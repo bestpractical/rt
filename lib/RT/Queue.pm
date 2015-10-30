@@ -96,6 +96,7 @@ RT::ACE->RegisterCacheHandler(sub {
 });
 
 use RT::Groups;
+use RT::CustomRoles;
 use RT::ACL;
 use RT::Interface::Email;
 
@@ -466,6 +467,23 @@ sub TicketTransactionCustomFields {
     return ($cfs);
 }
 
+=head2 CustomRoles
+
+Returns an L<RT::CustomRoles> object containing all queue-specific roles.
+
+=cut
+
+sub CustomRoles {
+    my $self = shift;
+
+    my $roles = RT::CustomRoles->new( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('SeeQueue') ) {
+        $roles->LimitToObjectId( $self->Id );
+        $roles->ApplySortOrder;
+    }
+    return ($roles);
+}
+
 =head2 ManageableRoleGroupTypes
 
 Returns a list of the names of the various role group types for Queues,
@@ -487,7 +505,7 @@ Returns whether the passed-in type is a manageable role group type.
 sub IsManageableRoleGroupType {
     my $self = shift;
     my $type = shift;
-    return( $self->HasRole($type) and not $self->Role($type)->{ACLOnly} );
+    return grep { $type eq $_ } $self->ManageableRoleGroupTypes;
 }
 
 
@@ -532,8 +550,9 @@ sub AddWatcher {
     my ($principal, $msg) = $self->AddRoleMember( %args );
     return ( 0, $msg) unless $principal;
 
-    return ( 1, $self->loc("Added [_1] to members of [_2] for this queue.",
-                           $principal->Object->Name, $self->loc($args{'Type'}) ));
+    my $group = $self->RoleGroup( $args{Type} );
+    return ( 1, $self->loc("Added [_1] as [_2] for this queue",
+                           $principal->Object->Name, $group->Label ));
 }
 
 
@@ -562,8 +581,9 @@ sub DeleteWatcher {
     my ($principal, $msg) = $self->DeleteRoleMember( %args );
     return ( 0, $msg) unless $principal;
 
-    return ( 1, $self->loc("Removed [_1] from members of [_2] for this queue.",
-                           $principal->Object->Name, $self->loc($args{'Type'}) ));
+    my $group = $self->RoleGroup( $args{Type} );
+    return ( 1, $self->loc("[_1] is no longer [_2] for this queue",
+                           $principal->Object->Name, $group->Label ));
 }
 
 
@@ -617,9 +637,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub Cc {
     my $self = shift;
 
-    return RT::Group->new($self->CurrentUser)
-        unless $self->CurrentUserHasRight('SeeQueue');
-    return $self->RoleGroup( 'Cc' );
+    return $self->RoleGroup( 'Cc', CheckRight => 'SeeQueue' );
 }
 
 
@@ -635,9 +653,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub AdminCc {
     my $self = shift;
 
-    return RT::Group->new($self->CurrentUser)
-        unless $self->CurrentUserHasRight('SeeQueue');
-    return $self->RoleGroup( 'AdminCc' );
+    return $self->RoleGroup( 'AdminCc', CheckRight => 'SeeQueue' );
 }
 
 
@@ -1061,6 +1077,11 @@ sub FindDependencies {
     $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
     $objs->{allow_deleted_search} = 1;
     $deps->Add( in => $objs );
+
+    # Object Custom Roles
+    $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
+    $objs->LimitToObjectId($self->Id);
+    $deps->Add( in => $objs );
 }
 
 sub __DependsOn {
@@ -1098,6 +1119,11 @@ sub __DependsOn {
     $objs = RT::CustomFields->new( $self->CurrentUser );
     $objs->SetContextObject( $self );
     $objs->LimitToQueue( $self->id );
+    push( @$list, $objs );
+
+# Object Custom Roles
+    $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
+    $objs->LimitToObjectId($self->Id);
     push( @$list, $objs );
 
     $deps->_PushDependencies(

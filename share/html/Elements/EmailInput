@@ -45,11 +45,56 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<input type="text" id="<% $Name %>" name="<% $Name %>" <% defined $Size ? qq{size="$Size"} : '' |n %> value="<% $Default || '' %>" <% $Autocomplete ? q{data-autocomplete="Users"} : '' |n%> <% $AutocompleteMultiple ? q{data-autocomplete-multiple} : '' |n%> />
+<input
+    type="text"
+    id="<% $Name %>"
+    name="<% $Name %>"
+    value="<% $Default || '' %>"
+
+% if (defined $Size) {
+    size="<% $Size %>"
+% }
+
+% if ($Placeholder) {
+    placeholder="<% $Placeholder %>"
+% }
+
+% if ($Autocomplete) {
+    data-autocomplete="Users"
+% }
+
+% if ($AutocompleteMultiple) {
+    data-autocomplete-multiple
+% }
+
+% if ($AutocompleteReturn) {
+    data-autocomplete-return="<% $AutocompleteReturn %>"
+% }
+
+% if ($AutocompleteNobody) {
+    data-autocomplete-include-nobody
+% }
+
+% if ($AutocompleteSystem) {
+    data-autocomplete-include-system
+% }
+
+/>
+% if ($EntryHint) {
+<br>
+<i><font size="-2">
+  <&|/l&><% $EntryHint %></&>
+</font></i>
+% }
 <%ARGS>
 $Name
 $Size    => 40
 $Default => ''
 $Autocomplete => 1
 $AutocompleteMultiple => 0
+$AutocompleteReturn => ''
+$AutocompleteNobody => 0
+$AutocompleteSystem => 0
+$EntryHint => ''
+$Placeholder => ''
 </%ARGS>

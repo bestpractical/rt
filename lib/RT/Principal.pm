@@ -161,7 +161,7 @@ sub DisplayName {
     return $self->Object->InstanceObj->Name if ($self->Object->Domain eq 'ACLEquivalence');
 
     # Otherwise, show the group name
-    return $self->Object->Name;
+    return $self->Object->Label;
 }
 
 =head2 GrantRight  { Right => RIGHTNAME, Object => undef }

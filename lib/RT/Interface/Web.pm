@@ -64,6 +64,7 @@ use warnings;
 package RT::Interface::Web;
 
 use RT::SavedSearches;
+use RT::CustomRoles;
 use URI qw();
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
@@ -287,6 +288,8 @@ sub HandleRequest {
 
     InitializeMenu();
     MaybeShowInstallModePage();
+
+    MaybeRebuildCustomRolesCache();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
@@ -1255,6 +1258,15 @@ sub MaybeEnableSQLStatementLog {
 
 }
 
+my $role_cache_time = time;
+sub MaybeRebuildCustomRolesCache {
+    my $needs_update = RT->System->CustomRoleCacheNeedsUpdate;
+    if ($needs_update > $role_cache_time) {
+        RT::CustomRoles->RegisterRoles;
+        $role_cache_time = $needs_update;
+    }
+}
+
 sub LogRecordedSQLStatements {
     my %args = @_;
 
@@ -2183,13 +2195,7 @@ sub CreateTicket {
     my %create_args = (
         Type => $ARGS{'Type'} || 'ticket',
         Queue => $ARGS{'Queue'},
-        Owner => $ARGS{'Owner'},
         SLA => $ARGS{'SLA'},
-
-        # note: name change
-        Requestor       => $ARGS{'Requestors'},
-        Cc              => $ARGS{'Cc'},
-        AdminCc         => $ARGS{'AdminCc'},
         InitialPriority => $ARGS{'InitialPriority'},
         FinalPriority   => $ARGS{'FinalPriority'},
         TimeLeft        => $ARGS{'TimeLeft'},
@@ -2202,12 +2208,19 @@ sub CreateTicket {
         MIMEObj         => $MIMEObj,
         SquelchMailTo   => $ARGS{'SquelchMailTo'},
         TransSquelchMailTo => $ARGS{'TransSquelchMailTo'},
+
+        (map { $_ => $ARGS{$_} } $Queue->Roles),
+        # note: name change
+        Requestor       => $ARGS{'Requestors'},
     );
 
     my @txn_squelch;
     foreach my $type (qw(Requestor Cc AdminCc)) {
         push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
             if grep $_ eq $type || $_ eq ( $type . 's' ), @{ $ARGS{'SkipNotification'} || [] };
+    }
+    foreach my $role (grep { /^RT::CustomRole-\d+$/ } @{ $ARGS{'SkipNotification'} || [] }) {
+        push @txn_squelch, map $_->address, Email::Address->parse( $create_args{$role} );
     }
     push @{$create_args{TransSquelchMailTo}}, @txn_squelch;
 
@@ -2420,6 +2433,11 @@ sub _ProcessUpdateMessageRecipients {
             push @txn_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
             push @txn_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
         }
+    }
+    for my $role (grep { /^RT::CustomRole-\d+$/ } @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+        push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{$role} );
+        push @txn_squelch, $args{TicketObj}->RoleGroup($role)->MemberEmailAddresses;
+        push @txn_squelch, $args{TicketObj}->QueueObj->RoleGroup($role)->MemberEmailAddresses;
     }
     if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
         push @txn_squelch, map $_->address, Email::Address->parse( $message_args->{Requestor} );
@@ -3399,7 +3417,7 @@ sub ProcessTicketWatchers {
         }
 
         # Delete watchers in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc)$/ ) {
+        elsif ( $key =~ /^Delete(Requestor|Cc|AdminCc|RT::CustomRole-\d+)$/ ) {
             my ( $code, $msg ) = $Ticket->DeleteWatcher(
                 Email => $ARGSRef->{$key},
                 Type  => $1
@@ -3407,8 +3425,8 @@ sub ProcessTicketWatchers {
             push @results, $msg;
         }
 
-        # Add new wathchers by email address
-        elsif ( ( $ARGSRef->{$key} || '' ) =~ /^(?:AdminCc|Cc|Requestor)$/
+        # Add new watchers by email address
+        elsif ( ( $ARGSRef->{$key} || '' ) =~ /^(?:AdminCc|Cc|Requestor|RT::CustomRole-\d+)$/
             and $key =~ /^WatcherTypeEmail(\d*)$/ )
         {
 
@@ -3421,7 +3439,7 @@ sub ProcessTicketWatchers {
         }
 
         #Add requestors in the simple style demanded by the bulk manipulator
-        elsif ( $key =~ /^Add(Requestor|Cc|AdminCc)$/ ) {
+        elsif ( $key =~ /^Add(Requestor|Cc|AdminCc|RT::CustomRole-\d+)$/ ) {
             my ( $code, $msg ) = $Ticket->AddWatcher(
                 Type  => $1,
                 Email => $ARGSRef->{$key}
@@ -3434,7 +3452,7 @@ sub ProcessTicketWatchers {
             my $principal_id = $1;
             my $form         = $ARGSRef->{$key};
             foreach my $value ( ref($form) ? @{$form} : ($form) ) {
-                next unless $value =~ /^(?:AdminCc|Cc|Requestor)$/i;
+                next unless $value =~ /^(?:AdminCc|Cc|Requestor|RT::CustomRole-\d+)$/i;
 
                 my ( $code, $msg ) = $Ticket->AddWatcher(
                     Type        => $value,
@@ -3442,6 +3460,17 @@ sub ProcessTicketWatchers {
                 );
                 push @results, $msg;
             }
+        }
+        # Single-user custom roles
+        elsif ( $key =~ /^RT::CustomRole-(\d*)$/ ) {
+            # clearing the field sets value to nobody
+            my $user = $ARGSRef->{$key} || RT->Nobody;
+
+            my ( $code, $msg ) = $Ticket->AddWatcher(
+                Type => $key,
+                User => $user,
+            );
+            push @results, $msg;
         }
 
     }
@@ -3830,6 +3859,13 @@ sub ProcessColumnMapValue {
 Returns an array suitable for passing to /Admin/Elements/EditRights with the
 principal collections mapped from the categories given.
 
+The return value is an array of arrays, where the inner arrays are like:
+
+    [ 'Category name' => $CollectionObj => 'DisplayColumn' => 1 ]
+
+The last value is a boolean determining if the value of DisplayColumn
+should be loc()-ed before display.
+
 =cut
 
 sub GetPrincipalsMap {
@@ -3860,7 +3896,7 @@ sub GetPrincipalsMap {
 
             push @map, [
                 'User Groups' => $groups,   # loc_left_pair
-                'Name'        => 0
+                'Label'       => 0
             ];
         }
         elsif (/Roles/) {
@@ -3890,7 +3926,7 @@ sub GetPrincipalsMap {
                 $roles->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
                 push @map, [
                     'Roles' => $roles,  # loc_left_pair
-                    'Name'  => 1
+                    'Label' => 0
                 ];
             }
         }

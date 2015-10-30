@@ -50,19 +50,29 @@
 <option value="">-</option>
 % }
 % for my $option (@types) {
+% my ($value, $label) = ($option, $option);
+% if (ref($option)) {
+%     ($value, $label) = @$option;
+% }
+
 %  if ($Suffix) {
-<option value="<% $option %><% $Suffix %>"<%$option eq $Default && qq[ selected="selected"] |n %> ><% loc($option) %> <% loc('Group') %></option>
+<option value="<% $value %><% $Suffix %>"<%$value eq $Default && qq[ selected="selected"] |n %> ><% loc($label) %> <% loc('Group') %></option>
 %   next;
 %  }
 %  foreach my $subtype (@subtypes) {
-<option value="<%"$option.$subtype"%>"<%$option eq $Default && $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($option) %> <% loc($subtype) %></option>
+<option value="<%"$value.$subtype"%>"<%$value eq $Default && $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($label) %> <% loc($subtype) %></option>
 %  }
 % }
 </select>
 
 <%INIT>
 my @types;
-if ($Scope =~ /queue/) {
+if ($Role) {
+   @types = (
+      [ "CustomRole.{" . $Role->Name . "}", $Role->Name ],
+   );
+}
+elsif ($Scope =~ /queue/) {
    @types = qw(Cc AdminCc);
 }
 elsif ($Suffix eq 'Group') {
@@ -81,4 +91,5 @@ $Suffix => ''
 $Default=>undef
 $Scope => 'ticket'
 $Name => 'WatcherType'
+$Role => undef
 </%ARGS>

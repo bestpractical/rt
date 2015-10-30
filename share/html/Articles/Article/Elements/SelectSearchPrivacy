@@ -48,7 +48,7 @@
 <select name="<%$Name%>">
 <option value="RT::User-<% $user->Id %>" <% $Default eq 'RT::User-'.$user->Id ? 'selected' : '' %>>My searches</option>
 % while (my $group = $groups->Next) {
-<option value="RT::Group-<% $group->Id %>" <% $Default eq 'RT::Group-'.$group->Id ? 'selected' : '' %>><% $group->Name %>'s searches</option>
+<option value="RT::Group-<% $group->Id %>" <% $Default eq 'RT::Group-'.$group->Id ? 'selected' : '' %>><% $group->Label %>'s searches</option>
 % }
 </select>
 <%INIT>

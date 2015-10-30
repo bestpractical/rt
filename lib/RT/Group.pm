@@ -84,6 +84,7 @@ use RT::Users;
 use RT::GroupMembers;
 use RT::Principals;
 use RT::ACL;
+use RT::CustomRole;
 
 __PACKAGE__->AddRight( Admin => AdminGroup           => 'Modify group metadata or delete group'); # loc
 __PACKAGE__->AddRight( Admin => AdminGroupMembership => 'Modify group membership roster'); # loc
@@ -1313,6 +1314,34 @@ sub BasicColumns {
     );
 }
 
+=head2 Label
+
+Returns the group name suitable for displaying to end users. Override
+this instead of L</Name>, which is used internally.
+
+=cut
+
+sub Label {
+    my $self = shift;
+
+    # don't loc user-defined group names
+    if ($self->Domain eq 'UserDefined') {
+        return $self->Name;
+    }
+
+    if ($self->Domain =~ /-Role$/) {
+        my ($id) = $self->Name =~ /^RT::CustomRole-(\d+)$/;
+        if ($id) {
+            my $role = RT::CustomRole->new($self->CurrentUser);
+            $role->Load($id);
+
+            # don't loc user-defined role names
+            return $role->Name;
+        }
+    }
+
+    return $self->loc($self->Name);
+}
 
 =head1 AUTHOR
 

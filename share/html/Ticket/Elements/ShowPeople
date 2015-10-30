@@ -54,6 +54,23 @@
 % $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
     </td>
   </tr>
+
+% my $single_roles = $Ticket->QueueObj->CustomRoles;
+% $single_roles->LimitToSingleValue;
+% while (my $role = $single_roles->Next) {
+%     my $group = $Ticket->RoleGroup($role->GroupType);
+%     my $users = $group->UserMembersObj( Recursively => 0 );
+
+%# $users can be empty for tickets created before the custom role is added to the queue,
+%# so fall back to nobody
+
+%     my $user = $users->First || RT->Nobody;
+  <tr>
+    <td class="label"><% $role->Name %>:</td>
+    <td class="value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></td>
+  </tr>
+% }
+
   <tr>
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
@@ -70,6 +87,16 @@
     <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
   </tr>
 % }
+
+% my $multi_roles = $Ticket->QueueObj->CustomRoles;
+% $multi_roles->LimitToMultipleValue;
+% while (my $role = $multi_roles->Next) {
+  <tr>
+    <td class="labeltop"><% $role->Name %>:</td>
+    <td class="value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></td>
+  </tr>
+% }
+
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
 </table>
 <%INIT>

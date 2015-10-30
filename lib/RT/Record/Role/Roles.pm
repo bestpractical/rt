@@ -129,6 +129,29 @@ Optional.  A numeric value indicating the position of this role when sorted
 ascending with other roles in a list.  Roles with the same sort order are
 ordered alphabetically by name within themselves.
 
+=item UserDefined
+
+Optional.  A true value indicates that this role was created by the user and
+as such is not managed by the core codebase or an extension.
+
+=item CreateGroupPredicate
+
+Optional.  A subroutine whose return value indicates whether the group for this
+role should be created as part of L</_CreateRoleGroups>.  When this subroutine
+is not provided, the group will be created.  The same parameters that will be
+passed to L<RT::Group/CreateRoleGroup> are passed to your predicate (including
+C<Object>)
+
+=item AppliesToObjectPredicate
+
+Optional.  A subroutine which decides whether a specific object in the class
+has the role or not.
+
+=item LabelGenerator
+
+Optional.  A subroutine which returns the name of the role as suitable for
+displaying to the end user. Will receive as an argument a specific object.
+
 =back
 
 =cut
@@ -137,9 +160,13 @@ sub RegisterRole {
     my $self  = shift;
     my $class = ref($self) || $self;
     my %role  = (
-        Name            => undef,
-        EquivClasses    => [],
-        SortOrder       => 0,
+        Name                     => undef,
+        EquivClasses             => [],
+        SortOrder                => 0,
+        UserDefined              => 0,
+        CreateGroupPredicate     => undef,
+        AppliesToObjectPredicate => undef,
+        LabelGenerator           => undef,
         @_
     );
     return unless $role{Name};
@@ -226,7 +253,7 @@ sub Role {
 
 =head2 Roles
 
-Returns a list of role names registered for this class, sorted ascending by
+Returns a list of role names registered for this object, sorted ascending by
 SortOrder and then alphabetically by name.
 
 Optionally takes a hash specifying attributes the returned roles must possess
@@ -258,6 +285,8 @@ sub Roles {
                     $ok = 0, last if $attr{$k} xor $_->[1]{$k};
                 }
                 $ok }
+            grep { !$_->[1]{AppliesToObjectPredicate}
+                 or $_->[1]{AppliesToObjectPredicate}->($self) }
              map { [ $_, $self->Role($_) ] }
             keys %{ $self->_ROLES };
 }
@@ -294,7 +323,13 @@ L<RT::Group> object on failure.
 sub RoleGroup {
     my $self  = shift;
     my $name  = shift;
+    my %args  = @_;
+
     my $group = RT::Group->new( $self->CurrentUser );
+
+    if ($args{CheckRight}) {
+        return $group if !$self->CurrentUserHasRight($args{CheckRight});
+    }
 
     if ($self->HasRole($name)) {
         $group->LoadRoleGroup(
@@ -305,64 +340,52 @@ sub RoleGroup {
     return $group;
 }
 
-=head2 AddRoleMember
+=head2 CanonicalizePrincipal
 
-Adds the described L<RT::Principal> to the specified role group for this record.
-
-Takes a set of key-value pairs:
+Takes some description of a principal (see below) and returns the corresponding
+L<RT::Principal>. C<Type>, as in role name, is a required parameter for
+producing error messages.
 
 =over 4
 
+=item Principal
+
+The L<RT::Principal> if you've already got it.
+
 =item PrincipalId
 
-Optional.  The ID of the L<RT::Principal> object to add.
+The ID of the L<RT::Principal> object.
 
 =item User
 
-Optional.  The Name or EmailAddress of an L<RT::User> to use as the
-principal.  If an email address is given, but a user matching it cannot
-be found, a new user will be created.
+The Name or EmailAddress of an L<RT::User>.  If an email address is given, but
+a user matching it cannot be found, a new user will be created.
 
 =item Group
 
-Optional.  The Name of an L<RT::Group> to use as the principal.
-
-=item Type
-
-Required.  One of the valid roles for this record, as returned by L</Roles>.
-
-=item ACL
-
-Optional.  A subroutine reference which will be passed the role type and
-principal being added.  If it returns false, the method will fail with a
-status of "Permission denied".
+The Name of an L<RT::Group>.
 
 =back
 
-One, and only one, of I<PrincipalId>, I<User>, or I<Group> is required.
-
-Returns a tuple of (principal object which was added, message).
-
 =cut
 
-sub AddRoleMember {
+sub CanonicalizePrincipal {
     my $self = shift;
     my %args = (@_);
 
-    return (0, $self->loc("One, and only one, of PrincipalId/User/Group is required"))
-        if 1 != grep { $_ } @args{qw/PrincipalId User Group/};
+    return (0, $self->loc("One, and only one, of Principal/PrincipalId/User/Group is required"))
+        if 1 != grep { $_ } @args{qw/Principal PrincipalId User Group/};
 
-    my $type = delete $args{Type};
-    return (0, $self->loc("No valid Type specified"))
-        unless $type and $self->HasRole($type);
-
-    if ($args{PrincipalId}) {
+    if ($args{Principal}) {
+        return $args{Principal};
+    }
+    elsif ($args{PrincipalId}) {
         # Check the PrincipalId for loops
         my $principal = RT::Principal->new( $self->CurrentUser );
         $principal->Load($args{'PrincipalId'});
         if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
             return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
-                                  $email, $self->loc($type)))
+                                  $email, $self->loc($args{Type})))
                 if RT::EmailParser->IsRTAddress( $email );
         }
     } else {
@@ -370,7 +393,7 @@ sub AddRoleMember {
             my $name = delete $args{User};
             # Sanity check the address
             return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
-                                  $name, $self->loc($type) ))
+                                  $name, $self->loc($args{Type}) ))
                 if RT::EmailParser->IsRTAddress( $name );
 
             # Create as the SystemUser, not the current user
@@ -403,27 +426,72 @@ sub AddRoleMember {
     my $principal = RT::Principal->new( $self->CurrentUser );
     $principal->Load( $args{PrincipalId} );
 
+    return $principal;
+}
+
+=head2 AddRoleMember
+
+Adds the described L<RT::Principal> to the specified role group for this record.
+
+Takes a set of key-value pairs:
+
+=over 4
+
+=item Principal, PrincipalId, User, or Group
+
+Required. Canonicalized through L</CanonicalizePrincipal>.
+
+=item Type
+
+Required.  One of the valid roles for this record, as returned by L</Roles>.
+
+=item ACL
+
+Optional.  A subroutine reference which will be passed the role type and
+principal being added.  If it returns false, the method will fail with a
+status of "Permission denied".
+
+=back
+
+Returns a tuple of (principal object which was added, message).
+
+=cut
+
+sub AddRoleMember {
+    my $self = shift;
+    my %args = (@_);
+
+    my $principal = $self->CanonicalizePrincipal(%args);
+
+    my $type = delete $args{Type};
+    return (0, $self->loc("That role is invalid for this object"))
+        unless $type and $self->HasRole($type);
+
     my $acl = delete $args{ACL};
     return (0, $self->loc("Permission denied"))
         if $acl and not $acl->($type => $principal);
 
     my $group = $self->RoleGroup( $type );
-    return (0, $self->loc("Role group '[_1]' not found", $type))
-        unless $group->id;
+    if (!$group->id) {
+        $group = $self->_CreateRoleGroup($type);
+        if (!$group || !$group->id) {
+            return (0, $self->loc("Role group '[_1]' not found", $type));
+        }
+    }
 
-    return (0, $self->loc('[_1] is already a [_2]',
-                          $principal->Object->Name, $self->loc($type)) )
+    return (0, $self->loc('[_1] is already [_2]',
+                          $principal->Object->Name, $group->Label) )
             if $group->HasMember( $principal );
 
-    return (0, $self->loc('[_1] cannot be a group', $self->loc($type)) )
+    return (0, $self->loc('[_1] cannot be a group', $group->Label) )
                 if $group->SingleMemberRoleGroup and $principal->IsGroup;
 
-    my ( $ok, $msg ) = $group->_AddMember( %args, RecordTransaction => !$args{Silent} );
+    my ( $ok, $msg ) = $group->_AddMember( %args, PrincipalId => $principal->Id, RecordTransaction => !$args{Silent} );
     unless ($ok) {
-        $RT::Logger->error("Failed to add $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
+        $RT::Logger->error("Failed to add principal ".$principal->Id." as a member of group ".$group->Id.": ".$msg);
 
         return ( 0, $self->loc('Could not make [_1] a [_2]',
-                    $principal->Object->Name, $self->loc($type)) );
+                    $principal->Object->Name, $group->Label) );
     }
 
     return ($principal, $msg);
@@ -469,7 +537,7 @@ sub DeleteRoleMember {
     my $self = shift;
     my %args = (@_);
 
-    return (0, $self->loc("No valid Type specified"))
+    return (0, $self->loc("That role is invalid for this object"))
         unless $args{Type} and $self->HasRole($args{Type});
 
     if ($args{User}) {
@@ -574,21 +642,42 @@ sub _ResolveRoles {
     return (@errors);
 }
 
+sub _CreateRoleGroup {
+    my $self = shift;
+    my $name = shift;
+    my %args = (
+        @_,
+    );
+
+    my $role = $self->Role($name);
+
+    my %create = (
+        Name    => $name,
+        Object  => $self,
+        %args,
+    );
+
+    return (0) if $role->{CreateGroupPredicate}
+               && !$role->{CreateGroupPredicate}->(%create);
+
+    my $type_obj = RT::Group->new($self->CurrentUser);
+    my ($id, $msg) = $type_obj->CreateRoleGroup(%create);
+
+    unless ($id) {
+        $RT::Logger->error("Couldn't create a role group of type '$name' for ".ref($self)." ".
+                               $self->id.": ".$msg);
+        return(undef);
+    }
+
+    return $type_obj;
+}
+
 sub _CreateRoleGroups {
     my $self = shift;
     my %args = (@_);
     for my $name ($self->Roles) {
-        my $type_obj = RT::Group->new($self->CurrentUser);
-        my ($id, $msg) = $type_obj->CreateRoleGroup(
-            Name    => $name,
-            Object  => $self,
-            %args,
-        );
-        unless ($id) {
-            $RT::Logger->error("Couldn't create a role group of type '$name' for ".ref($self)." ".
-                                   $self->id.": ".$msg);
-            return(undef);
-        }
+        my ($ok) = $self->_CreateRoleGroup($name, %args);
+        return(undef) if !$ok;
     }
     return(1);
 }
@@ -627,6 +716,22 @@ sub _AddRolesOnCreate {
     }
 
     return @errors;
+}
+
+=head2 LabelForRole
+
+Returns a label suitable for displaying the passed-in role to an end user.
+
+=cut
+
+sub LabelForRole {
+    my $self = shift;
+    my $name = shift;
+    my $role = $self->Role($name);
+    if ($role->{LabelGenerator}) {
+        return $role->{LabelGenerator}->($self);
+    }
+    return $role->{Name};
 }
 
 

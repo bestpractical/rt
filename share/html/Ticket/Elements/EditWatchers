@@ -47,11 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 %# Print out a placeholder if there are none.
-% unless ( $Members->Count ) {
+% if ( !$Watchers->id || $Members->Count == 0 ) {
 <li><i><&|/l&>none</&></i></li>
-% }
-
-
+% } else {
 % while ( my $watcher = $Members->Next ) {
 % my $member = $watcher->MemberObj->Object;
 <li>
@@ -75,6 +73,7 @@
 % } }
 
 </li>
+% }
 % }
 </ul>
 <%INIT>

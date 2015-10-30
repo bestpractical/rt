@@ -50,7 +50,7 @@
 <option value="">-</option>
 % }
 %while (my $group = $groups->Next) {
-<option value="<%$group->id%>"<%$group->id eq $Default && qq[ selected="selected"] |n %>><%$group->Name%></option>
+<option value="<%$group->id%>"<%$group->id eq $Default && qq[ selected="selected"] |n %>><%$group->Label%></option>
 %}
 </select>
 

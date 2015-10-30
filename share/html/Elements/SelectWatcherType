@@ -49,23 +49,29 @@
 % if ($AllowNull) {
 <option value="">-</option>
 % }
-%for my $option (@types) {
-<option value="<%$option%>"<%defined($Default) && $option eq $Default && qq[ selected="selected"] |n %>><%loc($option)%></option>
+%for my $value (@types) {
+<option value="<%$value%>"
+% if (defined($Default) && $value eq $Default) {
+selected="selected"
+% }
+><% loc($Queue->LabelForRole($value)) %></option>
 %}
 </select>
 
 <%INIT>
 my @types;
 if ($Scope =~ /queue/) {
-   @types = RT::Queue->ManageableRoleGroupTypes;
+    @types = $Queue->ManageableRoleGroupTypes;
 }
 else { 
-   @types = qw(Requestor Cc AdminCc);
+    @types = $Queue->Roles(Single => 0);
 }
+
 </%INIT>
 <%ARGS>
 $AllowNull => 1
 $Default=>undef
 $Scope => 'ticket'
 $Name => 'WatcherType'
+$Queue => undef
 </%ARGS>

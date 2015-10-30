@@ -199,6 +199,7 @@ sub Init {
     InitPlugins();
     _BuildTableAttributes();
     RT::I18N->Init;
+    RT::CustomRoles->RegisterRoles;
     RT->Config->PostLoadCheck;
     RT::Lifecycle->FillCache;
 }
@@ -459,6 +460,8 @@ sub InitClasses {
     require RT::CustomFieldValues;
     require RT::ObjectCustomFields;
     require RT::ObjectCustomFieldValues;
+    require RT::CustomRoles;
+    require RT::ObjectCustomRoles;
     require RT::Attributes;
     require RT::Dashboard;
     require RT::Approval;

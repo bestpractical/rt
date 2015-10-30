@@ -848,11 +848,12 @@ sub InsertData {
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final,
+           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
            @Catalogs, @Assets);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final,
+           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
            @Catalogs, @Assets);
+
     local $@;
     $RT::Logger->debug("Going to load '$datafile' data file");
     eval { require $datafile }
@@ -1177,6 +1178,36 @@ sub InsertData {
 
         $RT::Logger->debug("done.");
     }
+
+    if ( @CustomRoles ) {
+        $RT::Logger->debug("Creating custom roles...");
+        for my $item ( @CustomRoles ) {
+            my $attributes = delete $item->{ Attributes };
+            my $apply_to = delete $item->{'ApplyTo'};
+
+            my $new_entry = RT::CustomRole->new( RT->SystemUser );
+
+            my ( $ok, $msg ) = $new_entry->Create(%$item);
+            if (!$ok) {
+                $RT::Logger->error($msg);
+                next;
+            }
+
+            if ($apply_to) {
+                $apply_to = [ $apply_to ] unless ref $apply_to;
+                for my $name ( @{ $apply_to } ) {
+                    my ($ok, $msg) = $new_entry->AddToObject($name);
+                    $RT::Logger->error( $msg ) if !$ok;
+                }
+            }
+
+            $_->{Object} = $new_entry for @{$attributes || []};
+            push @Attributes, @{$attributes || []};
+        }
+
+        $RT::Logger->debug("done.");
+    }
+
     if ( @ACL ) {
         $RT::Logger->debug("Creating ACL...");
         for my $item (@ACL) {
@@ -1215,6 +1246,12 @@ sub InsertData {
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
+                if (my $role_name = delete $item->{CustomRole}) {
+                    my $role = RT::CustomRole->new(RT->SystemUser);
+                    $role->Load($role_name);
+                    $item->{'GroupType'} = $role->GroupType;
+                }
+
                 $princ = RT::Group->new(RT->SystemUser);
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
                   $princ->LoadUserDefinedGroup( $item->{'GroupId'} );

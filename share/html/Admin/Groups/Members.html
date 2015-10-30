@@ -52,7 +52,7 @@
 <form action="<% RT->Config->Get('WebPath') %>/Admin/Groups/Members.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 
-<&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Name) &>
+<&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Label) &>
 
 <table width="100%">
 <tr>
@@ -114,7 +114,7 @@ my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
 my $Group = RT::Group->new($session{'CurrentUser'});
 $Group->Load($id) || Abort(loc('Could not load group'));
 
-my $title = loc("Modify the group [_1]", $Group->Name);
+my $title = loc("Modify the group [_1]", $Group->Label);
 
 my (%UsersSeen, %GroupsSeen);
 $GroupsSeen{ $Group->id } = 1; # can't be a member of ourself

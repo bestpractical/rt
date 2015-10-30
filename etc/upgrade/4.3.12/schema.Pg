@@ -1,0 +1,35 @@
+CREATE SEQUENCE customroles_id_seq;
+
+CREATE TABLE CustomRoles (
+  id INTEGER DEFAULT nextval('customroles_id_seq'),
+  Name varchar(200) NULL  ,
+  Description varchar(255) NULL  ,
+  MaxValues integer NOT NULL DEFAULT 0  ,
+  EntryHint varchar(255) NULL  ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
+  Disabled integer NOT NULL DEFAULT 0 ,
+  PRIMARY KEY (id)
+
+);
+
+CREATE SEQUENCE objectcustomroles_id_seq;
+
+CREATE TABLE ObjectCustomRoles (
+  id INTEGER DEFAULT nextval('objectscrips_id_seq'),
+  CustomRole integer NOT NULL,
+  ObjectId integer NOT NULL,
+  SortOrder integer NOT NULL DEFAULT 0  ,
+
+  Creator integer NOT NULL DEFAULT 0  ,
+  Created TIMESTAMP NULL  ,
+  LastUpdatedBy integer NOT NULL DEFAULT 0  ,
+  LastUpdated TIMESTAMP NULL  ,
+  PRIMARY KEY (id)
+
+);
+
+CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);

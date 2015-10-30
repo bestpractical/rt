@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select multiple="multiple" name="<%$Name%>"  size="10">
 %while (my $group = $groups->Next) {
-<option value="<%$group->id%>"><%$group->Name%>
+<option value="<%$group->id%>"><%$group->Label%>
 %}
 </select>
 

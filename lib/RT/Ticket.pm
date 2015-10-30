@@ -370,7 +370,7 @@ sub Create {
 
     # Figure out users for roles
     my $roles = {};
-    push @non_fatal_errors, $self->_ResolveRoles( $roles, %args );
+    push @non_fatal_errors, $QueueObj->_ResolveRoles( $roles, %args );
 
     $args{'Type'} = lc $args{'Type'}
         if $args{'Type'} =~ /^(ticket|approval|reminder)$/i;
@@ -451,9 +451,10 @@ sub Create {
     }
 
     # Codify what it takes to add each kind of group
+    my $always_ok = sub { 1 };
     my %acls = (
-        Cc        => sub { 1 },
-        Requestor => sub { 1 },
+        (map { $_ => $always_ok } $QueueObj->Roles),
+
         AdminCc   => sub {
             my $principal = shift;
             return 1 if $self->CurrentUserHasRight('ModifyTicket');
@@ -645,16 +646,44 @@ sub AddWatcher {
         @_
     );
 
-    $args{ACL} = sub { $self->_HasModifyWatcherRight( @_ ) };
     $args{User} ||= delete $args{Email};
-    my ($principal, $msg) = $self->AddRoleMember(
-        %args,
+    my ($principal, $msg) = $self->CanonicalizePrincipal(%args);
+    if (!$principal) {
+        return (0, $msg);
+    }
+
+    my $original_user;
+    my $group = $self->RoleGroup( $args{Type} );
+    if ($group->id && $group->SingleMemberRoleGroup) {
+        my $users = $group->UserMembersObj( Recursively => 0 );
+        $original_user = $users->First;
+        if ($original_user->PrincipalId == $principal->Id) {
+            return 1;
+        }
+    }
+    else {
+        $original_user = RT->Nobody;
+    }
+
+    ((my $ok), $msg) = $self->AddRoleMember(
+        Principal         => $principal,
+        ACL               => sub { $self->_HasModifyWatcherRight( @_ ) },
+        Type              => $args{Type},
         InsideTransaction => 1,
     );
-    return ( 0, $msg) unless $principal;
+    return ( 0, $msg) unless $ok;
 
-    return ( 1, $self->loc('Added [_1] as a [_2] for this ticket',
-                $principal->Object->Name, $self->loc($args{'Type'})) );
+    # reload group in case it was lazily created
+    $group = $self->RoleGroup( $args{Type} );
+
+    if ($group->SingleMemberRoleGroup) {
+        return ( 1, $self->loc( "[_1] changed from [_2] to [_3]",
+                       $group->Label, $original_user->Name, $principal->Object->Name ) );
+    }
+    else {
+        return ( 1, $self->loc('Added [_1] as [_2] for this ticket',
+                    $principal->Object->Name, $group->Label) );
+    }
 }
 
 
@@ -682,10 +711,11 @@ sub DeleteWatcher {
     my ($principal, $msg) = $self->DeleteRoleMember( %args );
     return ( 0, $msg ) unless $principal;
 
+    my $group = $self->RoleGroup( $args{Type} );
     return ( 1,
-             $self->loc( "[_1] is no longer a [_2] for this ticket.",
+             $self->loc( "[_1] is no longer [_2] for this ticket",
                          $principal->Object->Name,
-                         $self->loc($args{'Type'}) ) );
+                         $group->Label ) );
 }
 
 
@@ -760,12 +790,7 @@ B<Returns> String: All Ticket Requestor email addresses as a string.
 
 sub RequestorAddresses {
     my $self = shift;
-
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return undef;
-    }
-
-    return ( $self->Requestors->MemberEmailAddressesAsString );
+    return $self->RoleAddresses('Requestor');
 }
 
 
@@ -777,13 +802,7 @@ returns String: All Ticket AdminCc email addresses as a string
 
 sub AdminCcAddresses {
     my $self = shift;
-
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return undef;
-    }
-
-    return ( $self->AdminCc->MemberEmailAddressesAsString )
-
+    return $self->RoleAddresses('AdminCc');
 }
 
 =head2 CcAddresses
@@ -794,14 +813,25 @@ returns String: All Ticket Ccs as a string of email addresses
 
 sub CcAddresses {
     my $self = shift;
+    return $self->RoleAddresses('Cc');
+}
+
+=head2 RoleAddresses
+
+Takes a role name and returns a string of all the email addresses for
+users in that role
+
+=cut
+
+sub RoleAddresses {
+    my $self = shift;
+    my $role = shift;
 
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
         return undef;
     }
-    return ( $self->Cc->MemberEmailAddressesAsString);
-
+    return ( $self->RoleGroup($role)->MemberEmailAddressesAsString);
 }
-
 
 
 

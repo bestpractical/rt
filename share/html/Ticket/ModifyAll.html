@@ -58,7 +58,7 @@
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS &>
+<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1 &>
 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics' &>
 </&>
 

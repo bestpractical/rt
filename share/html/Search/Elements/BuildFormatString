@@ -114,6 +114,18 @@ while ( my $CustomField = $CustomFields->Next ) {
     push @fields, "CustomField.{" . $CustomField->Name . "}";
 }
 
+my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
+foreach my $id (keys %queues) {
+    # Gotta load up the $queue object, since queues get stored by name now.
+    my $queue = RT::Queue->new($session{'CurrentUser'});
+    $queue->Load($id);
+    next unless $queue->Id;
+    $CustomRoles->LimitToObjectId($queue->Id);
+}
+while ( my $Role = $CustomRoles->Next ) {
+    push @fields, "CustomRole.{" . $Role->Name . "}";
+}
+
 $m->callback( Fields => \@fields, ARGSRef => \%ARGS );
 
 my ( @seen);

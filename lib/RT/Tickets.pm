@@ -83,6 +83,7 @@ use RT::SQL;
 sub Table { 'Tickets'}
 
 use RT::CustomFields;
+use RT::CustomRoles;
 
 __PACKAGE__->RegisterCustomFieldJoin(@$_) for
     [ "RT::Transaction" => sub { $_[0]->JoinTransactions } ],
@@ -149,6 +150,7 @@ our %FIELD_METADATA = (
     QueueCc          => [ 'WATCHERFIELD'    => 'Cc'      => 'Queue', ], #loc_left_pair
     QueueAdminCc     => [ 'WATCHERFIELD'    => 'AdminCc' => 'Queue', ], #loc_left_pair
     QueueWatcher     => [ 'WATCHERFIELD'    => undef     => 'Queue', ], #loc_left_pair
+    CustomRole       => [ 'WATCHERFIELD' ], # loc_left_pair
     CustomFieldValue => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     CustomField      => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
     CF               => [ 'CUSTOMFIELD' => 'Ticket' ], #loc_left_pair
@@ -997,6 +999,39 @@ sub _TransContentLimit {
     $self->_CloseParen;
 }
 
+=head2 _CustomRoleDecipher
+
+Try and turn a custom role descriptor (e.g. C<CustomRole.{Engineer}>) into
+(role, column, original name).
+
+=cut
+
+sub _CustomRoleDecipher {
+    my ($self, $string) = @_;
+
+    my ($field, $column) = ($string =~ /^\{(.+)\}(?:\.(\w+))?$/);
+
+    my $role;
+
+    if ( $field =~ /\D/ ) {
+        my $roles = RT::CustomRoles->new( $self->CurrentUser );
+        $roles->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
+
+        # custom roles are named uniquely, but just in case there are
+        # multiple matches, bail out as we don't know which one to use
+        $role = $roles->First;
+        if ( $role ) {
+            $role = undef if $roles->Next;
+        }
+    }
+    else {
+        $role = RT::CustomRole->new( $self->CurrentUser );
+        $role->Load( $field );
+    }
+
+    return ($role, $column, $field);
+}
+
 =head2 _WatcherLimit
 
 Handle watcher limits.  (Requestor, CC, etc..)
@@ -1018,18 +1053,25 @@ sub _WatcherLimit {
     my $meta = $FIELD_METADATA{ $field };
     my $type = $meta->[1] || '';
     my $class = $meta->[2] || 'Ticket';
+    my $column = $rest{SUBKEY};
+
+    if ($field eq 'CustomRole') {
+        my ($role, $col, $original_name) = $self->_CustomRoleDecipher( $column );
+        $column = $col || 'id';
+        $type = $role ? $role->GroupType : $original_name;
+    }
 
     # Bail if the subfield is not allowed
-    if (    $rest{SUBKEY}
-        and not grep { $_ eq $rest{SUBKEY} } @{$SEARCHABLE_SUBFIELDS{'User'}})
+    if (    $column
+        and not grep { $_ eq $column } @{$SEARCHABLE_SUBFIELDS{'User'}})
     {
-        die "Invalid watcher subfield: '$rest{SUBKEY}'";
+        die "Invalid watcher subfield: '$column'";
     }
 
     $self->RoleLimit(
         TYPE      => $type,
         CLASS     => "RT::$class",
-        FIELD     => $rest{SUBKEY},
+        FIELD     => $column,
         OPERATOR  => $op,
         VALUE     => $value,
         SUBCLAUSE => "ticketsql",
@@ -1319,14 +1361,24 @@ sub OrderByCols {
         my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
         my $meta = $FIELD_METADATA{$field};
         if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
+            my $type = $meta->[1] || '';
+            my $class = $meta->[2] || 'Ticket';
+            my $column = $subkey;
+
+            if ($field eq 'CustomRole') {
+                my ($role, $col, $original_name) = $self->_CustomRoleDecipher( $column );
+                $column = $col || 'id';
+                $type = $role ? $role->GroupType : $original_name;
+            }
+
             # cache alias as we want to use one alias per watcher type for sorting
-            my $cache_key = join "-", map { $_ || "" } @$meta[1,2];
+            my $cache_key = join "-", $type, $class;
             my $users = $self->{_sql_u_watchers_alias_for_sort}{ $cache_key };
             unless ( $users ) {
                 $self->{_sql_u_watchers_alias_for_sort}{ $cache_key }
-                    = $users = ( $self->_WatcherJoin( Name => $meta->[1], Class => "RT::" . ($meta->[2] || 'Ticket') ) )[2];
+                    = $users = ( $self->_WatcherJoin( Name => $type, Class => "RT::" . $class ) )[2];
             }
-            push @res, { %$row, ALIAS => $users, FIELD => $subkey };
+            push @res, { %$row, ALIAS => $users, FIELD => $column };
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
            my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cf ? $cf->id : "$object.$field";

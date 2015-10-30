@@ -79,7 +79,7 @@ if ($anchor =~ /AddPrincipal/) {
 </%init>
 %# Principals is an array of arrays, where the inner arrays are like:
 %#      [ 'Category name' => $CollectionObj => 'DisplayColumn' => 1 ]
-%# The last value is a boolen determining if the value of DisplayColumn
+%# The last value is a boolean determining if the value of DisplayColumn
 %# should be loc()-ed before display.
 
 <script type="text/javascript">

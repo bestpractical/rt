@@ -58,7 +58,13 @@
 <&|/l&>Username</&>
 </td></tr>
 % while (my $u = $Users->Next ) {
-<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-". $u->PrincipalId &></td><td><& '/Elements/ShowUser', User => $u, style=>'verbose' &></td></tr>
+<tr>
+<td><&/Elements/SelectWatcherType,
+    Name  => "Ticket-AddWatcher-Principal-". $u->PrincipalId,
+    Queue => $Ticket->QueueObj,
+&></td>
+<td><& '/Elements/ShowUser', User => $u, style=>'verbose' &></td>
+</tr>
 % }
 % }
 
@@ -69,7 +75,13 @@
 <&|/l&>Group</&>
 </td></tr>
 % while (my $g = $Groups->Next ) {
-<tr><td><&/Elements/SelectWatcherType, Name => "Ticket-AddWatcher-Principal-".$g->PrincipalId &></td><td><%$g->Name%> (<%$g->Description%>)</td></tr>
+<tr>
+<td><& /Elements/SelectWatcherType,
+    Name  => "Ticket-AddWatcher-Principal-".$g->PrincipalId,
+    Queue => $Ticket->QueueObj,
+&></td>
+<td><%$g->Name%> (<%$g->Description%>)</td>
+</tr>
 % }
 % }
 
@@ -82,27 +94,19 @@
 % for my $email (@extras) {
 % $counter++;
 <tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter &>
+<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter, Queue => $Ticket->QueueObj &>
 </td><td>
 <input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
 <%$email->format%>
 </td></tr>
 % }
+% for my $i (1 .. 3) {
 <tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail1" &>
+<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj &>
 </td><td>
-<& /Elements/EmailInput, Name => 'WatcherAddressEmail1', Size => '20' &>
+<& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20' &>
 </td></tr>
-<tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail2" &> 
-</td><td>
-<& /Elements/EmailInput, Name => 'WatcherAddressEmail2', Size => '20' &>
-</td></tr>
-<tr><td>
-<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail3" &>
-</td><td>
-<& /Elements/EmailInput, Name => 'WatcherAddressEmail3', Size => '20' &>
-</td></tr>
+% }
 </table>
 
 <%INIT>

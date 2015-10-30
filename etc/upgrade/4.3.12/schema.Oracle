@@ -1,0 +1,28 @@
+CREATE SEQUENCE CUSTOMROLES_seq;
+CREATE TABLE CustomRoles (
+        id              NUMBER(11,0)
+                CONSTRAINT CustomRoles_Key PRIMARY KEY,
+        Name            VARCHAR2(200),
+        Description     VARCHAR2(255),
+        MaxValues       NUMBER(11,0) DEFAULT 0 NOT NULL,
+        EntryHint       VARCHAR2(255),
+        Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
+        Created         DATE,
+        LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
+        LastUpdated     DATE,
+        Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL
+);
+
+CREATE SEQUENCE OBJECTCUSTOMROLES_seq;
+CREATE TABLE ObjectCustomRoles (
+        id              NUMBER(11,0)
+                 CONSTRAINT ObjectCustomRoles_Key PRIMARY KEY,
+        CustomRole       NUMBER(11,0)  NOT NULL,
+        ObjectId              NUMBER(11,0)  NOT NULL,
+        SortOrder       NUMBER(11,0) DEFAULT 0 NOT NULL,
+        Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
+        Created         DATE,
+        LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
+        LastUpdated     DATE
+);
+CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);

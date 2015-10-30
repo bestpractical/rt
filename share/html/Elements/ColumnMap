@@ -142,6 +142,37 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             return @values;
         },
     },
+    CustomRole => {
+        attribute => sub { return shift @_ },
+        title     => sub { return pop @_ },
+        value     => sub {
+            my $object = shift;
+            my $role_name = pop;
+
+            my $role_type = do {
+                # Cache the role object on a per-request basis, to avoid
+                # having to load it for every row
+                my $key = "RT::CustomRole-" . $role_name;
+
+                my $role_type = $m->notes($key);
+                if (!$role_type) {
+                    my $role_obj = RT::CustomRole->new($object->CurrentUser);
+                    $role_obj->Load($role_name);
+
+                    RT->Logger->notice("Unable to load custom role $role_name")
+                        unless $role_obj->Id;
+
+                    $role_type = $role_obj->GroupType;
+                    $m->notes($key, $role_type);
+                }
+
+                $role_type;
+            };
+
+            return if !$role_type;
+            return \($m->scomp("/Elements/ShowPrincipal", Object => $object->RoleGroup($role_type) ) );
+        },
+    },
 
     CheckBox => {
         title => sub {
@@ -220,7 +251,8 @@ my $RecordClass = $Class;
 $RecordClass =~ s/_/:/g;
 if ($RecordClass->DOES("RT::Record::Role::Roles")) {
     unless ($ROLE_MAP->{$RecordClass}) {
-        for my $role ($RecordClass->Roles) {
+        # UserDefined => 1 is handled by the CustomRole mapping
+        for my $role ($RecordClass->Roles(UserDefined => 0)) {
             my $attrs = $RecordClass->Role($role);
             $ROLE_MAP->{$RecordClass}{$role} = {
                 title => $role,

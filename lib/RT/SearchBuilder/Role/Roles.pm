@@ -114,8 +114,10 @@ sub _RoleGroupsJoin {
     my $instance = $self->_RoleGroupClass eq $args{Class} ? "id" : $args{Class};
        $instance =~ s/^RT:://;
 
-    # Watcher groups are always created for each record, so we use INNER join.
+    # Watcher groups are no longer always created for each record, so we now use left join.
+    # Previously (before 4.4) this used an inner join.
     my $groups = $self->Join(
+        TYPE            => 'left',
         ALIAS1          => 'main',
         FIELD1          => $instance,
         TABLE2          => 'Groups',

@@ -867,6 +867,20 @@ sub _FormatUser {
     ];
 }
 
+sub _CanonicalizeRoleName {
+    my $self = shift;
+    my $role_name = shift;
+
+    if ($role_name =~ /^RT::CustomRole-(\d+)$/) {
+        my $role = RT::CustomRole->new($self->CurrentUser);
+        $role->Load($1);
+        return $role->Name;
+    }
+
+    return $self->loc($role_name);
+}
+
+
 %_BriefDescriptions = (
     Create => sub {
         my $self = shift;
@@ -1074,19 +1088,19 @@ sub _FormatUser {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] [_2] added", $self->loc($self->Field), $self->_FormatPrincipal($principal));    #loc()
+        return ( "[_1] [_2] added", $self->_CanonicalizeRoleName($self->Field), $self->_FormatPrincipal($principal));    #loc()
     },
     DelWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->OldValue);
-        return ( "[_1] [_2] deleted", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc()
+        return ( "[_1] [_2] deleted", $self->_CanonicalizeRoleName($self->Field), $self->_FormatPrincipal($principal));  #loc()
     },
     SetWatcher => sub {
         my $self = shift;
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->NewValue);
-        return ( "[_1] set to [_2]", $self->loc($self->Field), $self->_FormatPrincipal($principal));  #loc()
+        return ( "[_1] set to [_2]", $self->_CanonicalizeRoleName($self->Field), $self->_FormatPrincipal($principal));  #loc()
     },
     Subject => sub {
         my $self = shift;
