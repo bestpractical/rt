@@ -728,6 +728,7 @@ their lib and L<HTML::Mason> component roots.
 
 our %CORED_PLUGINS = (
     'RT::Extension::SLA' => '4.4',
+    'RT::Extension::ExternalStorage' => '4.4',
 );
 
 sub InitPlugins {
