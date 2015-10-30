@@ -104,7 +104,12 @@ USAGE
 }
 
 my $importer = RT::LDAPImport->new;
-$importer->screendebug(1) if $OPT{debug};
+
+if( $opt{'debug'} ) {
+    RT->Config->Set( LogToSTDERR => 'debug' );
+} else {
+    RT->Config->Set( LogToSTDERR => undef );
+}
 
 if ($OPT{import}) {
     if ($OPT{users}) {

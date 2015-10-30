@@ -51,7 +51,7 @@ package RT::LDAPImport;
 use warnings;
 use strict;
 use base qw(Class::Accessor);
-__PACKAGE__->mk_accessors(qw(_ldap _group screendebug _users));
+__PACKAGE__->mk_accessors(qw(_ldap _group _users));
 use Carp;
 use Net::LDAP;
 use Net::LDAP::Util qw(escape_filter_value);
@@ -384,23 +384,23 @@ sub connect_ldap {
     my $self = shift;
 
     my $ldap = Net::LDAP->new($RT::LDAPHost);
-    $self->_debug("connecting to $RT::LDAPHost");
+    $RT::Logger->debug("connecting to $RT::LDAPHost");
     unless ($ldap) {
-        $self->_error("Can't connect to $RT::LDAPHost");
+        $RT::Logger->error("Can't connect to $RT::LDAPHost");
         return;
     }
 
     my $msg;
     if ($RT::LDAPUser) {
-        $self->_debug("binding as $RT::LDAPUser");
+        $RT::Logger->debug("binding as $RT::LDAPUser");
         $msg = $ldap->bind($RT::LDAPUser, password => $RT::LDAPPassword);
     } else {
-        $self->_debug("binding anonymously");
+        $RT::Logger->debug("binding anonymously");
         $msg = $ldap->bind;
     }
 
     if ($msg->code) {
-        $self->_error("LDAP bind failed " . $msg->error);
+        $RT::Logger->error("LDAP bind failed " . $msg->error);
         return;
     }
 
@@ -441,7 +441,7 @@ sub _run_search {
     my %args = @_;
 
     unless ($ldap) {
-        $self->_error("fetching an LDAP connection failed");
+        $RT::Logger->error("fetching an LDAP connection failed");
         return;
     }
 
@@ -461,12 +461,12 @@ sub _run_search {
         # Start where we left off
         $page->cookie($cookie) if $page and $cookie;
 
-        $self->_debug("searching with: " . join(' ', map { "$_ => '$search{$_}'" } sort keys %search));
+        $RT::Logger->debug("searching with: " . join(' ', map { "$_ => '$search{$_}'" } sort keys %search));
 
         my $result = $ldap->search( %search );
 
         if ($result->code) {
-            $self->_error("LDAP search failed " . $result->error);
+            $RT::Logger->error("LDAP search failed " . $result->error);
             last;
         }
 
@@ -480,7 +480,7 @@ sub _run_search {
             if (my $control = $result->control( LDAP_CONTROL_PAGED )) {
                 $cookie = $control->cookie;
             } else {
-                $self->_error("LDAP search didn't return a paging control");
+                $RT::Logger->error("LDAP search didn't return a paging control");
                 last;
             }
         }
@@ -489,13 +489,13 @@ sub _run_search {
 
     # Let the server know we're abandoning the search if we errored out
     if ($cookie) {
-        $self->_debug("Informing the LDAP server we're done with the result set");
+        $RT::Logger->debug("Informing the LDAP server we're done with the result set");
         $page->cookie($cookie);
         $page->size(0);
         $ldap->search( %search );
     }
 
-    $self->_debug("search found ".scalar @results." objects");
+    $RT::Logger->debug("search found ".scalar @results." objects");
     return @results;
 }
 
@@ -550,7 +550,7 @@ sub _import_users {
     my $users = $args{users};
 
     unless ( @$users ) {
-        $self->_debug("No users found, no import");
+        $RT::Logger->debug("No users found, no import");
         $self->disconnect_ldap;
         return;
     }
@@ -563,7 +563,7 @@ sub _import_users {
         my $user = $self->_build_user_object( ldap_entry => $entry );
         $self->_import_user( user => $user, ldap_entry => $entry, import => $args{import} );
         $done++;
-        $self->_debug("Imported $done/$count users");
+        $RT::Logger->debug("Imported $done/$count users");
     }
     return 1;
 }
@@ -580,15 +580,15 @@ sub _import_user {
     my %args = @_;
 
     unless ( $args{user}{Name} ) {
-        $self->_warn("No Name or Emailaddress for user, skipping ".Dumper($args{user}));
+        $RT::Logger->warn("No Name or Emailaddress for user, skipping ".Dumper($args{user}));
         return;
     }
     if ( $args{user}{Name} =~ /^[0-9]+$/) {
-        $self->_debug("Skipping user '$args{user}{Name}', as it is numeric");
+        $RT::Logger->debug("Skipping user '$args{user}{Name}', as it is numeric");
         return;
     }
 
-    $self->_debug("Processing user $args{user}{Name}");
+    $RT::Logger->debug("Processing user $args{user}{Name}");
     $self->_cache_user( %args );
 
     $args{user} = $self->create_rt_user( %args );
@@ -629,7 +629,7 @@ sub _cache_user {
     # Fallback to the DN if the user record doesn't have a value
     unless (defined $membership_key) {
         $membership_key = $args{ldap_entry}->dn;
-        $self->_warn("User attribute '$member_attr_val' has no value for '$membership_key'; falling back to DN");
+        $RT::Logger->warn("User attribute '$member_attr_val' has no value for '$membership_key'; falling back to DN");
     }
 
     return $self->_users->{lc $membership_key} = $user->{Name};
@@ -641,7 +641,7 @@ sub _show_user_info {
     my $user = $args{user};
     my $rt_user = $args{rt_user};
 
-    return unless $self->screendebug;
+    return unless (RT->Config->Get('LogToSTDERR') || '') eq 'debug';
 
     print "\tRT Field\tRT Value -> LDAP Value\n";
     foreach my $key (sort keys %$user) {
@@ -655,7 +655,7 @@ sub _show_user_info {
         $old_value ||= 'unset';
         print "\t$key\t$old_value => $user->{$key}\n";
     }
-    #$self->_debug(Dumper($user));
+    #$RT::Logger->debug(Dumper($user));
 }
 
 =head2 _check_ldap_mapping
@@ -673,7 +673,7 @@ sub _check_ldap_mapping {
 
     my @rtfields = keys %{$mapping};
     unless ( @rtfields ) {
-        $self->_error("No mapping found, can't import");
+        $RT::Logger->error("No mapping found, can't import");
         $self->disconnect_ldap;
         return;
     }
@@ -749,6 +749,11 @@ L<Net::LDAP::Entry> instance that should be mapped.
 Optional regular expression. If passed then only matching
 entries in the mapping will be processed.
 
+=item skip
+
+Optional regular expression. If passed then matching
+entries in the mapping will be skipped.
+
 =item mapping
 
 Hash that defines how to map. Key defines position
@@ -796,7 +801,7 @@ sub _parse_ldap_mapping {
         my $ldap_field = $mapping->{$rtfield};
         my @list = grep defined && length, ref $ldap_field eq 'ARRAY'? @$ldap_field : ($ldap_field);
         unless (@list) {
-            $self->_error("Invalid LDAP mapping for $rtfield, no defined fields");
+            $RT::Logger->error("Invalid LDAP mapping for $rtfield, no defined fields");
             next;
         }
 
@@ -811,7 +816,7 @@ sub _parse_ldap_mapping {
                     result => \%res,
                 );
             } elsif (ref $e) {
-                $self->_error("Invalid type of LDAP mapping for $rtfield, value is $e");
+                $RT::Logger->error("Invalid type of LDAP mapping for $rtfield, value is $e");
                 next;
             } else {
                 # XXX: get_value asref returns undef if there is no such field on
@@ -851,30 +856,30 @@ sub create_rt_user {
     if ($user_obj->Id) {
         my $message = "User $user->{Name} already exists as ".$user_obj->Id;
         if ($RT::LDAPUpdateUsers || $RT::LDAPUpdateOnly) {
-            $self->_debug("$message, updating their data");
+            $RT::Logger->debug("$message, updating their data");
             if ($args{import}) {
                 my @results = $user_obj->Update( ARGSRef => $user, AttributesRef => [keys %$user] );
-                $self->_debug(join("\n",@results)||'no change');
+                $RT::Logger->debug(join("\n",@results)||'no change');
             } else {
-                $self->_debug("Found existing user $user->{Name} to update");
+                $RT::Logger->debug("Found existing user $user->{Name} to update");
                 $self->_show_user_info( %args, rt_user => $user_obj );
             }
         } else {
-            $self->_debug("$message, skipping");
+            $RT::Logger->debug("$message, skipping");
         }
     } else {
         if ( $RT::LDAPUpdateOnly ) {
-            $self->_debug("User $user->{Name} doesn't exist in RT, skipping");
+            $RT::Logger->debug("User $user->{Name} doesn't exist in RT, skipping");
             return;
         } else {
             if ($args{import}) {
                 my ($val, $msg) = $user_obj->Create( %$user, Privileged => $RT::LDAPCreatePrivileged ? 1 : 0 );
 
                 unless ($val) {
-                    $self->_error("couldn't create user_obj for $user->{Name}: $msg");
+                    $RT::Logger->error("couldn't create user_obj for $user->{Name}: $msg");
                     return;
                 }
-                $self->_debug("Created user for $user->{Name} with id ".$user_obj->Id);
+                $RT::Logger->debug("Created user for $user->{Name} with id ".$user_obj->Id);
             } else {
                 print "Found new user $user->{Name} to create in RT\n";
                 $self->_show_user_info( %args );
@@ -884,7 +889,7 @@ sub create_rt_user {
     }
 
     unless ($user_obj->Id) {
-        $self->_error("We couldn't find or create $user->{Name}. This should never happen");
+        $RT::Logger->error("We couldn't find or create $user->{Name}. This should never happen");
     }
     return $user_obj;
 
@@ -925,20 +930,20 @@ sub add_user_to_group {
     my $principal = $user->PrincipalObj;
 
     if ($group->HasMember($principal)) {
-        $self->_debug($user->Name . " already a member of " . $group->Name);
+        $RT::Logger->debug($user->Name . " already a member of " . $group->Name);
         return;
     }
 
     if ($args{import}) {
         my ($status, $msg) = $group->AddMember($principal->Id);
         if ($status) {
-            $self->_debug("Added ".$user->Name." to ".$group->Name." [$msg]");
+            $RT::Logger->debug("Added ".$user->Name." to ".$group->Name." [$msg]");
         } else {
-            $self->_error("Couldn't add ".$user->Name." to ".$group->Name." [$msg]");
+            $RT::Logger->error("Couldn't add ".$user->Name." to ".$group->Name." [$msg]");
         }
         return $status;
     } else {
-        $self->_debug("Would add to ".$group->Name);
+        $RT::Logger->debug("Would add to ".$group->Name);
         return;
     }
 }
@@ -959,7 +964,7 @@ sub setup_group  {
     unless ($group->Id) {
         my ($id,$msg) = $group->CreateUserDefinedGroup( Name => $group_name );
         unless ($id) {
-            $self->_error("Can't create group $group_name [$msg]")
+            $RT::Logger->error("Can't create group $group_name [$msg]")
         }
     }
 
@@ -997,7 +1002,7 @@ sub add_custom_field_value {
         my $cf = RT::CustomField->new($RT::SystemUser);
         my ($status, $msg) = $cf->Load($cf_name);
         unless ($status) {
-            $self->_error("Couldn't load CF [$cf_name]: $msg");
+            $RT::Logger->error("Couldn't load CF [$cf_name]: $msg");
             next;
         }
 
@@ -1005,19 +1010,19 @@ sub add_custom_field_value {
         $cfv->LoadByCols( CustomField => $cf->id,
                           Name => $cfv_name );
         if ($cfv->id) {
-            $self->_debug("Custom Field '$cf_name' already has '$cfv_name' for a value");
+            $RT::Logger->debug("Custom Field '$cf_name' already has '$cfv_name' for a value");
             next;
         }
 
         if ($args{import}) {
             ($status, $msg) = $cf->AddValue( Name => $cfv_name );
             if ($status) {
-                $self->_debug("Added '$cfv_name' to Custom Field '$cf_name' [$msg]");
+                $RT::Logger->debug("Added '$cfv_name' to Custom Field '$cf_name' [$msg]");
             } else {
-                $self->_error("Couldn't add '$cfv_name' to '$cf_name' [$msg]");
+                $RT::Logger->error("Couldn't add '$cfv_name' to '$cf_name' [$msg]");
             }
         } else {
-            $self->_debug("Would add '$cfv_name' to Custom Field '$cf_name'");
+            $RT::Logger->debug("Would add '$cfv_name' to Custom Field '$cf_name'");
         }
     }
 
@@ -1058,20 +1063,20 @@ sub update_object_custom_field_values {
         $current = '' unless defined $current;
 
         if (not length $current and not length $value) {
-            $self->_debug("\tCF.$cf_name\tskipping, no value in RT and LDAP");
+            $RT::Logger->debug("\tCF.$cf_name\tskipping, no value in RT and LDAP");
             next;
         }
         elsif ($current eq $value) {
-            $self->_debug("\tCF.$cf_name\tunchanged => $value");
+            $RT::Logger->debug("\tCF.$cf_name\tunchanged => $value");
             next;
         }
 
         $current = 'unset' unless length $current;
-        $self->_debug("\tCF.$cf_name\t$current => $value");
+        $RT::Logger->debug("\tCF.$cf_name\t$current => $value");
         next unless $args{import};
 
         my ($ok, $msg) = $obj->AddCustomFieldValue( Field => $cf_name, Value => $value );
-        $self->_error($obj->Name . ": Couldn't add value '$value' for '$cf_name': $msg")
+        $RT::Logger->error($obj->Name . ": Couldn't add value '$value' for '$cf_name': $msg")
             unless $ok;
     }
 }
@@ -1097,7 +1102,7 @@ sub import_groups {
 
     my @results = $self->run_group_search;
     unless ( @results ) {
-        $self->_debug("No results found, no group import");
+        $RT::Logger->debug("No results found, no group import");
         $self->disconnect_ldap;
         return;
     }
@@ -1121,16 +1126,16 @@ sub import_groups {
             if $group->{'Member_Attr'};
         $group->{Description} ||= 'Imported from LDAP';
         unless ( $group->{Name} ) {
-            $self->_warn("No Name for group, skipping ".Dumper $group);
+            $RT::Logger->warn("No Name for group, skipping ".Dumper $group);
             next;
         }
         if ( $group->{Name} =~ /^[0-9]+$/) {
-            $self->_debug("Skipping group '$group->{Name}', as it is numeric");
+            $RT::Logger->debug("Skipping group '$group->{Name}', as it is numeric");
             next;
         }
         $self->_import_group( %args, group => $group, ldap_entry => $entry );
         $done++;
-        $self->_debug("Imported $done/$count groups");
+        $RT::Logger->debug("Imported $done/$count groups");
     }
     return 1;
 }
@@ -1145,7 +1150,7 @@ sub run_group_search {
     my $self = shift;
 
     unless ($RT::LDAPGroupBase && $RT::LDAPGroupFilter) {
-        $self->_warn("Not running a group import, configuration not set");
+        $RT::Logger->warn("Not running a group import, configuration not set");
         return;
     }
     $self->_run_search(
@@ -1168,7 +1173,7 @@ sub _import_group {
     my $group = $args{group};
     my $ldap_entry = $args{ldap_entry};
 
-    $self->_debug("Processing group $group->{Name}");
+    $RT::Logger->debug("Processing group $group->{Name}");
     my ($group_obj, $created) = $self->create_rt_group( %args, group => $group );
     return if $args{import} and not $group_obj;
     $self->add_group_members(
@@ -1213,32 +1218,32 @@ sub create_rt_group {
     my $created;
     if ($group_obj->Id) {
         if ($args{import}) {
-            $self->_debug("Group $group->{Name} already exists as ".$group_obj->Id.", updating their data");
+            $RT::Logger->debug("Group $group->{Name} already exists as ".$group_obj->Id.", updating their data");
             my @results = $group_obj->Update( ARGSRef => $group, AttributesRef => [keys %$group] );
-            $self->_debug(join("\n",@results)||'no change');
+            $RT::Logger->debug(join("\n",@results)||'no change');
         } else {
             print "Found existing group $group->{Name} to update\n";
             $self->_show_group_info( %args, rt_group => $group_obj );
         }
     } else {
         if ( $RT::LDAPUpdateOnly ) {
-            $self->_debug("Group $group->{Name} doesn't exist in RT, skipping");
+            $RT::Logger->debug("Group $group->{Name} doesn't exist in RT, skipping");
             return;
         }
 
         if ($args{import}) {
             my ($val, $msg) = $group_obj->CreateUserDefinedGroup( %$group );
             unless ($val) {
-                $self->_error("couldn't create group_obj for $group->{Name}: $msg");
+                $RT::Logger->error("couldn't create group_obj for $group->{Name}: $msg");
                 return;
             }
             $created = $val;
-            $self->_debug("Created group for $group->{Name} with id ".$group_obj->Id);
+            $RT::Logger->debug("Created group for $group->{Name} with id ".$group_obj->Id);
 
             if ( $id ) {
                 my ($val, $msg) = $group_obj->SetAttribute( Name => 'LDAPImport-gid-'.$id, Content => 1 );
                 unless ($val) {
-                    $self->_error("couldn't set attribute: $msg");
+                    $RT::Logger->error("couldn't set attribute: $msg");
                     return;
                 }
             }
@@ -1251,7 +1256,7 @@ sub create_rt_group {
     }
 
     unless ($group_obj->Id) {
-        $self->_error("We couldn't find or create $group->{Name}. This should never happen");
+        $RT::Logger->error("We couldn't find or create $group->{Name}. This should never happen");
     }
     return ($group_obj, $created);
 
@@ -1274,14 +1279,14 @@ sub find_rt_group {
     return $group_obj unless $group->{'id'};
 
     unless ( $group_obj->id ) {
-        $self->_debug("No group in RT named $group->{Name}. Looking by $group->{id} LDAP id.");
+        $RT::Logger->debug("No group in RT named $group->{Name}. Looking by $group->{id} LDAP id.");
         $group_obj = $self->find_rt_group_by_ldap_id( $group->{'id'} );
         unless ( $group_obj ) {
-            $self->_debug("No group in RT with LDAP id $group->{id}. Creating a new one.");
+            $RT::Logger->debug("No group in RT with LDAP id $group->{id}. Creating a new one.");
             return RT::Group->new($RT::SystemUser);
         }
 
-        $self->_debug("No group in RT named $group->{Name}, but found group by LDAP id $group->{id}. Renaming the group.");
+        $RT::Logger->debug("No group in RT named $group->{Name}, but found group by LDAP id $group->{id}. Renaming the group.");
         # $group->Update will take care of the name
         return $group_obj;
     }
@@ -1292,20 +1297,20 @@ sub find_rt_group {
 
     my $other_group = $self->find_rt_group_by_ldap_id( $group->{'id'} );
     if ( $other_group ) {
-        $self->_debug("Group with LDAP id $group->{id} exists, as well as group named $group->{Name}. Renaming both.");
+        $RT::Logger->debug("Group with LDAP id $group->{id} exists, as well as group named $group->{Name}. Renaming both.");
     }
     elsif ( grep $_->Name =~ /^LDAPImport-gid-/, @{ $group_obj->Attributes->ItemsArrayRef } ) {
-        $self->_debug("No group in RT with LDAP id $group->{id}, but group $group->{Name} has id. Renaming the group and creating a new one.");
+        $RT::Logger->debug("No group in RT with LDAP id $group->{id}, but group $group->{Name} has id. Renaming the group and creating a new one.");
     }
     else {
-        $self->_debug("No group in RT with LDAP id $group->{id}, but group $group->{Name} exists and has no LDAP id. Assigning the id to the group.");
+        $RT::Logger->debug("No group in RT with LDAP id $group->{id}, but group $group->{Name} exists and has no LDAP id. Assigning the id to the group.");
         if ( $args{import} ) {
             my ($status, $msg) = $group_obj->SetAttribute( Name => $attr_name, Content => 1 );
             unless ( $status ) {
-                $self->_error("Couldn't set attribute: $msg");
+                $RT::Logger->error("Couldn't set attribute: $msg");
                 return undef;
             }
-            $self->_debug("Assigned $group->{id} LDAP group id to $group->{Name}");
+            $RT::Logger->debug("Assigned $group->{id} LDAP group id to $group->{Name}");
         }
         else {
             print "Group $group->{'Name'} gets LDAP id $group->{id}\n";
@@ -1320,10 +1325,10 @@ sub find_rt_group {
         if ( $args{import} ) {
             my ($status, $msg) = $group_obj->SetName( $new );
             unless ( $status ) {
-                $self->_error("Couldn't rename group from $old to $new: $msg");
+                $RT::Logger->error("Couldn't rename group from $old to $new: $msg");
                 return undef;
             }
-            $self->_debug("Renamed group $old to $new");
+            $RT::Logger->debug("Renamed group $old to $new");
         }
         else {
             print "Group $old to be renamed to $new\n";
@@ -1370,16 +1375,16 @@ sub add_group_members {
     my $groupname = $args{name};
     my $ldap_entry = $args{ldap_entry};
 
-    $self->_debug("Processing group membership for $groupname");
+    $RT::Logger->debug("Processing group membership for $groupname");
 
     my $members = $args{'info'}{'Member_Attr'};
     unless (defined $members) {
-        $self->_warn("No members found for $groupname in Member_Attr");
+        $RT::Logger->warn("No members found for $groupname in Member_Attr");
         return;
     }
 
     if ($RT::LDAPImportGroupMembers) {
-        $self->_debug("Importing members of group $groupname");
+        $RT::Logger->debug("Importing members of group $groupname");
         my @entries;
         my $attr = lc($RT::LDAPGroupMapping->{Member_Attr_Value} || 'dn');
 
@@ -1406,7 +1411,7 @@ sub add_group_members {
         $self->_import_users(
             import  => $args{import},
             users   => \@entries,
-        ) or $self->_debug("Importing group members failed");
+        ) or $RT::Logger->debug("Importing group members failed");
     }
 
     my %rt_group_members;
@@ -1420,7 +1425,7 @@ sub add_group_members {
             $rt_group_members{$member->Name} = $member;
         }
     } elsif (not $args{import}) {
-        $self->_debug("No group in RT, would create with members:");
+        $RT::Logger->debug("No group in RT, would create with members:");
     }
 
     my $users = $self->_users;
@@ -1442,38 +1447,38 @@ sub add_group_members {
             );
             unless ( @results ) {
                 $users->{lc $member} = undef;
-                $self->_error("No user found for $member who should be a member of $groupname");
+                $RT::Logger->error("No user found for $member who should be a member of $groupname");
                 next;
             }
             my $ldap_user = shift @results;
             $username = $self->_cache_user( ldap_entry => $ldap_user );
         }
         if ( delete $rt_group_members{$username} ) {
-            $self->_debug("\t$username\tin RT and LDAP");
+            $RT::Logger->debug("\t$username\tin RT and LDAP");
             next;
         }
-        $self->_debug($group ? "\t$username\tin LDAP, adding to RT" : "\t$username");
+        $RT::Logger->debug($group ? "\t$username\tin LDAP, adding to RT" : "\t$username");
         next unless $args{import};
 
         my $rt_user = RT::User->new($RT::SystemUser);
         my ($res,$msg) = $rt_user->Load( $username );
         unless ($res) {
-            $self->_warn("Unable to load $username: $msg");
+            $RT::Logger->warn("Unable to load $username: $msg");
             next;
         }
         ($res,$msg) = $group->AddMember($rt_user->PrincipalObj->Id);
         unless ($res) {
-            $self->_warn("Failed to add $username to $groupname: $msg");
+            $RT::Logger->warn("Failed to add $username to $groupname: $msg");
         }
     }
 
     for my $username (sort keys %rt_group_members) {
-        $self->_debug("\t$username\tin RT, not in LDAP, removing");
+        $RT::Logger->debug("\t$username\tin RT, not in LDAP, removing");
         next unless $args{import};
 
         my ($res,$msg) = $group->DeleteMember($rt_group_members{$username}->PrincipalObj->Id);
         unless ($res) {
-            $self->_warn("Failed to remove $username to $groupname: $msg");
+            $RT::Logger->warn("Failed to remove $username to $groupname: $msg");
         }
     }
 }
@@ -1508,7 +1513,7 @@ sub _show_group_info {
     my $group = $args{group};
     my $rt_group = $args{rt_group};
 
-    return unless $self->screendebug;
+    return unless (RT->Config->Get('LogToSTDERR') || '') eq 'debug';
 
     print "\tRT Field\tRT Value -> LDAP Value\n";
     foreach my $key (sort keys %$group) {
@@ -1542,42 +1547,6 @@ sub disconnect_ldap {
     $ldap->disconnect;
     $self->_ldap(undef);
     return;
-}
-
-=head1 Utility Functions
-
-=head3 screendebug
-
-We always log to the RT log file with level 'debug'. This duplicates
-the messages to the screen.
-
-=cut
-
-sub _debug {
-    my $self = shift;
-    my $msg  = shift;
-
-    $RT::Logger->debug($msg);
-
-    return unless $self->screendebug;
-    print $msg, "\n";
-
-}
-
-sub _error {
-    my $self = shift;
-    my $msg  = shift;
-
-    $RT::Logger->error($msg);
-    print STDERR $msg, "\n";
-}
-
-sub _warn {
-    my $self = shift;
-    my $msg  = shift;
-
-    $RT::Logger->warning($msg);
-    print STDERR $msg, "\n";
 }
 
 RT::Base->_ImportOverlays();
