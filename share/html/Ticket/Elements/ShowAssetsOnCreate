@@ -65,7 +65,7 @@ my $asset_queue;
 if (RT->Config->Get('AssetQueues')) {
     $asset_queue = 1 if grep {$_ eq $QueueObj->Name} @{RT->Config->Get('AssetQueues')}
 } else {
-    $asset_queue = 1;
+    $asset_queue = 0;
 }
 
 return unless @linked_assets or $asset_queue;
