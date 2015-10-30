@@ -64,13 +64,9 @@ CREATE INDEX Links4 ON Links (Type,LocalBase);
 CREATE TABLE Principals (
         id INTEGER  AUTO_INCREMENT not null,
         PrincipalType VARCHAR(16) not null,
-        ObjectId integer, # foreign key to Users or Groups, depending
         Disabled int2 NOT NULL DEFAULT 0 ,
         PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET ascii;
-
-CREATE INDEX Principals2 ON Principals (ObjectId);
-
 
 
 CREATE TABLE Groups (

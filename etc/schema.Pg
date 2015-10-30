@@ -108,13 +108,10 @@ CREATE SEQUENCE principals_id_seq;
 CREATE TABLE Principals (
         id INTEGER DEFAULT nextval('principals_id_seq') not null,
         PrincipalType VARCHAR(16) not null,
-        ObjectId integer, 
         Disabled integer NOT NULL DEFAULT 0 ,
         PRIMARY KEY (id)
 
 );
-
-CREATE INDEX Principals2 ON Principals (ObjectId);
 
 
 

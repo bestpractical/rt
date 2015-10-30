@@ -772,24 +772,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 ObjectId
-
-Returns the current value of ObjectId.
-(In the database, ObjectId is stored as int(11).)
-
-
-
-=head2 SetObjectId VALUE
-
-
-Set ObjectId to VALUE.
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, ObjectId will be stored as a int(11).)
-
-
-=cut
-
-
 =head2 Disabled
 
 Returns the current value of Disabled.
@@ -816,8 +798,6 @@ sub _CoreAccessible {
                 {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         PrincipalType =>
                 {read => 1, write => 1, sql_type => 12, length => 16,  is_blob => 0,  is_numeric => 0,  type => 'varchar(16)', default => ''},
-        ObjectId =>
-                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Disabled =>
                 {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
 

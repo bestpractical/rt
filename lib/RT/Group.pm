@@ -316,9 +316,7 @@ sub _Create {
     my $principal    = RT::Principal->new( $self->CurrentUser );
     my $principal_id = $principal->Create(
         PrincipalType => 'Group',
-        ObjectId      => '0'
     );
-    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
 
     $self->SUPER::Create(
         id          => $principal_id,
@@ -581,12 +579,12 @@ registered role on the specified Domain.  Otherwise returns false.
 sub ValidateRoleGroup {
     my $self = shift;
     my %args = (@_);
-    return 0 unless $args{Domain} and ($args{Type} or $args{'Name'});
+    return 0 unless $args{Domain} and $args{'Name'};
 
     my $class = $self->RoleClass($args{Domain});
     return 0 unless $class;
 
-    return $class->HasRole($args{Type}||$args{'Name'});
+    return $class->HasRole($args{'Name'});
 }
 
 =head2 SingleMemberRoleGroup
@@ -624,7 +622,7 @@ sub SetName {
     my $value = shift;
 
     my ($status, $msg) = $self->_Set( Field => 'Name', Value => $value );
-    return ($status, $msg) unless $status;
+    return ($status, $msg);
 }
 
 =head2 Delete
@@ -1638,19 +1636,13 @@ sub PreInflate {
     my ($id) = $principal->Create(
         PrincipalType => 'Group',
         Disabled => $disabled,
-        ObjectId => 0,
     );
 
     # Now we have a principal id, set the id for the group record
     $data->{id} = $id;
 
     $importer->Resolve( $principal_uid => ref($principal), $id );
-
-    $importer->Postpone(
-        for => $uid,
-        uid => $principal_uid,
-        column => "ObjectId",
-    );
+    $data->{id} = $id;
 
     return 1;
 }

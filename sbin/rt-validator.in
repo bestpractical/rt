@@ -215,7 +215,7 @@ foreach my $table ( qw(Users Groups) ) {
                 }
                 elsif ( $a eq 'c' ) {
                     my $principal_id = create_record( 'Principals',
-                        id => $id, PrincipalType => $type, ObjectId => $id, Disabled => 0
+                        id => $id, PrincipalType => $type, Disabled => 0
                     );
                 }
                 else {
@@ -258,7 +258,7 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
             );
 
             my $gid = create_record( 'Groups',
-                Domain => 'ACLEquivalence', Type => 'UserEquiv', Instance => $id,
+                Domain => 'ACLEquivalence', Name => 'UserEquiv', Instance => $id,
             );
         },
     );
@@ -341,8 +341,8 @@ push @CHECKS, 'Tickets <-> Role Groups' => sub {
 };
 
 # additional CHECKS on groups
-push @CHECKS, 'Role Groups (Instance, Type) uniqueness' => sub {
-    # Check that Domain, Instance and Type are unique
+push @CHECKS, 'Role Groups (Instance, Name) uniqueness' => sub {
+    # Check that Domain, Instance and Name are unique
     return check_uniqueness(
         'Groups',
         columns     => ['Domain', 'Instance', 'Name'],
@@ -368,7 +368,7 @@ push @CHECKS, 'User Defined Group Name uniqueness' => sub {
         condition       => '.Domain = ?',
         bind_values     => [ 'UserDefined' ],
         extra_tables    => ['Principals sp', 'Principals tp'],
-        extra_condition => join(" and ", map { "$_.id = ${_}p.ObjectId and ${_}p.PrincipalType = ? and ${_}p.Disabled != 1" } qw(s t)),
+        extra_condition => join(" and ", map { "$_.id = ${_}p.id and ${_}p.PrincipalType = ? and ${_}p.Disabled != 1" } qw(s t)),
         extra_values    => ['Group', 'Group'],
         action          => sub {
             return unless prompt(

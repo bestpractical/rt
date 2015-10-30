@@ -180,8 +180,7 @@ sub Create {
     # When creating this user, set up a principal Id for it.
     my $principal = RT::Principal->new($self->CurrentUser);
     my $principal_id = $principal->Create(PrincipalType => 'User',
-                                Disabled => $args{'Disabled'},
-                                ObjectId => '0');
+                                Disabled => $args{'Disabled'});
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         $RT::Handle->Rollback();
@@ -190,7 +189,6 @@ sub Create {
         return ( 0, $self->loc('Could not create user') );
     }
 
-    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
     delete $args{'Disabled'};
 
     $self->SUPER::Create(id => $principal_id , %args);
@@ -422,8 +420,7 @@ sub _BootstrapCreate {
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal Id for it.
     my $principal = RT::Principal->new($self->CurrentUser);
-    my $principal_id = $principal->Create(PrincipalType => 'User', ObjectId => '0');
-    $principal->__Set(Field => 'ObjectId', Value => $principal_id);
+    my $principal_id = $principal->Create(PrincipalType => 'User');
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
@@ -2676,17 +2673,11 @@ sub FindDependencies {
     # Memberships in SystemInternal groups
     $objs = RT::GroupMembers->new( $self->CurrentUser );
     $objs->Limit( FIELD => 'MemberId', VALUE => $self->Id );
-    my $principals = $objs->Join(
+    my $groups = $objs->Join(
         ALIAS1 => 'main',
         FIELD1 => 'GroupId',
-        TABLE2 => 'Principals',
-        FIELD2 => 'id',
-    );
-    my $groups = $objs->Join(
-        ALIAS1 => $principals,
-        FIELD1 => 'ObjectId',
         TABLE2 => 'Groups',
-        FIELD2 => 'Id',
+        FIELD2 => 'id',
     );
     $objs->Limit(
         ALIAS => $groups,
@@ -2840,19 +2831,13 @@ sub PreInflate {
     my ($id) = $principal->Create(
         PrincipalType => 'User',
         Disabled => $disabled,
-        ObjectId => 0,
     );
 
     # Now we have a principal id, set the id for the user record
     $data->{id} = $id;
 
     $importer->Resolve( $principal_uid => ref($principal), $id );
-
-    $importer->Postpone(
-        for => $uid,
-        uid => $principal_uid,
-        column => "ObjectId",
-    );
+    $data->{id} = $id;
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
 }
