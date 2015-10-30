@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $id
-$oldestTransactionsFirst
+$oldestTransactionsFirst => RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
 $lastTransactionId => undef
 $focusTransactionId => undef
 </%ARGS>
