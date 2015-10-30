@@ -1114,6 +1114,11 @@ sub FindDependencies {
     $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
     $objs->{allow_deleted_search} = 1;
     $deps->Add( in => $objs );
+
+    # Object Custom Roles
+    $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
+    $objs->LimitToObjectId($self->Id);
+    $deps->Add( in => $objs );
 }
 
 sub __DependsOn {
@@ -1151,6 +1156,11 @@ sub __DependsOn {
     $objs = RT::CustomFields->new( $self->CurrentUser );
     $objs->SetContextObject( $self );
     $objs->LimitToQueue( $self->id );
+    push( @$list, $objs );
+
+# Object Custom Roles
+    $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
+    $objs->LimitToObjectId($self->Id);
     push( @$list, $objs );
 
     $deps->_PushDependencies(
