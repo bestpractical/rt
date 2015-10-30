@@ -53,6 +53,7 @@
 % if ( $CFs->Count > 0 ){
 <table>
 %   while (my $cf = $CFs->Next) {
+%     $$has_assets_cfs = 1 if $has_assets_cfs;
 %     my $name = "CF.{" . $cf->Name . "}";
 %     my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 %     my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
@@ -69,4 +70,5 @@
 <%args>
 $Grouping
 $CatalogObj => undef
+$has_assets_cfs => undef
 </%args>
