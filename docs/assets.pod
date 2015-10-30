@@ -156,7 +156,7 @@ Lifecycles configuration (see "Lifecycles" in F<RT_Config.pm>).  The default
 lifecycle is named "assets".  You're free to modify it as much as you'd like,
 or add your own lifecycles.  Each catalog may have its own lifecycle.
 
-For the default "assets" configuration, see F<etc/RT_Config.pm>.
+For the default "assets" configuration, see F<RT_Config.pm>.
 
 =head2 Field organization
 
@@ -170,7 +170,7 @@ By default your CFs will appear in a B<Custom Fields> box on the asset display
 page and will be editable from a box of the same name on the B<Basics> editing
 page.
 
-Using the C<%CustomFieldGroupings> option (documented in F<etc/RT_Config.pm>),
+Using the C<%CustomFieldGroupings> option (documented in F<RT_Config.pm>),
 you can move individual CFs by name into one of the four built-in groupings
 (B<Basics>, B<People>, B<Dates>, and B<Links>) or create your own just by
 naming it.  An example, assuming a date CF named "Purchased" and two "enter one
