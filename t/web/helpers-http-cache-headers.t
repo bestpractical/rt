@@ -22,6 +22,11 @@ ok $m->login, 'logged in';
 
 my $docroot = join '/', qw(share html);
 
+# files to exclude from testing headers
+my @exclude = (
+    'SpawnLinkedTicket', # results in redirect, expires header not expected
+);
+
 # find endpoints to loop over
 my @endpoints = (
     "/NoAuth/css/aileron/squished-".("0"x32).".css",
@@ -32,6 +37,7 @@ find({
     if ( -f $_ && $_ !~ m|autohandler$| ) {
       return if m{/\.[^/]+\.sw[op]$}; # vim swap files
       ( my $endpoint = $_ ) =~ s|^$docroot||;
+      return if grep $endpoint =~ m{/$_$}, @exclude;
       push @endpoints, $endpoint;
     }
   },
