@@ -49,7 +49,7 @@ diag "test with root";
 
     $m->content_contains( "Last Contact", "has Told as root can set it" );
     for my $label (@link_labels) {
-        $m->content_contains( "$label", "has $label as root can create" );
+        $m->content_contains( "$label:", "has $label as root can create" );
     }
 
     $m->goto_ticket( $bar->id );
@@ -68,11 +68,11 @@ diag "test without ModifyTicket right";
     $m->goto_ticket( $foo->id );
     $m->content_lacks( "Last Contact", "lacks Told as it is unset" );
     for my $label ( @link_labels ) {
-        $m->content_lacks( $label, "lacks $label as it is unset" );
+        $m->content_lacks( "$label:", "lacks $label as it is unset" );
     }
 
     $m->goto_ticket( $bar->id );
-    $m->content_contains( "Depends on", "has Depends on as it is set" );
+    $m->content_contains( "Depends on:", "has Depends on as it is set" );
 }
 
 undef $m;
