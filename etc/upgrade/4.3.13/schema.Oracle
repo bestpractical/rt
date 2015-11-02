@@ -1,7 +1,14 @@
 ALTER TABLE Tickets
-  DROP (IssueStatement, Resolution);
+  DROP (IssueStatement, Resolution, Disabled);
 
 ALTER TABLE Users
   DROP (EmailEncoding, WebEncoding,
         ExternalContactInfoId, ContactInfoSystem, ExternalAuthId, AuthSystem,
         PGPKey);
+
+ALTER TABLE Principals
+  DROP (ObjectId);
+
+ALTER TABLE Groups
+  DROP (Type);
+

@@ -1,6 +1,7 @@
 ALTER TABLE Tickets
   DROP COLUMN IssueStatement,
-  DROP COLUMN Resolution;
+  DROP COLUMN Resolution,
+  DROP COLUMN Disabled;
 
 ALTER TABLE Users
   DROP COLUMN EmailEncoding,
@@ -10,3 +11,10 @@ ALTER TABLE Users
   DROP COLUMN ExternalAuthId,
   DROP COLUMN AuthSystem,
   DROP COLUMN PGPKey;
+
+ALTER TABLE Principals
+  DROP COLUMN ObjectId;
+
+ALTER TABLE Groups
+  DROP COLUMN Type;
+
