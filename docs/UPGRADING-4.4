@@ -40,7 +40,7 @@ functionality. Assets documentation can be found at F<docs/assets.pod>.
 A tutorial on customizing your Assets install can be found at
 F<docs/customizing/assets/tutorial.pod>.
 
-Upgrading users that are currently using the
+Users who are currently using the
 L<RT::Extension::Assets|https://bestpractical.com/assets/> extension
 should remove C<RT::Extension::Assets> from the plugin list and run the
 F<etc/upgrade/upgrade-assets> utility after completing all the other
@@ -83,9 +83,8 @@ C<RT::Extension::SLA> before, you need to remove it from your plugins, adjust
 configs accordingly and run F<etc/upgrade/upgrade-sla>. See also the SLA
 section in F<RT_Config.pm>.
 
-Note that with core SLA, you can't define different set of levels for
-different queues. i.e. all the queues share the same set of levels defined in
-C<%ServiceAgreements>.
+Note that with core SLA, all queues share the same set of levels
+defined in C<%ServiceAgreements>.
 
 =item *
 
@@ -96,7 +95,7 @@ RT::Interface::Email no longer exports functions.
 Incoming email now always creates users for the C<From:> address.
 Previously, if the C<CreateTicket> right was not granted to C<Everyone>
 or C<Unprivileged>, the email would be rejected without a user; now, the
-user to be created even when the mail is rejected.
+user will be created even when the mail is rejected.
 
 =item *
 
@@ -107,7 +106,7 @@ expected.  See F<docs/extending/mail_plugins.pod>
 =item *
 
 The C<$UnsafeEmailCommands> option has been replaced with two mail
-plugins, L<RT::Interface::Email::Action::Take>, and
+plugins, L<RT::Interface::Email::Action::Take> and
 L<RT::Interface::Email::Action::Resolve>.
 
 =item *
@@ -130,7 +129,7 @@ month").
 =item *
 
 The "Display Columns" section in the Search Builder has been ajaxified, so you
-don't need to reload the whole page to adjust formatting now.
+don't need to reload the whole page to adjust formatting.
 
 =item *
 
@@ -142,8 +141,9 @@ L<RT::Extension::AddAttachmentsFromTransactions>.
 
 =item *
 
-We added a C<Disabled> column to the Articles table, so now instead of
-deleting articles, we disable them, like other RT records.
+We added a C<Disabled> column to the Articles table, so now instead of deleting
+articles, we disable them, like other RT records. This helps maintain RT's
+auditability goals.
 
 For new deploys we also establish some common defaults for Articles: a General
 class and a Content textarea custom field.
@@ -165,8 +165,8 @@ custom fields. All of them may be set on a queue's DefaultValues admin page.
 
 =item *
 
-We've added new config option and preference for C<HideUnsetFieldsOnDisplay> to
-hide unset fields on the ticket display page. Note that this option does not
+We've added a new config option and preference for C<HideUnsetFieldsOnDisplay>
+to hide unset fields on the ticket display page. Note that this option does not
 affect custom fields. If you would like to hide custom fields too, please see
 L<RT::Extension::CustomField::HideEmptyValues>.
 
@@ -178,7 +178,7 @@ the perceived performance of ticket display. Users can enable this option by
 changing the "Show history" preference to "as you scroll". You can also change
 the system default in F<RT_SiteConfig.pm> just like the existing options with
 
-    C<Set($ShowHistory, 'scroll');>
+    Set($ShowHistory, 'scroll');
 
 =item *
 
@@ -193,7 +193,7 @@ We added a modern file uploader (Dropzone, L<http://www.dropzonejs.com>). Now
 it's much easier to upload multiple files at a time, by dragging them into the
 page.
 
-The legacy attachment available is still when the modern uploader fails to
+The legacy attachment is still available when the modern uploader fails to
 load.
 
 =item *
@@ -216,18 +216,19 @@ customizable C<EntryHint> field.
 =item *
 
 We now have the functionality from L<RT::Extension::ParentTimeWorked> built in.
-When a ticket's TimeWorked field is updated, its parent ticket's TimeWorked
-field will also be incremented.
+When a child ticket's TimeWorked field is updated, its parent ticket's
+TimeWorked field will also be incremented.
 
-It also has built in functionality for recording time worked per user.
+It also has built-in functionality for recording time worked per user.
 When a ticket's TimeWorked field is updated, the time will be attributed
 to the currently logged in user.
 
-Both of these functions are enabled via scrips. Upgrades from prior
-versions will get these scrips installed disabled. If you would like to
-enable either of these functions, enable the 'On TimeWorked Change
-Update User TimeWorked' and/or 'On TimeWorked Change Update Parent
-TimeWorked' scrips. New deployments have these scrips enabled by default.
+Both of these functions are enabled via scrips. New installs will have these
+scrips by default. Upgrades will get them too, but set as disabled so they
+don't interfere with your existing configuration. If you would like to enable
+either of these functions, enable the 'On TimeWorked Change Update User
+TimeWorked' and/or 'On TimeWorked Change Update Parent TimeWorked' scrips. New
+deployments have these scrips enabled by default.
 
 =item *
 
@@ -243,7 +244,7 @@ in TicketSQL and the search builder with syntax like the following:
 
 Finally you may notify custom roles in scrips by creating a
 L<RT::Action::Notify> with an C<Argument> containing the role name or
-C<RT::CustomRole-#>. By default custom roles will be added as Cc on outgoing
+C<RT::CustomRole-#>. By default, custom roles will be added as Cc on outgoing
 mail but you can set them as To or Bcc by using a new slash syntax:
 
     AdminCc, Engineer
@@ -294,7 +295,7 @@ should help cut down on the "oops, I forgot the attachment" followup mails.
 =item *
 
 We've upgraded our version of jQuery from 1.9.1 to 1.11.3 and jQuery UI from
-1.10 to 1.11.4.
+1.10.0 to 1.11.4.
 
 https://jqueryui.com/upgrade-guide/1.10/
 https://jqueryui.com/upgrade-guide/1.11/
