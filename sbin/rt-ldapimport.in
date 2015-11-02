@@ -105,7 +105,7 @@ USAGE
 
 my $importer = RT::LDAPImport->new;
 
-if( $opt{'debug'} ) {
+if( $OPT{debug} ) {
     RT->Config->Set( LogToSTDERR => 'debug' );
 } else {
     RT->Config->Set( LogToSTDERR => undef );

@@ -308,7 +308,8 @@ sub HandleRequest {
     }
 
     # attempt external auth
-    $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS );
+    $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
+        if RT->Config->Get('ExernalAuth');
 
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
@@ -322,7 +323,8 @@ sub HandleRequest {
     _ForceLogout() unless _UserLoggedIn();
 
     # attempt external auth
-    $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS );
+    $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
+        if RT->Config->Get('ExernalAuth');
 
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
