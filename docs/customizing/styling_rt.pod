@@ -18,7 +18,7 @@ RT comes with the following themes:
 
 =item rudder
 
-The default layout for RT 4.2
+The default layout for RT 4.2 and 4.4
 
 =item aileron
 

@@ -52,9 +52,9 @@ documentation.
 
 =item 5.
 
-B<Add the plugin to RT's configuration.> By default, newly installed
-plugins are not enabled.  On RT 4.2, each plugin should be enabled by
-the C<Plugin()> command:
+B<Add the plugin to RT's configuration.> By default, newly installed plugins
+are not enabled.  On RT 4.2 and later, each plugin should be enabled by the
+C<Plugin()> command:
 
     Plugin( 'RT::Extension::Example' );
     Plugin( 'RT::Extension::Sample' );

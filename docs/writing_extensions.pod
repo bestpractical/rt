@@ -66,7 +66,7 @@ you're using some sort of version control for your work.
 There are several places to put code to provide your new features
 and if you follow the guidelines below, you'll make sure things
 get installed in the right places when you're ready to use it. These standards
-apply to RT 4.0 and 4.2 and any differences between the two are noted below.
+apply to RT 4.0 through 4.4 and any differences between them are noted below.
 
 =head2 Module Code
 
