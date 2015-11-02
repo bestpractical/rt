@@ -166,7 +166,7 @@ jQuery( function() {
 % if (@quoted_attachments) {
 <tr>
   <td class="label" valign="top"><&|/l&>Include attachments</&>:</td>
-  <td>
+  <td id="reuse-attachments">
 %     for my $attach (@quoted_attachments) {
     <label>
       <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $attach->Id %>" \
