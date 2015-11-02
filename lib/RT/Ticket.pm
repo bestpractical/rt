@@ -1262,7 +1262,7 @@ sub FirstActiveStatus {
 Returns the first inactive status that the ticket could transition to,
 according to its current Queue's lifecycle.  May return undef if there
 is no such possible status to transition to, or we are already in it.
-This is used in resolve action in UnsafeEmailCommands, for instance.
+This is used in L<RT::Interface::Email::Action::Resolve>, for instance.
 
 =cut
 

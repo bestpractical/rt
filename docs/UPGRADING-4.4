@@ -48,6 +48,35 @@ Note that with core SLA, you can't define different set of levels for
 different queues. i.e. all the queues share the same set of levels defined in
 C<%ServiceAgreements>.
 
+=item *
+
+RT::Interface::Email no longer exports functions.
+
+=item *
+
+Incoming email now always creates users for the C<From:> address.
+Previously, if the C<CreateTicket> right was not granted to C<Everyone>
+or C<Unprivileged>, the email would be rejected without a user; now, the
+user to be created even when the mail is rejected.
+
+=item *
+
+The L<RT_Config/@MailPlugins> functionality has been rewritten; mail
+plugins written for previous versions of RT will not function as
+expected.  See F<docs/extending/mail_plugins.pod>
+
+=item *
+
+The C<$UnsafeEmailCommands> option has been replaced with two mail
+plugins, L<RT::Interface::Email::Action::Take>, and
+L<RT::Interface::Email::Action::Resolve>.
+
+=item *
+
+The C<RejectOnUnencrypted> option to L<RT_Config/%Crypt> has been
+replaced with a mail plugin,
+L<RT::Interface::Email::Authz::RequireEncrypted>.
+
 =back
 
 =cut

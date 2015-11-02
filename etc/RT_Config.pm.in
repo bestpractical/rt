@@ -473,15 +473,6 @@ L<RT::Interface::Email> to use; see L<rt-mailgate>
 
 =cut
 
-=item C<$UnsafeEmailCommands>
-
-C<$UnsafeEmailCommands>, if set to 1, enables 'take' and 'resolve'
-as possible actions via the mail gateway.  As its name implies, this
-is very unsafe, as it allows email with a forged sender to possibly
-resolve arbitrary tickets!
-
-=cut
-
 =item C<$ExtractSubjectTagMatch>, C<$ExtractSubjectTagNoMatch>
 
 The default "extract remote tracking tags" scrip settings; these
@@ -2508,17 +2499,12 @@ The following options apply to all cryptography protocols.
 By default, all enabled security protocols will analyze each incoming
 email. You may set C<Incoming> to a subset of this list, if some enabled
 protocols do not apply to incoming mail; however, this is usually
-unnecessary. Note that for any verification or decryption to occur for
-incoming mail, the C<Auth::Crypt> mail plugin must be added to
-L</@MailPlugins> as specified in L<RT::Crypt/Handling incoming messages>.
+unnecessary.
 
 For outgoing emails, the first security protocol from the above list is
 used. Use the C<Outgoing> option to set a security protocol that should
 be used in outgoing emails.  At this moment, only one protocol can be
 used to protect outgoing emails.
-
-Set C<RejectOnUnencrypted> to 1 if all incoming email must be
-properly encrypted.  All unencrypted emails will be rejected by RT.
 
 Set C<RejectOnMissingPrivateKey> to 0 if you don't want to reject
 emails encrypted for key RT doesn't have and can not decrypt.
@@ -2541,7 +2527,6 @@ Set( %Crypt,
     Incoming                  => undef, # ['GnuPG', 'SMIME']
     Outgoing                  => undef, # 'SMIME'
 
-    RejectOnUnencrypted       => 0,
     RejectOnMissingPrivateKey => 1,
     RejectOnBadData           => 1,
 

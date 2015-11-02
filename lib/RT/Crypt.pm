@@ -82,12 +82,6 @@ uses the following config:
 C<Enable> is the only key that is generic for all protocols. A protocol may have
 additional options to fine-tune behaviour.
 
-However, note that you B<must> add the
-L<Auth::Crypt|RT::Interface::Email::Auth::Crypt> email filter to enable
-the handling of incoming encrypted/signed messages.  It should be added
-in addition to the standard
-L<Auth::MailFrom|RT::Interface::Email::Auth::Crypt> plugin.
-
 =head2 %Crypt
 
 This config option hash chooses which protocols are decrypted and
@@ -126,13 +120,6 @@ encrypting by default. As an administrative user of RT, navigate to the
 'Admin' and 'Queues' menus, and select a queue.  If at least one
 encryption protocol is enabled, information concerning available keys
 will be displayed, as well as options to enable signing and encryption.
-
-=head2 Handling incoming messages
-
-To enable handling of encrypted and signed message in the RT you must
-enable the L<RT::Interface::Email::Auth::Crypt> mail plugin:
-
-    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::Crypt', ...other filter...);
 
 =head2 Error handling
 
@@ -254,8 +241,6 @@ sub UseForOutgoing {
 
 Returns the list of encryption protocols that should be used for
 decryption and verification of incoming email; see L<RT_Config/Crypt>.
-This list is irrelevant unless L<RT::Interface::Email::Auth::Crypt> is
-enabled in L<RT_Config/@MailPlugins>.
 
 =cut
 

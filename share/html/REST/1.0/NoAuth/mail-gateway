@@ -55,7 +55,7 @@ $ticket => undef
 </%ARGS>
 <%init>
 $m->callback( %ARGS, CallbackName => 'Pre' );
-use RT::Interface::Email ();    # It's an exporter, but we don't care
+use RT::Interface::Email;
 $r->content_type('text/plain; charset=utf-8');
 $m->error_format('text');
 my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%ARGS );
@@ -72,7 +72,6 @@ if ( $status == 1 ) {
   }
 }
 else {
-  $RT::Logger->error( "Could not record email: " . $error );
   if ( $status == -75 ) {
     $m->out( "temporary failure - $error\n" );
   }

@@ -254,6 +254,7 @@ Regexp::Common::net::CIDR
 Regexp::IPv6
 Role::Basic 0.12
 Scalar::Util
+Scope::Upper
 Storable 2.08
 Symbol::Global::Name 0.04
 Sys::Syslog 0.16

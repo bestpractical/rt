@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Interface::Email::Auth::MailFrom;
+package RT::Interface::Email::Action::Take;
 
 use strict;
 use warnings;
@@ -56,57 +56,71 @@ with 'RT::Interface::Email::Role';
 
 =head1 NAME
 
-RT::Interface::Email::Auth::MailFrom - The default mail gateway authenticator
+RT::Interface::Email::Action::Take - Take tickets via the mail gateway
 
 =head1 SYNOPSIS
 
-This is the default authentication plugin for RT's email gateway; no no
-other authentication plugin is found in L<RT_Config/@MailPlugins>, RT
-will default to this one.
+This plugin, if placed in L<RT_Config/@MailPlugins>, allows the mail
+gateway to specify a take action:
 
-This plugin reads the first address found in the C<Reply-To>, C<From>,
-and C<Sender> headers, and loads or creates the user.  It performs no
-checking of the identity of the user, and trusts the headers of the
-incoming email.
+    | rt-mailgate --action take-correspond --queue General --url http://localhost/
+
+This can alternately (and more flexibly) be accomplished with a Scrip.
 
 =cut
 
-sub GetCurrentUser {
+sub CheckACL {
     my %args = (
-        Message => undef,
+        Message     => undef,
+        CurrentUser => undef,
+        Ticket      => undef,
+        Queue       => undef,
+        Action      => undef,
         @_,
     );
 
-    # We don't need to do any external lookups
-    my ( $Address, $Name, @errors ) = RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head );
-    $RT::Logger->warning("Failed to parse ".join(', ', @errors))
-        if @errors;
+    return unless lc $args{Action} eq "take";
 
-    unless ( $Address ) {
-        $RT::Logger->error("Couldn't parse or find sender's address");
-        FAILURE("Couldn't parse or find sender's address");
+    unless ( $args{Ticket}->Id ) {
+        MailError(
+            Subject     => "Message not recorded: $args{Subject}",
+            Explanation => "Could not find a ticket with id $args{TicketId}",
+            FAILURE     => 1,
+        );
     }
 
-    my $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->LoadByEmail( $Address );
-    $CurrentUser->LoadByName( $Address ) unless $CurrentUser->Id;
-    if ( $CurrentUser->Id ) {
-        $RT::Logger->debug("Mail from user #". $CurrentUser->Id ." ($Address)" );
-        return $CurrentUser;
-    }
+    my $principal = $args{CurrentUser}->PrincipalObj;
+    return 1 if $principal->HasRight( Object => $args{'Ticket'}, Right  => 'OwnTicket' );
 
+    my $email = $args{CurrentUser}->UserObj->EmailAddress;
+    my $qname = $args{Queue}->Name;
+    my $tid   = $args{Ticket}->id;
+    MailError(
+        Subject     => "Permission Denied",
+        Explanation => "$email has no right to own ticket $tid in queue $qname",
+        FAILURE     => 1,
+    );
+}
 
-    my $user = RT::User->new( RT->SystemUser );
-    $user->LoadOrCreateByEmail(
-        RealName     => $Name,
-        EmailAddress => $Address,
-        Comments     => 'Autocreated on ticket submission',
+sub HandleTake {
+    my %args = (
+        Message     => undef,
+        Ticket      => undef,
+        Queue       => undef,
+        @_,
     );
 
-    $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->Load( $user->id );
+    my $From = Encode::decode( "UTF-8", $args{Message}->head->get("From") );
 
-    return $CurrentUser;
+    my ( $status, $msg ) = $args{'Ticket'}->SetOwner( $args{Ticket}->CurrentUser->id );
+    return if $status;
+
+    MailError(
+        Subject     => "Ticket not taken",
+        Explanation => $msg,
+        FAILURE     => 1,
+    );
 }
 
 1;
+

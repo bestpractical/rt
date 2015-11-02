@@ -1,0 +1,250 @@
+=head1 MAIL PLUGINS
+
+By default, the mail gateway will accept mail from anyone. However,
+there are situations in which you will want to authenticate users before
+allowing them to communicate with the system.  You can do this via a
+plug-in mechanism in the RT configuration.
+
+You can set the array C<@MailPlugins> to be a list of plugins. For
+example, to allow the mailgate to specify a 'take' action, you can use
+the bundled L<RT::Interface::Email::Actions::Take>:
+
+    Set( @MailPlugins,
+        "Actions::Take",
+    );
+
+Anonymous subroutine references found in C<@MailPlugins> are treated
+like L</GetCurrentUser> methods.
+
+
+=head2 Core plugins
+
+A small number of plugins are included with core RT, but not enabled by
+default:
+
+=over
+
+=item L<RT::Interface::Email::Actions::Take>
+
+Allows the mailgate to specify C<--action take-comment>, for instance,
+which would take the ticket before commenting.  This action is somewhat
+"unsafe," which is why it is not enabled by default.  It can also often
+be accomplished via a scrip instead.
+
+=item L<RT::Interface::Email::Actions::Resolve>
+
+Allows the mailgate to specify C<--action correspond-resolve>, for
+instance, which would correspond, then resolve the ticket.  This action
+is somewhat "unsafe," which is why it is not enabled by default.  It can
+also often be accomplished via a scrip instead.
+
+=item L<RT::Interface::Email::Authz::RequireEncrypted>
+
+Forces that all incoming mail be encrypted to be accepted.
+
+=back
+
+You may also put Perl subroutines into the C<@MailPlugins> array, if
+they behave as described below.
+
+=head1 WRITING PLUGINS
+
+C<@MailPlugins> is a list of Perl modules; RT prepends
+C<RT::Interface::Email::> to the name to form a package name, and then
+C<use>'s this module.  The module should implement
+L<RT::Interface::Email::Role>.
+
+=head2 Plugin methods
+
+L<RT::Interface::Email::Role> defines a number of functions which are
+useful for immediately aborting processing.  They include
+L<RT::Interface::Email::Role/SUCCESS>,
+L<RT::Interface::Email::Role/FAILURE>, and
+L<RT::Interface::Email::Role/TMPFAIL>; read their descriptions for
+information on how to immediately abort processing from mail plugins.
+
+=head2 Plugin hooks
+
+Mail plugins are expected to provide one or more of the following
+methods:
+
+=head3 BeforeDecrypt
+
+Called before the message is decoded or decrypted.  Its return value is
+ignored; it is passed the following parameters:
+
+=over
+
+=item Message
+
+A L<MIME::Entity> object representing the mail.  This may be modified by
+the plugin.
+
+=item RawMessage
+
+A reference to the string containing the original message.  This should
+not be modified.
+
+=item Queue
+
+A L<RT::Queue>, the C<--queue> argument which was passed L<rt-mailgate>.
+
+=item Actions
+
+An array reference of actions to perform; the C<--action> argument which
+was passed to L<rt-mailgate>.  This may be modified.
+
+=back
+
+
+=head3 BeforeDecode
+
+Called after the message has been decrypted and verified, but before the
+bodies have been decoded of their content transfer encoding.  Its return
+value is ignored; it is passed the following parameters:
+
+=over
+
+=item Message
+
+A L<MIME::Entity> object representing the mail.  This may be modified by
+the plugin.
+
+=item RawMessage
+
+A reference to the string containing the original message.  This should
+not be modified.
+
+=item Queue
+
+A L<RT::Queue>, the C<--queue> argument which was passed L<rt-mailgate>.
+
+=item Actions
+
+An array reference of actions to perform; the C<--action> argument which
+was passed to L<rt-mailgate>.  This may be modified.
+
+=back
+
+
+
+=head3 GetCurrentUser
+
+This method is called in order on the mail plugins that define it.  The
+first method to return a L<RT::CurrentUser> value shortcuts all other
+plugins.  It is passed:
+
+=over
+
+=item Message
+
+A L<MIME::Entity> object representing the mail.  This may be modified by
+the plugin.
+
+=item RawMessage
+
+A reference to the string containing the original message.  This should
+not be modified.
+
+=item Ticket
+
+A L<RT::Ticket>, the ticket (if any) that has been extracted from the
+subject.  If there was no ticket id, this value will be a L<RT::Ticket>
+object with no C<id>.
+
+=item Queue
+
+A L<RT::Queue>, the C<--queue> argument which was passed L<rt-mailgate>.
+
+=back
+
+
+=head3 CheckACL
+
+Called to determine authorization -- namely, can the current user
+complete the action in question?  While RT's standard permission
+controls apply, this allows a better error message, or more limited
+restrictions on the email gateway.
+
+Only the I<first> action (if there are more than one defined) is
+checked, as the process of completing the first action might affect the
+later actions; consider the case of C<take-correspond>, where the
+C<correspond> action might only be avilable to owners.
+
+Each plugin defining this method is called in turn; as soon as one
+plugin returns true, the rest are short-circuited.  Arguments include:
+
+=over
+
+=item Message
+
+A L<MIME::Entity> object representing the mail.  This may be modified by
+the plugin.
+
+=item CurrentUser
+
+A L<RT::CurrentUser> object representing the authenticated user.
+
+=item Action
+
+A string representing the action to be undertaken.
+
+=item Ticket
+
+A L<RT::Ticket>, the ticket (if any) that has been extracted from the
+subject.  If there was no ticket id, this value will be a L<RT::Ticket>
+object with no C<id>.
+
+=item Queue
+
+A L<RT::Queue>, the C<--queue> argument which was passed L<rt-mailgate>.
+
+=back
+
+
+=head3 HandleI<Action>
+
+For any given action I<foo>, the presence of a subroutine called
+C<HandleFoo> signals the ability of the mailgate to handle that action.
+The first plugin in to define the method is called, and its return value
+ignored.  It is passed:
+
+=over
+
+=item Message
+
+A L<MIME::Entity> object representing the mail.  This may be modified by
+the plugin.
+
+=item Subject
+
+A string, the original C<Subject> header of the message before it was
+modified to extract the ticket id.
+
+=item CurrentUser
+
+A L<RT::CurrentUser> object representing the authenticated user.
+
+=item Ticket
+
+A L<RT::Ticket>, the ticket (if any) that has been extracted from the
+subject.  If there was no ticket id, this value will be a L<RT::Ticket>
+object with no C<id>.
+
+=item TicketId
+
+The value id that was extracted from the subject; this allows a
+non-existant ticket id to be differentiated from no subject id, as both
+will present as having an unloaded C<Ticket> argument.
+
+=item Queue
+
+A L<RT::Queue>, the C<--queue> argument which was passed L<rt-mailgate>.
+
+=back
+
+=head1 SEE ALSO
+
+L<RT::Interface::Email::Role>
+
+=cut

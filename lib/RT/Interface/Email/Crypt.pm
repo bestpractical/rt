@@ -46,73 +46,29 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Interface::Email::Auth::Crypt;
+package RT::Interface::Email::Crypt;
 
 use strict;
 use warnings;
 
 =head1 NAME
 
-RT::Interface::Email::Auth::Crypt - decrypting and verifying protected emails
+RT::Interface::Email::Crypt - decrypting and verifying protected emails
 
-=head2 DESCRIPTION
+=head1 SEE ALSO
 
-This mail plugin decrypts and verifies incoming emails. Supported
-encryption protocols are GnuPG and SMIME.
-
-This code is independant from code that encrypts/sign outgoing emails, so
-it's possible to decrypt data without bringing in encryption. To enable
-it put the module in the mail plugins list:
-
-    Set(@MailPlugins, 'Auth::MailFrom', 'Auth::Crypt', ...other filters...);
-
-C<Auth::Crypt> will not function without C<Auth::MailFrom> listed before
-it.
-
-=head3 GnuPG
-
-To use the gnupg-secured mail gateway, you need to do the following:
-
-Set up a GnuPG key directory with a pubring containing only the keys
-you care about and specify the following in your SiteConfig.pm
-
-    Set(%GnuPGOptions, homedir => '/opt/rt4/var/data/GnuPG');
-
-Read also: L<RT::Crypt> and L<RT::Crypt::GnuPG>.
-
-=head3 SMIME
-
-To use the SMIME-secured mail gateway, you need to do the following:
-
-Set up a SMIME key directory with files containing keys for queues'
-addresses and specify the following in your SiteConfig.pm
-
-    Set(%SMIME,
-        Enable => 1,
-        OpenSSL => '/usr/bin/openssl',
-        Keyring => '/opt/rt4/var/data/smime',
-        CAPath  => '/opt/rt4/var/data/smime/signing-ca.pem',
-        Passphrase => {
-            'queue.address@example.com' => 'passphrase',
-            '' => 'fallback',
-        },
-    );
-
-Read also: L<RT::Crypt> and L<RT::Crypt::SMIME>.
+See L<RT::Crypt>.
 
 =cut
-
-sub ApplyBeforeDecode { return 1 }
 
 use RT::Crypt;
 use RT::EmailParser ();
 
-sub GetCurrentUser {
+sub VerifyDecrypt {
     my %args = (
         Message       => undef,
         RawMessageRef => undef,
         Queue         => undef,
-        Actions       => undef,
         @_
     );
 
@@ -133,20 +89,10 @@ sub GetCurrentUser {
         Entity => $args{'Message'},
     );
     if ( !@res ) {
-        if (RT->Config->Get('Crypt')->{'RejectOnUnencrypted'}) {
-            EmailErrorToSender(
-                %args,
-                Template  => 'Error: unencrypted message',
-                Arguments => { Message  => $args{'Message'} },
-            );
-            return (-1, 'rejected because the message is unencrypted with RejectOnUnencrypted enabled');
-        }
-        else {
-            $args{'Message'}->head->replace(
-                'X-RT-Incoming-Encryption' => 'Not encrypted'
-            );
-        }
-        return 1;
+        $args{'Message'}->head->replace(
+            'X-RT-Incoming-Encryption' => 'Not encrypted'
+        );
+        return;
     }
 
     if ( grep {$_->{'exit_code'}} @res ) {
@@ -157,8 +103,7 @@ sub GetCurrentUser {
             $RT::Logger->warning("Failure during ".$fail->{Protocol}." ". lc($fail->{status}{Operation}) . ": ". $fail->{status}{Message});
         }
         my $reject = HandleErrors( Message => $args{'Message'}, Result => \@res );
-        return (0, 'rejected because of problems during decrypting and verifying')
-            if $reject;
+        return if $reject;
     }
 
     # attach the original encrypted message
@@ -201,8 +146,6 @@ sub GetCurrentUser {
     my %seen;
     $args{'Message'}->head->replace( 'X-RT-Privacy' => Encode::encode( "UTF-8", $_ ) )
         foreach grep !$seen{$_}++, @found;
-
-    return 1;
 }
 
 sub HandleErrors {
@@ -276,7 +219,7 @@ sub EmailErrorToSender {
     $args{'Arguments'} ||= {};
     $args{'Arguments'}{'TicketObj'} ||= $args{'Ticket'};
 
-    my $address = (RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head ))[0];
+    my ($address) = RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head );
     my ($status) = RT::Interface::Email::SendEmailUsingTemplate(
         To        => $address,
         Template  => $args{'Template'},

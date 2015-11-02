@@ -46,6 +46,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 =head1 NAME
 
 rt-mailgate - Mail interface to RT.
@@ -328,15 +329,15 @@ Usual invocation (from MTA):
 
 =item C<--action>
 
-Specifies what happens to email sent to this alias.  The avaliable
-basic actions are: C<correspond>, C<comment>.
+Specifies what happens to email sent to this alias.  The avaliable basic
+actions are: C<correspond>, C<comment>.  Additional actions, such as
+C<take> or C<resolve>, may be available depending on your local
+C<@MailPlugins> configuration.
 
-
-If you've set the RT configuration variable B<< C<UnsafeEmailCommands> >>,
-C<take> and C<resolve> are also available.  You can execute two or more
-actions on a single message using a C<-> separated list.  RT will execute
-the actions in the listed order.  For example you can use C<take-comment>,
-C<correspond-resolve> or C<take-comment-resolve> as actions.
+You can execute two or more actions on a single message using a C<->
+separated list.  RT will execute the actions in the listed order.  For
+example you can use C<take-comment>, C<correspond-resolve> or
+C<take-comment-resolve> as actions.
 
 Note that C<take> and C<resolve> actions ignore message text if used
 alone.  Include a  C<comment> or C<correspond> action if you want RT
@@ -423,73 +424,6 @@ monitoring. For instance, if you're using F</etc/aliases> and you have a
 
 Note that you don't have to run your RT server on your mail server, as
 the mail gateway will happily relay to a different machine.
-
-=head1 CUSTOMIZATION
-
-By default, the mail gateway will accept mail from anyone. However,
-there are situations in which you will want to authenticate users
-before allowing them to communicate with the system. You can do this
-via a plug-in mechanism in the RT configuration.
-
-You can set the array C<@MailPlugins> to be a list of plugins. The
-default plugin, if this is not given, is C<Auth::MailFrom> - that is,
-authentication of the person is done based on the C<From> header of the
-email. If you have additional filters or authentication mechanisms, you
-can list them here and they will be called in order:
-
-    Set( @MailPlugins =>
-        "Filter::SpamAssassin",
-        "Auth::LDAP",
-        # ...
-    );
-
-See the documentation for any additional plugins you have.
-
-You may also put Perl subroutines into the C<@MailPlugins> array, if
-they behave as described below.
-
-=head1 WRITING PLUGINS
-
-What's actually going on in the above is that C<@MailPlugins> is a
-list of Perl modules; RT prepends C<RT::Interface::Email::> to the name,
-to form a package name, and then C<use>'s this module. The module is
-expected to provide a C<GetCurrentUser> subroutine, which takes a hash of
-several parameters:
-
-=over 4
-
-=item Message
-
-A C<MIME::Entity> object representing the email
-
-=item CurrentUser
-
-An C<RT::CurrentUser> object
-
-=item AuthStat
-
-The authentication level returned from the previous plugin.
-
-=item Ticket [OPTIONAL]
-
-The ticket under discussion
-
-=item Queue [OPTIONAL]
-
-If we don't already have a ticket id, we need to know which queue we're talking about
-
-=item Action
-
-The action being performed. At the moment, it's one of "comment" or "correspond"
-
-=back
-
-It returns two values, the new C<RT::CurrentUser> object, and the new
-authentication level. The authentication level can be zero, not allowed
-to communicate with RT at all, (a "permission denied" error is mailed to
-the correspondent) or one, which is the normal mode of operation.
-Additionally, if C<-1> is returned, then the processing of the plug-ins
-stops immediately and the message is ignored.
 
 =head1 ENVIRONMENT
 

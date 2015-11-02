@@ -669,27 +669,9 @@ our %META;
             # Make sure Crypt is post-loaded first
             $META{Crypt}{'PostLoadCheck'}->( $self, $self->Get( 'Crypt' ) );
 
-            my @plugins = $self->Get('MailPlugins');
-            if ( grep $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME', @plugins ) {
-                $RT::Logger->warning(
-                    'Auth::GnuPG and Auth::SMIME (from an extension) have been'
-                    .' replaced with Auth::Crypt.  @MailPlugins has been adjusted,'
-                    .' but should be updated to replace both with Auth::Crypt to'
-                    .' silence this warning.'
-                );
-                my %seen;
-                @plugins =
-                    grep !$seen{$_}++,
-                    grep {
-                        $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME'
-                        ? 'Auth::Crypt' : $_
-                    } @plugins;
-                $self->Set( MailPlugins => @plugins );
-            }
-
-            if ( not @{$self->Get('Crypt')->{Incoming}} and grep $_ eq 'Auth::Crypt', @plugins ) {
-                $RT::Logger->warning("Auth::Crypt enabled in MailPlugins, but no available incoming encryption formats");
-            }
+            RT::Interface::Email::Plugins(Add => ["Authz::Default", "Action::Defaults"]);
+            RT::Interface::Email::Plugins(Add => ["Auth::MailFrom"])
+                  unless RT::Interface::Email::Plugins(Code => 1, Method => "GetCurrentUser");
         },
     },
     Crypt        => {

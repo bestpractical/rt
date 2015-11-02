@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Interface::Email::Auth::MailFrom;
+package RT::Interface::Email::Authz::RequireEncrypted;
 
 use strict;
 use warnings;
@@ -56,57 +56,37 @@ with 'RT::Interface::Email::Role';
 
 =head1 NAME
 
-RT::Interface::Email::Auth::MailFrom - The default mail gateway authenticator
+RT::Interface::Email::Authz::RequireEncrypted - Require that incoming email be encrypted
 
 =head1 SYNOPSIS
 
-This is the default authentication plugin for RT's email gateway; no no
-other authentication plugin is found in L<RT_Config/@MailPlugins>, RT
-will default to this one.
-
-This plugin reads the first address found in the C<Reply-To>, C<From>,
-and C<Sender> headers, and loads or creates the user.  It performs no
-checking of the identity of the user, and trusts the headers of the
-incoming email.
+This plugin allows restricting incoming emails to those which were
+encrypted.  Plaintext emails are rejected, with a reply sent to the
+originator using the C<Error: unencrypted message> template.
 
 =cut
 
-sub GetCurrentUser {
+sub BeforeDecode {
     my %args = (
-        Message => undef,
+        Action      => undef,
+        Message     => undef,
+        CurrentUser => undef,
+        Ticket      => undef,
+        Queue       => undef,
         @_,
     );
 
-    # We don't need to do any external lookups
-    my ( $Address, $Name, @errors ) = RT::Interface::Email::ParseSenderAddressFromHead( $args{'Message'}->head );
-    $RT::Logger->warning("Failed to parse ".join(', ', @errors))
-        if @errors;
+    my $encryption = $args{Message}->head->get('X-RT-Incoming-Encryption');
+    chomp $encryption;
+    return unless $encryption eq "Not encrypted";
 
-    unless ( $Address ) {
-        $RT::Logger->error("Couldn't parse or find sender's address");
-        FAILURE("Couldn't parse or find sender's address");
-    }
-
-    my $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->LoadByEmail( $Address );
-    $CurrentUser->LoadByName( $Address ) unless $CurrentUser->Id;
-    if ( $CurrentUser->Id ) {
-        $RT::Logger->debug("Mail from user #". $CurrentUser->Id ." ($Address)" );
-        return $CurrentUser;
-    }
-
-
-    my $user = RT::User->new( RT->SystemUser );
-    $user->LoadOrCreateByEmail(
-        RealName     => $Name,
-        EmailAddress => $Address,
-        Comments     => 'Autocreated on ticket submission',
+    RT::Interface::Email::Crypt::EmailErrorToSender(
+        %args,
+        Template  => 'Error: unencrypted message',
+        Arguments => { Message  => $args{'Message'} },
     );
-
-    $CurrentUser = RT::CurrentUser->new;
-    $CurrentUser->Load( $user->id );
-
-    return $CurrentUser;
+    $RT::Logger->warning("rejected because the message is unencrypted");
+    FAILURE('rejected because the message is unencrypted');
 }
 
 1;
