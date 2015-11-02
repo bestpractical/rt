@@ -343,10 +343,16 @@ function AddAttachmentWarning() {
             text = plainMessageBox.val();
         }
 
+        // look for checked reuse attachment checkboxes
+        var has_reused_attachments = jQuery('#reuse-attachments')
+                                        .find('input[type=checkbox]:checked')
+                                        .length;
+
         // if the word "attach" appears and there are no attachments in flight
         var needsWarning = text &&
                            text.match(regex) &&
-                           !dropzoneElement.hasClass('has-attachments');
+                           !dropzoneElement.hasClass('has-attachments') &&
+                           !has_reused_attachments;
 
         if (needsWarning) {
             warningMessage.show(instant ? 1 : 'fast');
@@ -412,6 +418,12 @@ function AddAttachmentWarning() {
         dropzoneElement.on('attachment-change', function () {
             toggleAttachmentWarning();
         });
+
+        jQuery('#reuse-attachments').on('change', 'input[type=checkbox]',
+            function () {
+                toggleAttachmentWarning();
+            }
+        );
     };
 
     // if dropzone has already tried and failed, don't show spurious warnings
