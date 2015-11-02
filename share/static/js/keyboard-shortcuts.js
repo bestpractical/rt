@@ -42,7 +42,7 @@ jQuery(function() {
             error: function(xhr, reason) {
                 // give the browser a chance to redraw the readout
                 setTimeout(function () {
-                    alert(loc_key("shortcut_help_error") + reason);
+                    alert(loc_key("shortcut_help_error") + " " + reason);
                 }, 100);
             }
         });
