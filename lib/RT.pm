@@ -736,6 +736,7 @@ our %CORED_PLUGINS = (
     'RT::Authen::ExternalAuth' => '4.4',
     'RT::Extension::LDAPImport' => '4.4',
     'RT::Extension::SpawnLinkedTicketInQueue' => '4.4',
+    'RT::Extension::ParentTimeWorked' => '4.4',
 );
 
 sub InitPlugins {
