@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-02-26 18:21+0000\n"
-"PO-Revision-Date: 2014-11-05 10:34+0000\n"
+"POT-Creation-Date: 2015-05-07 20:30+0000\n"
+"PO-Revision-Date: 2015-06-25 11:03+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-04-22 14:42+0000\n"
-"X-Generator: Launchpad (build 17430)\n"
+"X-Launchpad-Export-Date: 2015-11-02 23:02+0000\n"
+"X-Generator: Launchpad (build 17838)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -32,15 +32,15 @@ msgstr "%1 already exists, but does not contain RT's tables or metadata. The 'In
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr "%1 appears to be fully initialised. We won't need to create any tables or insert metadata, but you can continue to customise RT by clicking 'Customise Basics' below"
 
-#. ($email, $self->loc($type))
-#. ($name, $self->loc($type))
+#. ($email, $self->loc($args{Type}))
+#. ($name, $self->loc($args{Type}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:431 share/html/Ticket/Update.html:282 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:468 share/html/Ticket/Update.html:319 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
-#: share/html/Admin/Elements/EditCustomFieldValues:92 share/html/Admin/Elements/EditQueueWatchers:66 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:107 share/html/Elements/BulkLinks:117 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/EditPeople:69
+#: share/html/Admin/Elements/EditCustomFieldValues:88 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:107 share/html/Admin/Queues/People.html:64 share/html/Asset/Elements/EditCatalogPeople:59 share/html/Elements/BulkLinks:109 share/html/Elements/EditLinks:104 share/html/Ticket/Elements/EditPeople:88
 msgid "(Check box to delete)"
 msgstr "(Tick box to delete)"
 
@@ -48,7 +48,7 @@ msgstr "(Tick box to delete)"
 msgid "After logging in you'll be sent to your original destination:"
 msgstr "After logging in you will be sent to your original destination:"
 
-#: share/html/User/Prefs.html:173
+#: share/html/Prefs/AboutMe.html:175
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "All iCal feeds embed a secret token which authorises you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 
@@ -61,7 +61,7 @@ msgstr "Any word not recognised by RT is searched for in ticket subjects."
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Automatically suggested theme colours are not available for your image. This might be because you uploaded an image type that your installed version of GD does not support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 
-#: etc/initialdata:28
+#: etc/initialdata:33
 msgid "Autoreply To Requestors"
 msgstr "Autoreply to Requestors"
 
@@ -95,7 +95,7 @@ msgstr "Condition is a mandatory argument"
 msgid "Connection succeeded"
 msgstr "Connection successful"
 
-#: share/html/Prefs/DashboardsInMenu.html:74 share/html/Prefs/MyRT.html:81 share/html/Prefs/Quicksearch.html:79 share/html/Prefs/Search.html:81
+#: share/html/Prefs/DashboardsInMenu.html:74 share/html/Prefs/MyRT.html:81 share/html/Prefs/QueueList.html:79 share/html/Prefs/Search.html:81
 msgid "Customize"
 msgstr "Customise"
 
@@ -111,7 +111,7 @@ msgstr "Customise Email Addresses"
 msgid "Customize Email Configuration"
 msgstr "Customise Email Configuration"
 
-#: share/html/Elements/Tabs:212
+#: share/html/Elements/Tabs:245
 msgid "Customize dashboards in menu"
 msgstr "Customise dashboards in menu"
 
@@ -119,11 +119,11 @@ msgstr "Customise dashboards in menu"
 msgid "Customize the RT theme"
 msgstr "Customise the RT theme"
 
-#: share/html/Elements/Tabs:233
+#: share/html/Elements/Tabs:266
 msgid "Customize the look of your RT"
 msgstr "Customise the look of your RT"
 
-#: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
+#: share/html/Admin/Users/Modify.html:72 share/html/Prefs/AboutMe.html:65 share/html/Ticket/Elements/AddWatchers:91
 msgid "Email"
 msgstr "E-mail"
 
@@ -152,7 +152,7 @@ msgstr "LocalisedDateTime"
 msgid "No longer authorized"
 msgstr "No longer authorised"
 
-#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:132 share/html/Elements/RT__User/ColumnMap:76 share/html/User/Prefs.html:132
+#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:132 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
 msgid "Organization"
 msgstr "Organisation"
 
@@ -164,7 +164,7 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:363
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
