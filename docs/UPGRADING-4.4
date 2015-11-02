@@ -14,6 +14,40 @@ extension writers.
 
 =item *
 
+As of 4.4, RT now natively supports external authentication systems like
+LDAP and custom database setups. For new users wishing to use this
+functionality, see the L<RT::Authen::ExternalAuth::LDAP> or
+L<RT::Authen::ExternalAuth::DBI> documentation.
+
+For upgrading users of the
+L<RT::Authen::ExternalAuth|https://metacpan.org/pod/RT::Authen::ExternalAuth>
+extension, remove C<RT::Authen::ExternalAuth> from your plugins line,
+and add C<Set($ExternalAuth, 1);> in your F<RT_SiteConfig.pm> file.
+
+=item *
+
+As of 4.4, the
+L<RT::Extension::LDAPImport|https://metacpan.org/pod/RT::Extension::LDAPImport>
+functionality has been moved to core RT. The F<rtldapimport> script has
+been renamed to F<sbin/rt-ldapimport>. Be sure to update cron entries
+that refer to the old location and name of this utility.
+
+=item *
+
+As of 4.4, the C<RT::Extension::Assets> functionality has been moved to
+core RT. New and upgrading users will automatically get all Assets
+functionality. Assets documentation can be found at F<docs/assets.pod>.
+A tutorial on customizing your Assets install can be found at
+F<docs/customizing/assets/tutorial.pod>.
+
+Upgrading users that are currently using the
+L<RT::Extension::Assets|https://bestpractical.com/assets/> extension
+should remove C<RT::Extension::Assets> from the plugin list and run the
+F<etc/upgrade/upgrade-assets> utility after completing all the other
+upgrade steps from the F<README>.
+
+=item *
+
 The support for C<jsmin> (via the C<$JSMinPath> configuration) has been
 removed in favor of a built-in solution.
 
