@@ -684,7 +684,8 @@ sub CanonicalizeEmailAddress {
 
 CanonicalizeUserInfo can convert all User->Create options.
 it takes a hashref of all the params sent to User->Create and
-returns that same hash, by default nothing is done.
+returns that same hash, by default nothing is done. If external auth is enabled
+CanonicalizeUserInfoFromExternalAuth is called.
 
 This function is intended to allow users to have their info looked up via
 an outside source and modified upon creation.
@@ -694,11 +695,130 @@ an outside source and modified upon creation.
 sub CanonicalizeUserInfo {
     my $self = shift;
     my $args = shift;
-    my $success = 1;
 
-    return ($success);
+    if ( my $config = RT->Config->Get('ExternalInfoPriority') ) {
+        if ( ref $config && @$config ) {
+            return $self->CanonicalizeUserInfoFromExternalAuth( $args );
+        }
+    }
+
+    return 1; # fall back to old RT::User::CanonicalizeUserInfo
 }
 
+=head2 CanonicalizeUserInfoFromExternalAuth
+
+Convert an ldap entry in to fields that can be used by RT as specified by the
+C<attr_map> configuration in the C<$ExternalSettings> variable for
+L<RT::Authen::ExternalAuth>.
+
+=cut
+
+sub CanonicalizeUserInfoFromExternalAuth {
+
+    # Careful, this $args hashref was given to RT::User::CanonicalizeUserInfo and
+    # then transparently passed on to this function. The whole purpose is to update
+    # the original hash as whatever passed it to RT::User is expecting to continue its
+    # code with an update args hash.
+
+    my $UserObj = shift;
+    my $args    = shift;
+
+    my $found   = 0;
+    my %params  = (Name         => undef,
+                  EmailAddress => undef,
+                  RealName     => undef);
+
+    $RT::Logger->debug( (caller(0))[3],
+                        "called by",
+                        caller,
+                        "with:",
+                        join(", ", map {sprintf("%s: %s", $_, ($args->{$_} ? $args->{$_} : ''))}
+                            sort(keys(%$args))));
+
+    # Get the list of defined external services
+    my @info_services = @{ RT->Config->Get('ExternalInfoPriority') };
+    # For each external service...
+    foreach my $service (@info_services) {
+
+        $RT::Logger->debug( "Attempting to get user info using this external service:",
+                            $service);
+
+        # Get the config for the service so that we know what attrs we can canonicalize
+        my $config = RT->Config->Get('ExternalSettings')->{$service};
+
+        # For each attr we've been told to canonicalize in the match list
+        foreach my $rt_attr (@{$config->{'attr_match_list'}}) {
+            # Jump to the next attr in $args if this one isn't in the attr_match_list
+            $RT::Logger->debug( "Attempting to use this canonicalization key:",$rt_attr);
+            unless(defined($args->{$rt_attr})) {
+                $RT::Logger->debug("This attribute (",
+                                    $rt_attr,
+                                    ") is null or incorrectly defined in the attr_map for this service (",
+                                    $service,
+                                    ")");
+                next;
+            }
+
+            # Else, use it as a canonicalization key and lookup the user info
+            my $key = $config->{'attr_map'}->{$rt_attr};
+            my $value = $args->{$rt_attr};
+
+            # Check to see that the key being asked for is defined in the config's attr_map
+            my $valid = 0;
+            my ($attr_key, $attr_value);
+            my $attr_map = $config->{'attr_map'};
+            while (($attr_key, $attr_value) = each %$attr_map) {
+                $valid = 1 if ($key eq $attr_value);
+            }
+            unless ($valid){
+                $RT::Logger->debug( "This key (",
+                                    $key,
+                                    "is not a valid attribute key (",
+                                    $service,
+                                    ")");
+                next;
+            }
+
+            # Use an if/elsif structure to do a lookup with any custom code needed
+            # for any given type of external service, or die if no code exists for
+            # the service requested.
+
+            if($config->{'type'} eq 'ldap'){
+                ($found, %params) = RT::Authen::ExternalAuth::LDAP::CanonicalizeUserInfo($service,$key,$value);
+            } elsif ($config->{'type'} eq 'db') {
+                ($found, %params) = RT::Authen::ExternalAuth::DBI::CanonicalizeUserInfo($service,$key,$value);
+            }
+
+            # Don't Check any more attributes
+            last if $found;
+        }
+        # Don't Check any more services
+        last if $found;
+    }
+
+    # If found, Canonicalize Email Address and
+    # update the args hash that we were given the hashref for
+    if ($found) {
+        # It's important that we always have a canonical email address
+        if ($params{'EmailAddress'}) {
+            $params{'EmailAddress'} = $UserObj->CanonicalizeEmailAddress($params{'EmailAddress'});
+        }
+        %$args = (%$args, %params);
+    }
+
+    $RT::Logger->info(  (caller(0))[3],
+                        "returning",
+                        join(", ", map {sprintf("%s: %s", $_, ($args->{$_} ? $args->{$_} : ''))}
+                            sort(keys(%$args))));
+
+    ### HACK: The config var below is to overcome the (IMO) bug in
+    ### RT::User::Create() which expects this function to always
+    ### return true or rejects the user for creation. This should be
+    ### a different config var (CreateUncanonicalizedUsers) and
+    ### should be honored in RT::User::Create()
+    return($found || RT->Config->Get('AutoCreateNonExternalUsers'));
+
+}
 
 =head2 Password and authentication related functions
 

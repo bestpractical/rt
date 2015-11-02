@@ -43,6 +43,7 @@
 /sbin/rt-validate-aliases
 /sbin/rt-serializer
 /sbin/rt-importer
+/sbin/rt-ldapimport
 /sbin/standalone_httpd
 /var/mason_data/
 /autom4te.cache/

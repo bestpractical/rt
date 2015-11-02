@@ -324,6 +324,20 @@ fi
 AC_SUBST(RT_SMIME_DEPS)
 AC_SUBST(RT_SMIME)
 
+dnl Dependencies for external auth
+AC_ARG_WITH(externalauth,[],RT_EXTERNALAUTH=$withval,RT_EXTERNALAUTH="0")
+AC_ARG_ENABLE(externalauth,
+            AC_HELP_STRING([--enable-externalauth],
+                           [Add dependencies needed for external auth]),
+            RT_EXTERNALAUTH=$enableval,
+            RT_EXTERNALAUTH=$RT_EXTERNALAUTH)
+if test "$RT_EXTERNALAUTH" = yes; then
+        RT_EXTERNALAUTH="1"
+else
+        RT_EXTERNALAUTH="0"
+fi
+AC_SUBST(RT_EXTERNALAUTH)
+
 dnl ExternalStorage
 AC_ARG_WITH(attachment-store,
 	    AC_HELP_STRING([--with-attachment-store=TYPE],
@@ -439,6 +453,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/upgrade-assets
                  etc/upgrade/vulnerable-passwords
                  etc/upgrade/upgrade-sla
+                 sbin/rt-ldapimport
                  sbin/rt-attributes-viewer
                  sbin/rt-preferences-viewer
                  sbin/rt-session-viewer

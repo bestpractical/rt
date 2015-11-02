@@ -77,6 +77,7 @@ GetOptions(
     'with-DASHBOARDS',
     'with-USERLOGO',
     'with-HTML-DOC',
+    'with-EXTERNALAUTH',
 
     'with-S3', 'with-DROPBOX',
 
@@ -105,6 +106,7 @@ my %default = (
     'with-DASHBOARDS' => 1,
     'with-USERLOGO'   => 1,
     'with-HTML-DOC'   => @RT_DEVELOPER@,
+    'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'         => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'    => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
 );
@@ -382,6 +384,12 @@ Convert::Color
 $deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
 HTML::Entities
 Pod::Simple 3.24
+.
+
+$deps{'EXTERNALAUTH'} = [ text_to_hash( <<'.') ];
+Net::SSLeay
+Net::LDAP
+Net::LDAP::Server::Test
 .
 
 $deps{'S3'} = [ text_to_hash( <<'.') ];
