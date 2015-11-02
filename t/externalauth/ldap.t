@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, config => 'Set($ExternalAuth, 1);';
+use RT::Test tests => undef;
 
-eval { require Net::LDAP::Server::Test; 1; } or do {
-    plan skip_all => 'Unable to test without Net::LDAP::Server::Test';
+eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } or do {
+    plan skip_all => 'Unable to test without Net::LDAP and Net::LDAP::Server::Test';
 };
 
 
@@ -26,6 +26,8 @@ my $entry    = {
 };
 $ldap->add( $base );
 $ldap->add( $dn, attr => [%$entry] );
+
+RT->Config->Set( ExternalAuth => 1 );
 
 RT->Config->Set( ExternalAuthPriority        => ['My_LDAP'] );
 RT->Config->Set( ExternalInfoPriority        => ['My_LDAP'] );

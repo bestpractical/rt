@@ -1,7 +1,12 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, config => 'Set($ExternalAuth, 1);';
+use RT::Test tests => undef;
+
+eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } or do {
+    plan skip_all => 'Unable to test without Net::LDAP and Net::LDAP::Server::Test';
+};
+
 use DBI;
 use File::Temp;
 use Digest::MD5;
@@ -27,6 +32,8 @@ $dbh->do( $schema );
 $dbh->do(
 "INSERT INTO $table VALUES ( 'testuser', '$password', 'testuser\@invalid.tld')"
 );
+
+RT->Config->Set( ExternalAuth => 1 );
 
 RT->Config->Set( ExternalAuthPriority        => ['My_SQLite'] );
 RT->Config->Set( ExternalInfoPriority        => ['My_SQLite'] );

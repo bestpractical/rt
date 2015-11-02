@@ -1,7 +1,11 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, config => 'Set($ExternalAuth, 1);';
+use RT::Test tests => undef;
+
+eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } or do {
+    plan skip_all => 'Unable to test without Net::LDAP and Net::LDAP::Server::Test';
+};
 
 setup_auth_source();
 
@@ -89,6 +93,8 @@ sub setup_auth_source {
             ( '$user',  '$password', '$user\@invalid.tld');
             SQL
     }
+
+    RT->Config->Set( ExternalAuth => 1 );
 
     RT->Config->Set( ExternalAuthPriority        => ['My_SQLite'] );
     RT->Config->Set( ExternalInfoPriority        => ['My_SQLite'] );

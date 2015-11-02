@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 88, config => 'Set($ExternalAuth, 1);';
+use RT::Test tests => undef;
 
 eval { require RT::LDAPImport; require Net::LDAP::Server::Test; 1; } or do {
-    plan skip_all => 'Unable to test without Net::LDAP::Server::Test';
+    plan skip_all => 'Unable to test without RT::LDAPImport and Net::LDAP::Server::Test';
 };
 
 my $importer = RT::LDAPImport->new;
@@ -152,3 +152,5 @@ sub import_group_members_ok {
     );
     ok( !$group->Id );
 }
+
+done_testing;

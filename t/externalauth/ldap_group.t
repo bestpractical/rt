@@ -6,10 +6,10 @@ BEGIN {
     $ENV{RT_TEST_WEB_HANDLER} = 'inline';
 }
 
-use RT::Test tests => undef, config => 'Set($ExternalAuth, 1);';
+use RT::Test tests => undef;
 
-eval { require Net::LDAP::Server::Test; 1; } or do {
-    plan skip_all => 'Unable to test without Net::LDAP::Server::Test';
+eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } or do {
+    plan skip_all => 'Unable to test without Net::LDAP and Net::LDAP::Server::Test';
 };
 
 
@@ -54,6 +54,8 @@ $ldap->add(
         objectClass => "group",
     ],
 );
+
+RT->Config->Set( ExternalAuth => 1 );
 
 #RT->Config->Set( Plugins                     => 'RT::Authen::ExternalAuth' );
 RT->Config->Set( ExternalAuthPriority        => ['My_LDAP'] );

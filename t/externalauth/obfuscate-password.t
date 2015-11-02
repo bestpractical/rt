@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, config => 'Set($ExternalAuth, 1);';
+use RT::Test tests => undef;
 
 RT->Config->Set(
     ExternalSettings => {

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef, config => 'Set($ExternalAuth, 1);';
+use RT::Test tests => undef;
 
 eval { require RT::LDAPImport; require Net::LDAP::Server::Test; 1; } or do {
     plan skip_all => 'Unable to test without RT::LDAPImport and Net::LDAP::Server::Test';
@@ -102,5 +102,4 @@ sub get_group {
     $group->LoadUserDefinedGroup( $gname );
     return $group;
 }
-
 

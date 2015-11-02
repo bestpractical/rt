@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 7 + 13*3 + 2*2 + 1, config => 'Set($ExternalAuth, 1);';
+use RT::Test tests => undef;
 
 eval { require RT::LDAPImport; require Net::LDAP::Server::Test; 1; } or do {
     plan skip_all => 'Unable to test without RT::LDAPImport and Net::LDAP::Server::Test';
@@ -105,3 +105,5 @@ for my $entry (@ldap_entries) {
 
 # can't unbind earlier or the server will die
 $ldap->unbind;
+
+done_testing;
