@@ -7,6 +7,9 @@ changes, especially those that might require you to change a configuration
 option or other setting due to a change in RT. Read this section carefully
 before you upgrade and look for changes to features you currently use.
 
+See F<devel/docs/UPGRADING-4.4> for internals changes relevant to
+extension writers.
+
 =over
 
 =item *
@@ -19,6 +22,8 @@ removed in favor of a built-in solution.
 You can now split settings from F<RT_SiteConfig.pm> into separate files under
 an F<etc/RT_SiteConfig.d/> directory. All files ending in C<.pm> will be
 parsed, in alphabetical order, after the main F<RT_SiteConfig.pm> is loaded.
+
+You also no longer need the C<1;> at the end of site config files.
 
 =item *
 
@@ -35,13 +40,13 @@ fields.
 
 Homepage component "Quicksearch" has been renamed to "QueueList" to reflect
 what it actually is. Please update C<$HomepageComponents> accordingly if you
-customized it in site config.
+customized it in F<RT_SiteConfig.pm>.
 
 =item *
 
-SLA is in core now, so C<SLA> became a core field. if you installed
+SLA tracking is in core now, so C<SLA> became a core field. if you installed
 C<RT::Extension::SLA> before, you need to remove it from your plugins, adjust
-configs accordingly and run F<etc/upgrade/upgrade-sla>. see also the SLA
+configs accordingly and run F<etc/upgrade/upgrade-sla>. See also the SLA
 section in F<RT_Config.pm>.
 
 Note that with core SLA, you can't define different set of levels for
@@ -77,6 +82,271 @@ The C<RejectOnUnencrypted> option to L<RT_Config/%Crypt> has been
 replaced with a mail plugin,
 L<RT::Interface::Email::Authz::RequireEncrypted>.
 
+=item *
+
+We added L<DateTime::Format::Natural> support to parse user-entered datetimes,
+which will be called only when L<Time::ParseDate> fails to parse. You can tell
+RT to prefer L<DateTime::Format::Natural> in F<RT_SiteConfig.pm>:
+
+    Set($PreferDateTimeFormatNatural, 1);
+
+You might do this if you prefer its handling of some syntax (e.g. "last
+month").
+
+=item *
+
+The "Display Columns" section in the Search Builder has been ajaxified, so you
+don't need to reload the whole page to adjust formatting now.
+
+=item *
+
+When corresponding/commenting on tickets, you can include attachments that
+already exist on the ticket so you don't need to upload them again.
+
+This functionality was previously provided by the third-party
+L<RT::Extension::AddAttachmentsFromTransactions>.
+
+=item *
+
+We added a C<Disabled> column to the Articles table, so now instead of
+deleting articles, we disable them, like other RT records.
+
+For new deploys we also establish some common defaults for Articles: a General
+class and a Content textarea custom field.
+
+=item *
+
+We removed the C<InitialPriority>, C<FinalPriority>, and C<DefaultDueIn>
+columns from the Queues table. In their stead we have a more general
+C<< ->DefaultValue >> call, e.g.
+
+    $queue->DefaultValue('InitialPriority')
+    $queue->DefaultValue('FinalPriority')
+    $queue->DefaultValue('Due')
+
+Note that "Due" can now be anything that can be parsed as a date.
+
+With this, we've also added the ability to add default values for "Starts" and
+custom fields. All of them may be set on a queue's DefaultValues admin page.
+
+=item *
+
+We've added new config option and preference for C<HideUnsetFieldsOnDisplay> to
+hide unset fields on the ticket display page. Note that this option does not
+affect custom fields. If you would like to hide custom fields too, please see
+L<RT::Extension::CustomField::HideEmptyValues>.
+
+=item *
+
+We've added another option for rendering ticket history: infinite scroll. This
+loads several items at a time as you scroll down the page. This should improve
+the perceived performance of ticket display. Users can enable this option by
+changing the "Show history" preference to "as you scroll". You can also change
+the system default in F<RT_SiteConfig.pm> just like the existing options with
+
+    C<Set($ShowHistory, 'scroll');>
+
+=item *
+
+RT now ships with keyboard shortcuts, both global (e.g. C</> to focus on quick
+search) and page-specific (e.g. C<x> to toggle a checkbox in bulk update).
+Press C<?> in your browser to see what shortcuts can be used on the current
+page.
+
+=item *
+
+We added a modern file uploader (Dropzone, L<http://www.dropzonejs.com>). Now
+it's much easier to upload multiple files at a time, by dragging them into the
+page.
+
+The legacy attachment available is still when the modern uploader fails to
+load.
+
+=item *
+
+We added two meta-statuses to TicketSQL: C<__Active__> and C<__Inactive__>, so
+you no longer need to explicitly list all the active or inactive statuses like:
+
+    Status = 'new' or Status = 'open' or Status = 'stalled'
+
+Now you can simply write:
+
+    Status = '__Active__'
+
+=item *
+
+We added an "Entry Hint" to custom fields. Previously, we used the custom
+field's C<FriendlyType> as its hint, but now it is replaced by the per-CF
+customizable C<EntryHint> field.
+
+=item *
+
+We now have the functionality from L<RT::Extension::ParentTimeWorked> built in.
+When a ticket's TimeWorked field is updated, its parent ticket's TimeWorked
+field will also be incremented.
+
+It also has built in functionality for recording time worked per user.
+When a ticket's TimeWorked field is updated, the time will be attributed
+to the currently logged in user.
+
+Both of these functions are enabled via scrips. Upgrades from prior
+versions will get these scrips installed disabled. If you would like to
+enable either of these functions, enable the 'On TimeWorked Change
+Update User TimeWorked' and/or 'On TimeWorked Change Update Parent
+TimeWorked' scrips. New deployments have these scrips enabled by default.
+
+=item *
+
+RT now has support for custom roles, along the lines of Requestor, Owner, Cc,
+and AdminCc. You can select whether a custom role may have only a single member
+or multiple members (though you cannot change the role's arity after it's been
+created). You can assign custom roles to queues much like custom fields. Rights
+may be granted on custom roles globally or per-queue, and they may be searched
+in TicketSQL and the search builder with syntax like the following:
+
+    CustomRole.{Engineer}.EmailAddress LIKE 'bestpractical.com'
+    CustomRole.{3} = '__CurrentUser__'
+
+Finally you may notify custom roles in scrips by creating a
+L<RT::Action::Notify> with an C<Argument> containing the role name or
+C<RT::CustomRole-#>. By default custom roles will be added as Cc on outgoing
+mail but you can set them as To or Bcc by using a new slash syntax:
+
+    AdminCc, Engineer
+    Owner, RT::CustomRole-3/To, Cc
+    Engineer/To, Sales/Bcc
+
+Custom role members can be added at the queue level (for multi-member roles) as
+well as on individual tickets (for both single-member and multi-member roles).
+
+=item *
+
+RT can now natively store attachments outside the database, either on disk, in
+Dropbox, or on Amazon S3. If you had previously been using
+L<RT::Extension::ExternalStorage> you may remove it from C<@Plugins>. You'll
+need to adjust any cronjobs or external scripts which invoke
+F</opt/rt4/local/plugins/RT-Extension-ExternalStorage/bin/extract-attachments>
+to instead invoke F</opt/rt4/sbin/rt-externalize-attachments>. For more
+information see L<RT::ExternalStorage> and C<%ExternalStorage> in
+F<RT_Config.pm>.
+
+=item *
+
+Users can now select which days of the week they'd like Daily dashboard
+subscriptions to be mailed to them. This removes the now-duplicate C<M-F>
+subscription type and makes the C<Daily> subscription type respect new per-day
+checkboxes.
+
+=item *
+
+We've dropped several never-used columns on the C<Users> and C<Tickets> tables
+and several columns that haven't been used in a very long time. The first 4.4
+upgrade step makes sure there is no content in these fields, just in case an
+extension or local customization had appropriated any of them.
+
+For Users, we've dropped C<EmailEncoding>, C<WebEncoding>,
+C<ExternalContactInfoId>, C<ContactInfoSystem>, C<ExternalAuthId>,
+C<AuthSystem>, and C<PGPKey>. (Note: GPG keys have always been stored in
+attributes on the User record in RT, never in the C<PGPKey> column)
+
+For Tickets, we've dropped C<IssueStatement>, C<Resolution>, and C<Disabled>.
+
+=item *
+
+Users now receive a warning message when they type the word "attach" without
+having attached anything to the ticket, much like many mail clients offer. This
+should help cut down on the "oops, I forgot the attachment" followup mails.
+
+=item *
+
+We've upgraded our version of jQuery from 1.9.1 to 1.11.3 and jQuery UI from
+1.10 to 1.11.4.
+
+https://jqueryui.com/upgrade-guide/1.10/
+https://jqueryui.com/upgrade-guide/1.11/
+
+=item *
+
+We've upgraded our version of CKEditor from 4.0.1 to 4.5.3.
+
+=item *
+
+In rights management pages, sections with rights assigned now have a gray
+callout.
+
+=item *
+
+We've removed the C<Type> column for Groups, which was redundant. C<Domain>
+identifies the type of group.
+
+=item *
+
+We've removed the C<ObjectId> for Principals, which was redundant, as it should
+always be the same as C<id>.
+
+=item *
+
+We've added a new config option C<%ReferrerComponents> to customize how
+referrer whitelists and blacklists work.
+
+=item *
+
+We now place tmpfiles generated during email parsing under /tmp, which
+should allow the system tmp-cleaner to purge any dangling files, and
+eases configuration of RT under SELinux.
+
+=item *
+
+Squelching now applies to all updates in the request, instead of only the
+initial correspond/comment transaction.
+
+=item *
+
+We removed the unused "on merge" lifecycle property, as merged tickets cannot
+be found via searches or charts.
+
+=item *
+
+We now allow ModifyTicket to change nobody to someone else, without OwnTicket.
+
+Previously, we required OwnTicket if the ticket was currently unowned, no
+matter if you were taking it yourself or assigning it to someone else.
+
+We now allow nobody -> self with OwnTicket and (ModifyTicket, ReassignTicket,
+or TakeTicket), and nobody -> someone else with ModifyTicket or ReassignTicket.
+This also closes a bug where TakeTicket and OwnTicket was enough to change the
+owner from Nobody to someone else.
+
+=item *
+
+We now no longer large round number of hours worked into days, since "7 days
+worked" may imply only 56 business hours instead of 168 real hours.
+
+=item *
+
+We've added a ticket timer feature for automatically keeping track of time.
+This feature pops open a small JavaScript window with a very much trimmed down
+RT interface.
+
+=item *
+
+On ticket display pages we now make the queue name a hyperlink to a search for
+all active tickets in that queue.
+
+=item *
+
+There is a new widget on the ticket display page that allows you to create a
+ticket in a different queue that will automatically be linked to the given
+ticket. In the Links section on the display page, choose the type of link and
+the queue, and click Create. The create ticket form will be opened. When the
+ticket is created, it will be linked to the previous ticket.
+
+=item *
+
+IPv6 custom field values are now displayed in compressed form, for clarity.
+Searching and updating handle both representations as you'd expect.
+
 =back
 
 =cut
+

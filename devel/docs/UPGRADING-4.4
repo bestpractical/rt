@@ -1,0 +1,105 @@
+=head1 UPGRADING FROM RT 4.2.0 and greater
+
+This documentation notes internals changes between the 4.2 and 4.4
+series that are primarily of interest to developers writing extensions
+or local customizations.  It is not an exhaustive list.
+
+=over
+
+=item *
+
+The mailgate has been completely redesigned in a backwards-incompatible way.
+See F<docs/extending/mail_plugins.pod>.
+
+=item *
+
+jQuery has been updated from 1.9.1 to 1.11.3 and jQuery UI from 1.10.0 to
+1.11.4.
+
+https://jqueryui.com/upgrade-guide/1.10/
+https://jqueryui.com/upgrade-guide/1.11/
+
+=item *
+
+Customizations which link to attachments should take L<RT::ExternalStorage>
+into account. See L<RT::System/ExternalStorageURLFor> and
+F<share/html/Ticket/Elements/ShowAttachments> for an example.
+
+=item *
+
+We've added support for more object types in C<initialdata>-like files:
+C<@Classes>, C<@Categories>, C<@CustomRoles>, etc.
+
+=item *
+
+We've added a L<RT::Group/Label> method for displaying groups in the UI, as
+L<RT::Group/Name> was not overrideable.
+
+=item *
+
+We've dropped a number of unused fields:
+
+For Users, we've dropped C<EmailEncoding>, C<WebEncoding>,
+C<ExternalContactInfoId>, C<ContactInfoSystem>, C<ExternalAuthId>,
+C<AuthSystem>, and C<PGPKey>. (Note: GPG keys have always been stored in
+attributes on the User record in RT, never in the C<PGPKey> column)
+
+For Tickets, we've dropped C<IssueStatement>, C<Resolution>, and C<Disabled>.
+
+For Groups, we've dropped C<Type>. Use L<RT::Group/Domain>.
+
+For Principals, we've dropped C<ObjectId>. Use L<RT::Principal/id>.
+
+=item *
+
+The JOIN from tickets to watcher groups has changed from INNER to LEFT to
+support lazily-created watcher groups for custom roles.
+
+=item *
+
+Previously we've called the L<RT::Record::Role::Roles/Roles> method on classes, like so: 
+
+    RT::Queue->Roles
+
+Now that custom roles can be applied to individual objects it's important to
+switch such cases to
+
+    $QueueObj->Roles
+
+(C<< RT::Queue->Roles >> will continue to function, but may include roles that
+are not applied to the specific queue you're dealing with)
+
+=item *
+
+The C</User/Prefs.html> page was moved to C</Prefs/AboutMe.html> for
+consistency. Callbacks may need to be adjusted.
+
+=item *
+
+TicketSQL now supports C<Status = '__Active__'> and C<Status = '__Inactive__'>.
+
+=item *
+
+We removed the C<InitialPriority>, C<FinalPriority>, and C<DefaultDueIn>
+columns from the Queues table. In their stead we have a more general
+C<< ->DefaultValue >> call, e.g.
+
+    $queue->DefaultValue('InitialPriority')
+    $queue->DefaultValue('FinalPriority')
+    $queue->DefaultValue('Due')
+
+Note that "Due" can now be anything that can be parsed as a date.
+
+With this, we've also added the ability to add default values for "Starts" and
+custom fields. All of them may be set on a queue's DefaultValues admin page.
+
+=item *
+
+You can now split settings from F<RT_SiteConfig.pm> into separate files under
+an F<etc/RT_SiteConfig.d/> directory. All files ending in C<.pm> will be
+parsed, in alphabetical order, after the main F<RT_SiteConfig.pm> is loaded.
+
+You also no longer need the C<1;> at the end of site config files.
+
+=back
+
