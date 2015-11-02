@@ -353,7 +353,8 @@ sub action_insert {
     my %args = @_;
     unless ($RAN_INIT) {
         $RT::Handle = RT::Handle->new;
-        RT::Init();
+        my $has_custom_roles = grep { lc($_) eq 'customroles' } $RT::Handle->_TableNames;
+        RT::Init(SkipCustomRoles => !$has_custom_roles);
         $RAN_INIT++;
     }
     $log_actions = 1;

@@ -199,7 +199,7 @@ sub Init {
     InitPlugins();
     _BuildTableAttributes();
     RT::I18N->Init;
-    RT::CustomRoles->RegisterRoles;
+    RT::CustomRoles->RegisterRoles unless $args{SkipCustomRoles};
     RT->Config->PostLoadCheck;
     RT::Lifecycle->FillCache;
 }
