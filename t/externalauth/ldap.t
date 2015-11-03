@@ -101,4 +101,6 @@ $ldap->unbind();
 
 $m->get_warnings;
 
+undef $m;
+
 done_testing;
