@@ -1412,7 +1412,7 @@ sub _AddLink {
             LinkType  => $args{'Type'},
             Direction => $direction eq 'Target' ? 'Base' : 'Target',
         );
-        if ( grep { $_->id == ( $direction eq 'Target' ? $args{'Base'} : $args{'Target'} ) } @tickets ) {
+        if ( grep { $_->id eq ( $direction eq 'Target' ? $args{'Base'} : $args{'Target'} ) } @tickets ) {
             return ( 0, $self->loc("Refused to add link which would create a circular relationship") );
         }
     }
