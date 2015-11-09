@@ -128,10 +128,11 @@
 
 <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $TicketObj, InTable => 1, KeepValue => 1, &>
 
-% $m->callback( %ARGS, CallbackName => 'RightColumnBottom', Ticket => $TicketObj );
-
   </table>
   </&>
+
+% $m->callback( %ARGS, CallbackName => 'RightColumnBottom', Ticket => $TicketObj );
+
 </div>
 
 <div id="ticket-update-message">
