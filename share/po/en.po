@@ -25,3 +25,9 @@ msgstr "Home"
 msgid "Residence"
 msgstr "Home"
 
+# Spaces in role names make life needlessly difficult;
+# just translate it!
+#: lib/RT/Asset.pm:87
+msgid "HeldBy"
+msgstr "Held By"
+
