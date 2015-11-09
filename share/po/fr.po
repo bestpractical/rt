@@ -8818,7 +8818,7 @@ msgstr "Ticket n°%1 : %2"
 #. ($ticket->Id)
 #: lib/RT/Action/CreateTickets.pm:1097 lib/RT/Action/CreateTickets.pm:1106 lib/RT/Action/CreateTickets.pm:334 lib/RT/Action/CreateTickets.pm:453 lib/RT/Action/CreateTickets.pm:465
 msgid "Ticket %1"
-+msgstr "Ticket %1"
+msgstr "Ticket %1"
 
 #. ($self->Id, $QueueObj->Name)
 #: lib/RT/Ticket.pm:566 lib/RT/Ticket.pm:584
