@@ -109,6 +109,7 @@ sub MailDashboards {
             my $recipients_groups = $recipients->{Groups};
 
             my @emails;
+            my %recipient_language;
 
             # add users' emails to email list
             for my $user_id (@{ $recipients_users || [] }) {
@@ -117,6 +118,7 @@ sub MailDashboards {
                 next unless $user->id;
 
                 push @emails, $user->EmailAddress;
+                $recipient_language{$user->EmailAddress} = $user->Lang;
             }
 
             # add emails for every group's members
@@ -128,12 +130,19 @@ sub MailDashboards {
                 my $users = $group->UserMembersObj;
                 while (my $user = $users->Next) {
                     push @emails, $user->EmailAddress;
+                    $recipient_language{$user->EmailAddress} = $user->Lang;
                 }
             }
 
             my $email_success = 0;
             for my $email (uniq @emails) {
                 eval {
+                    my $lang = $subscription->SubValue('Language')
+                            || $recipient_language{$email}
+                            || 'en';
+
+                    $currentuser->{'LangHandle'} = RT::I18N->get_handle($lang);
+
                     $self->SendDashboard(
                         %args,
                         CurrentUser  => $currentuser,

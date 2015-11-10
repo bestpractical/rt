@@ -165,6 +165,15 @@
 (<%$timezone%>)
 </td></tr>
 <tr><td class="label">
+<&|/l&>Language</&>:
+</td><td class="value">
+<& /Elements/SelectLang,
+    Name => 'Language',
+    Default => $fields{'Language'},
+    ShowNullOption => 1,
+ &>
+</td></tr>
+<tr><td class="label">
 <&|/l&>Rows</&>:
 </td><td class="value">
 <select name="Rows">
@@ -228,6 +237,7 @@ my %fields = (
     Recipients  => { Users => [], Groups => [] },
     Fow         => 1,
     Counter     => 0,
+    Language    => '',
 );
 
 # update any fields with the values from the subscription object
@@ -360,6 +370,8 @@ $Hour        => undef
 $Dow         => undef
 $Dom         => undef
 $Rows        => undef
+$Recipient   => undef
+$Language    => undef
 
 $UserField => undef
 $UserOp => undef
