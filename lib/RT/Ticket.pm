@@ -1368,10 +1368,10 @@ sub _DurationAsString {
     my $value = shift;
     return "" unless $value;
     if ($value < 60) {
-        return $_[0]->loc("[quant,_1,minute,minutes]", $value);
+        return $self->loc("[quant,_1,minute,minutes]", $value);
     } else {
         my $h = sprintf("%.2f", $value / 60 );
-        return $_[0]->loc("[quant,_1,hour,hours] ([quant,_2,minute,minutes])", $h, $value);
+        return $self->loc("[quant,_1,hour,hours] ([quant,_2,minute,minutes])", $h, $value);
     }
 }
 
