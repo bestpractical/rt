@@ -50,8 +50,6 @@ RT->Config->Set('LDAPMapping',
 RT->Config->Set('LDAPBase','ou=foo,dc=bestpractical,dc=com');
 RT->Config->Set('LDAPFilter','(objectClass=User)');
 
-$importer->screendebug(1) if ($ENV{TEST_VERBOSE});
-
 # check that we don't import
 ok($importer->import_users());
 {
