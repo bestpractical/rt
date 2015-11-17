@@ -173,15 +173,17 @@
 %   }
 </select>
 </td></tr>
-
-<tr><td class="label">
-<&|/l&>Recipient</&>:
-</td><td class="value">
-<input name="Recipient" id="Recipient" size="30" value="<%$fields{Recipient} ? $fields{Recipient} : ''%>" />
-<div class="hints"><% loc("Leave blank to send to your current email address ([_1])", $session{'CurrentUser'}->EmailAddress) %></div>
-</td></tr>
 </table>
 </&>
+
+<&| /Widgets/TitleBox, title => loc('Recipients') &>
+<& Elements/SubscriptionRecipients,
+    UserField => $UserField, UserString => $UserString, UserOp => $UserOp,
+    GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField,
+    Recipients => $fields{Recipients},
+    IsFirstSubscription => $SubscriptionObj ? 0 : 1 &>
+</&>
+
 </td>
 </tr>
 </table>
@@ -194,6 +196,7 @@
 </form>
 
 <%INIT>
+use List::MoreUtils 'uniq';
 
 my ($title, @results);
 my $Loaded = 0;
@@ -222,7 +225,7 @@ my %fields = (
     Dow         => 'Monday',
     Dom         => 1,
     Rows        => 20,
-    Recipient   => '',
+    Recipients  => { Users => [], Groups => [] },
     Fow         => 1,
     Counter     => 0,
 );
@@ -241,53 +244,105 @@ for my $field (keys %fields) {
         if defined($ARGS{$field}) || $ARGS{$field.'-Magic'};
 }
 
-
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
-    my $ok = 1;
+    # update recipients
+    for my $key (keys %ARGS) {
+        my $val = $ARGS{$key};
+        if ( $key =~ /^Dashboard-Subscription-Email-\d+$/ && $val ) {
+            my @recipients = @{ $fields{Recipients}->{Users} };
 
-    # validation
-    if ($fields{Recipient}) {
-        my @addresses = Email::Address->parse($fields{Recipient});
-        if (@addresses == 0) {
-            push @results, loc('Recipient must be an email address');
-            $ok = 0;
+            for ( RT::EmailParser->ParseEmailAddress( $val ) ) {
+                my ( $email, $name ) = ( $_->address, $_->name );
+
+                my $user = RT::User->new($session{CurrentUser});
+                $user->LoadOrCreateByEmail(
+                    EmailAddress => $email,
+                    RealName     => $name,
+                    Comments     => 'Autocreated when added as a dashboard subscription recipient',
+                );
+
+                my $is_prev_recipient = grep { $_ == $user->id } @recipients;
+                if ( not $is_prev_recipient ) {
+                    push @recipients, $user->id;
+                    push @results, loc("[_1] added to dashboard subscription recipients", $email);
+                }
+            }
+            @{ $fields{Recipients}->{Users} } = uniq @recipients;
+
+        } elsif ($key =~ /^Dashboard-Subscription-(Users|Groups)-(\d+)$/) {
+            my ($mode, $type, $id) = ('', $1, $2);
+            my @recipients = @{ $fields{Recipients}->{$type} };
+
+            # find out proper value for user/group checkbox
+            my $add_keep_recipient = ref $ARGS{$key} eq 'ARRAY' ?
+                grep { $_ } @{ $ARGS{$key} } :
+                $ARGS{$key};
+
+            my $record; # hold user/group object
+            if ($type eq 'Users') {
+                my $user = RT::User->new($session{CurrentUser});
+                $user->Load( $id );
+                $record = $user;
+            } elsif ($type eq 'Groups') {
+                my $group = RT::Group->new($session{CurrentUser});
+                $group->Load( $id );
+                $record = $group;
+            }
+
+            my $is_prev_recipient = grep { $_ == $id } @recipients;
+
+            if ($add_keep_recipient and not $is_prev_recipient) { # Add User/Group
+                push @recipients, $id;
+                push @results, loc("[_1] added to dashboard subscription recipients", $record->Name);
+            } elsif (not $add_keep_recipient and $is_prev_recipient) { # Remove User/Group
+                @recipients = grep { $_ != $id } @recipients;
+                push @results, loc("[_1] removed from dashboard subscription recipients", $record->Name);
+            }
+
+            @{ $fields{Recipients}->{$type} } = uniq @recipients;
         }
     }
 
-    if ($ok) {
-        # update
-        if ($SubscriptionObj) {
-            $id = delete $fields{'DashboardId'}; # immutable
-            ($ok, $msg) = $SubscriptionObj->SetSubValues(%fields);
-            $fields{'DashboardId'} = $id;
+    # update
+    if ($SubscriptionObj) {
+        $id = delete $fields{'DashboardId'}; # immutable
+        ($ok, $msg) = $SubscriptionObj->SetSubValues(%fields);
+        $fields{'DashboardId'} = $id;
 
-            $msg = loc("Subscription updated") if $ok;
-            push @results, $msg;
+        $msg = loc("Subscription updated") if $ok;
+        push @results, $msg;
+    }
+    # create
+    else {
+        Abort(loc("Unable to subscribe to dashboard [_1]: Permission Denied", $id))
+            unless $Dashboard->CurrentUserCanSubscribe;
+
+        $SubscriptionObj = RT::Attribute->new($session{CurrentUser});
+        ($ok, $msg) = $SubscriptionObj->Create(
+            Name        => 'Subscription',
+            Description => 'Subscription to dashboard ' . $id,
+            ContentType => 'storable',
+            Object      => $session{'CurrentUser'}->UserObj,
+            Content     => \%fields,
+        );
+        if ($ok) {
+            push @results, loc("Subscribed to dashboard [_1]", $Dashboard->Name);
         }
-        # create
         else {
-            Abort(loc("Unable to subscribe to dashboard [_1]: Permission Denied", $id))
-                unless $Dashboard->CurrentUserCanSubscribe;
-
-            $SubscriptionObj = RT::Attribute->new($session{CurrentUser});
-            ($ok, $msg) = $SubscriptionObj->Create(
-                Name        => 'Subscription',
-                Description => 'Subscription to dashboard ' . $id,
-                ContentType => 'storable',
-                Object      => $session{'CurrentUser'}->UserObj,
-                Content     => \%fields,
-            );
-            if ($ok) {
-                push @results, loc("Subscribed to dashboard [_1]", $Dashboard->Name);
-                push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
-                    unless $session{'CurrentUser'}->EmailAddress || $fields{Recipient};
-            }
-            else {
-                push @results, loc('Subscription could not be created: [_1]', $msg);
-            }
+            push @results, loc('Subscription could not be created: [_1]', $msg);
         }
     }
+    push @results, loc("Warning: This dashboard has no recipients")
+        unless @{ $fields{Recipients}->{Users} } || @{ $fields{Recipients}->{Groups} };
+} elsif (defined $ARGS{OnlySearchForPeople}) {
+    $GroupString = undef;
+    $GroupField = undef;
+    $GroupOp = undef;
+} elsif (defined $ARGS{OnlySearchForGroup}) {
+    $UserString = undef;
+    $UserField = undef;
+    $UserOp = undef;
 }
 
 if ($SubscriptionObj) {
@@ -305,6 +360,12 @@ $Hour        => undef
 $Dow         => undef
 $Dom         => undef
 $Rows        => undef
-$Recipient   => undef
+
+$UserField => undef
+$UserOp => undef
+$UserString => undef
+$GroupField => undef
+$GroupOp => undef
+$GroupString => undef
 </%ARGS>
 
