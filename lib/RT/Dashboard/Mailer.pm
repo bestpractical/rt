@@ -272,11 +272,19 @@ SUMMARY
     local $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
+    my $HasResults = 0;
+
     my $content = RunComponent(
         '/Dashboards/Render.html',
-        id      => $dashboard->Id,
-        Preview => 0,
+        id         => $dashboard->Id,
+        Preview    => 0,
+        HasResults => \$HasResults,
     );
+
+    if ($subscription->SubValue('SuppressIfEmpty') && !$HasResults) {
+        $RT::Logger->debug("Not sending because there are no results and the subscription has SuppressIfEmpty");
+        return;
+    }
 
     if ( RT->Config->Get('EmailDashboardRemove') ) {
         for ( RT->Config->Get('EmailDashboardRemove') ) {
