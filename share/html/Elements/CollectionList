@@ -51,6 +51,10 @@ if (!$Collection && $Class eq 'RT::Tickets') {
     $Collection->FromSQL($Query);
 }
 
+# flip HasResults from undef to 0 to indicate there was a search, so
+# dashboard mail can be suppressed if there are no results
+$$HasResults = 0 if $HasResults && !defined($$HasResults);
+
 $TotalFound = $Collection->CountAll() unless defined $TotalFound;
 return '' if !$TotalFound && !$ShowEmpty;
 
@@ -159,6 +163,8 @@ while ( my $record = $Collection->Next ) {
         Warning   => $warning,
         Classes   => $Classes,
     );
+
+    $$HasResults++ if $HasResults;
 }
 
 $m->out('</table>');
@@ -202,4 +208,5 @@ $ShowNavigation => 1
 $ShowHeader     => 1
 $ShowEmpty      => 0
 $Query => 0
+$HasResults     => undef
 </%ARGS>

@@ -180,6 +180,12 @@
 <input name="Recipient" id="Recipient" size="30" value="<%$fields{Recipient} ? $fields{Recipient} : ''%>" />
 <div class="hints"><% loc("Leave blank to send to your current email address ([_1])", $session{'CurrentUser'}->EmailAddress) %></div>
 </td></tr>
+
+<tr><td align="right"><input type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" value="1" <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %> /></td>
+<td><label for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label><br />
+<input type="hidden"class="hidden" name="SuppressIfEmpty-Magic" value=1 />
+</td></tr>
+
 </table>
 </&>
 </td>
@@ -225,6 +231,7 @@ my %fields = (
     Recipient   => '',
     Fow         => 1,
     Counter     => 0,
+    SuppressIfEmpty => 0,
 );
 
 # update any fields with the values from the subscription object
