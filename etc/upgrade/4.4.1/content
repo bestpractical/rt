@@ -1,0 +1,52 @@
+use strict;
+use warnings;
+
+use List::MoreUtils 'uniq';
+
+our @Initial = (
+    # migrate old Recipient field to new Recipients format
+    sub {
+        $RT::Logger->debug("Going to migrate dashboard subscription recipients");
+
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+        $attrs->Limit( FIELD => 'Name', VALUE => 'Subscription' );
+
+        while ( my $attr = $attrs->Next ) {
+            my %fields = ( Recipients => { Users => [], Groups => [] } );
+
+            my $recipient = $attr->SubValue('Recipient');
+            my @users;
+
+            if ($recipient) {
+                for ( RT::EmailParser->ParseEmailAddress($recipient) ) {
+                    my ( $email, $name ) = ( $_->address, $_->name );
+
+                    $user->LoadOrCreateByEmail(
+                        EmailAddress => $email,
+                        RealName     => $name,
+                        Comments     => 'Autocreated when added as a dashboard subscription recipient',
+                    );
+
+                    push @users, $user->id;
+                }
+            } else { # blank recipient represents dashboard creator subscription
+                push @users, $attr->ObjectId;
+            }
+
+            @{ $fields{Recipients}->{Users} } = uniq @users;
+
+            my ($ok, $msg) = $attr->SetSubValues(%fields);
+            unless ($ok) {
+                $RT::Logger->error("Couldn't update subscription: $msg");
+                $RT::Logger->error("Aborting dashboard subscription recipient migration");
+                exit;
+            }
+
+            ($ok, $msg) = $attr->DeleteSubValue('Recipient');
+            $RT::Logger->error("Couldn't delete Recipient field from subscription: $msg") unless $ok;
+        }
+        return 1;
+    },
+);
+
