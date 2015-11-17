@@ -15,7 +15,7 @@ RT->Config->Set(
             pass => 'sekrit',
         },
         'My_DBI' => {
-            type => 'dbi',
+            type => 'db',
             user => 'external_db_user',
             pass => 'nottelling',
         },
