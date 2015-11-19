@@ -71,8 +71,6 @@ RT->Config->Set('LDAPGroupMapping',
                    });
 RT->Config->Set('LDAPImportGroupMembers',1);
 
-$importer->screendebug(1) if ($ENV{TEST_VERBOSE});
-
 # confirm that we skip the import
 ok( $importer->import_groups() );
 {
