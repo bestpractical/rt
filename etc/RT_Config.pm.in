@@ -118,10 +118,10 @@ Set($Timezone, "US/Eastern");
 Once a plugin has been downloaded and installed, use C<Plugin()> to add
 to the enabled C<@Plugins> list:
 
-    Plugin( "RT::Authen::ExternalAuth" );
+    Plugin( "RT::Extension::JSGantt" );
 
-RT will also accept the distribution name (i.e. C<RT-Authen-ExternalAuth>)
-instead of the package name (C<RT::Authen::ExternalAuth>).
+RT will also accept the distribution name (i.e. C<RT-Extension-JSGantt>)
+instead of the package name (C<RT::Extension::JSGantt>).
 
 =cut
 
