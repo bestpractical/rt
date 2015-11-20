@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-05-07 20:30+0000\n"
-"PO-Revision-Date: 2015-05-11 11:13+0000\n"
+"POT-Creation-Date: 2015-11-09 22:31+0000\n"
+"PO-Revision-Date: 2015-11-10 08:16+0000\n"
 "Last-Translator: Christian Loos <cloos@netsandbox.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-11-02 23:03+0000\n"
-"X-Generator: Launchpad (build 17838)\n"
+"X-Launchpad-Export-Date: 2015-11-20 19:21+0000\n"
+"X-Generator: Launchpad (build 17850)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -240,7 +240,7 @@ msgstr "%1 existiert bereits und enthält weder RT Tabellen noch RT Metadaten. D
 #. ($princ_obj->DisplayName, $args{'RightName'}, $args{'ObjectType'},  $args{'ObjectId'})
 #: lib/RT/ACE.pm:272
 msgid "%1 already has the right %2 on %3 %4"
-msgstr ""
+msgstr "%1 hat bereits das Recht %2 für %3 %4"
 
 #. ($args{'Base'})
 #. ($args{'Target'})
@@ -340,7 +340,7 @@ msgstr "%1 ist ein Dienstprogramm, welches aus CRON gestartet werden soll. Es se
 #. ($principal->Object->Name, $group->Label)
 #: lib/RT/Record/Role/Roles.pm:483
 msgid "%1 is already %2"
-msgstr ""
+msgstr "%1 ist bereits %2"
 
 #. ($self->loc($column), $name)
 #: lib/RT/Record/Role/Status.pm:264
@@ -358,12 +358,12 @@ msgstr "%1 ist eine RT Mail Adresse. Das Hinzufügen als %2 würde eine E-Mail S
 #. ($principal->Object->Name, $group->Label)
 #: lib/RT/Queue.pm:586
 msgid "%1 is no longer %2 for this queue"
-msgstr ""
+msgstr "%1 ist nicht länger %2 für diesen Bereich"
 
 #. ($principal->Object->Name,                         $group->Label)
 #: lib/RT/Ticket.pm:718
 msgid "%1 is no longer %2 for this ticket"
-msgstr ""
+msgstr "%1 ist nicht länger %2 für dieses Ticket"
 
 #. ($old_value, $cf->Name)
 #: lib/RT/Record.pm:2236
@@ -399,7 +399,7 @@ msgstr "%1 zuletzt aktualisierte Artikel"
 #. ($ShowRelatedTickets)
 #: share/html/Ticket/Elements/ShowAssets:169
 msgid "%1 most recently updated related tickets"
-msgstr ""
+msgstr "%1 zuletzt aktualisierte verwandte Tickets"
 
 #. ($rows)
 #: share/html/Articles/Elements/NewestArticles:48
@@ -475,7 +475,7 @@ msgstr "Gespeicherte Suchanfragen von %1"
 #. ($self)
 #: lib/RT/Transaction.pm:707
 msgid "%1: no attachment specified"
-msgstr "%1: keine Anlage angegeben"
+msgstr "%1: kein Anhang angegeben"
 
 #. ($hour,$min)
 #: lib/RT/Date.pm:766
@@ -692,7 +692,7 @@ msgstr "(wartet auf Freigabe)"
 #. ($pending_ticket->id)
 #: share/html/Elements/RT__Ticket/ColumnMap:143
 msgid "(pending ticket #%1)"
-msgstr ""
+msgstr "(abhängig von Ticket #%1)"
 
 #: share/html/Admin/Users/Modify.html:69
 msgid "(required)"
@@ -817,7 +817,7 @@ msgstr "Aktive Tickets"
 
 #: share/html/Elements/RT__Asset/ColumnMap:97
 msgid "Active tickets"
-msgstr ""
+msgstr "Aktive Tickets"
 
 #. ($session{'CurrentUser'}->Name)
 #: share/html/Tools/MyDay.html:53
@@ -865,11 +865,11 @@ msgstr "Wert hinzufügen"
 
 #: share/html/Asset/Elements/AddCatalogPeople:61
 msgid "Add a group"
-msgstr ""
+msgstr "Hinzufügen einer Gruppe"
 
 #: share/html/Asset/Elements/AddCatalogPeople:52
 msgid "Add a person"
-msgstr ""
+msgstr "Hinzufügen einer Person"
 
 #: share/html/Ticket/Elements/ShowAssets:193
 msgid "Add an asset to this ticket"
@@ -927,12 +927,12 @@ msgstr "Hinzugefügt"
 #. ($principal->Object->Name, $group->Label)
 #: lib/RT/Queue.pm:555
 msgid "Added %1 as %2 for this queue"
-msgstr ""
+msgstr "%1 als %2 hinzugefügt zu diesem Bereich"
 
 #. ($principal->Object->Name, $group->Label)
 #: lib/RT/Ticket.pm:685
 msgid "Added %1 as %2 for this ticket"
-msgstr ""
+msgstr "%1 als %2 hinzugefügt zu diesem Ticket"
 
 #. ($cf->Name)
 #: lib/RT/Class.pm:386
@@ -942,7 +942,7 @@ msgstr "Betreff überschreiben hinzugefügt: %1"
 #. ($self->Name, $object->Name)
 #: lib/RT/CustomField.pm:1568
 msgid "Added custom field %1 to %2."
-msgstr ""
+msgstr "Benutzerdefiniertes Feld %1 zu %2 hinzugefügt"
 
 #: share/html/Elements/RT__Queue/ColumnMap:81 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -971,7 +971,7 @@ msgstr "Administrator"
 
 #: share/html/Admin/Assets/Catalogs/index.html:48
 msgid "Admin Catalogs"
-msgstr ""
+msgstr "Admin Katalog"
 
 #: share/html/Ticket/Create.html:171 share/html/Ticket/Elements/EditPeople:103 share/html/m/ticket/create:284
 msgid "Admin Cc"
@@ -1047,7 +1047,7 @@ msgstr "Zeige alle Artikel dieser Klasse in einer Dropdown-Liste auf der Ticket 
 
 #: share/html/Admin/Assets/Catalogs/index.html:108
 msgid "All Catalogs"
-msgstr ""
+msgstr "Alle Kataloge"
 
 #: share/html/Admin/Articles/Classes/index.html:78
 msgid "All Classes"
@@ -1071,7 +1071,7 @@ msgstr "Alle Tickets"
 
 #: share/html/Admin/Assets/Catalogs/index.html:96
 msgid "All catalogs matching search criteria"
-msgstr ""
+msgstr "Alle Kataloge die den Suchkriterien entsprechen"
 
 #: share/html/Prefs/AboutMe.html:175
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
@@ -1083,7 +1083,7 @@ msgstr "Alle Bereiche die den Suchkriterien entsprechen"
 
 #: share/html/Helpers/PreviewScrips:97 share/html/Helpers/ShowSimplifiedRecipients:107
 msgid "All recipients"
-msgstr ""
+msgstr "Alle Empfänger"
 
 #: share/html/m/_elements/menu:82
 msgid "All tickets"
@@ -1132,7 +1132,7 @@ msgstr "Ein Fehler ist aufgetreten"
 
 #: share/html/Helpers/TicketTimer:193
 msgid "An error occurred while submitting time. Please submit your time manually."
-msgstr ""
+msgstr "Ein Fehler ist beim übertragen der Zeit aufgetreten. Bitte übertrage die Zeit manuell."
 
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
@@ -1310,20 +1310,20 @@ msgstr ""
 
 #: share/html/Elements/Tabs:1083
 msgid "Asset Custom Fields"
-msgstr ""
+msgstr "Anlagen benutzerdefinierte Felder"
 
 #. ($msg)
 #: lib/RT/Asset.pm:267
 msgid "Asset create failed: %1"
-msgstr ""
+msgstr "Anlage erstellen fehlgeschlagen: %1"
 
 #: share/html/Asset/Search/Bulk.html:48 share/html/Asset/Search/index.html:59 share/html/Asset/index.html:52 share/html/Elements/Tabs:1132 share/html/Elements/Tabs:178 share/html/Elements/Tabs:210 share/html/Elements/Tabs:581 share/html/Elements/Tabs:591 share/html/Ticket/Elements/ShowAssets:108 share/html/Ticket/Elements/ShowAssetsOnCreate:100
 msgid "Assets"
-msgstr ""
+msgstr "Anlagen"
 
 #: lib/RT/Asset.pm:363
 msgid "Assets may not be deleted"
-msgstr ""
+msgstr "Anlagen können nicht gelöscht werden"
 
 #: lib/RT/Queue.pm:110
 msgid "Assign and remove queue custom fields"
@@ -1331,7 +1331,7 @@ msgstr "Benutzerdefinierte Felder einem Bereich zuweisen oder entfernen"
 
 #: share/html/User/Elements/Portlets/UserAssets:49
 msgid "Assigned Assets"
-msgstr ""
+msgstr "Zugeordnete Anlagen"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1364,7 +1364,7 @@ msgstr "Dateiname des Anhangs"
 
 #: share/html/Ticket/Elements/ShowAttachments:49 share/html/m/ticket/show:306
 msgid "Attachments"
-msgstr "Anlagen"
+msgstr "Anhänge"
 
 #: lib/RT/Attachment.pm:806
 msgid "Attachments encryption is disabled"
@@ -1384,7 +1384,7 @@ msgstr ""
 
 #: lib/RT/Queue.pm:348
 msgid "AutoSigning"
-msgstr ""
+msgstr "automatisches Signieren"
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
@@ -1562,12 +1562,12 @@ msgstr "Kann kein benutzerdefiniertes Feld ohne Namen hinzufügen"
 #. ($args{Name}, $old_value, $new_value, $msg)
 #: lib/RT/Queue.pm:1199
 msgid "Can't change default value of %1 from %2 to %3: %4"
-msgstr ""
+msgstr "Kann nicht Standard Wert für %1 von %2 in %3 ändern: %4"
 
 #. ($old_values, $new_values, $msg)
 #: lib/RT/CustomField.pm:2085
 msgid "Can't change default values from %1 to %2: %3"
-msgstr ""
+msgstr "Kann nicht Standard Werte von %1 in %2 ändern: %3"
 
 #: share/html/Search/Elements/EditSearches:316
 msgid "Can't find a saved search to work with"
@@ -1622,59 +1622,59 @@ msgstr "In einem deaktivierten Bereich können keine Tickets erstellt werden."
 #. ($id)
 #: share/html/Admin/CustomRoles/Objects.html:106
 msgid "Cannot modify objects of disabled custom role #%1"
-msgstr ""
+msgstr "Kann nicht Objekte von deaktivierter benutzerdefinierter Rolle #%1 ändern"
 
 #: share/html/Asset/Elements/AssetSearchBasics:50 share/html/Asset/Elements/EditBasics:51 share/html/Asset/Elements/ShowBasics:50 share/html/Asset/Search/Bulk.html:79 share/html/Elements/RT__Asset/ColumnMap:88
 msgid "Catalog"
-msgstr ""
+msgstr "Katalog"
 
 #. ($self->id, $args{'Name'})
 #: lib/RT/Catalog.pm:251
 msgid "Catalog #%1 created: %2"
-msgstr ""
+msgstr "Katalog #%1 erstellt: %2"
 
 #. ($Catalog->Name)
 #: share/html/Admin/Assets/Catalogs/CustomFields.html:48
 msgid "Catalog %1: Edit Custom Fields"
-msgstr ""
+msgstr "Katalog %1: bearbeite benutzerdefinerte Felder"
 
 #. ($catalog->Name)
 #: share/html/Admin/Assets/Catalogs/Modify.html:48
 msgid "Catalog %1: Modify basics"
-msgstr ""
+msgstr "Katalog %1: bearbeite Grundlagen"
 
 #. ($Catalog->Name)
 #: share/html/Admin/Assets/Catalogs/GroupRights.html:48
 msgid "Catalog %1: Modify group rights"
-msgstr ""
+msgstr "Katalog %1: bearbeite Gruppenrechte"
 
 #. ($catalog->Name)
 #: share/html/Admin/Assets/Catalogs/Roles.html:48
 msgid "Catalog %1: Modify roles"
-msgstr ""
+msgstr "Katalog %1: bearbeite Rollen"
 
 #. ($Catalog->Name)
 #: share/html/Admin/Assets/Catalogs/UserRights.html:48
 msgid "Catalog %1: Modify user rights"
-msgstr ""
+msgstr "Katalog %1: bearbeite Benutzerrechte"
 
 #. ($txn_msg)
 #: lib/RT/Catalog.pm:245
 msgid "Catalog Create txn failed: %1"
-msgstr ""
+msgstr "Katalog Transaktion erstellen fehlgeschlagen: %1"
 
 #. ($msg)
 #: lib/RT/Catalog.pm:226
 msgid "Catalog create failed: %1"
-msgstr ""
+msgstr "Katalog erstellen fehlgeschlagen: %1"
 
 #: share/html/Elements/Tabs:1070 share/html/Elements/Tabs:212
 msgid "Catalogs"
-msgstr ""
+msgstr "Kataloge"
 
 #: lib/RT/Catalog.pm:283
 msgid "Catalogs may not be deleted"
-msgstr ""
+msgstr "Kataloge können nicht gelöscht werden"
 
 #: share/html/Admin/CustomFields/Modify.html:156
 msgid "Categories are based on"
@@ -1718,7 +1718,7 @@ msgstr "Diagramm"
 
 #: share/html/Ticket/Elements/AddAttachments:98
 msgid "Check"
-msgstr ""
+msgstr "Überprüfung"
 
 #: share/html/Elements/Submit:102
 msgid "Check All"
@@ -1809,7 +1809,7 @@ msgstr "Klicken um eine Farbe zu wählen"
 
 #: share/html/Helpers/TicketTimer:183 share/html/Helpers/TicketTimer:183
 msgid "Close Window"
-msgstr ""
+msgstr "Fenster schließen"
 
 #: share/html/Ticket/Elements/ShowDates:96 share/html/m/ticket/show:379
 msgid "Closed"
@@ -1845,7 +1845,7 @@ msgstr "Kommentar-Adresse"
 
 #: share/html/Helpers/ShortcutHelp:104
 msgid "Comment on ticket"
-msgstr ""
+msgstr "Kommentiere in Ticket"
 
 #: lib/RT/Queue.pm:125
 msgid "Comment on tickets"
@@ -1906,7 +1906,7 @@ msgstr "Einstellungen für Bereich %1"
 #. ($RoleObj->Name)
 #: share/html/Admin/CustomRoles/Modify.html:129
 msgid "Configuration for role %1"
-msgstr ""
+msgstr "Konfiguration für Rolle %1"
 
 #: share/html/Install/DatabaseDetails.html:137
 msgid "Connection succeeded"
@@ -1914,7 +1914,7 @@ msgstr "Verbindung erfolgreich"
 
 #: lib/RT/Asset.pm:88
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #. (qq[<a href="mailto:$owner">], $owner, '</a>')
 #: share/html/Errors/WebRemoteUser/Wrapper:67
@@ -2040,7 +2040,7 @@ msgstr "Konnte benutzerdefiniertes Feld %1 nicht laden"
 #. ($id)
 #: share/html/Admin/CustomRoles/Objects.html:102
 msgid "Could not load custom role #%1"
-msgstr ""
+msgstr "Kann benutzerdefinierte Rolle #%1 nicht laden"
 
 #: share/html/Admin/Groups/Members.html:115
 msgid "Could not load group"
@@ -2058,7 +2058,7 @@ msgstr "Konnte Scrip #%1 nicht laden"
 
 #: share/html/Ticket/Elements/ScrollShowHistory:111
 msgid "Could not load ticket history. Reason:"
-msgstr ""
+msgstr "Kann Ticket Verlauf nicht laden. Grund:"
 
 #. ($args{User})
 #: lib/RT/Record/Role/Roles.pm:547
@@ -2090,12 +2090,12 @@ msgstr "Konnte nicht hinzugefügt werden da es bereits global ist"
 
 #: lib/RT/Transaction.pm:166
 msgid "Couldn't add attachment"
-msgstr "Anlage konnte nicht zugefügt werden"
+msgstr "Anhang konnte nicht hinzugefügt werden"
 
 #. ($cfmsg)
 #: lib/RT/Asset.pm:300
 msgid "Couldn't add custom field value on create: %1"
-msgstr ""
+msgstr "Kann nicht benutzerdefinierten Feld Wert beim Erstellen hinzufügen: %1"
 
 #: lib/RT/Group.pm:969
 msgid "Couldn't add member to group"
@@ -2124,11 +2124,11 @@ msgstr "Eintrag konnte nicht erstellt werden: %1"
 
 #: lib/RT/Asset.pm:277
 msgid "Couldn't create role groups for asset"
-msgstr ""
+msgstr "Kann nicht Rollen Gruppen für Anlage erstellen"
 
 #: lib/RT/Catalog.pm:233
 msgid "Couldn't create role groups for catalog"
-msgstr ""
+msgstr "Kann nicht Rollen Gruppen für Katalog erstellen"
 
 #. ($id, $msg)
 #: share/html/Dashboards/Modify.html:154
@@ -2189,7 +2189,7 @@ msgstr "Konnte Kopie des Ticket #%1 nicht laden"
 #. ($Name)
 #: share/html/Admin/CustomRoles/Modify.html:124
 msgid "Couldn't load custom role '%1'"
-msgstr ""
+msgstr "Kann nicht benutzerdefinierte Rolle '%1' laden"
 
 #. ($id, $msg)
 #: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:100 share/html/Dashboards/Subscription.html:205
@@ -2367,7 +2367,7 @@ msgstr "Erstellen"
 
 #: share/html/Elements/Tabs:1061
 msgid "Create New"
-msgstr ""
+msgstr "Neu erstellen"
 
 #: etc/initialdata:103
 msgid "Create Tickets"
@@ -2388,7 +2388,7 @@ msgstr "Erstelle ein benutzerdefiniertes Feld für den Bereich %1"
 
 #: share/html/Admin/CustomRoles/Modify.html:167
 msgid "Create a custom role"
-msgstr ""
+msgstr "Erstelle eine benutzerdefinierte Rolle"
 
 #: share/html/Admin/Scrips/Create.html:109
 msgid "Create a global scrip"
@@ -2405,12 +2405,12 @@ msgstr "Neuen Artikel erstellen unter"
 #. ($catalog->Name)
 #: share/html/Asset/Create.html:48
 msgid "Create a new asset in catalog %1"
-msgstr ""
+msgstr "Erstelle eine neue Anlage in Katalog %1"
 
 #. ($m->scomp("/Asset/Elements/SelectCatalog"),)
 #: share/html/Asset/Elements/CreateInCatalog:51
 msgid "Create a new asset in the catalog %1."
-msgstr ""
+msgstr "Erstelle eine neue Anlage in dem Katalog %1."
 
 #: share/html/Dashboards/Modify.html:131 share/html/Dashboards/Modify.html:98
 msgid "Create a new dashboard"
@@ -2428,12 +2428,12 @@ msgstr "Neues Template für Bereich %1 erzeugen"
 #. ($m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj))
 #: share/html/Ticket/Create.html:418
 msgid "Create a new ticket in %1"
-msgstr ""
+msgstr "Erstelle ein neues Ticket in %1"
 
 #. ($m->scomp("/Elements/SelectNewTicketQueue"),    @description)
 #: share/html/Asset/Elements/CreateLinkedTicket:61
 msgid "Create a new ticket in the %1 queue about asset #%2: %3."
-msgstr ""
+msgstr "Erstelle ein neues Ticket im Bereich %1 für Anlage #%2: %3"
 
 #: share/html/Admin/Users/Modify.html:250 share/html/Admin/Users/Modify.html:264
 msgid "Create a new user"
@@ -2459,7 +2459,7 @@ msgstr "Neues Ticket erstellen"
 #. ($m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj))
 #: share/html/SelfService/Create.html:48
 msgid "Create a ticket in %1"
-msgstr ""
+msgstr "Erstele ein Ticket in %1"
 
 #: share/html/User/Elements/Portlets/CreateTicket:50
 msgid "Create a ticket with this user as the Requestor in Queue"
@@ -2479,15 +2479,15 @@ msgstr "Artikel in dieser Klasse erstellen"
 
 #: share/html/Asset/Create.html:100
 msgid "Create asset"
-msgstr ""
+msgstr "Erstelle Anlage"
 
 #: lib/RT/Catalog.pm:83
 msgid "Create assets"
-msgstr ""
+msgstr "Erstelle Anlagen"
 
 #: share/html/Admin/Assets/Catalogs/Create.html:48 share/html/Admin/Assets/Catalogs/Create.html:59
 msgid "Create catalog"
-msgstr ""
+msgstr "Erstelle Katalog"
 
 #: lib/RT/Group.pm:96
 msgid "Create group dashboards"
@@ -2495,16 +2495,16 @@ msgstr "Gruppen-Dashboard erstellen"
 
 #: share/html/Elements/Tabs:1011 share/html/Elements/Tabs:1167
 msgid "Create linked ticket"
-msgstr ""
+msgstr "Erstelle verknüpftes Ticket"
 
 #. ($asset->id, $asset->Name)
 #: share/html/Asset/CreateLinkedTicket.html:56 share/html/SelfService/Asset/CreateLinkedTicket.html:55
 msgid "Create linked ticket for asset #%1: %2"
-msgstr ""
+msgstr "Erstelle verknüpftes Ticket für Anlage #%1: %2"
 
 #: share/html/Asset/CreateInCatalog.html:49
 msgid "Create new asset"
-msgstr ""
+msgstr "Erstelle neue Anlage"
 
 #: etc/initialdata:105
 msgid "Create new tickets based on this scrip's template"
@@ -2540,7 +2540,7 @@ msgstr "Werte von benutzerdefinierten Feldern festlegen, ändern und löschen"
 
 #: lib/RT/System.pm:86
 msgid "Create, modify and delete custom roles"
-msgstr ""
+msgstr "Erstellen, bearbeiten und löschen von benutzerdefinierten Rollen"
 
 #: lib/RT/Queue.pm:104
 msgid "Create, modify and delete queue"
@@ -2556,7 +2556,7 @@ msgstr "Benutzer erstellen, ändern und löschen"
 
 #: lib/RT/Catalog.pm:80
 msgid "Create, modify, and disable catalogs"
-msgstr ""
+msgstr "Erstellen, bearbeiten und deaktivieren von Katalogen"
 
 #: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:139 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Asset/Elements/EditDates:50 share/html/Asset/Elements/ShowDates:50 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:354
 msgid "Created"
@@ -2641,7 +2641,7 @@ msgstr "Benutzerdefinierte Felder für den Bereich %1"
 
 #: share/html/Elements/Tabs:102 share/html/Elements/Tabs:292
 msgid "Custom Roles"
-msgstr ""
+msgstr "benutzerdefinierte Rollen"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:73
 msgid "Custom action commit code"
@@ -2705,19 +2705,19 @@ msgstr "Wert des benutzerdefinierten Feldes gelöscht"
 
 #: share/html/Admin/CustomRoles/Modify.html:121
 msgid "Custom role created"
-msgstr ""
+msgstr "benutzerdefinierte Rolle erstellt"
 
 #: lib/RT/CustomRole.pm:696
 msgid "Custom role disabled"
-msgstr ""
+msgstr "benutzerdefinierte Rolle deaktiviert"
 
 #: lib/RT/CustomRole.pm:694
 msgid "Custom role enabled"
-msgstr ""
+msgstr "benutzerdefinierte Rolle aktiviert"
 
 #: lib/RT/CustomRole.pm:447
 msgid "Custom role is not added"
-msgstr ""
+msgstr "benutzerdefinierte Rolle ist nicht hinzugefügt"
 
 #: lib/RT/Tickets.pm:155 lib/RT/Transaction.pm:995 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
@@ -2729,7 +2729,7 @@ msgstr ""
 
 #: lib/RT/Tickets.pm:153
 msgid "CustomRole"
-msgstr ""
+msgstr "benutzerdefinierte Rolle"
 
 #: share/html/Prefs/DashboardsInMenu.html:74 share/html/Prefs/MyRT.html:81 share/html/Prefs/QueueList.html:79 share/html/Prefs/Search.html:81
 msgid "Customize"
@@ -2887,12 +2887,12 @@ msgstr ""
 
 #: share/html/Elements/Tabs:344
 msgid "Default Values"
-msgstr ""
+msgstr "Standardwerte"
 
 #. ($queue->Name)
 #: share/html/Admin/Queues/DefaultValues.html:145
 msgid "Default Values for queue %1"
-msgstr ""
+msgstr "Standardwerte für Bereich %1"
 
 #: lib/RT/Config.pm:156
 msgid "Default queue"
@@ -2909,12 +2909,12 @@ msgstr ""
 #. ($args{Name}, $old_value, $new_value)
 #: lib/RT/Queue.pm:1196
 msgid "Default value of %1 changed from %2 to %3"
-msgstr ""
+msgstr "Standardwert von %1 geändert von %2 in %3"
 
 #. ($old_values, $new_values)
 #: lib/RT/CustomField.pm:2082
 msgid "Default values changed from %1 to %2"
-msgstr ""
+msgstr "Standardwerte von %1 in %2 geändert"
 
 #. ($DefaultValue)
 #: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
@@ -2927,7 +2927,7 @@ msgstr "Standardwert: %1/%2 von \"%3\" auf \"%4\" geändert."
 
 #: share/html/Elements/RT__Queue/ColumnMap:73
 msgid "DefaultDueIn"
-msgstr ""
+msgstr "Standard Fällig in"
 
 #: lib/RT/Date.pm:116
 msgid "DefaultFormat"
@@ -2935,7 +2935,7 @@ msgstr "Standard-Format"
 
 #: share/html/Elements/RT__Queue/ColumnMap:77
 msgid "DefaultStarts"
-msgstr ""
+msgstr "Standard Beginnt"
 
 #: etc/RT_Config.pm:3013 etc/RT_Config.pm:3102 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:146 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Ticket/Elements/AddAttachments:54 share/html/Widgets/SelectionBox:196
 msgid "Delete"
@@ -3078,7 +3078,7 @@ msgstr "Richtung"
 
 #: lib/RT/Class.pm:99
 msgid "Disable articles in this class"
-msgstr ""
+msgstr "Deaktiviere Artikel in dieser Klasse"
 
 #: lib/RT/CustomField.pm:1082 share/html/Elements/RT__Catalog/ColumnMap:67 share/html/Elements/RT__Class/ColumnMap:68 share/html/Elements/RT__CustomField/ColumnMap:58 share/html/Elements/RT__CustomRole/ColumnMap:58 share/html/Elements/RT__Group/ColumnMap:83 share/html/Elements/RT__Queue/ColumnMap:58 share/html/Elements/RT__Scrip/ColumnMap:112 share/html/Elements/RT__User/ColumnMap:147
 msgid "Disabled"
@@ -3086,7 +3086,7 @@ msgstr "Deaktiviert"
 
 #: share/html/Admin/Assets/Catalogs/Elements/EditBasics:69
 msgid "Disabled?"
-msgstr ""
+msgstr "Deaktiviert?"
 
 #: share/html/Elements/Tabs:1162 share/html/Elements/Tabs:710 share/html/Elements/Tabs:954 share/html/Elements/Tabs:974 share/html/Elements/Tabs:992 share/html/Search/Elements/EditFormat:99
 msgid "Display"
@@ -3107,7 +3107,7 @@ msgstr "Spalten Anzeige"
 
 #: lib/RT/Config.pm:419
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
-msgstr "Zeigt alle Klartext-Anlagen in einer Monospaceschrift mit Formatierung erhalten, aber umbrechen nach Bedarf."
+msgstr "Zeigt alle Klartext Anhänge in einer Monospaceschrift mit Formatierung erhalten, aber umbrechen nach Bedarf."
 
 #: lib/RT/Config.pm:362
 msgid "Display messages in rich text if available"
@@ -3115,7 +3115,7 @@ msgstr "Zeige Nachrichten in Rich-Text wenn verfügbar"
 
 #: lib/RT/Config.pm:418
 msgid "Display plain-text attachments in fixed-width font"
-msgstr "Anzeige Klartext-Anhänge in Schrift mit fester Breite"
+msgstr "Zeigt Klartext-Anhänge in Schrift mit fester Breite"
 
 #: lib/RT/Config.pm:462
 msgid "Display ticket after \"Quick Create\""
@@ -3160,7 +3160,7 @@ msgstr "Herunterladen"
 
 #: share/html/Elements/Tabs:1056
 msgid "Download Spreadsheet"
-msgstr ""
+msgstr "Tabelle herunterladen"
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
@@ -3168,7 +3168,7 @@ msgstr "Export Datei runterladen"
 
 #: share/html/Ticket/Elements/AddAttachments:71
 msgid "Drop files here or click to attach"
-msgstr ""
+msgstr "Dateien hier hinziehen oder anklicken zum hinzufügen"
 
 #: lib/RT/CustomField.pm:87
 msgid "Dropdown"
@@ -3202,7 +3202,7 @@ msgstr "Ändern"
 #. (($group? loc($group) : loc('Custom Fields')))
 #: share/html/Asset/Search/Bulk.html:134
 msgid "Edit %1"
-msgstr ""
+msgstr "Bearbeite %1"
 
 #: share/html/Search/Bulk.html:199
 msgid "Edit Custom Fields"
@@ -3215,7 +3215,7 @@ msgstr "Bearbeite benutzerdefinierte Felder für %1"
 
 #: share/html/Admin/Global/CustomFields/Catalog-Assets.html:52
 msgid "Edit Custom Fields for Assets in all Catalogs"
-msgstr ""
+msgstr "Bearbeite benutzerdefinierte Felder für Anlagen in allen Katalogen"
 
 #: share/html/Admin/Global/CustomFields/Groups.html:53
 msgid "Edit Custom Fields for all groups"
@@ -3337,7 +3337,7 @@ msgstr "Aktiviert"
 
 #: share/html/Articles/Article/Elements/EditBasics:73
 msgid "Enabled (Unchecking this box disables this article)"
-msgstr ""
+msgstr "Aktiviert (abwählen deaktiviert diesen Artikel)"
 
 #: share/html/Admin/Articles/Classes/Modify.html:73
 msgid "Enabled (Unchecking this box disables this class)"
@@ -3350,7 +3350,7 @@ msgstr "Aktiviert (Abwählen deaktiviert dieses benutzerdefinierte Feld)"
 
 #: share/html/Admin/CustomRoles/Modify.html:90
 msgid "Enabled (Unchecking this box disables this custom role)"
-msgstr ""
+msgstr "Aktiviert (abwählen deaktiviert diese benutzerdefinierte Rolle)"
 
 #: share/html/Admin/Groups/Modify.html:85
 msgid "Enabled (Unchecking this box disables this group)"
@@ -3366,7 +3366,7 @@ msgstr "Aktiviert (Deaktivieren Sie dieses Kontrollkästchen deaktiviert dieses 
 
 #: share/html/Admin/Assets/Catalogs/index.html:109
 msgid "Enabled Catalogs"
-msgstr ""
+msgstr "Aktivierte Kataloge"
 
 #: share/html/Admin/Articles/Classes/index.html:82
 msgid "Enabled Classes"
@@ -3378,7 +3378,7 @@ msgstr "Aktivierte Bereiche"
 
 #: share/html/Admin/Assets/Catalogs/index.html:97
 msgid "Enabled catalogs matching search criteria"
-msgstr ""
+msgstr "Aktivierte Kataloge die den Suchkriterien entsprechen"
 
 #: share/html/Admin/Queues/index.html:100
 msgid "Enabled queues matching search criteria"
@@ -3408,7 +3408,7 @@ msgstr "Verschlüsselte/Entschlüsselte Transaktion #%1 von Ticket #%2"
 
 #: lib/RT/Queue.pm:379
 msgid "Encrypting"
-msgstr ""
+msgstr "Verschlüsseln"
 
 #: lib/RT/Attachment.pm:842
 msgid "Encryption error; contact the administrator"
@@ -3416,7 +3416,7 @@ msgstr "Verschlüsselungsfehler; Administrator kontaktieren"
 
 #: share/html/Helpers/ShortcutHelp:95
 msgid "Enter"
-msgstr ""
+msgstr "Eingabe"
 
 #: share/html/Articles/Article/Elements/EditLinks:50
 msgid "Enter articles, tickets, or other URLs related to this article."
@@ -3424,7 +3424,7 @@ msgstr "Gebe Artikel, Tickets, oder andere URLs an die mit diesem Artikel in Zus
 
 #: share/html/Elements/AddLinks:64
 msgid "Enter links to assets as \"asset:###\", where ### represents the asset ID."
-msgstr ""
+msgstr "Gebe Verknüpfungen zu Anlagen als \"asset:###\" ein wobei ### die ID der Anlage ist"
 
 #: lib/RT/CustomField.pm:191
 msgid "Enter multiple IP address ranges"
@@ -3501,7 +3501,7 @@ msgstr "Die Eingabe von %1, %2, %3 oder %4 schränkt die Ticket Ergebnisse auf d
 
 #: share/html/Admin/CustomFields/Modify.html:118 share/html/Admin/CustomRoles/Modify.html:66
 msgid "Entry Hint"
-msgstr ""
+msgstr "Eingabe Hinweis"
 
 #: share/html/Admin/Tools/Configuration.html:290
 msgid "Environment variables"
@@ -3673,7 +3673,7 @@ msgstr "Konnte Vorlage nicht analysieren"
 
 #: share/html/Search/Elements/EditFormat:73 share/html/Search/Elements/EditFormat:77
 msgid "Failed to update format. Reason:"
-msgstr ""
+msgstr "Kann Format nicht aktualisieren. Grund:"
 
 #: lib/RT/Date.pm:92
 msgid "Feb"
@@ -3760,7 +3760,7 @@ msgstr "Endpriorität"
 
 #: share/html/Asset/Elements/AddCatalogPeople:66
 msgid "Find a group..."
-msgstr ""
+msgstr "Finde eine Gruppe ..."
 
 #: share/html/Elements/FindUser:48
 msgid "Find a user"
@@ -3768,7 +3768,7 @@ msgstr "Finde einen Benutzer"
 
 #: share/html/Asset/Elements/AddCatalogPeople:57
 msgid "Find a user..."
-msgstr ""
+msgstr "Finde einen Benutzer ..."
 
 #: share/html/Admin/Users/index.html:77
 msgid "Find all users whose"
@@ -3776,7 +3776,7 @@ msgstr "Finde alle Benutzer, deren"
 
 #: share/html/Elements/FindAsset:48
 msgid "Find an asset"
-msgstr ""
+msgstr "Finde eine Anlage"
 
 #: share/html/Admin/Groups/index.html:68 share/html/Admin/Queues/People.html:84 share/html/Ticket/Elements/EditPeople:57
 msgid "Find groups whose"
@@ -3883,7 +3883,7 @@ msgstr "Weitergeleitetes Ticket"
 #. ($assets->Count)
 #: share/html/Asset/Search/index.html:58
 msgid "Found %quant(%1,asset,assets)"
-msgstr ""
+msgstr "%quant(%1,Anlage,Anlagen) gefunden"
 
 #. ($ticketcount)
 #. ($collection->CountAll)
@@ -3982,12 +3982,12 @@ msgstr "Globale Vorlage '%1' nicht gefunden"
 #. ($self->Name)
 #: lib/RT/CustomField.pm:1570
 msgid "Globally added custom field %1."
-msgstr ""
+msgstr "Benutzerdefiniertes Feld %1 global hinzugefügt."
 
 #. ($self->Name)
 #: lib/RT/CustomField.pm:1611
 msgid "Globally removed custom field %1."
-msgstr ""
+msgstr "Benutzerdefiniertes Feld %1 global entfernt."
 
 #: share/html/Admin/Users/Keys.html:63
 msgid "GnuPG private key"
@@ -3999,7 +3999,7 @@ msgstr "Los"
 
 #: share/html/Helpers/ShortcutHelp:74
 msgid "Go back / forward"
-msgstr ""
+msgstr "Gehe zurück / vor"
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
@@ -4024,7 +4024,7 @@ msgstr "Gehe zu Ticket"
 #. ($self->RightName, $princ_obj->DisplayName)
 #: lib/RT/ACE.pm:288
 msgid "Granted right '%1' to %2."
-msgstr ""
+msgstr "Recht '%1' %2 gewährt."
 
 #: share/html/Ticket/Elements/ShowSummary:93 share/html/Ticket/ModifyLinks.html:58
 msgid "Graph"
@@ -4203,7 +4203,7 @@ msgstr "Verlauf für Artikel #%1"
 #. ($asset->id, $asset->Name)
 #: share/html/Asset/History.html:48 share/html/SelfService/Asset/History.html:48
 msgid "History of Asset #%1: %2"
-msgstr ""
+msgstr "Verlauf von Anlage #%1: %2"
 
 #. ($GroupObj->Name)
 #: share/html/Admin/Groups/History.html:60
@@ -4335,7 +4335,7 @@ msgstr "Inaktive Tickets"
 
 #: share/html/Elements/RT__Asset/ColumnMap:107
 msgid "Inactive tickets"
-msgstr ""
+msgstr "Inaktive Tickets"
 
 #: share/html/Articles/Elements/BeforeMessageBox:59
 msgid "Include Article:"
@@ -4355,7 +4355,7 @@ msgstr "Artikel Zusammenfassung hinzufügen"
 
 #: share/html/Ticket/Elements/AddAttachments:168
 msgid "Include attachments"
-msgstr ""
+msgstr "Anhänge hinzufügen"
 
 #. ($cf->Name)
 #: share/html/Admin/Articles/Classes/Modify.html:97
@@ -4368,7 +4368,7 @@ msgstr "Daten Tabelle anzeigen"
 
 #: share/html/Admin/Assets/Catalogs/index.html:85
 msgid "Include disabled catalogs in listing."
-msgstr ""
+msgstr "Zeige deaktivierte Kataloge"
 
 #: share/html/Admin/Articles/Classes/index.html:70
 msgid "Include disabled classes in listing."
@@ -4380,7 +4380,7 @@ msgstr "Zeige auch deaktivierte benutzerdefinierte Felder an"
 
 #: share/html/Admin/CustomRoles/index.html:69
 msgid "Include disabled custom roles in listing."
-msgstr ""
+msgstr "Zeige deaktivierte benutzerdefinierte Rollen"
 
 #: share/html/Admin/Groups/index.html:70
 msgid "Include disabled groups in listing."
@@ -4508,7 +4508,7 @@ msgstr "%1 ungültig: es sollte eine Zahl sein"
 
 #: lib/RT/Asset.pm:219
 msgid "Invalid Catalog"
-msgstr ""
+msgstr "Ungültiger Katalog"
 
 #: lib/RT/Article.pm:110
 msgid "Invalid Class"
@@ -4524,11 +4524,11 @@ msgstr "Ungültiger Gruppen-Name und Domain"
 
 #: lib/RT/Asset.pm:230
 msgid "Invalid Name (names may not be all digits)"
-msgstr ""
+msgstr "Ungültiger Name (Namen dürfen nicht nur Ziffern enthalten)"
 
 #: lib/RT/Catalog.pm:211
 msgid "Invalid Name (names must be unique and may not be all digits)"
-msgstr ""
+msgstr "Ungültiger Name (Namen müssen eindeutig sein und dürfen nicht nur Ziffern enthalten)"
 
 #. ($msg)
 #: lib/RT/Class.pm:311
@@ -4617,7 +4617,7 @@ msgstr "Es wird empfohlen einen nicht priviligierten Unix User mit korrekten Gru
 
 #: share/html/Elements/AttachmentWarning:54
 msgid "It looks like you may have forgotten to add an attachment."
-msgstr ""
+msgstr "Wie es aussieht hast Du möglicherweise vergessen einen Anhang hinzuzufügen."
 
 #: bin/rt-crontool:312
 msgid "It takes several arguments:"
@@ -4653,7 +4653,7 @@ msgstr "Belassen Sie 'localhost, wenn Sie nicht sicher sind. Zur lokalen Verbind
 
 #: share/html/Helpers/ShortcutHelp:54
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Tastaturkürzel"
 
 #. (ref $self)
 #: lib/RT/Search/Simple.pm:89
@@ -4933,7 +4933,7 @@ msgstr "Hauptsächliche Beziehungstypen"
 #. ($role->Name)
 #: share/html/Search/Bulk.html:103
 msgid "Make %1"
-msgstr ""
+msgstr "Mache %1"
 
 #: share/html/Search/Bulk.html:81
 msgid "Make Owner"
@@ -4977,7 +4977,7 @@ msgstr "Verwalte benutzerdefinierte Felder und Werte"
 
 #: share/html/Elements/Tabs:103
 msgid "Manage custom roles"
-msgstr ""
+msgstr "Verwalte benutzerdefinierte Rollen"
 
 #: share/html/Elements/Tabs:76
 msgid "Manage groups and group membership"
@@ -5264,7 +5264,7 @@ msgstr "Bearbeiten"
 #. ($asset->id, $asset->Name, $Grouping || loc("Custom Fields"))
 #: share/html/Asset/ModifyCFs.html:48
 msgid "Modify %3 for asset #%1: %2"
-msgstr ""
+msgstr "Bearbeite %3 von Anlage #%1: %2"
 
 #: share/html/Admin/Groups/Members.html:108
 msgid "Modify Members"
@@ -5298,24 +5298,24 @@ msgstr "Artikel #%1 ändern"
 
 #: lib/RT/Class.pm:92
 msgid "Modify articles in this class"
-msgstr ""
+msgstr "Bearbeite Artikel in dieser Klasse"
 
 #. ($asset->id, $asset->Name)
 #: share/html/Asset/Modify.html:48
 msgid "Modify asset #%1: %2"
-msgstr ""
+msgstr "Bearbeite Anlage #%1: %2"
 
 #: share/html/Elements/Tabs:213
 msgid "Modify asset catalogs"
-msgstr ""
+msgstr "Bearbeite Anlagen Kataloge"
 
 #: share/html/Elements/Tabs:222
 msgid "Modify asset custom fields"
-msgstr ""
+msgstr "Bearbeite ANlagen benutzerdefinierte Felder"
 
 #: lib/RT/Catalog.pm:84
 msgid "Modify assets"
-msgstr ""
+msgstr "Bearbeite Anlagen"
 
 #. ($CF->Name)
 #. ($Class->Name)
@@ -5336,7 +5336,7 @@ msgstr "Werte für benutzerdefiniertes Feld anpassen"
 #. ($asset->id, $asset->Name)
 #: share/html/Asset/ModifyDates.html:48
 msgid "Modify dates for asset #%1: %2"
-msgstr ""
+msgstr "Bearbeite Datumswerte für Anlage #%1: %2"
 
 #. ($TicketObj->Id)
 #: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:57
@@ -5398,7 +5398,7 @@ msgstr "Ändere Gruppenrechte für den Bereich %1"
 #. ($asset->id, $asset->Name)
 #: share/html/Asset/ModifyLinks.html:48
 msgid "Modify links for asset #%1: %2"
-msgstr ""
+msgstr "Bearbeite Verknüpfungen für Anlage #%1: %2"
 
 #: lib/RT/Class.pm:95
 msgid "Modify metadata and custom fields for this class"
@@ -5411,7 +5411,7 @@ msgstr "Eigenes RT Benutzerkonto ändern"
 #. ($asset->id, $asset->Name)
 #: share/html/Asset/ModifyPeople.html:48
 msgid "Modify people related to asset #%1: %2"
-msgstr ""
+msgstr "Bearbeite Personen verknüpft mit Anlage #%1: %2"
 
 #. ($Ticket->Id)
 #. ($Ticket->id)
@@ -5588,19 +5588,19 @@ msgstr "Hierher verschieben"
 
 #: share/html/Helpers/ShortcutHelp:92
 msgid "Move up / down the list of results"
-msgstr ""
+msgstr "Bewege Dich hoch / runter in der Liste der Ergebnisse"
 
 #: share/html/Elements/RT__CustomRole/ColumnMap:74
 msgid "Multiple"
-msgstr ""
+msgstr "Mehrere"
 
 #: share/html/Admin/CustomRoles/Modify.html:82
 msgid "Multiple users (This cannot be modified after creation)"
-msgstr ""
+msgstr "Mehrere Benutzer (Dies kann nach der Erstellung nicht geändert werden)"
 
 #: share/html/Admin/CustomRoles/Modify.html:80
 msgid "Multiple users (Unchecking this box limits this role to a single user. This cannot be modified after creation)"
-msgstr ""
+msgstr "Mehrere Benutzer (Abwählen begrenzt diese Rolle auf einen einzelnen Benutzer. Dies kann nach der Erstellung nicht geändert werden)"
 
 #: lib/RT/User.pm:163
 msgid "Must specify 'Name' attribute"
@@ -5617,7 +5617,7 @@ msgstr "Meine Freigaben"
 
 #: share/html/Elements/MyAssets:48 share/html/SelfService/Asset/index.html:48 share/html/SelfService/Asset/index.html:49
 msgid "My Assets"
-msgstr ""
+msgstr "Meine Anlagen"
 
 #: share/html/Elements/Tabs:598
 msgid "My Day"
@@ -5661,7 +5661,7 @@ msgstr ""
 
 #: etc/RT_Config.pm:1222
 msgid "MyAssets"
-msgstr ""
+msgstr "Meine Anlagen"
 
 #: etc/RT_Config.pm:1222 etc/initialdata:924
 msgid "MyReminders"
@@ -5737,12 +5737,12 @@ msgstr "Neue Suche"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:80
 msgid "New Value"
-msgstr ""
+msgstr "Neuer Wert"
 
 #. ($self->loc($args{'Status'}))
 #: lib/RT/Asset.pm:251
 msgid "New assets cannot have status '%1'."
-msgstr ""
+msgstr "Neue Anlagen können nicht den Status '%1' haben."
 
 #: share/html/Elements/RT__Ticket/ColumnMap:264 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
@@ -5830,7 +5830,7 @@ msgstr "Keine Gruppe definiert"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:104
 msgid "No Name"
-msgstr ""
+msgstr "Kein Name"
 
 #: lib/RT/Tickets.pm:3133
 msgid "No Query"
@@ -5862,19 +5862,19 @@ msgstr "Keine Aktion"
 
 #: lib/RT/Interface/Web.pm:3990
 msgid "No asset ID specified."
-msgstr ""
+msgstr "Keine Anlagen ID angegeben."
 
 #: share/html/Asset/Search/Bulk.html:66 share/html/Asset/Search/index.html:72
 msgid "No assets matching search criteria found."
-msgstr ""
+msgstr "Keine Anlagen entsprechen den Suchkriterien"
 
 #: lib/RT/Interface/Web.pm:3974
 msgid "No catalog specified."
-msgstr ""
+msgstr "Kein Katalog angegeben."
 
 #: share/html/Admin/Assets/Catalogs/index.html:54
 msgid "No catalogs matching search criteria found."
-msgstr ""
+msgstr "Keine Kataloge entsprechen den Suchkriterien"
 
 #: lib/RT/Record.pm:1012
 msgid "No column specified"
@@ -5887,11 +5887,11 @@ msgstr "Kein Kommentar zu diesem Benutzer angegeben"
 #. ($Grouping)
 #: share/html/Asset/ModifyCFs.html:78
 msgid "No custom fields found for grouping '%1'"
-msgstr ""
+msgstr "Keine benutzerdefinierten Felder für Gruppe '%1' gefunden"
 
 #: share/html/Admin/CustomRoles/index.html:75
 msgid "No custom roles matching search criteria found."
-msgstr ""
+msgstr "Keine benutzerdefinierten Rollen entsprechen den Suchkriterien"
 
 #. (ref $self)
 #: lib/RT/Action.pm:163 lib/RT/Condition.pm:183 lib/RT/Search.pm:125 lib/RT/Search/ActiveTicketsInQueue.pm:75
@@ -5950,11 +5950,11 @@ msgstr "Keine Berechtigung dieses Ticket anzuzeigen"
 
 #: lib/RT/Asset.pm:479 lib/RT/Asset.pm:494
 msgid "No permission to modify this asset"
-msgstr ""
+msgstr "Keine Berechtigung diese Anlage zu bearbeiten"
 
 #: lib/RT/Catalog.pm:334 lib/RT/Catalog.pm:349
 msgid "No permission to modify this catalog"
-msgstr ""
+msgstr "Keine Berechtigung diesen Katalog zu bearbeiten"
 
 #: share/html/Search/Elements/EditSearches:246
 msgid "No permission to save system-wide searches"
@@ -6180,7 +6180,7 @@ msgstr ""
 
 #: share/html/Elements/RT__CustomRole/ColumnMap:70
 msgid "Number"
-msgstr ""
+msgstr "Zahl"
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -6192,11 +6192,11 @@ msgstr "Objekt"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:60
 msgid "Object Id"
-msgstr ""
+msgstr "Objekt ID"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:55
 msgid "Object Type"
-msgstr ""
+msgstr "Objekt Typ"
 
 #: lib/RT/Record.pm:336
 msgid "Object could not be created"
@@ -6232,7 +6232,7 @@ msgstr "Okt"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:75
 msgid "Old Value"
-msgstr ""
+msgstr "Alter Wert"
 
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
 #: lib/RT/Transaction.pm:425
@@ -6347,7 +6347,7 @@ msgstr "Öffne Tickets"
 
 #: share/html/Ticket/Elements/PopupTimerLink:56 share/html/Ticket/Elements/PopupTimerLink:56
 msgid "Open Timer"
-msgstr ""
+msgstr "Öffne Stoppuhr"
 
 #: share/html/Elements/MakeClicky:67
 msgid "Open URL"
@@ -6521,7 +6521,7 @@ msgstr "Pfad zu sendmail"
 
 #: share/html/Helpers/TicketTimer:181 share/html/Helpers/TicketTimer:181
 msgid "Pause Timer"
-msgstr ""
+msgstr "Pausiere Stoppuhr"
 
 #. ($approvals)
 #: share/html/Ticket/Elements/ShowDependencyStatus:54
@@ -6684,7 +6684,7 @@ msgstr "Prepare Stumpf ausgeführt"
 #. ('<span class="keyboard-shortcuts-key">?</span>')
 #: share/html/Search/Bulk.html:221 share/html/Search/Results.html:96
 msgid "Press %1 to view keyboard shortcuts."
-msgstr ""
+msgstr "Drücke %1 um Tastenkombinationen zu sehen."
 
 #: share/html/Elements/Tabs:809
 msgid "Prev"
@@ -6816,7 +6816,7 @@ msgstr "Bereich Id"
 
 #: share/html/Elements/QueueList:50 share/html/Elements/Tabs:646 share/html/Prefs/QueueList.html:79
 msgid "Queue list"
-msgstr ""
+msgstr "Bereichsliste"
 
 #: lib/RT/CustomField.pm:287 share/html/SelfService/Display.html:112
 msgid "Queue not found"
@@ -6824,7 +6824,7 @@ msgstr "Bereich nicht gefunden"
 
 #: lib/RT/Queue.pm:1225
 msgid "Queue's default service level has been changed"
-msgstr ""
+msgstr "Bereichs standard Service Level ist geändert worden"
 
 #: share/html/Elements/Crypt/SelectKeyForSigning:50 share/html/Elements/Crypt/SelectKeyForSigning:54
 msgid "Queue's key"
@@ -6844,7 +6844,7 @@ msgstr "Bereich Cc"
 
 #: etc/RT_Config.pm:1222 etc/initialdata:928
 msgid "QueueList"
-msgstr ""
+msgstr "Bereichsliste"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "QueueName"
@@ -7175,15 +7175,15 @@ msgstr "Erinnerung '%1': %2"
 
 #: lib/RT/Transaction.pm:1298
 msgid "Reminder added"
-msgstr ""
+msgstr "Erinnerung hinzugefügt"
 
 #: lib/RT/Transaction.pm:1328
 msgid "Reminder completed"
-msgstr ""
+msgstr "Erinnerung beendet"
 
 #: lib/RT/Transaction.pm:1313
 msgid "Reminder reopened"
-msgstr ""
+msgstr "Erinnerung wieder geöffnet"
 
 #: share/html/Elements/Tabs:733 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:75 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:336
 msgid "Reminders"
@@ -7196,13 +7196,13 @@ msgstr "Erinnerung für Ticket #%1"
 
 #: share/html/Ticket/Elements/AddAttachments:77
 msgid "Remove"
-msgstr ""
+msgstr "Entfernen"
 
 #. ($role->Name)
 #. (loc($rname))
 #: share/html/Asset/Search/Bulk.html:116 share/html/Search/Bulk.html:117
 msgid "Remove %1"
-msgstr ""
+msgstr "entferne %1"
 
 #: share/html/Search/Bulk.html:95
 msgid "Remove AdminCc"
@@ -7227,7 +7227,7 @@ msgstr "Betreff überschreiben entfernt"
 #. ($self->Name, $object->Name)
 #: lib/RT/CustomField.pm:1609
 msgid "Removed custom field %1 from %2."
-msgstr ""
+msgstr "Benutzerdefiniertes Feld %1 von %2 entfernt"
 
 #: share/html/Admin/CustomFields/Modify.html:77
 msgid "Render Type"
@@ -7251,7 +7251,7 @@ msgstr "Antwort an Auftraggeber"
 
 #: share/html/Helpers/ShortcutHelp:100
 msgid "Reply to ticket"
-msgstr ""
+msgstr "Antworte zu Ticket"
 
 #: lib/RT/Queue.pm:124
 msgid "Reply to tickets"
@@ -8120,7 +8120,7 @@ msgstr "Vereinfachte Suche"
 
 #: share/html/Elements/RT__CustomRole/ColumnMap:74
 msgid "Single"
-msgstr ""
+msgstr "Einzelne"
 
 #: lib/RT/Installer.pm:137
 msgid "Site name"
@@ -9087,7 +9087,7 @@ msgstr "Transaktion erstellt"
 
 #: share/html/Admin/Queues/DefaultValues.html:130
 msgid "Transaction Custom Fields"
-msgstr ""
+msgstr "Benutzerdefinierte Felder bei Transaktionen"
 
 #: etc/initialdata:343 etc/upgrade/4.1.9/content:34
 msgid "Transaction in HTML"

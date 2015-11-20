@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-05-07 20:30+0000\n"
-"PO-Revision-Date: 2015-08-17 17:04+0000\n"
-"Last-Translator: Max Kosmach <Unknown>\n"
+"POT-Creation-Date: 2015-11-09 22:31+0000\n"
+"PO-Revision-Date: 2015-11-09 10:26+0000\n"
+"Last-Translator: Shawn M Moore <sartak@gmail.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-11-02 23:03+0000\n"
-"X-Generator: Launchpad (build 17838)\n"
+"X-Launchpad-Export-Date: 2015-11-20 19:22+0000\n"
+"X-Generator: Launchpad (build 17850)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -1075,7 +1075,7 @@ msgstr ""
 
 #: share/html/Prefs/AboutMe.html:175
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
-msgstr "Во все подписки iCal встроен секретный ключ. Если ссылка на одну из ваших подписок iCal была раскрыта , то можно получить новый секретный ключ ниже. <b>Внимание: это отменит доступ ко всем существующим подпискам iCal со старым ключом</b>."
+msgstr "Все iCal-каналы включают в себя секретный токен, позволяющий вас авторизовать. Если URL iCal-канала был раскрыт, Вы можете получить новый токен, <b>аннулирующий все iCal-каналы</b> ниже."
 
 #: share/html/Admin/Queues/index.html:99
 msgid "All queues matching search criteria"
@@ -3703,7 +3703,7 @@ msgstr ""
 #. ($self->Data, $self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:932
 msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
-msgstr ""
+msgstr "Файл '%1' обрезан, так как его размер (%2 байт) превышает заданный максимальный размер (%3 байт)."
 
 #: lib/RT/Tickets.pm:143 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:53 share/html/Elements/SelectAttachmentField:54
 msgid "Filename"
@@ -3990,7 +3990,7 @@ msgstr ""
 
 #: share/html/Admin/Users/Keys.html:63
 msgid "GnuPG private key"
-msgstr ""
+msgstr "Закрытый ключ GnuPG"
 
 #: share/html/Asset/Elements/CreateInCatalog:52 share/html/Asset/Elements/CreateLinkedTicket:77 share/html/m/_elements/menu:67
 msgid "Go"
@@ -4238,7 +4238,7 @@ msgstr "Час"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Hourly"
-msgstr ""
+msgstr "Раз в час"
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
@@ -5591,7 +5591,7 @@ msgstr ""
 
 #: share/html/Elements/RT__CustomRole/ColumnMap:74
 msgid "Multiple"
-msgstr ""
+msgstr "Несколько значений"
 
 #: share/html/Admin/CustomRoles/Modify.html:82
 msgid "Multiple users (This cannot be modified after creation)"
@@ -5994,7 +5994,7 @@ msgstr "Права не найдены"
 #. ($principal->Object->Name)
 #: lib/RT/Ticket.pm:548
 msgid "No rights to add '%1' as an AdminCc on this ticket"
-msgstr ""
+msgstr "Не хватает прав, чтобы добавить '%1' в качестве административной копии для заявки."
 
 #: share/html/Search/Bulk.html:265
 msgid "No search to operate on."
@@ -6011,7 +6011,7 @@ msgstr "Нет такого ключа или ключ не подходит д�
 #. ($tname, $queue->Name||$queue->id)
 #: lib/RT/Scrip.pm:324
 msgid "No template %1 in queue %2 or global"
-msgstr ""
+msgstr "Нет шаблона '%1' в очереди '%2' или общего."
 
 #: share/html/Search/Chart:167
 msgid "No tickets found."
@@ -6583,23 +6583,23 @@ msgstr "Изображение"
 
 #: etc/initialdata:269
 msgid "Plain text Autoresponse template"
-msgstr ""
+msgstr "Текстовый шаблон Автоответа"
 
 #: etc/initialdata:418
 msgid "Plain text admin comment template"
-msgstr ""
+msgstr "Текстовый шаблон административного комментария"
 
 #: etc/initialdata:378
 msgid "Plain text admin correspondence template"
-msgstr ""
+msgstr "Текстовый шаблон административной переписки"
 
 #: etc/initialdata:401
 msgid "Plain text correspondence template"
-msgstr ""
+msgstr "Текстовый шаблон переписки"
 
 #: etc/initialdata:325
 msgid "Plain text transaction template"
-msgstr ""
+msgstr "Текстовый шаблон транзакции"
 
 #: share/html/dhandler:51
 msgid "Please check the URL and try again."
@@ -6615,7 +6615,7 @@ msgstr "Пожалуйста  введите ВАш текущий пароль.
 
 #: share/html/Elements/CSRF:48 share/html/Elements/CSRF:51
 msgid "Possible cross-site request forgery"
-msgstr ""
+msgstr "Возможно подделка межсайтовых запросов"
 
 #: share/html/Dashboards/Elements/HiddenSearches:73
 msgid "Possible hidden searches"
@@ -6742,7 +6742,7 @@ msgstr "Привилегированные пользователи"
 
 #: lib/RT/Config.pm:188
 msgid "Privileged: usernames; Unprivileged: names and email addresses"
-msgstr ""
+msgstr "Привилегированные: имя пользователя; Непривилегированные: имя и адрес электронной почты"
 
 #: bin/rt-crontool:173
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
@@ -6907,7 +6907,7 @@ msgstr "Ошибка RT"
 
 #: share/html/Admin/Elements/Portal:49
 msgid "RT Portal"
-msgstr ""
+msgstr "Портал RT"
 
 #: share/html/Admin/Tools/Configuration.html:139
 msgid "RT Size"
@@ -7230,7 +7230,7 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:77
 msgid "Render Type"
-msgstr ""
+msgstr "Тип визуализации"
 
 #: lib/RT/Config.pm:201
 msgid "Replaces the owner dropdowns with textboxes"
@@ -7295,7 +7295,7 @@ msgstr ""
 
 #: share/html/Prefs/MyRT.html:71
 msgid "Reset RT at a glance"
-msgstr ""
+msgstr "Сбросить настройки обзорной страницы RT"
 
 #: share/html/Prefs/DashboardsInMenu.html:64
 msgid "Reset dashboards in menu"
@@ -7315,7 +7315,7 @@ msgstr "Восстановить логотип RT"
 
 #: share/html/Admin/Tools/Theme.html:114
 msgid "Reset to default RT Theme"
-msgstr ""
+msgstr "Восставновить исходную тему RT"
 
 #: share/html/Admin/Users/Modify.html:177 share/html/Prefs/AboutMe.html:89
 msgid "Residence"
@@ -7452,7 +7452,7 @@ msgstr "Сертификат SMIME"
 
 #: lib/RT/User.pm:99
 msgid "SMIMECertificate"
-msgstr ""
+msgstr "Сертификат S/MIME"
 
 #: share/html/Admin/Tools/Queries.html:53 share/html/Admin/Tools/Queries.html:62 share/html/Elements/Tabs:272
 msgid "SQL Queries"
@@ -7461,7 +7461,7 @@ msgstr "SQL запросы"
 #. ($m->interp->apply_escapes($level, 'h'), qq[<strong><a href="$url">], '</a></strong>')
 #: share/html/Admin/Elements/LoggingSummary:80
 msgid "SQL queries are logged at the %1 level and also available in the %2query tool%3."
-msgstr ""
+msgstr "SQL-запросы протоколируются на уровне  %1 и также доступны на %2странице SQL-запросов%3."
 
 #: share/html/Admin/Elements/LoggingSummary:82
 msgid "SQL queries are not logged."
@@ -7569,7 +7569,7 @@ msgstr "Скриплеты и получатели"
 
 #: share/html/Admin/Elements/EditScrips:54
 msgid "Scrips normally run after each individual change to a ticket."
-msgstr ""
+msgstr "Скриплеты обычно выполняются после каждого индивидуального изменения заявки."
 
 #: share/html/Admin/Assets/Catalogs/index.html:86 share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Asset/Search/index.html:80 share/html/Asset/Search/index.html:89 share/html/Elements/FindAsset:51 share/html/Elements/GotoUser:58 share/html/Elements/SimpleSearch:56 share/html/Elements/Tabs:570 share/html/Elements/Tabs:588 share/html/Elements/Tabs:593 share/html/Elements/Tabs:966 share/html/Helpers/ShortcutHelp:84 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
@@ -7611,7 +7611,7 @@ msgstr "Поиск заявок"
 #. (@strong)
 #: share/html/Search/Simple.html:63
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
-msgstr ""
+msgstr "Можно искать заявки по  %1цифровому%2 идентификатору, словам из темы запроса %1\"в кавычках\"%2, %1очередям%2 по имени, ответственным по %1имени%2, авторам по %1email-адресу%2, по %1статусам%2 заявки. Поиск по %1@домен.ru%2 вернет заявки с авторами, email-адреса которых из этого домена."
 
 #: share/html/Elements/Tabs:640
 msgid "Search options"
@@ -7672,7 +7672,7 @@ msgstr "Выбрать"
 
 #: share/html/Admin/Global/CustomFields/index.html:96 share/html/Elements/Tabs:174
 msgid "Select Custom Fields for Articles in all Classes"
-msgstr ""
+msgstr "Выберите дополнительные поля для статей во всех классах."
 
 #: share/html/Elements/Tabs:179
 msgid "Select Custom Fields for Assets in all Catalogs"
@@ -7866,7 +7866,7 @@ msgstr "Отправить сообщение всем Авторам заявк
 
 #: lib/RT/Interface/Email.pm:1415
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
-msgstr ""
+msgstr "Отправка предыдущего сообщения завершилась с ошибкой. Пожалуйста свяжитесь с администратором для получения дополнительной информации."
 
 #: etc/initialdata:39
 msgid "Sends a message to the requestors"
@@ -7954,7 +7954,7 @@ msgstr "Показать"
 
 #: lib/RT/System.pm:89
 msgid "Show Admin menu"
-msgstr ""
+msgstr "Показать меню 'Администрирование'"
 
 #: lib/RT/System.pm:90
 msgid "Show Approvals tab"
@@ -7962,7 +7962,7 @@ msgstr ""
 
 #: lib/RT/System.pm:88
 msgid "Show Articles menu"
-msgstr ""
+msgstr "Показать меню 'Статьи'"
 
 #: share/html/Search/Elements/EditFormat:54
 msgid "Show Columns"
@@ -8043,7 +8043,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:431
 msgid "Show the Requestor's 10 highest priority active tickets"
-msgstr ""
+msgstr "Показать 10 самых приоритетных активных запросов данного пользователя"
 
 #: lib/RT/Config.pm:432
 msgid "Show the Requestor's 10 highest priority inactive tickets"
@@ -8119,7 +8119,7 @@ msgstr "Простой поиск"
 
 #: share/html/Elements/RT__CustomRole/ColumnMap:74
 msgid "Single"
-msgstr ""
+msgstr "Одно значение"
 
 #: lib/RT/Installer.pm:137
 msgid "Site name"
@@ -8193,7 +8193,7 @@ msgstr "Приостановить"
 #. (map { "<strong>$_</strong>" } 'queue:"Example Queue"', 'owner:email@example.com')
 #: share/html/Search/Simple.html:85
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
-msgstr ""
+msgstr "Добавьте перед искомым запросом поддерживаемое имя поля через двоеточие, как в '%1' и '%2', для однозначного указания типа запроса"
 
 #: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:203 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:57 share/html/Ticket/Elements/ShowDates:63 share/html/m/ticket/show:362
 msgid "Started"
@@ -8476,7 +8476,7 @@ msgstr "Шаблон #%1 удалён"
 
 #: lib/RT/Scrip.pm:170
 msgid "Template '%1' is not global"
-msgstr ""
+msgstr "Шаблон '%1' не является глобальным"
 
 #: lib/RT/Scrip.pm:172
 msgid "Template '%1' is not global nor queue specific"
@@ -8614,7 +8614,7 @@ msgstr "Административная копия заявки"
 
 #: share/html/Ticket/ModifyPeople.html:63
 msgid "The checked users may receive email related to this ticket depending on the action taken. Uncheck users to stop sending email to them about this ticket."
-msgstr ""
+msgstr "Выбранные пользователи могут получать сообщения, связанные с данной заявкой, в зависимости от выполняемых действий. Если необходимо отключить отправку сообщений - снимите выделение с пользователей."
 
 #: etc/initialdata:28 etc/upgrade/4.3.10/content:10
 msgid "The default catalog"
@@ -9086,7 +9086,7 @@ msgstr "Транзакция создана"
 
 #: share/html/Admin/Queues/DefaultValues.html:130
 msgid "Transaction Custom Fields"
-msgstr ""
+msgstr "Дополнительные поля транзакции"
 
 #: etc/initialdata:343 etc/upgrade/4.1.9/content:34
 msgid "Transaction in HTML"
@@ -9279,7 +9279,7 @@ msgstr "Неизвестное поле: %1"
 #. ($status_str)
 #: share/html/Search/Simple.html:81
 msgid "Unless you specify a specific status, only tickets with active statuses (%1) are searched."
-msgstr ""
+msgstr "Если не указан определенный статус, то ищутся только активные заявки (статусы: %1)."
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:65
 msgid "Unlimit"
@@ -9912,12 +9912,12 @@ msgstr "Да"
 #. ($ARGS{User})
 #: share/html/Errors/WebRemoteUser/NoInternalUser:49
 msgid "You (%1) are not authorized to use RT."
-msgstr ""
+msgstr "Вы (%1) не авторизованы для доступа к RT."
 
 #. ($edit, $subscription)
 #: share/html/Dashboards/Render.html:85
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
-msgstr ""
+msgstr "Вы <a href=\"%1\">можете редактировать информационную панель</a> и <a href=\"%2\">Вашу подписку</a> на неё в RT."
 
 #: lib/RT/Ticket.pm:2161 lib/RT/Ticket.pm:2234
 msgid "You already own this ticket"
@@ -9933,7 +9933,7 @@ msgstr "Вы настроили шифрование исходящих сооб
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
-msgstr ""
+msgstr "Вы не авторизованы для доступа в RT."
 
 #. (RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
@@ -9966,7 +9966,7 @@ msgstr "Вы можете назначать ответственного тол
 
 #: lib/RT/Ticket.pm:2105
 msgid "You can only steal a ticket owned by someone else"
-msgstr ""
+msgstr "Вы можете перехватить только заявки, принадлежащие кому-то еще."
 
 #: lib/RT/Ticket.pm:2149
 msgid "You can only take tickets that are unowned"
@@ -9975,7 +9975,7 @@ msgstr "Вы можете назначать себя ответственным
 #. ($fulltext_keyword)
 #: share/html/Search/Simple.html:71
 msgid "You can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
-msgstr ""
+msgstr "Вы можете искать по произвольному слову в истории заявки  набрав  <b>%1<i>слово</i></b>."
 
 #. ($self->loc($old), $self->loc($new))
 #: lib/RT/Record/Role/Status.pm:167
@@ -9997,7 +9997,7 @@ msgstr ""
 
 #: share/html/Articles/Article/Search.html:58
 msgid "You don't have permission to view Articles in any Class"
-msgstr ""
+msgstr "Нет прав для просмотра статей во всех классах."
 
 #: lib/RT/Interface/Web.pm:3998
 msgid "You don't have permission to view this asset."
@@ -10677,5 +10677,5 @@ msgstr "да"
 
 #: lib/RT/Interface/Web.pm:1572
 msgid "your browser did not supply a Referrer header"
-msgstr "ваш обозреватель не передает заголовок Referrer"
+msgstr "ваш обозреватель не передал заголовок Referrer"
 
