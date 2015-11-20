@@ -60,6 +60,7 @@
     <td class="value"><% loc($Ticket->SLA) %></td>
   </tr>
 % }
+% if ($show_time_worked) {
 % if ($Ticket->TimeEstimated) {
   <tr class="time estimated">
     <td class="label"><&|/l&>Estimated</&>:</td>
@@ -95,6 +96,7 @@
     <td class="value"><& ShowTime, minutes => $Ticket->TimeLeft &></td>
   </tr>
 % }
+% }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeLeft', TicketObj => $Ticket );
   <tr class="priority">
     <td class="label"><&|/l&>Priority</&>:</td>
@@ -122,7 +124,8 @@ $UngroupedCFs => 0
 </%ARGS>
 <%init>
 my $time_worked;
-if ( $Ticket->TimeWorked ) {
+my $show_time_worked = $Ticket->CurrentUserCanSeeTime;
+if ( $show_time_worked && $Ticket->TimeWorked ) {
     my $time_worked_attr = $Ticket->FirstAttribute('TimeWorked');
 
     if ($time_worked_attr) {

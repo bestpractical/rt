@@ -3026,6 +3026,19 @@ sub Forward {
     return ( $ret, $self->loc('Message recorded') );
 }
 
+=head2 CurrentUserCanSeeTime
+
+Returns true if the current user can see time worked, estimated, left
+
+=cut
+
+sub CurrentUserCanSeeTime {
+    my $self = shift;
+
+    return $self->CurrentUser->Privileged ||
+           !RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
+}
+
 1;
 
 =head1 AUTHOR
