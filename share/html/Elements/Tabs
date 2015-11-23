@@ -298,10 +298,13 @@ my $build_admin_menu = sub {
                 $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Queue=" . $id);
 
                 my $cfs = $queue->child( 'custom-fields' => title => loc('Custom Fields') );
-                my $ticket_cfs = $cfs->child( 'tickets' => title => loc('Tickets'),
+                $cfs->child( 'queues' => title => loc('Queues'),
+                    path => '/Admin/Queues/CustomFields.html?id=' . $id );
+
+                $cfs->child( 'tickets' => title => loc('Tickets'),
                     path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket&id=' . $id );
 
-                my $txn_cfs = $cfs->child( 'transactions' => title => loc('Transactions'),
+                $cfs->child( 'transactions' => title => loc('Transactions'),
                     path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction&id='.$id );
 
                 $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
