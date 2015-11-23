@@ -54,14 +54,16 @@
 my $Object = RT::Queue->new( $session{'CurrentUser'} );
 
 $Object->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
-my $FriendlySubTypes =
+my $LookupType = "RT::Queue";
+$LookupType .= "-$SubType"
+    if length $SubType;
+my $FriendlyLookupType =
   RT::CustomField->new( $session{'CurrentUser'} )
-  ->FriendlyLookupType( $Object->CustomFieldLookupType );
-
-my $title = loc( 'Custom Fields for queue [_1]', $Object->Name );
+  ->FriendlyLookupType( $LookupType );
+my $title = loc( 'Custom Fields for [_1] for queue [_2]', $FriendlyLookupType, $Object->Name );
 
 </%INIT>
 <%ARGS>
 $id => undef
-$SubType => 'RT::Queue-RT::Ticket'
+$SubType => ''
 </%ARGS>
