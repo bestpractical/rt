@@ -1159,7 +1159,7 @@ vice versa.
 
 sub DateTimeObj {
     my $self = shift;
-    my %args = ( 
+    my %args = (
         Timezone => '',
         @_,
     );
@@ -1179,8 +1179,25 @@ sub DateTimeObj {
         second     => $sec,
         nanosecond => 0,
     );
+}
 
-    return $dt;
+=head3 Strftime FORMAT, [Timezone => 'user']
+
+Stringify the RT::Date according to the specified format. See
+L<DateTime/strftime Patterns>.
+
+=cut
+
+sub Strftime {
+    my $self = shift;
+    my $format = shift;
+    my %args = (
+        Timezone => 'user',
+        @_,
+    );
+
+    my $dt = $self->DateTimeObj(%args);
+    return $dt->strftime($format);
 }
 
 RT::Base->_ImportOverlays();
