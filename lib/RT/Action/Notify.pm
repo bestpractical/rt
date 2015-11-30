@@ -99,7 +99,7 @@ sub SetRecipients {
             push ( @Cc, $ticket->QueueObj->Cc->MemberEmailAddresses  );
         }
         else {
-            push ( @Cc, $ticket->Cc->MemberEmailAddresses  );
+            push ( @To, $ticket->Cc->MemberEmailAddresses  );
             push ( @To, $ticket->QueueObj->Cc->MemberEmailAddresses  );
         }
     }
