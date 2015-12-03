@@ -677,16 +677,20 @@ sub SortEntries {
         my $order = $group_by->{'META'}{Sort} || 'label';
         my $method = $order =~ /label$/ ? 'LabelValue' : 'RawValue';
 
+        my $nv = $self->loc("(no value)");
+
         unless ($order =~ /^numeric/) {
             # Traverse the values being used for labels.
             # If they all look like numbers or undef, flag for a numeric sort.
             my $looks_like_number = 1;
             foreach my $item (@data){
                 my $label = $item->[0]->$method($group_by->{'NAME'});
+                next if $label eq $nv;
 
-                $looks_like_number = 0
-                    unless (not defined $label)
-                    or Scalar::Util::looks_like_number( $label );
+                unless ( Scalar::Util::looks_like_number($label) ) {
+                    $looks_like_number = 0;
+                    last;
+                }
             }
             $order = "numeric $order" if $looks_like_number;
         }
@@ -696,7 +700,6 @@ sub SortEntries {
             $method = 'LabelValue';
         }
         elsif ( $order eq 'numeric label' ) {
-            my $nv = $self->loc("(no value)");
             # Sort the (no value) elements first, by comparing for them
             # first, and falling back to a numeric sort on all other
             # values.
