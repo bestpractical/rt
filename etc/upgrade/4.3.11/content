@@ -3,7 +3,7 @@ use warnings;
 
 our @Initial = (
     sub {
-        $RT::Logger->info("Going to migrate dashboard subscriptions");
+        $RT::Logger->debug("Going to migrate dashboard subscriptions");
 
         my $attrs = RT::Attributes->new( RT->SystemUser );
         $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
