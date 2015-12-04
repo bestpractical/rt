@@ -353,7 +353,8 @@ sub action_insert {
     my %args = @_;
     unless ($RAN_INIT) {
         $RT::Handle = RT::Handle->new;
-        my $has_custom_roles = grep { lc($_) eq 'customroles' } $RT::Handle->_TableNames(get_admin_dbh());
+        my $dbh = get_admin_dbh();
+        my $has_custom_roles = grep { lc($_) eq 'customroles' } $RT::Handle->_TableNames($dbh);
         RT::Init(SkipCustomRoles => !$has_custom_roles);
         $RAN_INIT++;
     }

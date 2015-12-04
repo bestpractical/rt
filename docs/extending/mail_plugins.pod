@@ -7,10 +7,10 @@ plug-in mechanism in the RT configuration.
 
 You can set the array C<@MailPlugins> to be a list of plugins. For
 example, to allow the mailgate to specify a 'take' action, you can use
-the bundled L<RT::Interface::Email::Actions::Take>:
+the bundled L<RT::Interface::Email::Action::Take>:
 
     Set( @MailPlugins,
-        "Actions::Take",
+        "Action::Take",
     );
 
 Anonymous subroutine references found in C<@MailPlugins> are treated
@@ -24,14 +24,14 @@ default:
 
 =over
 
-=item L<RT::Interface::Email::Actions::Take>
+=item L<RT::Interface::Email::Action::Take>
 
 Allows the mailgate to specify C<--action take-comment>, for instance,
 which would take the ticket before commenting.  This action is somewhat
 "unsafe," which is why it is not enabled by default.  It can also often
 be accomplished via a scrip instead.
 
-=item L<RT::Interface::Email::Actions::Resolve>
+=item L<RT::Interface::Email::Action::Resolve>
 
 Allows the mailgate to specify C<--action correspond-resolve>, for
 instance, which would correspond, then resolve the ticket.  This action

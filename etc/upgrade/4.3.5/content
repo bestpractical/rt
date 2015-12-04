@@ -11,7 +11,7 @@ our @Final = (
             for my $pane ( qw/body sidebar/ ) {
                 my @new;
                 for my $value ( @{$content->{$pane}} ) {
-                    if ( $value->{name} eq 'Quicksearch' && $value->{type} eq 'component' ) {
+                    if ( $value->{type} eq 'component' && $value->{name} eq 'Quicksearch' ) {
                         push @new, { %$value, name => 'QueueList' };
                         $changed = 1;
                     }
@@ -37,7 +37,7 @@ our @Final = (
             for my $pane ( qw/body sidebar/ ) {
                 my @new;
                 for my $value ( @{$content->{Panes}{$pane}} ) {
-                    if ( $value->{component} eq 'Quicksearch' ) {
+                    if ( $value->{portlet_type} eq 'component' && $value->{component} eq 'Quicksearch' ) {
                         push @new,
                           {
                             %$value,

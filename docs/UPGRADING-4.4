@@ -14,23 +14,29 @@ extension writers.
 
 =item *
 
-As of 4.4, RT now natively supports external authentication systems like
+RT now natively supports external authentication systems like
 LDAP and custom database setups. For new users wishing to use this
 functionality, see the L<RT::Authen::ExternalAuth::LDAP> or
 L<RT::Authen::ExternalAuth::DBI> documentation.
 
-For upgrading users of the
+Users of the existing
 L<RT::Authen::ExternalAuth|https://metacpan.org/pod/RT::Authen::ExternalAuth>
-extension, remove C<RT::Authen::ExternalAuth> from your plugins line,
-and add C<Set($ExternalAuth, 1);> in your F<RT_SiteConfig.pm> file.
+extension should remove C<RT::Authen::ExternalAuth> from the plugins list,
+and add C<Set($ExternalAuth, 1);> to the F<RT_SiteConfig.pm> file. Please
+also remove F<local/plugins/RT-Authen-ExternalAuth> from your RT
+installation.
 
 =item *
 
-As of 4.4, the
 L<RT::Extension::LDAPImport|https://metacpan.org/pod/RT::Extension::LDAPImport>
-functionality has been moved to core RT. The F<rtldapimport> script has
-been renamed to F<sbin/rt-ldapimport>. Be sure to update cron entries
-that refer to the old location and name of this utility.
+has been moved into core RT.
+
+Users of the existing LDAPImport extension should remove
+C<RT::Extension::LDAPImport> from the plugins list. Please adjust any
+cronjobs or external scripts which invoke
+F<local/plugins/RT-Extension-LDAPImport/bin/rtldapimport> to instead
+invoke F<sbin/rt-ldapimport>. Please also remove
+F<local/plugins/RT-Extension-LDAPImport> from your RT installation.
 
 =item *
 
@@ -44,7 +50,57 @@ Users who are currently using the
 L<RT::Extension::Assets|https://bestpractical.com/assets/> extension
 should remove C<RT::Extension::Assets> from the plugin list and run the
 F<etc/upgrade/upgrade-assets> utility after completing all the other
-upgrade steps from the F<README>.
+upgrade steps from the F<README>. Please also remove
+F<local/plugins/RT-Extension-Assets> from your RT installation.
+
+=item *
+
+SLA tracking is in core now, so C<SLA> became a core field. Please see the SLA
+section in F<RT_Config.pm> as well as F<docs/customizing/sla.pod>.
+
+Users who are currently using
+L<RT::Extension::SLA|https://metacpan.org/pod/RT::Extension::SLA> should
+remove C<RT::Extension::SLA> from the plugin list, and run
+F<etc/upgrade/upgrade-sla>. Please also remove
+F<local/plugins/RT-Extension-SLA> from your RT installation. Note that with
+core SLA, all queues share the same set of levels defined in
+C<%ServiceAgreements>.
+
+=item *
+
+RT can now natively store attachments outside the database, either on disk, in
+Dropbox, or on Amazon S3. For more information see L<RT::ExternalStorage> and
+C<%ExternalStorage> in F<RT_Config.pm>.
+
+Users who are currently using
+L<RT::Extension::ExternalStorage|https://metacpan.org/pod/RT::Extension::ExternalStorage>
+should remove it from the plugin list. Please adjust any cronjobs or external
+scripts which invoke
+F<local/plugins/RT-Extension-ExternalStorage/bin/extract-attachments>
+to instead invoke F<sbin/rt-externalize-attachments>. Please also remove
+F<local/plugins/RT-Extension-ExternalStorage> from your RT installation.
+
+=item *
+
+RT now has the functionality from L<RT::Extension::ParentTimeWorked> built in.
+When a child ticket's TimeWorked field is updated, its parent ticket's
+TimeWorked field will also be incremented.
+
+It also has built-in functionality for recording time worked per user.
+When a ticket's TimeWorked field is updated, the time will be attributed
+to the currently logged in user.
+
+Both of these functions are enabled via scrips. New installs will have these
+scrips by default. Upgrades will get them too, but set as disabled so they
+don't interfere with your existing configuration. If you would like to enable
+either of these functions, enable the 'On TimeWorked Change Update User
+TimeWorked' and/or 'On TimeWorked Change Update Parent TimeWorked' scrips. New
+deployments have these scrips enabled by default.
+
+Users who are currently using
+L<RT::Extension::ParentTimeWorked|https://metacpan.org/pod/RT::Extension::ParentTimeWorked>
+should remove it from the plugin list. Please also remove
+F<local/plugins/RT-Extension-ParentTimeWorked> from your RT installation.
 
 =item *
 
@@ -75,16 +131,6 @@ fields.
 Homepage component "Quicksearch" has been renamed to "QueueList" to reflect
 what it actually is. Please update C<$HomepageComponents> accordingly if you
 customized it in F<RT_SiteConfig.pm>.
-
-=item *
-
-SLA tracking is in core now, so C<SLA> became a core field. if you installed
-C<RT::Extension::SLA> before, you need to remove it from your plugins, adjust
-configs accordingly and run F<etc/upgrade/upgrade-sla>. See also the SLA
-section in F<RT_Config.pm>.
-
-Note that with core SLA, all queues share the same set of levels
-defined in C<%ServiceAgreements>.
 
 =item *
 
@@ -215,23 +261,6 @@ customizable C<EntryHint> field.
 
 =item *
 
-We now have the functionality from L<RT::Extension::ParentTimeWorked> built in.
-When a child ticket's TimeWorked field is updated, its parent ticket's
-TimeWorked field will also be incremented.
-
-It also has built-in functionality for recording time worked per user.
-When a ticket's TimeWorked field is updated, the time will be attributed
-to the currently logged in user.
-
-Both of these functions are enabled via scrips. New installs will have these
-scrips by default. Upgrades will get them too, but set as disabled so they
-don't interfere with your existing configuration. If you would like to enable
-either of these functions, enable the 'On TimeWorked Change Update User
-TimeWorked' and/or 'On TimeWorked Change Update Parent TimeWorked' scrips. New
-deployments have these scrips enabled by default.
-
-=item *
-
 RT now has support for custom roles, along the lines of Requestor, Owner, Cc,
 and AdminCc. You can select whether a custom role may have only a single member
 or multiple members (though you cannot change the role's arity after it's been
@@ -253,17 +282,6 @@ mail but you can set them as To or Bcc by using a new slash syntax:
 
 Custom role members can be added at the queue level (for multi-member roles) as
 well as on individual tickets (for both single-member and multi-member roles).
-
-=item *
-
-RT can now natively store attachments outside the database, either on disk, in
-Dropbox, or on Amazon S3. If you had previously been using
-L<RT::Extension::ExternalStorage> you may remove it from C<@Plugins>. You'll
-need to adjust any cronjobs or external scripts which invoke
-F</opt/rt4/local/plugins/RT-Extension-ExternalStorage/bin/extract-attachments>
-to instead invoke F</opt/rt4/sbin/rt-externalize-attachments>. For more
-information see L<RT::ExternalStorage> and C<%ExternalStorage> in
-F<RT_Config.pm>.
 
 =item *
 

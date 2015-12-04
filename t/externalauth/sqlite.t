@@ -54,7 +54,7 @@ RT->Config->Set(
             'attr_map'        => {
                 'Name'           => 'username',
                 'EmailAddress'   => 'email',
-                'ExternalAuthId' => 'username',
+#                'ExternalAuthId' => 'username',
             }
         },
     }
@@ -111,5 +111,7 @@ diag "test with user and pass in URL";
 }
 
 $m->get_warnings;
+
+undef $m;
 
 done_testing;

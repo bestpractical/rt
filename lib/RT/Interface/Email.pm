@@ -83,8 +83,8 @@ Takes parameters:
 
 A C<-> separated list of actions to run.  Standard actions, as detailed
 in L<bin/rt-mailgate>, are C<comment> and C<correspond>.  The
-L<RT::Interface::Email::Actions::Take> and
-L<RT::Interface::Email::Actions::Resolve> plugins can be added to
+L<RT::Interface::Email::Action::Take> and
+L<RT::Interface::Email::Action::Resolve> plugins can be added to
 L<RT_Config/@MailPlugins> to provide C<take> and C<resolve> actions,
 respectively.
 

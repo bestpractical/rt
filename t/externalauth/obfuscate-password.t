@@ -3,6 +3,10 @@ use warnings;
 
 use RT::Test tests => undef;
 
+eval { require RT::Authen::ExternalAuth; 1; } or do {
+    plan skip_all => 'Unable to test without Net::LDAP';
+};
+
 RT->Config->Set(
     ExternalSettings => {
         'My_LDAP' => {
@@ -11,7 +15,7 @@ RT->Config->Set(
             pass => 'sekrit',
         },
         'My_DBI' => {
-            type => 'dbi',
+            type => 'db',
             user => 'external_db_user',
             pass => 'nottelling',
         },

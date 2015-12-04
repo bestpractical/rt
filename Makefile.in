@@ -147,6 +147,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-externalize-attachments \
 				rt-fulltext-indexer \
 				rt-importer \
+				rt-ldapimport \
 				rt-preferences-viewer \
 				rt-serializer \
 				rt-server \

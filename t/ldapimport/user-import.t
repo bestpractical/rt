@@ -32,11 +32,11 @@ for ( 1 .. 13 ) {
     $ldap->add( $dn, attr => [%$entry] );
 }
 $ldap->add(
-    "uid=42,ou=foo,dc=bestpractical,dc=com",
+    "uid=9000,ou=foo,dc=bestpractical,dc=com",
     attr => [
         cn   => "Numeric user",
         mail => "numeric\@invalid.tld",
-        uid  => 42,
+        uid  => 9000,
         objectclass => 'User',
     ],
 );
@@ -49,8 +49,6 @@ RT->Config->Set('LDAPMapping',
                     RealName     => 'cn'});
 RT->Config->Set('LDAPBase','ou=foo,dc=bestpractical,dc=com');
 RT->Config->Set('LDAPFilter','(objectClass=User)');
-
-$importer->screendebug(1) if ($ENV{TEST_VERBOSE});
 
 # check that we don't import
 ok($importer->import_users());
@@ -77,9 +75,9 @@ for my $entry (@ldap_entries) {
 my $user = RT::User->new($RT::SystemUser);
 $user->LoadByCols( EmailAddress => "numeric\@invalid.tld" );
 ok(!$user->Id);
-$user->LoadByCols( Name => 42 );
+$user->LoadByCols( Name => 9000 );
 ok(!$user->Id);
-$user->Load( 42 );
+$user->Load( 9000 );
 ok(!$user->Id);
 
 # can't unbind earlier or the server will die
