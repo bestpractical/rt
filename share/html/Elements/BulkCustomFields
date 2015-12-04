@@ -87,7 +87,11 @@
 % # Pass datemanip format to prevent another tz date conversion
 <td><& /Elements/EditCustomFieldDateTime, @add, Default => undef, Format => 'datemanip' &></td>
 <td><& /Elements/EditCustomFieldDateTime, @del, Default => undef, Format => 'datemanip' &><br />
+% } elsif ($cf->Type eq 'Autocomplete') {
+<td><& /Elements/EditCustomFieldAutocomplete, @add &></td>
+<td><& /Elements/EditCustomFieldAutocomplete, @del &><br />
 % } else {
+    <td colspan="2"><em><&|/l&>(Unsupported custom field type)</&></em></td>
 %   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
 %   next
 % }
