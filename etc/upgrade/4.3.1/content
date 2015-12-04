@@ -9,7 +9,11 @@ our @Initial = (
         $cfs->Limit( FIELD => 'EntryHint', VALUE => 'NULL', OPERATOR => 'IS' );
         while ( my $cf = $cfs->Next ) {
             my ($ret, $msg) = $cf->SetEntryHint($cf->FriendlyType);
-            RT->Logger->warning("Update Custom Field EntryHint for CF." . $cf->Id . " $msg");
+            if ($ret) {
+                RT->Logger->debug("Update Custom Field EntryHint for CF." . $cf->Id . " $msg");
+            } else {
+                RT->Logger->error("Failed to update Custom Field EntryHint for CF." . $cf->Id . " $msg");
+            }
         }
         return 1;
     },
