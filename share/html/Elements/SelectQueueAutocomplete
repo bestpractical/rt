@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,15 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" name="CreateTicketInQueue" id="CreateTicketInQueue" \
-% $m->callback(CallbackName => 'InFormElement');
->
-% my $button_start = '<input type="submit" class="button" value="';
-% my $button_end = '" />';
-% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue') );
-<&|/l_unsafe, $button_start, $button_end, $queue_selector &>[_1]New ticket in[_2]&nbsp;[_3]</&>
-% $m->callback(CallbackName => 'BeforeFormEnd');
-</form>
-<%ARGS>
-$SendTo => '/Ticket/Create.html',
-</%ARGS>
+<%args>
+$Name            => 'Queue'
+$Default         => 0
+$Class           => 'select-queue field'
+$Placeholder     => ''
+
+$ShowAllQueues   => 1
+$CheckQueueRight => 'CreateTicket'
+$AutoSubmit      => 0
+$Return          => 'Name'
+</%args>
+<%init>
+my $DefaultQueue = RT::Queue->new($session{'CurrentUser'});
+$DefaultQueue->Load( $Default );
+
+undef $CheckQueueRight if $ShowAllQueues;
+</%init>
+<input name="<% $Name %>"
+       size="25"
+       value="<% $DefaultQueue->id ? $DefaultQueue->Name : "" %>"
+       class="<% $Class %>"
+       data-autocomplete="Queues"
+       placeholder="<% $Placeholder %>"
+       data-autocomplete-checkright="<% $CheckQueueRight %>"
+       data-autocomplete-return="<% $Return %>"
+       <% $AutoSubmit ? 'data-autocomplete-autosubmit=1' : '' %>
+/>

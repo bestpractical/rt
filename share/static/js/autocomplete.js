@@ -5,7 +5,8 @@ window.RT.Autocomplete.bind = function(from) {
     var cssClassMap = {
         Users: 'user',
         Groups: 'group',
-        Tickets: 'tickets'
+        Tickets: 'tickets',
+        Queues: 'queues'
     };
 
     jQuery("input[data-autocomplete]", from).each(function(){
@@ -13,7 +14,7 @@ window.RT.Autocomplete.bind = function(from) {
         var what  = input.attr("data-autocomplete");
         var wants = input.attr("data-autocomplete-return");
 
-        if (!what || !what.match(/^(Users|Groups|Tickets)$/)) // Did you update cssClassMap above?
+        if (!what || !what.match(/^(Users|Groups|Tickets|Queues)$/)) // Did you update cssClassMap above?
             return;
 
         // Don't re-bind the autocompleter
@@ -27,6 +28,11 @@ window.RT.Autocomplete.bind = function(from) {
 
         if ( wants ) {
             queryargs.push("return=" + wants);
+        }
+
+        if (what == 'Queues') {
+            options.minLength = 2;
+            options.delay = 2;
         }
 
         if (input.is('[data-autocomplete-privileged]')) {
@@ -65,9 +71,20 @@ window.RT.Autocomplete.bind = function(from) {
                 terms.push(''); // add trailing delimeter so user can input another value directly
                 this.value = terms.join(what == 'Tickets' ? ' ' : ", ");
                 jQuery(this).change();
+
                 return false;
             }
         }
+
+        if (input.attr("data-autocomplete-autosubmit")) {
+            options.select = function( event, ui ) {
+                jQuery(event.target).val(ui.item.value);
+                jQuery(event.target).closest("form").submit();
+            };
+        }
+
+        var checkRight = input.attr("data-autocomplete-checkright");
+        if (checkRight) queryargs.push("right=" + checkRight);
 
         var exclude = input.attr('data-autocomplete-exclude');
         if (exclude) {

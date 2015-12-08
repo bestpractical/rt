@@ -67,7 +67,6 @@
     top: 6.05em;
     right: 0em;
     left: auto;
-    z-index: 9995;
     font-size: 0.9em;
 }
 
@@ -162,9 +161,13 @@
     -webkit-border-radius:  0 0 0 5px;
 }
 
-#topactions input[type="search"] {
+#topactions input.field {
     border-radius: 3px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+}
+
+#topactions input.select-queue {
+    border: none;
 }
 

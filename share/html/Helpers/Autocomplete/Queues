@@ -45,15 +45,42 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" name="CreateTicketInQueue" id="CreateTicketInQueue" \
-% $m->callback(CallbackName => 'InFormElement');
->
-% my $button_start = '<input type="submit" class="button" value="';
-% my $button_end = '" />';
-% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue') );
-<&|/l_unsafe, $button_start, $button_end, $queue_selector &>[_1]New ticket in[_2]&nbsp;[_3]</&>
-% $m->callback(CallbackName => 'BeforeFormEnd');
-</form>
+% $r->content_type('application/json');
+<% JSON( \@suggestions ) |n %>
+% $m->abort;
 <%ARGS>
-$SendTo => '/Ticket/Create.html',
+$term       => undef
+$max        => 10
+$op         => 'STARTSWITH'
+$right      => undef
+$return     => 'Name';
 </%ARGS>
+<%INIT>
+# Only allow certain return fields
+$return = 'Name'
+    unless $return =~ /^(?:id|Name)$/;
+
+$m->abort unless defined $return
+             and defined $term
+             and length $term;
+
+# Sanity check the operator
+$op = 'STARTSWITH' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
+my $queues = RT::Queues->new( $session{CurrentUser} );
+$queues->RowsPerPage( $max );
+$queues->Limit(
+    FIELD           => 'Name',
+    OPERATOR        => $op,
+    VALUE           => $term,
+    ENTRYAGGREGATOR => 'OR',
+    CASESENSITIVE   => 0,
+);
+
+my @suggestions;
+while (my $q = $queues->Next) {
+    next if $right and not $q->CurrentUserHasRight($right);
+    my $value = $q->$return;
+    push @suggestions, { label => $q->Name, value => $value };
+}
+</%INIT>
