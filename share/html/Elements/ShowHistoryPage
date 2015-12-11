@@ -119,7 +119,7 @@ while ( my $Transaction = $Transactions->Next ) {
     # HideTimeWorkedForUnprivilegedUsers is set.
     $skip = 1 if $Object->isa("RT::Ticket") and
                  not $Object->CurrentUserCanSeeTime and
-                 ($Transaction->Field || '') =~ /^(?:TimeEstimated|Worked|TimeLeft)$/;
+                 ($Transaction->Field || '') =~ /^Time(?:Estimated|Worked|Left)$/;
 
     $m->callback(
         %ARGS,
