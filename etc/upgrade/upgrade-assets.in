@@ -63,7 +63,7 @@ my $dbh = $RT::Handle->dbh;
 
 my $found_assets_tables = {};
 foreach my $name ( $RT::Handle->_TableNames ) {
-    next unless grep $name eq $_, qw(RTxAssets RTxCatalogs);
+    next unless grep lc($name) eq $_, qw(rtxassets rtxcatalogs);
     $found_assets_tables->{lc $name}++;
 }
 
