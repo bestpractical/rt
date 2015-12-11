@@ -377,6 +377,7 @@ Pod::Simple 3.24
 my %AVOID = (
     'DBD::Oracle' => [qw(1.23)],
     'Devel::StackTrace' => [qw(1.28 1.29)],
+    'DateTime::Locale' => [qw(1.00 1.01)]
 );
 
 if ($args{'download'}) {
