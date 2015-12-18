@@ -65,6 +65,7 @@
 % $m->callback( %ARGS );
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
 
+% if ($Object->isa('RT::Ticket')) {
   <tr>
     <td colspan=2>
       <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
@@ -83,6 +84,7 @@
       </form>
     </td>
   </tr>
+% }
 </table>
 <%INIT>
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
