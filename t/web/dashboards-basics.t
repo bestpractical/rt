@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 122;
+use RT::Test tests => 105;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -149,37 +149,6 @@ $m->content_contains("50 newest unowned tickets");
 $m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
     'only dashboard queries show up' );
 $m->content_contains("dashboard test", "ticket subject");
-
-$m->get_ok("/Dashboards/Subscription.html?id=$id");
-$m->form_name('SubscribeDashboard');
-$m->click_button(name => 'Save');
-$m->content_contains("Permission Denied");
-$m->warning_like(qr/Unable to subscribe to dashboard.*Permission Denied/, "got a permission denied warning when trying to subscribe to a dashboard");
-
-$user_obj->Attributes->RedoSearch;
-is($user_obj->Attributes->Named('Subscription'), 0, "no subscriptions");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard', Object => $RT::System);
-
-$m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->follow_link_ok({text => "Subscription"});
-$m->content_contains("Subscribe to dashboard different dashboard");
-$m->content_contains("Unowned Tickets");
-$m->content_contains("My Tickets");
-$m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
-    'only dashboard queries show up' );
-
-$m->form_name('SubscribeDashboard');
-$m->click_button(name => 'Save');
-$m->content_lacks("Permission Denied");
-$m->content_contains("Subscribed to dashboard different dashboard");
-
-$user_obj->Attributes->RedoSearch;
-is($user_obj->Attributes->Named('Subscription'), 1, "we have a subscription");
-
-$m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->follow_link_ok({text => "Subscription"});
-$m->content_contains("Modify the subscription to dashboard different dashboard");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
 $m->content_contains("Permission Denied", "unable to delete dashboard because we lack DeleteOwnDashboard");

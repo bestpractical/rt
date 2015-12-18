@@ -1,0 +1,226 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$UserField      => 'Name'
+$UserOp         => '='
+$UserString     => undef
+$PrivilegedOnly => undef
+
+$GroupField     => 'Name'
+$GroupOp        => '='
+$GroupString    => undef
+
+$Recipients => undef
+$IsFirstSubscription => undef
+</%ARGS>
+
+<%INIT>
+my ($recipients_users, $recipients_groups);
+my ($Users, $Groups);
+
+if ($Recipients) {
+    $recipients_users = $Recipients->{Users};
+    $recipients_groups = $Recipients->{Groups};
+}
+
+if ($UserString) {
+    $Users = RT::Users->new($session{'CurrentUser'});
+    $Users->Limit(FIELD => $UserField, VALUE => $UserString, OPERATOR => $UserOp, CASESENSITIVE => 0);
+    $Users->LimitToPrivileged if $PrivilegedOnly;
+
+    my $excluded_users = [ $session{'CurrentUser'}->id ];
+    push @$excluded_users, @{ $recipients_users || [] };
+    $Users->Limit(FIELD => 'id', VALUE => $excluded_users, OPERATOR => 'NOT IN');
+}
+
+if ($GroupString) {
+    $Groups = RT::Groups->new($session{'CurrentUser'});
+    $Groups->LimitToUserDefinedGroups;
+    $Groups->Limit(FIELD => $GroupField, VALUE => $GroupString, OPERATOR => $GroupOp, CASESENSITIVE => 0);
+    $Groups->Limit(FIELD => 'id', VALUE => $recipients_groups, OPERATOR => 'NOT IN') if @{ $recipients_groups || [] };
+}
+</%INIT>
+
+<table>
+<tr>
+<td>
+
+<table width="100%">
+<tr>
+<td valign="top">
+<&|/l&>Find people whose</&><br />
+% if ($UserString) {
+<& /Elements/SelectUsers, UserString => $UserString, UserField => $UserField, UserOp => $UserOp &>
+% } else {
+<& /Elements/SelectUsers &>
+% }
+<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+
+<br />
+
+<&|/l&>Find groups whose</&><br />
+% if ($GroupString) {
+<& /Elements/SelectGroups, GroupString => $GroupString, GroupField => $GroupField, GroupOp => $GroupOp &>
+% } else {
+<& /Elements/SelectGroups &>
+% }
+<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+</td>
+</tr>
+</table>
+
+<br/>
+<&|/l&>Add New Recipients</&>:
+<table>
+
+% if ( $Users && $Users->Count ) {
+<tr><td></td><td>
+<&|/l&>User</&>
+</tr></td>
+% while ( my $u = $Users->Next ) {
+<tr><td>
+<input type="checkbox" class="checkbox" name="Dashboard-Subscription-Users-<%$u->id%>" value="1" />
+</td><td>
+<input type="hidden" name="Dashboard-Subscription-Users-<%$u->id%>" value="0" />
+<& '/Elements/ShowUser', User => $u, style=>'verbose' &>
+</td></tr>
+% }
+% }
+
+% if ( $Groups && $Groups->Count ) {
+<tr><td></td><td>
+<&|/l&>Group</&>
+</tr></td>
+% while ( my $g = $Groups->Next ) {
+<tr><td>
+<input type="checkbox" class="checkbox" name="Dashboard-Subscription-Groups-<%$g->id%>" value="1" />
+</td><td>
+<input type="hidden" name="Dashboard-Subscription-Groups-<%$g->id%>" value="0" />
+<%$g->Name%> (<%$g->Description%>)
+</td></tr>
+% }
+% }
+
+<tr><td></td><td>
+<&|/l&>Email</&>
+</tr></td>
+
+% for my $i (1 .. 3) {
+<tr><td></td><td>
+<& /Elements/EmailInput, Name => 'Dashboard-Subscription-Email-' . $i, Size => '20' &>
+</td></tr>
+% }
+
+</table>
+
+</td>
+<td class="current-recipients">
+
+<&|/l&>Current Recipients</&>:
+
+<ul>
+% my $current_user_id = $session{CurrentUser}->id;
+% my $current_user_subscribed = $recipients_users && grep { $_ == $current_user_id } @$recipients_users;
+<li>
+<input type="checkbox" class="checkbox" name="Dashboard-Subscription-Users-<%$current_user_id%>" value="1" <% $current_user_subscribed || $IsFirstSubscription ? 'checked' : '' %> />
+<input type="hidden" name="Dashboard-Subscription-Users-<%$current_user_id%>" value="0" />
+% if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
+%      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $current_user_id %>">
+<& /Elements/ShowUser, User => $session{CurrentUser} &></a>
+% } else {
+<& /Elements/ShowUser, User => $session{CurrentUser} &>
+% }
+<& /Elements/ShowUserEmailFrequency, User => $session{CurrentUser} &>
+</li>
+
+% for my $user_id (@{ $recipients_users || [] }) {
+% next if $user_id == $session{'CurrentUser'}->id; # already listed current user
+% my $user = RT::User->new( $session{'CurrentUser'} );
+% $user->Load($user_id);
+% next unless $user->id;
+<li>
+<input type="checkbox" class="checkbox" name="Dashboard-Subscription-Users-<%$user_id%>" value="1" checked />
+<input type="hidden" name="Dashboard-Subscription-Users-<%$user_id%>" value="0" />
+% if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
+%      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $user_id %>">
+<& /Elements/ShowUser, User => $user &></a>
+% } else {
+<& /Elements/ShowUser, User => $user &>
+% }
+<& /Elements/ShowUserEmailFrequency, User => $user &>
+</li>
+% }
+
+% for my $group_id (@{ $recipients_groups || [] }) {
+% my $group = RT::Group->new( $session{'CurrentUser'} );
+% $group->Load($group_id);
+% next unless $group->id;
+<li>
+<input type="checkbox" class="checkbox" name="Dashboard-Subscription-Groups-<%$group_id%>" value="1" checked />
+<input type="hidden" name="Dashboard-Subscription-Groups-<%$group_id%>" value="0" />
+
+
+% if ( $session{CurrentUser}->HasRight( Right => 'AdminGroup', Object => $RT::System ) &&
+%      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $group_id %>">
+<% $group->Name %>
+</a>
+% } else {
+<% $group->Name %>
+% }
+</li>
+% }
+
+</ul>
+
+</td>
+</tr>
+</table>
+
