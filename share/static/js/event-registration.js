@@ -67,6 +67,7 @@ jQuery(function() {
 
         // Synchronize the <select> we just generated
         var selected = jQuery("option[selected]", this).parent().attr("label");
+        if (selected === undefined) selected = "";
         jQuery('option[value="' + selected + '"]', groups).attr("selected", "selected");
 
         // Wire it all up
