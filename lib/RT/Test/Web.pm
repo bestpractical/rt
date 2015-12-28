@@ -447,7 +447,7 @@ for my $method_name (qw/
         my $ok = $self->$super_method(@_);
         if (!$ok) {
             my $dir = RT::Test->temp_directory;
-            my ($name) = $self->uri =~ m{/([^/]+)$};
+            my ($name) = $self->uri->path =~ m{/([^/]+)$};
             $name ||= 'index.html';
 
             my $file = $dir . '/' . RT::Test->builder->current_test . '-' . $name;
