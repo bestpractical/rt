@@ -56,6 +56,9 @@ use base qw(HTML::Mason::Request::PSGI);
 use Params::Validate qw(:all);
 
 my %deprecated = (
+    '/Admin/CustomFields/Modify.html' => {
+        'AfterUpdateCustomFieldValue' => { Remove => '4.6' },
+    },
 );
 
 sub new {
