@@ -45,14 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+%if (RT->Config->Get("AutocompleteQueues", $session{'CurrentUser'})) {
+<& SelectQueueAutocomplete, %ARGS, &>
+%} else {
 <& SelectObject,
     %ARGS,
-    ObjectType  => "Queue",
-    CheckRight  => $CheckQueueRight,
-    ShowAll     => $ShowAllQueues,
+    ObjectType       => "Queue",
+    CheckRight       => $CheckQueueRight,
+    ShowAll          => $ShowAllQueues,
     CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
     &>
+%}
 <%args>
 $CheckQueueRight => 'CreateTicket'
-$ShowAllQueues => 1
+$ShowAllQueues   => 1
+$AutoSubmit      => 0
 </%args>
+<%init>
+$ARGS{OnChange} = 'jQuery(this).closest("form").submit();' if $AutoSubmit;
+</%init>

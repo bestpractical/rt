@@ -119,3 +119,10 @@ div.cke {
     text-decoration: underline !important;
     color: white !important;
 }
+
+/* dashboard subscription */
+
+td.current-recipients {
+    vertical-align: top;
+    padding-left: 50px;
+}

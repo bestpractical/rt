@@ -1612,6 +1612,16 @@ Set this to 1 to hide unset fields.
 
 Set($HideUnsetFieldsOnDisplay, 0);
 
+=item C<$HideTimeFieldsFromUnprivilegedUsers>
+
+This determines if we should hide Time Worked, Time Estimated, and
+Time Left for unprivileged users.
+Set this to 1 to hide those fields.
+
+=cut
+
+Set($HideTimeFieldsFromUnprivilegedUsers, 0);
+
 =back
 
 

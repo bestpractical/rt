@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2013 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,42 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%args>
+$Name            => 'Queue'
+$Default         => 0
+$Class           => 'select-queue field'
+$Placeholder     => ''
+
+$ShowAllQueues   => 1
+$CheckQueueRight => 'CreateTicket'
+$AutoSubmit      => 0
+$Return          => 'Name'
+</%args>
 <%init>
-my $Config = {};
-$Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
-  for qw(rtname WebPath MessageBoxRichText MessageBoxRichTextHeight);
+my $DefaultQueue = RT::Queue->new($session{'CurrentUser'});
+$DefaultQueue->Load( $Default );
 
-my $CurrentUser = {};
-if ($session{CurrentUser} and $session{CurrentUser}->id) {
-    $CurrentUser->{$_} = $session{CurrentUser}->$_
-      for qw(id Name EmailAddress RealName);
-
-    $CurrentUser->{Privileged} = $session{CurrentUser}->Privileged
-        ? JSON::true : JSON::false;
-
-    $Config->{WebHomePath} = RT->Config->Get("WebPath")
-        . (!$session{CurrentUser}->Privileged ? "/SelfService" : "");
-}
-
-my $Catalog = {
-    quote_in_filename => "Filenames with double quotes can not be uploaded.", #loc
-    attachment_warning_regex => "\\battach", #loc
-    shortcut_help_error => "Unable to open shortcut help. Reason:", #loc
-};
-$_ = loc($_) for values %$Catalog;
-
-$m->callback(
-    CallbackName    => "Data",
-    CurrentUser     => $CurrentUser,
-    Config          => $Config,
-    Catalog         => $Catalog,
-);
+undef $CheckQueueRight if $ShowAllQueues;
 </%init>
-<script>
-window.RT = {};
-RT.CurrentUser = <% JSON( $CurrentUser ) |n%>;
-RT.Config      = <% JSON( $Config      ) |n%>;
-
-RT.I18N = {};
-RT.I18N.Catalog = <% JSON( $Catalog ) |n %>;
-</script>
+<input name="<% $Name %>"
+       size="25"
+       value="<% $DefaultQueue->id ? $DefaultQueue->Name : "" %>"
+       class="<% $Class %>"
+       data-autocomplete="Queues"
+       placeholder="<% $Placeholder %>"
+       data-autocomplete-checkright="<% $CheckQueueRight %>"
+       data-autocomplete-return="<% $Return %>"
+       <% $AutoSubmit ? 'data-autocomplete-autosubmit=1' : '' %>
+/>

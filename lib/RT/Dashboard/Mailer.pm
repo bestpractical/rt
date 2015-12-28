@@ -61,6 +61,7 @@ use RT::Interface::Web;
 use File::Temp 'tempdir';
 use HTML::Scrubber;
 use URI::QueryParam;
+use List::MoreUtils 'uniq';
 
 sub MailDashboards {
     my $self = shift;
@@ -103,22 +104,53 @@ sub MailDashboards {
                 LocalTime    => [$hour, $dow, $dom],
             );
 
-            my $email = $subscription->SubValue('Recipient')
-                     || $user->EmailAddress;
+            my $recipients = $subscription->SubValue('Recipients');
+            my $recipients_users = $recipients->{Users};
+            my $recipients_groups = $recipients->{Groups};
 
-            eval {
-                $self->SendDashboard(
-                    %args,
-                    CurrentUser  => $currentuser,
-                    Email        => $email,
-                    Subscription => $subscription,
-                    From         => $from,
-                )
-            };
-            if ( $@ ) {
-                $RT::Logger->error("Caught exception: $@");
+            my @emails;
+
+            # add users' emails to email list
+            for my $user_id (@{ $recipients_users || [] }) {
+                my $user = RT::User->new(RT->SystemUser);
+                $user->Load($user_id);
+                next unless $user->id;
+
+                push @emails, $user->EmailAddress;
             }
-            else {
+
+            # add emails for every group's members
+            for my $group_id (@{ $recipients_groups || [] }) {
+                my $group = RT::Group->new(RT->SystemUser);
+                $group->Load($group_id);
+                next unless $group->id;
+
+                my $users = $group->UserMembersObj;
+                while (my $user = $users->Next) {
+                    push @emails, $user->EmailAddress;
+                }
+            }
+
+            my $email_success = 0;
+            for my $email (uniq @emails) {
+                eval {
+                    $self->SendDashboard(
+                        %args,
+                        CurrentUser  => $currentuser,
+                        Email        => $email,
+                        Subscription => $subscription,
+                        From         => $from,
+                    )
+                };
+                if ( $@ ) {
+                    $RT::Logger->error("Caught exception: $@");
+                }
+                else {
+                    $email_success = 1;
+                }
+            }
+
+            if ($email_success) {
                 my $counter = $subscription->SubValue('Counter') || 0;
                 $subscription->SetSubValues(Counter => $counter + 1)
                     unless $args{DryRun};

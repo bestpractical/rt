@@ -50,7 +50,7 @@
 >
 % my $button_start = '<input type="submit" class="button" value="';
 % my $button_end = '" />';
-% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()', SendTo => $SendTo );
+% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue') );
 <&|/l_unsafe, $button_start, $button_end, $queue_selector &>[_1]New ticket in[_2]&nbsp;[_3]</&>
 % $m->callback(CallbackName => 'BeforeFormEnd');
 </form>

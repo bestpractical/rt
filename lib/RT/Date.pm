@@ -818,6 +818,8 @@ sub LocalizedDateTime
                  @_,
                );
 
+    my $dt = $self->DateTimeObj;
+
     # Require valid names for the format methods
     my $date_format = $args{DateFormat} =~ /^\w+$/
                     ? $args{DateFormat} : 'date_format_full';
@@ -830,24 +832,6 @@ sub LocalizedDateTime
     $time_format = $formatter->$time_format;
     $date_format =~ s/EEEE/EEE/g if ( $args{'AbbrDay'} );
     $date_format =~ s/MMMM/MMM/g if ( $args{'AbbrMonth'} );
-
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-                            $self->Localtime($args{'Timezone'});
-    $mon++;
-    my $tz = $self->Timezone($args{'Timezone'});
-
-    # FIXME : another way to call this module without conflict with local
-    # DateTime method?
-    my $dt = DateTime::->new( locale => $formatter,
-                            time_zone => $tz,
-                            year => $year,
-                            month => $mon,
-                            day => $mday,
-                            hour => $hour,
-                            minute => $min,
-                            second => $sec,
-                            nanosecond => 0,
-                          );
 
     if ( $args{'Date'} && !$args{'Time'} ) {
         return $dt->format_cldr($date_format);
@@ -1219,6 +1203,58 @@ sub IsSet {
 
 }
 
+=head3 DateTimeObj [Timezone => 'utc']
+
+Returns an L<DateTime> object representing the same time as this RT::Date. The
+DateTime object's locale is set up to match the user's language.
+
+Modifying this DateTime object will not change the corresponding RT::Date, and
+vice versa.
+
+=cut
+
+sub DateTimeObj {
+    my $self = shift;
+    my %args = (
+        Timezone => '',
+        @_,
+    );
+
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime($args{'Timezone'});
+    $mon++;
+
+    return DateTime::->new(
+        locale     => $self->LocaleObj,
+        time_zone  => $self->Timezone($args{'Timezone'}),
+        year       => $year,
+        month      => $mon,
+        day        => $mday,
+        hour       => $hour,
+        minute     => $min,
+        second     => $sec,
+        nanosecond => 0,
+    );
+}
+
+=head3 Strftime FORMAT, [Timezone => 'user']
+
+Stringify the RT::Date according to the specified format. See
+L<DateTime/strftime Patterns>.
+
+=cut
+
+sub Strftime {
+    my $self = shift;
+    my $format = shift;
+    my %args = (
+        Timezone => 'user',
+        @_,
+    );
+
+    my $dt = $self->DateTimeObj(%args);
+    return $dt->strftime($format);
+}
 
 RT::Base->_ImportOverlays();
 

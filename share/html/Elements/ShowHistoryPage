@@ -115,6 +115,12 @@ while ( my $Transaction = $Transactions->Next ) {
                  and $Object->RoleGroup( $Transaction->Field )->SingleMemberRoleGroupColumn;
     }
 
+    # Skip Time Worked fields if user is unprivileged and
+    # HideTimeWorkedForUnprivilegedUsers is set.
+    $skip = 1 if $Object->isa("RT::Ticket") and
+                 not $Object->CurrentUserCanSeeTime and
+                 ($Transaction->Field || '') =~ /^Time(?:Estimated|Worked|Left)$/;
+
     $m->callback(
         %ARGS,
         Transaction   => $Transaction,
