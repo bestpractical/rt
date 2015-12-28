@@ -53,19 +53,18 @@
 <table>
 
 <tr>
-<th>&nbsp;</th>
 <th><&|/l&>Sort</&></th>
 <th><&|/l&>Name</&></th>
 <th><&|/l&>Description</&></th>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
 <th class="categoryheader"><&|/l&>Category</&></th>
 % }
+<th></th>
 </tr>
 
 % while ( my $value = $values->Next ) {
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-". $value->Id;
 <tr>
-<td><input type="checkbox" class="checkbox" name="Delete-<% $paramtag %>" /></td>
 <td><input type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->SortOrder %>" /></td>
 <td><input type="text" size="25" name="<% $paramtag %>-Name" value="<% $value->Name %>" /></td>
 <td><input type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description || '' %>" /></td>
@@ -80,12 +79,29 @@
 %   }
 </td>
 % }
+<td><input type="button" class="delete_custom_field_value" data-cfv-id="<% $value->id %>" value="<&|/l&>Delete</&>" onclick="delete_custom_field_value(<% $value->id %>)" /></td>
 % $m->callback(CallbackName => 'AfterCustomFieldValueInput', CustomFieldObj => $CustomField, CustomFieldValueObj => $value, ARGSRef => \%ARGS );
 </tr>
 % }
 
 </table>
-<i><&|/l&>(Check box to delete)</&></i>
+
+<script type="text/javascript">
+function delete_custom_field_value(value_id) {
+    jQuery.post('<% RT->Config->Get('WebPath') %>/Helpers/Admin/EditCustomFieldValue', {
+        action: 'delete',
+        cf_id: <% $CustomField->id %>,
+        value_id: value_id
+    }, function(data) {
+        if ( data.status != 0 ) {
+            jQuery('div.edit_custom_field_values').html(data.html);
+        }
+        else {
+            alert(data.message);
+        }
+    }, 'json')
+}
+</script>
 <%init>
 
 my $values = $CustomField->ValuesObj();

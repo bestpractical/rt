@@ -47,9 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header,
     Title => $title,
-    Focus => (($added_cfv or $ARGS{FocusAddValue})
-        ? "input[name=CustomField-$id-Value-new-Name]"
-        : undef),
     &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
@@ -177,15 +174,20 @@ jQuery( function() {
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
 <h2><&|/l&>Values</&></h2>
-<div>
+<div class="edit_custom_field_values">
 <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
-<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
 </div>
 % }
 
 <& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
 
 </form>
+
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
+<div class="add_custom_field_value">
+<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+</div>
+% }
 <%INIT>
 my ($title, @results, $added_cfv);
 
@@ -283,15 +285,8 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         push @results, $msg;
     }
 
-    my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
-    # Delete any fields that want to be deleted
-    foreach my $key ( keys %ARGS ) {
-        next unless $key =~ /^Delete-$paramtag-(\d+)$/;
-        my ($val, $msg) = $CustomFieldObj->DeleteValue( $1 );
-        push (@results, $msg);
-    }
-
     # Update any existing values
+    my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
         foreach my $attr (qw(Name Description SortOrder Category)) {
@@ -308,7 +303,12 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         $m->callback(CallbackName => 'AfterUpdateCustomFieldValue', CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $value, ARGSRef => \%ARGS );
     }
 
+}
+
+# for old tests only, users should use ajax calls and this should never be called in real usage.
+if ( $ARGS{'AddValue'} ) {
     # Add any new values
+    my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     if ( defined $ARGS{ $paramtag ."-new-Name" } && length $ARGS{ $paramtag ."-new-Name" } ) {
         my ($id, $msg) = $CustomFieldObj->AddValue(
             map { 
@@ -317,12 +317,6 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
                 $_ => $ARGS{ $paramtag ."-new-$_" } } grep { defined $ARGS{ $paramtag ."-new-$_" } } qw/ Name Description SortOrder Category/
         );
         push (@results, $msg);
-        $added_cfv = 1 if $id;
-
-        my $cfv = RT::CustomFieldValue->new( $session{CurrentUser} );
-        $cfv->Load($id);
-        $m->callback(CallbackName => 'AfterCreateCustomFieldValue',
-CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $cfv, ARGSRef => \%ARGS );
     }
 }
 
@@ -346,7 +340,7 @@ $id = $CustomFieldObj->id if $CustomFieldObj->id;
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions     => \@results,
-    Arguments   => { id => $id, FocusAddValue => ($added_cfv ? 1 : 0) },
+    Arguments   => { id => $id },
 ) if $CustomFieldObj->id;
 
 

@@ -47,8 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <h3><&|/l&>Add Value</&></h3>
 
+<form name="AddCustomFieldValue" action="Modify.html" method="post">
+<input type="hidden" class="hidden" name="id" value="<% $CustomField->id %>" />
 <table border="0">
-
 <tr>
 <th><&|/l&>Sort</&></th>
 <th><&|/l&>Name</&></th>
@@ -56,6 +57,7 @@
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
 <th class="categoryheader"><&|/l&>Category</&></th>
 % }
+<th></th>
 </tr>
 
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-new";
@@ -72,12 +74,39 @@
 %   }
 </td>
 % }
-
+<td><input type="submit" name="AddValue" value="<&|/l&>Add</&>" /></td>
 % $m->callback(CallbackName => 'AfterCustomFieldValueInput', CustomFieldObj => $CustomField, ARGSRef => \%ARGS );
 </tr>
 
 </table>
+</form>
 
+<script type="text/javascript">
+jQuery( function() {
+    jQuery('form[name=AddCustomFieldValue]').submit(function() {
+        jQuery.post('<% RT->Config->Get('WebPath') %>/Helpers/Admin/EditCustomFieldValue', {
+            action: 'add',
+            cf_id: <% $CustomField->id %>,
+            sort_order: jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-SortOrder]').val(),
+            name: jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-Name]').val(),
+            description: jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-Description]').val(),
+            category: jQuery('[name=CustomField-<% $CustomField->id %>-Value-new-Category]').val()
+        }, function(data) {
+            if ( data.status != 0 ) {
+                jQuery('div.edit_custom_field_values').html(data.html);
+                jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-SortOrder]').val(''),
+                jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-Name]').val('').focus(),
+                jQuery('input[name=CustomField-<% $CustomField->id %>-Value-new-Description]').val(''),
+                jQuery('[name=CustomField-<% $CustomField->id %>-Value-new-Category]').val('');
+            }
+            else {
+                alert(data.message);
+            }
+        }, 'json');
+        return false;
+    });
+});
+</script>
 <%init>
 my $BasedOnObj = $CustomField->BasedOnObj;
 my $Categories;
@@ -85,7 +114,6 @@ if ($BasedOnObj and $BasedOnObj->Id) {
     $Categories = $BasedOnObj->Values;
 }
 </%init>
-
 <%args>
 $CustomField => undef
 </%args>
