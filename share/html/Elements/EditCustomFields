@@ -51,7 +51,8 @@
 <<% $WRAP %> class="edit-custom-fields">
 % }
 % while ( my $CustomField = $CustomFields->Next ) {
-% next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
+% next unless $CustomField->CurrentUserHasRight('ModifyCustomField')
+%          || ($ForCreation && $CustomField->CurrentUserHasRight('SetInitialCustomField'));
 % my $Type = $CustomField->Type || 'Unknown';
 
   <<% $FIELD %> class="edit-custom-field cftype-<% $Type %>">
@@ -116,4 +117,5 @@ $Grouping     => undef
 $AsTable => 1
 $InTable => 0
 $ShowHints => 1
+$ForCreation => 0
 </%ARGS>

@@ -214,6 +214,7 @@ __PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'
 __PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc
 __PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc
 __PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc
+__PACKAGE__->AddRight( Staff   => SetInitialCustomField  => 'Add custom field values only at object creation time'); # loc
 
 =head1 NAME
 
@@ -1639,11 +1640,15 @@ sub AddValueForObject {
         Content      => undef,
         LargeContent => undef,
         ContentType  => undef,
+        ForCreation  => 0,
         @_
     );
     my $obj = $args{'Object'} or return ( 0, $self->loc('Invalid object') );
 
-    unless ( $self->CurrentUserHasRight('ModifyCustomField') ) {
+    unless (
+        $self->CurrentUserHasRight('ModifyCustomField') ||
+        ($args{ForCreation} && $self->CurrentUserHasRight('SetInitialCustomField'))
+    ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 

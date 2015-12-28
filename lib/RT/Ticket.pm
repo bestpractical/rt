@@ -502,6 +502,7 @@ sub Create {
                 ),
                 Field             => $cfid,
                 RecordTransaction => 0,
+                ForCreation       => 1,
             );
             push @non_fatal_errors, $msg unless $status;
         }
