@@ -61,6 +61,13 @@
     },
 );
 
+push @ACL,
+        {
+            Right       => 'ShowAssetsMenu',
+            GroupDomain => 'SystemInternal',
+            GroupType   => 'Privileged',
+        };
+
 push @ACL, map {
         {
             Right       => $_,
