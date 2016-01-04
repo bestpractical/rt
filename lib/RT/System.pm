@@ -88,6 +88,7 @@ __PACKAGE__->AddRight( Staff   => ModifySelf          => "Modify one's own RT ac
 __PACKAGE__->AddRight( Staff   => ShowArticlesMenu    => 'Show Articles menu'); # loc
 __PACKAGE__->AddRight( Admin   => ShowConfigTab       => 'Show Admin menu'); # loc
 __PACKAGE__->AddRight( Admin   => ShowApprovalsTab    => 'Show Approvals tab'); # loc
+__PACKAGE__->AddRight( Staff   => ShowAssetsMenu      => 'Show Assets menu'); # loc
 __PACKAGE__->AddRight( Staff   => ShowGlobalTemplates => 'Show global templates'); # loc
 __PACKAGE__->AddRight( General => LoadSavedSearch     => 'Allow loading of saved searches'); # loc
 __PACKAGE__->AddRight( General => CreateSavedSearch   => 'Allow creation of saved searches'); # loc
