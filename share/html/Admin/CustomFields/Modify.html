@@ -156,12 +156,13 @@
 <& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
 
 </form>
+% $m->callback(%ARGS, CallbackName => 'EndOfPage', CustomFieldObj => $CustomFieldObj);
 <%INIT>
 my ($title, @results, $added_cfv);
 
 my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
 
-$m->callback(CallbackName => 'Initial', Pattern => \$Pattern, ARGSRef => \%ARGS);
+$m->callback(CallbackName => 'Initial', Pattern => \$Pattern, Results => \@results, ARGSRef => \%ARGS);
 
 unless ( $id ) {
     $title = loc("Create a CustomField");
