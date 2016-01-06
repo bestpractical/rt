@@ -1047,17 +1047,17 @@ my $build_main_nav = sub {
         if ( $request_path =~ /Bulk/) {
             $page->child('search',
                 title => loc('Show Results'),
-                path => '/Asset/Search/?' . keys %search ? $query_string->(%search) : '',
+                path => '/Asset/Search/?' . (keys %search ? $query_string->(%search) : ''),
             );
         } else {
             $page->child('bulk',
                 title => loc('Bulk Update'),
-                path => '/Asset/Search/Bulk.html?' . keys %search ? $query_string->(%search) : '',
+                path => '/Asset/Search/Bulk.html?' . (keys %search ? $query_string->(%search) : ''),
             );
         }
         $page->child('csv',
             title => loc('Download Spreadsheet'),
-            path  => '/Asset/Search/Results.tsv?' . keys %search ? $query_string->(%search) : '',
+            path  => '/Asset/Search/Results.tsv?' . (keys %search ? $query_string->(%search) : ''),
         );
     } elsif ($request_path =~ m{^/Admin/Global/CustomFields/Catalog-Assets\.html$}) {
         my $page  = PageMenu();
