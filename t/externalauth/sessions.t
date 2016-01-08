@@ -115,7 +115,6 @@ sub setup_auth_source {
                 'attr_map'        => {
                     'Name'           => 'username',
                     'EmailAddress'   => 'email',
-#                    'ExternalAuthId' => 'username',
                 }
             },
         }
