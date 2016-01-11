@@ -77,7 +77,6 @@ foreach my $column (@Format) {
     }
 
     my $class = $column->{class} ? $m->interp->apply_escapes($column->{class}, 'h') : 'collection-as-table';
-    $m->out(qq{<td class="$class" });
 
     my %attrs;
     foreach my $attr (qw(style align)) {
@@ -130,6 +129,20 @@ foreach my $column (@Format) {
             Arguments => [$record, $i],
         );
     }
+
+    $m->callback(
+        CallbackName => 'EachField',
+        Record       => $record,
+        Format       => \@Format,
+        Column       => $column,
+        Classes      => \$class,
+        Align        => \$attrs{align},
+        Style        => \$attrs{style},
+        Colspan      => \$attrs{colspan},
+        Out          => \@out,
+    );
+
+    $m->out(qq{<td class="$class" });
 
     $m->out( $_ .'="'. $m->interp->apply_escapes( $attrs{$_} => 'h' ) .'"' )
         foreach grep $attrs{$_}, qw(align style colspan);
