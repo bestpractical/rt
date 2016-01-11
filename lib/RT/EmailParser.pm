@@ -642,7 +642,7 @@ sub RescueOutlook {
 
         # use the unencoded string
         my $content = $text_part->bodyhandle->as_string;
-        if ( $content =~ s/\n\n/\n/g ) {
+        if ( $content =~ s/\r?\n\r?\n/\n/g ) {
 
             # Outlook puts a space on extra newlines, remove it
             $content =~ s/\ +$//mg;
