@@ -56,8 +56,6 @@ use strict;
 use warnings;
 
 use Getopt::Long;
-use utf8;
-no utf8;
 
 my $opts = { };
 GetOptions( $opts,   "queue=s", "action=s", "url=s",
@@ -65,7 +63,6 @@ GetOptions( $opts,   "queue=s", "action=s", "url=s",
             "timeout=i", "verify-ssl!", "ca-file=s",
           );
 
-if ( !utf8::is_utf8( $opts->{"queue"} ) ) { utf8::decode( $opts->{"queue"} ); }
 my $gateway = RT::Client::MailGateway->new();
 
 $gateway->run($opts);
@@ -208,6 +205,10 @@ sub setup_session {
                                  $message->{'filename'}, '',
                                  'Content-Type' => 'application/octet-stream',
         ];
+    }
+    if (defined $post_params{queue} ) {
+        utf8::decode(  $post_params{queue} );
+        $post_params{queue} = HTML::Entities::encode_entities( $post_params{queue} );
     }
 
     return \%post_params;
