@@ -82,4 +82,10 @@ $MasonDataDir = '@MASON_DATA_PATH@';
 $MasonSessionDir = '@MASON_SESSION_PATH@';
 
 
+if ( my $override_file = $ENV{RT_PATHS_OVERRIDE} )
+{
+    require "$override_file" || die "Couldn't load paths override file: $@";
+}
+
+
 1;
