@@ -53,7 +53,7 @@
 % if ($m->{'rt_base_time'}) {
   <p id="time"><span><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></span></p>
 %}
-  <p id="bpscredits"><span><&|/l_unsafe,     '&#187;&#124;&#171;', $RT::VERSION, '2015', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&>
+  <p id="bpscredits"><span><&|/l_unsafe,     '&#187;&#124;&#171;', $RT::VERSION, '2016', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&>
 </span></p>
 % if (!$Menu) {
   <p id="legal"><&|/l_unsafe, '<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>' &>Distributed under [_1]version 2 of the GNU GPL[_2].</&><br /><&|/l_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>To inquire about support, training, custom development or licensing, please contact [_1].</&><br /></p>
