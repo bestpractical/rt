@@ -78,7 +78,8 @@ unless ($action =~ /^(?:Comment|Correspond)$/) {
 }
 
 my $text = $changes{Text};
-my @atts = @{ vsplit($changes{Attachment}) };
+my @atts = @{ vsplit($changes{Attachment}) }
+    if defined $changes{Attachment};
 
 if (!$changes{Text} && @atts == 0) {
     $e = 1;
@@ -117,12 +118,12 @@ unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
     goto OUTPUT;
 }
 
-my $cc = join ", ", @{ vsplit($changes{Cc}) };
-my $bcc = join ", ", @{ vsplit($changes{Bcc}) };
-my ($n, $s) = $ticket->$action(MIMEObj => $ent,
-                               CcMessageTo => $cc,
-                               BccMessageTo => $bcc,
-                               TimeTaken => $changes{TimeWorked} || 0);
+my $cc = join ", ", @{ vsplit($changes{Cc} || '') };
+my $bcc = join ", ", @{ vsplit($changes{Bcc} || '') };
+my ($n, $s, $txn) = $ticket->$action(MIMEObj => $ent,
+                                     CcMessageTo => $cc,
+                                     BccMessageTo => $bcc,
+                                     TimeTaken => $changes{TimeWorked} || 0);
 $c = "# ".$s;
 if ($changes{Status}) {
    my  ($status_n, $status_s) = $ticket->SetStatus($changes{'Status'} );   
