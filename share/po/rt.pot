@@ -9767,3 +9767,6 @@ msgstr ""
 msgid "your browser did not supply a Referrer header"
 msgstr ""
 
+#: share/html/Dashboards/Render.html:120
+msgid "%1 Dashboard"
+msgstr ""
