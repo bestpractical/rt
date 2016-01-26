@@ -980,6 +980,33 @@ sub load_or_create_custom_field {
     return $obj;
 }
 
+=head2 load_or_create_txn_custom_field
+
+=cut
+
+sub load_or_create_txn_custom_field {
+    my $self = shift;
+    my %args = ( Disabled => 0, @_ );
+    my $obj = RT::CustomField->new( RT->SystemUser );
+    if ( $args{'Name'} ) {
+        $obj->LoadByName(
+            Name       => $args{'Name'},
+            LookupType => RT::Transaction->CustomFieldLookupType,
+            ObjectId   => $args{'Queue'}->id,
+        );
+    } else {
+        die "Name is required";
+    }
+    unless ( $obj->id ) {
+        $args{'LookupType'} = 'RT::Queue-RT::Ticket-RT::Transaction';
+        my $queue = delete $args{'Queue'};
+        my ($val, $msg) = $obj->Create( %args );
+        $obj->AddToObject($queue);
+    }
+
+    return $obj;
+}
+
 sub last_ticket {
     my $self = shift;
     my $current = shift;
