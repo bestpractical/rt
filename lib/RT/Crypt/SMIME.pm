@@ -883,6 +883,7 @@ sub GetCertificateInfo {
             my $method = $type . "_" . $USER_MAP{$_};
             $data{$_} = $cert->$method if $cert->can($method);
         }
+        $data{String} = join(',',@{$cert->Issuer}) if ($type eq 'issuer');
         $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format
             if $data{EmailAddress};
         return \%data;
