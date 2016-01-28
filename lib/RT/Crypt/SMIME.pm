@@ -883,8 +883,18 @@ sub GetCertificateInfo {
             my $method = $type . "_" . $USER_MAP{$_};
             $data{$_} = $cert->$method if $cert->can($method);
         }
-        $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format
-            if $data{EmailAddress};
+        if ($type eq 'issuer') {
+            $data{String} = join(',',@{$cert->Issuer});
+        } elsif ($type eq 'subject') {
+            if (grep /rfc822name/i, @{$cert->SubjectAltName}) {
+                $data{String} = join( ',', map { s/rfc822name=//i; $_ } grep /rfc822name/i, @{$cert->SubjectAltName});
+            } elsif ($data{EmailAddress}) {
+                $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format;
+            } else {
+                $data{String} = join(',',@{$cert->Subject});
+            }
+        }
+
         return \%data;
     };
 
