@@ -176,6 +176,8 @@
 <input name="Recipient" id="Recipient" size="30" value="<%$fields{Recipient} ? $fields{Recipient} : ''%>" />
 <div class="hints"><% loc("Leave blank to send to your current email address ([_1])", $session{'CurrentUser'}->EmailAddress) %></div>
 </td></tr>
+% $m->callback( %ARGS, CallbackName => 'SubscriptionFormEnd', FieldsRef => \%fields,
+%     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard );
 </table>
 </&>
 </td>
@@ -216,6 +218,9 @@ my %fields = (
     Counter     => 0,
 );
 
+$m->callback( %ARGS, CallbackName => 'SubscriptionFields', FieldsRef => \%fields,
+     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard);
+
 # update any fields with the values from the subscription object
 if ($SubscriptionObj) {
     for my $field (keys %fields) {
@@ -230,6 +235,8 @@ for my $field (keys %fields) {
         if defined($ARGS{$field});
 }
 
+$m->callback( %ARGS, CallbackName => 'MassageSubscriptionFields', FieldsRef => \%fields,
+     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard);
 
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
