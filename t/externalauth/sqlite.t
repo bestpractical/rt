@@ -54,7 +54,6 @@ RT->Config->Set(
             'attr_map'        => {
                 'Name'           => 'username',
                 'EmailAddress'   => 'email',
-#                'ExternalAuthId' => 'username',
             }
         },
     }

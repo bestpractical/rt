@@ -94,7 +94,6 @@ Provides the LDAP implementation for L<RT::Authen::ExternalAuth>.
                 'EmailAddress' => 'mail',
                 'Organization' => 'physicalDeliveryOfficeName',
                 'RealName' => 'cn',
-                'ExternalAuthId' => 'sAMAccountName',
                 'Gecos' => 'sAMAccountName',
                 'WorkPhone' => 'telephoneNumber',
                 'Address1' => 'streetAddress',

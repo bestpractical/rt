@@ -100,7 +100,6 @@ Provides the database implementation for L<RT::Authen::ExternalAuth>.
             'attr_map' => {
                 'Name'           => 'username',
                 'EmailAddress'   => 'email',
-                'ExternalAuthId' => 'username',
                 'Gecos'          => 'userID',
             },
         },

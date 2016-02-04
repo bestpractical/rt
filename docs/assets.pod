@@ -54,7 +54,12 @@ add it to the catalogs you want or make it global.
 There are three rights controlling basic access to assets and two for
 catalogs.  Each right is grantable at the global level or individual catalog
 level, and grantable to system groups, asset roles, user groups, and individual
-users (just like ticket and queue rights).
+users (just like ticket and queue rights). Visibility of the Assets menu item
+itself is also controlled with a right.
+
+=head3 ShowAssetsMenu
+
+Control visibility of the Assets menu in RT.
 
 =head3 ShowAsset
 
