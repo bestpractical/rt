@@ -60,10 +60,14 @@
     </td>
   </tr>
 % } }
-</table>
-<table>
+
+% # Allow people to add more rows to the table
+% $m->callback( %ARGS );
+  <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
+
+% if ($Object->isa('RT::Ticket')) {
   <tr>
-    <td>
+    <td colspan=2>
       <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
         <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
         <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket">
@@ -80,9 +84,7 @@
       </form>
     </td>
   </tr>
-% # Allow people to add more rows to the table
-% $m->callback( %ARGS );
-  <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
+% }
 </table>
 <%INIT>
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);

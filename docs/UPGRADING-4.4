@@ -46,6 +46,12 @@ functionality. Assets documentation can be found at F<docs/assets.pod>.
 A tutorial on customizing your Assets install can be found at
 F<docs/customizing/assets/tutorial.pod>.
 
+To cleanly hide it from upgrading RT installs, the Assets menu is controlled
+by the right ShowAssetsMenu. This right is only grantable globally to groups
+or users. If you were previously using the Assets extension, you can grant the
+ShowAssetsMenu right to Privileged or another role or group to make the menu
+visible.
+
 Users who are currently using the
 L<RT::Extension::Assets|https://bestpractical.com/assets/> extension
 should remove C<RT::Extension::Assets> from the plugin list and run the
