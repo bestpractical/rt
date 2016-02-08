@@ -209,11 +209,15 @@ sub process {
         my $action_argument = ($i <= $#$actions_arg) ? $actions_arg->[$i] : undef;
         $i++;
 
+        # When running multiple actions, reload the template object each time
+        # to avoid re-using previous values for To, Cc, Bcc, etc.
+        my $action_template_obj = get_template( $ticket );
+
         # prepare our action
         my $action_obj = $action->new(
             TicketObj      => $ticket,
             TransactionObj => $transaction,
-            TemplateObj    => $template_obj,
+            TemplateObj    => $action_template_obj,
             Argument       => $action_argument,
             ScripObj       => $void_scrip,
             ScripActionObj => $void_scrip_action,
