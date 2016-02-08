@@ -1,0 +1,111 @@
+#!/usr/bin/perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use 5.10.1;
+use strict;
+use warnings;
+
+use lib "local/lib";
+use lib "lib";
+
+use RT::Interface::CLI qw(Init);
+Init();
+
+my $dbh = RT->DatabaseHandle->dbh;
+my $ids = $dbh->selectcol_arrayref(
+    "SELECT t1.id FROM Tickets t1, Tickets t2 WHERE t1.id = t2.EffectiveId"
+    ." AND t2.id != t2.EffectiveId AND t2.EffectiveId = t1.id"
+);
+foreach my $id ( @$ids ) {
+    my $t = RT::Ticket->new( RT->SystemUser );
+    $t->Load( $id );
+    unless ( $t->id ) {
+        $RT::Logger->error("Couldn't load ticket #$id");
+        next;
+    }
+
+    fix_time_worked_history($t);
+}
+
+sub fix_time_worked_history {
+    my ($t) = (@_);
+
+    my $history = 0;
+    my $candidate = undef;
+    my @delete = ();
+    my $delete_time = 0;
+
+    my $txns = $t->Transactions;
+    while ( my $txn = $txns->Next ) {
+        if ( $txn->Type =~ /^(Create|Correspond|Comment)$/ ) {
+            $history += $txn->TimeTaken || 0;
+        } elsif ( $txn->Type eq 'Set' && $txn->Field eq 'TimeWorked' ) {
+            $history += $txn->NewValue - $txn->OldValue;
+            $candidate = $txn;
+        } elsif ( $candidate && ($txn->Field||'') eq 'MergedInto' ) {
+            if ($candidate->Creator eq $txn->Creator ) {
+                push @delete, $candidate;
+                $delete_time += $candidate->NewValue - $candidate->OldValue;
+            }
+
+            $candidate = undef;
+        }
+    }
+
+    if ( $history == $t->TimeWorked ) {
+        $RT::Logger->info("Ticket #". $t->id . " has TimeWorked matching history. Skipping");
+    } elsif ( $history - $delete_time == $t->TimeWorked ) {
+        $RT::Logger->warn( "Ticket #". $t->id ." has TimeWorked mismatch. Deleting transactions" );
+        foreach my $dtxn ( @delete ) {
+            my ($status, $msg) = $dtxn->Delete;
+            $RT::Logger->error("Couldn't delete transaction: $msg") unless $status;
+        }
+    } else {
+        $RT::Logger->error( "Ticket #". $t->id ." has TimeWorked mismatch, but we couldn't find correct transactions to delete. Skipping" );
+    }
+}

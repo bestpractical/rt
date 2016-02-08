@@ -1,0 +1,231 @@
+#!/usr/bin/perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+# fix lib paths, some may be relative
+BEGIN { # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ("lib", "local/lib");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+# Read in the options
+my %opts;
+use Getopt::Long;
+GetOptions( \%opts,
+    "help|h", "verbose|v",
+);
+
+if ($opts{'help'}) {
+    require Pod::Usage;
+    print Pod::Usage::pod2usage(-verbose => 2);
+    exit;
+}
+
+use RT -init;
+
+# Ensure we only run one of these processes at once
+use Fcntl ':flock';
+exit unless flock main::DATA, LOCK_EX | LOCK_NB;
+
+use Digest::SHA qw//;
+
+my $ExternalStorage = RT->System->ExternalStorage;
+
+die "\%ExternalStorage is not configured\n"
+    unless $ExternalStorage;
+
+if ($ExternalStorage->can('IsWriteable')) {
+    my ($ok, $msg) = $ExternalStorage->IsWriteable;
+    die $msg if !$ok;
+}
+
+# pull out the previous high-water mark for each object type
+my $last = RT->System->FirstAttribute("ExternalStorage");
+$last = $last ? $last->Content : {};
+
+for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
+    my $column = $class eq 'RT::Attachments' ? "Content" : "LargeContent";
+    my $id = $last->{$class} || 0;
+
+    while (1) {
+        my $attach = $class->new($RT::SystemUser);
+        $attach->Limit(
+            FIELD    => 'id',
+            OPERATOR => '>',
+            VALUE    => $id,
+        );
+        $attach->Limit(
+            FIELD           => 'ContentEncoding',
+            OPERATOR        => '!=',
+            VALUE           => 'external',
+            ENTRYAGGREGATOR => 'AND',
+        );
+
+        if ($class eq "RT::ObjectCustomFieldValues") {
+            $attach->{'find_disabled_rows'} = 1;
+        }
+
+        $attach->RowsPerPage(100);
+        while ( my $a = $attach->Next ) {
+            $id = $a->id;
+
+            my ($ok, $why) = $a->ShouldStoreExternally;
+            if (!$ok) {
+                if ($opts{verbose}) {
+                    RT->Logger->info("Skipping $class $id because: $why");
+                }
+                next;
+            }
+
+            # Explicitly get bytes (not characters, which ->$column would do)
+            my $content = $a->_DecodeLOB(
+                "application/octet-stream",
+                $a->ContentEncoding,
+                $a->_Value( $column, decode_utf8 => 0),
+            );
+
+            # Attempt to write that out
+            if ($opts{verbose}) {
+                RT->Logger->info("Storing $class $id");
+            }
+
+            my ($key, $msg) = Store( $content );
+            unless ($key) {
+                RT->Logger->error("Failed to store $class $id: $msg");
+                exit 1;
+            }
+
+            $RT::Handle->dbh->begin_work;
+
+            (my $status, $msg ) = $a->__Set(
+                Field => $column, Value => $key
+            );
+            unless ($status) {
+                RT->Logger->error("Failed to update $column of $class $id: $msg");
+                exit 2;
+            }
+
+            ( $status, $msg ) = $a->__Set(
+                Field => 'ContentEncoding', Value => 'external',
+            );
+            unless ($status) {
+                RT->Logger->error("Failed to update ContentEncoding of $class $id: $msg");
+                exit 2;
+            }
+
+            $RT::Handle->dbh->commit;
+
+            if ($opts{verbose}) {
+                RT->Logger->info("Stored $class $id as $key");
+            }
+        }
+
+        last unless $attach->Count;
+    }
+    $last->{$class} = $id;
+}
+
+# update high-water mark for each object type
+RT->System->SetAttribute( Name => "ExternalStorage", Content => $last );
+
+sub Store {
+    my $content = shift;
+
+    my $key = Digest::SHA::sha256_hex( $content );
+    my ($ok, $msg) = $ExternalStorage->Store( $key => $content );
+    return ($ok, $msg) unless defined $ok;
+
+    return ($key);
+}
+
+=head1 NAME
+
+rt-externalize-attachments - Move attachments from database to external storage
+
+=head1 SYNOPSIS
+
+    rt-externalize-attachments [options]
+
+=head1 OPTIONS
+
+This tool supports a few options. Most are for debugging.
+
+=over 8
+
+=item -h
+
+=item --help
+
+Display this documentation
+
+=item -v
+
+=item --verbose
+
+Log a message (at level "info") for each attachment, both before its
+upload begins and after it completes.
+
+=back
+
+=cut
+
+# don't remove; for locking (see call to flock above)
+__DATA__

@@ -1,0 +1,101 @@
+#!/usr/bin/perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use 5.10.1;
+use strict;
+use warnings;
+
+use lib "local/lib";
+use lib "lib";
+
+use RT::Interface::CLI qw(Init);
+Init();
+
+my $db_name = RT->Config->Get('DatabaseName');
+my $db_type = RT->Config->Get('DatabaseType');
+
+my $dbh = $RT::Handle->dbh;
+
+my $found_assets_tables = {};
+foreach my $name ( $RT::Handle->_TableNames ) {
+    next unless grep lc($name) eq $_, qw(rtxassets rtxcatalogs);
+    $found_assets_tables->{lc $name}++;
+}
+
+unless ( $found_assets_tables->{rtxassets} && $found_assets_tables->{rtxcatalogs} ) {
+    warn "Could not find RT::Extension::Assets data to migrate";
+    exit;
+}
+
+{ # port over Catalogs
+    my @columns = qw(id Name Lifecycle Description Disabled Creator Created LastUpdatedBy LastUpdated);
+    copy_tables('RTxCatalogs','Catalogs',\@columns);
+
+}
+
+
+{ # port over Assets
+    my @columns = qw(id Name Catalog Status Description Creator Created LastUpdatedBy LastUpdated);
+    copy_tables('RTxAssets','Assets',\@columns);
+}
+
+sub copy_tables {
+    my ($source, $dest, $columns) = @_;
+    my $column_list = join(', ',@$columns);
+    my $sql;
+    # SQLite: http://www.sqlite.org/lang_insert.html
+    if ( $db_type eq 'mysql' || $db_type eq 'SQLite' ) {
+        $sql = "insert into $dest ($column_list) select $column_list from $source";
+    }
+    # Oracle: http://www.adp-gmbh.ch/ora/sql/insert/select_and_subquery.html
+    elsif ( $db_type eq 'Pg' || $db_type eq 'Oracle' ) {
+        $sql = "insert into $dest ($column_list) (select $column_list from $source)";
+    }
+    $RT::Logger->debug($sql);
+    $dbh->do($sql);
+}

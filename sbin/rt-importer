@@ -1,0 +1,283 @@
+#!/usr/bin/perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+# fix lib paths, some may be relative
+BEGIN {
+    require File::Spec;
+    my @libs = ("lib", "local/lib");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            unless ($bin_path) {
+                if ( File::Spec->file_name_is_absolute(__FILE__) ) {
+                    $bin_path = ( File::Spec->splitpath(__FILE__) )[1];
+                }
+                else {
+                    require FindBin;
+                    no warnings "once";
+                    $bin_path = $FindBin::Bin;
+                }
+            }
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+use RT;
+RT::LoadConfig();
+RT::Init();
+
+@RT::Record::ISA = qw( DBIx::SearchBuilder::Record RT::Base );
+
+use RT::Migrate;
+use RT::Migrate::Importer::File;
+use Getopt::Long;
+use Pod::Usage qw//;
+use Time::HiRes qw//;
+
+my %OPT = (resume => 1);
+GetOptions(
+    \%OPT,
+    "help|?",
+    "quiet|q!",
+    "list|l!",
+
+    "resume!",
+    "originalid|i=s",
+
+    "ask",
+    "ignore-errors",
+
+    "dump=s@",
+) or Pod::Usage::pod2usage();
+
+Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
+
+Pod::Usage::pod2usage() unless @ARGV == 1;
+my ($dir) = @ARGV;
+$dir =~ s|/$||;
+die "No such directory $dir\n" unless -d $dir;
+die "$dir doesn't appear to contain serialized data\n"
+    unless -f "$dir/001.dat";
+
+if ($OPT{dump}) {
+    die "Dumping objects only works in conjunction with --list\n"
+        unless $OPT{list};
+
+    $OPT{dump} = [ split /,/, join(',', @{$OPT{dump}}) ];
+}
+
+my $error_handler;
+if ($OPT{ask}) {
+    die "Interactive mode (--ask) doesn't work when STDERR and STDIN aren't terminals.\n"
+        unless -t STDERR and -t STDIN;
+
+    $error_handler = sub {
+        my $importer = shift;
+        local $| = 1;
+        print STDERR "\n", @_, "\n";
+        print STDERR "Hit any key to abort import, or type 'ignore' to continue anyway.\n";
+        print STDERR "Continuing may leave you with a corrupt database. > ";
+        chomp( my $resp = <STDIN> );
+        return lc($resp) eq 'ignore';
+    };
+}
+elsif ($OPT{'ignore-errors'}) {
+    $error_handler = sub {
+        my $importer = shift;
+        warn "Ignoring error: ", @_;
+        return 1;
+    };
+}
+
+my $import = RT::Migrate::Importer::File->new(
+    Directory   => $dir,
+    OriginalId  => $OPT{originalid},
+    DumpObjects => $OPT{dump},
+    Resume      => $OPT{resume},
+    HandleError => $error_handler,
+);
+
+if ($import->Metadata and -t STDOUT and not $OPT{quiet}) {
+    $import->Progress(
+        RT::Migrate::progress(
+            counts => sub { $import->ObjectCount },
+            max    => $import->Metadata->{ObjectCount},
+        )
+    );
+}
+
+my $log = RT::Migrate::setup_logging( $dir => 'importer.log' );
+print "Logging warnings and errors to $log\n" if $log;
+
+my %counts;
+if ($OPT{list}) {
+    %counts = $import->List;
+
+    my $org = $import->Organization;
+    print "=========== Dump of $org ===========\n\n";
+} else {
+    %counts = $import->Import;
+
+    my $org = $import->Organization;
+    print "========== Import of $org ==========\n\n";
+}
+
+print "Total object counts:\n";
+for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
+    printf "%8d %s\n", $counts{$_}, $_;
+}
+
+my @missing = $import->Missing;
+if (@missing) {
+    warn "The following UIDs were expected but never observed:\n";
+    warn "    $_\n" for @missing;
+}
+
+my @invalid = $import->Invalid;
+if (@invalid) {
+    warn "The following UIDs (serialized => imported) referred to objects missing from the original database:\n";
+    for my $info (@invalid) {
+        my $uid = delete $info->{uid};
+        my $obj = $import->LookupObj($uid);
+        warn sprintf "    %s => %s (%s)\n",
+                $uid,
+                ($obj && $obj->Id ? $obj->UID : '(not imported)'),
+                join(", ", map  { "$_ => $info->{$_}" }
+                           grep { defined $info->{$_} }
+                                sort keys %$info);
+    }
+}
+
+if ($log and -s $log) {
+    print STDERR "\n! Some warnings or errors occurred during import."
+                ."\n! Please see $log for details.\n\n";
+}
+
+exit @missing;
+
+=head1 NAME
+
+rt-importer - Import a serialized RT database on top of the current one
+
+=head1 SYNOPSIS
+
+    rt-importer path/to/export/directory
+
+This script is used to import the contents of a dump created by
+C<rt-serializer>.  It will create all of the objects in the dump in the
+current database; this may include users, queues, and tickets.
+
+It is possible to stop the import process with ^C; it can be later
+resumed by re-running the importer.
+
+=head2 OPTIONS
+
+=over
+
+=item B<--list>
+
+Print a summary of the data contained in the dump.
+
+=item B<--originalid> I<cfname>
+
+Places the original ticket organization and ID into a global custom
+field with the given name.  If no global ticket custom field with that
+name is found in the current database, it will create one.
+
+=item B<--ask>
+
+Prompt for action when an error occurs inserting a record into the
+database.  This can often happen when importing data from very old RTs
+where some attachments (usually spam) contain invalid UTF-8.
+
+The importer will pause and ask if you want to ignore the error and
+continue on or abort (potentially to restart later).  Ignoring errors
+will result in missing records in the database, which may cause database
+integrity problems later.  If you ignored any errors, you should run
+C<rt-validator> after import.
+
+=item B<--ignore-errors>
+
+Ignore all record creation errors and continue on when importing.  This
+is equivalent to running with C<--ask> and manually typing "ignore" at
+every prompt.  You should always run C<rt-validator> after importing
+with errors ignored.
+
+B<This option can be dangerous and leave you with a broken RT!>
+
+=item B<--dump> I<class>[,I<class>]
+
+Prints L<Data::Dumper> representations of the objects of type I<class> in the
+serialized data.  This is mostly useful for debugging.
+
+Works only in conjunction with C<--list>.
+
+=back
+
+
+=head1 CLONED DATA
+
+Some dumps may have been taken as complete clones of the RT system,
+which are only suitable for inserting into a schema with no data in it.
+You can setup the required database state for the receiving RT instance
+by running:
+
+    /opt/rt4/sbin/rt-setup-database --action create,schema,acl --prompt-for-dba-password
+
+The normal C<make initdb> step will B<not> work because it also inserts
+core system data.
+
+
+=cut
