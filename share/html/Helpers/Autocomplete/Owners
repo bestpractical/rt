@@ -97,6 +97,9 @@ foreach my $spec (map { [split /\-/, $_, 2] } split /\|/, $limit) {
         Return => $return,
     );
 
+    $m->callback( CallbackName => 'ModifyOwnerAutocompleteSearch',
+        ARGSRef => \%ARGS, Users => \$Users );
+
     $Users->WhoHaveRight(
         Right               => 'OwnTicket',
         Object              => $object,
