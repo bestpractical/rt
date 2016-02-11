@@ -158,7 +158,11 @@ foreach my $k (keys %changes) {
             delete $changes{$k};
             next;
         }
-        $v{"CustomField-".$cf->Id()} = delete $changes{$k};
+        if ($cf->SingleValue) {
+            $v{"CustomField-".$cf->Id()} = delete $changes{$k};
+        } else {
+            $v{"CustomField-".$cf->Id()} = vsplit(delete $changes{$k});
+        }
     }
 }
 $txn->UpdateCustomFields(%v);
