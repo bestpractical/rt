@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use RT::Interface::REST;
 
-use RT::Test tests => 29;
+use RT::Test tests => 37;
 use Test::Warn;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -14,6 +14,14 @@ ok($queue->Id, "loaded the General queue");
     my $cf = RT::Test->load_or_create_txn_custom_field(
         Name  => 'txn_cf',
         Type  => 'FreeformSingle',
+        Queue => $queue,
+    );
+    ok($cf->Id, "created a CustomField: txn_cf");
+}
+{
+    my $cf = RT::Test->load_or_create_txn_custom_field(
+        Name  => 'txn_cf_multi',
+        Type  => 'FreeformMultiple',
         Queue => $queue,
     );
     ok($cf->Id, "created a CustomField: txn_cf");
@@ -149,3 +157,40 @@ $txn = $ticket->Transactions->Last;
 like($msg->Content, qr/Test with other queue CF/, "Transaction contains expected content - other queue CF");
 
 warning_like {$txn->FirstCustomFieldValue('txn_other_queue_cf')} qr"Couldn't load custom field by 'txn_other_queue_cf' identifier", "CF isn't set - other queue CF";
+
+my $with_valid_cf_multi = $text . "\nText: Test with multi CF\nCF.{txn_cf_multi}: Value 1, Value 2";
+
+$m->post(
+    "$baseurl/REST/1.0/ticket/$id/comment",
+    [
+        user => 'root',
+        pass => 'password',
+        content => $with_valid_cf_multi,
+    ],
+    Content_Type => 'form-data'
+);
+like($m->content, qr{Correspondence added}, "correspondance added - valid CF multi");
+unlike($m->content, qr{Invalid custom field name}, "no invalid custom field - valid CF multi");
+
+$ticket = RT::Ticket->new(RT->SystemUser);
+$ticket->Load($id);
+is($ticket->Id, $id, "loaded the REST-created ticket - valid CF multi");
+is($ticket->Subject, "REST interface", "subject successfully set - valid CF multi");
+
+$txn = $ticket->Transactions->Last;
+($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
+like($msg->Content, qr/Test with multi CF/, "Transaction contains expected content - valid CF multi");
+
+is($txn->FirstCustomFieldValue('txn_cf_multi'), "Value 1", "CF successfully set - valid CF multi");
+
+$m->post(
+    "$baseurl/REST/1.0/ticket/$id/history",
+    [
+        user   => 'root',
+        pass   => 'password',
+        format => 'l',
+    ],
+    Content_Type => 'form-data'
+);
+
+like($m->content, qr/CF.{txn_cf_multi}: Value 1,Value 2/, "Ticket history contains expected content - valid CF multi");
