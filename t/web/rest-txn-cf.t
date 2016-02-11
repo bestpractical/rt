@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use RT::Interface::REST;
 
-use RT::Test tests => 28;
+use RT::Test tests => 29;
 use Test::Warn;
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -90,6 +90,17 @@ like($msg->Content, qr/Test with valid CF/, "Transaction contains expected conte
 
 is($txn->FirstCustomFieldValue('txn_cf'), "valid cf", "CF successfully set - valid CF");
 
+$m->post(
+    "$baseurl/REST/1.0/ticket/$id/history",
+    [
+        user   => 'root',
+        pass   => 'password',
+        format => 'l',
+    ],
+    Content_Type => 'form-data'
+);
+
+like($m->content, qr/CF.{txn_cf}: valid cf/, "Ticket history contains expected content - valid CF");
 
 my $with_nonexistant_cf = $text . "\nText: Test with invalid CF\nCF.{other_cf}: invalid cf";
 
