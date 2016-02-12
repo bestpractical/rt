@@ -55,6 +55,12 @@ use HTML::Mason::PSGIHandler;
 use base qw(HTML::Mason::Request::PSGI);
 use Params::Validate qw(:all);
 
+my %deprecated = (
+    '/Admin/CustomFields/Modify.html' => {
+        'AfterUpdateCustomFieldValue' => { Remove => '4.6' },
+    },
+);
+
 sub new {
     my $class = shift;
     $class->valid_params( %{ $class->valid_params },cgi_request => { type => OBJECT, optional => 1 } );
@@ -131,6 +137,15 @@ sub callback {
         }
 
         $cache{ $CacheKey } = $callbacks unless RT->Config->Get('DevelMode');
+
+        if (@{ $callbacks } && $deprecated{$page}{$name}) {
+            RT->Deprecated(
+                Message => "The callback $name on page $page is deprecated",
+                Detail  => "Callback list:\n" . join("\n", @{ $callbacks }),
+                Stack   => 0,
+                %{ $deprecated{$page}{$name} },
+            );
+        }
     }
 
     my @rv;
