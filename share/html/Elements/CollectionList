@@ -159,6 +159,8 @@ while ( my $record = $Collection->Next ) {
         Warning   => $warning,
         Classes   => $Classes,
     );
+
+    $$HasResults++ if $HasResults;
 }
 
 $m->out('</table>');
@@ -202,4 +204,5 @@ $ShowNavigation => 1
 $ShowHeader     => 1
 $ShowEmpty      => 0
 $Query => 0
+$HasResults     => undef
 </%ARGS>
