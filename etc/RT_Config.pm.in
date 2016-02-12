@@ -1872,6 +1872,13 @@ When set to C<always>, history is loaded before showing the page.  This ensures
 history is always available immediately, but at the expense of longer page load
 times.  This behaviour was the default in RT 4.0.
 
+=item C<scroll>
+
+When set to C<scroll>, history is loaded via javascript after the rest of the
+page has been loaded, as you scroll down the page. Ten transactions are loaded
+initially, and then more are loaded ten at a time. This can dramatically speed
+up initial page load times on very long tickets.  
+
 =back
 
 =cut
