@@ -50,7 +50,6 @@ $Dashboard
 $Portlet
 $Rows => 20
 $Preview => 0
-$HasResults
 </%args>
 <%init>
 my @for_showsearch = $Dashboard->ShowSearchName($Portlet);
@@ -58,8 +57,7 @@ my @for_showsearch = $Dashboard->ShowSearchName($Portlet);
 
 <& /Elements/ShowSearch,
     @for_showsearch,
-    Override      => { Rows => $Rows },
-    hideable      => $Preview,
+    Override       => { Rows => $Rows },
+    hideable       => $Preview,
     ShowCustomize => $Preview,
-    HasResults    => $HasResults,
 &>

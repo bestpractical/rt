@@ -173,12 +173,6 @@
 %   }
 </select>
 </td></tr>
-
-<tr><td align="right"><input type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" value="1" <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %> /></td>
-<td><label for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label><br />
-<input type="hidden"class="hidden" name="SuppressIfEmpty-Magic" value=1 />
-</td></tr>
-
 </table>
 </&>
 
@@ -234,7 +228,6 @@ my %fields = (
     Recipients  => { Users => [], Groups => [] },
     Fow         => 1,
     Counter     => 0,
-    SuppressIfEmpty => 0,
 );
 
 # update any fields with the values from the subscription object

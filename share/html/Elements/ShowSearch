@@ -51,7 +51,7 @@
     titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize,
     hideable => $hideable &>
-<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets', HasResults => $HasResults &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets' &>
 </&>
 <%init>
 my $search;
@@ -135,6 +135,5 @@ $SavedSearch    => undef
 %Override       => ()
 $IgnoreMissing  => undef
 $hideable       => 1
-$ShowCustomize  => 1
-$HasResults     => undef
+$ShowCustomize => 1
 </%ARGS>

@@ -122,13 +122,12 @@ my $title = loc '[_1] Dashboard', $Dashboard->Name;
 my $show_cb = sub {
     my $pane = shift;
     $m->comp('Elements/ShowPortlet/dashboard',
-        Portlet    => $Dashboard,
-        Rows       => $rows,
-        Preview    => $Preview,
-        Dashboard  => $Dashboard,
-        Pane       => $pane,
-        Depth      => 0,
-        HasResults => $HasResults,
+        Portlet   => $Dashboard,
+        Rows      => $rows,
+        Preview   => $Preview,
+        Dashboard => $Dashboard,
+        Pane      => $pane,
+        Depth     => 0,
     );
 };
 
@@ -141,6 +140,5 @@ my $Refresh = $Preview
 <%ARGS>
 $id => undef
 $Preview => 1
-$HasResults => undef
 </%ARGS>
 
