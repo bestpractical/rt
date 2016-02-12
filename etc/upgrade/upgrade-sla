@@ -1,0 +1,142 @@
+#!/usr/bin/perl
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use 5.10.1;
+use strict;
+use warnings;
+
+use lib "local/lib";
+use lib "lib";
+
+use RT::Interface::CLI qw(Init);
+Init();
+
+my $tickets = RT::Tickets->new(RT->SystemUser);
+$tickets->FromSQL('CF.SLA IS NOT NULL AND SLA IS NULL');
+while ( my $ticket = $tickets->Next ) {
+    my ($ret, $msg) = $ticket->SetSLA($ticket->FirstCustomFieldValue('SLA'));
+    unless ( $ret ) {
+        RT->Logger->error("Failed to upgrade SLA for ticket #" . $ticket->id . ": $msg");
+    }
+}
+
+my $queues = RT::Queues->new(RT->SystemUser);
+$queues->UnLimit;
+
+my %cfs_to_disable;
+while ( my $queue = $queues->Next ) {
+    my $cfs = $queue->TicketCustomFields;
+    $cfs->Limit(FIELD => 'Name', VALUE => 'SLA', CASESENSITIVE => 0 );
+    if ( my $cf = $cfs->First ) {
+        $cfs_to_disable{$cf->id} ||= $cf;
+    }
+    elsif ( !$queue->SLADisabled ) {
+        my ($ret, $msg) = $queue->SetSLADisabled(1);
+        if ( $ret ) {
+            RT->Logger->info("Disabled SLA for queue #" . $queue->id . " because it doesn't have custom field SLA applied");
+        }
+        else {
+            RT->Logger->error("Failed to disable SLA for queue #" . $queue->id . ": $msg");
+        }
+    }
+}
+
+for my $cf ( values %cfs_to_disable ) {
+    my ($ret, $msg) = $cf->SetDisabled(1);
+    if ( $ret ) {
+        RT->Logger->info("Disabled custom field SLA #" . $cf->id);
+    }
+    else {
+        RT->Logger->error("Failed to disable custom field SLA #" . $cf->id . ": $msg");
+    }
+}
+
+my @old_scrips = ( '[SLA] Set default service level if needed', '[SLA] Set starts date if needed', '[SLA] Set due date if needed' );
+for my $item ( @old_scrips ) {
+    my $scrip = RT::Scrip->new(RT->SystemUser);
+    $scrip->LoadByCols( Description => $item );
+    if ( $scrip->id ) {
+        my ($ret, $msg) = $scrip->RT::Record::Delete();
+        if ( $ret ) {
+            RT->Logger->info(qq{Deleted scrip "$item"});
+        }
+        else {
+            RT->Logger->error(qq{Failed to delete scrip "$item": $msg});
+        }
+    }
+}
+
+my @old_conditions = ( '[SLA] Require default', '[SLA] Require Starts set', '[SLA] Require Due set' );
+for my $item ( @old_conditions ) {
+    my $condition = RT::ScripCondition->new(RT->SystemUser);
+    $condition->Load($item);
+    if ( $condition->id ) {
+        my ($ret, $msg) = $condition->RT::Record::Delete();
+        if ( $ret ) {
+            RT->Logger->info(qq{Deleted condition "$item"});
+        }
+        else {
+            RT->Logger->error(qq{Failed to delete condition "$item": $msg});
+        }
+    }
+}
+
+my @old_actions = ('[SLA] Set default service level', '[SLA] Set starts date', '[SLA] Set due date' );
+for my $item ( @old_actions ) {
+    my $action = RT::ScripAction->new(RT->SystemUser);
+    $action->Load($item);
+    if ( $action->id ) {
+        my ($ret, $msg) = $action->RT::Record::Delete();
+        if ( $ret ) {
+            RT->Logger->info(qq{Deleted action "$item"});
+        }
+        else {
+            RT->Logger->error(qq{Failed to delete action "$item": $msg});
+        }
+    }
+}
