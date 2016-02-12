@@ -54,6 +54,7 @@ use warnings;
 use base qw(Test::WWW::Mechanize);
 use Scalar::Util qw(weaken);
 use MIME::Base64 qw//;
+use Encode 'encode_utf8';
 
 BEGIN { require RT::Test; }
 require Test::More;
@@ -430,6 +431,38 @@ sub dom {
         unless $self->is_html;
     require Mojo::DOM;
     return Mojo::DOM->new( $self->content );
+}
+
+# override content_* and text_* methods in Test::Mech to dump the content
+# on failure, to speed investigation
+for my $method_name (qw/
+    content_is content_contains content_lacks content_like content_unlike
+    text_contains text_lacks text_like text_unlike
+/) {
+    my $super_method = __PACKAGE__->SUPER::can($method_name);
+    my $implementation = sub {
+        local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+        my $self = shift;
+        my $ok = $self->$super_method(@_);
+        if (!$ok) {
+            my $dir = RT::Test->temp_directory;
+            my ($name) = $self->uri->path =~ m{/([^/]+)$};
+            $name ||= 'index.html';
+
+            my $file = $dir . '/' . RT::Test->builder->current_test . '-' . $name;
+
+            open my $handle, '>', $file or die $!;
+            print $handle encode_utf8($self->content) or die $!;
+            close $handle or die $!;
+
+            Test::More::diag("Dumped failing test page content to $file");
+        }
+        return $ok;
+    };
+
+    no strict 'refs';
+    *{$method_name} = $implementation;
 }
 
 sub DESTROY {
