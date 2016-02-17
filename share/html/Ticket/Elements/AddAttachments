@@ -172,6 +172,7 @@ jQuery( function() {
       Selectable   => 1,
       HideTitleBox => 1,
       Checked      => \@AttachExisting,
+      Count        => 5,
     &>
   </td>
 </tr>
