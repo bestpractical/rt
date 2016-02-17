@@ -22,20 +22,18 @@ ok( $id, $msg );
 
 use_ok("RT::Search::Simple");
 
-my $active_statuses = join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
-
 my $tickets = RT::Tickets->new(RT->SystemUser);
 my $quick = RT::Search::Simple->new(Argument => "",
                                  TicketsObj => $tickets);
 my @tests = (
     "General new open root"     => "( Owner = 'root' ) AND ( Queue = 'General' ) AND ( Status = 'new' OR Status = 'open' )", 
-    "General"              => "( Queue = 'General' ) AND ( $active_statuses )",
+    "General"              => "( Queue = 'General' ) AND ( Status = '__Active__' )",
     "General any"          => "( Queue = 'General' )",
-    "fulltext:jesse"       => "( Content LIKE 'jesse' ) AND ( $active_statuses )",
-    $queue                 => "( Queue = '$queue' ) AND ( $active_statuses )",
-    "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses )",
-    "notauser $queue"      => "( Subject LIKE 'notauser' ) AND ( Queue = '$queue' ) AND ( $active_statuses )",
-    "notauser $queue root" => "( Subject LIKE 'notauser' ) AND ( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( $active_statuses )");
+    "fulltext:jesse"       => "( Content LIKE 'jesse' ) AND ( Status = '__Active__' )",
+    $queue                 => "( Queue = '$queue' ) AND ( Status = '__Active__' )",
+    "root $queue"          => "( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Status = '__Active__' )",
+    "notauser $queue"      => "( Subject LIKE 'notauser' ) AND ( Queue = '$queue' ) AND ( Status = '__Active__' )",
+    "notauser $queue root" => "( Subject LIKE 'notauser' ) AND ( Owner = 'root' ) AND ( Queue = '$queue' ) AND ( Status = '__Active__' )");
 
 while (my ($from, $to) = splice @tests, 0, 2) {
     is($quick->QueryToSQL($from), $to, "<$from> -> <$to>");

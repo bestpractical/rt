@@ -188,7 +188,7 @@ sub Finalize {
     # limits ourselves, and we're not limited by id
     if (not $limits->{status} and not $limits->{id}
         and RT::Config->Get('OnlySearchActiveTicketsInSimpleSearch', $self->TicketsObj->CurrentUser)) {
-        $limits->{status} = [map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->ActiveStatusArray()];
+        $limits->{status} = ["Status = '__Active__'"];
     }
 
     # Respect the "only search these queues" limit if we didn't
