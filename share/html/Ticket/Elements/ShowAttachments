@@ -49,7 +49,8 @@
 <&| /Widgets/TitleBox, title => loc('Attachments'), 
         title_class=> 'inverse',  
         class => 'ticket-info-attachments',
-        color => "#336699" &>
+        color => "#336699",
+        hide_chrome => $HideTitleBox &>
 
 % foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
 
@@ -95,5 +96,6 @@ while ( my $attach = $Attachments->Next() ) {
 $Ticket => undef
 $Attachments => undef
 $DisplayPath => $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService'
+$HideTitleBox => 0
 </%ARGS>
 
