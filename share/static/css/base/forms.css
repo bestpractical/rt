@@ -264,6 +264,10 @@ ul.selectable a {
     padding-top: 0.25em;
 }
 
+.ticket-info-attachments ul li {
+    font-size: .8em;
+}
+
 /* query builder */
 
 #formatbuttons {

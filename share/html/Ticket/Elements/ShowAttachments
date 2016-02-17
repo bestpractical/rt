@@ -58,7 +58,7 @@
 <ul <% $Selectable ? 'class="selectable"' : '' |n %> >
 % foreach my $rev (@{$documents{$key}}) {
 % if ($rev->ContentLength) {
-<li><font size="-2">
+<li>
 
 % if ($Selectable) {
     <label>
@@ -79,7 +79,7 @@
     </label>
 % }
 
-</font></li>
+</li>
 % }
 % }
 </ul>
