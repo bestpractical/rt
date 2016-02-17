@@ -49,6 +49,7 @@
 $id
 $Selectable => undef
 $Count => undef
+@AttachExisting => ()
 </%ARGS>
 <%INIT>
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
@@ -59,5 +60,6 @@ $TicketObj->Load($id);
   HideTitleBox => 1,
   Selectable   => $Selectable,
   Count        => $Count,
+  Checked      => \@AttachExisting,
 &>
 % $m->abort();

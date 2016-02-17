@@ -94,10 +94,24 @@
 % delete $params{Ticket};
 % delete $params{Attachments};
 % delete $params{Count};
-
 % my $query = $m->comp('/Elements/QueryString', %params, id => $Ticket->id );
 % my $url   = RT->Config->Get('WebPath')."/Helpers/TicketAttachments?$query";
-<a href="#" onclick="jQuery(this).parent().text(<% loc('Loading...') | n,j%>).closest('.attachment-list').load(<% $url |n,j %>); return false;" ><% loc('Show all attachments') %></a>
+
+<script type="text/javascript">
+    function showAllAttachments(node) {
+        var container = node.closest('.attachment-list');
+        var params = node.closest('form').find('input[name=AttachExisting]').serialize();
+
+        node.parent().text(<% loc('Loading...') | n,j%>);
+
+        var url = <% $url |n,j %>;
+        if (params) url += '&' + params;
+        container.load(url);
+    }
+</script>
+
+<a href="#" onclick="showAllAttachments(jQuery(this)); return false;" ><% loc('Show all attachments') %></a>
+
 </span>
 % }
 
