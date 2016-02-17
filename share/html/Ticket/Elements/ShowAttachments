@@ -55,10 +55,17 @@
 % foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
 
 <%$key%><br />
-<ul>
+<ul <% $Selectable ? 'class="selectable"' : '' |n %> >
 % foreach my $rev (@{$documents{$key}}) {
 % if ($rev->ContentLength) {
 <li><font size="-2">
+
+% if ($Selectable) {
+    <label>
+    <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $rev->Id %>" \
+             <% $is_checked{$rev->Id} ? 'checked' : '' %> />
+% }
+
 % if (my $url = RT->System->ExternalStorageURLFor($rev)) {
 <a href="<%$url%>">
 % } else {
@@ -67,6 +74,11 @@
 % my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
 <% $desc |n%>
 </a>
+
+% if ($Selectable) {
+    </label>
+% }
+
 </font></li>
 % }
 % }
@@ -91,11 +103,14 @@ while ( my $attach = $Attachments->Next() ) {
    unshift( @{ $documents{ $attach->Filename } }, $attach );
 }
 
+my %is_checked = map { $_ => 1 } @Checked;
 </%INIT>
 <%ARGS>
 $Ticket => undef
 $Attachments => undef
 $DisplayPath => $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService'
 $HideTitleBox => 0
+$Selectable => 0
+@Checked => ()
 </%ARGS>
 
