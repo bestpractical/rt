@@ -150,7 +150,7 @@ my @escaped = @statuses;
 s{(['\\])}{\\$1}g for @escaped;
 my $query =
     "(".
-    join(" OR ", map {"Status = '$_'"} @escaped) #'
+    join(" OR ", map {"Status = '$_'"} @escaped)
     .") AND (".
     join(' OR ', map "Queue = ".$_->{id}, @queues)
     .")";
