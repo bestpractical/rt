@@ -63,7 +63,9 @@ if ( $Ticket and $Ticket->CurrentUserHasRight('SeeQueue') ) {
     # see the queue based on his role for this ticket
     $label = $QueueObj->__Value('Name');
     if ( $session{CurrentUser}->Privileged ) {
-        $query = "Queue = " . $QueueObj->id . " AND Status = '__Active__'";
+        my $queue_name_parameter = $label;
+        $queue_name_parameter =~ s/(['\\])/\\$1/g; #'
+        $query = "Queue = '$queue_name_parameter' AND Status = '__Active__'";
     }
 }
 
