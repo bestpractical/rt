@@ -108,7 +108,20 @@ $Attachments->Limit(
 );
 
 my %documents;
+
+# if we're limiting the number of attachments, show only the most recent
+# if we're not limiting the number, order doesn't much matter
+if (defined($Count)) {
+    $Attachments->OrderByCols(
+        { FIELD => 'Created', ORDER => 'DESC' },
+        { FIELD => 'id', ORDER => 'DESC' },
+    );
+}
+
 while ( my $attach = $Attachments->Next() ) {
+   if (defined($Count) && --$Count < 0) {
+       last;
+   }
    unshift( @{ $documents{ $attach->Filename } }, $attach );
 }
 
@@ -120,6 +133,7 @@ $Attachments => undef
 $DisplayPath => $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService'
 $HideTitleBox => 0
 $Selectable => 0
+$Count => undef
 @Checked => ()
 </%ARGS>
 
