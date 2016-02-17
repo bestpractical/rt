@@ -59,12 +59,11 @@ my $i = 0;
 for my $queue (@queues) {
     $i++;
     my $lifecycle = $lifecycle{ lc $queue->{'Lifecycle'} };
-    my @queue_statuses = grep { $lifecycle->IsValid($_) } @statuses;
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
 <td>
-    <a href="<% $link_all->($queue, \@queue_statuses) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
+    <a href="<% $link_all->($queue) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
 </td>
 
 <%perl>
@@ -92,8 +91,8 @@ my $build_search_link = sub {
 };
 
 my $link_all = sub {
-    my ($queue, $all_statuses) = @_;
-    return $build_search_link->($queue->{Name}, "(".join(" OR ", map "Status = '$_'", @$all_statuses).")");
+    my ($queue) = @_;
+    return $build_search_link->($queue->{Name}, "Status = '__Active__'");
 };
 
 my $link_status = sub {

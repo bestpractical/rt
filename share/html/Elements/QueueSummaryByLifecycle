@@ -70,7 +70,7 @@ for my $queue (@queues) {
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
 <td>
-    <a href="<% $link_all->($queue, \@cur_statuses) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
+    <a href="<% $link_all->($queue) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
 </td>
 
 %   for my $status (@cur_statuses) {
@@ -93,10 +93,8 @@ my $build_search_link = sub {
 };
 
 my $link_all = sub {
-    my ($queue, $all_statuses) = @_;
-    my @escaped = @{$all_statuses};
-    s{(['\\])}{\\$1}g for @escaped;
-    return $build_search_link->($queue->{Name}, "(".join(" OR ", map "Status = '$_'", @escaped).")");
+    my ($queue) = @_;
+    return $build_search_link->($queue->{Name}, "Status = '__Active__'");
 };
 
 my $link_status = sub {
