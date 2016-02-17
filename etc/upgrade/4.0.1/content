@@ -50,6 +50,11 @@ our @Initial = (
     sub {
         RT->Logger->debug('Removing all Delegate and PersonalGroup rights');
 
+        # this temporarily tells the system that the rights exist so it can properly canonicalize them
+        RT::System->AddRight(Admin => AdminOwnPersonalGroups  => 'Add right for 4.0.1 upgrade steps');
+        RT::System->AddRight(Admin => AdminAllPersonalGroups  => 'Add right for 4.0.1 upgrade steps');
+        RT::System->AddRight(Admin => DelegateRights          => 'Add right for 4.0.1 upgrade steps');
+
         my $acl = RT::ACL->new(RT->SystemUser);
         for my $right (qw/AdminOwnPersonalGroups AdminAllPersonalGroups DelegateRights/) {
             $acl->Limit( FIELD => 'RightName', VALUE => $right );
