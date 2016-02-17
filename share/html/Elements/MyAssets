@@ -45,4 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /User/Elements/AssetList, User => $session{'CurrentUser'}->UserObj, Roles => [qw(HeldBy)], Title => loc('My Assets') &>
+<& /User/Elements/AssetList, User => $session{'CurrentUser'}->UserObj, Roles => [qw(HeldBy)], Title => loc('My Assets'), HasResults => $HasResults &>
+<%ARGS>
+$HasResults => undef
+</%ARGS>

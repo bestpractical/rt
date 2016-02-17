@@ -272,11 +272,23 @@ SUMMARY
     local $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
+    my $HasResults = undef;
+
     my $content = RunComponent(
         '/Dashboards/Render.html',
-        id      => $dashboard->Id,
-        Preview => 0,
+        id         => $dashboard->Id,
+        Preview    => 0,
+        HasResults => \$HasResults,
     );
+
+    if ($subscription->SubValue('SuppressIfEmpty')) {
+        # undef means there were no searches, so we should still send it (it's just portlets)
+        # 0 means there was at least one search and none had any result, so we should suppress it
+        if (defined($HasResults) && !$HasResults) {
+            $RT::Logger->debug("Not sending because there are no results and the subscription has SuppressIfEmpty");
+            return;
+        }
+    }
 
     if ( RT->Config->Get('EmailDashboardRemove') ) {
         for ( RT->Config->Get('EmailDashboardRemove') ) {

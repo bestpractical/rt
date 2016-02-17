@@ -50,6 +50,7 @@ $Dashboard
 $Portlet
 $Rows => 20
 $Preview => 0
+$HasResults
 </%args>
 <%init>
 my $full_path = $Portlet->{path};
@@ -60,5 +61,5 @@ my $allowed = grep { $_ eq $path } @{RT->Config->Get('HomepageComponents')};
 % if (!$allowed) {
 %     $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $path), "h" ) );
 % } else {
-%     $m->comp($full_path);
+%     $m->comp($full_path, HasResults => $HasResults);
 % }

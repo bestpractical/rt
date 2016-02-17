@@ -50,10 +50,13 @@
     title => loc("My reminders"),
     title_href => RT->Config->Get('WebPath') . '/Tools/MyReminders.html' &>
 
-<& /Elements/ShowReminders &>
+<& /Elements/ShowReminders, HasResults => $HasResults &>
 
 </&>
 
 <%init>
 return unless RT->Config->Get('EnableReminders');
 </%init>
+<%ARGS>
+$HasResults => undef
+</%ARGS>

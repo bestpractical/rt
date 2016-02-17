@@ -69,10 +69,12 @@ $m->callback( CallbackName => 'ModifyFormat', %ARGS, Format => \$Format );
         Order           => 'ASC',
         Format          => $Format,
         AllowSorting    => 0,
+        HasResults      => $HasResults,
         &>
 </&>
 <%args>
 $User
 $Title
 @Roles
+$HasResults => undef
 </%args>

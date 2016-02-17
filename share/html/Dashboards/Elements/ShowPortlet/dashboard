@@ -52,6 +52,7 @@ $Portlet
 $Rows => 20
 $Preview => 0
 $Depth => 0
+$HasResults
 </%args>
 <%init>
 my $current_dashboard;
@@ -76,12 +77,13 @@ Abort("Possible recursive dashboard detected.") if $Depth > 8;
 <%perl>
 for my $portlet (@panes) {
     $m->comp($portlet->{portlet_type},
-        Portlet   => $portlet,
-        Rows      => $Rows,
-        Preview   => $Preview,
-        Dashboard => $current_dashboard,
-        Pane      => $Pane,
-        Depth     => $Depth + 1,
+        Portlet    => $portlet,
+        Rows       => $Rows,
+        Preview    => $Preview,
+        Dashboard  => $current_dashboard,
+        Pane       => $Pane,
+        Depth      => $Depth + 1,
+        HasResults => $HasResults
     );
 }
 </%perl>
