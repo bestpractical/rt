@@ -141,14 +141,11 @@ $Attachments->Limit(
 my $show_more = 0;
 my %documents;
 
-# if we're limiting the number of attachments, show only the most recent
-# if we're not limiting the number, order doesn't much matter
-if (defined($Count)) {
-    $Attachments->OrderByCols(
-        { FIELD => 'Created', ORDER => 'DESC' },
-        { FIELD => 'id', ORDER => 'DESC' },
-    );
-}
+# show newest first
+$Attachments->OrderByCols(
+    { FIELD => 'Created', ORDER => 'DESC' },
+    { FIELD => 'id',      ORDER => 'DESC' },
+);
 
 while ( my $attach = $Attachments->Next() ) {
    # display "show more" only when there will be more attachments
@@ -156,7 +153,7 @@ while ( my $attach = $Attachments->Next() ) {
        $show_more = 1;
        last;
    }
-   unshift( @{ $documents{ $attach->Filename } }, $attach );
+   push @{ $documents{ $attach->Filename } }, $attach;
 }
 
 my %is_checked = map { $_ => 1 } @Checked;
