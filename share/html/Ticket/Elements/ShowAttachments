@@ -95,11 +95,20 @@
 # then we need to find one
 $Attachments ||= $Ticket->Attachments;
 
-# XXX PERF: why doesn't this Limit on Filename to avoid fetching *all* the
-# attachments?
+# Avoid applying limits to this collection that may be used elsewhere
+# (e.g. transaction display)
+$Attachments = $Attachments->Clone;
+
+# Remember, each message in a transaction is an attachment; we only
+# want named attachments (real files)
+$Attachments->Limit(
+    FIELD    => 'Filename',
+    OPERATOR => '!=',
+    VALUE    => '',
+);
+
 my %documents;
 while ( my $attach = $Attachments->Next() ) {
-    next unless defined $attach->Filename && length $attach->Filename;
    unshift( @{ $documents{ $attach->Filename } }, $attach );
 }
 
