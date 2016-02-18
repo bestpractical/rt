@@ -90,7 +90,7 @@ if ( my $ticket= $targets->First ) {
 my $reminders = RT::Tickets->new($session{'CurrentUser'});
 my $tsql = 'Type = "reminder"' .
            ' AND ( Owner = "Nobody" OR Owner ="' . $session{'CurrentUser'}->id . '")' .
-           ' AND ( Status = "new" OR Status = "open" )';
+           ' AND Status = "__Active__"';
 
 $tsql .= ' AND ( Due < "now" OR Due IS NULL )' if $OnlyOverdue;
 
