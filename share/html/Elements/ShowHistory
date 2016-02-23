@@ -60,7 +60,8 @@
     ShowHeaders       => $ARGS{'ShowHeaders'},
     Attachments       => $Attachments,
     AttachmentContent => $AttachmentContent,
-    PathPrefix        => ''
+    PathPrefix        => '',
+    %ARGS,
     &>
 
 </div>
