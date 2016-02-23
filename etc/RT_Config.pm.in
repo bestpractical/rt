@@ -1829,6 +1829,17 @@ their preferences.
 
 Set($MaxInlineBody, 12000);
 
+=item C<$MaxInlineImage>
+
+C<$MaxInlineImage> is the maximum image size that we want to see
+inline when viewing a transaction. RT will inline any image if the
+value is undefined or 0. This option can be overridden by users in
+their preferences.
+
+=cut
+
+Set($MaxInlineImage, 0);
+
 =item C<$ShowTransactionImages>
 
 By default, RT shows images attached to incoming (and outgoing) ticket

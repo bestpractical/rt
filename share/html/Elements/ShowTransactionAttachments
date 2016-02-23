@@ -260,6 +260,7 @@ my $render_attachment = sub {
 
     # if it's an image, show it as an image
     elsif ( $content_type =~ m{^image/} ) {
+        my $max_size = RT->Config->Get( 'MaxInlineImage', $session{'CurrentUser'} );
         if (not RT->Config->Get('ShowTransactionImages')) {
             $m->out('<p><i>'. loc( 'Image not shown because display is disabled in system configuration.' ) .'</i></p>');
             return;
@@ -270,6 +271,10 @@ my $render_attachment = sub {
         }
         elsif ( $disposition ne 'inline' ) {
             $m->out('<p>'. loc( 'Image not shown because sender requested not to inline it.' ) .'</p>');
+            return;
+        }
+        elsif ( $max_size && $message->ContentLength > $max_size ) {
+            $m->out('<p>'. loc( 'Image not shown because it is too large.' ) .'</p>');
             return;
         }
 
