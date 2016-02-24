@@ -55,6 +55,7 @@
 % $m->callback( %ARGS, Object => $Object, CallbackName => 'BeforeTransactions' );
 
 <& /Elements/ShowHistoryPage,
+    %ARGS,
     Object            => $Object,
     Transactions      => $Object->SortedTransactions,
     ShowHeaders       => $ARGS{'ShowHeaders'},
