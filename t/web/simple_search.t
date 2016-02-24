@@ -61,10 +61,10 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
     is $parser->QueryToSQL('owner:root@localhost'), "( Owner.EmailAddress = 'root\@localhost' ) AND $active", "Email address as owner";
 
     is $parser->QueryToSQL("resolved me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' )", "correct parsing";
-    is $parser->QueryToSQL("resolved active me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' OR Status = 'new' OR Status = 'open' OR Status = 'stalled' )", "correct parsing";
-    is $parser->QueryToSQL("status:active"), $active, "Explicit active search";
+    is $parser->QueryToSQL("resolved active me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' OR Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("status:active"), "( Status = '__Active__' )", "Explicit active search";
     is $parser->QueryToSQL("status:'active'"), "( Status = 'active' )", "Quoting active makes it the actual word";
-    is $parser->QueryToSQL("inactive me"), "( Owner.id = '__CurrentUser__' ) AND $inactive", "correct parsing";
+    is $parser->QueryToSQL("inactive me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = '__Inactive__' )", "correct parsing";
 
     is $parser->QueryToSQL("cf.Foo:bar"), "( 'CF.{Foo}' LIKE 'bar' ) AND $active", "correct parsing of CFs";
     is $parser->QueryToSQL(q{cf."don't foo?":'bar n\\' baz'}), qq/( 'CF.{don\\'t foo?}' LIKE 'bar n\\' baz' ) AND $active/, "correct parsing of CFs with quotes";

@@ -256,9 +256,9 @@ sub HandleContent   { return content   => "Content LIKE '$_[1]'"; }
 sub HandleId        { $_[1] =~ s/^#//; return id => "Id = $_[1]"; }
 sub HandleStatus    {
     if ($_[1] =~ /^active$/i and !$_[2]) {
-        return status => map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->ActiveStatusArray();
+        return status => "Status = '__Active__'";
     } elsif ($_[1] =~ /^inactive$/i and !$_[2]) {
-        return status => map {s/(['\\])/\\$1/g; "Status = '$_'"} RT::Queue->InactiveStatusArray();
+        return status => "Status = '__Inactive__'";
     } elsif ($_[1] =~ /^any$/i and !$_[2]) {
         return 'status';
     } else {
