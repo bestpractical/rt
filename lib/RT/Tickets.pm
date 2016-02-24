@@ -979,13 +979,13 @@ sub _TransContentLimit {
         }
     } else {
         $self->Limit(
+            %rest,
             ALIAS    => $txn_alias,
             FIELD    => 'Type',
             OPERATOR => 'NOT IN',
             VALUE    => ['EmailRecord', 'CommentEmailRecord'],
         );
         $self->Limit(
-            %rest,
             ENTRYAGGREGATOR => 'AND',
             ALIAS           => $self->{_sql_trattachalias},
             FIELD           => $field,
