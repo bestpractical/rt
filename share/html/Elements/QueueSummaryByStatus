@@ -97,6 +97,7 @@ my $link_all = sub {
 
 my $link_status = sub {
     my ($queue, $status) = @_;
+    $status =~ s{(['\\])}{\\$1}g;
     return $build_search_link->($queue->{Name}, "Status = '$status'");
 };
 
