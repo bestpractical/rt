@@ -88,7 +88,12 @@
 % $m->callback( CallbackName => 'AfterCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS );
 <%INIT>
-$CustomFields ||= $Object->CustomFields;
+if (ref $Object eq 'RT::Ticket' && $Queue && !$CustomFields) {
+    $CustomFields = RT::CustomFields->new( $session{CurrentUser} );
+    $CustomFields->LimitToGlobalOrQueue( $Queue );
+} else {
+    $CustomFields ||= $Object->CustomFields;
+}
 
 $CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
 
@@ -116,4 +121,5 @@ $Grouping     => undef
 $AsTable => 1
 $InTable => 0
 $ShowHints => 1
+$Queue => undef
 </%ARGS>
