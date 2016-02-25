@@ -63,7 +63,7 @@
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
 
-<& /Elements/EditCustomFieldCustomGroupings, Object => $TicketObj &>
+<& /Elements/LoadEditCustomFieldCustomGroupings, Object => $TicketObj &>
 
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
