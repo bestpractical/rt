@@ -1,0 +1,118 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%args>
+$show_search      => 0
+$show_bulk_update => 0
+</%args>
+
+<div class="keyboard-shortcuts">
+    <h2><&|/l&>Keyboard Shortcuts</&></h2>
+
+    <div class="titlebox">
+        <div class="titlebox-title">
+            <span class="left"><&|/l&>Global</&></span>
+            <span class="right-empty"></span>
+        </div>
+        <div class="titlebox-content">
+            <hr class="clear">
+            <table>
+                <tr>
+                    <td class="key-column"><span class="keyboard-shortcuts-key">/</span></td>
+                    <td><&|/l&>Quick search</&></td>
+                </tr>
+                <tr>
+                    <td><span class="keyboard-shortcuts-key">gh</span></td>
+                    <td><&|/l&>Return home</&></td>
+                </tr>
+                <tr>
+                    <td><span class="keyboard-shortcuts-key">gb</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">gf</span></td>
+                    <td><&|/l&>Go back / forward</&></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+% if($show_search) {
+
+    <div class="titlebox">
+        <div class="titlebox-title">
+            <span class="left"><&|/l&>Search</&></span>
+            <span class="right-empty"></span>
+        </div>
+        <div class="titlebox-content">
+            <hr class="clear">
+            <table>
+                <tr>
+                    <td class="key-column"><span class="keyboard-shortcuts-key">k</span><span class="keyboard-shortcuts-separator"> / </span><span class="keyboard-shortcuts-key">j</span></td>
+                    <td><&|/l&>Move up / down the list of results</&></td>
+                </tr>
+                <tr>
+                    <td><span class="keyboard-shortcuts-key">o</span> <span class="keyboard-shortcuts-separator">or</span> <span class="keyboard-shortcuts-key">&lt;<&|/l&>Enter</&>&gt;</span></td>
+                    <td><&|/l&>View highlighted ticket</&></td>
+                </tr>
+                <tr>
+                    <td class="key-column"><span class="keyboard-shortcuts-key">r</span></td>
+                    <td><&|/l&>Reply to ticket</&></td>
+                </tr>
+                <tr>
+                    <td><span class="keyboard-shortcuts-key">c</span></td>
+                    <td><&|/l&>Comment on ticket</&></td>
+                </tr>
+% if($show_bulk_update) {
+                <tr>
+                    <td><span class="keyboard-shortcuts-key">x</span></td>
+                    <td><&|/l&>Toggle highlighted ticket's checkbox</&></td>
+                </tr>
+% }
+            </table>
+        </div>
+    </div>
+
+% }
+
+</div>
