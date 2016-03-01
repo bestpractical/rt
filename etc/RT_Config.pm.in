@@ -1495,6 +1495,18 @@ is ignored. Helpful when owners list is huge in the query builder.
 
 Set($AutocompleteOwnersForSearch, 0);
 
+=item C<$AutocompleteQueues>
+
+If set to 1, any queue drop-downs are replaced by text fields that
+autocomplete. This can alleviate the sometimes huge queue list for
+installations with many queues, and can also increase page load
+times in some cases. A user can override this setting as a personal
+preference.
+
+=cut
+
+Set($AutocompleteQueues, 0);
+
 =item C<$UserSearchFields>
 
 Used by the User Autocompleter as well as the User Search.
