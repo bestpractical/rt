@@ -649,6 +649,8 @@ sub NewItem {
 sub _RoleGroupClass { "RT::Ticket" }
 sub _SingularClass { "RT::Report::Tickets::Entry" }
 
+sub _JOINS_FOR_LOOKUP_TYPES { return RT::Tickets->_JOINS_FOR_LOOKUP_TYPES }
+
 sub SortEntries {
     my $self = shift;
 
