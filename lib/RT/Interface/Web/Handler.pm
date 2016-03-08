@@ -199,6 +199,8 @@ sub CleanupRequest {
     File::Temp::cleanup()
             unless $INC{'Test/WWW/Mechanize/PSGI.pm'};
 
+    # flush attributes cache
+    %RT::Record::GLOBAL_ATTR_CACHE = ();
 
 }
 

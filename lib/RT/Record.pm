@@ -80,6 +80,7 @@ use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 
 our $_TABLE_ATTR = { };
+our %GLOBAL_ATTR_CACHE;
 
 
 sub _Init {
@@ -175,12 +176,13 @@ Return this object's attributes as an RT::Attributes object
 
 sub Attributes {
     my $self = shift;
-    unless ($self->{'attributes'}) {
-        $self->{'attributes'} = RT::Attributes->new($self->CurrentUser);
-        $self->{'attributes'}->LimitToObject($self);
-        $self->{'attributes'}->OrderByCols({FIELD => 'id'});
+    my $cache_key = ref($self)."-".$self->id;
+    unless ($GLOBAL_ATTR_CACHE{$cache_key}->{'attributes'}) {
+        $GLOBAL_ATTR_CACHE{$cache_key}->{'attributes'} = RT::Attributes->new($self->CurrentUser);
+        $GLOBAL_ATTR_CACHE{$cache_key}->{'attributes'}->LimitToObject($self);
+        $GLOBAL_ATTR_CACHE{$cache_key}->{'attributes'}->OrderByCols({FIELD => 'id'});
     }
-    return ($self->{'attributes'});
+    return ($GLOBAL_ATTR_CACHE{$cache_key}->{'attributes'});
 }
 
 
@@ -270,7 +272,7 @@ sub FirstAttribute {
 
 sub ClearAttributes {
     my $self = shift;
-    delete $self->{'attributes'};
+    delete $GLOBAL_ATTR_CACHE{ref($self)."-".$self->id}->{'attributes'} if $self->id;
 
 }
 
