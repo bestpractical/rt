@@ -36,21 +36,13 @@ fi
 
 dnl BSD find uses -perm +xxxx, GNU find has deprecated this syntax in favour of
 dnl -perm /xxx.
-AC_MSG_CHECKING([whether find supports -perm /x or find -perm +x])
-if find -perm /0100 -not -perm /0100
-then
-	FINDPERM="/"
-elif
-	find -perm +0100 -not -perm +0100
-then
-	FINDPERM="+"
-else
-	FINDPERM="na"
-fi
-AC_MSG_RESULT([${FINDPERM}])
-if test "x$FINDPERM" = "xna" ; then
-	AC_MSG_WARN([local find program supports neither -perm /0111 nor -perm +0111, make fixperms will not work])
-fi
+AC_MSG_CHECKING([checking version of find])
+AS_IF([find --version 2>&1 | grep 'GNU'],
+      [   FINDPERM="/"
+          AC_MSG_RESULT([configuring for GNU find]) ],
+      [   FINDPERM="+"
+          AC_MSG_RESULT([configuring for BSD find]) ])
+
 AC_SUBST([FINDPERM])
 
 dnl WEB_HANDLER
