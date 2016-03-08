@@ -8,6 +8,9 @@ push @Final, sub {
     my $handle = RT->DatabaseHandle;
 
     for my $role (RT::System->Roles) {
+        # HeldBy and Contact come in with Assets, didn't exist yet in 4.1.4
+        next if ( $role eq 'HeldBy' or $role eq 'Contact');
+
         my $group       = RT::Group->new( RT->SystemUser );
         my ($ok, $msg)  = $group->LoadRoleGroup(
             Object  => RT->System,

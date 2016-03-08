@@ -5,3 +5,5 @@ $RT::Handle->MakeSureIndexExists(
     Table => 'CachedGroupMembers',
     Columns => ['MemberId', 'ImmediateParentId'],
 );
+
+1;
