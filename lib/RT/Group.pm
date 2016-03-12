@@ -1741,13 +1741,12 @@ sub PreInflate {
         return;
     };
 
-    # Go looking for the pre-existing version of the it
+    # Go looking for the pre-existing version of it
     if ($data->{Domain} eq "ACLEquivalence") {
         $obj->LoadACLEquivalenceGroup( $data->{Instance} );
         return $duplicated->() if $obj->Id;
 
-        # Update the name and description for the new ID
-        $data->{Name} = 'User '. $data->{Instance};
+        # Update description for the new ID
         $data->{Description} = 'ACL equiv. for user '.$data->{Instance};
     } elsif ($data->{Domain} eq "UserDefined") {
         $data->{Name} = $importer->Qualify($data->{Name});
