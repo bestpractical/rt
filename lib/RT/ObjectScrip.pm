@@ -272,6 +272,19 @@ sub FindDependencies {
     }
 }
 
+sub Serialize {
+    my $self = shift;
+    my %args = (@_);
+    my %store = $self->SUPER::Serialize(@_);
+
+    if ($store{ObjectId}) {
+        my $obj = RT::Queue->new( RT->SystemUser );
+        $obj->Load( $store{ObjectId} );
+        $store{ObjectId} = \($obj->UID);
+    }
+    return %store;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
