@@ -236,6 +236,8 @@ if (!keys(%data)) {
     my ($time, $key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->Id   ];
+    push @data, [ Merged => join(", ", $ticket->Merged) ]
+        if $ticket->Merged;
     push @data, [ Queue => $ticket->QueueObj->Name ]
         if (!%$fields || exists $fields->{lc 'Queue'});
     push @data, [ Owner => $ticket->OwnerObj->Name ]
