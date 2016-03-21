@@ -671,6 +671,19 @@ sub FindDependencies {
             }
         }
     }
+    # dashboards have dependencies on all the searches and dashboards they use
+    elsif ($self->Name eq 'Dashboard') {
+        my $content = $self->Content;
+        for my $pane (values %{ $content->{Panes} || {} }) {
+            for my $component (@$pane) {
+                if ($component->{portlet_type} eq 'search' || $component->{portlet_type} eq 'dashboard') {
+                    my $attr = RT::Attribute->new($self->CurrentUser);
+                    $attr->LoadById($component->{id});
+                    $deps->Add( out => $attr );
+                }
+            }
+        }
+    }
 }
 
 sub PreInflate {
@@ -759,6 +772,33 @@ sub PostInflateFixup {
         }
         $self->SetContent($content);
     }
+    elsif ($self->Name eq 'Dashboard') {
+        my $content = $self->Content;
+
+        for my $pane (values %{ $content->{Panes} || {} }) {
+            for (@$pane) {
+                if (ref($_->{uid}) eq 'SCALAR') {
+                    my $uid = $_->{uid};
+                    my $attr = $importer->LookupObj($$uid);
+
+                    if ($attr) {
+                        # update with the new id numbers assigned to us
+                        $_->{id} = $attr->Id;
+                        $_->{privacy} = join '-', $attr->ObjectType, $attr->ObjectId;
+                        delete $_->{uid};
+                    }
+                    else {
+                        $importer->Postpone(
+                            for    => $$uid,
+                            uid    => $spec->{uid},
+                            method => 'PostInflateFixup',
+                        );
+                    }
+                }
+            }
+        }
+        $self->SetContent($content);
+    }
 }
 
 sub PostInflate {
@@ -816,6 +856,21 @@ sub Serialize {
                     if ($search) {
                         $_->{uid} = \($search->UID);
                     }
+                }
+                # pass through everything else (e.g. component)
+            }
+        }
+        $store{Content} = $self->_SerializeContent($content);
+    }
+    # encode saved searches and dashboards to be UIDs
+    elsif ($store{Name} eq 'Dashboard') {
+        my $content = $self->_DeserializeContent($store{Content}) || {};
+        for my $pane (values %{ $content->{Panes} || {} }) {
+            for (@$pane) {
+                if ($_->{portlet_type} eq 'search' || $_->{portlet_type} eq 'dashboard') {
+                    my $attr = RT::Attribute->new($self->CurrentUser);
+                    $attr->LoadById($_->{id});
+                    $_->{uid} = \($attr->UID);
                 }
                 # pass through everything else (e.g. component)
             }
