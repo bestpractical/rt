@@ -684,6 +684,13 @@ sub FindDependencies {
             }
         }
     }
+    # each subscription depends on its dashboard
+    elsif ($self->Name eq 'Subscription') {
+        my $content = $self->Content;
+        my $attr = RT::Attribute->new($self->CurrentUser);
+        $attr->LoadById($content->{DashboardId});
+        $deps->Add( out => $attr );
+    }
 }
 
 sub PreInflate {
@@ -799,6 +806,23 @@ sub PostInflateFixup {
         }
         $self->SetContent($content);
     }
+    elsif ($self->Name eq 'Subscription') {
+        my $content = $self->Content;
+        if (ref($content->{DashboardId}) eq 'SCALAR') {
+            my $attr = $importer->LookupObj(${ $content->{DashboardId} });
+            if ($attr) {
+                $content->{DashboardId} = $attr->Id;
+            }
+            else {
+                $importer->Postpone(
+                    for    => ${ $content->{DashboardId} },
+                    uid    => $spec->{uid},
+                    method => 'PostInflateFixup',
+                );
+            }
+        }
+        $self->SetContent($content);
+    }
 }
 
 sub PostInflate {
@@ -875,6 +899,14 @@ sub Serialize {
                 # pass through everything else (e.g. component)
             }
         }
+        $store{Content} = $self->_SerializeContent($content);
+    }
+    # encode subscriptions to have dashboard UID
+    elsif ($store{Name} eq 'Subscription') {
+        my $content = $self->_DeserializeContent($store{Content});
+        my $attr = RT::Attribute->new($self->CurrentUser);
+        $attr->LoadById($content->{DashboardId});
+        $content->{DashboardId} = \($attr->UID);
         $store{Content} = $self->_SerializeContent($content);
     }
 
