@@ -652,7 +652,12 @@ sub PreInflate {
 
     if ($data->{Object} and ref $data->{Object}) {
         my $on_uid = ${ $data->{Object} };
-        return if $importer->ShouldSkipTransaction($on_uid);
+
+        # skip attributes of objects we're not inflating
+        # exception: we don't inflate RT->System, but we want RT->System's searches
+        unless ($on_uid eq RT->System->UID && $data->{Name} =~ /Search/) {
+            return if $importer->ShouldSkipTransaction($on_uid);
+        }
     }
 
     # decode UIDs to be raw dashboard IDs
