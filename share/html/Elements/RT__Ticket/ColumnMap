@@ -260,6 +260,11 @@ $COLUMN_MAP = {
         attribute => 'Resolved',
         value     => sub { return $_[0]->ResolvedObj->AsString }
     },
+    SLA => {
+        attribute => 'SLA',
+        title     => 'SLA', # loc
+        value     => sub { return $_[0]->SLA }
+    },
     UpdateStatus => {
         title => 'New messages', # loc
         value => sub {

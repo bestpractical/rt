@@ -88,6 +88,8 @@ my @fields = qw(
     Due         DueRelative
     Resolved    ResolvedRelative
 
+    SLA
+
     RefersTo    ReferredToBy
     DependsOn   DependedOnBy
     MemberOf    Members
