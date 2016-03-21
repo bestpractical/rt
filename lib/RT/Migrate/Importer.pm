@@ -179,6 +179,9 @@ sub Resolve {
             Field => $ref->{uri},
             Value => $self->LookupObj($uid)->URI,
         ) if defined $ref->{uri};
+        if (my $method = $ref->{method}) {
+            $obj->$method($self, $ref, $class, $id);
+        }
     }
     delete $self->{Pending}{$uid};
 }
@@ -332,7 +335,7 @@ sub Create {
     # Load it back to get real values into the columns
     $obj = $class->new( RT->SystemUser );
     $obj->Load( $id );
-    $obj->PostInflate( $self );
+    $obj->PostInflate( $self, $uid );
 
     return $obj;
 }
