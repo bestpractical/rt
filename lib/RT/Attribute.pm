@@ -632,6 +632,18 @@ sub FindDependencies {
 
     $self->SUPER::FindDependencies($walker, $deps);
     $deps->Add( out => $self->Object );
+
+    # dashboards in menu attribute has dependencies on each of its dashboards
+    if ($self->Name eq RT::User::_PrefName("DashboardsInMenu")) {
+        my $content = $self->Content;
+        for my $pane (values %{ $content || {} }) {
+            for my $dash_id (@$pane) {
+                my $attr = RT::Attribute->new($self->CurrentUser);
+                $attr->LoadById($dash_id);
+                $deps->Add( out => $attr );
+            }
+        }
+    }
 }
 
 sub PreInflate {
@@ -642,7 +654,38 @@ sub PreInflate {
         my $on_uid = ${ $data->{Object} };
         return if $importer->ShouldSkipTransaction($on_uid);
     }
+
+    # decode UIDs to be raw dashboard IDs
+    if ($data->{Name} eq RT::User::_PrefName("DashboardsInMenu")) {
+        my $content = $class->_DeserializeContent($data->{Content});
+        for my $pane (values %{ $content || {} }) {
+            @$pane = map { $importer->LookupObj($$_)->Id } @$pane;
+        }
+        $data->{Content} = $class->_SerializeContent($content);
+    }
+
     return $class->SUPER::PreInflate( $importer, $uid, $data );
+}
+
+sub Serialize {
+    my $self = shift;
+    my %args = (@_);
+    my %store = $self->SUPER::Serialize(@_);
+
+    # encode raw dashboard IDs to be UIDs
+    if ($store{Name} eq RT::User::_PrefName("DashboardsInMenu")) {
+        my $content = $self->_DeserializeContent($store{Content});
+        for my $pane (values %{ $content || {} }) {
+            for (@$pane) {
+                my $attr = RT::Attribute->new($self->CurrentUser);
+                $attr->LoadById($_);
+                $_ = \($attr->UID);
+            }
+        }
+        $store{Content} = $self->_SerializeContent($content);
+    }
+
+    return %store;
 }
 
 RT::Base->_ImportOverlays();
