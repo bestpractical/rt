@@ -58,6 +58,18 @@
         <td class="label"><&|/l&>Class</&>:</td>
         <td class="value"><%$article->ClassObj->Name%></td>
     </tr>
+    <tr>
+        <td class="label"><&|/l&>Creator</&>:</td>
+        <td class="value"><& /Elements/ShowUser, User => $article->CreatorObj &></td>
+    </tr>
+    <tr>
+        <td class="label"><&|/l&>Created</&>:</td>
+        <td class="value"><%$article->CreatedObj->AsString%></td>
+    </tr>
+    <tr>
+        <td class="label"><&|/l&>Updated</&>:</td>
+        <td class="value"><%$article->LastUpdatedObj->AsString%></td>
+    </tr>
 </table>
 </&>
 

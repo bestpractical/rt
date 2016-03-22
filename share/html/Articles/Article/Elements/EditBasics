@@ -65,6 +65,20 @@
 % }
 </td>
 </tr>
+% if ($ARGS{'id'} ne 'new') {
+<tr>
+<td class="label"><&|/l&>Creator</&>:</td>
+<td><& /Elements/ShowUser, User => $ArticleObj->CreatorObj &></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Created</&>:</td>
+<td><span class="value"><%$ArticleObj->CreatedObj->AsString%></span></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Updated</&>:</td>
+<td><span class="value"><%$ArticleObj->LastUpdatedObj->AsString%></span></td>
+</tr>
+% }
 % if ($ARGS{'id'} eq 'new' || $ArticleObj->CurrentUserHasRight('DisableArticle')) {
 <tr>
 <td class="label"></td>
