@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<table>
 <tr>
 <td class="label"></td>
 <td class="value"><i><&|/l&>Enter articles, tickets, or other URLs related to this article.</&>
@@ -107,6 +108,7 @@
 </ul>
 </td>
 </tr>
+</table>
 <%ARGS>
 $ArticleObj => undef
 $id => undef
