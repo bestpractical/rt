@@ -47,17 +47,45 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<h2><&|/l&>Basics</&></h2>
-<span class="label"><&|/l&>Class</&></span>: <span class="value"><%$article->ClassObj->Name%></span><br />
-<em><span class="value"><%$article->Summary%></span></em>
-<h2><&|/l&>Content</&></h2>
+
+<&| /Widgets/TitleBox, title => loc('The Basics'), class => 'article-basics', &>
+<table>
+    <tr>
+        <td class="label"><&|/l&>Summary</&>:</td>
+        <td class="value"><%$article->Summary%></td>
+    </tr>
+    <tr>
+        <td class="label"><&|/l&>Class</&>:</td>
+        <td class="value"><%$article->ClassObj->Name%></td>
+    </tr>
+    <tr>
+        <td class="label"><&|/l&>Creator</&>:</td>
+        <td class="value"><& /Elements/ShowUser, User => $article->CreatorObj &></td>
+    </tr>
+    <tr>
+        <td class="label"><&|/l&>Created</&>:</td>
+        <td class="value"><%$article->CreatedObj->AsString%></td>
+    </tr>
+    <tr>
+        <td class="label"><&|/l&>Updated</&>:</td>
+        <td class="value"><%$article->LastUpdatedObj->AsString%></td>
+    </tr>
+</table>
+</&>
+
+% $m->callback( %ARGS, CallbackName => 'AfterBasics' );
+
+<&| /Widgets/TitleBox, title => loc('Content'), class => 'article-content', &>
 <& /Elements/ShowCustomFields, Object => $article &>
+</&>
 
-<h2><&|/l&>Links</&></h2>
+<&| /Widgets/TitleBox, title => loc('Links'), class => 'article-links', &>
 <& Elements/ShowLinks, article => $article &>
+</&>
 
-<h2><&|/l&>Topics</&></h2>
+<&| /Widgets/TitleBox, title => loc('Topics'), class => 'article-topics', &>
 <& Elements/ShowTopics, article => $article &>
+</&>
 <%init>
 
 my $article = RT::Article->new( $session{'CurrentUser'} );

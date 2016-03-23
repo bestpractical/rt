@@ -45,6 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<table>
+<tr>
+<td class="label"><&|/l&>Topics</&>:</td>
+<td class="value">
 <input type="hidden" name="EditTopics" value="1" />
 <select multiple size="10" name="Topics" class="selection-box">
 % if (@Classes) {
@@ -76,6 +80,9 @@
 </optgroup>
 % }
 </select>
+</td>
+</tr>
+</table>
 
 <%INIT>
 use Tree::Simple;

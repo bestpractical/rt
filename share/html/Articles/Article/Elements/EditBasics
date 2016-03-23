@@ -45,16 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<table>
 <tr>
-<td class="label"><&|/l&>Name</&></td>
+<td class="label"><&|/l&>Name</&>:</td>
 <td><input name="Name" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Name) || $ARGS{'Name'} || ''|h%>" size="50" /></td>
 </tr>
 <tr>
-<td class="label"><&|/l&>Summary</&></td>
+<td class="label"><&|/l&>Summary</&>:</td>
 <td><input name="Summary" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Summary) || $ARGS{'Summary'} ||'' |h%>" size="50" /></td>
 </tr>
 <tr>
-<td class="label"><&|/l&>Class</&></td>
+<td class="label"><&|/l&>Class</&>:</td>
 <td>
 % if ($EditClass) {
 <& /Articles/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
@@ -64,6 +65,20 @@
 % }
 </td>
 </tr>
+% if ($ARGS{'id'} ne 'new') {
+<tr>
+<td class="label"><&|/l&>Creator</&>:</td>
+<td><& /Elements/ShowUser, User => $ArticleObj->CreatorObj &></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Created</&>:</td>
+<td><span class="value"><%$ArticleObj->CreatedObj->AsString%></span></td>
+</tr>
+<tr>
+<td class="label"><&|/l&>Updated</&>:</td>
+<td><span class="value"><%$ArticleObj->LastUpdatedObj->AsString%></span></td>
+</tr>
+% }
 % if ($ARGS{'id'} eq 'new' || $ArticleObj->CurrentUserHasRight('DisableArticle')) {
 <tr>
 <td class="label"></td>
@@ -73,6 +88,7 @@
     <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this article)</&></label>
 </td>
 </tr>
+</table>
 % }
 <%INIT>
 </%INIT>

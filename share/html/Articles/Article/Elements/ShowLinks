@@ -45,8 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<span class="label"><&|/l&>Refers to</&></span>:<br />
-<ul class="value">
+
+<table>
+<tr>
+<td class="label"><&|/l&>Refers to</&>:</td>
+<td class="value">
 % my $refersto = $article->RefersTo;
 
 % while (my $link = $refersto->Next) {
@@ -65,10 +68,11 @@
 % }
 </li>
 % }
-</ul>
+</td>
+</tr>
 
-<span class="label"><&|/l&>Referred to by</&></span>:<br />
-<ul class="value">
+<td class="label"><&|/l&>Referred to by</&>:</td>
+<td class="value">
 % my $referredtoby = $article->ReferredToBy;
 % while (my $link = $referredtoby->Next) {
 % my $member = $link->BaseURI;
@@ -86,7 +90,9 @@
 % }
 </li>
 % }
-</ul>
+</td>
+</tr>
+</table>
 <%args>
 $article => undef
 </%args>
