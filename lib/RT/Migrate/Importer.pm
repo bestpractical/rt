@@ -65,16 +65,19 @@ sub new {
 sub Init {
     my $self = shift;
     my %args = (
-        OriginalId  => undef,
-        Progress    => undef,
-        Statefile   => undef,
-        DumpObjects => undef,
-        HandleError => undef,
+        OriginalId          => undef,
+        Progress            => undef,
+        Statefile           => undef,
+        DumpObjects         => undef,
+        HandleError         => undef,
+        ExcludeOrganization => undef,
         @_,
     );
 
     # Should we attempt to preserve record IDs as they are created?
     $self->{OriginalId} = $args{OriginalId};
+
+    $self->{ExcludeOrganization} = $args{ExcludeOrganization};
 
     $self->{Progress} = $args{Progress};
 
@@ -294,6 +297,7 @@ sub Qualify {
     my ($string) = @_;
     return $string if $self->{Clone};
     return $string if not defined $self->{Organization};
+    return $string if $self->{ExcludeOrganization};
     return $string if $self->{Organization} eq $RT::Organization;
     return $self->{Organization}.": $string";
 }
@@ -402,9 +406,13 @@ sub ReadStream {
     # If it's a ticket, we might need to create a
     # TicketCustomField for the previous ID
     if ($class eq "RT::Ticket" and $self->{OriginalId}) {
+        my $value = $self->{ExcludeOrganization}
+                  ? $origid
+                  : $self->Organization . ":$origid";
+
         my ($id, $msg) = $obj->AddCustomFieldValue(
             Field             => $self->{OriginalId},
-            Value             => $self->Organization . ":$origid",
+            Value             => $value,
             RecordTransaction => 0,
         );
         warn "Failed to add custom field to $uid: $msg"
