@@ -24,8 +24,12 @@ EOSQL
         # Those are not allowed to be granted on global role groups
         my $invalid = RT::ACL->new( RT->SystemUser );
         $invalid->LimitToObject( 'RT::System' );
-        $invalid->LimitToPrincipal( Id => RT::System->RoleGroup($_)->PrincipalId )
-            for RT::System->Roles;
+
+        foreach my $role ( RT::System->Roles ){
+            # HeldBy and Contact come in with Assets, didn't exist yet in 4.2.11
+            next if ( $role eq 'HeldBy' or $role eq 'Contact');
+            $invalid->LimitToPrincipal( Id => RT::System->RoleGroup($role)->PrincipalId )
+        }
         $invalid->Limit( FIELD => 'RightName', OPERATOR => 'IN', VALUE => \@rights );
 
         return unless $invalid->Count;

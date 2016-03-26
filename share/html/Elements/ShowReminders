@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,6 +64,7 @@ $targets->{'allow_deleted_search'} = 1;
 $targets->FromSQL( "ReferredToBy = " . $reminder->id );
 
 if ( my $ticket= $targets->First ) {
+    $$HasResults++ if $HasResults;
 </%PERL>
 <tr class="<% $i%2 ? 'oddline' : 'evenline' %>">
 <td class="collection-as-table">
@@ -95,8 +96,13 @@ $tsql .= ' AND ( Due < "now" OR Due IS NULL )' if $OnlyOverdue;
 
 $reminders->FromSQL($tsql);
 $reminders->OrderBy( FIELD => 'Due', ORDER => 'ASC' );
+
+# flip HasResults from undef to 0 to indicate there was a search, so
+# dashboard mail can be suppressed if there are no results
+$$HasResults = 0 if $HasResults && !defined($$HasResults);
 </%INIT>
 
 <%ARGS>
 $OnlyOverdue => 0
+$HasResults => undef
 </%ARGS>

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -54,6 +54,12 @@ use warnings;
 use HTML::Mason::PSGIHandler;
 use base qw(HTML::Mason::Request::PSGI);
 use Params::Validate qw(:all);
+
+my %deprecated = (
+    '/Admin/CustomFields/Modify.html' => {
+        'AfterUpdateCustomFieldValue' => { Remove => '4.6' },
+    },
+);
 
 sub new {
     my $class = shift;
@@ -131,6 +137,15 @@ sub callback {
         }
 
         $cache{ $CacheKey } = $callbacks unless RT->Config->Get('DevelMode');
+
+        if (@{ $callbacks } && $deprecated{$page}{$name}) {
+            RT->Deprecated(
+                Message => "The callback $name on page $page is deprecated",
+                Detail  => "Callback list:\n" . join("\n", @{ $callbacks }),
+                Stack   => 0,
+                %{ $deprecated{$page}{$name} },
+            );
+        }
     }
 
     my @rv;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -272,11 +272,23 @@ SUMMARY
     local $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
+    my $HasResults = undef;
+
     my $content = RunComponent(
         '/Dashboards/Render.html',
-        id      => $dashboard->Id,
-        Preview => 0,
+        id         => $dashboard->Id,
+        Preview    => 0,
+        HasResults => \$HasResults,
     );
+
+    if ($subscription->SubValue('SuppressIfEmpty')) {
+        # undef means there were no searches, so we should still send it (it's just portlets)
+        # 0 means there was at least one search and none had any result, so we should suppress it
+        if (defined($HasResults) && !$HasResults) {
+            $RT::Logger->debug("Not sending because there are no results and the subscription has SuppressIfEmpty");
+            return;
+        }
+    }
 
     if ( RT->Config->Get('EmailDashboardRemove') ) {
         for ( RT->Config->Get('EmailDashboardRemove') ) {

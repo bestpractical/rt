@@ -6,3 +6,5 @@ $RT::Handle->MakeSureIndexExists(
     Unique => 1,
     Columns => ['GroupId', 'MemberId'],
 );
+
+1;

@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -74,6 +74,13 @@ while ( my $queue = $queues->Next ) {
     $cfs->Limit(FIELD => 'Name', VALUE => 'SLA', CASESENSITIVE => 0 );
     if ( my $cf = $cfs->First ) {
         $cfs_to_disable{$cf->id} ||= $cf;
+         my ($ret, $msg) = $queue->SetSLADisabled(0);
+         if ( $ret ) {
+             RT->Logger->info("Enabled SLA for queue #" . $queue->id);
+         }
+         else {
+             RT->Logger->error("Failed to enable SLA for queue #" . $queue->id . ": $msg");
+         }
     }
     elsif ( !$queue->SLADisabled ) {
         my ($ret, $msg) = $queue->SetSLADisabled(1);

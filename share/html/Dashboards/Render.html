@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -122,12 +122,13 @@ my $title = loc '[_1] Dashboard', $Dashboard->Name;
 my $show_cb = sub {
     my $pane = shift;
     $m->comp('Elements/ShowPortlet/dashboard',
-        Portlet   => $Dashboard,
-        Rows      => $rows,
-        Preview   => $Preview,
-        Dashboard => $Dashboard,
-        Pane      => $pane,
-        Depth     => 0,
+        Portlet    => $Dashboard,
+        Rows       => $rows,
+        Preview    => $Preview,
+        Dashboard  => $Dashboard,
+        Pane       => $pane,
+        Depth      => 0,
+        HasResults => $HasResults,
     );
 };
 
@@ -140,5 +141,6 @@ my $Refresh = $Preview
 <%ARGS>
 $id => undef
 $Preview => 1
+$HasResults => undef
 </%ARGS>
 

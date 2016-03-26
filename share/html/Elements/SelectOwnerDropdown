@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -91,6 +91,9 @@ if (keys(%user_uniq_hash) > $dropdown_limit ) {
     return;
 }
 
+$m->callback( CallbackName => 'ModifyOwnerListRaw', ARGSRef => \%ARGS,
+    UserHashRef => \%user_uniq_hash, DefaultRef => \$Default, Objects => $Objects );
+
 if ($Default && $Default != RT->Nobody->id && !$user_uniq_hash{$Default}) {
     $user_uniq_hash{$Default} = RT::User->new($session{CurrentUser});
     $user_uniq_hash{$Default}->Load($Default);
@@ -106,6 +109,9 @@ my $nobody_user = RT::User->new( $session{CurrentUser} );
 $nobody_user->Load( RT->Nobody->id );
 my $nobody = [$nobody_user, $nobody_user->Format];
 unshift @formatednames, $nobody;
+
+$m->callback( CallbackName => 'ModifyOwnerListSorted', ARGSRef => \%ARGS,
+    NamesRef => \@formatednames, DefaultRef => \$Default, Objects => $Objects );
 
 </%INIT>
 

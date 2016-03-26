@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -980,11 +980,18 @@ sub _TransContentLimit {
     } else {
         $self->Limit(
             %rest,
-            ALIAS         => $self->{_sql_trattachalias},
-            FIELD         => $field,
-            OPERATOR      => $op,
-            VALUE         => $value,
-            CASESENSITIVE => 0,
+            ALIAS    => $txn_alias,
+            FIELD    => 'Type',
+            OPERATOR => 'NOT IN',
+            VALUE    => ['EmailRecord', 'CommentEmailRecord'],
+        );
+        $self->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            ALIAS           => $self->{_sql_trattachalias},
+            FIELD           => $field,
+            OPERATOR        => $op,
+            VALUE           => $value,
+            CASESENSITIVE   => 0,
         );
     }
     if ( RT->Config->Get('DontSearchFileAttachments') ) {

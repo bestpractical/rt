@@ -14,6 +14,9 @@ jQuery(function() {
 
     var simpleSearch = function() {
         var searchInput = jQuery('#simple-search').find('input');
+        if (!searchInput.length) { // try SelfService simple search
+            searchInput = jQuery('#GotoTicket').find('input');
+        }
         if (!searchInput.length) return;
 
         searchInput.focus();

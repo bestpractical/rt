@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2015 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -915,6 +915,11 @@ calling it; names the arguments which are deprecated.
 Overrides the auto-built phrasing of C<Calling function ____ is
 deprecated> with a custom message.
 
+=item Detail
+
+Provides more context (e.g. callback paths) after the Message but before the
+Stack
+
 =item Object
 
 An L<RT::Record> object to print the class and numeric id of.  Useful if the
@@ -932,6 +937,7 @@ sub Deprecated {
         Remove => undef,
         Instead => undef,
         Message => undef,
+        Detail => undef,
         Stack   => 1,
         LogLevel => "warn",
         @_,
@@ -968,6 +974,8 @@ sub Deprecated {
 
     $msg .= sprintf "  Object: %s #%d.", blessed($args{Object}), $args{Object}->id
         if $args{Object};
+
+    $msg .= "\n$args{Detail}\n" if $args{Detail};
 
     $msg .= "  Call stack:\n$stack" if $args{Stack};
 

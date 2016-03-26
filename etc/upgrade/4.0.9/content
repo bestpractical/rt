@@ -7,6 +7,10 @@ our @Initial = (
             'Going to update empty Queue Lifecycle column to "default"');
 
         my $queues = RT::Queues->new( RT->SystemUser );
+
+        # override the default order by SortOrder, because it doesn't exist yet
+        $queues->OrderByCols();
+
         $queues->FindAllRows;
         $queues->Limit(
             FIELD    => 'Lifecycle',
