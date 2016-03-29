@@ -45,9 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table width="100%" class="ticket-summary">
-<tr>
-  <td valign="top" class="boxcontainer">
+<div class="columns ticket-summary">
+  <div class="boxcontainer col-6">
 % $m->callback( %ARGS, CallbackName => 'LeftColumnTop' );
     <&| /Widgets/TitleBox, title => loc('The Basics'),
         (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
@@ -68,19 +67,17 @@
 % $m->callback( %ARGS, CallbackName => 'AfterAttachments' );
     <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 % $m->callback( %ARGS, CallbackName => 'LeftColumn' );
-  </td>
-  <td valign="top" class="boxcontainer">
+  </div>
+  <div class="boxcontainer col-6">
 % $m->callback( %ARGS, CallbackName => 'RightColumnTop' );
 % if ( RT->Config->Get('EnableReminders') ) {
     <&|/Widgets/TitleBox, title => loc("Reminders"),
         title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$Ticket->Id,
         class => 'ticket-info-reminders',
     &>
-        <table><tr><td>
-            <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" name="UpdateReminders" id="UpdateReminders" method="post">
-                <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
-            </form>
-        </td></tr></table>
+        <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" name="UpdateReminders" id="UpdateReminders" method="post">
+            <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
+        </form>
     </&>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterReminders' );
@@ -99,9 +96,8 @@
         @extra,
     &><& /Elements/ShowLinks, Object => $Ticket &></&>
 % $m->callback( %ARGS, CallbackName => 'RightColumn' );
-  </td>
-</tr>
-</table>
+  </div>
+</div>
 <%ARGS>
 $Ticket => undef
 $Attachments => undef
