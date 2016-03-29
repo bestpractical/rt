@@ -46,20 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeTable' );
-<table class="myrt">
-<tr valign="top">
+<div class="myrt">
 
-<td class="boxcontainer">
+<div class="boxcontainer">
 % $show_cb->($_) foreach @$body;
-</td>
+</div>
 
 % if ( $sidebar ) {
-<td class="boxcontainer">
+<div class="boxcontainer">
 % $show_cb->($_) foreach @$sidebar;
-</td>
+</div>
 % }
 
-</tr></table>
+</div>
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterTable' );
 <%INIT>
 
