@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeTable' );
-<div class="myrt">
+<div class="myrt columns">
 
 <div class="boxcontainer">
 % $show_cb->($_) foreach @$body;

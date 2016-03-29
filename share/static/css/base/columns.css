@@ -1,0 +1,8 @@
+.columns {
+    display: table;
+}
+
+.boxcontainer {
+    display: table-cell;
+}
+

@@ -1,0 +1,20 @@
+.columns .boxcontainer {
+    width: 100%;
+}
+
+@media (min-width: 900px) {
+    .columns .boxcontainer {
+        padding: 0;
+    }
+
+    .columns .boxcontainer {
+        float: right;
+        width: 30%;
+    }
+    .columns .boxcontainer:first-child {
+        float: left;
+        width: 66%;
+    }
+}
+
+

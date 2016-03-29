@@ -1,10 +1,5 @@
 .myrt {
-    display: table;
     width: 100%;
-}
-
-.myrt .boxcontainer {
-    display: table-cell;
 }
 
 table.dashboard {
