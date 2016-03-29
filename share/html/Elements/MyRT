@@ -48,12 +48,12 @@
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeTable' );
 <div class="myrt columns">
 
-<div class="boxcontainer">
+<div class="boxcontainer col-8">
 % $show_cb->($_) foreach @$body;
 </div>
 
 % if ( $sidebar ) {
-<div class="boxcontainer">
+<div class="boxcontainer col-4">
 % $show_cb->($_) foreach @$sidebar;
 </div>
 % }
