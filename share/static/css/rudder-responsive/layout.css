@@ -74,6 +74,15 @@ div#logo .rtname {
     float: left;
 }
 
+@media (max-width: 800px) {
+    div#logo .rtname {
+        width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        padding-right: 0; /* otherwise the text will overflow into the padding */
+    }
+}
+
 div#quickbar,
 div#logo {
     font-size: 0.9em
