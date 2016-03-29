@@ -1,0 +1,130 @@
+/* More about requestor ticket lists */
+
+.more-about-requestor-tickets {
+    background: none;
+    border: none;
+    font-family: arial,helvetica,sans-serif !important;
+    padding: 0 !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav {
+    background: none;
+    border: none;
+    font-size: 80%;
+    padding: 0;
+    margin: 0;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav li {
+    border: none !important;
+    background: none !important;
+    padding-right: 1em;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav a {
+    padding: 0 !important;
+    margin: 0 !important;
+    color: black !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-nav a:hover,
+.more-about-requestor-tickets .ui-tabs-nav .ui-tabs-active a {
+    text-decoration: underline;
+}
+
+.more-about-requestor-tickets .ui-tabs-panel {
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: black !important;
+}
+
+.more-about-requestor-tickets .ui-tabs-panel a {
+    color: black !important;
+}
+
+
+.plain-text-white-space {
+ white-space: pre-wrap;
+ font-family: monospace;
+}
+
+.plain-text-white-space br {
+    display: none;
+}
+
+.dependency-status {
+    font-style: italic;
+}
+.dependency-status .summary {
+    font-weight: bold;
+    font-style: normal;
+}
+
+/* Color the titlebox tabs */
+.ticket-info-cfs .titlebox .titlebox-title .left { background-color: #b32; color: #fff;}
+.ticket-info-basics .titlebox .titlebox-title .left { background-color: #b32;  color: #fff;}
+.ticket-info-people .titlebox .titlebox-title .left { background-color: #48c;  color: #fff;}
+.ticket-info-requestor .titlebox .titlebox-title .left { white-space: nowrap; background-color: #48c;  color: #fff;}
+.ticket-info-links .titlebox .titlebox-title .left { background-color: #316531;  color: #fff;}
+.ticket-info-merge .titlebox .titlebox-title .left { background-color: #8b4513;  color: #fff;}
+.ticket-info-reminders .titlebox .titlebox-title .left { background-color: #369;  color: #fff;}
+.ticket-info-dates .titlebox .titlebox-title .left { background-color: #633063;  color: #fff;}
+.ticket-info-attachments .titlebox .titlebox-title .left { background-color: #993366;  color: #fff;}
+.ticket-info-generic .titlebox .titlebox-title .left { background-color: #547ccc;  color: #fff;}
+
+.ticket-summary .titlebox .titlebox-title .left a, .ticket-summary .titlebox .titlebox-title .left a:visited { color: #fff;}
+
+.unread-messages .titlebox-content :link {
+    text-decoration: underline;
+}
+
+.ticket-inactive {
+  text-decoration: line-through;
+  color: #666
+}
+
+table.ticket-summary td.boxcontainer:first-child {
+  width: 50%;
+}
+div.requestor-ticket-links {
+    text-align: left;
+    font-size: 0.8em;
+    padding-top: 0.25em;
+}
+
+.ticket-info-requestor .more-about-requestor-extra,
+.ticket-info-requestor .comments-about-user,
+.ticket-info-requestor .more-about-requestor-tickets,
+.ticket-info-requestor .more-about-user-groups
+{
+    margin: 0.5em 0 1em 0;
+}
+
+.ticket-info-requestor .comments-about-user .label,
+.ticket-info-requestor .more-about-user-groups .label,
+.ticket-info-requestor .more-about-requestor-tickets .label
+{
+    display: block;
+    font-weight: bold;
+    text-align: left;
+}
+
+.ticket-info-requestor .more-about-user-groups .value ul,
+.ticket-info-requestor .more-about-requestor-tickets ul
+{
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.unset-fields-hidden .unset-field {
+    display: none !important;
+}
+
+/* textareas get to be bigger when we're in a table */
+tr.edit-custom-field.cftype-Text textarea,
+tr.edit-custom-field.cftype-Freeform input,
+tr.edit-custom-field.cftype-Wikitext textarea
+{
+    width: 100%;
+}

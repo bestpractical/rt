@@ -1,0 +1,84 @@
+ul.list-menu .menu-item {
+ font-size: 1.25em;
+}
+ul.list-menu {
+ list-style: none;
+    width: 35%;
+}
+ul.list-menu > li {
+    margin-bottom: .5em;
+    margin-top: .5em;
+}
+ul.list-menu .description {
+ font-style: italic;
+ display: block;
+ padding: 0.2em 0 0 1em;
+}
+
+ul.list-menu ul {
+ list-style: none;
+ padding: 0.25em 0 0 1em;
+}
+ul.list-menu ul li {
+ display: inline;
+ margin-right: 0.5em;
+}
+
+#rt-portal .titlebox iframe {
+    height: 100%;
+    width: 100%;
+    border: 0;
+}
+
+#rt-portal .titlebox {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    bottom: 3em;
+    width: 55%;
+    padding-bottom: 1em;
+}
+
+#rt-portal .titlebox-content {
+    height: 100%;
+    padding: 0;
+}
+
+#rt-portal .titlebox.rolled-up {
+    bottom: auto;
+    padding-bottom: 0;
+}
+
+.admin-hint {
+    font-style: italic;
+}
+
+h2 + .admin-hint {
+    margin-top: -1em;
+}
+
+textarea[name="SMIMECertificate"] {
+    width: 50em;
+    height: 25em;
+}
+
+table.upgrade-history .incomplete {
+    font-weight: bold;
+    color: #900;
+}
+
+table.upgrade-history .upgrade-history-parent .widget a {
+  display: block;
+  margin: 0;
+  width: 20px;
+
+  background: url(../../../static/images/css/rollup-arrow.gif) no-repeat;
+  background-position: center 0;
+
+  padding: 7px 0 0 0;
+  overflow: hidden;
+}
+
+table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
+    background-image: url(../../../static/images/css/rolldown-arrow.gif);
+}

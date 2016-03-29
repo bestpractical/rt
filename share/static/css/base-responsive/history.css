@@ -1,0 +1,165 @@
+.transaction {
+    border-top: 2px solid #ccc;
+    padding-bottom: 0.5em;
+    position: relative; /* gives us a container for position: absolute */
+}
+
+.transaction.odd {
+ background-color: #fff;
+}
+
+div.history-container {
+
+ margin-top: 0.75em;
+ border-left: 1px solid #ccc;
+
+ border-right: 2px solid #999;
+  border-bottom: 2px solid #999;
+
+}
+
+.transaction div.metadata span.actions {
+ position: absolute;
+ top: 0;
+ right: 0;
+ padding: 0em;
+ background: #ccc;
+ text-align: right;
+ border-left: 1px solid #999;
+ border-bottom: 1px solid #999;
+ color: #ccc;
+ -moz-border-radius-bottomleft: 0.5em;
+ -webkit-border-bottom-left-radius: 0.5em;
+ white-space: nowrap;
+
+ border-radius: 0 0 0 0.5em;
+}
+
+.transaction div.metadata  span.type {
+ text-align: center;
+ float: left;
+ margin: 0.25em 0.70em 0.25em 0.25em;
+ width: 1em;
+ padding: 0;
+ border-right: 1px solid #999;
+ border-bottom: 1px solid #999;
+ -moz-border-radius-bottomright: 0.25em;
+ -webkit-border-bottom-right-radius: 0.25em;
+
+ border-radius: 0 0 0.25em 0;
+
+}
+
+.transaction span.type a {
+ color: #fff;
+ padding-top: 0.75em;
+ display: block;
+}
+
+
+.transaction span.date {
+ width: 15em;
+}
+
+
+.transaction span.description {
+ margin-left: 1em;
+ font-weight: bold;
+}
+
+.transaction .description a:visited {
+    color: inherit;
+}
+
+.transaction span.time-taken {
+ margin-left: 1em;
+}
+
+.transaction div.content {
+ padding-right: 1em;
+ padding-bottom: 0.7em;
+ margin-left: 1.5em;
+}
+
+
+.transaction .messagebody {
+ font-size: 1em;
+ padding-left: 1em;
+ margin-top: 0.5em;
+ padding-top: 0.5em;
+ border-top: 1px solid #ccc;
+ /*overflow: auto; */
+ min-height: 2.5em;
+ /* To avoid overlapping of "downloadattachment" by messagebody */
+ clear: left;
+ word-wrap: break-word;
+}
+
+.transaction .messagebody img {
+ max-width: 100%;
+}
+
+.transaction div.downloadattachment {
+float: right;
+clear: both;
+font-size: 0.9em;
+text-align: right;
+background: #ddd;
+padding: 0.5em;
+margin-left: 1em;
+
+border: 1px solid #ccc;
+border-right: 2px solid #aaa;
+border-bottom: 2px solid #aaa;
+margin-top: 0.5em;
+-moz-border-radius: 0.5em;
+-webkit-border-radius: 0.5em;
+ border-radius: 0.5em;
+}
+
+.transaction div.downloadattachment .downloadcontenttype{
+color: #666;
+padding-right:0.25em;
+}
+
+
+.transaction .message-header-key {
+  width: 7em;
+  font-weight: bold;
+  color: #666;
+}
+
+
+.transaction .messagebody .messagebody{
+ font-size: 1em;
+ padding: 0;
+ border: 0;
+ margin: 0;
+}
+
+
+
+.transaction.basics .type { background: #b32; }
+.transaction.cfs .type { background: #b32; }
+.transaction.people .type { background: #48c; }
+.transaction.links .type { background: #316531; }
+.transaction.dates .type { background: #633063; }
+.transaction.message .type { background: #069; }
+.transaction.reminders .type { background: #369; }
+.transaction.other .type { background: #abc; }
+.transaction.error .type { background: #abc; }
+.transaction.attachment-truncate .type, .transaction.attachment-drop .type { background-color: #abc; }
+
+.transaction.error { background-color: #fcc; }
+.transaction.attachment-truncate, .transaction.attachment-drop { background-color: #ffc; }
+
+
+.transaction .message-header-value.verify { font-weight: bold; }
+.transaction .message-header-value.verify.bad                  { color: #A00; }
+.transaction .message-header-value.verify.done.trust-UNDEFINED { color: #F60; }
+.transaction .message-header-value.verify.done.trust-NONE      { color: #900; }
+.transaction .message-header-value.verify.done.trust-NEVER     { color: #900; }
+.transaction .message-header-value.verify.done.trust-MARGINAL  { color: #F60; }
+.transaction .message-header-value.verify.done.trust-FULL      { color: #060; }
+.transaction .message-header-value.verify.done.trust-FULLY     { color: #060; }
+.transaction .message-header-value.verify.done.trust-ULTIMATE  { color: #060; }

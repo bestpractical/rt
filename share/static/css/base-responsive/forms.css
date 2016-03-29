@@ -1,0 +1,282 @@
+form {
+
+    background: none;
+    border: none;
+    margin: 0;
+}
+
+
+.input-row .label {
+  position: relative;
+  text-align: right;
+  width: 4em;
+}
+
+.input-row .input {
+  position: relative;
+  left: 1em;
+  width: 10em;
+  text-align: right;
+}
+
+.value {
+ font-size: 0.85em;
+
+}
+
+.value.no-value {
+    color: #666;
+    font-style: italic;
+}
+
+
+
+div.button-row {
+   text-align: right;
+   padding-right: 0.5em;
+}
+
+
+.button {
+    display: inline-block;
+}
+.button:hover {
+    text-decoration:none;
+    cursor: default;
+}
+
+.button, .button:visited, input[type=reset], input[type=submit], input[class=button], button {
+   color: #fff;
+   background: #3858a3;
+   padding: 0.25em;
+   padding-left: 0.5em;
+   padding-right: 0.5em;
+   -moz-border-radius: 0.5em;
+   -webkit-border-radius: 0.5em;
+   border-radius: 0.5em;
+}
+
+.button:hover, input.button:hover, button:hover, input[type=reset]:hover, input[type=submit]:hover, input[class=button]:hover {
+   background: #1D3B7D;
+}
+
+.button:focus, input.button:focus, button:focus, input[type=reset]:focus, input[type=submit]:focus, input[class=button]:focus {
+   background: #1D3B7D;
+}
+
+div.error div.error {
+ border: 2px solid #aa0000;
+ border-top: 1px solid #bb0000;
+ border-left: 1px solid #bb0000;
+ background-color: #fcc;
+}
+
+div.error .titlebox-title span.left {
+  background-color: #f00;
+  color: #fff;
+  border: 1px solid #cc0000;
+  border-right: 2px solid #bb0000;
+  border-bottom: 2px solid #bb0000;
+
+}
+
+
+div.results .titlebox-title .left, div.results .titlebox {
+  border: 1px solid #aa9;
+  border-bottom: 2px solid #990;
+  border-right: 2px solid #990;
+}
+
+div.results .titlebox-title .left {
+  background: #ff9;
+
+}
+
+div.results .titlebox {
+  background: #ffc;
+
+}
+
+div.results .titlebox-content {
+  padding: 0;
+}
+
+.results .titlebox-content > p:first-child,
+.error .titlebox-content > p:first-child {
+    margin-top: 0;
+}
+
+.results .titlebox-content > p:last-child,
+.error .titlebox-content > p:last-of-type {
+    margin-bottom: 0;
+}
+
+
+.label, .labeltop {
+ text-align: right;
+ font-size: 0.8em;
+ padding-right: .5em;
+
+}
+
+.cflabel {
+ text-align: right;
+ font-size: 0.8em;
+ padding-right: .5em;
+ width: 12em;
+}
+
+td.cflabel {
+    width: auto;
+}
+
+.labeltop, .label, .value {
+  padding-top: 0.25em;
+}
+
+div.ticket-info-basics div.titlebox-content .labeltop{
+  width: 10em;
+}
+
+div.submit {
+ text-align: right;
+}
+
+div.submit .extra-buttons {
+ text-align: left;
+ float: left;
+}
+
+
+div.widget {
+    padding-bottom: 0.5em;
+    clear: both;
+}
+
+div.widget .label {
+ text-align: right;
+ display: block;
+ width: 15em;
+ float: left;
+ clear: both;
+ font-size: 0.9em;
+ padding-right: 0.5em;
+}
+
+div.widget .hints {
+
+  display: block;
+  padding-left: 14em;
+  font-style: italic;
+}
+
+
+.combobox {
+    position: relative;
+    width: 11.5em;
+}
+
+.combobox .combo-button {
+    right: 0;
+    padding: 0;
+    margin-top: 0;
+    cursor: default;
+    color: ButtonFace;
+    background: ButtonFace;
+    border: 2px outset ButtonHighlight;
+}
+
+/* this style replaces the default down-triangle with one that looks more like
+ *  native widget sets. It does not work in IE as it's an :after pseudo element
+ *  with a "content" value. but that's ok because IE can't display unicode 25be
+ *  anyway */
+
+.combobox .combo-button:after {
+    color: ButtonText;
+    margin: 0;
+    padding: 0;
+    margin-top: -0.5em;
+    margin-left: -0.8em;
+    content: "\25be";
+}
+
+.combobox .combo-text {
+    border: 1px inset ButtonHighlight;
+    margin: 0;
+    padding: 0;
+}
+
+.combobox .combo-list {
+    border: 1px outset;
+    z-index: 150;
+}
+
+.value .TimeUnits{
+    margin-left: .5em;
+    width: 7em;
+}
+
+.cfinvalidfield {
+    font-style: italic;
+    color: red;
+}
+
+form div.submit div.buttons {
+    min-height: 2.8em;
+}
+
+form div.submit div.buttons div.back {
+    position: relative;
+    float: left;
+    width: 50%;
+    text-align: left;
+}
+
+form div.submit div.buttons div.next {
+    position: relative;
+    float: right;
+    width: 50%;
+}
+
+.invalid {
+    font-style: italic;
+    color: red;
+}
+
+.messagebox-attachment-warning {
+    display: none;
+}
+
+.messagebox-attachment-warning .ignore {
+    display: none;
+}
+
+ul.selectable {
+    list-style-type: none;
+}
+
+ul.selectable input[type=checkbox],
+ul.selectable a {
+    vertical-align: bottom;
+}
+
+#reuse-attachments {
+    padding-top: 0.25em;
+}
+
+.ticket-info-attachments ul li {
+    font-size: .8em;
+}
+
+/* query builder */
+
+#formatbuttons {
+    clear: both;
+}
+
+#ResetAuthTokenPrompt {
+    display: block;
+    text-align: right;
+    font-weight: bold;
+    text-decoration: underline;
+}

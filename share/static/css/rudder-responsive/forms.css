@@ -1,0 +1,115 @@
+/* These override the base titlebox rules in base/forms.css. They try not to
+   duplicate properties. */
+
+div.results .titlebox,
+div.error-titlebox {
+    border: none;
+    background: none;
+    font-weight: bold;
+}
+
+div.results .titlebox-content {
+    border: 1px solid #aa9;
+    border-bottom: 2px solid #990;
+    border-right: 2px solid #990;
+    background: #ffc;
+}
+
+div.results .titlebox-title .left {
+    border: solid #aa9;
+    border-width: 1px 1px 0 1px;
+}
+
+div.error-titlebox .titlebox-title span.left {
+    border: none;
+    border-right: 2px solid #b00;
+    margin-left: 0;
+    padding-left: 2.3em;
+    background-color: #f00;
+    color: #fff;
+}
+
+div.error-titlebox .titlebox-content {
+    background-color: #fcc;
+    padding: 1em;
+}
+
+div#body>div.error {
+    background-color: #fcc;
+    padding: 1em;
+}
+
+div.error .titlebox-title .widget a {
+    background-position: center -7px
+}
+
+.button,
+input[type=reset],
+input[type=submit],
+input[class=button],
+button,
+input,
+select { font-size: 1.0em }
+
+.button,
+.button:visited,
+input[type=reset],
+input[type=submit],
+input[class=button],
+button {
+    color: #fff;
+    background: #4868b3;
+    border: 1px solid #fff;
+    padding: 0.5em;
+}
+
+.button:focus,
+input.button:focus,
+button:focus,
+input[type=reset]:focus,
+input[type=submit]:focus,
+input[class=button]:focus,
+.button:hover,
+input.button:hover,
+button:hover,
+input[type=reset]:hover,
+input[type=submit]:hover,
+input[class=button]:hover {
+    background: #3D5B9D
+}
+
+.button:active,
+input.button:active,
+button:active,
+input[type=reset]:active,
+input[type=submit]:active,
+input[class=button]:active {
+    background: #1D3B7D
+}
+
+.button,
+input[type=reset],
+input[type=submit],
+input[class=button],
+button {
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+}
+
+.value {
+    font-size: 1em
+}
+
+.messagebox-attachment-warning {
+    background-color: #fcc;
+    font-weight: bold;
+    padding: .5em 2em;
+    margin: .5em 0;
+
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}

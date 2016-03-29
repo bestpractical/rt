@@ -1,0 +1,40 @@
+.comment {
+    padding-left: 0.5em;
+    color: #999;
+}
+
+#comp-Ticket-ShowEmailRecord #header {
+    top: 0em;
+}
+
+#comp-Ticket-ShowEmailRecord #body {
+    margin-left: 1em;
+    margin-top: 1em;
+    overflow: auto;
+}
+
+span.cflabel,
+td.cflabel,
+span.label,
+span.labeltop,
+td.label,
+td.labeltop {
+    font-weight: bold;
+    color: #666;
+    font-size: 1em;
+    min-width: 6em;
+}
+
+span.cflabel .type,
+td.cflabel .type {
+    font-weight: normal;
+    font-size: 0.8em;
+}
+
+table.myday h2 {
+    display: inline
+}
+
+table.myday td {
+    padding: 0.25em
+}

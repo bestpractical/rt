@@ -1,0 +1,243 @@
+.sf-menu {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.sf-menu li:hover {
+    background-color: #CFDEFF
+}
+
+.sf-menu li,
+.sf-menu li li,
+.sf-menu li li li {
+    background-color: #fff
+}
+
+.sf-sub-indicator {
+    background-image: url(../../../static/css/images/arrows-grey.png)
+}
+
+.sf-menu li li .sf-sub-indicator {
+    margin-top: -3px
+}
+
+#page-menu.sf-menu li .sf-sub-indicator {
+    top: 0.7em
+}
+
+#page-menu.sf-menu li:hover ul,
+#page-menu.sf-menu li.sfHover ul {
+    top: 2.5em
+}
+
+#main-navigation {
+    position: absolute;
+    top: 1px;
+    left: 0;
+    z-index: 9999;
+    text-color: #000;
+}
+
+#main-navigation .sf-menu a,
+#main-navigation .sf-menu a:hover {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border-color: #fff;
+    color: #000;
+}
+
+#main-navigation a {
+    border-top: none
+}
+
+#main-navigation li li a {
+    border-top: 1px solid white
+}
+
+#app-nav.sf-menu > li:first-child > a {
+    border-left: none
+}
+
+#main-navigation #app-nav > li,
+#main-navigation #app-nav > li > a {
+    background-color: transparent
+}
+
+#page-navigation {
+    position: absolute;
+    top: 6em;
+    right: 0;
+    left: 0;
+    padding-right: 3em;
+    font-size: 0.9em;
+    border-bottom: 1px solid #ccc;
+    background-color: #eee;
+}
+
+#page-navigation #page-menu {
+    margin-top: 0.2em;
+    float: right;
+    width: auto;
+}
+
+#page-navigation .sf-menu li {
+    background-color: transparent
+}
+
+#page-navigation .sf-menu li li,
+#page-navigation .sf-menu li li li {
+    background-color: #fff
+}
+
+#page-navigation .sf-menu a:visited,
+#page-navigation .sf-menu a {
+    border: none;
+    color: #000;
+}
+
+/* to stop a "flash" of an unstyled menu on an older browser,  hide the menu until superfish has initialized it */
+
+#app-nav.toplevel {
+    display: none
+}
+
+#app-nav.toplevel.sf-menu {
+    display: block
+}
+
+#page-menu.toplevel {
+    display: none
+}
+
+#page-menu.toplevel.sf-menu {
+    display: block
+}
+
+#topactions {
+    position: absolute;
+    background: transparent;
+    top: 3.25em;
+    right: 0em;
+    padding-right: 0.7em;
+    width: auto;
+    min-width: 42em;
+    font-size: 0.9em;
+    z-index: 99;
+}
+
+#topactions form * {
+
+}
+
+#topactions input,
+#topactions select,
+#topactions button {
+    font-size: 1em;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    vertical-align: middle;
+
+    width: 8em;
+    -webkit-transition: width 0.25s ease-in-out;
+    -moz-transition: width 0.25s ease-in-out;
+    -ms-transition: width 0.25s ease-in-out;
+    transition: width 0.25s ease-in-out;
+}
+
+#topactions .asset-search input[type="search"],
+#topactions .article-search input[type="search"]
+ {
+    width: 16em;
+}
+
+#topactions input[type="search"]:focus {
+    width: 16em;
+    -webkit-transition: width 0.25s ease-in-out;
+    -moz-transition: width 0.25s ease-in-out;
+    -ms-transition: width 0.25s ease-in-out;
+    transition: width 0.25s ease-in-out;
+}
+
+#topactions select {
+    -webkit-appearance: menulist-button;
+}
+
+#topactions .select-queue {
+    padding-right: 0
+}
+
+#topactions #simple-search .field {
+    margin-left: 1em;
+    color: #787;
+}
+
+#topactions #simple-search .field:focus {
+    color: #000
+}
+
+.sf-menu ul {
+    background-image: none;
+    padding: 0;
+}
+
+.sf-menu.sf-shadow ul {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -moz-box-shadow: 2px 2px 8px -2px #999;
+    -webkit-box-shadow: 2px 2px 8px -2px #999;
+    box-shadow: 2px 2px 8px -2px #999;
+}
+
+/* Pin page menu to top left corner once you scroll past it */
+
+#page-navigation #page-menu.pinned {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: auto;
+    margin-top: 0;
+    background: white;
+    border-left: 1px #aaa solid;
+    border-bottom: 1px #aaa solid;
+    border-radius: 0 0 0 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    /* stupid vendor prefixes */
+    -moz-border-radius: 0 0 0 5px;
+    -webkit-border-radius: 0 0 0 5px;
+    -moz-box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+#page-menu.pinned li:hover ul,
+#page-menu.pinned li.sfHover ul {
+    border-left: 1px #aaa solid;
+    border-right: 1px #aaa solid;
+    z-index: -1 !important; /* relative to current stacking context */
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    -moz-box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+/* round off the corner of the first menu item so it matches the container */
+
+#page-menu.pinned > li:first-of-type,
+#page-menu.pinned > li:first-of-type > a {
+    border-radius: 0 0 0 5px;
+    -moz-border-radius: 0 0 0 5px;
+    -webkit-border-radius: 0 0 0 5px;
+}
+
+#topactions input.field {
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+#topactions input.select-queue {
+    border: none;
+}
+

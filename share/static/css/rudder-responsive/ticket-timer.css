@@ -1,0 +1,36 @@
+.ticket-timer {
+    padding: 0;
+}
+
+.ticket-timer .ticket-link {
+    background: #547CCC;
+    padding: 0.33em 1em;
+    margin-bottom: 0;
+
+    /* for text-overflow: ellipsis */
+    color: white;
+    font-weight: bold;
+}
+
+.ticket-timer .ticket-link a {
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+/* we use background: #547CCC; to help make the ticket timer look more like RT
+   but unfortunately that makes the stopwatch icon (being black) look bad */
+.ticket-timer .ticket-link img {
+    display: none;
+}
+
+.ticket-timer .gutter {
+    border-bottom: 1px solid #ccc;
+    background-color: #eee;
+    padding: 0.5em;
+}
+
+.ticket-timer .extra,
+.ticket-timer .on-error {
+    padding: 0 1em;
+}

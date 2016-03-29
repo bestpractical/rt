@@ -1,0 +1,259 @@
+#assets-accordion h3 {
+    position: relative;
+}
+
+#assets-accordion h3 a.unlink-asset {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: inherit;
+    padding: 0;
+}
+
+.ticket-assets .add-asset {
+    padding: 2em 0 0 0;
+    text-align: right;
+}
+
+body#comp-Asset-Search .collection-as-table td {
+    white-space: nowrap;
+}
+
+/* Colors */
+
+.asset-basics   .titlebox .titlebox-title .left,
+.asset-info-cfs .titlebox .titlebox-title .left { background-color: #b32    }
+.asset-people   .titlebox .titlebox-title .left { background-color: #48c    }
+.asset-dates    .titlebox .titlebox-title .left { background-color: #633063 }
+.asset-links    .titlebox .titlebox-title .left { background-color: #316531 }
+.ticket-assets  .titlebox .titlebox-title .left { background-color: #316531 }
+
+/* People display */
+
+#comp-Asset-Display .asset-people table {
+    width: 100%;
+}
+
+#comp-Asset-Display .asset-people td.label {
+    text-align: left;
+}
+
+#comp-Asset-Display .asset-people h3 {
+    margin: 0;
+    padding: 0;
+    line-height: 1.3;
+    font-size: 100%;
+}
+
+#comp-Asset-Display .asset-people .details {
+    padding: 0;
+}
+
+/* People editing */
+
+.asset-people .edit ul.role-members {
+    margin-top: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.asset-people .edit td {
+    vertical-align: top;
+}
+
+.asset-people .edit .note {
+    font-size: 0.9em;
+}
+
+.asset-people .edit h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.asset-people .edit .role h3 {
+    margin-bottom: 0.5em;
+}
+
+.asset-people .edit .role,
+.asset-people .edit .add-group,
+.asset-people .edit .add-user {
+    margin-bottom: 1em;
+}
+
+/* Asset summary */
+
+.ticket-assets form {
+    display: inherit;
+}
+
+.ticket-assets .related-tickets {
+    margin-top: 1em;
+}
+
+.ticket-assets .related-tickets .label a {
+    font-weight: bold;
+    color: black;
+}
+
+.asset-metadata>div {
+    vertical-align: top;
+    min-width: 30%;
+    max-width: 30%;
+    padding-right: 1.5em;
+    display: inline-block;
+}
+
+.asset-metadata {
+    padding-top: 2em; /* nav overflows this :( */
+}
+
+@media (max-width: 800px) {
+    .asset-metadata>div {
+        min-width: 45%;
+        width: 45%;
+    }
+}
+
+/* on a little screen, let's just use a single column */
+@media (max-width: 600px) {
+    .asset-metadata {
+        padding-top: 6em;
+        /* nav overflows this: < */
+    }
+
+    .asset-metadata>div {
+        min-width: 100%;
+        width: 100%;
+    }
+
+    #Asset-Create-basics>table,
+    #Asset-Create-basics>table>tbody>tr,
+    #Asset-Create-basics>table>tbody>tr>td {
+        display: block;
+    }
+}
+
+/* On a reasonable-width screen, make better use of whitespace */
+@media (min-width: 601px) {
+    .asset-info-cfs .edit-custom-fields {
+        width: 100%;
+    }
+
+    .asset-info-cfs .edit-custom-fields tr td,
+    #ModifyAsset .asset-basics tr td {
+        display: inline-block;
+    }
+
+    .asset-info-cfs .edit-custom-fields tr,
+    #ModifyAsset .asset-basics tr {
+        display: inline-block;
+        width: 49%;
+    }
+
+    .asset-info-cfs .edit-custom-fields tr td.cflabel,
+    #ModifyAsset .asset-basics tr td.label,
+    #ModifyAsset .asset-basics tr td.cflabel {
+        width: 8em;
+    }
+
+    /* Asset creation */
+    #Asset-Create-basics>table {
+        width: 100%;
+        align: left;
+    }
+
+    #Asset-Create-basics>table>tbody>tr>td {
+        padding-right: 2em;
+    }
+
+    #Asset-Create-basics>table>tbody>tr {
+        vertical-align: top;
+    }
+}
+
+/* basic cleanups for the search UI's elements */
+.asset-search-grouping input.datepicker {
+    width: 7em;
+}
+
+.asset-search-grouping td * {
+    max-width: 11em;
+}
+
+.asset-search-grouping td.label.not {
+    min-width: 3em;
+    width: auto;
+    padding-left: 1em;
+}
+
+/* On a wide screen, use two columns for search/bulk criteria */
+@media (min-width:1150px) {
+    .asset-bulk-grouping.asset-bulk-cfs,
+    .asset-search-grouping.asset-search-cfs {
+        display: inline-block;
+        width: 45%;
+        padding-right: 1em;
+        vertical-align: top;
+    }
+
+    .titlebox.asset-bulk-grouping.asset-bulk-cfs,
+    .titlebox.asset-search-grouping.asset-search-cfs {
+        display: block;
+        width: auto;
+        padding: inherit;
+    }
+
+    .asset-bulk-people tr.full-width,
+    .asset-search-people tr.ful-width,
+    .asset-bulk-basics tr.full-width,
+    .asset-search-basics tr.full-width {
+        width: 100%;
+    }
+
+    .asset-bulk-people table.core-fields tr,
+    .asset-search-people tr,
+    .asset-bulk-basics table.core-fields tr,
+    .asset-search-basics tr {
+        width: 49%;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .asset-bulk-people table.core-fields tr>td,
+    .asset-search-people tr>td,
+    .asset-bulk-basics table.core-fields tr>td,
+    .asset-search-basics tr>td {
+        display: inline-block;
+        width: 10em;
+    }
+}
+
+#assets-accordion ul.toplevel {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    width: auto;
+    font-size: .9em;
+    z-index: 1;
+}
+
+#assets-accordion li.has-children {
+    background: transparent;
+}
+
+#assets-accordion li.has-children ul {
+    min-width: 12em;
+}
+
+#assets-accordion a {
+    border: none;
+    color: #000;
+}
+
+#assets-accordion a.sf-with-ul {
+    padding-top: .3em;
+}
+
+#assets-accordion .sf-sub-indicator {
+    top: .2em;
+}

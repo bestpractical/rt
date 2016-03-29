@@ -1,0 +1,97 @@
+.ticket-info-basics input[name="Subject"] {
+    width: 20em;
+}
+
+#ticket-create-metadata .cflabel .name,
+#ticket-update-metadata .cflabel .name {
+    font-weight: normal;
+}
+
+#ticket-create-message .messagedetails,
+#ticket-update-message .messagedetails
+{
+    margin-bottom: 0.5em;
+}
+
+#ticket-create-message .messagedetails input[type="text"],
+#ticket-update-message .messagedetails input[type="text"] {
+    width: 90%;
+}
+
+#ticket-create-message #SubmitTicket,
+#ticket-update-message #SubmitTicket {
+    padding-bottom: 2em;
+}
+
+.ticket-info-squelch ul, #previewscrips ul {
+    list-style: none;
+}
+
+.ticket-update-suggested-cc {
+    white-space: nowrap;
+}
+
+iframe.richtext-editor {
+    background-color: white !important;
+}
+
+.messagebox-container.action-response textarea,
+.messagebox-container.action-response iframe
+{
+    background-color: #fcc !important;
+}
+
+.messagebox-container.action-private textarea,
+.messagebox-container.action-private iframe
+{
+    background-color: #ffffdd !important;
+}
+
+.sidebyside #ticket-create-metadata,
+.sidebyside #ticket-update-metadata {
+    float: right;
+    width: 40%;
+    clear: right;
+}
+
+.sidebyside #ticket-create-message,
+.sidebyside #ticket-update-message {
+    float: left;
+    width: 58%;
+    clear: left;
+}
+
+@media (max-width: 950px) {
+    /* Revert to a single column when we're less than 1000px wide */
+    .sidebyside #ticket-create-metadata,
+    .sidebyside #ticket-update-metadata,
+    .sidebyside #ticket-create-message,
+    .sidebyside #ticket-update-message
+    {
+        float: none;
+        width: auto;
+        clear: both;
+    }
+}
+
+.sidebyside #comp-Ticket-Update #body {
+    padding-top: 3em;
+}
+
+.sidebyside #ticket-create-message .button[name="AddMoreAttach"],
+.sidebyside #ticket-update-message .button[name="AddMoreAttach"] {
+    float: right;
+}
+
+#recipients label {
+    padding-left: 2em;
+}
+
+#recipients input.checkbox {
+    position: absolute;
+    margin-left: 0.5em;
+}
+
+.refreshing {
+    opacity: 0.3;
+}

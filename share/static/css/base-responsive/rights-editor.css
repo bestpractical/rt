@@ -1,0 +1,146 @@
+/* Styles for putting jQuery UI tabs on the left */
+.rights-editor {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 110%;
+}
+
+/* Position and style the left tabs */
+.rights-editor > .ui-tabs-nav {
+    float: left;
+    background: transparent;
+    border: none;
+    color: black;
+    width: 25%;
+}
+
+.rights-editor > .ui-tabs-nav li {
+    float: none;
+    display: block;
+    border: none;
+    background: transparent;
+}
+
+.rights-editor > .ui-tabs-nav .ui-tabs-anchor {
+    float: none;
+    display: block;
+    padding: 0 0 0.2em 0.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rights-editor .ui-tabs-nav li.category {
+    text-transform: uppercase;
+}
+
+li.category ~ li.category {
+    margin-top: 1em;
+}
+
+.rights-editor li.addprincipal .warning {
+    color: #a00;
+    display: none;
+}
+
+/* Position the outer-most panel */
+.rights-editor > .ui-tabs-panel {
+    position: static;
+    float: left;
+    width: 72%;
+}
+
+.rights-editor .ui-tabs-panel {
+    padding: 2px;
+}
+
+.rights-editor .ui-tabs-panel h3 {
+    color: black;
+    margin-top: 0;
+    line-height: 0.8em;
+}
+
+.rights-editor .ui-tabs-panel h3 .subgroups {
+    color: #444;
+    font-size: 80%;
+}
+
+.category-tabs {
+    width: 100%;
+    border: none;
+    background: none;
+}
+
+.category-tabs .ui-tabs-nav {
+    border: none;
+    background: none;
+}
+
+.category-tabs .ui-tabs-panel {
+    background: none;
+    border: 1px solid #aaa;
+}
+
+.rights-editor li.ui-tabs-active {
+    background: white !important;
+    color: #222 !important;
+    border-color: #aaa !important; 
+    font-weight: bold;
+}
+
+.rights-editor .ui-state-active a,
+.rights-editor .ui-state-hover a {
+    color: #222 !important;
+}
+
+.rights-editor .category-tabs li.ui-state-hover {
+    background: #f6f6f6;
+    border-color: #aaa !important;
+}
+
+.rights-editor .separator {
+    display: none;
+}
+
+.rights-editor ul.rights-list {
+    list-style: none;
+}
+
+.rights-editor ul.rights-list li {
+    padding: 0.2em 0;
+}
+
+.rights-editor ul.rights-list li:nth-child(even) {
+    background: #f4f4f4;
+}
+
+.rights-editor ul.rights-list li label {
+    cursor: pointer;
+}
+
+.rights-editor .rightname {
+    color: #888;
+    font-size: 0.9em;
+
+    position: absolute;
+    right: 1em;
+    margin-top: 0.3em;
+
+    text-align: right;
+}
+
+span.rights-editor-label {
+    padding: 0.15em 0.5em;
+    border-radius: 6px;
+}
+
+.tab-aggregates-checked-rights {
+    background: #cfcfcf;
+}
+
+/* override jquery-ui by using a more specific
+ * class identifier.
+ */
+.category-tabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
+    padding: .5em 0.5em;
+}

@@ -1,0 +1,129 @@
+.hide, .hidden { display: none !important; }
+
+.clear { clear: both; }
+
+* html .clearfix {
+    height: 1%; /* IE5-6 */
+}
+.clearfix {
+    display: inline-block; /* IE7xhtml*/
+}
+html[xmlns] .clearfix { /* O */
+    display: block;
+}
+.clearfix:after { /* FF, O, etc. */
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+hr.clear {
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 1px;
+}
+
+/* Custom fields */
+
+/* Only apply these when we're not rendering in a table, hence the leading div. */
+div.edit-custom-field {
+    width: 48%;
+    float: left;
+    margin: 0.5em;
+}
+
+div.edit-custom-field .cflabel {
+    float: left;
+    padding-right: 0.5em;
+}
+
+div.edit-custom-field .entry {
+    margin-left: 10em;
+}
+
+.cflabel .name { font-weight: bold; }
+.cflabel .type { font-style: italic; }
+
+fieldset.cfedit {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+table.bulk-edit-custom-fields {
+    border-spacing: 0;
+}
+table.bulk-edit-custom-fields tr td {
+    padding-bottom: 0.5em;
+}
+
+.query-stacktrace-toggle {
+    float: right;
+}
+
+/* jQuery UI overrides */
+.ui-widget {
+    font-family: arial,helvetica,sans-serif !important;
+}
+
+textarea.messagebox, #cke_Content, #cke_UpdateContent {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+div.cke {
+    border: 1px solid #b6b6b6;
+}
+
+.cke_top {
+    border-bottom: none !important;
+}
+
+.cke_bottom {
+    border-top: none !important;
+}
+
+.selection-box {
+    min-width: 300px;
+}
+
+.datepicker {
+    width: 17em;
+}
+
+.toggle-bookmark a img,
+.timer-link a img {
+    height: 1em;
+    width: 1em;
+    border-style: none;
+}
+
+.dashboard-subscription tr.frequency .value input {
+    margin-bottom: 0.75em;
+}
+
+/* infinite history error message */
+
+.error-load-history {
+    background-color: #b32;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+.error-load-history a {
+    text-decoration: underline !important;
+    color: white !important;
+}
+
+/* dashboard subscription */
+
+td.current-recipients {
+    vertical-align: top;
+    padding-left: 50px;
+}

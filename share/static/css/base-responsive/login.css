@@ -1,0 +1,71 @@
+.login-body .action-results {
+    list-style: none;
+}
+
+#login-box hr {
+ display: none;
+}
+
+#login-box {
+
+ width: 30em;
+
+margin-right:auto;margin-left:auto;
+ padding-top: 2em;
+ padding-bottom: 2em;
+
+
+}
+
+
+#login-box .input-row {
+  position: relative;
+  height: 1.5em;
+  padding-top: 1em;
+}
+
+#login-box .input-row .label {
+
+ float: left;
+ width: 8em;
+ text-align: right;
+ font-weight: bold;
+
+
+}
+
+#login-box .input-row input {
+  width: 14em;
+}
+
+#login-box .button-row {
+  margin-top: 0.5em;
+}
+
+#quick-personal {
+    position: absolute;
+    z-index: 9999;
+    left: 0;
+    /* This avoids a very weird bug in Chrome where opening a select causes a
+     * hover event at (0,0), which will be over top of the menu sometimes */
+    top: 1px;
+}
+
+#quick-personal #not-logged-in {
+    display: block;
+    padding-top: 0.5em;
+    padding-left: 1em;
+}
+
+.redirect-warning tt {
+    display: block;
+    margin: 0.5em 0 0.5em 1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 90%;
+}
+
+#login-box div.login-help {
+    text-align: center;
+}

@@ -1,0 +1,229 @@
+table.queue-summary,
+table.collection-as-table {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+table.collection-as-table td {
+    padding-bottom: 0.25em
+}
+
+table.collection-as-table h1,
+table.collection-as-table h2,
+table.collection-as-table h3,
+table.collection-as-table h4,
+table.collection-as-table h5 {
+    margin: 0;
+    margin-right: 0.5em;
+    padding: 0;
+    padding: 0.1em;
+    display: inline-block;
+    font-weight: normal;
+}
+
+table.collection-as-table h1 a,
+table.collection-as-table h2 a,
+table.collection-as-table h3 a,
+table.collection-as-table h4 a,
+table.collection-as-table h5 a {
+    font-weight: normal
+}
+
+table.queue-summary tr>*:first-child {
+    padding-left: 1em
+}
+
+table.queue-summary tr>*:last-child {
+    padding-right: 1em
+}
+
+table.queue-summary a,
+table.collection-as-table a {
+    font-weight: bold
+}
+
+table.collection-as-table th.collection-as-table,
+table.queue-summary th.collection-as-table {
+    background: transparent;
+    padding: 0.25em;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.5em;
+    color: #3858a3;
+}
+
+table.collection-as-table th.collection-as-table a,
+table.queue-summary th.collection-as-table a {
+    color: #3858a3
+}
+
+table.collection-as-table th.collection-as-table {
+    text-align: left
+}
+
+table.queue-summary th.collection-as-table {
+    text-align: right
+}
+
+table.collection-as-table,
+table.queue-summary {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1em;
+}
+
+table.queue-summary th.collection-as-table:first-child {
+    text-align: left
+}
+
+tr.collection-as-table+tr.collection-as-table th,
+table.collection-as-table.chart th {
+    border-bottom: 2px solid #ccc
+}
+
+table.queue-summary td {
+    background: #efefef;
+    border-bottom: 1px solid #ccc;
+}
+
+tr.evenline td,
+tr.oddline td {
+    padding-top: 0.5em;
+    border-top: 1px solid #cccccc;
+}
+
+tr.evenline td {
+    background: #fff
+}
+
+tr.oddline td {
+    background: #eee
+}
+
+tr.evenline+tr.evenline td,
+tr.oddline+tr.oddline td {
+    border-top: none
+}
+
+tr.evenline,
+tr.oddline {
+    border-left: 1px solid #cccccc;
+    border-right: 1px solid #cccccc;
+}
+
+tr.evenline+tr.evenline td,
+tr.oddline+tr.oddline td {
+    padding-top: 0;
+    border: none;
+}
+
+table.collection-as-table td:first-child,
+table.collection-as-table th:first-child {
+    padding-left: 1em
+}
+
+table.collection-as-table td:last-child,
+table.collection-as-table th:last-child {
+    padding-right: 1em
+}
+
+th.collection-as-table,
+td.collection-as-table {
+    padding-right: 0.5em
+}
+
+.pagenum.a:hover,
+.paging a.nav:hover {
+    text-decoration: underline
+}
+
+.pagenum *,
+.paging a.nav {
+    padding: .5em
+}
+
+.currentpage {
+    text-decoration: none;
+    font-weight: bold;
+    background: #eee;
+}
+
+div.paging {
+    text-align: center;
+    padding-bottom: 1em;
+}
+
+/* full-page ticket lists */
+
+#body>table.collection-as-table {
+    margin-bottom: 2em
+}
+
+.chart.image {
+    padding-right: 2em;
+    float: left;
+    clear: both;
+}
+
+.chart.image.bar {
+    margin-top: -1em;
+}
+
+.chart-wrapper {
+    display: block;
+    width: auto;
+}
+
+.chart-wrapper .collection-as-table {
+    width: auto;
+    font-size: 1em;
+    /* Firefox needs this to let the table flow below the chart on narrow screens */
+    clear: right;
+}
+
+.chart-wrapper .collection-as-table th.collection-as-table {
+    text-align: center;
+    padding: 0.5em;
+    padding-right: 1em;
+    padding-left: 1em;
+}
+
+.chart-wrapper .collection-as-table tr.total td {
+    border-top: 1px solid #ccc
+}
+
+.chart-wrapper .collection-as-table td.value {
+    padding-left: 0.5em
+}
+
+.chart-wrapper .query {
+    clear: both;
+    text-align: center;
+    font-size: 1.2em;
+    padding: 1em;
+}
+
+.chart-wrapper .collection-as-table .label {
+    font-weight: bold
+}
+
+.chart-wrapper .query .label {
+    font-weight: bold
+}
+
+.chart-meta {
+    padding-top: 2em;
+    border-top: 1px solid #ccc;
+    clear: both;
+}
+
+.chart-meta .chart-type {
+    display: inline-block;
+    float: left;
+    padding-right: 2em;
+    clear: both;
+}
+
+.chart-meta .saved-search {
+    display: inline-block
+}
