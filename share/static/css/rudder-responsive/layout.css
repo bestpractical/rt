@@ -9,12 +9,22 @@ body {
 
 div#body {
     padding: 3em;
-    margin-left: 1em;
     margin-top: 4em;
     margin-right: 0;
     margin-bottom: 0em;
     background: #fff;
     z-index: 1;
+}
+
+@media (max-width: 800px) {
+    div#body {
+        padding: 3em 4.875%; /* 3em at 13px font size => 39px => 39/800 => .04875 */
+    }
+    /* at narrow widths we'll have broken into a single column, so the default
+       padding-right just causes the layout to degrade */
+    .boxcontainer {
+        padding-right: 0;
+    }
 }
 
 div#footer {
