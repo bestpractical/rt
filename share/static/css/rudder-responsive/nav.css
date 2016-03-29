@@ -152,10 +152,24 @@
     width: 16em;
 }
 
-@media (max-width: 800px) {
+.create-wide   { display: block; }
+.create-medium { display: none; }
+.create-narrow { display: none; }
+
+@media (max-width: 900px) {
+    .create-wide   { display: none; }
+    .create-medium { display: block; }
+    .create-narrow { display: none; }
+
     #topactions input[type="search"] {
         width: 2em;
     }
+}
+
+@media (max-width: 600px) {
+    .create-wide   { display: none; }
+    .create-medium { display: none; }
+    .create-narrow { display: block; }
 }
 
 #topactions input[type="search"]:focus {
