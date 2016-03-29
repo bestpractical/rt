@@ -152,6 +152,12 @@
     width: 16em;
 }
 
+@media (max-width: 800px) {
+    #topactions input[type="search"] {
+        width: 2em;
+    }
+}
+
 #topactions input[type="search"]:focus {
     width: 16em;
     -webkit-transition: width 0.25s ease-in-out;
