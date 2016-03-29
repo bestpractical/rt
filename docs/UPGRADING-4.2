@@ -327,11 +327,11 @@ functionality can now be implemented via C<%DatabaseExtraDSN>.
 C<$DatabaseRequireSSL> has been removed, and setting it will trigger an
 informational message that setting it is ineffective.
 
-The full-text indexing defaults for PostgreSQL have changed; GiST is now
+The full-text indexing defaults for PostgreSQL have changed; GIN is now
 the suggested index, as well as storing data in a separate
 AttachmentsIndex table.  Both changes improve lookup speed.  For
 improved search performance, you may wish to drop existing C<tsvector>
-and C<GIN> indexes on C<Attachments>, and re-generate the index using
+and C<GiST> indexes on C<Attachments>, and re-generate the index using
 C<rt-setup-fulltext-index>.
 
 =cut
