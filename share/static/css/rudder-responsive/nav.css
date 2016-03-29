@@ -164,6 +164,9 @@
     #topactions input[type="search"] {
         width: 2em;
     }
+    #topactions form {
+        margin-left: 0;
+    }
 }
 
 @media (max-width: 600px) {
