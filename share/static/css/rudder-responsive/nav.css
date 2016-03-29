@@ -167,12 +167,20 @@
     #topactions form {
         margin-left: 0;
     }
+
+    div#header h1 {
+        right: 10em;
+    }
 }
 
 @media (max-width: 600px) {
     .create-wide   { display: none; }
     .create-medium { display: none; }
     .create-narrow { display: block; }
+
+    div#header h1 {
+        right: 5em;
+    }
 }
 
 #topactions input[type="search"]:focus {
