@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,33 +45,5 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" name="CreateTicketInQueue" id="CreateTicketInQueue" \
-% $m->callback(CallbackName => 'InFormElement');
->
-
-% if ($IncludeExplanation) {
-<p><&|/l&>Select a queue for your new ticket.</&></p>
-% }
-
-% my $button_start = '<input type="submit" class="button" value="';
-% my $button_start_modal = '<input type="submit" class="button ticket-create-modal" value="';
-% my $button_end = '" />';
-% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue') );
-
-<div class="create-wide">
-<&|/l_unsafe, $button_start, $button_end, $queue_selector &>[_1]New ticket in[_2]&nbsp;[_3]</&>
-</div>
-<div class="create-medium">
-<&|/l_unsafe, $button_start_modal, $button_end &>[_1]New ticket[_2]</&>
-</div>
-<div class="create-narrow">
-<&|/l_unsafe, $button_start_modal, $button_end &>[_1]+[_2]</&>
-</div>
-
-% $m->callback(CallbackName => 'BeforeFormEnd');
-
-</form>
-<%ARGS>
-$SendTo => '/Ticket/Create.html',
-$IncludeExplanation => 0
-</%ARGS>
+<& /Elements/CreateTicket, IncludeExplanation => 1 &>
+% $m->abort;

@@ -35,6 +35,13 @@ function toggle_upgrade_history(widget, selector) {
     jQuery(widget).toggleClass("rolled-up");
 }
 
+var showModal = function(html) {
+    jQuery("<div class='modal'></div>")
+        .append(html).appendTo("body")
+        .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
+        .modal();
+};
+
 /* Classes */
 function jQueryWrap( id ) {
     return typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
@@ -558,6 +565,14 @@ jQuery(function() {
             }
         }, 'json');
         return false;
+    });
+
+    jQuery(".ticket-create-modal").click(function(ev){
+        ev.preventDefault();
+        jQuery.get(
+            RT.Config.WebHomePath + "/Helpers/CreateInQueue",
+            showModal
+        );
     });
 });
 
