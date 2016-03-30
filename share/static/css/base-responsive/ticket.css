@@ -128,3 +128,7 @@ tr.edit-custom-field.cftype-Wikitext textarea
 {
     width: 100%;
 }
+
+input.reminder-subject {
+    width: 25em;
+}

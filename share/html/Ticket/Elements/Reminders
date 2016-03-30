@@ -131,7 +131,7 @@ $Ticket
 <table>
 <tr>
 <td class="label"><&|/l&>Subject</&>:</td>
-<td class="entry" colspan="3"><input type="text" size="50" name="NewReminder-Subject" id="NewReminder-Subject" /></td>
+<td class="entry" colspan="3"><input type="text" class="reminder-subject" name="NewReminder-Subject" id="NewReminder-Subject" /></td>
 </tr>
 <tr>
 <td class="label"><&|/l&>Owner</&>:</td>
@@ -163,7 +163,7 @@ disabled="disabled"
 /></td>
 <td class="label"><&|/l&>Subject</&>:</td>
 <td class="entry" colspan="3">
-<input type="text" size="50" name="Reminder-Subject-<% $Reminder->id %>" value="<% $Reminder->Subject %>" 
+<input type="text" class="reminder-subject" name="Reminder-Subject-<% $Reminder->id %>" value="<% $Reminder->Subject %>"
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
 readonly="readonly" 
 % }
