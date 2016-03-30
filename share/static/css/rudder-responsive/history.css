@@ -8,6 +8,12 @@ div.history-container {
     margin-left: 3em;
 }
 
+@media (max-width: 600px) {
+    .history .transaction.message div.content {
+        margin-left: 0;
+    }
+}
+
 .history .transaction .metadata span.type {
     margin: 0;
     font-size: 1.2em;
