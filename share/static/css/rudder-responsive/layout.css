@@ -27,7 +27,7 @@ div#body {
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     div#body {
         padding: 3em 0;
     }

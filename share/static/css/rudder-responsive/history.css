@@ -8,7 +8,7 @@ div.history-container {
     margin-left: 3em;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     .history .transaction.message div.content {
         margin-left: 0;
     }
@@ -60,6 +60,15 @@ div.history-container {
     border-right: 1px solid #999;
     -moz-border-radius-bottomright: 0.5em;
     -webkit-border-bottom-right-radius: 0.5em;
+}
+
+@media (max-width: 700px) {
+    .transaction div.metadata span.actions {
+        margin-right: 0;
+        border-right: 0;
+        -moz-border-radius-bottomright: 0;
+        -webkit-border-bottom-right-radius: 0;
+    }
 }
 
 .transaction div.metadata span.actions a {
