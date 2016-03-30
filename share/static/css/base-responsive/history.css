@@ -95,6 +95,12 @@ div.history-container {
  word-wrap: break-word;
 }
 
+@media (max-width: 600px) {
+  .transaction .messagebody {
+    padding-left: 0;
+  }
+}
+
 .transaction .messagebody img {
  max-width: 100%;
 }

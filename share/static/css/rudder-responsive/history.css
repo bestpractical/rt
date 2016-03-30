@@ -12,6 +12,9 @@ div.history-container {
     .history .transaction.message div.content {
         margin-left: 0;
     }
+    .message-stanza {
+        margin: 0 1em;
+    }
 }
 
 .history .transaction .metadata span.type {

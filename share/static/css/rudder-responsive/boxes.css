@@ -16,6 +16,13 @@
     border-bottom: 1px solid #eee;
 }
 
+@media (max-width: 600px) {
+    .titlebox .titlebox-content {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
 * html .titlebox {
     border-top: none;
     border-left: none;
