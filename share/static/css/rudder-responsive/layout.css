@@ -27,6 +27,12 @@ div#body {
     }
 }
 
+@media (max-width: 600px) {
+    div#body {
+        padding: 3em 0;
+    }
+}
+
 div#footer {
     position: absolute;
     right: 0;
