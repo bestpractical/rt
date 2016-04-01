@@ -4,7 +4,6 @@
 }
 
 .titlebox .titlebox-content {
-    padding: 0.5em 0.25em 0.5em 0.25em;
     border-top: 2px solid #aaa;
     min-height: 3em;
     -moz-border-radius-bottomright: 0.5em;
@@ -151,8 +150,4 @@ div.results .titlebox .titlebox-content {
 
 .results .titlebox-title {
     display: none
-}
-
-.titlebox form {
-    display: inline-block; /* makes the submit buttons not end up way far away */
 }
