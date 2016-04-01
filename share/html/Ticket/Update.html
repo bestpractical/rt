@@ -62,7 +62,7 @@
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div id="ticket-update-metadata">
-  <&|/Widgets/TitleBox, title => loc('Ticket and Transaction') &>
+  <&|/Widgets/TitleBox, title => loc('Ticket and Transaction'), class => 'ticket-info-basics' &>
 <table width="100%" border="0">
 % $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
@@ -186,7 +186,7 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeScrips', Ticket => $TicketObj );
 
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
-  <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips', rolledup => RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}) &>
+  <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips', rolledup => RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}), class => 'ticket-info-people' &>
 %   for my $address (grep {defined} ref $ARGS{TxnSendMailTo} ? @{$ARGS{TxnSendMailTo}} : $ARGS{TxnSendMailTo}) {
       <input type="hidden" name="TxnSendMailTo" value="<% $address %>" />
 %   }
