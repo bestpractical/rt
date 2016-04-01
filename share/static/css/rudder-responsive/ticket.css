@@ -59,6 +59,27 @@
     width: 100%;
 }
 
+@media (max-width: 800px) {
+    .messagedetails .fields,
+    .messagedetails .fields .field,
+    .messagedetails .fields .field .label,
+    .messagedetails .fields .field .value {
+        display: block;
+    }
+
+    .messagedetails .fields .field .label {
+        text-align: left;
+    }
+
+    .messagedetails .fields .field + .field {
+        margin-top: 1em;
+    }
+
+    .messagedetails .fields .label.crypto {
+        display: none;
+    }
+}
+
 /* don't put a background on the outer titlebox */
 
 .summary>div>.titlebox>.titlebox-content {
