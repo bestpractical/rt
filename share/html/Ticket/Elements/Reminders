@@ -116,7 +116,6 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 
 % if (lc $Ticket->Status ne "deleted" and $Ticket->QueueObj->CurrentUserHasRight('CreateTicket') and $Ticket->CurrentUserHasRight('ModifyTicket') ) {
-<&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
 % $editable = 1;
 % }
@@ -128,20 +127,21 @@ my $reminder_collection = $count_reminders->Collection;
 <%args>
 $Ticket
 </%args>
-<table>
-<tr>
-<td class="label"><&|/l&>Subject</&>:</td>
-<td class="entry" colspan="3"><input type="text" class="reminder-subject" name="NewReminder-Subject" id="NewReminder-Subject" /></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Owner</&>:</td>
-<td class="entry"><& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, Default=>$session{'CurrentUser'}->id, DefaultValue => 0 &></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Due</&>:</td>
-<td class="entry"><& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &></td>
-</tr>
-</table>
+<div class="fields">
+  <&|/l&>New reminder:</&>
+  <div class="field">
+    <span class="label"><&|/l&>Subject</&>:</span>
+    <span class="entry" colspan="3"><input type="text" class="reminder-subject" name="NewReminder-Subject" id="NewReminder-Subject" /></span>
+  </div>
+  <div class="field">
+    <span class="label"><&|/l&>Owner</&>:</span>
+    <span class="entry"><& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, Default=>$session{'CurrentUser'}->id, DefaultValue => 0 &></span>
+  </div>
+  <div class="field">
+    <span class="label"><&|/l&>Due</&>:</span>
+    <span class="entry"><& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &></span>
+  </div>
+</div>
 </%method>
 <%method EditEntry>
 <%args>
