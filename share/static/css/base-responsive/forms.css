@@ -125,21 +125,21 @@ div.results .titlebox-content {
 }
 
 @media (max-width: 1200px) {
-    .fields {
+    .wide.fields {
         display: block;
     }
-    .fields .field {
+    .wide.fields .field {
         display: block;
         margin-bottom: 1em;
     }
-    .fields .label,
-    .fields .labeltop,
-    .fields .cflabel,
-    .fields .value {
+    .wide.fields .label,
+    .wide.fields .labeltop,
+    .wide.fields .cflabel,
+    .wide.fields .value {
         display: inline;
         margin-left: 1em;
     }
-    .fields .value > ul {
+    .wide.fields .value > ul {
         margin-top: 0;
     }
 }

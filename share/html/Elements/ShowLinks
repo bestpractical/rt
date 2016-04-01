@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="fields">
+<div class="wide fields">
 % for my $type (@display) {
   <div class="field <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
     <span class="labeltop">
