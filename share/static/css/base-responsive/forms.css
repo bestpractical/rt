@@ -142,6 +142,9 @@ div.results .titlebox-content {
     .wide.fields .value > ul {
         margin-top: 0;
     }
+    .wide.fields .value > ul > li {
+        margin-left: 1.5em;
+    }
 }
 
 .label, .labeltop {
