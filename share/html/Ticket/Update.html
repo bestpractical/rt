@@ -63,7 +63,7 @@
 
 <div id="ticket-update-metadata">
   <&|/Widgets/TitleBox, title => loc('Ticket and Transaction'), class => 'ticket-info-basics' &>
-<table width="100%" border="0">
+<div class="fields">
 % $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 % my $skip;
@@ -71,8 +71,8 @@
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
 % }
-<tr><td class="label"><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType" id="UpdateType">
+<div class="field"><span class="label"><&|/l&>Update Type</&>:</span>
+<span class="value"><select name="UpdateType" id="UpdateType">
 % if ($CanComment) {
 <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -82,7 +82,7 @@
 </select> 
 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
-</td></tr>
+</span></div>
 
 <& /Ticket/Elements/EditBasics,
     TicketObj => $TicketObj,
@@ -121,7 +121,7 @@
 
 <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $TicketObj, AsTable => 1 &>
 
-  </table>
+  </div>
   </&>
 
 % $m->callback( %ARGS, CallbackName => 'RightColumnBottom', Ticket => $TicketObj );
@@ -140,25 +140,25 @@
 %}
 
   <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
-  <table width="100%" border="0">
+  <div class="fields">
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
 % if ( $gnupg_widget ) {
-<tr><td>&nbsp;</td><td>
+<div class="field"><span class="label crypto">&nbsp;</span><span class="value">
 <& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 &>
-</td></tr>
+</span></div>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
-<tr><td class="label"><&|/l&>Subject</&>:</td><td> <input type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
+<div class="field"><span class="label"><&|/l&>Subject</&>:</span><span class="value"><input type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-</td></tr>
+</span></div>
 
-<tr><td class="label" valign="top"><&|/l&>Message</&>:</td>
-<td class="messagebox-container action-<% $type %>">
+<div class="field"><span class="labeltop"><&|/l&>Message</&>:</span>
+<span class="value messagebox-container action-<% $type %>">
 <& /Articles/Elements/BeforeMessageBox, %ARGS &>
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
@@ -173,10 +173,10 @@
 <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterMessageBox' );
-</td></tr>
+</span></div>
 
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj &>
-  </table>
+  </div>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );

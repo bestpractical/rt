@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
-<tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1 &>
+<div class="field"><span class="label"><&|/l&>One-time Cc</&>:</span><span class="value"><& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1 &>
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
 
@@ -78,8 +78,8 @@
 %if (@one_time_Ccs && $hide_cc_suggestions) {
 </div>
 %}
-</td></tr>
-<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &><br />
+</span></div>
+<div class="field"><span class="label"><&|/l&>One-time Bcc</&>:</span><span class="value"><& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &><br />
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
         <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
@@ -119,7 +119,7 @@ jQuery(function() {
 });
 </script>
 %}
-</td></tr>
+</span></div>
 <%args>
 $TicketObj
 </%args>
