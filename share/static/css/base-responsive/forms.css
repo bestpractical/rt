@@ -148,7 +148,7 @@ div.results .titlebox-content {
  text-align: right;
  font-size: 0.8em;
  padding-right: .5em;
-
+ white-space: nowrap;
 }
 
 .cflabel {
