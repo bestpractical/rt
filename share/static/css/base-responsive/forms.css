@@ -124,6 +124,26 @@ div.results .titlebox-content {
     display: table-cell;
 }
 
+@media (max-width: 1200px) {
+    .fields {
+        display: block;
+    }
+    .fields .field {
+        display: block;
+        margin-bottom: 1em;
+    }
+    .fields .label,
+    .fields .labeltop,
+    .fields .cflabel,
+    .fields .value {
+        display: inline;
+        margin-left: 1em;
+    }
+    .fields .value > ul {
+        margin-top: 0;
+    }
+}
+
 .label, .labeltop {
  text-align: right;
  font-size: 0.8em;
