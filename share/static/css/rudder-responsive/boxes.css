@@ -21,6 +21,10 @@
     }
 }
 
+.titlebox .titlebox-content .fields {
+    padding: 0.5em 0.25em 0.5em 0.25em;
+}
+
 * html .titlebox {
     border-top: none;
     border-left: none;
