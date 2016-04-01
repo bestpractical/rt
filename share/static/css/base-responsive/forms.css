@@ -124,6 +124,10 @@ div.results .titlebox-content {
     display: table-cell;
 }
 
+.fields {
+    padding: 0 1em;
+}
+
 @media (max-width: 1200px) {
     .wide.fields {
         display: block;
@@ -137,7 +141,6 @@ div.results .titlebox-content {
     .wide.fields .cflabel,
     .wide.fields .value {
         display: inline;
-        margin-left: 1em;
     }
     .wide.fields .value > ul {
         margin-top: 0;

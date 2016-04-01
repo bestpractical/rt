@@ -22,7 +22,6 @@ td.labeltop {
     font-weight: bold;
     color: #666;
     font-size: 1em;
-    min-width: 6em;
 }
 
 span.cflabel .type,
