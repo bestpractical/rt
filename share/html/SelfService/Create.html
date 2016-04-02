@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& Elements/Header, Title => loc("Create a ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj)) &>
+<& Elements/Header, Title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form action="Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
@@ -55,6 +55,7 @@
 <input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
 % }
 
+<&|/Widgets/TitleBox, title => $title, class => 'ticket-info-basics' &>
 <div class="fields">
 <div class="field">
 <span class="label">
@@ -104,6 +105,7 @@
 
 <& /Elements/Submit, Label => loc("Create ticket")&>
 
+</&>
 
 </form>
 <%args>
@@ -113,6 +115,8 @@ $Queue => undef
 my @results;
 my $queue_obj = RT::Queue->new($session{'CurrentUser'});
 $queue_obj->Load($Queue);
+
+my $title = loc("Create a ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj));
 
 ProcessAttachments(ARGSRef => \%ARGS);
 
