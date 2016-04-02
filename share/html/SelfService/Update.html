@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, 
-    Title =>loc('Update ticket #[_1]', $Ticket->id) 
+    Title => $title
 &>
 
 % $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
@@ -56,6 +56,9 @@
 <input type="hidden" class="hidden" name="UpdateType" value="response" />
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
+
+<&|/Widgets/TitleBox, title => $title, class => 'ticket-info-basics' &>
+
 <div class="fields">
     <div class="field">
         <span class="label">
@@ -94,6 +97,8 @@
 
 
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+
+  </&>
   </form>
 
 
