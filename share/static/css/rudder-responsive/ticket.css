@@ -75,7 +75,7 @@
         margin-top: 1em;
     }
 
-    .messagedetails .fields .label.crypto {
+    .messagedetails .fields .label.empty {
         display: none;
     }
 }

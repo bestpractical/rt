@@ -144,7 +144,7 @@
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
 % if ( $gnupg_widget ) {
-<div class="field"><span class="label crypto">&nbsp;</span><span class="value">
+<div class="field"><span class="label empty">&nbsp;</span><span class="value">
 <& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,
