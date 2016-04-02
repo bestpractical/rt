@@ -56,30 +56,30 @@
 <input type="hidden" class="hidden" name="UpdateType" value="response" />
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-<table width="100%">
-    <tr>
-        <td class="label">
+<div class="fields">
+    <div class="field">
+        <span class="label">
             <&|/l&>Status</&>
-        </td>
-        <td class="value">
+        </span>
+        <span class="value">
             <& /Ticket/Elements/SelectStatus,
                Name => "Status",
                TicketObj => $Ticket,
                Default => $DefaultStatus &>
-        </td>
-    </tr>
-    <tr>
-        <td class="label">
+        </span>
+    </div>
+    <div class="field">
+        <span class="label">
             <&|/l&>Subject</&>
-        </td>
-        <td class="value">
+        </span>
+        <span class="value">
             <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
-        </td>
+        </span>
 
-    </tr>
+    </div>
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-    <tr><td colspan="2"><& /Elements/EditCustomFields, Object => $Ticket, AsTable => 0 &></td></tr>
-</table>
+    <& /Elements/EditCustomFields, Object => $Ticket, InTable => 1 &>
+</div>
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
