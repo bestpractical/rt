@@ -48,7 +48,7 @@
 % $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields, Table => $Table );
 % if ($Table) {
-<table>
+<div class="fields">
 % }
 % while ( my $CustomField = $CustomFields->Next ) {
 % my $Values = $Object->CustomFieldValues( $CustomField->Id );
@@ -61,9 +61,9 @@
 % push @classes, 'unset-field' if not $count;
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes, Grouping => $Grouping );
-  <tr class="<% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
-    <td class="label"><% $CustomField->Name %>:</td>
-    <td class="value<% $count ? '' : ' no-value' %>">
+  <div class="field <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
+    <span class="label"><% $CustomField->Name %>:</span>
+    <span class="value<% $count ? '' : ' no-value' %>">
 % unless ( $count ) {
 <&|/l&>(no value)</&>
 % } elsif ( $count == 1 ) {
@@ -77,13 +77,13 @@
 % }
 </ul>
 % }
-    </td>
+    </span>
 % $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField,
 %               Object => $Object, Grouping => $Grouping, Table => $Table );
-  </tr>
+  </div>
 % }
 % if ($Table) {
-</table>
+</div>
 % }
 % $m->callback( CallbackName => 'AfterCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS, Table => $Table );
