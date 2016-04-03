@@ -52,35 +52,36 @@
 <& /Elements/ListActions, actions => \@results &>
 <& /Ticket/Elements/ShowUpdateStatus, Ticket => $Ticket &>
 
-  <table width="100%" class="ticket-summary" >
-      <tr>
-        <td valign="top" width="50%" class="boxcontainer">
-          <&| /Widgets/TitleBox, title => loc('The Basics'),
-                class => 'ticket-info-basics',
-                ($LinkBasicsTitle ? (title_href => $title_box_link) : ()),
-                title_class=> 'inverse',
-                color => "#993333" &>
-                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket, UngroupedCFs => 1 &>
-          </&>
+<&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
+<div class="columns ticket-summary">
+    <div class="boxcontainer col-6">
+        <&| /Widgets/TitleBox, title => loc('The Basics'),
+              class => 'ticket-info-basics',
+              ($LinkBasicsTitle ? (title_href => $title_box_link) : ()),
+              title_class=> 'inverse',
+              color => "#993333" &>
+              <& /Ticket/Elements/ShowBasics, Ticket => $Ticket, UngroupedCFs => 1 &>
+        </&>
 
-    <& /Elements/ShowCustomFieldCustomGroupings,
-        Object       => $Ticket,
-        title_href   => ($LinkBasicsTitle ? RT->Config->Get('WebPath')."/SelfService/Update.html" : "" ),
-        Groupings    => [ grep {$_ !~ /^(Basics|Dates)$/} RT::CustomField->Groupings( "RT::Ticket" ) ],
+        <& /Elements/ShowCustomFieldCustomGroupings,
+            Object       => $Ticket,
+            title_href   => ($LinkBasicsTitle ? RT->Config->Get('WebPath')."/SelfService/Update.html" : "" ),
+            Groupings    => [ grep {$_ !~ /^(Basics|Dates)$/} RT::CustomField->Groupings( "RT::Ticket" ) ],
         &>
-</td>
-        <td valign="top" width="50%" class="boxcontainer">
+    </div>
+    <div class="boxcontainer col-6">
           <&| /Widgets/TitleBox, title => loc("Dates"),
                  class => 'ticket-info-dates',
                  title_class=> 'inverse',
                  color => "#663366" &>
           <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
           </&>
-</td>
-</tr>
-</table>
+    </div>
+</div>
 
 <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
+
+</&>
 
 % $m->callback(CallbackName => 'BeforeShowHistory', ARGSRef=> \%ARGS, Ticket => $Ticket );
 
