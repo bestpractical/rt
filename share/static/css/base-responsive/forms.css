@@ -165,7 +165,17 @@ td.cflabel {
 }
 
 .labeltop, .label, .value {
-  padding-top: 0.25em;
+  padding-top: 0.5em;
+}
+.labeltop, .label {
+  padding-left: 1em;
+}
+.value {
+  padding-right: 1em;
+}
+
+.fields {
+  padding-bottom: 0.5em;
 }
 
 div.ticket-info-basics div.titlebox-content .labeltop{
