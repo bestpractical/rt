@@ -51,7 +51,8 @@
     title_href => $query_link_url.$QueryString,
     titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize,
-    hideable => $hideable &>
+    hideable => $hideable,
+    class => 'fullwidth' &>
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets', HasResults => $HasResults, PreferOrderBy => 1 &>
 </&>
 <%init>
