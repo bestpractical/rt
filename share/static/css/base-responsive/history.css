@@ -19,9 +19,7 @@ div.history-container {
 }
 
 .transaction div.metadata span.actions {
- position: absolute;
- top: 0;
- right: 0;
+ float: right;
  padding: 0em;
  background: #ccc;
  text-align: right;

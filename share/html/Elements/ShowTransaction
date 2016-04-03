@@ -47,6 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="<% join ' ', @classes %>" data-transaction-id="<% $Transaction->id %>">
   <div class="metadata">
+% if ( $actions ) {
+    <span class="actions"><% $actions |n %></span>
+% }
     <span class="type">
       <a name="txn-<% $Transaction->id %>" \
 % if ( $DisplayPath ) {
@@ -62,9 +65,6 @@
     </span>
 % if ( $Object->isa("RT::Ticket") and $Object->CurrentUserCanSeeTime ) {
     <span class="time-taken"><% $time %></span>
-% }
-% if ( $actions ) {
-    <span class="actions"><% $actions |n %></span>
 % }
   </div>
 
