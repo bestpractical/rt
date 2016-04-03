@@ -73,7 +73,7 @@
 % if ( RT->Config->Get('EnableReminders') ) {
     <&|/Widgets/TitleBox, title => loc("Reminders"),
         title_href => RT->Config->Get('WebPath')."/Ticket/Reminders.html?id=".$Ticket->Id,
-        class => 'ticket-info-reminders',
+        class => 'ticket-info-reminders fullwidth',
     &>
         <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" name="UpdateReminders" id="UpdateReminders" method="post">
             <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>

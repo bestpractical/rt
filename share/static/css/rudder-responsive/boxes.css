@@ -4,6 +4,7 @@
 }
 
 .titlebox .titlebox-content {
+    padding: 1em;
     border-top: 2px solid #aaa;
     -moz-border-radius-bottomright: 0.5em;
     -webkit-border-bottom-right-radius: 0.5em;
@@ -14,15 +15,9 @@
     border-bottom: 1px solid #eee;
 }
 
-@media (max-width: 700px) {
-    .titlebox .titlebox-content {
-        padding-left: 0;
-        padding-right: 0;
-    }
-}
-
-.titlebox .titlebox-content .fields {
-    padding: 0.5em 0.25em 0.5em 0.25em;
+.titlebox.fullwidth > .titlebox-content {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 * html .titlebox {

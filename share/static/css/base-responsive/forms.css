@@ -150,7 +150,13 @@ div.results .titlebox-content {
  text-align: right;
  font-size: 0.8em;
  padding-right: .5em;
+ padding-top: .5em;
+ margin-top: .5em;
  white-space: nowrap;
+}
+
+.fields > .field:first-child > .label {
+  padding-top: 0;
 }
 
 .cflabel {
@@ -160,22 +166,13 @@ div.results .titlebox-content {
  width: 12em;
 }
 
+.value > ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
 td.cflabel {
     width: auto;
-}
-
-.labeltop, .label, .value {
-  padding-top: 0.5em;
-}
-.labeltop, .label {
-  padding-left: 1em;
-}
-.value {
-  padding-right: 1em;
-}
-
-.fields {
-  padding-bottom: 0.5em;
 }
 
 div.ticket-info-basics div.titlebox-content .labeltop{

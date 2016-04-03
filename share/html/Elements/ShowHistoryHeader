@@ -97,7 +97,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     }
 
 </%perl>
-<& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
+<& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright, class => 'fullwidth' &>
 % }
 
 <div class="history-container">
