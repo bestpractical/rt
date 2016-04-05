@@ -309,6 +309,13 @@ ul.selectable a {
     font-size: .8em;
 }
 
+.dropzone .dz-message {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
 /* query builder */
 
 #formatbuttons {
