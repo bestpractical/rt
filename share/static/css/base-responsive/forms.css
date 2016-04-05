@@ -122,6 +122,7 @@ div.results .titlebox-content {
 .fields .cflabel,
 .fields .value {
     display: table-cell;
+    vertical-align: middle;
 }
 
 @media (max-width: 1200px) {
