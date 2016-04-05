@@ -43,6 +43,9 @@
     color: black !important;
 }
 
+.ticket-info-reminders .save {
+    text-align: right;
+}
 
 .plain-text-white-space {
  white-space: pre-wrap;
