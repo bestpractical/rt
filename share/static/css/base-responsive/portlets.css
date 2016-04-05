@@ -3,6 +3,10 @@ table.dashboard {
     border: 0;
 }
 
+.quick-create form {
+   max-width: 500px;
+}
+
 .quick-create .select-queue {
    width: 12em;
 }
