@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
-    class => 'reminders',
+    class => 'reminders fullwidth',
     title => loc("My reminders"),
     title_href => RT->Config->Get('WebPath') . '/Tools/MyReminders.html' &>
 
