@@ -151,7 +151,7 @@ padding-right:0.25em;
 .transaction.message .type { background: #069; }
 .transaction.reminders .type { background: #369; }
 .transaction.other .type { background: #abc; }
-.transaction.error .type { background: #abc; }
+.transaction.error .type { background: #900; }
 .transaction.attachment-truncate .type, .transaction.attachment-drop .type { background-color: #abc; }
 
 .transaction.error { background-color: #fcc; }
