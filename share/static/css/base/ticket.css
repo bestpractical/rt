@@ -146,3 +146,9 @@ input.reminder-subject {
 .ticket-info-attachments .revision {
     font-size: 85%;
 }
+
+.transaction .downloadattachment a,
+.transaction .message-header-value,
+.ticket-info-attachments .filename {
+    word-break: break-word;
+}
