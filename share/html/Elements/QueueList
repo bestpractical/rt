@@ -48,6 +48,7 @@
 <div class="ticket-overview">
 <&|/Widgets/TitleBox,
     title => loc("Queue list"),
+    class => "fullwidth",
     bodyclass => "",
     titleright => loc("Edit"),
     titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueList.html',
