@@ -102,8 +102,9 @@ my $reminder_collection = $count_reminders->Collection;
 % }
 </table>
 % if ( $editable ) {
-<i><&|/l&>(Check box to complete)</&></i><br /><br />
+<i><&|/l&>(Check box to complete)</&></i>
 % }
+<hr>
 % } else {
 
 %# we must always include resolved reminders due to the browser
