@@ -29,7 +29,15 @@
   margin-top: .75em;
 }
 
+#login-box div.button-row {
+  padding-right: 1em;
+}
+
 @media (max-width: 400px) {
+  #login-box .input-row {
+    margin-bottom: 2em;
+    height: 2.5em;
+  }
   #login-box .input-row .label {
     width: 8em;
   }
@@ -39,7 +47,7 @@
   display: block;
   overflow: hidden;
   width: auto;
-  padding: .25em 1em .25em 1em;
+  padding: .25em 1.5em .25em 1.5em;
 }
 #login-box .input-row .input input {
   width: 100%;
