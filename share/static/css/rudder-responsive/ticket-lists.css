@@ -3,7 +3,6 @@ table.collection-as-table {
     width: 100%;
     border-spacing: 0;
     border-collapse: collapse;
-    margin-top: 1em;
 }
 
 table.collection-as-table td {
