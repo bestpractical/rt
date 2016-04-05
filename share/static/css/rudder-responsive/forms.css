@@ -34,6 +34,10 @@ div.error-titlebox .titlebox-content {
     padding: 1em;
 }
 
+div.error .titlebox-content {
+    background-color: #fcc;
+}
+
 div#body>div.error {
     background-color: #fcc;
     padding: 1em;
