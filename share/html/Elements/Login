@@ -68,7 +68,7 @@
 
 <div class="input-row">
     <span class="label"><&|/l&>Username</&>:</span>
-    <span class="input"><input type="text" name="user" value="<%$user%>" id="user" /></span>
+    <span class="input"><input type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" /></span>
 </div>
 
 <div class="input-row">
