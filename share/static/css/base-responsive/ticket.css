@@ -143,3 +143,7 @@ input.reminder-subject {
     box-sizing: border-box;
     width: 100%;
 }
+
+.ticket-info-attachments .revision {
+    font-size: 85%;
+}

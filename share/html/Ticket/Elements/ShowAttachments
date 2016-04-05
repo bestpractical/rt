@@ -57,7 +57,7 @@
 
 % foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
 
-<%$key%><br />
+<span class="filename"><%$key%></span>
 <ul <% $Selectable ? 'class="selectable"' : '' |n %> >
 % foreach my $rev (@{$documents{$key}}) {
 % if ($rev->ContentLength) {
@@ -69,6 +69,7 @@
              <% $is_checked{$rev->Id} ? 'checked' : '' %> />
 % }
 
+<span class="revision">
 % if (my $url = RT->System->ExternalStorageURLFor($rev)) {
 <a href="<%$url%>">
 % } else {
@@ -77,6 +78,7 @@
 % my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
 <% $desc |n%>
 </a>
+</span>
 
 % if ($Selectable) {
     </label>
