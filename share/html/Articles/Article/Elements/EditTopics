@@ -50,7 +50,7 @@
 <td class="label"><&|/l&>Topics</&>:</td>
 <td class="value">
 <input type="hidden" name="EditTopics" value="1" />
-<select multiple size="10" name="Topics" class="selection-box">
+<select multiple size="10" name="Topics" class="tall selection-box">
 % if (@Classes) {
 %   unless ($OnlyThisClass) {
 <optgroup label="Current classes (<% join(" ", map {$_->Name} @Classes) %>)">

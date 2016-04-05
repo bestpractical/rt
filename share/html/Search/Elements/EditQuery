@@ -48,7 +48,7 @@
 <& NewListActions, actions => $actions &>
 <&|/Widgets/TitleBox, title => join(': ', grep defined, loc("Current search"), $Description) &>
 
-<select size="10" name="clauses" style="width: 100%" multiple="multiple">
+<select size="10" name="clauses" class="tall" style="width: 100%" multiple="multiple">
 % $m->out($optionlist);
 </select>
 

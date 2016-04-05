@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select multiple="multiple" name="<% $Name %>"  size="10">
+<select multiple="multiple" name="<% $Name %>" class="tall" size="10">
 % while ( my $user = $users->Next ) {
 <option value="<% $user->id %>">\
 <& /Elements/ShowUser, User => $user &>\

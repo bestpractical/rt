@@ -48,7 +48,7 @@
 %# if the custom field is a select, enumerate the options
 % if ($Field->Type =~ /^Select/) {
 % my $CustomFieldValues = $Field->ValuesObj();
-<select name="<%$Name%>" size="5" multiple>
+<select name="<%$Name%>" class="tall" size="5" multiple>
 % while (my $value = $CustomFieldValues->Next) {
 % my $name = $value->Name || '';
 <option value="<% $name %>" <% grep($_ eq $name, @Values)? 'SELECTED' : ''%>><% $name %></option>

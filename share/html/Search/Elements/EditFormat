@@ -133,7 +133,7 @@ jQuery( function() {
 <td><input type="submit" class="button" name="AddCol" value=" &rarr; " /></td>
 
 <td valign="top">
-<select size="8" name="CurrentDisplayColumns">
+<select size="8" class="tall" name="CurrentDisplayColumns">
 % my $i=0;
 % my $current = $ARGS{CurrentDisplayColumns} || ''; $current =~ s/^\d+>//;
 % foreach my $field ( @$CurrentFormat ) {
