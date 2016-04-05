@@ -2,45 +2,66 @@
     list-style: none;
 }
 
+#login-box {
+  width: 100%;
+  max-width: 30em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#login-box .input-row {
+  margin-bottom: 1em;
+  height: 1.5em;
+}
+
+#login-box .input-row .label,
+#login-box .input-row .input {
+  position: static;
+  padding: 0;
+  margin: 0;
+}
+
+#login-box .input-row .label {
+  display: inline-block;
+  width: 13em;
+  float: left;
+  text-align: right;
+  margin-top: .75em;
+}
+
+@media (max-width: 400px) {
+  #login-box .input-row .label {
+    width: 8em;
+  }
+}
+
+#login-box .input-row .input {
+  display: block;
+  overflow: hidden;
+  width: auto;
+  padding: .25em 1em .25em 1em;
+}
+#login-box .input-row .input input {
+  width: 100%;
+}
 #login-box hr {
  display: none;
 }
 
-#login-box {
-
- width: 30em;
-
-margin-right:auto;margin-left:auto;
- padding-top: 2em;
- padding-bottom: 2em;
-
-
+@media (max-width: 300px) {
+  #login-box .input-row {
+    height: auto;
+  }
+  #login-box .input-row .label {
+    width: auto;
+    float: none;
+  }
+  #login-box .input-row .input {
+    padding: 0;
+    overflow: visible;
+  }
 }
 
-
-#login-box .input-row {
-  position: relative;
-  height: 1.5em;
-  padding-top: 1em;
-}
-
-#login-box .input-row .label {
-
- float: left;
- width: 8em;
- text-align: right;
- font-weight: bold;
-
-
-}
-
-#login-box .input-row input {
-  width: 14em;
-}
-
-#login-box .button-row {
-  margin-top: 0.5em;
-}
 
 #quick-personal {
     position: absolute;
