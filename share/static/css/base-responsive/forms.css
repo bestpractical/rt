@@ -160,7 +160,8 @@ div.results .titlebox-content {
     .wide.fields .value > ul {
         margin-top: 0;
     }
-    .wide.fields .value > ul > li {
+    .wide.fields .value > ul,
+    .wide.fields .value > .checkboxes {
         margin-left: 1.5em;
     }
 }
