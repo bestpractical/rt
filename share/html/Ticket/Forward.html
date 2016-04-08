@@ -59,43 +59,56 @@
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
-<table border="0">
-<tr><td align="right"><&|/l&>From</&>:</td>
-<td><% $from %></td></tr>
+<div class="wide fields">
+  <div class="field">
+    <span class="label"><&|/l&>From</&>:</span>
+    <span class="value"><% $from %></span>
+  </div>
 
-<tr><td align="right"><&|/l&>Subject</&>:</td>
-<td><input type="text" name="Subject" size="60" value="<% $ARGS{'Subject'} || $subject %>" /></td></tr>
+  <div class="field">
+    <span class="label"><&|/l&>Subject</&>:</span>
+    <span class="value"><input type="text" name="Subject" value="<% $ARGS{'Subject'} || $subject %>" /></span>
+  </div>
 
-<tr><td align="right"><&|/l&>To</&>:</td>
-<td><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></td></tr>
+  <div class="field">
+    <span class="label"><&|/l&>To</&>:</span>
+    <span class="value"><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></span>
+  </div>
 
-<tr><td align="right"><&|/l&>Cc</&>:</td>
-<td><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></td></tr>
+  <div class="field">
+    <span class="label"><&|/l&>Cc</&>:</span>
+    <span class="value"><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></span>
+  </div>
 
-<tr><td align="right"><&|/l&>Bcc</&>:</td>
-<td><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></td></tr>
+  <div class="field">
+    <span class="label"><&|/l&>Bcc</&>:</span>
+    <span class="value"><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></span>
+  </div>
 
 % if ( $gnupg_widget ) {
-<tr><td>&nbsp;</td><td>
+  <div class="field">
+    <span class="label empty">&nbsp;</span>
+    <span class="value">
 <& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 &>
-</td></tr>
+    </span>
+  </div>
 % }
 
-<tr>
-<td><&|/l&>Content</&>:</td>
-<td>
+  <div class="field">
+    <span class="label"><&|/l&>Message</&>:</span>
+    <span class="value">
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1 &>
 % } else {
 <& /Elements/MessageBox, SuppressAttachmentWarning => 1 &>
 %}
-</td>
-</tr>
+    </span>
+  </div>
+</div>
 
-</table>
 </&>
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments, Count => RT->Config->Get('AttachmentListCount') &>
