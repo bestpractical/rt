@@ -58,8 +58,10 @@
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1 &>
-<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics' &>
+<div class="fields">
+<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1, InTable => 1 &>
+<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
+</div>
 </&>
 
 % $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
