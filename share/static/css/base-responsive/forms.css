@@ -125,6 +125,14 @@ div.results .titlebox-content {
     vertical-align: middle;
 }
 
+.fields .value > .label {
+    padding-left: 3em;
+}
+.fields .value > .label,
+.fields .value > .value {
+    display: inline;
+}
+
 @media (max-width: 1200px) {
     .wide.fields {
         display: block;
@@ -139,11 +147,20 @@ div.results .titlebox-content {
     .wide.fields .value {
         display: inline;
     }
+
     .wide.fields .value > ul {
         margin-top: 0;
     }
     .wide.fields .value > ul > li {
         margin-left: 1.5em;
+    }
+}
+
+@media (max-width: 700px) {
+    /* hack to force quickcreate to break queue/owner row across two lines */
+    .wide.fields .value > .label:before {
+        content: '\a\a';
+        white-space: pre;
     }
 }
 
