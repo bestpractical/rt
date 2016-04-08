@@ -45,14 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ($m->comp_exists($beforenav_plugin) ) {
+<& $beforenav_plugin &>
+% }
+
 % if ( $show_menu ) {
 <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
 <div id="page-navigation"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
 % }
 <div id="topactions"><& /Elements/WidgetBar, menu => PageWidgets() &></div>
 
-% if ($m->comp_exists($stylesheet_plugin) ) {
-<& $stylesheet_plugin &>
+% if ($m->comp_exists($aftermenu_plugin) ) {
+<& $aftermenu_plugin &>
 % }
 
 <div id="body">
@@ -66,5 +70,6 @@ $show_menu => 1
 my $style = $session{'CurrentUser'}
           ? $session{'CurrentUser'}->Stylesheet
           : RT->Config->Get('WebDefaultStylesheet');
-my $stylesheet_plugin = "/NoAuth/css/".$style."/AfterMenus";
+my $beforenav_plugin = "/NoAuth/css/".$style."/BeforeNav";
+my $aftermenu_plugin = "/NoAuth/css/".$style."/AfterMenus";
 </%init>
