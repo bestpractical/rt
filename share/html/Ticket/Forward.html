@@ -58,6 +58,7 @@
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
+<&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
 <table border="0">
 <tr><td align="right"><&|/l&>From</&>:</td>
 <td><% $from %></td></tr>
@@ -95,6 +96,7 @@
 </tr>
 
 </table>
+</&>
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments, Count => RT->Config->Get('AttachmentListCount') &>
 
