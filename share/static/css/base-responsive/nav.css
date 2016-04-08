@@ -63,3 +63,29 @@
 .create-medium { display: none; }
 .create-narrow { display: none; }
 
+/* be overly specific to defeat specificity */
+#app-nav.sf-menu > li#li-overflow,
+#page-menu.sf-menu > li#li-page-overflow {
+    display: none;
+}
+#app-nav.sf-menu > li#li-overflow.has-overflow,
+#page-menu.sf-menu > li#li-page-overflow.has-overflow {
+    display: inline-block;
+}
+
+/* these two rules prevent the menus from wrapping, so that our overflow
+   calculations can work */
+#app-nav.sf-menu > li,
+#page-menu.sf-menu > li {
+    float: none;
+    display: inline-block;
+}
+#app-nav.sf-menu,
+#page-menu.sf-menu {
+    white-space: nowrap;
+}
+
+/* restore wrapping for submenus */
+#app-nav.sf-menu ul {
+    white-space: normal;
+}

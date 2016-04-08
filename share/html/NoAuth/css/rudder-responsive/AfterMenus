@@ -61,6 +61,13 @@ var initMenus = function() {
     };
     floatMenu();
     jQuery(window).scroll(floatMenu);
+
+    // remove stub elements we added in BeforeNav to get a dropdown indicator
+    jQuery('#li-overflow-will_be_deleted').remove();
+    jQuery('#li-page-overflow-will_be_deleted').remove();
+
+    rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
+    rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
 };
 
 // If everything is loaded, init NOW.  Otherwise, defer to DOM ready.

@@ -1,0 +1,146 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+my $app_overflow = Menu->child( overflow => title => loc('More'), sort_order => 99999);
+# add a child element to make sure we get a dropdown indicator
+$app_overflow->child(will_be_deleted => raw_html => '');
+
+my $page_overflow = PageMenu->child( overflow => title => loc('More'), sort_order => 99999);
+# add a child element to make sure we get a dropdown indicator
+$page_overflow->child(will_be_deleted => raw_html => '');
+</%INIT>
+<script type="text/javascript">
+var rebalanceOverflowBuffer = 30;
+
+var rebalanceOverflowMenu = function (menuId, overflowId, withLogo) {
+    var toplevelMenu = jQuery(menuId);
+    var overflowMenu = jQuery(overflowId);
+
+    var availableWidth = jQuery(window).width();
+    if (withLogo) {
+        availableWidth -= jQuery('#logo').width();
+    }
+    availableWidth -= rebalanceOverflowBuffer;
+
+    // if the menu is too wide for the viewport, move overflow items into
+    // the menu
+    while (toplevelMenu.width() > availableWidth) {
+        // rightmost menu item, skipping the overflow menu itself
+        var item = toplevelMenu.children('li:not('+overflowId+')').get(-1);
+
+        // no items to overflow? odd, but visual degradation is better than
+        // throwing exceptions
+        if (!item) {
+            break;
+        }
+
+        // remove item from main menu and add it to the overflow menu
+        item.remove();
+        overflowMenu.children('ul').prepend(item);
+        overflowMenu.addClass('has-overflow');
+    }
+
+    // if the menu + an overflow item fits into the viewport, move
+    // previously overflow items back into the top level
+    while (1) {
+        var item = overflowMenu.find('li').get(0);
+
+        // no items to un-overflow
+        if (!item) {
+            break;
+        }
+
+        item = jQuery(item);
+
+        // first, add a clone of the menu item back into the top level,
+        // in the expected place
+        var clone = item.clone();
+        overflowMenu.before(clone);
+
+        // calculate width now that we have the item back in
+        var prospectiveWidth = toplevelMenu.width();
+
+        // destroy the evidence
+        clone.remove();
+
+        if (prospectiveWidth > availableWidth) {
+            break;
+        }
+
+        // remove menu item from overflow menu then add back it into the
+        // toplevel menu, but specifically before the overflow (which
+        // should always be the last menu item)
+        item.remove();
+        overflowMenu.before(item);
+
+        // if we just removed the last overflow item then hide "More"
+        if (overflowMenu.find('li').length == 0) {
+            overflowMenu.removeClass('has-overflow');
+        }
+    }
+};
+
+jQuery(function() {
+    // without this width fix, because the overflow menu starts out as
+    // display: none, superfish calculates its width to be just 2em
+    jQuery('#li-overflow').children('ul').css('width', '12em');
+    jQuery('#li-page-overflow').children('ul').css('width', '12em');
+
+    rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
+    rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
+
+    jQuery('#logo img').load(function () {
+        rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
+    });
+
+    jQuery(window).resize(function () {
+        rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
+        rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
+    });
+});
+</script>
