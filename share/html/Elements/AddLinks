@@ -70,31 +70,31 @@ $exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
 % } else {
 <i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
 % }
-<table>
-  <tr>
-    <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></td>
-    <td class="entry"><input type="text" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude |n%>/></td>
-  </tr>
-  <tr>
-    <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></td>
-    <td class="entry"><input type="text" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude |n%>/></td>
-  </tr>
-  <tr>
-    <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></td>
-    <td class="entry"><input type="text" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude |n%>/></td>
-  </tr>
-  <tr>
-    <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></td>
-    <td class="entry"> <input type="text" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude |n%>/></td>
-  </tr>
-  <tr>
-    <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></td>
-    <td class="entry"><input type="text" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></td>
-  </tr>
-  <tr>
-    <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></td>
-    <td class="entry"> <input type="text" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></td>
-  </tr>
+<div class="fields">
+  <div class="field">
+    <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></span>
+    <span class="value entry"><input type="text" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude |n%>/></span>
+  </div>
+  <div class="field">
+    <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></span>
+    <span class="value entry"><input type="text" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude |n%>/></span>
+  </div>
+  <div class="field">
+    <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></span>
+    <span class="value entry"><input type="text" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude |n%>/></span>
+  </div>
+  <div class="field">
+    <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></span>
+    <span class="value entry"> <input type="text" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude |n%>/></span>
+  </div>
+  <div class="field">
+    <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></span>
+    <span class="value entry"><input type="text" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></span>
+  </div>
+  <div class="field">
+    <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></span>
+    <span class="value entry"><input type="text" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></span>
+  </div>
   <& /Elements/EditCustomFields,
         Object          => $Object,
         Grouping        => 'Links',
@@ -104,4 +104,4 @@ $exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
             : ()),
         &>
 % $m->callback( CallbackName => 'NewLink' );
-</table>
+</div>
