@@ -119,7 +119,7 @@
 <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
 
   <tr>
-    <td class="labeltop"><&|/l&>Content</&>:</td>
+    <td class="labeltop"><&|/l&>Message</&>:</td>
     <td class="entry messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent})) {
