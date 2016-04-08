@@ -14,7 +14,9 @@
 }
 
 #ticket-create-message .messagedetails input[type="text"],
-#ticket-update-message .messagedetails input[type="text"] {
+#ticket-update-message .messagedetails input[type="text"],
+#ticket-create-message .messagedetails input[type="email"],
+#ticket-update-message .messagedetails input[type="email"] {
     width: 90%;
 }
 

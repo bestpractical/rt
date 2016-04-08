@@ -14,7 +14,9 @@
 }
 
 #ticket-create-message .messagedetails input[type="text"],
-#ticket-update-message .messagedetails input[type="text"] {
+#ticket-update-message .messagedetails input[type="text"],
+#ticket-create-message .messagedetails input[type="email"],
+#ticket-update-message .messagedetails input[type="email"] {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
