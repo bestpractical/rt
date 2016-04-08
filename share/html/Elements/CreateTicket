@@ -56,8 +56,12 @@
 % my $button_start = '<input type="submit" class="button" value="';
 % my $button_start_modal = '<input type="submit" class="button ticket-create-modal" value="';
 % my $button_end = '" />';
-% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue') );
+% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue'), Hyperlink => $Hyperlink );
 
+% if ($Hyperlink) {
+<% $queue_selector |n %>
+% }
+% else {
 <div class="create-wide">
 <&|/l_unsafe, $button_start, $button_end, $queue_selector &>[_1]New ticket in[_2]&nbsp;[_3]</&>
 </div>
@@ -67,6 +71,7 @@
 <div class="create-narrow">
 <&|/l_unsafe, $button_start_modal, $button_end &>[_1]+[_2]</&>
 </div>
+% }
 
 % $m->callback(CallbackName => 'BeforeFormEnd');
 
@@ -74,4 +79,5 @@
 <%ARGS>
 $SendTo => '/Ticket/Create.html',
 $IncludeExplanation => 0
+$Hyperlink => undef
 </%ARGS>

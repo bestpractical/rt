@@ -153,3 +153,15 @@ input.reminder-subject {
 .ticket-info-attachments .filename {
     word-break: break-word;
 }
+
+ul.select-queue {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 1.5em;
+}
+ul.select-queue li + li {
+    margin-top: .5em;
+}
+ul.select-queue li a:visited {
+    color: #000;
+}

@@ -45,5 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/CreateTicket, IncludeExplanation => 1 &>
+<& /Elements/CreateTicket,
+    IncludeExplanation => 1,
+    Hyperlink          => RT->Config->Get('WebPath') . '/Ticket/Create.html?Queue=',
+&>
 % $m->abort;

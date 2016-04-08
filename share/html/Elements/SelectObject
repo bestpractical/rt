@@ -50,6 +50,19 @@
 %     $d->Load($Default);
 <input type="text" name="<%$Name%>" size="25" value="<%$d->Name%>" class="<%$Class%>" />
 % }
+% elsif ($Hyperlink) {
+<ul class="<%$Class%>">
+%  for my $object (@{$session{$cache_key}{objects}}) {
+  <li>
+    <a href="<% $Hyperlink %><% ($NamedValues ? $object->{Name} : $object->{Id}) %>"><%$object->{Name}%>\
+%             if ($Verbose and $object->{Description}) {
+ (<%$object->{Description}%>)\
+%             }
+</a>
+</li>
+%     }
+</ul>
+% }
 % else {
 <select name="<%$Name%>" <% ($Multiple) ? qq{class="tall" multiple="multiple" size="$Size"} : '' |n%> <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
 %     if ($ShowNullOption) {
@@ -84,6 +97,7 @@ $Multiple => 0
 $Size => 6
 $Class => ""
 $CacheNeedsUpdate => undef
+$Hyperlink => undef
 </%args>
 <%init>
 $ObjectType = "RT::$ObjectType" unless $ObjectType =~ /::/;
