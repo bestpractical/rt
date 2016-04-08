@@ -45,9 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table width="100%">
-  <tr>
-    <td valign="top" width="50%">
+<div class="columns ticket-summary">
+  <div class="boxcontainer col-6">
       <h3><&|/l&>Current Links</&></h3>
 
 <table>
@@ -105,13 +104,12 @@
   </tr>
 </table>
 
-</td>
-<td valign="top">
+  </div>
+  <div class="boxcontainer col-6">
 <h3><&|/l&>New Links</&></h3>
 <& AddLinks, %ARGS &>
-</td>
-</tr>
-</table>
+</div>
+</div>
 <%ARGS>
 $Object => undef
 </%ARGS>
