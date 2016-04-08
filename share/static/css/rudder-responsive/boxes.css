@@ -6,12 +6,6 @@
 .titlebox .titlebox-content {
     padding: 1em;
     border-top: 2px solid #aaa;
-    -moz-border-radius-bottomright: 0.5em;
-    -webkit-border-bottom-right-radius: 0.5em;
-    border-bottom-right-radius: 0.5em;
-    -moz-border-radius-bottomleft: 0.5em;
-    -webkit-border-bottom-left-radius: 0.5em;
-    border-bottom-left-radius: 0.5em;
     border-bottom: 1px solid #eee;
 }
 
