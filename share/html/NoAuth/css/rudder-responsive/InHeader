@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <!--[if lt IE 8]>
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/static/css/rudder/msie.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/static/css/rudder-responsive/msie.css" type="text/css" media="all" />
 <![endif]-->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
