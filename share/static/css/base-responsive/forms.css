@@ -360,3 +360,12 @@ ul.selectable a {
     font-weight: bold;
     text-decoration: underline;
 }
+
+#SimpleSearchForm {
+    margin: 0 1em;
+} 
+
+#SimpleSearchForm input[name="q"] {
+    width: 100%;
+}
+

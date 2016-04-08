@@ -292,3 +292,7 @@ ul.selectable a {
     font-weight: bold;
     text-decoration: underline;
 }
+
+#SimpleSearchForm input[name=q] {
+    width: 30em;
+}
