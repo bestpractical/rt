@@ -89,3 +89,12 @@
 #app-nav.sf-menu ul {
     white-space: normal;
 }
+
+#li-overflow > a,
+#li-page-overflow > a {
+    cursor: default;
+}
+#li-overflow > a:hover,
+#li-page-overflow > a:hover {
+    text-decoration: none;
+}
