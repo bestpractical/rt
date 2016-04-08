@@ -123,7 +123,16 @@ div.results .titlebox-content {
 .fields .value {
     display: table-cell;
     vertical-align: middle;
+    padding-top: 0.25em;
 }
+
+.fields > .field:last-child > .label,
+.fields > .field:last-child > .labeltop,
+.fields > .field:last-child > .cflabel,
+.fields > .field:last-child > .value {
+    padding-bottom: 0.25em;
+}
+
 
 .fields .value > .label {
     padding-left: 3em;
@@ -175,10 +184,6 @@ div.results .titlebox-content {
  padding-top: .5em;
  margin-top: .5em;
  white-space: nowrap;
-}
-
-.fields > .field:first-child > .label {
-  padding-top: 0;
 }
 
 .cflabel {
