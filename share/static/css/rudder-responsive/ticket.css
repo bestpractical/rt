@@ -95,3 +95,20 @@ tr.edit-custom-field.cftype-IPAddress textarea,
 tr.edit-custom-field.cftype-IPAddressRange textarea {
     width: 24em;
 }
+
+#requestor-accordion .details {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+#requestor-accordion .user-summary {
+    margin-right: 1em;
+}
+
+#requestor-accordion .details .comments-about-user,
+#requestor-accordion .details .ui-tabs-nav,
+#requestor-accordion .details .ui-tabs-panel .label,
+#requestor-accordion .details .more-about-user-groups {
+    margin-left: 1em;
+    margin-right: 1em;
+}
