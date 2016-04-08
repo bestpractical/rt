@@ -157,6 +157,10 @@ div.results .titlebox-content {
 }
 
 @media (max-width: 700px) {
+    .fields .value .current-value {
+        display: block;
+    }
+
     /* hack to force quickcreate to break queue/owner row across two lines */
     .wide.fields .value > .label:before {
         content: '\a\a';
