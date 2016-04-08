@@ -52,7 +52,7 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></td>
+    <td class="entry"><input type="text" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></td>
   </tr>
 </table>
 

@@ -117,27 +117,27 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Depends on</&>:</td>
-    <td class="entry"><input name="<% $record_type %>-DependsOn" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-DependsOn' } || '' %>" /></td>
+    <td class="entry"><input type="text" name="<% $record_type %>-DependsOn" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-DependsOn' } || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Depended on by</&>:</td>
-    <td class="entry"><input name="DependsOn-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'DependsOn-'. $record_type } || '' %>" /></td>
+    <td class="entry"><input type="text" name="DependsOn-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'DependsOn-'. $record_type } || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Parents</&>:</td>
-    <td class="entry"><input name="<% $record_type %>-MemberOf" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-MemberOf'} || '' %>" /></td>
+    <td class="entry"><input type="text" name="<% $record_type %>-MemberOf" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-MemberOf'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Children</&>:</td>
-    <td class="entry"> <input name="MemberOf-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'MemberOf-'. $record_type } || '' %>" /></td>
+    <td class="entry"> <input type="text" name="MemberOf-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'MemberOf-'. $record_type } || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Refers to</&>:</td>
-    <td class="entry"><input name="<% $record_type %>-RefersTo" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-RefersTo'} || '' %>" /></td>
+    <td class="entry"><input type="text" name="<% $record_type %>-RefersTo" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-RefersTo'} || '' %>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Referred to by</&>:</td>
-    <td class="entry"> <input name="RefersTo-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'RefersTo-'. $record_type } || '' %>" /></td>
+    <td class="entry"> <input type="text" name="RefersTo-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'RefersTo-'. $record_type } || '' %>" /></td>
   </tr>
 </table>
 </td>

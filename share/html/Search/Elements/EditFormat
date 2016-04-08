@@ -108,7 +108,7 @@ jQuery( function() {
 </div>
 <div class="row">
 <span class="label"><&|/l&>Title</&>:</span>
-<span class="value"><input name="Title" size="10" /></span>
+<span class="value"><input type="text" name="Title" size="10" /></span>
 </div>
 <div class="row">
 <span class="label"><&|/l&>Size</&>:</span>

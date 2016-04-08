@@ -46,5 +46,5 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/SelfService/Display.html" method="get" id="GotoTicket" name="GotoTicket">
-<input size="4" name="id" value="<&|/l&>Goto Ticket</&>..." onfocus="if (this.value=='<&|/l&>Goto Ticket</&>...') this.value=''"  />
+<input type="text" size="4" name="id" value="<&|/l&>Goto Ticket</&>..." onfocus="if (this.value=='<&|/l&>Goto Ticket</&>...') this.value=''"  />
 </form>

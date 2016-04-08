@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ($Lite) {
-<input name="<%$Name%>" size="25" default="<%$d->Name%>" />
+<input type="text" name="<%$Name%>" size="25" default="<%$d->Name%>" />
 % } else {
 <select NAME ="<%$Name%>"
 % if ($Multiple) {

@@ -48,11 +48,11 @@
 <table>
   <tr>
     <td class="label"><label for="Name"><&|/l&>Name</&></label></td>
-    <td><input name="Name" value="<% $current{Name} %>" size="40"></td>
+    <td><input type="text" name="Name" value="<% $current{Name} %>" size="40"></td>
   </tr>
   <tr>
     <td class="label"><label for="Description"><&|/l&>Description</&></label></td>
-    <td><input name="Description" value="<% $current{Description} %>" size="40"></td>
+    <td><input type="text" name="Description" value="<% $current{Description} %>" size="40"></td>
   </tr>
   <tr class="lifecycle">
     <td class="label"><label for="Lifecycle"><&|/l&>Lifecycle</&></label></td>

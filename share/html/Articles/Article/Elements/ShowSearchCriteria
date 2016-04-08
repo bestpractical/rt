@@ -61,17 +61,17 @@
 </tr>
 <tr>
 <td class="label"><&|/l&>Name</&></td>
-<td class="value"><&|/l&>matches</&> <input name="Name~" value="<%$ARGS{'Name~'}%>" /> <&|/l&>and not</&> <input name="Name!~" value="<%$ARGS{'Name!~'}%>" /></td>
+<td class="value"><&|/l&>matches</&> <input type="text" name="Name~" value="<%$ARGS{'Name~'}%>" /> <&|/l&>and not</&> <input type="text" name="Name!~" value="<%$ARGS{'Name!~'}%>" /></td>
 </tr>
 <tr>
 <td class="label"><&|/l&>Summary</&></td>
-<td class="value"><&|/l&>matches</&> <input name="Summary~" value="<%$ARGS{'Summary~'}%>" /> <&|/l&>and not</&> <input name="Summary!~" value="<%$ARGS{'Summary!~'}%>" /></td>
+<td class="value"><&|/l&>matches</&> <input type="text" name="Summary~" value="<%$ARGS{'Summary~'}%>" /> <&|/l&>and not</&> <input type="text" name="Summary!~" value="<%$ARGS{'Summary!~'}%>" /></td>
 </tr>
 <tr>
 <td class="label" colspan="2"><h2><&|/l&>Content</&></h2></td>
 </tr>
 <tr>
-<td class="label"><&|/l&>Any field</&></td><td class="value"> <&|/l&>matches</&> <input name="Article~" value="<%$ARGS{'Article~'}%>" /> <&|/l&>and not</&> <input name="Article!~" value="<%$ARGS{'Article!~'}%>" /></td>
+<td class="label"><&|/l&>Any field</&></td><td class="value"> <&|/l&>matches</&> <input type="text" name="Article~" value="<%$ARGS{'Article~'}%>" /> <&|/l&>and not</&> <input type="text" name="Article!~" value="<%$ARGS{'Article!~'}%>" /></td>
 </tr>
 % while (my $field = $customfields->Next ) {
 <tr>

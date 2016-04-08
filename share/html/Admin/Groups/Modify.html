@@ -67,11 +67,11 @@
         <table>
           <tr>
             <td align="right"><&|/l&>Name</&>:</td>
-            <td><input name="Name" value="<%$Group->Name||$Name||''%>" /></td>
+            <td><input type="text" name="Name" value="<%$Group->Name||$Name||''%>" /></td>
           </tr>
           <tr>
             <td align="right"><&|/l&>Description</&>:</td>
-            <td colspan="3"><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
+            <td colspan="3"><input type="text" name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
           </tr>
           <& /Elements/EditCustomFields, Object => $Group, Grouping => 'Basics', InTable => 1 &>
           <tr>

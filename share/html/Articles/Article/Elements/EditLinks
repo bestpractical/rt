@@ -57,7 +57,7 @@
 </tr>
 <tr>
 <td class="label"><&|/l&>Refers to</&>:</td>
-<td><input name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}||''%>" /><br />
+<td><input type="text" name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}||''%>" /><br />
 <ul>
 % if ($id ne 'new') {
 %   my $refersto = $ArticleObj->RefersTo;
@@ -83,7 +83,7 @@
 </tr>
 <tr>
 <td class="label"><&|/l&>Referred to by</&>:</td>
-<td><input name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}||''%>" />
+<td><input type="text" name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}||''%>" />
 <br />
 <ul>
 % if ($id ne 'new') {

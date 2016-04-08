@@ -63,6 +63,7 @@ $DefaultQueue->Load( $Default );
 undef $CheckQueueRight if $ShowAllQueues;
 </%init>
 <input name="<% $Name %>"
+       type="text"
        size="25"
        value="<% $DefaultQueue->id ? $DefaultQueue->Name : "" %>"
        class="<% $Class %>"

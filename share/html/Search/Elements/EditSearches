@@ -54,7 +54,7 @@
 <& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
 <br />
 <span class="label"><&|/l&>Description</&>:</span>
-<input size="25" name="SavedSearchDescription" value="<% $Description || '' %>" />
+<input type="text" size="25" name="SavedSearchDescription" value="<% $Description || '' %>" />
 
 % if ($Id ne 'new') {
 <nobr>

@@ -46,6 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/SelfService/Article/Search.html" id="ArticleSearch">
-<input size="4" name="Articles_Content" value="<&|/l&>Search Articles</&>..." onfocus="if (this.value=='<&|/l&>Search Articles</&>...') this.value=''" />
+<input type="text" size="4" name="Articles_Content" value="<&|/l&>Search Articles</&>..." onfocus="if (this.value=='<&|/l&>Search Articles</&>...') this.value=''" />
 </form>
 

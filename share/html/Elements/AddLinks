@@ -73,27 +73,27 @@ $exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
 <table>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></td>
-    <td class="entry"><input name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude |n%>/></td>
+    <td class="entry"><input type="text" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></td>
-    <td class="entry"><input name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude |n%>/></td>
+    <td class="entry"><input type="text" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></td>
-    <td class="entry"><input name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude |n%>/></td>
+    <td class="entry"><input type="text" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></td>
-    <td class="entry"> <input name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude |n%>/></td>
+    <td class="entry"> <input type="text" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></td>
-    <td class="entry"><input name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></td>
+    <td class="entry"><input type="text" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></td>
-    <td class="entry"> <input name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></td>
+    <td class="entry"> <input type="text" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></td>
   </tr>
   <& /Elements/EditCustomFields,
         Object          => $Object,

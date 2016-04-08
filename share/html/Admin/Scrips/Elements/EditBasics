@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <tr><td class="label"><&|/l&>Description</&>:</td><td class="value">\
-<input name="Description" \
+<input type="text" name="Description" \
     size="60" \
     value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
 </td></tr>

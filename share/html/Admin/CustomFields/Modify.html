@@ -58,10 +58,10 @@
 <table>
 
 <tr><td class="label"><&|/l&>Name</&></td>
-<td><input name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" /></td></tr>
+<td><input type="text" name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" /></td></tr>
 
 <tr><td class="label"><&|/l&>Description</&></td>
-<td><input name="Description" value="<% $CustomFieldObj->Description || $Description || '' %>" size="80" /></td></tr>
+<td><input type="text" name="Description" value="<% $CustomFieldObj->Description || $Description || '' %>" size="80" /></td></tr>
 
 <tr><td class="label"><&|/l&>Type</&></td>
 <td><& /Admin/Elements/SelectCustomFieldType, 
@@ -119,7 +119,7 @@ jQuery( function() {
 </script>
 
 <tr><td class="label"><&|/l&>Entry Hint</&></td>
-<td><input name="EntryHint" value="<% $CustomFieldObj->EntryHint // $EntryHint // '' %>" size="80" /></td></tr>
+<td><input type="text" name="EntryHint" value="<% $CustomFieldObj->EntryHint // $EntryHint // '' %>" size="80" /></td></tr>
 
 
 <tr class="edit_validation"><td class="label"><&|/l&>Validation</&></td>
@@ -139,7 +139,7 @@ jQuery( function() {
 % }
 
 <tr><td class="label"><&|/l&>Link values to</&></td><td>
-<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
+<input type="text" size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
 <div class="hints">
 <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
 <&|/l&>Fill in this field with a URL.</&>
@@ -147,7 +147,7 @@ jQuery( function() {
 </div></td></tr>
 
 <tr><td class="label"><&|/l&>Include page</&></td><td>
-<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
+<input type="text" size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
 <div class="hints">
 <&|/l&>RT can include content from another web service when showing this custom field.</&>
 <&|/l&>Fill in this field with a URL.</&>

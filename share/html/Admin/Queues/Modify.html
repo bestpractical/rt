@@ -59,12 +59,12 @@
 % if ($InternalQueue) {
 <% $QueueObj->Name %>
 % } else {
-<input name="Name" value="<% $Create ? "" : $QueueObj->Name || $Name %>" />
+<input type="text" name="Name" value="<% $Create ? "" : $QueueObj->Name || $Name %>" />
 % }
 </td></tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% $Create ? "" : $QueueObj->Description || $Description || '' %>" size="60" /></td>
+<td colspan="3"><input type="text" name="Description" value="<% $Create ? "" : $QueueObj->Description || $Description || '' %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Lifecycle</&>:</td><td colspan="3">
@@ -81,18 +81,18 @@
 </td></tr>
 
 <tr><td align="right"><&|/l&>Subject Tag</&>:</td>
-<td colspan="3"><input name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $QueueObj->SubjectTag || '' ) %>" size="60" /></td>
+<td colspan="3"><input type="text" name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $QueueObj->SubjectTag || '' ) %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Sort Order</&>:</td>
-<td colspan="3"><input name="SortOrder" value="<% $Create ? 0 : $QueueObj->SortOrder || $SortOrder || 0 %>" size="60" /></td>
+<td colspan="3"><input type="text" name="SortOrder" value="<% $Create ? 0 : $QueueObj->SortOrder || $SortOrder || 0 %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
-<td><input name="CorrespondAddress" value="<% $Create ? "" : $QueueObj->CorrespondAddress || $CorrespondAddress || '' %>" />
+<td><input type="email" name="CorrespondAddress" value="<% $Create ? "" : $QueueObj->CorrespondAddress || $CorrespondAddress || '' %>" />
 <br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 <td align="right"><&|/l&>Comment Address</&>:</td>
-<td><input name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || $CommentAddress || '' %>" />
+<td><input type="email" name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || $CommentAddress || '' %>" />
 <br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
 </tr>
 

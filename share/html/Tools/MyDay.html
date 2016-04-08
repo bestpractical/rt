@@ -59,7 +59,7 @@
 <tr <%$class|n%>><td colspan="2"><h2><a
 href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
 <%$Ticket->Subject%></a></h2></td></tr>
-<tr <%$class|n%>><td><span class="label"><&|/l&>Worked</&>:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" /> <&|/l&>minutes</&>
+<tr <%$class|n%>><td><span class="label"><&|/l&>Worked</&>:</span><input type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" /> <&|/l&>minutes</&>
 </td>
 <td rowspan="2"><span class="label"><&|/l&>Comments</&>:<br /></span><textarea name="UpdateContent-<%$Ticket->Id%>" rows="5"
 cols="60"></textarea></td></tr>

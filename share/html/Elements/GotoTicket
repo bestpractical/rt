@@ -46,5 +46,5 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Display.html">
-<input type="submit" class="button" value="<&|/l&>Goto ticket</&>" />&nbsp;<input size="5" name="id" accesskey="0" />
+<input type="submit" class="button" value="<&|/l&>Goto ticket</&>" />&nbsp;<input type="text" size="5" name="id" accesskey="0" />
 </form>

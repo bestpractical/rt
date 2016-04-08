@@ -62,7 +62,7 @@
 % }
 </select>
 <& /Elements/SelectMatch, Name => 'QueueOp', Default => $QueueOp &>
-<input size="8" name="QueueString" value="<% $QueueString %>" />
+<input type="text" size="8" name="QueueString" value="<% $QueueString %>" />
 <br />
 
 <input type="checkbox" class="checkbox" id="FindDisabledQueues" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />

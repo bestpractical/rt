@@ -58,7 +58,7 @@
 % }
 %# otherwise, put in a textedity field
 % else {
-<input name="<%$Name%>" value="<%$Values[0]||''%>" />
+<input type="text" name="<%$Name%>" value="<%$Values[0]||''%>" />
 % }
 <%init>
 my @Values =ref( $Values ) ? @{ $Values } : ( $Values ); 

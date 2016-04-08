@@ -124,7 +124,7 @@
 <td valign="top">
 <table>
 <tr><td class="label"> <&|/l&>Make subject</&>: </td>
-<td class="value"> <input name="Subject" size="20" value="<% $ARGS{Subject} || '' %>"/> </td></tr>
+<td class="value"> <input type="text" name="Subject" size="20" value="<% $ARGS{Subject} || '' %>"/> </td></tr>
 <tr><td class="label"> <&|/l&>Make priority</&>: </td>
 <td class="value"> <& /Elements/SelectPriority, Name => "Priority", Default => $ARGS{Priority} &> </td></tr>
 <tr><td class="label"> <&|/l&>Make queue</&>: </td>
@@ -160,7 +160,7 @@
 <tr>
     <td align="right"><&|/l&>Subject</&>:</td>
     <td>
-        <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || "" %>" />
+        <input type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || "" %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateSubject' );
     </td>
 </tr>

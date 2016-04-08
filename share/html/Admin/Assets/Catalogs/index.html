@@ -78,7 +78,7 @@
 % }
 </select>
 <& /Elements/SelectMatch, Name => 'Op', Default => $Op &>
-<input size="20" name="String" value="<% $String %>" />
+<input type="text" size="20" name="String" value="<% $String %>" />
 <br />
 
 <input type="checkbox" class="checkbox" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled ? 'checked="checked"': '' |n%> />

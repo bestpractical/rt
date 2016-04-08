@@ -66,27 +66,27 @@
 <tr><td align="right">
 <&|/l&>Username</&>:
 </td><td>
-<input name="Name" value="<%$UserObj->Name//$ARGS{Name}//''%>" /> <strong><&|/l&>(required)</&></strong>
+<input type="text" name="Name" value="<%$UserObj->Name//$ARGS{Name}//''%>" /> <strong><&|/l&>(required)</&></strong>
 </td></tr>
 <tr><td align="right">
 <&|/l&>Email</&>:
 </td><td>
-<input name="EmailAddress" value="<%$UserObj->EmailAddress//$ARGS{EmailAddress}//''%>" />
+<input type="email" name="EmailAddress" value="<%$UserObj->EmailAddress//$ARGS{EmailAddress}//''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Real Name</&>:
 </td><td>
-<input name="RealName" value="<%$UserObj->RealName//$ARGS{RealName}//''%>" />
+<input type="text" name="RealName" value="<%$UserObj->RealName//$ARGS{RealName}//''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Nickname</&>:
 </td><td>
-<input name="NickName" value="<%$UserObj->NickName//$ARGS{NickName}//''%>" />
+<input type="text" name="NickName" value="<%$UserObj->NickName//$ARGS{NickName}//''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Unix login</&>:
 </td><td>
-<input name="Gecos" value="<%$UserObj->Gecos//$ARGS{Gecos}//''%>" />
+<input type="text" name="Gecos" value="<%$UserObj->Gecos//$ARGS{Gecos}//''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Language</&>:
@@ -135,39 +135,39 @@
 <tr><td align="right">
 <&|/l&>Organization</&>:
 </td><td>
-<input name="Organization" value="<%$UserObj->Organization//$ARGS{Organization}//''%>" />
+<input type="text" name="Organization" value="<%$UserObj->Organization//$ARGS{Organization}//''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Address1</&>:
 </td><td>
-<input name="Address1" value="<%$UserObj->Address1//$ARGS{Address1}//''%>" />
+<input type="text" name="Address1" value="<%$UserObj->Address1//$ARGS{Address1}//''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Address2</&>:
 </td><td>
-<input name="Address2" value="<%$UserObj->Address2//$ARGS{Address2}//''%>" />
+<input type="text" name="Address2" value="<%$UserObj->Address2//$ARGS{Address2}//''%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>City</&>:
 </td><td>
-<input name="City" value="<%$UserObj->City//$ARGS{City}//''%>" size="14" />
+<input type="text" name="City" value="<%$UserObj->City//$ARGS{City}//''%>" size="14" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>State</&>:
 </td><td>
-<input name="State" value="<%$UserObj->State//$ARGS{State}//''%>" size="3" />
+<input type="text" name="State" value="<%$UserObj->State//$ARGS{State}//''%>" size="3" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>Zip</&>:
 </td><td>
-<input name="Zip" value="<%$UserObj->Zip//$ARGS{Zip}//''%>" size="9" />
+<input type="text" name="Zip" value="<%$UserObj->Zip//$ARGS{Zip}//''%>" size="9" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Country</&>:
 </td><td>
-<input name="Country" value="<%$UserObj->Country//$ARGS{Country}//''%>" />
+<input type="text" name="Country" value="<%$UserObj->Country//$ARGS{Country}//''%>" />
 </td></tr>
 
 <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location', InTable => 1 &>
@@ -180,22 +180,22 @@
 <tr><td align="right">
 <&|/l&>Residence</&>:
 </td><td>
-<input name="HomePhone" value="<%$UserObj->HomePhone//$ARGS{HomePhone}//''%>" size="13" /><br />
+<input type="tel" name="HomePhone" value="<%$UserObj->HomePhone//$ARGS{HomePhone}//''%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Work</&>:
 </td><td>
-<input name="WorkPhone" value="<%$UserObj->WorkPhone//$ARGS{WorkPhone}//''%>" size="13" /><br />
+<input type="tel" name="WorkPhone" value="<%$UserObj->WorkPhone//$ARGS{WorkPhone}//''%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Mobile</&>:
 </td><td>
-<input name="MobilePhone" value="<%$UserObj->MobilePhone//$ARGS{MobilePhone}//''%>" size="13" /><br />
+<input type="tel" name="MobilePhone" value="<%$UserObj->MobilePhone//$ARGS{MobilePhone}//''%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Pager</&>:
 </td><td>
-<input name="PagerPhone" value="<%$UserObj->PagerPhone//$ARGS{PagerPhone}//''%>" size="13" /><br />
+<input type="tel" name="PagerPhone" value="<%$UserObj->PagerPhone//$ARGS{PagerPhone}//''%>" size="13" /><br />
 </td>
 </tr>
 

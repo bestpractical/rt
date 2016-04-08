@@ -48,11 +48,11 @@
 <table>
 <tr>
 <td class="label"><&|/l&>Name</&>:</td>
-<td><input name="Name" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Name) || $ARGS{'Name'} || ''|h%>" size="50" /></td>
+<td><input type="text" name="Name" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Name) || $ARGS{'Name'} || ''|h%>" size="50" /></td>
 </tr>
 <tr>
 <td class="label"><&|/l&>Summary</&>:</td>
-<td><input name="Summary" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Summary) || $ARGS{'Summary'} ||'' |h%>" size="50" /></td>
+<td><input type="text" name="Summary" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Summary) || $ARGS{'Summary'} ||'' |h%>" size="50" /></td>
 </tr>
 <tr>
 <td class="label"><&|/l&>Class</&>:</td>

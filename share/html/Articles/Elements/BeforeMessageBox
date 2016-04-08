@@ -53,11 +53,11 @@
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
 <tr>
 <td><&|/l&>Search for Articles matching</&></td>
-<td><input size=20 name="<% $name_prefix %>Articles_Content" /></td>
+<td><input type="text" size=20 name="<% $name_prefix %>Articles_Content" /></td>
 </tr>
 <tr>
 <td><&|/l&>Include Article:</&></td>
-<td><input size=20 name="<% $name_prefix %>Articles-Include-Article-Named" /></td>
+<td><input type="text" size=20 name="<% $name_prefix %>Articles-Include-Article-Named" /></td>
 <td><input type="submit" name="Go" value="Go" /></td>
 </tr>
 % }

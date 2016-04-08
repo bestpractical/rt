@@ -70,9 +70,9 @@
 <input type="checkbox" class="checkbox" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
 <label for="ShowDependent"><&|/l&>Show requests awaiting other approvals</&></label><br />
 
-<&|/l_unsafe, qq{<input size='15' class="datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
+<&|/l_unsafe, qq{<input type='text' size='15' class="datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
 
-<&|/l_unsafe, qq{<input size='15' class="datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests created after [_1]</&>
+<&|/l_unsafe, qq{<input type='text' size='15' class="datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests created after [_1]</&>
 </&>
 
 <%init>

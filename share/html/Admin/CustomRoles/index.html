@@ -62,7 +62,7 @@
 % }
 </select>
 <& /Elements/SelectMatch, Name => 'SearchOp', Default => $SearchOp &>
-<input size="8" name="SearchString" value="<% $SearchString %>" />
+<input type="text" size="8" name="SearchString" value="<% $SearchString %>" />
 <br />
 
 <input type="checkbox" class="checkbox" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled? 'checked="checked"': '' |n%> />

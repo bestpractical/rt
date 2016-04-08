@@ -55,7 +55,7 @@
 % }
 </select>
 <& /Elements/SelectMatch, Name => 'GroupOp', Default => $GroupOp &>
-<input size="8" name="GroupString" value="<% $GroupString %>" />
+<input type="text" size="8" name="GroupString" value="<% $GroupString %>" />
 <%INIT>
 my $CFs = RT::CustomFields->new($session{'CurrentUser'});
 $CFs->LimitToChildType('RT::Group');

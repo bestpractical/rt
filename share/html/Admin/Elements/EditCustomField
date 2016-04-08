@@ -56,12 +56,12 @@
 <tr><td align="right">
 <&|/l&>Name</&>:
 </td><td>
-<input name="Name" value="<%$CustomFieldObj->Name%>" size="20" />
+<input type="text" name="Name" value="<%$CustomFieldObj->Name%>" size="20" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Description</&>:
 </td><td>
-<input name="Description" value="<%$CustomFieldObj->Description%>" size="80" />
+<input type="text" name="Description" value="<%$CustomFieldObj->Description%>" size="80" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Type</&>:

@@ -48,7 +48,7 @@
 % if ($Lite) {
 %     my $d = $ObjectType->new($session{'CurrentUser'});
 %     $d->Load($Default);
-<input name="<%$Name%>" size="25" value="<%$d->Name%>" class="<%$Class%>" />
+<input type="text" name="<%$Name%>" size="25" value="<%$d->Name%>" class="<%$Class%>" />
 % }
 % else {
 <select name="<%$Name%>" <% ($Multiple) ? qq{class="tall" multiple="multiple" size="$Size"} : '' |n%> <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">

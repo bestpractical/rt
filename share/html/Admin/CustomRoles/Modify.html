@@ -56,15 +56,15 @@
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
 <table>
 <tr><td align="right"><&|/l&>Role Name</&>:</td><td colspan="3">
-<input name="Name" value="<% $Create ? "" : $RoleObj->Name || $Name %>" />
+<input type="text" name="Name" value="<% $Create ? "" : $RoleObj->Name || $Name %>" />
 </td></tr>
 
 <tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" /></td>
+<td colspan="3"><input type="text" name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Entry Hint</&>:</td>
-<td colspan="3"><input name="EntryHint" value="<% $Create ? "" : $RoleObj->EntryHint || $EntryHint || '' %>" size="60" /></td>
+<td colspan="3"><input type="text" name="EntryHint" value="<% $Create ? "" : $RoleObj->EntryHint || $EntryHint || '' %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><input type="checkbox" class="checkbox" id="Multiple" name="Multiple" value="1"
