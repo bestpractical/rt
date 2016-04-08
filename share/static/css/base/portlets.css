@@ -7,7 +7,8 @@ table.dashboard {
    width: 12em;
 }
 
-.quick-create input[type="text"], .quick-create textarea {
+.quick-create input[type="text"],
+.quick-create input[type="email"],
+.quick-create textarea {
     width: 100%;
-
 }
