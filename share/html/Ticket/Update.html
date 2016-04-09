@@ -222,7 +222,7 @@ jQuery( function() {
            }
        );
        jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
-           jQuery('form[name=TicketUpdate]').serialize(),
+           jQuery('form[name=TicketUpdate]').serializeObject(),
            function() {
                var txn_send_field = jQuery("#previewscrips input[name=TxnSendMailTo]");
                txn_send_field.change( syncCheckboxes );
