@@ -27,8 +27,8 @@ o   A supported SQL database
                                            upgrade path guaranteed
 
 o   Apache version 1.3.x or 2.x (http://httpd.apache.org)
-        with mod_perl -- (http://perl.apache.org)
-        or with FastCGI -- (http://www.fastcgi.com)
+        with FastCGI -- (http://www.fastcgi.com)
+        or mod_perl -- (http://perl.apache.org)
         or another webserver with FastCGI support
 
         RT's FastCGI handler needs to access RT's configuration file.
