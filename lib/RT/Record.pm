@@ -2124,7 +2124,7 @@ sub AddCustomFieldDefaultValues {
         my $values = $cf->DefaultValues( Object => $on || RT->System );
         foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
             next if $self->CustomFieldValueIsEmpty(
-                Field => $cf->id,
+                Field => $cf,
                 Value => $value,
             );
 
@@ -2161,7 +2161,10 @@ sub CustomFieldValueIsEmpty {
     my $value = $args{Value};
     return 1 unless defined $value  && length $value;
 
-    my $cf = $self->LoadCustomFieldByIdentifier( $args{'Field'} );
+    my $cf = ref($args{'Field'})
+           ? $args{'Field'}
+           : $self->LoadCustomFieldByIdentifier( $args{'Field'} );
+
     if ($cf) {
         if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
             my $DateObj = RT::Date->new( $self->CurrentUser );

@@ -3211,7 +3211,7 @@ sub _ProcessObjectCustomFieldUpdates {
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
                 next if $args{'Object'}->CustomFieldValueIsEmpty(
-                    Field => $cf->id,
+                    Field => $cf,
                     Value => $value,
                 );
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
