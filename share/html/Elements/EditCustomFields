@@ -99,6 +99,7 @@
 %               Grouping => $Grouping, ARGSRef => \%ARGS );
 <%INIT>
 $CustomFields ||= $Object->CustomFields;
+$CustomFields->{include_set_initial} = 1 if $ForCreation;
 
 $CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
 

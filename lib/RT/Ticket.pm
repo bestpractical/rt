@@ -484,6 +484,7 @@ sub Create {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
+        $cf->{include_set_initial} = 1;
         next unless $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $self);
 
         foreach my $value (

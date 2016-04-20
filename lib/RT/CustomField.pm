@@ -1885,12 +1885,22 @@ sub ValuesForObject {
 =head2 CurrentUserCanSee
 
 If the user has SeeCustomField they can see this custom field and its details.
-+
+
+Otherwise, if the user has SetInitialCustomField and this is being used in a
+"create" context, then they can see this custom field and its details. This
+allows you to set up custom fields that are only visible on create pages and
+are then inaccessible.
+
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
-    return $self->CurrentUserHasRight('SeeCustomField');
+    return 1 if $self->CurrentUserHasRight('SeeCustomField');
+
+    return 1 if $self->{include_set_initial}
+             && $self->CurrentUserHasRight('SetInitialCustomField');
+
+    return 0;
 }
 
 =head2 RegisterLookupType LOOKUPTYPE FRIENDLYNAME

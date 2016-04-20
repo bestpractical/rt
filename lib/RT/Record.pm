@@ -1942,6 +1942,8 @@ sub _AddCustomFieldValue {
     );
 
     my $cf = $self->LoadCustomFieldByIdentifier($args{'Field'});
+    $cf->{include_set_initial} = 1 if $args{'ForCreation'};
+
     unless ( $cf->Id ) {
         return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
@@ -2024,6 +2026,7 @@ sub _AddCustomFieldValue {
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
+        $new_value->{include_set_initial} = 1 if $args{'ForCreation'};
         $new_value->Load( $new_value_id );
 
         # now that adding the new value was successful, delete the old one

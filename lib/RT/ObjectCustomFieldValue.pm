@@ -222,6 +222,7 @@ sub Content {
     my $self = shift;
 
     my $cf = $self->CustomFieldObj;
+    $cf->{include_set_initial} = $self->{include_set_initial};
 
     return undef unless $cf->CurrentUserCanSee;
 
