@@ -221,7 +221,7 @@ my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
 sub Content {
     my $self = shift;
 
-    return undef unless $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
+    return undef unless $self->CustomFieldObj->CurrentUserCanSee;
 
     my $content = $self->_Value('Content');
     if (   $self->CustomFieldObj->Type eq 'IPAddress'

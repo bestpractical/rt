@@ -611,7 +611,7 @@ sub Values {
     my $cf_values = $class->new( $self->CurrentUser );
     $cf_values->SetCustomFieldObject( $self );
     # if the user has no rights, return an empty object
-    if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
+    if ( $self->id && $self->CurrentUserCanSee ) {
         $cf_values->LimitToCustomField( $self->Id );
     } else {
         $cf_values->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'acl' );
@@ -1050,7 +1050,7 @@ sub _Value {
     return undef unless $self->id;
 
     # we need to do the rights check
-    unless ( $self->CurrentUserHasRight('SeeCustomField') ) {
+    unless ( $self->CurrentUserCanSee ) {
         $RT::Logger->debug(
             "Permission denied. User #". $self->CurrentUser->id
             ." has no SeeCustomField right on CF #". $self->id
@@ -1870,7 +1870,7 @@ sub ValuesForObject {
     my $object = shift;
 
     my $values = RT::ObjectCustomFieldValues->new($self->CurrentUser);
-    unless ($self->id and $self->CurrentUserHasRight('SeeCustomField')) {
+    unless ($self->id and $self->CurrentUserCanSee) {
         # Return an empty object if they have no rights to see
         $values->Limit( FIELD => "id", VALUE => 0, SUBCLAUSE => "ACL" );
         return ($values);
@@ -1882,6 +1882,16 @@ sub ValuesForObject {
     return ($values);
 }
 
+=head2 CurrentUserCanSee
+
+If the user has SeeCustomField they can see this custom field and its details.
++
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('SeeCustomField');
+}
 
 =head2 RegisterLookupType LOOKUPTYPE FRIENDLYNAME
 
@@ -1971,7 +1981,7 @@ sub _URLTemplate {
         }
         return ( 1, $self->loc('Updated') );
     } else {
-        unless ( $self->id && $self->CurrentUserHasRight('SeeCustomField') ) {
+        unless ( $self->id && $self->CurrentUserCanSee ) {
             return (undef);
         }
 
@@ -1993,7 +2003,7 @@ sub SetBasedOn {
     $cf->Load( ref $value ? $value->id : $value );
 
     return (0, "Permission Denied")
-        unless $cf->id && $cf->CurrentUserHasRight('SeeCustomField');
+        unless $cf->id && $cf->CurrentUserCanSee;
 
     # XXX: Remove this restriction once we support lists and cascaded selects
     if ( $self->RenderType =~ /List/ ) {
