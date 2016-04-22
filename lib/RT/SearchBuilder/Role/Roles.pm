@@ -394,6 +394,7 @@ sub RoleLimit {
     if ($args{BUNDLE} and not @{$args{BUNDLE}}) {
         @{$args{BUNDLE}} = ($groups, $group_members, $users);
     }
+    return ($groups, $group_members, $users);
 }
 
 1;
