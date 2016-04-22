@@ -57,7 +57,7 @@
 <& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
 
 % $m->callback( %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowSummary' );
-<div class="summary">
+<div class="summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">
 <&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
 </&>
@@ -102,6 +102,7 @@
 $id => undef
 $TicketObj => undef
 $ShowHeaders => 0
+$HideUnsetFields => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
 $ForceShowHistory => 0
 </%ARGS>
 

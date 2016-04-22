@@ -3,13 +3,13 @@ use warnings;
 
 use RT::Test tests => undef, config => 'Set( $HideUnsetFieldsOnDisplay, 1 );';
 
-my @link_labels = (
-    'Depends on',
-    'Depended on by',
-    'Parents',
-    'Children',
-    'Refers to',
-    'Referred to by',
+my @link_classes = qw(
+    DependsOn
+    DependedOnBy
+    MemberOf
+    Members
+    RefersTo
+    ReferredToBy
 );
 
 my $foo = RT::Test->create_ticket(
@@ -40,23 +40,23 @@ diag "test with root";
     $m->login;
     $m->goto_ticket( $foo->id );
 
-    for my $label (qw/Starts Started Closed Cc AdminCc/) {
-        $m->content_lacks( "$label:", "lacks $label as value is unset" );
+    my $dom = $m->dom;
+
+    for my $class (qw/starts started due resolved cc admincc/) {
+        is $dom->find(qq{tr.$class.unset-field})->size, 1, "found unset $class";
     }
 
-    # there is one Due: in reminder
-    $m->content_unlike( qr/Due:.*Due:/s, "lacks Due as value is unset" );
+    is $dom->find(qq{tr.told:not(.unset-field)})->size, 1, "has Told as root can modify it";
 
-    $m->content_contains( "Last Contact", "has Told as root can set it" );
-    for my $label (@link_labels) {
-        $m->content_contains( "$label:", "has $label as root can create" );
+    for my $class (@link_classes) {
+        is $dom->find(qq{tr.$class:not(.unset-field)})->size, 1, "has $class as root can create";
     }
 
     $m->goto_ticket( $bar->id );
-    for my $label (qw/Starts Started Closed Cc AdminCc/) {
-        $m->content_contains( "$label:", "has $label as value is set" );
+    $dom = $m->dom;
+    for my $class (qw/starts started due resolved cc admincc/) {
+        is $dom->find(qq{tr.$class:not(.unset-field)})->size, 1, "has $class as value is set";
     }
-    $m->content_like( qr/Due:.*Due:/s, "has Due as value is set" );
 }
 
 diag "test without ModifyTicket right";
@@ -66,13 +66,15 @@ diag "test without ModifyTicket right";
     RT::Test->set_rights( Principal => $user, Right => ['ShowTicket'] );
     $m->login( 'foo', 'password', logout => 1 );
     $m->goto_ticket( $foo->id );
-    $m->content_lacks( "Last Contact", "lacks Told as it is unset" );
-    for my $label ( @link_labels ) {
-        $m->content_lacks( "$label:", "lacks $label as it is unset" );
+    my $dom = $m->dom;
+    is $dom->find(qq{tr.told.unset-field})->size, 1, "lacks Told as it is unset and user has no modify right";
+    for my $class ( @link_classes ) {
+        is $dom->find(qq{tr.$class.unset-field})->size, 1, "lacks $class as it is unset and user has no modify right";
     }
 
     $m->goto_ticket( $bar->id );
-    $m->content_contains( "Depends on:", "has Depends on as it is set" );
+    $dom = $m->dom;
+    is $dom->find(qq{tr.DependsOn:not(.unset-field)})->size, 1, "has Depends on as it is set";
 }
 
 undef $m;
