@@ -37,15 +37,15 @@
 
 
 
-.user-accordion h3 {
-    position: relative;
-}
 .user-accordion a.user-summary {
-    position: absolute;
-    right: 0;
+    float: right;
     text-decoration: none;
 }
 .user-accordion a.user-summary:hover { text-decoration: underline }
+
+.user-accordion .ui-accordion-content {
+    clear: both;
+}
 
 .user-accordion a.modify-user {
     font-size: 80%;
