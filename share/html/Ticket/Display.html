@@ -59,16 +59,14 @@
 % $m->callback( %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowSummary' );
 
 <%PERL>
-my $show_all  = $m->interp->apply_escapes( loc("Show unset fields"), 'j' );
-my $show_html = $m->interp->apply_escapes( loc("Show unset fields"), 'h' );
-my $hide_all  = $m->interp->apply_escapes( loc("Hide unset fields"), 'j' );
-my $hide_html = $m->interp->apply_escapes( loc("Hide unset fields"), 'h' );
-my $initial_label = $HideUnsetFields ? $show_html : $hide_html;
+my $show_label    = $m->interp->apply_escapes( loc("Show unset fields"), 'h' );
+my $hide_label    = $m->interp->apply_escapes( loc("Hide unset fields"), 'h' );
+my $initial_label = $HideUnsetFields ? $show_label : $hide_label;
 
 my $url = "?HideUnsetFields=" . ($HideUnsetFields ? 0 : 1) . ";id=$id";
 my $url_html = $m->interp->apply_escapes($url, 'h');
 
-my $titleright = qq{<a href="$url_html" onclick="return toggle_hide_unset(this, $show_all, $hide_all)">$initial_label</a>};
+my $titleright = qq{<a href="$url_html" data-show-label="$show_label" data-hide-label="$hide_label" onclick="return toggle_hide_unset(this)">$initial_label</a>};
 </%PERL>
 
 <div class="summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">
