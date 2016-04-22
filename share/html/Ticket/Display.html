@@ -57,8 +57,19 @@
 <& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
 
 % $m->callback( %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowSummary' );
+
+<%PERL>
+my $show_all  = $m->interp->apply_escapes( loc("Show unset fields"), 'j' );
+my $show_html = $m->interp->apply_escapes( loc("Show unset fields"), 'h' );
+my $hide_all  = $m->interp->apply_escapes( loc("Hide unset fields"), 'j' );
+my $hide_html = $m->interp->apply_escapes( loc("Hide unset fields"), 'h' );
+my $initial_label = $HideUnsetFields ? $show_html : $hide_html;
+
+my $titleright = qq{<a href="#" onclick="return toggle_hide_unset(this, $show_all, $hide_all)">$initial_label</a>};
+</%PERL>
+
 <div class="summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">
-<&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
+<&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $titleright &>
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
 </&>
 </div>
