@@ -2041,6 +2041,9 @@ sub Serialize {
         my $cf = RT::CustomField->new( RT->SystemUser );
         $cf->Load( $store{Field} );
         $store{Field} = \($cf->UID);
+
+        $store{OldReference} = \($self->OldReferenceObject->UID) if $self->OldReference;
+        $store{NewReference} = \($self->NewReferenceObject->UID) if $self->NewReference;
     } elsif ($type =~ /^(Take|Untake|Force|Steal|Give)$/) {
         for my $field (qw/OldValue NewValue/) {
             my $user = RT::User->new( RT->SystemUser );
