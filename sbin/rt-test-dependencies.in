@@ -251,6 +251,7 @@ Net::CIDR
 Net::IP
 Plack 1.0002
 Plack::Handler::Starlet
+Pod::Select
 Regexp::Common
 Regexp::Common::net::CIDR
 Regexp::IPv6
