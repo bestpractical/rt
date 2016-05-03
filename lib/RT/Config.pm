@@ -319,6 +319,15 @@ our %META;
         WidgetArguments => {
             Description => 'Enter time in hours by default', #loc
             Hints       => 'Only for entry, not display', #loc
+        },    
+    },
+    SignatureAboveQuote => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 10,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Place signature above quote', #loc
         },
     },
     SearchResultsRefreshInterval => {
