@@ -22,11 +22,16 @@ username and password into RT's login form, and in the other your web server
 (such as Apache) handles authentication, often seamlessly, and tells RT the
 user logged in.
 
-The second is supported by RT out of the box under the configuration option
-C<$WebRemoteUserAuth> and other related options.  The first is supported by an RT
-extension named L</RT::Authen::ExternalAuth>.  These two types may be used
-independently or together, and both can fallback to RT's internal
-authentication.
+Starting with RT 4.4, both of these options are supported by RT out of the
+box, activated using different configuration options. The first is supported
+by the L<RT::Authen::ExternalAuth> module. The second is activated using
+the configuration option C<$WebRemoteUserAuth> along with some related
+options. These two types may be used independently or together, and both
+can fallback to RT's internal authentication.
+
+If you are running a version of RT earlier than 4.4, you can install
+L<RT::Authen::ExternalAuth|https://metacpan.org/pod/RT::Authen::ExternalAuth>
+as an extension.
 
 No matter what type of external authentication you use, RT still maintains user
 records in its database that correspond to your external source.  This is
@@ -36,7 +41,7 @@ All that is necessary for integration with external authentication systems is a
 shared username or email address.  However, in RT you may want to leverage
 additional information from your external source.  Synchronization of users,
 user data, and groups is provided by an extension named
-L</RT::Extension::LDAPImport>.  It uses an external LDAP source, such an
+L<RT::LDAPImport>.  It uses an external LDAP source, such an
 OpenLDAP or Active Directory server, as the authoritative repository and keeps
 RT up to date accordingly.  This can be used in tandem with any of the external
 authentication options as it does not provide any authentication itself.
@@ -57,10 +62,10 @@ The flexibility of RT's C<$WebRemoteUserAuth> support means that it can be setup
 with almost any authentication system.
 
 In order to keep user data in sync, this type of external auth is almost always
-used in combination with one or both of L</RT::Authen::ExternalAuth> and
-L</RT::Extension::LDAPImport>.
+used in combination with one or both of L<RT::Authen::ExternalAuth> and
+L<RT::LDAPImport>.
 
-=head3 Apache configuration
+=head3 Apache Configuration
 
 When configuring Apache to protect RT, remember that the RT mail gateway
 uses the web interface to upload the incoming email messages.  You will
@@ -77,10 +82,12 @@ An example of using LDAP authentication and HTTP Basic auth:
             "ldap://ldap.example.com/dc=example,dc=com"
     </Location>
     <Location /REST/1.0/NoAuth/mail-gateway>
-        <IfVersion >= 2.4> # For Apache 2.4
+        # For Apache 2.4
+        <IfVersion >= 2.4>
             Require local
         </IfVersion>
-        <IfVersion < 2.4>  # For Apache 2.2
+        # For Apache 2.2
+        <IfVersion < 2.4>
             Order deny,allow
             Deny from all
             Allow from localhost
@@ -89,11 +96,11 @@ An example of using LDAP authentication and HTTP Basic auth:
     </Location>
 
 
-=head3 RT configuration options
+=head3 RT Configuration Options
 
-All of the following options control the behaviour of RT's built-in external
+All of the following options control the behavior of RT's built-in external
 authentication which relies on the web server.  They are documented in detail
-under the "Authorization and user configuration" section of C<etc/RT_Config.pm>
+under the "Authorization and user configuration" section of L<RT_Config>
 and you can read the documentation by running C<perldoc /opt/rt4/etc/RT_Config.pm>.
 
 The list below is meant to make you aware of what's available.  You should read
@@ -137,13 +144,18 @@ the C<Name> field.
 
 =head2 Via RT's login form, aka RT::Authen::ExternalAuth
 
-L<RT::Authen::ExternalAuth> is an RT extension which provides authentication
+L<RT::Authen::ExternalAuth> provides authentication
 B<using> RT's login form.  It can be configured to talk to an LDAP source (such
 as Active Directory), an external database, or an SSO cookie.
 
-The key difference between C<$WebRemoteUserAuth> and L<RT::Authen::ExternalAuth>
-is the use of the RT login form and what part of the system talks to your
-authentication source (your web server vs. RT itself).
+The key difference between C<$WebRemoteUserAuth> and
+L<RT::Authen::ExternalAuth> is the use of the RT login form and what
+part of the system talks to your authentication source (your web
+server vs. RT itself).
+
+As noted above, for versions of RT before 4.4, you can install
+L<RT::Authen::ExternalAuth|https://metacpan.org/pod/RT::Authen::ExternalAuth>
+as an extension.
 
 =head3 Info mode and Authentication mode
 
@@ -160,9 +172,13 @@ logs in.
 
 =head2 RT::Extension::LDAPImport
 
-L<RT::Extension::LDAPImport> provides no authentication, but is worth
-mentioning because it provides user data and group member synchronization from
-any LDAP source into RT.  It provides a similar but more complete sync solution
-than L<RT::Authen::ExternalAuth> (which only updates upon login and doesn't
-handle groups).  It may be used with either of RT's external authentication
-sources, or on it's own.
+L<RT::LDAPImport> provides no authentication, but
+is useful alongside authentication because it provides user data and group
+member synchronization from any LDAP source into RT.  It provides a similar
+but more complete sync solution than L<RT::Authen::ExternalAuth> (which
+only updates upon login and doesn't handle groups).  It may be used with
+either of RT's external authentication sources, or on it's own.
+
+Starting with RT 4.4, L<RT::LDAPImport> is part of RT. For
+earlier versions of RT, you can install L<RT::Extension::LDAPImport> as
+an extension.

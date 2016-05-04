@@ -71,9 +71,11 @@ access it.
 
 =head1 CONFIGURATION
 
-L<RT::Authen::ExternalAuth> provides a lot of flexibility with many
+C<RT::Authen::ExternalAuth> provides a lot of flexibility with many
 configuration options.  The following describes these configuration options,
-and provides a complete example.
+and provides a complete example. As with all RT configuration, you set
+these values in C<RT_SiteConfig.pm> or for RT 4.4 or later in a custom
+configuration file in the directory C<RT_SiteConfig.d>.
 
 =over 4
 
