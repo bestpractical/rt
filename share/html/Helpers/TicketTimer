@@ -65,7 +65,26 @@ my $submit_url = RT->Config->Get('WebPath') . '/Helpers/AddTimeWorked';
 <script type="text/javascript">
 jQuery( function() {
     var Interval;
-    var Seconds = 0;
+
+    // LastUnpause tracks when the current timer started. Then we render
+    // (current time - LastUnpause). This is more reliable than a timer
+    // that ticks up every second. For example, if JavaScript is temporarily
+    // paused (such as being on a background browser tab on a mobile device),
+    // the seconds ticker doesn't run. When the timer is paused, LastUnpaused
+    // will be a false value.
+    var LastUnpause = (new Date).getTime() / 1000;
+
+    // How many seconds has passed since the current timer started?
+    var CurrentSeconds = function () {
+        if (!LastUnpause) return 0;
+        return Math.floor(((new Date).getTime() / 1000) - LastUnpause);
+    };
+
+    // CommittedSeconds tracks how long we've "committed" time, which is
+    // different from when the timer was initially launched, due to unpausing.
+    // Every time we pause, we add (current time - LastUnpause) to
+    // CommittedSeconds.
+    var CommittedSeconds = 0;
 
     var readout = jQuery('.readout');
     var playpause = jQuery('.playpause');
@@ -90,8 +109,7 @@ jQuery( function() {
     };
 
     var tick = function () {
-        Seconds++;
-        renderReadout(Seconds);
+        renderReadout(CommittedSeconds + CurrentSeconds());
     };
 
     jQuery('.playpause').click(function () {
@@ -99,6 +117,8 @@ jQuery( function() {
             // pause
             clearInterval(Interval);
             Interval = false;
+            CommittedSeconds += CurrentSeconds();
+            LastUnpause = false;
             playpause_img.attr('src', <% $unpause_img |n,j %>);
             playpause_img.attr('alt', unpause_alt);
             playpause_img.attr('title', unpause_alt);
@@ -106,6 +126,7 @@ jQuery( function() {
         else {
             // unpause
             Interval = setInterval(tick, 1000);
+            LastUnpause = new Date().getTime() / 1000;
             playpause_img.attr('src', <% $pause_img |n,j %>);
             playpause_img.attr('alt', pause_alt);
             playpause_img.attr('title', pause_alt);
@@ -116,16 +137,17 @@ jQuery( function() {
     jQuery('.submit-time').click(function () {
         clearInterval(Interval);
         jQuery('.control-line a').hide();
+        CommittedSeconds += CurrentSeconds();
 
         var payload = {
             id: <% $Ticket->id %>,
-            seconds: Seconds
+            seconds: CommittedSeconds
         };
 
         readout.text('<% loc("Submitting") %>');
 
         var renderSubmitError = function (reason) {
-            renderReadout(Seconds);
+            renderReadout(CommittedSeconds);
             jQuery('.ticket-timer').addClass('error');
 
             // give the browser a chance to redraw the readout
@@ -161,8 +183,8 @@ jQuery( function() {
         return false;
     });
 
-    renderReadout(Seconds);
-    Interval = setInterval(tick, 1000);
+    tick();
+    Interval = setInterval(tick, 500);
 });
 </script>
 
