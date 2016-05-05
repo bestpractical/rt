@@ -62,7 +62,7 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 % if (my $url = RT->System->ExternalStorageURLFor($message)) {
 <a href="<% $url %>">
 % } else {
-<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | u%>">
+<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | un %>">
 % }
 <&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
 % if ( $DownloadableHeaders && ! length $name && $message->ContentType =~ /text/  ) {
