@@ -27,8 +27,6 @@ my $entry    = {
 $ldap->add( $base );
 $ldap->add( $dn, attr => [%$entry] );
 
-RT->Config->Set( ExternalAuth => 1 );
-
 RT->Config->Set( ExternalAuthPriority        => ['My_LDAP'] );
 RT->Config->Set( ExternalInfoPriority        => ['My_LDAP'] );
 RT->Config->Set( AutoCreateNonExternalUsers  => 0 );
