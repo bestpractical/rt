@@ -4,8 +4,6 @@ use warnings;
 use RT::Test tests => undef;
 use HTML::Entities qw/decode_entities/;
 
-# Removed the: Remove the timestamp from the quote header
-
 my ($baseurl, $m) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
@@ -49,11 +47,11 @@ sub template_is {
 
     # For ease of interpretation, replace blank lines with dots, and
     # put a $ after trailing whitespace.
+    # Remove the timestamp from the quote header
     my $display = $value;
     $display =~ s/^$/./mg;
     $display =~ s/([ ]+)$/$1\$/mg;
-    $display =~ s/On .* wrote:/Someone wrote:/;
-
+    $display =~ s/On \w\w\w \w\w\w \d\d \d\d:\d\d:\d\d \d\d\d\d, \w+:/Someone wrote:/
 
     is($display, $expected, "Content matches expected");
 
