@@ -65,27 +65,24 @@
 % $m->callback( %ARGS );
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
 
-% if ($Object->isa('RT::Ticket')) {
-  <tr>
-    <td colspan=2>
-      <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
-        <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
-        <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket">
-        <select name="LinkType">
-          <option value="DependsOn-new"><% loc('Depends on') %></option>
-          <option value="new-DependsOn"><% loc('Depended on by') %></option>
-          <option value="MemberOf-new"><% loc('Parents') %></option>
-          <option value="new-MemberOf"><% loc('Children') %></option>
-          <option value="RefersTo-new"><% loc('Refers to') %></option>
-          <option value="new-RefersTo"><% loc('Referred to by') %></option>
-        </select>
-        <&|/l&>Ticket in</&>
-        <& /Elements/SelectQueue, ShowNullOption => 0, Name => 'CloneQueue' &>
-      </form>
-    </td>
-  </tr>
-% }
 </table>
+
+% if ($Object->isa('RT::Ticket')) {
+  <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
+    <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
+    <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket">
+    <select name="LinkType">
+      <option value="DependsOn-new"><% loc('Depends on') %></option>
+      <option value="new-DependsOn"><% loc('Depended on by') %></option>
+      <option value="MemberOf-new"><% loc('Parents') %></option>
+      <option value="new-MemberOf"><% loc('Children') %></option>
+      <option value="RefersTo-new"><% loc('Refers to') %></option>
+      <option value="new-RefersTo"><% loc('Referred to by') %></option>
+    </select>
+    <&|/l&>Ticket in</&>
+    <& /Elements/SelectQueue, ShowNullOption => 0, Name => 'CloneQueue' &>
+  </form>
+% }
 <%INIT>
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
 $m->callback( %ARGS, CallbackName => 'ChangeDisplay', display => \@display );
