@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<textarea autocomplete="off" class="messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">\
+<textarea autocomplete="off" class="messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>">
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature, DefaultRef => \$Default, MessageRef => $message );
 % if (RT->Config->Get("SignatureAboveQuote", $session{'CurrentUser'})) {
@@ -74,9 +74,10 @@ if ( $QuoteTransaction ) {
     $message = $transaction->Content( Quote => 1, Type  => $Type );
 }
 
-my $signature = '';
-if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
-    $signature = "-- \n". $text;
+my $signature = $session{'CurrentUser'}->UserObj->Signature // "";
+if ( $IncludeSignature and $signature =~ /\S/ ) {
+    $signature =~ s/\n*$//;
+
     if ($Type eq 'text/html') {
         $signature =~ s/&/&amp;/g;
         $signature =~ s/</&lt;/g;
@@ -84,8 +85,20 @@ if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signatur
         $signature =~ s/"/&quot;/g;  # "//;
         $signature =~ s/'/&#39;/g;   # '//;
         $signature =~ s{\n}{<br />}g;
-        $signature = "<p>$signature</p>";
+        $signature = "<br /><p>--&nbsp;<br />$signature</p>";
+    } else {
+        $signature = "\n\n-- \n". $signature . "\n";
     }
+
+    if ($message =~ /\S/) {
+        if (RT->Config->Get('SignatureAboveQuote', $session{CurrentUser})) {
+            $signature .= $Type eq 'text/html' ? "<br />" : "\n";
+        } else {
+            $signature = ($Type eq 'text/html' ? "" : "\n") . $signature;
+        }
+    }
+} else {
+    $signature = '';
 }
 
 # wrap="something" seems to really break IE + richtext
