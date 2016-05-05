@@ -2474,6 +2474,16 @@ minutes.  Note that this only effects entry, not display.
 
 Set($DefaultTimeUnitsToHours, 0);
 
+=item C<$SignatureAboveQuote>
+
+By default RT places the signature at the bottom of the quoted text in
+the message box for ticket replies.  Set this to 1 to place the signature
+above the quoted text.
+
+=cut
+
+Set($SignatureAboveQuote, 0);
+
 =item C<$TimeInICal>
 
 By default, events in the iCal feed on the ticket search page

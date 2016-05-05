@@ -321,6 +321,15 @@ our %META;
             Hints       => 'Only for entry, not display', #loc
         },
     },
+    SignatureAboveQuote => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 10,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Place signature above quote', #loc
+        },
+    },
     SearchResultsRefreshInterval => {
         Section         => 'General',                       #loc
         Overridable     => 1,
