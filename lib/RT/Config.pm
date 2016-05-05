@@ -1069,11 +1069,18 @@ our %META;
             $self->EnableExternalAuth();
 
             if (not @values) {
+                $RT::Logger->debug("ExternalAuthPriority not defined. Attempting to create based on ExternalSettings");
                 $self->Set( 'ExternalAuthPriority', \@values );
                 return;
             }
-
-            my %settings = %{ $self->Get('ExternalSettings') };
+            my %settings;
+            if ( $self->Get('ExternalSettings') ){
+                %settings = %{ $self->Get('ExternalSettings') };
+            }
+            else{
+                $RT::Logger->error("ExternalSettings not defined. ExternalAuth requires the ExternalSettings configuration option to operate properly");
+                return;
+            }
             for my $key (grep {not $settings{$_}} @values) {
                 $RT::Logger->error("Removing '$key' from ExternalAuthPriority, as it is not defined in ExternalSettings");
             }
@@ -1094,7 +1101,14 @@ our %META;
                 return;
             }
 
-            my %settings = %{ $self->Get('ExternalSettings') };
+            my %settings;
+            if ( $self->Get('ExternalSettings') ){
+                %settings = %{ $self->Get('ExternalSettings') };
+            }
+            else{
+                $RT::Logger->error("ExternalSettings not defined. ExternalAuth requires the ExternalSettings configuration option to operate properly");
+                return;
+            }
             for my $key (grep {not $settings{$_}} @values) {
                 $RT::Logger->error("Removing '$key' from ExternalInfoPriority, as it is not defined in ExternalSettings");
             }
