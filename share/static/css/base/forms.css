@@ -251,6 +251,23 @@ form div.submit div.buttons div.next {
     display: none;
 }
 
+ul.selectable {
+    list-style-type: none;
+}
+
+ul.selectable input[type=checkbox],
+ul.selectable a {
+    vertical-align: bottom;
+}
+
+#reuse-attachments {
+    padding-top: 0.25em;
+}
+
+.ticket-info-attachments ul li {
+    font-size: .8em;
+}
+
 /* query builder */
 
 #formatbuttons {

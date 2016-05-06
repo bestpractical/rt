@@ -45,19 +45,21 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="<% $class %>">
-% if ($hide_chrome) {
-  <% $content | n %>
-% } else {
-  <& TitleBoxStart, %ARGS &><% $content | n %><& TitleBoxEnd &>
-% }
-</div>
 <%ARGS>
-$class => ''
-$hide_empty => 0
-$hide_chrome => 0
+$id
+$Selectable => undef
+$Count => undef
+@AttachExisting => ()
 </%ARGS>
 <%INIT>
-my $content = $m->content;
-return if $hide_empty && $content =~ /^\s*$/s;
+my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
+$TicketObj->Load($id);
 </%INIT>
+<& /Ticket/Elements/ShowAttachments,
+  Ticket       => $TicketObj,
+  HideTitleBox => 1,
+  Selectable   => $Selectable,
+  Count        => $Count,
+  Checked      => \@AttachExisting,
+&>
+% $m->abort();
