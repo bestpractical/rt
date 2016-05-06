@@ -163,7 +163,7 @@ jQuery( function() {
         </div>
     </td>
 </tr>
-% if ($TicketObj && $TicketObj->id) {
+% if ($HasExisting) {
 <tr>
   <td class="label" valign="top"><&|/l&>Include attachments</&>:</td>
   <td id="reuse-attachments">
@@ -188,5 +188,17 @@ $TicketObj => undef
 my $attachments;
 if ( exists $session{'Attachments'}{ $Token } && keys %{ $session{'Attachments'}{ $Token } } ) {
     $attachments = $session{'Attachments'}{ $Token };
+}
+
+my $HasExisting = 0;
+
+if ($TicketObj && $TicketObj->id) {
+    my $Existing = $TicketObj->Attachments;
+    $Existing->Limit(
+        FIELD    => 'Filename',
+        OPERATOR => '!=',
+        VALUE    => '',
+    );
+    $HasExisting = 1 if $Existing->Count;
 }
 </%INIT>
