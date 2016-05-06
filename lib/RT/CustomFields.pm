@@ -403,7 +403,10 @@ sub AddRecord {
     my ($record) = @_;
 
     $record->SetContextObject( $self->ContextObject );
-    return unless $record->CurrentUserHasRight('SeeCustomField');
+    $record->{include_set_initial} = $self->{include_set_initial};
+
+    return unless $record->CurrentUserCanSee;
+
     return $self->SUPER::AddRecord( $record );
 }
 

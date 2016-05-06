@@ -3211,7 +3211,7 @@ sub _ProcessObjectCustomFieldUpdates {
         if ( $arg eq 'AddValue' || $arg eq 'Value' ) {
             foreach my $value (@values) {
                 next if $args{'Object'}->CustomFieldValueIsEmpty(
-                    Field => $cf->id,
+                    Field => $cf,
                     Value => $value,
                 );
                 my ( $val, $msg ) = $args{'Object'}->AddCustomFieldValue(
@@ -3306,6 +3306,7 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
         # we're only interested in new objects, so only look at $id == 0
         for my $cfid (keys %{ $custom_fields{$class}{0} || {} }) {
             my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->{include_set_initial} = 1;
             if ($context) {
                 my $system_cf = RT::CustomField->new( RT->SystemUser );
                 $system_cf->LoadById($cfid);

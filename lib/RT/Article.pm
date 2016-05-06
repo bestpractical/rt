@@ -147,7 +147,8 @@ sub Create {
                     : (Value => $value)
                 ),
                 Field             => $cf,
-                RecordTransaction => 0
+                RecordTransaction => 0,
+                ForCreation       => 1,
             );
 
             unless ($cfid) {

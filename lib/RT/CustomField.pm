@@ -214,6 +214,7 @@ __PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'
 __PACKAGE__->AddRight( Admin   => AdminCustomField       => 'Create, modify and delete custom fields'); # loc
 __PACKAGE__->AddRight( Admin   => AdminCustomFieldValues => 'Create, modify and delete custom fields values'); # loc
 __PACKAGE__->AddRight( Staff   => ModifyCustomField      => 'Add, modify and delete custom field values for objects'); # loc
+__PACKAGE__->AddRight( Staff   => SetInitialCustomField  => 'Add custom field values only at object creation time'); # loc
 
 =head1 NAME
 
@@ -610,7 +611,7 @@ sub Values {
     my $cf_values = $class->new( $self->CurrentUser );
     $cf_values->SetCustomFieldObject( $self );
     # if the user has no rights, return an empty object
-    if ( $self->id && $self->CurrentUserHasRight( 'SeeCustomField') ) {
+    if ( $self->id && $self->CurrentUserCanSee ) {
         $cf_values->LimitToCustomField( $self->Id );
     } else {
         $cf_values->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'acl' );
@@ -1049,7 +1050,7 @@ sub _Value {
     return undef unless $self->id;
 
     # we need to do the rights check
-    unless ( $self->CurrentUserHasRight('SeeCustomField') ) {
+    unless ( $self->CurrentUserCanSee ) {
         $RT::Logger->debug(
             "Permission denied. User #". $self->CurrentUser->id
             ." has no SeeCustomField right on CF #". $self->id
@@ -1639,11 +1640,15 @@ sub AddValueForObject {
         Content      => undef,
         LargeContent => undef,
         ContentType  => undef,
+        ForCreation  => 0,
         @_
     );
     my $obj = $args{'Object'} or return ( 0, $self->loc('Invalid object') );
 
-    unless ( $self->CurrentUserHasRight('ModifyCustomField') ) {
+    unless (
+        $self->CurrentUserHasRight('ModifyCustomField') ||
+        ($args{ForCreation} && $self->CurrentUserHasRight('SetInitialCustomField'))
+    ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -1865,7 +1870,7 @@ sub ValuesForObject {
     my $object = shift;
 
     my $values = RT::ObjectCustomFieldValues->new($self->CurrentUser);
-    unless ($self->id and $self->CurrentUserHasRight('SeeCustomField')) {
+    unless ($self->id and $self->CurrentUserCanSee) {
         # Return an empty object if they have no rights to see
         $values->Limit( FIELD => "id", VALUE => 0, SUBCLAUSE => "ACL" );
         return ($values);
@@ -1877,6 +1882,26 @@ sub ValuesForObject {
     return ($values);
 }
 
+=head2 CurrentUserCanSee
+
+If the user has SeeCustomField they can see this custom field and its details.
+
+Otherwise, if the user has SetInitialCustomField and this is being used in a
+"create" context, then they can see this custom field and its details. This
+allows you to set up custom fields that are only visible on create pages and
+are then inaccessible.
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return 1 if $self->CurrentUserHasRight('SeeCustomField');
+
+    return 1 if $self->{include_set_initial}
+             && $self->CurrentUserHasRight('SetInitialCustomField');
+
+    return 0;
+}
 
 =head2 RegisterLookupType LOOKUPTYPE FRIENDLYNAME
 
@@ -1966,7 +1991,7 @@ sub _URLTemplate {
         }
         return ( 1, $self->loc('Updated') );
     } else {
-        unless ( $self->id && $self->CurrentUserHasRight('SeeCustomField') ) {
+        unless ( $self->id && $self->CurrentUserCanSee ) {
             return (undef);
         }
 
@@ -1988,7 +2013,7 @@ sub SetBasedOn {
     $cf->Load( ref $value ? $value->id : $value );
 
     return (0, "Permission Denied")
-        unless $cf->id && $cf->CurrentUserHasRight('SeeCustomField');
+        unless $cf->id && $cf->CurrentUserCanSee;
 
     # XXX: Remove this restriction once we support lists and cascaded selects
     if ( $self->RenderType =~ /List/ ) {

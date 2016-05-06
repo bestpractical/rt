@@ -484,13 +484,14 @@ sub Create {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
         my $cf = $self->LoadCustomFieldByIdentifier($cfid);
+        $cf->{include_set_initial} = 1;
         next unless $cf->ObjectTypeFromLookupType($cf->__Value('LookupType'))->isa(ref $self);
 
         foreach my $value (
             UNIVERSAL::isa( $args{$arg} => 'ARRAY' ) ? @{ $args{$arg} } : ( $args{$arg} ) )
         {
             next if $self->CustomFieldValueIsEmpty(
-                Field => $cfid,
+                Field => $cf,
                 Value => $value,
             );
 
@@ -502,6 +503,7 @@ sub Create {
                 ),
                 Field             => $cfid,
                 RecordTransaction => 0,
+                ForCreation       => 1,
             );
             push @non_fatal_errors, $msg unless $status;
         }
