@@ -79,10 +79,12 @@ $m->content_lacks( 'DeleteLink--', 'no delete link stuff' );
 $m->form_name('BulkUpdate');
 my @fields = qw/Owner AddRequestor DeleteRequestor AddCc DeleteCc AddAdminCc
 DeleteAdminCc Subject Priority Queue Status Starts_Date Told_Date Due_Date
-UpdateSubject UpdateContent/;
+UpdateSubject/;
 for my $field ( @fields ) {
     is( $m->value($field), '', "default $field is empty" );
 }
+
+like( $m->value('UpdateContent'), qr/^\s*$/, "default UpdateContent is effectively empty" );
 
 # test DependsOn, MemberOf and RefersTo
 $m->submit_form(

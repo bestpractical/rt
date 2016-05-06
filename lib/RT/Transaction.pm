@@ -400,12 +400,12 @@ sub Content {
                 . $self->QuoteHeader
                 . '<br /><blockquote class="gmail_quote" type="cite">'
                 . $content
-                . '</blockquote></div><br /><br />';
+                . '</blockquote></div>';
         } else {
             $content = $self->ApplyQuoteWrap(content => $content,
                                              cols    => $args{'Wrap'} );
 
-            $content = $self->QuoteHeader . "\n$content\n\n";
+            $content = $self->QuoteHeader . "\n$content";
         }
     }
 
