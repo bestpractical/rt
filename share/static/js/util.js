@@ -99,7 +99,7 @@ function setCheckbox(input, name, val) {
         name = input.name || input.attr('name');
         is_set_event = true;
     }
-    else {
+    else if (input.name) {
         var allfield = jQuery('input[name=' + input.name + ']');
         allfield.prop('checked', val);
     }
