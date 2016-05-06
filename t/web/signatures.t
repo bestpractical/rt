@@ -4,6 +4,11 @@ use warnings;
 use RT::Test tests => undef;
 use HTML::Entities qw/decode_entities/;
 
+{
+    no warnings 'redefine';
+    *RT::Transaction::QuoteHeader = sub { "Someone wrote:" };
+}
+
 my ($baseurl, $m) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
@@ -47,11 +52,12 @@ sub template_is {
 
     # For ease of interpretation, replace blank lines with dots, and
     # put a $ after trailing whitespace.
-    # Remove the timestamp from the quote header
     my $display = $value;
     $display =~ s/^$/./mg;
     $display =~ s/([ ]+)$/$1\$/mg;
-    $display =~ s/On \w\w\w \w\w\w \d\d \d\d:\d\d:\d\d \d\d\d\d, \w+:/Someone wrote:/
+
+    # Remove the timestamp from the quote header
+    $display =~ s/On \w\w\w \w\w\w+ \d\d \d\d:\d\d:\d\d \d\d\d\d, \w+ wrote:/Someone wrote:/;
 
     is($display, $expected, "Content matches expected");
 

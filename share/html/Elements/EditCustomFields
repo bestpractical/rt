@@ -47,18 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields);
-
-%# only show the wrapper if there are editable custom fields, so we can
-%# suppress the empty titlebox. we do this in such a way that we still call the
-%# BeforeCustomFields and AfterCustomFields callbacks (rather than returning
-%# from the INIT block) to maintain compatibility with old behavior
-
-% if (@CustomFields) {
-
 % if ( $WRAP ) {
 <<% $WRAP %> class="edit-custom-fields">
 % }
-% for my $CustomField (@CustomFields) {
+% while ( my $CustomField = $CustomFields->Next ) {
+% next unless $CustomField->CurrentUserHasRight('ModifyCustomField');
 % my $Type = $CustomField->Type || 'Unknown';
 
   <<% $FIELD %> class="edit-custom-field cftype-<% $Type %>">
@@ -92,27 +85,18 @@
 % if ( $WRAP ) {
 </<% $WRAP %>>
 % }
-
-% }
-
 % $m->callback( CallbackName => 'AfterCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS );
 <%INIT>
 $CustomFields ||= $Object->CustomFields;
-$CustomFields->{include_set_initial} = 1 if $ForCreation;
 
 $CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
 
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
+# don't print anything if there is no custom fields
+return unless $CustomFields->First;
 $CustomFields->GotoFirstItem;
-my @CustomFields;
-while ( my $CustomField = $CustomFields->Next ) {
-    next unless $CustomField->CurrentUserHasRight('ModifyCustomField')
-             || ($ForCreation && $CustomField->CurrentUserHasRight('SetInitialCustomField'));
-
-    push @CustomFields, $CustomField;
-}
 
 $AsTable ||= $InTable;
 my $FIELD = $AsTable ? 'tr' : 'div';
@@ -132,5 +116,4 @@ $Grouping     => undef
 $AsTable => 1
 $InTable => 0
 $ShowHints => 1
-$ForCreation => 0
 </%ARGS>

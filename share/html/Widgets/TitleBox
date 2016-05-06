@@ -46,16 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="<% $class %>">
-% if ($hide_chrome) {
-  <% $content | n %>
-% } else {
   <& TitleBoxStart, %ARGS &><% $content | n %><& TitleBoxEnd &>
-% }
 </div>
 <%ARGS>
 $class => ''
 $hide_empty => 0
-$hide_chrome => 0
 </%ARGS>
 <%INIT>
 my $content = $m->content;

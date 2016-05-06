@@ -1423,7 +1423,7 @@ sub CurrentUserCanSee {
         my $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->SetContextObject( $self->Object );
         $cf->Load( $cf_id );
-        return 0 unless $cf->CurrentUserCanSee;
+        return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
     }
 
     # Transactions that might have changed the ->Object's visibility to
@@ -1539,7 +1539,7 @@ sub UpdateCustomFields {
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
             next if $self->CustomFieldValueIsEmpty(
-                Field => $cf,
+                Field => $cfid,
                 Value => $value,
             );
             $self->_AddCustomFieldValue(

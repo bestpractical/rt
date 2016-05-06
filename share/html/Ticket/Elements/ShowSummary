@@ -64,7 +64,7 @@
         class => 'ticket-info-people',
     &><& /Ticket/Elements/ShowPeople, Ticket => $Ticket &></&>
 % $m->callback( %ARGS, CallbackName => 'AfterPeople' );
-    <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments, Count => 5 &>
+    <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
 % $m->callback( %ARGS, CallbackName => 'AfterAttachments' );
     <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 % $m->callback( %ARGS, CallbackName => 'LeftColumn' );

@@ -293,8 +293,7 @@ sub Create {
                     ? %$value
                     : (Value => $value)),
                 Field             => $cf,
-                RecordTransaction => 0,
-                ForCreation       => 1,
+                RecordTransaction => 0
             );
             unless ($cfid) {
                 RT->DatabaseHandle->Rollback();

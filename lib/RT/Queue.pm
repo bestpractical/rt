@@ -100,17 +100,16 @@ use RT::CustomRoles;
 use RT::ACL;
 use RT::Interface::Email;
 
-__PACKAGE__->AddRight( General => SeeQueue              => 'View queue' ); # loc
-__PACKAGE__->AddRight( Admin   => AdminQueue            => 'Create, modify and delete queue' ); # loc
-__PACKAGE__->AddRight( Admin   => ShowACL               => 'Display Access Control List' ); # loc
-__PACKAGE__->AddRight( Admin   => ModifyACL             => 'Create, modify and delete Access Control List entries' ); # loc
-__PACKAGE__->AddRight( Admin   => ModifyQueueWatchers   => 'Modify queue watchers' ); # loc
-__PACKAGE__->AddRight( General => SeeCustomField        => 'View custom field values' ); # loc
-__PACKAGE__->AddRight( Staff   => ModifyCustomField     => 'Modify custom field values' ); # loc
-__PACKAGE__->AddRight( Staff   => SetInitialCustomField => 'Add custom field values only at object creation time'); # loc
-__PACKAGE__->AddRight( Admin   => AssignCustomFields    => 'Assign and remove queue custom fields' ); # loc
-__PACKAGE__->AddRight( Admin   => ModifyTemplate        => 'Modify Scrip templates' ); # loc
-__PACKAGE__->AddRight( Admin   => ShowTemplate          => 'View Scrip templates' ); # loc
+__PACKAGE__->AddRight( General => SeeQueue            => 'View queue' ); # loc
+__PACKAGE__->AddRight( Admin   => AdminQueue          => 'Create, modify and delete queue' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyACL           => 'Create, modify and delete Access Control List entries' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyQueueWatchers => 'Modify queue watchers' ); # loc
+__PACKAGE__->AddRight( General => SeeCustomField      => 'View custom field values' ); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomField   => 'Modify custom field values' ); # loc
+__PACKAGE__->AddRight( Admin   => AssignCustomFields  => 'Assign and remove queue custom fields' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyTemplate      => 'Modify Scrip templates' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowTemplate        => 'View Scrip templates' ); # loc
 
 __PACKAGE__->AddRight( Admin   => ModifyScrips        => 'Modify Scrips' ); # loc
 __PACKAGE__->AddRight( Admin   => ShowScrips          => 'View Scrips' ); # loc

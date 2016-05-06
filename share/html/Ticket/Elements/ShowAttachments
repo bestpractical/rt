@@ -49,25 +49,15 @@
 <&| /Widgets/TitleBox, title => loc('Attachments'), 
         title_class=> 'inverse',  
         class => 'ticket-info-attachments',
-        color => "#336699",
-        hide_chrome => $HideTitleBox &>
-
-<div class="attachment-list">
+        color => "#336699" &>
 
 % foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
 
 <%$key%><br />
-<ul <% $Selectable ? 'class="selectable"' : '' |n %> >
+<ul>
 % foreach my $rev (@{$documents{$key}}) {
 % if ($rev->ContentLength) {
-<li>
-
-% if ($Selectable) {
-    <label>
-    <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $rev->Id %>" \
-             <% $is_checked{$rev->Id} ? 'checked' : '' %> />
-% }
-
+<li><font size="-2">
 % if (my $url = RT->System->ExternalStorageURLFor($rev)) {
 <a href="<%$url%>">
 % } else {
@@ -76,46 +66,12 @@
 % my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
 <% $desc |n%>
 </a>
-
-% if ($Selectable) {
-    </label>
-% }
-
-</li>
+</font></li>
 % }
 % }
 </ul>
 
 % }
-
-% if ($show_more) {
-<span class="show-more-link">
-% my %params = %ARGS;
-% delete $params{Ticket};
-% delete $params{Attachments};
-% delete $params{Count};
-% my $query = $m->comp('/Elements/QueryString', %params, id => $Ticket->id );
-% my $url   = RT->Config->Get('WebPath')."/Helpers/TicketAttachments?$query";
-
-<script type="text/javascript">
-    function showAllAttachments(node) {
-        var container = node.closest('.attachment-list');
-        var params = node.closest('form').find('input[name=AttachExisting]').serialize();
-
-        node.parent().text(<% loc('Loading...') | n,j%>);
-
-        var url = <% $url |n,j %>;
-        if (params) url += '&' + params;
-        container.load(url);
-    }
-</script>
-
-<a href="#" onclick="showAllAttachments(jQuery(this)); return false;" ><% loc('Show all attachments') %></a>
-
-</span>
-% }
-
-</div>
 </&>
 
 % }
@@ -126,45 +82,18 @@
 # then we need to find one
 $Attachments ||= $Ticket->Attachments;
 
-# Avoid applying limits to this collection that may be used elsewhere
-# (e.g. transaction display)
-$Attachments = $Attachments->Clone;
-
-# Remember, each message in a transaction is an attachment; we only
-# want named attachments (real files)
-$Attachments->Limit(
-    FIELD    => 'Filename',
-    OPERATOR => '!=',
-    VALUE    => '',
-);
-
-my $show_more = 0;
+# XXX PERF: why doesn't this Limit on Filename to avoid fetching *all* the
+# attachments?
 my %documents;
-
-# show newest first
-$Attachments->OrderByCols(
-    { FIELD => 'Created', ORDER => 'DESC' },
-    { FIELD => 'id',      ORDER => 'DESC' },
-);
-
 while ( my $attach = $Attachments->Next() ) {
-   # display "show more" only when there will be more attachments
-   if (defined($Count) && --$Count < 0) {
-       $show_more = 1;
-       last;
-   }
-   push @{ $documents{ $attach->Filename } }, $attach;
+    next unless defined $attach->Filename && length $attach->Filename;
+   unshift( @{ $documents{ $attach->Filename } }, $attach );
 }
 
-my %is_checked = map { $_ => 1 } @Checked;
 </%INIT>
 <%ARGS>
 $Ticket => undef
 $Attachments => undef
 $DisplayPath => $session{'CurrentUser'}->Privileged ? 'Ticket' : 'SelfService'
-$HideTitleBox => 0
-$Selectable => 0
-$Count => undef
-@Checked => ()
 </%ARGS>
 

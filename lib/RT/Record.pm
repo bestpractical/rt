@@ -1937,13 +1937,10 @@ sub _AddCustomFieldValue {
         LargeContent      => undef,
         ContentType       => undef,
         RecordTransaction => 1,
-        ForCreation       => 0,
         @_
     );
 
     my $cf = $self->LoadCustomFieldByIdentifier($args{'Field'});
-    $cf->{include_set_initial} = 1 if $args{'ForCreation'};
-
     unless ( $cf->Id ) {
         return ( 0, $self->loc( "Custom field [_1] not found", $args{'Field'} ) );
     }
@@ -2018,7 +2015,6 @@ sub _AddCustomFieldValue {
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
             ContentType  => $args{'ContentType'},
-            ForCreation  => $args{'ForCreation'},
         );
 
         unless ( $new_value_id ) {
@@ -2026,7 +2022,6 @@ sub _AddCustomFieldValue {
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
-        $new_value->{include_set_initial} = 1 if $args{'ForCreation'};
         $new_value->Load( $new_value_id );
 
         # now that adding the new value was successful, delete the old one
@@ -2127,7 +2122,7 @@ sub AddCustomFieldDefaultValues {
         my $values = $cf->DefaultValues( Object => $on || RT->System );
         foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
             next if $self->CustomFieldValueIsEmpty(
-                Field => $cf,
+                Field => $cf->id,
                 Value => $value,
             );
 
@@ -2164,10 +2159,7 @@ sub CustomFieldValueIsEmpty {
     my $value = $args{Value};
     return 1 unless defined $value  && length $value;
 
-    my $cf = ref($args{'Field'})
-           ? $args{'Field'}
-           : $self->LoadCustomFieldByIdentifier( $args{'Field'} );
-
+    my $cf = $self->LoadCustomFieldByIdentifier( $args{'Field'} );
     if ($cf) {
         if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
             my $DateObj = RT::Date->new( $self->CurrentUser );

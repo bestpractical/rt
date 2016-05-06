@@ -94,9 +94,7 @@
         Object => $asset,
         TitleBoxARGS => { title_class => "inverse" },
         KeepValue => 1,
-        CustomFieldGenerator => sub { $catalog->AssetCustomFields },
-        ForCreation => 1,
-  &>
+        CustomFieldGenerator => sub { $catalog->AssetCustomFields } &>
 </div>
 
   <& /Elements/Submit, Label => loc('Create asset') &>
