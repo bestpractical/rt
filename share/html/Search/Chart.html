@@ -49,7 +49,7 @@
 my $default_value = {
     Query => 'id > 0',
     GroupBy => ['Status'],
-    ChartStyle => ['bar+table+sql'],
+    ChartStyle => 'bar+table+sql',
     ChartFunction => ['COUNT'],
 };
     
@@ -174,8 +174,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 </&>
 
 <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
-<input name="ChartStyle" type="hidden" value="<% $query{ChartStyle}[0] %>" />
-<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $query{ChartStyle}[0] =~ /^(pie|bar|table)\b/ ? $1 : undef &></label>
+<input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
+<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar|table)\b/ ? $1 : undef &></label>
 <span class="width">
 <label><% loc("Width") %>: <input type="text" name="Width" value="<% $query{'Width'} || q{} %>"> <% loc("px") %></label>
 </span>
@@ -184,10 +184,10 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
   <label><% loc("Height") %>: <input type="text" name="Height" value="<% $query{'Height'} || q{} %>"> <% loc("px") %></label>
 </span>
 <div class="include-table">
-    <input type="checkbox" name="ChartStyleIncludeTable" <% $query{ChartStyle}[0] =~ /\btable\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include data table') %>
+    <input type="checkbox" name="ChartStyleIncludeTable" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include data table') %>
 </div>
 <div class="include-sql">
-    <input type="checkbox" name="ChartStyleIncludeSQL" <% $query{ChartStyle}[0] =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include TicketSQL query') %>
+    <input type="checkbox" name="ChartStyleIncludeSQL" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include TicketSQL query') %>
 </div>
 </&>
 <script type="text/javascript">
