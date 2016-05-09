@@ -63,7 +63,11 @@ my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchFields => [@search_fields],
 );
 
-my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
+my @actions = $m->comp( '/Widgets/SavedSearch:process',
+    args     => \%ARGS,
+    defaults => $default_value,
+    self     => $saved_search,
+);
 
 my %query;
 
