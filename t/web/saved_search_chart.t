@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test no_plan => 1;
+use RT::Test tests => undef;
 my ( $url, $m ) = RT::Test->started_ok;
 use RT::Attribute;
 
@@ -151,3 +151,43 @@ is(
 );
 
 page_chart_link_has($m, $saved_search_ids[1]);
+
+diag "saving a chart without changing its config shows up on dashboards (I#31557)";
+{
+    $m->get_ok( $url . "/Search/Chart.html?Query=" . 'id!=-1' );
+    $m->submit_form(
+        form_name => 'SaveSearch',
+        fields    => {
+            SavedSearchDescription => 'chart without updates',
+            SavedSearchOwner       => $owner,
+        },
+        button => 'SavedSearchSave',
+    );
+
+    $m->form_name('SaveSearch');
+    @saved_search_ids =
+        $m->current_form->find_input('SavedSearchLoad')->possible_values;
+    shift @saved_search_ids; # first value is blank
+    my $chart_without_updates_id = $saved_search_ids[2];
+    ok($chart_without_updates_id, 'got a saved chart id');
+
+    my ($privacy, $user_id, $search_id) = $chart_without_updates_id =~ /^(RT::User-(\d+))-SavedSearch-(\d+)$/;
+    my $user = RT::User->new(RT->SystemUser);
+    $user->Load($user_id);
+    is($user->Name, 'root', 'loaded user');
+    my $currentuser = RT::CurrentUser->new($user);
+
+    my $search = RT::SavedSearch->new($currentuser);
+    $search->Load($privacy, $search_id);
+    is($search->Name, 'chart without updates', 'loaded search');
+    is($search->GetParameter('ChartStyle'), 'bar+table+sql', 'chart correctly initialized with default ChartStyle');
+    is($search->GetParameter('Height'), undef, 'no height by default');
+    is($search->GetParameter('Width'), undef, 'no width by default');
+    is($search->GetParameter('Query'), 'id!=-1', 'chart correctly initialized with Query');
+    is($search->GetParameter('SearchType'), 'Chart', 'chart correctly initialized with SearchType');
+    is_deeply($search->GetParameter('GroupBy'), ['Status'], 'chart correctly initialized with default GroupBy');
+    is_deeply($search->GetParameter('ChartFunction'), ['COUNT'], 'chart correctly initialized with default ChartFunction');
+}
+
+undef $m;
+done_testing;
