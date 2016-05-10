@@ -3543,7 +3543,7 @@ Read more about how to describe a schedule in L<Business::Hours>.
 
 =over 4
 
-=item Defining different business hours for service levels
+=item Configuring business hours
 
 Each level supports BusinessHours option to specify your own business
 hours.
