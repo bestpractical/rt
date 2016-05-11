@@ -769,6 +769,7 @@ sub _SplitHeaders {
     # continuations and rely on this bogus split pattern, however, so it is
     # left as-is for now.
     for (split(/\n(?=\w|\z)/,$headers)) {
+        next if /^>?From /;
         push @headers, $_;
 
     }
