@@ -159,6 +159,7 @@ sub Create {
         Sign              => undef,
         SignAuto          => undef,
         Encrypt           => undef,
+        SLA               => undef,
         _RecordTransaction => 1,
         @_
     );
@@ -198,7 +199,7 @@ sub Create {
     }
     $RT::Handle->Commit;
 
-    for my $attr (qw/Sign SignAuto Encrypt/) {
+    for my $attr (qw/Sign SignAuto Encrypt SLA/) {
         next unless defined $args{$attr};
         my $set = "Set" . $attr;
         my ($status, $msg) = $self->$set( $args{$attr} );
