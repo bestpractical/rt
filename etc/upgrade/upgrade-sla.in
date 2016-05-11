@@ -56,12 +56,25 @@ use lib "@RT_LIB_PATH@";
 use RT::Interface::CLI qw(Init);
 Init();
 
-my $tickets = RT::Tickets->new(RT->SystemUser);
-$tickets->FromSQL('CF.SLA IS NOT NULL AND SLA IS NULL');
-while ( my $ticket = $tickets->Next ) {
-    my ($ret, $msg) = $ticket->SetSLA($ticket->FirstCustomFieldValue('SLA'));
-    unless ( $ret ) {
-        RT->Logger->error("Failed to upgrade SLA for ticket #" . $ticket->id . ": $msg");
+{
+    local *RT::Ticket::_SetLastUpdated = sub {
+        return (1, "Migrating SLA from CF to core field silently");
+    };
+
+    my $tickets = RT::Tickets->new(RT->SystemUser);
+    $tickets->FromSQL('CF.SLA IS NOT NULL AND SLA IS NULL');
+    while ( my $ticket = $tickets->Next ) {
+        my $SLA = $ticket->FirstCustomFieldValue('SLA');
+
+        my ($ret, $msg) = $ticket->_Set(
+            Field => 'SLA',
+            Value => $SLA,
+            RecordTransaction => 0,
+        );
+
+        unless ( $ret ) {
+            RT->Logger->error("Failed to upgrade SLA for ticket #" . $ticket->id . ": $msg");
+        }
     }
 }
 
