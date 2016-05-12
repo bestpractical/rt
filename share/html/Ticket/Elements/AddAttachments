@@ -74,7 +74,7 @@ jQuery( function() {
             '<div class="dz-preview dz-file-preview">' +
             '    <div class="dz-remove-mark pointer-events" data-dz-remove>' +
             '        <svg width="54px" height="54px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">' +
-            '            <title><&|/l&>Remove</&></title>' +
+            '            <title>' + loc_key('remove') + '</title>' +
             '            <defs></defs>' +
             '            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">' +
             '                <g style="fill:#d9534f" id="Check-+-Oval-2" sketch:type="MSLayerGroup" stroke="#747474" stroke-opacity="0.198794158" fill="#FFFFFF" fill-opacity="0.816519475">' +
@@ -95,7 +95,7 @@ jQuery( function() {
             '    <div class="dz-error-message"><span data-dz-errormessage></span></div>' +
             '    <div class="dz-success-mark">' +
             '        <svg width="54px" height="54px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">' + 
-            '            <title><&|/l&>Check</&></title>' +
+            '            <title>' + loc_key('check') + '</title>' +
             '            <defs></defs>' +
             '            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">' +
             '                <path d="M23.5,31.8431458 L17.5852419,25.9283877 C16.0248253,24.3679711 13.4910294,24.366835 11.9289322,25.9289322 C10.3700136,27.4878508 10.3665912,30.0234455 11.9283877,31.5852419 L20.4147581,40.0716123' +
@@ -107,7 +107,7 @@ jQuery( function() {
             '    </div>' +
             '    <div class="dz-error-mark">' +
             '        <svg width="54px" height="54px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">' +
-            '            <title><&|/l&>Error</&></title>' +
+            '            <title>' + loc_key('error') + '</title>' +
             '            <defs></defs>' +
             '            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">' +
             '                <g id="Check-+-Oval-2" sketch:type="MSLayerGroup" stroke="#747474" stroke-opacity="0.198794158" fill="#FFFFFF" fill-opacity="0.816519475">' +
