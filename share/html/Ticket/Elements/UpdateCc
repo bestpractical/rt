@@ -87,11 +87,17 @@ $TicketObj
 </%args>
 <%init>
 my %txn_addresses = %{$TicketObj->TransactionAddresses};
-my @req_addresses = Email::Address->parse( $TicketObj->RequestorAddresses );
+
+# Get people already added as watchers on the ticket so we can filter
+# them out of the one-time list
+my @people_addresses = Email::Address->parse( $TicketObj->RequestorAddresses );
+push @people_addresses, Email::Address->parse( $TicketObj->CcAddresses );
+push @people_addresses, Email::Address->parse( $TicketObj->AdminCcAddresses );
+
 my @one_time_Ccs;
 
 foreach my $addr ( keys %txn_addresses) {
-  next if ( grep {$addr eq lc $_->address} @req_addresses );
+  next if ( grep {$addr eq lc $_->address} @people_addresses );
   push @one_time_Ccs,$addr;
 }
 </%init>
