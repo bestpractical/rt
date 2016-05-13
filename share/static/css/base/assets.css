@@ -104,7 +104,7 @@ body#comp-Asset-Search .collection-as-table td {
 }
 
 .asset-metadata {
-    padding-top: 2em; /* nav overflows this :( */;
+    padding-top: 2em; /* nav overflows this :( */
 }
 
 @media (max-width: 800px) {
@@ -118,7 +118,7 @@ body#comp-Asset-Search .collection-as-table td {
 @media (max-width: 600px) {
     .asset-metadata {
         padding-top: 6em;
-        /* nav overflows this: < */;
+        /* nav overflows this: < */
     }
 
     .asset-metadata>div {
