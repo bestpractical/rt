@@ -1706,7 +1706,7 @@ sub _CanonicalizeValue {
     my $self = shift;
     my $args = shift;
 
-    my $type = $self->_Value('Type');
+    my $type = $self->__Value('Type');
     return 1 unless $type;
 
     my $method = '_CanonicalizeValue'. $type;

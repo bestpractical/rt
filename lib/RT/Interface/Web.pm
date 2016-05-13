@@ -3153,8 +3153,9 @@ sub _ParseObjectCustomFieldArgs {
     foreach my $arg ( keys %$ARGSRef ) {
 
         # format: Object-<object class>-<object id>-CustomField[:<grouping>]-<CF id>-<commands>
+        # or: Bulk-<Add or Delete>-CustomField[:<grouping>]-<CF id>-<commands>
         # you can use GetCustomFieldInputName to generate the complement input name
-        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField(?::(\w+))?-(\d+)-(.*)$/;
+        next unless $arg =~ /^(?:Bulk-(?:Add|Delete)|Object-([\w:]+)-(\d*))-CustomField(?::(\w+))?-(\d+)-(.*)$/;
 
         # For each of those objects, find out what custom fields we want to work with.
         #                   Class     ID     CF  grouping command

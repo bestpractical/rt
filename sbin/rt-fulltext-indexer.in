@@ -99,6 +99,8 @@ if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
     }
 }
 
+my $max_size = RT->Config->Get('MaxFulltextAttachmentSize');
+
 my $db_type = RT->Config->Get('DatabaseType');
 my $fts_config = $ENV{RT_FTS_CONFIG} ? JSON::from_json($ENV{RT_FTS_CONFIG})
     : RT->Config->Get('FullTextSearch') || {};
@@ -213,8 +215,16 @@ sub process_bulk_insert {
         my ($attachments) = @_;
         my @insert;
         my $found = 0;
+
         while ( my $a = $attachments->Next ) {
             debug("Found attachment #". $a->id );
+            if ( $max_size and $a->ContentLength > $max_size ){
+                debug("Attachment #" . $a->id . " is " . $a->ContentLength .
+                      " bytes which is larger than configured MaxFulltextAttachmentSize " .
+                      " of " . $max_size . ", skipping");
+                next;
+            }
+
             my $text = $a->Content // "";
             HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";
             push @insert, join("\n", $a->Subject // "", $text), $a->id;
@@ -316,8 +326,16 @@ sub process_pg_update {
     attachment_loop( sub {
         my ($attachments) = @_;
         my @insert;
+
         while ( my $a = $attachments->Next ) {
             debug("Found attachment #". $a->id );
+
+            if ( $max_size and $a->ContentLength > $max_size ){
+                debug("Attachment #" . $a->id . " is " . $a->ContentLength .
+                      " bytes which is larger than configured MaxFulltextAttachmentSize " .
+                      " of " . $max_size . ", skipping");
+                next;
+            }
 
             my $text = $a->Content // "";
             HTML::Entities::decode_entities($text) if $a->ContentType eq "text/html";

@@ -273,4 +273,11 @@ option to 1, while leaving C<Indexed> set to 0:
 This is not generally suggested, as unindexed full-text searching can
 cause severe performance problems.
 
+=head1 LIMIT ATTACHMENT SIZE
+
+On some systems, very large attachments can cause memory and other
+performance issues for the indexer making it unable to complete
+indexing. See L<RT_Config.pm/"$MaxFulltextAttachmentSize"> for
+details on setting a maximum attachment size to index.
+
 =cut

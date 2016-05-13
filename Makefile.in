@@ -304,9 +304,7 @@ fixperms:
 
 	# Make upgrade scripts executable if they are in the source.
 	#
-	# Note that we use the deprecated (by GNU/POSIX find) -perm +0NNN syntax
-	# instead of -perm /0NNN since BSD find doesn't support the latter.
-	( cd etc/upgrade && find . -type f -not -name '*.in' -perm +0111 -print ) | while read file ; do \
+	( cd etc/upgrade && find . -type f -not -name '*.in' -perm @FINDPERM@0111 -print ) | while read file ; do \
 		chmod a+x "$(DESTDIR)$(RT_ETC_PATH)/upgrade/$$file" ; \
 	done
 

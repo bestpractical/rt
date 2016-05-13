@@ -178,7 +178,8 @@
 <td><label for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label><br />
 <input type="hidden"class="hidden" name="SuppressIfEmpty-Magic" value=1 />
 </td></tr>
-
+% $m->callback( %ARGS, CallbackName => 'SubscriptionFormEnd', FieldsRef => \%fields,
+%     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard );
 </table>
 </&>
 
@@ -237,6 +238,9 @@ my %fields = (
     SuppressIfEmpty => 0,
 );
 
+$m->callback( %ARGS, CallbackName => 'SubscriptionFields', FieldsRef => \%fields,
+     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard);
+
 # update any fields with the values from the subscription object
 if ($SubscriptionObj) {
     for my $field (keys %fields) {
@@ -250,6 +254,9 @@ for my $field (keys %fields) {
     $fields{$field} = $ARGS{$field}
         if defined($ARGS{$field}) || $ARGS{$field.'-Magic'};
 }
+
+$m->callback( %ARGS, CallbackName => 'MassageSubscriptionFields', FieldsRef => \%fields,
+     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard);
 
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
