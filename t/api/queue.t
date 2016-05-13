@@ -2,7 +2,21 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodata => 1, tests => undef;
+use RT::Test nodata => 1, tests => undef, config => <<'CONFIG';
+Set( %ServiceAgreements, (
+    Default => 'standard',
+    Levels => {
+        'standard' => {
+            Starts => { RealMinutes => 0 },
+            Resolve => { RealMinutes => 8*60 },
+        },
+        'urgent' => {
+            Starts => { RealMinutes => 0 },
+            Resolve => { RealMinutes => 2*60 },
+        },
+    },
+));
+CONFIG
 
 
 {
@@ -84,6 +98,21 @@ $group = $Queue->RoleGroup('AdminCc');
 ok ($group->Id, "Found the AdminCc object for this Queue");
 
 
+}
+
+{
+    my $NoSLA = RT::Queue->new(RT->SystemUser);
+    my ($id, $msg) = $NoSLA->Create(Name => "NoSLA");
+    ok($id, "created queue NoSLA");
+    is($NoSLA->SLA, undef, 'No SLA for NoSLA');
+
+    my $WithSLA = RT::Queue->new(RT->SystemUser);
+    ($id, $msg) = $WithSLA->Create(Name => "WithSLA", SLA => 'urgent');
+    ok($id, "created queue WithSLA");
+    is($WithSLA->SLA, 'urgent', 'SLA is set');
+
+    $WithSLA->SetSLA('standard');
+    is($WithSLA->SLA, 'standard', 'SLA is updated');
 }
 
 done_testing;
