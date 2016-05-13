@@ -1025,7 +1025,8 @@ our %META;
         PostLoadCheck => sub {
             my $self = shift;
             my $settings = shift || {};
-            $self->EnableExternalAuth();
+
+            $self->EnableExternalAuth() if keys %$settings > 0;
 
             my $remove = sub {
                 my ($service) = @_;
@@ -1075,7 +1076,8 @@ our %META;
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
-            $self->EnableExternalAuth();
+
+            $self->EnableExternalAuth() if @values;
 
             if (not @values) {
                 $RT::Logger->debug("ExternalAuthPriority not defined. Attempting to create based on ExternalSettings");
@@ -1102,7 +1104,8 @@ our %META;
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
-            $self->EnableExternalAuth();
+
+            $self->EnableExternalAuth() if @values;
 
             if (not @values) {
                 $RT::Logger->debug("ExternalInfoPriority not defined. User information (including user enabled/disabled) cannot be externally-sourced");
