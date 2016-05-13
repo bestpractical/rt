@@ -94,6 +94,8 @@ sub MailDashboards {
         my $currentuser = RT::CurrentUser->new;
         $currentuser->LoadByName($user->Name);
 
+        my $subscriber_lang = $user->Lang;
+
         # look through this user's subscriptions, are any supposed to be generated
         # right now?
         for my $subscription ($user->Attributes->Named('Subscription')) {
@@ -137,9 +139,42 @@ sub MailDashboards {
             my $email_success = 0;
             for my $email (uniq @emails) {
                 eval {
-                    my $lang = $subscription->SubValue('Language')
-                            || $recipient_language{$email}
-                            || 'en';
+                    my $lang;
+                    for my $langkey (RT->Config->Get('EmailDashboardLanguageOrder')) {
+                        if ($langkey eq '_subscription') {
+                            if ($lang = $subscription->SubValue('Language')) {
+                                $RT::Logger->debug("Using subscription's specified language '$lang'");
+                                last;
+                            }
+                        }
+                        elsif ($langkey eq '_recipient') {
+                            if ($lang = $recipient_language{$email}) {
+                                $RT::Logger->debug("Using recipient's preferred language '$lang'");
+                                last;
+                            }
+                        }
+                        elsif ($langkey eq '_subscriber') {
+                            if ($lang = $subscriber_lang) {
+                                $RT::Logger->debug("Using subscriber's preferred language '$lang'");
+                                last;
+                            }
+                        }
+                        else { # specific language name
+                            $lang = $langkey;
+                            $RT::Logger->debug("Using EmailDashboardLanguageOrder fallback language '$lang'");
+                            last;
+                        }
+                    }
+
+                    # use English as the absolute fallback. Though the config
+                    # lets you specify a site-specific fallback, it also lets
+                    # you not specify a fallback, and we don't want to
+                    # accidentally reuse whatever language the previous
+                    # recipient happened to have
+                    if (!$lang) {
+                        $RT::Logger->debug("Using RT's fallback language 'en'. You may specify a different fallback language in your config with EmailDashboardLanguageOrder.");
+                        $lang = 'en';
+                    }
 
                     $currentuser->{'LangHandle'} = RT::I18N->get_handle($lang);
 

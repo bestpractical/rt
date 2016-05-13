@@ -760,6 +760,33 @@ mailed dashboards.
 
 Set(@EmailDashboardRemove, ());
 
+=item C<@EmailDashboardLanguageOrder>
+
+A list that specifies which language to use for dashboard subscription email.
+There are several special keys:
+
+* _subscription: the language chosen on the dashboard subscription page
+* _recipient: the recipient's language, as chosen on their "About Me" page
+* _subscriber: the subscriber's language, as chosen on their "About Me" page
+
+The first key that produces a value is used for the email. Be aware that users
+may not actually have a language set on their "About Me" page, since RT falls
+back to the language their web browser specifies (and of course in a scheduled
+email dashboard, there is no web browser).
+
+You may also include a specific language as a fallback when there is no
+language specified otherwise. Using a specific language never fails to produce
+a value, so subsequent values in the list will never be considered.
+
+By default, RT examines the subscription, then the recipient, then subscriber,
+then finally falls back to English.
+
+See also L</@LexiconLanguages>.
+
+=cut
+
+Set(@EmailDashboardLanguageOrder, qw(_subscription _recipient _subscriber en));
+
 =back
 
 
