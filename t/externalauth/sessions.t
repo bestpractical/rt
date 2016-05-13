@@ -94,8 +94,6 @@ sub setup_auth_source {
             SQL
     }
 
-    RT->Config->Set( ExternalAuth => 1 );
-
     RT->Config->Set( ExternalAuthPriority        => ['My_SQLite'] );
     RT->Config->Set( ExternalInfoPriority        => ['My_SQLite'] );
     RT->Config->Set( AutoCreateNonExternalUsers  => 0 );

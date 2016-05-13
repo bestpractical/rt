@@ -1009,16 +1009,6 @@ our %META;
         },
     },
 
-    ExternalAuth => {
-        PostLoadCheck => sub {
-            my $self = shift;
-            my $ExternalAuthEnabled = $self->Get('ExternalAuth');
-            if ( $ExternalAuthEnabled ) {
-                require RT::Authen::ExternalAuth;
-            }
-        }
-    },
-
     ExternalSettings => {
         Obfuscate => sub {
             # Ensure passwords are obfuscated on the System Configuration page
@@ -1035,6 +1025,7 @@ our %META;
         PostLoadCheck => sub {
             my $self = shift;
             my $settings = shift || {};
+            $self->EnableExternalAuth();
 
             my $remove = sub {
                 my ($service) = @_;
@@ -1084,12 +1075,21 @@ our %META;
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
+            $self->EnableExternalAuth();
+
             if (not @values) {
+                $RT::Logger->debug("ExternalAuthPriority not defined. Attempting to create based on ExternalSettings");
                 $self->Set( 'ExternalAuthPriority', \@values );
                 return;
             }
-
-            my %settings = %{ $self->Get('ExternalSettings') };
+            my %settings;
+            if ( $self->Get('ExternalSettings') ){
+                %settings = %{ $self->Get('ExternalSettings') };
+            }
+            else{
+                $RT::Logger->error("ExternalSettings not defined. ExternalAuth requires the ExternalSettings configuration option to operate properly");
+                return;
+            }
             for my $key (grep {not $settings{$_}} @values) {
                 $RT::Logger->error("Removing '$key' from ExternalAuthPriority, as it is not defined in ExternalSettings");
             }
@@ -1102,13 +1102,22 @@ our %META;
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
+            $self->EnableExternalAuth();
+
             if (not @values) {
                 $RT::Logger->debug("ExternalInfoPriority not defined. User information (including user enabled/disabled) cannot be externally-sourced");
                 $self->Set( 'ExternalInfoPriority', \@values );
                 return;
             }
 
-            my %settings = %{ $self->Get('ExternalSettings') };
+            my %settings;
+            if ( $self->Get('ExternalSettings') ){
+                %settings = %{ $self->Get('ExternalSettings') };
+            }
+            else{
+                $RT::Logger->error("ExternalSettings not defined. ExternalAuth requires the ExternalSettings configuration option to operate properly");
+                return;
+            }
             for my $key (grep {not $settings{$_}} @values) {
                 $RT::Logger->error("Removing '$key' from ExternalInfoPriority, as it is not defined in ExternalSettings");
             }
@@ -1723,6 +1732,16 @@ sub ObjectHasCustomFieldGrouping {
     return 0 unless $groupings;
     return 1 if $groupings->{$object_type} && grep { $_ eq $args{Grouping} } @{ $groupings->{$object_type} };
     return 0;
+}
+
+# Internal method to activate ExtneralAuth if any ExternalAuth config
+# options are set.
+sub EnableExternalAuth {
+    my $self = shift;
+
+    $self->Set('ExternalAuth', 1);
+    require RT::Authen::ExternalAuth;
+    return;
 }
 
 RT::Base->_ImportOverlays();
