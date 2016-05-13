@@ -115,6 +115,9 @@ if ( $args->{SavedSearchSave} ) {
     }
     else {
         # new saved search
+
+        $SearchParams->{$_} //= $defaults->{$_} for @{$self->{SearchFields}};
+
         my $saved_search = RT::SavedSearch->new( $session{'CurrentUser'} );
         my ( $ok, $search_msg ) = $saved_search->Save(
             Privacy      => $args->{'SavedSearchOwner'},
@@ -151,6 +154,7 @@ return @actions;
 <%ARGS>
 $self
 $args
+$defaults => {}
 </%ARGS>
 
 </%method>

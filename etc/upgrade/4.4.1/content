@@ -49,5 +49,28 @@ our @Initial = (
         }
         return 1;
     },
+    # fix incompletely-saved charts
+    sub {
+        my $attrs = RT::Attributes->new(RT->SystemUser);
+        $attrs->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+
+            next unless lc($content->{SearchType}) eq 'chart';
+
+            next if $content->{ChartStyle}
+                 && $content->{GroupBy}
+                 && $content->{ChartFunction};
+
+            $content->{ChartStyle} ||= 'bar+table+sql';
+            $content->{GroupBy} ||= ['Status'];
+            $content->{ChartFunction} ||= ['COUNT'];
+
+            my ($ret, $msg) = $attr->SetContent($content);
+            unless ( $ret ) {
+                RT->Logger->error("Failed to update chart for SavedSearch #" . $attr->id . ": $msg");
+            }
+        }
+    },
 );
 
