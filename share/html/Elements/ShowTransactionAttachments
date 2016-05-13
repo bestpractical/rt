@@ -63,7 +63,7 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
     if ($should_render_download) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | u%>"><&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
+<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | un%>"><&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
 % if ( $DownloadableHeaders && ! length $name && $message->ContentType =~ /text/  ) {
  / <a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
 % }
