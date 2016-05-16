@@ -2987,6 +2987,12 @@ sub _parser {
 
     state ( $active_status_node, $inactive_status_node );
 
+    my $escape_quotes = sub {
+        my $text = shift;
+        $text =~ s{(['\\])}{\\$1}g;
+        return $text;
+    };
+
     $tree->traverse(
         sub {
             my $node = shift;
@@ -3008,15 +3014,16 @@ sub _parser {
 
                     my $sql;
                     if ( keys %lifecycle == 1 ) {
-                        $sql = join ' OR ', map { qq{ Status = "$_" } } map { @$_ } values %lifecycle;
+                        $sql = join ' OR ', map { qq{ Status = '$_' } } map { $escape_quotes->($_) } map { @$_ } values %lifecycle;
                     }
                     else {
                         my @inactive_sql;
                         for my $name ( keys %lifecycle ) {
+                            my $escaped_name = $escape_quotes->($name);
                             my $inactive_sql =
-                                qq{Lifecycle = "$name"}
+                                qq{Lifecycle = '$escaped_name'}
                               . ' AND ('
-                              . join( ' OR ', map { qq{ Status = "$_" } } @{ $lifecycle{ $name } } ) . ')';
+                              . join( ' OR ', map { qq{ Status = '$_' } } map { $escape_quotes->($_) } @{ $lifecycle{ $name } } ) . ')';
                             push @inactive_sql, qq{($inactive_sql)};
                         }
                         $sql = join ' OR ', @inactive_sql;
@@ -3047,15 +3054,16 @@ sub _parser {
 
                     my $sql;
                     if ( keys %lifecycle == 1 ) {
-                        $sql = join ' OR ', map { qq{ Status = "$_" } } map { @$_ } values %lifecycle;
+                        $sql = join ' OR ', map { qq{ Status = '$_' } } map { $escape_quotes->($_) } map { @$_ } values %lifecycle;
                     }
                     else {
                         my @active_sql;
                         for my $name ( keys %lifecycle ) {
+                            my $escaped_name = $escape_quotes->($name);
                             my $active_sql =
-                                qq{Lifecycle = "$name"}
+                                qq{Lifecycle = '$escaped_name'}
                               . ' AND ('
-                              . join( ' OR ', map { qq{ Status = "$_" } } @{ $lifecycle{ $name } } ) . ')';
+                              . join( ' OR ', map { qq{ Status = '$_' } } map { $escape_quotes->($_) } @{ $lifecycle{ $name } } ) . ')';
                             push @active_sql, qq{($active_sql)};
                         }
                         $sql = join ' OR ', @active_sql;

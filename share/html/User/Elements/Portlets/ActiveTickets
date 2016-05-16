@@ -58,9 +58,7 @@
 &>
 <%INIT>
 unless ( @$conditions ) {
-    foreach (RT::Queue->ActiveStatusArray()) {
-        push @$conditions, { cond => "Status = '$_'", name => loc($_) };
-    }
+    push @$conditions, { cond => "Status = '__Active__'" };
 }
 </%INIT>
 <%ARGS>

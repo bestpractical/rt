@@ -62,16 +62,18 @@
 $title ||= loc("My [_1] tickets", $friendly_status);
 my $id = $session{'CurrentUser'}->id;
 my $Query = "( Watcher.id = $id )";
-if ( @status ) {
-    @status = map {s/(['\\])/\\$1/g; "Status = '$_'"} @status;
-    $Query .= " AND ( " . join(' OR ', @status ) . " )";
+
+if ($status) {
+    $status =~ s/(['\\])/\\$1/g;
+    $Query .= " AND Status = '$status'";
 }
+
 my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
 </%INIT>
 <%ARGS>
 $title => undef
 $friendly_status => loc('open')
-@status => ()
+$status => undef
 $BaseURL => undef
 $Page => 1
 @Order => ('ASC')

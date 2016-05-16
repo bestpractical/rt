@@ -866,7 +866,7 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
       { Format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
                  . q{Priority, QueueName, ExtendedStatus},
-        Query   => " Owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
+        Query   => " Owner = '__CurrentUser__' AND Status = '__Active__'",
         OrderBy => 'Priority',
         Order   => 'DESC'
       },
@@ -879,7 +879,7 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
                  . q{QueueName, ExtendedStatus, CreatedRelative, }
                  . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">__loc(Take)__</a>/TITLE:NBSP'},
-        Query   => " Owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
+        Query   => " Owner = 'Nobody' AND Status = '__Active__'",
         OrderBy => 'Created',
         Order   => 'DESC'
       },
