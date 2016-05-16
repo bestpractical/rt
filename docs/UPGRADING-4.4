@@ -261,6 +261,17 @@ Now you can simply write:
 
 =item *
 
+We updated default RT searches that previously specified 'new' and 'open' status
+to use the new '__Active__' and '__Inactive__' syntax where appropriate. For new
+RT's, this means the default RT at a Glance searches will now work with custom
+lifecycles without updating these searches.
+
+For existing RTs, you may want to update the "highest priority tickets I own" and
+'newest unowned tickets' system searches to use '__Active__' rather than specific
+statuses if you have a custom lifecycle.
+
+=item *
+
 We added an "Entry Hint" to custom fields. Previously, we used the custom
 field's C<FriendlyType> as its hint, but now it is replaced by the per-CF
 customizable C<EntryHint> field.
