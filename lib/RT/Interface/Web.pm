@@ -1425,6 +1425,8 @@ our %WHITELISTED_COMPONENT_ARGS = (
     '/Ticket/Update.html' => ['QuoteTransaction', 'Action', 'DefaultStatus'],
     # Action->Extract Article on a ticket's menu
     '/Articles/Article/ExtractIntoClass.html' => ['Ticket'],
+    # Only affects display
+    '/Ticket/Display.html' => ['HideUnsetFields'],
 );
 
 # Components which are blacklisted from automatic, argument-based whitelisting.

@@ -47,8 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % for my $type (@display) {
-% if ( !RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser}) || $clone{$type} || $Object->$type->Count ) {
-  <tr>
+  <tr class="<%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
     <td class="labeltop">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
@@ -59,7 +58,7 @@
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
     </td>
   </tr>
-% } }
+% }
 
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );

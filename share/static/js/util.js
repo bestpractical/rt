@@ -565,3 +565,17 @@ function scrollToJQueryObject(obj) {
     }
 }
 
+function toggle_hide_unset(e) {
+    var link      = jQuery(e);
+    var container = link.closest(".unset-fields-container");
+    container.toggleClass('unset-fields-hidden');
+
+    if (container.hasClass('unset-fields-hidden')) {
+        link.text(link.data('show-label'));
+    }
+    else {
+        link.text(link.data('hide-label'));
+    }
+
+    return false;
+}
