@@ -407,5 +407,22 @@ Searching and updating handle both representations as you'd expect.
 
 =back
 
+=head1 UPGRADING FROM 4.4.0 AND EARLIER
+
+=over 4
+
+=item *
+
+We updated default RT searches that previously specified 'new' and 'open' status
+to use the new '__Active__' and '__Inactive__' syntax where appropriate. For new
+RT's, this means the default RT at a Glance searches will now work with custom
+lifecycles without updating these searches.
+
+For existing RTs, you may want to update the "highest priority tickets I own" and
+'newest unowned tickets' system searches to use '__Active__' rather than specific
+statuses if you have a custom lifecycle.
+
+=back
+
 =cut
 
