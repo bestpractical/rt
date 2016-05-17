@@ -1078,6 +1078,8 @@ our %META;
             my $self = shift;
             my @values = @{ shift || [] };
 
+            return unless @values or $self->Get('ExternalSettings');
+
             if (not @values) {
                 $RT::Logger->debug("ExternalAuthPriority not defined. Attempting to create based on ExternalSettings");
                 $self->Set( 'ExternalAuthPriority', \@values );
@@ -1103,6 +1105,8 @@ our %META;
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
+
+            return unless @values or $self->Get('ExternalSettings');
 
             if (not @values) {
                 $RT::Logger->debug("ExternalInfoPriority not defined. User information (including user enabled/disabled) cannot be externally-sourced");
