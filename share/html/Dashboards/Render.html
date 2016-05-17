@@ -55,6 +55,15 @@
 <& /Elements/Tabs &>
 % }
 
+% # honor the chosen language for just the dashboard content
+% my $original_handle;
+% if ($SubscriptionObj->id) {
+%     if (my $lang = $SubscriptionObj->SubValue('Language')) {
+%         $original_handle = $session{'CurrentUser'}->{'LangHandle'};
+%         $session{'CurrentUser'}->{'LangHandle'} = RT::I18N->get_handle($lang);
+%     }
+% }
+
 % $m->callback(CallbackName => 'BeforeTable', Dashboard => $Dashboard, show_cb => $show_cb);
 
 <table class="dashboard" id="dashboard-<%$id%>">
@@ -91,6 +100,10 @@
 </html>
 % }
 
+% # restore the original language for anything else on the page
+% if ($original_handle) {
+%     $session{'CurrentUser'}->{'LangHandle'} = $original_handle;
+% }
 <%INIT>
 
 

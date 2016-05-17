@@ -91,6 +91,8 @@ my ($dashboard_id, $subscription_id) = get_dash_sub_ids();
 sub produces_dashboard_mail_ok { # {{{
     my %args = @_;
     my $subject = delete $args{Subject};
+    my $body_like = delete $args{BodyLike};
+    my $body_unlike = delete $args{BodyUnlike};
 
     local $Test::Builder::Level = $Test::Builder::Level + 1;
 
@@ -107,8 +109,20 @@ sub produces_dashboard_mail_ok { # {{{
     is($mail->head->get('X-RT-Dashboard-Subscription-Id'), "$subscription_id\n");
 
     my $body = $mail->bodyhandle->as_string;
-    like($body, qr{My dashboards});
+    like($body, qr{My dashboards}) if !$body_like && !$body_unlike;
     like($body, qr{<a href="http://[^/]+/Dashboards/\d+/Testing!">Testing!</a>});
+
+    if ($body_like) {
+        for my $re (ref($body_like) eq 'ARRAY' ? @$body_like : $body_like) {
+            ok($body =~ $re, "body should match $re");
+        }
+    }
+
+    if ($body_unlike) {
+        for my $re (ref($body_unlike) eq 'ARRAY' ? @$body_unlike : $body_unlike) {
+            ok($body !~ $re, "body should not match $re");
+        }
+    }
 } # }}}
 
 sub produces_no_dashboard_mail_ok { # {{{
@@ -311,6 +325,7 @@ RT::Test->clean_caught_mails;
 RT::Test->stop_server;
 
 RT->Config->Set('EmailDashboardRemove' => ());
+RT->Config->Set('EmailDashboardLanguageOrder' => qw(_subscription _recipient _subscriber fr));
 RT->Config->Set('DashboardAddress' => 'root');
 ($baseurl, $m) = RT::Test->started_ok;
 $m->login;
@@ -323,11 +338,54 @@ create_subscription($baseurl, $m,
 ($dashboard_id, $subscription_id) = get_dash_sub_ids();
 
 $good_time = 1291201200;        # dec 1
+
+produces_dashboard_mail_ok(
+    Time       => $good_time,
+    Subject    => "[example.com] a Mensuel b Testing! c\n",
+    BodyLike   => qr/Mes tableaux de bord/,
+    BodyUnlike => qr/My dashboards/,
+);
+
+
+
+@mails = RT::Test->fetch_caught_mails;
+is(@mails, 0, "no mail leftover");
+
+$m->no_warnings_ok;
+RT::Test->stop_server;
+RT->Config->Set('DashboardSubject' => 'a %s b %s c');
+RT->Config->Set('DashboardAddress' => 'dashboard@example.com');
+RT->Config->Set('EmailDashboardRemove' => (qr/My dashboards/, "Testing!"));
+($baseurl, $m) = RT::Test->started_ok;
+
+delete_dashboard($dashboard_id);
+
+RT::Test->clean_caught_mails;
+
+RT::Test->stop_server;
+
+RT->Config->Set('EmailDashboardRemove' => ());
+RT->Config->Set('EmailDashboardLanguage' => 'ja');
+RT->Config->Set('DashboardAddress' => 'root');
+($baseurl, $m) = RT::Test->started_ok;
+$m->login;
+create_dashboard($baseurl, $m);
+create_subscription($baseurl, $m,
+    Frequency => 'monthly',
+    Hour => '06:00',
+    Language => 'fr', # overrides EmailDashboardLanguage
+);
+
+($dashboard_id, $subscription_id) = get_dash_sub_ids();
+
+$good_time = 1291201200;        # dec 1
 $bad_time = $good_time - 86400; # day before (i.e. different month)
 
 produces_dashboard_mail_ok(
-    Time    => $good_time,
-    Subject =>  "[example.com] a Monthly b Testing! c\n",
+    Time       => $good_time,
+    Subject    => "[example.com] a Mensuel b Testing! c\n",
+    BodyLike   => qr/Mes tableaux de bord/,
+    BodyUnlike => qr/My dashboards/,
 );
 
 produces_no_dashboard_mail_ok(
