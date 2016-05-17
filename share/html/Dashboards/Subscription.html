@@ -277,12 +277,11 @@ if (defined $ARGS{Save}) {
             my @recipients = @{ $fields{Recipients}->{Users} };
 
             for ( RT::EmailParser->ParseEmailAddress( $val ) ) {
-                my ( $email, $name ) = ( $_->address, $_->name );
+                my $email = $_->address;
 
                 my $user = RT::User->new(RT->SystemUser);
                 ($ok, $msg) = $user->LoadOrCreateByEmail(
                     EmailAddress => $email,
-                    RealName     => $name,
                     Comments     => 'Autocreated when added as a dashboard subscription recipient',
                 );
 
