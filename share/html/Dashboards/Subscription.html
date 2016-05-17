@@ -279,18 +279,23 @@ if (defined $ARGS{Save}) {
             for ( RT::EmailParser->ParseEmailAddress( $val ) ) {
                 my ( $email, $name ) = ( $_->address, $_->name );
 
-                my $user = RT::User->new($session{CurrentUser});
-                $user->LoadOrCreateByEmail(
+                my $user = RT::User->new(RT->SystemUser);
+                ($ok, $msg) = $user->LoadOrCreateByEmail(
                     EmailAddress => $email,
                     RealName     => $name,
                     Comments     => 'Autocreated when added as a dashboard subscription recipient',
                 );
 
-                my $is_prev_recipient = grep { $_ == $user->id } @recipients;
-                if ( not $is_prev_recipient ) {
-                    push @recipients, $user->id;
-                    push @results, loc("[_1] added to dashboard subscription recipients", $email);
+                unless ($ok) {
+                    push @results, loc("Could not add [_1] as a recipient: [_2]", $email, $msg);
+                    next;
                 }
+
+                my $is_prev_recipient = grep { $_ == $user->id } @recipients;
+                next if $is_prev_recipient;
+
+                push @recipients, $user->id;
+                push @results, loc("[_1] added to dashboard subscription recipients", $email);
             }
             @{ $fields{Recipients}->{Users} } = uniq @recipients;
 
