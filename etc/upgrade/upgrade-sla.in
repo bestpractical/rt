@@ -56,7 +56,9 @@ use lib "@RT_LIB_PATH@";
 use RT::Interface::CLI qw(Init);
 Init();
 
+print "Starting SLA upgrade process...\n";
 {
+    RT->Logger->info("Updating tickets with SLA custom field");
     local *RT::Ticket::_SetLastUpdated = sub {
         return (1, "Migrating SLA from CF to core field silently");
     };
@@ -160,3 +162,4 @@ for my $item ( @old_actions ) {
         }
     }
 }
+print "\nDone.\n";
