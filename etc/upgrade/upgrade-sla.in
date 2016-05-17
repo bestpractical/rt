@@ -163,3 +163,23 @@ for my $item ( @old_actions ) {
     }
 }
 print "\nDone.\n";
+
+__END__
+
+=head1 NAME
+
+upgrade-sla - upgrade SLA extension installs to core SLA feature
+
+=head1 SYNOPSIS
+
+    # Run upgrade after upgrading RT to 4.4.x
+    upgrade-sla
+    upgrade-sla --verbose # see more output while running the upgrade
+
+=head1 DESCRIPTION
+
+This upgrade script examines data from RTs that previously used C<RT::Extension::SLA>
+and migrates the data to the configuration required for core SLA functionality.
+This includes moving SLA values from the SLA custom field to the core RT field
+and enabling the SLA feature for queues that appear to have it configured.
+Some old scrips, actions, and conditions are also cleaned up.
