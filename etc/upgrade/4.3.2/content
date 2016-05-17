@@ -7,8 +7,6 @@ our @Initial = (
         my $queues = RT::Queues->new(RT->SystemUser);
         $queues->UnLimit;
         $queues->{'find_disabled_rows'} = 1;
-        # override the default order by SortOrder, because it doesn't exist yet
-        $queues->OrderByCols();
         while ( my $queue = $queues->Next ) {
             next if $queue->FirstAttribute('DefaultValues');
             my %default;
