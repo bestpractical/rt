@@ -91,19 +91,19 @@ while ( my $queue = $queues->Next ) {
         $cfs_to_disable{$cf->id} ||= $cf;
          my ($ret, $msg) = $queue->SetSLADisabled(0);
          if ( $ret ) {
-             RT->Logger->info("Enabled SLA for queue #" . $queue->id);
+             RT->Logger->info("Enabled SLA for queue #" . $queue->id . ", " . $queue->Name);
          }
          else {
-             RT->Logger->error("Failed to enable SLA for queue #" . $queue->id . ": $msg");
+             RT->Logger->error("Failed to enable SLA for queue #" . $queue->id . ", " . $queue->Name . ": $msg");
          }
     }
     elsif ( !$queue->SLADisabled ) {
         my ($ret, $msg) = $queue->SetSLADisabled(1);
         if ( $ret ) {
-            RT->Logger->info("Disabled SLA for queue #" . $queue->id . " because it doesn't have custom field SLA applied");
+            RT->Logger->info("Disabled SLA for queue #" . $queue->id . ", " . $queue->Name . ", because it doesn't have custom field SLA applied");
         }
         else {
-            RT->Logger->error("Failed to disable SLA for queue #" . $queue->id . ": $msg");
+            RT->Logger->error("Failed to disable SLA for queue #" . $queue->id . ", " . $queue->Name . ": $msg");
         }
     }
 }
