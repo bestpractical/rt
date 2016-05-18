@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-11-09 22:31+0000\n"
-"PO-Revision-Date: 2015-11-08 23:10+0000\n"
+"POT-Creation-Date: 2016-02-04 18:00+0000\n"
+"PO-Revision-Date: 2016-03-01 10:50+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-11-20 19:23+0000\n"
-"X-Generator: Launchpad (build 17850)\n"
+"X-Launchpad-Export-Date: 2016-05-18 19:36+0000\n"
+"X-Generator: Launchpad (build 18025)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -36,7 +36,7 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($name, $self->loc($args{Type}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:468 share/html/Ticket/Update.html:319 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:472 share/html/Ticket/Update.html:334 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
@@ -44,9 +44,25 @@ msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would creat
 msgid "(Check box to delete)"
 msgstr "(Tick box to delete)"
 
+#: share/html/Asset/Elements/ShowPeople:69
+msgid "(via this asset's catalog)"
+msgstr "(via this asset's catalogue)"
+
+#: share/html/Admin/Assets/Catalogs/index.html:48
+msgid "Admin Catalogs"
+msgstr "Admin Catalogues"
+
 #: share/html/Elements/LoginRedirectWarning:62
 msgid "After logging in you'll be sent to your original destination:"
 msgstr "After logging in you will be sent to your original destination:"
+
+#: share/html/Admin/Assets/Catalogs/index.html:108
+msgid "All Catalogs"
+msgstr "All Catalogues"
+
+#: share/html/Admin/Assets/Catalogs/index.html:96
+msgid "All catalogs matching search criteria"
+msgstr "All catalogues matching search criteria"
 
 #: share/html/Prefs/AboutMe.html:175
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
@@ -79,6 +95,58 @@ msgstr "Cannot link to a deleted ticket"
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
+#: share/html/Asset/Elements/AssetSearchBasics:50 share/html/Asset/Elements/EditBasics:51 share/html/Asset/Elements/ShowBasics:50 share/html/Asset/Search/Bulk.html:79 share/html/Elements/RT__Asset/ColumnMap:88
+msgid "Catalog"
+msgstr "Catalogue"
+
+#. ($self->id, $args{'Name'})
+#: lib/RT/Catalog.pm:252
+msgid "Catalog #%1 created: %2"
+msgstr "Catalogue #%1 created: %2"
+
+#. ($Catalog->Name)
+#: share/html/Admin/Assets/Catalogs/CustomFields.html:48
+msgid "Catalog %1: Edit Custom Fields"
+msgstr "Catalogue %1: Edit Custom Fields"
+
+#. ($catalog->Name)
+#: share/html/Admin/Assets/Catalogs/Modify.html:48
+msgid "Catalog %1: Modify basics"
+msgstr "Catalogue %1: Modify basics"
+
+#. ($Catalog->Name)
+#: share/html/Admin/Assets/Catalogs/GroupRights.html:48
+msgid "Catalog %1: Modify group rights"
+msgstr "Catalogue %1: Modify group rights"
+
+#. ($catalog->Name)
+#: share/html/Admin/Assets/Catalogs/Roles.html:48
+msgid "Catalog %1: Modify roles"
+msgstr "Catalogue %1: Modify roles"
+
+#. ($Catalog->Name)
+#: share/html/Admin/Assets/Catalogs/UserRights.html:48
+msgid "Catalog %1: Modify user rights"
+msgstr "Catalogue %1: Modify user rights"
+
+#. ($txn_msg)
+#: lib/RT/Catalog.pm:246
+msgid "Catalog Create txn failed: %1"
+msgstr "Catalogue Create txn failed: %1"
+
+#. ($msg)
+#: lib/RT/Catalog.pm:227
+msgid "Catalog create failed: %1"
+msgstr "Catalogue create failed: %1"
+
+#: share/html/Elements/Tabs:1073 share/html/Elements/Tabs:212
+msgid "Catalogs"
+msgstr "Catalogues"
+
+#: lib/RT/Catalog.pm:284
+msgid "Catalogs may not be deleted"
+msgstr "Catalogues may not be deleted"
+
 #: share/html/Install/Initialize.html:54
 msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
 msgstr "Click \"Initialise Database\" to create RT's database and insert initial metadata. This may take a few moments"
@@ -94,6 +162,28 @@ msgstr "Condition is a mandatory argument"
 #: share/html/Install/DatabaseDetails.html:137
 msgid "Connection succeeded"
 msgstr "Connection successful"
+
+#: lib/RT/Catalog.pm:234
+msgid "Couldn't create role groups for catalog"
+msgstr "Couldn't create role groups for catalogue"
+
+#. ($catalog->Name)
+#: share/html/Asset/Create.html:48
+msgid "Create a new asset in catalog %1"
+msgstr "Create a new asset in catalogue %1"
+
+#. ($m->scomp("/Asset/Elements/SelectCatalog"),)
+#: share/html/Asset/Elements/CreateInCatalog:51
+msgid "Create a new asset in the catalog %1."
+msgstr "Create a new asset in the catalogue %1."
+
+#: share/html/Admin/Assets/Catalogs/Create.html:48 share/html/Admin/Assets/Catalogs/Create.html:59
+msgid "Create catalog"
+msgstr "Create catalogue"
+
+#: lib/RT/Catalog.pm:80
+msgid "Create, modify, and disable catalogs"
+msgstr "Create, modify, and disable catalogues"
 
 #: share/html/Prefs/DashboardsInMenu.html:74 share/html/Prefs/MyRT.html:81 share/html/Prefs/QueueList.html:79 share/html/Prefs/Search.html:81
 msgid "Customize"
@@ -123,9 +213,21 @@ msgstr "Customise the RT theme"
 msgid "Customize the look of your RT"
 msgstr "Customise the look of your RT"
 
-#: share/html/Admin/Users/Modify.html:72 share/html/Prefs/AboutMe.html:65 share/html/Ticket/Elements/AddWatchers:91
+#: share/html/Admin/Global/CustomFields/Catalog-Assets.html:52
+msgid "Edit Custom Fields for Assets in all Catalogs"
+msgstr "Edit Custom Fields for Assets in all Catalogues"
+
+#: share/html/Admin/Users/Modify.html:72 share/html/Dashboards/Elements/SubscriptionRecipients:150 share/html/Prefs/AboutMe.html:65 share/html/Ticket/Elements/AddWatchers:91
 msgid "Email"
 msgstr "E-mail"
+
+#: share/html/Admin/Assets/Catalogs/index.html:109
+msgid "Enabled Catalogs"
+msgstr "Enabled Catalogues"
+
+#: share/html/Admin/Assets/Catalogs/index.html:97
+msgid "Enabled catalogs matching search criteria"
+msgstr "Enabled catalogues matching search criteria"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:82
 msgid "Fill boxes with color using"
@@ -135,9 +237,17 @@ msgstr "Fill boxes with colour using"
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
 msgstr "GD is disabled or not installed. You can upload an image, but you won't get automatic colour suggestions."
 
+#: share/html/Admin/Assets/Catalogs/index.html:85
+msgid "Include disabled catalogs in listing."
+msgstr "Include disabled catalogues in listing."
+
 #: share/html/Install/Global.html:64 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:61
 msgid "Initialize Database"
 msgstr "Initialise Database"
+
+#: lib/RT/Asset.pm:219
+msgid "Invalid Catalog"
+msgstr "Invalid Catalogue"
 
 #. ($args{'RightName'})
 #: lib/RT/ACE.pm:123 lib/RT/ACE.pm:246
@@ -148,9 +258,25 @@ msgstr "Invalid right. Couldn't canonicalise right '%1'"
 msgid "LocalizedDateTime"
 msgstr "LocalisedDateTime"
 
+#: share/html/Elements/Tabs:213
+msgid "Modify asset catalogs"
+msgstr "Modify asset catalogues"
+
+#: lib/RT/Interface/Web.pm:3984
+msgid "No catalog specified."
+msgstr "No catalogue specified."
+
+#: share/html/Admin/Assets/Catalogs/index.html:54
+msgid "No catalogs matching search criteria found."
+msgstr "No catalogues matching search criteria found."
+
 #: share/html/Errors/WebRemoteUser/Deauthorized:48
 msgid "No longer authorized"
 msgstr "No longer authorised"
+
+#: lib/RT/Catalog.pm:335 lib/RT/Catalog.pm:350
+msgid "No permission to modify this catalog"
+msgstr "No permission to modify this catalogue"
 
 #: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:132 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
 msgid "Organization"
@@ -164,13 +290,39 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:363
+#: lib/RT/Config.pm:382
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
+
+#: lib/RT/Catalog.pm:79
+msgid "See catalogs"
+msgstr "See catalogues"
+
+#: share/html/Elements/Tabs:179
+msgid "Select Custom Fields for Assets in all Catalogs"
+msgstr "Select Custom Fields for Assets in all Catalogues"
+
+#: share/html/Admin/Assets/Catalogs/index.html:52
+msgid "Select a catalog"
+msgstr "Select a catalogue"
 
 #: share/html/Admin/Tools/Theme.html:84
 msgid "Select a color for the section"
 msgstr "Select a colour for the section"
+
+#: etc/initialdata:28 etc/upgrade/4.3.10/content:10
+msgid "The default catalog"
+msgstr "The default catalogue"
+
+#. ($id)
+#: lib/RT/Interface/Web.pm:3989
+msgid "Unable to find catalog %1"
+msgstr "Unable to find catalogue %1"
+
+#. ($Catalog)
+#: share/html/Asset/Create.html:115
+msgid "Unable to find catalog '%1'"
+msgstr "Unable to find catalogue '%1'"
 
 #: share/html/Errors/WebRemoteUser/NoInternalUser:48 share/html/Errors/WebRemoteUser/NoRemoteUser:48
 msgid "Unauthorized"
@@ -197,8 +349,21 @@ msgstr "You are not authorised to use RT."
 msgid "You can also click on the logo above to get colors!"
 msgstr "You can also click on the logo above to get colours!"
 
+#. ($catalog->Name || $catalog->id)
+#: share/html/Asset/Create.html:119
+msgid "You don't have permission to create assets in catalog %1."
+msgstr "You don't have permission to create assets in catalogue %1."
+
+#: lib/RT/Interface/Web.pm:3992
+msgid "You don't have permission to view this catalog."
+msgstr "You don't have permission to view this catalogue."
+
 #. ($valid_image_types)
 #: share/html/Admin/Tools/Theme.html:65
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr "Your system supports automatic colour suggestions for: %1"
+
+#: lib/RT/Transaction.pm:1337
+msgid "[a hidden catalog]"
+msgstr "[a hidden catalogue]"
 
