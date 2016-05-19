@@ -132,11 +132,7 @@ $Attachments = $Attachments->Clone;
 
 # Remember, each message in a transaction is an attachment; we only
 # want named attachments (real files)
-$Attachments->Limit(
-    FIELD    => 'Filename',
-    OPERATOR => '!=',
-    VALUE    => '',
-);
+$Attachments->LimitHasFilename;
 
 my $show_more = 0;
 my %documents;
