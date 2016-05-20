@@ -1683,6 +1683,22 @@ sub AddValueForObject {
         }
     }
 
+    if ($self->UniqueValues) {
+        my $existing = RT::ObjectCustomFieldValue->new(RT->SystemUser);
+        $existing->LoadByCols(
+            CustomField  => $self->Id,
+            Content      => $args{'Content'},
+            LargeContent => $args{'LargeContent'},
+            ContentType  => $args{'ContentType'},
+            Disabled     => 0,
+        );
+        if ($existing->Id) {
+            $RT::Logger->debug( "Non-unique custom field value for CF #" . $self->Id ." with object custom field value " . $existing->Id );
+            $RT::Handle->Rollback();
+            return ( 0, $self->loc('That is not a unique value') );
+        }
+    }
+
     my $newval = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
     my ($val, $msg) = $newval->Create(
         ObjectType   => ref($obj),
