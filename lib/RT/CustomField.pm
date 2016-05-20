@@ -246,16 +246,17 @@ C<RT::Ticket->CustomFieldLookupType> or C<RT::Transaction->CustomFieldLookupType
 sub Create {
     my $self = shift;
     my %args = (
-        Name        => '',
-        Type        => '',
-        MaxValues   => 0,
-        Pattern     => '',
-        Description => '',
-        Disabled    => 0,
-        LookupType  => '',
-        LinkValueTo => '',
+        Name         => '',
+        Type         => '',
+        MaxValues    => 0,
+        Pattern      => '',
+        Description  => '',
+        Disabled     => 0,
+        LookupType   => '',
+        LinkValueTo  => '',
         IncludeContentForValue => '',
-        EntryHint   => undef,
+        EntryHint    => undef,
+        UniqueValues => 0,
         @_,
     );
 
@@ -328,16 +329,17 @@ sub Create {
     $args{'Disabled'} ||= 0;
 
     (my $rv, $msg) = $self->SUPER::Create(
-        Name        => $args{'Name'},
-        Type        => $args{'Type'},
-        RenderType  => $args{'RenderType'},
-        MaxValues   => $args{'MaxValues'},
-        Pattern     => $args{'Pattern'},
-        BasedOn     => $args{'BasedOn'},
-        ValuesClass => $args{'ValuesClass'},
-        Description => $args{'Description'},
-        Disabled    => $args{'Disabled'},
-        LookupType  => $args{'LookupType'},
+        Name         => $args{'Name'},
+        Type         => $args{'Type'},
+        RenderType   => $args{'RenderType'},
+        MaxValues    => $args{'MaxValues'},
+        Pattern      => $args{'Pattern'},
+        BasedOn      => $args{'BasedOn'},
+        ValuesClass  => $args{'ValuesClass'},
+        Description  => $args{'Description'},
+        Disabled     => $args{'Disabled'},
+        LookupType   => $args{'LookupType'},
+        UniqueValues => $args{'UniqueValues'},
     );
 
     if ($rv) {
@@ -2448,6 +2450,8 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         EntryHint =>
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0, is_numeric => 0,  type => 'varchar(255)', default => undef },
+        UniqueValues =>
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
         Creator => 
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
         Created => 

@@ -163,6 +163,12 @@ jQuery( function() {
 </td></tr>
 % }
 
+<tr><td class="label">&nbsp;</td><td>
+<input type="hidden" class="hidden" name="SetUniqueValues" value="1" />
+<input type="checkbox" class="checkbox" id="UniqueValues" name="UniqueValues" value="1" <% $UniqueValuesChecked |n %> />
+<label for="UniqueValues"><&|/l&>New values must be unique</&></label>
+</td></tr>
+
 % $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
 <tr><td class="label">&nbsp;</td><td>
@@ -211,6 +217,7 @@ else {
             BasedOn       => $BasedOn,
             Disabled      => ($Enabled ? 0 : 1),
             EntryHint     => $EntryHint,
+            UniqueValues  => $UniqueValues,
         );
         if (!$val) {
             push @results, loc("Could not create CustomField: [_1]", $msg);
@@ -233,7 +240,11 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     #we're asking about enabled on the web page but really care about disabled.
     $ARGS{'Disabled'} = $Enabled? 0 : 1;
 
-    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint);
+    # make sure the unchecked checkbox still causes an update
+    $ARGS{UniqueValues} ||= 0 if $SetUniqueValues;
+
+    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint UniqueValues);
+
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
         Object        => $CustomFieldObj,
@@ -354,6 +365,9 @@ MaybeRedirectForResults(
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
 
+my $UniqueValuesChecked = qq[checked="checked"];
+$UniqueValuesChecked = '' if !$CustomFieldObj->UniqueValues;
+
 my @CFvalidations = (
     '(?#Mandatory).',
     '(?#Digits)^[\d.]+$',
@@ -374,6 +388,8 @@ $Pattern => undef
 $Name => undef
 $SetEnabled => undef
 $Enabled => 0
+$SetUniqueValues => undef
+$UniqueValues => 0
 $ValuesClass => 'RT::CustomFieldValues'
 $RenderType => undef
 $LinkValueTo => undef

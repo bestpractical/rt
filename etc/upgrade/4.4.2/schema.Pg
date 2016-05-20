@@ -1,0 +1,1 @@
+ALTER TABLE CustomFields ADD COLUMN UniqueValues integer NOT NULL DEFAULT 0;
