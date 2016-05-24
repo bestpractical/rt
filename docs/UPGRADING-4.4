@@ -442,14 +442,78 @@ Searching and updating handle both representations as you'd expect.
 
 =item *
 
-We updated default RT searches that previously specified 'new' and 'open' status
-to use the new '__Active__' and '__Inactive__' syntax where appropriate. For new
-RT's, this means the default RT at a Glance searches will now work with custom
+The Dashboard subscription recipient options have been greatly expanded from
+a single text field (which happened to support multiple email address
+separated with a comma) to a robust user/group search. There is a database
+upgrade step for migrating the old "Recipient" textbox values.
+
+=item *
+
+In versions of RT before 4.4.1, under certain conditions Saved Charts were
+not completely saved to the database, which led to them not showing up when
+added to dashboards. There is a database upgrade step that fixes such charts
+so they will now show up on dashboards, and of course the underlying bug has
+been corrected.
+
+=item *
+
+We updated default RT searches that previously specified 'new' and 'open'
+(and sometimes, 'stalled') status to use the new Status='__Active__' and
+Status='__Inactive__' syntax where appropriate. For new RT installs, this
+means the default RT at a Glance searches will now work with custom
 lifecycles without updating these searches.
 
-For existing RTs, you may want to update the "highest priority tickets I own" and
-'newest unowned tickets' system searches to use '__Active__' rather than specific
-statuses if you have a custom lifecycle.
+For existing RT sites, you may want to update the "highest priority tickets
+I own" and 'newest unowned tickets' system searches to use
+Status='__Active__' rather than specific statuses.
+
+=item *
+
+Users may now select a specific language for dashboard email subscriptions.
+Administrators can customize the method by which dashboard email language is
+chosen (including specifying an ultimate fallback other than English) with
+the @EmailDashboardLanguageOrder RT_Config option.
+
+This may change which language users receive their dashboards in. To fix
+this, users may need to specify their language explicitly on their "About
+Me" page. Administrators may also want to set up a default language that
+matches their userbase better than RT's default of English.
+
+=item *
+
+The "hide unset fields" preference now also hides unset custom fields,
+obsoleting RT::Extension::CustomField::HideEmptyValues. The implementation
+was also changed from omitting HTML tags for such fields to adding an
+`.unset` class name and hiding such fields with CSS.
+
+=item *
+
+Long attachment lists now show only the five newest attachments with an AJAX
+"Show all" link. This should improve the performance and usability of both
+ticket display and ticket reply pages.
+
+=item *
+
+rt-crontool used with multiple actions may have been sending email to the
+wrong recipients; we've fixed this issue (by reloading the template object
+for each action) so please double check that such cronjobs are still sending
+mail to the right people.
+
+=item *
+
+We now explicitly depend on the Pod::Select Perl module since it was removed
+from the Perl core starting in 5.18. If you're on a recent version of Perl
+you will most likely need to install this dependency.
+
+=item *
+
+We now automatically enable ExternalAuth when the ExternalSettings config is
+declared, so you may remove Set($ExternalAuth, 1); from your config.
+
+=item *
+
+We've deprecated the /Admin/CustomFields/Modify.html callback named
+AfterUpdateCustomFieldValue. It will be removed in RT 4.6.
 
 =back
 
