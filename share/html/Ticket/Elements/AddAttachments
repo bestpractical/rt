@@ -194,11 +194,7 @@ my $HasExisting = 0;
 
 if ($TicketObj && $TicketObj->id) {
     my $Existing = $TicketObj->Attachments;
-    $Existing->Limit(
-        FIELD    => 'Filename',
-        OPERATOR => '!=',
-        VALUE    => '',
-    );
+    $Existing->LimitHasFilename;
     $HasExisting = 1 if $Existing->Count;
 }
 </%INIT>
