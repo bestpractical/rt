@@ -363,6 +363,12 @@ sub _SetPrivileged {
         }
         my ($status, $msg) = $priv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);
         if ($status) {
+            $self->_NewTransaction(
+                Type     => 'Set',
+                Field    => 'Privileged',
+                NewValue => 1,
+                OldValue => 0,
+            );
             return (1, $self->loc("That user is now privileged"));
         } else {
             return (0, $msg);
@@ -383,6 +389,12 @@ sub _SetPrivileged {
         }
         my ($status, $msg) = $unpriv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);
         if ($status) {
+            $self->_NewTransaction(
+                Type     => 'Set',
+                Field    => 'Privileged',
+                NewValue => 0,
+                OldValue => 1,
+            );
             return (1, $self->loc("That user is now unprivileged"));
         } else {
             return (0, $msg);
