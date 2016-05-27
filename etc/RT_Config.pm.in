@@ -920,7 +920,10 @@ your own canonicalizers.
 
 =cut
 
-Set(@CustomFieldValuesCanonicalizers, ());
+Set(@CustomFieldValuesCanonicalizers, qw(
+    RT::CustomFieldValues::Canonicalizer::Uppercase
+    RT::CustomFieldValues::Canonicalizer::Lowercase
+));
 
 =item C<%CustomFieldGroupings>
 

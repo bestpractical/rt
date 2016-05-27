@@ -46,74 +46,38 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::CustomFieldValues::Canonicalizer;
+package RT::CustomFieldValues::Canonicalizer::Lowercase;
 
 use strict;
 use warnings;
-use base 'RT::Base';
+
+use base qw(RT::CustomFieldValues::Canonicalizer);
+
+=encoding utf-8
 
 =head1 NAME
 
-RT::CustomFieldValues::Canonicalizer - base class for custom field value
-canonicalizers
-
-=head1 SYNOPSIS
+RT::CustomFieldValues::Canonicalizer::Lowercase - lowercase custom field values
 
 =head1 DESCRIPTION
 
-This class is the base class for custom field value canonicalizers. To
-implement a new canonicalizer, you must create a new class that subclasses
-this class. Your subclass must implement the methods L</CanonicalizeValue>
-and L</Description> as documented below. Finally, add the new class name to
-L<RT_Config/@CustomFieldValuesCanonicalizers>.
-
-See L<RT::CustomFieldValues::Canonicalizer::Uppercase> for a complete
-example.
-
-=head2 new
-
-The object constructor takes one argument: L<RT::CurrentUser> object.
-
-=cut
-
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless ($self, $class);
-    $self->CurrentUser(@_);
-    return $self;
-}
-
-=head2 CanonicalizeValue
-
-Receives a parameter hash including C<CustomField> (an L<RT::CustomField>
-object) and C<Content> (a string of user-provided content).
-
-You may also access C<< $self->CurrentUser >> in case you need the user's
-language or locale.
-
-This method is expected to return the canonicalized C<Content>.
+This canonicalizer adjusts the custom field value to have all lowercase
+characters. It is Unicode-aware, so for example "Ω" will become "ω".
 
 =cut
 
 sub CanonicalizeValue {
     my $self = shift;
-    die "Subclass " . ref($self) . " of " . __PACKAGE__ . " does not implement required method CanonicalizeValue";
+    my %args = (
+        CustomField => undef,
+        Content     => undef,
+        @_,
+    );
+
+    return lc $args{Content};
 }
 
-=head2 Description
-
-A class method that returns the human-friendly name for this canonicalizer
-which appears in the admin UI. By default it is the class name, which is
-not so human friendly. You should override this in your subclass.
-
-=cut
-
-sub Description {
-    my $class = shift;
-    return $class;
-}
+sub Description { "Lowercase" }
 
 RT::Base->_ImportOverlays();
 
