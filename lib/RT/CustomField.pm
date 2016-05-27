@@ -1826,9 +1826,29 @@ sub _CanonicalizeValue {
     my $type = $self->__Value('Type');
     return 1 unless $type;
 
+    $self->_CanonicalizeValueWithCanonicalizer($args);
+
     my $method = '_CanonicalizeValue'. $type;
     return 1 unless $self->can($method);
     $self->$method($args);
+}
+
+sub _CanonicalizeValueWithCanonicalizer {
+    my $self = shift;
+    my $args = shift;
+
+    return 1 if !$self->CanonicalizeClass;
+
+    my $class = $self->CanonicalizeClass;
+    $class->require or die "Can't load $class: $@";
+    my $canonicalizer = $class->new($self->CurrentUser);
+
+    $args->{'Content'} = $canonicalizer->CanonicalizeValue(
+        CustomField => $self,
+        Content     => $args->{'Content'},
+    );
+
+    return 1;
 }
 
 sub _CanonicalizeValueDateTime {
