@@ -2056,7 +2056,7 @@ sub BasedOnObj {
 sub SupportDefaultValues {
     my $self = shift;
     return 0 unless $self->id;
-    return 0 unless $self->LookupType =~ /RT::(?:Ticket|Transaction)$/;
+    return 0 unless $self->LookupType =~ /RT::(?:Ticket|Transaction|Asset)$/;
     return $self->Type !~ /^(?:Image|Binary)$/;
 }
 
