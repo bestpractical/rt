@@ -1131,7 +1131,7 @@ sub _Set {
         return ( 0, $self->loc('Permission Denied') );
     }
     my ($ret, $msg) = $self->SUPER::_Set( @_ );
-    if ( $args{Field} =~ /^(?:MaxValues|Type|LookupType|ValuesClass)$/ ) {
+    if ( $args{Field} =~ /^(?:MaxValues|Type|LookupType|ValuesClass|CanonicalizeClass)$/ ) {
         $self->CleanupDefaultValues;
     }
     return ($ret, $msg);
@@ -2308,6 +2308,30 @@ sub CleanupDefaultValues {
                     if ( ref $default_values eq 'ARRAY' ) {
                         $content->{ $self->id } = join "\n", @$default_values;
                         $changed = 1;
+                    }
+
+                    if ($self->MaxValues == 1) {
+                        my $args = { Content => $default_values };
+                        $self->_CanonicalizeValueWithCanonicalizer($args);
+                        if ($args->{Content} ne $default_values) {
+                            $content->{ $self->id } = $default_values;
+                            $changed = 1;
+                        }
+                    }
+                    else {
+                        my @new_values;
+                        my $multi_changed = 0;
+                        for my $value (split /\s*\n+\s*/, $default_values) {
+                            my $args = { Content => $value };
+                            $self->_CanonicalizeValueWithCanonicalizer($args);
+                            push @new_values, $args->{Content};
+                            $multi_changed = 1 if $args->{Content} ne $value;
+                        }
+
+                        if ($multi_changed) {
+                            $content->{ $self->id } = join "\n", @new_values;
+                            $changed = 1;
+                        }
                     }
                 }
             }
