@@ -805,6 +805,7 @@ our %META;
     GnuPGOptions => { Type => 'HASH' },
     ReferrerWhitelist => { Type => 'ARRAY' },
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
+    CustomFieldValuesCanonicalizers => { Type => 'ARRAY' },
     WebPath => {
         PostLoadCheck => sub {
             my $self  = shift;

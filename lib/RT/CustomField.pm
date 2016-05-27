@@ -70,6 +70,7 @@ our %FieldTypes = (
     Select => {
         sort_order => 10,
         selection_type => 1,
+        canonicalizes => 0,
 
         labels => [ 'Select multiple values',               # loc
                     'Select one value',                     # loc
@@ -93,6 +94,7 @@ our %FieldTypes = (
     Freeform => {
         sort_order => 20,
         selection_type => 0,
+        canonicalizes => 1,
 
         labels => [ 'Enter multiple values',               # loc
                     'Enter one value',                     # loc
@@ -102,6 +104,7 @@ our %FieldTypes = (
     Text => {
         sort_order => 30,
         selection_type => 0,
+        canonicalizes => 1,
         labels         => [
                     'Fill in multiple text areas',                   # loc
                     'Fill in one text area',                         # loc
@@ -111,6 +114,7 @@ our %FieldTypes = (
     Wikitext => {
         sort_order => 40,
         selection_type => 0,
+        canonicalizes => 1,
         labels         => [
                     'Fill in multiple wikitext areas',                       # loc
                     'Fill in one wikitext area',                             # loc
@@ -121,6 +125,7 @@ our %FieldTypes = (
     Image => {
         sort_order => 50,
         selection_type => 0,
+        canonicalizes => 0,
         labels         => [
                     'Upload multiple images',               # loc
                     'Upload one image',                     # loc
@@ -130,6 +135,7 @@ our %FieldTypes = (
     Binary => {
         sort_order => 60,
         selection_type => 0,
+        canonicalizes => 0,
         labels         => [
                     'Upload multiple files',              # loc
                     'Upload one file',                    # loc
@@ -140,6 +146,7 @@ our %FieldTypes = (
     Combobox => {
         sort_order => 70,
         selection_type => 1,
+        canonicalizes => 1,
         labels         => [
                     'Combobox: Select or enter multiple values',               # loc
                     'Combobox: Select or enter one value',                     # loc
@@ -149,6 +156,7 @@ our %FieldTypes = (
     Autocomplete => {
         sort_order => 80,
         selection_type => 1,
+        canonicalizes => 1,
         labels         => [
                     'Enter multiple values with autocompletion',               # loc
                     'Enter one value with autocompletion',                     # loc
@@ -159,6 +167,7 @@ our %FieldTypes = (
     Date => {
         sort_order => 90,
         selection_type => 0,
+        canonicalizes => 0,
         labels         => [
                     'Select multiple dates',              # loc
                     'Select date',                        # loc
@@ -168,6 +177,7 @@ our %FieldTypes = (
     DateTime => {
         sort_order => 100,
         selection_type => 0,
+        canonicalizes => 0,
         labels         => [
                     'Select multiple datetimes',                  # loc
                     'Select datetime',                            # loc
@@ -178,6 +188,7 @@ our %FieldTypes = (
     IPAddress => {
         sort_order => 110,
         selection_type => 0,
+        canonicalizes => 0,
 
         labels => [ 'Enter multiple IP addresses',                    # loc
                     'Enter one IP address',                           # loc
@@ -187,6 +198,7 @@ our %FieldTypes = (
     IPAddressRange => {
         sort_order => 120,
         selection_type => 0,
+        canonicalizes => 0,
 
         labels => [ 'Enter multiple IP address ranges',                          # loc
                     'Enter one IP address range',                                # loc
@@ -246,17 +258,18 @@ C<RT::Ticket->CustomFieldLookupType> or C<RT::Transaction->CustomFieldLookupType
 sub Create {
     my $self = shift;
     my %args = (
-        Name         => '',
-        Type         => '',
-        MaxValues    => 0,
-        Pattern      => '',
-        Description  => '',
-        Disabled     => 0,
-        LookupType   => '',
-        LinkValueTo  => '',
+        Name                   => '',
+        Type                   => '',
+        MaxValues              => 0,
+        Pattern                => '',
+        Description            => '',
+        Disabled               => 0,
+        LookupType             => '',
+        LinkValueTo            => '',
         IncludeContentForValue => '',
-        EntryHint    => undef,
-        UniqueValues => 0,
+        EntryHint              => undef,
+        UniqueValues           => 0,
+        CanonicalizeClass      => undef,
         @_,
     );
 
@@ -326,20 +339,30 @@ sub Create {
         }
     }
 
+    if ( $args{'CanonicalizeClass'} ||= undef ) {
+        return (0, $self->loc("This custom field can not have a canonicalizer"))
+            unless $self->IsCanonicalizeType( $args{'Type'} );
+
+        unless ( $self->ValidateCanonicalizeClass( $args{'CanonicalizeClass'} ) ) {
+            return (0, $self->loc("Invalid custom field values canonicalizer"));
+        }
+    }
+
     $args{'Disabled'} ||= 0;
 
     (my $rv, $msg) = $self->SUPER::Create(
-        Name         => $args{'Name'},
-        Type         => $args{'Type'},
-        RenderType   => $args{'RenderType'},
-        MaxValues    => $args{'MaxValues'},
-        Pattern      => $args{'Pattern'},
-        BasedOn      => $args{'BasedOn'},
-        ValuesClass  => $args{'ValuesClass'},
-        Description  => $args{'Description'},
-        Disabled     => $args{'Disabled'},
-        LookupType   => $args{'LookupType'},
-        UniqueValues => $args{'UniqueValues'},
+        Name              => $args{'Name'},
+        Type              => $args{'Type'},
+        RenderType        => $args{'RenderType'},
+        MaxValues         => $args{'MaxValues'},
+        Pattern           => $args{'Pattern'},
+        BasedOn           => $args{'BasedOn'},
+        ValuesClass       => $args{'ValuesClass'},
+        Description       => $args{'Description'},
+        Disabled          => $args{'Disabled'},
+        LookupType        => $args{'LookupType'},
+        UniqueValues      => $args{'UniqueValues'},
+        CanonicalizeClass => $args{'CanonicalizeClass'},
     );
 
     if ($rv) {
@@ -730,7 +753,7 @@ sub Types {
 
 =head2 IsSelectionType 
 
-Retuns a boolean value indicating whether the C<Values> method makes sense
+Returns a boolean value indicating whether the C<Values> method makes sense
 to this Custom Field.
 
 =cut
@@ -742,6 +765,19 @@ sub IsSelectionType {
     return $FieldTypes{$type}->{selection_type};
 }
 
+=head2 IsCanonicalizeType
+
+Returns a boolean value indicating whether the type of this custom field
+permits using a canonicalizer.
+
+=cut
+
+sub IsCanonicalizeType {
+    my $self = shift;
+    my $type = @_ ? shift : $self->Type;
+    return undef unless $type;
+    return $FieldTypes{$type}->{canonicalizes};
+}
 
 
 =head2 IsExternalValues
@@ -804,6 +840,50 @@ sub ValidateValuesClass {
     return undef;
 }
 
+=head2 SetCanonicalizeClass CLASS
+
+Writer method for the CanonicalizeClass field; validates that the custom
+field can use a CanonicalizeClass, and that the provided CanonicalizeClass
+passes L</ValidateCanonicalizeClass>.
+
+=cut
+
+sub SetCanonicalizeClass {
+    my $self = shift;
+    my $class = shift;
+
+    if ( !$class ) {
+        return $self->_Set( Field => 'CanonicalizeClass', Value => undef, @_ );
+    }
+
+    return (0, $self->loc("This custom field can not have a canonicalizer"))
+        unless $self->IsCanonicalizeType;
+
+    unless ( $self->ValidateCanonicalizeClass( $class ) ) {
+        return (0, $self->loc("Invalid custom field values canonicalizer"));
+    }
+    return $self->_Set( Field => 'CanonicalizeClass', Value => $class, @_ );
+}
+
+=head2 ValidateCanonicalizeClass CLASS
+
+Validates a potential CanonicalizeClass value; the CanonicalizeClass may be
+C<undef> (which make this custom field use no special canonicalization), or
+a class name in the listed in the
+L<RT_Config/@CustomFieldValuesCanonicalizers> setting.
+
+Returns true if valid; false if invalid.
+
+=cut
+
+sub ValidateCanonicalizeClass {
+    my $self = shift;
+    my $class = shift;
+
+    return 1 if !$class;
+    return 1 if grep $class eq $_, RT->Config->Get('CustomFieldValuesCanonicalizers');
+    return undef;
+}
 
 =head2 FriendlyType [TYPE, MAX_VALUES]
 
