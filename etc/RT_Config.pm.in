@@ -909,6 +909,19 @@ custom field values from external sources at runtime.
 
 Set(@CustomFieldValuesSources, ());
 
+=item C<@CustomFieldValuesCanonicalizers>
+
+Set C<@CustomFieldValuesCanonicalizers> to a list of class names which extend
+L<RT::CustomFieldValues::Canonicalizer>. This can be used to rewrite
+(canonicalize) values entered by users to fit some defined format.
+
+See the documentation in L<RT::CustomFieldValues::Canonicalizer> for adding
+your own canonicalizers.
+
+=cut
+
+Set(@CustomFieldValuesCanonicalizers, ());
+
 =item C<%CustomFieldGroupings>
 
 This option affects the display of ticket and user custom fields in the

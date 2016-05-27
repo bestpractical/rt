@@ -484,6 +484,7 @@ sub InitClasses {
     require RT::Catalogs;
     require RT::Asset;
     require RT::Assets;
+    require RT::CustomFieldValues::Canonicalizer;
 
     _BuildTableAttributes();
 
