@@ -544,57 +544,7 @@ sub BuildMainNav {
     }
 
     if ($request_path =~ m{^/Asset/} and $HTML::Mason::Commands::DECODED_ARGS->{id} and $HTML::Mason::Commands::DECODED_ARGS->{id} !~ /\D/) {
-        my $page  = HTML::Mason::Commands::PageMenu();
-        my $id    = $HTML::Mason::Commands::DECODED_ARGS->{id};
-        my $asset = RT::Asset->new( $HTML::Mason::Commands::session{CurrentUser} );
-        $asset->Load($id);
-
-        if ($asset->id) {
-            $page->child("display",     title => HTML::Mason::Commands::loc("Display"),        path => "/Asset/Display.html?id=$id");
-            $page->child("history",     title => HTML::Mason::Commands::loc("History"),        path => "/Asset/History.html?id=$id");
-            $page->child("basics",      title => HTML::Mason::Commands::loc("Basics"),         path => "/Asset/Modify.html?id=$id");
-            $page->child("links",       title => HTML::Mason::Commands::loc("Links"),          path => "/Asset/ModifyLinks.html?id=$id");
-            $page->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
-            $page->child("dates",       title => HTML::Mason::Commands::loc("Dates"),          path => "/Asset/ModifyDates.html?id=$id");
-
-            for my $grouping (RT::CustomField->CustomGroupings($asset)) {
-                my $cfs = $asset->CustomFields;
-                $cfs->LimitToGrouping( $asset => $grouping );
-                next unless $cfs->Count;
-                $page->child(
-                    "cf-grouping-$grouping",
-                    title   => HTML::Mason::Commands::loc($grouping),
-                    path    => "/Asset/ModifyCFs.html?id=$id;Grouping=" . $HTML::Mason::Commands::m->interp->apply_escapes($grouping, 'u'),
-                );
-            }
-
-            my $actions = $page->child("actions", title => HTML::Mason::Commands::loc("Actions"));
-            $actions->child("create-linked-ticket", title => HTML::Mason::Commands::loc("Create linked ticket"), path => "/Asset/CreateLinkedTicket.html?Asset=$id");
-
-            my $status    = $asset->Status;
-            my $lifecycle = $asset->LifecycleObj;
-            for my $action ( $lifecycle->Actions($status) ) {
-                my $next = $action->{'to'};
-                next unless $lifecycle->IsTransition( $status => $next );
-
-                my $check = $lifecycle->CheckRight( $status => $next );
-                next unless $asset->CurrentUserHasRight($check);
-
-                my $label = $action->{'label'} || ucfirst($next);
-                $actions->child(
-                    $label,
-                    title   => HTML::Mason::Commands::loc($label),
-                    path    => "/Asset/Modify.html?id=$id;Update=1;DisplayAfter=1;Status="
-                                . $HTML::Mason::Commands::m->interp->apply_escapes($next, 'u'),
-
-                    class       => "asset-lifecycle-action",
-                    attributes  => {
-                        'data-current-status'   => $status,
-                        'data-next-status'      => $next,
-                    },
-                );
-            }
-        }
+        _BuildAssetMenu();
     } elsif ($request_path =~ m{^/Asset/Search/}) {
         my $page  = HTML::Mason::Commands::PageMenu();
         my %search = map @{$_},
@@ -665,6 +615,71 @@ sub BuildMainNav {
 
     # due to historical reasons of always having been in /Elements/Tabs
     $HTML::Mason::Commands::m->callback( CallbackName => 'Privileged', Path => $request_path, CallbackPage => '/Elements/Tabs' );
+}
+
+sub _BuildAssetMenu {
+    my $page  = HTML::Mason::Commands::PageMenu();
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser};
+
+    my $id    = $HTML::Mason::Commands::DECODED_ARGS->{id};
+    my $asset = RT::Asset->new( $current_user );
+    $asset->Load($id);
+
+    if ($asset->id) {
+        $page->child("display",     title => HTML::Mason::Commands::loc("Display"),        path => "/Asset/Display.html?id=$id");
+        $page->child("history",     title => HTML::Mason::Commands::loc("History"),        path => "/Asset/History.html?id=$id");
+        $page->child("basics",      title => HTML::Mason::Commands::loc("Basics"),         path => "/Asset/Modify.html?id=$id");
+        $page->child("links",       title => HTML::Mason::Commands::loc("Links"),          path => "/Asset/ModifyLinks.html?id=$id");
+        $page->child("people",      title => HTML::Mason::Commands::loc("People"),         path => "/Asset/ModifyPeople.html?id=$id");
+        $page->child("dates",       title => HTML::Mason::Commands::loc("Dates"),          path => "/Asset/ModifyDates.html?id=$id");
+
+        for my $grouping (RT::CustomField->CustomGroupings($asset)) {
+            my $cfs = $asset->CustomFields;
+            $cfs->LimitToGrouping( $asset => $grouping );
+            next unless $cfs->Count;
+            $page->child(
+                "cf-grouping-$grouping",
+                title   => HTML::Mason::Commands::loc($grouping),
+                path    => "/Asset/ModifyCFs.html?id=$id;Grouping=" . $HTML::Mason::Commands::m->interp->apply_escapes($grouping, 'u'),
+            );
+        }
+
+        _BuildAssetMenuActionSubmenu($asset);
+    }
+}
+
+sub _BuildAssetMenuActionSubmenu {
+    my $asset = shift;
+
+    my $page  = HTML::Mason::Commands::PageMenu();
+    my $id    = $asset->id;
+
+    my $actions = $page->child("actions", title => HTML::Mason::Commands::loc("Actions"));
+    $actions->child("create-linked-ticket", title => HTML::Mason::Commands::loc("Create linked ticket"), path => "/Asset/CreateLinkedTicket.html?Asset=$id");
+
+    my $status    = $asset->Status;
+    my $lifecycle = $asset->LifecycleObj;
+    for my $action ( $lifecycle->Actions($status) ) {
+        my $next = $action->{'to'};
+        next unless $lifecycle->IsTransition( $status => $next );
+
+        my $check = $lifecycle->CheckRight( $status => $next );
+        next unless $asset->CurrentUserHasRight($check);
+
+        my $label = $action->{'label'} || ucfirst($next);
+        $actions->child(
+            $label,
+            title   => HTML::Mason::Commands::loc($label),
+            path    => "/Asset/Modify.html?id=$id;Update=1;DisplayAfter=1;Status="
+                        . $HTML::Mason::Commands::m->interp->apply_escapes($next, 'u'),
+
+            class       => "asset-lifecycle-action",
+            attributes  => {
+                'data-current-status'   => $status,
+                'data-next-status'      => $next,
+            },
+        );
+    }
 }
 
 sub _BuildAdminMenu {
