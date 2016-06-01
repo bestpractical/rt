@@ -48,6 +48,7 @@
 <%ARGS>
 $id
 $seconds => 0
+$comment => undef
 </%ARGS>
 <%INIT>
 my $Ticket = RT::Ticket->new($session{'CurrentUser'});
@@ -61,10 +62,25 @@ if ($minutes == 0) {
     # avoid "That is already the current value" error
     $ok = 1;
     $msg = loc("Worked [quant,_1,minute,minutes]", 0);
+
+    if ($comment) {
+        my ($comment_ok, $comment_msg) = $Ticket->Comment(Content => $comment);
+        if (!$comment_ok) {
+            ($ok, $msg) = ($comment_ok, $comment_msg);
+        }
+    }
 }
 else {
-    my $total_worked = $Ticket->TimeWorked + $minutes;
-    ($ok, $msg) = $Ticket->SetTimeWorked($total_worked);
+    if ($comment) {
+        ($ok, $msg) = $Ticket->Comment(
+            Content   => $comment,
+            TimeTaken => $minutes,
+        );
+    }
+    else {
+        my $total_worked = $Ticket->TimeWorked + $minutes;
+        ($ok, $msg) = $Ticket->SetTimeWorked($total_worked);
+    }
 
     if ($ok) {
         if ($minutes < 60) {

@@ -27,7 +27,7 @@
 .ticket-timer .gutter {
     border-bottom: 1px solid #ccc;
     background-color: #eee;
-    padding: 0.5em 0;
+    padding: 0.5em;
 }
 
 .ticket-timer .extra,
