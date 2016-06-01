@@ -91,7 +91,7 @@ $Multiple         => 0,
 % foreach my $v( @Values ) {
 % my $selected = '';
 % $selected = 'selected="selected"' if delete $CurrentValue{ $v };
-<option value="<% $v %>" <% $selected |n %>><% loc($ValuesLabel{ $v } || $v) %></option>
+<option value="<% $v %>" <% $selected |n %>><% loc(ref($ValuesLabel{ $v }) ? @{ $ValuesLabel{ $v } } : $ValuesLabel{ $v } || $v) %></option>
 % }
 
 % if ( $Alternative ) {
@@ -120,7 +120,7 @@ if ( $ValuesCallback ) {
 }
 unless (defined $DefaultLabel ) {
     $DefaultLabel = loc('Use system default ([_1])',
-        join ', ', map loc($ValuesLabel{$_} || $_), grep defined,
+        join ', ', map loc(ref($ValuesLabel{$_}) ? @{ $ValuesLabel{$_ }} : $ValuesLabel{$_} || $_), grep defined,
             @DefaultValue
     );
 }
