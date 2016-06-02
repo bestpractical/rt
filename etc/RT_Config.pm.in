@@ -1967,6 +1967,18 @@ overrides C<TrustHTMLAttachments>.
 
 Set($AlwaysDownloadAttachments, undef);
 
+=item C<$AttachmentListCount>
+
+The number of attachments to display by default on ticket display and ticket
+reply pages. Attachments beyond this count will be displayed only after the
+user clicks a "Show all attachments" link. The default value, C<undef>, means
+always show all attachments. A value of C<0> means show no attachments by
+default.
+
+=cut
+
+Set($AttachmentListCount, undef);
+
 =item C<$PreferRichText>
 
 By default, RT shows rich text (HTML) messages if possible.  If
