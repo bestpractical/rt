@@ -93,22 +93,22 @@ if ( $args{help} ) {
 
 # Set up defaults
 my %default = (
-    'with-CORE'       => 1,
-    'with-CLI'        => 1,
-    'with-MAILGATE'   => 1,
-    'with-DEVELOPER'  => @RT_DEVELOPER@,
-    'with-GPG'        => @RT_GPG_DEPS@,
-    'with-SMIME'      => @RT_SMIME_DEPS@,
-    'with-GRAPHVIZ'   => @RT_GRAPHVIZ@,
-    'with-GD'         => @RT_GD@,
+    'with-CORE'         => 1,
+    'with-CLI'          => 1,
+    'with-MAILGATE'     => 1,
+    'with-DEVELOPER'    => @RT_DEVELOPER@,
+    'with-GPG'          => @RT_GPG_DEPS@,
+    'with-SMIME'        => @RT_SMIME_DEPS@,
+    'with-GRAPHVIZ'     => @RT_GRAPHVIZ@,
+    'with-GD'           => @RT_GD@,
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
-    'with-S3'         => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
-    'with-DROPBOX'    => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
+    'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
+    'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
 );
-$args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
+$args{$_} = $default{$_} foreach grep {!exists $args{$_}} keys %default;
 
-$args{'with-EXTERNALAUTH-TESTS'} = $args{'with-EXTERNALAUTH'} && $args{'with-DEVELOPER'};
-
+$args{'with-EXTERNALAUTH-TESTS'}
+    = $args{'with-EXTERNALAUTH'} && $args{'with-DEVELOPER'};
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
 Apache::Session 1.53
@@ -197,7 +197,7 @@ URI::QueryParam
 XML::RSS 1.05
 .
 set_dep( CORE => 'Symbol::Global::Name' => 0.05 ) if $] >= 5.019003;
-set_dep( CORE => CGI => 4.00 )                    if $] > 5.019003;
+set_dep( CORE => CGI => 4.00 ) if $] > 5.019003;
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
 Crypt::SSLeay
@@ -311,9 +311,9 @@ File::Dropbox
 .
 
 my %AVOID = (
-    'DBD::Oracle' => [qw(1.23)],
+    'DBD::Oracle'       => [qw(1.23)],
     'Devel::StackTrace' => [qw(1.28 1.29)],
-    'DateTime::Locale' => [qw(1.00 1.01)]
+    'DateTime::Locale'  => [qw(1.00 1.01)]
 );
 
 check_perl_version();
@@ -321,8 +321,8 @@ check_perl_version();
 check_users();
 
 my %Missing_By_Type = ();
-foreach my $type (sort grep $args{$_}, keys %args) {
-    next unless ($type =~ /^with-(.*?)$/) and $deps{$1};
+foreach my $type ( sort grep {$args{$_}} keys %args ) {
+    next unless ( $type =~ /^with-(.*?)$/ ) and $deps{$1};
 
     $type = $1;
     section("$type dependencies");
@@ -333,8 +333,8 @@ foreach my $type (sort grep $args{$_}, keys %args) {
     my %missing = test_deps(@deps);
 
     if ( $args{'install'} ) {
-        for my $module (keys %missing) {
-            resolve_dep($module, $missing{$module}{version});
+        for my $module ( keys %missing ) {
+            resolve_dep( $module, $missing{$module}{version} );
             my $m = $module . '.pm';
             $m =~ s!::!/!g;
             if ( delete $INC{$m} ) {
@@ -346,7 +346,7 @@ foreach my $type (sort grep $args{$_}, keys %args) {
                 }
             }
             delete $missing{$module}
-                if test_dep($module, $missing{$module}{version}, $AVOID{$module});
+                if test_dep( $module, $missing{$module}{version}, $AVOID{$module} );
         }
     }
 
@@ -354,40 +354,40 @@ foreach my $type (sort grep $args{$_}, keys %args) {
 }
 
 if ( $args{'install'} && keys %Missing_By_Type ) {
-    exec($script_path, @orig_argv, '--no-install');
-}
-else {
+    exec( $script_path, @orig_argv, '--no-install' );
+} else {
     conclude(%Missing_By_Type);
 }
 
 {
-  my $section;
-  my %always_show_sections = (
-    perl => 1,
-    users => 1,
-  );
+    my $section;
+    my %always_show_sections = (
+        perl  => 1,
+        users => 1,
+    );
 
-  sub section {
-    my $s = shift;
-    $section = $s;
-    print "$s:\n" unless $args{'list-deps'};
-  }
-
-  sub print_found {
-    my $msg = shift;
-    my $test = shift;
-    my $extra = shift;
-
-    unless ( $args{'list-deps'} ) {
-        if ( $args{'v'} or not $test or $always_show_sections{$section} ) {
-            print "\t$msg ...";
-            print $test ? "found" : "MISSING";
-            print "\n";
-        }
-
-        print "\t\t$extra\n" if defined $extra;
+    sub section {
+        my $s = shift;
+        $section = $s;
+        print "$s:\n" unless $args{'list-deps'};
     }
-  }
+
+    sub print_found {
+        my $msg   = shift;
+        my $test  = shift;
+        my $extra = shift;
+
+        unless ( $args{'list-deps'} ) {
+            if ( $args{'v'} or not $test or $always_show_sections{$section} )
+            {
+                print "\t$msg ...";
+                print $test ? "found" : "MISSING";
+                print "\n";
+            }
+
+            print "\t\t$extra\n" if defined $extra;
+        }
+    }
 }
 
 sub conclude {
@@ -408,8 +408,9 @@ sub conclude {
             for my $name ( keys %$missing ) {
                 my $module  = $missing->{$name};
                 my $version = $module->{version};
-                my $error = $module->{error};
-                print_found( $name . ( $version && !$error ? " >= $version" : "" ),
+                my $error   = $module->{error};
+                print_found(
+                    $name . ( $version && !$error ? " >= $version" : "" ),
                     0, $module->{error} );
             }
         }
@@ -424,46 +425,47 @@ sub conclude {
 sub text_to_hash {
     my %hash;
     for my $line ( split /\n/, $_[0] ) {
-        my($key, $value) = $line =~ /(\S+)\s*(\S*)/;
+        my ( $key, $value ) = $line =~ /(\S+)\s*(\S*)/;
         $value ||= '';
         $hash{$key} = $value;
     }
 
     return %hash;
 }
+
 sub set_dep {
-    my ($name, $module, $version) = @_;
-    my %list = @{$deps{$name}};
-    $list{$module} = ($version || '');
-    $deps{$name} = [ %list ];
+    my ( $name, $module, $version ) = @_;
+    my %list = @{ $deps{$name} };
+    $list{$module} = ( $version || '' );
+    $deps{$name} = [%list];
 }
 
 sub test_deps {
     my @deps = @_;
 
     my %missing;
-    while(@deps) {
-        my $module = shift @deps;
+    while (@deps) {
+        my $module  = shift @deps;
         my $version = shift @deps;
-        my($test, $error) = test_dep($module, $version, $AVOID{$module});
-        my $msg = $module . ($version && !$error ? " >= $version" : '');
-        print_found($msg, $test, $error);
+        my ( $test, $error ) = test_dep( $module, $version, $AVOID{$module} );
+        my $msg = $module . ( $version && !$error ? " >= $version" : '' );
+        print_found( $msg, $test, $error );
 
-        $missing{$module} = { version => $version, error => $error } unless $test;
+        $missing{$module} = { version => $version, error => $error }
+            unless $test;
     }
 
     return %missing;
 }
 
 sub test_dep {
-    my $module = shift;
+    my $module  = shift;
     my $version = shift;
-    my $avoid = shift;
+    my $avoid   = shift;
 
     if ( $args{'list-deps'} ) {
-        print $module, ': ', $version || 0, "\n"; 
-    }
-    else {
+        print $module, ': ', $version || 0, "\n";
+    } else {
         no warnings 'deprecated';
         eval "{ local \$ENV{__WARN__}; use $module $version () }";
         if ( my $error = $@ ) {
@@ -475,16 +477,20 @@ sub test_dep {
 
             my $path = $module;
             $path =~ s{::}{/}g;
-            undef $error if defined $error and $error =~ /^Can't locate $path\.pm in \@INC/;
+            undef $error
+                if defined $error
+                and $error =~ /^Can't locate $path\.pm in \@INC/;
 
             return ( 0, $error );
         }
-        
-        if ( $avoid ) {
+
+        if ($avoid) {
             my $version = $module->VERSION;
-            if ( grep $version eq $_, @$avoid ) {
+            if ( grep {$version eq $_} @$avoid ) {
                 return 0 unless wantarray;
-                return (0, "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually.");
+                return ( 0,
+                    "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually."
+                );
             }
         }
 
@@ -493,18 +499,23 @@ sub test_dep {
 }
 
 sub resolve_dep {
-    my $module = shift;
+    my $module  = shift;
     my $version = shift;
 
-    unless (defined $args{siteinstall}) {
+    unless ( defined $args{siteinstall} ) {
         require Config;
         my %uniq;
-        my @order = grep {($_ eq $Config::Config{sitelibexp}
-                        or $_ eq $Config::Config{privlibexp})
-                        and not $uniq{$_}++} @INC;
-        if ($] < 5.011 and @order == 2
-                and $order[0] eq $Config::Config{sitelibexp}
-                and $order[1] eq $Config::Config{privlibexp}) {
+        my @order = grep {
+            (          $_ eq $Config::Config{sitelibexp}
+                    or $_ eq $Config::Config{privlibexp}
+                )
+                and not $uniq{$_}++
+        } @INC;
+        if (    $] < 5.011
+            and @order == 2
+            and $order[0] eq $Config::Config{sitelibexp}
+            and $order[1] eq $Config::Config{privlibexp} )
+        {
 
             print "\n";
             print "Patched perl, with site_perl before core in \@INC, detected.\n";
@@ -520,16 +531,17 @@ sub resolve_dep {
     print "\nInstall module $module\n";
 
     my $ext = $ENV{'RT_FIX_DEPS_CMD'} || $ENV{'PERL_PREFER_CPAN_CLIENT'};
-    unless( $ext ) {
+    unless ($ext) {
         my $configured = 1;
         {
             local @INC = @INC;
             if ( $ENV{'HOME'} ) {
                 unshift @INC, "$ENV{'HOME'}/.cpan";
             }
-            $configured = eval { require CPAN::MyConfig } || eval { require CPAN::Config };
+            $configured = eval { require CPAN::MyConfig }
+                || eval { require CPAN::Config };
         }
-        unless ( $configured ) {
+        unless ($configured) {
             print <<END;
 You haven't configured the CPAN shell yet.
 Please run `@PERL@ -MCPAN -e shell` to configure it.
@@ -576,8 +588,8 @@ END
         exit(1);
     }
 
-    if( $ext =~ /\%s/) {
-        $ext =~ s/\%s/$module/g; # sprintf( $ext, $module );
+    if ( $ext =~ /\%s/ ) {
+        $ext =~ s/\%s/$module/g;    # sprintf( $ext, $module );
     } else {
         $ext .= " $module";
     }
@@ -586,24 +598,29 @@ END
 }
 
 sub check_perl_version {
-  section("perl");
-  eval {require 5.010_001};
-  if ($@) {
-    print_found("5.10.1", 0, sprintf("RT requires Perl v5.10.1 or newer. Your current Perl is v%vd", $^V));
-    exit(1);
-  } else {
-    print_found( sprintf(">=5.10.1(%vd)", $^V), 1 );
-  }
+    section("perl");
+    eval { require 5.010_001 };
+    if ($@) {
+        print_found(
+            "5.10.1", 0,
+            sprintf(
+                "RT requires Perl v5.10.1 or newer. Your current Perl is v%vd",
+                $^V )
+        );
+        exit(1);
+    } else {
+        print_found( sprintf( ">=5.10.1(%vd)", $^V ), 1 );
+    }
 }
 
 sub check_users {
-  section("users");
-  print_found("rt group (@RTGROUP@)",      defined getgrnam("@RTGROUP@"));
-  print_found("bin owner (@BIN_OWNER@)",   defined getpwnam("@BIN_OWNER@"));
-  print_found("libs owner (@LIBS_OWNER@)", defined getpwnam("@LIBS_OWNER@"));
-  print_found("libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@"));
-  print_found("web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@"));
-  print_found("web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@"));
+    section("users");
+    print_found( "rt group (@RTGROUP@)",      defined getgrnam("@RTGROUP@") );
+    print_found( "bin owner (@BIN_OWNER@)",   defined getpwnam("@BIN_OWNER@") );
+    print_found( "libs owner (@LIBS_OWNER@)", defined getpwnam("@LIBS_OWNER@") );
+    print_found( "libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@") );
+    print_found( "web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@") );
+    print_found( "web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@") );
 }
 
 1;
