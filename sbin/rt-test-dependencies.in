@@ -73,7 +73,6 @@ GetOptions(
     'with-GPG',
     'with-GRAPHVIZ',
     'with-GD',
-    'with-HTML-DOC',
     'with-EXTERNALAUTH',
 
     'with-S3', 'with-DROPBOX',
@@ -102,7 +101,6 @@ my %default = (
     'with-SMIME'      => @RT_SMIME_DEPS@,
     'with-GRAPHVIZ'   => @RT_GRAPHVIZ@,
     'with-GD'         => @RT_GD@,
-    'with-HTML-DOC'   => @RT_DEVELOPER@,
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'         => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'    => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
@@ -299,10 +297,12 @@ $deps{'DEVELOPER'} = [ text_to_hash( << '.') ];
 Email::Abstract
 File::Find
 File::Which
+HTML::Entities
 Locale::PO
 Log::Dispatch::Perl
 Mojo::DOM
 Plack::Middleware::Test::StashWarnings 0.08
+Pod::Simple 3.24
 Set::Tiny
 String::ShellQuote 0 # needed for gnupg-incoming.t
 Test::Builder 0.90 # needed for is_passing
@@ -366,11 +366,6 @@ $deps{'GD'} = [ text_to_hash( << '.') ];
 GD
 GD::Graph 1.47
 GD::Text
-.
-
-$deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
-HTML::Entities
-Pod::Simple 3.24
 .
 
 $deps{'EXTERNALAUTH'} = [ text_to_hash( <<'.') ];
