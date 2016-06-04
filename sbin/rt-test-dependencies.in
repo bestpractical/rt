@@ -77,7 +77,6 @@ GetOptions(
 
     'with-S3', 'with-DROPBOX',
 
-    'list-deps',
     'siteinstall!',
     'help|h',
 
@@ -361,7 +360,7 @@ if ( $args{'install'} && keys %Missing_By_Type ) {
 
 sub section {
     my $s = shift;
-    print "$s:\n" unless $args{'list-deps'};
+    print "$s:\n";
 }
 
 sub print_found {
@@ -369,45 +368,41 @@ sub print_found {
     my $test  = shift;
     my $extra = shift;
 
-    unless ( $args{'list-deps'} ) {
-        print "\t$msg ...";
-        print $test ? "found" : "MISSING";
-        print "\n";
+    print "\t$msg ...";
+    print $test ? "found" : "MISSING";
+    print "\n";
 
-        print "\t\t$extra\n" if defined $extra;
-    }
+    print "\t\t$extra\n" if defined $extra;
 }
 
 sub conclude {
     my %missing_by_type = @_;
 
-    unless ( $args{'list-deps'} ) {
-        unless ( keys %missing_by_type ) {
-            print "\nAll dependencies have been found.\n";
-            return;
-        }
-
-        print "\nSOME DEPENDENCIES WERE MISSING.\n";
-
-        for my $type ( keys %missing_by_type ) {
-            my $missing = $missing_by_type{$type};
-
-            print "$type missing dependencies:\n";
-            for my $name ( keys %$missing ) {
-                my $module  = $missing->{$name};
-                my $version = $module->{version};
-                my $error   = $module->{error};
-                print_found(
-                    $name . ( $version && !$error ? " >= $version" : "" ),
-                    0, $module->{error} );
-            }
-        }
-
-        print "\nPerl library path for @PERL@:\n";
-        print "    $_\n" for @INC;
-
-        exit 1;
+    unless ( keys %missing_by_type ) {
+        print "\nAll dependencies have been found.\n";
+        return;
     }
+
+    print "\nSOME DEPENDENCIES WERE MISSING.\n";
+
+    for my $type ( keys %missing_by_type ) {
+        my $missing = $missing_by_type{$type};
+
+        print "$type missing dependencies:\n";
+        for my $name ( keys %$missing ) {
+            my $module  = $missing->{$name};
+            my $version = $module->{version};
+            my $error   = $module->{error};
+            print_found(
+                $name . ( $version && !$error ? " >= $version" : "" ),
+                0, $module->{error} );
+        }
+    }
+
+    print "\nPerl library path for @PERL@:\n";
+    print "    $_\n" for @INC;
+
+    exit 1;
 }
 
 sub text_to_hash {
@@ -451,39 +446,35 @@ sub test_dep {
     my $version = shift;
     my $avoid   = shift;
 
-    if ( $args{'list-deps'} ) {
-        print $module, ': ', $version || 0, "\n";
-    } else {
-        no warnings 'deprecated';
-        eval "{ local \$ENV{__WARN__}; use $module $version () }";
-        if ( my $error = $@ ) {
-            return 0 unless wantarray;
+    no warnings 'deprecated';
+    eval "{ local \$ENV{__WARN__}; use $module $version () }";
+    if ( my $error = $@ ) {
+        return 0 unless wantarray;
 
-            $error =~ s/\n(.*)$//s;
-            $error =~ s/at \(eval \d+\) line \d+\.$//;
-            undef $error if $error =~ /this is only/;
+        $error =~ s/\n(.*)$//s;
+        $error =~ s/at \(eval \d+\) line \d+\.$//;
+        undef $error if $error =~ /this is only/;
 
-            my $path = $module;
-            $path =~ s{::}{/}g;
-            undef $error
-                if defined $error
-                and $error =~ /^Can't locate $path\.pm in \@INC/;
+        my $path = $module;
+        $path =~ s{::}{/}g;
+        undef $error
+            if defined $error
+            and $error =~ /^Can't locate $path\.pm in \@INC/;
 
-            return ( 0, $error );
-        }
-
-        if ($avoid) {
-            my $version = $module->VERSION;
-            if ( grep {$version eq $_} @$avoid ) {
-                return 0 unless wantarray;
-                return ( 0,
-                    "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually."
-                );
-            }
-        }
-
-        return 1;
+        return ( 0, $error );
     }
+
+    if ($avoid) {
+        my $version = $module->VERSION;
+        if ( grep {$version eq $_} @$avoid ) {
+            return 0 unless wantarray;
+            return ( 0,
+                "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually."
+            );
+        }
+    }
+
+    return 1;
 }
 
 sub resolve_dep {
