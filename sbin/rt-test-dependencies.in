@@ -71,11 +71,8 @@ GetOptions(
     'with-DEVELOPER',
 
     'with-GPG',
-    'with-ICAL',
     'with-GRAPHVIZ',
     'with-GD',
-    'with-DASHBOARDS',
-    'with-USERLOGO',
     'with-HTML-DOC',
     'with-EXTERNALAUTH',
 
@@ -84,6 +81,9 @@ GetOptions(
     'list-deps',
     'siteinstall!',
     'help|h',
+
+    # No-ops, for back-compat
+    'with-ICAL', 'with-DASHBOARDS', 'with-USERLOGO',
 );
 
 if ( $args{help} ) {
@@ -100,11 +100,8 @@ my %default = (
     'with-DEVELOPER'  => @RT_DEVELOPER@,
     'with-GPG'        => @RT_GPG_DEPS@,
     'with-SMIME'      => @RT_SMIME_DEPS@,
-    'with-ICAL'       => 1,
     'with-GRAPHVIZ'   => @RT_GRAPHVIZ@,
     'with-GD'         => @RT_GD@,
-    'with-DASHBOARDS' => 1,
-    'with-USERLOGO'   => 1,
     'with-HTML-DOC'   => @RT_DEVELOPER@,
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'         => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
@@ -198,10 +195,12 @@ CGI::Cookie 1.20
 CGI::Emulate::PSGI
 CGI::PSGI 0.12
 Class::Accessor::Fast
+Convert::Color
 Crypt::Eksblowfish
 CSS::Minifier::XS
 CSS::Squish 0.06
 Data::GUID
+Data::ICal
 Data::Page::Pageset
 Date::Extract 0.02
 Date::Manip
@@ -244,6 +243,7 @@ LWP::Simple
 Mail::Header 2.12
 Mail::Mailer 1.57
 MIME::Entity 5.504
+MIME::Types
 Module::Refresh 0.03
 Module::Versions::Report 1.05
 Net::CIDR
@@ -269,6 +269,8 @@ Time::HiRes
 Time::ParseDate
 Tree::Simple 1.04
 UNIVERSAL::require
+URI 1.59
+URI::QueryParam
 XML::RSS 1.05
 .
 set_dep( CORE => 'Symbol::Global::Name' => 0.05 ) if $] >= 5.019003;
@@ -355,16 +357,6 @@ File::Which
 String::ShellQuote
 .
 
-$deps{'ICAL'} = [ text_to_hash( << '.') ];
-Data::ICal
-.
-
-$deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
-MIME::Types
-URI 1.59
-URI::QueryParam
-.
-
 $deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
 GraphViz
 IPC::Run 0.90
@@ -374,10 +366,6 @@ $deps{'GD'} = [ text_to_hash( << '.') ];
 GD
 GD::Graph 1.47
 GD::Text
-.
-
-$deps{'USERLOGO'} = [ text_to_hash( << '.') ];
-Convert::Color
 .
 
 $deps{'HTML-DOC'} = [ text_to_hash( <<'.') ];
