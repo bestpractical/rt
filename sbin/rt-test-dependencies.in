@@ -63,7 +63,7 @@ my @orig_argv = @ARGV;
 my $script_path = abs_path($0);
 
 GetOptions(
-    \%args,                               'v|verbose',
+    \%args,
     'install!',
     'with-MYSQL', 'with-PG', 'with-SQLITE', 'with-ORACLE',
     'with-FASTCGI', 'with-MODPERL1', 'with-MODPERL2', 'with-STANDALONE',
@@ -82,7 +82,7 @@ GetOptions(
     'help|h',
 
     # No-ops, for back-compat
-    'with-ICAL', 'with-DASHBOARDS', 'with-USERLOGO',
+    'v|verbose', 'with-ICAL', 'with-DASHBOARDS', 'with-USERLOGO',
 );
 
 if ( $args{help} ) {
@@ -359,34 +359,22 @@ if ( $args{'install'} && keys %Missing_By_Type ) {
     conclude(%Missing_By_Type);
 }
 
-{
-    my $section;
-    my %always_show_sections = (
-        perl  => 1,
-        users => 1,
-    );
+sub section {
+    my $s = shift;
+    print "$s:\n" unless $args{'list-deps'};
+}
 
-    sub section {
-        my $s = shift;
-        $section = $s;
-        print "$s:\n" unless $args{'list-deps'};
-    }
+sub print_found {
+    my $msg   = shift;
+    my $test  = shift;
+    my $extra = shift;
 
-    sub print_found {
-        my $msg   = shift;
-        my $test  = shift;
-        my $extra = shift;
+    unless ( $args{'list-deps'} ) {
+        print "\t$msg ...";
+        print $test ? "found" : "MISSING";
+        print "\n";
 
-        unless ( $args{'list-deps'} ) {
-            if ( $args{'v'} or not $test or $always_show_sections{$section} )
-            {
-                print "\t$msg ...";
-                print $test ? "found" : "MISSING";
-                print "\n";
-            }
-
-            print "\t\t$extra\n" if defined $extra;
-        }
+        print "\t\t$extra\n" if defined $extra;
     }
 }
 
@@ -658,10 +646,6 @@ module name before calling the program.
 =item B<--install>
 
 Attempt to install missing modules
-
-=item B<--verbose> or B<-v>
-
-List the status of all dependencies, rather than just the missing ones.
 
 =item B<--siteinstall> / B<--no-siteinstall>
 

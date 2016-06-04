@@ -266,12 +266,12 @@ upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
 
 my_with_web_handlers= $(shell $(PERL) -e 'print join " ", map "--with-$$_", grep defined && length, split /,/, "$(WEB_HANDLER)"')
 testdeps:
-	$(PERL) ./sbin/rt-test-dependencies --verbose --with-$(DB_TYPE) $(my_with_web_handlers)
+	$(PERL) ./sbin/rt-test-dependencies --with-$(DB_TYPE) $(my_with_web_handlers)
 
 depends: fixdeps
 
 fixdeps:
-	$(PERL) ./sbin/rt-test-dependencies --verbose --install --with-$(DB_TYPE) $(my_with_web_handlers)
+	$(PERL) ./sbin/rt-test-dependencies --install --with-$(DB_TYPE) $(my_with_web_handlers)
 
 #}}}
 
