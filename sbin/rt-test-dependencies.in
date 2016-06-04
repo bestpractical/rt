@@ -246,7 +246,6 @@ Mail::Mailer 1.57
 MIME::Entity 5.504
 Module::Refresh 0.03
 Module::Versions::Report 1.05
-Encode 2.64
 Net::CIDR
 Net::IP
 Plack 1.0002
