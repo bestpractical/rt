@@ -621,65 +621,98 @@ rt-test-dependencies - test rt's dependencies
 
 =head1 DESCRIPTION
 
-by default, C<rt-test-dependencies> determines whether you have installed all
-the perl modules RT needs to run.
+By default, C<rt-test-dependencies> determines whether you have
+installed all the perl modules RT needs to run.
 
-the "RT_FIX_DEPS_CMD" environment variable, if set, will be used instead of
-the standard CPAN shell by --install to install any required modules.  it will
-be called with the module name, or, if "RT_FIX_DEPS_CMD" contains a "%s", will
-replace the "%s" with the module name before calling the program.
+With B<--install>, it attempts to install any missing dependencies.
+If the C<RT_FIX_DEPS_CMD> environment variable is set, it will be used
+instead of the standard CPAN shell to install any required modules.
+The command will be called with the module to install -- or, if
+C<RT_FIX_DEPS_CMD> contains a C<%s>, will replace the C<%s> with the
+module name before calling the program.
 
 =head1 OPTIONS
 
-=over
-
-=item install
-
-    install missing modules
-
-=item verbose
-
-list the status of all dependencies, rather than just the missing ones.
-
--v is equal to --verbose
-
-=item specify dependencies
+=head2 General options
 
 =over
 
-=item --with-mysql
+=item B<--install>
 
-database interface for mysql
+Attempt to install missing modules
 
-=item --with-pg
+=item B<--verbose> or B<-v>
 
-database interface for postgresql
+List the status of all dependencies, rather than just the missing ones.
 
-=item --with-oracle
+=item B<--siteinstall> / B<--no-siteinstall>
 
-database interface for oracle
-
-=item --with-sqlite
-
-database interface and driver for sqlite (unsupported)
-
-=item --with-fastcgi
-
-libraries needed to support the fastcgi handler
-
-=item --with-modperl1
-
-libraries needed to support the modperl 1 handler
-
-=item --with-modperl2
-
-libraries needed to support the modperl 2 handler
-
-=item --with-developer
-
-tools needed for RT development
+By default, RT detects if you are running a version of Perl prior to
+5.11, which has been patched by your distribution to alter the search
+order for modules.  In such cases, C<--install> attempts to install
+modules into the right place such that they cannot be accidentally
+downgraded by the distribution.  Use B<--siteinstall> to force this
+behavior, or B<--no-siteinstall> to prohibit it.  These options have
+no effect when used with Perl 5.11 or above.
 
 =back
+
+=head2 Configuration options
+
+=over
+
+=item B<--with-mysql>
+
+=item B<--with-pg>
+
+=item B<--with-oracle>
+
+=item B<--with-sqlite>
+
+These configure which backend database to add dependencies for.
+
+
+=item C<--with-standalone>
+
+=item B<--with-fastcgi>
+
+=item B<--with-modperl1>
+
+=item B<--with-modperl2>
+
+These configure which interface between the webserver and RT to add
+dependencies for.
+
+
+=item B<--with-developer>
+
+Add dependencies needed to develop RT and run its tests.
+
+
+=item B<--with-gpg>
+
+Add dependencies for GPG encryption and decryption of email.
+
+=item B<--with-graphviz>
+
+Add dependencies for visualizing dependencies between tickets.
+
+=item B<--with-gd>
+
+Add dependencies for creating charts and graphs from search results.
+
+=item B<--with-externalauth>
+
+Add dependencies to integrating with LDAP and other external
+authentication sources.
+
+=item B<--with-s3>
+
+Add dependencies for storing large attachments in Amazon S3.
+
+=item B<--with-dropbox>
+
+Add dependencies for storing large attachments in Dropbox.
 
 =back
 
