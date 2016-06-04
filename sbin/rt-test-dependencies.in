@@ -477,6 +477,62 @@ sub test_dep {
     return 1;
 }
 
+sub check_cpan {
+    unless ( eval {require CPAN; 1} ) {
+        print <<END;
+Failed to load CPAN module.
+
+-------- Error ---------
+$@
+------------------------
+
+When we tried to start installing RT's perl dependencies, we were
+unable to load the CPAN client. This module is usually distributed
+with Perl. This usually indicates that your vendor has shipped an
+unconfigured or incorrectly configured CPAN client.  The error above
+may (or may not) give you a hint about what went wrong.
+
+You have several choices about how to install dependencies in
+this situation:
+
+1) Install the package from your vendor that provides the 'CPAN' perl
+   module, then re-run this command.  The package is likely named
+   `perl-CPAN` or similar.
+
+2) Use a different tool to install CPAN dependencies; set the
+   RT_FIX_DEPS_CMD environment to that tool and re-run this command.
+   For instance, using the standalone `cpanm` tool:
+
+       curl -L -o cpanm https://cpanmin.us/
+       chmod +x cpanm
+       RT_FIX_DEPS_CMD=./cpanm make fixdeps
+
+3) Try to update the CPAN client. Download it from:
+   http://search.cpan.org/dist/CPAN , install it, and try again.
+
+4) Install each dependency manually by downloading them one by one from
+   http://search.cpan.org
+
+END
+        exit(1);
+    }
+
+    local @INC = @INC;
+    if ( $ENV{'HOME'} ) {
+        unshift @INC, "$ENV{'HOME'}/.cpan";
+    }
+    my $configured = eval { require CPAN::MyConfig }
+        || eval { require CPAN::Config };
+    unless ($configured) {
+        print <<END;
+You haven't configured the CPAN shell yet.
+Please run `@PERL@ -MCPAN -e shell` to configure it.
+END
+        exit(1);
+    }
+}
+
+
 sub resolve_dep {
     my $module  = shift;
     my $version = shift;
@@ -511,22 +567,7 @@ sub resolve_dep {
 
     my $ext = $ENV{'RT_FIX_DEPS_CMD'} || $ENV{'PERL_PREFER_CPAN_CLIENT'};
     unless ($ext) {
-        my $configured = 1;
-        {
-            local @INC = @INC;
-            if ( $ENV{'HOME'} ) {
-                unshift @INC, "$ENV{'HOME'}/.cpan";
-            }
-            $configured = eval { require CPAN::MyConfig }
-                || eval { require CPAN::Config };
-        }
-        unless ($configured) {
-            print <<END;
-You haven't configured the CPAN shell yet.
-Please run `@PERL@ -MCPAN -e shell` to configure it.
-END
-            exit(1);
-        }
+        check_cpan();
 
         my $installdirs = $CPAN::Config->{makepl_arg} ||= "";
         $installdirs =~ s/(\bINSTALLDIRS=\S+|$)/ INSTALLDIRS=site/
@@ -535,36 +576,6 @@ END
 
         my $rv = eval { require CPAN; CPAN::Shell->install($module) };
         return $rv unless $@;
-
-        print <<END;
-Failed to load module CPAN.
-
--------- Error ---------
-$@
-------------------------
-
-When we tried to start installing RT's perl dependencies, 
-we were unable to load the CPAN client. This module is usually distributed
-with Perl. This usually indicates that your vendor has shipped an unconfigured
-or incorrectly configured CPAN client.
-The error above may (or may not) give you a hint about what went wrong
-
-You have several choices about how to install dependencies in 
-this situatation:
-
-1) use a different tool to install dependencies by running setting the following
-   shell environment variable and rerunning this tool:
-    RT_FIX_DEPS_CMD='@PERL@ -MCPAN -e"install %s"'
-2) Attempt to configure CPAN by running:
-   `@PERL@ -MCPAN -e shell` program from shell.
-   If this fails, you may have to manually upgrade CPAN (see below)
-3) Try to update the CPAN client. Download it from:
-   http://search.cpan.org/dist/CPAN and try again
-4) Install each dependency manually by downloading them one by one from
-   http://search.cpan.org
-
-END
-        exit(1);
     }
 
     if ( $ext =~ /\%s/ ) {
