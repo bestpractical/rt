@@ -169,6 +169,7 @@ ETC_FILES		=	acl.Pg \
 				schema.Oracle \
 				schema.mysql \
 				schema.SQLite \
+				cpanfile \
 				initialdata
 
 
