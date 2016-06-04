@@ -109,83 +109,6 @@ $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
 $args{'with-EXTERNALAUTH-TESTS'} = $args{'with-EXTERNALAUTH'} && $args{'with-DEVELOPER'};
 
-{
-  my $section;
-  my %always_show_sections = (
-    perl => 1,
-    users => 1,
-  );
-
-  sub section {
-    my $s = shift;
-    $section = $s;
-    print "$s:\n" unless $args{'list-deps'};
-  }
-
-  sub print_found {
-    my $msg = shift;
-    my $test = shift;
-    my $extra = shift;
-
-    unless ( $args{'list-deps'} ) {
-        if ( $args{'v'} or not $test or $always_show_sections{$section} ) {
-            print "\t$msg ...";
-            print $test ? "found" : "MISSING";
-            print "\n";
-        }
-
-        print "\t\t$extra\n" if defined $extra;
-    }
-  }
-}
-
-sub conclude {
-    my %missing_by_type = @_;
-
-    unless ( $args{'list-deps'} ) {
-        unless ( keys %missing_by_type ) {
-            print "\nAll dependencies have been found.\n";
-            return;
-        }
-
-        print "\nSOME DEPENDENCIES WERE MISSING.\n";
-
-        for my $type ( keys %missing_by_type ) {
-            my $missing = $missing_by_type{$type};
-
-            print "$type missing dependencies:\n";
-            for my $name ( keys %$missing ) {
-                my $module  = $missing->{$name};
-                my $version = $module->{version};
-                my $error = $module->{error};
-                print_found( $name . ( $version && !$error ? " >= $version" : "" ),
-                    0, $module->{error} );
-            }
-        }
-
-        print "\nPerl library path for @PERL@:\n";
-        print "    $_\n" for @INC;
-
-        exit 1;
-    }
-}
-
-sub text_to_hash {
-    my %hash;
-    for my $line ( split /\n/, $_[0] ) {
-        my($key, $value) = $line =~ /(\S+)\s*(\S*)/;
-        $value ||= '';
-        $hash{$key} = $value;
-    }
-
-    return %hash;
-}
-sub set_dep {
-    my ($name, $module, $version) = @_;
-    my %list = @{$deps{$name}};
-    $list{$module} = ($version || '');
-    $deps{$name} = [ %list ];
-}
 
 $deps{'CORE'} = [ text_to_hash( << '.') ];
 Apache::Session 1.53
@@ -435,6 +358,84 @@ if ( $args{'install'} && keys %Missing_By_Type ) {
 }
 else {
     conclude(%Missing_By_Type);
+}
+
+{
+  my $section;
+  my %always_show_sections = (
+    perl => 1,
+    users => 1,
+  );
+
+  sub section {
+    my $s = shift;
+    $section = $s;
+    print "$s:\n" unless $args{'list-deps'};
+  }
+
+  sub print_found {
+    my $msg = shift;
+    my $test = shift;
+    my $extra = shift;
+
+    unless ( $args{'list-deps'} ) {
+        if ( $args{'v'} or not $test or $always_show_sections{$section} ) {
+            print "\t$msg ...";
+            print $test ? "found" : "MISSING";
+            print "\n";
+        }
+
+        print "\t\t$extra\n" if defined $extra;
+    }
+  }
+}
+
+sub conclude {
+    my %missing_by_type = @_;
+
+    unless ( $args{'list-deps'} ) {
+        unless ( keys %missing_by_type ) {
+            print "\nAll dependencies have been found.\n";
+            return;
+        }
+
+        print "\nSOME DEPENDENCIES WERE MISSING.\n";
+
+        for my $type ( keys %missing_by_type ) {
+            my $missing = $missing_by_type{$type};
+
+            print "$type missing dependencies:\n";
+            for my $name ( keys %$missing ) {
+                my $module  = $missing->{$name};
+                my $version = $module->{version};
+                my $error = $module->{error};
+                print_found( $name . ( $version && !$error ? " >= $version" : "" ),
+                    0, $module->{error} );
+            }
+        }
+
+        print "\nPerl library path for @PERL@:\n";
+        print "    $_\n" for @INC;
+
+        exit 1;
+    }
+}
+
+sub text_to_hash {
+    my %hash;
+    for my $line ( split /\n/, $_[0] ) {
+        my($key, $value) = $line =~ /(\S+)\s*(\S*)/;
+        $value ||= '';
+        $hash{$key} = $value;
+    }
+
+    return %hash;
+}
+sub set_dep {
+    my ($name, $module, $version) = @_;
+    my %list = @{$deps{$name}};
+    $list{$module} = ($version || '');
+    $deps{$name} = [ %list ];
 }
 
 sub test_deps {
