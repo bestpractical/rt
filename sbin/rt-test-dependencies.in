@@ -393,11 +393,6 @@ my %AVOID = (
     'DateTime::Locale' => [qw(1.00 1.01)]
 );
 
-if ($args{'download'}) {
-    download_mods();
-}
-
-
 check_perl_version();
 
 check_users();
