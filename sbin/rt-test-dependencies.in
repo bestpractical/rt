@@ -107,6 +107,8 @@ my %default = (
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
+$args{'with-EXTERNALAUTH-TESTS'} = $args{'with-EXTERNALAUTH'} && $args{'with-DEVELOPER'};
+
 {
   my $section;
   my %always_show_sections = (
@@ -371,6 +373,9 @@ GD::Text
 $deps{'EXTERNALAUTH'} = [ text_to_hash( <<'.') ];
 Net::SSLeay
 Net::LDAP
+.
+
+$deps{'EXTERNALAUTH-TESTS'} = [ text_to_hash( <<'.') ];
 Net::LDAP::Server::Test
 .
 
