@@ -1,0 +1,206 @@
+# Core dependencies
+requires 'Apache::Session', '>= 1.53';
+requires 'Business::Hours';
+requires 'CGI', ($] >= 5.019003 ? '>= 4.00' : '>= 3.38');
+requires 'CGI::Cookie', '>= 1.20';
+requires 'CGI::Emulate::PSGI';
+requires 'CGI::PSGI', '>= 0.12';
+requires 'Class::Accessor::Fast';
+requires 'Convert::Color';
+requires 'Crypt::Eksblowfish';
+requires 'CSS::Minifier::XS';
+requires 'CSS::Squish', '>= 0.06';
+requires 'Data::GUID';
+requires 'Data::ICal';
+requires 'Data::Page::Pageset';
+requires 'Date::Extract', '>= 0.02';
+requires 'Date::Manip';
+requires 'DateTime', '>= 0.44';
+requires 'DateTime::Format::Natural', '>= 0.67';
+requires 'DateTime::Locale', '>= 0.40, != 1.00, != 1.01';
+requires 'DBI', '>= 1.37';
+requires 'DBIx::SearchBuilder', '>= 1.65';
+requires 'Devel::GlobalDestruction';
+requires 'Devel::StackTrace', '>= 1.19, != 1.28, != 1.29';
+requires 'Digest::base';
+requires 'Digest::MD5', '>= 2.27';
+requires 'Digest::SHA';
+requires 'Email::Address', '>= 1.897';
+requires 'Email::Address::List', '>= 0.02';
+requires 'Encode', '>= 2.64';
+requires 'Errno';
+requires 'File::Glob';
+requires 'File::ShareDir';
+requires 'File::Spec', '>= 0.8';
+requires 'File::Temp', '>= 0.19';
+requires 'HTML::Entities';
+requires 'HTML::FormatText::WithLinks', '>= 0.14';
+requires 'HTML::FormatText::WithLinks::AndTables', '>= 0.06';
+requires 'HTML::Mason', '>= 1.43';
+requires 'HTML::Mason::PSGIHandler', '>= 0.52';
+requires 'HTML::Quoted';
+requires 'HTML::RewriteAttributes', '>= 0.05';
+requires 'HTML::Scrubber', '>= 0.08';
+requires 'HTTP::Message', '>= 6.0';
+requires 'IPC::Run3';
+requires 'JavaScript::Minifier::XS';
+requires 'JSON';
+requires 'List::MoreUtils';
+requires 'Locale::Maketext', '>= 1.06';
+requires 'Locale::Maketext::Fuzzy', '>= 0.11';
+requires 'Locale::Maketext::Lexicon', '>= 0.32';
+requires 'Log::Dispatch', '>= 2.30';
+requires 'LWP::Simple';
+requires 'Mail::Header', '>= 2.12';
+requires 'Mail::Mailer', '>= 1.57';
+requires 'MIME::Entity', '>= 5.504';
+requires 'MIME::Types';
+requires 'Module::Refresh', '>= 0.03';
+requires 'Module::Versions::Report', '>= 1.05';
+requires 'Net::CIDR';
+requires 'Net::IP';
+requires 'Plack', '>= 1.0002';
+requires 'Plack::Handler::Starlet';
+requires 'Pod::Select';
+requires 'Regexp::Common';
+requires 'Regexp::Common::net::CIDR';
+requires 'Regexp::IPv6';
+requires 'Role::Basic', '>= 0.12';
+requires 'Scalar::Util';
+requires 'Scope::Upper';
+requires 'Storable', '>= 2.08';
+requires 'Symbol::Global::Name', ($] >= 5.019003 ? '>= 0.05' : '>= 0.04');
+requires 'Sys::Syslog', '>= 0.16';
+requires 'Text::Password::Pronounceable';
+requires 'Text::Quoted', '>= 2.07';
+requires 'Text::Template', '>= 1.44';
+requires 'Text::WikiFormat', '>= 0.76';
+requires 'Text::Wrapper';
+requires 'Time::HiRes';
+requires 'Time::ParseDate';
+requires 'Tree::Simple', '>= 1.04';
+requires 'UNIVERSAL::require';
+requires 'URI', '>= 1.59';
+requires 'URI::QueryParam';
+requires 'XML::RSS', '>= 1.05';
+
+# Mailgate
+requires 'Crypt::SSLeay';
+requires 'Getopt::Long';
+requires 'LWP::Protocol::https';
+requires 'LWP::UserAgent', '>= 6.0';
+requires 'Mozilla::CA';
+requires 'Net::SSL';
+requires 'Pod::Usage';
+
+# CLI
+requires 'Getopt::Long', '>= 2.24';
+requires 'HTTP::Request::Common';
+requires 'LWP';
+requires 'Term::ReadKey';
+requires 'Term::ReadLine';
+requires 'Text::ParseWords';
+
+
+on 'develop' => sub {
+    requires 'Email::Abstract';
+    requires 'File::Find';
+    requires 'File::Which';
+    requires 'HTML::Entities';
+    requires 'Locale::PO';
+    requires 'Log::Dispatch::Perl';
+    requires 'Mojo::DOM';
+    requires 'Plack::Middleware::Test::StashWarnings', '>= 0.08';
+    requires 'Pod::Simple', '>= 3.24';
+    requires 'Set::Tiny';
+    requires 'String::ShellQuote';
+    requires 'Test::Builder', '>= 0.90';
+    requires 'Test::Deep';
+    requires 'Test::Email';
+    requires 'Test::Expect', '>= 0.31';
+    requires 'Test::LongString';
+    requires 'Test::MockTime';
+    requires 'Test::NoWarnings';
+    requires 'Test::Pod';
+    requires 'Test::Warn';
+    requires 'Test::WWW::Mechanize', '>= 1.30';
+    requires 'Test::WWW::Mechanize::PSGI';
+    requires 'WWW::Mechanize', '>= 1.52';
+    requires 'XML::Simple';
+};
+
+
+# Deployment options
+feature 'standalone' => sub {};
+
+feature 'fastcgi' => sub {
+    requires 'FCGI', '>= 0.74';
+};
+
+feature 'modperl1' => sub {
+    requires 'Apache::Request';
+};
+
+feature 'modperl2' => sub {};
+
+
+# Database options
+feature 'mysql' => sub {
+    requires 'DBD::mysql', '>= 2.1018';
+};
+
+feature 'oracle' => sub {
+    requires 'DBD::Oracle != 1.23';
+};
+
+feature 'pg' => sub {
+    requires 'DBIx::SearchBuilder', '>= 1.66';
+    requires 'DBD::Pg', '>= 1.43';
+};
+
+feature 'sqlite' => sub {
+    requires 'DBD::SQLite', '>= 1.00';
+};
+
+
+# Optional features
+feature 'gpg' => sub {
+    requires 'File::Which';
+    requires 'GnuPG::Interface';
+    requires 'PerlIO::eol';
+};
+
+feature 'smime' => sub {
+    requires 'Crypt::X509';
+    requires 'File::Which';
+    requires 'String::ShellQuote';
+};
+
+feature 'graphviz' => sub {
+    requires 'GraphViz';
+    requires 'IPC::Run', '>= 0.90';
+};
+
+feature 'gd' => sub {
+    requires 'GD';
+    requires 'GD::Graph', '>= 1.47';
+    requires 'GD::Text';
+};
+
+feature 'externalauth' => sub {
+    requires 'Net::SSLeay';
+    requires 'Net::LDAP';
+    on 'develop' => sub {
+        requires 'Net::LDAP::Server::Test';
+    };
+};
+
+
+# External attachment storage
+feature 's3' => sub {
+    requires 'Amazon::S3';
+};
+
+feature 'dropbox' => sub {
+    requires 'File::Dropbox';
+};

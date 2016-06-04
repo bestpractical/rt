@@ -46,22 +46,19 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-#
-# This is just a basic script that checks to make sure that all
-# the modules needed by RT before you can install it.
-#
 
 use strict;
 use warnings;
-no warnings qw(numeric redefine);
+
 use Getopt::Long;
+
 use Cwd qw(abs_path);
-my %args;
-my %deps;
+use File::Spec;
 my @orig_argv = @ARGV;
 # Save our path because installers or tests can change cwd
 my $script_path = abs_path($0);
 
+my %args;
 GetOptions(
     \%args,
     'install!',
@@ -109,231 +106,27 @@ $args{$_} = $default{$_} foreach grep {!exists $args{$_}} keys %default;
 $args{'with-EXTERNALAUTH-TESTS'}
     = $args{'with-EXTERNALAUTH'} && $args{'with-DEVELOPER'};
 
-$deps{'CORE'} = [ text_to_hash( << '.') ];
-Apache::Session 1.53
-Business::Hours
-CGI 3.38
-CGI::Cookie 1.20
-CGI::Emulate::PSGI
-CGI::PSGI 0.12
-Class::Accessor::Fast
-Convert::Color
-Crypt::Eksblowfish
-CSS::Minifier::XS
-CSS::Squish 0.06
-Data::GUID
-Data::ICal
-Data::Page::Pageset
-Date::Extract 0.02
-Date::Manip
-DateTime 0.44
-DateTime::Format::Natural 0.67
-DateTime::Locale 0.40
-DBI 1.37
-DBIx::SearchBuilder 1.65
-Devel::GlobalDestruction
-Devel::StackTrace 1.19
-Digest::base
-Digest::MD5 2.27
-Digest::SHA
-Email::Address 1.897
-Email::Address::List 0.02
-Encode 2.64
-Errno
-File::Glob
-File::ShareDir
-File::Spec 0.8
-File::Temp 0.19
-HTML::Entities
-HTML::FormatText::WithLinks 0.14
-HTML::FormatText::WithLinks::AndTables 0.06
-HTML::Mason 1.43
-HTML::Mason::PSGIHandler 0.52
-HTML::Quoted
-HTML::RewriteAttributes 0.05
-HTML::Scrubber 0.08
-HTTP::Message 6.0
-IPC::Run3
-JavaScript::Minifier::XS
-JSON
-List::MoreUtils
-Locale::Maketext 1.06
-Locale::Maketext::Fuzzy 0.11
-Locale::Maketext::Lexicon 0.32
-Log::Dispatch 2.30
-LWP::Simple
-Mail::Header 2.12
-Mail::Mailer 1.57
-MIME::Entity 5.504
-MIME::Types
-Module::Refresh 0.03
-Module::Versions::Report 1.05
-Net::CIDR
-Net::IP
-Plack 1.0002
-Plack::Handler::Starlet
-Pod::Select
-Regexp::Common
-Regexp::Common::net::CIDR
-Regexp::IPv6
-Role::Basic 0.12
-Scalar::Util
-Scope::Upper
-Storable 2.08
-Symbol::Global::Name 0.04
-Sys::Syslog 0.16
-Text::Password::Pronounceable
-Text::Quoted 2.07
-Text::Template 1.44
-Text::WikiFormat 0.76
-Text::Wrapper
-Time::HiRes
-Time::ParseDate
-Tree::Simple 1.04
-UNIVERSAL::require
-URI 1.59
-URI::QueryParam
-XML::RSS 1.05
-.
-set_dep( CORE => 'Symbol::Global::Name' => 0.05 ) if $] >= 5.019003;
-set_dep( CORE => CGI => 4.00 ) if $] > 5.019003;
-
-$deps{'MAILGATE'} = [ text_to_hash( << '.') ];
-Crypt::SSLeay
-Getopt::Long
-LWP::Protocol::https
-LWP::UserAgent 6.0
-Mozilla::CA
-Net::SSL
-Pod::Usage
-.
-
-$deps{'CLI'} = [ text_to_hash( << '.') ];
-Getopt::Long 2.24
-HTTP::Request::Common
-LWP
-Term::ReadKey
-Term::ReadLine
-Text::ParseWords
-.
-
-$deps{'DEVELOPER'} = [ text_to_hash( << '.') ];
-Email::Abstract
-File::Find
-File::Which
-HTML::Entities
-Locale::PO
-Log::Dispatch::Perl
-Mojo::DOM
-Plack::Middleware::Test::StashWarnings 0.08
-Pod::Simple 3.24
-Set::Tiny
-String::ShellQuote 0 # needed for gnupg-incoming.t
-Test::Builder 0.90 # needed for is_passing
-Test::Deep 0 # needed for shredder tests
-Test::Email
-Test::Expect 0.31
-Test::LongString
-Test::MockTime
-Test::NoWarnings
-Test::Pod
-Test::Warn
-Test::WWW::Mechanize 1.30
-Test::WWW::Mechanize::PSGI
-WWW::Mechanize 1.52
-XML::Simple
-.
-
-$deps{'FASTCGI'} = [ text_to_hash( << '.') ];
-FCGI 0.74
-.
-
-$deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-Apache::Request
-.
-
-$deps{'MYSQL'} = [ text_to_hash( << '.') ];
-DBD::mysql 2.1018
-.
-
-$deps{'ORACLE'} = [ text_to_hash( << '.') ];
-DBD::Oracle
-.
-
-$deps{'PG'} = [ text_to_hash( << '.') ];
-DBIx::SearchBuilder 1.66
-DBD::Pg 1.43
-.
-
-$deps{'SQLITE'} = [ text_to_hash( << '.') ];
-DBD::SQLite 1.00
-.
-
-$deps{'GPG'} = [ text_to_hash( << '.') ];
-File::Which
-GnuPG::Interface
-PerlIO::eol
-.
-
-$deps{'SMIME'} = [ text_to_hash( << '.') ];
-Crypt::X509
-File::Which
-String::ShellQuote
-.
-
-$deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
-GraphViz
-IPC::Run 0.90
-.
-
-$deps{'GD'} = [ text_to_hash( << '.') ];
-GD
-GD::Graph 1.47
-GD::Text
-.
-
-$deps{'EXTERNALAUTH'} = [ text_to_hash( <<'.') ];
-Net::SSLeay
-Net::LDAP
-.
-
-$deps{'EXTERNALAUTH-TESTS'} = [ text_to_hash( <<'.') ];
-Net::LDAP::Server::Test
-.
-
-$deps{'S3'} = [ text_to_hash( <<'.') ];
-Amazon::S3
-.
-
-$deps{'DROPBOX'} = [ text_to_hash( <<'.') ];
-File::Dropbox
-.
-
-my %AVOID = (
-    'DBD::Oracle'       => [qw(1.23)],
-    'Devel::StackTrace' => [qw(1.28 1.29)],
-    'DateTime::Locale'  => [qw(1.00 1.01)]
-);
-
+my %deps = read_deps();
 check_perl_version();
 
 check_users();
 
-my %Missing_By_Type = ();
-foreach my $type ( sort grep {$args{$_}} keys %args ) {
-    next unless ( $type =~ /^with-(.*?)$/ ) and $deps{$1};
+test_deps();
 
-    $type = $1;
-    section("$type dependencies");
+if ($args{'install'}) {
+    for my $type ( sort keys %deps ) {
+        for my $module (sort keys %{$deps{$type}}) {
+            # Recheck if the dependency is now satisfied, either
+            # because it was pulled in as part of some other install,
+            # or if it was failing to load because of bad deps.
+            next if test_dep( $module, $deps{$type}{$module} );
 
-    my @missing;
-    my @deps = @{ $deps{$type} };
+            resolve_dep( $module );
 
-    my %missing = test_deps(@deps);
-
-    if ( $args{'install'} ) {
-        for my $module ( keys %missing ) {
-            resolve_dep( $module, $missing{$module}{version} );
+            # Delete the module and reload it; if it was previously
+            # installed and got upgraded, this means the new version
+            # will get loaded if some later module goes looking for it
+            # as a prereq.
             my $m = $module . '.pm';
             $m =~ s!::!/!g;
             if ( delete $INC{$m} ) {
@@ -344,19 +137,18 @@ foreach my $type ( sort grep {$args{$_}} keys %args ) {
                     delete $symtab->{$symbol};
                 }
             }
-            delete $missing{$module}
-                if test_dep( $module, $missing{$module}{version}, $AVOID{$module} );
+
+            # Recheck, to catch install failures and the like
+            delete $deps{$type}{$module} if test_dep( $module, $deps{$type}{$module} );
         }
+        delete $deps{$type} if not keys %{$deps{$type}};
     }
-
-    $Missing_By_Type{$type} = \%missing if keys %missing;
+    exec( $script_path, @orig_argv, '--no-install' ) if %deps;
 }
 
-if ( $args{'install'} && keys %Missing_By_Type ) {
-    exec( $script_path, @orig_argv, '--no-install' );
-} else {
-    conclude(%Missing_By_Type);
-}
+conclude();
+exit 0;
+
 
 sub section {
     my $s = shift;
@@ -376,26 +168,21 @@ sub print_found {
 }
 
 sub conclude {
-    my %missing_by_type = @_;
-
-    unless ( keys %missing_by_type ) {
+    unless ( keys %deps ) {
         print "\nAll dependencies have been found.\n";
         return;
     }
 
     print "\nSOME DEPENDENCIES WERE MISSING.\n";
 
-    for my $type ( keys %missing_by_type ) {
-        my $missing = $missing_by_type{$type};
-
+    foreach my $type ( sort keys %deps ) {
         print "$type missing dependencies:\n";
-        for my $name ( keys %$missing ) {
-            my $module  = $missing->{$name};
-            my $version = $module->{version};
-            my $error   = $module->{error};
-            print_found(
-                $name . ( $version && !$error ? " >= $version" : "" ),
-                0, $module->{error} );
+        for my $module (sort keys %{$deps{$type}}) {
+            my $spec = $deps{$type}{$module};
+            my ($ok, $error) = test_dep( $module, $spec );
+            next if $ok;
+            my $msg = $module . ( $spec  && !$error ? " $spec" : "" );
+            print_found( $msg, $ok, $error );
         }
     }
 
@@ -405,73 +192,87 @@ sub conclude {
     exit 1;
 }
 
-sub text_to_hash {
-    my %hash;
-    for my $line ( split /\n/, $_[0] ) {
-        my ( $key, $value ) = $line =~ /(\S+)\s*(\S*)/;
-        $value ||= '';
-        $hash{$key} = $value;
-    }
+sub read_deps {
+    my %deps;
 
-    return %hash;
-}
+    # 'local' would be cleaner, but you can't localize lexicals. :/
+    my @section = ('CORE');
 
-sub set_dep {
-    my ( $name, $module, $version ) = @_;
-    my %list = @{ $deps{$name} };
-    $list{$module} = ( $version || '' );
-    $deps{$name} = [%list];
+    no warnings 'once';
+    local *requires = sub {
+        $deps{$section[-1]}{$_[0]} = $_[1];
+    };
+    local *on = sub {
+        return unless $_[0] eq 'develop' and $args{'with-DEVELOPER'};
+        push @section, 'DEVELOPER';
+        $_[1]->();
+        pop @section;
+    };
+    local *feature = sub {
+        return unless $args{"with-".uc($_[0])};
+        push @section, uc( $_[0] );
+        $_[-1]->();
+        pop @section;
+    };
+
+    my ($vol, $dir, $path) = File::Spec->splitpath( $script_path );
+    my $ret = do "$dir/../etc/cpanfile";
+    die "Failed to load cpanfile: @{[$@ || $!]}" if not defined $ret and ($@ or $!);
+
+    return %deps;
 }
 
 sub test_deps {
-    my @deps = @_;
+    foreach my $type ( sort keys %deps ) {
+        section("$type dependencies");
 
-    my %missing;
-    while (@deps) {
-        my $module  = shift @deps;
-        my $version = shift @deps;
-        my ( $test, $error ) = test_dep( $module, $version, $AVOID{$module} );
-        my $msg = $module . ( $version && !$error ? " >= $version" : '' );
-        print_found( $msg, $test, $error );
-
-        $missing{$module} = { version => $version, error => $error }
-            unless $test;
+        for my $module (sort keys %{$deps{$type}}) {
+            my $spec = $deps{$type}{$module};
+            my ($ok, $error) = test_dep( $module, $spec );
+            my $msg = $module . ( $spec  && !$error ? " $spec" : "" );
+            print_found( $msg, $ok, $error );
+            delete $deps{$type}{$module} if $ok;
+        }
+        delete $deps{$type} if not keys %{$deps{$type}};
+        print "\n";
     }
-
-    return %missing;
 }
 
 sub test_dep {
-    my $module  = shift;
-    my $version = shift;
-    my $avoid   = shift;
+    my ($module, $version_spec) = @_;
+    my @spec_parts = split /\s*,\s*/, defined $version_spec ? $version_spec : '';
+    my @req = grep {defined} map {/>=\s*(\S+)/ ? $1 : undef} @spec_parts;
+    my @avoid = grep {defined} map {/!=\s*(\S+)/ ? $1 : undef} @spec_parts;
+    @req = ('') unless @req;
 
     no warnings 'deprecated';
-    eval "{ local \$ENV{__WARN__}; use $module $version () }";
-    if ( my $error = $@ ) {
-        return 0 unless wantarray;
+    for my $version (@req) {
+        eval "{ local \$ENV{__WARN__}; use $module $version () }";
+        if ( my $error = $@ ) {
+            return 0 unless wantarray;
 
-        $error =~ s/\n(.*)$//s;
-        $error =~ s/at \(eval \d+\) line \d+\.$//;
-        undef $error if $error =~ /this is only/;
+            $error =~ s/\n(.*)$//s;
+            $error =~ s/at \(eval \d+\) line \d+\.$//;
+            undef $error if $error =~ /this is only/;
 
-        my $path = $module;
-        $path =~ s{::}{/}g;
-        undef $error
-            if defined $error
-            and $error =~ /^Can't locate $path\.pm in \@INC/;
+            my $path = $module;
+            $path =~ s{::}{/}g;
+            undef $error
+                if defined $error
+                and $error =~ /^Can't locate $path\.pm in \@INC/;
 
-        return ( 0, $error );
+            return ( 0, $error );
+        }
     }
 
-    if ($avoid) {
-        my $version = $module->VERSION;
-        if ( grep {$version eq $_} @$avoid ) {
-            return 0 unless wantarray;
-            return ( 0,
-                "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually."
-            );
-        }
+    return 1 unless @avoid;
+
+    my $version = $module->VERSION;
+    if ( grep {$version eq $_} @avoid ) {
+        return 0 unless wantarray;
+        return ( 0,
+                 "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually."
+             );
     }
 
     return 1;
@@ -535,7 +336,6 @@ END
 
 sub resolve_dep {
     my $module  = shift;
-    my $version = shift;
 
     unless ( defined $args{siteinstall} ) {
         require Config;
