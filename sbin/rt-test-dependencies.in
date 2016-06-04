@@ -158,14 +158,17 @@ sub section {
 sub row {
     my $msg   = shift;
     my $test  = shift;
+    my $have  = shift;
     my $extra = shift;
 
     my $dots = "." x (55 - (length $msg));
 
     if ($test) {
-        print "    $msg $dots ok\n";
+        $have = $have ? "ok ($have)" : "ok";
+        print "    $msg $dots $have\n";
     } else {
-        print "    $msg $dots MISSING\n";
+        $have = $have ? "MISSING (have $have)" : "MISSING";
+        print "    $msg $dots $have\n";
         print "        $extra\n" if $extra;
     }
 }
@@ -186,7 +189,8 @@ sub conclude {
             my ($ok, $error) = test_dep( $module, $spec );
             next if $ok;
             my $msg = $module . ( $spec  && !$error ? " $spec" : "" );
-            row( $msg, $ok, $error );
+            my $v = $spec && eval { local $SIG{__WARN__}; $module->VERSION };
+            row( $msg, $ok, $v, $error );
         }
         print "\n";
     }
@@ -235,7 +239,8 @@ sub test_deps {
             my $spec = $deps{$type}{$module};
             my ($ok, $error) = test_dep( $module, $spec );
             my $msg = $module . ( $spec  && !$error ? " $spec" : "" );
-            row( $msg, $ok, $error );
+            my $v = $spec && eval { local $SIG{__WARN__}; $module->VERSION };
+            row( $msg, $ok, $v, $error );
             delete $deps{$type}{$module} if $ok;
         }
         delete $deps{$type} if not keys %{$deps{$type}};
