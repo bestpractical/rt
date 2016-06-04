@@ -235,12 +235,12 @@ HTTP::Message 6.0
 IPC::Run3
 JavaScript::Minifier::XS
 JSON
-LWP::Simple
 List::MoreUtils
 Locale::Maketext 1.06
 Locale::Maketext::Fuzzy 0.11
 Locale::Maketext::Lexicon 0.32
 Log::Dispatch 2.30
+LWP::Simple
 Mail::Header 2.12
 Mail::Mailer 1.57
 MIME::Entity 5.504
