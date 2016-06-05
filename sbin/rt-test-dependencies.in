@@ -402,15 +402,10 @@ sub check_perl_version {
     my $require = delete $deps{CORE}{perl};
     eval "require $require";
     if ($@) {
-        row(
-            $require, 0,
-            sprintf(
-                "RT requires Perl v$require or newer. Your current Perl is v%vd",
-                $^V )
-        );
+        row( $require, 0,  sprintf("%vd", $^V ) );
         exit(1);
     } else {
-        row( sprintf( ">=%s(%vd)", $require, $^V ), 1 );
+        row( $require, 1, sprintf( "%vd", $^V ) );
     }
     print "\n";
 }
