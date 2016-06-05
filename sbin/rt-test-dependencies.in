@@ -101,6 +101,13 @@ my %default = (
     'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
 );
+
+$default{"with-".uc("@DB_TYPE@")} = 1 unless grep {$args{"with-$_"}} qw/MYSQL PG SQLITE ORACLE/;
+unless (grep {$args{"with-$_"}} qw/FASTCGI MODPERL1 MODPERL2 STANDALONE/) {
+    $default{"with-".uc($_)} = 1 for grep {defined && length} split /,/, "@WEB_HANDLER@"
+}
+
+
 $args{$_} = $default{$_} foreach grep {!exists $args{$_}} keys %default;
 
 $args{'with-EXTERNALAUTH-TESTS'}
