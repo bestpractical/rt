@@ -413,9 +413,11 @@ sub check_perl_version {
 sub check_users_groups {
     section("users / groups");
 
+    my $fails = 0;
     my $line = sub {
         my ($type, $func, $name, $value) = @_;
         my $id = $func->($value);
+        $fails++ unless defined $id;
         my $return_type = substr($type,0,1)."id";
         row("$name $type ($value)", defined $id, defined $id ? "$return_type $id" : undef);
     };
@@ -429,6 +431,7 @@ sub check_users_groups {
     $user->(  web  => "@WEB_USER@" );
     $group->( web  => "@WEB_GROUP@" );
     print "\n";
+    exit 1 if $fails;
 }
 
 1;
