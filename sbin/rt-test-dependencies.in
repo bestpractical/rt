@@ -389,17 +389,18 @@ sub resolve_dep {
 
 sub check_perl_version {
     section("perl");
-    eval { require 5.010_001 };
+    my $require = delete $deps{CORE}{perl};
+    eval "require $require";
     if ($@) {
         print_found(
-            "5.10.1", 0,
+            $require, 0,
             sprintf(
-                "RT requires Perl v5.10.1 or newer. Your current Perl is v%vd",
+                "RT requires Perl v$require or newer. Your current Perl is v%vd",
                 $^V )
         );
         exit(1);
     } else {
-        print_found( sprintf( ">=5.10.1(%vd)", $^V ), 1 );
+        print_found( sprintf( ">=%s(%vd)", $require, $^V ), 1 );
     }
 }
 
