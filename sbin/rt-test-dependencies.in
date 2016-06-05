@@ -160,23 +160,27 @@ sub row {
     my $test  = shift;
     my $extra = shift;
 
-    print "\t$msg ...";
-    print $test ? "found" : "MISSING";
-    print "\n";
+    my $dots = "." x (55 - (length $msg));
 
-    print "\t\t$extra\n" if defined $extra;
+    if ($test) {
+        print "    $msg $dots ok\n";
+    } else {
+        print "    $msg $dots MISSING\n";
+        print "        $extra\n" if $extra;
+    }
 }
 
 sub conclude {
+    print "\n", "-" x 75, "\n\n";
     unless ( keys %deps ) {
-        print "\nAll dependencies have been found.\n";
+        print "All dependencies found.\n\n";
         return;
     }
 
-    print "\nSOME DEPENDENCIES WERE MISSING.\n";
+    print "SOME DEPENDENCIES WERE MISSING:\n\n";
 
     foreach my $type ( sort keys %deps ) {
-        print "$type missing dependencies:\n";
+        section("$type dependencies");
         for my $module (sort keys %{$deps{$type}}) {
             my $spec = $deps{$type}{$module};
             my ($ok, $error) = test_dep( $module, $spec );
@@ -184,9 +188,10 @@ sub conclude {
             my $msg = $module . ( $spec  && !$error ? " $spec" : "" );
             row( $msg, $ok, $error );
         }
+        print "\n";
     }
 
-    print "\nPerl library path for @PERL@:\n";
+    print "Perl library path for @PERL@:\n";
     print "    $_\n" for @INC;
 
     exit 1;
@@ -402,6 +407,7 @@ sub check_perl_version {
     } else {
         row( sprintf( ">=%s(%vd)", $require, $^V ), 1 );
     }
+    print "\n";
 }
 
 sub check_users {
@@ -412,6 +418,7 @@ sub check_users {
     row( "libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@") );
     row( "web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@") );
     row( "web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@") );
+    print "\n";
 }
 
 1;
