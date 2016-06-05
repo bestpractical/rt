@@ -155,7 +155,7 @@ sub section {
     print "$s:\n";
 }
 
-sub print_found {
+sub row {
     my $msg   = shift;
     my $test  = shift;
     my $extra = shift;
@@ -182,7 +182,7 @@ sub conclude {
             my ($ok, $error) = test_dep( $module, $spec );
             next if $ok;
             my $msg = $module . ( $spec  && !$error ? " $spec" : "" );
-            print_found( $msg, $ok, $error );
+            row( $msg, $ok, $error );
         }
     }
 
@@ -230,7 +230,7 @@ sub test_deps {
             my $spec = $deps{$type}{$module};
             my ($ok, $error) = test_dep( $module, $spec );
             my $msg = $module . ( $spec  && !$error ? " $spec" : "" );
-            print_found( $msg, $ok, $error );
+            row( $msg, $ok, $error );
             delete $deps{$type}{$module} if $ok;
         }
         delete $deps{$type} if not keys %{$deps{$type}};
@@ -392,7 +392,7 @@ sub check_perl_version {
     my $require = delete $deps{CORE}{perl};
     eval "require $require";
     if ($@) {
-        print_found(
+        row(
             $require, 0,
             sprintf(
                 "RT requires Perl v$require or newer. Your current Perl is v%vd",
@@ -400,18 +400,18 @@ sub check_perl_version {
         );
         exit(1);
     } else {
-        print_found( sprintf( ">=%s(%vd)", $require, $^V ), 1 );
+        row( sprintf( ">=%s(%vd)", $require, $^V ), 1 );
     }
 }
 
 sub check_users {
     section("users");
-    print_found( "rt group (@RTGROUP@)",      defined getgrnam("@RTGROUP@") );
-    print_found( "bin owner (@BIN_OWNER@)",   defined getpwnam("@BIN_OWNER@") );
-    print_found( "libs owner (@LIBS_OWNER@)", defined getpwnam("@LIBS_OWNER@") );
-    print_found( "libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@") );
-    print_found( "web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@") );
-    print_found( "web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@") );
+    row( "rt group (@RTGROUP@)",      defined getgrnam("@RTGROUP@") );
+    row( "bin owner (@BIN_OWNER@)",   defined getpwnam("@BIN_OWNER@") );
+    row( "libs owner (@LIBS_OWNER@)", defined getpwnam("@LIBS_OWNER@") );
+    row( "libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@") );
+    row( "web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@") );
+    row( "web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@") );
 }
 
 1;
