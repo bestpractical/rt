@@ -320,7 +320,6 @@ XML::Simple
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
 FCGI 0.74
-FCGI::ProcManager
 .
 
 $deps{'MODPERL1'} = [ text_to_hash( << '.') ];
