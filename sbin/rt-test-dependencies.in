@@ -109,7 +109,7 @@ $args{'with-EXTERNALAUTH-TESTS'}
 my %deps = read_deps();
 check_perl_version();
 
-check_users();
+check_users_groups();
 
 test_deps();
 
@@ -410,8 +410,8 @@ sub check_perl_version {
     print "\n";
 }
 
-sub check_users {
-    section("users");
+sub check_users_groups {
+    section("users / groups");
 
     my $line = sub {
         my ($type, $func, $name, $value) = @_;
