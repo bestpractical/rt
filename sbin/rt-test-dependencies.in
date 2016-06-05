@@ -412,12 +412,22 @@ sub check_perl_version {
 
 sub check_users {
     section("users");
-    row( "rt group (@RTGROUP@)",      defined getgrnam("@RTGROUP@") );
-    row( "bin owner (@BIN_OWNER@)",   defined getpwnam("@BIN_OWNER@") );
-    row( "libs owner (@LIBS_OWNER@)", defined getpwnam("@LIBS_OWNER@") );
-    row( "libs group (@LIBS_GROUP@)", defined getgrnam("@LIBS_GROUP@") );
-    row( "web owner (@WEB_USER@)",    defined getpwnam("@WEB_USER@") );
-    row( "web group (@WEB_GROUP@)",   defined getgrnam("@WEB_GROUP@") );
+
+    my $line = sub {
+        my ($type, $func, $name, $value) = @_;
+        my $id = $func->($value);
+        my $return_type = substr($type,0,1)."id";
+        row("$name $type ($value)", defined $id, defined $id ? "$return_type $id" : undef);
+    };
+    my $group = sub { $line->("group", sub {getgrnam($_[0])}, @_) };
+    my $user  = sub { $line->("user",  sub {getpwnam($_[0])}, @_) };
+
+    $group->( rt   => "@RTGROUP@" );
+    $user->(  bin  => "@BIN_OWNER@" );
+    $user->(  libs => "@LIBS_OWNER@" );
+    $group->( libs => "@LIBS_GROUP@" );
+    $user->(  web  => "@WEB_USER@" );
+    $group->( web  => "@WEB_GROUP@" );
     print "\n";
 }
 
