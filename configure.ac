@@ -348,6 +348,22 @@ else
 fi
 AC_SUBST(RT_EXTERNALAUTH)
 
+dnl Optional HTML email dependencies
+AC_ARG_ENABLE(better-html-email,
+            AC_HELP_STRING([--enable-better-html-email],
+                           [Add dependencies needed for better HTML email rendering]),
+            BETTER_HTML_EMAIL=1,
+            BETTER_HTML_EMAIL=0)
+AC_SUBST(BETTER_HTML_EMAIL)
+
+dnl Optional encoding dependencies
+AC_ARG_ENABLE(extra-email-encodings,
+            AC_HELP_STRING([--enable-extra-email-encodings],
+                           [Add dependencies for more Chinese character sets, and better character set detection]),
+            EXTRA_EMAIL_ENCODINGS=1,
+            EXTRA_EMAIL_ENCODINGS=0)
+AC_SUBST(EXTRA_EMAIL_ENCODINGS)
+
 dnl ExternalStorage
 AC_ARG_WITH(attachment-store,
 	    AC_HELP_STRING([--with-attachment-store=TYPE],

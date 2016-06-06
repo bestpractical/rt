@@ -206,3 +206,16 @@ feature 's3' => sub {
 feature 'dropbox' => sub {
     requires 'File::Dropbox';
 };
+
+
+# Better HTML email rendering
+feature 'better-html-email' => sub {
+    requires 'HTML::FormatExternal';
+    requires 'HTML::Gumbo';
+};
+
+# Support for more obscure Chinese character sets
+feature 'extra-email-encodings' => sub {
+    requires 'Encode::HanExtra';
+    requires 'Encode::Detect::Detector';
+};

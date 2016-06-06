@@ -74,6 +74,9 @@ GetOptions(
 
     'with-S3', 'with-DROPBOX',
 
+    'with-BETTER-HTML-EMAIL',
+    'with-EXTRA-EMAIL-ENCODING',
+
     'siteinstall!',
     'help|h',
 
@@ -100,6 +103,8 @@ my %default = (
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
+    'with-BETTER-HTML-EMAIL'     => @BETTER_HTML_EMAIL@,
+    'with-EXTRA-EMAIL-ENCODINGS' => @EXTRA_EMAIL_ENCODINGS@,
 );
 
 $default{"with-".uc("@DB_TYPE@")} = 1 unless grep {$args{"with-$_"}} qw/MYSQL PG SQLITE ORACLE/;
