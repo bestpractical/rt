@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-02-26 18:21+0000\n"
+"POT-Creation-Date: 2015-05-07 20:30+0000\n"
 "PO-Revision-Date: 2014-05-05 18:46+0000\n"
 "Last-Translator: Alex Vandiver <Unknown>\n"
 "Language-Team: Latvian <lv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-04-22 14:41+0000\n"
-"X-Generator: Launchpad (build 17430)\n"
+"X-Launchpad-Export-Date: 2016-06-08 19:37+0000\n"
+"X-Generator: Launchpad (build 18097)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -33,7 +33,7 @@ msgid "#%1: %2"
 msgstr ""
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1118 lib/RT/Transaction.pm:1157
+#: lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:1171
 msgid "%1"
 msgstr ""
 
@@ -80,20 +80,20 @@ msgstr ""
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:1018 lib/RT/Transaction.pm:1061
+#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:1032 lib/RT/Transaction.pm:1075
 msgid "%1 %2 added"
 msgstr "%1 %2 pievienots"
 
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
-#: lib/RT/Record.pm:2098 lib/RT/Transaction.pm:1024
+#: lib/RT/Record.pm:2098 lib/RT/Transaction.pm:1038
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 mainits uz %3"
 
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2095 lib/RT/Transaction.pm:1021 lib/RT/Transaction.pm:1067
+#: lib/RT/Record.pm:2095 lib/RT/Transaction.pm:1035 lib/RT/Transaction.pm:1081
 msgid "%1 %2 deleted"
 msgstr "%1 %2 dzēsts"
 
@@ -105,12 +105,12 @@ msgstr "%1 %2 izdzēsts"
 #. ($self->loc($column), $args{Value})
 #: lib/RT/Record/Role/Status.pm:256
 msgid "%1 %2 does not exist"
-msgstr ""
+msgstr "%1 %2 neeksistē"
 
 #. ($self->loc($column), $name)
 #: lib/RT/Record/Role/Status.pm:261
 msgid "%1 %2 is disabled"
-msgstr ""
+msgstr "%1 %2 ir izslēgts"
 
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 #: share/html/Widgets/SavedSearch:130
@@ -149,49 +149,53 @@ msgid "%1 (from pane %2)"
 msgstr "%1 (no rūts %2)"
 
 #. ("--log")
-#: bin/rt-crontool:330
+#: bin/rt-crontool:343
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr "%1 - Pielāgot LogToSTDERR config opciju"
 
-#. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
-#: bin/rt-crontool:305 bin/rt-crontool:312 bin/rt-crontool:318
+#: bin/rt-crontool:318 bin/rt-crontool:325
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - Arguments kuru nodot uz %2"
 
+#. ("--action-arg", "--action")
+#: bin/rt-crontool:331
+msgid "%1 - An argument to pass to %2. This option may be repeated to pass corresponding arguments to multiple calls of %2."
+msgstr ""
+
 #. ("--verbose")
-#: bin/rt-crontool:332
+#: bin/rt-crontool:345
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - Drukāt statusa izmaiņas uz STDOUT"
 
 #. ("--transaction")
-#: bin/rt-crontool:324
+#: bin/rt-crontool:337
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr "%1 - Uzrādiet vai vēlaties izmantot 'first', 'last' vai 'all' tranzakcijas"
 
 #. ("--template")
-#: bin/rt-crontool:321
+#: bin/rt-crontool:334
 msgid "%1 - Specify name or id of template(s) you want to use"
 msgstr "%1 - Norādiet šablona(u) vārdu vai id, kuru vēlaties izmantot"
 
 #. ("--action")
-#: bin/rt-crontool:315
-msgid "%1 - Specify the action module you want to use"
-msgstr "%1 - Uzrādiet darbības moduli kuru vēlaties izmantot"
+#: bin/rt-crontool:328
+msgid "%1 - Specify the action module you want to use. This option may be repeated to apply multiple actions to found tickets."
+msgstr ""
 
 #. ("--transaction-type")
-#: bin/rt-crontool:327
+#: bin/rt-crontool:340
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
 msgstr "%1 - Uzrādiet ar komatiem atdalītu sarakstu ar tranzakciju tipiem, kurus vēlaties izmantot"
 
 #. ("--condition")
-#: bin/rt-crontool:309
+#: bin/rt-crontool:322
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 - Uzrādiet nosacījuma moduli, kuru vēlaties izmantot"
 
 #. ("--search")
-#: bin/rt-crontool:302
+#: bin/rt-crontool:315
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - Uzrādiet meklēšanas moduli, kuru vēlaties izmantot"
 
@@ -200,8 +204,8 @@ msgstr "%1 - Uzrādiet meklēšanas moduli, kuru vēlaties izmantot"
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2015', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2015', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2016', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2016', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -209,7 +213,7 @@ msgstr ""
 #. ($package)
 #: share/html/Admin/Elements/UpgradeHistory:58
 msgid "%1 Version"
-msgstr ""
+msgstr "%1 Versija"
 
 #. ($args{'Value'}, $cf->Name)
 #: lib/RT/Record.pm:2131
@@ -219,7 +223,7 @@ msgstr "%1 pievienots kā vērtība priekš %2"
 #. (join ' ', @res)
 #: lib/RT/Date.pm:433
 msgid "%1 ago"
-msgstr ""
+msgstr "pirms %1"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -250,30 +254,30 @@ msgstr "%1 izskatās pilnībā inicializēta. Mums nebūs nepieciešams pievieno
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($self->BriefDescription , $self->CreatorObj->Name)
-#: lib/RT/Transaction.pm:749 share/html/Ticket/Elements/ShowDates:86 share/html/m/ticket/show:380
+#: lib/RT/Transaction.pm:763 share/html/Ticket/Elements/ShowDates:86 share/html/m/ticket/show:380
 msgid "%1 by %2"
 msgstr "%1 no %2"
 
 #. ($self->loc($type))
 #: lib/RT/Record/Role/Roles.pm:418
 msgid "%1 cannot be a group"
-msgstr ""
+msgstr "%1 nevar būt grupa"
 
-#. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),                    ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")))
+#. ($self->loc($self->Field), $q1->Name // '#'.$q1->id, $q2->Name // '#'.$q2->id)
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
-#: lib/RT/Record.pm:528 lib/RT/Transaction.pm:1167 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:1186 lib/RT/Transaction.pm:1195 lib/RT/Transaction.pm:1235 lib/RT/Transaction.pm:892
+#: lib/RT/Record.pm:528 lib/RT/Transaction.pm:1181 lib/RT/Transaction.pm:1186 lib/RT/Transaction.pm:1200 lib/RT/Transaction.pm:1209 lib/RT/Transaction.pm:1249 lib/RT/Transaction.pm:906
 msgid "%1 changed from %2 to %3"
 msgstr "%1 mainīts not %2 uz %3"
 
 #. (loc("Render Type"), $original, $RenderType)
 #. (loc("Field values source"), $original, $ValuesClass)
-#: share/html/Admin/CustomFields/Modify.html:215 share/html/Admin/CustomFields/Modify.html:231
+#: share/html/Admin/CustomFields/Modify.html:216 share/html/Admin/CustomFields/Modify.html:232
 msgid "%1 changed from '%2' to '%3'"
-msgstr ""
+msgstr "%1 nomainīts no '%2' uz '%3'"
 
 #. ($SavedSearch->{'Object'}->Description)
 #: share/html/Search/Elements/EditSearches:203
@@ -290,17 +294,17 @@ msgid "%1 could not be set to %2."
 msgstr "%1 nevar tikt uzstādīts kā %2."
 
 #. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:857
+#: lib/RT/Transaction.pm:871
 msgid "%1 created"
 msgstr "%1 izveidots"
 
 #. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:871
+#: lib/RT/Transaction.pm:885
 msgid "%1 deleted"
 msgstr "%1 dzēsts"
 
-#. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:865
+#. ($self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType)
+#: lib/RT/Transaction.pm:879
 msgid "%1 disabled"
 msgstr "%1 atslēgts"
 
@@ -309,8 +313,8 @@ msgstr "%1 atslēgts"
 msgid "%1 doesn't exist."
 msgstr "%1 neeksistē."
 
-#. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:861
+#. ($self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType)
+#: lib/RT/Transaction.pm:875
 msgid "%1 enabled"
 msgstr "%1 ieslēgts"
 
@@ -319,7 +323,7 @@ msgid "%1 highest priority tickets I own"
 msgstr "%1 man piederoši augstākās prioritātes pieteikumi"
 
 #. ($0)
-#: bin/rt-crontool:297
+#: bin/rt-crontool:310
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 ir instruments kas darbojas ar pieteikumiem no ārējā šedulēšanas instrumenta, kā piemēram no cron."
 
@@ -336,18 +340,18 @@ msgstr ""
 #. ($self->loc($column), $name)
 #: lib/RT/Record/Role/Status.pm:264
 msgid "%1 is already set to %2"
-msgstr ""
+msgstr "%1 jau ir uzstādīts uz %2"
 
 #. ($email, $self->loc($type))
 #. ($name, $self->loc($type))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:431 share/html/Ticket/Update.html:282 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:433 share/html/Ticket/Update.html:285 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 adrese, uz kuru RT saņem e-pastu. Pieliekot to kā '%2' veidos pasta ciklēšanu"
 
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
-#: lib/RT/Ticket.pm:676
+#: lib/RT/Ticket.pm:681
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 vairs nav %2 priekš šī pieprasījuma."
 
@@ -359,7 +363,7 @@ msgstr "%1 vairs nav vērtība pielāgojuma laukam %2"
 #. ($principal->Object->Name, $self->loc($args{Type}))
 #: lib/RT/Record/Role/Roles.pm:499
 msgid "%1 is not a %2"
-msgstr ""
+msgstr "%1 nav %2"
 
 #. ($args{'Lifecycle'})
 #. ($value)
@@ -380,12 +384,12 @@ msgstr ""
 #. ($rows)
 #: share/html/Articles/Elements/UpdatedArticles:48
 msgid "%1 most recently updated articles"
-msgstr ""
+msgstr "%1 visnesenāk atjaunotie raksti"
 
 #. ($rows)
 #: share/html/Articles/Elements/NewestArticles:48
 msgid "%1 newest articles"
-msgstr ""
+msgstr "%1 jaunākie raksti"
 
 #: etc/initialdata:822
 msgid "%1 newest unowned tickets"
@@ -397,9 +401,9 @@ msgstr "%1 objekti"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1073
+#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1087
 msgid "%1 set to %2"
-msgstr ""
+msgstr "%1 uzstādīts uz %2"
 
 #. ($meta->{'Source'}{'Extension'})
 #: share/html/Admin/Tools/Configuration.html:74
@@ -432,7 +436,7 @@ msgstr "%1' %2' %3 objekti"
 #. ($session{'CurrentUser'}->Name())
 #: share/html/Elements/EditPassword:55
 msgid "%1's current password"
-msgstr ""
+msgstr "%1 pašreizējā parole"
 
 #. ($object->Format)
 #. ($object->Name)
@@ -444,7 +448,7 @@ msgstr "%1' dashboardi"
 #. ($UserObj->Name)
 #: share/html/Admin/Users/Keys.html:48
 msgid "%1's encryption keys"
-msgstr ""
+msgstr "%1 šifrēšanas atslēga"
 
 #. ($Object->Format)
 #. ($Object->Name)
@@ -454,7 +458,7 @@ msgid "%1's saved searches"
 msgstr "%1' saglabātie meklējumi"
 
 #. ($self)
-#: lib/RT/Transaction.pm:691
+#: lib/RT/Transaction.pm:705
 msgid "%1: no attachment specified"
 msgstr "%1: nav norādīti pielikumi"
 
@@ -498,7 +502,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:420
 msgid "%1Y"
-msgstr ""
+msgstr "%1G"
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -506,7 +510,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:396
 msgid "%1h"
-msgstr ""
+msgstr "%1st"
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
@@ -534,48 +538,48 @@ msgstr "%quant(%1,stunda)"
 #. (sprintf("%.1f",$minutes / 60), $minutes)
 #: share/html/Ticket/Elements/ShowTime:51
 msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
-msgstr ""
+msgstr "%quant(%1,stunda,stundas) (%quant(%2,minūte,minūtes))"
 
 #. ($Transaction->TimeTaken)
 #. ($minutes)
 #: lib/RT/Date.pm:391 share/html/Elements/ShowTransaction:135 share/html/Ticket/Elements/ShowTime:49
 msgid "%quant(%1,minute,minutes)"
-msgstr ""
+msgstr "%quant(%1,minūte,minūtes)"
 
 #: lib/RT/Date.pm:415
 msgid "%quant(%1,month,months)"
-msgstr ""
+msgstr "%quant(%1,mēnesis,mēneši)"
 
 #: lib/RT/Date.pm:385
 msgid "%quant(%1,second,seconds)"
-msgstr ""
+msgstr "%quant(%1,sekunde,sekundes)"
 
 #: lib/RT/Date.pm:409
 msgid "%quant(%1,week,weeks)"
-msgstr ""
+msgstr "%quant(%1,nedēļa,nedēļas)"
 
 #: lib/RT/Date.pm:421
 msgid "%quant(%1,year,years)"
-msgstr ""
+msgstr "%quant(%1,gads,gadi)"
 
 #. ($name)
-#: lib/RT/Queue.pm:316
+#: lib/RT/Queue.pm:279
 msgid "'%1' is not a valid name."
-msgstr ""
+msgstr "'%1'nav derīgs vārds"
 
 #. ($Class)
 #: share/html/Articles/Article/Edit.html:121
 msgid "'%1' isn't a valid class"
-msgstr ""
+msgstr "'%1' nav derīga klase"
 
 #. ($Class)
 #: share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
 msgid "'%1' isn't a valid class identifier"
-msgstr ""
+msgstr "'%1' nav derīgs identifikators"
 
 #: share/html/Ticket/Elements/Reminders:105
 msgid "(Check box to complete)"
-msgstr ""
+msgstr "(Iezīmējiet lai pabeigtu)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:92 share/html/Admin/Elements/EditQueueWatchers:66 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:107 share/html/Elements/BulkLinks:117 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/EditPeople:69
 msgid "(Check box to delete)"
@@ -583,11 +587,11 @@ msgstr "(Atzīmēt rūti lai dzēstu)"
 
 #: share/html/Articles/Article/Elements/EditLinks:53
 msgid "(Check boxes to delete)"
-msgstr ""
+msgstr "(Atzīmējiet lai dzēstu)"
 
-#: share/html/Elements/BulkCustomFields:95
+#: share/html/Elements/BulkCustomFields:99
 msgid "(Check to delete all values)"
-msgstr ""
+msgstr "(Atzīmējiet, lai dzēstu visu saturu)"
 
 #: share/html/m/ticket/create:389
 msgid "(Enter ticket ids or URLs, separated with spaces)"
@@ -601,11 +605,11 @@ msgstr "(Ja paliks tukšs, standarta vērtība saglabāsies %1)"
 
 #: share/html/Admin/Elements/UpgradeHistoryRow:69
 msgid "(Incomplete)"
-msgstr ""
+msgstr "(Nav pabeigts)"
 
 #: lib/RT/Report/Tickets.pm:429
 msgid "(Incorrect data)"
-msgstr ""
+msgstr "(Nepareizs datums)"
 
 #: share/html/Admin/Elements/EditCustomFields:95
 msgid "(No custom fields)"
@@ -631,6 +635,10 @@ msgstr "(Sūta carbon-copy šim papildinājumam uz, ar komatiem atdalītu, sarak
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(Sūta carbon-copy šim papildinājumam uz, ar komatiem atdalītu, sarakstu ar e-pasta adresēm. Šie adresāti <strong>saņems</strong> tālākos papildinājumus nākotnē.)"
 
+#: share/html/Elements/BulkCustomFields:94
+msgid "(Unsupported custom field type)"
+msgstr ""
+
 #: share/html/Admin/Scrips/Elements/EditCustomCode:52
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
 msgstr "(Izmanto šos laukus kad esi izvēlējies 'User Defined' kā nosacījumu darbībai)"
@@ -641,17 +649,17 @@ msgstr "(katrs)"
 
 #: share/html/Articles/Elements/NewestArticles:66 share/html/Articles/Elements/UpdatedArticles:67
 msgid "(no Summary)"
-msgstr ""
+msgstr "(Nav kosavilkuma)"
 
 #: share/html/Admin/Articles/Elements/Topics:99 share/html/Articles/Article/Elements/EditTopics:58 share/html/Articles/Article/Elements/EditTopics:74 share/html/Articles/Article/Elements/Preformatted:49 share/html/Articles/Article/Elements/Preformatted:50 share/html/Articles/Elements/BeforeMessageBox:103 share/html/Articles/Elements/BeforeMessageBox:120 share/html/Articles/Elements/BeforeMessageBox:70 share/html/Articles/Elements/BeforeMessageBox:82 share/html/Articles/Elements/BeforeMessageBox:90 share/html/Articles/Elements/NewestArticles:60 share/html/Articles/Elements/ShowTopic:51 share/html/Articles/Elements/ShowTopicLink:55 share/html/Articles/Elements/UpdatedArticles:61 share/html/Articles/Topics.html:105 share/html/SelfService/Article/Display.html:49 share/html/SelfService/Article/Search.html:77 share/html/SelfService/Article/Search.html:85
 msgid "(no name)"
-msgstr ""
+msgstr "(nav vārda)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:277 share/html/Elements/RT__Ticket/ColumnMap:88
 msgid "(no pubkey!)"
 msgstr "(nav publiskās atslēgas!)"
 
-#: lib/RT/Report/Tickets.pm:702 lib/RT/Report/Tickets.pm:871 lib/RT/Report/Tickets.pm:882 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:1234 lib/RT/Transaction.pm:1235 lib/RT/Transaction.pm:811 lib/RT/Transaction.pm:816 lib/RT/Transaction.pm:886 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:699 lib/RT/Report/Tickets.pm:868 lib/RT/Report/Tickets.pm:879 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1186 lib/RT/Transaction.pm:1248 lib/RT/Transaction.pm:1249 lib/RT/Transaction.pm:825 lib/RT/Transaction.pm:830 lib/RT/Transaction.pm:900 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(nav vērtības)"
 
@@ -677,7 +685,7 @@ msgstr "(nepieciešams)"
 msgid "(trust: %1)"
 msgstr "(uzticēt: %1)"
 
-#: share/html/Elements/ShowTransactionAttachments:276 share/html/Elements/ShowTransactionAttachments:62
+#: share/html/Elements/ShowTransactionAttachments:280 share/html/Elements/ShowTransactionAttachments:66
 msgid "(untitled)"
 msgstr "(beznosaukuma)"
 
@@ -704,7 +712,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:368
 msgid "0 seconds"
-msgstr ""
+msgstr "0 sekundes"
 
 #: lib/RT/Date.pm:368
 msgid "0s"
@@ -712,7 +720,7 @@ msgstr ""
 
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:727
 msgid "A Template with that name already exists"
-msgstr ""
+msgstr "Šablons ar šādu nosaukumu jau eksistē"
 
 #: etc/initialdata:228
 msgid "A blank template"
@@ -733,7 +741,7 @@ msgstr "ACEs var tikai tikt izveidotas vai dzēstas."
 #. ($row->{filename})
 #: share/html/Admin/Elements/UpgradeHistoryRow:62
 msgid "ACL updates from %1"
-msgstr ""
+msgstr "ACL atjaunots no %1"
 
 #: share/html/Search/Elements/SelectAndOr:48
 msgid "AND"
@@ -757,35 +765,35 @@ msgstr "Darbība"
 msgid "Action '%1' not found"
 msgstr "Darbība '%1' nav atrasta"
 
-#: bin/rt-crontool:217
+#: bin/rt-crontool:229
 msgid "Action committed."
-msgstr ""
+msgstr "Darbība izpildīta"
 
 #: lib/RT/Scrip.pm:149 lib/RT/Scrip.pm:799
 msgid "Action is mandatory argument"
 msgstr "Darbība ir obligāts arguments"
 
-#: bin/rt-crontool:213
+#: bin/rt-crontool:225
 msgid "Action prepared..."
 msgstr "Darbība sagatavota..."
 
 #: share/html/Elements/Tabs:631
 msgid "Actions"
-msgstr ""
+msgstr "Darbības"
 
 #: share/html/Ticket/Elements/ShowRequestor:159 share/html/User/Elements/Portlets/ActiveTickets:54
 msgid "Active Tickets"
-msgstr ""
+msgstr "Aktīvie pieprasījumi"
 
 #. ($session{'CurrentUser'}->Name)
 #: share/html/Tools/MyDay.html:53
 msgid "Active tickets for %1"
-msgstr ""
+msgstr "Aktīvie lietotāja %1 pieprasījumi"
 
 #. (loc($AddPrincipal))
 #: share/html/Admin/Elements/EditRights:138
 msgid "Add %1"
-msgstr ""
+msgstr "Pievienot %1"
 
 #: share/html/Search/Bulk.html:93
 msgid "Add AdminCc"
@@ -825,11 +833,11 @@ msgstr "Pievienot komentārus vai atbildes atzīmētajiem pieprasījumiem"
 
 #: share/html/Admin/Elements/SelectNewGroupMembers:69
 msgid "Add group"
-msgstr ""
+msgstr "Pievienot grupu"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Add here"
-msgstr ""
+msgstr "Pievienot šeit"
 
 #: share/html/Admin/Groups/Members.html:63
 msgid "Add members"
@@ -842,7 +850,7 @@ msgstr "Pievienot jaunus skatītājus"
 #. (loc($AddPrincipal))
 #: share/html/Admin/Elements/EditRights:204
 msgid "Add rights for this %1"
-msgstr ""
+msgstr "Pievienot tiesības no %1"
 
 #: share/html/Search/Build.html:83
 msgid "Add these terms"
@@ -854,7 +862,7 @@ msgstr "Pievienot šos terminus un Meklēt"
 
 #: share/html/Admin/Elements/SelectNewGroupMembers:51
 msgid "Add user"
-msgstr ""
+msgstr "Pievienot lietotāju"
 
 #: share/html/Elements/BulkCustomFields:52
 msgid "Add values"
@@ -862,19 +870,19 @@ msgstr "Pievienot vērtības"
 
 #: lib/RT/CustomField.pm:216
 msgid "Add, modify and delete custom field values for objects"
-msgstr ""
+msgstr "Pievienot, labot un dzēst papildus laukus"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:85
 msgid "Added"
-msgstr ""
+msgstr "Pievienots"
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
-#: lib/RT/Ticket.pm:645
+#: lib/RT/Ticket.pm:650
 msgid "Added %1 as a %2 for this ticket"
 msgstr ""
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
-#: lib/RT/Queue.pm:603
+#: lib/RT/Queue.pm:581
 msgid "Added %1 to members of %2 for this queue."
 msgstr ""
 
@@ -889,7 +897,7 @@ msgstr "Adrese"
 
 #: share/html/Elements/RT__User/ColumnMap:106
 msgid "Address 2"
-msgstr ""
+msgstr "Adreses līnija 2"
 
 #: share/html/Admin/Users/Modify.html:137 share/html/User/Prefs.html:136
 msgid "Address1"
@@ -900,13 +908,13 @@ msgid "Address2"
 msgstr "Adrese2"
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1244
+#: lib/RT/Transaction.pm:1258
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
-msgstr ""
+msgstr "Labots pavadītais laiks uz %quant(%1,minūte,minūtes)"
 
 #: share/html/Elements/Tabs:64
 msgid "Admin"
-msgstr ""
+msgstr "Administrators"
 
 #: share/html/Ticket/Create.html:155 share/html/m/ticket/create:284
 msgid "Admin Cc"
@@ -918,7 +926,7 @@ msgstr "Admina Komentārs"
 
 #: etc/initialdata:394 etc/upgrade/4.1.9/content:77
 msgid "Admin Comment in HTML"
-msgstr ""
+msgstr "Administratora komentārs HTML"
 
 #: etc/initialdata:340
 msgid "Admin Correspondence"
@@ -926,7 +934,7 @@ msgstr "Admina Korespondence"
 
 #: etc/initialdata:351 etc/upgrade/4.1.9/content:56
 msgid "Admin Correspondence in HTML"
-msgstr ""
+msgstr "Administratora sarakste HTML"
 
 #: share/html/Admin/Queues/index.html:48
 msgid "Admin queues"
@@ -944,7 +952,7 @@ msgstr ""
 msgid "AdminCc"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:154
+#: lib/RT/Graph/Tickets.pm:157
 msgid "AdminCcs"
 msgstr ""
 
@@ -962,11 +970,11 @@ msgstr "Papildus"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:49 share/html/Articles/Article/Elements/ShowSearchCriteria:51
 msgid "Advanced search"
-msgstr ""
+msgstr "Paplašinātā meklēšana"
 
 #: share/html/Elements/LoginRedirectWarning:62
 msgid "After logging in you'll be sent to your original destination:"
-msgstr ""
+msgstr "Pēc pieslēgšanās, Jūs tiksiet nosūtīts uz sākotnējo lapu:"
 
 #: share/html/Search/Elements/PickCriteria:62
 msgid "Aggregator"
@@ -978,23 +986,23 @@ msgstr "Visi Apstiprinājumi Izlaisti"
 
 #: etc/initialdata:544 etc/upgrade/4.1.9/content:146
 msgid "All Approvals Passed in HTML"
-msgstr ""
+msgstr "Visi apstiprinājumi saņemti HTML"
 
 #: share/html/Admin/Articles/Classes/Modify.html:80
 msgid "All Articles in this class should be listed in a dropdown of the ticket reply page"
-msgstr ""
+msgstr "Visiem rakstiem šajā klasē vajadzētu parādīties iznirstošajā logā, pieprasījuma atbildes lapā."
 
 #: share/html/Admin/Articles/Classes/index.html:78
 msgid "All Classes"
-msgstr ""
+msgstr "Visas klases"
 
 #: share/html/Admin/CustomFields/index.html:52
 msgid "All Custom Fields"
-msgstr ""
+msgstr "Visi papildus lauki"
 
 #: share/html/Elements/Tabs:511
 msgid "All Dashboards"
-msgstr ""
+msgstr "Visi paneļi"
 
 #: share/html/Admin/Queues/index.html:111
 msgid "All Queues"
@@ -1002,7 +1010,7 @@ msgstr "Visas Rindas"
 
 #: share/html/Ticket/Elements/ShowRequestor:161
 msgid "All Tickets"
-msgstr ""
+msgstr "Visi pieprasījumi"
 
 #: share/html/User/Prefs.html:173
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
@@ -1014,11 +1022,11 @@ msgstr "visi meklējumā atlasītie uzdevumi"
 
 #: share/html/m/_elements/menu:82
 msgid "All tickets"
-msgstr ""
+msgstr "Visi pieteikumi"
 
 #: share/html/Articles/Topics.html:51
 msgid "All topics"
-msgstr ""
+msgstr "Visas tēmas"
 
 #: lib/RT/System.pm:92
 msgid "Allow creation of saved searches"
@@ -1030,7 +1038,7 @@ msgstr ""
 
 #: lib/RT/System.pm:93
 msgid "Allow writing Perl code in templates, scrips, etc"
-msgstr ""
+msgstr "Atļaut rakstīt Perl kodu šablonos, scripos utt."
 
 #: lib/RT/Attachment.pm:793
 msgid "Already encrypted"
@@ -1038,7 +1046,7 @@ msgstr "Jau aizkodēts"
 
 #: etc/initialdata:30
 msgid "Always sends a message to the requestors independent of message sender"
-msgstr ""
+msgstr "Vienmēr nosūtīt ziņu pieprasītājam, neatkarīgi no tā, kurš sūta ziņu"
 
 #. (qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/customizing/articles_introduction.html">], qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/">], '</a>')
 #: share/html/Articles/Elements/NeedsSetup:51
@@ -1051,7 +1059,7 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/Wrapper:49
 msgid "An error occurred"
-msgstr ""
+msgstr "Gadījās kļūda"
 
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
@@ -1059,15 +1067,15 @@ msgstr "Un/Vai"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Annually"
-msgstr ""
+msgstr "Reizi gadā"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
-msgstr ""
+msgstr "Jebkurš lauks"
 
 #: share/html/Search/Simple.html:65
 msgid "Any word not recognized by RT is searched for in ticket subjects."
-msgstr ""
+msgstr "Jebkurš vārds, ko RT neatpazīst, tiek meklēts pieprasījuma tēmā"
 
 #: share/html/Admin/CustomFields/Modify.html:94 share/html/Admin/Scrips/Modify.html:62 share/html/Elements/Tabs:370 share/html/Elements/Tabs:406 share/html/Elements/Tabs:456
 msgid "Applies to"
@@ -1087,7 +1095,7 @@ msgstr "Apstiprināt globāli"
 
 #: share/html/Admin/Elements/EditScrips:95
 msgid "Apply selected scrips"
-msgstr ""
+msgstr "Pielietot iezīmēto scripu"
 
 #: share/html/Search/Edit.html:62
 msgid "Apply your changes"
@@ -1120,7 +1128,7 @@ msgstr "Apstiprinājums Izlaists"
 
 #: etc/initialdata:514 etc/upgrade/4.1.9/content:130
 msgid "Approval Passed in HTML"
-msgstr ""
+msgstr "Apstiprinājums saņemts HTML"
 
 #: etc/initialdata:588 etc/upgrade/3.8.2/content:122
 msgid "Approval Ready for Owner"
@@ -1136,7 +1144,7 @@ msgstr "Apstiprinājums Noraidīts"
 
 #: etc/initialdata:573 etc/upgrade/4.1.9/content:162
 msgid "Approval Rejected in HTML"
-msgstr ""
+msgstr "Apstiprinājums noraidīts HTML"
 
 #: share/html/Approvals/Elements/Approve:75
 msgid "Approve"
@@ -1153,7 +1161,7 @@ msgstr ""
 #. ($object->id)
 #: lib/RT/URI/fsck_com_article.pm:215
 msgid "Article #%1"
-msgstr ""
+msgstr "Raksts #%1"
 
 #. ($ArticleObj->Id)
 #: share/html/Articles/Article/Delete.html:97
@@ -1163,22 +1171,22 @@ msgstr ""
 #. ($id)
 #: share/html/Articles/Article/History.html:61
 msgid "Article #%1 not found"
-msgstr ""
+msgstr "Raksts #%1 nav atrasts"
 
 #. ($article->Id, $article->Name || loc("(no name)"))
 #. ($object->id, $object->Name)
 #: lib/RT/URI/fsck_com_article.pm:213 share/html/Articles/Article/Display.html:84 share/html/SelfService/Article/Display.html:66
 msgid "Article #%1: %2"
-msgstr ""
+msgstr "Raksts #%1: %2"
 
 #. ($self->id)
 #: lib/RT/Article.pm:216
 msgid "Article %1 created"
-msgstr ""
+msgstr "Raksts %1 izveidots"
 
 #: share/html/Admin/Articles/index.html:48
 msgid "Article Administration"
-msgstr ""
+msgstr "Rakstu administrēšana"
 
 #: lib/RT/Article.pm:324
 msgid "Article Deleted"
@@ -1186,25 +1194,25 @@ msgstr ""
 
 #: share/html/Articles/Article/Display.html:76 share/html/SelfService/Article/Display.html:60
 msgid "Article not found"
-msgstr ""
+msgstr "Raksts nav atrasts"
 
 #: lib/RT/Article.pm:72 share/html/Admin/Global/CustomFields/index.html:95 share/html/Articles/index.html:48 share/html/Elements/Tabs:163 share/html/Elements/Tabs:168 share/html/Elements/Tabs:523 share/html/Elements/Tabs:529
 msgid "Articles"
-msgstr ""
+msgstr "Raksti"
 
 #. ($currtopic->Name)
 #: share/html/Articles/Topics.html:99
 msgid "Articles in %1"
-msgstr ""
+msgstr "Raksti sadaļā %1"
 
 #. ($Articles_Content)
 #: share/html/SelfService/Article/Search.html:64
 msgid "Articles matching %1"
-msgstr ""
+msgstr "Raksti, kas izpilda noteikumu %1"
 
 #: share/html/Articles/Topics.html:101
 msgid "Articles with no topics"
-msgstr ""
+msgstr "Raksti bez sadaļām."
 
 #: share/html/Search/Elements/EditSort:79
 msgid "Asc"
@@ -1212,7 +1220,7 @@ msgstr "Aug"
 
 #: lib/RT/Queue.pm:109
 msgid "Assign and remove queue custom fields"
-msgstr ""
+msgstr "PIevienot un dzēst rindas papildus laukus"
 
 #: share/html/Ticket/Elements/AddAttachments:61
 msgid "Attach"
@@ -1235,7 +1243,7 @@ msgstr "Pielikums"
 msgid "Attachment '%1' could not be loaded"
 msgstr "Pielikums '%1' nevar tikt ielādēts"
 
-#: lib/RT/Transaction.pm:699
+#: lib/RT/Transaction.pm:713
 msgid "Attachment created"
 msgstr "Pielikums izveidots"
 
@@ -1257,20 +1265,24 @@ msgstr "Atribūts Dzēsts"
 
 #: lib/RT/Attribute.pm:288
 msgid "Attribute updated"
-msgstr ""
+msgstr "Īpašība atjaunota"
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
 msgstr ""
 
+#: lib/RT/Queue.pm:353
+msgid "AutoSigning"
+msgstr ""
+
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
-msgstr ""
+msgstr "Automātiskā konta izveide neizdevās"
 
 #. ($valid_image_types)
 #: share/html/Admin/Tools/Theme.html:269
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
-msgstr ""
+msgstr "Automātiski izveidotās tēmu krāsas nav pieejamas jūsu bildei. Iespējams, ka tas noticis tādēļ, ka ielādēto bildi neatbalsta uzstādītā GD versija. Atbalstītie tipi ir: %1. Varat pārkompilēt libgd un GD.pm, lai iekļautu atbalstu citiem bilžu veidiem."
 
 #: etc/initialdata:231
 msgid "Autoreply"
@@ -1282,7 +1294,7 @@ msgstr "Autoatbilde Pieprasītājiem"
 
 #: etc/initialdata:261 etc/upgrade/4.1.9/content:8
 msgid "Autoreply in HTML"
-msgstr ""
+msgstr "Automātiskā atbilde HTML"
 
 #: share/html/Widgets/SelectionBox:170
 msgid "Available"
@@ -1294,35 +1306,35 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:227
 msgid "Average Created-Resolved"
-msgstr ""
+msgstr "Vidējā Izveidots-Atrisināts"
 
 #: lib/RT/Report/Tickets.pm:222
 msgid "Average Created-Started"
-msgstr ""
+msgstr "Vidējā Izveidots-Uzsākts"
 
 #: lib/RT/Report/Tickets.pm:242
 msgid "Average Due-Resolved"
-msgstr ""
+msgstr "Vidējā Termiņš-Atrisināts"
 
 #: lib/RT/Report/Tickets.pm:247
 msgid "Average Started-Resolved"
-msgstr ""
+msgstr "Vidējā Uzsākts-Atrisināts"
 
 #: lib/RT/Report/Tickets.pm:237
 msgid "Average Starts-Started"
-msgstr ""
+msgstr "Vidējā Jāsāak-Sākts"
 
 #: lib/RT/Report/Tickets.pm:212
 msgid "Average time estimated"
-msgstr ""
+msgstr "VIdējais ieplānotais laiks"
 
 #: lib/RT/Report/Tickets.pm:217
 msgid "Average time left"
-msgstr ""
+msgstr "Vidējais atlikušais laiks"
 
 #: lib/RT/Report/Tickets.pm:207
 msgid "Average time worked"
-msgstr ""
+msgstr "Vidējais nostrādātais laiks"
 
 #: share/html/Elements/Submit:109 share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89 share/html/Install/Global.html:65 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:64
 msgid "Back"
@@ -1333,34 +1345,34 @@ msgstr "Atpakaļ"
 msgid "Bad privacy for attribute %1"
 msgstr "Nepareizs privātums atribūtam %1"
 
-#: share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:348 share/html/Elements/Tabs:366 share/html/Elements/Tabs:405 share/html/Elements/Tabs:451 share/html/Elements/Tabs:614 share/html/Elements/Tabs:650 share/html/Ticket/Create.html:453 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
+#: share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:348 share/html/Elements/Tabs:366 share/html/Elements/Tabs:405 share/html/Elements/Tabs:451 share/html/Elements/Tabs:614 share/html/Elements/Tabs:650 share/html/Ticket/Create.html:455 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Pamati"
 
 #: lib/RT/Scrip.pm:472
 msgid "Batch"
-msgstr ""
+msgstr "Pakešapstrāde"
 
 #: lib/RT/Scrip.pm:473
 msgid "Batch (disabled by config)"
-msgstr ""
+msgstr "Pakešapstrāda (izslēgta konfigurācijā)"
 
 #: share/html/Admin/Elements/EditScrips:61
 msgid "Batch scrips"
-msgstr ""
+msgstr "Pakešapstrādes scripi"
 
 #: share/html/Admin/Elements/EditScrips:62
 msgid "Batch scrips run after a set of related changes to a ticket."
-msgstr ""
+msgstr "Pakešapstrādes scripi tiek palaisti pēc izmaiņu izdarīšanas pieprasījumā"
 
 #: share/html/Ticket/Forward.html:72
 msgid "Bcc"
-msgstr ""
+msgstr "Slēptā kopija"
 
 #. (qq[<a href="@{[RT->Config->Get("WebPath")]}/Admin/Articles/">], '</a>')
 #: share/html/Articles/Elements/NeedsSetup:50
 msgid "Before Articles can be used, your RT administrator must %1create Classes%2, apply Article custom fields to them, and grant users rights on the classes and CFs."
-msgstr ""
+msgstr "Pirms ir iespējams lietot rakstus, jūsu RT administratoram %1jāizveido klases%2, jāpielieto tām papildus lauki un jāiedod lietotājiem tiesības uz klasēm un papildus laukiem."
 
 #: etc/initialdata:227
 msgid "Blank"
@@ -1380,7 +1392,7 @@ msgstr "Grāmatzīme"
 
 #: share/html/Articles/Article/Search.html:111
 msgid "Bookmarkable link for this search"
-msgstr ""
+msgstr "Grāmatzīmes links šim meklējumam"
 
 #: etc/initialdata:835 etc/initialdata:860 etc/upgrade/3.7.82/content:6
 msgid "Bookmarked Tickets"
@@ -1388,15 +1400,15 @@ msgstr "Pieprasījumi Grāmatzīmēs"
 
 #: share/html/m/_elements/menu:73
 msgid "Bookmarked tickets"
-msgstr ""
+msgstr "Pieprasījumi ar grāmatzīmēm"
 
 #: share/html/Articles/Topics.html:48 share/html/Articles/Topics.html:60
 msgid "Browse by topic"
-msgstr ""
+msgstr "Pārlūkot pēc sadaļām"
 
 #: share/html/Elements/Tabs:240
 msgid "Browse the SQL queries made in this process"
-msgstr ""
+msgstr "Pārlūkot šī procesa izveidotos SQL pieprasījumus"
 
 #: share/html/Elements/Tabs:839
 msgid "Bulk Update"
@@ -1413,15 +1425,15 @@ msgstr ""
 #. ('<strong>cf.Name:value</strong>')
 #: share/html/Search/Simple.html:87
 msgid "CFs may be searched using a similar syntax as above with %1."
-msgstr ""
+msgstr "Papildus laukos iespējams meklēt ar analoģisku sintaksi, kā %1"
 
 #: share/html/Search/Chart.html:162
 msgid "Calculate"
-msgstr ""
+msgstr "Aprēķināt"
 
 #: share/html/Search/Chart.html:164
 msgid "Calculate values of"
-msgstr ""
+msgstr "Aprēķināt vērtību"
 
 #. ($ARGS{'SavedSearchLoad'})
 #: share/html/Search/Elements/EditSearches:176
@@ -1440,7 +1452,7 @@ msgstr "Nevar pievienot pielāgojuma lauku bez vārda"
 msgid "Can't find a saved search to work with"
 msgstr "Nevar atrast saglabāto meklējumu ar kuru strādāt"
 
-#: lib/RT/Ticket.pm:3061
+#: lib/RT/Ticket.pm:3066
 msgid "Can't forward: no valid email addresses specified"
 msgstr ""
 
@@ -1452,7 +1464,7 @@ msgstr "Pieprasījumu nevar linkot pašu ar sevi"
 msgid "Can't link to a deleted ticket"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1781
+#: lib/RT/Ticket.pm:1786
 msgid "Can't merge a ticket into itself"
 msgstr ""
 
@@ -1482,7 +1494,7 @@ msgstr ""
 msgid "Cannot add link to plain number"
 msgstr ""
 
-#: share/html/Ticket/Create.html:387 share/html/m/ticket/create:147
+#: share/html/Ticket/Create.html:389 share/html/m/ticket/create:147
 msgid "Cannot create tickets in a disabled queue."
 msgstr "Nevar izveidot pieprasījumus atslēgtā rindā"
 
@@ -1498,7 +1510,7 @@ msgstr "Kategorija"
 msgid "Cc"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:154
+#: lib/RT/Graph/Tickets.pm:157
 msgid "Ccs"
 msgstr ""
 
@@ -1661,7 +1673,7 @@ msgstr "Piezīmes (Nesūtītas pieprasītājiem)"
 msgid "Comments about this user"
 msgstr "Piezīmes par šo lietotāju"
 
-#: lib/RT/Ticket.pm:1628 lib/RT/Transaction.pm:961
+#: lib/RT/Ticket.pm:1633 lib/RT/Transaction.pm:975
 msgid "Comments added"
 msgstr "Piezīmes pievienotas"
 
@@ -1683,7 +1695,7 @@ msgstr "Nosacījums '%1' nav atrasts"
 msgid "Condition is mandatory argument"
 msgstr "Nosacījums ir obligāts arguments"
 
-#: bin/rt-crontool:197
+#: bin/rt-crontool:199
 msgid "Condition matches..."
 msgstr "Nosacījums atbilst..."
 
@@ -1719,11 +1731,11 @@ msgid "Content"
 msgstr "Saturs"
 
 #. ($self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:917
+#: lib/RT/Transaction.pm:931
 msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
 msgstr ""
 
-#: lib/RT/Transaction.pm:926
+#: lib/RT/Transaction.pm:940
 msgid "Content insert failed. See error log for details."
 msgstr ""
 
@@ -1736,7 +1748,7 @@ msgid "Content is not a valid IP address range"
 msgstr ""
 
 #. ($self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:906
+#: lib/RT/Transaction.pm:920
 msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
 msgstr ""
 
@@ -1756,7 +1768,7 @@ msgstr "Atbilstošā adrese"
 msgid "Correspondence"
 msgstr "Sarakste"
 
-#: lib/RT/Ticket.pm:1630 lib/RT/Transaction.pm:957
+#: lib/RT/Ticket.pm:1635 lib/RT/Transaction.pm:971
 msgid "Correspondence added"
 msgstr "Sarakste pievienota"
 
@@ -1771,12 +1783,12 @@ msgid "Could not add new custom field value: %1"
 msgstr "Nav iespējams pievienot jaunu pielāgota lauka vērtību: %1"
 
 #. ($msg)
-#: lib/RT/Ticket.pm:2053
+#: lib/RT/Ticket.pm:2058
 msgid "Could not change owner: %1"
 msgstr "Nevar nomainīt īpašnieku: %1"
 
 #. ($msg)
-#: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
+#: share/html/Admin/CustomFields/Modify.html:185 share/html/Admin/Elements/EditCustomField:116
 msgid "Could not create CustomField: %1"
 msgstr "Nevar izveidot CustomField: %1"
 
@@ -1906,7 +1918,7 @@ msgstr "Nevarēja izdzēst dashboardu %1: %2"
 msgid "Couldn't find row"
 msgstr "Nevarēja atrast rindu"
 
-#: bin/rt-crontool:168
+#: bin/rt-crontool:170
 msgid "Couldn't find suitable transaction, skipping"
 msgstr "Nevarēja atrast atbilstošu transakciju, izlaižam"
 
@@ -1949,12 +1961,12 @@ msgid "Couldn't load copy of %1 #%2"
 msgstr ""
 
 #. ($self->Id)
-#: lib/RT/Ticket.pm:1086
+#: lib/RT/Ticket.pm:1091
 msgid "Couldn't load copy of ticket #%1."
 msgstr "Nevarēja ielādēt kopiju pieprasījumam #%1."
 
 #. ($id, $msg)
-#: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:100 share/html/Dashboards/Subscription.html:201
+#: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:100 share/html/Dashboards/Subscription.html:203
 msgid "Couldn't load dashboard %1: %2"
 msgstr "Nevarēja ielādēt dashboardu %1: %2"
 
@@ -2028,7 +2040,7 @@ msgstr "Nevarēja ielādēt skriptu #%1"
 msgid "Couldn't load template #%1"
 msgstr "Nevarēja ielādēt šablonu #%1"
 
-#: lib/RT/Interface/Web.pm:2629
+#: lib/RT/Interface/Web.pm:2668
 msgid "Couldn't load the specified principal"
 msgstr ""
 
@@ -2135,7 +2147,7 @@ msgstr "Izveidot Pieprasījumus"
 msgid "Create a Class"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:167 share/html/Admin/CustomFields/Modify.html:185 share/html/Admin/Elements/EditCustomField:99
+#: share/html/Admin/CustomFields/Modify.html:168 share/html/Admin/CustomFields/Modify.html:186 share/html/Admin/Elements/EditCustomField:99
 msgid "Create a CustomField"
 msgstr "Izveidot CustomField"
 
@@ -2169,7 +2181,7 @@ msgstr "Izveidot jaunu grupu"
 msgid "Create a new template for queue %1"
 msgstr ""
 
-#: share/html/Ticket/Create.html:378
+#: share/html/Ticket/Create.html:380
 msgid "Create a new ticket"
 msgstr "Izveidot jaunu pieprasījumu"
 
@@ -2258,7 +2270,7 @@ msgstr ""
 msgid "Create, modify and delete users"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Izveidots"
 
@@ -2268,7 +2280,7 @@ msgstr "Izveidoja"
 
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
-#: share/html/Admin/CustomFields/Modify.html:189 share/html/Admin/Elements/EditCustomField:120
+#: share/html/Admin/CustomFields/Modify.html:190 share/html/Admin/Elements/EditCustomField:120
 msgid "Created CustomField %1"
 msgstr "Izveidots CustomField %1"
 
@@ -2289,7 +2301,7 @@ msgstr ""
 msgid "CreatedRelative"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:69 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Report/Tickets.pm:69 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
 msgstr "Izveidotājs"
 
@@ -2325,7 +2337,7 @@ msgstr "Pašreizējie uzraugi"
 msgid "Custom CSS (Advanced)"
 msgstr ""
 
-#: share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:51 share/html/Elements/Tabs:133 share/html/Elements/Tabs:183 share/html/Elements/Tabs:258 share/html/Elements/Tabs:300 share/html/Elements/Tabs:453 share/html/Elements/Tabs:92 share/html/m/ticket/show:252
+#: lib/RT/Graph/Tickets.pm:169 share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:51 share/html/Elements/Tabs:133 share/html/Elements/Tabs:183 share/html/Elements/Tabs:258 share/html/Elements/Tabs:300 share/html/Elements/Tabs:453 share/html/Elements/Tabs:92 share/html/m/ticket/show:252
 msgid "Custom Fields"
 msgstr "Pielāgotie Lauki"
 
@@ -2399,7 +2411,7 @@ msgstr "Pielāgotā lauka vērtība nav atrasta"
 msgid "Custom field value deleted"
 msgstr "Pielāgotā lauka vērtība ir dzēsta"
 
-#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:965 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:979 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr ""
 
@@ -2524,7 +2536,7 @@ msgstr ""
 msgid "Date format"
 msgstr "Datuma formāts"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:659 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:374 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:659 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/ShowSummary:87 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:374 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "Datumi"
 
@@ -2569,7 +2581,7 @@ msgstr ""
 msgid "Default: %1"
 msgstr "Noklusējums: %1"
 
-#: lib/RT/Transaction.pm:805
+#: lib/RT/Transaction.pm:819
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "Noklusējums: %1/%2 mainīts no %3 uz %4"
 
@@ -2577,7 +2589,7 @@ msgstr "Noklusējums: %1/%2 mainīts no %3 uz %4"
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2807 etc/RT_Config.pm:2851 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2839 etc/RT_Config.pm:2883 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Dzēst"
 
@@ -2603,7 +2615,7 @@ msgstr "Dzēšana neizdevās: %1"
 msgid "Delete group dashboards"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2444 lib/RT/Ticket.pm:2444
+#: lib/RT/Ticket.pm:2449 lib/RT/Ticket.pm:2449
 msgid "Delete operation is disabled by lifecycle configuration"
 msgstr ""
 
@@ -2657,27 +2669,27 @@ msgstr "Aizliegt"
 msgid "Depended on by"
 msgstr "Atkarīgs no"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:129 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:129 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "DependedOnBy"
 msgstr ""
 
 #. ($value)
-#: lib/RT/Transaction.pm:1099
+#: lib/RT/Transaction.pm:1113
 msgid "Dependency by %1 added"
 msgstr "Atkarība no %1 pievienota"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1141
+#: lib/RT/Transaction.pm:1155
 msgid "Dependency by %1 deleted"
 msgstr "Atkarība no %1 dzēsta"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1096
+#: lib/RT/Transaction.pm:1110
 msgid "Dependency on %1 added"
 msgstr "Atkarība no %1 pievienota"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1138
+#: lib/RT/Transaction.pm:1152
 msgid "Dependency on %1 deleted"
 msgstr "Atkarība no %1 dzēsta"
 
@@ -2689,7 +2701,7 @@ msgstr ""
 msgid "Depends on"
 msgstr "Atkarīgs no"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:125 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:125 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "DependsOn"
 msgstr ""
 
@@ -2701,7 +2713,7 @@ msgstr ""
 msgid "Describe the issue below"
 msgstr "Aprakstīt jautājumu zemāk"
 
-#: share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/CustomFields/Modify.html:66 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:70 share/html/Admin/Queues/Modify.html:66 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Scrip/ColumnMap:105 share/html/Elements/RT__Template/ColumnMap:61 share/html/Search/Elements/EditSearches:56
+#: share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/CustomFields/Modify.html:66 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:70 share/html/Admin/Queues/Modify.html:66 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Scrip/ColumnMap:105 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__Transaction/ColumnMap:90 share/html/Search/Elements/EditSearches:56
 msgid "Description"
 msgstr "Apraksts"
 
@@ -2709,7 +2721,7 @@ msgstr "Apraksts"
 msgid "Detailed information about your RT setup"
 msgstr ""
 
-#: share/html/Ticket/Create.html:454
+#: share/html/Ticket/Create.html:456
 msgid "Details"
 msgstr ""
 
@@ -2787,7 +2799,7 @@ msgstr "Neatjaunini šo lapu."
 msgid "Don't trust this key at all"
 msgstr "Neuzticēties šai atslēgam pavisam"
 
-#: share/html/Elements/ShowTransactionAttachments:62
+#: share/html/Elements/ShowTransactionAttachments:66
 msgid "Download"
 msgstr "Lejuplādēt"
 
@@ -2799,7 +2811,7 @@ msgstr "Lejuplādēt dumpfailu"
 msgid "Dropdown"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:263 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:70 share/html/m/ticket/create:381 share/html/m/ticket/show:366
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:263 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:70 share/html/m/ticket/create:381 share/html/m/ticket/show:366
 msgid "Due"
 msgstr "Līdz"
 
@@ -2880,7 +2892,7 @@ msgstr ""
 
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
-#: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
+#: share/html/Admin/CustomFields/Modify.html:196 share/html/Admin/Elements/EditCustomField:123
 msgid "Editing CustomField %1"
 msgstr "Labot lauku %1"
 
@@ -3005,13 +3017,9 @@ msgstr "Šifrēt/Atšifrēt"
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
 msgstr "Šifrēt/Atšifrēt transakciju #%1 no pieprasījuma #%2"
 
-#: lib/RT/Queue.pm:410
-msgid "Encrypting disabled"
-msgstr "Šifrēšana neaktīva"
-
-#: lib/RT/Queue.pm:409
-msgid "Encrypting enabled"
-msgstr "Šifrēšana aktīva"
+#: lib/RT/Queue.pm:384
+msgid "Encrypting"
+msgstr ""
 
 #: lib/RT/Attachment.pm:824
 msgid "Encryption error; contact the administrator"
@@ -3153,7 +3161,7 @@ msgstr ""
 msgid "Error: unencrypted message"
 msgstr ""
 
-#: bin/rt-crontool:355
+#: bin/rt-crontool:368
 msgid "Escalate tickets"
 msgstr "izplatīt pieprasījumus"
 
@@ -3165,7 +3173,7 @@ msgstr "Aptuveni"
 msgid "Everyone"
 msgstr "Jebkurš"
 
-#: bin/rt-crontool:341
+#: bin/rt-crontool:354
 msgid "Example:"
 msgstr "Paraugs:"
 
@@ -3240,7 +3248,7 @@ msgid "Failed to load %1 %2: %3"
 msgstr "Neizdevās ielādēt %1 %2: %3"
 
 #. ($modname, $error)
-#: bin/rt-crontool:289
+#: bin/rt-crontool:302
 msgid "Failed to load module %1. (%2)"
 msgstr "Neizdevās ielādēt moduli %1. (%2)"
 
@@ -3270,7 +3278,7 @@ msgstr ""
 msgid "Feeds"
 msgstr ""
 
-#: share/html/Articles/Article/ExtractFromTicket.html:62
+#: share/html/Articles/Article/ExtractFromTicket.html:62 share/html/Elements/RT__Transaction/ColumnMap:70
 msgid "Field"
 msgstr ""
 
@@ -3279,17 +3287,17 @@ msgid "Field values source:"
 msgstr "Lauku vērtību  avots:"
 
 #. ($self->Data, $self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:913
+#: lib/RT/Transaction.pm:927
 msgid "File '%1' dropped because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
 msgstr ""
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:923
+#: lib/RT/Transaction.pm:937
 msgid "File '%1' insert failed. See error log for details."
 msgstr ""
 
 #. ($self->Data, $self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:902
+#: lib/RT/Transaction.pm:916
 msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
 msgstr ""
 
@@ -3434,12 +3442,12 @@ msgid "Forward transaction #%1"
 msgstr "Pārsūtīt saraksti #%1"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
-#: lib/RT/Transaction.pm:937
+#: lib/RT/Transaction.pm:951
 msgid "Forwarded %3Transaction #%1%4 to %2"
 msgstr ""
 
 #. ($recipients)
-#: lib/RT/Transaction.pm:945
+#: lib/RT/Transaction.pm:959
 msgid "Forwarded Ticket to %1"
 msgstr ""
 
@@ -3502,7 +3510,7 @@ msgid "Give output even on messages successfully sent"
 msgstr ""
 
 #. ($self->_FormatUser($New))
-#: lib/RT/Transaction.pm:1055 lib/RT/Transaction.pm:1208 lib/RT/Transaction.pm:1220
+#: lib/RT/Transaction.pm:1069 lib/RT/Transaction.pm:1222 lib/RT/Transaction.pm:1234
 msgid "Given to %1"
 msgstr "Iedots %1"
 
@@ -3569,7 +3577,7 @@ msgstr ""
 msgid "Goto ticket"
 msgstr "Iet uz pieprasījumu"
 
-#: share/html/Ticket/Elements/ShowSummary:90 share/html/Ticket/ModifyLinks.html:58
+#: share/html/Ticket/Elements/ShowSummary:93 share/html/Ticket/ModifyLinks.html:58
 msgid "Graph"
 msgstr "Grafiks"
 
@@ -3807,7 +3815,7 @@ msgstr "Ja apstiprinājums noraidīts, atcelt oriģinālu un dzēst gaidošos ap
 msgid "If this is not what you expect, leave this page now without logging in."
 msgstr ""
 
-#: bin/rt-crontool:337
+#: bin/rt-crontool:350
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr ""
 
@@ -3842,15 +3850,15 @@ msgstr ""
 msgid "Illegal value for %1"
 msgstr "nepareiza vērtība %1"
 
-#: share/html/Elements/ShowTransactionAttachments:268
+#: share/html/Elements/ShowTransactionAttachments:272
 msgid "Image displayed inline above"
 msgstr ""
 
-#: share/html/Elements/ShowTransactionAttachments:264
+#: share/html/Elements/ShowTransactionAttachments:268
 msgid "Image not shown because display is disabled in system configuration."
 msgstr ""
 
-#: share/html/Elements/ShowTransactionAttachments:272
+#: share/html/Elements/ShowTransactionAttachments:276
 msgid "Image not shown because sender requested not to inline it."
 msgstr ""
 
@@ -4112,15 +4120,15 @@ msgstr ""
 msgid "Is not encrypted"
 msgstr "Nav šifrēti dati"
 
-#: bin/rt-crontool:338
+#: bin/rt-crontool:351
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
 msgstr "Svarīgi ir neļaut nepriveleģētiem lietotājiem izmantot šo utilītu."
 
-#: bin/rt-crontool:339
+#: bin/rt-crontool:352
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
 msgstr "Ieteicams izveidot nepriveliģētu lietotāju korektā lietotāju grupā un atļauju lietot RT un šo utilītu"
 
-#: bin/rt-crontool:299
+#: bin/rt-crontool:312
 msgid "It takes several arguments:"
 msgstr "Nepieciešami daži argumenti:"
 
@@ -4175,7 +4183,7 @@ msgstr "Pēdējais"
 
 #: share/html/Ticket/Elements/EditDates:61 share/html/Ticket/Elements/ShowDates:65 share/html/m/ticket/show:362
 msgid "Last Contact"
-msgstr "Pēdējauis Kontakts"
+msgstr "Pēdējais kontakts"
 
 #: share/html/Elements/SelectDateType:52
 msgid "Last Contacted"
@@ -4197,11 +4205,11 @@ msgstr ""
 msgid "Last updated by"
 msgstr "Pēdējais atjauninātājs"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:83 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:83 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdated"
 msgstr "Pēd.Jauninājums"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:70 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Report/Tickets.pm:70 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedBy"
 msgstr "Pēd.Jauninātājs"
 
@@ -4298,7 +4306,7 @@ msgstr "PievienotsUz"
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:660 share/html/Ticket/Create.html:281 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:386
+#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:660 share/html/Ticket/Create.html:281 share/html/Ticket/Elements/ShowSummary:95 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:386
 msgid "Links"
 msgstr "Saites"
 
@@ -4484,7 +4492,7 @@ msgstr "Labot uzstādījumus un konfigurācijas visiem uzdevumiem"
 msgid "Manage queues and queue-specific properties"
 msgstr "Labot uzdevumu un speciālo uzdevumu uzstādījumus"
 
-#: share/html/Ticket/Graphs/index.html:63
+#: share/html/Ticket/Graphs/index.html:66
 msgid "Manage saved graphs"
 msgstr "Labot saglabātos grafikus"
 
@@ -4570,12 +4578,12 @@ msgid "Member"
 msgstr "Biedrs"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1111
+#: lib/RT/Transaction.pm:1125
 msgid "Member %1 added"
 msgstr "Biedrs %1 pievienots"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1153
+#: lib/RT/Transaction.pm:1167
 msgid "Member %1 deleted"
 msgstr "Biedrs %1 dzēsts"
 
@@ -4592,21 +4600,21 @@ msgstr "Biedrs dzēsts"
 msgid "Member not deleted"
 msgstr "Biedrs netika dzēsts"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "MemberOf"
 msgstr "Biedrs"
 
-#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:349 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 share/html/Elements/Tabs:349 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "Members"
 msgstr "Biedri"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1108
+#: lib/RT/Transaction.pm:1122
 msgid "Membership in %1 added"
 msgstr "Biedrs %1 pielikts"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1150
+#: lib/RT/Transaction.pm:1164
 msgid "Membership in %1 deleted"
 msgstr "Biedrs %1 dzēsts"
 
@@ -4633,19 +4641,19 @@ msgstr "Lietotāja tiesības %1"
 msgid "Merge"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1941
+#: lib/RT/Ticket.pm:1946
 msgid "Merge Successful"
 msgstr "Apvienots veiksmīgi"
 
-#: lib/RT/Ticket.pm:1821
+#: lib/RT/Ticket.pm:1826
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Apvienošana neveiksmīga. Nevar pieškirt EffectiveId"
 
-#: lib/RT/Ticket.pm:1827
+#: lib/RT/Ticket.pm:1832
 msgid "Merge failed. Couldn't set IsMerged"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1840
+#: lib/RT/Ticket.pm:1845
 msgid "Merge failed. Couldn't set Status"
 msgstr "Apvienošana neveiksmīga. Nevar uzstādīt statusu"
 
@@ -4654,23 +4662,23 @@ msgid "Merge into"
 msgstr "Apvienot ar"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1114
+#: lib/RT/Transaction.pm:1128
 msgid "Merged into %1"
 msgstr "Apvienots %1"
 
-#: share/html/Search/Bulk.html:151 share/html/Ticket/Update.html:138 share/html/Ticket/Update.html:156 share/html/m/ticket/reply:107
+#: share/html/Search/Bulk.html:151 share/html/Ticket/Update.html:141 share/html/Ticket/Update.html:159 share/html/m/ticket/reply:107
 msgid "Message"
 msgstr "Vēstule"
 
-#: share/html/Elements/ShowTransactionAttachments:149
+#: share/html/Elements/ShowTransactionAttachments:153
 msgid "Message body is not shown because it is too large."
 msgstr ""
 
-#: share/html/Elements/ShowTransactionAttachments:141
+#: share/html/Elements/ShowTransactionAttachments:145
 msgid "Message body is not shown because sender requested not to inline it."
 msgstr "Vēstule netiks parādīta. Sūtītājs neļauj izlasīt pašu vēstuli"
 
-#: share/html/Elements/ShowTransactionAttachments:287
+#: share/html/Elements/ShowTransactionAttachments:291
 msgid "Message body not shown because it is not plain text."
 msgstr "Vēstule netiks parādīta jo nav tīra teksta formātā."
 
@@ -4682,7 +4690,7 @@ msgstr "Vēstules augstums punktos"
 msgid "Message box width"
 msgstr "Vēstules lauka platums punktos"
 
-#: lib/RT/Ticket.pm:1624
+#: lib/RT/Ticket.pm:1629
 msgid "Message could not be recorded"
 msgstr "Vēstule netiks ierakstīta"
 
@@ -4690,7 +4698,7 @@ msgstr "Vēstule netiks ierakstīta"
 msgid "Message for user"
 msgstr "Vēstule lietotājam"
 
-#: lib/RT/Ticket.pm:3107
+#: lib/RT/Ticket.pm:3112
 msgid "Message recorded"
 msgstr "Vēstule ierakstīta"
 
@@ -4943,7 +4951,7 @@ msgid "Modify the group %1"
 msgstr "Mainīt grupu %1"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:283
+#: share/html/Dashboards/Subscription.html:290
 msgid "Modify the subscription to dashboard %1"
 msgstr "Mainīt abonementus panelim %1"
 
@@ -5121,7 +5129,7 @@ msgstr ""
 msgid "NEWLINE"
 msgstr ""
 
-#: lib/RT/User.pm:91 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__User/ColumnMap:56
+#: lib/RT/User.pm:91 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:94 share/html/Elements/RT__User/ColumnMap:56
 msgid "Name"
 msgstr "Vārds"
 
@@ -5173,6 +5181,10 @@ msgstr ""
 msgid "New Search"
 msgstr "Jauna Meklēšana"
 
+#: share/html/Elements/RT__Transaction/ColumnMap:80
+msgid "New Value"
+msgstr ""
+
 #: share/html/Elements/RT__Ticket/ColumnMap:256 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
 msgstr "Jaunas vēstules"
@@ -5193,7 +5205,7 @@ msgstr "Jauns atgādinājums:"
 msgid "New ticket"
 msgstr "Jauns pieprasījums"
 
-#: lib/RT/Ticket.pm:1776
+#: lib/RT/Ticket.pm:1781
 msgid "New ticket doesn't exist"
 msgstr "Jauns pieprasījums nepastāv"
 
@@ -5218,7 +5230,7 @@ msgstr "Segvārds"
 msgid "Nickname"
 msgstr "Segvārds"
 
-#: share/html/Articles/Article/Delete.html:62 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:258 share/html/Widgets/Form/Boolean:79
+#: share/html/Articles/Article/Delete.html:62 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:258 share/html/Widgets/Form/Boolean:82
 msgid "No"
 msgstr "Nē"
 
@@ -5245,7 +5257,7 @@ msgstr "Nedefinēta klase"
 msgid "No Classes matching search criteria found."
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:192 share/html/Admin/Elements/EditCustomField:122
+#: share/html/Admin/CustomFields/Modify.html:193 share/html/Admin/Elements/EditCustomField:122
 msgid "No CustomField"
 msgstr ""
 
@@ -5256,6 +5268,10 @@ msgstr "Nav definēts lauks"
 #: share/html/Admin/Groups/GroupRights.html:62 share/html/Admin/Groups/UserRights.html:63
 msgid "No Group defined"
 msgstr "Nav definēta grupa"
+
+#: share/html/Elements/RT__Transaction/ColumnMap:104
+msgid "No Name"
+msgstr ""
 
 #: lib/RT/Tickets.pm:3050
 msgid "No Query"
@@ -5319,7 +5335,7 @@ msgstr "Nav atslēgas šifrēšanai"
 msgid "No longer authorized"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1559
+#: lib/RT/Ticket.pm:1564
 msgid "No message attached"
 msgstr "Nav pievienota vēstule"
 
@@ -5389,7 +5405,7 @@ msgid "No rights found"
 msgstr "Nav atrastas tiesības"
 
 #. ($principal->Object->Name)
-#: lib/RT/Ticket.pm:530
+#: lib/RT/Ticket.pm:535
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr ""
 
@@ -5414,7 +5430,7 @@ msgstr ""
 msgid "No tickets found."
 msgstr "Nav atrasti pieprasījumi"
 
-#: lib/RT/Transaction.pm:746 lib/RT/Transaction.pm:788
+#: lib/RT/Transaction.pm:760 lib/RT/Transaction.pm:802
 msgid "No transaction type specified"
 msgstr ""
 
@@ -5582,6 +5598,14 @@ msgstr "VAI"
 msgid "Object"
 msgstr "Objekts"
 
+#: share/html/Elements/RT__Transaction/ColumnMap:60
+msgid "Object Id"
+msgstr ""
+
+#: share/html/Elements/RT__Transaction/ColumnMap:55
+msgid "Object Type"
+msgstr ""
+
 #: lib/RT/Record.pm:358
 msgid "Object could not be created"
 msgstr "Objekts nevar tikt izveidots"
@@ -5590,7 +5614,7 @@ msgstr "Objekts nevar tikt izveidots"
 msgid "Object could not be deleted"
 msgstr "Objekts nevar tikt dzēsts"
 
-#: lib/RT/Record.pm:375 share/html/Admin/CustomFields/Modify.html:188
+#: lib/RT/Record.pm:375 share/html/Admin/CustomFields/Modify.html:189
 msgid "Object created"
 msgstr "Objekts izveidots"
 
@@ -5614,8 +5638,12 @@ msgstr "Ojektu saraksts ir tukšs"
 msgid "Oct"
 msgstr "Okt."
 
+#: share/html/Elements/RT__Transaction/ColumnMap:75
+msgid "Old Value"
+msgstr ""
+
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
-#: lib/RT/Transaction.pm:409
+#: lib/RT/Transaction.pm:423
 msgid "On %1, %2 wrote:"
 msgstr "%1, %2 raksta:"
 
@@ -5713,7 +5741,7 @@ msgstr "Rādīt laukus tikai:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2804 etc/RT_Config.pm:2811 etc/RT_Config.pm:2848 etc/RT_Config.pm:2855
+#: etc/RT_Config.pm:2836 etc/RT_Config.pm:2843 etc/RT_Config.pm:2880 etc/RT_Config.pm:2887
 msgid "Open It"
 msgstr ""
 
@@ -5770,11 +5798,11 @@ msgstr "Organizācija"
 msgid "Originating ticket: #%1"
 msgstr "Oriģināls pieprasījums: #%1"
 
-#: lib/RT/Transaction.pm:949
+#: lib/RT/Transaction.pm:963
 msgid "Outgoing email about a comment recorded"
 msgstr "Izejošs e-pasts ar komentāru ierakstīts"
 
-#: lib/RT/Transaction.pm:953
+#: lib/RT/Transaction.pm:967
 msgid "Outgoing email recorded"
 msgstr "Izejošs e-pasts ierakstīts"
 
@@ -5794,22 +5822,22 @@ msgstr ""
 msgid "Own tickets"
 msgstr "piederīgie pieprasījumi"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1880 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:270 share/html/Elements/RT__Ticket/ColumnMap:287 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1880 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:270 share/html/Elements/RT__Ticket/ColumnMap:287 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
 msgstr "Īpašnieks"
 
 #. ($owner->Name)
-#: lib/RT/Ticket.pm:524
+#: lib/RT/Ticket.pm:529
 msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "Īpašniekam '%1' nav tiesību paņemt šo pieprasījumu."
 
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
-#: lib/RT/Ticket.pm:2057
+#: lib/RT/Ticket.pm:2062
 msgid "Owner changed from %1 to %2"
 msgstr "Īpašnieks nomainīts no %1 uz %2"
 
 #. (map { $self->_FormatUser($_) } $Old, $New)
-#: lib/RT/Transaction.pm:1043 lib/RT/Transaction.pm:1227
+#: lib/RT/Transaction.pm:1057 lib/RT/Transaction.pm:1241
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Īpašnieks nomainīts no %1 uz %2"
 
@@ -5857,7 +5885,7 @@ msgstr "Vecāki"
 msgid "Password"
 msgstr "Parole"
 
-#: lib/RT/Transaction.pm:1178 lib/RT/User.pm:859
+#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:859
 msgid "Password changed"
 msgstr "Parole nomainīta"
 
@@ -5942,7 +5970,7 @@ msgstr ""
 msgid "Permanently wipeout data from RT"
 msgstr ""
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:348 lib/RT/Queue.pm:374 lib/RT/Queue.pm:400 lib/RT/Queue.pm:797 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1068 lib/RT/Ticket.pm:1279 lib/RT/Ticket.pm:1447 lib/RT/Ticket.pm:1497 lib/RT/Ticket.pm:1767 lib/RT/Ticket.pm:1786 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2203 lib/RT/Ticket.pm:2217 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2246 lib/RT/Ticket.pm:2463 lib/RT/Ticket.pm:2692 lib/RT/Ticket.pm:3056 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:742 lib/RT/Transaction.pm:782 lib/RT/User.pm:1127 lib/RT/User.pm:137 lib/RT/User.pm:1562 lib/RT/User.pm:1810 lib/RT/User.pm:1843 lib/RT/User.pm:326 lib/RT/User.pm:727 lib/RT/User.pm:762 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1127 lib/RT/User.pm:137 lib/RT/User.pm:1562 lib/RT/User.pm:1810 lib/RT/User.pm:1843 lib/RT/User.pm:326 lib/RT/User.pm:727 lib/RT/User.pm:762 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Atļauja liegta"
 
@@ -6078,7 +6106,7 @@ msgstr ""
 msgid "Print this message"
 msgstr "Drukāt šo vēstuli"
 
-#: lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:116 lib/RT/Tickets.pm:1684 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:200 share/html/Ticket/Create.html:229 share/html/Ticket/Elements/ShowBasics:78 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:238
+#: lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:116 lib/RT/Tickets.pm:1684 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:200 share/html/Ticket/Create.html:229 share/html/Ticket/Elements/ShowBasics:79 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:238
 msgid "Priority"
 msgstr "Prioritāte"
 
@@ -6124,7 +6152,7 @@ msgstr "Priveliģēti lietotāji"
 msgid "Privileged: usernames; Unprivileged: names and email addresses"
 msgstr ""
 
-#: bin/rt-crontool:171
+#: bin/rt-crontool:173
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr ""
 
@@ -6154,12 +6182,12 @@ msgstr "Pieprasījums"
 msgid "Query Builder"
 msgstr "Pieprasījumu veidošana"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:1024 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1491 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:84 share/html/m/ticket/create:248 share/html/m/ticket/show:242
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Record.pm:1024 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1491 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:86 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "Secība"
 
 #. ($Queue||'')
-#: share/html/Ticket/Create.html:381
+#: share/html/Ticket/Create.html:383
 msgid "Queue %1 could not be loaded."
 msgstr ""
 
@@ -6173,7 +6201,7 @@ msgstr "Uzdevums %1 nav atrasts"
 msgid "Queue Name"
 msgstr "Uzdevuma nosaukums"
 
-#: lib/RT/Queue.pm:324
+#: lib/RT/Queue.pm:287
 msgid "Queue already exists"
 msgstr "Uzdevums jau eksistē"
 
@@ -6188,14 +6216,6 @@ msgstr "Uzdevums nevar tikt ielādēts"
 #: lib/RT/Queue.pm:215
 msgid "Queue created"
 msgstr "Uzdevums izveidots"
-
-#: lib/RT/Queue.pm:256
-msgid "Queue disabled"
-msgstr "Uzdevums atspēkots"
-
-#: lib/RT/Queue.pm:254
-msgid "Queue enabled"
-msgstr "Uzdevums aktīvs"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:97
 msgid "Queue id"
@@ -6370,7 +6390,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2812 etc/RT_Config.pm:2813 etc/RT_Config.pm:2856 etc/RT_Config.pm:2857
+#: etc/RT_Config.pm:2844 etc/RT_Config.pm:2845 etc/RT_Config.pm:2888 etc/RT_Config.pm:2889
 msgid "Re-open"
 msgstr ""
 
@@ -6390,7 +6410,7 @@ msgstr ""
 msgid "Recipient"
 msgstr "Saņēmējs"
 
-#: share/html/Dashboards/Subscription.html:242
+#: share/html/Dashboards/Subscription.html:249
 msgid "Recipient must be an email address"
 msgstr ""
 
@@ -6411,22 +6431,22 @@ msgid "Refer to"
 msgstr ""
 
 #. ($value)
-#: lib/RT/Transaction.pm:1105
+#: lib/RT/Transaction.pm:1119
 msgid "Reference by %1 added"
 msgstr "Atsauce no %1 pielikta"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1147
+#: lib/RT/Transaction.pm:1161
 msgid "Reference by %1 deleted"
 msgstr "Atsauce no %1 dzēsta"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1102
+#: lib/RT/Transaction.pm:1116
 msgid "Reference to %1 added"
 msgstr "Atsauce %1 pielikta"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1144
+#: lib/RT/Transaction.pm:1158
 msgid "Reference to %1 deleted"
 msgstr "Atsauce %1 dzēsta"
 
@@ -6434,7 +6454,7 @@ msgstr "Atsauce %1 dzēsta"
 msgid "Referred to by"
 msgstr "Atsauksme uz no"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:130 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:130 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "ReferredToBy"
 msgstr ""
 
@@ -6442,7 +6462,7 @@ msgstr ""
 msgid "Refers to"
 msgstr "Atsauce uz"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:126 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:126 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "RefersTo"
 msgstr ""
 
@@ -6511,7 +6531,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2806 etc/RT_Config.pm:2810 etc/RT_Config.pm:2850 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 etc/RT_Config.pm:2882 etc/RT_Config.pm:2886
 msgid "Reject"
 msgstr ""
 
@@ -6524,27 +6544,39 @@ msgid "Reminder"
 msgstr ""
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1265
+#: lib/RT/Transaction.pm:1280
 msgid "Reminder '%1' added"
 msgstr "Atgādinājums '%1' pielikts"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1287
+#: lib/RT/Transaction.pm:1310
 msgid "Reminder '%1' completed"
 msgstr "Atgādinājums '%1' sagatavots"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1276
+#: lib/RT/Transaction.pm:1295
 msgid "Reminder '%1' reopened"
 msgstr "Atgādinājums '%1' pāratvērts"
 
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
-#: lib/RT/Interface/Web.pm:2989 lib/RT/Interface/Web.pm:3007
+#: lib/RT/Interface/Web.pm:3028 lib/RT/Interface/Web.pm:3046
 msgid "Reminder '%1': %2"
 msgstr ""
 
-#: share/html/Elements/Tabs:668 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:74 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
+#: lib/RT/Transaction.pm:1282
+msgid "Reminder added"
+msgstr ""
+
+#: lib/RT/Transaction.pm:1312
+msgid "Reminder completed"
+msgstr ""
+
+#: lib/RT/Transaction.pm:1297
+msgid "Reminder reopened"
+msgstr ""
+
+#: share/html/Elements/Tabs:668 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:75 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
 msgid "Reminders"
 msgstr "Atgādinājumi"
 
@@ -6570,7 +6602,7 @@ msgid "Remove Requestor"
 msgstr "Noņemt Pieprasītāju"
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
-#: lib/RT/Queue.pm:633
+#: lib/RT/Queue.pm:611
 msgid "Removed %1 from members of %2 for this queue."
 msgstr ""
 
@@ -6610,7 +6642,7 @@ msgstr "Pieprasītājs"
 msgid "RequestorGroup"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:144 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:265 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:130 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:291
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Tickets.pm:144 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:265 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:130 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:291
 msgid "Requestors"
 msgstr "Pieprasītāji"
 
@@ -6655,7 +6687,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Uzturēšanās"
 
-#: etc/RT_Config.pm:2805 etc/RT_Config.pm:2809 etc/RT_Config.pm:2849 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:76
+#: etc/RT_Config.pm:2837 etc/RT_Config.pm:2841 etc/RT_Config.pm:2881 etc/RT_Config.pm:2885 share/html/Search/Elements/EditFormat:76
 msgid "Resolve"
 msgstr "Atrisināt"
 
@@ -6664,7 +6696,7 @@ msgstr "Atrisināt"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Atrisināt pieprasījumu #%1 (%2)"
 
-#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:80 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:251 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
+#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:80 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:251 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Atrisināts"
 
@@ -6721,7 +6753,7 @@ msgid "Right revoked"
 msgstr "Tiesības anulētas"
 
 #. ($object_type)
-#: lib/RT/Interface/Web.pm:2587 lib/RT/Interface/Web.pm:2687
+#: lib/RT/Interface/Web.pm:2626 lib/RT/Interface/Web.pm:2726
 msgid "Rights could not be granted for %1"
 msgstr "Tiesības nav apstiprinātas %1"
 
@@ -6743,7 +6775,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3824
+#: lib/RT/Interface/Web.pm:3864
 msgid "Roles"
 msgstr "Tiesības"
 
@@ -6800,7 +6832,7 @@ msgstr "Sestdiena"
 msgid "Save"
 msgstr "Saglabāt"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:167 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:167 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:188 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Saglabāt izmaiņas"
 
@@ -6872,7 +6904,7 @@ msgstr ""
 msgid "Scrips"
 msgstr "Skripi"
 
-#: share/html/Ticket/Update.html:185
+#: share/html/Ticket/Update.html:188
 msgid "Scrips and Recipients"
 msgstr "Skripi un saņēmēji"
 
@@ -6943,7 +6975,7 @@ msgstr ""
 msgid "Secret authentication token"
 msgstr "Slepenais autorizācijas žetons"
 
-#: bin/rt-crontool:335
+#: bin/rt-crontool:348
 msgid "Security:"
 msgstr "Drošība:"
 
@@ -7370,13 +7402,9 @@ msgstr ""
 msgid "Signature"
 msgstr "Paraksts"
 
-#: lib/RT/Queue.pm:358 lib/RT/Queue.pm:384
-msgid "Signing disabled"
-msgstr "Pierakstīšanās neaktīva"
-
-#: lib/RT/Queue.pm:357 lib/RT/Queue.pm:383
-msgid "Signing enabled"
-msgstr "Pierakstīšanās aktīva"
+#: lib/RT/Queue.pm:322
+msgid "Signing"
+msgstr ""
 
 #: share/html/Admin/Elements/ModifyTemplate:65
 msgid "Simple"
@@ -7447,7 +7475,7 @@ msgstr ""
 msgid "Stage"
 msgstr ""
 
-#: etc/RT_Config.pm:2808 etc/RT_Config.pm:2852
+#: etc/RT_Config.pm:2840 etc/RT_Config.pm:2884
 msgid "Stall"
 msgstr ""
 
@@ -7456,7 +7484,7 @@ msgstr ""
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:195 share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:60 share/html/m/ticket/show:358
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:195 share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:60 share/html/m/ticket/show:358
 msgid "Started"
 msgstr "Iesākta"
 
@@ -7464,7 +7492,7 @@ msgstr "Iesākta"
 msgid "StartedRelative"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:132 share/html/Elements/RT__Ticket/ColumnMap:190 share/html/Elements/RT__Ticket/ColumnMap:223 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:262 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:55 share/html/m/ticket/create:380 share/html/m/ticket/show:354
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:132 share/html/Elements/RT__Ticket/ColumnMap:190 share/html/Elements/RT__Ticket/ColumnMap:223 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:262 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:55 share/html/m/ticket/create:380 share/html/m/ticket/show:354
 msgid "Starts"
 msgstr "Sākas"
 
@@ -7480,7 +7508,7 @@ msgstr "Statuss"
 msgid "Static file search order"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1523 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1523 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
 msgstr "Stāvoklis"
 
@@ -7503,7 +7531,7 @@ msgid "Status Change in HTML"
 msgstr ""
 
 #. ("'" . $self->loc( $canon->($self->OldValue) ) . "'",                    "'" . $self->loc( $canon->($self->NewValue) ) . "'")
-#: lib/RT/Transaction.pm:881
+#: lib/RT/Transaction.pm:895
 msgid "Status changed from %1 to %2"
 msgstr "Statuss mainīts no %1 uz %2"
 
@@ -7531,7 +7559,7 @@ msgid "Step %1 of %2"
 msgstr "Solis %1 no %2"
 
 #. ($self->_FormatUser($Old))
-#: lib/RT/Transaction.pm:1049 lib/RT/Transaction.pm:1213
+#: lib/RT/Transaction.pm:1063 lib/RT/Transaction.pm:1227
 msgid "Stolen from %1"
 msgstr "Nozagts no %1"
 
@@ -7539,7 +7567,7 @@ msgstr "Nozagts no %1"
 msgid "Style"
 msgstr "Stils"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:138 lib/RT/Tickets.pm:1633 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:116 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:132 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:87 share/html/SelfService/Update.html:73 share/html/Ticket/Create.html:180 share/html/Ticket/Elements/Reminders:133 share/html/Ticket/Elements/Reminders:164 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:111 share/html/Ticket/Update.html:152 share/html/m/ticket/create:229 share/html/m/ticket/reply:99
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:138 lib/RT/Tickets.pm:1633 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:116 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:132 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:87 share/html/SelfService/Update.html:73 share/html/Ticket/Create.html:180 share/html/Ticket/Elements/Reminders:133 share/html/Ticket/Elements/Reminders:164 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:111 share/html/Ticket/Update.html:155 share/html/m/ticket/create:229 share/html/m/ticket/reply:99
 msgid "Subject"
 msgstr "Temats"
 
@@ -7548,7 +7576,7 @@ msgid "Subject Tag"
 msgstr "Temata tegs"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1077
+#: lib/RT/Transaction.pm:1091
 msgid "Subject changed to %1"
 msgstr "Temats mainīts uz %1"
 
@@ -7560,12 +7588,12 @@ msgstr ""
 msgid "Submit"
 msgstr "Nosūtīt"
 
-#: share/html/Dashboards/Subscription.html:188
+#: share/html/Dashboards/Subscription.html:190
 msgid "Subscribe"
 msgstr "Pierakstīties"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:286
+#: share/html/Dashboards/Subscription.html:293
 msgid "Subscribe to dashboard %1"
 msgstr "Pierakstīties panelī %1"
 
@@ -7574,7 +7602,7 @@ msgid "Subscribe to dashboards"
 msgstr "Pierakstīties panelī"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:271
+#: share/html/Dashboards/Subscription.html:278
 msgid "Subscribed to dashboard %1"
 msgstr "Parakstījies uz paneli %1"
 
@@ -7583,11 +7611,11 @@ msgid "Subscription"
 msgstr "Parakstīšanās"
 
 #. ($msg)
-#: share/html/Dashboards/Subscription.html:276
+#: share/html/Dashboards/Subscription.html:283
 msgid "Subscription could not be created: %1"
 msgstr "Parakstīšanās netika veikta: %1"
 
-#: share/html/Dashboards/Subscription.html:254
+#: share/html/Dashboards/Subscription.html:261
 msgid "Subscription updated"
 msgstr ""
 
@@ -7651,7 +7679,7 @@ msgstr "Svētdiena"
 msgid "Suspended"
 msgstr "Iesaldēts"
 
-#: lib/RT/Interface/Web.pm:3776
+#: lib/RT/Interface/Web.pm:3816
 msgid "System"
 msgstr ""
 
@@ -7663,7 +7691,7 @@ msgstr "Sistēmas konfigurācija"
 msgid "System Default"
 msgstr "Sistēmas noklusētais"
 
-#: lib/RT/Interface/Web.pm:2587 lib/RT/Interface/Web.pm:2687 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:2626 lib/RT/Interface/Web.pm:2726 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "Sistēmas kļūda"
 
@@ -7676,7 +7704,7 @@ msgstr "Sistēmas kļūda: %1"
 msgid "System Tools"
 msgstr "Sistēmas rīki"
 
-#: lib/RT/Transaction.pm:896
+#: lib/RT/Transaction.pm:910
 msgid "System error"
 msgstr ""
 
@@ -7696,7 +7724,7 @@ msgstr "Paņemt"
 msgid "Take tickets"
 msgstr "Paņemt pieprasījumus"
 
-#: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1205
+#: lib/RT/Transaction.pm:1047 lib/RT/Transaction.pm:1219
 msgid "Taken"
 msgstr "Paņemts"
 
@@ -7778,7 +7806,7 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: share/html/Elements/ShowTransactionAttachments:145
+#: share/html/Elements/ShowTransactionAttachments:149
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "Teksta fails netiks parādīts, jo funkcija aizliegta uzstādījumos"
 
@@ -7790,15 +7818,15 @@ msgstr "Tas jau ir tekošā vērtība"
 msgid "That is not a value for this custom field"
 msgstr "Šī nav vērtība šim laukam"
 
-#: lib/RT/Ticket.pm:2358
+#: lib/RT/Ticket.pm:2363
 msgid "That ticket has unresolved dependencies"
 msgstr "šim pieprasījumam ir neatrsinātas atkarības"
 
-#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2271
+#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2276
 msgid "That user already owns that ticket"
 msgstr "Šim lietotājam jau pieder šis pieprasījums"
 
-#: lib/RT/Ticket.pm:2261
+#: lib/RT/Ticket.pm:2266
 msgid "That user does not exist"
 msgstr "Šāds lietotājs neeksistē"
 
@@ -7818,7 +7846,7 @@ msgstr "Šis lietotājs tagad ir priveliģēts"
 msgid "That user is now unprivileged"
 msgstr "Šis lietotājs tagad ir nepriveliģēts"
 
-#: lib/RT/Ticket.pm:2266
+#: lib/RT/Ticket.pm:2271
 msgid "That user may not own tickets in that queue"
 msgstr "Šim lietotājam nav savu pieprasījumu šajā uzdevumā"
 
@@ -7855,7 +7883,7 @@ msgstr ""
 msgid "The domain name of your database server (like 'db.example.com')."
 msgstr "Domēna vārds datubāzes serverim (piem. 'db.example.com')."
 
-#: bin/rt-crontool:345
+#: bin/rt-crontool:358
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
 
@@ -7992,11 +8020,11 @@ msgstr ""
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 msgstr ""
 
-#: bin/rt-crontool:336
+#: bin/rt-crontool:349
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr "Šis rīks atļauj lietotājam palaist Perl moduļus no RT."
 
-#: lib/RT/Transaction.pm:378
+#: lib/RT/Transaction.pm:392
 msgid "This transaction appears to have no content"
 msgstr "Šāds darījums parādās bez satura"
 
@@ -8027,7 +8055,7 @@ msgid "Ticket #%1 Jumbo update: %2"
 msgstr "Pieprasījums #%1 Jumbo labojums:  %2"
 
 #. ($id)
-#: share/html/Ticket/Graphs/index.html:109
+#: share/html/Ticket/Graphs/index.html:117
 msgid "Ticket #%1 relationships graph"
 msgstr "Pieprasījuma #%1 grafiks"
 
@@ -8044,7 +8072,7 @@ msgid "Ticket %1"
 msgstr "Pieprasījums %1"
 
 #. ($self->Id, $QueueObj->Name)
-#: lib/RT/Ticket.pm:549 lib/RT/Ticket.pm:571
+#: lib/RT/Ticket.pm:554 lib/RT/Ticket.pm:576
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Pieprasījums %1 izveidots uzdevumā '%2'"
 
@@ -8087,7 +8115,7 @@ msgstr "Pieprasījuma saturs"
 msgid "Ticket content type"
 msgstr "Pieprasījuma satura tips"
 
-#: lib/RT/Ticket.pm:413 lib/RT/Ticket.pm:426 lib/RT/Ticket.pm:438 lib/RT/Ticket.pm:557
+#: lib/RT/Ticket.pm:418 lib/RT/Ticket.pm:431 lib/RT/Ticket.pm:443 lib/RT/Ticket.pm:562
 msgid "Ticket could not be created due to an internal error"
 msgstr "Pieprasījums nav izveidots iekšējas kļūdas dēļ"
 
@@ -8154,6 +8182,10 @@ msgstr "Aprēķinātais laiks"
 msgid "Time Left"
 msgstr "Atlikušais laiks"
 
+#: share/html/Elements/RT__Transaction/ColumnMap:85
+msgid "Time Taken"
+msgstr ""
+
 #: lib/RT/Tickets.pm:1754 share/html/Elements/RT__Ticket/ColumnMap:176 share/html/Search/Elements/PickBasics:178 share/html/Ticket/Create.html:244 share/html/m/ticket/create:359
 msgid "Time Worked"
 msgstr "Risinājuma laiks"
@@ -8162,15 +8194,15 @@ msgstr "Risinājuma laiks"
 msgid "Time to display"
 msgstr "Laiks ko parādīt"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:117 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:117 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeLeft"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeWorked"
 msgstr ""
 
@@ -8201,7 +8233,7 @@ msgstr ""
 msgid "Toggle stack trace"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:82 lib/RT/Tickets.pm:131 share/html/Elements/RT__Ticket/ColumnMap:200 share/html/Elements/RT__Ticket/ColumnMap:233 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:82 lib/RT/Tickets.pm:131 share/html/Elements/RT__Ticket/ColumnMap:200 share/html/Elements/RT__Ticket/ColumnMap:233 share/html/Search/Elements/BuildFormatString:100
 msgid "Told"
 msgstr "Teica"
 
@@ -8233,7 +8265,7 @@ msgstr ""
 msgid "Topics"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:998
+#: lib/RT/Report/Tickets.pm:995
 msgid "Total"
 msgstr "Kopā"
 
@@ -8278,7 +8310,7 @@ msgid "Transaction"
 msgstr "Darījumi"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1254
+#: lib/RT/Transaction.pm:1268
 msgid "Transaction %1 purged"
 msgstr "Darījums %1 iztīrīts"
 
@@ -8306,7 +8338,7 @@ msgstr ""
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1323
+#: lib/RT/Transaction.pm:1349
 msgid "Transactions are immutable"
 msgstr "Darījums ir nemainīgs"
 
@@ -8330,7 +8362,7 @@ msgstr "Otrdiena"
 msgid "TxnCF"
 msgstr ""
 
-#: lib/RT/Tickets.pm:108 lib/RT/Tickets.pm:1609 share/html/Admin/CustomFields/Modify.html:69 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:170 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Tickets.pm:108 lib/RT/Tickets.pm:1609 share/html/Admin/CustomFields/Modify.html:69 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:170 share/html/Elements/RT__Transaction/ColumnMap:65 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "Tips"
 
@@ -8400,7 +8432,7 @@ msgid "Unable to set privacy object: %1"
 msgstr ""
 
 #. ($id)
-#: share/html/Dashboards/Subscription.html:259
+#: share/html/Dashboards/Subscription.html:266
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
 msgstr ""
 
@@ -8413,7 +8445,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2814 etc/RT_Config.pm:2858
+#: etc/RT_Config.pm:2846 etc/RT_Config.pm:2890
 msgid "Undelete"
 msgstr ""
 
@@ -8496,7 +8528,7 @@ msgstr "Neatlasīti objekti"
 msgid "Unset private key"
 msgstr "Nepiešķirta privātā atslēga"
 
-#: lib/RT/Transaction.pm:1029 lib/RT/Transaction.pm:1217
+#: lib/RT/Transaction.pm:1043 lib/RT/Transaction.pm:1231
 msgid "Untaken"
 msgstr "Nepaņemts"
 
@@ -8516,7 +8548,7 @@ msgstr "Jaunināt grafiku"
 msgid "Update This Menu"
 msgstr ""
 
-#: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:180 share/html/m/ticket/reply:146
+#: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:183 share/html/m/ticket/reply:146
 msgid "Update Ticket"
 msgstr "Jaunināt Pieprasījumu"
 
@@ -8532,7 +8564,7 @@ msgstr "Jaunināt formātu un meklēt"
 msgid "Update multiple tickets"
 msgstr "Jaunināt vairākus pieprasījumus"
 
-#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2355
+#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2394
 msgid "Update not recorded."
 msgstr "Jauninājums nav ierakstīts."
 
@@ -8548,11 +8580,11 @@ msgstr "Jaunināt pieprasījumu #%1"
 
 #. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
-#: share/html/Ticket/Update.html:218 share/html/m/ticket/reply:174
+#: share/html/Ticket/Update.html:221 share/html/m/ticket/reply:174
 msgid "Update ticket #%1 (%2)"
 msgstr "Jaunināt Pieprasījumu #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2355
+#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2394
 msgid "Update type was neither correspondence nor comment."
 msgstr "Atjaunošanas veids nebija ne korespondence, ne komentārs."
 
@@ -8674,7 +8706,7 @@ msgstr "Lietotāja definēts"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3794
+#: lib/RT/Interface/Web.pm:3834
 msgid "User Groups"
 msgstr ""
 
@@ -8695,7 +8727,7 @@ msgid "User Summary"
 msgstr ""
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
-#: lib/RT/Interface/Web.pm:3206
+#: lib/RT/Interface/Web.pm:3246
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Lietotājs pieprasīja nezināmu jauninājuma tipu cust.laukam %1 dēļ %2 objektam #%3"
 
@@ -8741,7 +8773,7 @@ msgstr "Lietotājvārds"
 msgid "Username format"
 msgstr "Lietotājvārda formāts"
 
-#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3852 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3892 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "Lietotāji"
 
@@ -8750,7 +8782,7 @@ msgid "Users matching search criteria"
 msgstr "Filtrējot sameklētie lietotāji"
 
 #. ($txn->id)
-#: bin/rt-crontool:163
+#: bin/rt-crontool:165
 msgid "Using transaction #%1..."
 msgstr "Lietot darbību #%1..."
 
@@ -8854,7 +8886,7 @@ msgstr "Uzmanību! NAV parakstīts!"
 msgid "Warning: merging is a non-reversible action! Enter a single ticket number to be merged into."
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:272
+#: share/html/Dashboards/Subscription.html:279
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr "Uzmanību! Nav norādīta E-pasta adrese, dašbords netiks nosūtīts!"
 
@@ -9035,12 +9067,12 @@ msgid "Worked"
 msgstr "Strādāts"
 
 #. (sprintf("%.1f", $duration / 60), $duration)
-#: lib/RT/Transaction.pm:1249
+#: lib/RT/Transaction.pm:1263
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1247
+#: lib/RT/Transaction.pm:1261
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -9048,7 +9080,7 @@ msgstr ""
 msgid "Year"
 msgstr ""
 
-#: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:77
+#: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:78
 msgid "Yes"
 msgstr "Jā"
 
@@ -9062,7 +9094,7 @@ msgstr ""
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr ""
 
-#: lib/RT/Ticket.pm:2241 lib/RT/Ticket.pm:2314
+#: lib/RT/Ticket.pm:2246 lib/RT/Ticket.pm:2319
 msgid "You already own this ticket"
 msgstr "Jums jau pieder šis pieprasījums"
 
@@ -9103,15 +9135,15 @@ msgstr ""
 msgid "You can not set password."
 msgstr "Jūs nevarat piešķirt paroli."
 
-#: lib/RT/Ticket.pm:2233
+#: lib/RT/Ticket.pm:2238
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Jūs varat pārsūtīt pieprasījumus kas jums pieder, vai tiem nav īpašnieka"
 
-#: lib/RT/Ticket.pm:2185
+#: lib/RT/Ticket.pm:2190
 msgid "You can only steal a ticket owned by someone else"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2229
+#: lib/RT/Ticket.pm:2234
 msgid "You can only take tickets that are unowned"
 msgstr "Jūs varat paņemt pieprasījumus kuriem nav īpašnieka"
 
@@ -9224,7 +9256,7 @@ msgstr "[Augšup]"
 msgid "[none]"
 msgstr "[nekas]"
 
-#: lib/RT/Transaction.pm:973
+#: lib/RT/Transaction.pm:987
 msgid "a custom field"
 msgstr ""
 
@@ -9308,7 +9340,7 @@ msgstr "Spiest lai uzreiz pieliktu/noņemtu visus objektus"
 msgid "core config"
 msgstr "Pamatu konfigurācija"
 
-#: lib/RT/Interface/Web.pm:1614 lib/RT/Interface/Web.pm:1623
+#: lib/RT/Interface/Web.pm:1653 lib/RT/Interface/Web.pm:1662
 msgid "create a ticket"
 msgstr ""
 
@@ -9333,7 +9365,7 @@ msgstr ""
 msgid "days"
 msgstr "dienas"
 
-#: etc/RT_Config.pm:2777
+#: etc/RT_Config.pm:2809
 msgid "deleted"
 msgstr "dzēsts"
 
@@ -9410,7 +9442,7 @@ msgid "group"
 msgstr ""
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:840
+#: lib/RT/Transaction.pm:854
 msgid "group %1"
 msgstr ""
 
@@ -9451,7 +9483,7 @@ msgid "index"
 msgstr ""
 
 #. ($due)
-#: lib/RT/Interface/Web.pm:2982
+#: lib/RT/Interface/Web.pm:3021
 msgid "invalid due date: %1"
 msgstr ""
 
@@ -9499,19 +9531,19 @@ msgstr "maksimālais dziļums"
 msgid "minutes"
 msgstr "minūtes"
 
-#: lib/RT/Interface/Web.pm:1616
+#: lib/RT/Interface/Web.pm:1655
 msgid "modify RT's configuration"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1619
+#: lib/RT/Interface/Web.pm:1658
 msgid "modify a dashboard"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1622
+#: lib/RT/Interface/Web.pm:1661
 msgid "modify or access a search"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1621
+#: lib/RT/Interface/Web.pm:1660
 msgid "modify your preferences"
 msgstr ""
 
@@ -9528,7 +9560,7 @@ msgstr "ikmēnaša (diena %1) at %2"
 msgid "never"
 msgstr "nekad"
 
-#: etc/RT_Config.pm:2775
+#: etc/RT_Config.pm:2807
 msgid "new"
 msgstr "Jauns"
 
@@ -9568,7 +9600,7 @@ msgstr "dienā"
 msgid "one"
 msgstr "viens"
 
-#: etc/RT_Config.pm:2776 share/html/SelfService/Elements/MyRequests:73
+#: etc/RT_Config.pm:2808 share/html/SelfService/Elements/MyRequests:73
 msgid "open"
 msgstr "atvērt"
 
@@ -9609,7 +9641,7 @@ msgstr ""
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:2777
+#: etc/RT_Config.pm:2809
 msgid "rejected"
 msgstr "noraidīts"
 
@@ -9617,7 +9649,7 @@ msgstr "noraidīts"
 msgid "requires running rt-crontool"
 msgstr ""
 
-#: etc/RT_Config.pm:2777
+#: etc/RT_Config.pm:2809
 msgid "resolved"
 msgstr "atrisināts"
 
@@ -9641,9 +9673,9 @@ msgstr ""
 msgid "site config"
 msgstr "Saita konfig"
 
-#: etc/RT_Config.pm:2776
+#: etc/RT_Config.pm:2808
 msgid "stalled"
-msgstr "Neizdevās"
+msgstr "apstādināts"
 
 #: share/html/Admin/Tools/Queries.html:88
 msgid "statement"
@@ -9667,11 +9699,11 @@ msgstr "Sistēmas grupas '%1'"
 msgid "table"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1526
+#: lib/RT/Interface/Web.pm:1565
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1519
+#: lib/RT/Interface/Web.pm:1558
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
 msgstr ""
 
@@ -9709,15 +9741,15 @@ msgstr "Neparakstīta grupa %1"
 msgid "unlimited"
 msgstr "neierobežots"
 
-#: lib/RT/Interface/Web.pm:1615 lib/RT/Interface/Web.pm:1620 lib/RT/Interface/Web.pm:1624
+#: lib/RT/Interface/Web.pm:1654 lib/RT/Interface/Web.pm:1659 lib/RT/Interface/Web.pm:1663
 msgid "update a ticket"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1617
+#: lib/RT/Interface/Web.pm:1656
 msgid "update an approval"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1618
+#: lib/RT/Interface/Web.pm:1657
 msgid "update an article"
 msgstr ""
 
@@ -9756,7 +9788,7 @@ msgstr ""
 msgid "which port your web server will listen to, e.g. 8080"
 msgstr "kuru portu Jūsu tīmekļa serveris klausīsies, piem., 8080"
 
-#: share/html/Elements/ShowTransactionAttachments:64
+#: share/html/Elements/ShowTransactionAttachments:68
 msgid "with headers"
 msgstr "ar hederiem"
 
@@ -9764,7 +9796,7 @@ msgstr "ar hederiem"
 msgid "yes"
 msgstr "jā"
 
-#: lib/RT/Interface/Web.pm:1511
+#: lib/RT/Interface/Web.pm:1550
 msgid "your browser did not supply a Referrer header"
 msgstr ""
 

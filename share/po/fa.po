@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-02-26 18:21+0000\n"
-"PO-Revision-Date: 2014-06-06 00:25+0000\n"
-"Last-Translator: Alex Vandiver <Unknown>\n"
+"POT-Creation-Date: 2015-05-07 20:30+0000\n"
+"PO-Revision-Date: 2015-11-02 23:10+0000\n"
+"Last-Translator: Shawn M Moore <sartak@gmail.com>\n"
 "Language-Team: Persian <fa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-04-22 14:41+0000\n"
-"X-Generator: Launchpad (build 17430)\n"
+"X-Launchpad-Export-Date: 2016-06-08 19:37+0000\n"
+"X-Generator: Launchpad (build 18097)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
 msgid "#"
@@ -33,7 +33,7 @@ msgid "#%1: %2"
 msgstr "شماره %1: %2"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1118 lib/RT/Transaction.pm:1157
+#: lib/RT/Transaction.pm:1132 lib/RT/Transaction.pm:1171
 msgid "%1"
 msgstr ""
 
@@ -80,20 +80,20 @@ msgstr ""
 #. ($cf->Name, $new_content)
 #. ($field, $new)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:1018 lib/RT/Transaction.pm:1061
+#: lib/RT/Record.pm:2091 lib/RT/Transaction.pm:1032 lib/RT/Transaction.pm:1075
 msgid "%1 %2 added"
 msgstr "%1 %2 اضافه شد"
 
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $old, $new)
-#: lib/RT/Record.pm:2098 lib/RT/Transaction.pm:1024
+#: lib/RT/Record.pm:2098 lib/RT/Transaction.pm:1038
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 به %3 تغییر یافت"
 
 #. ($cf->Name, $old_content)
 #. ($field, $old)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Record.pm:2095 lib/RT/Transaction.pm:1021 lib/RT/Transaction.pm:1067
+#: lib/RT/Record.pm:2095 lib/RT/Transaction.pm:1035 lib/RT/Transaction.pm:1081
 msgid "%1 %2 deleted"
 msgstr "%1 %2 حذف شد"
 
@@ -149,49 +149,53 @@ msgid "%1 (from pane %2)"
 msgstr "%1 (از قاب %2)"
 
 #. ("--log")
-#: bin/rt-crontool:330
+#: bin/rt-crontool:343
 msgid "%1 - Adjust LogToSTDERR config option"
 msgstr ""
 
-#. ("--action-arg", "--action")
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
-#: bin/rt-crontool:305 bin/rt-crontool:312 bin/rt-crontool:318
+#: bin/rt-crontool:318 bin/rt-crontool:325
 msgid "%1 - An argument to pass to %2"
 msgstr "%1 - یک پارامتر ارسالی به %2"
 
+#. ("--action-arg", "--action")
+#: bin/rt-crontool:331
+msgid "%1 - An argument to pass to %2. This option may be repeated to pass corresponding arguments to multiple calls of %2."
+msgstr ""
+
 #. ("--verbose")
-#: bin/rt-crontool:332
+#: bin/rt-crontool:345
 msgid "%1 - Output status updates to STDOUT"
 msgstr "%1 - وضعیت خروجی در STDOUT روزآمد شد"
 
 #. ("--transaction")
-#: bin/rt-crontool:324
+#: bin/rt-crontool:337
 msgid "%1 - Specify if you want to use either 'first', 'last' or 'all' transactions"
 msgstr "%1 - مشخص کنید آیا شما  'اولین', 'آخرین' و یا 'تمام' تبادل ها را می خواهید"
 
 #. ("--template")
-#: bin/rt-crontool:321
+#: bin/rt-crontool:334
 msgid "%1 - Specify name or id of template(s) you want to use"
 msgstr "%1 - نام و یا مشخصه قالب (-هایی) را که می خواهید استفاده کنید، مشخص نمایید"
 
 #. ("--action")
-#: bin/rt-crontool:315
-msgid "%1 - Specify the action module you want to use"
-msgstr "%1 - ماژول عملیاتی دلخواه خود را مشخص کنید"
+#: bin/rt-crontool:328
+msgid "%1 - Specify the action module you want to use. This option may be repeated to apply multiple actions to found tickets."
+msgstr ""
 
 #. ("--transaction-type")
-#: bin/rt-crontool:327
+#: bin/rt-crontool:340
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
 msgstr "%1 - لیستی که با کاما جدا شده اند از انواع تبادل هایی که می خواهید استفاده کنید، مشخص نمایید"
 
 #. ("--condition")
-#: bin/rt-crontool:309
+#: bin/rt-crontool:322
 msgid "%1 - Specify the condition module you want to use"
 msgstr "%1 - ماژول شرطی دلخواه خود را مشخص نمایید"
 
 #. ("--search")
-#: bin/rt-crontool:302
+#: bin/rt-crontool:315
 msgid "%1 - Specify the search module you want to use"
 msgstr "%1 - ماژول جستجوی دلخواه خود را مشخص نمایید"
 
@@ -200,8 +204,8 @@ msgstr "%1 - ماژول جستجوی دلخواه خود را مشخص نمای�
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2015', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2015', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2016', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2016', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "سیستم پیگیری درخواست شرکت تراکتورسازی ایران 1391."
@@ -250,7 +254,7 @@ msgstr "%1 ظاهرا کاملا آماده سازی شده است. ما نیا�
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj))
 #. ($self->BriefDescription , $self->CreatorObj->Name)
-#: lib/RT/Transaction.pm:749 share/html/Ticket/Elements/ShowDates:86 share/html/m/ticket/show:380
+#: lib/RT/Transaction.pm:763 share/html/Ticket/Elements/ShowDates:86 share/html/m/ticket/show:380
 msgid "%1 by %2"
 msgstr "%1 توسط %2"
 
@@ -259,19 +263,19 @@ msgstr "%1 توسط %2"
 msgid "%1 cannot be a group"
 msgstr ""
 
-#. ($self->loc($self->Field) , $q1->Name , $q2->Name)
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),                    ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")))
+#. ($self->loc($self->Field), $q1->Name // '#'.$q1->id, $q2->Name // '#'.$q2->id)
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
-#: lib/RT/Record.pm:528 lib/RT/Transaction.pm:1167 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:1186 lib/RT/Transaction.pm:1195 lib/RT/Transaction.pm:1235 lib/RT/Transaction.pm:892
+#: lib/RT/Record.pm:528 lib/RT/Transaction.pm:1181 lib/RT/Transaction.pm:1186 lib/RT/Transaction.pm:1200 lib/RT/Transaction.pm:1209 lib/RT/Transaction.pm:1249 lib/RT/Transaction.pm:906
 msgid "%1 changed from %2 to %3"
 msgstr "%1 تغییر یافته از %2 به %3"
 
 #. (loc("Render Type"), $original, $RenderType)
 #. (loc("Field values source"), $original, $ValuesClass)
-#: share/html/Admin/CustomFields/Modify.html:215 share/html/Admin/CustomFields/Modify.html:231
+#: share/html/Admin/CustomFields/Modify.html:216 share/html/Admin/CustomFields/Modify.html:232
 msgid "%1 changed from '%2' to '%3'"
 msgstr "%1 تغییر یافته از '%2' به '%3'"
 
@@ -290,17 +294,17 @@ msgid "%1 could not be set to %2."
 msgstr "%1 نمی تواند به %2 تنظیم شود."
 
 #. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:857
+#: lib/RT/Transaction.pm:871
 msgid "%1 created"
 msgstr "%1 ایجاد شد"
 
 #. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:871
+#: lib/RT/Transaction.pm:885
 msgid "%1 deleted"
 msgstr "%1 حذف شد"
 
-#. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:865
+#. ($self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType)
+#: lib/RT/Transaction.pm:879
 msgid "%1 disabled"
 msgstr "%1 غیر فعال شد"
 
@@ -309,8 +313,8 @@ msgstr "%1 غیر فعال شد"
 msgid "%1 doesn't exist."
 msgstr "%1 وجود ندارد."
 
-#. ($self->FriendlyObjectType)
-#: lib/RT/Transaction.pm:861
+#. ($self->Field ? $self->loc($self->Field) : $self->FriendlyObjectType)
+#: lib/RT/Transaction.pm:875
 msgid "%1 enabled"
 msgstr "%1 فعال شد"
 
@@ -319,7 +323,7 @@ msgid "%1 highest priority tickets I own"
 msgstr "%1 درخواست اولویت بالا با مسئولیت من"
 
 #. ($0)
-#: bin/rt-crontool:297
+#: bin/rt-crontool:310
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 ابزاری برای انجام عملیات از طریق یک ابزار زمان بندی خارجی مانند cron‌ است."
 
@@ -342,12 +346,12 @@ msgstr ""
 #. ($name, $self->loc($type))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:431 share/html/Ticket/Update.html:282 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:365 lib/RT/Record/Role/Roles.pm:373 share/html/Ticket/Create.html:433 share/html/Ticket/Update.html:285 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 یک آدرس سیستم پیگیری درخواست هست که نامه های الکترونیکی را دریافت می کند. اضافه کردن آن به عنوان  '%2' یک چرخه نامه رسانی تولید می کند"
 
 #. ($principal->Object->Name,                         $self->loc($args{'Type'}))
-#: lib/RT/Ticket.pm:676
+#: lib/RT/Ticket.pm:681
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 دیگر یک %2 برای این درخواست نیست."
 
@@ -397,7 +401,7 @@ msgstr "%1 اشیا"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1073
+#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1087
 msgid "%1 set to %2"
 msgstr ""
 
@@ -454,7 +458,7 @@ msgid "%1's saved searches"
 msgstr "جستجوهای ذخیره شده ی  %1"
 
 #. ($self)
-#: lib/RT/Transaction.pm:691
+#: lib/RT/Transaction.pm:705
 msgid "%1: no attachment specified"
 msgstr "%1: هیچ ضمیمه ای مشخص نشده است"
 
@@ -559,7 +563,7 @@ msgid "%quant(%1,year,years)"
 msgstr ""
 
 #. ($name)
-#: lib/RT/Queue.pm:316
+#: lib/RT/Queue.pm:279
 msgid "'%1' is not a valid name."
 msgstr "'%1' نام معتبری نیست."
 
@@ -585,7 +589,7 @@ msgstr "(برای حذف انتخاب کنید)"
 msgid "(Check boxes to delete)"
 msgstr "(برای حذف موارد انتخاب کنید)"
 
-#: share/html/Elements/BulkCustomFields:95
+#: share/html/Elements/BulkCustomFields:99
 msgid "(Check to delete all values)"
 msgstr ""
 
@@ -631,6 +635,10 @@ msgstr "(یک کپی از این بروز رسانی به لیست جدا شده
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(یک کپی از این بروز رسانی به لیست جدا شده با کاما از آدرس ایمیل ها، ارسال می کند. این افراد <strong>حتما</strong> در آینده بروز رسانی ها را دریافت خواهند کرد.)"
 
+#: share/html/Elements/BulkCustomFields:94
+msgid "(Unsupported custom field type)"
+msgstr ""
+
 #: share/html/Admin/Scrips/Elements/EditCustomCode:52
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
 msgstr "(از این فیلد زمانی استفاده کنید که برای شرط یا عمل 'تعریف شده توسط کاربر' را انتخاب کرده باشید)"
@@ -651,7 +659,7 @@ msgstr "(بدون نام)"
 msgid "(no pubkey!)"
 msgstr "(بدون کلید عمومی!)"
 
-#: lib/RT/Report/Tickets.pm:702 lib/RT/Report/Tickets.pm:871 lib/RT/Report/Tickets.pm:882 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1172 lib/RT/Transaction.pm:1234 lib/RT/Transaction.pm:1235 lib/RT/Transaction.pm:811 lib/RT/Transaction.pm:816 lib/RT/Transaction.pm:886 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
+#: lib/RT/Report/Tickets.pm:699 lib/RT/Report/Tickets.pm:868 lib/RT/Report/Tickets.pm:879 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1186 lib/RT/Transaction.pm:1248 lib/RT/Transaction.pm:1249 lib/RT/Transaction.pm:825 lib/RT/Transaction.pm:830 lib/RT/Transaction.pm:900 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:109 share/html/Elements/EditCustomFieldSelect:128 share/html/Elements/EditCustomFieldSelect:138 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:61 share/html/m/ticket/show:263
 msgid "(no value)"
 msgstr "(بدون مقدار)"
 
@@ -677,7 +685,7 @@ msgstr "(الزامی)"
 msgid "(trust: %1)"
 msgstr "(مورد تایید: %1)"
 
-#: share/html/Elements/ShowTransactionAttachments:276 share/html/Elements/ShowTransactionAttachments:62
+#: share/html/Elements/ShowTransactionAttachments:280 share/html/Elements/ShowTransactionAttachments:66
 msgid "(untitled)"
 msgstr "(بدون عنوان)"
 
@@ -757,7 +765,7 @@ msgstr "عمل"
 msgid "Action '%1' not found"
 msgstr "عمل '%1' پیدا نشد"
 
-#: bin/rt-crontool:217
+#: bin/rt-crontool:229
 msgid "Action committed."
 msgstr "عمل انجام شد."
 
@@ -765,7 +773,7 @@ msgstr "عمل انجام شد."
 msgid "Action is mandatory argument"
 msgstr "عمل، آرگومان اجباری است"
 
-#: bin/rt-crontool:213
+#: bin/rt-crontool:225
 msgid "Action prepared..."
 msgstr "عمل آماده سازی شد..."
 
@@ -869,12 +877,12 @@ msgid "Added"
 msgstr ""
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
-#: lib/RT/Ticket.pm:645
+#: lib/RT/Ticket.pm:650
 msgid "Added %1 as a %2 for this ticket"
 msgstr ""
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
-#: lib/RT/Queue.pm:603
+#: lib/RT/Queue.pm:581
 msgid "Added %1 to members of %2 for this queue."
 msgstr "%1 به اعضای %2 از این صف اضافه شد."
 
@@ -900,7 +908,7 @@ msgid "Address2"
 msgstr "آدرس ۲"
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1244
+#: lib/RT/Transaction.pm:1258
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -944,7 +952,7 @@ msgstr "گروه رونوشت مدیریتی"
 msgid "AdminCc"
 msgstr "رونوشت مدیریتی"
 
-#: lib/RT/Graph/Tickets.pm:154
+#: lib/RT/Graph/Tickets.pm:157
 msgid "AdminCcs"
 msgstr "رونوشت های مدیریتی"
 
@@ -1235,7 +1243,7 @@ msgstr "ضمیمه"
 msgid "Attachment '%1' could not be loaded"
 msgstr "بارگذاری ضمیمه '%1' امکان ندارد"
 
-#: lib/RT/Transaction.pm:699
+#: lib/RT/Transaction.pm:713
 msgid "Attachment created"
 msgstr "ضمیمه ایجاد شد"
 
@@ -1261,6 +1269,10 @@ msgstr ""
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
+msgstr ""
+
+#: lib/RT/Queue.pm:353
+msgid "AutoSigning"
 msgstr ""
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
@@ -1333,7 +1345,7 @@ msgstr "قبلی"
 msgid "Bad privacy for attribute %1"
 msgstr "مشکل حریم برای خاصیت %1"
 
-#: share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:348 share/html/Elements/Tabs:366 share/html/Elements/Tabs:405 share/html/Elements/Tabs:451 share/html/Elements/Tabs:614 share/html/Elements/Tabs:650 share/html/Ticket/Create.html:453 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
+#: share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Display.html:50 share/html/Articles/Article/Edit.html:57 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:289 share/html/Elements/Tabs:323 share/html/Elements/Tabs:348 share/html/Elements/Tabs:366 share/html/Elements/Tabs:405 share/html/Elements/Tabs:451 share/html/Elements/Tabs:614 share/html/Elements/Tabs:650 share/html/Ticket/Create.html:455 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "مبانی"
 
@@ -1440,7 +1452,7 @@ msgstr "اضافه نمودن یک مقدار فیلد خاص بدون نام ا
 msgid "Can't find a saved search to work with"
 msgstr "یافتن جستجوی ذخیره شده برای انجام عمل امکان ندارد"
 
-#: lib/RT/Ticket.pm:3061
+#: lib/RT/Ticket.pm:3066
 msgid "Can't forward: no valid email addresses specified"
 msgstr ""
 
@@ -1452,7 +1464,7 @@ msgstr "پیوند یک درخواست به خودش امکان ندارد"
 msgid "Can't link to a deleted ticket"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1781
+#: lib/RT/Ticket.pm:1786
 msgid "Can't merge a ticket into itself"
 msgstr ""
 
@@ -1482,7 +1494,7 @@ msgstr ""
 msgid "Cannot add link to plain number"
 msgstr "اضافه نمودن پیوند به عدد خالی امکان ندارد"
 
-#: share/html/Ticket/Create.html:387 share/html/m/ticket/create:147
+#: share/html/Ticket/Create.html:389 share/html/m/ticket/create:147
 msgid "Cannot create tickets in a disabled queue."
 msgstr "ایجاد درخواست در یک صف غیر فعال شده امکان ندارد."
 
@@ -1498,7 +1510,7 @@ msgstr "دسته بندی"
 msgid "Cc"
 msgstr "رونوشت"
 
-#: lib/RT/Graph/Tickets.pm:154
+#: lib/RT/Graph/Tickets.pm:157
 msgid "Ccs"
 msgstr "رونوشتها"
 
@@ -1661,7 +1673,7 @@ msgstr "توضیحات (ارسال نشده به درخواست کنندگان)"
 msgid "Comments about this user"
 msgstr "توضیحات مربوط به این کاربر"
 
-#: lib/RT/Ticket.pm:1628 lib/RT/Transaction.pm:961
+#: lib/RT/Ticket.pm:1633 lib/RT/Transaction.pm:975
 msgid "Comments added"
 msgstr "توضیحات اضافه شد"
 
@@ -1683,7 +1695,7 @@ msgstr "شرط '%1' پیدا نشد"
 msgid "Condition is mandatory argument"
 msgstr "شرط، آرگومان اجباری است"
 
-#: bin/rt-crontool:197
+#: bin/rt-crontool:199
 msgid "Condition matches..."
 msgstr "شرط مطابق است با..."
 
@@ -1719,11 +1731,11 @@ msgid "Content"
 msgstr "محتوا"
 
 #. ($self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:917
+#: lib/RT/Transaction.pm:931
 msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
 msgstr ""
 
-#: lib/RT/Transaction.pm:926
+#: lib/RT/Transaction.pm:940
 msgid "Content insert failed. See error log for details."
 msgstr ""
 
@@ -1736,7 +1748,7 @@ msgid "Content is not a valid IP address range"
 msgstr "محتوا یک طیف آدرس IP نامعتبر است"
 
 #. ($self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:906
+#: lib/RT/Transaction.pm:920
 msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
 msgstr ""
 
@@ -1756,7 +1768,7 @@ msgstr "آدرس متناظر"
 msgid "Correspondence"
 msgstr "تناظر"
 
-#: lib/RT/Ticket.pm:1630 lib/RT/Transaction.pm:957
+#: lib/RT/Ticket.pm:1635 lib/RT/Transaction.pm:971
 msgid "Correspondence added"
 msgstr "پاراف اضافه شد"
 
@@ -1771,12 +1783,12 @@ msgid "Could not add new custom field value: %1"
 msgstr "اضافه کردن مقدار جدید فیلد خاص امکان ندارد: %1"
 
 #. ($msg)
-#: lib/RT/Ticket.pm:2053
+#: lib/RT/Ticket.pm:2058
 msgid "Could not change owner: %1"
 msgstr "تغییر مسئول امکان ندارد: %1"
 
 #. ($msg)
-#: share/html/Admin/CustomFields/Modify.html:184 share/html/Admin/Elements/EditCustomField:116
+#: share/html/Admin/CustomFields/Modify.html:185 share/html/Admin/Elements/EditCustomField:116
 msgid "Could not create CustomField: %1"
 msgstr "ساخت فیلد خاص امکان ندارد: %1"
 
@@ -1906,7 +1918,7 @@ msgstr "حذف داشبورد %1 امکان ندارد:%2"
 msgid "Couldn't find row"
 msgstr "پیدا کردن سطر امکان ندارد"
 
-#: bin/rt-crontool:168
+#: bin/rt-crontool:170
 msgid "Couldn't find suitable transaction, skipping"
 msgstr "یافتن تبادل مناسب امکان ندارد، صرف نظر"
 
@@ -1949,12 +1961,12 @@ msgid "Couldn't load copy of %1 #%2"
 msgstr ""
 
 #. ($self->Id)
-#: lib/RT/Ticket.pm:1086
+#: lib/RT/Ticket.pm:1091
 msgid "Couldn't load copy of ticket #%1."
 msgstr "بارگذاری یک کپی از درخواست شماره %1 امکان ندارد."
 
 #. ($id, $msg)
-#: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:100 share/html/Dashboards/Subscription.html:201
+#: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:100 share/html/Dashboards/Subscription.html:203
 msgid "Couldn't load dashboard %1: %2"
 msgstr "بارگذاری داشبورد %1 امکان ندارد:%2"
 
@@ -2028,7 +2040,7 @@ msgstr "بارگذاری اسکریپ شماره %1 امکان ندارد"
 msgid "Couldn't load template #%1"
 msgstr "بارگذاری قالب شماره %1 امکان ندارد"
 
-#: lib/RT/Interface/Web.pm:2629
+#: lib/RT/Interface/Web.pm:2668
 msgid "Couldn't load the specified principal"
 msgstr "بارگذاری فرد معین شده امکان ندارد"
 
@@ -2135,7 +2147,7 @@ msgstr "ایجاد درخواست ها"
 msgid "Create a Class"
 msgstr "ایجاد یک دسته"
 
-#: share/html/Admin/CustomFields/Modify.html:167 share/html/Admin/CustomFields/Modify.html:185 share/html/Admin/Elements/EditCustomField:99
+#: share/html/Admin/CustomFields/Modify.html:168 share/html/Admin/CustomFields/Modify.html:186 share/html/Admin/Elements/EditCustomField:99
 msgid "Create a CustomField"
 msgstr "ایجاد یک فیلد خاص"
 
@@ -2169,7 +2181,7 @@ msgstr "ایجاد یک گروه جدید"
 msgid "Create a new template for queue %1"
 msgstr "ایجاد یک قالب جدید برای صف %1"
 
-#: share/html/Ticket/Create.html:378
+#: share/html/Ticket/Create.html:380
 msgid "Create a new ticket"
 msgstr "ایجاد یک درخواست جدید"
 
@@ -2258,7 +2270,7 @@ msgstr "ایجاد، تغییر و حذف جستجو های ذخیره شده"
 msgid "Create, modify and delete users"
 msgstr "ایجاد، تغییر و حذف کاربران"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "ایجاد شده"
 
@@ -2268,7 +2280,7 @@ msgstr "ایجاد شده توسط"
 
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
-#: share/html/Admin/CustomFields/Modify.html:189 share/html/Admin/Elements/EditCustomField:120
+#: share/html/Admin/CustomFields/Modify.html:190 share/html/Admin/Elements/EditCustomField:120
 msgid "Created CustomField %1"
 msgstr "ایجاد فیلد خاص %1"
 
@@ -2289,7 +2301,7 @@ msgstr "ایجاد شده توسط"
 msgid "CreatedRelative"
 msgstr "ایجاد شده نسبی"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:69 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Report/Tickets.pm:69 lib/RT/Tickets.pm:109 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
 msgstr "ایجاد کننده"
 
@@ -2325,7 +2337,7 @@ msgstr "ناظران اخیر"
 msgid "Custom CSS (Advanced)"
 msgstr ""
 
-#: share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:51 share/html/Elements/Tabs:133 share/html/Elements/Tabs:183 share/html/Elements/Tabs:258 share/html/Elements/Tabs:300 share/html/Elements/Tabs:453 share/html/Elements/Tabs:92 share/html/m/ticket/show:252
+#: lib/RT/Graph/Tickets.pm:169 share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:51 share/html/Elements/Tabs:133 share/html/Elements/Tabs:183 share/html/Elements/Tabs:258 share/html/Elements/Tabs:300 share/html/Elements/Tabs:453 share/html/Elements/Tabs:92 share/html/m/ticket/show:252
 msgid "Custom Fields"
 msgstr "فیلدهای خاص"
 
@@ -2399,7 +2411,7 @@ msgstr "یافتن مقدار فیلد خاص امکان ندارد"
 msgid "Custom field value deleted"
 msgstr "مقدار فیلد خاص حذف شده"
 
-#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:965 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets.pm:152 lib/RT/Transaction.pm:979 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr "فیلد خاص"
 
@@ -2524,7 +2536,7 @@ msgstr ""
 msgid "Date format"
 msgstr "قالب تاریخ"
 
-#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:659 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/ShowSummary:85 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:374 share/html/m/ticket/show:344
+#: share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Elements/Tabs:659 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:257 share/html/Ticket/Elements/ShowSummary:87 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:374 share/html/m/ticket/show:344
 msgid "Dates"
 msgstr "تاریخها"
 
@@ -2569,7 +2581,7 @@ msgstr ""
 msgid "Default: %1"
 msgstr "پیش‌فرض: %1"
 
-#: lib/RT/Transaction.pm:805
+#: lib/RT/Transaction.pm:819
 msgid "Default: %1/%2 changed from %3 to %4"
 msgstr "پیش فرض: %1/%2 تغییر یافته از %3 به %4"
 
@@ -2577,7 +2589,7 @@ msgstr "پیش فرض: %1/%2 تغییر یافته از %3 به %4"
 msgid "DefaultFormat"
 msgstr "قالب پیشفرض"
 
-#: etc/RT_Config.pm:2807 etc/RT_Config.pm:2851 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2839 etc/RT_Config.pm:2883 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "حذف"
 
@@ -2603,7 +2615,7 @@ msgstr "حذف انجام نشد: %1"
 msgid "Delete group dashboards"
 msgstr "حذف داشبوردهای گروه"
 
-#: lib/RT/Ticket.pm:2444 lib/RT/Ticket.pm:2444
+#: lib/RT/Ticket.pm:2449 lib/RT/Ticket.pm:2449
 msgid "Delete operation is disabled by lifecycle configuration"
 msgstr "عملیات حذف توسط پیکربندی چرخه حیات غیر فعال شده است"
 
@@ -2657,27 +2669,27 @@ msgstr "تکذیب"
 msgid "Depended on by"
 msgstr "پیشنیاز"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:129 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:129 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "DependedOnBy"
 msgstr "پیشنیاز"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1099
+#: lib/RT/Transaction.pm:1113
 msgid "Dependency by %1 added"
 msgstr "وابستگی بوسیله  %1 اضافه شد"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1141
+#: lib/RT/Transaction.pm:1155
 msgid "Dependency by %1 deleted"
 msgstr "وابستگی بوسیله  %1 حذف شد"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1096
+#: lib/RT/Transaction.pm:1110
 msgid "Dependency on %1 added"
 msgstr "وابستگی به  %1 اضافه شد"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1138
+#: lib/RT/Transaction.pm:1152
 msgid "Dependency on %1 deleted"
 msgstr "وابستگی به  %1 حذف شد"
 
@@ -2689,7 +2701,7 @@ msgstr "وابستگی به"
 msgid "Depends on"
 msgstr "وابسته است به"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:125 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:125 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "DependsOn"
 msgstr "وابسته است به"
 
@@ -2701,7 +2713,7 @@ msgstr "نزولی"
 msgid "Describe the issue below"
 msgstr "موضوع ذیل را توصیف کنید"
 
-#: share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/CustomFields/Modify.html:66 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:70 share/html/Admin/Queues/Modify.html:66 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Scrip/ColumnMap:105 share/html/Elements/RT__Template/ColumnMap:61 share/html/Search/Elements/EditSearches:56
+#: share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/CustomFields/Modify.html:66 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:70 share/html/Admin/Queues/Modify.html:66 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Scrip/ColumnMap:105 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__Transaction/ColumnMap:90 share/html/Search/Elements/EditSearches:56
 msgid "Description"
 msgstr "توصیف"
 
@@ -2709,7 +2721,7 @@ msgstr "توصیف"
 msgid "Detailed information about your RT setup"
 msgstr "اطلاعات دقیق تر از نصب سیستم پیگیری درخواست های شما"
 
-#: share/html/Ticket/Create.html:454
+#: share/html/Ticket/Create.html:456
 msgid "Details"
 msgstr "جزئیات ‌"
 
@@ -2787,7 +2799,7 @@ msgstr "این صفحه را تجدید نکنید."
 msgid "Don't trust this key at all"
 msgstr "هیچ وقت به این کلید اعتماد نکنید"
 
-#: share/html/Elements/ShowTransactionAttachments:62
+#: share/html/Elements/ShowTransactionAttachments:66
 msgid "Download"
 msgstr "بارگیری"
 
@@ -2799,7 +2811,7 @@ msgstr "بارگذاری فایل رونوشت"
 msgid "Dropdown"
 msgstr "پایین افتادنی"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:263 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:70 share/html/m/ticket/create:381 share/html/m/ticket/show:366
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:134 share/html/Elements/RT__Ticket/ColumnMap:205 share/html/Elements/RT__Ticket/ColumnMap:238 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:263 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:70 share/html/m/ticket/create:381 share/html/m/ticket/show:366
 msgid "Due"
 msgstr "مهلت"
 
@@ -2880,7 +2892,7 @@ msgstr "ویرایش سلسله مراتب موضوع برای %1"
 
 #. ($CustomFieldObj->Name)
 #. ($CustomFieldObj->Name())
-#: share/html/Admin/CustomFields/Modify.html:195 share/html/Admin/Elements/EditCustomField:123
+#: share/html/Admin/CustomFields/Modify.html:196 share/html/Admin/Elements/EditCustomField:123
 msgid "Editing CustomField %1"
 msgstr "ویرایش فیلد خاص %1"
 
@@ -3005,13 +3017,9 @@ msgstr "رمزگذاری/رمزگشایی"
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
 msgstr "رمزگذاری/رمزگشایی تبادل شماره %1 از درخواست شماره %2"
 
-#: lib/RT/Queue.pm:410
-msgid "Encrypting disabled"
-msgstr "رمز گذاری غیر فعال شده"
-
-#: lib/RT/Queue.pm:409
-msgid "Encrypting enabled"
-msgstr "رمزگذاری فعال شده"
+#: lib/RT/Queue.pm:384
+msgid "Encrypting"
+msgstr ""
 
 #: lib/RT/Attachment.pm:824
 msgid "Encryption error; contact the administrator"
@@ -3153,7 +3161,7 @@ msgstr "خطا: جستجوی %1 روزآمد نشده: %2"
 msgid "Error: unencrypted message"
 msgstr ""
 
-#: bin/rt-crontool:355
+#: bin/rt-crontool:368
 msgid "Escalate tickets"
 msgstr "افزایش درخواست ها"
 
@@ -3165,7 +3173,7 @@ msgstr "تخمینی"
 msgid "Everyone"
 msgstr "همه کس"
 
-#: bin/rt-crontool:341
+#: bin/rt-crontool:354
 msgid "Example:"
 msgstr "مثال:"
 
@@ -3240,7 +3248,7 @@ msgid "Failed to load %1 %2: %3"
 msgstr "ناموفق در بارگذاری %1 %2: %3"
 
 #. ($modname, $error)
-#: bin/rt-crontool:289
+#: bin/rt-crontool:302
 msgid "Failed to load module %1. (%2)"
 msgstr "ناموفق در بارگذاری ماژول %1. (%2)"
 
@@ -3270,7 +3278,7 @@ msgstr ""
 msgid "Feeds"
 msgstr "خبر خوان ها"
 
-#: share/html/Articles/Article/ExtractFromTicket.html:62
+#: share/html/Articles/Article/ExtractFromTicket.html:62 share/html/Elements/RT__Transaction/ColumnMap:70
 msgid "Field"
 msgstr "فیلد"
 
@@ -3279,17 +3287,17 @@ msgid "Field values source:"
 msgstr "منبع مقادیر فیلد:"
 
 #. ($self->Data, $self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:913
+#: lib/RT/Transaction.pm:927
 msgid "File '%1' dropped because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
 msgstr ""
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:923
+#: lib/RT/Transaction.pm:937
 msgid "File '%1' insert failed. See error log for details."
 msgstr ""
 
 #. ($self->Data, $self->OldValue, $self->NewValue)
-#: lib/RT/Transaction.pm:902
+#: lib/RT/Transaction.pm:916
 msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
 msgstr ""
 
@@ -3434,12 +3442,12 @@ msgid "Forward transaction #%1"
 msgstr "ارجاع تبادل شماره %1"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
-#: lib/RT/Transaction.pm:937
+#: lib/RT/Transaction.pm:951
 msgid "Forwarded %3Transaction #%1%4 to %2"
 msgstr ""
 
 #. ($recipients)
-#: lib/RT/Transaction.pm:945
+#: lib/RT/Transaction.pm:959
 msgid "Forwarded Ticket to %1"
 msgstr "ارجاع درخواست به %1"
 
@@ -3502,7 +3510,7 @@ msgid "Give output even on messages successfully sent"
 msgstr ""
 
 #. ($self->_FormatUser($New))
-#: lib/RT/Transaction.pm:1055 lib/RT/Transaction.pm:1208 lib/RT/Transaction.pm:1220
+#: lib/RT/Transaction.pm:1069 lib/RT/Transaction.pm:1222 lib/RT/Transaction.pm:1234
 msgid "Given to %1"
 msgstr "دادن مسئولیت به %1"
 
@@ -3569,7 +3577,7 @@ msgstr "رفتن به درخواست"
 msgid "Goto ticket"
 msgstr "رفتن به درخواست"
 
-#: share/html/Ticket/Elements/ShowSummary:90 share/html/Ticket/ModifyLinks.html:58
+#: share/html/Ticket/Elements/ShowSummary:93 share/html/Ticket/ModifyLinks.html:58
 msgid "Graph"
 msgstr "نگاره"
 
@@ -3807,7 +3815,7 @@ msgstr "اگر یک تاییدیه رد شد،‌ اصلی را رد کرده و
 msgid "If this is not what you expect, leave this page now without logging in."
 msgstr "اگر این صفحه چیزی نیست که انتظارش را داشتید، بدون ورود به سیستم آن را رها کنید."
 
-#: bin/rt-crontool:337
+#: bin/rt-crontool:350
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr ""
 
@@ -3842,15 +3850,15 @@ msgstr ""
 msgid "Illegal value for %1"
 msgstr "مقدار نامعتبر برای %1"
 
-#: share/html/Elements/ShowTransactionAttachments:268
+#: share/html/Elements/ShowTransactionAttachments:272
 msgid "Image displayed inline above"
 msgstr ""
 
-#: share/html/Elements/ShowTransactionAttachments:264
+#: share/html/Elements/ShowTransactionAttachments:268
 msgid "Image not shown because display is disabled in system configuration."
 msgstr ""
 
-#: share/html/Elements/ShowTransactionAttachments:272
+#: share/html/Elements/ShowTransactionAttachments:276
 msgid "Image not shown because sender requested not to inline it."
 msgstr ""
 
@@ -4112,15 +4120,15 @@ msgstr ""
 msgid "Is not encrypted"
 msgstr "رمزنگاری نشده"
 
-#: bin/rt-crontool:338
+#: bin/rt-crontool:351
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
 msgstr ""
 
-#: bin/rt-crontool:339
+#: bin/rt-crontool:352
 msgid "It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool."
 msgstr ""
 
-#: bin/rt-crontool:299
+#: bin/rt-crontool:312
 msgid "It takes several arguments:"
 msgstr "چندین آرگومان دارد:"
 
@@ -4197,11 +4205,11 @@ msgstr "آخرین بروز شده"
 msgid "Last updated by"
 msgstr "آخرین بروز رسانی توسط"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:83 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:83 lib/RT/Tickets.pm:136 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdated"
 msgstr "آخرین بروزرسانی"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:70 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Report/Tickets.pm:70 lib/RT/Tickets.pm:110 share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedBy"
 msgstr "آخرین بروز رسانی توسط"
 
@@ -4298,7 +4306,7 @@ msgstr "پیوند داده شده به"
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
 
-#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:660 share/html/Ticket/Create.html:281 share/html/Ticket/Elements/ShowSummary:92 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:386
+#: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:660 share/html/Ticket/Create.html:281 share/html/Ticket/Elements/ShowSummary:95 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:386
 msgid "Links"
 msgstr "پیوندها"
 
@@ -4484,7 +4492,7 @@ msgstr "مدیریت مشخصات و پیکربندی هایی که به همه 
 msgid "Manage queues and queue-specific properties"
 msgstr "مدیریت صف ها و مشخصات صف ها"
 
-#: share/html/Ticket/Graphs/index.html:63
+#: share/html/Ticket/Graphs/index.html:66
 msgid "Manage saved graphs"
 msgstr "مدیریت نگاره های ذخیره شده"
 
@@ -4570,12 +4578,12 @@ msgid "Member"
 msgstr "عضو"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1111
+#: lib/RT/Transaction.pm:1125
 msgid "Member %1 added"
 msgstr "عضو %1 اضافه شد"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1153
+#: lib/RT/Transaction.pm:1167
 msgid "Member %1 deleted"
 msgstr "عضو %1 حذف شد"
 
@@ -4592,21 +4600,21 @@ msgstr "عضو حذف شد"
 msgid "Member not deleted"
 msgstr "عضو حذف نشد"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:124 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "MemberOf"
 msgstr "عضو"
 
-#: lib/RT/Graph/Tickets.pm:156 share/html/Elements/Tabs:349 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 share/html/Elements/Tabs:349 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "Members"
 msgstr "اعضا"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1108
+#: lib/RT/Transaction.pm:1122
 msgid "Membership in %1 added"
 msgstr "عضویت در %1 اضافه شد"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1150
+#: lib/RT/Transaction.pm:1164
 msgid "Membership in %1 deleted"
 msgstr "عضویت در %1 حذف شد"
 
@@ -4633,19 +4641,19 @@ msgstr "عضویت کاربر %1"
 msgid "Merge"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1941
+#: lib/RT/Ticket.pm:1946
 msgid "Merge Successful"
 msgstr "ادغام موفق"
 
-#: lib/RT/Ticket.pm:1821
+#: lib/RT/Ticket.pm:1826
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "شکست ادغام. تنظیم شماره موثر امکان ندارد"
 
-#: lib/RT/Ticket.pm:1827
+#: lib/RT/Ticket.pm:1832
 msgid "Merge failed. Couldn't set IsMerged"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1840
+#: lib/RT/Ticket.pm:1845
 msgid "Merge failed. Couldn't set Status"
 msgstr "شکست ادغام. تنظیم حالت امکان ندارد"
 
@@ -4654,23 +4662,23 @@ msgid "Merge into"
 msgstr "ادغام به"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1114
+#: lib/RT/Transaction.pm:1128
 msgid "Merged into %1"
 msgstr "ادغام به %1"
 
-#: share/html/Search/Bulk.html:151 share/html/Ticket/Update.html:138 share/html/Ticket/Update.html:156 share/html/m/ticket/reply:107
+#: share/html/Search/Bulk.html:151 share/html/Ticket/Update.html:141 share/html/Ticket/Update.html:159 share/html/m/ticket/reply:107
 msgid "Message"
 msgstr "پیغام"
 
-#: share/html/Elements/ShowTransactionAttachments:149
+#: share/html/Elements/ShowTransactionAttachments:153
 msgid "Message body is not shown because it is too large."
 msgstr "متن پیغام به دلیل طولانی بودن آن نشان داده نمی شود."
 
-#: share/html/Elements/ShowTransactionAttachments:141
+#: share/html/Elements/ShowTransactionAttachments:145
 msgid "Message body is not shown because sender requested not to inline it."
 msgstr "متن پیغام به دلیل اینکه فرستنده خواسته، نشان داده نمی شود."
 
-#: share/html/Elements/ShowTransactionAttachments:287
+#: share/html/Elements/ShowTransactionAttachments:291
 msgid "Message body not shown because it is not plain text."
 msgstr "متن پیغام به دلیل اینکه متن خالی نیست، نشان داده نمی شود."
 
@@ -4682,7 +4690,7 @@ msgstr "طول جعبه پیغام"
 msgid "Message box width"
 msgstr "عرض جعبه پیغام"
 
-#: lib/RT/Ticket.pm:1624
+#: lib/RT/Ticket.pm:1629
 msgid "Message could not be recorded"
 msgstr "ثبت پیغام امکان ندارد"
 
@@ -4690,7 +4698,7 @@ msgstr "ثبت پیغام امکان ندارد"
 msgid "Message for user"
 msgstr "پیغام برای کاربر"
 
-#: lib/RT/Ticket.pm:3107
+#: lib/RT/Ticket.pm:3112
 msgid "Message recorded"
 msgstr "پیغام ها ذخیره شدند"
 
@@ -4943,7 +4951,7 @@ msgid "Modify the group %1"
 msgstr "اصلاح گروه %1"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:283
+#: share/html/Dashboards/Subscription.html:290
 msgid "Modify the subscription to dashboard %1"
 msgstr "تغییر عضویت به داشبورد %1"
 
@@ -5121,7 +5129,7 @@ msgstr ""
 msgid "NEWLINE"
 msgstr "خط جدید"
 
-#: lib/RT/User.pm:91 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__User/ColumnMap:56
+#: lib/RT/User.pm:91 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:94 share/html/Elements/RT__User/ColumnMap:56
 msgid "Name"
 msgstr "نام"
 
@@ -5173,6 +5181,10 @@ msgstr ""
 msgid "New Search"
 msgstr "جست‌وجوی جدید"
 
+#: share/html/Elements/RT__Transaction/ColumnMap:80
+msgid "New Value"
+msgstr ""
+
 #: share/html/Elements/RT__Ticket/ColumnMap:256 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
 msgstr "پیغام جدید"
@@ -5193,7 +5205,7 @@ msgstr "یادآوری جدید:"
 msgid "New ticket"
 msgstr "درخواست جدید"
 
-#: lib/RT/Ticket.pm:1776
+#: lib/RT/Ticket.pm:1781
 msgid "New ticket doesn't exist"
 msgstr "درخواست جدید وجود ندارد"
 
@@ -5218,7 +5230,7 @@ msgstr ""
 msgid "Nickname"
 msgstr "نام مستعار"
 
-#: share/html/Articles/Article/Delete.html:62 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:258 share/html/Widgets/Form/Boolean:79
+#: share/html/Articles/Article/Delete.html:62 share/html/Elements/RT__Template/ColumnMap:78 share/html/Elements/RT__Ticket/ColumnMap:258 share/html/Widgets/Form/Boolean:82
 msgid "No"
 msgstr "نه"
 
@@ -5245,7 +5257,7 @@ msgstr "هیج دسته ای تعریف نشده"
 msgid "No Classes matching search criteria found."
 msgstr "عدم یافتن دسته هایی منطبق با معیارهای جستجو"
 
-#: share/html/Admin/CustomFields/Modify.html:192 share/html/Admin/Elements/EditCustomField:122
+#: share/html/Admin/CustomFields/Modify.html:193 share/html/Admin/Elements/EditCustomField:122
 msgid "No CustomField"
 msgstr "بدون فیلد خاص"
 
@@ -5256,6 +5268,10 @@ msgstr "هیچ فیلد خاصی تعریف نشده"
 #: share/html/Admin/Groups/GroupRights.html:62 share/html/Admin/Groups/UserRights.html:63
 msgid "No Group defined"
 msgstr "هیچ گروهی تعریف نشده"
+
+#: share/html/Elements/RT__Transaction/ColumnMap:104
+msgid "No Name"
+msgstr ""
 
 #: lib/RT/Tickets.pm:3050
 msgid "No Query"
@@ -5319,7 +5335,7 @@ msgstr ""
 msgid "No longer authorized"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1559
+#: lib/RT/Ticket.pm:1564
 msgid "No message attached"
 msgstr "هیچ پیغامی ضمیمه نشده است"
 
@@ -5389,7 +5405,7 @@ msgid "No rights found"
 msgstr "هیچ حقی یافت نشد"
 
 #. ($principal->Object->Name)
-#: lib/RT/Ticket.pm:530
+#: lib/RT/Ticket.pm:535
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr ""
 
@@ -5414,7 +5430,7 @@ msgstr ""
 msgid "No tickets found."
 msgstr "هیچ درخواستی یافت نشد."
 
-#: lib/RT/Transaction.pm:746 lib/RT/Transaction.pm:788
+#: lib/RT/Transaction.pm:760 lib/RT/Transaction.pm:802
 msgid "No transaction type specified"
 msgstr "هیچ نوع تبادلی مشخص نشده است"
 
@@ -5582,6 +5598,14 @@ msgstr "یا"
 msgid "Object"
 msgstr "شئ"
 
+#: share/html/Elements/RT__Transaction/ColumnMap:60
+msgid "Object Id"
+msgstr ""
+
+#: share/html/Elements/RT__Transaction/ColumnMap:55
+msgid "Object Type"
+msgstr ""
+
 #: lib/RT/Record.pm:358
 msgid "Object could not be created"
 msgstr "ایجاد شئ امکان ندارد"
@@ -5590,7 +5614,7 @@ msgstr "ایجاد شئ امکان ندارد"
 msgid "Object could not be deleted"
 msgstr "حذف شئ امکان ندارد"
 
-#: lib/RT/Record.pm:375 share/html/Admin/CustomFields/Modify.html:188
+#: lib/RT/Record.pm:375 share/html/Admin/CustomFields/Modify.html:189
 msgid "Object created"
 msgstr "شئ ایجاد شد"
 
@@ -5614,8 +5638,12 @@ msgstr "لیست اشیا خالی است"
 msgid "Oct"
 msgstr ""
 
+#: share/html/Elements/RT__Transaction/ColumnMap:75
+msgid "Old Value"
+msgstr ""
+
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
-#: lib/RT/Transaction.pm:409
+#: lib/RT/Transaction.pm:423
 msgid "On %1, %2 wrote:"
 msgstr "هنگام %1، %2 نوشت:"
 
@@ -5713,7 +5741,7 @@ msgstr "نشان بده فیلدهای خاص را تنها برای:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2804 etc/RT_Config.pm:2811 etc/RT_Config.pm:2848 etc/RT_Config.pm:2855
+#: etc/RT_Config.pm:2836 etc/RT_Config.pm:2843 etc/RT_Config.pm:2880 etc/RT_Config.pm:2887
 msgid "Open It"
 msgstr "باز کردن آن"
 
@@ -5770,11 +5798,11 @@ msgstr "سازمان"
 msgid "Originating ticket: #%1"
 msgstr "درخواست منشا: شماره %1"
 
-#: lib/RT/Transaction.pm:949
+#: lib/RT/Transaction.pm:963
 msgid "Outgoing email about a comment recorded"
 msgstr "ایمیل ارسالی در مورد یک توضیح ثبت شد"
 
-#: lib/RT/Transaction.pm:953
+#: lib/RT/Transaction.pm:967
 msgid "Outgoing email recorded"
 msgstr "ایمیل ارسالی ثبت شد"
 
@@ -5794,22 +5822,22 @@ msgstr "خلاصه"
 msgid "Own tickets"
 msgstr "جلب مسئولیت"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1880 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:270 share/html/Elements/RT__Ticket/ColumnMap:287 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:100 lib/RT/Tickets.pm:111 lib/RT/Tickets.pm:1880 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:270 share/html/Elements/RT__Ticket/ColumnMap:287 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:286
 msgid "Owner"
 msgstr "مسئول"
 
 #. ($owner->Name)
-#: lib/RT/Ticket.pm:524
+#: lib/RT/Ticket.pm:529
 msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "مسئول '%1'دارای مجوز مسئول شدن برای این درخواست را ندارد."
 
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
-#: lib/RT/Ticket.pm:2057
+#: lib/RT/Ticket.pm:2062
 msgid "Owner changed from %1 to %2"
 msgstr "تغییر مسئول از %1 به %2"
 
 #. (map { $self->_FormatUser($_) } $Old, $New)
-#: lib/RT/Transaction.pm:1043 lib/RT/Transaction.pm:1227
+#: lib/RT/Transaction.pm:1057 lib/RT/Transaction.pm:1241
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "به ناچار مسئول از %1 به %2 تغییر یافت"
 
@@ -5857,7 +5885,7 @@ msgstr "والدین"
 msgid "Password"
 msgstr "گذرواژه"
 
-#: lib/RT/Transaction.pm:1178 lib/RT/User.pm:859
+#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:859
 msgid "Password changed"
 msgstr "گذرواژه تغییر یافت"
 
@@ -5942,7 +5970,7 @@ msgstr "ترتیب جستجوی کتابخانه پرل"
 msgid "Permanently wipeout data from RT"
 msgstr "پاکسازی همیشگی داده از سیستم پیگیری درخواست"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:348 lib/RT/Queue.pm:374 lib/RT/Queue.pm:400 lib/RT/Queue.pm:797 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1068 lib/RT/Ticket.pm:1279 lib/RT/Ticket.pm:1447 lib/RT/Ticket.pm:1497 lib/RT/Ticket.pm:1767 lib/RT/Ticket.pm:1786 lib/RT/Ticket.pm:2197 lib/RT/Ticket.pm:2203 lib/RT/Ticket.pm:2217 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2246 lib/RT/Ticket.pm:2463 lib/RT/Ticket.pm:2692 lib/RT/Ticket.pm:3056 lib/RT/Ticket.pm:734 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:742 lib/RT/Transaction.pm:782 lib/RT/User.pm:1127 lib/RT/User.pm:137 lib/RT/User.pm:1562 lib/RT/User.pm:1810 lib/RT/User.pm:1843 lib/RT/User.pm:326 lib/RT/User.pm:727 lib/RT/User.pm:762 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1127 lib/RT/User.pm:137 lib/RT/User.pm:1562 lib/RT/User.pm:1810 lib/RT/User.pm:1843 lib/RT/User.pm:326 lib/RT/User.pm:727 lib/RT/User.pm:762 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "مشکل مجوز"
 
@@ -6078,7 +6106,7 @@ msgstr ""
 msgid "Print this message"
 msgstr "چاپ این پیغام"
 
-#: lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:116 lib/RT/Tickets.pm:1684 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:200 share/html/Ticket/Create.html:229 share/html/Ticket/Elements/ShowBasics:78 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:238
+#: lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:116 lib/RT/Tickets.pm:1684 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:200 share/html/Ticket/Create.html:229 share/html/Ticket/Elements/ShowBasics:79 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:238
 msgid "Priority"
 msgstr "اولویت"
 
@@ -6124,7 +6152,7 @@ msgstr "کاربران مجاز"
 msgid "Privileged: usernames; Unprivileged: names and email addresses"
 msgstr ""
 
-#: bin/rt-crontool:171
+#: bin/rt-crontool:173
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr ""
 
@@ -6154,12 +6182,12 @@ msgstr "پرس و جو"
 msgid "Query Builder"
 msgstr "ایجاد کننده پرس و جو"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Record.pm:1024 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1491 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:84 share/html/m/ticket/create:248 share/html/m/ticket/show:242
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Record.pm:1024 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1491 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:86 share/html/m/ticket/create:248 share/html/m/ticket/show:242
 msgid "Queue"
 msgstr "صف"
 
 #. ($Queue||'')
-#: share/html/Ticket/Create.html:381
+#: share/html/Ticket/Create.html:383
 msgid "Queue %1 could not be loaded."
 msgstr ""
 
@@ -6173,7 +6201,7 @@ msgstr "صف '%1' پیدا نشد"
 msgid "Queue Name"
 msgstr "نام صف"
 
-#: lib/RT/Queue.pm:324
+#: lib/RT/Queue.pm:287
 msgid "Queue already exists"
 msgstr "صف از قبل وجود دارد"
 
@@ -6188,14 +6216,6 @@ msgstr "بارگذاری صف امکان ندارد"
 #: lib/RT/Queue.pm:215
 msgid "Queue created"
 msgstr "صف ایجاد شد"
-
-#: lib/RT/Queue.pm:256
-msgid "Queue disabled"
-msgstr "صف غیر فعال شد"
-
-#: lib/RT/Queue.pm:254
-msgid "Queue enabled"
-msgstr "صف فعال شده"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:97
 msgid "Queue id"
@@ -6370,7 +6390,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2812 etc/RT_Config.pm:2813 etc/RT_Config.pm:2856 etc/RT_Config.pm:2857
+#: etc/RT_Config.pm:2844 etc/RT_Config.pm:2845 etc/RT_Config.pm:2888 etc/RT_Config.pm:2889
 msgid "Re-open"
 msgstr "دوباره باز کن"
 
@@ -6390,7 +6410,7 @@ msgstr ""
 msgid "Recipient"
 msgstr "گیرنده"
 
-#: share/html/Dashboards/Subscription.html:242
+#: share/html/Dashboards/Subscription.html:249
 msgid "Recipient must be an email address"
 msgstr "گیرنده باید یک آدرس ایمیل باشد"
 
@@ -6411,22 +6431,22 @@ msgid "Refer to"
 msgstr "ارجاع به"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1105
+#: lib/RT/Transaction.pm:1119
 msgid "Reference by %1 added"
 msgstr "ارجاع از %1 ایجاد شد"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1147
+#: lib/RT/Transaction.pm:1161
 msgid "Reference by %1 deleted"
 msgstr "ارجاع از %1 حذف شد"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1102
+#: lib/RT/Transaction.pm:1116
 msgid "Reference to %1 added"
 msgstr "ارجاع به %1 ایجاد شد"
 
 #. ($value)
-#: lib/RT/Transaction.pm:1144
+#: lib/RT/Transaction.pm:1158
 msgid "Reference to %1 deleted"
 msgstr "ارجاع به %1 حذف شد"
 
@@ -6434,7 +6454,7 @@ msgstr "ارجاع به %1 حذف شد"
 msgid "Referred to by"
 msgstr "ارجاع شده بوسیله"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:130 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:130 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "ReferredToBy"
 msgstr "ارجاع شده بوسیله"
 
@@ -6442,7 +6462,7 @@ msgstr "ارجاع شده بوسیله"
 msgid "Refers to"
 msgstr "مربوط است به"
 
-#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:126 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets.pm:126 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:139
 msgid "RefersTo"
 msgstr "مرجوع به"
 
@@ -6511,7 +6531,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2806 etc/RT_Config.pm:2810 etc/RT_Config.pm:2850 etc/RT_Config.pm:2854
+#: etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 etc/RT_Config.pm:2882 etc/RT_Config.pm:2886
 msgid "Reject"
 msgstr "رد کردن"
 
@@ -6524,27 +6544,39 @@ msgid "Reminder"
 msgstr "یادآوری"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1265
+#: lib/RT/Transaction.pm:1280
 msgid "Reminder '%1' added"
 msgstr "یادآوری '%1' اضافه شد"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1287
+#: lib/RT/Transaction.pm:1310
 msgid "Reminder '%1' completed"
 msgstr "یادآوری '%1' تمام شد"
 
 #. ($subject)
-#: lib/RT/Transaction.pm:1276
+#: lib/RT/Transaction.pm:1295
 msgid "Reminder '%1' reopened"
 msgstr "یادآوری '%1' دوباره باز شد"
 
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
-#: lib/RT/Interface/Web.pm:2989 lib/RT/Interface/Web.pm:3007
+#: lib/RT/Interface/Web.pm:3028 lib/RT/Interface/Web.pm:3046
 msgid "Reminder '%1': %2"
 msgstr ""
 
-#: share/html/Elements/Tabs:668 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:74 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
+#: lib/RT/Transaction.pm:1282
+msgid "Reminder added"
+msgstr ""
+
+#: lib/RT/Transaction.pm:1312
+msgid "Reminder completed"
+msgstr ""
+
+#: lib/RT/Transaction.pm:1297
+msgid "Reminder reopened"
+msgstr ""
+
+#: share/html/Elements/Tabs:668 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:75 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
 msgid "Reminders"
 msgstr "یادآوری ها"
 
@@ -6570,7 +6602,7 @@ msgid "Remove Requestor"
 msgstr "حذف درخواست کننده"
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
-#: lib/RT/Queue.pm:633
+#: lib/RT/Queue.pm:611
 msgid "Removed %1 from members of %2 for this queue."
 msgstr "%1 از اعضای %2 از این صف اضافه شد."
 
@@ -6610,7 +6642,7 @@ msgstr "درخواست کننده"
 msgid "RequestorGroup"
 msgstr "گروه درخواست کننده"
 
-#: lib/RT/Graph/Tickets.pm:154 lib/RT/Tickets.pm:144 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:265 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:130 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:291
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Tickets.pm:144 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:265 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:130 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:291
 msgid "Requestors"
 msgstr "درخواست کنندگان"
 
@@ -6655,7 +6687,7 @@ msgstr ""
 msgid "Residence"
 msgstr "محل اقامت"
 
-#: etc/RT_Config.pm:2805 etc/RT_Config.pm:2809 etc/RT_Config.pm:2849 etc/RT_Config.pm:2853 share/html/Search/Elements/EditFormat:76
+#: etc/RT_Config.pm:2837 etc/RT_Config.pm:2841 etc/RT_Config.pm:2881 etc/RT_Config.pm:2885 share/html/Search/Elements/EditFormat:76
 msgid "Resolve"
 msgstr "حل کردن"
 
@@ -6664,7 +6696,7 @@ msgstr "حل کردن"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "حل درخواست شماره %1 (%2)"
 
-#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:80 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:251 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
+#: etc/initialdata:444 lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:80 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:218 share/html/Elements/RT__Ticket/ColumnMap:251 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "حل شده"
 
@@ -6721,7 +6753,7 @@ msgid "Right revoked"
 msgstr "دسترسی فسخ شده"
 
 #. ($object_type)
-#: lib/RT/Interface/Web.pm:2587 lib/RT/Interface/Web.pm:2687
+#: lib/RT/Interface/Web.pm:2626 lib/RT/Interface/Web.pm:2726
 msgid "Rights could not be granted for %1"
 msgstr "دسترسی ها برای %1 نمی توانند واگذار شوند"
 
@@ -6743,7 +6775,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3824
+#: lib/RT/Interface/Web.pm:3864
 msgid "Roles"
 msgstr ""
 
@@ -6800,7 +6832,7 @@ msgstr "شنبه"
 msgid "Save"
 msgstr "ذخیره"
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:167 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:186 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:93 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:167 share/html/Admin/Queues/People.html:124 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:227 share/html/Articles/Article/Edit.html:102 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:188 share/html/Prefs/Other.html:76 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:79 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:76 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "ذخیره‌ی تغییرات"
 
@@ -6872,7 +6904,7 @@ msgstr ""
 msgid "Scrips"
 msgstr "اسکریپ ها"
 
-#: share/html/Ticket/Update.html:185
+#: share/html/Ticket/Update.html:188
 msgid "Scrips and Recipients"
 msgstr "اسکریپ ها و گیرندگان"
 
@@ -6943,7 +6975,7 @@ msgstr ""
 msgid "Secret authentication token"
 msgstr ""
 
-#: bin/rt-crontool:335
+#: bin/rt-crontool:348
 msgid "Security:"
 msgstr "امنیت:"
 
@@ -7370,13 +7402,9 @@ msgstr "امضا %1 %2 با استفاده از %3"
 msgid "Signature"
 msgstr "امضا"
 
-#: lib/RT/Queue.pm:358 lib/RT/Queue.pm:384
-msgid "Signing disabled"
-msgstr "امضا غیر فعال شده"
-
-#: lib/RT/Queue.pm:357 lib/RT/Queue.pm:383
-msgid "Signing enabled"
-msgstr "امضا فعال شده"
+#: lib/RT/Queue.pm:322
+msgid "Signing"
+msgstr ""
 
 #: share/html/Admin/Elements/ModifyTemplate:65
 msgid "Simple"
@@ -7447,7 +7475,7 @@ msgstr ""
 msgid "Stage"
 msgstr "مرحله"
 
-#: etc/RT_Config.pm:2808 etc/RT_Config.pm:2852
+#: etc/RT_Config.pm:2840 etc/RT_Config.pm:2884
 msgid "Stall"
 msgstr "معطل"
 
@@ -7456,7 +7484,7 @@ msgstr "معطل"
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
 msgstr "برای تعیین صریح نوع جستجو، عبارت جستجو را با نام یک فیلد مورد پشتیبانی که بعد از دو نقطه آمده است، شروع کنید، مانند %1 و %2."
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:195 share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:60 share/html/m/ticket/show:358
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:195 share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/EditDates:55 share/html/Ticket/Elements/ShowDates:60 share/html/m/ticket/show:358
 msgid "Started"
 msgstr "شروع شده"
 
@@ -7464,7 +7492,7 @@ msgstr "شروع شده"
 msgid "StartedRelative"
 msgstr "تاریخ آغاز شده ی نسبی"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:132 share/html/Elements/RT__Ticket/ColumnMap:190 share/html/Elements/RT__Ticket/ColumnMap:223 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:262 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:55 share/html/m/ticket/create:380 share/html/m/ticket/show:354
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:132 share/html/Elements/RT__Ticket/ColumnMap:190 share/html/Elements/RT__Ticket/ColumnMap:223 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:262 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:55 share/html/m/ticket/create:380 share/html/m/ticket/show:354
 msgid "Starts"
 msgstr "آغاز می شود"
 
@@ -7480,7 +7508,7 @@ msgstr "وضعیت"
 msgid "Static file search order"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1523 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:106 lib/RT/Tickets.pm:1523 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:216
 msgid "Status"
 msgstr "وضعیت"
 
@@ -7503,7 +7531,7 @@ msgid "Status Change in HTML"
 msgstr ""
 
 #. ("'" . $self->loc( $canon->($self->OldValue) ) . "'",                    "'" . $self->loc( $canon->($self->NewValue) ) . "'")
-#: lib/RT/Transaction.pm:881
+#: lib/RT/Transaction.pm:895
 msgid "Status changed from %1 to %2"
 msgstr "تغییر وضعیت از %1 به %2"
 
@@ -7531,7 +7559,7 @@ msgid "Step %1 of %2"
 msgstr "قدم %1 از %2"
 
 #. ($self->_FormatUser($Old))
-#: lib/RT/Transaction.pm:1049 lib/RT/Transaction.pm:1213
+#: lib/RT/Transaction.pm:1063 lib/RT/Transaction.pm:1227
 msgid "Stolen from %1"
 msgstr "گرفتن مسئولیت از %1"
 
@@ -7539,7 +7567,7 @@ msgstr "گرفتن مسئولیت از %1"
 msgid "Style"
 msgstr "سبک"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:138 lib/RT/Tickets.pm:1633 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:116 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:132 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:87 share/html/SelfService/Update.html:73 share/html/Ticket/Create.html:180 share/html/Ticket/Elements/Reminders:133 share/html/Ticket/Elements/Reminders:164 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:111 share/html/Ticket/Update.html:152 share/html/m/ticket/create:229 share/html/m/ticket/reply:99
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:138 lib/RT/Tickets.pm:1633 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:116 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:132 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:87 share/html/SelfService/Update.html:73 share/html/Ticket/Create.html:180 share/html/Ticket/Elements/Reminders:133 share/html/Ticket/Elements/Reminders:164 share/html/Ticket/Forward.html:63 share/html/Ticket/ModifyAll.html:111 share/html/Ticket/Update.html:155 share/html/m/ticket/create:229 share/html/m/ticket/reply:99
 msgid "Subject"
 msgstr "موضوع"
 
@@ -7548,7 +7576,7 @@ msgid "Subject Tag"
 msgstr "برچسب موضوع"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1077
+#: lib/RT/Transaction.pm:1091
 msgid "Subject changed to %1"
 msgstr "تغییر موضوع به %1"
 
@@ -7560,12 +7588,12 @@ msgstr "برچسب موضوع"
 msgid "Submit"
 msgstr "ارسال"
 
-#: share/html/Dashboards/Subscription.html:188
+#: share/html/Dashboards/Subscription.html:190
 msgid "Subscribe"
 msgstr "عضویت"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:286
+#: share/html/Dashboards/Subscription.html:293
 msgid "Subscribe to dashboard %1"
 msgstr "عضویت به داشبورد %1"
 
@@ -7574,7 +7602,7 @@ msgid "Subscribe to dashboards"
 msgstr "عضویت به داشبوردها"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:271
+#: share/html/Dashboards/Subscription.html:278
 msgid "Subscribed to dashboard %1"
 msgstr "عضو شده به داشبورد %1"
 
@@ -7583,11 +7611,11 @@ msgid "Subscription"
 msgstr "عضویت"
 
 #. ($msg)
-#: share/html/Dashboards/Subscription.html:276
+#: share/html/Dashboards/Subscription.html:283
 msgid "Subscription could not be created: %1"
 msgstr "ایجاد عضویت امکان ندارد: %1"
 
-#: share/html/Dashboards/Subscription.html:254
+#: share/html/Dashboards/Subscription.html:261
 msgid "Subscription updated"
 msgstr ""
 
@@ -7651,7 +7679,7 @@ msgstr "یکشنبه"
 msgid "Suspended"
 msgstr "معوق"
 
-#: lib/RT/Interface/Web.pm:3776
+#: lib/RT/Interface/Web.pm:3816
 msgid "System"
 msgstr ""
 
@@ -7663,7 +7691,7 @@ msgstr "تنظیمات سیستم"
 msgid "System Default"
 msgstr "پیش‌فرض سیستم"
 
-#: lib/RT/Interface/Web.pm:2587 lib/RT/Interface/Web.pm:2687 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:2626 lib/RT/Interface/Web.pm:2726 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "خطای سیستم"
 
@@ -7676,7 +7704,7 @@ msgstr "خطای سیستم: %1"
 msgid "System Tools"
 msgstr "ابزارهای سیستمی"
 
-#: lib/RT/Transaction.pm:896
+#: lib/RT/Transaction.pm:910
 msgid "System error"
 msgstr "خطای سیستمی"
 
@@ -7696,7 +7724,7 @@ msgstr "اقدام"
 msgid "Take tickets"
 msgstr "اقدام برای درخواست ها"
 
-#: lib/RT/Transaction.pm:1033 lib/RT/Transaction.pm:1205
+#: lib/RT/Transaction.pm:1047 lib/RT/Transaction.pm:1219
 msgid "Taken"
 msgstr "اقدام شده"
 
@@ -7778,7 +7806,7 @@ msgstr "قالب برای صف %1"
 msgid "Text"
 msgstr "متن"
 
-#: share/html/Elements/ShowTransactionAttachments:145
+#: share/html/Elements/ShowTransactionAttachments:149
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr "فیل متنی نشان داده نمی شود چون در ترجیحات غیر فعال شده است."
 
@@ -7790,15 +7818,15 @@ msgstr "همچنان مقدار فعلی است"
 msgid "That is not a value for this custom field"
 msgstr "آن مقداری برای این فیلد خاص نیست"
 
-#: lib/RT/Ticket.pm:2358
+#: lib/RT/Ticket.pm:2363
 msgid "That ticket has unresolved dependencies"
 msgstr "درخواست دارای وابستگی های غیر حل شده می باشد"
 
-#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2271
+#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2276
 msgid "That user already owns that ticket"
 msgstr "آن کاربر همچنان مسئول آن درخواست می باشد"
 
-#: lib/RT/Ticket.pm:2261
+#: lib/RT/Ticket.pm:2266
 msgid "That user does not exist"
 msgstr "آن کاربر وجود ندارد"
 
@@ -7818,7 +7846,7 @@ msgstr "حالا آن کاربر دارای دسترسی است"
 msgid "That user is now unprivileged"
 msgstr "حالا آن کاربر بدون دسترسی است"
 
-#: lib/RT/Ticket.pm:2266
+#: lib/RT/Ticket.pm:2271
 msgid "That user may not own tickets in that queue"
 msgstr "آن کاربر شاید مسئول درخواست های آن صف نباشد"
 
@@ -7855,7 +7883,7 @@ msgstr ""
 msgid "The domain name of your database server (like 'db.example.com')."
 msgstr ""
 
-#: bin/rt-crontool:345
+#: bin/rt-crontool:358
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
 msgstr ""
 
@@ -7992,11 +8020,11 @@ msgstr ""
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 msgstr ""
 
-#: bin/rt-crontool:336
+#: bin/rt-crontool:349
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
 msgstr ""
 
-#: lib/RT/Transaction.pm:378
+#: lib/RT/Transaction.pm:392
 msgid "This transaction appears to have no content"
 msgstr "ظاهرا تبادل محتوایی نداشته است"
 
@@ -8027,7 +8055,7 @@ msgid "Ticket #%1 Jumbo update: %2"
 msgstr "بروز رسانی در یک نگاه درخواست شماره%1 : %2"
 
 #. ($id)
-#: share/html/Ticket/Graphs/index.html:109
+#: share/html/Ticket/Graphs/index.html:117
 msgid "Ticket #%1 relationships graph"
 msgstr "نگاره ارتباطات درخواست شماره %1"
 
@@ -8044,7 +8072,7 @@ msgid "Ticket %1"
 msgstr "درخواست %1"
 
 #. ($self->Id, $QueueObj->Name)
-#: lib/RT/Ticket.pm:549 lib/RT/Ticket.pm:571
+#: lib/RT/Ticket.pm:554 lib/RT/Ticket.pm:576
 msgid "Ticket %1 created in queue '%2'"
 msgstr "درخواست %1 در صف '%2' ایجاد شد"
 
@@ -8087,7 +8115,7 @@ msgstr "محتوای درخواست"
 msgid "Ticket content type"
 msgstr "نوع محتوای درخواست"
 
-#: lib/RT/Ticket.pm:413 lib/RT/Ticket.pm:426 lib/RT/Ticket.pm:438 lib/RT/Ticket.pm:557
+#: lib/RT/Ticket.pm:418 lib/RT/Ticket.pm:431 lib/RT/Ticket.pm:443 lib/RT/Ticket.pm:562
 msgid "Ticket could not be created due to an internal error"
 msgstr "ایجاد درخواست بنا به یک خطای داخلی امکان ندارد"
 
@@ -8154,6 +8182,10 @@ msgstr "زمان تخمین زده"
 msgid "Time Left"
 msgstr "زمان باقیمانده"
 
+#: share/html/Elements/RT__Transaction/ColumnMap:85
+msgid "Time Taken"
+msgstr ""
+
 #: lib/RT/Tickets.pm:1754 share/html/Elements/RT__Ticket/ColumnMap:176 share/html/Search/Elements/PickBasics:178 share/html/Ticket/Create.html:244 share/html/m/ticket/create:359
 msgid "Time Worked"
 msgstr "زمان کارشده"
@@ -8162,15 +8194,15 @@ msgstr "زمان کارشده"
 msgid "Time to display"
 msgstr "زمان نمایش"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:119 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
 msgstr "زمان پیش بینی شده"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:117 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:117 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeLeft"
 msgstr "زمان باقیمانده"
 
-#: lib/RT/Graph/Tickets.pm:153 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:156 lib/RT/Tickets.pm:118 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeWorked"
 msgstr "زمان کارشده"
 
@@ -8201,7 +8233,7 @@ msgstr "تغییر وضعیت %1 پرس و جو"
 msgid "Toggle stack trace"
 msgstr "فعال/غیر فعال نمودن پیگیری پشته"
 
-#: lib/RT/Graph/Tickets.pm:155 lib/RT/Report/Tickets.pm:82 lib/RT/Tickets.pm:131 share/html/Elements/RT__Ticket/ColumnMap:200 share/html/Elements/RT__Ticket/ColumnMap:233 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:82 lib/RT/Tickets.pm:131 share/html/Elements/RT__Ticket/ColumnMap:200 share/html/Elements/RT__Ticket/ColumnMap:233 share/html/Search/Elements/BuildFormatString:100
 msgid "Told"
 msgstr "آخرین تماس"
 
@@ -8233,7 +8265,7 @@ msgstr "موضوع پیدا نشد"
 msgid "Topics"
 msgstr "موضوعات"
 
-#: lib/RT/Report/Tickets.pm:998
+#: lib/RT/Report/Tickets.pm:995
 msgid "Total"
 msgstr "جمع کل"
 
@@ -8278,7 +8310,7 @@ msgid "Transaction"
 msgstr "تبادل"
 
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1254
+#: lib/RT/Transaction.pm:1268
 msgid "Transaction %1 purged"
 msgstr "تبادل %1 کاملا حذف شد"
 
@@ -8306,7 +8338,7 @@ msgstr "تاریخ تبادل"
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1323
+#: lib/RT/Transaction.pm:1349
 msgid "Transactions are immutable"
 msgstr "تبادلات تغییر ناپذیر هستند"
 
@@ -8330,7 +8362,7 @@ msgstr "سه شنبه"
 msgid "TxnCF"
 msgstr ""
 
-#: lib/RT/Tickets.pm:108 lib/RT/Tickets.pm:1609 share/html/Admin/CustomFields/Modify.html:69 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:170 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Tickets.pm:108 lib/RT/Tickets.pm:1609 share/html/Admin/CustomFields/Modify.html:69 share/html/Admin/Elements/EditCustomField:67 share/html/Admin/Elements/ModifyTemplate:58 share/html/Elements/RT__Ticket/ColumnMap:170 share/html/Elements/RT__Transaction/ColumnMap:65 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "نوع"
 
@@ -8400,7 +8432,7 @@ msgid "Unable to set privacy object: %1"
 msgstr ""
 
 #. ($id)
-#: share/html/Dashboards/Subscription.html:259
+#: share/html/Dashboards/Subscription.html:266
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
 msgstr ""
 
@@ -8413,7 +8445,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "انتخاب ها را برای عدم اطلاع رسانی به لسیت گیرندگان <b> تنها برای این تبادل</b> غیر فعال کنید؛ اطلاع رسانی دائمی را می توانید از <a href=\"%1\">صفحه افراد</a> تنظیم نمایید."
 
-#: etc/RT_Config.pm:2814 etc/RT_Config.pm:2858
+#: etc/RT_Config.pm:2846 etc/RT_Config.pm:2890
 msgid "Undelete"
 msgstr "بازیابی"
 
@@ -8496,7 +8528,7 @@ msgstr "اشیاء انتخاب نشده"
 msgid "Unset private key"
 msgstr "بازنشانی کلید خصوصی"
 
-#: lib/RT/Transaction.pm:1029 lib/RT/Transaction.pm:1217
+#: lib/RT/Transaction.pm:1043 lib/RT/Transaction.pm:1231
 msgid "Untaken"
 msgstr "اقدام نشده"
 
@@ -8516,7 +8548,7 @@ msgstr "بروزسازی نگاره"
 msgid "Update This Menu"
 msgstr ""
 
-#: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:180 share/html/m/ticket/reply:146
+#: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:183 share/html/m/ticket/reply:146
 msgid "Update Ticket"
 msgstr "بروزسازی درخواست"
 
@@ -8532,7 +8564,7 @@ msgstr "بروزرسانی فرمت و جستجو"
 msgid "Update multiple tickets"
 msgstr "بروزسازی چندین درخواست"
 
-#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2355
+#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2394
 msgid "Update not recorded."
 msgstr "بروز رسانی ثبت نشده است."
 
@@ -8548,11 +8580,11 @@ msgstr "بروزسازی درخواست شماره %1"
 
 #. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
-#: share/html/Ticket/Update.html:218 share/html/m/ticket/reply:174
+#: share/html/Ticket/Update.html:221 share/html/m/ticket/reply:174
 msgid "Update ticket #%1 (%2)"
 msgstr "بروزسازی درخواست شماره %1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2355
+#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2394
 msgid "Update type was neither correspondence nor comment."
 msgstr "نوع بروزرسانی نه مکاتبه است و نه توضیح."
 
@@ -8674,7 +8706,7 @@ msgstr "تعریف شده توسط کاربر"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:3794
+#: lib/RT/Interface/Web.pm:3834
 msgid "User Groups"
 msgstr ""
 
@@ -8695,7 +8727,7 @@ msgid "User Summary"
 msgstr ""
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
-#: lib/RT/Interface/Web.pm:3206
+#: lib/RT/Interface/Web.pm:3246
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
 
@@ -8741,7 +8773,7 @@ msgstr "نام کاربری"
 msgid "Username format"
 msgstr "قالب نام کاربری"
 
-#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3852 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
+#: lib/RT/CustomField.pm:1889 lib/RT/CustomField.pm:204 lib/RT/Interface/Web.pm:3892 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:85 share/html/Elements/Tabs:138 share/html/Elements/Tabs:256 share/html/Elements/Tabs:526 share/html/Elements/Tabs:67
 msgid "Users"
 msgstr "کاربران"
 
@@ -8750,7 +8782,7 @@ msgid "Users matching search criteria"
 msgstr "کاربران مطابق با معیار های جستجو"
 
 #. ($txn->id)
-#: bin/rt-crontool:163
+#: bin/rt-crontool:165
 msgid "Using transaction #%1..."
 msgstr "با استفاده از تبادل شماره %1..."
 
@@ -8854,7 +8886,7 @@ msgstr "اخطار! این امضا نشده!"
 msgid "Warning: merging is a non-reversible action! Enter a single ticket number to be merged into."
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:272
+#: share/html/Dashboards/Subscription.html:279
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr ""
 
@@ -9035,12 +9067,12 @@ msgid "Worked"
 msgstr "کار شده"
 
 #. (sprintf("%.1f", $duration / 60), $duration)
-#: lib/RT/Transaction.pm:1249
+#: lib/RT/Transaction.pm:1263
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #. ($duration)
-#: lib/RT/Transaction.pm:1247
+#: lib/RT/Transaction.pm:1261
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr ""
 
@@ -9048,7 +9080,7 @@ msgstr ""
 msgid "Year"
 msgstr ""
 
-#: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:77
+#: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:78
 msgid "Yes"
 msgstr "بله"
 
@@ -9062,7 +9094,7 @@ msgstr ""
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr "شما <a href=\"%1\">ممکن است این داشبورد </a> و <a href=\"%2\">عضویت تان به آن </a> درسیستم پیگیری درخواست را ویرایش نمایید."
 
-#: lib/RT/Ticket.pm:2241 lib/RT/Ticket.pm:2314
+#: lib/RT/Ticket.pm:2246 lib/RT/Ticket.pm:2319
 msgid "You already own this ticket"
 msgstr "در حال حاضر شما مسئول این درخواست هستید"
 
@@ -9103,15 +9135,15 @@ msgstr ""
 msgid "You can not set password."
 msgstr "تنظیم گذرواژه برای شما امکان ندارد."
 
-#: lib/RT/Ticket.pm:2233
+#: lib/RT/Ticket.pm:2238
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "تنها می توانید درخواست های بدون مسئول و یا با مسئولیت خودتان را به دیگران اختصاص دهید"
 
-#: lib/RT/Ticket.pm:2185
+#: lib/RT/Ticket.pm:2190
 msgid "You can only steal a ticket owned by someone else"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2229
+#: lib/RT/Ticket.pm:2234
 msgid "You can only take tickets that are unowned"
 msgstr "تنها می توانید برای درخواست های بدون مسئول را اقدام کنید"
 
@@ -9224,7 +9256,7 @@ msgstr "[بالا]"
 msgid "[none]"
 msgstr "[هیچ‌کدام]"
 
-#: lib/RT/Transaction.pm:973
+#: lib/RT/Transaction.pm:987
 msgid "a custom field"
 msgstr "یک فیلد خاص"
 
@@ -9308,7 +9340,7 @@ msgstr "کلیک برای انتخاب/عدم انتخاب یکباره تمام
 msgid "core config"
 msgstr "پیکربندی هسته"
 
-#: lib/RT/Interface/Web.pm:1614 lib/RT/Interface/Web.pm:1623
+#: lib/RT/Interface/Web.pm:1653 lib/RT/Interface/Web.pm:1662
 msgid "create a ticket"
 msgstr "ایجاد یک درخواست"
 
@@ -9333,7 +9365,7 @@ msgstr ""
 msgid "days"
 msgstr "روز"
 
-#: etc/RT_Config.pm:2777
+#: etc/RT_Config.pm:2809
 msgid "deleted"
 msgstr "حذف شد"
 
@@ -9410,7 +9442,7 @@ msgid "group"
 msgstr "گروه"
 
 #. ($principal->Object->Name)
-#: lib/RT/Transaction.pm:840
+#: lib/RT/Transaction.pm:854
 msgid "group %1"
 msgstr ""
 
@@ -9451,7 +9483,7 @@ msgid "index"
 msgstr "شاخص"
 
 #. ($due)
-#: lib/RT/Interface/Web.pm:2982
+#: lib/RT/Interface/Web.pm:3021
 msgid "invalid due date: %1"
 msgstr ""
 
@@ -9499,19 +9531,19 @@ msgstr "حداکثر عمق"
 msgid "minutes"
 msgstr "دقیقه"
 
-#: lib/RT/Interface/Web.pm:1616
+#: lib/RT/Interface/Web.pm:1655
 msgid "modify RT's configuration"
 msgstr "تغییر تنظیمات سیستم پیگیری درخواست"
 
-#: lib/RT/Interface/Web.pm:1619
+#: lib/RT/Interface/Web.pm:1658
 msgid "modify a dashboard"
 msgstr "اصلاح یک داشبورد"
 
-#: lib/RT/Interface/Web.pm:1622
+#: lib/RT/Interface/Web.pm:1661
 msgid "modify or access a search"
 msgstr "اصلاح یا دسترسی به یک جستجو"
 
-#: lib/RT/Interface/Web.pm:1621
+#: lib/RT/Interface/Web.pm:1660
 msgid "modify your preferences"
 msgstr "تغییر تنظیمات شما"
 
@@ -9528,7 +9560,7 @@ msgstr "ماهانه (روز %1) در %2"
 msgid "never"
 msgstr "هرگز"
 
-#: etc/RT_Config.pm:2775
+#: etc/RT_Config.pm:2807
 msgid "new"
 msgstr "جدید"
 
@@ -9568,7 +9600,7 @@ msgstr "در روز"
 msgid "one"
 msgstr "یک"
 
-#: etc/RT_Config.pm:2776 share/html/SelfService/Elements/MyRequests:73
+#: etc/RT_Config.pm:2808 share/html/SelfService/Elements/MyRequests:73
 msgid "open"
 msgstr "باز"
 
@@ -9609,7 +9641,7 @@ msgstr ""
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:2777
+#: etc/RT_Config.pm:2809
 msgid "rejected"
 msgstr "رد شده"
 
@@ -9617,7 +9649,7 @@ msgstr "رد شده"
 msgid "requires running rt-crontool"
 msgstr "نیازمند اجرای rt-crontool"
 
-#: etc/RT_Config.pm:2777
+#: etc/RT_Config.pm:2809
 msgid "resolved"
 msgstr "حل شده"
 
@@ -9641,7 +9673,7 @@ msgstr ""
 msgid "site config"
 msgstr "تنظیم سایت"
 
-#: etc/RT_Config.pm:2776
+#: etc/RT_Config.pm:2808
 msgid "stalled"
 msgstr "معطل"
 
@@ -9667,11 +9699,11 @@ msgstr "گروه سیستم '%1'"
 msgid "table"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1526
+#: lib/RT/Interface/Web.pm:1565
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1519
+#: lib/RT/Interface/Web.pm:1558
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
 msgstr ""
 
@@ -9709,15 +9741,15 @@ msgstr "گروه تعریف نشده %1"
 msgid "unlimited"
 msgstr "بینهایت"
 
-#: lib/RT/Interface/Web.pm:1615 lib/RT/Interface/Web.pm:1620 lib/RT/Interface/Web.pm:1624
+#: lib/RT/Interface/Web.pm:1654 lib/RT/Interface/Web.pm:1659 lib/RT/Interface/Web.pm:1663
 msgid "update a ticket"
 msgstr "بروزسازی یک درخواست"
 
-#: lib/RT/Interface/Web.pm:1617
+#: lib/RT/Interface/Web.pm:1656
 msgid "update an approval"
 msgstr "بروزسازی یک تایید"
 
-#: lib/RT/Interface/Web.pm:1618
+#: lib/RT/Interface/Web.pm:1657
 msgid "update an article"
 msgstr "بروزسازی یک مقاله"
 
@@ -9756,7 +9788,7 @@ msgstr ""
 msgid "which port your web server will listen to, e.g. 8080"
 msgstr ""
 
-#: share/html/Elements/ShowTransactionAttachments:64
+#: share/html/Elements/ShowTransactionAttachments:68
 msgid "with headers"
 msgstr "با سرآمد"
 
@@ -9764,7 +9796,7 @@ msgstr "با سرآمد"
 msgid "yes"
 msgstr "بله"
 
-#: lib/RT/Interface/Web.pm:1511
+#: lib/RT/Interface/Web.pm:1550
 msgid "your browser did not supply a Referrer header"
 msgstr "مرورگر شما یک هدر مراجعه گر تهیه نمی‌کند"
 
