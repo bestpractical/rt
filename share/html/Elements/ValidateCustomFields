@@ -98,12 +98,27 @@ while ( my $CF = $CustomFields->Next ) {
             }
         }
 
-        next if $CF->MatchPattern($value);
+        if (!$CF->MatchPattern($value)) {
+            my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
+            $m->notes( ('InvalidField-' . $CF->Id) => $msg );
+            push @res, $CF->Name .': '. $msg;
+            $valid = 0;
+        }
 
-        my $msg = loc("Input must match [_1]", $CF->FriendlyPattern);
-        $m->notes( ('InvalidField-' . $CF->Id) => $msg );
-        push @res, $CF->Name .': '. $msg;
-        $valid = 0;
+        if ($CF->UniqueValues) {
+            my $existing = RT::ObjectCustomFieldValue->new(RT->SystemUser);
+            $existing->LoadByCols(
+                CustomField  => $CF->Id,
+                Content      => $value,
+                Disabled     => 0,
+            );
+            if ($existing->Id) {
+                my $msg = loc("That is not a unique value");
+                $m->notes( ('InvalidField-' . $CF->Id) => $msg );
+                push @res, $CF->Name .': '. $msg;
+                $valid = 0;
+            }
+        }
     }
 }
 $m->notes('ValidFields', $valid);

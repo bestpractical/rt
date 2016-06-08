@@ -357,6 +357,7 @@ CREATE TABLE CustomFields (
         SortOrder       NUMBER(11,0) DEFAULT 0 NOT NULL,
         LookupType      VARCHAR2(255),
         EntryHint       VARCHAR2(255) NULL,
+        UniqueValues    NUMBER(11,0) DEFAULT 0 NOT NULL,
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE,
         LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
