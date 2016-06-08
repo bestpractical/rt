@@ -737,7 +737,7 @@ to this Custom Field.
 
 sub IsSelectionType {
     my $self = shift;
-    my $type = @_? shift : $self->Type;
+    my $type = @_ ? shift : $self->Type;
     return undef unless $type;
     return $FieldTypes{$type}->{selection_type};
 }
@@ -759,6 +759,14 @@ sub ValuesClass {
     return $self->_Value( ValuesClass => @_ ) || 'RT::CustomFieldValues';
 }
 
+=head2 SetValuesClass CLASS
+
+Writer method for the ValuesClass field; validates that the custom field can
+use a ValuesClass, and that the provided ValuesClass passes
+L</ValidateValuesClass>.
+
+=cut
+
 sub SetValuesClass {
     my $self = shift;
     my $class = shift || 'RT::CustomFieldValues';
@@ -775,6 +783,17 @@ sub SetValuesClass {
     }
     return $self->_Set( Field => 'ValuesClass', Value => $class, @_ );
 }
+
+=head2 ValidateValuesClass CLASS
+
+Validates a potential ValuesClass value; the ValuesClass may be C<undef> or
+the string C<"RT::CustomFieldValues"> (both of which make this custom field
+use the ordinary values implementation), or a class name in the listed in
+the L<RT_Config/@CustomFieldValuesSources> setting.
+
+Returns true if valid; false if invalid.
+
+=cut
 
 sub ValidateValuesClass {
     my $self = shift;

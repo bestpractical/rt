@@ -257,6 +257,9 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
             $msg = loc("[_1] changed from '[_2]' to '[_3]'",
                         loc("Field values source"), $original, $ValuesClass );
         }
+        else {
+            RT->Logger->debug("Unable to SetValuesClass to '$ValuesClass': $msg");
+        }
         push @results, $msg;
     }
 
@@ -272,6 +275,9 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
             if ( $good ) {
                 $msg = loc("[_1] changed from '[_2]' to '[_3]'",
                             loc("Render Type"), $original, $RenderType );
+            }
+            else {
+                RT->Logger->debug("Unable to SetRenderType to '$RenderType': $msg");
             }
 
             push @results, $msg;
