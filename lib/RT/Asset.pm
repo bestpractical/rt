@@ -303,6 +303,10 @@ sub Create {
         }
     }
 
+    # Add CF default values
+    my ( $status, @msgs ) = $self->AddCustomFieldDefaultValues;
+    push @non_fatal_errors, @msgs unless $status;
+
     # Create transaction
     my ( $txn_id, $txn_msg, $txn ) = $self->_NewTransaction( Type => 'Create' );
     unless ($txn_id) {
