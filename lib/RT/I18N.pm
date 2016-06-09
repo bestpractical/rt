@@ -65,6 +65,7 @@ use base 'Locale::Maketext::Fuzzy';
 use MIME::Entity;
 use MIME::Head;
 use File::Glob;
+use Encode::Guess;
 
 # I decree that this project's first language is English.
 
@@ -506,11 +507,11 @@ sub _FindOrGuessCharset {
 
 =head2 _GuessCharset STRING
 
-use Encode::Guess to try to figure it out the string's encoding.
+Use Encode::Guess, and optionally Encode::Detect::Detector, to try to
+figure it out the string's encoding.
 
 =cut
 
-use constant HAS_ENCODE_GUESS => Encode::Guess->require;
 use constant HAS_ENCODE_DETECT => Encode::Detect::Detector->require;
 
 sub _GuessCharset {
@@ -548,11 +549,6 @@ sub _GuessCharset {
 
     unless ( @encodings ) {
         $RT::Logger->warning("No EmailInputEncodings set except '*', fallback to $fallback");
-        return $fallback;
-    }
-
-    unless ( HAS_ENCODE_GUESS ) {
-        $RT::Logger->error("We couldn't load Encode::Guess module, fallback to $fallback");
         return $fallback;
     }
 
