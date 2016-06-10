@@ -1335,6 +1335,14 @@ should the sort be ascending (ASC) or descending (DESC).
 
 Set($DefaultSearchResultOrder, 'ASC');
 
+=item C<$ShowSearchResultCount>
+
+Display search result count on ticket lists. Defaults to 0 (hide them).
+
+=cut
+
+Set($ShowSearchResultCount, 0);
+
 =item C<$DefaultSelfServiceSearchResultFormat>
 
 C<$DefaultSelfServiceSearchResultFormat> is the default format of
