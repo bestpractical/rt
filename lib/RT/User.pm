@@ -363,6 +363,12 @@ sub _SetPrivileged {
         }
         my ($status, $msg) = $priv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);
         if ($status) {
+            $self->_NewTransaction(
+                Type     => 'Set',
+                Field    => 'Privileged',
+                NewValue => 1,
+                OldValue => 0,
+            );
             return (1, $self->loc("That user is now privileged"));
         } else {
             return (0, $msg);
@@ -383,6 +389,12 @@ sub _SetPrivileged {
         }
         my ($status, $msg) = $unpriv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);
         if ($status) {
+            $self->_NewTransaction(
+                Type     => 'Set',
+                Field    => 'Privileged',
+                NewValue => 0,
+                OldValue => 1,
+            );
             return (1, $self->loc("That user is now unprivileged"));
         } else {
             return (0, $msg);
@@ -2728,6 +2740,12 @@ sub __DependsOn {
 # Cleanup user's membership
     $objs = RT::GroupMembers->new( $self->CurrentUser );
     $objs->Limit( FIELD => 'MemberId', VALUE => $self->Id );
+    push( @$list, $objs );
+
+# Cleanup user's membership transactions
+    $objs = RT::Transactions->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Type', OPERATOR => 'IN', VALUE => ['AddMember', 'DeleteMember'] );
+    $objs->Limit( FIELD => 'Field', VALUE => $self->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
     push( @$list, $objs );
 
     $deps->_PushDependencies(

@@ -1107,6 +1107,19 @@ sub _AddMember {
             unless $ok;
     }
 
+    # Record transactions for UserDefined groups
+    if ($args{RecordTransaction} && $self->Domain eq 'UserDefined') {
+        $new_member_obj->Object->_NewTransaction(
+            Type  => 'AddMembership',
+            Field => $self->PrincipalObj->id,
+        );
+
+        $self->_NewTransaction(
+            Type  => 'AddMember',
+            Field => $new_member,
+        );
+    }
+
     # Record an Add/SetWatcher txn on the object if we're a role group
     if ($args{RecordTransaction} and $self->RoleClass) {
         my $obj = $args{Object} || $self->RoleGroupObject;
@@ -1310,6 +1323,19 @@ sub _DeleteMember {
             my $obj = $args{Object} || $self->RoleGroupObject;
             $obj->_NewTransaction(%txn);
         }
+    }
+
+    # Record transactions for UserDefined groups
+    if ($args{RecordTransaction} && $self->Domain eq 'UserDefined') {
+        $member_obj->MemberObj->Object->_NewTransaction(
+            Type  => 'DeleteMembership',
+            Field => $self->PrincipalObj->id,
+        );
+
+        $self->_NewTransaction(
+            Type  => 'DeleteMember',
+            Field => $member_id,
+        );
     }
 
     return ( $val, $self->loc("Member deleted") );
@@ -1684,6 +1710,12 @@ sub __DependsOn {
         ENTRYAGGREGATOR => 'OR',
         QUOTEVALUE => 0
     );
+    push( @$list, $objs );
+
+# Cleanup group's membership transactions
+    $objs = RT::Transactions->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Type', OPERATOR => 'IN', VALUE => ['AddMember', 'DeleteMember'] );
+    $objs->Limit( FIELD => 'Field', VALUE => $self->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
     push( @$list, $objs );
 
     $deps->_PushDependencies(
