@@ -91,6 +91,12 @@
 </td></tr>
 % }
 
+% if ( $CustomFieldObj->Id and $CustomFieldObj->IsCanonicalizeType and RT->Config->Get('CustomFieldValuesCanonicalizers') and ( scalar(@{RT->Config->Get('CustomFieldValuesCanonicalizers')}) > 0 ) ) {
+<tr><td class="label"><&|/l&>Canonicalizer:</&></td><td>
+<& /Admin/Elements/EditCustomFieldValuesCanonicalizer, CustomField => $CustomFieldObj &>
+</td></tr>
+% }
+
 <tr><td class="label"><&|/l&>Applies to</&></td>
 <td><& /Admin/Elements/SelectCustomFieldLookupType, 
         Name => "LookupType", 
@@ -257,6 +263,38 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
             $msg = loc("[_1] changed from '[_2]' to '[_3]'",
                         loc("Field values source"), $original, $ValuesClass );
         }
+        else {
+            RT->Logger->debug("Unable to SetValuesClass to '$ValuesClass': $msg");
+        }
+        push @results, $msg;
+    }
+    if ( ($CanonicalizeClass||'') ne ($CustomFieldObj->CanonicalizeClass||'') ) {
+        my $original = $CustomFieldObj->CanonicalizeClass;
+        my ($good, $msg) = $CustomFieldObj->SetCanonicalizeClass( $CanonicalizeClass );
+        if ( $good ) {
+            # Improve message from class names to their friendly descriptions
+            $original = $original->Description
+                if $original && $original->require;
+            $CanonicalizeClass = $CanonicalizeClass->Description
+                if $CanonicalizeClass && $CanonicalizeClass->require;
+
+            if (!$original) {
+                $msg = loc("[_1] '[_2]' added",
+                            loc("Canonicalizer"), $CanonicalizeClass);
+            }
+            elsif (!$CanonicalizeClass) {
+                $msg = loc("[_1] '[_2]' removed",
+                            loc("Canonicalizer"), $original);
+            }
+            else {
+                $msg = loc("[_1] changed from '[_2]' to '[_3]'",
+                            loc("Canonicalizer"), $original, $CanonicalizeClass );
+            }
+        }
+        else {
+            RT->Logger->debug("Unable to SetCanonicalizeClass to '$CanonicalizeClass': $msg");
+        }
+
         push @results, $msg;
     }
 
@@ -272,6 +310,9 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
             if ( $good ) {
                 $msg = loc("[_1] changed from '[_2]' to '[_3]'",
                             loc("Render Type"), $original, $RenderType );
+            }
+            else {
+                RT->Logger->debug("Unable to SetRenderType to '$RenderType': $msg");
             }
 
             push @results, $msg;
@@ -391,6 +432,7 @@ $Enabled => 0
 $SetUniqueValues => undef
 $UniqueValues => 0
 $ValuesClass => 'RT::CustomFieldValues'
+$CanonicalizeClass => undef
 $RenderType => undef
 $LinkValueTo => undef
 $IncludeContentForValue => undef

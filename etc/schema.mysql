@@ -360,6 +360,7 @@ CREATE TABLE CustomFields (
   LookupType varchar(255) CHARACTER SET ascii NOT NULL,
   EntryHint varchar(255) NULL,
   UniqueValues int2 NOT NULL DEFAULT 0 ,
+  CanonicalizeClass varchar(64) CHARACTER SET ascii NULL  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,
