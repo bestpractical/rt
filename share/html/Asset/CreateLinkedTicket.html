@@ -47,12 +47,33 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $Asset => undef
+@Assets => ()
 $Requestors => ''
 </%args>
 <%init>
-my $asset = LoadAsset($Asset);
+my @asset_objs;
+my $single_asset;
+
+# Support passing a single asset or many, as with bulk update.
+if ( $Asset ){
+    push @asset_objs, LoadAsset($Asset);
+    $single_asset = 1;
+}
+elsif ( @Assets ){
+    @asset_objs = map { LoadAsset($_) } @Assets;
+    $single_asset = 1 if @asset_objs == 1;
+}
+else {
+    Abort('No asset specified');
+}
 </%init>
-<& /Elements/Header,
-    Title => loc("Create linked ticket for asset #[_1]: [_2]", $asset->id, $asset->Name) &>
+% if ($single_asset){
+    <& /Elements/Header,
+        Title => loc("Create linked ticket for asset #[_1]: [_2]", $asset_objs[0]->id, $asset_objs[0]->Name) &>
+%}
+%else{
+    <& /Elements/Header,
+        Title => loc("Create linked ticket for multiple assets") &>
+%}
 <& /Elements/Tabs &>
-<& /Asset/Elements/CreateLinkedTicket, AssetObj => $asset, Requestors => $Requestors &>
+<& /Asset/Elements/CreateLinkedTicket, AssetObj => \@asset_objs, Requestors => $Requestors &>
