@@ -74,6 +74,12 @@
     Label => loc('Update'),
     CheckboxNameRegex => '/^UpdateAsset(All)?$/',
 &>
+<div class="submit">
+  <div class="buttons">
+  <span class="caption"></span>
+  <input type="submit" id="bulk-update-create-linked-ticket" name="CreateLinkedTicket"  value="Create Linked Ticket" class="button" alt="Create a ticket with checked assets linked" />
+  </div>
+</div>
 
 <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics asset-bulk-basics", title_class => "inverse" &>
 <table>
@@ -166,7 +172,12 @@ delete $ARGS{$_} foreach grep { $ARGS{$_} =~ /^$/ } keys %ARGS;
 
 $DECODED_ARGS->{'UpdateAssetAll'} = 1 unless @UpdateAsset;
 
-if ( $ARGS{Update} ) {
+if ( $ARGS{'CreateLinkedTicket'} ){
+    my $url = RT->Config->Get('WebURL') . "Asset/CreateLinkedTicket.html";
+    $url .= '?'. $m->comp( '/Elements/QueryString', 'Assets' => \@UpdateAsset );
+    RT::Interface::Web::Redirect($url);
+}
+elsif ( $ARGS{Update} ) {
     my @attributes  = $asset->WritableAttributes;
     @attributes = grep exists $ARGS{ 'Update'. $_ }, @attributes;
     my %basics = map { $_ => $ARGS{ 'Update'. $_ } } @attributes;
