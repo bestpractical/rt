@@ -45,22 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/SelectStatus, %ARGS &>
+<& /Elements/SelectStatus, %ARGS, Type => 'asset', Object => $AssetObj && $AssetObj->id ? $AssetObj : $CatalogObj, Lifecycles => \@Lifecycles &>
 <%init>
-if ($AssetObj and $AssetObj->Id) {
+my @Lifecycles;
+for my $id (keys %Catalogs) {
+    my $catalog = RT::Catalog->new($session{'CurrentUser'});
+    $catalog->Load($id);
+    push @Lifecycles, $catalog->LifecycleObj if $catalog->id;
+}
+
+if ($AssetObj && $AssetObj->id) {
     $ARGS{DefaultValue} = 0;
     $ARGS{Default} = $DECODED_ARGS->{Status} || $ARGS{Default};
     $ARGS{Object} = $AssetObj;
-} else {
-    my $lifecycle = ($CatalogObj || "RT::Catalog")->LifecycleObj;
-    if ( not $ARGS{DefaultValue} ){
-        $ARGS{DefaultValue} = 0;
-        $ARGS{Default} ||= $DECODED_ARGS->{Status} || $lifecycle->DefaultOnCreate;
-    }
-    $ARGS{Statuses} = [ $AssetObj ? $lifecycle->Transitions("") : $lifecycle->Valid ];
+} elsif ( $CatalogObj ) {
+    my $lifecycle = $CatalogObj->LifecycleObj;
+    $ARGS{DefaultValue} = 0;
+    $ARGS{Default} ||= $DECODED_ARGS->{Status} || $lifecycle->DefaultOnCreate;
 }
 </%init>
 <%args>
 $AssetObj   => undef
 $CatalogObj => undef
+%Catalogs => ()
 </%args>
