@@ -84,6 +84,13 @@ if ($SavedSearch) {
         $class = 'RT::Transactions';
         $query_link_url = RT->Config->Get('WebPath') .  "/Transaction/Search/Results.html";
     }
+    elsif ( $SearchArg->{SearchType} eq 'Asset' ) {
+        $class = 'RT::Assets';
+        $query_link_url = RT->Config->Get('WebPath') . "/Asset/Search/Results.html";
+        $customize = RT->Config->Get('WebPath') . '/Asset/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString',
+            SavedSearchLoad => $SavedSearch );
+    }
     elsif ( $SearchArg->{SearchType} ne 'Ticket' ) {
 
         # XXX: dispatch to different handler here
@@ -157,6 +164,9 @@ if ($ShowCount) {
     my $title;
     if ( $class eq 'RT::Transactions' ) {
         $title = loc('(Found [quant,_1,transaction,transactions])', $count);
+    }
+    elsif ( $class eq 'RT::Assets' ) {
+        $title = loc('(Found [quant,_1,asset,assets])', $count);
     }
     else {
         $title = loc('(Found [quant,_1,ticket,tickets])', $count);

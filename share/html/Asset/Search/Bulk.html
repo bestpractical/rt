@@ -56,6 +56,9 @@
 % foreach my $var ( @{$search{'PassArguments'}} )  {
 <input type="hidden" class="hidden" name="<% $var %>" value="<% $ARGS{$var} || '' %>" />
 % }
+% foreach my $var (qw(Query Format OrderBy Order Rows Page Token)) {
+<input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
+%}
 <& /Elements/CollectionList,
     %search,
     Collection      => $assets,
@@ -94,7 +97,7 @@
             <&|/l&>Catalog</&>
           </div>
           <div class="col-md-9 value">
-            <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', Default => $catalog_obj->id, UpdateSession => 0, &>
+            <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', UpdateSession => 0, ShowNullOption => 1 &>
           </div>
         </div>
       </div>
@@ -123,7 +126,7 @@
         <div class="form-row">
           <div class="label col-md-3"><&|/l&>Status</&></div>
           <div class="col-md-9 value">
-            <& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1, CatalogObj => $catalog_obj &>
+            <& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1 &>
           </div>
         </div>
       </div>
@@ -231,11 +234,18 @@ my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
 $ARGS{'Catalog'} = $catalog_obj->Id;
 
 my $assets = RT::Assets->new($session{CurrentUser});
-my %search = ProcessAssetsSearchArguments(
-    Assets => $assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
-);
+my %search;
+if ( $ARGS{Query} ) {
+    $assets->FromSQL($ARGS{Query});
+}
+else {
+    %search = ProcessAssetsSearchArguments(
+        Assets => $assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
+    );
+}
+$search{Format} ||= RT->Config->Get('AssetSearchFormat');
 
-my $DisplayFormat = "'__CheckBox.{UpdateAsset}__',". $search{'Format'};
+my $DisplayFormat = "'__CheckBox.{UpdateAsset}__',". ($ARGS{Format} || $search{'Format'});
 $DisplayFormat =~ s/\s*,\s*('?__NEWLINE__'?)/,$1,''/gi;
 
 my $asset = RT::Asset->new( $session{'CurrentUser'} );
@@ -272,7 +282,7 @@ elsif ( $ARGS{Update} ) {
 
     MaybeRedirectForResults(
         Actions     => \@results,
-        Arguments   => { map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } @{$search{'PassArguments'}} },
+        Arguments   => { map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } @{$search{'PassArguments'}}, qw(Query Format OrderBy Order Rows Page Token) },
     );
 }
 </%INIT>

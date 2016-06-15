@@ -46,6 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
+if (RT->Config->Get('AssetSQL_HideSimpleSearch')) {
+    $m->redirect( RT->Config->Get("WebPath") .'/Asset/Search/Build.html' );
+}
+
 my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
 $ARGS{'Catalog'} = $catalog_obj->Id;
 

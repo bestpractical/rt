@@ -57,6 +57,10 @@ if (!$Collection) {
     }
     $Collection->FromSQL($Query);
 }
+elsif (!$Collection && $Class eq 'RT::Assets') {
+    $Collection = RT::Assets->new( $session{'CurrentUser'} );
+    $Collection->FromSQL($Query);
+}
 
 # flip HasResults from undef to 0 to indicate there was a search, so
 # dashboard mail can be suppressed if there are no results

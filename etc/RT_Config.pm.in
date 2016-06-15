@@ -3142,6 +3142,14 @@ Set( $AssetBasicCustomFieldsOnCreate, [ 'foo', 'bar' ] );
 
 # Set($AssetBasicCustomFieldsOnCreate, undef );
 
+=item C<$AssetSQL_HideSimpleSearch>
+
+Set to a true value to hide the legacy Asset Simple Search in favor of RT 4.6's AssetSQL.
+
+=cut
+
+Set($AssetSQL_HideSimpleSearch, 0);
+
 =back
 
 =head2 Message box properties
