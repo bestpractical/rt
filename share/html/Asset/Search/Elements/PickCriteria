@@ -45,53 +45,29 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<&| /Widgets/TitleBox, title => loc('Add Criteria')&>
+
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+
+
+% $m->callback( %ARGS, CallbackName => "BeforeBasics" );
+<& PickBasics, catalogs => \%catalogs &>
+<& PickAssetCFs, catalogs => \%catalogs &>
+% $m->callback( %ARGS, CallbackName => "AfterCFs" );
+
+<tr class="separator"><td colspan="3"><hr /></td></tr>
+<tr>
+<td class="label"><&|/l&>Aggregator</&></td>
+<td class="operator" colspan="2"><& /Search/Elements/SelectAndOr, Name => "AndOr" &></td>
+
+</tr>
+
+</table>
+
+</&>
+
 <%ARGS>
-$Format => undef
-$Query => ''
-$OrderBy => 'Name'
-$Order => 'ASC'
-$PreserveNewLines => 0
+$addquery => 0
+$query => undef
+%catalogs => ()
 </%ARGS>
-<%INIT>
-my $Assets = RT::Assets->new( $session{'CurrentUser'} );
-
-my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
-$ARGS{'Catalog'} = $catalog_obj->Id;
-
-if ( $ARGS{Query} ) {
-    $Assets->FromSQL( $Query );
-}
-else {
-    ProcessAssetsSearchArguments(
-        Assets => $Assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
-    );
-}
-if ( $OrderBy =~ /\|/ ) {
-    # Multiple Sorts
-    my @OrderBy = split /\|/, $OrderBy;
-    my @Order   = split /\|/, $Order;
-    $Assets->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-        ( 0 .. $#OrderBy )
-    );
-}
-else {
-    $Assets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
-}
-
-if ( !$Format ) {
-    $Format = q|id, Name, Description, Status, Catalog, |;
-    $Format .= "$_, " for RT::Asset->Roles;
-    my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
-    my $CFs = RT::CustomFields->new( $session{CurrentUser} );
-    $CFs->LimitToCatalog( $catalog_obj->Id );
-    $CFs->LimitToObjectId( 0 ); # LimitToGlobal but no LookupType restriction
-    $Format .= "'__CF.{$_}__/TITLE:$_', " for map {$_ = $_->Name; s/['\\]/\\$1/g; $_} @{$CFs->ItemsArrayRef};
-    $m->callback(CallbackName => "ModifyFormat", Format => \$Format );
-}
-
-my $comp = "/Asset/Elements/TSVExport";
-$comp = "/Elements/TSVExport" if $m->comp_exists("/Elements/TSVExport");
-$m->comp( $comp, Collection => $Assets, Format => $Format );
-
-</%INIT>

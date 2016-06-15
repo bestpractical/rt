@@ -45,53 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<select name="<%$Name%>">
+% foreach (@fields) {
+<option value="<%$_->[0]%>"><% $_->[1] %></option>
+% }
+</select>
 <%ARGS>
-$Format => undef
-$Query => ''
-$OrderBy => 'Name'
-$Order => 'ASC'
-$PreserveNewLines => 0
+$Name => 'LinksField'
 </%ARGS>
+
 <%INIT>
-my $Assets = RT::Assets->new( $session{'CurrentUser'} );
-
-my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
-$ARGS{'Catalog'} = $catalog_obj->Id;
-
-if ( $ARGS{Query} ) {
-    $Assets->FromSQL( $Query );
-}
-else {
-    ProcessAssetsSearchArguments(
-        Assets => $Assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
-    );
-}
-if ( $OrderBy =~ /\|/ ) {
-    # Multiple Sorts
-    my @OrderBy = split /\|/, $OrderBy;
-    my @Order   = split /\|/, $Order;
-    $Assets->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-        ( 0 .. $#OrderBy )
-    );
-}
-else {
-    $Assets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
-}
-
-if ( !$Format ) {
-    $Format = q|id, Name, Description, Status, Catalog, |;
-    $Format .= "$_, " for RT::Asset->Roles;
-    my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
-    my $CFs = RT::CustomFields->new( $session{CurrentUser} );
-    $CFs->LimitToCatalog( $catalog_obj->Id );
-    $CFs->LimitToObjectId( 0 ); # LimitToGlobal but no LookupType restriction
-    $Format .= "'__CF.{$_}__/TITLE:$_', " for map {$_ = $_->Name; s/['\\]/\\$1/g; $_} @{$CFs->ItemsArrayRef};
-    $m->callback(CallbackName => "ModifyFormat", Format => \$Format );
-}
-
-my $comp = "/Asset/Elements/TSVExport";
-$comp = "/Elements/TSVExport" if $m->comp_exists("/Elements/TSVExport");
-$m->comp( $comp, Collection => $Assets, Format => $Format );
-
+my @fields = (
+    [ HasMember    => loc("Child") ],
+    [ MemberOf     => loc("Parent") ],
+    [ DependsOn    => loc("Depends on") ],
+    [ DependedOnBy => loc("Depended on by") ],
+    [ RefersTo     => loc("Refers to") ],
+    [ ReferredToBy => loc("Referred to by") ],
+    [ Linked       => loc("Links to") ],
+);
 </%INIT>

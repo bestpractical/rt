@@ -45,53 +45,96 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%ARGS>
-$Format => undef
-$Query => ''
-$OrderBy => 'Name'
-$Order => 'ASC'
-$PreserveNewLines => 0
-</%ARGS>
+<table valign="top">
+
+% for my $o (0..3) {
+% $Order[$o] ||= ''; $OrderBy[$o] ||= '';
+<tr>
+<td class="label">
+% if ($o == 0) {
+<&|/l&>Order by</&>:
+% }
+</td>
+<td class="value">
+<select name="OrderBy">
+% if ($o > 0) {
+<option value=""><&|/l&>~[none~]</&></option>
+% }
+% # %fields maps display name to SQL column/function
+% foreach my $field (sort keys %fields) {
+%    next unless $field;
+%    my $fieldval = $fields{$field};
+<option value="<%$fieldval%>"
+% if (defined $OrderBy[$o] and $fieldval eq $OrderBy[$o]) {
+selected="selected"
+% }
+><% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
+% }
+</select>
+<select name="Order">
+<option value="ASC"
+% unless ( ($Order[$o]||'') eq "DESC" ) {
+selected="selected"
+% }
+><&|/l&>Asc</&></option>
+<option value="DESC"
+% if ( ($Order[$o]||'') eq "DESC" ) {
+selected="selected"
+% }
+><&|/l&>Desc</&></option>
+</select>
+</td>
+</tr>
+% }
+<tr>
+<td class="label">
+<&|/l&>Rows per page</&>:
+</td><td class="value">
+<& /Elements/SelectResultsPerPage, 
+    Name => "RowsPerPage", 
+    Default => $RowsPerPage &>
+</td>
+</tr>
+</table>
+
 <%INIT>
-my $Assets = RT::Assets->new( $session{'CurrentUser'} );
+my $assets = RT::Assets->new($session{'CurrentUser'});
+my %FieldDescriptions = %{$assets->FIELDS};
+my %fields;
 
-my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
-$ARGS{'Catalog'} = $catalog_obj->Id;
-
-if ( $ARGS{Query} ) {
-    $Assets->FromSQL( $Query );
-}
-else {
-    ProcessAssetsSearchArguments(
-        Assets => $Assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
-    );
-}
-if ( $OrderBy =~ /\|/ ) {
-    # Multiple Sorts
-    my @OrderBy = split /\|/, $OrderBy;
-    my @Order   = split /\|/, $Order;
-    $Assets->OrderByCols(
-        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-        ( 0 .. $#OrderBy )
-    );
-}
-else {
-    $Assets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+for my $field (keys %FieldDescriptions) {
+    next if $field eq 'EffectiveId';
+    next unless $FieldDescriptions{$field}->[0] =~ /^(?:ENUM|INT|DATE|STRING|ID)$/;
+    $fields{$field} = $field;
 }
 
-if ( !$Format ) {
-    $Format = q|id, Name, Description, Status, Catalog, |;
-    $Format .= "$_, " for RT::Asset->Roles;
-    my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
-    my $CFs = RT::CustomFields->new( $session{CurrentUser} );
-    $CFs->LimitToCatalog( $catalog_obj->Id );
-    $CFs->LimitToObjectId( 0 ); # LimitToGlobal but no LookupType restriction
-    $Format .= "'__CF.{$_}__/TITLE:$_', " for map {$_ = $_->Name; s/['\\]/\\$1/g; $_} @{$CFs->ItemsArrayRef};
-    $m->callback(CallbackName => "ModifyFormat", Format => \$Format );
-}
+$fields{'Owner'} = 'Owner';
+$fields{'HeldBy'} = 'HeldBy';
+$fields{'Contact'} = 'Contact';
 
-my $comp = "/Asset/Elements/TSVExport";
-$comp = "/Elements/TSVExport" if $m->comp_exists("/Elements/TSVExport");
-$m->comp( $comp, Collection => $Assets, Format => $Format );
+# Add all available CustomFields to the list of sortable columns.
+my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
+$fields{$_} = $_ for @cfs;
+
+# Add PAW sort
+$fields{'Custom.Ownership'} = 'Custom.Ownership';
+
+$m->callback(CallbackName => 'MassageSortFields', Fields => \%fields );
+
+my @Order = split /\|/, $Order;
+my @OrderBy = split /\|/, $OrderBy;
+if ($Order =~ /\|/) {
+    @Order = split /\|/, $Order;
+} else {
+    @Order = ( $Order );
+}
 
 </%INIT>
+
+<%ARGS>
+$Order => ''
+$OrderBy => ''
+$RowsPerPage => undef
+$Format => undef
+$GroupBy => 'id'
+</%ARGS>
