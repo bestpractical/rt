@@ -58,6 +58,7 @@ my $title = ( $ARGS{'SearchAssets'} or $ARGS{q} ) ?
       loc("Found [quant,_1,asset,assets]",$assets->Count)
     : loc("Assets");
 
+$m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
