@@ -578,8 +578,13 @@ my $build_main_nav = sub {
 
     $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
 
-    $search->child( assets => title => loc("Assets"), path => "/Asset/Search/" )
-        if $session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
+    if ($session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
+        my $search_assets = $search->child( assets => title => loc("Assets"), path => "/Asset/Search/Build.html?NewQuery=1" );
+        if (!RT->Config->Get('AssetSQL_HideSimpleSearch')) {
+            $search_assets->child("asset_simple", title => loc("Simple Search"), path => "/Asset/Search/");
+            $search_assets->child("assetsql", title => loc("New Search"), path => "/Asset/Search/Build.html?NewQuery=1");
+        }
+    }
 
     if ($session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
         my $articles = Menu->child( articles => title => loc('Articles'), path => "/Articles/index.html");
@@ -592,7 +597,10 @@ my $build_main_nav = sub {
     if ($session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
         my $assets = Menu->child( "assets", title => loc("Assets"), path => "/Asset/Search/" );
         $assets->child( "create", title => loc("Create"), path => "/Asset/CreateInCatalog.html" );
-        $assets->child( "search", title => loc("Search"), path => "/Asset/Search/" );
+        $assets->child( "search", title => loc("Search"), path => "/Asset/Search/Build.html?NewQuery=1" );
+        if (!RT->Config->Get('AssetSQL_HideSimpleSearch')) {
+            $assets->child( "simple_search", title => loc("Simple Search"), path => "/Asset/Search/" );
+        }
     }
 
     my $tools = Menu->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
@@ -792,6 +800,12 @@ my $build_main_nav = sub {
                     title => loc('Extract Article'),
                     path  => "/Articles/Article/ExtractIntoClass.html?Ticket=".$obj->id,
                 ) if $session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
+
+                $actions->child( 'edit_assets' =>
+                    title => loc('Edit Assets'),
+                     path => "/Asset/Search/Bulk.html?Query=Linked=" . $obj->id,
+                ) if $can->('ModifyTicket')
+                  && $session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
                 if ( defined $session{"tickets"} ) {
                     # we have to update session data if we get new ItemMap
@@ -1037,7 +1051,7 @@ my $build_main_nav = sub {
                 );
             }
         }
-    } elsif ($request_path =~ m{^/Asset/Search/}) {
+    } elsif ($request_path =~ m{^/Asset/Search/(index.html)?$}) {
         my $page  = PageMenu();
         my %search = map @{$_},
             grep defined $_->[1] && length $_->[1],
@@ -1059,6 +1073,79 @@ my $build_main_nav = sub {
             title => loc('Download Spreadsheet'),
             path  => '/Asset/Search/Results.tsv?' . (keys %search ? $query_string->(%search) : ''),
         );
+    } elsif ($request_path =~ m{^/Asset/Search/}) {
+        my $page  = PageMenu();
+        my %search = map @{$_},
+            grep defined $_->[1] && length $_->[1],
+            map {ref $DECODED_ARGS->{$_} ? [$_, $DECODED_ARGS->{$_}[0]] : [$_, $DECODED_ARGS->{$_}] }
+            grep /^(?:q|SearchAssets|!?(Name|Description|Catalog|Status|Role\..+|CF\..+)|Order(?:By)?|Page)$/,
+            keys %$DECODED_ARGS;
+    
+        my $current_search = $session{"CurrentAssetSearchHash"} || {};
+        my $search_id = $DECODED_ARGS->{'SavedSearchLoad'} || $DECODED_ARGS->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
+        my $args      = '';
+        my $has_query;
+        $has_query = 1 if ( $DECODED_ARGS->{'Query'} or $current_search->{'Query'} );
+    
+        my %query_args;
+        my %fallback_query_args = (
+            SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
+            (
+                map {
+                    my $p = $_;
+                    $p => $DECODED_ARGS->{$p} || $current_search->{$p}
+                } qw(Query Format OrderBy Order Page)
+            ),
+            RowsPerPage => (
+                defined $DECODED_ARGS->{'RowsPerPage'}
+                ? $DECODED_ARGS->{'RowsPerPage'}
+                : $current_search->{'RowsPerPage'}
+            ),
+        );
+    
+        if ($QueryString) {
+            $args = '?' . $QueryString;
+        }
+        else {
+            my %final_query_args = ();
+            # key => callback to avoid unnecessary work
+    
+            for my $param (keys %fallback_query_args) {
+                $final_query_args{$param} = defined($QueryArgs->{$param})
+                                          ? $QueryArgs->{$param}
+                                          : $fallback_query_args{$param};
+            }
+    
+            for my $field (qw(Order OrderBy)) {
+                if ( ref( $final_query_args{$field} ) eq 'ARRAY' ) {
+                    $final_query_args{$field} = join( "|", @{ $final_query_args{$field} } );
+                } elsif (not defined $final_query_args{$field}) {
+                    delete $final_query_args{$field};
+                }
+                else {
+                    $final_query_args{$field} ||= '';
+                }
+            }
+    
+            $args = '?' . $query_string->(%final_query_args);
+        }
+    
+        $page->child('edit_search',
+            title      => loc('Edit Search'),
+            path       => '/Asset/Search/Build.html' . $args,
+        );
+        $page->child( advanced => title => loc('Advanced'), path => '/Asset/Search/Edit.html' . $args );
+        if ($has_query) {
+            $page->child( results => title => loc('Show Results'), path => '/Asset/Search/Results.html' . $args );
+            $page->child('bulk',
+                title => loc('Bulk Update'),
+                path => '/Asset/Search/Bulk.html' . $args,
+            );
+            $page->child('csv',
+                title => loc('Download Spreadsheet'),
+                path  => '/Asset/Search/Results.tsv' . $args,
+            );
+        }
     } elsif ($request_path =~ m{^/Admin/Global/CustomFields/Catalog-Assets\.html$}) {
         my $page  = PageMenu();
         $page->child("create", title => loc("Create New"), path => "/Admin/CustomFields/Modify.html?Create=1;LookupType=" . RT::Asset->CustomFieldLookupType);
