@@ -227,3 +227,11 @@ body#comp-Asset-Search .collection-as-table td {
         width: 10em;
     }
 }
+
+#comp-Asset-Search-Build #body {
+    position: relative;
+}
+
+#comp-Asset-Search-Build #pick-criteria {
+    min-height: 400px;
+}
