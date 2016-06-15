@@ -66,6 +66,9 @@ my $Catalog = {
     quote_in_filename => "Filenames with double quotes can not be uploaded.", #loc
     attachment_warning_regex => "\\battach", #loc
     shortcut_help_error => "Unable to open shortcut help. Reason:", #loc
+    error => "Error", #loc
+    check => "Check", #loc
+    remove => "Remove", #loc
 };
 $_ = loc($_) for values %$Catalog;
 

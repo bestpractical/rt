@@ -616,14 +616,20 @@ sub _get_dbh {
 }
 
 sub __create_database {
+    my %args = (
+        # already dropped db in parallel tests, need to do so for other cases.
+        DropDatabase => $ENV{RT_TEST_PARALLEL} ? 0 : 1,
+
+        @_,
+    );
+
     # bootstrap with dba cred
     my $dbh = _get_dbh(
         RT::Handle->SystemDSN,
         $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD}
     );
 
-    unless ( $ENV{RT_TEST_PARALLEL} ) {
-        # already dropped db in parallel tests, need to do so for other cases.
+    if ($args{DropDatabase}) {
         __drop_database( $dbh );
 
     }

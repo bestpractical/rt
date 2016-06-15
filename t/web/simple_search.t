@@ -18,56 +18,54 @@ ok $two_words_queue && $two_words_queue->id, 'loaded or created a queue';
 
 {
     my $tickets = RT::Tickets->new( RT->SystemUser );
-    my $active = "( ".join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray())." )";
-    my $inactive = "( ".join( " OR ", map "Status = '$_'", RT::Queue->InactiveStatusArray())." )";
 
     require RT::Search::Simple;
     my $parser = RT::Search::Simple->new(
         TicketsObj => $tickets,
         Argument   => '',
     );
-    is $parser->QueryToSQL("foo"), "( Subject LIKE 'foo' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("1 foo"), "( Subject LIKE 'foo' AND Subject LIKE '1' ) AND $active", "correct parsing";
+    is $parser->QueryToSQL("foo"), "( Subject LIKE 'foo' ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("1 foo"), "( Subject LIKE 'foo' AND Subject LIKE '1' ) AND ( Status = '__Active__' )", "correct parsing";
     is $parser->QueryToSQL("1"), "( Id = 1 )", "correct parsing";
     is $parser->QueryToSQL("#1"), "( Id = 1 )", "correct parsing";
-    is $parser->QueryToSQL("'1'"), "( Subject LIKE '1' ) AND $active", "correct parsing";
+    is $parser->QueryToSQL("'1'"), "( Subject LIKE '1' ) AND ( Status = '__Active__' )", "correct parsing";
 
     is $parser->QueryToSQL("foo bar"),
-        "( Subject LIKE 'foo' AND Subject LIKE 'bar' ) AND $active",
+        "( Subject LIKE 'foo' AND Subject LIKE 'bar' ) AND ( Status = '__Active__' )",
         "correct parsing";
     is $parser->QueryToSQL("'foo bar'"),
-        "( Subject LIKE 'foo bar' ) AND $active",
+        "( Subject LIKE 'foo bar' ) AND ( Status = '__Active__' )",
         "correct parsing";
 
     is $parser->QueryToSQL("'foo \\' bar'"),
-        "( Subject LIKE 'foo \\' bar' ) AND $active",
+        "( Subject LIKE 'foo \\' bar' ) AND ( Status = '__Active__' )",
         "correct parsing";
     is $parser->QueryToSQL('"foo \' bar"'),
-        "( Subject LIKE 'foo \\' bar' ) AND $active",
+        "( Subject LIKE 'foo \\' bar' ) AND ( Status = '__Active__' )",
         "correct parsing";
     is $parser->QueryToSQL('"\f\o\o"'),
-        "( Subject LIKE '\\\\f\\\\o\\\\o' ) AND $active",
+        "( Subject LIKE '\\\\f\\\\o\\\\o' ) AND ( Status = '__Active__' )",
         "correct parsing";
 
-    is $parser->QueryToSQL("General"), "( Queue = 'General' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("'Two Words'"), "( Subject LIKE 'Two Words' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("queue:'Two Words'"), "( Queue = 'Two Words' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("subject:'Two Words'"), "$active AND ( Subject LIKE 'Two Words' )", "correct parsing";
+    is $parser->QueryToSQL("General"), "( Queue = 'General' ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("'Two Words'"), "( Subject LIKE 'Two Words' ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("queue:'Two Words'"), "( Queue = 'Two Words' ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("subject:'Two Words'"), "( Status = '__Active__' ) AND ( Subject LIKE 'Two Words' )", "correct parsing";
 
-    is $parser->QueryToSQL("me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("'me'"), "( Subject LIKE 'me' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("owner:me"), "( Owner.id = '__CurrentUser__' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL("owner:'me'"), "( Owner = 'me' ) AND $active", "correct parsing";
-    is $parser->QueryToSQL('owner:root@localhost'), "( Owner.EmailAddress = 'root\@localhost' ) AND $active", "Email address as owner";
+    is $parser->QueryToSQL("me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("'me'"), "( Subject LIKE 'me' ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("owner:me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("owner:'me'"), "( Owner = 'me' ) AND ( Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL('owner:root@localhost'), "( Owner.EmailAddress = 'root\@localhost' ) AND ( Status = '__Active__' )", "Email address as owner";
 
     is $parser->QueryToSQL("resolved me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' )", "correct parsing";
-    is $parser->QueryToSQL("resolved active me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' OR Status = 'new' OR Status = 'open' OR Status = 'stalled' )", "correct parsing";
-    is $parser->QueryToSQL("status:active"), $active, "Explicit active search";
+    is $parser->QueryToSQL("resolved active me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = 'resolved' OR Status = '__Active__' )", "correct parsing";
+    is $parser->QueryToSQL("status:active"), "( Status = '__Active__' )", "Explicit active search";
     is $parser->QueryToSQL("status:'active'"), "( Status = 'active' )", "Quoting active makes it the actual word";
-    is $parser->QueryToSQL("inactive me"), "( Owner.id = '__CurrentUser__' ) AND $inactive", "correct parsing";
+    is $parser->QueryToSQL("inactive me"), "( Owner.id = '__CurrentUser__' ) AND ( Status = '__Inactive__' )", "correct parsing";
 
-    is $parser->QueryToSQL("cf.Foo:bar"), "( 'CF.{Foo}' LIKE 'bar' ) AND $active", "correct parsing of CFs";
-    is $parser->QueryToSQL(q{cf."don't foo?":'bar n\\' baz'}), qq/( 'CF.{don\\'t foo?}' LIKE 'bar n\\' baz' ) AND $active/, "correct parsing of CFs with quotes";
+    is $parser->QueryToSQL("cf.Foo:bar"), "( 'CF.{Foo}' LIKE 'bar' ) AND ( Status = '__Active__' )", "correct parsing of CFs";
+    is $parser->QueryToSQL(q{cf."don't foo?":'bar n\\' baz'}), qq/( 'CF.{don\\'t foo?}' LIKE 'bar n\\' baz' ) AND ( Status = '__Active__' )/, "correct parsing of CFs with quotes";
 }
 
 my $ticket_found_1 = RT::Ticket->new($RT::SystemUser);

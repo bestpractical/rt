@@ -221,11 +221,14 @@ my $re_ip_serialized = qr/$re_ip_sunit(?:\.$re_ip_sunit){3}/;
 sub Content {
     my $self = shift;
 
-    return undef unless $self->CustomFieldObj->CurrentUserHasRight('SeeCustomField');
+    my $cf = $self->CustomFieldObj;
+    $cf->{include_set_initial} = $self->{include_set_initial};
+
+    return undef unless $cf->CurrentUserCanSee;
 
     my $content = $self->_Value('Content');
-    if (   $self->CustomFieldObj->Type eq 'IPAddress'
-        || $self->CustomFieldObj->Type eq 'IPAddressRange' )
+    if (   $cf->Type eq 'IPAddress'
+        || $cf->Type eq 'IPAddressRange' )
     {
 
         require Net::IP;
@@ -236,7 +239,7 @@ sub Content {
             $content = Net::IP::ip_compress_address($1, 6);
         }
 
-        return $content if $self->CustomFieldObj->Type eq 'IPAddress';
+        return $content if $cf->Type eq 'IPAddress';
 
         my $large_content = $self->__Value('LargeContent');
         if ( $large_content =~ /^\s*($re_ip_serialized)\s*$/o ) {

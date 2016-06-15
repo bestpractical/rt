@@ -100,16 +100,17 @@ use RT::CustomRoles;
 use RT::ACL;
 use RT::Interface::Email;
 
-__PACKAGE__->AddRight( General => SeeQueue            => 'View queue' ); # loc
-__PACKAGE__->AddRight( Admin   => AdminQueue          => 'Create, modify and delete queue' ); # loc
-__PACKAGE__->AddRight( Admin   => ShowACL             => 'Display Access Control List' ); # loc
-__PACKAGE__->AddRight( Admin   => ModifyACL           => 'Create, modify and delete Access Control List entries' ); # loc
-__PACKAGE__->AddRight( Admin   => ModifyQueueWatchers => 'Modify queue watchers' ); # loc
-__PACKAGE__->AddRight( General => SeeCustomField      => 'View custom field values' ); # loc
-__PACKAGE__->AddRight( Staff   => ModifyCustomField   => 'Modify custom field values' ); # loc
-__PACKAGE__->AddRight( Admin   => AssignCustomFields  => 'Assign and remove queue custom fields' ); # loc
-__PACKAGE__->AddRight( Admin   => ModifyTemplate      => 'Modify Scrip templates' ); # loc
-__PACKAGE__->AddRight( Admin   => ShowTemplate        => 'View Scrip templates' ); # loc
+__PACKAGE__->AddRight( General => SeeQueue              => 'View queue' ); # loc
+__PACKAGE__->AddRight( Admin   => AdminQueue            => 'Create, modify and delete queue' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowACL               => 'Display Access Control List' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyACL             => 'Create, modify and delete Access Control List entries' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyQueueWatchers   => 'Modify queue watchers' ); # loc
+__PACKAGE__->AddRight( General => SeeCustomField        => 'View custom field values' ); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomField     => 'Modify custom field values' ); # loc
+__PACKAGE__->AddRight( Staff   => SetInitialCustomField => 'Add custom field values only at object creation time'); # loc
+__PACKAGE__->AddRight( Admin   => AssignCustomFields    => 'Assign and remove queue custom fields' ); # loc
+__PACKAGE__->AddRight( Admin   => ModifyTemplate        => 'Modify Scrip templates' ); # loc
+__PACKAGE__->AddRight( Admin   => ShowTemplate          => 'View Scrip templates' ); # loc
 
 __PACKAGE__->AddRight( Admin   => ModifyScrips        => 'Modify Scrips' ); # loc
 __PACKAGE__->AddRight( Admin   => ShowScrips          => 'View Scrips' ); # loc
@@ -158,6 +159,7 @@ sub Create {
         Sign              => undef,
         SignAuto          => undef,
         Encrypt           => undef,
+        SLA               => undef,
         _RecordTransaction => 1,
         @_
     );
@@ -197,7 +199,7 @@ sub Create {
     }
     $RT::Handle->Commit;
 
-    for my $attr (qw/Sign SignAuto Encrypt/) {
+    for my $attr (qw/Sign SignAuto Encrypt SLA/) {
         next unless defined $args{$attr};
         my $set = "Set" . $attr;
         my ($status, $msg) = $self->$set( $args{$attr} );
@@ -1013,7 +1015,7 @@ sub _CoreAccessible {
         LastUpdated => 
         {read => 1, auto => 1, sql_type => 11, length => 0,  is_blob => 0,  is_numeric => 0,  type => 'datetime', default => ''},
         SLADisabled => 
-        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
+        {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '1'},
         Disabled => 
         {read => 1, write => 1, sql_type => 5, length => 6,  is_blob => 0,  is_numeric => 1,  type => 'smallint(6)', default => '0'},
 

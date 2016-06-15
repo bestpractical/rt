@@ -21,9 +21,8 @@ L<RT::Authen::ExternalAuth::DBI> documentation.
 
 Users of the existing
 L<RT::Authen::ExternalAuth|https://metacpan.org/pod/RT::Authen::ExternalAuth>
-extension should remove C<RT::Authen::ExternalAuth> from the plugins list,
-and add C<Set($ExternalAuth, 1);> to the F<RT_SiteConfig.pm> file. Please
-also remove F<local/plugins/RT-Authen-ExternalAuth> from your RT
+extension should remove C<RT::Authen::ExternalAuth> from the plugins list.
+Please also remove F<local/plugins/RT-Authen-ExternalAuth> from your RT
 installation.
 
 =item *
@@ -61,16 +60,46 @@ F<local/plugins/RT-Extension-Assets> from your RT installation.
 
 =item *
 
-SLA tracking is in core now, so C<SLA> became a core field. Please see the SLA
-section in F<RT_Config.pm> as well as F<docs/customizing/sla.pod>.
+As of 4.4, SLA tracking is also a core feature, so C<SLA> is a core field
+on tickets for queues on which SLA tracking is enabled. Please see the SLA
+section in F<RT_Config.pm> as well as F<docs/customizing/sla.pod> for
+details on configuring RT's SLA feature.
 
-Users who are currently using
+Users currently using
 L<RT::Extension::SLA|https://metacpan.org/pod/RT::Extension::SLA> should
-remove C<RT::Extension::SLA> from the plugin list, and run
-F<etc/upgrade/upgrade-sla>. Please also remove
-F<local/plugins/RT-Extension-SLA> from your RT installation. Note that with
-core SLA, all queues share the same set of levels defined in
+do the following to migrate to core SLA functionality after running
+the main RT code and database upgrade steps successfully:
+
+=over 4
+
+=item * Remove C<RT::Extension::SLA> from your plugin list in C<RT_SiteConfig.pm>
+
+=item * Run the upgrade script F<etc/upgrade/upgrade-sla>
+
+=item * Update the format of your C<%ServiceAgreements> configuration
+
+You can keep the same configuration, but it is now set with a C<Set>
+call like all standard RT features, the leading C<RT::> is removed,
+and the C<=> becomes a C<,>. You can
+see examples in F<docs/customizing/sla.pod>.
+
+=item * Update the format of your C<%ServiceBusinessHours> configuration
+
+If you have a Business Hours configuration, update your configuration
+in C<RT_SiteConfig.pm> with the same changes as described above for
 C<%ServiceAgreements>.
+
+=item * (Optional) Remove the directory F<local/plugins/RT-Extension-SLA>
+
+You can remove this directory and all of its contents from your RT
+installation to uninstall the previous extension code
+
+=back
+
+Note that since SLA is now a core ticket value, it is currently not possible
+to have different levels per queue as was previously possible when using
+multiple SLA custom fields. Currently all queues share the same set of levels
+defined in C<%ServiceAgreements>.
 
 =item *
 
@@ -404,6 +433,23 @@ ticket is created, it will be linked to the previous ticket.
 
 IPv6 custom field values are now displayed in compressed form, for clarity.
 Searching and updating handle both representations as you'd expect.
+
+=back
+
+=head1 UPGRADING FROM 4.4.0 AND EARLIER
+
+=over 4
+
+=item *
+
+We updated default RT searches that previously specified 'new' and 'open' status
+to use the new '__Active__' and '__Inactive__' syntax where appropriate. For new
+RT's, this means the default RT at a Glance searches will now work with custom
+lifecycles without updating these searches.
+
+For existing RTs, you may want to update the "highest priority tickets I own" and
+'newest unowned tickets' system searches to use '__Active__' rather than specific
+statuses if you have a custom lifecycle.
 
 =back
 

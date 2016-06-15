@@ -760,6 +760,33 @@ mailed dashboards.
 
 Set(@EmailDashboardRemove, ());
 
+=item C<@EmailDashboardLanguageOrder>
+
+A list that specifies which language to use for dashboard subscription email.
+There are several special keys:
+
+* _subscription: the language chosen on the dashboard subscription page
+* _recipient: the recipient's language, as chosen on their "About Me" page
+* _subscriber: the subscriber's language, as chosen on their "About Me" page
+
+The first key that produces a value is used for the email. Be aware that users
+may not actually have a language set on their "About Me" page, since RT falls
+back to the language their web browser specifies (and of course in a scheduled
+email dashboard, there is no web browser).
+
+You may also include a specific language as a fallback when there is no
+language specified otherwise. Using a specific language never fails to produce
+a value, so subsequent values in the list will never be considered.
+
+By default, RT examines the subscription, then the recipient, then subscriber,
+then finally falls back to English.
+
+See also L</@LexiconLanguages>.
+
+=cut
+
+Set(@EmailDashboardLanguageOrder, qw(_subscription _recipient _subscriber en));
+
 =back
 
 
@@ -881,6 +908,22 @@ custom field values from external sources at runtime.
 =cut
 
 Set(@CustomFieldValuesSources, ());
+
+=item C<@CustomFieldValuesCanonicalizers>
+
+Set C<@CustomFieldValuesCanonicalizers> to a list of class names which extend
+L<RT::CustomFieldValues::Canonicalizer>. This can be used to rewrite
+(canonicalize) values entered by users to fit some defined format.
+
+See the documentation in L<RT::CustomFieldValues::Canonicalizer> for adding
+your own canonicalizers.
+
+=cut
+
+Set(@CustomFieldValuesCanonicalizers, qw(
+    RT::CustomFieldValues::Canonicalizer::Uppercase
+    RT::CustomFieldValues::Canonicalizer::Lowercase
+));
 
 =item C<%CustomFieldGroupings>
 
@@ -1308,6 +1351,14 @@ should the sort be ascending (ASC) or descending (DESC).
 
 Set($DefaultSearchResultOrder, 'ASC');
 
+=item C<$ShowSearchResultCount>
+
+Display search result count on ticket lists. Defaults to 0 (hide them).
+
+=cut
+
+Set($ShowSearchResultCount, 0);
+
 =item C<$DefaultSelfServiceSearchResultFormat>
 
 C<$DefaultSelfServiceSearchResultFormat> is the default format of
@@ -1341,6 +1392,21 @@ Set(%FullTextSearch,
     Enable  => 0,
     Indexed => 0,
 );
+
+=item C<$MaxFulltextAttachmentSize>
+
+On some systems, very large attachments can cause memory and other
+performance issues for the indexer making it unable to complete
+indexing. Adding resources like memory and CPU will solve this
+issue, but in cases where that isn't possible, this option
+sets a maximum size in bytes on attachments to index. Attachments
+larger than this limit are skipped and will not be available to
+full text searches.
+
+=cut
+
+# Default 0 means no limit
+Set($MaxFulltextAttachmentSize, 0);
 
 =item C<$DontSearchFileAttachments>
 
@@ -2372,6 +2438,104 @@ Set($MinimumPasswordLength, 5);
 
 =back
 
+=head2 External Authentication and Authorization
+
+RT has a built-in module for integrating with a directory service like
+LDAP or Active Directory for authentication (login) and authorization
+(enabling/disabling users and setting user attributes). The core configuration
+settings for the service are listed here. Additional details are available
+in the L<RT::Authen::ExternalAuth> module documentation.
+
+=over 4
+
+=item C<$ExternalSettings>
+
+This option, along with the following options, activate and configure authentication
+via a resource external to RT. All of the configuration for your external authentication
+service, like LDAP or Active Directory, are defined in a data structure in this option.
+You can find full details on the configuration
+options in the L<RT::Authen::ExternalAuth> documentation.
+
+=cut
+
+# No defaults are set for ExternalAuth because this is an optional feature.
+
+=item C<$ExternalAuthPriority>
+
+Sets the priority of authentication resources if you have multiple configured.
+RT will attempt authorization with each resource, in order, until one succeeds or
+no more remain. See L<RT::Authen::ExternalAuth> for details.
+
+=item C<$ExternalInfoPriority>
+
+Sets the order of resources for querying user information if you have multiple
+configured. RT will query each resource, in order, until one succeeds or
+no more remain. See L<RT::Authen::ExternalAuth> for details.
+
+=item C<$UserAutocreateDefaultsOnLogin>
+
+A hashref of options to set for users who are autocreated on login via
+ExternalAuth. For example, you can automatically make "Privileged" users
+who were authenticated and created from LDAP or Active Directory.
+See L<RT::Authen::ExternalAuth> for details.
+
+=item C<$AutoCreateNonExternalUsers>
+
+Users should still be autocreated by RT as internal users if they
+fail to exist in an external service; this is so requestors who
+are not in LDAP can still be created when they email in.
+See L<RT::Authen::ExternalAuth> for details.
+
+=back
+
+=head2 Syncing Users and Groups with LDAP or AD
+
+In addition to the authentication services described above, RT also
+has a utility you can schedule to periodicially sync from your
+directory service additional user attributes, new users,
+disabled users, and group membership. Options for the
+LDAPImport tool are listed here. Additional information is
+available in the L<RT::LDAPImport> documentation.
+
+=over 4
+
+=item C<$LDAPHost>
+
+Your LDAP server hostname.
+
+=item C<$LDAPUser>
+
+The LDAP user to log in with.
+
+=item C<$LDAPPassword>
+
+Password for LDAPUser.
+
+=item C<$LDAPFilter>
+
+The filter to use when querying LDAP for the set of users to sync.
+
+=item C<$LDAPMapping>
+
+Mapping to apply between LDAP attributes retrieved and RT user
+record attributes. See the L<RT::LDAPImport> documentation
+for details.
+
+=item C<$LDAPGroupBase>
+
+The base for the LDAP group search.
+
+=item C<$LDAPGroupFilter>
+
+The filter to use when querying LDAP for groups to sync.
+
+=item C<$LDAPGroupMapping>
+
+Mapping to apply between LDAP group member attributes retrieved and
+RT groups. See the L<RT::LDAPImport> documentation
+for details.
+
+=back
 
 =head1 Internationalization
 
@@ -2473,6 +2637,16 @@ minutes.  Note that this only effects entry, not display.
 =cut
 
 Set($DefaultTimeUnitsToHours, 0);
+
+=item C<$SignatureAboveQuote>
+
+By default RT places the signature at the bottom of the quoted text in
+the message box for ticket replies.  Set this to 1 to place the signature
+above the quoted text.
+
+=cut
+
+Set($SignatureAboveQuote, 0);
 
 =item C<$TimeInICal>
 
@@ -3026,10 +3200,10 @@ Set(%Lifecycles,
             # from   => [ to list ],
             new      => [qw(    open stalled resolved rejected deleted)],
             open     => [qw(new      stalled resolved rejected deleted)],
-            stalled  => [qw(new open         rejected resolved deleted)],
+            stalled  => [qw(new open         resolved rejected deleted)],
             resolved => [qw(new open stalled          rejected deleted)],
             rejected => [qw(new open stalled resolved          deleted)],
-            deleted  => [qw(new open stalled rejected resolved        )],
+            deleted  => [qw(new open stalled resolved rejected        )],
         },
         rights => {
             '* -> deleted'  => 'DeleteTicket',
@@ -3445,7 +3619,7 @@ Read more about how to describe a schedule in L<Business::Hours>.
 
 =over 4
 
-=item Defining different business hours for service levels
+=item Configuring business hours
 
 Each level supports BusinessHours option to specify your own business
 hours.

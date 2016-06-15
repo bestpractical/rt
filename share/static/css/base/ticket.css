@@ -117,6 +117,9 @@ div.requestor-ticket-links {
     margin-bottom: 0;
 }
 
+.unset-fields-hidden .unset-field {
+    display: none !important;
+}
 
 /* textareas get to be bigger when we're in a table */
 tr.edit-custom-field.cftype-Text textarea,

@@ -97,8 +97,7 @@ my $COLUMN_MAP = {
         title     => 'Active tickets', # loc
         value     => sub {
             my $Asset = shift;
-            my $Query = "RefersTo = 'asset:" . $Asset->id . "'";
-            $Query .= " AND (" . join(" OR ", map { "Status = '$_'" } RT::Queue->ActiveStatusArray) . ")";
+            my $Query = "RefersTo = 'asset:" . $Asset->id . "' AND Status = '__Active__'";
             my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
             return \'[&nbsp;<a href="',$SearchURL,\'">Active</a>&nbsp;]';
         }
@@ -107,8 +106,7 @@ my $COLUMN_MAP = {
         title     => 'Inactive tickets', # loc
         value     => sub {
             my $Asset = shift;
-            my $Query = "RefersTo = 'asset:" . $Asset->id . "'";
-            $Query .= " AND (" . join(" OR ", map { "Status = '$_'" } RT::Queue->InactiveStatusArray) . ")";
+            my $Query = "RefersTo = 'asset:" . $Asset->id . "' AND Status = '__Inactive__'";
             my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
             return \'[&nbsp;<a href="',$SearchURL,\'">Inactive</a>&nbsp;]';
         }

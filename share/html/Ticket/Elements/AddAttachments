@@ -66,7 +66,7 @@
 Dropzone.autoDiscover = false;
 jQuery( function() {
     var attachDropzone = new Dropzone('#attach-dropzone', {
-        url: '<% RT->Config->Get('WebPath') %>/Helpers/Upload/Add?Token=' + jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val(),
+        url: RT.Config.WebHomePath + '/Helpers/Upload/Add?Token=' + jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val(),
         paramName: "Attach",
         dictDefaultMessage: <% loc("Drop files here or click to attach") |n,j %>,
         maxFilesize: 10000,
@@ -74,7 +74,7 @@ jQuery( function() {
             '<div class="dz-preview dz-file-preview">' +
             '    <div class="dz-remove-mark pointer-events" data-dz-remove>' +
             '        <svg width="54px" height="54px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">' +
-            '            <title><&|/l&>Remove</&></title>' +
+            '            <title>' + loc_key('remove') + '</title>' +
             '            <defs></defs>' +
             '            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">' +
             '                <g style="fill:#d9534f" id="Check-+-Oval-2" sketch:type="MSLayerGroup" stroke="#747474" stroke-opacity="0.198794158" fill="#FFFFFF" fill-opacity="0.816519475">' +
@@ -95,7 +95,7 @@ jQuery( function() {
             '    <div class="dz-error-message"><span data-dz-errormessage></span></div>' +
             '    <div class="dz-success-mark">' +
             '        <svg width="54px" height="54px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">' + 
-            '            <title><&|/l&>Check</&></title>' +
+            '            <title>' + loc_key('check') + '</title>' +
             '            <defs></defs>' +
             '            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">' +
             '                <path d="M23.5,31.8431458 L17.5852419,25.9283877 C16.0248253,24.3679711 13.4910294,24.366835 11.9289322,25.9289322 C10.3700136,27.4878508 10.3665912,30.0234455 11.9283877,31.5852419 L20.4147581,40.0716123' +
@@ -107,7 +107,7 @@ jQuery( function() {
             '    </div>' +
             '    <div class="dz-error-mark">' +
             '        <svg width="54px" height="54px" viewBox="0 0 54 54" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">' +
-            '            <title><&|/l&>Error</&></title>' +
+            '            <title>' + loc_key('error') + '</title>' +
             '            <defs></defs>' +
             '            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">' +
             '                <g id="Check-+-Oval-2" sketch:type="MSLayerGroup" stroke="#747474" stroke-opacity="0.198794158" fill="#FFFFFF" fill-opacity="0.816519475">' +
@@ -163,25 +163,17 @@ jQuery( function() {
         </div>
     </td>
 </tr>
-% if (@quoted_attachments) {
+% if ($HasExisting) {
 <tr>
   <td class="label" valign="top"><&|/l&>Include attachments</&>:</td>
   <td id="reuse-attachments">
-%     for my $attach (@quoted_attachments) {
-    <label>
-      <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $attach->Id %>" \
-             <% (grep { $attach->Id == $_ } @AttachExisting) ? 'checked' : '' %> />
-      <% $attach->Filename %>
-      <% loc("[_1] ([_2]) by [_3]", $attach->CreatedAsString, $attach->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $attach->CreatorObj)) |n %>
-    </label>
-<%perl>
-my $url = RT->System->ExternalStorageURLFor($attach) || sprintf '%s/Ticket/Attachment/%d/%d/%s',
-            RT->Config->Get('WebPath'), $attach->TransactionObj->Id, $attach->Id,
-            $m->interp->apply_escapes($attach->Filename, 'u');
-</%perl>
-      (<a href="<% $url %>" target="_blank"><&|/l&>View</&></a>)
-      <br />
-%     }
+    <& /Ticket/Elements/ShowAttachments,
+      Ticket       => $TicketObj,
+      Selectable   => 1,
+      HideTitleBox => 1,
+      Checked      => \@AttachExisting,
+      Count        => 5,
+    &>
   </td>
 </tr>
 % }
@@ -198,10 +190,15 @@ if ( exists $session{'Attachments'}{ $Token } && keys %{ $session{'Attachments'}
     $attachments = $session{'Attachments'}{ $Token };
 }
 
-my @quoted_attachments;
-if ($TicketObj and $TicketObj->id) {
-    @quoted_attachments = sort { lc($a->Filename) cmp lc($b->Filename) }
-                          grep { defined $_->Filename and length $_->Filename }
-                            @{$TicketObj->Attachments->ItemsArrayRef};
+my $HasExisting = 0;
+
+if ($TicketObj && $TicketObj->id) {
+    my $Existing = $TicketObj->Attachments;
+    $Existing->Limit(
+        FIELD    => 'Filename',
+        OPERATOR => '!=',
+        VALUE    => '',
+    );
+    $HasExisting = 1 if $Existing->Count;
 }
 </%INIT>

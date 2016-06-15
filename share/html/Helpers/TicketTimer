@@ -52,46 +52,64 @@ $id
 my $Ticket = RT::Ticket->new($session{'CurrentUser'});
 $Ticket->Load( $id );
 
-my $unpause_img = RT->Config->Get('WebPath') . '/static/images/unpause.png';
-my $pause_img   = RT->Config->Get('WebPath') . '/static/images/pause.png';
+my $UnpauseImg = RT->Config->Get('WebPath') . '/static/images/unpause.png';
+my $PauseImg   = RT->Config->Get('WebPath') . '/static/images/pause.png';
 
-my $now = RT::Date->new($session{'CurrentUser'});
-$now->SetToNow;
+my $Now = RT::Date->new($session{'CurrentUser'});
+$Now->SetToNow;
 
-my $submit_url = RT->Config->Get('WebPath') . '/Helpers/AddTimeWorked';
+my $SubmitURL = RT->Config->Get('WebPath') . '/Helpers/AddTimeWorked';
 </%INIT>
 <& /Elements/Header, Title => loc('Timer for #[_1]: [_2]', $Ticket->Id, $Ticket->Subject), RichText => 0, ShowBar => 0, ShowTitle => 0 &>
 
 <script type="text/javascript">
 jQuery( function() {
     var Interval;
-    var Seconds = 0;
 
-    var readout = jQuery('.readout');
-    var playpause = jQuery('.playpause');
-    var playpause_img = playpause.find('img');
+    // LastUnpause tracks when the current timer started. Then we render
+    // (current time - LastUnpause). This is more reliable than a timer
+    // that ticks up every second. For example, if JavaScript is temporarily
+    // paused (such as being on a background browser tab on a mobile device),
+    // the seconds ticker doesn't run. When the timer is paused, LastUnpaused
+    // will be a false value.
+    var LastUnpause = (new Date).getTime() / 1000;
 
-    var pause_alt = playpause_img.attr('alt');
-    var unpause_alt = playpause_img.data('toggle-alt');
-
-    var toHHMMSS = function (total) {
-        var hours   = Math.floor(total / 3600);
-        var minutes = Math.floor((total - (hours * 3600)) / 60);
-        var seconds = total - (hours * 3600) - (minutes * 60);
-
-        if (minutes < 10) { minutes = "0" + minutes; }
-        if (seconds < 10) { seconds = "0" + seconds; }
-
-        return hours + ':' + minutes + ':' + seconds;
+    // How many seconds has passed since the current timer started?
+    var CurrentSeconds = function () {
+        if (!LastUnpause) return 0;
+        return Math.floor(((new Date).getTime() / 1000) - LastUnpause);
     };
 
-    var renderReadout = function (seconds) {
-        readout.text(toHHMMSS(seconds));
+    // CommittedSeconds tracks how long we've "committed" time, which is
+    // different from when the timer was initially launched, due to unpausing.
+    // Every time we pause, we add (current time - LastUnpause) to
+    // CommittedSeconds.
+    var CommittedSeconds = 0;
+
+    var Readout = jQuery('.readout');
+    var PlayPause = jQuery('.playpause');
+    var PlayPauseImg = PlayPause.find('img');
+
+    var PauseAlt = PlayPauseImg.attr('alt');
+    var UnpauseAlt = PlayPauseImg.data('toggle-alt');
+
+    var ToHHMMSS = function (Total) {
+        var Hours   = Math.floor(Total / 3600);
+        var Minutes = Math.floor((Total - (Hours * 3600)) / 60);
+        var Seconds = Total - (Hours * 3600) - (Minutes * 60);
+
+        if (Minutes < 10) { Minutes = "0" + Minutes; }
+        if (Seconds < 10) { Seconds = "0" + Seconds; }
+
+        return Hours + ':' + Minutes + ':' + Seconds;
     };
 
-    var tick = function () {
-        Seconds++;
-        renderReadout(Seconds);
+    var RenderReadout = function (seconds) {
+        Readout.text(ToHHMMSS(seconds));
+    };
+
+    var Tick = function () {
+        RenderReadout(CommittedSeconds + CurrentSeconds());
     };
 
     jQuery('.playpause').click(function () {
@@ -99,16 +117,19 @@ jQuery( function() {
             // pause
             clearInterval(Interval);
             Interval = false;
-            playpause_img.attr('src', <% $unpause_img |n,j %>);
-            playpause_img.attr('alt', unpause_alt);
-            playpause_img.attr('title', unpause_alt);
+            CommittedSeconds += CurrentSeconds();
+            LastUnpause = false;
+            PlayPauseImg.attr('src', <% $UnpauseImg |n,j %>);
+            PlayPauseImg.attr('alt', UnpauseAlt);
+            PlayPauseImg.attr('title', UnpauseAlt);
         }
         else {
             // unpause
-            Interval = setInterval(tick, 1000);
-            playpause_img.attr('src', <% $pause_img |n,j %>);
-            playpause_img.attr('alt', pause_alt);
-            playpause_img.attr('title', pause_alt);
+            Interval = setInterval(Tick, 1000);
+            LastUnpause = new Date().getTime() / 1000;
+            PlayPauseImg.attr('src', <% $PauseImg |n,j %>);
+            PlayPauseImg.attr('alt', PauseAlt);
+            PlayPauseImg.attr('title', PauseAlt);
         }
         return false;
     });
@@ -116,40 +137,41 @@ jQuery( function() {
     jQuery('.submit-time').click(function () {
         clearInterval(Interval);
         jQuery('.control-line a').hide();
+        CommittedSeconds += CurrentSeconds();
 
-        var payload = {
+        var Payload = {
             id: <% $Ticket->id %>,
-            seconds: Seconds
+            seconds: CommittedSeconds
         };
 
-        readout.text('<% loc("Submitting") %>');
+        Readout.text('<% loc("Submitting") %>');
 
-        var renderSubmitError = function (reason) {
-            renderReadout(Seconds);
+        var RenderSubmitError = function (Reason) {
+            RenderReadout(CommittedSeconds);
             jQuery('.ticket-timer').addClass('error');
 
             // give the browser a chance to redraw the readout
             setTimeout(function () {
-                alert('<% loc("Unable to submit time. Please add it to the ticket manually. Reason:") %>' + ' ' + reason);
+                alert('<% loc("Unable to submit time. Please add it to the ticket manually. Reason:") %>' + ' ' + Reason);
             }, 100);
         };
 
         jQuery.ajax({
-            url: <% $submit_url |n,j %>,
-            data: payload,
+            url: <% $SubmitURL |n,j %>,
+            data: Payload,
             timeout: 30000, /* 30 seconds */
-            success: function (response) {
-                if (response.ok) {
-                    readout.addClass('response');
-                    readout.text(response.msg);
+            success: function (Response) {
+                if (Response.ok) {
+                    Readout.addClass('response');
+                    Readout.text(Response.msg);
                     jQuery('.control-line .close-popup').show().removeClass('hidden');
                 }
                 else {
-                    renderSubmitError(response.msg);
+                    RenderSubmitError(Response.msg);
                 }
             },
             error: function (xhr, reason) {
-                renderSubmitError(reason);
+                RenderSubmitError(reason);
             }
         });
 
@@ -161,8 +183,8 @@ jQuery( function() {
         return false;
     });
 
-    renderReadout(Seconds);
-    Interval = setInterval(tick, 1000);
+    Tick();
+    Interval = setInterval(Tick, 500);
 });
 </script>
 
@@ -178,13 +200,13 @@ jQuery( function() {
         <div class="readout"></div>
 
         <div class="control-line">
-            <a href="#" class="playpause"><img src="<% $pause_img %>" alt="<% loc('Pause Timer') %>" data-toggle-alt="<% loc('Resume Timer') %>" title="<% loc('Pause Timer') %>" /></a>
+            <a href="#" class="playpause"><img src="<% $PauseImg %>" alt="<% loc('Pause Timer') %>" data-toggle-alt="<% loc('Resume Timer') %>" title="<% loc('Pause Timer') %>" /></a>
             <a href="#" class="submit-time"><img src="<% RT->Config->Get('WebPath') %>/static/images/submit.png" alt="<% loc('Submit Timer') %>" title="<% loc('Submit Timer') %>" /></a>
             <a href="#" class="close-popup hidden"><img src="<% RT->Config->Get('WebPath') %>/static/images/close.png" alt="<% loc('Close Window') %>" title="<% loc('Close Window') %>" /></a>
         </div>
     </div>
 
-    <div class="extra"><&|/l, $now->AsString &>Started at [_1].</&></div>
+    <div class="extra"><&|/l, $Now->AsString &>Started at [_1].</&></div>
 
 % if ($Ticket->TimeEstimated) {
     <div class="extra"><&|/l&>Time estimated</&>: <& /Ticket/Elements/ShowTime, minutes => $Ticket->TimeEstimated &></div>

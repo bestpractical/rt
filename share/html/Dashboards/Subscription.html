@@ -165,6 +165,15 @@
 (<%$timezone%>)
 </td></tr>
 <tr><td class="label">
+<&|/l&>Language</&>:
+</td><td class="value">
+<& /Elements/SelectLang,
+    Name => 'Language',
+    Default => $fields{'Language'},
+    ShowNullOption => 1,
+ &>
+</td></tr>
+<tr><td class="label">
 <&|/l&>Rows</&>:
 </td><td class="value">
 <select name="Rows">
@@ -178,7 +187,8 @@
 <td><label for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label><br />
 <input type="hidden"class="hidden" name="SuppressIfEmpty-Magic" value=1 />
 </td></tr>
-
+% $m->callback( %ARGS, CallbackName => 'SubscriptionFormEnd', FieldsRef => \%fields,
+%     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard );
 </table>
 </&>
 
@@ -234,8 +244,12 @@ my %fields = (
     Recipients  => { Users => [], Groups => [] },
     Fow         => 1,
     Counter     => 0,
+    Language    => '',
     SuppressIfEmpty => 0,
 );
+
+$m->callback( %ARGS, CallbackName => 'SubscriptionFields', FieldsRef => \%fields,
+     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard);
 
 # update any fields with the values from the subscription object
 if ($SubscriptionObj) {
@@ -251,6 +265,9 @@ for my $field (keys %fields) {
         if defined($ARGS{$field}) || $ARGS{$field.'-Magic'};
 }
 
+$m->callback( %ARGS, CallbackName => 'MassageSubscriptionFields', FieldsRef => \%fields,
+     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard);
+
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
     # update recipients
@@ -260,20 +277,24 @@ if (defined $ARGS{Save}) {
             my @recipients = @{ $fields{Recipients}->{Users} };
 
             for ( RT::EmailParser->ParseEmailAddress( $val ) ) {
-                my ( $email, $name ) = ( $_->address, $_->name );
+                my $email = $_->address;
 
-                my $user = RT::User->new($session{CurrentUser});
-                $user->LoadOrCreateByEmail(
+                my $user = RT::User->new(RT->SystemUser);
+                ($ok, $msg) = $user->LoadOrCreateByEmail(
                     EmailAddress => $email,
-                    RealName     => $name,
                     Comments     => 'Autocreated when added as a dashboard subscription recipient',
                 );
 
-                my $is_prev_recipient = grep { $_ == $user->id } @recipients;
-                if ( not $is_prev_recipient ) {
-                    push @recipients, $user->id;
-                    push @results, loc("[_1] added to dashboard subscription recipients", $email);
+                unless ($ok) {
+                    push @results, loc("Could not add [_1] as a recipient: [_2]", $email, $msg);
+                    next;
                 }
+
+                my $is_prev_recipient = grep { $_ == $user->id } @recipients;
+                next if $is_prev_recipient;
+
+                push @recipients, $user->id;
+                push @results, loc("[_1] added to dashboard subscription recipients", $email);
             }
             @{ $fields{Recipients}->{Users} } = uniq @recipients;
 
@@ -367,6 +388,8 @@ $Hour        => undef
 $Dow         => undef
 $Dom         => undef
 $Rows        => undef
+$Recipient   => undef
+$Language    => undef
 
 $UserField => undef
 $UserOp => undef

@@ -132,9 +132,7 @@ $COLUMN_MAP = {
                     return \'<em>', loc('(pending approval)'), \'</em>';
                 }
                 else {
-                    my $Query = "DependedOnBy = " . $Ticket->id;
-                    $Query .= " AND (" . join(" OR ", map { "Status = '$_'" } RT::Queue->ActiveStatusArray) . ")";
-
+                    my $Query = "DependedOnBy = " . $Ticket->id . " AND Status = '__Active__'";
                     my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
 
                     if ($count == 1) {

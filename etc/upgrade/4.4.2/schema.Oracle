@@ -1,0 +1,2 @@
+ALTER TABLE CustomFields ADD UniqueValues NUMBER(11,0) DEFAULT 0 NOT NULL;
+ALTER TABLE CustomFields ADD CanonicalizeClass VARCHAR2(64);

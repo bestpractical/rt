@@ -70,7 +70,7 @@ for my $queue (@queues) {
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 
 <td>
-    <a href="<% $link_all->($queue, \@cur_statuses) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
+    <a href="<% $link_all->($queue) %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a>
 </td>
 
 %   for my $status (@cur_statuses) {
@@ -93,10 +93,8 @@ my $build_search_link = sub {
 };
 
 my $link_all = sub {
-    my ($queue, $all_statuses) = @_;
-    my @escaped = @{$all_statuses};
-    s{(['\\])}{\\$1}g for @escaped;
-    return $build_search_link->($queue->{Name}, "(".join(" OR ", map "Status = '$_'", @escaped).")");
+    my ($queue) = @_;
+    return $build_search_link->($queue->{Name}, "Status = '__Active__'");
 };
 
 my $link_status = sub {
@@ -134,12 +132,11 @@ for my $queue (@queues) {
     $lifecycle{ lc $cycle->Name } = $cycle;
 }
 
-unless (@statuses) {
-    my %seen;
-    foreach my $set ( 'initial', 'active' ) {
-        foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
-            push @statuses, grep !$seen{ lc $_ }++, $lifecycle->Valid($set);
-        }
+my @statuses;
+my %seen;
+foreach my $set ( 'initial', 'active' ) {
+    foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
+        push @statuses, grep !$seen{ lc $_ }++, $lifecycle->Valid($set);
     }
 }
 
@@ -148,12 +145,8 @@ my $statuses = {};
 
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( RT->SystemUser );
-my @escaped = @statuses;
-s{(['\\])}{\\$1}g for @escaped;
 my $query =
-    "(".
-    join(" OR ", map {"Status = '$_'"} @escaped) #'
-    .") AND (".
+    "(Status = '__Active__') AND (".
     join(' OR ', map "Queue = ".$_->{id}, @queues)
     .")";
 $query = 'id < 0' unless @queues;
@@ -167,5 +160,4 @@ while ( my $entry = $report->Next ) {
 </%INIT>
 <%ARGS>
 $queue_filter => undef
-@statuses => ()
 </%ARGS>

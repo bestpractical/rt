@@ -33,8 +33,6 @@ $dbh->do(
 "INSERT INTO $table VALUES ( 'testuser', '$password', 'testuser\@invalid.tld')"
 );
 
-RT->Config->Set( ExternalAuth => 1 );
-
 RT->Config->Set( ExternalAuthPriority        => ['My_SQLite'] );
 RT->Config->Set( ExternalInfoPriority        => ['My_SQLite'] );
 RT->Config->Set( AutoCreateNonExternalUsers  => 0 );

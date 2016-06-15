@@ -56,12 +56,27 @@ use lib "@RT_LIB_PATH@";
 use RT::Interface::CLI qw(Init);
 Init();
 
-my $tickets = RT::Tickets->new(RT->SystemUser);
-$tickets->FromSQL('CF.SLA IS NOT NULL AND SLA IS NULL');
-while ( my $ticket = $tickets->Next ) {
-    my ($ret, $msg) = $ticket->SetSLA($ticket->FirstCustomFieldValue('SLA'));
-    unless ( $ret ) {
-        RT->Logger->error("Failed to upgrade SLA for ticket #" . $ticket->id . ": $msg");
+print "Starting SLA upgrade process...\n";
+{
+    RT->Logger->info("Updating tickets with SLA custom field");
+    local *RT::Ticket::_SetLastUpdated = sub {
+        return (1, "Migrating SLA from CF to core field silently");
+    };
+
+    my $tickets = RT::Tickets->new(RT->SystemUser);
+    $tickets->FromSQL('CF.SLA IS NOT NULL AND SLA IS NULL');
+    while ( my $ticket = $tickets->Next ) {
+        my $SLA = $ticket->FirstCustomFieldValue('SLA');
+
+        my ($ret, $msg) = $ticket->_Set(
+            Field => 'SLA',
+            Value => $SLA,
+            RecordTransaction => 0,
+        );
+
+        unless ( $ret ) {
+            RT->Logger->error("Failed to upgrade SLA for ticket #" . $ticket->id . ": $msg");
+        }
     }
 }
 
@@ -76,19 +91,19 @@ while ( my $queue = $queues->Next ) {
         $cfs_to_disable{$cf->id} ||= $cf;
          my ($ret, $msg) = $queue->SetSLADisabled(0);
          if ( $ret ) {
-             RT->Logger->info("Enabled SLA for queue #" . $queue->id);
+             RT->Logger->info("Enabled SLA for queue #" . $queue->id . ", " . $queue->Name);
          }
          else {
-             RT->Logger->error("Failed to enable SLA for queue #" . $queue->id . ": $msg");
+             RT->Logger->error("Failed to enable SLA for queue #" . $queue->id . ", " . $queue->Name . ": $msg");
          }
     }
     elsif ( !$queue->SLADisabled ) {
         my ($ret, $msg) = $queue->SetSLADisabled(1);
         if ( $ret ) {
-            RT->Logger->info("Disabled SLA for queue #" . $queue->id . " because it doesn't have custom field SLA applied");
+            RT->Logger->info("Disabled SLA for queue #" . $queue->id . ", " . $queue->Name . ", because it doesn't have custom field SLA applied");
         }
         else {
-            RT->Logger->error("Failed to disable SLA for queue #" . $queue->id . ": $msg");
+            RT->Logger->error("Failed to disable SLA for queue #" . $queue->id . ", " . $queue->Name . ": $msg");
         }
     }
 }
@@ -147,3 +162,24 @@ for my $item ( @old_actions ) {
         }
     }
 }
+print "\nDone.\n";
+
+__END__
+
+=head1 NAME
+
+upgrade-sla - upgrade SLA extension installs to core SLA feature
+
+=head1 SYNOPSIS
+
+    # Run upgrade after upgrading RT to 4.4.x
+    upgrade-sla
+    upgrade-sla --verbose # see more output while running the upgrade
+
+=head1 DESCRIPTION
+
+This upgrade script examines data from RTs that previously used C<RT::Extension::SLA>
+and migrates the data to the configuration required for core SLA functionality.
+This includes moving SLA values from the SLA custom field to the core RT field
+and enabling the SLA feature for queues that appear to have it configured.
+Some old scrips, actions, and conditions are also cleaned up.

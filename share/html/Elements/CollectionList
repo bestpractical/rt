@@ -70,7 +70,7 @@ if ( $Rows ) {
 
 # XXX: ->{'order_by'} is hacky, but there is no way to check if
 # collection is ordered or not
-if ( @OrderBy && ($AllowSorting || !$Collection->{'order_by'}) ) {
+if ( @OrderBy && ($AllowSorting || $PreferOrderBy || !$Collection->{'order_by'}) ) {
     if ( $OrderBy[0] =~ /\|/ ) {
         @OrderBy = split /\|/, $OrderBy[0];
         @Order = split /\|/,$Order[0];
@@ -203,7 +203,8 @@ $Title         => loc('Ticket Search')
 $BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
 @PassArguments => qw( Query Format Rows Page Order OrderBy)
 
-$AllowSorting   => 0
+$AllowSorting   => 0  # Make headers in table links that will resort results
+$PreferOrderBy  => 0  # Prefer the passed-in @OrderBy to the collection default
 $ShowNavigation => 1
 $ShowHeader     => 1
 $ShowEmpty      => 0

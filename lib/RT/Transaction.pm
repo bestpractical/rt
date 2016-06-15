@@ -400,12 +400,12 @@ sub Content {
                 . $self->QuoteHeader
                 . '<br /><blockquote class="gmail_quote" type="cite">'
                 . $content
-                . '</blockquote></div><br /><br />';
+                . '</blockquote></div>';
         } else {
             $content = $self->ApplyQuoteWrap(content => $content,
                                              cols    => $args{'Wrap'} );
 
-            $content = $self->QuoteHeader . "\n$content\n\n";
+            $content = $self->QuoteHeader . "\n$content";
         }
     }
 
@@ -1423,7 +1423,7 @@ sub CurrentUserCanSee {
         my $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->SetContextObject( $self->Object );
         $cf->Load( $cf_id );
-        return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
+        return 0 unless $cf->CurrentUserCanSee;
     }
 
     # Transactions that might have changed the ->Object's visibility to
@@ -1539,7 +1539,7 @@ sub UpdateCustomFields {
           my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
         {
             next if $self->CustomFieldValueIsEmpty(
-                Field => $cfid,
+                Field => $cf,
                 Value => $value,
             );
             $self->_AddCustomFieldValue(

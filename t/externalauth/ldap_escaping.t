@@ -48,8 +48,6 @@ $ldap->add(
     ],
 );
 
-RT->Config->Set( ExternalAuth => 1 );
-
 RT->Config->Set( ExternalAuthPriority        => ['My_LDAP'] );
 RT->Config->Set( ExternalInfoPriority        => ['My_LDAP'] );
 RT->Config->Set( AutoCreateNonExternalUsers  => 0 );

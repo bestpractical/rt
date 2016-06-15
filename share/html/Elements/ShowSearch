@@ -47,11 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
     title => loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'}),
+    title_raw => $title_raw,
     title_href => $query_link_url.$QueryString,
     titleright => $customize ? loc('Edit') : '',
     titleright_href => $customize,
     hideable => $hideable &>
-<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets', HasResults => $HasResults &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets', HasResults => $HasResults, PreferOrderBy => 1 &>
 </&>
 <%init>
 my $search;
@@ -81,6 +82,7 @@ if ($SavedSearch) {
         $query_display_component
             = '/Search/Elements/' . $SearchArg->{SearchType};
         $query_link_url = RT->Config->Get('WebPath') . "/Search/$SearchArg->{SearchType}.html";
+        $ShowCount = 0;
     } elsif ($ShowCustomize) {
         $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
@@ -128,6 +130,19 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
 }
 
 my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
+
+my $title_raw;
+if ($ShowCount) {
+    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
+    $tickets->FromSQL($ProcessedSearchArg->{Query});
+    my $count = $tickets->CountAll();
+
+    $title_raw = '<span class="results-count">' . loc('(Found [quant,_1,ticket,tickets])', $count) . '</span>';
+
+    # don't repeat the search in CollectionList
+    $ProcessedSearchArg->{Collection} = $tickets;
+    $ProcessedSearchArg->{TotalFound} = $count;
+}
 </%init>
 <%ARGS>
 $Name           => undef
@@ -136,5 +151,6 @@ $SavedSearch    => undef
 $IgnoreMissing  => undef
 $hideable       => 1
 $ShowCustomize  => 1
+$ShowCount      => RT->Config->Get('ShowSearchResultCount')
 $HasResults     => undef
 </%ARGS>

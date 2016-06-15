@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table>
-  <tr>
+  <tr class="owner">
     <td class="label"><&|/l&>Owner</&>:</td>
 % my $owner = $Ticket->OwnerObj;
     <td class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
@@ -71,22 +71,18 @@
   </tr>
 % }
 
-  <tr>
+  <tr class="requestors">
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
   </tr>
-% if ( !$hide_unset_fields || $Ticket->Cc->MembersObj->Count ) {
-  <tr>
+  <tr class="cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
     <td class="labeltop"><&|/l&>Cc</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></td>
   </tr>
-% }
-% if ( !$hide_unset_fields || $Ticket->AdminCc->MembersObj->Count ) {
-  <tr>
+  <tr class="admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
     <td class="labeltop"><&|/l&>AdminCc</&>:</td>
     <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
   </tr>
-% }
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
 % $multi_roles->LimitToMultipleValue;
@@ -99,9 +95,6 @@
 
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
 </table>
-<%INIT>
-my $hide_unset_fields = RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser});
-</%INIT>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

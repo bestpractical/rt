@@ -47,8 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % for my $type (@display) {
-% if ( !RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser}) || $clone{$type} || $Object->$type->Count ) {
-  <tr>
+  <tr class="<%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
     <td class="labeltop">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
@@ -59,33 +58,30 @@
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
     </td>
   </tr>
-% } }
+% }
 
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
 
-% if ($Object->isa('RT::Ticket')) {
-  <tr>
-    <td colspan=2>
-      <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
-        <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
-        <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket">
-        <select name="LinkType">
-          <option value="DependsOn-new"><% loc('Depends on') %></option>
-          <option value="new-DependsOn"><% loc('Depended on by') %></option>
-          <option value="MemberOf-new"><% loc('Parents') %></option>
-          <option value="new-MemberOf"><% loc('Children') %></option>
-          <option value="RefersTo-new"><% loc('Refers to') %></option>
-          <option value="new-RefersTo"><% loc('Referred to by') %></option>
-        </select>
-        <&|/l&>Ticket in</&>
-        <& /Elements/SelectQueue, ShowNullOption => 0, Name => 'CloneQueue' &>
-      </form>
-    </td>
-  </tr>
-% }
 </table>
+
+% if ($Object->isa('RT::Ticket')) {
+  <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
+    <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
+    <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket">
+    <select name="LinkType">
+      <option value="DependsOn-new"><% loc('Depends on') %></option>
+      <option value="new-DependsOn"><% loc('Depended on by') %></option>
+      <option value="MemberOf-new"><% loc('Parents') %></option>
+      <option value="new-MemberOf"><% loc('Children') %></option>
+      <option value="RefersTo-new"><% loc('Refers to') %></option>
+      <option value="new-RefersTo"><% loc('Referred to by') %></option>
+    </select>
+    <&|/l&>Ticket in</&>
+    <& /Elements/SelectQueue, ShowNullOption => 0, Name => 'CloneQueue' &>
+  </form>
+% }
 <%INIT>
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
 $m->callback( %ARGS, CallbackName => 'ChangeDisplay', display => \@display );
