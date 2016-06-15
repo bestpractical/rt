@@ -120,6 +120,36 @@ sub GetReferencedQueues {
     return $queues;
 }
 
+=head2 GetReferencedCatalogs
+
+Returns a hash reference; each catalog referenced with an '=' operation
+will appear as a key whose value is 1.
+
+=cut
+
+sub GetReferencedCatalogs {
+    my $self = shift;
+
+    my $catalogs = {};
+
+    $self->traverse(
+        sub {
+            my $node = shift;
+
+            return if $node->isRoot;
+            return unless $node->isLeaf;
+
+            my $clause = $node->getNodeValue();
+            return unless $clause->{ Key } eq 'Catalog';
+            return unless $clause->{ Op } eq '=';
+
+            $catalogs->{ $clause->{ Value } } = 1;
+        }
+    );
+
+    return $catalogs;
+}
+
 =head2 GetQueryAndOptionList SELECTED_NODES
 
 Given an array reference of tree nodes that have been selected by the user,
@@ -285,6 +315,53 @@ sub ParseSQL {
 
     require RT::SQL;
     RT::SQL::Parse($string, \%callback);
+    return @results;
+}
+
+sub ParseAssetSQL {
+    my $self = shift;
+    my %args = (
+        Query       => '',
+        CurrentUser => '',    #XXX: Hack
+        @_
+    );
+    my $string = $args{ 'Query' };
+
+    my @results;
+
+    my %field = %{ RT::Assets->new( $args{ 'CurrentUser' } )->FIELDS };
+    my %lcfield = map { ( lc( $_ ) => $_ ) } keys %field;
+
+    my $node = $self;
+
+    my %callback;
+    $callback{ 'OpenParen' } = sub {
+        $node = __PACKAGE__->new( 'AND', $node );
+    };
+    $callback{ 'CloseParen' } = sub { $node = $node->getParent };
+    $callback{ 'EntryAggregator' } = sub { $node->setNodeValue( $_[ 0 ] ) };
+    $callback{ 'Condition' } = sub {
+        my ( $key, $op, $value ) = @_;
+
+        my ($main_key, $subkey) = split /[.]/, $key, 2;
+
+        unless( $lcfield{ lc $main_key} ) {
+            push @results, [ $args{ 'CurrentUser' }->loc( "Unknown field: [_1]", $key ), -1 ];
+        }
+        $main_key = $lcfield{ lc $main_key };
+
+        # Hardcode value for IS / IS NOT
+        $value = 'NULL' if $op =~ /^IS( NOT)?$/i;
+
+        my $clause = { Key => $main_key, Subkey => $subkey,
+                       Meta => $field{ $main_key },
+                       Op => $op, Value => $value };
+        $node->addChild( __PACKAGE__->new( $clause ) );
+    };
+    $callback{ 'Error' } = sub { push @results, @_ };
+
+    require RT::SQL;
+    RT::SQL::Parse( $string, \%callback );
     return @results;
 }
 
