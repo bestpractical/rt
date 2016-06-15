@@ -97,10 +97,12 @@ jQuery( function() {
 <select name="Link">
 <option value="None">-</option>
 <option value="Display"><&|/l&>Display</&></option>
+% if ($IncludeTicketLinks) {
 <option value="Take"><&|/l&>Take</&></option>
 <option value="Respond"><&|/l&>Respond</&></option>
 <option value="Comment"><&|/l&>Comment</&></option>
 <option value="Resolve"><&|/l&>Resolve</&></option>
+% }
 </select>
 </span>
 </div>
@@ -159,4 +161,5 @@ $selected{$_}++ for grep {defined} @{ $selected };
 <%ARGS>
 $CurrentFormat => undef
 $AvailableColumns => undef
+$IncludeTicketLinks => 1
 </%ARGS>

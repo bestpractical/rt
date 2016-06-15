@@ -241,7 +241,7 @@ sub OrderByCols {
     my $class = $self->_RoleGroupClass;
 
     for my $row (@_) {
-        if ($row->{FIELD} =~ /^CF\.(?:\{(.*)\}|(.*))$/) {
+        if ($row->{FIELD} =~ /^(?:CF|CustomField)\.(?:\{(.*)\}|(.*))$/) {
             my $name = $1 || $2;
             my $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->LoadByNameAndCatalog(
