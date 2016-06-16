@@ -206,6 +206,10 @@ sub setup_session {
                                  'Content-Type' => 'application/octet-stream',
         ];
     }
+    if (defined $post_params{queue} ) {
+        utf8::decode(  $post_params{queue} );
+        $post_params{queue} = HTML::Entities::encode_entities( $post_params{queue} );
+    }
 
     return \%post_params;
 }

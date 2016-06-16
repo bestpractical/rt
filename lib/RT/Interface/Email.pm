@@ -60,6 +60,7 @@ use Mail::Mailer ();
 use Text::ParseWords qw/shellwords/;
 use RT::Util 'safe_run_child';
 use File::Spec;
+use HTML::Entities;
 
 BEGIN {
     use base 'Exporter';
@@ -1295,6 +1296,7 @@ sub Gateway {
 
     #Set up a queue object
     my $SystemQueueObj = RT::Queue->new( RT->SystemUser );
+    $args{'queue'} = HTML::Entities::decode_entities( $args{'queue'} );
     $SystemQueueObj->Load( $args{'queue'} );
 
     my %skip_plugin;
