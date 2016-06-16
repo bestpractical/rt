@@ -108,7 +108,7 @@ jQuery(function(){
         removeLoadingMessage();
         disableLoading = true;
         removeLoadLink();
-        var loadLink = jQuery('<div class="error-load-history"><&|/l&>Could not load ticket history. Reason:</&> ' + reason + '<br/><a href="#"><&|/l&>Try again</&></a></div>');
+        var loadLink = jQuery('<div class="error-load-history"><% loc('Could not load ticket history. Reason:') |h %> ' + reason + '<br/><a href="#"><&|/l&>Try again</&></a></div>');
         jQuery(".history-container").append(loadLink);
     };
 
