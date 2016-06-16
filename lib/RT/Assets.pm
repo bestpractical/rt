@@ -689,7 +689,7 @@ sub CurrentUserCanSee {
 # the idea here is that if the right is set globaly for a role
 # and user plays this role for a catalog directly not a ticket
 # then we have to check in advance
-    if ( my @tmp = grep $_ ne 'Owner' && !ref $roles{ $_ }, keys %roles ) {
+    if ( my @tmp = grep !ref $roles{ $_ }, keys %roles ) {
 
         my $groups = RT::Groups->new( RT->SystemUser );
         $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Catalog-Role', CASESENSITIVE => 0 );
@@ -733,7 +733,6 @@ sub CurrentUserCanSee {
 
     {
         my $join_roles = keys %roles;
-        $join_roles = 0 if $join_roles == 1 && $roles{'Owner'};
         my ($role_group_alias, $cgm_alias);
         if ( $join_roles ) {
             $role_group_alias = $self->_RoleGroupsJoin( New => 1 );
@@ -766,33 +765,23 @@ sub CurrentUserCanSee {
         $ea = 'OR' if $limit_catalogs->( $ea, @direct_catalogs );
         while ( my ($role, $catalogs) = each %roles ) {
             $self->SUPER::_OpenParen('ACL');
-            if ( $role eq 'Owner' ) {
-                $self->Limit(
-                    SUBCLAUSE => 'ACL',
-                    FIELD           => 'Owner',
-                    VALUE           => $id,
-                    ENTRYAGGREGATOR => $ea,
-                );
-            }
-            else {
-                $self->Limit(
-                    SUBCLAUSE       => 'ACL',
-                    ALIAS           => $cgm_alias,
-                    FIELD           => 'MemberId',
-                    OPERATOR        => 'IS NOT',
-                    VALUE           => 'NULL',
-                    QUOTEVALUE      => 0,
-                    ENTRYAGGREGATOR => $ea,
-                );
-                $self->Limit(
-                    SUBCLAUSE       => 'ACL',
-                    ALIAS           => $role_group_alias,
-                    FIELD           => 'Name',
-                    VALUE           => $role,
-                    ENTRYAGGREGATOR => 'AND',
-                    CASESENSITIVE   => 0,
-                );
-            }
+            $self->Limit(
+                SUBCLAUSE       => 'ACL',
+                ALIAS           => $cgm_alias,
+                FIELD           => 'MemberId',
+                OPERATOR        => 'IS NOT',
+                VALUE           => 'NULL',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => $ea,
+            );
+            $self->Limit(
+                SUBCLAUSE       => 'ACL',
+                ALIAS           => $role_group_alias,
+                FIELD           => 'Name',
+                VALUE           => $role,
+                ENTRYAGGREGATOR => 'AND',
+                CASESENSITIVE   => 0,
+            );
             $limit_catalogs->( 'AND', @$catalogs ) if ref $catalogs;
             $ea = 'OR' if $ea eq 'AND';
             $self->SUPER::_CloseParen('ACL');
@@ -1290,13 +1279,8 @@ sub _WatcherMembershipLimit {
     my $meta = $FIELD_METADATA{$field};
     my $type = $meta->[1] || '';
 
-    my ($members_alias, $members_column);
-    if ( $type eq 'Owner' ) {
-        ($members_alias, $members_column) = ('main', 'Owner');
-    } else {
-        (undef, undef, $members_alias) = $self->_WatcherJoin( New => 1, Name => $type );
-        $members_column = 'id';
-    }
+    (undef, undef, my $members_alias) = $self->_WatcherJoin( New => 1, Name => $type );
+    my $members_column = 'id';
 
     my $cgm_alias = $self->Join(
         ALIAS1          => $members_alias,
