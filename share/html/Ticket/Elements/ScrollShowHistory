@@ -100,7 +100,8 @@ jQuery(function(){
 
     var showLoadingMessage = function() {
         removeLoadingMessage();
-        var loadingMessage = jQuery('<span class="loading-message"><&|/l&>Loading...</&></span>');
+        var loadingMessage = jQuery('<span class="loading-message">' +
+            loc_key('loading') + '</span>');
         jQuery(".history-container").append(loadingMessage);
     };
 
@@ -108,7 +109,9 @@ jQuery(function(){
         removeLoadingMessage();
         disableLoading = true;
         removeLoadLink();
-        var loadLink = jQuery('<div class="error-load-history"><&|/l&>Could not load ticket history. Reason:</&> ' + reason + '<br/><a href="#"><&|/l&>Try again</&></a></div>');
+        var loadLink = jQuery('<div class="error-load-history">' +
+            loc_key('history_scroll_error') + ' ' + reason +
+            '<br/><a href="#">' + loc_key('try_again') + '</a></div>');
         jQuery(".history-container").append(loadLink);
     };
 
