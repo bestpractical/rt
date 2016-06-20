@@ -678,6 +678,10 @@ sub InsertInitialData {
 
     my @warns;
 
+    # avoid trying to canonicalize system users through ExternalAuth
+    no warnings 'redefine';
+    local *RT::User::CanonicalizeUserInfo = sub { 1 };
+
     # create RT_System user and grant him rights
     {
         require RT::CurrentUser;
