@@ -1,13 +1,14 @@
 # Initial data for a fresh RT installation.
 
 @Users = (
-    {  Name         => 'root',
-       Gecos        => 'root',
-       RealName     => 'Enoch Root',
-       Password     => 'password',
-       EmailAddress => "root\@localhost",
-       Comments     => 'SuperUser',
-       Privileged   => '1',
+    {  Name             => 'root',
+       Gecos            => 'root',
+       RealName         => 'Enoch Root',
+       Password         => 'password',
+       EmailAddress     => "root\@localhost",
+       Comments         => 'SuperUser',
+       Privileged       => '1',
+       SkipCanonicalize => '1',
     },
 );
 
