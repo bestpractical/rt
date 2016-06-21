@@ -172,7 +172,7 @@ jQuery( function() {
       Selectable   => 1,
       HideTitleBox => 1,
       Checked      => \@AttachExisting,
-      Count        => 5,
+      Count        => RT->Config->Get('AttachmentListCount'),
     &>
   </td>
 </tr>
