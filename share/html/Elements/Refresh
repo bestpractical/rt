@@ -51,18 +51,18 @@
  selected="selected"
 %}
 ><&|/l&>Don't refresh this page.</&></option>
-%foreach my $value (@refreshevery) {
+%foreach my $value (RT->Config->Get('RefreshIntervals')) {
 <option value="<%$value%>"
 % if  ( $Default && ($value == $Default)) {
 selected="selected"
 % }
+% if ($value % 60 == 0) {
 ><&|/l, $value/60 &>Refresh this page every [quant,_1,minute,minutes].</&></option>
-%}
+% } else {
+><&|/l, $value &>Refresh this page every [quant,_1,second,seconds].</&></option>
+% }
+% }
 </select>
-
-<%INIT>
-my @refreshevery = qw(120 300 600 1200 3600 7200);
-</%INIT>
 <%ARGS>
 $Name => undef
 $Default => 0
