@@ -48,7 +48,7 @@
 <& /Elements/SelectObject,
     Name           => "Catalog",
     ShowAll        => $ShowAll,
-    ShowNullOption => 0,
+    ShowNullOption => $ShowNullOption,
     CheckRight     => "CreateAsset",
     %ARGS,
     ObjectType     => "Catalog",
@@ -59,6 +59,7 @@
 $ShowAll => 0
 $Default => undef
 $UpdateSession => 1
+$ShowNullOption => 0
 </%args>
 <%init>
 my $catalog_obj = LoadDefaultCatalog($Default || '');

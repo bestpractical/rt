@@ -54,7 +54,7 @@
 </td></tr>
 <tr class="asset-status"><td class="label"><label for="Status"><&|/l&>Status</&></label></td>
     <td class="value" colspan="3">
-<& /Asset/Elements/SelectStatus, Name => 'Status', CatalogObj => $CatalogObj, DefaultValue => 1,
+<& /Asset/Elements/SelectStatus, Name => 'Status', Catalogs => { $CatalogObj->id => 1 }, DefaultValue => 1,
        Default => ($ARGS{'Status'} || '') &>
 </td></tr>
 <tr class="asset-name"><td class="label"><label for="Name"><&|/l&>Name</&></label></td>
