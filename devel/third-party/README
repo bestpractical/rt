@@ -1,3 +1,9 @@
+This directory contains the source code for components which are used
+elsewhere in RT in a minified (or other) format optimized for delivery to
+users over developer modification.
+
+The rest of this file documents the contents of the directory.
+
 chosen
 Chosen, a Select Box Enhancer for jQuery and Prototype
 
