@@ -4,38 +4,48 @@ users over developer modification.
 
 The rest of this file documents the contents of the directory.
 
-chosen
-Chosen, a Select Box Enhancer for jQuery and Prototype
+* chosen-1.4.2
+Description: <select> box enhancer
+Origin: https://github.com/harvesthq/chosen
+License: MIT
 
-ckeditor
-http://ckeditor.com/builder
-The JS and CSS source files distributed with the version of ckeditor bundled in RT.
+* ckeditor-4.5.3
+Description: WYSIWYG text editor
+Origin: http://ckeditor.com/builder
+License: GPL
 
-dropzone
-http://www.dropzonejs.com/
-Unminified version of dropzone.min.js
+* dropzone-4.0.1
+Description: drag and drop attachment uploader
+Origin: https://github.com/enyo/dropzone
+License: MIT
 
-jquery-1.11.3.js
-http://code.jquery.com/jquery-1.11.3.js
-Unminified version of jQuery 1.11.3
+* eyedropper.svg
+Description: color picker icon
+Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
+License: CC BY 3.0
 
-jquery-ui-1.11.4.custom/
-http://jqueryui.com/download/
-jQuery UI components that go into our minified jquery-ui.min.js
+* jquery-1.11.3.js
+Description: DOM manipulation
+Origin: http://code.jquery.com/jquery-1.11.3.js
+License: MIT
 
-jquery.tablesorter.js
-http://tablesorter.com/jquery.tablesorter.js
-jQuery tablesorter plugin version 2.05b, corresponds to jquery.tablesorter.min.js
+* jquery-modal-0.5.2.js
+Description: modal popup dialogs
+Origin: https://github.com/kylefox/jquery-modal
+License: MIT
 
-eyedropper.svg
-The Noun Project
-http://thenounproject.com/noun/eye-dropper/
-Creative Commons - Attribution (CC BY 3.0)
-Modified version included at share/static/images/eyedropper.png
+* jquery-tablesorter-2.0.5b.js 
+Description: sort tables without page refresh
+Origin: https://github.com/christianbach/tablesorter
+License: MIT
 
-jquery.modal-0.5.2.js
-https://github.com/kylefox/jquery-modal
-Simple jQuery modal plugin, minified source in jquery.modal.min.js
+* jquery-ui-1.11.4.custom/
+Description: JavaScript user interface enhancements
+Origin: http://jqueryui.com/download/
+License: MIT
 
-mousetrap.js
-Unminified version of mousetrap.min.js
+* mousetrap-1.5.3.js
+Description: keyboard shortcuts
+Origin: https://github.com/ccampbell/mousetrap
+License: Apache
+
