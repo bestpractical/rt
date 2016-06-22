@@ -52,11 +52,15 @@
 my $request_path = $HTML::Mason::Commands::r->path_info;
 $request_path =~ s!/{2,}!/!g;
 
+my $top     = Menu();
+my $widgets = PageWidgets();
+my $page    = PageMenu();
+
 use RT::Interface::Web::MenuBuilder;
 if ( $request_path !~ m{^/SelfService/} ) {
-    RT::Interface::Web::MenuBuilder::BuildMainNav( $request_path, $QueryString, $QueryArgs );
+    RT::Interface::Web::MenuBuilder::BuildMainNav( $request_path, $top, $widgets, $page, %ARGS );
 } else {
-    RT::Interface::Web::MenuBuilder::BuildSelfServiceNav( $request_path );
+    RT::Interface::Web::MenuBuilder::BuildSelfServiceNav( $request_path, $top, $widgets, $page, %ARGS );
 }
 </%INIT>
 <%ARGS>

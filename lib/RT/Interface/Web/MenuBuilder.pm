@@ -68,12 +68,14 @@ sub QueryString {
 
 sub BuildMainNav {
     my $request_path = shift;
-    my $query_string = shift;
-    my $query_args = shift;
+    my $top          = shift;
+    my $widgets      = shift;
+    my $page         = shift;
 
-    my $top     = HTML::Mason::Commands::Menu();
-    my $widgets = HTML::Mason::Commands::PageWidgets();
-    my $page    = HTML::Mason::Commands::PageMenu();
+    my %args = ( @_ );
+
+    my $query_string = $args{QueryString};
+    my $query_args = $args{QueryArgs};
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
@@ -185,7 +187,7 @@ sub BuildMainNav {
 
     if ( $current_user->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
-        _BuildAdminMenu($request_path, $top);
+        _BuildAdminMenu( $request_path, $top, $widgets, $page, %args );
     }
 
     my $username = '<span class="current-user">'
@@ -545,7 +547,7 @@ sub BuildMainNav {
     }
 
     if ($request_path =~ m{^/Asset/} and $HTML::Mason::Commands::DECODED_ARGS->{id} and $HTML::Mason::Commands::DECODED_ARGS->{id} !~ /\D/) {
-        _BuildAssetMenu();
+        _BuildAssetMenu( $request_path, $top, $widgets, $page, %args );
     } elsif ($request_path =~ m{^/Asset/Search/}) {
         my %search = map @{$_},
             grep defined $_->[1] && length $_->[1],
@@ -615,7 +617,13 @@ sub BuildMainNav {
 }
 
 sub _BuildAssetMenu {
-    my $page  = HTML::Mason::Commands::PageMenu();
+    my $request_path = shift;
+    my $top          = shift;
+    my $widgets      = shift;
+    my $page         = shift;
+
+    my %args = ( @_ );
+
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
     my $id    = $HTML::Mason::Commands::DECODED_ARGS->{id};
@@ -641,14 +649,22 @@ sub _BuildAssetMenu {
             );
         }
 
-        _BuildAssetMenuActionSubmenu($asset);
+        _BuildAssetMenuActionSubmenu( $request_path, $top, $widgets, $page, %args, Asset => $asset );
     }
 }
 
 sub _BuildAssetMenuActionSubmenu {
-    my $asset = shift;
+    my $request_path = shift;
+    my $top          = shift;
+    my $widgets      = shift;
+    my $page         = shift;
 
-    my $page  = HTML::Mason::Commands::PageMenu();
+    my %args = (
+        Asset => undef,
+        @_
+    );
+
+    my $asset = $args{Asset};
     my $id    = $asset->id;
 
     my $actions = $page->child("actions", title => HTML::Mason::Commands::loc("Actions"));
@@ -681,9 +697,12 @@ sub _BuildAssetMenuActionSubmenu {
 
 sub _BuildAdminMenu {
     my $request_path = shift;
-    my $top = shift;
+    my $top          = shift;
+    my $widgets      = shift;
+    my $page         = shift;
 
-    my $page = HTML::Mason::Commands::PageMenu();
+    my %args = ( @_ );
+
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
     my $admin = $top->child( admin => title => loc('Admin'), path => '/Admin/' );
@@ -1129,10 +1148,11 @@ sub _BuildAdminMenu {
 
 sub BuildSelfServiceNav {
     my $request_path = shift;
+    my $top          = shift;
+    my $widgets      = shift;
+    my $page         = shift;
 
-    my $top     = HTML::Mason::Commands::Menu();
-    my $widgets = HTML::Mason::Commands::PageWidgets();
-    my $page    = HTML::Mason::Commands::PageMenu();
+    my %args = ( @_ );
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
