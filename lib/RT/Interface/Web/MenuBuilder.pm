@@ -71,23 +71,29 @@ sub BuildMainNav {
     my $query_string = shift;
     my $query_args = shift;
 
+    my $top     = HTML::Mason::Commands::Menu();
+    my $widgets = HTML::Mason::Commands::PageWidgets();
+    my $page    = HTML::Mason::Commands::PageMenu();
+
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser};
+
     if ($request_path =~ m{^/Asset/}) {
-        HTML::Mason::Commands::PageWidgets()->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+        $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
     } else {
-        HTML::Mason::Commands::PageWidgets()->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch') );
-        HTML::Mason::Commands::PageWidgets()->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket') );
+        $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch') );
+        $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket') );
     }
 
-    my $home = HTML::Mason::Commands::Menu()->child( home => title => loc('Homepage'), path => '/' );
+    my $home = $top->child( home => title => loc('Homepage'), path => '/' );
     unless ($HTML::Mason::Commands::session{'dashboards_in_menu'}) {
-        my $dashboards_in_menu = $HTML::Mason::Commands::session{CurrentUser}->UserObj->Preferences(
+        my $dashboards_in_menu = $current_user->UserObj->Preferences(
             'DashboardsInMenu',
             {},
         );
 
         unless ($dashboards_in_menu->{dashboards}) {
             my ($default_dashboards) =
-                RT::System->new( $HTML::Mason::Commands::session{'CurrentUser'} )
+                RT::System->new( $current_user )
                     ->Attributes
                     ->Named('DashboardsInMenu');
             if ($default_dashboards) {
@@ -100,7 +106,7 @@ sub BuildMainNav {
 
     my @dashboards;
     for my $id ( @{$HTML::Mason::Commands::session{'dashboards_in_menu'}} ) {
-        my $dash = RT::Dashboard->new( $HTML::Mason::Commands::session{CurrentUser} );
+        my $dash = RT::Dashboard->new( $current_user );
         my ( $status, $msg ) = $dash->LoadById($id);
         if ( $status ) {
             push @dashboards, $dash;
@@ -109,7 +115,7 @@ sub BuildMainNav {
         }
     }
 
-    my $dashes = HTML::Mason::Commands::Menu()->child('home');
+    my $dashes = $top->child('home');
     if (@dashboards) {
         for my $dash (@dashboards) {
             $home->child( 'dashboard-' . $dash->id,
@@ -120,40 +126,40 @@ sub BuildMainNav {
     }
     $dashes->child( edit => title => loc('Update This Menu'), path => 'Prefs/DashboardsInMenu.html' );
     $dashes->child( more => title => loc('All Dashboards'),   path => 'Dashboards/index.html' );
-    my $dashboard = RT::Dashboard->new( $HTML::Mason::Commands::session{CurrentUser} );
+    my $dashboard = RT::Dashboard->new( $current_user );
     if ( $dashboard->CurrentUserCanCreateAny ) {
         $dashes->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
     }
 
-    my $search = HTML::Mason::Commands::Menu()->child( search => title => loc('Search'), path => '/Search/Simple.html' );
+    my $search = $top->child( search => title => loc('Search'), path => '/Search/Simple.html' );
 
     my $tickets = $search->child( tickets => title => loc('Tickets'), path => '/Search/Build.html' );
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
 
     $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" )
-        if $HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
+        if $current_user->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
     $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
 
     $search->child( assets => title => loc("Assets"), path => "/Asset/Search/" )
-        if $HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
+        if $current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
-    if ($HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
-        my $articles = HTML::Mason::Commands::Menu()->child( articles => title => loc('Articles'), path => "/Articles/index.html");
+    if ($current_user->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
+        my $articles = $top->child( articles => title => loc('Articles'), path => "/Articles/index.html");
         $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
         $articles->child( topics   => title => loc('Topics'),   path => "/Articles/Topics.html" );
         $articles->child( create   => title => loc('Create'),   path => "/Articles/Article/PreCreate.html" );
         $articles->child( search   => title => loc('Search'),   path => "/Articles/Article/Search.html" );
     }
 
-    if ($HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
-        my $assets = HTML::Mason::Commands::Menu()->child( "assets", title => loc("Assets"), path => "/Asset/Search/" );
+    if ($current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
+        my $assets = $top->child( "assets", title => loc("Assets"), path => "/Asset/Search/" );
         $assets->child( "create", title => loc("Create"), path => "/Asset/CreateInCatalog.html" );
         $assets->child( "search", title => loc("Search"), path => "/Asset/Search/" );
     }
 
-    my $tools = HTML::Mason::Commands::Menu()->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
+    my $tools = $top->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
 
     $tools->child( my_day =>
         title       => loc('My Day'),
@@ -169,7 +175,7 @@ sub BuildMainNav {
         );
     }
 
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab', Object => RT->System ) ) {
+    if ( $current_user->HasRight( Right => 'ShowApprovalsTab', Object => RT->System ) ) {
         $tools->child( approval =>
             title       => loc('Approval'),
             description => loc('My Approvals'),
@@ -177,24 +183,24 @@ sub BuildMainNav {
         );
     }
 
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
+    if ( $current_user->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
-        _BuildAdminMenu($request_path, HTML::Mason::Commands::Menu());
+        _BuildAdminMenu($request_path, $top);
     }
 
     my $username = '<span class="current-user">'
-                 . $HTML::Mason::Commands::m->interp->apply_escapes($HTML::Mason::Commands::session{'CurrentUser'}->Name, 'h')
+                 . $HTML::Mason::Commands::m->interp->apply_escapes($current_user->Name, 'h')
                  . '</span>';
-    my $about_me = HTML::Mason::Commands::Menu()->child( 'preferences' =>
+    my $about_me = $top->child( 'preferences' =>
         title        => loc('Logged in as [_1]', $username),
         escape_title => 0,
-        path         => '/User/Summary.html?id=' . $HTML::Mason::Commands::session{CurrentUser}->id,
+        path         => '/User/Summary.html?id=' . $current_user->id,
         sort_order   => 99,
     );
 
 
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->UserObj
-         && $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => RT->System )) {
+    if ( $current_user->UserObj
+         && $current_user->HasRight( Right => 'ModifySelf', Object => RT->System )) {
         my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html' );
         $settings->child( options        => title => loc('Preferences'),        path => '/Prefs/Other.html' );
         $settings->child( about_me       => title => loc('About me'),       path => '/Prefs/AboutMe.html' );
@@ -208,7 +214,7 @@ sub BuildMainNav {
 
         my $search_menu = $settings->child( 'saved-searches' => title => loc('Saved Searches') );
         my $searches = [ $HTML::Mason::Commands::m->comp( "/Search/Elements/SearchesForObject",
-                          Object => RT::System->new( $HTML::Mason::Commands::session{'CurrentUser'} )) ];
+                          Object => RT::System->new( $current_user )) ];
         my $i = 0;
 
         for my $search (@$searches) {
@@ -220,22 +226,21 @@ sub BuildMainNav {
 
         }
     }
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->Name
+    if ( $current_user->Name
          && (   !RT->Config->Get('WebRemoteUserAuth')
               || RT->Config->Get('WebFallbackToRTLogin') )) {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
         if ( my $id = ( $1 || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) ) {
-            my $obj = RT::Dashboard->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::Dashboard->new( $current_user );
             $obj->LoadById($id);
             if ( $obj and $obj->id ) {
-                my $tabs = HTML::Mason::Commands::PageMenu();
-                $tabs->child( basics       => title => loc('Basics'),       path => "/Dashboards/Modify.html?id=" . $obj->id);
-                $tabs->child( content      => title => loc('Content'),      path => "/Dashboards/Queries.html?id=" . $obj->id);
-                $tabs->child( subscription => title => loc('Subscription'), path => "/Dashboards/Subscription.html?id=" . $obj->id)
+                $page->child( basics       => title => loc('Basics'),       path => "/Dashboards/Modify.html?id=" . $obj->id);
+                $page->child( content      => title => loc('Content'),      path => "/Dashboards/Queries.html?id=" . $obj->id);
+                $page->child( subscription => title => loc('Subscription'), path => "/Dashboards/Subscription.html?id=" . $obj->id)
                     if $obj->CurrentUserCanSubscribe;
-                $tabs->child( show         => title => loc('Show'),         path => "/Dashboards/" . $obj->id . "/" . $obj->Name)
+                $page->child( show         => title => loc('Show'),         path => "/Dashboards/" . $obj->id . "/" . $obj->Name)
             }
         }
     }
@@ -244,11 +249,11 @@ sub BuildMainNav {
     if ( $request_path =~ m{^/Ticket/} ) {
         if ( ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
-            my $obj = RT::Ticket->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::Ticket->new( $current_user );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                my $actions = HTML::Mason::Commands::PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
+                my $actions = $page->child( actions => title => loc('Actions'), sort_order  => 95 );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
                 $can{'_ModifyOwner'} = $obj->CurrentUserCanSetOwner();
@@ -261,37 +266,36 @@ sub BuildMainNav {
                     }
                 };
 
-                my $tabs = HTML::Mason::Commands::PageMenu();
-                $tabs->child( bookmark => raw_html => $HTML::Mason::Commands::m->scomp( '/Ticket/Elements/Bookmark', id => $id ), sort_order => 98 );
+                $page->child( bookmark => raw_html => $HTML::Mason::Commands::m->scomp( '/Ticket/Elements/Bookmark', id => $id ), sort_order => 98 );
 
                 if ($can->('ModifyTicket')) {
-                    $tabs->child( timer => raw_html => $HTML::Mason::Commands::m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id ), sort_order => 99 );
+                    $page->child( timer => raw_html => $HTML::Mason::Commands::m->scomp( '/Ticket/Elements/PopupTimerLink', id => $id ), sort_order => 99 );
                 }
 
-                $tabs->child( display => title => loc('Display'), path => "/Ticket/Display.html?id=" . $id );
-                $tabs->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
+                $page->child( display => title => loc('Display'), path => "/Ticket/Display.html?id=" . $id );
+                $page->child( history => title => loc('History'), path => "/Ticket/History.html?id=" . $id );
 
                 # comment out until we can do it for an individual custom field
                 #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') ) {
-                $tabs->child( basics => title => loc('Basics'), path => "/Ticket/Modify.html?id=" . $id );
+                $page->child( basics => title => loc('Basics'), path => "/Ticket/Modify.html?id=" . $id );
 
                 #}
 
                 if ( $can->('ModifyTicket') || $can->('_ModifyOwner') || $can->('Watch') || $can->('WatchAsAdminCc') ) {
-                    $tabs->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
+                    $page->child( people => title => loc('People'), path => "/Ticket/ModifyPeople.html?id=" . $id );
                 }
 
                 if ( $can->('ModifyTicket') ) {
-                    $tabs->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id );
-                    $tabs->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id );
+                    $page->child( dates => title => loc('Dates'), path => "/Ticket/ModifyDates.html?id=" . $id );
+                    $page->child( links => title => loc('Links'), path => "/Ticket/ModifyLinks.html?id=" . $id );
                 }
 
                 #if ( $can->('ModifyTicket') || $can->('ModifyCustomField') || $can->('_ModifyOwner') ) {
-                $tabs->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
+                $page->child( jumbo => title => loc('Jumbo'), path => "/Ticket/ModifyAll.html?id=" . $id );
                 #}
 
                 if ( RT->Config->Get('EnableReminders') ) {
-                    $tabs->child( reminders => title => loc('Reminders'), path => "/Ticket/Reminders.html?id=" . $id );
+                    $page->child( reminders => title => loc('Reminders'), path => "/Ticket/Reminders.html?id=" . $id );
                 }
 
                 if ( $can->('ModifyTicket') or $can->('ReplyToTicket') ) {
@@ -349,7 +353,7 @@ sub BuildMainNav {
                 $actions->child( 'extract-article' =>
                     title => loc('Extract Article'),
                     path  => "/Articles/Article/ExtractIntoClass.html?Ticket=".$obj->id,
-                ) if $HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
+                ) if $current_user->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
                 if ( defined $HTML::Mason::Commands::session{"tickets"} ) {
                     # we have to update session data if we get new ItemMap
@@ -361,7 +365,7 @@ sub BuildMainNav {
                         $HTML::Mason::Commands::session{"tickets"}->PrepForSerialization();
                     }
 
-                    my $search = HTML::Mason::Commands::Menu()->child('search')->child('tickets');
+                    my $search = $top->child('search')->child('tickets');
                     # Don't display prev links if we're on the first ticket
                     if ( $item_map->{$id}->{prev} ) {
                         $search->child( first =>
@@ -392,7 +396,7 @@ sub BuildMainNav {
             && $HTML::Mason::Commands::DECODED_ARGS->{'q'} )
       )
     {
-        my $search = HTML::Mason::Commands::Menu()->child('search')->child('tickets');
+        my $search = $top->child('search')->child('tickets');
         my $args      = '';
         my $has_query = '';
         my $current_search = $HTML::Mason::Commands::session{"CurrentSearchHash"} || {};
@@ -450,7 +454,7 @@ sub BuildMainNav {
             $current_search_menu = $search->child( current_search => title => loc('Current Search') );
             $current_search_menu->path("/Search/Results.html$args") if $has_query;
         } else {
-            $current_search_menu = HTML::Mason::Commands::PageMenu();
+            $current_search_menu = $page;
         }
 
         $current_search_menu->child( edit_search =>
@@ -478,22 +482,22 @@ sub BuildMainNav {
                                    OrderBy => $rss_data{OrderBy}
                                  );
             my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->Name,
-                $HTML::Mason::Commands::session{'CurrentUser'}
+                $current_user->UserObj->Name,
+                $current_user
                 ->UserObj->GenerateAuthString(   $rss_data{Query}
                                                . $rss_data{Order}
                                                . $rss_data{OrderBy} );
 
             $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString");
             my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes($_, 'u'),
-                $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->Name,
-                $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->GenerateAuthString( $rss_data{Query} ),
+                $current_user->UserObj->Name,
+                $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
                 $rss_data{Query};
             $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/'.$ical_path);
 
             if ($request_path =~ m{^/Search/Results.html}
                 &&                        #XXX TODO better abstraction
-                $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
+                $current_user->HasRight( Right => 'SuperUser', Object => RT->System )) {
                 my $shred_args = QueryString(
                     Search          => 1,
                     Plugin          => 'Tickets',
@@ -510,33 +514,30 @@ sub BuildMainNav {
     if ( $request_path =~ m{^/Article/} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
-            my $tabs = HTML::Mason::Commands::PageMenu();
-
-            $tabs->child( display => title => loc('Display'), path => "/Articles/Article/Display.html?id=".$id );
-            $tabs->child( history => title => loc('History'), path => "/Articles/Article/History.html?id=".$id );
-            $tabs->child( modify  => title => loc('Modify'),  path => "/Articles/Article/Edit.html?id=".$id );
+            $page->child( display => title => loc('Display'), path => "/Articles/Article/Display.html?id=".$id );
+            $page->child( history => title => loc('History'), path => "/Articles/Article/History.html?id=".$id );
+            $page->child( modify  => title => loc('Modify'),  path => "/Articles/Article/Edit.html?id=".$id );
         }
     }
 
     if ( $request_path =~ m{^/Articles/} ) {
-        HTML::Mason::Commands::PageWidgets()->child( article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
-        HTML::Mason::Commands::PageWidgets()->delete('create_ticket');
-        HTML::Mason::Commands::PageWidgets()->delete('simple_search');
+        $widgets->child( article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
+        $widgets->delete('create_ticket');
+        $widgets->delete('simple_search');
 
-        my $tabs = HTML::Mason::Commands::PageMenu();
-        $tabs->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
-        $tabs->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
+        $page->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
+        $page->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
         if ( $request_path =~ m{^/Articles/Article/} and ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
-            my $obj = RT::Article->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::Article->new( $current_user );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                $tabs->child( display => title => loc("Display"), path => "/Articles/Article/Display.html?id=" . $id );
-                $tabs->child( history => title => loc('History'), path => '/Articles/Article/History.html?id=' . $id );
+                $page->child( display => title => loc("Display"), path => "/Articles/Article/Display.html?id=" . $id );
+                $page->child( history => title => loc('History'), path => '/Articles/Article/History.html?id=' . $id );
 
                 if ( $obj->CurrentUserHasRight('ModifyArticle') ) {
-                    $tabs->child(modify => title => loc('Modify'), path => '/Articles/Article/Edit.html?id=' . $id );
+                    $page->child(modify => title => loc('Modify'), path => '/Articles/Article/Edit.html?id=' . $id );
                 }
             }
         }
@@ -546,7 +547,6 @@ sub BuildMainNav {
     if ($request_path =~ m{^/Asset/} and $HTML::Mason::Commands::DECODED_ARGS->{id} and $HTML::Mason::Commands::DECODED_ARGS->{id} !~ /\D/) {
         _BuildAssetMenu();
     } elsif ($request_path =~ m{^/Asset/Search/}) {
-        my $page  = HTML::Mason::Commands::PageMenu();
         my %search = map @{$_},
             grep defined $_->[1] && length $_->[1],
             map {ref $HTML::Mason::Commands::DECODED_ARGS->{$_} ? [$_, $HTML::Mason::Commands::DECODED_ARGS->{$_}[0]] : [$_, $HTML::Mason::Commands::DECODED_ARGS->{$_}] }
@@ -568,14 +568,11 @@ sub BuildMainNav {
             path  => '/Asset/Search/Results.tsv?' . (keys %search ? QueryString(%search) : ''),
         );
     } elsif ($request_path =~ m{^/Admin/Global/CustomFields/Catalog-Assets\.html$}) {
-        my $page  = HTML::Mason::Commands::PageMenu();
         $page->child("create", title => loc("Create New"), path => "/Admin/CustomFields/Modify.html?Create=1;LookupType=" . RT::Asset->CustomFieldLookupType);
     } elsif ($request_path =~ m{^/Admin/CustomFields(/|/index\.html)?$}
             and $HTML::Mason::Commands::DECODED_ARGS->{'Type'} and $HTML::Mason::Commands::DECODED_ARGS->{'Type'} eq RT::Asset->CustomFieldLookupType) {
-        my $page  = HTML::Mason::Commands::PageMenu();
         $page->child("create")->path( $page->child("create")->path . "&LookupType=" . RT::Asset->CustomFieldLookupType );
     } elsif ($request_path =~ m{^/Admin/Assets/Catalogs/}) {
-        my $page  = HTML::Mason::Commands::PageMenu();
         my $actions = $request_path =~ m{/((index|Create)\.html)?$}
             ? $page
             : $page->child("catalogs", title => loc("Catalogs"), path => "/Admin/Assets/Catalogs/");
@@ -583,7 +580,7 @@ sub BuildMainNav {
         $actions->child("select", title => loc("Select"), path => "/Admin/Assets/Catalogs/");
         $actions->child("create", title => loc("Create"), path => "/Admin/Assets/Catalogs/Create.html");
 
-        my $catalog = RT::Catalog->new( $HTML::Mason::Commands::session{CurrentUser} );
+        my $catalog = RT::Catalog->new( $current_user );
         $catalog->Load($HTML::Mason::Commands::DECODED_ARGS->{id}) if $HTML::Mason::Commands::DECODED_ARGS->{id};
 
         if ($catalog->id and $catalog->CurrentUserCanSee) {
@@ -599,18 +596,18 @@ sub BuildMainNav {
     }
 
     if ( $request_path =~ m{^/User/(Summary|History)\.html} ) {
-        if (HTML::Mason::Commands::PageMenu()->child('summary')) {
+        if ($page->child('summary')) {
             # Already set up from having AdminUser and ShowConfigTab;
             # but rename "Basics" to "Edit" in this context
-            HTML::Mason::Commands::PageMenu()->child( 'basics' )->title( loc('Edit') );
-        } elsif ( $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'ShowUserHistory' ) ) {
-            HTML::Mason::Commands::PageMenu()->child( display => title => loc('Summary'), path => '/User/Summary.html?id=' . $HTML::Mason::Commands::DECODED_ARGS->{'id'} );
-            HTML::Mason::Commands::PageMenu()->child( history => title => loc('History'), path => '/User/History.html?id=' . $HTML::Mason::Commands::DECODED_ARGS->{'id'} );
+            $page->child( 'basics' )->title( loc('Edit') );
+        } elsif ( $current_user->HasRight( Object => $RT::System, Right => 'ShowUserHistory' ) ) {
+            $page->child( display => title => loc('Summary'), path => '/User/Summary.html?id=' . $HTML::Mason::Commands::DECODED_ARGS->{'id'} );
+            $page->child( history => title => loc('History'), path => '/User/History.html?id=' . $HTML::Mason::Commands::DECODED_ARGS->{'id'} );
         }
     }
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
-        HTML::Mason::Commands::PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
+        $page->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
 
     # due to historical reasons of always having been in /Elements/Tabs
@@ -686,8 +683,11 @@ sub _BuildAdminMenu {
     my $request_path = shift;
     my $top = shift;
 
+    my $page = HTML::Mason::Commands::PageMenu();
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser};
+
     my $admin = $top->child( admin => title => loc('Admin'), path => '/Admin/' );
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
+    if ( $current_user->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
         my $users = $admin->child( users =>
             title       => loc('Users'),
             description => loc('Manage users and passwords'),
@@ -712,7 +712,7 @@ sub _BuildAdminMenu {
     $queues->child( select => title => loc('Select'), path => "/Admin/Queues/" );
     $queues->child( create => title => loc('Create'), path => "/Admin/Queues/Modify.html?Create=1" );
 
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminCustomField' ) ) {
+    if ( $current_user->HasRight( Object => RT->System, Right => 'AdminCustomField' ) ) {
         my $cfs = $admin->child( 'custom-fields' =>
             title       => loc('Custom Fields'),
             description => loc('Manage custom fields and custom field values'),
@@ -722,7 +722,7 @@ sub _BuildAdminMenu {
         $cfs->child( create => title => loc('Create'), path => "/Admin/CustomFields/Modify.html?Create=1" );
     }
 
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminCustomRoles' ) ) {
+    if ( $current_user->HasRight( Object => RT->System, Right => 'AdminCustomRoles' ) ) {
         my $roles = $admin->child( 'custom-roles' =>
             title       => loc('Custom Roles'),
             description => loc('Manage custom roles'),
@@ -732,7 +732,7 @@ sub _BuildAdminMenu {
         $roles->child( create => title => loc('Create'), path => "/Admin/CustomRoles/Modify.html?Create=1" );
     }
 
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'ModifyScrips' ) ) {
+    if ( $current_user->HasRight( Object => RT->System, Right => 'ModifyScrips' ) ) {
         my $scrips = $admin->child( 'scrips' =>
             title       => loc('Scrips'),
             description => loc('Manage scrips'),
@@ -892,7 +892,7 @@ sub _BuildAdminMenu {
         path        => '/Admin/Tools/Theme.html',
     );
     if (RT->Config->Get('StatementLog')
-        && $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System )) {
+        && $current_user->HasRight( Right => 'SuperUser', Object => RT->System )) {
        $admin_tools->child( 'sql-queries' =>
            title       => loc('SQL Queries'),
            description => loc('Browse the SQL queries made in this process'),
@@ -907,7 +907,6 @@ sub _BuildAdminMenu {
 
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;
-        my $tabs = HTML::Mason::Commands::PageMenu();
 
         my %labels = (
             Queues       => loc("Queues"),
@@ -923,10 +922,10 @@ sub _BuildAdminMenu {
                   && $HTML::Mason::Commands::DECODED_ARGS->{'Create'} )
            )
         {
-            $section = $tabs;
+            $section = $page;
 
         } else {
-            $section = $tabs->child( select => title => $labels{$type},
+            $section = $page->child( select => title => $labels{$type},
                                      path => "/Admin/$type/" );
         }
 
@@ -940,11 +939,11 @@ sub _BuildAdminMenu {
               $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} && $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} =~ /^\d+$/
                 ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'Queue'} || $HTML::Mason::Commands::DECODED_ARGS->{'id'};
-            my $queue_obj = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $queue_obj = RT::Queue->new( $current_user );
             $queue_obj->Load($id);
 
             if ( $queue_obj and $queue_obj->id ) {
-                my $queue = HTML::Mason::Commands::PageMenu();
+                my $queue = $page;
                 $queue->child( basics => title => loc('Basics'),   path => "/Admin/Queues/Modify.html?id=" . $id );
                 $queue->child( people => title => loc('Watchers'), path => "/Admin/Queues/People.html?id=" . $id );
 
@@ -976,23 +975,22 @@ sub _BuildAdminMenu {
     if ( $request_path =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} and $admin->child("users") ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
-            my $obj = RT::User->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::User->new( $current_user );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                my $tabs = HTML::Mason::Commands::PageMenu();
-                $tabs->child( basics      => title => loc('Basics'),         path => "/Admin/Users/Modify.html?id=" . $id );
-                $tabs->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
-                $tabs->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
-                $tabs->child( 'my-rt'     => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
-                $tabs->child( 'dashboards-in-menu' =>
+                $page->child( basics      => title => loc('Basics'),         path => "/Admin/Users/Modify.html?id=" . $id );
+                $page->child( memberships => title => loc('Memberships'),    path => "/Admin/Users/Memberships.html?id=" . $id );
+                $page->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
+                $page->child( 'my-rt'     => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
+                $page->child( 'dashboards-in-menu' =>
                     title => loc('Dashboards in menu'),
                     path  => '/Admin/Users/DashboardsInMenu.html?id=' . $id,
                 );
                 if ( RT->Config->Get('Crypt')->{'Enable'} ) {
-                    $tabs->child( keys    => title => loc('Private keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
+                    $page->child( keys    => title => loc('Private keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
                 }
-                $tabs->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
+                $page->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
             }
         }
 
@@ -1001,17 +999,16 @@ sub _BuildAdminMenu {
     if ( $request_path =~ m{^/Admin/Groups} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
-            my $obj = RT::Group->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::Group->new( $current_user );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                my $tabs = HTML::Mason::Commands::PageMenu();
-                $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/Groups/Modify.html?id=" . $obj->id );
-                $tabs->child( members        => title => loc('Members'),      path => "/Admin/Groups/Members.html?id=" . $obj->id );
-                $tabs->child( memberships    => title => loc('Memberships'),  path => "/Admin/Groups/Memberships.html?id=" . $obj->id );
-                $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
-                $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
-                $tabs->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
+                $page->child( basics         => title => loc('Basics'),       path => "/Admin/Groups/Modify.html?id=" . $obj->id );
+                $page->child( members        => title => loc('Members'),      path => "/Admin/Groups/Members.html?id=" . $obj->id );
+                $page->child( memberships    => title => loc('Memberships'),  path => "/Admin/Groups/Memberships.html?id=" . $obj->id );
+                $page->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
+                $page->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
+                $page->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
             }
         }
     }
@@ -1019,16 +1016,15 @@ sub _BuildAdminMenu {
     if ( $request_path =~ m{^/Admin/CustomFields/} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
-            my $obj = RT::CustomField->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::CustomField->new( $current_user );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                my $tabs = HTML::Mason::Commands::PageMenu();
-                $tabs->child( basics           => title => loc('Basics'),       path => "/Admin/CustomFields/Modify.html?id=".$id );
-                $tabs->child( 'group-rights'   => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
-                $tabs->child( 'user-rights'    => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
+                $page->child( basics           => title => loc('Basics'),       path => "/Admin/CustomFields/Modify.html?id=".$id );
+                $page->child( 'group-rights'   => title => loc('Group Rights'), path => "/Admin/CustomFields/GroupRights.html?id=" . $id );
+                $page->child( 'user-rights'    => title => loc('User Rights'),  path => "/Admin/CustomFields/UserRights.html?id=" . $id );
                 unless ( $obj->IsOnlyGlobal ) {
-                    $tabs->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
+                    $page->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomFields/Objects.html?id=" . $id );
                 }
             }
         }
@@ -1037,13 +1033,12 @@ sub _BuildAdminMenu {
     if ( $request_path =~ m{^/Admin/CustomRoles} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
-            my $obj = RT::CustomRole->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::CustomRole->new( $current_user );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                my $tabs = HTML::Mason::Commands::PageMenu();
-                $tabs->child( basics       => title => loc('Basics'),       path => "/Admin/CustomRoles/Modify.html?id=".$id );
-                $tabs->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomRoles/Objects.html?id=" . $id );
+                $page->child( basics       => title => loc('Basics'),       path => "/Admin/CustomRoles/Modify.html?id=".$id );
+                $page->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomRoles/Objects.html?id=" . $id );
             }
         }
     }
@@ -1051,10 +1046,8 @@ sub _BuildAdminMenu {
     if ( $request_path =~ m{^/Admin/Scrips/} ) {
         if ( $HTML::Mason::Commands::m->request_args->{'id'} && $HTML::Mason::Commands::m->request_args->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::m->request_args->{'id'};
-            my $obj = RT::Scrip->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::Scrip->new( $current_user );
             $obj->Load($id);
-
-            my $tabs = HTML::Mason::Commands::PageMenu();
 
             my ( $admin_cat, $create_path_arg, $from_query_param );
             my $from_arg = $HTML::Mason::Commands::DECODED_ARGS->{'From'} || q{};
@@ -1073,12 +1066,12 @@ sub _BuildAdminMenu {
                 $admin_cat = 'Scrips';
                 $from_query_param = $create_path_arg = q{};
             }
-            my $scrips = $tabs->child( scrips => title => loc('Scrips'), path => "/Admin/${admin_cat}" );
+            my $scrips = $page->child( scrips => title => loc('Scrips'), path => "/Admin/${admin_cat}" );
             $scrips->child( select => title => loc('Select'), path => "/Admin/${admin_cat}" );
             $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html${create_path_arg}" );
 
-            $tabs->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=" . $id . $from_query_param );
-            $tabs->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id . $from_query_param );
+            $page->child( basics => title => loc('Basics') => path => "/Admin/Scrips/Modify.html?id=" . $id . $from_query_param );
+            $page->child( 'applies-to' => title => loc('Applies to'), path => "/Admin/Scrips/Objects.html?id=" . $id . $from_query_param );
         }
         elsif ( $request_path =~ m{^/Admin/Scrips/(index\.html)?$} ) {
             HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips/" );
@@ -1101,38 +1094,35 @@ sub _BuildAdminMenu {
     }
 
     if ( $request_path =~ m{^/Admin/Global/Scrips\.html} ) {
-        my $tabs = HTML::Mason::Commands::PageMenu();
-        $tabs->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
-        $tabs->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
+        $page->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
+        $page->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
     }
 
     if ( $request_path =~ m{^/Admin/Global/Templates?\.html} ) {
-        my $tabs = HTML::Mason::Commands::PageMenu();
-        $tabs->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
-        $tabs->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
+        $page->child( select => title => loc('Select'), path => "/Admin/Global/Templates.html" );
+        $page->child( create => title => loc('Create'), path => "/Admin/Global/Template.html?Create=1" );
     }
 
     if ( $request_path =~ m{^/Admin/Articles/Classes/} ) {
-        my $tabs = HTML::Mason::Commands::PageMenu();
         if ( my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) {
-            my $obj = RT::Class->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            my $obj = RT::Class->new( $current_user );
             $obj->Load($id);
 
             if ( $obj and $obj->id ) {
-                my $section = $tabs->child( select => title => loc("Classes"), path => "/Admin/Articles/Classes/" );
+                my $section = $page->child( select => title => loc("Classes"), path => "/Admin/Articles/Classes/" );
                 $section->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
                 $section->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
 
-                $tabs->child( basics          => title => loc('Basics'),        path => "/Admin/Articles/Classes/Modify.html?id=".$id );
-                $tabs->child( topics          => title => loc('Topics'),        path => "/Admin/Articles/Classes/Topics.html?id=".$id );
-                $tabs->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
-                $tabs->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
-                $tabs->child( 'user-rights'   => title => loc('User Rights'),   path => "/Admin/Articles/Classes/UserRights.html?id=".$id );
-                $tabs->child( 'applies-to'    => title => loc('Applies to'),    path => "/Admin/Articles/Classes/Objects.html?id=$id" );
+                $page->child( basics          => title => loc('Basics'),        path => "/Admin/Articles/Classes/Modify.html?id=".$id );
+                $page->child( topics          => title => loc('Topics'),        path => "/Admin/Articles/Classes/Topics.html?id=".$id );
+                $page->child( 'custom-fields' => title => loc('Custom Fields'), path => "/Admin/Articles/Classes/CustomFields.html?id=".$id );
+                $page->child( 'group-rights'  => title => loc('Group Rights'),  path => "/Admin/Articles/Classes/GroupRights.html?id=".$id );
+                $page->child( 'user-rights'   => title => loc('User Rights'),   path => "/Admin/Articles/Classes/UserRights.html?id=".$id );
+                $page->child( 'applies-to'    => title => loc('Applies to'),    path => "/Admin/Articles/Classes/Objects.html?id=$id" );
             }
         } else {
-            $tabs->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
-            $tabs->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
+            $page->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
+            $page->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
         }
     }
 }
@@ -1140,7 +1130,13 @@ sub _BuildAdminMenu {
 sub BuildSelfServiceNav {
     my $request_path = shift;
 
-    my $queues = RT::Queues->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+    my $top     = HTML::Mason::Commands::Menu();
+    my $widgets = HTML::Mason::Commands::PageWidgets();
+    my $page    = HTML::Mason::Commands::PageMenu();
+
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser};
+
+    my $queues = RT::Queues->new( $current_user );
     $queues->UnLimit;
 
     my $queue_count = 0;
@@ -1155,44 +1151,43 @@ sub BuildSelfServiceNav {
 
 
     if ( $queue_count > 1 ) {
-        HTML::Mason::Commands::Menu()->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
+        $top->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
     } elsif ( $queue_id ) {
-        HTML::Mason::Commands::Menu()->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
+        $top->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
     }
-    my $tickets = HTML::Mason::Commands::Menu()->child( tickets => title => loc('Tickets'), path => '/SelfService/' );
+    my $tickets = $top->child( tickets => title => loc('Tickets'), path => '/SelfService/' );
     $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
 
-    HTML::Mason::Commands::Menu()->child( "assets", title => loc("Assets"), path => "/SelfService/Asset/" )
-        if $HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
+    $top->child( "assets", title => loc("Assets"), path => "/SelfService/Asset/" )
+        if $current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
     my $username = '<span class="current-user">'
-                 . $HTML::Mason::Commands::m->interp->apply_escapes($HTML::Mason::Commands::session{'CurrentUser'}->Name, 'h')
+                 . $HTML::Mason::Commands::m->interp->apply_escapes($current_user->Name, 'h')
                  . '</span>';
-    my $about_me = HTML::Mason::Commands::Menu()->child( preferences =>
+    my $about_me = $top->child( preferences =>
         title        => loc('Logged in as [_1]', $username),
         escape_title => 0,
         sort_order   => 99,
     );
 
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
+    if ( $current_user->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
         $about_me->child( prefs => title => loc('Preferences'), path => '/SelfService/Prefs.html' );
     }
 
-    if ( $HTML::Mason::Commands::session{'CurrentUser'}->Name
+    if ( $current_user->Name
          && (   !RT->Config->Get('WebRemoteUserAuth')
               || RT->Config->Get('WebFallbackToRTLogin') )) {
         $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
     }
 
-    if ($HTML::Mason::Commands::session{'CurrentUser'}->HasRight( Right => 'ShowArticle', Object => RT->System )) {
-        HTML::Mason::Commands::PageWidgets()->child( 'goto-article' => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/SearchArticle') );
+    if ($current_user->HasRight( Right => 'ShowArticle', Object => RT->System )) {
+        $widgets->child( 'goto-article' => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/SearchArticle') );
     }
 
-    HTML::Mason::Commands::PageWidgets()->child( goto => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/GotoTicket') );
+    $widgets->child( goto => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/GotoTicket') );
 
     if ($request_path =~ m{^/SelfService/Asset/} and $HTML::Mason::Commands::DECODED_ARGS->{id}) {
-        my $page = HTML::Mason::Commands::PageMenu();
         my $id   = $HTML::Mason::Commands::DECODED_ARGS->{id};
         $page->child("display",     title => loc("Display"),        path => "/SelfService/Asset/Display.html?id=$id");
         $page->child("history",     title => loc("History"),        path => "/SelfService/Asset/History.html?id=$id");
