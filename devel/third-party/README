@@ -1,22 +1,25 @@
+chosen
+Chosen, a Select Box Enhancer for jQuery and Prototype
+
 ckeditor
 http://ckeditor.com/builder
 The JS and CSS source files distributed with the version of ckeditor bundled in RT.
 
-jquery-1.9.1.js
-http://code.jquery.com/jquery-1.9.1.js
-Unminified version of jQuery 1.9.1
+dropzone
+http://www.dropzonejs.com/
+Unminified version of dropzone.min.js
 
-jquery.ui.*-1.10.0.js
-https://github.com/jquery/jquery-ui/zipball/1.10.0
-jQuery UI components that go into our minified jquery.ui-1.10.0.custom.min.js
+jquery-1.11.3.js
+http://code.jquery.com/jquery-1.11.3.js
+Unminified version of jQuery 1.11.3
+
+jquery-ui-1.11.4.custom/
+http://jqueryui.com/download/
+jQuery UI components that go into our minified jquery-ui.min.js
 
 jquery.tablesorter.js
 http://tablesorter.com/jquery.tablesorter.js
-jQuery tablesorter plugin version 2.05b
-
-jquery-ui-timepicker-addon.js 1.2
-https://github.com/trentrichardson/jQuery-Timepicker-Addon
-Timepicker integrated with the jQuery UI datepicker
+jQuery tablesorter plugin version 2.05b, corresponds to jquery.tablesorter.min.js
 
 eyedropper.svg
 The Noun Project
@@ -27,3 +30,6 @@ Modified version included at share/static/images/eyedropper.png
 jquery.modal-0.5.2.js
 https://github.com/kylefox/jquery-modal
 Simple jQuery modal plugin, minified source in jquery.modal.min.js
+
+mousetrap.js
+Unminified version of mousetrap.min.js
