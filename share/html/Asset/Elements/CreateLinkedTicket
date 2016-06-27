@@ -50,21 +50,50 @@ $AssetObj
 $Requestors => ''
 </%args>
 <%init>
+my @asset_objs;
+if ( ref $AssetObj eq 'ARRAY' ){
+    # Accept an array of asset objects
+    @asset_objs = @$AssetObj;
+}
+else{
+    # Also support passing a single asset object
+    push @asset_objs, $AssetObj;
+}
+
 my @description = map { $m->interp->apply_escapes($_, 'h') }
-    $AssetObj->id, $AssetObj->Name;
+    $asset_objs[0]->id, $asset_objs[0]->Name;
+
+my $refers_to = join ' ', map { "asset:" . $_->id } @asset_objs;
+
+# Find possible requestors
+my %role_addresses;
+foreach my $asset (@asset_objs){
+    for my $role ($asset->Roles) {
+        # Create a hash with email addresses to easily de-dupe the lists from multiple assets
+        map { $role_addresses{$role}{$_} = 1 } $asset->RoleGroup($role)->MemberEmailAddresses;
+    }
+}
+
 </%init>
 <form action="<% RT->Config->Get("WebPath") %><% $session{CurrentUser}->Privileged ? "/Ticket" : "/SelfService" %>/Create.html" id="AssetCreateLinkedTicket">
-  <input name="new-RefersTo" value="asset:<% $AssetObj->id %>" type="hidden">
-  <input name="Subject" value="<% $AssetObj->Name %>" type="hidden">
+  <input name="new-RefersTo" value="<% $refers_to %>" type="hidden">
+  <input name="Subject" value="<% $asset_objs[0]->Name %>" type="hidden">
+% if ( @asset_objs == 1 ){
   <&|/l_unsafe,
     $m->scomp("/Elements/SelectNewTicketQueue"),
     @description &>Create a new ticket in the [_1] queue about asset #[_2]: [_3].</&>
+% }
+% else {
+<&|/l_unsafe,
+    $m->scomp("/Elements/SelectNewTicketQueue"),
+    &>Create a new ticket in the [_1] queue about multiple assets.</&>
+% }
 % if ($Requestors) {
     <input type="hidden" name="Requestors" value="<% $Requestors%>" />
 % } else {
 %     my $first = 1;
-%     for my $role ($AssetObj->Roles) {
-%         my $addr = $AssetObj->RoleGroup($role)->MemberEmailAddressesAsString;
+%     for my $role ($asset_objs[0]->Roles) {
+%         my $addr = join ', ', keys %{$role_addresses{$role}};
 %         next unless defined $addr and length $addr;
   <br>
   <label>
