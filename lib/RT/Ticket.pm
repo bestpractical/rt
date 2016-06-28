@@ -68,6 +68,7 @@ package RT::Ticket;
 use strict;
 use warnings;
 use base 'RT::Record';
+use 5.010;
 
 use Role::Basic 'with';
 
@@ -3226,6 +3227,19 @@ sub CurrentUserCanSeeTime {
 
     return $self->CurrentUser->Privileged ||
            !RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
+}
+
+sub _DateForCustomDateRangeField {
+    my $self  = shift;
+    my $field = shift or return;
+
+    state $alias = { 'lastcontact' => 'told' };
+    return $self->SUPER::_DateForCustomDateRangeField( $alias->{lc $field} || $field, @_);
+}
+
+sub _CustomDateRangeFieldParser {
+    my $self = shift;
+    return $self->SUPER::_CustomDateRangeFieldParser . '|' . qr{LastContact}i;
 }
 
 sub Table {'Tickets'}
