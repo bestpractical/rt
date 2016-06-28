@@ -2406,6 +2406,184 @@ sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
+# Matches one field in "field - field" style range specs. Subclasses
+# that can participate in custom date ranges should override this method
+# to match their additional date fields. Be sure to call this superclass
+# method to get "now", datetime columns and CF parsing.
+
+sub _CustomDateRangeFieldParser {
+    my $self = shift;
+    my $regex = qr{
+        now
+        | cf\. (?: \{ .*? \} | \S+ )
+    }xi;
+
+    for my $column ( keys %{ $_TABLE_ATTR->{ ref $self || $self} } ) {
+        my $entry = $_TABLE_ATTR->{ ref $self || $self}{$column};
+        next unless $entry->{read} && ( $entry->{type} // '' ) eq 'datetime';
+        $regex .= '|' . qr{$column}i;
+    }
+    return $regex;
+}
+
+# Returns an RT::Date instantiated with this record's value for the parsed
+# field name. Includes the $range_name parameter only for diagnostics.
+# Subclasses should override this to instantiate the fields they added in
+# _CustomDateRangeFieldParser.
+
+sub _DateForCustomDateRangeField {
+    my $self       = shift;
+    my $field      = shift;
+    my $range_name = shift;
+
+    my $date = RT::Date->new($self->CurrentUser);
+
+    if (lc($field) eq 'now') {
+        $date->Set(Format => 'unix', Value => time);
+    }
+    elsif ($field =~ m{^ cf\. (?: \{ (.*?) \} | (\S+) ) $}xi) {
+        my $name = $1 || $2;
+        my $value = $self->FirstCustomFieldValue($name);
+
+        if (!$value) {
+            # no CF value for this record, so bail out
+            return;
+        }
+
+        $date->Set(Format => 'unknown', Value => $value, Timezone => 'UTC');
+    }
+    else {
+        if ( my ($column) = grep { lc $field eq lc $_ } keys %{ $_TABLE_ATTR->{ ref $self || $self } } ) {
+            my $method = $column . 'Obj';
+            if ( $self->can($method) ) {
+                $date = $self->$method;
+            }
+            else {
+                RT->Logger->error( "Missing $method in " . ref $self );
+                return;
+            }
+        }
+        else {
+            RT->Logger->error("Unable to parse '$field' as a field name in CustomDateRanges '$range_name'");
+            return;
+        }
+    }
+
+    return $date;
+}
+
+# Parses "field - field" and returns a four-element list containing the end
+# date field name, the operator (right now always "-" for subtraction), the
+# start date field name, and either a custom duration formatter coderef or
+# undef. Returns the empty list if there's an error.
+
+sub _ParseCustomDateRangeSpec {
+    my $self = shift;
+    my $name = shift;
+    my $spec = shift;
+
+    my $calculation;
+    my $format;
+
+    if (ref($spec)) {
+        $calculation = $spec->{value};
+        $format = $spec->{format};
+    }
+    else {
+        $calculation = $spec;
+    }
+
+    if (!$calculation || ref($calculation)) {
+        RT->Logger->error("CustomDateRanges '$name' 'value' must be a string");
+        return;
+    }
+
+    if ($format && ref($format) ne 'CODE') {
+        RT->Logger->error("CustomDateRanges '$name' 'format' must be a CODE reference");
+        return;
+    }
+
+    # class-specific matcher for now, created, CF.{foo bar}, CF.baz, etc.
+    my $field_parser = $self->_CustomDateRangeFieldParser;
+
+    # regex parses "field - field" (intentionally very strict)
+    my $calculation_parser = qr{
+        ^
+        ($field_parser)   # end field name
+        \s+ (-) \s+       # space, operator, more space
+        ($field_parser)   # start field name
+        $
+    }x;
+
+    my @matches = $calculation =~ $calculation_parser;
+
+    if (!@matches) {
+        RT->Logger->error("Unable to parse '$calculation' as a calculated value in CustomDateRanges '$name'");
+        return;
+    }
+
+    if (@matches != 3) {
+        RT->Logger->error("Unexpected number of submatches for '$calculation' in CustomDateRanges '$name'. Got " . scalar(@matches) . ", expected 3.");
+        return;
+    }
+
+    my ($end, $op, $start) = @matches;
+
+    return ($end, $op, $start, $format);
+}
+
+=head2 CustomDateRange name, spec
+
+Takes a L<RT_Config/%CustomDateRanges>-style spec string and its name (for
+diagnostics). Returns a localized string evaluating the calculation. If either
+date is unset, or anything fails to parse, this returns C<undef>.
+
+=cut
+
+sub CustomDateRange {
+    my $self = shift;
+    my $name = shift;
+    my $spec = shift;
+
+    my ($end, $op, $start, $format) = $self->_ParseCustomDateRangeSpec($name, $spec);
+
+    # parse failed; render no value
+    return unless $start && $end;
+
+    my $end_dt = $self->_DateForCustomDateRangeField($end, $name);
+    my $start_dt = $self->_DateForCustomDateRangeField($start, $name);
+
+    # RT::Date instantiation failed; render no value
+    return unless $start_dt && $start_dt->IsSet
+               && $end_dt && $end_dt->IsSet;
+
+    my $duration;
+    if ($op eq '-') {
+        $duration = $end_dt->Diff($start_dt);
+    }
+    else {
+        RT->Logger->error("Unexpected operator in CustomDateRanges '$name' spec '$spec'. Got '$op', expected '-'.");
+        return;
+    }
+
+    # _ParseCustomDateRangeSpec guarantees $format is a coderef
+    if ($format) {
+        return $format->($duration, $end_dt, $start_dt, $self);
+    }
+    else {
+        # "x days ago" is strongly suggestive of comparing with the current
+        # time; but if we're comparing two arbitrary times, "x days prior"
+        # reads better
+        if ($duration < 0) {
+            $duration *= -1;
+            return $self->loc('[_1] prior', $end_dt->DurationAsString($duration));
+        }
+        else {
+            return $end_dt->DurationAsString($duration);
+        }
+    }
+}
+
 sub UID {
     my $self = shift;
     return undef unless defined $self->Id;
