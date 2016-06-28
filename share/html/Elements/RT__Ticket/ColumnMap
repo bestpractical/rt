@@ -326,6 +326,18 @@ $COLUMN_MAP = {
         },
     },
 };
+
+if (RT->Config->Get('CustomDateRanges')) {
+    my %ranges = %{ RT->Config->Get('CustomDateRanges')->{'RT::Ticket'} || {} };
+    for my $name (keys %ranges) {
+        $COLUMN_MAP->{$name} = {
+            title => $name,
+            value => sub {
+                $_[0]->CustomDateRange($name, $ranges{$name});
+            },
+        };
+    }
+}
 </%ONCE>
 <%init>
 # if no encryption support, then KeyOwnerName and KeyRequestors fall back to the regular
