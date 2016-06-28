@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if (keys %documents) {
 <&| /Widgets/TitleBox, title => loc('Attachments'), 
         title_class=> 'inverse',  
         class => 'ticket-info-attachments',
@@ -118,8 +117,6 @@
 </div>
 </&>
 
-% }
-
 <%INIT>
 
 # If we haven't been passed in an Attachments object (through the precaching mechanism)
@@ -132,11 +129,7 @@ $Attachments = $Attachments->Clone;
 
 # Remember, each message in a transaction is an attachment; we only
 # want named attachments (real files)
-$Attachments->Limit(
-    FIELD    => 'Filename',
-    OPERATOR => '!=',
-    VALUE    => '',
-);
+$Attachments->LimitHasFilename;
 
 my $show_more = 0;
 my %documents;
@@ -157,6 +150,8 @@ while ( my $attach = $Attachments->Next() ) {
 }
 
 my %is_checked = map { $_ => 1 } @Checked;
+
+return if !$show_more && keys %documents == 0;
 </%INIT>
 <%ARGS>
 $Ticket => undef

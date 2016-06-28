@@ -172,7 +172,7 @@ jQuery( function() {
       Selectable   => 1,
       HideTitleBox => 1,
       Checked      => \@AttachExisting,
-      Count        => 5,
+      Count        => RT->Config->Get('AttachmentListCount'),
     &>
   </td>
 </tr>
@@ -194,11 +194,7 @@ my $HasExisting = 0;
 
 if ($TicketObj && $TicketObj->id) {
     my $Existing = $TicketObj->Attachments;
-    $Existing->Limit(
-        FIELD    => 'Filename',
-        OPERATOR => '!=',
-        VALUE    => '',
-    );
+    $Existing->LimitHasFilename;
     $HasExisting = 1 if $Existing->Count;
 }
 </%INIT>
