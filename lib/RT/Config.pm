@@ -1051,6 +1051,37 @@ our %META;
             $config->Set( CustomFieldGroupings => %$groups );
         },
     },
+    CustomDateRanges => {
+        Type            => 'HASH',
+        PostLoadCheck   => sub {
+            my $config = shift;
+            # use scalar context intentionally to avoid not a hash error
+            my $ranges = $config->Get('CustomDateRanges') || {};
+
+            unless (ref($ranges) eq 'HASH') {
+                RT->Logger->error("Config option \%CustomDateRanges is a @{[ref $ranges]} not a HASH");
+                return;
+            }
+
+            for my $class (keys %$ranges) {
+                if (ref($ranges->{$class}) eq 'HASH') {
+                    for my $name (keys %{ $ranges->{$class} }) {
+                        my $spec = $ranges->{$class}{$name};
+                        if (!ref($spec) || ref($spec) eq 'HASH') {
+                            # this will produce error messages if parsing fails
+                            $class->require;
+                            $class->_ParseCustomDateRangeSpec($name, $spec);
+                        }
+                        else {
+                            RT->Logger->error("Config option \%CustomDateRanges{$class}{$name} is not a string or HASH");
+                        }
+                    }
+                } else {
+                    RT->Logger->error("Config option \%CustomDateRanges{$class} is not a HASH");
+                }
+            }
+        },
+    },
     ExternalStorage => {
         Type            => 'HASH',
         PostLoadCheck   => sub {
