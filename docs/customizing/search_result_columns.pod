@@ -76,7 +76,7 @@ In the F<Once> file, we'll put the following code:
 
     <%init>
     $COLUMN_MAP->{'NumberOfMessages'} = {
-            title     => 'Messages', # loc
+            title     => 'Messages',
             attribute => 'Messages',
             value     => sub {
                 my $ticket = shift;
@@ -110,8 +110,6 @@ The parameters in the hashref are as follows:
 =item title
 
 The title is what will be used in the header row to identify this value.
-The C<# loc> is some special markup that allows RT to replace the value
-with translations in other languages, if they are available.
 
 =item attribute
 
