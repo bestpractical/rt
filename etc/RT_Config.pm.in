@@ -927,12 +927,13 @@ Set(@CustomFieldValuesCanonicalizers, qw(
 
 =item C<%CustomFieldGroupings>
 
-This option affects the display of ticket and user custom fields in the
-web interface. It does not address the sorting of custom fields within
-the groupings; which is controlled by the Ticket Custom Fields tab in
-Queue Configuration in the Admin UI.
+This option affects the display of ticket, user, and asset custom fields
+in the web interface. It does not address the sorting of custom fields within
+the groupings; that ordering is controlled by the Ticket Custom Fields tab in
+Queue configuration in the Admin UI. Asset custom field ordering is
+found in the Asset Custom Fields tab in Catalog configuration.
 
-A nested datastructure defines how to group together custom fields
+A nested data structure defines how to group together custom fields
 under a mix of built-in and arbitrary headings ("groupings").
 
 Set C<%CustomFieldGroupings> to a nested structure similar to the following:
@@ -945,6 +946,10 @@ Set C<%CustomFieldGroupings> to a nested structure similar to the following:
         ],
         'RT::User' => [
             'Phones' => ['Fax number'],
+        ],
+        'RT::Asset' => [
+            'Asset Details' => ['Serial Number', 'Manufacturer', 'Type', 'Tracking Number'],
+            'Dates'         => ['Support Expiration', 'Issue Date'],
         ],
     );
 
