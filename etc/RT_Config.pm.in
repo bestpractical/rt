@@ -1013,6 +1013,81 @@ For C<RT::Asset>: C<Basics>, C<Dates>, C<People>, C<Links>
 Extensions may also add their own built-in groupings, refer to the individual
 extension documentation for those.
 
+=item C<%CustomDateRanges>
+
+This option lets you declare additional date ranges to be calculated
+and displayed in search results. Durations between any two core fields,
+as well as custom fields, are supported. Each custom date range is
+added as an additional display column in the search builder.
+
+Set C<%CustomDateRanges> to a nested structure similar to the following:
+
+    Set(%CustomDateRanges,
+        'RT::Ticket' => {
+            'Resolution Time' => 'Resolved - Created',
+
+            'Downtime' => 'CF.Recovered - CF.{First Alert}',
+
+            'Time To Beta' => {
+                value => 'CF.Beta - now',
+
+                format => sub {
+                    my ($duration, $beta, $now, $ticket) = @_;
+                    my $days = int($duration / (24*60*60));
+                    if ($days < 0) {
+                        $ticket->loc('[quant,_1,day,days] ago', -$days);
+                    }
+                    else {
+                        $ticket->loc('in [quant,_1,day,days]', $days);
+                    }
+                },
+            },
+        },
+    );
+
+The first level keys are record types. Each record type's value must be a
+hash reference. Each pair in the second-level hash defines a new range. The
+key is the range's name (which is displayed to users in the UI), and its
+value describes the range and must be either a string or a hashref.
+
+Values that are plain strings simply describe the calculation to be made.
+
+Values that are hashrefs must include the key C<value> which must a string
+that describes the calculation to be made. This hashref may also include the
+key C<format>, which is a code reference that allows customization of how
+the duration is displayed to users. This code reference receives four
+parameters: the duration (a number of seconds), the end time (an L<RT::Date>
+object), the start time (another L<RT::Date>), and the record itself (which
+corresponds to the first-level key; in the example config above, it would be
+the L<RT::Ticket> object). The code reference should return the string to
+be displayed to the user.
+
+The calculation is expected to be of the format C<"field - field"> where each
+field may be:
+
+=over 4
+
+=item * a core field
+
+For example, L<RT::Ticket> supports: created, starts, started, last updated,
+told or last contact, due, resolved.
+
+=item * a custom field
+
+You may use either C<CF.Name> or C<CF.{Longer Name}> syntax.
+
+=item * the word C<now>
+
+=back
+
+Custom date range calculations are defined using typical math operators with
+a space before and after. Subtraction (-) is currently supported.
+
+If either field is unset, nothing will be displayed for that record (and the
+C<format> code reference will not be called). If you need additional control
+over how results are calculated, see
+L<docs/customizing/search_result_columns.pod>.
+
 =item C<$CanonicalizeRedirectURLs>
 
 Set C<$CanonicalizeRedirectURLs> to 1 to use C<$WebURL> when
