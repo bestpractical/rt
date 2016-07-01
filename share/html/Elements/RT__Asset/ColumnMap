@@ -112,6 +112,16 @@ my $COLUMN_MAP = {
         }
     },
 };
+
+my %ranges = %{ RT->Config->Get('CustomDateRanges')->{'RT::Asset'} || {} };
+for my $name (keys %ranges) {
+    $COLUMN_MAP->{$name} = {
+        title => $name,
+        value => sub {
+            $_[0]->CustomDateRange($name, $ranges{$name});
+        },
+    };
+}
 </%ONCE>
 <%init>
 $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
