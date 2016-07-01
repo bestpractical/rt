@@ -251,7 +251,7 @@ similar to those above.  Address questions about the stable release to
 the rt-users list, and questions about the development version to the
 rt-devel list.
 
-The RT wiki, at http://requesttracker.wikia.com/ , is also a potential
+The RT wiki, at https://rt-wiki.bestpractical.com, is also a potential
 resource.
 
 
@@ -262,7 +262,7 @@ If you believe you've discovered a security issue in RT, please send an
 email to <security@bestpractical.com> with a detailed description of the
 issue, and a secure means to respond to you (such as your PGP public
 key).  You can find our PGP key and fingerprint at
-http://bestpractical.com/security/
+https://bestpractical.com/security/
 
 
 BUGS
