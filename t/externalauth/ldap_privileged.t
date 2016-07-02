@@ -47,6 +47,7 @@ RT->Config->Set(
         },
     }
 );
+RT->Config->PostLoadCheck;
 
 my ( $baseurl, $m ) = RT::Test->started_ok();
 
