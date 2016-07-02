@@ -55,7 +55,6 @@ $ldap->add(
     ],
 );
 
-#RT->Config->Set( Plugins                     => 'RT::Authen::ExternalAuth' );
 RT->Config->Set( ExternalAuthPriority        => ['My_LDAP'] );
 RT->Config->Set( ExternalInfoPriority        => ['My_LDAP'] );
 RT->Config->Set( AutoCreateNonExternalUsers  => 0 );
@@ -80,6 +79,7 @@ RT->Config->Set(
         },
     }
 );
+RT->Config->PostLoadCheck;
 
 my ( $baseurl, $m ) = RT::Test->started_ok();
 
