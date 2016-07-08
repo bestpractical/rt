@@ -1670,6 +1670,15 @@ you will have no access to Articles.
 
 Set($HideArticleSearchOnReplyCreate, 0);
 
+=item C<$LinkArticlesOnInclude>
+
+Set this to 0 to suppress the default behavior of automatically linking
+to Articles when they are included in a message.
+
+=cut
+
+Set($LinkArticlesOnInclude, 1);
+
 =back
 
 
