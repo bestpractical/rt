@@ -615,6 +615,7 @@ sub error {
 }
 
 sub get_dba_password {
+    return "" if $db_type eq 'SQLite';
     print "In order to create or update your RT database,"
         . " this script needs to connect to your "
         . " $db_type instance on $db_host (port '$db_port') as $dba_user\n";
