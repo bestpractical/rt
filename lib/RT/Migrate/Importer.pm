@@ -125,10 +125,24 @@ sub Import {
     die "Abstract base class; use RT::Migrate::Importer::File";
 }
 
+=head2 Metadata
+
+Returns metadata (e.g. C<Organization>, C<Clone>, C<Incremental>) about the import
+stream as a hash reference.
+
+=cut
+
 sub Metadata {
     my $self = shift;
     return $self->{Metadata};
 }
+
+=head2 LoadMetadata C<DATA>
+
+Reads important metadata from the import stream from C<DATA> and validates
+that its version is compatible. See L</Metadata>.
+
+=cut
 
 sub LoadMetadata {
     my $self = shift;
@@ -145,6 +159,12 @@ sub LoadMetadata {
     $self->{Incremental}  = $data->{Incremental};
     $self->{Files}        = $data->{Files} if $data->{Final};
 }
+
+=head2 InitStream
+
+Sets up the initial state to begin importing data.
+
+=cut
 
 sub InitStream {
     my $self = shift;
@@ -219,7 +239,7 @@ sub Resolve {
 =head2 Lookup C<UID>
 
 Returns an array reference of C<[ CLASS, ID ]> if the C<UID> has been
-resolved, or undefined if it has been to be created locally.
+resolved, or undefined if it has not yet been created locally.
 
 =cut
 
@@ -269,14 +289,22 @@ When the C<for> UID is resolved, the object with this UID (which must be
 resolved prior to the C<Postpone> call) will be updated using
 information from C<for>.
 
-=item C<column>, C<classcolumn>, or C<uri>
+=item C<column>, C<classcolumn>, C<uri>, or C<method>
 
-One or more of these must be specified, and determine how the C<uid>
-object is updated with the C<for> object's information.  The C<uid>
-object's C<column> will be set to the C<for> object's id.  The C<uid>
-object's column named C<classcolumn> will be set to the C<for> object's
-class.  The C<uid> object's column named C<uri> will be set to the
-internal URI of the C<for> object.
+One or more of these must be specified, and determine how the C<uid> object is
+updated with the C<for> object's information.
+
+The C<uid> object's C<column> will be set to the C<for> object's id.
+
+The C<uid> object's column named C<classcolumn> will be set to the C<for>
+object's class.
+
+The C<uid> object's column named C<uri> will be set to the internal URI of the
+C<for> object.
+
+The method named by C<method> will be called on the C<uid> object, passing
+parameters for this importer instance, the hashref of arguments passed to
+L</Postpone>, the C<for> object's class, and the C<for> object's id.
 
 =back
 
@@ -305,6 +333,16 @@ sub Postpone {
     }
 }
 
+=head2 SkipTransactions C<UID>
+
+Flags this C<UID> such that transactions on this record should not be
+imported. This is typically used for duplicate records (e.g. users, groups,
+L<RT::System>) since we use the original record.
+
+This has no effect for clones, as we want a pristine copy.
+
+=cut
+
 sub SkipTransactions {
     my $self = shift;
     my ($uid) = @_;
@@ -312,11 +350,25 @@ sub SkipTransactions {
     $self->{SkipTransactions}{$uid} = 1;
 }
 
+=head2 ShouldSkipTransaction C<UID>
+
+Returns a boolean indicating whether L</SkipTransactions> has been invoked for
+this C<UID>.
+
+=cut
+
 sub ShouldSkipTransaction {
     my $self = shift;
     my ($uid) = @_;
     return exists $self->{SkipTransactions}{$uid};
 }
+
+=head2 MergeValues C<OBJECT>, C<DATA>
+
+Updates each unset column in C<OBJECT> with each value in C<DATA>. Any
+references will be resolved, if needed, using L</Postpone>.
+
+=cut
 
 sub MergeValues {
     my $self = shift;
@@ -343,6 +395,15 @@ sub MergeValues {
     }
 }
 
+=head2 SkipBy C<COLUMN>, C<CLASS>, C<UID>, C<DATA>
+
+This is used to skip records that already exist. If there is an instance of
+C<CLASS> whose value for C<COLUMN> is the same as what is in C<DATA>, then
+the existing record is used instead of the record being imported. No values
+are merged into the existing record; for that, see L</MergeBy>.
+
+=cut
+
 sub SkipBy {
     my $self = shift;
     my ($column, $class, $uid, $data) = @_;
@@ -357,6 +418,15 @@ sub SkipBy {
     return $obj;
 }
 
+=head2 MergeBy C<COLUMN>, C<CLASS>, C<UID>, C<DATA>
+
+This is used to skip records that already exist. If there is an instance of
+C<CLASS> whose value for C<COLUMN> is the same as what is in C<DATA>, then
+the existing record is used instead of the record being imported. Values
+from C<DATA> are merged into the existing record.
+
+=cut
+
 sub MergeBy {
     my $self = shift;
     my ($column, $class, $uid, $data) = @_;
@@ -367,6 +437,18 @@ sub MergeBy {
     return 1;
 }
 
+=head2 Qualify C<NAME>
+
+Returns the passed-in name with the organization and a colon prepended, if
+needed. The name is instead returned as-is for clones, imports without an
+organization, imports with C<--exclude-organization>, or imports where the
+organization is the same as the current RT.
+
+This is meant to disambiguate records (e.g. queues) that would otherwise
+violate uniqueness constraints.
+
+=cut
+
 sub Qualify {
     my $self = shift;
     my ($string) = @_;
@@ -376,6 +458,15 @@ sub Qualify {
     return $string if $self->{Organization} eq $RT::Organization;
     return $self->{Organization}.": $string";
 }
+
+=head2 Create C<CLASS>, C<UID>, C<DATA>
+
+Creates a record of class C<CLASS> for identifier C<UID> using the provided
+C<DATA>. This will invoke the record's PreInflate and PostInflate for
+massaging data before and after creation. As part of this process,
+L</Resolve> will be invoked to finalize the class and id for this C<UID>.
+
+=cut
 
 sub Create {
     my $self = shift;
@@ -419,10 +510,19 @@ sub Create {
     return $obj;
 }
 
+=head2 ReadStream C<FH>
+
+Takes a L<Storable>-encoded stream and imports the
+L<RT::Migrate::Serializer>-generated records from it.
+
+=cut
+
 sub ReadStream {
     my $self = shift;
     my ($fh) = @_;
 
+    # simplify the ticket load process to avoid loading the wrong ticket due
+    # to merges
     no warnings 'redefine';
     local *RT::Ticket::Load = sub {
         my $self = shift;
@@ -440,6 +540,7 @@ sub ReadStream {
         return;
     }
 
+    # Data files are stored as arrayrefs
     my ($class, $uid, $data) = @{$loaded};
 
     if ($self->{Incremental}) {
@@ -504,6 +605,13 @@ sub ReadStream {
     $self->{Progress}->($obj) if $self->{Progress};
 }
 
+=head2 CloseStream
+
+Finalizes this import; serves to update imported CFs that were global to
+instead be applied only to the newly-imported queues.
+
+=cut
+
 sub CloseStream {
     my $self = shift;
 
@@ -522,17 +630,37 @@ sub CloseStream {
     $self->{NewCFs} = [];
 }
 
+=head2 ObjectCount
+
+Returns a hash mapping each class to the number of imported objects of that
+class. This may be called midstream to see how much progress has been made.
+
+=cut
 
 sub ObjectCount {
     my $self = shift;
     return %{ $self->{ObjectCount} };
 }
 
+=head2 Missing
+
+Returns the list of not-yet imported UIDs which are required for other
+objects using L</Postpone>.
+
+=cut
+
 sub Missing {
     my $self = shift;
     return wantarray ? sort keys %{ $self->{Pending} }
         : keys %{ $self->{Pending} };
 }
+
+=head2 Invalid
+
+Returns the list of objects missing from the source database before
+serialization.
+
+=cut
 
 sub Invalid {
     my $self = shift;
@@ -542,7 +670,7 @@ sub Invalid {
 
 =head2 Organization
 
-Returns the organization the serialized data was read 
+Returns the organization from the RT which generated the serialized data.
 
 =cut
 
