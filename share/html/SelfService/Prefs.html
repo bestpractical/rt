@@ -68,10 +68,12 @@
 </td>
 <td valign="top">
 <&| /Widgets/TitleBox, title => loc('Change password')  &>
+% if ( $user->__Value('Password') ne '*NO-PASSWORD*' ) {
 <& /Elements/EditPassword,
     User => $user,
     Name => [qw(CurrentPass NewPass1 NewPass2)],
 &>
+% }
 </&>
 
 </td></tr></table>
