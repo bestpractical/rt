@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 34;
+use RT::Test::Shredder tests => 35;
 my $test = "RT::Test::Shredder";
 
 ### nested membership check
@@ -38,8 +38,21 @@ my $test = "RT::Test::Shredder";
         $members->Limit( FIELD => 'GroupId', VALUE => $cgid );
         is( $members->Count, 1, "find membership record" );
 
+        my $transactions = RT::Transactions->new(RT->SystemUser);
+        $transactions->_OpenParen('member');
+        $transactions->Limit( SUBCLAUSE => 'member', FIELD => 'Type', VALUE => 'AddMember');
+        $transactions->Limit( SUBCLAUSE => 'member', FIELD => 'Field', VALUE => $user->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
+        $transactions->Limit( SUBCLAUSE => 'member', FIELD => 'ObjectId', VALUE => $cgroup->id, ENTRYAGGREGATOR => 'AND' );
+        $transactions->_CloseParen('member');
+        $transactions->_OpenParen('member');
+        $transactions->Limit( SUBCLAUSE => 'member', FIELD => 'Type', VALUE => 'AddMembership');
+        $transactions->Limit( SUBCLAUSE => 'member', FIELD => 'Field', VALUE => $cgroup->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
+        $transactions->Limit( SUBCLAUSE => 'member', FIELD => 'ObjectId', VALUE => $user->id, ENTRYAGGREGATOR => 'AND' );
+        $transactions->_CloseParen('member');
+        is( $transactions->Count, 2, "find membership transaction records" );
+
         my $shredder = $test->shredder_new();
-        $shredder->PutObjects( Objects => $members );
+        $shredder->PutObjects( Objects => [$members, $transactions] );
         $shredder->WipeoutAll();
         $test->db_is_valid;
         cmp_deeply( $test->dump_current_and_savepoint('buadd'), "current DB equal to savepoint");

@@ -53,7 +53,7 @@
 <table>
 
 <tr>
-<th>&nbsp;</th>
+<th><input type="checkbox" name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-/)" /></th>
 <th><&|/l&>Sort</&></th>
 <th><&|/l&>Name</&></th>
 <th><&|/l&>Description</&></th>

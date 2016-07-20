@@ -330,23 +330,42 @@ our %META;
             Description => 'Place signature above quote', #loc
         },
     },
+    RefreshIntervals => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my @intervals = $self->Get('RefreshIntervals');
+            if (grep { $_ == 0 } @intervals) {
+                $RT::Logger->warning("Please do not include a 0 value in RefreshIntervals, as that default is already added for you.");
+            }
+        },
+    },
     SearchResultsRefreshInterval => {
         Section         => 'General',                       #loc
         Overridable     => 1,
         SortOrder       => 9,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Search results refresh interval',                            #loc
-            Values      => [qw(0 120 300 600 1200 3600 7200)],
-            ValuesLabel => {
-                0 => "Don't refresh search results.",                      #loc
-                120 => "Refresh search results every 2 minutes.",          #loc
-                300 => "Refresh search results every 5 minutes.",          #loc
-                600 => "Refresh search results every 10 minutes.",         #loc
-                1200 => "Refresh search results every 20 minutes.",        #loc
-                3600 => "Refresh search results every 60 minutes.",        #loc
-                7200 => "Refresh search results every 120 minutes.",       #loc
-            },  
+            Description => 'Search results refresh interval', #loc
+            Callback    => sub {
+                my @values = RT->Config->Get('RefreshIntervals');
+                my %labels = (
+                    0 => "Don't refresh search results.", # loc
+                );
+
+                for my $value (@values) {
+                    if ($value % 60 == 0) {
+                        $labels{$value} = ['Refresh search results every [quant,_1,minute,minutes].', $value / 60]; # loc
+                    }
+                    else {
+                        $labels{$value} = ['Refresh search results every [quant,_1,second,seconds].', $value]; # loc
+                    }
+                }
+
+                unshift @values, 0;
+
+                return { Values => \@values, ValuesLabel => \%labels };
+            },
         },  
     },
 
@@ -358,16 +377,25 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Home page refresh interval',                #loc
-            Values      => [qw(0 120 300 600 1200 3600 7200)],
-            ValuesLabel => {
-                0 => "Don't refresh home page.",                  #loc
-                120 => "Refresh home page every 2 minutes.",      #loc
-                300 => "Refresh home page every 5 minutes.",      #loc
-                600 => "Refresh home page every 10 minutes.",     #loc
-                1200 => "Refresh home page every 20 minutes.",    #loc
-                3600 => "Refresh home page every 60 minutes.",    #loc
-                7200 => "Refresh home page every 120 minutes.",   #loc
-            },  
+            Callback    => sub {
+                my @values = RT->Config->Get('RefreshIntervals');
+                my %labels = (
+                    0 => "Don't refresh home page.", # loc
+                );
+
+                for my $value (@values) {
+                    if ($value % 60 == 0) {
+                        $labels{$value} = ['Refresh home page every [quant,_1,minute,minutes].', $value / 60]; # loc
+                    }
+                    else {
+                        $labels{$value} = ['Refresh home page every [quant,_1,second,seconds].', $value]; # loc
+                    }
+                }
+
+                unshift @values, 0;
+
+                return { Values => \@values, ValuesLabel => \%labels };
+            },
         },  
     },
 

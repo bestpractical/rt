@@ -996,6 +996,19 @@ sub _AddMember {
             unless $ok;
     }
 
+    # Record transactions for UserDefined groups
+    if ($args{RecordTransaction} && $self->Domain eq 'UserDefined') {
+        $new_member_obj->Object->_NewTransaction(
+            Type  => 'AddMembership',
+            Field => $self->PrincipalObj->id,
+        );
+
+        $self->_NewTransaction(
+            Type  => 'AddMember',
+            Field => $new_member,
+        );
+    }
+
     # Record an Add/SetWatcher txn on the object if we're a role group
     if ($args{RecordTransaction} and $self->RoleClass) {
         my $obj = $args{Object} || $self->RoleGroupObject;
@@ -1199,6 +1212,19 @@ sub _DeleteMember {
             my $obj = $args{Object} || $self->RoleGroupObject;
             $obj->_NewTransaction(%txn);
         }
+    }
+
+    # Record transactions for UserDefined groups
+    if ($args{RecordTransaction} && $self->Domain eq 'UserDefined') {
+        $member_obj->MemberObj->Object->_NewTransaction(
+            Type  => 'DeleteMembership',
+            Field => $self->PrincipalObj->id,
+        );
+
+        $self->_NewTransaction(
+            Type  => 'DeleteMember',
+            Field => $member_id,
+        );
     }
 
     return ( $val, $self->loc("Member deleted") );
@@ -1581,6 +1607,12 @@ sub __DependsOn {
     );
     push( @$list, $objs );
 
+# Cleanup group's membership transactions
+    $objs = RT::Transactions->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Type', OPERATOR => 'IN', VALUE => ['AddMember', 'DeleteMember'] );
+    $objs->Limit( FIELD => 'Field', VALUE => $self->PrincipalObj->id, ENTRYAGGREGATOR => 'AND' );
+    push( @$list, $objs );
+
     $deps->_PushDependencies(
         BaseObject => $self,
         Flags => RT::Shredder::Constants::DEPENDS_ON,
@@ -1636,13 +1668,12 @@ sub PreInflate {
         return;
     };
 
-    # Go looking for the pre-existing version of the it
+    # Go looking for the pre-existing version of it
     if ($data->{Domain} eq "ACLEquivalence") {
         $obj->LoadACLEquivalenceGroup( $data->{Instance} );
         return $duplicated->() if $obj->Id;
 
-        # Update the name and description for the new ID
-        $data->{Name} = 'User '. $data->{Instance};
+        # Update description for the new ID
         $data->{Description} = 'ACL equiv. for user '.$data->{Instance};
     } elsif ($data->{Domain} eq "UserDefined") {
         $data->{Name} = $importer->Qualify($data->{Name});
