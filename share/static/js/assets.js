@@ -34,6 +34,25 @@ jQuery(function() {
             showModal
         );
     });
+    jQuery("#bulk-update-create-linked-ticket").click(function(ev){
+        ev.preventDefault();
+        var chkArray = [];
+
+        jQuery("input[name='UpdateAsset']:checked").each(function() {
+            chkArray.push(jQuery(this).val());
+        });
+
+        var selected = '';
+        for (var i = 0; i < chkArray.length; i++) {
+            selected += 'Asset=' + chkArray[i] + '&';
+        }
+        /* selected = chkArray.join(','); */
+        var url = RT.Config.WebHomePath + '/Asset/Helpers/CreateLinkedTicket?' + selected;
+        jQuery.post(
+            url,
+            showModal
+        );
+    });
     jQuery("#assets-create").click(function(ev){
         ev.preventDefault();
         jQuery.get(

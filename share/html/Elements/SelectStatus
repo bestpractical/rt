@@ -94,7 +94,7 @@ if ( @Statuses ) {
     }
 
     if (not keys %statuses_by_lifecycle) {
-        for my $lifecycle (map { RT::Lifecycle->Load($_) } RT::Lifecycle->List($Type)) {
+        for my $lifecycle (map { RT::Lifecycle->Load(Type => $Type, Name => $_) } RT::Lifecycle->List($Type)) {
             $statuses_by_lifecycle{$lifecycle->Name} = [ $lifecycle->Valid ];
         }
     }

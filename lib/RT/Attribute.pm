@@ -632,6 +632,65 @@ sub FindDependencies {
 
     $self->SUPER::FindDependencies($walker, $deps);
     $deps->Add( out => $self->Object );
+
+    # dashboards in menu attribute has dependencies on each of its dashboards
+    if ($self->Name eq RT::User::_PrefName("DashboardsInMenu")) {
+        my $content = $self->Content;
+        for my $pane (values %{ $content || {} }) {
+            for my $dash_id (@$pane) {
+                my $attr = RT::Attribute->new($self->CurrentUser);
+                $attr->LoadById($dash_id);
+                $deps->Add( out => $attr );
+            }
+        }
+    }
+    # homepage settings attribute has dependencies on each of the searches in it
+    elsif ($self->Name eq RT::User::_PrefName("HomepageSettings")) {
+        my $content = $self->Content;
+        for my $pane (values %{ $content || {} }) {
+            for my $component (@$pane) {
+                # this hairy code mirrors what's in the saved search loader
+                # in /Elements/ShowSearch
+                if ($component->{type} eq 'saved') {
+                    if ($component->{name} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/) {
+                        my $attr = RT::Attribute->new($self->CurrentUser);
+                        $attr->LoadById($3);
+                        $deps->Add( out => $attr );
+                    }
+                }
+                elsif ($component->{type} eq 'system') {
+                    my ($search) = RT::System->new($self->CurrentUser)->Attributes->Named( 'Search - ' . $component->{name} );
+                    unless ( $search && $search->Id ) {
+                        my (@custom_searches) = RT::System->new($self->CurrentUser)->Attributes->Named('SavedSearch');
+                        foreach my $custom (@custom_searches) {
+                            if ($custom->Description eq $component->{name}) { $search = $custom; last }
+                        }
+                    }
+                    $deps->Add( out => $search ) if $search;
+                }
+            }
+        }
+    }
+    # dashboards have dependencies on all the searches and dashboards they use
+    elsif ($self->Name eq 'Dashboard') {
+        my $content = $self->Content;
+        for my $pane (values %{ $content->{Panes} || {} }) {
+            for my $component (@$pane) {
+                if ($component->{portlet_type} eq 'search' || $component->{portlet_type} eq 'dashboard') {
+                    my $attr = RT::Attribute->new($self->CurrentUser);
+                    $attr->LoadById($component->{id});
+                    $deps->Add( out => $attr );
+                }
+            }
+        }
+    }
+    # each subscription depends on its dashboard
+    elsif ($self->Name eq 'Subscription') {
+        my $content = $self->Content;
+        my $attr = RT::Attribute->new($self->CurrentUser);
+        $attr->LoadById($content->{DashboardId});
+        $deps->Add( out => $attr );
+    }
 }
 
 sub PreInflate {
@@ -640,9 +699,218 @@ sub PreInflate {
 
     if ($data->{Object} and ref $data->{Object}) {
         my $on_uid = ${ $data->{Object} };
-        return if $importer->ShouldSkipTransaction($on_uid);
+
+        # skip attributes of objects we're not inflating
+        # exception: we don't inflate RT->System, but we want RT->System's searches
+        unless ($on_uid eq RT->System->UID && $data->{Name} =~ /Search/) {
+            return if $importer->ShouldSkipTransaction($on_uid);
+        }
     }
+
     return $class->SUPER::PreInflate( $importer, $uid, $data );
+}
+
+# this method will be called repeatedly to fix up this attribute's contents
+# (a list of searches, dashboards) during the import process, as the
+# ordinary dependency resolution system can't quite handle the subtlety
+# involved (e.g. a user simply declares out-dependencies on all of her
+# attributes, but those attributes (e.g. dashboards, saved searches,
+# dashboards in menu preferences) have dependencies amongst themselves).
+# if this attribute (e.g. a user's dashboard) fails to load an attribute
+# (e.g. a user's saved search) then it postpones and repeats the postinflate
+# process again when that user's saved search has been imported
+# this method updates Content each time through, each time getting closer and
+# closer to the fully inflated attribute
+sub PostInflateFixup {
+    my $self     = shift;
+    my $importer = shift;
+    my $spec     = shift;
+
+    # decode UIDs to be raw dashboard IDs
+    if ($self->Name eq RT::User::_PrefName("DashboardsInMenu")) {
+        my $content = $self->Content;
+
+        for my $pane (values %{ $content || {} }) {
+            for (@$pane) {
+                if (ref($_) eq 'SCALAR') {
+                    my $attr = $importer->LookupObj($$_);
+                    if ($attr) {
+                        $_ = $attr->Id;
+                    }
+                    else {
+                        $importer->Postpone(
+                            for    => $$_,
+                            uid    => $spec->{uid},
+                            method => 'PostInflateFixup',
+                        );
+                    }
+                }
+            }
+        }
+        $self->SetContent($content);
+    }
+    # decode UIDs to be saved searches
+    elsif ($self->Name eq RT::User::_PrefName("HomepageSettings")) {
+        my $content = $self->Content;
+
+        for my $pane (values %{ $content || {} }) {
+            for (@$pane) {
+                if (ref($_->{uid}) eq 'SCALAR') {
+                    my $uid = $_->{uid};
+                    my $attr = $importer->LookupObj($$uid);
+
+                    if ($attr) {
+                        if ($_->{type} eq 'saved') {
+                            $_->{name} = join '-', $attr->ObjectType, $attr->ObjectId, 'SavedSearch', $attr->id;
+                        }
+                        # if type is system, name doesn't need to change
+                        # if type is anything else, pass it through as is
+                        delete $_->{uid};
+                    }
+                    else {
+                        $importer->Postpone(
+                            for    => $$uid,
+                            uid    => $spec->{uid},
+                            method => 'PostInflateFixup',
+                        );
+                    }
+                }
+            }
+        }
+        $self->SetContent($content);
+    }
+    elsif ($self->Name eq 'Dashboard') {
+        my $content = $self->Content;
+
+        for my $pane (values %{ $content->{Panes} || {} }) {
+            for (@$pane) {
+                if (ref($_->{uid}) eq 'SCALAR') {
+                    my $uid = $_->{uid};
+                    my $attr = $importer->LookupObj($$uid);
+
+                    if ($attr) {
+                        # update with the new id numbers assigned to us
+                        $_->{id} = $attr->Id;
+                        $_->{privacy} = join '-', $attr->ObjectType, $attr->ObjectId;
+                        delete $_->{uid};
+                    }
+                    else {
+                        $importer->Postpone(
+                            for    => $$uid,
+                            uid    => $spec->{uid},
+                            method => 'PostInflateFixup',
+                        );
+                    }
+                }
+            }
+        }
+        $self->SetContent($content);
+    }
+    elsif ($self->Name eq 'Subscription') {
+        my $content = $self->Content;
+        if (ref($content->{DashboardId}) eq 'SCALAR') {
+            my $attr = $importer->LookupObj(${ $content->{DashboardId} });
+            if ($attr) {
+                $content->{DashboardId} = $attr->Id;
+            }
+            else {
+                $importer->Postpone(
+                    for    => ${ $content->{DashboardId} },
+                    uid    => $spec->{uid},
+                    method => 'PostInflateFixup',
+                );
+            }
+        }
+        $self->SetContent($content);
+    }
+}
+
+sub PostInflate {
+    my $self = shift;
+    my ($importer, $uid) = @_;
+
+    $self->SUPER::PostInflate( $importer, $uid );
+
+    # this method is separate because it needs to be callable multple times,
+    # and we can't guarantee that SUPER::PostInflate can deal with that
+    $self->PostInflateFixup($importer, { uid => $uid });
+}
+
+sub Serialize {
+    my $self = shift;
+    my %args = (@_);
+    my %store = $self->SUPER::Serialize(@_);
+
+    # encode raw dashboard IDs to be UIDs
+    if ($store{Name} eq RT::User::_PrefName("DashboardsInMenu")) {
+        my $content = $self->_DeserializeContent($store{Content});
+        for my $pane (values %{ $content || {} }) {
+            for (@$pane) {
+                my $attr = RT::Attribute->new($self->CurrentUser);
+                $attr->LoadById($_);
+                $_ = \($attr->UID);
+            }
+        }
+        $store{Content} = $self->_SerializeContent($content);
+    }
+    # encode saved searches to be UIDs
+    elsif ($store{Name} eq RT::User::_PrefName("HomepageSettings")) {
+        my $content = $self->_DeserializeContent($store{Content});
+        for my $pane (values %{ $content || {} }) {
+            for (@$pane) {
+                # this hairy code mirrors what's in the saved search loader
+                # in /Elements/ShowSearch
+                if ($_->{type} eq 'saved') {
+                    if ($_->{name} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/) {
+                        my $attr = RT::Attribute->new($self->CurrentUser);
+                        $attr->LoadById($3);
+                        $_->{uid} = \($attr->UID);
+                    }
+                    # if we can't parse the name, just pass it through
+                }
+                elsif ($_->{type} eq 'system') {
+                    my ($search) = RT::System->new($self->CurrentUser)->Attributes->Named( 'Search - ' . $_->{name} );
+                    unless ( $search && $search->Id ) {
+                        my (@custom_searches) = RT::System->new($self->CurrentUser)->Attributes->Named('SavedSearch');
+                        foreach my $custom (@custom_searches) {
+                            if ($custom->Description eq $_->{name}) { $search = $custom; last }
+                        }
+                    }
+                    # if we can't load the search, just pass it through
+                    if ($search) {
+                        $_->{uid} = \($search->UID);
+                    }
+                }
+                # pass through everything else (e.g. component)
+            }
+        }
+        $store{Content} = $self->_SerializeContent($content);
+    }
+    # encode saved searches and dashboards to be UIDs
+    elsif ($store{Name} eq 'Dashboard') {
+        my $content = $self->_DeserializeContent($store{Content}) || {};
+        for my $pane (values %{ $content->{Panes} || {} }) {
+            for (@$pane) {
+                if ($_->{portlet_type} eq 'search' || $_->{portlet_type} eq 'dashboard') {
+                    my $attr = RT::Attribute->new($self->CurrentUser);
+                    $attr->LoadById($_->{id});
+                    $_->{uid} = \($attr->UID);
+                }
+                # pass through everything else (e.g. component)
+            }
+        }
+        $store{Content} = $self->_SerializeContent($content);
+    }
+    # encode subscriptions to have dashboard UID
+    elsif ($store{Name} eq 'Subscription') {
+        my $content = $self->_DeserializeContent($store{Content});
+        my $attr = RT::Attribute->new($self->CurrentUser);
+        $attr->LoadById($content->{DashboardId});
+        $content->{DashboardId} = \($attr->UID);
+        $store{Content} = $self->_SerializeContent($content);
+    }
+
+    return %store;
 }
 
 RT::Base->_ImportOverlays();

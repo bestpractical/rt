@@ -141,7 +141,8 @@ jQuery( function() {
 
         var Payload = {
             id: <% $Ticket->id %>,
-            seconds: CommittedSeconds
+            seconds: CommittedSeconds,
+            comment: jQuery('#Comment').val()
         };
 
         Readout.text('<% loc("Submitting") %>');
@@ -204,6 +205,17 @@ jQuery( function() {
             <a href="#" class="submit-time"><img src="<% RT->Config->Get('WebPath') %>/static/images/submit.png" alt="<% loc('Submit Timer') %>" title="<% loc('Submit Timer') %>" /></a>
             <a href="#" class="close-popup hidden"><img src="<% RT->Config->Get('WebPath') %>/static/images/close.png" alt="<% loc('Close Window') %>" title="<% loc('Close Window') %>" /></a>
         </div>
+
+        <& /Elements/MessageBox,
+            Name => 'Comment',
+            Type => 'text/plain',
+            Height => 3,
+            Width => undef, # sets width:100% CSS
+            Placeholder => loc('Comments for the ticket'),
+            SuppressAttachmentWarning => 1,
+            IncludeSignature => 0,
+            IncludeArticle => 0,
+        &>
     </div>
 
     <div class="extra"><&|/l, $Now->AsString &>Started at [_1].</&></div>

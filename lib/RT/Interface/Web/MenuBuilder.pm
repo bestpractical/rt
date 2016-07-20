@@ -615,7 +615,7 @@ sub BuildMainNav {
     }
 
     # due to historical reasons of always having been in /Elements/Tabs
-    $HTML::Mason::Commands::m->callback( CallbackName => 'Privileged', Path => $request_path, CallbackPage => '/Elements/Tabs' );
+    $HTML::Mason::Commands::m->callback( CallbackName => 'Privileged', Path => $request_path, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
 }
 
 sub _BuildAssetMenu {
@@ -1221,7 +1221,7 @@ sub BuildSelfServiceNav {
     }
 
     # due to historical reasons of always having been in /Elements/Tabs
-    $HTML::Mason::Commands::m->callback( CallbackName => 'SelfService', Path => $request_path, CallbackPage => '/Elements/Tabs' );
+    $HTML::Mason::Commands::m->callback( CallbackName => 'SelfService', Path => $request_path, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
 }
 
 1;

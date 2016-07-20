@@ -45,54 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%ARGS>
-$id
-$seconds => 0
-$comment => undef
-</%ARGS>
+<&| /Widgets/TitleBox, title => loc('Quick asset creation'), class => "user create-asset" &>
+<form action="<% RT->Config->Get("WebPath") %>/Asset/Create.html">
+%   for my $key (keys %ARGS) {
+%       next if grep { lc $key eq $_ } qw(user catalog);
+        <input type="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
+%   }
+    <&|/l_unsafe,
+        $m->scomp("/Asset/Elements/SelectCatalog", Default => $ARGS{Catalog}),
+        &>Create a new asset in the catalog [_1]</&>
+    <input type="submit" value="<&|/l&>Create</&>">
+</form>
+</&>
 <%INIT>
-my $Ticket = RT::Ticket->new($session{'CurrentUser'});
-$Ticket->Load( $id );
-
-# round up 30s or more
-my $minutes = int(0.5 + $seconds / 60);
-
-my ($ok, $msg);
-if ($minutes == 0) {
-    # avoid "That is already the current value" error
-    $ok = 1;
-    $msg = loc("Worked [quant,_1,minute,minutes]", 0);
-
-    if ($comment) {
-        my ($comment_ok, $comment_msg) = $Ticket->Comment(Content => $comment);
-        if (!$comment_ok) {
-            ($ok, $msg) = ($comment_ok, $comment_msg);
-        }
-    }
-}
-else {
-    if ($comment) {
-        ($ok, $msg) = $Ticket->Comment(
-            Content   => $comment,
-            TimeTaken => $minutes,
-        );
-    }
-    else {
-        my $total_worked = $Ticket->TimeWorked + $minutes;
-        ($ok, $msg) = $Ticket->SetTimeWorked($total_worked);
-    }
-
-    if ($ok) {
-        if ($minutes < 60) {
-            $msg = loc("Worked [quant,_1,minute,minutes]", $minutes);
-        }
-        else {
-            $msg = loc("Worked [quant,_1,hour,hours] ([quant,_2,minute,minutes])", sprintf("%.2f", $minutes / 60), $minutes);
-        }
-    }
-}
-
-$r->content_type('application/json; charset=utf-8');
-$m->print(JSON({ ok => $ok, msg => $msg }));
-$m->abort;
+my %default_values = ();
+$m->callback( CallbackName => 'ModifyDefaultValues', ARGSRef => \%ARGS );
 </%INIT>
+<%ARGS>
+$User
+</%ARGS>

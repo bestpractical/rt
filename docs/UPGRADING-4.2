@@ -334,4 +334,10 @@ improved search performance, you may wish to drop existing C<tsvector>
 and C<GiST> indexes on C<Attachments>, and re-generate the index using
 C<rt-setup-fulltext-index>.
 
+=head1 UPGRADING FROM 4.2.12 AND EARLIER
+
+New deployments install an C<RT_SiteConfig.pm> that includes a C<use utf8;>
+to allow Unicode to be used in config. You may wish to add a C<use utf8;> to
+the top of your C<RT_SiteConfig.pm> if you haven't already done so.
+
 =cut

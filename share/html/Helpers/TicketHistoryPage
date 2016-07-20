@@ -56,7 +56,12 @@ my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
 $TicketObj->Load($id);
 
 my %extra_args;
-$m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $TicketObj, ExtraArgs => \%extra_args );
+$m->callback(
+    CallbackPage => '/Helpers/TicketHistory',
+    CallbackName => 'ExtraShowHistoryArguments',
+    Ticket => $TicketObj,
+    ExtraArgs => \%extra_args
+);
 
 my $transactions  = $TicketObj->Transactions;
 my $order = $oldestTransactionsFirst ? 'ASC' : 'DESC';

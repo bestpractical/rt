@@ -84,6 +84,8 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 <& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
 % }
 
+% $m->callback( CallbackName => 'AfterChartTable', ARGSRef => \%ARGS );
+
 % if ( ($ChartStyle || '') =~ /\bsql\b/ ) {
 <div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
 % }

@@ -169,10 +169,10 @@ similar custom fields and give them a custom name. If we add the following to
 F<RT_SiteConfig.pm>:
 
     Set(%CustomFieldGroupings,
-        'RT::Asset' => {
+        'RT::Asset' => [
             'Asset Details' => ['Serial Number', 'Manufacturer', 'Type', 'Tracking Number'],
             'Dates'         => ['Support Expiration', 'Issue Date'],
-        },
+        ],
     );
 
 and restart RT, the dates will be tacked on the end of the Dates portlet and we

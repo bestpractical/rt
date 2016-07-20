@@ -45,13 +45,21 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% my $content = $Object->LargeContent || $Object->Content;
-% $content = $m->comp('/Elements/ScrubHTML', Content => $content);
-% my $base = $Object->Object->WikiBase;
-% my $wiki_content = Text::WikiFormat::format( $content."\n" , {}, { extended => 1,  absolute_links => 1, implicit_links => RT->Config->Get('WikiImplicitLinks'), prefix => $base} );
 <%$wiki_content|n%>
 <%init>
+my $content = $Object->LargeContent || $Object->Content;
+$content = $m->comp('/Elements/ScrubHTML', Content => $content);
+my $base = $Object->Object->WikiBase;
+my %wiki_args = (
+    extended => 1,
+    absolute_links => 1,
+    implicit_links => RT->Config->Get('WikiImplicitLinks'),
+    prefix => $base,
+);
+$m->callback( CallbackName => 'WikiFormatArgs', ARGSRef => \%ARGS, WikiArgsRef => \%wiki_args, ContentRef => \$content);
+
 use Text::WikiFormat;
+my $wiki_content = Text::WikiFormat::format( $content."\n" , {}, { %wiki_args } );
 </%init>
 <%ARGS>
 $Object

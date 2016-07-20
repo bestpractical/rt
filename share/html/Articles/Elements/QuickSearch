@@ -48,7 +48,7 @@
 <& /Widgets/TitleBoxStart, title => loc('Quick search') &>
 <ul>
 % while (my $class = $classes->Next) {
-<li><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?Class=<%$class->Name%>&Parent=0&HideOptions=1"><%$class->Name%></a></li>
+<li><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?Class=<%$class->id%>&Parent=0&HideOptions=1"><%$class->Name%></a></li>
 % }
 </ul>
 <& /Widgets/TitleBoxEnd &>

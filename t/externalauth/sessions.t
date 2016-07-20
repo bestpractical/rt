@@ -117,5 +117,6 @@ sub setup_auth_source {
             },
         }
     );
+    RT->Config->PostLoadCheck;
 }
 

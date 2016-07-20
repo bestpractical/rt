@@ -1337,6 +1337,42 @@ sub _CanonicalizeRoleName {
                     $c->Name || $self->loc("~[a hidden catalog~]")
                 } $self->OldValue, $self->NewValue);
     },
+    AddMember => sub {
+        my $self = shift;
+        my $principal = RT::Principal->new($self->CurrentUser);
+        $principal->Load($self->Field);
+
+        if ($principal->IsUser) {
+            return ("Added user '[_1]'", $principal->Object->Name); #loc()
+        }
+        else {
+            return ("Added group '[_1]'", $principal->Object->Name); #loc()
+        }
+    },
+    DeleteMember => sub {
+        my $self = shift;
+        my $principal = RT::Principal->new($self->CurrentUser);
+        $principal->Load($self->Field);
+
+        if ($principal->IsUser) {
+            return ("Removed user '[_1]'", $principal->Object->Name); #loc()
+        }
+        else {
+            return ("Removed group '[_1]'", $principal->Object->Name); #loc()
+        }
+    },
+    AddMembership => sub {
+        my $self = shift;
+        my $principal = RT::Principal->new($self->CurrentUser);
+        $principal->Load($self->Field);
+        return ("Added to group '[_1]'", $principal->Object->Name); #loc()
+    },
+    DeleteMembership => sub {
+        my $self = shift;
+        my $principal = RT::Principal->new($self->CurrentUser);
+        $principal->Load($self->Field);
+        return ("Removed from group '[_1]'", $principal->Object->Name); #loc()
+    },
 );
 
 
@@ -2059,6 +2095,9 @@ sub Serialize {
         my $cf = RT::CustomField->new( RT->SystemUser );
         $cf->Load( $store{Field} );
         $store{Field} = \($cf->UID);
+
+        $store{OldReference} = \($self->OldReferenceObject->UID) if $self->OldReference;
+        $store{NewReference} = \($self->NewReferenceObject->UID) if $self->NewReference;
     } elsif ($type =~ /^(Take|Untake|Force|Steal|Give)$/) {
         for my $field (qw/OldValue NewValue/) {
             my $user = RT::User->new( RT->SystemUser );
