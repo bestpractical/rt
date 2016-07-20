@@ -45,24 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/ShowHistoryHeader,
-    Object            => $Object,
-    ShowHeaders       => $ShowHeaders,
-    ShowTitle         => $ShowTitle,
-    ShowDisplayModes  => $ShowDisplayModes,
-    &>
+<& /Elements/ShowHistoryHeader, %ARGS &>
 
 % $m->callback( %ARGS, Object => $Object, CallbackName => 'BeforeTransactions' );
 
-<& /Elements/ShowHistoryPage,
-    Object            => $Object,
-    Transactions      => $Object->SortedTransactions,
-    ShowHeaders       => $ARGS{'ShowHeaders'},
-    Attachments       => $Attachments,
-    AttachmentContent => $AttachmentContent,
-    PathPrefix        => '',
-    %ARGS,
-    &>
+<& /Elements/ShowHistoryPage, %ARGS &>
 
 </div>
 % if ($ShowDisplayModes or $ShowTitle) {

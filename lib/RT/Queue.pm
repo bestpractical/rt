@@ -1227,6 +1227,68 @@ sub SetSLA {
     return ($status, $self->loc("Queue's default service level has been changed"));
 }
 
+sub InitialPriority {
+    my $self = shift;
+    RT->Deprecated( Instead => "DefaultValue('InitialPriority')", Remove => '4.6' );
+    return $self->DefaultValue('InitialPriority');
+}
+
+sub FinalPriority {
+    my $self = shift;
+    RT->Deprecated( Instead => "DefaultValue('FinalPriority')", Remove => '4.6' );
+    return $self->DefaultValue('FinalPriority');
+}
+
+sub DefaultDueIn {
+    my $self = shift;
+    RT->Deprecated( Instead => "DefaultValue('Due')", Remove => '4.6' );
+
+    # DefaultDueIn used to be a number of days; so if the DefaultValue is,
+    # say, "3 days" then return 3
+    my $due = $self->DefaultValue('Due');
+    if (defined($due) && $due =~ /^(\d+) days?$/i) {
+        return $1;
+    }
+
+    return $due;
+}
+
+sub SetInitialPriority {
+    my $self = shift;
+    my $value = shift;
+    RT->Deprecated( Instead => "SetDefaultValue", Remove => '4.6' );
+    return $self->SetDefaultValue(
+        Name => 'InitialPriority',
+        Value => $value,
+    );
+}
+
+sub SetFinalPriority {
+    my $self = shift;
+    my $value = shift;
+    RT->Deprecated( Instead => "SetDefaultValue", Remove => '4.6' );
+    return $self->SetDefaultValue(
+        Name => 'FinalPriority',
+        Value => $value,
+    );
+}
+
+sub SetDefaultDueIn {
+    my $self = shift;
+    my $value = shift;
+
+    # DefaultDueIn used to be a number of days; so if we're setting to,
+    # say, "3" then add the word "days" to match the way the new
+    # DefaultValues works
+    $value .= " days" if defined($value) && $value =~ /^\d+$/;
+
+    RT->Deprecated( Instead => "SetDefaultValue", Remove => '4.6' );
+    return $self->SetDefaultValue(
+        Name => 'Due',
+        Value => $value,
+    );
+}
+
 RT::Base->_ImportOverlays();
 
 1;

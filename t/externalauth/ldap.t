@@ -49,10 +49,7 @@ RT->Config->Set(
         },
     }
 );
-
-# print "sleeping... ";
-# sleep( 500 );
-# print "done\n";
+RT->Config->PostLoadCheck;
 
 my ( $baseurl, $m ) = RT::Test->started_ok();
 

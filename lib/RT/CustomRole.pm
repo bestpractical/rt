@@ -178,7 +178,10 @@ sub _RegisterAsRole {
             }
             elsif ($object->isa('RT::Ticket')) {
                 # see if the role has been applied to the ticket's queue
-                return $role->IsAdded($object->Queue);
+                # need to walk around ACLs because of the common case of
+                # (e.g. Everyone) having the CreateTicket right but not
+                # ShowTicket
+                return $role->IsAdded($object->__Value('Queue'));
             }
 
             return 0;
