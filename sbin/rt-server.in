@@ -172,6 +172,9 @@ rt-server - RT standalone server
     # runs prefork server listening on port 8080, requires Starlet
     rt-server --port 8080
 
+    # runs prefork server listening on port 8080 at /rt
+    rt-server --port 8080 --webpath /rt
+
     # runs server listening on port 8080
     rt-server --server Standalone --port 8080
     # or

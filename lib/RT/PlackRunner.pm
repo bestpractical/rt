@@ -73,6 +73,8 @@ sub parse_options {
     $self->{server} ||= $self->loader->guess;
 
     my %args = @{$self->{options}};
+    $self->{webpath} ||= $args{webpath} if $args{webpath};
+
     if ($self->{server} eq "FCGI") {
         # We deal with the possible failure modes of this in ->run
     } elsif ($args{port}) {
@@ -136,6 +138,13 @@ sub run {
     if ($self->{server} eq "FCGI" and not -S STDIN and not @{$args{listen} || []}) {
         print STDERR "STDIN is not a socket, and no --listen, --socket, or --port provided\n";
         exit 1;
+    }
+
+    if ( $self->{webpath} ){
+        require Plack::App::URLMap;
+        my $urlmap = Plack::App::URLMap->new;
+        $urlmap->map($self->{webpath} => $self->{app});
+        $self->{app} = $urlmap->to_app;
     }
 
     eval { $self->SUPER::run(@_) };
