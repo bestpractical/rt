@@ -38,6 +38,7 @@ requires 'File::ShareDir';
 requires 'File::Spec', '>= 0.8';
 requires 'File::Temp', '>= 0.19';
 requires 'HTML::Entities';
+requires 'HTML::FormatExternal';
 requires 'HTML::FormatText::WithLinks', '>= 0.14';
 requires 'HTML::FormatText::WithLinks::AndTables', '>= 0.06';
 requires 'HTML::Mason', '>= 1.43';
