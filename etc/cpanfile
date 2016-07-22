@@ -41,6 +41,7 @@ requires 'HTML::Entities';
 requires 'HTML::FormatExternal';
 requires 'HTML::FormatText::WithLinks', '>= 0.14';
 requires 'HTML::FormatText::WithLinks::AndTables', '>= 0.06';
+requires 'HTML::Gumbo';
 requires 'HTML::Mason', '>= 1.43';
 requires 'HTML::Mason::PSGIHandler', '>= 0.52';
 requires 'HTML::Quoted';
