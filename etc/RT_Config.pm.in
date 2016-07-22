@@ -2033,9 +2033,6 @@ multiple vectors for XSS and phishing attacks.  If
 L</$TrustHTMLAttachments> is enabled, the original HTML is available for
 viewing via the "Download" link.
 
-If the optional L<HTML::Gumbo> dependency is installed, RT will leverage
-this to allow a broader set of HTML through, including tables.
-
 =cut
 
 Set($PreferRichText, 1);
