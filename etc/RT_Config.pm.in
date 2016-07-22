@@ -2586,9 +2586,35 @@ Set(@LexiconLanguages, qw(*));
 
 An array that contains default encodings used to guess which charset
 an attachment uses, if it does not specify one explicitly.  All
-options must be recognized by L<Encode::Guess>.  The first element may
-also be '*', which enables encoding detection using
-L<Encode::Detect::Detector>, if installed.
+options must be recognized by L<Encode::Guess>.
+
+The first element may also be C<*>, which attempts encoding detection
+using L<Encode::Detect::Detector>.  This uses Mozilla's character
+detection library to examine the bytes, and use frequency metrics to
+rank the options.  This detection may fail (and fall back to other
+options in the C<@EmailInputEncodings> list) if no decoding has high
+enough confidence metrics.  As of L<Encode::Detect::Detector> version
+1.01, it knows the following encodings:
+
+    big5-eten
+    cp1250
+    cp1251
+    cp1253
+    cp1255
+    cp855
+    cp866
+    euc-jp
+    euc-kr
+    euc-tw
+    gb18030
+    iso-8859-2
+    iso-8859-5
+    iso-8859-7
+    iso-8859-11
+    koi8-r
+    MacCyrillic
+    shiftjis
+    utf-8
 
 =cut
 

@@ -66,6 +66,7 @@ use MIME::Entity;
 use MIME::Head;
 use File::Glob;
 use Encode::Guess;
+use Encode::Detect::Detector;
 
 # I decree that this project's first language is English.
 
@@ -507,12 +508,10 @@ sub _FindOrGuessCharset {
 
 =head2 _GuessCharset STRING
 
-Use Encode::Guess, and optionally Encode::Detect::Detector, to try to
-figure it out the string's encoding.
+Use L<Encode::Guess> and L<Encode::Detect::Detector> to try to figure it out
+the string's encoding.
 
 =cut
-
-use constant HAS_ENCODE_DETECT => Encode::Detect::Detector->require;
 
 sub _GuessCharset {
     my $fallback = _CanonicalizeCharset('iso-8859-1');
@@ -529,21 +528,12 @@ sub _GuessCharset {
 
     if ( $encodings[0] eq '*' ) {
         shift @encodings;
-        if ( HAS_ENCODE_DETECT ) {
-            my $charset = Encode::Detect::Detector::detect( $_[0] );
-            if ( $charset ) {
-                $RT::Logger->debug("Encode::Detect::Detector guessed encoding: $charset");
-                return _CanonicalizeCharset( Encode::resolve_alias( $charset ) );
-            }
-            else {
-                $RT::Logger->debug("Encode::Detect::Detector failed to guess encoding");
-            }
-        }
-        else {
-            $RT::Logger->error(
-                "You requested to guess encoding, but we couldn't"
-                ." load Encode::Detect::Detector module"
-            );
+        my $charset = Encode::Detect::Detector::detect( $_[0] );
+        if ( $charset ) {
+            $RT::Logger->debug("Encode::Detect::Detector guessed encoding: $charset");
+            return _CanonicalizeCharset( Encode::resolve_alias( $charset ) );
+        } else {
+            $RT::Logger->debug("Encode::Detect::Detector failed to guess encoding");
         }
     }
 
