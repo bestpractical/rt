@@ -31,6 +31,7 @@ requires 'Email::Address', '>= 1.897';
 requires 'Email::Address::List', '>= 0.02';
 requires 'Encode', '>= 2.64';
 requires 'Encode::Detect::Detector';
+requires 'Encode::HanExtra';
 requires 'Errno';
 requires 'File::Glob';
 requires 'File::ShareDir';

@@ -65,6 +65,7 @@ use base 'Locale::Maketext::Fuzzy';
 use MIME::Entity;
 use MIME::Head;
 use File::Glob;
+use Encode::HanExtra;
 use Encode::Guess;
 use Encode::Detect::Detector;
 
@@ -593,12 +594,6 @@ sub _CanonicalizeCharset {
     elsif ( $charset eq 'euc-cn' ) {
         # gbk is superset of gb2312/euc-cn so it's safe
         return 'gbk';
-    }
-    elsif ( $charset =~ /^(?:(?:big5(-1984|-2003|ext|plus))|cccii|unisys|euc-tw|gb18030|(?:cns11643-\d+))$/ ) {
-        unless ( Encode::HanExtra->require ) {
-            RT->Logger->error("Please install Encode::HanExtra to handle $charset");
-        }
-        return $charset;
     }
     else {
         return $charset;
