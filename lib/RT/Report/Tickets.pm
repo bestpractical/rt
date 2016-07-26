@@ -818,7 +818,9 @@ sub GenerateCustomFieldFunction {
         @args{qw(FUNCTION FIELD)} = ('NULL', undef);
     } else {
         my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf);
-        @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
+        my $mangled_name = $cf->Name;
+        $mangled_name =~ s/\W/_/g;
+        @args{qw(AS ALIAS FIELD)} = ('CF_'.$mangled_name, $ticket_cf_alias, 'Content');
     }
     return %args;
 }
