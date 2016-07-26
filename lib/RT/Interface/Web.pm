@@ -2930,7 +2930,6 @@ sub ProcessTicketBasics {
         FinalPriority
         Priority
         TimeEstimated
-        TimeWorked
         TimeLeft
         Type
         Status
@@ -2959,6 +2958,12 @@ sub ProcessTicketBasics {
         Object        => $TicketObj,
         ARGSRef       => $ARGSRef,
     );
+
+    if ( $ARGSRef->{'TimeWorked'} ) {
+        my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'} );
+        push( @results, $msg );
+        $txn->UpdateCustomFields( %$ARGSRef) if $txn;
+    }
 
     # We special case owner changing, so we can use ForceOwnerChange
     if ( $ARGSRef->{'Owner'}
@@ -3360,7 +3365,14 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
                     );
             }
 
-            $parsed{"CustomField-$cfid"} = \@values if @values;
+            if (@values) {
+                if ( $class eq 'RT::Transaction' ) {
+                    $parsed{"Object-RT::Transaction--CustomField-$cfid"} = \@values;
+                }
+                else {
+                    $parsed{"CustomField-$cfid"} = \@values if @values;
+                }
+            }
         }
     }
 

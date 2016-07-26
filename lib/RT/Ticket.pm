@@ -2651,7 +2651,7 @@ sub _Set {
     # just made the ticket unreadable to us
     $trans->{ _object_is_readable } = 1;
 
-    return ( $ret, scalar $trans->BriefDescription );
+    return ( $ret, scalar $trans->BriefDescription, $trans );
 }
 
 
