@@ -1061,6 +1061,7 @@ sub TransactionAddresses {
     while ( my $att = $attachments->Next ) {
         foreach my $addrlist ( values %{$att->Addresses } ) {
             foreach my $addr (@$addrlist) {
+                $addr->address( lc $addr->address ); # force lower-case
 
 # Skip addresses without a phrase (things that are just raw addresses) if we have a phrase
                 next
