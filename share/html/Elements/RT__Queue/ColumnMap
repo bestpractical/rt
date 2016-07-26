@@ -57,6 +57,11 @@ my $COLUMN_MAP = {
         attribute => 'Disabled',
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
+    SLADisabled => {
+        title     => 'SLA Status', # loc
+        attribute => 'SLADisabled',
+        value     => sub { return $_[0]->SLADisabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+    },
     InitialPriority => {
         title     => 'InitialPriority', # loc
         value     => sub { $_[0]->DefaultValue('InitialPriority') || '' },
