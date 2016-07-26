@@ -73,6 +73,10 @@ my $COLUMN_MAP = {
         title     => 'Queue', # loc
         value     => sub { $_[0]->Queue },
     },
+    Type => {
+        title     => 'Type', # loc
+        value     => sub { $_[0]->Type },
+    },
     IsEmpty => {
         title     => 'Empty', # loc
         value     => sub { $_[0]->IsEmpty? $_[0]->loc('Yes') : $_[0]->loc('No') },

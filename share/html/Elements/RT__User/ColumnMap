@@ -137,6 +137,11 @@ my $COLUMN_MAP = {
         attribute   => 'Lang',
         value       => sub { return $_[0]->Lang() },
     },
+    Timezone => {
+        title       => 'Timezone', #loc
+        attribute   => 'Timezone',
+        value       => sub { return $_[0]->Timezone() },
+    },
     FreeformContactInfo => {
         title       => 'Extra Info', #loc
         attribute   => 'FreeformContactInfo',
