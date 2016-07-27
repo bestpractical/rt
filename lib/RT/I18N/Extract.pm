@@ -111,164 +111,88 @@ sub from {
     my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
     my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
 
+    my %seen;
+    my $line;
+
+    my $_add = sub {
+        my ($maybe_quoted, $key, $vars) = @_;
+        $vars = '' unless defined $vars;
+
+        $seen{$line}++;
+
+        my $interp;
+        if ($maybe_quoted and $key =~ s/^(['"])(.*)\1$/$2/) {
+            $interp = 1 if $1 eq '"';
+            $key =~ s/\\(['"\\])/$1/g;
+        }
+
+        $vars =~ tr/\n\r//d;
+
+        push @{ $FILECAT{$key} }, [ $normalized, $line, $vars, $interp ];
+    };
+    my $add = sub {$_add->(1, @_)};
+    my $add_noquotes = sub {$_add->(0, @_)};
+
+    my $extract = sub {
+        my ($regex, $run) = @_;
+        $line = 1;
+        pos($contents) = 0;
+        while ($contents =~ m!\G.*?$regex!sg) {
+            my $match = substr($contents,$-[0],$+[0]-$-[0]);
+            $line += ( $match =~ tr/\n/\n/ );
+            $run->();
+        }
+    };
 
     # Mason filter: <&|/l&>...</&> and <&|/l_unsafe&>...</&>
-    my $line = 1;
-    while ($contents =~ m!\G(.*?<&\|/l(?:_unsafe)?(.*?)&>(.*?)</&>)!sg) {
-        my ( $all, $vars, $str ) = ( $1, $2, $3 );
-        $vars =~ s/[\n\r]//g;
-        $line += ( $all =~ tr/\n/\n/ );
-        $str =~ s/\\(['"\\])/$1/g;
-        push @{ $FILECAT{$str} }, [ $normalized, $line, $vars ];
-    }
+    $extract->(qr!<&\|/l(?:_unsafe)?(.*?)&>(.*?)</&>!so, sub {
+        $add_noquotes->($2, $1);
+    });
 
     # Localization function: loc(...)
-    $line = 1;
-    pos($contents) = 0;
-    while ($contents =~ m/\G(.*?\bloc$RE{balanced}{-parens=>'()'}{-keep})/sg) {
-        my ( $all, $match ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
+    $extract->(qr/\bloc$RE{balanced}{-parens=>'()'}{-keep}/so, sub {
+        return unless "$1" =~ /\(\s*($re_delim)(.*?)\s*\)$/so;
+        $add->($1, $9);
+    });
 
-        my ( $vars, $str );
-        next unless ( $match =~ /\(\s*($re_delim)(.*?)\s*\)$/so );
-
-        my $interp = (substr($1,0,1) eq '"' ? 1 : 0);
-        $str = substr( $1, 1, -1 );       # $str comes before $vars now
-        $vars = $9;
-
-        $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\(['"\\])/$1/g;
-
-        push @{ $FILECAT{$str} }, [ $normalized, $line, $vars, $interp ];
-    }
-
-    my %seen;
     # Comment-based mark: "..." # loc
-    $line = 1;
-    pos($contents) = 0;
-    while ($contents =~ m/\G(.*?($re_delim)[ \{\}\)\],;]*$re_loc_suffix)/smgo) {
-        my ( $all, $str ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $str ) {
-            print "\n" unless $errors++;
-            print "  Couldn't process loc at $normalized:$line:\n  $str\n";
-            next;
-        }
-        my $interp = (substr($str,0,1) eq '"' ? 1 : 0);
-        $str = substr($str, 1, -1);
-        $str =~ s/\\(['"\\])/$1/g;
-        push @{ $FILECAT{$str} }, [ $normalized, $line, '', $interp ];
-    }
+    $extract->(qr/($re_delim)[ \{\}\)\],;]*$re_loc_suffix/smo, sub {
+        $add->($1);
+    });
 
     # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
-    $line = 1;
-    pos($contents) = 0;
-    while ($contents =~ m/\G(.*? $RE{balanced}{-parens=>'()'}{-keep} [ \{\}\)\],;]* $re_loc_paren_suffix)/sgx) {
-        my ( $all, $match ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-
-        my ( $vars, $str );
-        unless ( $match =~
-                /\(\s*($re_delim)(.*?)\s*\)$/so ) {
-            print "\n" unless $errors++;
-            print "  Failed to match delimited against $match, line $line";
-            next;
-        }
-
-        my $interp = (substr($1,0,1) eq '"' ? 1 : 0);
-        $str = substr( $1, 1, -1 );       # $str comes before $vars now
-        $vars = $9;
-        $seen{$line}++;
-
-        $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\(['"\\])/$1/g;
-
-        push @{ $FILECAT{$str} }, [ $normalized, $line, $vars, $interp ];
-    }
+    $extract->(qr/$RE{balanced}{-parens=>'()'}{-keep} [ \{\}\)\],;]* $re_loc_paren_suffix/sox, sub {
+        return unless "$1" =~ /\(\s*($re_delim)(.*?)\s*\)$/so;
+        $add->($1, $9);
+    });
 
     # Comment-based qw mark: "qw(...)" # loc_qw
-    $line = 1;
-    pos($contents) = 0;
-    while ($contents =~ m/\G(.*?(?:qw\(([^)]+)\)[ \{\}\)\],;]*)?$re_loc_qw_suffix)/smgo) {
-        my ( $all, $str ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $str ) {
-            print "\n" unless $errors++;
-            print "  Couldn't process loc_qw at $normalized:$line:\n  $str\n";
-            next;
-        }
-        foreach my $value (split ' ', $str) {
-            push @{ $FILECAT{$value} }, [ $normalized, $line, '' ];
-        }
-    }
+    $extract->(qr/(?:qw\(([^)]+)\)[ \{\}\)\],;]*)?$re_loc_qw_suffix/smo, sub {
+        $add_noquotes->($_) for split ' ', $1;
+    });
 
     # Comment-based left pair mark: "..." => ... # loc_left_pair
-    $line = 1;
-    pos($contents) = 0;
-    while ($contents =~ m/\G(.*?(?:(\w+|$re_delim)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix)/smgo) {
-        my ( $all, $key ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $key ) {
-            print "\n" unless $errors++;
-            print "  Couldn't process loc_left_pair at $normalized:$line:\n  $key\n";
-            next;
-        }
-        my $interp = (substr($key,0,1) eq '"' ? 1 : 0);
-        $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        push @{ $FILECAT{$key} }, [ $normalized, $line, '', $interp ];
-    }
+    $extract->(qr/(?:(\w+|$re_delim)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix/smo, sub {
+        $add->($1);
+    });
 
     # Comment-based pair mark: "..." => "..." # loc_pair
-    $line = 1;
-    pos($contents) = 0;
-    while ($contents =~ m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[ \{\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
-        my ( $all, $key, $val ) = ( $1, $2, $10 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $key && defined $val ) {
-            print "\n" unless $errors++;
-            print "  Couldn't process loc_pair at $normalized:$line:\n  $key\n  $val\n";
-            next;
-        }
-        my $interp_key = (substr($key,0,1) eq '"' ? 1 : 0);
-        $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        push @{ $FILECAT{$key} }, [ $normalized, $line, '', $interp_key ];
-
-        my $interp_val = (substr($val,0,1) eq '"' ? 1 : 0);
-        $val = substr($val, 1, -1);    # dequote always quoted string
-        $val  =~ s/\\(['"\\])/$1/g;
-        push @{ $FILECAT{$val} }, [ $normalized, $line, '', $interp_val ];
-    }
+    $extract->(qr/(?:(\w+|$re_delim)\s*=>\s*($re_delim)[ \{\}\)\],;]*)?$re_loc_pair_suffix/smo, sub {
+        $add->($1);
+        $add->($9);
+    });
 
     # Specific key  foo => "...", #loc{foo}
-    $line = 1;
-    pos($contents) = 0;
-    while ($contents =~ m/\G(.*?(\w+|$re_delim)\s*=>\s*($re_delim)(?-s:.*?)\#$re_space_wo_nl*loc\{\2\}$re_space_wo_nl*)$/smgo) {
-        my ( $all, $key, $val ) = ( $1, $2, $10 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $key && defined $val ) {
-            warn "Couldn't process loc_pair at $normalized:$line:\n  $key\n  $val\n";
-            next;
-        }
-        $val = substr($val, 1, -1);    # dequote always quoted string
-        $val  =~ s/\\(['"])/$1/g;
-        push @{ $FILECAT{$val} }, [ $normalized, $line, '' ];
-    }
+    $extract->(qr/(\w+|$re_delim)\s*=>\s*($re_delim)(?-s:.*?)\#$re_space_wo_nl*loc\{\1\}$re_space_wo_nl*$/smo, sub {
+        $add->($9);
+    });
 
     # Check for ones we missed
-    $line = 1;
-    pos($contents) = 0;
-    while ($contents =~ m/\G(.*? \# $re_space_wo_nl* (loc (_\w+|\(\)|{$re_delim})?) $re_space_wo_nl* $)/smgox) {
-        my ($all, $loc_type) = ($1, $2);
-        $line += ( $all =~ tr/\n/\n/ );
-        next if $seen{$line};
+    $extract->(qr/\# $re_space_wo_nl* (loc (_\w+|\(\)|{$re_delim})?) $re_space_wo_nl* $/smox, sub {
+        return if $seen{$line};
         print "\n" unless $errors++;
-        print "  $loc_type that did not match, line $line of $normalized\n";
-    }
+        print "  $1 that did not match, line $line of $normalized\n";
+    });
 
     if ($errors) {
         print "\n"
