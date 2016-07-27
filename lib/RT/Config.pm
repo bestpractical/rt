@@ -340,10 +340,16 @@ our %META;
 
                 for my $value (@values) {
                     if ($value % 60 == 0) {
-                        $labels{$value} = ['Refresh search results every [quant,_1,minute,minutes].', $value / 60]; # loc
+                        $labels{$value} = [
+                            'Refresh search results every [quant,_1,minute,minutes].', #loc
+                            $value / 60
+                        ];
                     }
                     else {
-                        $labels{$value} = ['Refresh search results every [quant,_1,second,seconds].', $value]; # loc
+                        $labels{$value} = [
+                            'Refresh search results every [quant,_1,second,seconds].', #loc
+                            $value
+                        ];
                     }
                 }
 
@@ -370,10 +376,16 @@ our %META;
 
                 for my $value (@values) {
                     if ($value % 60 == 0) {
-                        $labels{$value} = ['Refresh home page every [quant,_1,minute,minutes].', $value / 60]; # loc
+                        $labels{$value} = [
+                            'Refresh home page every [quant,_1,minute,minutes].', #loc
+                            $value / 60
+                        ];
                     }
                     else {
-                        $labels{$value} = ['Refresh home page every [quant,_1,second,seconds].', $value]; # loc
+                        $labels{$value} = [
+                            'Refresh home page every [quant,_1,second,seconds].', #loc
+                            $value
+                        ];
                     }
                 }
 
