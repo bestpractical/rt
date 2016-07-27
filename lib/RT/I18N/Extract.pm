@@ -64,9 +64,21 @@ sub all {
     my $merged = sub { $self->from($File::Find::name) };
     File::Find::find(
         { wanted => $merged, no_chdir => 1, follow => 1 },
-        qw(bin sbin lib share html etc),
+        grep {-d $_} qw(bin sbin lib share/html html etc),
     );
     return $self->results;
+}
+
+sub valid_to_extract {
+    my $self = shift;
+    my ($file) = @_;
+
+    return unless -f $file;
+    return if $file eq "lib/RT/StyleGuide.pod";
+    return if $file eq "lib/RT/I18N/Extract.pm";
+    return if $file =~ m{/[\.#][^/]*$} or $file =~ /\.bak$/;
+    return if -f "$file.in";
+    return 1;
 }
 
 sub from {
@@ -74,19 +86,8 @@ sub from {
     my ($file) = (@_);
 
     local $/;
-    return if ( -d $file || !-e _ );
 
-    my (undef, $dir, $file_only) = File::Spec->splitpath($file);
-    local $_ = $file_only;
-    return
-      if ( $dir =~
-        qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts! );
-    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/ );
-    return if ( /~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
-    return if ( /StyleGuide.pod/ );
-    return if ( /^[\.#]/ );
-    return if ( -f "$file.in" );
-    return if $file eq "lib/RT/I18N/Extract.pm";
+    return unless $self->valid_to_extract($file);
 
     my $normalized = $file;
     $normalized =~ s'^\./'';
