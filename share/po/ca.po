@@ -401,7 +401,7 @@ msgstr "%1 objectes"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1087
+#: lib/RT/Group.pm:1144 lib/RT/Transaction.pm:1087
 msgid "%1 set to %2"
 msgstr "%1 assignat a %2"
 
@@ -890,6 +890,21 @@ msgstr "S'ha afegit %1 com a membre de %2 per a aquesta cua"
 #: lib/RT/Class.pm:386
 msgid "Added Subject Override: %1"
 msgstr "Afegida la modificació de l'assumpte: %1"
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1324
+msgid "Added group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1343
+msgid "Added to group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1321
+msgid "Added user '%1'"
+msgstr ""
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1440,7 +1455,7 @@ msgstr ""
 msgid "Can not load saved search \"%1\""
 msgstr "No es pot carregar la cerca desada \"%1\""
 
-#: lib/RT/User.pm:1559
+#: lib/RT/User.pm:1571
 msgid "Can not modify system users"
 msgstr "No es poden modificar els usuaris de sistema"
 
@@ -1805,7 +1820,7 @@ msgstr "No s'ha pogut crear la cerca: %1"
 msgid "Could not create ticket. Queue not set"
 msgstr "No s'ha pogut crear el tiquet. No s'ha definit la cua"
 
-#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:448
+#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:460
 msgid "Could not create user"
 msgstr "No s'ha pogut crear l'usuari"
 
@@ -2123,11 +2138,11 @@ msgstr "No s'ha pogut resoldre el destí '%1' en una URI."
 msgid "Couldn't set %1 watcher: %2"
 msgstr "No s'ha pogut establir %1 observador: %2"
 
-#: lib/RT/User.pm:1833
+#: lib/RT/User.pm:1845
 msgid "Couldn't set private key"
 msgstr "No s'ha pogut establir la clau privada"
 
-#: lib/RT/User.pm:1817
+#: lib/RT/User.pm:1829
 msgid "Couldn't unset private key"
 msgstr "No s'ha pogut desassignar la clau privada"
 
@@ -2459,7 +2474,7 @@ msgstr "Nom d'usuari DBA"
 msgid "Daily"
 msgstr "Diàriament"
 
-#: lib/RT/Config.pm:535
+#: lib/RT/Config.pm:575
 msgid "Daily digest"
 msgstr "Resum diari"
 
@@ -2491,7 +2506,7 @@ msgstr "No s'ha pogut actualitzar el tauler: %1"
 msgid "Dashboard updated"
 msgstr "Tauler actualitzat"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1258 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Taulers"
 
@@ -2532,7 +2547,7 @@ msgstr "Usuari de la base de dades per a RT"
 msgid "Date"
 msgstr ""
 
-#: lib/RT/Config.pm:484
+#: lib/RT/Config.pm:524
 msgid "Date format"
 msgstr "Format de data"
 
@@ -2589,7 +2604,7 @@ msgstr "Per defecte: %1/%2 ha canviat de %3 a %4"
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2839 etc/RT_Config.pm:2883 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2861 etc/RT_Config.pm:2905 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Esborra"
 
@@ -2657,7 +2672,7 @@ msgstr "S'ha esborrat la cerca %1"
 msgid "Deleting this object would break referential integrity"
 msgstr "Esborrar aquest objecte trencarà la integritat referencial"
 
-#: lib/RT/User.pm:459
+#: lib/RT/User.pm:471
 msgid "Deleting this object would violate referential integrity"
 msgstr "A l'esborrar aquest objecte es violarà l'integritat referencial"
 
@@ -2750,19 +2765,19 @@ msgstr "Mostra article %1"
 msgid "Display Columns"
 msgstr "Mostra columnes"
 
-#: lib/RT/Config.pm:431
+#: lib/RT/Config.pm:471
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr ""
 
-#: lib/RT/Config.pm:358
+#: lib/RT/Config.pm:398
 msgid "Display messages in rich text if available"
 msgstr ""
 
-#: lib/RT/Config.pm:430
+#: lib/RT/Config.pm:470
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
 
-#: lib/RT/Config.pm:465
+#: lib/RT/Config.pm:505
 msgid "Display ticket after \"Quick Create\""
 msgstr ""
 
@@ -2783,11 +2798,11 @@ msgstr "Nom de domini"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "No incloguis http://, només alguna cosa com ara 'localhost' o 'rt.exemple.cat'"
 
-#: lib/RT/Config.pm:340
+#: lib/RT/Config.pm:366
 msgid "Don't refresh home page."
 msgstr "No refresquis la pàgina principal"
 
-#: lib/RT/Config.pm:319
+#: lib/RT/Config.pm:330
 msgid "Don't refresh search results."
 msgstr "No refresquis els resultats de la cerca"
 
@@ -2935,11 +2950,11 @@ msgstr "Resum per correu electrònic"
 msgid "Email Source for Ticket %1, Attachment %2"
 msgstr ""
 
-#: lib/RT/User.pm:588
+#: lib/RT/User.pm:600
 msgid "Email address in use"
 msgstr "L'adreça de correu electrònic ja està en ús"
 
-#: lib/RT/Config.pm:532
+#: lib/RT/Config.pm:572
 msgid "Email delivery"
 msgstr "Enviament per correu electrònic"
 
@@ -2955,7 +2970,7 @@ msgstr ""
 msgid "Empty"
 msgstr ""
 
-#: lib/RT/Config.pm:474
+#: lib/RT/Config.pm:514
 msgid "Enable quote folding?"
 msgstr ""
 
@@ -3185,7 +3200,7 @@ msgstr "Venç"
 msgid "ExtendedStatus"
 msgstr ""
 
-#: lib/RT/User.pm:1029
+#: lib/RT/User.pm:1041
 msgid "External authentication enabled."
 msgstr "Autenticació externa habilitada"
 
@@ -3373,7 +3388,7 @@ msgstr "Troba gent pels quals"
 msgid "Find tickets"
 msgstr "Troba tiquets"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "FindUser"
 msgstr ""
 
@@ -3493,7 +3508,7 @@ msgstr "GD està desactivat o no està instal·lat. Pots carregar una imatge, pe
 msgid "Gecos"
 msgstr ""
 
-#: lib/RT/Config.pm:201 lib/RT/Config.pm:311
+#: lib/RT/Config.pm:201 lib/RT/Config.pm:321
 msgid "General"
 msgstr ""
 
@@ -3623,7 +3638,7 @@ msgstr "S'ha deshabilitat el grup"
 msgid "Group enabled"
 msgstr "S'ha habilitat el grup"
 
-#: lib/RT/Group.pm:1276
+#: lib/RT/Group.pm:1289
 msgid "Group has no such member"
 msgstr "El grup no té aquest membre"
 
@@ -3762,7 +3777,7 @@ msgstr "Historial de l'usuari %1"
 msgid "Home Phone"
 msgstr "Telèfon de casa"
 
-#: lib/RT/Config.pm:337
+#: lib/RT/Config.pm:362
 msgid "Home page refresh interval"
 msgstr "Interval de refresc de la pàgina d'inici"
 
@@ -3932,7 +3947,7 @@ msgstr ""
 msgid "Index updates from %1"
 msgstr ""
 
-#: lib/RT/Config.pm:534
+#: lib/RT/Config.pm:574
 msgid "Individual messages"
 msgstr "Missatges individuals"
 
@@ -4098,7 +4113,7 @@ msgstr "Permís no vàlid"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Permís no vàlid. No es pot normalitzar el permís '%1'"
 
-#: lib/RT/User.pm:578
+#: lib/RT/User.pm:590
 msgid "Invalid syntax for email address"
 msgstr "Sintaxis de l'adreça de correu electrònic no vàlida"
 
@@ -4238,7 +4253,7 @@ msgstr "Esquerra"
 msgid "Legends"
 msgstr "Llegendes"
 
-#: lib/RT/Config.pm:370
+#: lib/RT/Config.pm:410
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Longitut en caràcters; Utilitza '0 'per mostrar tots els missatges en línia, independentment de la longitut de"
 
@@ -4361,7 +4376,7 @@ msgstr "S'ha carregat la cerca desada \"%1\""
 msgid "Loading..."
 msgstr "Carregant..."
 
-#: lib/RT/Config.pm:480 share/html/SelfService/Prefs.html:56
+#: lib/RT/Config.pm:520 share/html/SelfService/Prefs.html:56
 msgid "Locale"
 msgstr ""
 
@@ -4432,7 +4447,7 @@ msgstr "No coincideixen els tipus de cerca"
 msgid "M-F at %1"
 msgstr "M-F a les %1"
 
-#: lib/RT/Config.pm:527 lib/RT/Config.pm:542
+#: lib/RT/Config.pm:567 lib/RT/Config.pm:582
 msgid "Mail"
 msgstr "Correu"
 
@@ -4549,7 +4564,7 @@ msgstr ""
 msgid "Maximum Starts-Started"
 msgstr ""
 
-#: lib/RT/Config.pm:368
+#: lib/RT/Config.pm:408
 msgid "Maximum inline message length"
 msgstr "Longitud màxima del missatge"
 
@@ -4588,15 +4603,15 @@ msgid "Member %1 deleted"
 msgstr "S'ha esborrat el membre %1"
 
 #. ($new_member_obj->Object->Name)
-#: lib/RT/Group.pm:1134
+#: lib/RT/Group.pm:1147
 msgid "Member added: %1"
 msgstr "Membre afegit: %1"
 
-#: lib/RT/Group.pm:1315
+#: lib/RT/Group.pm:1341
 msgid "Member deleted"
 msgstr "Membre esborrat"
 
-#: lib/RT/Group.pm:1286
+#: lib/RT/Group.pm:1299
 msgid "Member not deleted"
 msgstr "Membre no esborrat"
 
@@ -5105,11 +5120,11 @@ msgstr "Els meus recordatoris"
 msgid "My saved searches"
 msgstr "Les meves cerques"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "MyAdminQueues"
 msgstr "LesMevesCuesAdministratives"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:871
+#: etc/RT_Config.pm:1258 etc/initialdata:871
 msgid "MyReminders"
 msgstr "ElsMeusRecordatoris"
 
@@ -5117,7 +5132,7 @@ msgstr "ElsMeusRecordatoris"
 msgid "MySQL"
 msgstr ""
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "MySupportQueues"
 msgstr "LesMevesCuesDeSuport"
 
@@ -5193,7 +5208,7 @@ msgstr "Nous missatges"
 msgid "New password"
 msgstr "Contrasenya nova"
 
-#: lib/RT/User.pm:779
+#: lib/RT/User.pm:791
 msgid "New password notification sent"
 msgstr "S'ha enviat la notificació de nova contrasenya"
 
@@ -5347,7 +5362,7 @@ msgstr "No s'ha introduït cap nom"
 msgid "No need to encrypt"
 msgstr "No és necessari xifrar"
 
-#: lib/RT/User.pm:848
+#: lib/RT/User.pm:860
 msgid "No password set"
 msgstr "No s'ha establert contrasenya"
 
@@ -5372,7 +5387,7 @@ msgstr "No tens permís per modificar l'article"
 msgid "No permission to save system-wide searches"
 msgstr "No tens permís per desar cerques a tot el sistema"
 
-#: lib/RT/User.pm:1411 lib/RT/User.pm:1435
+#: lib/RT/User.pm:1423 lib/RT/User.pm:1447
 msgid "No permission to set preferences"
 msgstr "No tens permís per canviar la configuració"
 
@@ -5417,7 +5432,7 @@ msgstr "No hi ha cap cerca sobre la qual treballar."
 msgid "No subject"
 msgstr "Sense assumpte"
 
-#: lib/RT/User.pm:1825
+#: lib/RT/User.pm:1837
 msgid "No such key or it's not suitable for signing"
 msgstr "No existeix la clau o no és vàlida per firmar"
 
@@ -5494,7 +5509,7 @@ msgstr "No estas utilitzant un navegador mòbil?"
 msgid "Notes"
 msgstr ""
 
-#: lib/RT/User.pm:781
+#: lib/RT/User.pm:793
 msgid "Notification could not be sent"
 msgstr "No s'ha pogut enviar la notificació"
 
@@ -5582,7 +5597,7 @@ msgstr "Notifica als sol·licitants i Ccs"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Notifica als sol·licitants i Ccs com a comentari"
 
-#: lib/RT/Config.pm:403
+#: lib/RT/Config.pm:443
 msgid "Notify me of unread messages"
 msgstr "Notifica'm sobre els missatges no llegits"
 
@@ -5741,7 +5756,7 @@ msgstr "Mostra només els camps personalitzats per a:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2836 etc/RT_Config.pm:2843 etc/RT_Config.pm:2880 etc/RT_Config.pm:2887
+#: etc/RT_Config.pm:2858 etc/RT_Config.pm:2865 etc/RT_Config.pm:2902 etc/RT_Config.pm:2909
 msgid "Open It"
 msgstr "Obre'l"
 
@@ -5806,7 +5821,7 @@ msgstr "Correu sortint sobre un comentari registrat"
 msgid "Outgoing email recorded"
 msgstr "Correu sortint registrat"
 
-#: lib/RT/Config.pm:547
+#: lib/RT/Config.pm:587
 msgid "Outgoing mail"
 msgstr "Correu sortint"
 
@@ -5885,11 +5900,11 @@ msgstr "Pares"
 msgid "Password"
 msgstr "﻿Contrasenya"
 
-#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:859
+#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:871
 msgid "Password changed"
 msgstr "S'ha canviat la contrasenya"
 
-#: lib/RT/User.pm:825
+#: lib/RT/User.pm:837
 msgid "Password has not been set."
 msgstr "No s'ha establert la contrasenya."
 
@@ -5902,7 +5917,7 @@ msgstr "La contraseña necessita tenir com a mínim %1 caràcters de longitud"
 msgid "Password not printed"
 msgstr "No es mostra la contrasenya"
 
-#: lib/RT/User.pm:858
+#: lib/RT/User.pm:870
 msgid "Password set"
 msgstr "S'ha establert contrasenya"
 
@@ -5911,7 +5926,7 @@ msgstr "S'ha establert contrasenya"
 msgid "Password: %1"
 msgstr "Contrasenya: %1"
 
-#: lib/RT/User.pm:844
+#: lib/RT/User.pm:856
 msgid "Password: Permission Denied"
 msgstr "Contrasenya: Permís denegat"
 
@@ -5919,7 +5934,7 @@ msgstr "Contrasenya: Permís denegat"
 msgid "PasswordChange"
 msgstr ""
 
-#: lib/RT/User.pm:821
+#: lib/RT/User.pm:833
 msgid "Passwords do not match."
 msgstr "Les contrasenyes no coincideixen."
 
@@ -5970,7 +5985,7 @@ msgstr "Ordre de cerca de la libreria Perl"
 msgid "Permanently wipeout data from RT"
 msgstr "Esborrar permanentment tota la informació de RT"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1127 lib/RT/User.pm:137 lib/RT/User.pm:1562 lib/RT/User.pm:1810 lib/RT/User.pm:1843 lib/RT/User.pm:326 lib/RT/User.pm:727 lib/RT/User.pm:762 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1260 lib/RT/Group.pm:1357 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1139 lib/RT/User.pm:137 lib/RT/User.pm:1574 lib/RT/User.pm:1822 lib/RT/User.pm:1855 lib/RT/User.pm:326 lib/RT/User.pm:739 lib/RT/User.pm:774 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "S'ha denegat el permís"
 
@@ -6010,11 +6025,11 @@ msgstr ""
 msgid "Please check the URL and try again."
 msgstr "Si us plau, comprova la URL i torna-ho a intentar."
 
-#: lib/RT/User.pm:816
+#: lib/RT/User.pm:828
 msgid "Please enter your current password correctly."
 msgstr "Si us plau introdueix la teva contrasenya actual correctament."
 
-#: lib/RT/User.pm:818
+#: lib/RT/User.pm:830
 msgid "Please enter your current password."
 msgstr "Si us plau introdueix la teva contrasenya actual."
 
@@ -6068,7 +6083,7 @@ msgstr "S'han desat les preferències per a l'usuari %1."
 msgid "Preferences saved."
 msgstr "S'han desat les preferències."
 
-#: lib/RT/User.pm:1439
+#: lib/RT/User.pm:1451
 msgid "Preferences were not found"
 msgstr ""
 
@@ -6174,7 +6189,7 @@ msgstr ""
 msgid "Queries"
 msgstr "Consultes"
 
-#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:88
+#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:90
 msgid "Query"
 msgstr "Consulta"
 
@@ -6269,11 +6284,11 @@ msgstr "Cerca ràpida"
 msgid "Quick ticket creation"
 msgstr "Creació ràpida de tiquet"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:864
+#: etc/RT_Config.pm:1258 etc/initialdata:864
 msgid "QuickCreate"
 msgstr "CreaRapid"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:875
+#: etc/RT_Config.pm:1258 etc/initialdata:875
 msgid "Quicksearch"
 msgstr "CercaRapida"
 
@@ -6313,7 +6328,7 @@ msgstr ""
 msgid "RT Size"
 msgstr "Tamany del RT"
 
-#: lib/RT/Config.pm:332 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
+#: lib/RT/Config.pm:357 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT d'un cop d'ull"
 
@@ -6390,7 +6405,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "La opció RTDireccionRegexp de la configuració no coincideix amb %1"
 
-#: etc/RT_Config.pm:2844 etc/RT_Config.pm:2845 etc/RT_Config.pm:2888 etc/RT_Config.pm:2889
+#: etc/RT_Config.pm:2866 etc/RT_Config.pm:2867 etc/RT_Config.pm:2910 etc/RT_Config.pm:2911
 msgid "Re-open"
 msgstr "Tornar a obrir"
 
@@ -6470,60 +6485,33 @@ msgstr ""
 msgid "Refresh"
 msgstr "Refresca"
 
-#: lib/RT/Config.pm:343
-msgid "Refresh home page every 10 minutes."
-msgstr "Refresca la pàgina principal cada 10 minuts."
+#: lib/RT/Config.pm:372
+msgid "Refresh home page every %quant(%1,minute,minutes)."
+msgstr ""
 
-#: lib/RT/Config.pm:346
-msgid "Refresh home page every 120 minutes."
-msgstr "Refresca la pàgina principal cada 120 minuts."
+#: lib/RT/Config.pm:378
+msgid "Refresh home page every %quant(%1,second,seconds)."
+msgstr ""
 
-#: lib/RT/Config.pm:341
-msgid "Refresh home page every 2 minutes."
-msgstr "Refresca la pàgina principal cada 2 minuts."
-
-#: lib/RT/Config.pm:344
-msgid "Refresh home page every 20 minutes."
-msgstr "Refresca la pàgina principal cada 20 minuts."
+#: lib/RT/Config.pm:336
+msgid "Refresh search results every %quant(%1,minute,minutes)."
+msgstr ""
 
 #: lib/RT/Config.pm:342
-msgid "Refresh home page every 5 minutes."
-msgstr "Refresca la pàgina principal cada 5 minuts."
-
-#: lib/RT/Config.pm:345
-msgid "Refresh home page every 60 minutes."
-msgstr "Refresca la pàgina principal cada 60 minuts."
-
-#: lib/RT/Config.pm:322
-msgid "Refresh search results every 10 minutes."
-msgstr "Refresca els resultats de cerca cada 10 minuts."
-
-#: lib/RT/Config.pm:325
-msgid "Refresh search results every 120 minutes."
-msgstr "Refresca els resultats de cerca cada 120 minuts."
-
-#: lib/RT/Config.pm:320
-msgid "Refresh search results every 2 minutes."
-msgstr "Refresca els resultats de cerca cada 2 minuts."
-
-#: lib/RT/Config.pm:323
-msgid "Refresh search results every 20 minutes."
-msgstr "Refresca els resultats de cerca cada 20 minuts."
-
-#: lib/RT/Config.pm:321
-msgid "Refresh search results every 5 minutes."
-msgstr "Refresca els resultats de cerca cada 5 minuts."
-
-#: lib/RT/Config.pm:324
-msgid "Refresh search results every 60 minutes."
-msgstr "Refresca els resultats de cerca cada 60 minuts."
+msgid "Refresh search results every %quant(%1,second,seconds)."
+msgstr ""
 
 #. ($value/60)
-#: share/html/Elements/Refresh:59
+#: share/html/Elements/Refresh:60
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Refresca aquesta pàgina cada %1 minuts."
 
-#: etc/RT_Config.pm:1245 etc/initialdata:883
+#. ($value)
+#: share/html/Elements/Refresh:62
+msgid "Refresh this page every %quant(%1,second,seconds)."
+msgstr ""
+
+#: etc/RT_Config.pm:1258 etc/initialdata:883
 msgid "RefreshHomepage"
 msgstr "RefrescaPaginaInici"
 
@@ -6531,7 +6519,7 @@ msgstr "RefrescaPaginaInici"
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 etc/RT_Config.pm:2882 etc/RT_Config.pm:2886
+#: etc/RT_Config.pm:2860 etc/RT_Config.pm:2864 etc/RT_Config.pm:2904 etc/RT_Config.pm:2908
 msgid "Reject"
 msgstr "Rebutja"
 
@@ -6608,6 +6596,21 @@ msgstr "S'ha esborrat %1 dels membres de %2 per a aquesta cua."
 
 #: lib/RT/Class.pm:390
 msgid "Removed Subject Override"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1349
+msgid "Removed from group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1336
+msgid "Removed group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1333
+msgid "Removed user '%1'"
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:77
@@ -6687,7 +6690,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Residència"
 
-#: etc/RT_Config.pm:2837 etc/RT_Config.pm:2841 etc/RT_Config.pm:2881 etc/RT_Config.pm:2885 share/html/Search/Elements/EditFormat:76
+#: etc/RT_Config.pm:2859 etc/RT_Config.pm:2863 etc/RT_Config.pm:2903 etc/RT_Config.pm:2907 share/html/Search/Elements/EditFormat:76
 msgid "Resolve"
 msgstr "Resol"
 
@@ -6728,7 +6731,7 @@ msgstr "Torna a introduir la contrasenya"
 msgid "Revert"
 msgstr "Desfés"
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:399
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
@@ -6878,7 +6881,7 @@ msgstr ""
 msgid "Saved searches"
 msgstr "Cerques desades"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "SavedSearches"
 msgstr "CerquesDesades"
 
@@ -6958,7 +6961,7 @@ msgstr "Opcions de cerca"
 msgid "Search results"
 msgstr "Resultats de la cerca"
 
-#: lib/RT/Config.pm:316
+#: lib/RT/Config.pm:326
 msgid "Search results refresh interval"
 msgstr "Interval de refresc dels resultats de cerca"
 
@@ -7177,7 +7180,7 @@ msgstr "Envia un correu als sol·licitants i Ccs"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Envia un correu als sol·licitants i Ccs com a comentari"
 
-#: lib/RT/Interface/Email.pm:1800
+#: lib/RT/Interface/Email.pm:1801
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr ""
 
@@ -7225,7 +7228,7 @@ msgstr "Set"
 msgid "Separate multiple entries with spaces."
 msgstr "Separa múltiples entrades amb espais."
 
-#: lib/RT/User.pm:1835
+#: lib/RT/User.pm:1847
 msgid "Set private key"
 msgstr "Defineix la clau privada"
 
@@ -7241,7 +7244,7 @@ msgstr ""
 msgid "Short usernames"
 msgstr "Noms d'usuari curts"
 
-#: lib/RT/Config.pm:548
+#: lib/RT/Config.pm:588
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "Vols que l'RT t'enviï un correu per cada modificació que facis a un tiquet?"
 
@@ -7302,7 +7305,7 @@ msgstr "Mostra les capçaleres completes"
 msgid "Show global templates"
 msgstr "Mostra les plantilles globals"
 
-#: lib/RT/Config.pm:388
+#: lib/RT/Config.pm:428
 msgid "Show history"
 msgstr ""
 
@@ -7314,11 +7317,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Mostra les descripcions de l'enllaç"
 
-#: lib/RT/Config.pm:446
+#: lib/RT/Config.pm:486
 msgid "Show no tickets for the Requestor"
 msgstr "No mostris els tiquets pel sol·licitant"
 
-#: lib/RT/Config.pm:379
+#: lib/RT/Config.pm:419
 msgid "Show oldest history first"
 msgstr "Mostra primer l'historial més antic"
 
@@ -7334,19 +7337,19 @@ msgstr "Mostra el text citat"
 msgid "Show requests awaiting other approvals"
 msgstr "Mostra les sol·licituds pendents d'altres aprovacions"
 
-#: lib/RT/Config.pm:456
+#: lib/RT/Config.pm:496
 msgid "Show simplified recipient list on ticket update"
 msgstr ""
 
-#: lib/RT/Config.pm:443
+#: lib/RT/Config.pm:483
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr "Mostra els 10 tiquets actius del sol·licitant amb més prioritat"
 
-#: lib/RT/Config.pm:444
+#: lib/RT/Config.pm:484
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr "Mostra els 10 tiquets inactius del sol·licitant amb més prioritat"
 
-#: lib/RT/Config.pm:445
+#: lib/RT/Config.pm:485
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr "Mostra els 10 tiquets del sol·licitant amb més prioritat"
 
@@ -7475,7 +7478,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Fase"
 
-#: etc/RT_Config.pm:2840 etc/RT_Config.pm:2884
+#: etc/RT_Config.pm:2862 etc/RT_Config.pm:2906
 msgid "Stall"
 msgstr "Casella"
 
@@ -7675,7 +7678,7 @@ msgstr "Diu"
 msgid "Sunday"
 msgstr "Diumenge"
 
-#: lib/RT/Config.pm:537
+#: lib/RT/Config.pm:577
 msgid "Suspended"
 msgstr "Suspesa"
 
@@ -7834,15 +7837,15 @@ msgstr "No existeix aquest usuari"
 msgid "That user is already privileged"
 msgstr "Aquest usuari ja és privilegiat"
 
-#: lib/RT/User.pm:373
+#: lib/RT/User.pm:379
 msgid "That user is already unprivileged"
 msgstr "Aquest usuari ja és no privilegiat"
 
-#: lib/RT/User.pm:366
+#: lib/RT/User.pm:372
 msgid "That user is now privileged"
 msgstr "Aquest usuari és ara privilegiat"
 
-#: lib/RT/User.pm:386
+#: lib/RT/User.pm:398
 msgid "That user is now unprivileged"
 msgstr "Aquest usuari és ara no privilegiat"
 
@@ -8127,7 +8130,7 @@ msgstr "No s'ha pogut carregar el tiquet"
 msgid "Ticket count"
 msgstr ""
 
-#: lib/RT/Config.pm:353 lib/RT/Config.pm:363 lib/RT/Config.pm:435 lib/RT/Config.pm:451
+#: lib/RT/Config.pm:393 lib/RT/Config.pm:403 lib/RT/Config.pm:475 lib/RT/Config.pm:491
 msgid "Ticket display"
 msgstr "Visualitza el tiquet"
 
@@ -8338,7 +8341,7 @@ msgstr ""
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1349
+#: lib/RT/Transaction.pm:1385
 msgid "Transactions are immutable"
 msgstr "Les transaccions són immutables"
 
@@ -8445,7 +8448,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Desmarca les caselles per a deshabilitar les notificacions per als destinataris llistats <b>només per a aquesta transacció</b>; el silenciament persistent s'administra a la pàgina <a href=\"%1\">Persones</a>."
 
-#: etc/RT_Config.pm:2846 etc/RT_Config.pm:2890
+#: etc/RT_Config.pm:2868 etc/RT_Config.pm:2912
 msgid "Undelete"
 msgstr "Desfès la supressió"
 
@@ -8524,7 +8527,7 @@ msgstr "Cues no sel·leccionades"
 msgid "Unselected objects"
 msgstr "Objectes no sel·leccionats"
 
-#: lib/RT/User.pm:1819
+#: lib/RT/User.pm:1831
 msgid "Unset private key"
 msgstr "Desassigna la clau privada"
 
@@ -8667,7 +8670,7 @@ msgstr "Per defecte (%1)"
 msgid "Use other RT administrative tools"
 msgstr "Utilitza altres eines administratives de RT"
 
-#. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
+#. (join ', ', map loc(ref($ValuesLabel{$_}) ? @{ $ValuesLabel{$_ }} : $ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
 #: share/html/Widgets/Form/Select:125
 msgid "Use system default (%1)"
 msgstr "Utilitza el per defecte del sistema (%1)"
@@ -8740,11 +8743,11 @@ msgstr "No s'ha pogut crear l'usuari: %1"
 msgid "User created"
 msgstr "S'ha creat l'usuari"
 
-#: lib/RT/User.pm:1142
+#: lib/RT/User.pm:1154
 msgid "User disabled"
 msgstr "S'ha deshabilitat l'usuari"
 
-#: lib/RT/User.pm:1144
+#: lib/RT/User.pm:1156
 msgid "User enabled"
 msgstr "S'ha habilitat l'usuari"
 
@@ -8752,7 +8755,7 @@ msgstr "S'ha habilitat l'usuari"
 msgid "User has empty email address"
 msgstr "L'usuari no té adreça de correu electrònic"
 
-#: lib/RT/User.pm:531 lib/RT/User.pm:551
+#: lib/RT/User.pm:543 lib/RT/User.pm:563
 msgid "User loaded"
 msgstr "S'ha carregat l'usuari"
 
@@ -8938,7 +8941,7 @@ msgstr "Dia de la setmana"
 msgid "Weekly"
 msgstr "Setmanalment"
 
-#: lib/RT/Config.pm:536
+#: lib/RT/Config.pm:576
 msgid "Weekly digest"
 msgstr "Resum setmanal"
 
@@ -8954,7 +8957,7 @@ msgstr "Què he fet avui"
 msgid "What is RT?"
 msgstr "Què és RT?"
 
-#: lib/RT/Config.pm:440
+#: lib/RT/Config.pm:480
 msgid "What tickets to display in the \"More about requestor\" box"
 msgstr ""
 
@@ -9131,7 +9134,7 @@ msgstr ""
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr "Pots introduir el contingut del tiquet a qualsevol camp de text lliure, text o camp de text wiki."
 
-#: lib/RT/User.pm:810
+#: lib/RT/User.pm:822
 msgid "You can not set password."
 msgstr "No pots establir la contrasenya."
 
@@ -9227,7 +9230,7 @@ msgstr "Estas veient aquesta pantalla degut a que has iniciat un servidor RT sen
 msgid "You're welcome to login again"
 msgstr "Ets benvingut a tornar en qualsevol moment."
 
-#: lib/RT/User.pm:1036
+#: lib/RT/User.pm:1048
 msgid "Your password is not set."
 msgstr "No tens una contrasenya definida."
 
@@ -9268,11 +9271,11 @@ msgstr "actiu"
 msgid "after"
 msgstr "després"
 
-#: lib/RT/Config.pm:392
+#: lib/RT/Config.pm:432
 msgid "after clicking a link"
 msgstr ""
 
-#: lib/RT/Config.pm:391
+#: lib/RT/Config.pm:431
 msgid "after the rest of the page loads"
 msgstr ""
 
@@ -9365,7 +9368,7 @@ msgstr ""
 msgid "days"
 msgstr "dies"
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "deleted"
 msgstr "eliminat"
 
@@ -9381,11 +9384,11 @@ msgstr "descarrega"
 msgid "duration"
 msgstr "durada"
 
-#: lib/RT/User.pm:664
+#: lib/RT/User.pm:676
 msgid "email delivery suspended"
 msgstr ""
 
-#: lib/RT/User.pm:656
+#: lib/RT/User.pm:668
 msgid "email disabled for ticket"
 msgstr ""
 
@@ -9459,7 +9462,7 @@ msgstr ""
 msgid "id"
 msgstr ""
 
-#: lib/RT/Config.pm:393
+#: lib/RT/Config.pm:433
 msgid "immediately"
 msgstr ""
 
@@ -9560,7 +9563,7 @@ msgstr "mensualment (dia %1) fins %2"
 msgid "never"
 msgstr "mai"
 
-#: etc/RT_Config.pm:2807
+#: etc/RT_Config.pm:2829
 msgid "new"
 msgstr "nou"
 
@@ -9568,7 +9571,7 @@ msgstr "nou"
 msgid "no"
 msgstr ""
 
-#: lib/RT/User.pm:654
+#: lib/RT/User.pm:666
 msgid "no email address set"
 msgstr ""
 
@@ -9600,7 +9603,7 @@ msgstr "el dia"
 msgid "one"
 msgstr "un"
 
-#: etc/RT_Config.pm:2808 share/html/SelfService/Elements/MyRequests:73
+#: etc/RT_Config.pm:2830 share/html/SelfService/Elements/MyRequests:73
 msgid "open"
 msgstr "obert"
 
@@ -9633,15 +9636,15 @@ msgstr ""
 msgid "queue %1 %2"
 msgstr "cua %1 %2"
 
-#: lib/RT/User.pm:660
+#: lib/RT/User.pm:672
 msgid "receives daily digests"
 msgstr ""
 
-#: lib/RT/User.pm:662
+#: lib/RT/User.pm:674
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "rejected"
 msgstr "rebutjat"
 
@@ -9649,7 +9652,7 @@ msgstr "rebutjat"
 msgid "requires running rt-crontool"
 msgstr "requereix una instància de rt-crontool executant-se"
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "resolved"
 msgstr "resolt"
 
@@ -9673,7 +9676,7 @@ msgstr ""
 msgid "site config"
 msgstr "configuració del lloc"
 
-#: etc/RT_Config.pm:2808
+#: etc/RT_Config.pm:2830
 msgid "stalled"
 msgstr "aparcat"
 

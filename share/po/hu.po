@@ -401,7 +401,7 @@ msgstr "%1 objektumok"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1087
+#: lib/RT/Group.pm:1144 lib/RT/Transaction.pm:1087
 msgid "%1 set to %2"
 msgstr ""
 
@@ -889,6 +889,21 @@ msgstr "A sor %2-jeihez hozzáadásra került %1."
 #. ($cf->Name)
 #: lib/RT/Class.pm:386
 msgid "Added Subject Override: %1"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1324
+msgid "Added group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1343
+msgid "Added to group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1321
+msgid "Added user '%1'"
 msgstr ""
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
@@ -1440,7 +1455,7 @@ msgstr ""
 msgid "Can not load saved search \"%1\""
 msgstr "A \"%1\" mentett lekérdezés nem tölthető be"
 
-#: lib/RT/User.pm:1559
+#: lib/RT/User.pm:1571
 msgid "Can not modify system users"
 msgstr "Rendszerfelhasználó nem módosítható"
 
@@ -1805,7 +1820,7 @@ msgstr "Nem lehetett a keresést létrehozni: %1"
 msgid "Could not create ticket. Queue not set"
 msgstr "Nem jött létre a jegy. A sor nincs meghatározva"
 
-#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:448
+#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:460
 msgid "Could not create user"
 msgstr "A felhasználó nem jött létre"
 
@@ -2123,11 +2138,11 @@ msgstr ""
 msgid "Couldn't set %1 watcher: %2"
 msgstr ""
 
-#: lib/RT/User.pm:1833
+#: lib/RT/User.pm:1845
 msgid "Couldn't set private key"
 msgstr "Privát kulcs beállítása sikertelen."
 
-#: lib/RT/User.pm:1817
+#: lib/RT/User.pm:1829
 msgid "Couldn't unset private key"
 msgstr "Privát kulcs feloldása sikertelen."
 
@@ -2459,7 +2474,7 @@ msgstr ""
 msgid "Daily"
 msgstr ""
 
-#: lib/RT/Config.pm:535
+#: lib/RT/Config.pm:575
 msgid "Daily digest"
 msgstr "Napi gyűjtő"
 
@@ -2491,7 +2506,7 @@ msgstr "A [%1] faliújságot nem lehetett frissíteni"
 msgid "Dashboard updated"
 msgstr "Faliújság frissítve"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1258 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Faliújságok"
 
@@ -2532,7 +2547,7 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: lib/RT/Config.pm:484
+#: lib/RT/Config.pm:524
 msgid "Date format"
 msgstr "Dátum formátum"
 
@@ -2589,7 +2604,7 @@ msgstr ""
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2839 etc/RT_Config.pm:2883 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2861 etc/RT_Config.pm:2905 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Törlés"
 
@@ -2657,7 +2672,7 @@ msgstr ""
 msgid "Deleting this object would break referential integrity"
 msgstr ""
 
-#: lib/RT/User.pm:459
+#: lib/RT/User.pm:471
 msgid "Deleting this object would violate referential integrity"
 msgstr ""
 
@@ -2750,19 +2765,19 @@ msgstr "%1 cikk mutatása"
 msgid "Display Columns"
 msgstr "Mezők kiválasztása"
 
-#: lib/RT/Config.pm:431
+#: lib/RT/Config.pm:471
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr "Minden szöveges melléklet fix szélességű betűtípussal jelenik meg a formázást megtartva, de szükség szerint tördelve."
 
-#: lib/RT/Config.pm:358
+#: lib/RT/Config.pm:398
 msgid "Display messages in rich text if available"
 msgstr "Mellékletek megjelenítése formázott szövegként ha lehetséges"
 
-#: lib/RT/Config.pm:430
+#: lib/RT/Config.pm:470
 msgid "Display plain-text attachments in fixed-width font"
 msgstr "Csak szöveg mellékletek megjelenítése fix szélességű betűvel"
 
-#: lib/RT/Config.pm:465
+#: lib/RT/Config.pm:505
 msgid "Display ticket after \"Quick Create\""
 msgstr "Jegy mutatása \"Gyors jegylétrehozás\" után"
 
@@ -2783,11 +2798,11 @@ msgstr "Tartománynév"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Ne írd be hogy http://, csak úgy írd hogy 'localhost', vagy 'rt.example.com'"
 
-#: lib/RT/Config.pm:340
+#: lib/RT/Config.pm:366
 msgid "Don't refresh home page."
 msgstr "Ne frissítse a kezdőlapot."
 
-#: lib/RT/Config.pm:319
+#: lib/RT/Config.pm:330
 msgid "Don't refresh search results."
 msgstr "Ne frissítse a lekérdezési eredményeket."
 
@@ -2935,11 +2950,11 @@ msgstr "Gyűjtő levél"
 msgid "Email Source for Ticket %1, Attachment %2"
 msgstr ""
 
-#: lib/RT/User.pm:588
+#: lib/RT/User.pm:600
 msgid "Email address in use"
 msgstr "E-Mail-cím már foglalt"
 
-#: lib/RT/Config.pm:532
+#: lib/RT/Config.pm:572
 msgid "Email delivery"
 msgstr "Levél kézbesítés"
 
@@ -2955,7 +2970,7 @@ msgstr "EmailCím"
 msgid "Empty"
 msgstr "Üres"
 
-#: lib/RT/Config.pm:474
+#: lib/RT/Config.pm:514
 msgid "Enable quote folding?"
 msgstr "Elrejthetők az idézetek?"
 
@@ -3186,7 +3201,7 @@ msgstr "Lejárt"
 msgid "ExtendedStatus"
 msgstr "Kiterjesztett_Státusz"
 
-#: lib/RT/User.pm:1029
+#: lib/RT/User.pm:1041
 msgid "External authentication enabled."
 msgstr ""
 
@@ -3374,7 +3389,7 @@ msgstr "Olyan felhasználók keresése, akiknél a"
 msgid "Find tickets"
 msgstr "Jegyek keresése"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "FindUser"
 msgstr ""
 
@@ -3494,7 +3509,7 @@ msgstr ""
 msgid "Gecos"
 msgstr ""
 
-#: lib/RT/Config.pm:201 lib/RT/Config.pm:311
+#: lib/RT/Config.pm:201 lib/RT/Config.pm:321
 msgid "General"
 msgstr "Általános"
 
@@ -3624,7 +3639,7 @@ msgstr "Csoport letiltva"
 msgid "Group enabled"
 msgstr "Csoport engedélyezve"
 
-#: lib/RT/Group.pm:1276
+#: lib/RT/Group.pm:1289
 msgid "Group has no such member"
 msgstr "A csoportnak már van ilyen tagja"
 
@@ -3763,7 +3778,7 @@ msgstr "%1 felhasználó története"
 msgid "Home Phone"
 msgstr ""
 
-#: lib/RT/Config.pm:337
+#: lib/RT/Config.pm:362
 msgid "Home page refresh interval"
 msgstr "Kezdőlap frissítésének gyakorisága"
 
@@ -3933,7 +3948,7 @@ msgstr "iCal eseményeknél időpont hozzávétele az eseményhez"
 msgid "Index updates from %1"
 msgstr ""
 
-#: lib/RT/Config.pm:534
+#: lib/RT/Config.pm:574
 msgid "Individual messages"
 msgstr "Önálló levelek"
 
@@ -4099,7 +4114,7 @@ msgstr "Érvénytelen jog"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr ""
 
-#: lib/RT/User.pm:578
+#: lib/RT/User.pm:590
 msgid "Invalid syntax for email address"
 msgstr ""
 
@@ -4239,7 +4254,7 @@ msgstr "Hátralévő Idő"
 msgid "Legends"
 msgstr "Magyarázatok"
 
-#: lib/RT/Config.pm:370
+#: lib/RT/Config.pm:410
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Karakter szám; Ha nullát állít be, minden (szöveges) üzenet megjelenítésre kerül"
 
@@ -4362,7 +4377,7 @@ msgstr "Mentett lekérdezés \"%1\" betöltve"
 msgid "Loading..."
 msgstr "Betöltés..."
 
-#: lib/RT/Config.pm:480 share/html/SelfService/Prefs.html:56
+#: lib/RT/Config.pm:520 share/html/SelfService/Prefs.html:56
 msgid "Locale"
 msgstr "Területi beállítások"
 
@@ -4433,7 +4448,7 @@ msgstr ""
 msgid "M-F at %1"
 msgstr ""
 
-#: lib/RT/Config.pm:527 lib/RT/Config.pm:542
+#: lib/RT/Config.pm:567 lib/RT/Config.pm:582
 msgid "Mail"
 msgstr "Levelezés"
 
@@ -4550,7 +4565,7 @@ msgstr ""
 msgid "Maximum Starts-Started"
 msgstr ""
 
-#: lib/RT/Config.pm:368
+#: lib/RT/Config.pm:408
 msgid "Maximum inline message length"
 msgstr "Maximális megjelenítendő üzenethossz"
 
@@ -4589,15 +4604,15 @@ msgid "Member %1 deleted"
 msgstr "Tag %1 törölve"
 
 #. ($new_member_obj->Object->Name)
-#: lib/RT/Group.pm:1134
+#: lib/RT/Group.pm:1147
 msgid "Member added: %1"
 msgstr "Tag hozzáadva: %1"
 
-#: lib/RT/Group.pm:1315
+#: lib/RT/Group.pm:1341
 msgid "Member deleted"
 msgstr "Tag törölve"
 
-#: lib/RT/Group.pm:1286
+#: lib/RT/Group.pm:1299
 msgid "Member not deleted"
 msgstr "Tag nincs törölve"
 
@@ -5106,11 +5121,11 @@ msgstr "Emlékeztetőim"
 msgid "My saved searches"
 msgstr "Saját lekérdezések"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "MyAdminQueues"
 msgstr ""
 
-#: etc/RT_Config.pm:1245 etc/initialdata:871
+#: etc/RT_Config.pm:1258 etc/initialdata:871
 msgid "MyReminders"
 msgstr ""
 
@@ -5118,7 +5133,7 @@ msgstr ""
 msgid "MySQL"
 msgstr ""
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "MySupportQueues"
 msgstr ""
 
@@ -5194,7 +5209,7 @@ msgstr "Új üzenetek"
 msgid "New password"
 msgstr "Új jelszó"
 
-#: lib/RT/User.pm:779
+#: lib/RT/User.pm:791
 msgid "New password notification sent"
 msgstr "Új jelszó értesítő lett elküldve"
 
@@ -5348,7 +5363,7 @@ msgstr ""
 msgid "No need to encrypt"
 msgstr ""
 
-#: lib/RT/User.pm:848
+#: lib/RT/User.pm:860
 msgid "No password set"
 msgstr "Nincs jelszó megadva"
 
@@ -5373,7 +5388,7 @@ msgstr "Nincs joga a cikket módosítani"
 msgid "No permission to save system-wide searches"
 msgstr ""
 
-#: lib/RT/User.pm:1411 lib/RT/User.pm:1435
+#: lib/RT/User.pm:1423 lib/RT/User.pm:1447
 msgid "No permission to set preferences"
 msgstr ""
 
@@ -5418,7 +5433,7 @@ msgstr "Nincs feldolgozható lekérdezési lista."
 msgid "No subject"
 msgstr "(nincs tárgy)"
 
-#: lib/RT/User.pm:1825
+#: lib/RT/User.pm:1837
 msgid "No such key or it's not suitable for signing"
 msgstr ""
 
@@ -5495,7 +5510,7 @@ msgstr ""
 msgid "Notes"
 msgstr "Megjegyzések"
 
-#: lib/RT/User.pm:781
+#: lib/RT/User.pm:793
 msgid "Notification could not be sent"
 msgstr "Az értesítést nem sikerült elküldeni"
 
@@ -5583,7 +5598,7 @@ msgstr "A beküldő és az ügyfél értesítése"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "A beküldő és az ügyfél értesítése kiegészítésként"
 
-#: lib/RT/Config.pm:403
+#: lib/RT/Config.pm:443
 msgid "Notify me of unread messages"
 msgstr "Értesítsen az olvasatlan üzenetekről"
 
@@ -5742,7 +5757,7 @@ msgstr "Csak a következő csoport egyéni mezőit muatssa:"
 msgid "Open Inactive Tickets"
 msgstr "Inaktív jegyek megnyitása"
 
-#: etc/RT_Config.pm:2836 etc/RT_Config.pm:2843 etc/RT_Config.pm:2880 etc/RT_Config.pm:2887
+#: etc/RT_Config.pm:2858 etc/RT_Config.pm:2865 etc/RT_Config.pm:2902 etc/RT_Config.pm:2909
 msgid "Open It"
 msgstr "Megnyit"
 
@@ -5807,7 +5822,7 @@ msgstr "A megjegyzésről szóló kimenő levél rögzítve"
 msgid "Outgoing email recorded"
 msgstr "Kimenő levél rögzítve"
 
-#: lib/RT/Config.pm:547
+#: lib/RT/Config.pm:587
 msgid "Outgoing mail"
 msgstr "Saját hozzászólások levelei"
 
@@ -5886,11 +5901,11 @@ msgstr "Szülők"
 msgid "Password"
 msgstr "Jelszó"
 
-#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:859
+#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:871
 msgid "Password changed"
 msgstr "Jelszó megváltoztatva"
 
-#: lib/RT/User.pm:825
+#: lib/RT/User.pm:837
 msgid "Password has not been set."
 msgstr ""
 
@@ -5903,7 +5918,7 @@ msgstr ""
 msgid "Password not printed"
 msgstr ""
 
-#: lib/RT/User.pm:858
+#: lib/RT/User.pm:870
 msgid "Password set"
 msgstr ""
 
@@ -5912,7 +5927,7 @@ msgstr ""
 msgid "Password: %1"
 msgstr "Jelszó: %1"
 
-#: lib/RT/User.pm:844
+#: lib/RT/User.pm:856
 msgid "Password: Permission Denied"
 msgstr ""
 
@@ -5920,7 +5935,7 @@ msgstr ""
 msgid "PasswordChange"
 msgstr "JelszóVáltozás"
 
-#: lib/RT/User.pm:821
+#: lib/RT/User.pm:833
 msgid "Passwords do not match."
 msgstr "A jelszavak nem egyeznek."
 
@@ -5971,7 +5986,7 @@ msgstr "Perl könyvtár keresési sorrend"
 msgid "Permanently wipeout data from RT"
 msgstr ""
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1127 lib/RT/User.pm:137 lib/RT/User.pm:1562 lib/RT/User.pm:1810 lib/RT/User.pm:1843 lib/RT/User.pm:326 lib/RT/User.pm:727 lib/RT/User.pm:762 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1260 lib/RT/Group.pm:1357 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1139 lib/RT/User.pm:137 lib/RT/User.pm:1574 lib/RT/User.pm:1822 lib/RT/User.pm:1855 lib/RT/User.pm:326 lib/RT/User.pm:739 lib/RT/User.pm:774 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Hozzáférés visszautasítva"
 
@@ -6011,11 +6026,11 @@ msgstr ""
 msgid "Please check the URL and try again."
 msgstr ""
 
-#: lib/RT/User.pm:816
+#: lib/RT/User.pm:828
 msgid "Please enter your current password correctly."
 msgstr ""
 
-#: lib/RT/User.pm:818
+#: lib/RT/User.pm:830
 msgid "Please enter your current password."
 msgstr ""
 
@@ -6069,7 +6084,7 @@ msgstr ""
 msgid "Preferences saved."
 msgstr "Beállítások mentve."
 
-#: lib/RT/User.pm:1439
+#: lib/RT/User.pm:1451
 msgid "Preferences were not found"
 msgstr ""
 
@@ -6175,7 +6190,7 @@ msgstr ""
 msgid "Queries"
 msgstr "Lekérdezések"
 
-#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:88
+#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:90
 msgid "Query"
 msgstr "Lekérdezés"
 
@@ -6270,11 +6285,11 @@ msgstr "Gyors lekérdezés"
 msgid "Quick ticket creation"
 msgstr "Gyors jegylétrehozás"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:864
+#: etc/RT_Config.pm:1258 etc/initialdata:864
 msgid "QuickCreate"
 msgstr ""
 
-#: etc/RT_Config.pm:1245 etc/initialdata:875
+#: etc/RT_Config.pm:1258 etc/initialdata:875
 msgid "Quicksearch"
 msgstr ""
 
@@ -6314,7 +6329,7 @@ msgstr ""
 msgid "RT Size"
 msgstr "RT méret"
 
-#: lib/RT/Config.pm:332 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
+#: lib/RT/Config.pm:357 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "Kezdőlap"
 
@@ -6391,7 +6406,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2844 etc/RT_Config.pm:2845 etc/RT_Config.pm:2888 etc/RT_Config.pm:2889
+#: etc/RT_Config.pm:2866 etc/RT_Config.pm:2867 etc/RT_Config.pm:2910 etc/RT_Config.pm:2911
 msgid "Re-open"
 msgstr ""
 
@@ -6471,60 +6486,33 @@ msgstr "Erre_a_jegyre_hivatkozik"
 msgid "Refresh"
 msgstr "Frissítés"
 
-#: lib/RT/Config.pm:343
-msgid "Refresh home page every 10 minutes."
-msgstr "Kezdőlap frissítése 10 percenként."
+#: lib/RT/Config.pm:372
+msgid "Refresh home page every %quant(%1,minute,minutes)."
+msgstr ""
 
-#: lib/RT/Config.pm:346
-msgid "Refresh home page every 120 minutes."
-msgstr "Kezdőlap frissítése 120 percenként."
+#: lib/RT/Config.pm:378
+msgid "Refresh home page every %quant(%1,second,seconds)."
+msgstr ""
 
-#: lib/RT/Config.pm:341
-msgid "Refresh home page every 2 minutes."
-msgstr "Kezdőlap frissítése 2 percenként."
-
-#: lib/RT/Config.pm:344
-msgid "Refresh home page every 20 minutes."
-msgstr "Kezdőlap frissítése 20 percenként."
+#: lib/RT/Config.pm:336
+msgid "Refresh search results every %quant(%1,minute,minutes)."
+msgstr ""
 
 #: lib/RT/Config.pm:342
-msgid "Refresh home page every 5 minutes."
-msgstr "Kezdőlap frissítése 5 percenként."
-
-#: lib/RT/Config.pm:345
-msgid "Refresh home page every 60 minutes."
-msgstr "Kezdőlap frissítése 60 percenként."
-
-#: lib/RT/Config.pm:322
-msgid "Refresh search results every 10 minutes."
-msgstr "Lekérdezési eredmények frissítése 10 percenként."
-
-#: lib/RT/Config.pm:325
-msgid "Refresh search results every 120 minutes."
-msgstr "Lekérdezési eredmények frissítése 120 percenként."
-
-#: lib/RT/Config.pm:320
-msgid "Refresh search results every 2 minutes."
-msgstr "Lekérdezési eredmények frissítése 2 percenként."
-
-#: lib/RT/Config.pm:323
-msgid "Refresh search results every 20 minutes."
-msgstr "Lekérdezési eredmények frissítése 20 percenként."
-
-#: lib/RT/Config.pm:321
-msgid "Refresh search results every 5 minutes."
-msgstr "Lekérdezési eredmények frissítése 5 percenként."
-
-#: lib/RT/Config.pm:324
-msgid "Refresh search results every 60 minutes."
-msgstr "Lekérdezési eredmények frissítése 60 percenként."
+msgid "Refresh search results every %quant(%1,second,seconds)."
+msgstr ""
 
 #. ($value/60)
-#: share/html/Elements/Refresh:59
+#: share/html/Elements/Refresh:60
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "%1 percenként frissítse ezt az oldalt."
 
-#: etc/RT_Config.pm:1245 etc/initialdata:883
+#. ($value)
+#: share/html/Elements/Refresh:62
+msgid "Refresh this page every %quant(%1,second,seconds)."
+msgstr ""
+
+#: etc/RT_Config.pm:1258 etc/initialdata:883
 msgid "RefreshHomepage"
 msgstr ""
 
@@ -6532,7 +6520,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 etc/RT_Config.pm:2882 etc/RT_Config.pm:2886
+#: etc/RT_Config.pm:2860 etc/RT_Config.pm:2864 etc/RT_Config.pm:2904 etc/RT_Config.pm:2908
 msgid "Reject"
 msgstr "Visszautasít"
 
@@ -6609,6 +6597,21 @@ msgstr ""
 
 #: lib/RT/Class.pm:390
 msgid "Removed Subject Override"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1349
+msgid "Removed from group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1336
+msgid "Removed group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1333
+msgid "Removed user '%1'"
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:77
@@ -6688,7 +6691,7 @@ msgstr "Visszaállás az alapértelmezett témára"
 msgid "Residence"
 msgstr "Otthoni"
 
-#: etc/RT_Config.pm:2837 etc/RT_Config.pm:2841 etc/RT_Config.pm:2881 etc/RT_Config.pm:2885 share/html/Search/Elements/EditFormat:76
+#: etc/RT_Config.pm:2859 etc/RT_Config.pm:2863 etc/RT_Config.pm:2903 etc/RT_Config.pm:2907 share/html/Search/Elements/EditFormat:76
 msgid "Resolve"
 msgstr "Megold"
 
@@ -6729,7 +6732,7 @@ msgstr "Jelszó mégegyszer"
 msgid "Revert"
 msgstr ""
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:399
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "A formázott szöveg (HTML) mutatja a színeket, kiemelést, dölt betűket és még sok mást"
 
@@ -6879,7 +6882,7 @@ msgstr ""
 msgid "Saved searches"
 msgstr "Mentett lekérdezések"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "SavedSearches"
 msgstr ""
 
@@ -6959,7 +6962,7 @@ msgstr "Lekérdezési beállítások"
 msgid "Search results"
 msgstr "Lekérdezési eredmények"
 
-#: lib/RT/Config.pm:316
+#: lib/RT/Config.pm:326
 msgid "Search results refresh interval"
 msgstr "Lekérdezési eredmények frissítési gyakorisága"
 
@@ -7178,7 +7181,7 @@ msgstr "Email küldése a beküldőknek és az ügyfélnek"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Megjegyzés email küldése a beküldőknek és az ügyfélnek"
 
-#: lib/RT/Interface/Email.pm:1800
+#: lib/RT/Interface/Email.pm:1801
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr ""
 
@@ -7226,7 +7229,7 @@ msgstr "Szept"
 msgid "Separate multiple entries with spaces."
 msgstr "Szóközzel elválasztva több is megadható."
 
-#: lib/RT/User.pm:1835
+#: lib/RT/User.pm:1847
 msgid "Set private key"
 msgstr ""
 
@@ -7242,7 +7245,7 @@ msgstr ""
 msgid "Short usernames"
 msgstr "Rövid felhasználónevek"
 
-#: lib/RT/Config.pm:548
+#: lib/RT/Config.pm:588
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "A saját jegy frissítésekről küldjön az RT levelet Önnek?"
 
@@ -7303,7 +7306,7 @@ msgstr "Teljes fejléc mutatása"
 msgid "Show global templates"
 msgstr "Láthatja a globális sablonokat"
 
-#: lib/RT/Config.pm:388
+#: lib/RT/Config.pm:428
 msgid "Show history"
 msgstr "Történet mutatása"
 
@@ -7315,11 +7318,11 @@ msgstr "Láthatja a felhasználók publikus adatainak változását"
 msgid "Show link descriptions"
 msgstr "Linkleírások megjelenítése"
 
-#: lib/RT/Config.pm:446
+#: lib/RT/Config.pm:486
 msgid "Show no tickets for the Requestor"
 msgstr "Ne mutasson jegyeket a beküldőtől"
 
-#: lib/RT/Config.pm:379
+#: lib/RT/Config.pm:419
 msgid "Show oldest history first"
 msgstr "A legidősebb elem az első"
 
@@ -7335,19 +7338,19 @@ msgstr "Idézett szöveg mutatása"
 msgid "Show requests awaiting other approvals"
 msgstr "Láthatóak legyenek a mások engedélyezésére váró jegyek"
 
-#: lib/RT/Config.pm:456
+#: lib/RT/Config.pm:496
 msgid "Show simplified recipient list on ticket update"
 msgstr "Hozzászóláskor egyszerűsített lista az értesítést kapókról"
 
-#: lib/RT/Config.pm:443
+#: lib/RT/Config.pm:483
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr "Mutassa a beküldő 10 legmagasabb prioritású aktív jegyét"
 
-#: lib/RT/Config.pm:444
+#: lib/RT/Config.pm:484
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr "Mutassa a beküldő 10 legmagasabb prioritású inaktív jegyét"
 
-#: lib/RT/Config.pm:445
+#: lib/RT/Config.pm:485
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr "Mutassa a beküldő 10 legmagasabb prioritású jegyét"
 
@@ -7476,7 +7479,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Állapot"
 
-#: etc/RT_Config.pm:2840 etc/RT_Config.pm:2884
+#: etc/RT_Config.pm:2862 etc/RT_Config.pm:2906
 msgid "Stall"
 msgstr "Várakoztat"
 
@@ -7676,7 +7679,7 @@ msgstr "V"
 msgid "Sunday"
 msgstr "Vasárnap"
 
-#: lib/RT/Config.pm:537
+#: lib/RT/Config.pm:577
 msgid "Suspended"
 msgstr "Felfüggesztett"
 
@@ -7835,15 +7838,15 @@ msgstr "Ilyen felhasználó nem létezik"
 msgid "That user is already privileged"
 msgstr "A felhasználó már kiemelt"
 
-#: lib/RT/User.pm:373
+#: lib/RT/User.pm:379
 msgid "That user is already unprivileged"
 msgstr "A felhasználó már nem kiemelt"
 
-#: lib/RT/User.pm:366
+#: lib/RT/User.pm:372
 msgid "That user is now privileged"
 msgstr "A felhasználó mostantól kiemelt"
 
-#: lib/RT/User.pm:386
+#: lib/RT/User.pm:398
 msgid "That user is now unprivileged"
 msgstr "A felhasználó mostantól nem kiemelt"
 
@@ -8128,7 +8131,7 @@ msgstr "A problémát nem sikerült betölteni"
 msgid "Ticket count"
 msgstr ""
 
-#: lib/RT/Config.pm:353 lib/RT/Config.pm:363 lib/RT/Config.pm:435 lib/RT/Config.pm:451
+#: lib/RT/Config.pm:393 lib/RT/Config.pm:403 lib/RT/Config.pm:475 lib/RT/Config.pm:491
 msgid "Ticket display"
 msgstr "Jegy megjelenítés"
 
@@ -8339,7 +8342,7 @@ msgstr ""
 msgid "Transactions"
 msgstr "Tranzakciók"
 
-#: lib/RT/Transaction.pm:1349
+#: lib/RT/Transaction.pm:1385
 msgid "Transactions are immutable"
 msgstr "A tranzakciók megváltozhatatlanok"
 
@@ -8446,7 +8449,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Ha nem szeretné, hogy valaki értesítést kapjon <b>erről a tranzakcióról</b>, szüntesse meg a jelölést a címe mellett; véglegesen a <a href=\"%1\">Résztvevők</a> lapon módosíthatja az értesítéseket."
 
-#: etc/RT_Config.pm:2846 etc/RT_Config.pm:2890
+#: etc/RT_Config.pm:2868 etc/RT_Config.pm:2912
 msgid "Undelete"
 msgstr ""
 
@@ -8525,7 +8528,7 @@ msgstr "Kiválasztható Sorok"
 msgid "Unselected objects"
 msgstr "Kiválasztható objektumok"
 
-#: lib/RT/User.pm:1819
+#: lib/RT/User.pm:1831
 msgid "Unset private key"
 msgstr ""
 
@@ -8668,7 +8671,7 @@ msgstr "Alapértelmezett érték használata (%1)"
 msgid "Use other RT administrative tools"
 msgstr "Használjon más RT adminisztratív eszközöket"
 
-#. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
+#. (join ', ', map loc(ref($ValuesLabel{$_}) ? @{ $ValuesLabel{$_ }} : $ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
 #: share/html/Widgets/Form/Select:125
 msgid "Use system default (%1)"
 msgstr "A rendszer alapértelmezett értékének használata (%1)"
@@ -8741,11 +8744,11 @@ msgstr "A felhasználót nem tudtam lérehozni: %1"
 msgid "User created"
 msgstr "Felhasználó létrehozva"
 
-#: lib/RT/User.pm:1142
+#: lib/RT/User.pm:1154
 msgid "User disabled"
 msgstr "Felhasználó letiltva"
 
-#: lib/RT/User.pm:1144
+#: lib/RT/User.pm:1156
 msgid "User enabled"
 msgstr "Felhasználó engedélyezve"
 
@@ -8753,7 +8756,7 @@ msgstr "Felhasználó engedélyezve"
 msgid "User has empty email address"
 msgstr "A felhasználónak nincs megadva e-mail címe"
 
-#: lib/RT/User.pm:531 lib/RT/User.pm:551
+#: lib/RT/User.pm:543 lib/RT/User.pm:563
 msgid "User loaded"
 msgstr "Felhasználó betöltve"
 
@@ -8939,7 +8942,7 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-#: lib/RT/Config.pm:536
+#: lib/RT/Config.pm:576
 msgid "Weekly digest"
 msgstr "Heti gyűjtő"
 
@@ -8955,7 +8958,7 @@ msgstr "Mit csináltam ma"
 msgid "What is RT?"
 msgstr ""
 
-#: lib/RT/Config.pm:440
+#: lib/RT/Config.pm:480
 msgid "What tickets to display in the \"More about requestor\" box"
 msgstr "Milyen jegyek jelenjenek meg a \"Többet a tulajdonosról\" dobozban"
 
@@ -9132,7 +9135,7 @@ msgstr ""
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr ""
 
-#: lib/RT/User.pm:810
+#: lib/RT/User.pm:822
 msgid "You can not set password."
 msgstr ""
 
@@ -9228,7 +9231,7 @@ msgstr ""
 msgid "You're welcome to login again"
 msgstr "Itt ismét bejelentkezhet"
 
-#: lib/RT/User.pm:1036
+#: lib/RT/User.pm:1048
 msgid "Your password is not set."
 msgstr "A jelszavad nem került beállításra."
 
@@ -9269,11 +9272,11 @@ msgstr ""
 msgid "after"
 msgstr "után"
 
-#: lib/RT/Config.pm:392
+#: lib/RT/Config.pm:432
 msgid "after clicking a link"
 msgstr "linkre kattintás után"
 
-#: lib/RT/Config.pm:391
+#: lib/RT/Config.pm:431
 msgid "after the rest of the page loads"
 msgstr "miután minden más betöltődött"
 
@@ -9367,7 +9370,7 @@ msgstr ""
 msgid "days"
 msgstr "napja"
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "deleted"
 msgstr "törölve"
 
@@ -9383,11 +9386,11 @@ msgstr "letöltés"
 msgid "duration"
 msgstr ""
 
-#: lib/RT/User.pm:664
+#: lib/RT/User.pm:676
 msgid "email delivery suspended"
 msgstr ""
 
-#: lib/RT/User.pm:656
+#: lib/RT/User.pm:668
 msgid "email disabled for ticket"
 msgstr ""
 
@@ -9461,7 +9464,7 @@ msgstr ""
 msgid "id"
 msgstr "Sorszám"
 
-#: lib/RT/Config.pm:393
+#: lib/RT/Config.pm:433
 msgid "immediately"
 msgstr "azonnal"
 
@@ -9562,7 +9565,7 @@ msgstr "havonta (%1 napon) %2 órakor"
 msgid "never"
 msgstr "soha"
 
-#: etc/RT_Config.pm:2807
+#: etc/RT_Config.pm:2829
 msgid "new"
 msgstr "új"
 
@@ -9570,7 +9573,7 @@ msgstr "új"
 msgid "no"
 msgstr "nem"
 
-#: lib/RT/User.pm:654
+#: lib/RT/User.pm:666
 msgid "no email address set"
 msgstr ""
 
@@ -9602,7 +9605,7 @@ msgstr "adott napon"
 msgid "one"
 msgstr "egy"
 
-#: etc/RT_Config.pm:2808 share/html/SelfService/Elements/MyRequests:73
+#: etc/RT_Config.pm:2830 share/html/SelfService/Elements/MyRequests:73
 msgid "open"
 msgstr "nyitott"
 
@@ -9635,15 +9638,15 @@ msgstr ""
 msgid "queue %1 %2"
 msgstr "Stapel %1 %2"
 
-#: lib/RT/User.pm:660
+#: lib/RT/User.pm:672
 msgid "receives daily digests"
 msgstr ""
 
-#: lib/RT/User.pm:662
+#: lib/RT/User.pm:674
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "rejected"
 msgstr "elutasítva"
 
@@ -9651,7 +9654,7 @@ msgstr "elutasítva"
 msgid "requires running rt-crontool"
 msgstr "Az rt-crontool futtatása szükséges hozzá"
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "resolved"
 msgstr "megoldva"
 
@@ -9675,7 +9678,7 @@ msgstr "Oldalsó Panel"
 msgid "site config"
 msgstr ""
 
-#: etc/RT_Config.pm:2808
+#: etc/RT_Config.pm:2830
 msgid "stalled"
 msgstr "várakozik"
 

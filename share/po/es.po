@@ -401,7 +401,7 @@ msgstr "%1 objetos"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1087
+#: lib/RT/Group.pm:1144 lib/RT/Transaction.pm:1087
 msgid "%1 set to %2"
 msgstr "%1 establecido como %2"
 
@@ -890,6 +890,21 @@ msgstr "Añadido %1 a miembros de %2 para este queue"
 #: lib/RT/Class.pm:386
 msgid "Added Subject Override: %1"
 msgstr "Añadida anulación de asunto: %1"
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1324
+msgid "Added group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1343
+msgid "Added to group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1321
+msgid "Added user '%1'"
+msgstr ""
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1440,7 +1455,7 @@ msgstr ""
 msgid "Can not load saved search \"%1\""
 msgstr "No puede cargar la busqueda salvada \"%1\""
 
-#: lib/RT/User.pm:1559
+#: lib/RT/User.pm:1571
 msgid "Can not modify system users"
 msgstr "No se pueden modificar los usuarios del sistema"
 
@@ -1805,7 +1820,7 @@ msgstr "No se pudo crear la búsqueda: %1"
 msgid "Could not create ticket. Queue not set"
 msgstr "No se pudo crear el caso. Cola no seleccionada"
 
-#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:448
+#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:460
 msgid "Could not create user"
 msgstr "No se pudo crear el usuario"
 
@@ -2123,11 +2138,11 @@ msgstr "No se pudo resolver el destino '%1' en una URI"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "No se pudo establecer %1 observador: %2"
 
-#: lib/RT/User.pm:1833
+#: lib/RT/User.pm:1845
 msgid "Couldn't set private key"
 msgstr "No se pudo establecer clave privada"
 
-#: lib/RT/User.pm:1817
+#: lib/RT/User.pm:1829
 msgid "Couldn't unset private key"
 msgstr "No se pudo desconfigurar la clave privada"
 
@@ -2459,7 +2474,7 @@ msgstr "Nombre del usuario para el Administrador de la Base de Datos"
 msgid "Daily"
 msgstr "Diariamente"
 
-#: lib/RT/Config.pm:535
+#: lib/RT/Config.pm:575
 msgid "Daily digest"
 msgstr "Resumen diario"
 
@@ -2491,7 +2506,7 @@ msgstr "No fue posible actualizar Cuadro de Mandos: %1"
 msgid "Dashboard updated"
 msgstr "Cuadro de Mandos actualizado"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1258 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Cuadros de Mandos"
 
@@ -2532,7 +2547,7 @@ msgstr "Usuario de la base de datos para RT"
 msgid "Date"
 msgstr ""
 
-#: lib/RT/Config.pm:484
+#: lib/RT/Config.pm:524
 msgid "Date format"
 msgstr "Formato de fecha"
 
@@ -2589,7 +2604,7 @@ msgstr "Por omisión: %1/%2 ha cambiado de %3 a %4"
 msgid "DefaultFormat"
 msgstr "FormatoPredefinido"
 
-#: etc/RT_Config.pm:2839 etc/RT_Config.pm:2883 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2861 etc/RT_Config.pm:2905 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Borrar"
 
@@ -2657,7 +2672,7 @@ msgstr "Búsqueda %1 eliminada"
 msgid "Deleting this object would break referential integrity"
 msgstr "Al borrar este objeto, se romperá la integridad referencial"
 
-#: lib/RT/User.pm:459
+#: lib/RT/User.pm:471
 msgid "Deleting this object would violate referential integrity"
 msgstr "Al borrar este objeto, se violará la integridad referencial"
 
@@ -2750,19 +2765,19 @@ msgstr "Mostrar artículo %1"
 msgid "Display Columns"
 msgstr "Mostrar Columnas"
 
-#: lib/RT/Config.pm:431
+#: lib/RT/Config.pm:471
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr "Mostrar todos los adjuntos de texto plano en fuente monoespaciada, conservando el formato, pero ajustándolo según sea necesario."
 
-#: lib/RT/Config.pm:358
+#: lib/RT/Config.pm:398
 msgid "Display messages in rich text if available"
 msgstr "Mostrar los mensajes en formato de texto enriquecido si está disponible"
 
-#: lib/RT/Config.pm:430
+#: lib/RT/Config.pm:470
 msgid "Display plain-text attachments in fixed-width font"
 msgstr "Mostrar los adjuntos de texto plano en fuentes monoespaciadas."
 
-#: lib/RT/Config.pm:465
+#: lib/RT/Config.pm:505
 msgid "Display ticket after \"Quick Create\""
 msgstr "Mostrar caso después de la \"Creación Rápida\""
 
@@ -2783,11 +2798,11 @@ msgstr "Nombre de dominio"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "No incluya http://, sólo algo como 'localhost' o 'rt.ejemplo.com'"
 
-#: lib/RT/Config.pm:340
+#: lib/RT/Config.pm:366
 msgid "Don't refresh home page."
 msgstr "No actualizar la pagina principal."
 
-#: lib/RT/Config.pm:319
+#: lib/RT/Config.pm:330
 msgid "Don't refresh search results."
 msgstr "No actualizar los resultados de la busqueda."
 
@@ -2935,11 +2950,11 @@ msgstr "Resumen por e-mail"
 msgid "Email Source for Ticket %1, Attachment %2"
 msgstr ""
 
-#: lib/RT/User.pm:588
+#: lib/RT/User.pm:600
 msgid "Email address in use"
 msgstr "La dirección de correo ya está en uso"
 
-#: lib/RT/Config.pm:532
+#: lib/RT/Config.pm:572
 msgid "Email delivery"
 msgstr "Envío por e-mail"
 
@@ -2955,7 +2970,7 @@ msgstr "CorreoElectrónico"
 msgid "Empty"
 msgstr "Vacío"
 
-#: lib/RT/Config.pm:474
+#: lib/RT/Config.pm:514
 msgid "Enable quote folding?"
 msgstr ""
 
@@ -3185,7 +3200,7 @@ msgstr "Expirar"
 msgid "ExtendedStatus"
 msgstr "EstadoExtendido"
 
-#: lib/RT/User.pm:1029
+#: lib/RT/User.pm:1041
 msgid "External authentication enabled."
 msgstr "Autenticación externa habilitada"
 
@@ -3373,7 +3388,7 @@ msgstr "Encontrar usuarios que"
 msgid "Find tickets"
 msgstr "Encontrar casos"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "FindUser"
 msgstr "EncontrarUsuario"
 
@@ -3493,7 +3508,7 @@ msgstr "GD está desactivado o no está instalado. Puede cargar una imagen, pero
 msgid "Gecos"
 msgstr ""
 
-#: lib/RT/Config.pm:201 lib/RT/Config.pm:311
+#: lib/RT/Config.pm:201 lib/RT/Config.pm:321
 msgid "General"
 msgstr ""
 
@@ -3623,7 +3638,7 @@ msgstr "Grupo deshabilitado"
 msgid "Group enabled"
 msgstr "Grupo habilitado"
 
-#: lib/RT/Group.pm:1276
+#: lib/RT/Group.pm:1289
 msgid "Group has no such member"
 msgstr "El grupo no tiene este miembro"
 
@@ -3762,7 +3777,7 @@ msgstr "Historico del usuario %1"
 msgid "Home Phone"
 msgstr "Teléfono particular"
 
-#: lib/RT/Config.pm:337
+#: lib/RT/Config.pm:362
 msgid "Home page refresh interval"
 msgstr "Intervalo de refresco de la página de inicio"
 
@@ -3932,7 +3947,7 @@ msgstr ""
 msgid "Index updates from %1"
 msgstr ""
 
-#: lib/RT/Config.pm:534
+#: lib/RT/Config.pm:574
 msgid "Individual messages"
 msgstr "Mensajes individuales"
 
@@ -4098,7 +4113,7 @@ msgstr "Permiso no válido"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Permiso no válido. No se pudo hacer canónico el permiso '%1'"
 
-#: lib/RT/User.pm:578
+#: lib/RT/User.pm:590
 msgid "Invalid syntax for email address"
 msgstr "Sintaxis no válida para la dirección de correo electrónico"
 
@@ -4238,7 +4253,7 @@ msgstr "Queda"
 msgid "Legends"
 msgstr "Leyendas"
 
-#: lib/RT/Config.pm:370
+#: lib/RT/Config.pm:410
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Longitud en caracteres; uso '0 'para mostrar todos los mensajes en línea, independientemente de la longitud de"
 
@@ -4361,7 +4376,7 @@ msgstr "Se cargó la búsqueda salvada \"%1\""
 msgid "Loading..."
 msgstr "Cargando…"
 
-#: lib/RT/Config.pm:480 share/html/SelfService/Prefs.html:56
+#: lib/RT/Config.pm:520 share/html/SelfService/Prefs.html:56
 msgid "Locale"
 msgstr "Local"
 
@@ -4432,7 +4447,7 @@ msgstr "No coinciden los tipos de búsqueda"
 msgid "M-F at %1"
 msgstr "M-F a las %1"
 
-#: lib/RT/Config.pm:527 lib/RT/Config.pm:542
+#: lib/RT/Config.pm:567 lib/RT/Config.pm:582
 msgid "Mail"
 msgstr "Correo electrónico"
 
@@ -4549,7 +4564,7 @@ msgstr ""
 msgid "Maximum Starts-Started"
 msgstr ""
 
-#: lib/RT/Config.pm:368
+#: lib/RT/Config.pm:408
 msgid "Maximum inline message length"
 msgstr "Longitud máxima del mensaje en línea"
 
@@ -4588,15 +4603,15 @@ msgid "Member %1 deleted"
 msgstr "Miembro %1 borrado"
 
 #. ($new_member_obj->Object->Name)
-#: lib/RT/Group.pm:1134
+#: lib/RT/Group.pm:1147
 msgid "Member added: %1"
 msgstr "Miembro añadido: %1"
 
-#: lib/RT/Group.pm:1315
+#: lib/RT/Group.pm:1341
 msgid "Member deleted"
 msgstr "Miembro borrado"
 
-#: lib/RT/Group.pm:1286
+#: lib/RT/Group.pm:1299
 msgid "Member not deleted"
 msgstr "Miembro no borrado"
 
@@ -5105,11 +5120,11 @@ msgstr "Mis recordatorios"
 msgid "My saved searches"
 msgstr "Mis búsquedas salvadas"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "MyAdminQueues"
 msgstr "MisColasDeAdmin"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:871
+#: etc/RT_Config.pm:1258 etc/initialdata:871
 msgid "MyReminders"
 msgstr "MisRecordatorios"
 
@@ -5117,7 +5132,7 @@ msgstr "MisRecordatorios"
 msgid "MySQL"
 msgstr ""
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "MySupportQueues"
 msgstr "MisColasDeSoporte"
 
@@ -5193,7 +5208,7 @@ msgstr "Nuevos mensajes"
 msgid "New password"
 msgstr "Nueva contraseña"
 
-#: lib/RT/User.pm:779
+#: lib/RT/User.pm:791
 msgid "New password notification sent"
 msgstr "Notificación de nueva contraseña enviada"
 
@@ -5347,7 +5362,7 @@ msgstr "No se introdujo nombre"
 msgid "No need to encrypt"
 msgstr "No es necesario encriptar"
 
-#: lib/RT/User.pm:848
+#: lib/RT/User.pm:860
 msgid "No password set"
 msgstr "No hay contraseña definida"
 
@@ -5372,7 +5387,7 @@ msgstr "No tiene permiso para modificar artículo"
 msgid "No permission to save system-wide searches"
 msgstr "Sin permiso para grabar búsquedas a través del sistema."
 
-#: lib/RT/User.pm:1411 lib/RT/User.pm:1435
+#: lib/RT/User.pm:1423 lib/RT/User.pm:1447
 msgid "No permission to set preferences"
 msgstr "Sin permisos para establecer preferencias"
 
@@ -5417,7 +5432,7 @@ msgstr "No hay búsqueda sobre la que operar"
 msgid "No subject"
 msgstr "Sin asunto"
 
-#: lib/RT/User.pm:1825
+#: lib/RT/User.pm:1837
 msgid "No such key or it's not suitable for signing"
 msgstr "Clave inexistente o no es apropiada para firmar"
 
@@ -5494,7 +5509,7 @@ msgstr "¿No está usando un navegador móvil?"
 msgid "Notes"
 msgstr "Notas"
 
-#: lib/RT/User.pm:781
+#: lib/RT/User.pm:793
 msgid "Notification could not be sent"
 msgstr "La notificación no se pudo enviar"
 
@@ -5582,7 +5597,7 @@ msgstr "Notificar solicitantes y Ccs"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Notificar solicitantes y Ccs como comentario"
 
-#: lib/RT/Config.pm:403
+#: lib/RT/Config.pm:443
 msgid "Notify me of unread messages"
 msgstr "Notifiqueme si hay mensajes no leídos"
 
@@ -5741,7 +5756,7 @@ msgstr "Solo mostrar campos personalizados para:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2836 etc/RT_Config.pm:2843 etc/RT_Config.pm:2880 etc/RT_Config.pm:2887
+#: etc/RT_Config.pm:2858 etc/RT_Config.pm:2865 etc/RT_Config.pm:2902 etc/RT_Config.pm:2909
 msgid "Open It"
 msgstr "Abrirlo"
 
@@ -5806,7 +5821,7 @@ msgstr "Email saliente acerca de un comentario grabado"
 msgid "Outgoing email recorded"
 msgstr "Email saliente grabado"
 
-#: lib/RT/Config.pm:547
+#: lib/RT/Config.pm:587
 msgid "Outgoing mail"
 msgstr "Correo de salida"
 
@@ -5885,11 +5900,11 @@ msgstr "Padres"
 msgid "Password"
 msgstr "Contraseña"
 
-#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:859
+#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:871
 msgid "Password changed"
 msgstr "Contraseña cambiada"
 
-#: lib/RT/User.pm:825
+#: lib/RT/User.pm:837
 msgid "Password has not been set."
 msgstr "No se ha establecido contraseña."
 
@@ -5902,7 +5917,7 @@ msgstr "La Contraseña necesita ser al menos de %1 caracteres de longitud"
 msgid "Password not printed"
 msgstr "Contraseña no mostrada"
 
-#: lib/RT/User.pm:858
+#: lib/RT/User.pm:870
 msgid "Password set"
 msgstr "Contraseña establecida"
 
@@ -5911,7 +5926,7 @@ msgstr "Contraseña establecida"
 msgid "Password: %1"
 msgstr "Contraseña: %1"
 
-#: lib/RT/User.pm:844
+#: lib/RT/User.pm:856
 msgid "Password: Permission Denied"
 msgstr "Contraseña: Permiso Denegado"
 
@@ -5919,7 +5934,7 @@ msgstr "Contraseña: Permiso Denegado"
 msgid "PasswordChange"
 msgstr "CambioContraseña"
 
-#: lib/RT/User.pm:821
+#: lib/RT/User.pm:833
 msgid "Passwords do not match."
 msgstr "Las Contraseña no coinciden"
 
@@ -5970,7 +5985,7 @@ msgstr "Orden de búsqueda de librería Perl"
 msgid "Permanently wipeout data from RT"
 msgstr "Eliminar datos de RT de forma definitiva"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1127 lib/RT/User.pm:137 lib/RT/User.pm:1562 lib/RT/User.pm:1810 lib/RT/User.pm:1843 lib/RT/User.pm:326 lib/RT/User.pm:727 lib/RT/User.pm:762 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1260 lib/RT/Group.pm:1357 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1139 lib/RT/User.pm:137 lib/RT/User.pm:1574 lib/RT/User.pm:1822 lib/RT/User.pm:1855 lib/RT/User.pm:326 lib/RT/User.pm:739 lib/RT/User.pm:774 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Permiso denegado"
 
@@ -6010,11 +6025,11 @@ msgstr ""
 msgid "Please check the URL and try again."
 msgstr "Por favor, verifique la URL e intente nuevamente."
 
-#: lib/RT/User.pm:816
+#: lib/RT/User.pm:828
 msgid "Please enter your current password correctly."
 msgstr "Por favor introduzca su contraseña actual correctamente"
 
-#: lib/RT/User.pm:818
+#: lib/RT/User.pm:830
 msgid "Please enter your current password."
 msgstr "Por favor introduzca su contraseña actual"
 
@@ -6068,7 +6083,7 @@ msgstr "Preferencias guaraddas para el usuario %1."
 msgid "Preferences saved."
 msgstr "Preferencias guardadas"
 
-#: lib/RT/User.pm:1439
+#: lib/RT/User.pm:1451
 msgid "Preferences were not found"
 msgstr ""
 
@@ -6174,7 +6189,7 @@ msgstr ""
 msgid "Queries"
 msgstr "Consultas"
 
-#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:88
+#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:90
 msgid "Query"
 msgstr "Consulta"
 
@@ -6269,11 +6284,11 @@ msgstr "Búsqueda rápida"
 msgid "Quick ticket creation"
 msgstr "Creación rápida de caso"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:864
+#: etc/RT_Config.pm:1258 etc/initialdata:864
 msgid "QuickCreate"
 msgstr "CreaciónRápida"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:875
+#: etc/RT_Config.pm:1258 etc/initialdata:875
 msgid "Quicksearch"
 msgstr "Búsqueda rápida"
 
@@ -6313,7 +6328,7 @@ msgstr ""
 msgid "RT Size"
 msgstr "Tamaño de RT"
 
-#: lib/RT/Config.pm:332 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
+#: lib/RT/Config.pm:357 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT de un vistazo"
 
@@ -6390,7 +6405,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "La opción RTDireccionRegexp de la configuración no coincide con %1"
 
-#: etc/RT_Config.pm:2844 etc/RT_Config.pm:2845 etc/RT_Config.pm:2888 etc/RT_Config.pm:2889
+#: etc/RT_Config.pm:2866 etc/RT_Config.pm:2867 etc/RT_Config.pm:2910 etc/RT_Config.pm:2911
 msgid "Re-open"
 msgstr "Reabrir"
 
@@ -6470,60 +6485,33 @@ msgstr "SeRefiereA"
 msgid "Refresh"
 msgstr "Recargar"
 
-#: lib/RT/Config.pm:343
-msgid "Refresh home page every 10 minutes."
-msgstr "Refrescar la página principal cada 10 minutos"
+#: lib/RT/Config.pm:372
+msgid "Refresh home page every %quant(%1,minute,minutes)."
+msgstr ""
 
-#: lib/RT/Config.pm:346
-msgid "Refresh home page every 120 minutes."
-msgstr "Refrescar la página principal cada 120 minutos"
+#: lib/RT/Config.pm:378
+msgid "Refresh home page every %quant(%1,second,seconds)."
+msgstr ""
 
-#: lib/RT/Config.pm:341
-msgid "Refresh home page every 2 minutes."
-msgstr "Refrescar la página principal cada 2 minutos"
-
-#: lib/RT/Config.pm:344
-msgid "Refresh home page every 20 minutes."
-msgstr "Refrescar la página principal cada 20 minutos"
+#: lib/RT/Config.pm:336
+msgid "Refresh search results every %quant(%1,minute,minutes)."
+msgstr ""
 
 #: lib/RT/Config.pm:342
-msgid "Refresh home page every 5 minutes."
-msgstr "Refrescar la página principal cada 5 minutos"
-
-#: lib/RT/Config.pm:345
-msgid "Refresh home page every 60 minutes."
-msgstr "Refrescar la página principal cada 60 minutos"
-
-#: lib/RT/Config.pm:322
-msgid "Refresh search results every 10 minutes."
-msgstr "Refrescar los resultados de la búsqueda cada 10 minutos"
-
-#: lib/RT/Config.pm:325
-msgid "Refresh search results every 120 minutes."
-msgstr "Refrescar resultados de la búsqueda cada 120 minutos."
-
-#: lib/RT/Config.pm:320
-msgid "Refresh search results every 2 minutes."
-msgstr "Refrescar resultados de la búsqueda cada 2 minutos."
-
-#: lib/RT/Config.pm:323
-msgid "Refresh search results every 20 minutes."
-msgstr "Refrescar resultados de la búsqueda cada 20 minutos."
-
-#: lib/RT/Config.pm:321
-msgid "Refresh search results every 5 minutes."
-msgstr "Refrescar resultados de la búsqueda cada 5 minutos."
-
-#: lib/RT/Config.pm:324
-msgid "Refresh search results every 60 minutes."
-msgstr "Refrescar resultados de la búsqueda cada 60 minutos."
+msgid "Refresh search results every %quant(%1,second,seconds)."
+msgstr ""
 
 #. ($value/60)
-#: share/html/Elements/Refresh:59
+#: share/html/Elements/Refresh:60
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Refrescar esta página cada %1 minutos"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:883
+#. ($value)
+#: share/html/Elements/Refresh:62
+msgid "Refresh this page every %quant(%1,second,seconds)."
+msgstr ""
+
+#: etc/RT_Config.pm:1258 etc/initialdata:883
 msgid "RefreshHomepage"
 msgstr "RecargarPaginaDeInicio"
 
@@ -6531,7 +6519,7 @@ msgstr "RecargarPaginaDeInicio"
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 etc/RT_Config.pm:2882 etc/RT_Config.pm:2886
+#: etc/RT_Config.pm:2860 etc/RT_Config.pm:2864 etc/RT_Config.pm:2904 etc/RT_Config.pm:2908
 msgid "Reject"
 msgstr "Rechazar"
 
@@ -6608,6 +6596,21 @@ msgstr "%1 removido de los miembros de %2 para esta cola."
 
 #: lib/RT/Class.pm:390
 msgid "Removed Subject Override"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1349
+msgid "Removed from group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1336
+msgid "Removed group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1333
+msgid "Removed user '%1'"
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:77
@@ -6687,7 +6690,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Residencia"
 
-#: etc/RT_Config.pm:2837 etc/RT_Config.pm:2841 etc/RT_Config.pm:2881 etc/RT_Config.pm:2885 share/html/Search/Elements/EditFormat:76
+#: etc/RT_Config.pm:2859 etc/RT_Config.pm:2863 etc/RT_Config.pm:2903 etc/RT_Config.pm:2907 share/html/Search/Elements/EditFormat:76
 msgid "Resolve"
 msgstr "Resolver"
 
@@ -6728,7 +6731,7 @@ msgstr "Confirmar contraseña"
 msgid "Revert"
 msgstr "Revertir"
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:399
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
@@ -6878,7 +6881,7 @@ msgstr ""
 msgid "Saved searches"
 msgstr "Búsquedas guardadas"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "SavedSearches"
 msgstr "BusquedasGuardadas"
 
@@ -6958,7 +6961,7 @@ msgstr "Opciones de búsqueda"
 msgid "Search results"
 msgstr "Resultados de búsqueda"
 
-#: lib/RT/Config.pm:316
+#: lib/RT/Config.pm:326
 msgid "Search results refresh interval"
 msgstr "Intervalo de refresco de los resultados de la búsqueda"
 
@@ -7177,7 +7180,7 @@ msgstr "Enviar mail a los solicitantes y Ccs"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Enviar mail a los solicitantes y Ccs como comentario"
 
-#: lib/RT/Interface/Email.pm:1800
+#: lib/RT/Interface/Email.pm:1801
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr ""
 
@@ -7225,7 +7228,7 @@ msgstr ""
 msgid "Separate multiple entries with spaces."
 msgstr "Separar entradas múltiples con espacios."
 
-#: lib/RT/User.pm:1835
+#: lib/RT/User.pm:1847
 msgid "Set private key"
 msgstr "Definir clave privada"
 
@@ -7241,7 +7244,7 @@ msgstr ""
 msgid "Short usernames"
 msgstr "Nombres cortos de usuario"
 
-#: lib/RT/Config.pm:548
+#: lib/RT/Config.pm:588
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "¿Desea que RT le envíe un correo por cada actualización de caso que usted realice?"
 
@@ -7302,7 +7305,7 @@ msgstr "Mostrar cabeceras completas"
 msgid "Show global templates"
 msgstr "Mostrar plantillas globales"
 
-#: lib/RT/Config.pm:388
+#: lib/RT/Config.pm:428
 msgid "Show history"
 msgstr ""
 
@@ -7314,11 +7317,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Mostrar descripciones de enlace"
 
-#: lib/RT/Config.pm:446
+#: lib/RT/Config.pm:486
 msgid "Show no tickets for the Requestor"
 msgstr "No mostrar casos al solicitante"
 
-#: lib/RT/Config.pm:379
+#: lib/RT/Config.pm:419
 msgid "Show oldest history first"
 msgstr "Mostrar primero el historial más antiguo"
 
@@ -7334,19 +7337,19 @@ msgstr "Mostrar texto citado"
 msgid "Show requests awaiting other approvals"
 msgstr "Mostrar solicitudes esperando otras aprobaciones"
 
-#: lib/RT/Config.pm:456
+#: lib/RT/Config.pm:496
 msgid "Show simplified recipient list on ticket update"
 msgstr ""
 
-#: lib/RT/Config.pm:443
+#: lib/RT/Config.pm:483
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr "Mostrar los 10 casos activos con más alta prioridad del solicitante"
 
-#: lib/RT/Config.pm:444
+#: lib/RT/Config.pm:484
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr "Mostrar los 10 casos inactivos con más alta prioridad del solicitante"
 
-#: lib/RT/Config.pm:445
+#: lib/RT/Config.pm:485
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr "Mostrar los 10 casos con más alta prioridad del solicitante"
 
@@ -7475,7 +7478,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Fase"
 
-#: etc/RT_Config.pm:2840 etc/RT_Config.pm:2884
+#: etc/RT_Config.pm:2862 etc/RT_Config.pm:2906
 msgid "Stall"
 msgstr "Casilla"
 
@@ -7675,7 +7678,7 @@ msgstr "Dom"
 msgid "Sunday"
 msgstr "Domingo"
 
-#: lib/RT/Config.pm:537
+#: lib/RT/Config.pm:577
 msgid "Suspended"
 msgstr "Suspendido"
 
@@ -7834,15 +7837,15 @@ msgstr "Ese usuario no existe"
 msgid "That user is already privileged"
 msgstr "Ese usuario ya es privilegiado"
 
-#: lib/RT/User.pm:373
+#: lib/RT/User.pm:379
 msgid "That user is already unprivileged"
 msgstr "Ese usuario ya es no privilegiado"
 
-#: lib/RT/User.pm:366
+#: lib/RT/User.pm:372
 msgid "That user is now privileged"
 msgstr "Ese usuario ahora es privilegiado"
 
-#: lib/RT/User.pm:386
+#: lib/RT/User.pm:398
 msgid "That user is now unprivileged"
 msgstr "Ese usuario ahora es no privilegiado"
 
@@ -8127,7 +8130,7 @@ msgstr "El caso no pudo ser cargado"
 msgid "Ticket count"
 msgstr ""
 
-#: lib/RT/Config.pm:353 lib/RT/Config.pm:363 lib/RT/Config.pm:435 lib/RT/Config.pm:451
+#: lib/RT/Config.pm:393 lib/RT/Config.pm:403 lib/RT/Config.pm:475 lib/RT/Config.pm:491
 msgid "Ticket display"
 msgstr "Visualizar caso"
 
@@ -8338,7 +8341,7 @@ msgstr ""
 msgid "Transactions"
 msgstr ""
 
-#: lib/RT/Transaction.pm:1349
+#: lib/RT/Transaction.pm:1385
 msgid "Transactions are immutable"
 msgstr "Las transacciones son inmutables"
 
@@ -8445,7 +8448,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Desactive las casillas para deshabilitar notificaciones a los destinatarios listados <b>solo para esta transacción</b>; el silenciamiento persistente es administrado en la página <a href=\"%1\">Personas</a>."
 
-#: etc/RT_Config.pm:2846 etc/RT_Config.pm:2890
+#: etc/RT_Config.pm:2868 etc/RT_Config.pm:2912
 msgid "Undelete"
 msgstr "Recuperar"
 
@@ -8524,7 +8527,7 @@ msgstr "Colas no seleccionadas"
 msgid "Unselected objects"
 msgstr "Objetos No Seleccionados"
 
-#: lib/RT/User.pm:1819
+#: lib/RT/User.pm:1831
 msgid "Unset private key"
 msgstr "Quitar valor de clave privada"
 
@@ -8667,7 +8670,7 @@ msgstr "Usar predeterminado (%1)"
 msgid "Use other RT administrative tools"
 msgstr "Usar otras herramientas administrativas de RT"
 
-#. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
+#. (join ', ', map loc(ref($ValuesLabel{$_}) ? @{ $ValuesLabel{$_ }} : $ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
 #: share/html/Widgets/Form/Select:125
 msgid "Use system default (%1)"
 msgstr "Utilizar predeterminado del sistema (%1)"
@@ -8740,11 +8743,11 @@ msgstr "El usuario no pudo ser creado: %1"
 msgid "User created"
 msgstr "Usuario creado"
 
-#: lib/RT/User.pm:1142
+#: lib/RT/User.pm:1154
 msgid "User disabled"
 msgstr "Usuario deshabilitado"
 
-#: lib/RT/User.pm:1144
+#: lib/RT/User.pm:1156
 msgid "User enabled"
 msgstr "Usuario activado"
 
@@ -8752,7 +8755,7 @@ msgstr "Usuario activado"
 msgid "User has empty email address"
 msgstr "El usuario tiene la dirección de e-mail vacía"
 
-#: lib/RT/User.pm:531 lib/RT/User.pm:551
+#: lib/RT/User.pm:543 lib/RT/User.pm:563
 msgid "User loaded"
 msgstr "Usuario cargado"
 
@@ -8938,7 +8941,7 @@ msgstr "Día de la semana"
 msgid "Weekly"
 msgstr "Semanalmente"
 
-#: lib/RT/Config.pm:536
+#: lib/RT/Config.pm:576
 msgid "Weekly digest"
 msgstr "Resumen semanal"
 
@@ -8954,7 +8957,7 @@ msgstr "Qué he hecho hoy"
 msgid "What is RT?"
 msgstr "¿Qué es RT?"
 
-#: lib/RT/Config.pm:440
+#: lib/RT/Config.pm:480
 msgid "What tickets to display in the \"More about requestor\" box"
 msgstr ""
 
@@ -9131,7 +9134,7 @@ msgstr ""
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr "Puede ingresar contenido del caso en cualquier campo de texto libre, texto o wiki."
 
-#: lib/RT/User.pm:810
+#: lib/RT/User.pm:822
 msgid "You can not set password."
 msgstr "No puede introducir la contraseña"
 
@@ -9227,7 +9230,7 @@ msgstr "Está viendo esta pantalla debido a que comenzó en un servidor RT sin u
 msgid "You're welcome to login again"
 msgstr "Es bienvenido a regresar en cualquier momento."
 
-#: lib/RT/User.pm:1036
+#: lib/RT/User.pm:1048
 msgid "Your password is not set."
 msgstr "Su contraseña no está establecida."
 
@@ -9268,11 +9271,11 @@ msgstr "activo"
 msgid "after"
 msgstr "Después"
 
-#: lib/RT/Config.pm:392
+#: lib/RT/Config.pm:432
 msgid "after clicking a link"
 msgstr ""
 
-#: lib/RT/Config.pm:391
+#: lib/RT/Config.pm:431
 msgid "after the rest of the page loads"
 msgstr ""
 
@@ -9365,7 +9368,7 @@ msgstr ""
 msgid "days"
 msgstr "días"
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "deleted"
 msgstr "borrado"
 
@@ -9381,11 +9384,11 @@ msgstr "descargar"
 msgid "duration"
 msgstr "duración"
 
-#: lib/RT/User.pm:664
+#: lib/RT/User.pm:676
 msgid "email delivery suspended"
 msgstr ""
 
-#: lib/RT/User.pm:656
+#: lib/RT/User.pm:668
 msgid "email disabled for ticket"
 msgstr ""
 
@@ -9459,7 +9462,7 @@ msgstr ""
 msgid "id"
 msgstr ""
 
-#: lib/RT/Config.pm:393
+#: lib/RT/Config.pm:433
 msgid "immediately"
 msgstr ""
 
@@ -9560,7 +9563,7 @@ msgstr "mensualmente (día %1) a las %2"
 msgid "never"
 msgstr "nunca"
 
-#: etc/RT_Config.pm:2807
+#: etc/RT_Config.pm:2829
 msgid "new"
 msgstr "nuevo"
 
@@ -9568,7 +9571,7 @@ msgstr "nuevo"
 msgid "no"
 msgstr ""
 
-#: lib/RT/User.pm:654
+#: lib/RT/User.pm:666
 msgid "no email address set"
 msgstr ""
 
@@ -9600,7 +9603,7 @@ msgstr "el día"
 msgid "one"
 msgstr "uno"
 
-#: etc/RT_Config.pm:2808 share/html/SelfService/Elements/MyRequests:73
+#: etc/RT_Config.pm:2830 share/html/SelfService/Elements/MyRequests:73
 msgid "open"
 msgstr "abierto"
 
@@ -9633,15 +9636,15 @@ msgstr ""
 msgid "queue %1 %2"
 msgstr "Cola %1 %2"
 
-#: lib/RT/User.pm:660
+#: lib/RT/User.pm:672
 msgid "receives daily digests"
 msgstr ""
 
-#: lib/RT/User.pm:662
+#: lib/RT/User.pm:674
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "rejected"
 msgstr "rechazado"
 
@@ -9649,7 +9652,7 @@ msgstr "rechazado"
 msgid "requires running rt-crontool"
 msgstr "requiere que rt-crontool esté ejecutándose"
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "resolved"
 msgstr "resuelto"
 
@@ -9673,7 +9676,7 @@ msgstr ""
 msgid "site config"
 msgstr "configuración del sitio"
 
-#: etc/RT_Config.pm:2808
+#: etc/RT_Config.pm:2830
 msgid "stalled"
 msgstr "parado"
 

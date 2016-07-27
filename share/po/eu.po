@@ -401,7 +401,7 @@ msgstr "%1 objektu"
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
-#: lib/RT/Group.pm:1131 lib/RT/Transaction.pm:1087
+#: lib/RT/Group.pm:1144 lib/RT/Transaction.pm:1087
 msgid "%1 set to %2"
 msgstr "%1 %2ra ezarrita"
 
@@ -889,6 +889,21 @@ msgstr "%1 gehituta %2ren kideei ilara honetarako"
 #. ($cf->Name)
 #: lib/RT/Class.pm:386
 msgid "Added Subject Override: %1"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1324
+msgid "Added group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1343
+msgid "Added to group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1321
+msgid "Added user '%1'"
 msgstr ""
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
@@ -1440,7 +1455,7 @@ msgstr "Hauen balioak kalkulatu"
 msgid "Can not load saved search \"%1\""
 msgstr "Ezin da kargatu gordetako \"%1\" bilaketa"
 
-#: lib/RT/User.pm:1559
+#: lib/RT/User.pm:1571
 msgid "Can not modify system users"
 msgstr "Ezin dira aldatu sistemako erabiltzaileak"
 
@@ -1805,7 +1820,7 @@ msgstr "Ezin izan da bilaketa sortu: %1"
 msgid "Could not create ticket. Queue not set"
 msgstr "Ezin izan da lan-agindua sortu. Ez da ilara ezarri"
 
-#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:448
+#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:460
 msgid "Could not create user"
 msgstr "Ezin izan da erabiltzailea sortu"
 
@@ -2123,11 +2138,11 @@ msgstr "Ezin izan da '%1' helburua URI bat bihurtu"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "Ezin izan da %1(r)en begiralea ezarri: %2"
 
-#: lib/RT/User.pm:1833
+#: lib/RT/User.pm:1845
 msgid "Couldn't set private key"
 msgstr "Ezin izan da gako pribatua ezarri"
 
-#: lib/RT/User.pm:1817
+#: lib/RT/User.pm:1829
 msgid "Couldn't unset private key"
 msgstr "Ezin izan da gako pribatua kendu"
 
@@ -2459,7 +2474,7 @@ msgstr ""
 msgid "Daily"
 msgstr "Egunero"
 
-#: lib/RT/Config.pm:535
+#: lib/RT/Config.pm:575
 msgid "Daily digest"
 msgstr "Eguneroko laburpena"
 
@@ -2491,7 +2506,7 @@ msgstr "Ezin izan da aginte-panela eguneratu: %1"
 msgid "Dashboard updated"
 msgstr "Aginte-panela eguneratuta"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1258 etc/initialdata:879 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Aginte-panelak"
 
@@ -2532,7 +2547,7 @@ msgstr ""
 msgid "Date"
 msgstr "Data"
 
-#: lib/RT/Config.pm:484
+#: lib/RT/Config.pm:524
 msgid "Date format"
 msgstr "Data formatua"
 
@@ -2589,7 +2604,7 @@ msgstr "Lehenetsia: %1/%2 aldatuta %3tik %4ra"
 msgid "DefaultFormat"
 msgstr ""
 
-#: etc/RT_Config.pm:2839 etc/RT_Config.pm:2883 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:2861 etc/RT_Config.pm:2905 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Elements/Tabs:892 share/html/Elements/Tabs:917 share/html/Search/Elements/EditFormat:119 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Ezabatu"
 
@@ -2657,7 +2672,7 @@ msgstr "Ezabatutako %1 bilaketa"
 msgid "Deleting this object would break referential integrity"
 msgstr "Objektu hau ezabatzeak integritate erreferentziala hautsi dezake"
 
-#: lib/RT/User.pm:459
+#: lib/RT/User.pm:471
 msgid "Deleting this object would violate referential integrity"
 msgstr "Objektu hau ezabatzeak integritate erreferentziala urratu dezake"
 
@@ -2750,19 +2765,19 @@ msgstr "%1 Artikulua Bistaratu"
 msgid "Display Columns"
 msgstr "Bistaratutako Zutabeak"
 
-#: lib/RT/Config.pm:431
+#: lib/RT/Config.pm:471
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr "Testu-plano eranskin guztiak zabalera finkoko letra-tipoan bistaratu formatua errespetatuz, baina testua egokituta beharrezko denean."
 
-#: lib/RT/Config.pm:358
+#: lib/RT/Config.pm:398
 msgid "Display messages in rich text if available"
 msgstr "Mezuak testu aberastuan bistaratu posible bada"
 
-#: lib/RT/Config.pm:430
+#: lib/RT/Config.pm:470
 msgid "Display plain-text attachments in fixed-width font"
 msgstr "Testu-plano eranskinak zabalera finkoko letra-tipoan bistaratu"
 
-#: lib/RT/Config.pm:465
+#: lib/RT/Config.pm:505
 msgid "Display ticket after \"Quick Create\""
 msgstr "Lan-agindua bistaratu \"Sorrera azkarraren\" ondoren"
 
@@ -2783,11 +2798,11 @@ msgstr "Domeinu-izena"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr ""
 
-#: lib/RT/Config.pm:340
+#: lib/RT/Config.pm:366
 msgid "Don't refresh home page."
 msgstr "Ez freskatu etxeko-orria."
 
-#: lib/RT/Config.pm:319
+#: lib/RT/Config.pm:330
 msgid "Don't refresh search results."
 msgstr "Ez freskatu bilaketa emaitzak."
 
@@ -2935,11 +2950,11 @@ msgstr "Laburpena Postaz"
 msgid "Email Source for Ticket %1, Attachment %2"
 msgstr "Posta-e iturburua %1 lan-agindu, %2 eranskinarendako"
 
-#: lib/RT/User.pm:588
+#: lib/RT/User.pm:600
 msgid "Email address in use"
 msgstr "Post-e helbidea erabilita dago"
 
-#: lib/RT/Config.pm:532
+#: lib/RT/Config.pm:572
 msgid "Email delivery"
 msgstr "Posta-e banaketa"
 
@@ -2955,7 +2970,7 @@ msgstr ""
 msgid "Empty"
 msgstr "Hutsik"
 
-#: lib/RT/Config.pm:474
+#: lib/RT/Config.pm:514
 msgid "Enable quote folding?"
 msgstr ""
 
@@ -3185,7 +3200,7 @@ msgstr "Iraungi"
 msgid "ExtendedStatus"
 msgstr ""
 
-#: lib/RT/User.pm:1029
+#: lib/RT/User.pm:1041
 msgid "External authentication enabled."
 msgstr "Kanpo-autentifikazioa gaituta."
 
@@ -3373,7 +3388,7 @@ msgstr "Aurkitu ondokoa betetzen duen jende guztia"
 msgid "Find tickets"
 msgstr "Lan-aginduak aurkitu"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "FindUser"
 msgstr ""
 
@@ -3493,7 +3508,7 @@ msgstr "GD desgaituta edo instalatu gabe dago. Irudi bat igo dezakezu, baina ez 
 msgid "Gecos"
 msgstr ""
 
-#: lib/RT/Config.pm:201 lib/RT/Config.pm:311
+#: lib/RT/Config.pm:201 lib/RT/Config.pm:321
 msgid "General"
 msgstr "Orokorra"
 
@@ -3623,7 +3638,7 @@ msgstr "Taldea desgaituta"
 msgid "Group enabled"
 msgstr "Taldea gaituta"
 
-#: lib/RT/Group.pm:1276
+#: lib/RT/Group.pm:1289
 msgid "Group has no such member"
 msgstr "Taldean ez dago horrelako kiderik"
 
@@ -3762,7 +3777,7 @@ msgstr "%1 erabiltzailearen historia"
 msgid "Home Phone"
 msgstr "Etxeko-telefonoa"
 
-#: lib/RT/Config.pm:337
+#: lib/RT/Config.pm:362
 msgid "Home page refresh interval"
 msgstr "Etxeko orria freskatze tartea"
 
@@ -3932,7 +3947,7 @@ msgstr ""
 msgid "Index updates from %1"
 msgstr ""
 
-#: lib/RT/Config.pm:534
+#: lib/RT/Config.pm:574
 msgid "Individual messages"
 msgstr "Mezuak banaka"
 
@@ -4098,7 +4113,7 @@ msgstr "Eskubide baliogabea"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr ""
 
-#: lib/RT/User.pm:578
+#: lib/RT/User.pm:590
 msgid "Invalid syntax for email address"
 msgstr ""
 
@@ -4238,7 +4253,7 @@ msgstr "Ezker"
 msgid "Legends"
 msgstr "Legendak"
 
-#: lib/RT/Config.pm:370
+#: lib/RT/Config.pm:410
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Luzeera karakteretan; Erabili '0' mezu guztiak linean erakusteko, luzeera kontuan izan gabe"
 
@@ -4361,7 +4376,7 @@ msgstr "Kargatuta gordetako \"%1\" bilaketa"
 msgid "Loading..."
 msgstr "Kargatzen..."
 
-#: lib/RT/Config.pm:480 share/html/SelfService/Prefs.html:56
+#: lib/RT/Config.pm:520 share/html/SelfService/Prefs.html:56
 msgid "Locale"
 msgstr ""
 
@@ -4432,7 +4447,7 @@ msgstr ""
 msgid "M-F at %1"
 msgstr ""
 
-#: lib/RT/Config.pm:527 lib/RT/Config.pm:542
+#: lib/RT/Config.pm:567 lib/RT/Config.pm:582
 msgid "Mail"
 msgstr "Posta"
 
@@ -4549,7 +4564,7 @@ msgstr ""
 msgid "Maximum Starts-Started"
 msgstr ""
 
-#: lib/RT/Config.pm:368
+#: lib/RT/Config.pm:408
 msgid "Maximum inline message length"
 msgstr "Gehienezko lineako mezu luzeera"
 
@@ -4588,15 +4603,15 @@ msgid "Member %1 deleted"
 msgstr "%1 kidea ezabatuta"
 
 #. ($new_member_obj->Object->Name)
-#: lib/RT/Group.pm:1134
+#: lib/RT/Group.pm:1147
 msgid "Member added: %1"
 msgstr "Kidea gehituta: %1"
 
-#: lib/RT/Group.pm:1315
+#: lib/RT/Group.pm:1341
 msgid "Member deleted"
 msgstr "Kidea ezabatuta"
 
-#: lib/RT/Group.pm:1286
+#: lib/RT/Group.pm:1299
 msgid "Member not deleted"
 msgstr "Kidea ez da ezabatu"
 
@@ -5105,11 +5120,11 @@ msgstr "Nere oroigarriak"
 msgid "My saved searches"
 msgstr "Nere gordetako bilaketak"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "MyAdminQueues"
 msgstr ""
 
-#: etc/RT_Config.pm:1245 etc/initialdata:871
+#: etc/RT_Config.pm:1258 etc/initialdata:871
 msgid "MyReminders"
 msgstr ""
 
@@ -5117,7 +5132,7 @@ msgstr ""
 msgid "MySQL"
 msgstr ""
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "MySupportQueues"
 msgstr ""
 
@@ -5193,7 +5208,7 @@ msgstr "Mezu berriak"
 msgid "New password"
 msgstr "Pasahitz berria"
 
-#: lib/RT/User.pm:779
+#: lib/RT/User.pm:791
 msgid "New password notification sent"
 msgstr "Pasahitz berri jakinarazpena bidalita"
 
@@ -5347,7 +5362,7 @@ msgstr "Ez da izenik eman"
 msgid "No need to encrypt"
 msgstr ""
 
-#: lib/RT/User.pm:848
+#: lib/RT/User.pm:860
 msgid "No password set"
 msgstr "Ez da pasahitzik ezarri"
 
@@ -5372,7 +5387,7 @@ msgstr "Artikulua aldatzeko baimenik ez"
 msgid "No permission to save system-wide searches"
 msgstr "Ez duzu baimenik sistema-mailako bilaketak gordetzeko"
 
-#: lib/RT/User.pm:1411 lib/RT/User.pm:1435
+#: lib/RT/User.pm:1423 lib/RT/User.pm:1447
 msgid "No permission to set preferences"
 msgstr "Hobespenak ezarteko baimenik ez"
 
@@ -5417,7 +5432,7 @@ msgstr ""
 msgid "No subject"
 msgstr "Gairik ez"
 
-#: lib/RT/User.pm:1825
+#: lib/RT/User.pm:1837
 msgid "No such key or it's not suitable for signing"
 msgstr ""
 
@@ -5494,7 +5509,7 @@ msgstr ""
 msgid "Notes"
 msgstr "Oharrak"
 
-#: lib/RT/User.pm:781
+#: lib/RT/User.pm:793
 msgid "Notification could not be sent"
 msgstr "Ezin izan da jakinarazpena bidali"
 
@@ -5582,7 +5597,7 @@ msgstr "Eskatzaile eta CC-ei jakinarazi"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Eskatzaile eta CC-ei jakinarazi iruzkin gisa"
 
-#: lib/RT/Config.pm:403
+#: lib/RT/Config.pm:443
 msgid "Notify me of unread messages"
 msgstr "Jakinarazi neri irakurri gabeko mezuak daudela"
 
@@ -5741,7 +5756,7 @@ msgstr "Honendako eremu pertsonalizatuak bakarrik erakutsi:"
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:2836 etc/RT_Config.pm:2843 etc/RT_Config.pm:2880 etc/RT_Config.pm:2887
+#: etc/RT_Config.pm:2858 etc/RT_Config.pm:2865 etc/RT_Config.pm:2902 etc/RT_Config.pm:2909
 msgid "Open It"
 msgstr "Ireki"
 
@@ -5806,7 +5821,7 @@ msgstr ""
 msgid "Outgoing email recorded"
 msgstr "Irteera posta-e grabatuta"
 
-#: lib/RT/Config.pm:547
+#: lib/RT/Config.pm:587
 msgid "Outgoing mail"
 msgstr "Kanpora doan posta"
 
@@ -5885,11 +5900,11 @@ msgstr "Gurasoak"
 msgid "Password"
 msgstr "Pasahitza"
 
-#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:859
+#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:871
 msgid "Password changed"
 msgstr "Pasahitza aldatuta"
 
-#: lib/RT/User.pm:825
+#: lib/RT/User.pm:837
 msgid "Password has not been set."
 msgstr "Pasahitza ez da ezarria izan"
 
@@ -5902,7 +5917,7 @@ msgstr "Pasahitzak gutxienez %1 karaktere izan behar ditu"
 msgid "Password not printed"
 msgstr ""
 
-#: lib/RT/User.pm:858
+#: lib/RT/User.pm:870
 msgid "Password set"
 msgstr "Pasahitza ezarrita"
 
@@ -5911,7 +5926,7 @@ msgstr "Pasahitza ezarrita"
 msgid "Password: %1"
 msgstr "Pasahitza: %1"
 
-#: lib/RT/User.pm:844
+#: lib/RT/User.pm:856
 msgid "Password: Permission Denied"
 msgstr ""
 
@@ -5919,7 +5934,7 @@ msgstr ""
 msgid "PasswordChange"
 msgstr ""
 
-#: lib/RT/User.pm:821
+#: lib/RT/User.pm:833
 msgid "Passwords do not match."
 msgstr "Pasahitzak ez datoz bat."
 
@@ -5970,7 +5985,7 @@ msgstr ""
 msgid "Permanently wipeout data from RT"
 msgstr "RT-tik datuak behin-betiko ezabatu"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1247 lib/RT/Group.pm:1331 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1127 lib/RT/User.pm:137 lib/RT/User.pm:1562 lib/RT/User.pm:1810 lib/RT/User.pm:1843 lib/RT/User.pm:326 lib/RT/User.pm:727 lib/RT/User.pm:762 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1260 lib/RT/Group.pm:1357 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1073 lib/RT/Ticket.pm:1284 lib/RT/Ticket.pm:1452 lib/RT/Ticket.pm:1502 lib/RT/Ticket.pm:1772 lib/RT/Ticket.pm:1791 lib/RT/Ticket.pm:2202 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2222 lib/RT/Ticket.pm:2227 lib/RT/Ticket.pm:2251 lib/RT/Ticket.pm:2468 lib/RT/Ticket.pm:2697 lib/RT/Ticket.pm:3061 lib/RT/Ticket.pm:739 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1139 lib/RT/User.pm:137 lib/RT/User.pm:1574 lib/RT/User.pm:1822 lib/RT/User.pm:1855 lib/RT/User.pm:326 lib/RT/User.pm:739 lib/RT/User.pm:774 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Baimena Ukatuta"
 
@@ -6010,11 +6025,11 @@ msgstr ""
 msgid "Please check the URL and try again."
 msgstr ""
 
-#: lib/RT/User.pm:816
+#: lib/RT/User.pm:828
 msgid "Please enter your current password correctly."
 msgstr "Mesedez zuzen sartu zure oraingo pasahitza."
 
-#: lib/RT/User.pm:818
+#: lib/RT/User.pm:830
 msgid "Please enter your current password."
 msgstr "Mesedez sartu zure oraingo pasahitza."
 
@@ -6068,7 +6083,7 @@ msgstr ""
 msgid "Preferences saved."
 msgstr "Hobespenak gordeta."
 
-#: lib/RT/User.pm:1439
+#: lib/RT/User.pm:1451
 msgid "Preferences were not found"
 msgstr ""
 
@@ -6174,7 +6189,7 @@ msgstr ""
 msgid "Queries"
 msgstr "Kontsultak"
 
-#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:88
+#: share/html/Elements/RT__SavedSearch/ColumnMap:61 share/html/Search/Edit.html:56 share/html/Search/Elements/Chart:90
 msgid "Query"
 msgstr "Kontsulta"
 
@@ -6269,11 +6284,11 @@ msgstr "Bilaketa azkarra"
 msgid "Quick ticket creation"
 msgstr "Lan-agindu sorrera azkarra"
 
-#: etc/RT_Config.pm:1245 etc/initialdata:864
+#: etc/RT_Config.pm:1258 etc/initialdata:864
 msgid "QuickCreate"
 msgstr ""
 
-#: etc/RT_Config.pm:1245 etc/initialdata:875
+#: etc/RT_Config.pm:1258 etc/initialdata:875
 msgid "Quicksearch"
 msgstr ""
 
@@ -6313,7 +6328,7 @@ msgstr ""
 msgid "RT Size"
 msgstr ""
 
-#: lib/RT/Config.pm:332 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
+#: lib/RT/Config.pm:357 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:582 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT begiratu batean"
 
@@ -6390,7 +6405,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr ""
 
-#: etc/RT_Config.pm:2844 etc/RT_Config.pm:2845 etc/RT_Config.pm:2888 etc/RT_Config.pm:2889
+#: etc/RT_Config.pm:2866 etc/RT_Config.pm:2867 etc/RT_Config.pm:2910 etc/RT_Config.pm:2911
 msgid "Re-open"
 msgstr "Berriz ireki"
 
@@ -6470,60 +6485,33 @@ msgstr ""
 msgid "Refresh"
 msgstr "Freskatu"
 
-#: lib/RT/Config.pm:343
-msgid "Refresh home page every 10 minutes."
-msgstr "Etxeko orria 10 minuturo freskatu."
+#: lib/RT/Config.pm:372
+msgid "Refresh home page every %quant(%1,minute,minutes)."
+msgstr ""
 
-#: lib/RT/Config.pm:346
-msgid "Refresh home page every 120 minutes."
-msgstr "Etxeko orria 120 minuturo freskatu."
+#: lib/RT/Config.pm:378
+msgid "Refresh home page every %quant(%1,second,seconds)."
+msgstr ""
 
-#: lib/RT/Config.pm:341
-msgid "Refresh home page every 2 minutes."
-msgstr "Etxeko orria 2 minuturo freskatu."
-
-#: lib/RT/Config.pm:344
-msgid "Refresh home page every 20 minutes."
-msgstr "Etxeko orria 20 minuturo freskatu."
+#: lib/RT/Config.pm:336
+msgid "Refresh search results every %quant(%1,minute,minutes)."
+msgstr ""
 
 #: lib/RT/Config.pm:342
-msgid "Refresh home page every 5 minutes."
-msgstr "Etxeko orria 5 minuturo freskatu."
-
-#: lib/RT/Config.pm:345
-msgid "Refresh home page every 60 minutes."
-msgstr "Etxeko orria 60 minuturo freskatu."
-
-#: lib/RT/Config.pm:322
-msgid "Refresh search results every 10 minutes."
-msgstr "Bilaketa emaitzak 10 minuturo freskatu."
-
-#: lib/RT/Config.pm:325
-msgid "Refresh search results every 120 minutes."
-msgstr "Bilaketa emaitzak 120 minuturo freskatu."
-
-#: lib/RT/Config.pm:320
-msgid "Refresh search results every 2 minutes."
-msgstr "Bilaketa emaitzak 2 minuturo freskatu."
-
-#: lib/RT/Config.pm:323
-msgid "Refresh search results every 20 minutes."
-msgstr "Bilaketa emaitzak 20 minuturo freskatu."
-
-#: lib/RT/Config.pm:321
-msgid "Refresh search results every 5 minutes."
-msgstr "Bilaketa emaitzak 5 minuturo freskatu."
-
-#: lib/RT/Config.pm:324
-msgid "Refresh search results every 60 minutes."
-msgstr "Bilaketa emaitzak 60 minuturo freskatu."
+msgid "Refresh search results every %quant(%1,second,seconds)."
+msgstr ""
 
 #. ($value/60)
-#: share/html/Elements/Refresh:59
+#: share/html/Elements/Refresh:60
 msgid "Refresh this page every %quant(%1,minute,minutes)."
 msgstr "Orri hau %1 minuturo freskatu."
 
-#: etc/RT_Config.pm:1245 etc/initialdata:883
+#. ($value)
+#: share/html/Elements/Refresh:62
+msgid "Refresh this page every %quant(%1,second,seconds)."
+msgstr ""
+
+#: etc/RT_Config.pm:1258 etc/initialdata:883
 msgid "RefreshHomepage"
 msgstr ""
 
@@ -6531,7 +6519,7 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:2838 etc/RT_Config.pm:2842 etc/RT_Config.pm:2882 etc/RT_Config.pm:2886
+#: etc/RT_Config.pm:2860 etc/RT_Config.pm:2864 etc/RT_Config.pm:2904 etc/RT_Config.pm:2908
 msgid "Reject"
 msgstr "Baztertu"
 
@@ -6608,6 +6596,21 @@ msgstr ""
 
 #: lib/RT/Class.pm:390
 msgid "Removed Subject Override"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1349
+msgid "Removed from group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1336
+msgid "Removed group '%1'"
+msgstr ""
+
+#. ($principal->Object->Name)
+#: lib/RT/Transaction.pm:1333
+msgid "Removed user '%1'"
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:77
@@ -6687,7 +6690,7 @@ msgstr "RT Tema lehenetsira berrezarri"
 msgid "Residence"
 msgstr "Bizilekua"
 
-#: etc/RT_Config.pm:2837 etc/RT_Config.pm:2841 etc/RT_Config.pm:2881 etc/RT_Config.pm:2885 share/html/Search/Elements/EditFormat:76
+#: etc/RT_Config.pm:2859 etc/RT_Config.pm:2863 etc/RT_Config.pm:2903 etc/RT_Config.pm:2907 share/html/Search/Elements/EditFormat:76
 msgid "Resolve"
 msgstr "Amaitu"
 
@@ -6728,7 +6731,7 @@ msgstr "Pasahitza berriro idatzi"
 msgid "Revert"
 msgstr "Leheneratu"
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:399
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
@@ -6878,7 +6881,7 @@ msgstr "Ez da aurkitu %1 gordetako bilaketa"
 msgid "Saved searches"
 msgstr "Gordetako bilaketak"
 
-#: etc/RT_Config.pm:1245
+#: etc/RT_Config.pm:1258
 msgid "SavedSearches"
 msgstr ""
 
@@ -6958,7 +6961,7 @@ msgstr "Bilaketa aukerak"
 msgid "Search results"
 msgstr "Bilaketa emaitzak"
 
-#: lib/RT/Config.pm:316
+#: lib/RT/Config.pm:326
 msgid "Search results refresh interval"
 msgstr "Bilaketa emaitzak freskatzeko tartea"
 
@@ -7177,7 +7180,7 @@ msgstr "Eskatzaile eta CC-ei bidali mezua"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Eskatzaile eta CC-ei bidali mezua iruzkin gisa"
 
-#: lib/RT/Interface/Email.pm:1800
+#: lib/RT/Interface/Email.pm:1801
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr ""
 
@@ -7225,7 +7228,7 @@ msgstr "Ira"
 msgid "Separate multiple entries with spaces."
 msgstr "Banandu sarrera anitz hutsuneekin."
 
-#: lib/RT/User.pm:1835
+#: lib/RT/User.pm:1847
 msgid "Set private key"
 msgstr ""
 
@@ -7241,7 +7244,7 @@ msgstr ""
 msgid "Short usernames"
 msgstr "Erabiltzaile-izen motzak"
 
-#: lib/RT/Config.pm:548
+#: lib/RT/Config.pm:588
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "RTk zuk egindako lan-agindu eguneraketengatik posta bidali beharko lizuke?"
 
@@ -7302,7 +7305,7 @@ msgstr "Goiburu osoak erakutsi"
 msgid "Show global templates"
 msgstr "Erakutsi txantiloi globalak"
 
-#: lib/RT/Config.pm:388
+#: lib/RT/Config.pm:428
 msgid "Show history"
 msgstr "Historia erakutsi"
 
@@ -7314,11 +7317,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Esteka deskribapenak erakutsi"
 
-#: lib/RT/Config.pm:446
+#: lib/RT/Config.pm:486
 msgid "Show no tickets for the Requestor"
 msgstr "Ez erakutsi Eskatzailearen lan-agindurik"
 
-#: lib/RT/Config.pm:379
+#: lib/RT/Config.pm:419
 msgid "Show oldest history first"
 msgstr "Erakutsi historia zaharrena lehenengo"
 
@@ -7334,19 +7337,19 @@ msgstr "Aipatutako testua erakutsi"
 msgid "Show requests awaiting other approvals"
 msgstr ""
 
-#: lib/RT/Config.pm:456
+#: lib/RT/Config.pm:496
 msgid "Show simplified recipient list on ticket update"
 msgstr ""
 
-#: lib/RT/Config.pm:443
+#: lib/RT/Config.pm:483
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr "Erakutsi Eskatzailearen lehentasun handieneko 10 lan-agindu aktibo"
 
-#: lib/RT/Config.pm:444
+#: lib/RT/Config.pm:484
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr "Erakutsi Eskatzailearen lehentasun handieneko 10 lan-agindu ez-aktibo"
 
-#: lib/RT/Config.pm:445
+#: lib/RT/Config.pm:485
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr "Erakutsi Eskatzailearen 10 lehentasun handieneko lan-aginduak"
 
@@ -7475,7 +7478,7 @@ msgstr ""
 msgid "Stage"
 msgstr ""
 
-#: etc/RT_Config.pm:2840 etc/RT_Config.pm:2884
+#: etc/RT_Config.pm:2862 etc/RT_Config.pm:2906
 msgid "Stall"
 msgstr "Izoztu"
 
@@ -7675,7 +7678,7 @@ msgstr "Ig."
 msgid "Sunday"
 msgstr "Igandea"
 
-#: lib/RT/Config.pm:537
+#: lib/RT/Config.pm:577
 msgid "Suspended"
 msgstr "Geldiarazi"
 
@@ -7834,15 +7837,15 @@ msgstr "Erabiltzaile hori ez da existitzen"
 msgid "That user is already privileged"
 msgstr ""
 
-#: lib/RT/User.pm:373
+#: lib/RT/User.pm:379
 msgid "That user is already unprivileged"
 msgstr ""
 
-#: lib/RT/User.pm:366
+#: lib/RT/User.pm:372
 msgid "That user is now privileged"
 msgstr ""
 
-#: lib/RT/User.pm:386
+#: lib/RT/User.pm:398
 msgid "That user is now unprivileged"
 msgstr ""
 
@@ -8018,8 +8021,7 @@ msgstr "Lan-agindu hau ezin da amaitu onartuta dagoen arte."
 #. ($depends)
 #: share/html/Ticket/Elements/ShowDependencyStatus:60
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
-msgstr ""
-"Lan-agindu hau ezin da amaitu bere %numerate(%1,dependentzia,dependentziak) amaitu arte.\\r\n"
+msgstr "Lan-agindu hau ezin da amaitu bere %numerate(%1,dependentzia,dependentziak) amaitu arte.\\r\n"
 "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 
 #: bin/rt-crontool:349
@@ -8129,7 +8131,7 @@ msgstr "Ezin izan da lan-agindua kargatu"
 msgid "Ticket count"
 msgstr "Agindu kopurua"
 
-#: lib/RT/Config.pm:353 lib/RT/Config.pm:363 lib/RT/Config.pm:435 lib/RT/Config.pm:451
+#: lib/RT/Config.pm:393 lib/RT/Config.pm:403 lib/RT/Config.pm:475 lib/RT/Config.pm:491
 msgid "Ticket display"
 msgstr "Lan-agindu bistaratzea"
 
@@ -8340,7 +8342,7 @@ msgstr ""
 msgid "Transactions"
 msgstr "Eragiketak"
 
-#: lib/RT/Transaction.pm:1349
+#: lib/RT/Transaction.pm:1385
 msgid "Transactions are immutable"
 msgstr "Eragiketak aldaezinak dira"
 
@@ -8447,7 +8449,7 @@ msgstr "Baimenik gabe"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:2846 etc/RT_Config.pm:2890
+#: etc/RT_Config.pm:2868 etc/RT_Config.pm:2912
 msgid "Undelete"
 msgstr "Desezabatu"
 
@@ -8526,7 +8528,7 @@ msgstr ""
 msgid "Unselected objects"
 msgstr ""
 
-#: lib/RT/User.pm:1819
+#: lib/RT/User.pm:1831
 msgid "Unset private key"
 msgstr ""
 
@@ -8669,7 +8671,7 @@ msgstr "Erabili lehenetsia (%1)"
 msgid "Use other RT administrative tools"
 msgstr "RTren beste tresna administratibo batzuk erabili"
 
-#. (join ', ', map loc($ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
+#. (join ', ', map loc(ref($ValuesLabel{$_}) ? @{ $ValuesLabel{$_ }} : $ValuesLabel{$_} || $_), grep defined,            @DefaultValue)
 #: share/html/Widgets/Form/Select:125
 msgid "Use system default (%1)"
 msgstr "Erabili sistemaren lehenetsia (%1)"
@@ -8742,11 +8744,11 @@ msgstr "Ezin izan da erabiltzailea sortu: %1"
 msgid "User created"
 msgstr "Erabiltzailea sortuta"
 
-#: lib/RT/User.pm:1142
+#: lib/RT/User.pm:1154
 msgid "User disabled"
 msgstr "Erabiltzailea desgaituta"
 
-#: lib/RT/User.pm:1144
+#: lib/RT/User.pm:1156
 msgid "User enabled"
 msgstr "Erabiltzailea gaituta"
 
@@ -8754,7 +8756,7 @@ msgstr "Erabiltzailea gaituta"
 msgid "User has empty email address"
 msgstr "Erabiltzaileak posta-e helbidea hutsik du"
 
-#: lib/RT/User.pm:531 lib/RT/User.pm:551
+#: lib/RT/User.pm:543 lib/RT/User.pm:563
 msgid "User loaded"
 msgstr "Erabiltzailea kargatuta"
 
@@ -8940,7 +8942,7 @@ msgstr "Asteguna"
 msgid "Weekly"
 msgstr "Astero"
 
-#: lib/RT/Config.pm:536
+#: lib/RT/Config.pm:576
 msgid "Weekly digest"
 msgstr "Asteroko laburpena"
 
@@ -8956,7 +8958,7 @@ msgstr "Gaur egin dudana"
 msgid "What is RT?"
 msgstr "Zer da RT?"
 
-#: lib/RT/Config.pm:440
+#: lib/RT/Config.pm:480
 msgid "What tickets to display in the \"More about requestor\" box"
 msgstr "Zein lan-agindu bistaratu \"Gehiago eskatzaileari buruz\" kaxan"
 
@@ -9133,7 +9135,7 @@ msgstr "Behar izanez gero txantiloia aldatu dezakezu"
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr ""
 
-#: lib/RT/User.pm:810
+#: lib/RT/User.pm:822
 msgid "You can not set password."
 msgstr "Ezin duzu pasahitza ezarri."
 
@@ -9229,7 +9231,7 @@ msgstr ""
 msgid "You're welcome to login again"
 msgstr "Berriz saioa hasi ezkero ongietorria izango zara"
 
-#: lib/RT/User.pm:1036
+#: lib/RT/User.pm:1048
 msgid "Your password is not set."
 msgstr "Zure pasahitza ez dago ezarrita."
 
@@ -9270,11 +9272,11 @@ msgstr "aktibo"
 msgid "after"
 msgstr "ondoren"
 
-#: lib/RT/Config.pm:392
+#: lib/RT/Config.pm:432
 msgid "after clicking a link"
 msgstr "esteka baten klik egin ondoren"
 
-#: lib/RT/Config.pm:391
+#: lib/RT/Config.pm:431
 msgid "after the rest of the page loads"
 msgstr "orriaren gainontzekoa kargatu ondoren"
 
@@ -9367,7 +9369,7 @@ msgstr "aginte-panelak menuan"
 msgid "days"
 msgstr "egun"
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "deleted"
 msgstr "ezabatuta"
 
@@ -9383,11 +9385,11 @@ msgstr "deskargatu"
 msgid "duration"
 msgstr "iraupena"
 
-#: lib/RT/User.pm:664
+#: lib/RT/User.pm:676
 msgid "email delivery suspended"
 msgstr ""
 
-#: lib/RT/User.pm:656
+#: lib/RT/User.pm:668
 msgid "email disabled for ticket"
 msgstr ""
 
@@ -9461,7 +9463,7 @@ msgstr ""
 msgid "id"
 msgstr ""
 
-#: lib/RT/Config.pm:393
+#: lib/RT/Config.pm:433
 msgid "immediately"
 msgstr "berehala"
 
@@ -9562,7 +9564,7 @@ msgstr "hilero (%1 egunean) %2tan"
 msgid "never"
 msgstr "inoiz ez"
 
-#: etc/RT_Config.pm:2807
+#: etc/RT_Config.pm:2829
 msgid "new"
 msgstr "berria"
 
@@ -9570,7 +9572,7 @@ msgstr "berria"
 msgid "no"
 msgstr "ez"
 
-#: lib/RT/User.pm:654
+#: lib/RT/User.pm:666
 msgid "no email address set"
 msgstr ""
 
@@ -9602,7 +9604,7 @@ msgstr "egun honetan"
 msgid "one"
 msgstr "bat"
 
-#: etc/RT_Config.pm:2808 share/html/SelfService/Elements/MyRequests:73
+#: etc/RT_Config.pm:2830 share/html/SelfService/Elements/MyRequests:73
 msgid "open"
 msgstr "irekita"
 
@@ -9635,15 +9637,15 @@ msgstr ""
 msgid "queue %1 %2"
 msgstr "%1 %2 ilara"
 
-#: lib/RT/User.pm:660
+#: lib/RT/User.pm:672
 msgid "receives daily digests"
 msgstr ""
 
-#: lib/RT/User.pm:662
+#: lib/RT/User.pm:674
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "rejected"
 msgstr "baztertuta"
 
@@ -9651,7 +9653,7 @@ msgstr "baztertuta"
 msgid "requires running rt-crontool"
 msgstr ""
 
-#: etc/RT_Config.pm:2809
+#: etc/RT_Config.pm:2831
 msgid "resolved"
 msgstr "amaituta"
 
@@ -9675,7 +9677,7 @@ msgstr "albo-barra"
 msgid "site config"
 msgstr "gunearen konfigurazioa"
 
-#: etc/RT_Config.pm:2808
+#: etc/RT_Config.pm:2830
 msgid "stalled"
 msgstr "izoztuta"
 
