@@ -85,8 +85,6 @@ sub from {
     my $self = shift;
     my ($file) = (@_);
 
-    local $/;
-
     return unless $self->valid_to_extract($file);
 
     my $normalized = $file;
@@ -94,10 +92,13 @@ sub from {
     $normalized =~ s'\.in$'';
     print "Looking at $normalized";
 
-    unless (open _, '<', $file) {
+    my $fh;
+    unless (open $fh, '<', $file) {
         print "\n  Cannot open $file for reading ($!), skipping.\n\n";
         return;
     }
+    my $contents = do { local $/; <$fh> };
+    close $fh;
 
     my %FILECAT = %{$self->{filecat}};
     my $errors = 0;
@@ -110,11 +111,10 @@ sub from {
     my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
     my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
 
-    $_ = <_>;
 
-    # Mason filter: <&|/l>...</&> and <&|/l_unsafe>...</&>
+    # Mason filter: <&|/l&>...</&> and <&|/l_unsafe&>...</&>
     my $line = 1;
-    while (m!\G(.*?<&\|/l(?:_unsafe)?(.*?)&>(.*?)</&>)!sg) {
+    while ($contents =~ m!\G(.*?<&\|/l(?:_unsafe)?(.*?)&>(.*?)</&>)!sg) {
         my ( $all, $vars, $str ) = ( $1, $2, $3 );
         $vars =~ s/[\n\r]//g;
         $line += ( $all =~ tr/\n/\n/ );
@@ -124,8 +124,8 @@ sub from {
 
     # Localization function: loc(...)
     $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?\bloc$RE{balanced}{-parens=>'()'}{-keep})/sg) {
+    pos($contents) = 0;
+    while ($contents =~ m/\G(.*?\bloc$RE{balanced}{-parens=>'()'}{-keep})/sg) {
         my ( $all, $match ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
 
@@ -145,8 +145,8 @@ sub from {
     my %seen;
     # Comment-based mark: "..." # loc
     $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?($re_delim)[ \{\}\)\],;]*$re_loc_suffix)/smgo) {
+    pos($contents) = 0;
+    while ($contents =~ m/\G(.*?($re_delim)[ \{\}\)\],;]*$re_loc_suffix)/smgo) {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
@@ -163,8 +163,8 @@ sub from {
 
     # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
     $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*? $RE{balanced}{-parens=>'()'}{-keep} [ \{\}\)\],;]* $re_loc_paren_suffix)/sgx) {
+    pos($contents) = 0;
+    while ($contents =~ m/\G(.*? $RE{balanced}{-parens=>'()'}{-keep} [ \{\}\)\],;]* $re_loc_paren_suffix)/sgx) {
         my ( $all, $match ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
 
@@ -189,8 +189,8 @@ sub from {
 
     # Comment-based qw mark: "qw(...)" # loc_qw
     $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?(?:qw\(([^)]+)\)[ \{\}\)\],;]*)?$re_loc_qw_suffix)/smgo) {
+    pos($contents) = 0;
+    while ($contents =~ m/\G(.*?(?:qw\(([^)]+)\)[ \{\}\)\],;]*)?$re_loc_qw_suffix)/smgo) {
         my ( $all, $str ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
@@ -206,8 +206,8 @@ sub from {
 
     # Comment-based left pair mark: "..." => ... # loc_left_pair
     $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix)/smgo) {
+    pos($contents) = 0;
+    while ($contents =~ m/\G(.*?(?:(\w+|$re_delim)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix)/smgo) {
         my ( $all, $key ) = ( $1, $2 );
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
@@ -223,8 +223,8 @@ sub from {
 
     # Comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[ \{\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
+    pos($contents) = 0;
+    while ($contents =~ m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[ \{\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
         my ( $all, $key, $val ) = ( $1, $2, $10 );
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
@@ -245,8 +245,8 @@ sub from {
 
     # Specific key  foo => "...", #loc{foo}
     $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?(\w+|$re_delim)\s*=>\s*($re_delim)(?-s:.*?)\#$re_space_wo_nl*loc\{\2\}$re_space_wo_nl*)$/smgo) {
+    pos($contents) = 0;
+    while ($contents =~ m/\G(.*?(\w+|$re_delim)\s*=>\s*($re_delim)(?-s:.*?)\#$re_space_wo_nl*loc\{\2\}$re_space_wo_nl*)$/smgo) {
         my ( $all, $key, $val ) = ( $1, $2, $10 );
         $line += ( $all =~ tr/\n/\n/ );
         $seen{$line}++;
@@ -261,8 +261,8 @@ sub from {
 
     # Check for ones we missed
     $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*? \# $re_space_wo_nl* (loc (_\w+|\(\)|{$re_delim})?) $re_space_wo_nl* $)/smgox) {
+    pos($contents) = 0;
+    while ($contents =~ m/\G(.*? \# $re_space_wo_nl* (loc (_\w+|\(\)|{$re_delim})?) $re_space_wo_nl* $)/smgox) {
         my ($all, $loc_type) = ($1, $2);
         $line += ( $all =~ tr/\n/\n/ );
         next if $seen{$line};
@@ -275,8 +275,6 @@ sub from {
     } else {
         print "\r", " " x 100, "\r";
     }
-
-    close (_);
 
     $self->{filecat} = \%FILECAT;
 }
