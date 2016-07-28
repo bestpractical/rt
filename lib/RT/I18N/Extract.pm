@@ -114,15 +114,27 @@ sub from {
 
         $seen{$line}++;
 
-        my $interp;
         if ($maybe_quoted and $key =~ s/^(['"])(.*)\1$/$2/) {
-            $interp = 1 if $1 eq '"';
+            my $quote = $1;
             $key =~ s/\\(['"\\])/$1/g;
+
+            if ($quote eq '"') {
+                if ($key =~ /([\$\@]\w+)/) {
+                    push @{$self->{errors}}, "$file:$line: Interpolated variable '$1' in \"$key\"";
+                }
+                if ($key =~ /\\n/) {
+                    push @{$self->{errors}}, "$file:$line: Embedded newline in \"$key\"";
+                }
+            }
+        }
+
+        if ($key =~ /^\s/m || $key =~ /\s$/m) {
+            push @{$self->{errors}}, "$file:$line: Extraneous whitespace in '$key'";
         }
 
         $vars =~ tr/\n\r//d;
 
-        push @{ $FILECAT{$key} }, [ $file, $line, $vars, $interp ];
+        push @{ $FILECAT{$key} }, [ $file, $line, $vars ];
     };
     my $add = sub {$_add->(1, @_)};
     my $add_noquotes = sub {$_add->(0, @_)};
