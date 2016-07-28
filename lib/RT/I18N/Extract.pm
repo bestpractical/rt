@@ -54,10 +54,11 @@ use warnings;
 use Regexp::Common;
 use File::Spec;
 use File::Find;
+use Locale::PO;
 
 sub new {
     return bless {
-        filecat => {},
+        results => {},
         errors  => [],
     }, shift;
 }
@@ -98,8 +99,6 @@ sub from {
     my $contents = do { local $/; <$fh> };
     close $fh;
 
-    my %FILECAT = %{$self->{filecat}};
-
     # Provide the non-.in filename for the rest of error reporting and
     # POT file needs, as the .in file will not exist if looking in the
     # installed tree.
@@ -134,7 +133,7 @@ sub from {
 
         $vars =~ tr/\n\r//d;
 
-        push @{ $FILECAT{$key} }, [ $file, $line, $vars ];
+        push @{ $self->{results}{$key} }, [ $file, $line, $vars ];
     };
     my $add = sub {$_add->(1, @_)};
     my $add_noquotes = sub {$_add->(0, @_)};
@@ -241,13 +240,36 @@ sub from {
         return if $seen{$line};
         push @{$self->{errors}}, "$file:$line: Localization comment '$1' did not match";
     });
-
-    $self->{filecat} = \%FILECAT;
 }
 
 sub results {
     my $self = shift;
-    return %{$self->{filecat}};
+
+    my %PO;
+    for my $str ( sort keys %{$self->{results}} ) {
+        my $entry = $self->{results}{$str};
+
+        my $escape = sub { $_ = shift; s/\b_(\d+)/%$1/; $_ };
+        $str =~ s/((?<!~)(?:~~)*)\[_(\d+)\]/$1%$2/g;
+        $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".$escape->($3).")"/eg;
+        $str =~ s/~([\[\]])/$1/g;
+
+        my $po = Locale::PO->new(-msgid => $str, -msgstr => "");
+        $po->reference( join ( ' ', sort map $_->[0].":".$_->[1], @{ $entry } ) );
+        my %seen;
+        my @vars;
+        foreach my $find ( sort { $a->[2] cmp $b->[2] } grep { $_->[2] } @{ $entry } ) {
+            my ( $file, $line, $var ) = @{$find};
+            $var =~ s/^\s*,\s*//;
+            $var =~ s/\s*$//;
+            push @vars, "($var)" unless $seen{$var}++;
+        }
+        $po->automatic( join( "\n", @vars) );
+
+        $PO{$po->msgid} = $po;
+    }
+
+    return %PO;
 }
 
 sub errors {
