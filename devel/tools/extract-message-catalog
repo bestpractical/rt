@@ -53,8 +53,6 @@ use warnings;
 
 use open qw/ :std :encoding(UTF-8) /;
 
-use File::Copy;
-use Carp;
 use Locale::PO;
 
 use lib 'lib';
