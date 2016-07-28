@@ -156,7 +156,11 @@ sub from {
 
     # Mason filter: <&|/l&>...</&> and <&|/l_unsafe&>...</&>
     $extract->(qr! <&\|/l(?:_unsafe)?(.*?)&>  (.*?)  </&> !sox, sub {
-        $add_noquotes->($2, $1);
+        my ($key, $vars) = ($2, $1);
+        if ($key =~ m! (<([%&]) .*? \2>) !sox) {
+            push @{$self->{errors}}, "$file:$line: Mason content within loc: '$1'";
+        }
+        $add_noquotes->($key, $vars);
     });
 
     # Localization function: loc(...)
