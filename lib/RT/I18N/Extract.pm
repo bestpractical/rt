@@ -56,7 +56,10 @@ use File::Spec;
 use File::Find;
 
 sub new {
-    return bless {filecat => {}}, shift;
+    return bless {
+        filecat => {},
+        errors  => [],
+    }, shift;
 }
 
 sub all {
@@ -87,22 +90,20 @@ sub from {
 
     return unless $self->valid_to_extract($file);
 
-    my $normalized = $file;
-    $normalized =~ s'^\./'';
-    $normalized =~ s'\.in$'';
-    print "Looking at $normalized";
-
     my $fh;
     unless (open $fh, '<', $file) {
-        print "\n  Cannot open $file for reading ($!), skipping.\n\n";
+        push @{$self->{errors}}, "$file:0: Cannot open for reading: $!";
         return;
     }
     my $contents = do { local $/; <$fh> };
     close $fh;
 
     my %FILECAT = %{$self->{filecat}};
-    my $errors = 0;
 
+    # Provide the non-.in filename for the rest of error reporting and
+    # POT file needs, as the .in file will not exist if looking in the
+    # installed tree.
+    $file =~ s/\.in$//;
 
     my %seen;
     my $line;
@@ -121,7 +122,7 @@ sub from {
 
         $vars =~ tr/\n\r//d;
 
-        push @{ $FILECAT{$key} }, [ $normalized, $line, $vars, $interp ];
+        push @{ $FILECAT{$key} }, [ $file, $line, $vars, $interp ];
     };
     my $add = sub {$_add->(1, @_)};
     my $add_noquotes = sub {$_add->(0, @_)};
@@ -222,15 +223,8 @@ sub from {
                    $ws $
                  !smox, sub {
         return if $seen{$line};
-        print "\n" unless $errors++;
-        print "  $1 that did not match, line $line of $normalized\n";
+        push @{$self->{errors}}, "$file:$line: Localization comment '$1' did not match";
     });
-
-    if ($errors) {
-        print "\n"
-    } else {
-        print "\r", " " x 100, "\r";
-    }
 
     $self->{filecat} = \%FILECAT;
 }
@@ -238,6 +232,11 @@ sub from {
 sub results {
     my $self = shift;
     return %{$self->{filecat}};
+}
+
+sub errors {
+    my $self = shift;
+    return @{$self->{errors}};
 }
 
 1;

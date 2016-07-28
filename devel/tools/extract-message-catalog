@@ -65,7 +65,9 @@ $| = 1;
 
 # extract all strings and stuff them into %FILECAT
 # scan html dir for extensions
-our %FILECAT = RT::I18N::Extract->new->all;
+my $extract = RT::I18N::Extract->new;
+our %FILECAT = $extract->all;
+print "$_\n" for $extract->errors;
 
 # ensure proper escaping and [_1] => %1 transformation
 foreach my $str ( sort keys %FILECAT ) {
