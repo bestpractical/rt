@@ -139,7 +139,7 @@ sub from {
 
     my $ws = qr{[ ]*};
     my $punct = qr{[ \{\}\)\],;]*};
-    my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
+    my $quoted = $RE{delimited}{-delim=>q{'"}};
 
     # Mason filter: <&|/l&>...</&> and <&|/l_unsafe&>...</&>
     $extract->(qr! <&\|/l(?:_unsafe)?(.*?)&>  (.*?)  </&> !sox, sub {
@@ -148,15 +148,15 @@ sub from {
 
     # Localization function: loc(...)
     $extract->(qr! \b loc
-                   $RE{balanced}{-parens=>'()'}{-keep}
+                   ( $RE{balanced}{-parens=>'()'} )
                  !sox, sub {
         # Re-parse what was in the parens for the string and optional arguments
-        return unless "$1" =~ m! \( \s* ($re_delim)  (.*?) \s* \) $ !sox;
-        $add->($1, $9);
+        return unless "$1" =~ m! \( \s* ($quoted)  (.*?) \s* \) $ !sox;
+        $add->($1, $2);
     });
 
     # Comment-based mark: "..." # loc
-    $extract->(qr! ($re_delim)      # Quoted string
+    $extract->(qr! ($quoted)      # Quoted string
                    $punct
                    $ws \# $ws loc
                    $ws $
@@ -165,14 +165,14 @@ sub from {
     });
 
     # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
-    $extract->(qr! $RE{balanced}{-parens=>'()'}{-keep}
+    $extract->(qr! ( $RE{balanced}{-parens=>'()'} )
                    $punct
                    $ws \# $ws loc \(\)
                    $ws $
                  !smox, sub {
         # Re-parse what was in the parens for the string and optional arguments
-        return unless "$1" =~ m! \( \s* ($re_delim)  (.*?) \s* \) $ !sox;
-        $add->($1, $9);
+        return unless "$1" =~ m! \( \s* ($quoted)  (.*?) \s* \) $ !sox;
+        $add->($1, $2);
     });
 
     # Comment-based qw mark: "qw(...)" # loc_qw
@@ -185,7 +185,7 @@ sub from {
     });
 
     # Comment-based left pair mark: "..." => ... # loc_left_pair
-    $extract->(qr! (\w+|$re_delim)
+    $extract->(qr! (\w+|$quoted)
                    \s* => [^#\n]+?
                    $ws \# $ws loc_left_pair
                    $ws $
@@ -194,30 +194,30 @@ sub from {
     });
 
     # Comment-based pair mark: "..." => "..." # loc_pair
-    $extract->(qr! (\w+|$re_delim)
-                   \s* => \s* ($re_delim)
+    $extract->(qr! (\w+|$quoted)
+                   \s* => \s* ($quoted)
                    $punct
                    $ws \# $ws loc_pair
                    $ws $
                  !smox, sub {
         $add->($1);
-        $add->($9);
+        $add->($2);
     });
 
     # Specific key  foo => "...", #loc{foo}
-    $extract->(qr! (\w+|$re_delim)
-                   \s* => \s* ($re_delim)
+    $extract->(qr! (\w+|$quoted)
+                   \s* => \s* ($quoted)
                    (?-s: .*? ) \# $ws loc\{\1\}  # More lax about what matches before the #
                    $ws $
                  !smox, sub {
-        $add->($9);
+        $add->($2);
     });
 
     # Check for ones we missed
     $extract->(qr! \# $ws
                    (
                      loc
-                     ( _\w+ | \(\) | {$re_delim} )?
+                     ( _\w+ | \(\) | {(\w+|$quoted)} )?
                    )
                    $ws $
                  !smox, sub {
