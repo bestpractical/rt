@@ -103,13 +103,6 @@ sub from {
     my %FILECAT = %{$self->{filecat}};
     my $errors = 0;
 
-    my $re_space_wo_nl = qr{(?!\n)\s};
-    my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
-    my $re_loc_qw_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_qw $re_space_wo_nl* $}mx;
-    my $re_loc_paren_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc \(\) $re_space_wo_nl* $}mx;
-    my $re_loc_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_pair $re_space_wo_nl* $}mx;
-    my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
-    my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
 
     my %seen;
     my $line;
@@ -144,51 +137,90 @@ sub from {
         }
     };
 
+    my $ws = qr{[ ]*};
+    my $punct = qr{[ \{\}\)\],;]*};
+    my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
+
     # Mason filter: <&|/l&>...</&> and <&|/l_unsafe&>...</&>
-    $extract->(qr!<&\|/l(?:_unsafe)?(.*?)&>(.*?)</&>!so, sub {
+    $extract->(qr! <&\|/l(?:_unsafe)?(.*?)&>  (.*?)  </&> !sox, sub {
         $add_noquotes->($2, $1);
     });
 
     # Localization function: loc(...)
-    $extract->(qr/\bloc$RE{balanced}{-parens=>'()'}{-keep}/so, sub {
-        return unless "$1" =~ /\(\s*($re_delim)(.*?)\s*\)$/so;
+    $extract->(qr! \b loc
+                   $RE{balanced}{-parens=>'()'}{-keep}
+                 !sox, sub {
+        # Re-parse what was in the parens for the string and optional arguments
+        return unless "$1" =~ m! \( \s* ($re_delim)  (.*?) \s* \) $ !sox;
         $add->($1, $9);
     });
 
     # Comment-based mark: "..." # loc
-    $extract->(qr/($re_delim)[ \{\}\)\],;]*$re_loc_suffix/smo, sub {
+    $extract->(qr! ($re_delim)      # Quoted string
+                   $punct
+                   $ws \# $ws loc
+                   $ws $
+                 !smox, sub {
         $add->($1);
     });
 
     # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
-    $extract->(qr/$RE{balanced}{-parens=>'()'}{-keep} [ \{\}\)\],;]* $re_loc_paren_suffix/sox, sub {
-        return unless "$1" =~ /\(\s*($re_delim)(.*?)\s*\)$/so;
+    $extract->(qr! $RE{balanced}{-parens=>'()'}{-keep}
+                   $punct
+                   $ws \# $ws loc \(\)
+                   $ws $
+                 !smox, sub {
+        # Re-parse what was in the parens for the string and optional arguments
+        return unless "$1" =~ m! \( \s* ($re_delim)  (.*?) \s* \) $ !sox;
         $add->($1, $9);
     });
 
     # Comment-based qw mark: "qw(...)" # loc_qw
-    $extract->(qr/(?:qw\(([^)]+)\)[ \{\}\)\],;]*)?$re_loc_qw_suffix/smo, sub {
+    $extract->(qr! qw \( ([^)]+) \)
+                   $punct
+                   $ws \# $ws loc_qw
+                   $ws $
+                 !smox, sub {
         $add_noquotes->($_) for split ' ', $1;
     });
 
     # Comment-based left pair mark: "..." => ... # loc_left_pair
-    $extract->(qr/(?:(\w+|$re_delim)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix/smo, sub {
+    $extract->(qr! (\w+|$re_delim)
+                   \s* => [^#\n]+?
+                   $ws \# $ws loc_left_pair
+                   $ws $
+                 !smox, sub {
         $add->($1);
     });
 
     # Comment-based pair mark: "..." => "..." # loc_pair
-    $extract->(qr/(?:(\w+|$re_delim)\s*=>\s*($re_delim)[ \{\}\)\],;]*)?$re_loc_pair_suffix/smo, sub {
+    $extract->(qr! (\w+|$re_delim)
+                   \s* => \s* ($re_delim)
+                   $punct
+                   $ws \# $ws loc_pair
+                   $ws $
+                 !smox, sub {
         $add->($1);
         $add->($9);
     });
 
     # Specific key  foo => "...", #loc{foo}
-    $extract->(qr/(\w+|$re_delim)\s*=>\s*($re_delim)(?-s:.*?)\#$re_space_wo_nl*loc\{\1\}$re_space_wo_nl*$/smo, sub {
+    $extract->(qr! (\w+|$re_delim)
+                   \s* => \s* ($re_delim)
+                   (?-s: .*? ) \# $ws loc\{\1\}  # More lax about what matches before the #
+                   $ws $
+                 !smox, sub {
         $add->($9);
     });
 
     # Check for ones we missed
-    $extract->(qr/\# $re_space_wo_nl* (loc (_\w+|\(\)|{$re_delim})?) $re_space_wo_nl* $/smox, sub {
+    $extract->(qr! \# $ws
+                   (
+                     loc
+                     ( _\w+ | \(\) | {$re_delim} )?
+                   )
+                   $ws $
+                 !smox, sub {
         return if $seen{$line};
         print "\n" unless $errors++;
         print "  $1 that did not match, line $line of $normalized\n";
