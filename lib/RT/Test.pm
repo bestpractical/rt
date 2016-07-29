@@ -363,6 +363,7 @@ END
 
     print $config "\n1;\n";
     $ENV{'RT_SITE_CONFIG'} = $tmp{'config'}{'RT'};
+    $ENV{'RT_SITE_CONFIG_DIR'} = '/dev/null';
     close $config;
 
     return $config;
