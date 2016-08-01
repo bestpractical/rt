@@ -71,9 +71,12 @@ diag "Walking through install screens setting defaults";
     }, 'set root password');
 
     # Mail options
+    my $sendmail = File::Spec->rel2abs( File::Spec->catfile(
+        't', 'security', 'fake-sendmail' ) );
     $m->submit_form_ok({
         with_fields => {
-            OwnerEmail  => 'admin@example.com',
+            OwnerEmail   => 'admin@example.com',
+            SendmailPath => $sendmail,
         },
     }, 'set admin email');
 
