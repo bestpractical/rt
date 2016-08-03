@@ -246,6 +246,7 @@ sub ParseSQL {
     my %args = (
         Query => '',
         CurrentUser => '', #XXX: Hack
+        UseErrorCallback => 1,
         @_
     );
     my $string = $args{'Query'};
@@ -281,7 +282,7 @@ sub ParseSQL {
                        Op => $op, Value => $value };
         $node->addChild( __PACKAGE__->new( $clause ) );
     };
-    $callback{'Error'} = sub { push @results, @_ };
+    $callback{'Error'} = sub { push @results, @_ } if $args{UseErrorCallback};
 
     require RT::SQL;
     RT::SQL::Parse($string, \%callback);

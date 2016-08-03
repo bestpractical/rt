@@ -2983,6 +2983,7 @@ sub _parser {
     $tree->ParseSQL(
         Query => $string,
         CurrentUser => $self->CurrentUser,
+        UseErrorCallback => 0,
     );
 
     state ( $active_status_node, $inactive_status_node );
