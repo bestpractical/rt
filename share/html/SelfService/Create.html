@@ -97,6 +97,7 @@
             Object          => RT::Ticket->new($session{CurrentUser}),
             CustomFields    => $queue_obj->TicketCustomFields,
             AsTable         => 0,
+            ForCreation     => 1,
             &>
     </td>
 </tr>
