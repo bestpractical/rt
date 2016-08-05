@@ -50,7 +50,7 @@
 <!DOCTYPE html>
 % }
 
-<html lang="en">
+<html lang="<% $lang %>">
   <head>
     <title><%$Title%></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -110,6 +110,12 @@
 <div id="header"><h1><% $Title %></h1></div>
 % }
 <%INIT>
+my $lang = 'en';
+$lang = $session{'CurrentUser'}->LanguageHandle->language_tag
+     if $session{'CurrentUser'}
+     && $session{'CurrentUser'}->LanguageHandle
+     && $session{'CurrentUser'}->LanguageHandle->language_tag;
+
 $r->headers_out->{'Pragma'} = 'no-cache';
 $r->headers_out->{'Cache-control'} = 'no-cache';
 
