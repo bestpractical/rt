@@ -758,6 +758,7 @@ sub InstallMode {
 sub LoadGeneratedData {
     my $class = shift;
     my $pm_path = ( File::Spec->splitpath( $INC{'RT.pm'} ) )[1];
+    $pm_path = File::Spec->rel2abs( $pm_path );
 
     require "$pm_path/RT/Generated.pm" || die "Couldn't load RT::Generated: $@";
     $class->CanonicalizeGeneratedPaths();
