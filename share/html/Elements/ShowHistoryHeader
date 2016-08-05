@@ -50,6 +50,7 @@ $Object
 $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
+$ScrollShowHistory => 0
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -85,6 +86,14 @@ if ( $ShowDisplayModes or $ShowTitle ) {
                            qq{</a>};
         }
     }
+
+if ( $ScrollShowHistory ) {
+    $titleright .= qq{<span id="LoadAllHistoryContainer">} .
+                   ($titleright ? '&mdash;' : '') .
+                   qq{<a href="#" id="LoadAllHistory">} .
+                   loc('Load All') .
+                   qq{</a></span>};
+}
 </%perl>
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
