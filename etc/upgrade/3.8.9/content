@@ -53,7 +53,7 @@
 
             # there is only one OwnerObj->Name normally, so no need /g
             if ( $content =~
-s!(?<=Your ticket has been (?:approved|rejected) by { eval { )\$Approval->OwnerObj->Name!\$Approver->Name!
+s!(?<=Your ticket has been (?:approved|rejected) by \{ eval \{ )\$Approval->OwnerObj->Name!\$Approver->Name!
               )
             {
                 $template->SetType('Perl');

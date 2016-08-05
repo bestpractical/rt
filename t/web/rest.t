@@ -204,7 +204,7 @@ is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content)
     $text = $m->content;
     $text =~ s/.*?\n\n//;
     $text =~ s/\n\n/\n/;
-    $text =~ s{CF\.{severity}:.*\n}{}img;
+    $text =~ s{CF\.\{severity\}:.*\n}{}img;
     $text .= "CF.{severity}: explosive, a bit\n";
     $m->post(
         "$baseurl/REST/1.0/ticket/edit",
@@ -234,7 +234,7 @@ is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content)
         ]
     );
     $text = $m->content;
-    $text =~ s{CF\.{severity}:.*\n}{}img;
+    $text =~ s{CF\.\{severity\}:.*\n}{}img;
     $text .= "CF.{severity}:\n";
     $m->post(
         "$baseurl/REST/1.0/ticket/edit",
@@ -301,7 +301,7 @@ is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content)
         ]
     );
     $text = $m->content;
-    $text =~ s{CF\.{single}:.*\n}{}img;
+    $text =~ s{CF\.\{single\}:.*\n}{}img;
     $text .= "CF.{single}: that\n";
     $m->post(
         "$baseurl/REST/1.0/ticket/edit",
