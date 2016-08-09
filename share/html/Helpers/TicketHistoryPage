@@ -50,6 +50,7 @@ $id
 $oldestTransactionsFirst => RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
 $lastTransactionId => undef
 $focusTransactionId => undef
+$loadAll => 0
 </%ARGS>
 <%INIT>
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
@@ -82,7 +83,7 @@ if ($focusTransactionId) { # make sure we load enough if we need to focus a tran
         OPERATOR => $oldestTransactionsFirst ? '<=' : '>=',
         VALUE    => $focusTransactionId
     );
-} else { # otherwise, just load the standard page of 10 transactions
+} elsif (!$loadAll) { # otherwise, just load the standard page of 10 transactions
     $transactions->RowsPerPage(10);
     $transactions->FirstPage();
 }
