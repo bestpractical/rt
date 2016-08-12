@@ -461,7 +461,8 @@ sub AddRoleMember {
     my $self = shift;
     my %args = (@_);
 
-    my $principal = $self->CanonicalizePrincipal(%args);
+    my ($principal, $msg) = $self->CanonicalizePrincipal(%args);
+    return (0, $msg) if !$principal;
 
     my $type = delete $args{Type};
     return (0, $self->loc("That role is invalid for this object"))
@@ -486,7 +487,7 @@ sub AddRoleMember {
     return (0, $self->loc('[_1] cannot be a group', $group->Label) )
                 if $group->SingleMemberRoleGroup and $principal->IsGroup;
 
-    my ( $ok, $msg ) = $group->_AddMember( %args, PrincipalId => $principal->Id, RecordTransaction => !$args{Silent} );
+    ( (my $ok), $msg ) = $group->_AddMember( %args, PrincipalId => $principal->Id, RecordTransaction => !$args{Silent} );
     unless ($ok) {
         $RT::Logger->error("Failed to add principal ".$principal->Id." as a member of group ".$group->Id.": ".$msg);
 
