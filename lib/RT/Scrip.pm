@@ -625,6 +625,17 @@ sub Prepare {
                  TransactionObj => undef,
                  @_ );
 
+    local $SIG{__WARN__} = sub {
+        $RT::Logger->warning(
+            "#" . $args{'TicketObj'}->Id . "/"
+            . $args{'TransactionObj'}->Id
+            . " - prepare Scrip "
+            . ($self->Id || '#rule') . " "
+            . ($self->Description || '')
+            . ": @_"
+        );
+    };
+
     my $return;
     eval {
         $self->ActionObj->LoadAction(
@@ -658,6 +669,17 @@ sub Commit {
     my %args = ( TicketObj      => undef,
                  TransactionObj => undef,
                  @_ );
+
+    local $SIG{__WARN__} = sub {
+        $RT::Logger->warning(
+            "#" . $args{'TicketObj'}->Id . "/"
+            . $args{'TransactionObj'}->Id
+            . " - commit Scrip "
+            . ($self->Id || '#rule') . " "
+            . ($self->Description || '')
+            . ": @_"
+        );
+    };
 
     my $return;
     eval {
