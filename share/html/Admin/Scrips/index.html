@@ -48,6 +48,14 @@
 <& /Admin/Elements/Header, Title => loc('Select a Scrip') &>
 <& /Elements/Tabs &>
 
+<h1><%$caption%></h1>
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Scrips/index.html">
+<input type="checkbox" class="checkbox" id="FindDisabledScrips" name="FindDisabledScrips" value="1" <% $FindDisabledScrips ? 'checked="checked"': '' |n%> />
+<label for="FindDisabledScrips"><&|/l&>Include disabled scrips in listing.</&></label>
+<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div>
+</form>
+
 <& /Elements/CollectionList,
     OrderBy       => 'Description',
     Order         => 'ASC',
@@ -56,17 +64,31 @@
     Collection    => $scrips,
     Format        => $Format,
     AllowSorting  => 1,
+    PassArguments => [qw(
+       FindDisabledScrips
+    )], 
 &>
-<%args>
-$Format => undef
-</%args>
+
+
 <%INIT>
 my $scrips = RT::Scrips->new( $session{'CurrentUser'} );
-$scrips->FindAllRows;
+$scrips->FindAllRows if $FindDisabledScrips;
 $scrips->UnLimit;
+
+my ($caption);
+$caption = $FindDisabledScrips 
+  ? loc("All Scrips")
+  : loc("Enabled Scrips");
 
 $m->callback(CallbackName => 'Massage', Scrips => $scrips);
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
 my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Scrips'} || 50;
 </%INIT>
+
+<%ARGS>
+$FindDisabledScrips => 0
+$Format => undef
+</%ARGS>
+
+
