@@ -61,12 +61,6 @@
 <tr><td class="label"><&|/l&>Stage</&>:</td><td class="value">\
 <& /Admin/Elements/SelectStage, Default => $ARGS{"Stage"} &></td></tr>
 
-<tr><td class="label">&nbsp;</td><td>
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" value="1" <% $ARGS{'Enabled'}? 'checked="checked"': '' |n%> />
-<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
-</td></tr>
-
 </table>
 </&>
 

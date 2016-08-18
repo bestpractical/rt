@@ -199,12 +199,16 @@ sub Create {
     );
     return ( $id, $msg ) unless $id;
 
-    (my $status, $msg) = RT::ObjectScrip->new( $self->CurrentUser )->Add(
-        Scrip    => $self,
-        Stage    => $args{'Stage'},
-        ObjectId => $args{'Queue'},
-    );
-    $RT::Logger->error( "Couldn't add scrip: $msg" ) unless $status;
+    # this prevents new scrips from being applied globally by default
+    # but scrips associated with a queue are automatically applied
+    if ($args{'Queue'}) {
+        (my $status, $msg) = RT::ObjectScrip->new( $self->CurrentUser )->Add(
+            Scrip    => $self,
+            Stage    => $args{'Stage'},
+            ObjectId => $args{'Queue'},
+        );
+        $RT::Logger->error( "Couldn't add scrip: $msg" ) unless $status;
+    }
 
     return ( $id, $self->loc('Scrip Created') );
 }
