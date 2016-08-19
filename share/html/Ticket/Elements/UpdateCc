@@ -52,6 +52,12 @@
         <br />
 
 %if (scalar @one_time_Ccs) {
+%   if ($hide_cc_suggestions) {
+        <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
+            <i class="label">(<&|/l&>show suggestions</&>)</i>
+        </a>
+        <div class="OneTimeCcs hidden">
+%   }
 <i class="label">(<&|/l&>check to add</&>)</i>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
@@ -65,9 +71,18 @@
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
       <label for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
 %}
+%if (@one_time_Ccs && $hide_cc_suggestions) {
+</div>
+%}
 </td></tr>
 <tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &><br />
 %if (scalar @one_time_Ccs) {
+%   if ($hide_cc_suggestions) {
+        <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
+            <i class="label">(<&|/l&>show suggestions</&>)</i>
+        </a>
+        <div class="OneTimeCcs hidden">
+%   }
 <i class="label">(<&|/l&>check to add</&>)</i>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
@@ -80,6 +95,21 @@
     onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
     <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
       <label for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
+%}
+%if (@one_time_Ccs && $hide_cc_suggestions) {
+</div>
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('a.ToggleSuggestions').click(function(e) {
+        e.preventDefault();
+        var toggleSuggestions = jQuery(this);
+        var oneTimeCcs = toggleSuggestions.closest('td').find('.OneTimeCcs');
+        oneTimeCcs.toggleClass('hidden');
+        var hideOrShow = oneTimeCcs.hasClass('hidden') ? toggleSuggestions.data('showLabel') : toggleSuggestions.data('hideLabel');
+        toggleSuggestions.find('i').html('(' + hideOrShow + ')');
+    });
+});
+</script>
 %}
 </td></tr>
 <%args>
@@ -100,4 +130,8 @@ foreach my $addr ( keys %txn_addresses) {
   next if ( grep {$addr eq lc $_->address} @people_addresses );
   push @one_time_Ccs,$addr;
 }
+
+my $hide_cc_suggestions =  RT->Config->Get('HideOneTimeSuggestions', $session{CurrentUser});
+my $show_label    = $m->interp->apply_escapes( loc("show suggestions"), 'h' );
+my $hide_label    = $m->interp->apply_escapes( loc("hide suggestions"), 'h' );
 </%init>
