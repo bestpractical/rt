@@ -352,6 +352,32 @@ sub WillSignEncrypt {
     return wantarray ? %args : ($args{Sign} || $args{Encrypt});
 }
 
+sub _OutgoingMailFrom {
+    my $TicketObj = shift;
+
+    my $MailFrom = RT->Config->Get('SetOutgoingMailFrom');
+    my $OutgoingMailAddress = $MailFrom =~ /\@/ ? $MailFrom : undef;
+    my $Overrides = RT->Config->Get('OverrideOutgoingMailFrom') || {};
+
+    if ($TicketObj) {
+        my $Queue = $TicketObj->QueueObj;
+        my $QueueAddressOverride = $Overrides->{$Queue->id}
+            || $Overrides->{$Queue->Name};
+
+        if ($QueueAddressOverride) {
+            $OutgoingMailAddress = $QueueAddressOverride;
+        } else {
+            $OutgoingMailAddress ||= $Queue->CorrespondAddress
+                || RT->Config->Get('CorrespondAddress');
+        }
+    }
+    elsif ($Overrides->{'Default'}) {
+        $OutgoingMailAddress = $Overrides->{'Default'};
+    }
+
+    return $OutgoingMailAddress;
+}
+
 sub SendEmail {
     my (%args) = (
         Entity => undef,
@@ -437,25 +463,8 @@ sub SendEmail {
         # SetOutgoingMailFrom and bounces conflict, since they both want -f
         if ( $args{'Bounce'} ) {
             push @args, shellwords(RT->Config->Get('SendmailBounceArguments'));
-        } elsif ( my $MailFrom = RT->Config->Get('SetOutgoingMailFrom') ) {
-            my $OutgoingMailAddress = $MailFrom =~ /\@/ ? $MailFrom : undef;
-            my $Overrides = RT->Config->Get('OverrideOutgoingMailFrom') || {};
-
-            if ($TicketObj) {
-                my $Queue = $TicketObj->QueueObj;
-                my $QueueAddressOverride = $Overrides->{$Queue->id}
-                    || $Overrides->{$Queue->Name};
-
-                if ($QueueAddressOverride) {
-                    $OutgoingMailAddress = $QueueAddressOverride;
-                } else {
-                    $OutgoingMailAddress ||= $Queue->CorrespondAddress
-                        || RT->Config->Get('CorrespondAddress');
-                }
-            }
-            elsif ($Overrides->{'Default'}) {
-                $OutgoingMailAddress = $Overrides->{'Default'};
-            }
+        } elsif ( RT->Config->Get('SetOutgoingMailFrom') ) {
+            my $OutgoingMailAddress = _OutgoingMailFrom($TicketObj);
 
             push @args, "-f", $OutgoingMailAddress
                 if $OutgoingMailAddress;
