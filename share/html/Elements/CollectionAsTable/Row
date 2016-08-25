@@ -81,7 +81,7 @@ foreach my $column (@Format) {
     my $class = $column->{class} ? $m->interp->apply_escapes($column->{class}, 'h') : 'collection-as-table';
 
     my %attrs;
-    foreach my $attr (qw(style align)) {
+    foreach my $attr (qw(style align edit)) {
         if ( defined $column->{ $attr } ) {
             $attrs{ $attr } = $column->{ $attr };
             next;
@@ -108,6 +108,10 @@ foreach my $column (@Format) {
 
     $attrs{colspan} = $column->{span};
     $item += ($attrs{'colspan'} || 1);
+
+    if ($attrs{edit}) {
+        $class .= ' editable';
+    }
 
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
@@ -141,6 +145,7 @@ foreach my $column (@Format) {
         Align        => \$attrs{align},
         Style        => \$attrs{style},
         Colspan      => \$attrs{colspan},
+        Edit         => \$attrs{edit},
         Out          => \@out,
     );
 
@@ -150,7 +155,18 @@ foreach my $column (@Format) {
         foreach grep $attrs{$_}, qw(align style colspan);
 
     $m->out('>');
+
+    if ($attrs{edit}) {
+        $m->out('<form method="POST" action="'.RT->Config->Get('WebPath').'/Helpers/TicketUpdate?id='.$record->id.'" class="editor">' . $attrs{edit} . '</form>');
+        $m->out('<div class="value">');
+    }
+
     $m->out(@out) if @out;
+
+    if ($attrs{edit}) {
+        $m->out('</div>');
+    }
+
     $m->out( '</td>' . "\n" );
 }
 $m->out('</tr>');

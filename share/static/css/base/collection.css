@@ -24,3 +24,11 @@ table.collection td:first-child, table.collection th:first-child {
 .results-count::before {
     content: '\a0\a0\a0\a0';
 }
+
+td.editable > form.editor {
+    display: none;
+}
+
+td.editable > .value {
+    padding-top: 0;
+}
