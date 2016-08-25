@@ -572,6 +572,12 @@ jQuery(function () {
         var value = cell.find('.value');
 
         cell.removeClass('editing').addClass('editable');
+
+        jQuery.ajax({
+            url     : editor.attr('action'),
+            method  : 'POST',
+            data    : editor.serialize()
+        });
     });
 
     jQuery(document).on('submit', 'td.editing form', function (e) {
