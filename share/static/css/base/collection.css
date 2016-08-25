@@ -32,3 +32,7 @@ td.editable > form.editor {
 td.editable > .value {
     padding-top: 0;
 }
+
+td.editing > .value {
+    display: none;
+}
