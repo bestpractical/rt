@@ -604,7 +604,15 @@ jQuery(function () {
         jQuery.ajax({
             url     : editor.attr('action'),
             method  : 'POST',
-            data    : params
+            data    : params,
+            success : function (results) {
+                jQuery.each(results.actions, function (i, action) {
+                    jQuery.jGrowl(action, { themeState: 'none' });
+                });
+            },
+            error   : function (xhr, error) {
+                jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
+            }
         });
     });
 
