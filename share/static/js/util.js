@@ -573,6 +573,24 @@ jQuery(function() {
     });
 });
 
+/* inline edit */
+jQuery(function () {
+    // stop propagation when we click a hyperlink (e.g. ticket subject) so that
+    // the td.editable onclick handler doesn't also fire
+    jQuery(document).on('click', 'td.editable a', function (e) {
+        e.stopPropagation();
+    });
+
+    jQuery(document).on('click', 'td.editable', function (e) {
+        var cell = jQuery(this);
+        var value = cell.find('.value');
+        var editor = cell.find('.editor');
+
+        cell.removeClass('editable').addClass('editing');
+        editor.find(':input:visible:enabled:first').focus();
+    });
+});
+
 // focus jquery object in window, only moving the screen when necessary
 function scrollToJQueryObject(obj) {
     if (!obj.length) return;
