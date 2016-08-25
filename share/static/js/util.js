@@ -589,6 +589,20 @@ jQuery(function () {
         cell.removeClass('editable').addClass('editing');
         editor.find(':input:visible:enabled:first').focus();
     });
+
+    jQuery('table.collection-as-table').each(function () {
+        var table = jQuery(this);
+        var cols = table.find('colgroup col');
+        if (cols.length == 0) {
+            return;
+        }
+
+        cols.each(function () {
+            var col = jQuery(this);
+            col.attr('width', col.width());
+        });
+        table.css('table-layout', 'fixed');
+    });
 });
 
 // focus jquery object in window, only moving the screen when necessary

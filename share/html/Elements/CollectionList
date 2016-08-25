@@ -123,6 +123,12 @@ $m->out(' data-max-items="' . $maxitems . '"');
 $m->out(' data-class="' . $Collection->RecordClass . '"');
 $m->out('>');
 
+if ( $ShowCols ) {
+    $m->out('<colgroup>');
+    $m->out('<col>') for 1 .. $maxitems;
+    $m->out('</colgroup>');
+}
+
 if ( $ShowHeader ) {
     $m->comp('/Elements/CollectionAsTable/Header',
         %ARGS,
@@ -211,6 +217,7 @@ $AllowSorting   => 0  # Make headers in table links that will resort results
 $PreferOrderBy  => 0  # Prefer the passed-in @OrderBy to the collection default
 $ShowNavigation => 1
 $ShowHeader     => 1
+$ShowCols       => 1
 $ShowEmpty      => 0
 $Query => 0
 $HasResults     => undef
