@@ -134,6 +134,7 @@ sub JSFiles {
       assets.js
       /static/RichText/ckeditor.js
       dropzone.min.js
+      jquery.jgrowl.min.js
       }, RT->Config->Get('JSFiles');
 }
 
