@@ -167,6 +167,7 @@ if ($ARGS{'id'} eq 'new') {
 } else { 
     $TicketObj ||= LoadTicket($ARGS{'id'});
 
+    # fill ACL cache
     $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
     my $SkipProcessing;
