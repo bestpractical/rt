@@ -590,6 +590,29 @@ jQuery(function () {
         editor.find(':input:visible:enabled:first').focus();
     });
 
+    jQuery(document).on('focusout', 'td.editing form', function () {
+        var editor = jQuery(this);
+        var cell = editor.closest('td');
+        var value = cell.find('.value');
+
+        cell.removeClass('editing').addClass('editable');
+
+        jQuery.ajax({
+            url     : editor.attr('action'),
+            method  : 'POST',
+            data    : editor.serialize()
+        });
+    });
+
+    jQuery(document).on('submit', 'td.editing form', function (e) {
+        e.preventDefault();
+        jQuery(this).find(':input:focus').blur();
+    });
+
+    jQuery(document).on('change', 'td.editing form select', function () {
+        jQuery(this).closest('form').trigger('submit');
+    });
+
     jQuery('table.collection-as-table').each(function () {
         var table = jQuery(this);
         var cols = table.find('colgroup col');
