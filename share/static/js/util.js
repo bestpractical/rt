@@ -574,6 +574,15 @@ jQuery(function () {
         cell.removeClass('editing').addClass('editable');
     });
 
+    jQuery(document).on('submit', 'td.editing form', function (e) {
+        e.preventDefault();
+        jQuery(this).find(':input:focus').blur();
+    });
+
+    jQuery(document).on('change', 'td.editing form select', function () {
+        jQuery(this).closest('form').trigger('submit');
+    });
+
     jQuery('table.collection-as-table').each(function () {
         var table = jQuery(this);
         var cols = table.find('colgroup col');
