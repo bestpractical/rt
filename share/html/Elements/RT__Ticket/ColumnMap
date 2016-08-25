@@ -95,27 +95,32 @@ $COLUMN_MAP = {
     Queue => {
         attribute => 'Queue',
         title     => 'Queue id', # loc
-        value     => sub { return $_[0]->Queue }
+        value     => sub { return $_[0]->Queue },
+        edit      => sub { return \($m->scomp('/Elements/SelectQueue', Default => $_[0]->Queue, Name => 'Queue', ShowNullOption => 0)) },
     },
     QueueName => {
         attribute => 'Queue',
         title     => 'Queue', # loc
-        value     => sub { return $_[0]->QueueObj->Name }
+        value     => sub { return $_[0]->QueueObj->Name },
+        edit      => sub { return \($m->scomp('/Elements/SelectQueue', Default => $_[0]->Queue, Name => 'Queue', ShowNullOption => 0)) },
     },
     OwnerName => {
         title     => 'Owner', # loc
         attribute => 'Owner',
-        value     => sub { return $_[0]->OwnerObj->Name }
+        value     => sub { return $_[0]->OwnerObj->Name },
+        edit      => sub { return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0)) },
     },
     Status => {
         title     => 'Status', # loc
         attribute => 'Status',
-        value     => sub { return loc($_[0]->Status) }
+        value     => sub { return loc($_[0]->Status) },
+        edit      => sub { return \($m->scomp("/Ticket/Elements/SelectStatus", TicketObj => $_[0], Name => 'Status' ) ) },
     },
     Subject => {
         title     => 'Subject', # loc
         attribute => 'Subject',
-        value     => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" }
+        value     => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" },
+        edit      => sub { return \('<input name="Subject" value="'.$m->interp->apply_escapes( $_[0]->Subject, 'h' ).'" />') },
     },
     ExtendedStatus => {
         title     => 'Status', # loc
@@ -148,24 +153,28 @@ $COLUMN_MAP = {
                 return loc( $Ticket->Status );
             }
 
-          }
+        },
+        edit      => sub { return \($m->scomp("/Ticket/Elements/SelectStatus", TicketObj => $_[0], Name => 'Status' ) ) },
     },
     Priority => {
         title     => 'Priority', # loc
         attribute => 'Priority',
-        value     => sub { return $_[0]->Priority }
+        value     => sub { return $_[0]->Priority },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'Priority', Default => $_[0]->Priority)) },
     },
     InitialPriority => {
         title     => 'InitialPriority', # loc
         attribute => 'InitialPriority',
         name      => 'Initial Priority',
-        value     => sub { return $_[0]->InitialPriority }
+        value     => sub { return $_[0]->InitialPriority },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'InitialPriority', Default => $_[0]->InitialPriority)) },
     },
     FinalPriority => {
         title     => 'FinalPriority', # loc
         attribute => 'FinalPriority',
         name      => 'Final Priority',
-        value     => sub { return $_[0]->FinalPriority }
+        value     => sub { return $_[0]->FinalPriority },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'FinalPriority', Default => $_[0]->FinalPriority)) },
     },
     EffectiveId => {
         title     => 'EffectiveId', # loc
@@ -180,32 +189,38 @@ $COLUMN_MAP = {
     TimeWorked => {
         attribute => 'TimeWorked',
         title     => 'Time Worked', # loc
-        value     => sub { return $_[0]->TimeWorkedAsString }
+        value     => sub { return $_[0]->TimeWorkedAsString },
+        edit      => sub { return \($m->scomp('/Elements/EditTimeValue', Name => 'TimeWorked', Default => $_[0]->TimeWorked)) },
     },
     TimeLeft => {
         attribute => 'TimeLeft',
         title     => 'Time Left', # loc
-        value     => sub { return $_[0]->TimeLeftAsString }
+        value     => sub { return $_[0]->TimeLeftAsString },
+        edit      => sub { return \($m->scomp('/Elements/EditTimeValue', Name => 'TimeLeft', Default => $_[0]->TimeLeft)) },
     },
     TimeEstimated => {
         attribute => 'TimeEstimated',
         title     => 'Time Estimated', # loc
-        value     => sub { return $_[0]->TimeEstimatedAsString }
+        value     => sub { return $_[0]->TimeEstimatedAsString },
+        edit      => sub { return \($m->scomp('/Elements/EditTimeValue', Name => 'TimeEstimated', Default => $_[0]->TimeEstimated)) },
     },
     StartsRelative => {
         title     => 'Starts', # loc
         attribute => 'Starts',
-        value     => sub { return $_[0]->StartsObj->AgeAsString }
+        value     => sub { return $_[0]->StartsObj->AgeAsString },
+        edit      => sub { return \($m->scomp('/Elements/SelectDate', menu_prefix => 'Starts', current => 0, Default => $_[0]->StartsObj->Unix ? $_[0]->StartsObj->ISO( Timezone => 'user' ) : '')) },
     },
     StartedRelative => {
         title     => 'Started', # loc
         attribute => 'Started',
-        value     => sub { return $_[0]->StartedObj->AgeAsString }
+        value     => sub { return $_[0]->StartedObj->AgeAsString },
+        edit      => sub { return \($m->scomp('/Elements/SelectDate', menu_prefix => 'Started', current => 0, Default => $_[0]->StartedObj->Unix ? $_[0]->StartedObj->ISO( Timezone => 'user' ) : '')) },
     },
     ToldRelative => {
         title     => 'Told', # loc
         attribute => 'Told',
-        value     => sub { return $_[0]->ToldObj->AgeAsString }
+        value     => sub { return $_[0]->ToldObj->AgeAsString },
+        edit      => sub { return \($m->scomp('/Elements/SelectDate', menu_prefix => 'Told', current => 0, Default => $_[0]->ToldObj->Unix ? $_[0]->ToldObj->ISO( Timezone => 'user' ) : '')) },
     },
     DueRelative => {
         title     => 'Due', # loc
@@ -218,7 +233,8 @@ $COLUMN_MAP = {
             } else {
                 return $date->AgeAsString;
             }
-        }
+        },
+        edit      => sub { return \($m->scomp('/Elements/SelectDate', menu_prefix => 'Due', current => 0, Default => $_[0]->DueObj->Unix ? $_[0]->DueObj->ISO( Timezone => 'user' ) : '')) },
     },
     ResolvedRelative => {
         title     => 'Resolved', # loc
@@ -228,17 +244,20 @@ $COLUMN_MAP = {
     Starts => {
         title     => 'Starts', # loc
         attribute => 'Starts',
-        value     => sub { return $_[0]->StartsObj->AsString }
+        value     => sub { return $_[0]->StartsObj->AsString },
+        edit      => sub { return \($m->scomp('/Elements/SelectDate', menu_prefix => 'Starts', current => 0, Default => $_[0]->StartsObj->Unix ? $_[0]->StartsObj->ISO( Timezone => 'user' ) : '')) },
     },
     Started => {
         title     => 'Started', # loc
         attribute => 'Started',
-        value     => sub { return $_[0]->StartedObj->AsString }
+        value     => sub { return $_[0]->StartedObj->AsString },
+        edit      => sub { return \($m->scomp('/Elements/SelectDate', menu_prefix => 'Started', current => 0, Default => $_[0]->StartedObj->Unix ? $_[0]->StartedObj->ISO( Timezone => 'user' ) : '')) },
     },
     Told => {
         title     => 'Told', # loc
         attribute => 'Told',
-        value     => sub { return $_[0]->ToldObj->AsString }
+        value     => sub { return $_[0]->ToldObj->AsString },
+        edit      => sub { return \($m->scomp('/Elements/SelectDate', menu_prefix => 'Told', current => 0, Default => $_[0]->ToldObj->Unix ? $_[0]->ToldObj->ISO( Timezone => 'user' ) : '')) },
     },
     Due => {
         title     => 'Due', # loc
@@ -251,7 +270,8 @@ $COLUMN_MAP = {
             } else {
                 return $date->AsString;
             }
-        }
+        },
+        edit      => sub { return \($m->scomp('/Elements/SelectDate', menu_prefix => 'Due', current => 0, Default => $_[0]->DueObj->Unix ? $_[0]->DueObj->ISO( Timezone => 'user' ) : '')) },
     },
     Resolved => {
         title     => 'Resolved', # loc
