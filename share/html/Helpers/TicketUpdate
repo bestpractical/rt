@@ -58,6 +58,7 @@ my @Actions;
 
 my $TicketObj = LoadTicket($id);
 
+# fill ACL cache
 $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
 $m->callback(CallbackName => 'ProcessArguments', 
