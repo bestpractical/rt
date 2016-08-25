@@ -576,7 +576,12 @@ jQuery(function () {
         jQuery.ajax({
             url     : editor.attr('action'),
             method  : 'POST',
-            data    : editor.serialize()
+            data    : editor.serialize(),
+            success : function (results) {
+                jQuery.each(results.actions, function (i, action) {
+                    jQuery.jGrowl(action, { themeState: 'none' });
+                });
+            }
         });
     });
 
