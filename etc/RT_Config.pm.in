@@ -598,6 +598,23 @@ Precedence header, it will be preserved.
 
 Set($DefaultMailPrecedence, "bulk");
 
+=item C<$OverrideMailPrecedence>
+
+C<$OverrideMailPrecedence> is used for overwriting the C<$DefaultMailPrecedence>
+value for a queue.
+
+The option is a hash reference of queue id/name to precedence. If you set the
+precedence to C<undef>, a Precedence header will not be added to the mail.
+
+This option only works if C<$DefaultMailPrecedence> is enabled.
+
+=cut
+
+Set($OverrideMailPrecedence, {
+#    'Queue 1' => "list",
+#    'Queue 2' => undef,
+});
+
 =item C<$DefaultErrorMailPrecedence>
 
 C<$DefaultErrorMailPrecedence> is used to control the default
