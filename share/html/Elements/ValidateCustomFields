@@ -106,17 +106,22 @@ while ( my $CF = $CustomFields->Next ) {
         }
 
         if ($CF->UniqueValues) {
-            my $existing = RT::ObjectCustomFieldValue->new(RT->SystemUser);
-            $existing->LoadByCols(
-                CustomField  => $CF->Id,
-                Content      => $value,
-                Disabled     => 0,
+            my $existing = RT::ObjectCustomFieldValues->new(RT->SystemUser);
+            $existing->LimitToCustomField($CF->Id);
+            $existing->LimitToEnabled;
+            $existing->Limit(FIELD => 'ObjectType', VALUE => ref($Object));
+            $existing->Limit(FIELD => 'ObjectId', VALUE => $Object->id, OPERATOR => '!=');
+            $existing->Limit(
+                FIELD => 'Content',
+                VALUE => $value,
             );
-            if ($existing->Id) {
+
+            while (my $ocfv = $existing->Next) {
                 my $msg = loc("That is not a unique value");
                 $m->notes( ('InvalidField-' . $CF->Id) => $msg );
                 push @res, $CF->Name .': '. $msg;
                 $valid = 0;
+                last;
             }
         }
     }
