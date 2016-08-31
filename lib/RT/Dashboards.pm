@@ -104,6 +104,22 @@ sub LimitToPrivacy {
     }
 }
 
+=head2 SortDashboards
+
+Sort the list of dashboards. The default is to sort alphabetically.
+
+=cut
+
+sub SortDashboards {
+    my $self = shift;
+
+    # Work directly with the internal data structure since Dashboards
+    # aren't fully backed by a DB table and can't support typical OrderBy, etc.
+    my @sorted = sort { lcfirst($a->Name) cmp lcfirst($b->Name) } @{$self->{'objects'}};
+    @{$self->{'objects'}} = @sorted;
+    return;
+}
+
 sub ColumnMapClassName {
     return 'RT__Dashboard';
 }
