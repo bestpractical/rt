@@ -612,6 +612,16 @@ jQuery(function () {
             },
             error   : function (xhr, error) {
                 jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
+            },
+            complete : function () {
+                refreshCollectionListRow(
+                    cell.closest('tbody'),
+                    function () { },
+                    function (xhr, error) {
+                        jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
+                        cell.addClass('error').html(loc_key('error'));
+                    }
+                );
             }
         });
     });

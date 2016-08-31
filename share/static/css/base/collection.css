@@ -47,3 +47,8 @@ td.editing.loading > form.editor > img.loading {
     height: 1em;
     width: 1em;
 }
+
+td.editing.loading.error {
+    color: red;
+    font-weight: bold;
+}
