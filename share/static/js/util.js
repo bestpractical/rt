@@ -520,6 +520,30 @@ function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
 }
 
+function refreshCollectionListRow(tbody, success, error) {
+    var table = tbody.closest('table');
+
+    var params = {
+        DisplayFormat : table.data('display-format'),
+        ObjectClass   : table.data('class'),
+        MaxItems      : table.data('max-items'),
+
+        i             : tbody.data('index'),
+        ObjectId      : tbody.data('record-id'),
+        Warning       : tbody.data('warning')
+    };
+
+    jQuery.ajax({
+        url    : RT.Config.WebHomePath + '/Helpers/CollectionListRow',
+        method : 'GET',
+        data   : params,
+        success: function (response) {
+            tbody.replaceWith(response);
+            if (success) { success(response) }
+        },
+        error: error,
+    });
+}
 
 jQuery(function() {
     jQuery(".user-accordion").each(function(){
