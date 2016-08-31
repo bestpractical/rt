@@ -157,7 +157,7 @@ foreach my $column (@Format) {
     $m->out('>');
 
     if ($attrs{edit}) {
-        $m->out('<form method="POST" action="'.RT->Config->Get('WebPath').'/Helpers/TicketUpdate?id='.$record->id.'" class="editor">' . $attrs{edit} . '</form>');
+        $m->out('<form method="POST" action="'.RT->Config->Get('WebPath').'/Helpers/TicketUpdate?id='.$record->id.'" class="editor">' . $attrs{edit} . '<img class="loading" src="'.RT->Config->Get('WebPath').'/static/images/loading.gif" alt="'.loc('Loading').'"/></form>');
         $m->out('<div class="value">');
     }
 
