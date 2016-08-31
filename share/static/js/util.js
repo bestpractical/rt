@@ -587,6 +587,9 @@ jQuery(function () {
             },
             error   : function (xhr, error) {
                 jQuery.jGrowl(error, { sticky: true });
+            },
+            complete : function () {
+                cell.removeClass('loading').removeClass('editing').addClass('editable');
             }
         });
     });
