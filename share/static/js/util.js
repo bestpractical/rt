@@ -571,12 +571,15 @@ jQuery(function () {
         var cell = editor.closest('td');
         var value = cell.find('.value');
 
-        cell.removeClass('editing').addClass('editable');
+        var params = editor.serialize();
+
+        cell.addClass('loading');
+        editor.find(':input').attr('disabled', 'disabled');
 
         jQuery.ajax({
             url     : editor.attr('action'),
             method  : 'POST',
-            data    : editor.serialize(),
+            data    : params,
             success : function (results) {
                 jQuery.each(results.actions, function (i, action) {
                     jQuery.jGrowl(action, { themeState: 'none' });
