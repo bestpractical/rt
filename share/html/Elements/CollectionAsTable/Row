@@ -57,9 +57,9 @@ $Class     => 'RT__Ticket'
 $Classes => ''
 </%ARGS>
 <%init>
-$m->out( '<tbody class="list-item" data-index="'.$i.'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )  . ( $Warning ? ' data-warning=1' : ''). '>' );
+$m->out( '<tbody class="list-item" data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )  . ( $Warning ? ' data-warning=1' : ''). '>' );
 
-$m->out(  '<tr class="' . $Classes . ' '
+$m->out(  '<tr class="' . $m->interp->apply_escapes($Classes, 'h') . ' '
         . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
         . "\n" );
 my $item;
