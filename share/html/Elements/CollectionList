@@ -116,8 +116,12 @@ if ($Class =~ /::/) { # older passed in value
     $Class =~ s/:/_/g;
 }
 
-$m->out('<table cellspacing="0" class="' .
-            ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
+$m->out('<table cellspacing="0"');
+$m->out(' class="' .  ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table"');
+$m->out(' data-display-format="' . $m->interp->apply_escapes($DisplayFormat, 'h') . '"');
+$m->out(' data-max-items="' . $maxitems . '"');
+$m->out(' data-class="' . $Collection->RecordClass . '"');
+$m->out('>');
 
 if ( $ShowHeader ) {
     $m->comp('/Elements/CollectionAsTable/Header',
