@@ -595,12 +595,15 @@ jQuery(function () {
         var cell = editor.closest('td');
         var value = cell.find('.value');
 
+        var params = editor.serialize();
+
         cell.removeClass('editing').addClass('editable');
+        editor.find(':input').attr('disabled', 'disabled');
 
         jQuery.ajax({
             url     : editor.attr('action'),
             method  : 'POST',
-            data    : editor.serialize()
+            data    : params
         });
     });
 
