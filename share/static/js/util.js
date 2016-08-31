@@ -584,6 +584,9 @@ jQuery(function () {
                 jQuery.each(results.actions, function (i, action) {
                     jQuery.jGrowl(action, { themeState: 'none' });
                 });
+            },
+            error   : function (xhr, error) {
+                jQuery.jGrowl(error, { sticky: true });
             }
         });
     });
