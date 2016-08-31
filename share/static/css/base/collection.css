@@ -29,10 +29,21 @@ td.editable > form.editor {
     display: none;
 }
 
+td.editable > form.editor > img.loading,
+td.editing > form.editor > img.loading {
+    display: none;
+}
+
 td.editable > .value {
     padding-top: 0;
 }
 
 td.editing > .value {
     display: none;
+}
+
+td.editing.loading > form.editor > img.loading {
+    display: inline-block;
+    height: 1em;
+    width: 1em;
 }

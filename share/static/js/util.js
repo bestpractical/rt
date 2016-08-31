@@ -599,6 +599,7 @@ jQuery(function () {
 
         cell.removeClass('editing').addClass('editable');
         editor.find(':input').attr('disabled', 'disabled');
+        cell.addClass('loading');
 
         jQuery.ajax({
             url     : editor.attr('action'),
