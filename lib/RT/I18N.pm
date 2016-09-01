@@ -442,11 +442,9 @@ sub _DecodeMIMEWordsToEncoding {
         $charset  = _CanonicalizeCharset($charset);
         $encoding = lc $encoding;
 
-        $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
-
         if ( $encoding eq 'q' ) {
             use MIME::QuotedPrint;
-            $enc_str =~ tr/_/ /;                # Observed from Outlook Express
+            $enc_str =~ tr/_/ /;              # RFC 2047, 4.2 (2)
             $enc_str = decode_qp($enc_str);
         } elsif ( $encoding eq 'b' ) {
             use MIME::Base64;
