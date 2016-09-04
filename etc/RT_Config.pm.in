@@ -1715,6 +1715,19 @@ send HTML email messages from the web interface.
 
 Set($MessageBoxRichText, 1);
 
+=item C<$MessageBoxUseSystemContextMenu>
+
+Should the "rich text" editor use the browser's right-click menu?
+
+The rich text editor's custom menu can block system functionality like spell check,
+dictionary lookup and browser extension options. Enabling this option allows the browser's
+native right click menu to be used; However, enabling this option may also prevent
+pasting rich text from other applications.
+
+=cut
+
+Set($MessageBoxUseSystemContextMenu, 0);
+
 =item C<$MessageBoxRichTextHeight>
 
 Height of rich text JavaScript enabled editing boxes (in pixels)

@@ -270,6 +270,15 @@ our %META;
             Description => 'WYSIWYG message composer' # loc
         }
     },
+    MessageBoxUseSystemContextMenu => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 5.2,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'WYSIWYG Force browser-right click menu', #loc
+        },
+    },
     MessageBoxRichTextHeight => {
         Section => 'Ticket composition',
         Overridable => 1,
