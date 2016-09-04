@@ -88,72 +88,10 @@ my $skip_create = 0;
 
 $m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial', 
               skip_create => \$skip_create );
-
-if ( $ARGS{'QuickCreate'} ) {
-    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-    $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
-    
-    my $CFs = $QueueObj->TicketCustomFields();
-    
-    my ($ValidCFs, @msg) = $m->comp(
-        '/Elements/ValidateCustomFields',
-        CustomFields        => $CFs,
-        ARGSRef             => \%ARGS,
-        ValidateUnsubmitted => 1,
-    );
-
-
-    my $created;
-    if ( $ValidCFs && !$skip_create ) {
-        my ($t, $msg) = CreateTicket( 
-                        Queue => $ARGS{'Queue'},
-                        Owner => $ARGS{'Owner'},
-                        Status => $ARGS{'Status'},
-                        # yes! it's Requestors, not Requestor
-                        Requestors => $ARGS{'Requestors'},
-                        Content => $ARGS{'Content'},
-                        Subject => $ARGS{'Subject'});
-        push @results, $msg;
-
-        if ( $t && $t->Id ) {
-            $created = 1;
-            if ( RT->Config->Get('DisplayTicketAfterQuickCreate', $session{'CurrentUser'}) ) {
-                MaybeRedirectForResults(
-                    Actions   => \@results,
-                    Path      => '/Ticket/Display.html',
-                    Arguments => { id => $t->Id },
-                );
-            }
-        }
-    }
-    elsif ( !$ValidCFs ) {
-        push @results, loc("Can't quickly create ticket in queue [_1] because custom fields are required.  Please finish by using the normal ticket creation page.", $QueueObj->Name);
-        push @results, @msg;
-
-        MaybeRedirectForResults(
-            Actions     => \@results,
-            Path        => "/Ticket/Create.html",
-            Arguments   => {
-                (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
-                Requestors => $ARGS{Requestors},
-                # From is set above when CFs are OK, but not here since we're
-                # not calling CreateTicket() directly.  The proper place to set
-                # a default for From, if desired in the future, is in
-                # CreateTicket() itself, or at least /Ticket/Display.html
-                # (which processes /Ticket/Create.html).  From is rarely used
-                # overall.
-            },
-        );
-    }
-
-    $session{QuickCreate} = \%ARGS unless $created;
-
-    MaybeRedirectForResults(
-        Actions   => \@results,
-        Path      => '/',
-    );
+ 
+unless ( $skip_create ) {
+    push @results, ProcessQuickCreate( Path => '/', ARGSRef => \%ARGS );
 }
-
 
 if ( $ARGS{'q'} ) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}, 'u'));

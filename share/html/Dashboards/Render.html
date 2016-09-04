@@ -55,6 +55,8 @@
 <& /Elements/Tabs &>
 % }
 
+<& /Elements/ListActions, actions => \@results &>
+
 % $m->callback(CallbackName => 'BeforeTable', Dashboard => $Dashboard, show_cb => $show_cb);
 
 <table class="dashboard" id="dashboard-<%$id%>">
@@ -92,12 +94,23 @@
 % }
 
 <%INIT>
+my @results;
+my $skip_create = 0;
 
+$m->callback(ARGSRef => \%ARGS,
+             results => \@results,
+             CallbackName => 'Initial',
+             skip_create => \$skip_create);
 
 use RT::Dashboard;
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
 $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
+
+my $path = '/Dashboards/' . $Dashboard->id . '/' . $Dashboard->Name;
+unless ( $skip_create ) {
+    push @results, ProcessQuickCreate( Path => $path, ARGSRef => \%ARGS );
+}
 
 my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
 my $rows;

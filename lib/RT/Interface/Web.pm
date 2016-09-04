@@ -3797,6 +3797,79 @@ sub ProcessColumnMapValue {
     }
 }
 
+    sub ProcessQuickCreate {
+        my %params = @_;
+        my %ARGS = %{ $params{ARGSRef} };
+        my $path = $params{Path};
+        my @results;
+
+        if ( $ARGS{'QuickCreate'} ) {
+            my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+            $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
+
+            my $CFs = $QueueObj->TicketCustomFields();
+
+            my ($ValidCFs, @msg) = $m->comp(
+            '/Elements/ValidateCustomFields',
+            CustomFields        => $CFs,
+            ARGSRef             => \%ARGS,
+            ValidateUnsubmitted => 1,
+            );
+
+
+            my $created;
+            if ( $ValidCFs ) {
+                my ($t, $msg) = CreateTicket(
+                Queue => $ARGS{'Queue'},
+                Owner => $ARGS{'Owner'},
+                Status => $ARGS{'Status'},
+                # yes! it's Requestors, not Requestor
+                Requestors => $ARGS{'Requestors'},
+                Content => $ARGS{'Content'},
+                Subject => $ARGS{'Subject'});
+                push @results, $msg;
+
+                if ( $t && $t->Id ) {
+                    $created = 1;
+                    if ( RT->Config->Get('DisplayTicketAfterQuickCreate', $session{'CurrentUser'}) ) {
+                        MaybeRedirectForResults(
+                        Actions   => \@results,
+                        Path      => '/Ticket/Display.html',
+                        Arguments => { id => $t->Id },
+                        );
+                    }
+                }
+            }
+            else {
+                push @results, loc("Can't quickly create ticket in queue [_1] because custom fields are required.  Please finish by using the normal ticket creation page.", $QueueObj->Name);
+                push @results, @msg;
+
+                MaybeRedirectForResults(
+                Actions     => \@results,
+                Path        => "/Ticket/Create.html",
+                Arguments   => {
+                    (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
+                    Requestors => $ARGS{Requestors},
+                    # From is set above when CFs are OK, but not here since we're
+                    # not calling CreateTicket() directly.  The proper place to set
+                    # a default for From, if desired in the future, is in
+                    # CreateTicket() itself, or at least /Ticket/Display.html
+                    # (which processes /Ticket/Create.html).  From is rarely used
+                    # overall.
+                },
+                );
+            }
+
+            $session{QuickCreate} = \%ARGS unless $created;
+
+            MaybeRedirectForResults(
+            Actions   => \@results,
+            Path      => $path,
+            );
+        }
+        return @results;
+    }
+
 =head2 GetPrincipalsMap OBJECT, CATEGORIES
 
 Returns an array suitable for passing to /Admin/Elements/EditRights with the
