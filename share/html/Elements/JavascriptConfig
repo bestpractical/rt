@@ -48,7 +48,8 @@
 <%init>
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
-  for qw(rtname WebPath MessageBoxRichText MessageBoxRichTextHeight);
+  for qw(rtname WebPath MessageBoxRichText MessageBoxRichTextHeight
+         MessageBoxUseSystemContextMenu);
 
 my $CurrentUser = {};
 if ($session{CurrentUser} and $session{CurrentUser}->id) {
