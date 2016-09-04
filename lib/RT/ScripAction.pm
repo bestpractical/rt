@@ -241,8 +241,12 @@ Return the actual RT::Action object for this scrip.
 
 sub Action {
     my $self = shift;
+    unless (defined $self->{'Action'}) {
+        $self->LoadAction;
+    }
     return $self->{'Action'};
 }
+
 
 =head2 id
 

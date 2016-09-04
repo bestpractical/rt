@@ -189,6 +189,19 @@ sub Describe  {
     
 }
 
+=head2 Condition
+
+Return the actual RT::Condition object for this scrip.
+
+=cut
+
+sub Condition {
+    my $self = shift;
+    unless (defined $self->{'Condition'}) {
+        $self->LoadCondition;
+    }
+    return $self->{'Condition'};
+}
 
 =head2 IsApplicable
 

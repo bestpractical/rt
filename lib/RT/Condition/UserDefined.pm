@@ -69,6 +69,13 @@ sub IsApplicable {
     return ($retval);
 }
 
+=head2 IsUserEditable
+Return 1 if the condition can be edited by a user, otherwise 0.
+=cut
+sub IsUserEditable {
+    return 1;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

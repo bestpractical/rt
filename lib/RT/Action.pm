@@ -171,6 +171,12 @@ sub Prepare  {
   return (0, $self->loc("Prepare Stubbed"));
 }
 
+=head2 IsUserEditable
+Return 1 if the action can be edited by a user, otherwise 0.
+=cut
+sub IsUserEditable {
+    return 0;
+}
 
 RT::Base->_ImportOverlays();
 

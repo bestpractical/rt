@@ -68,6 +68,10 @@ sub Prepare {
     return ($retval);
 }
 
+sub IsUserEditable {
+    return 1;
+}
+
 =head2 Commit
 
 This happens on every transaction. it's always applicable
