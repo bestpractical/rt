@@ -75,14 +75,6 @@
     Name => 'Create',
 &>
 
-% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
-<& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
-<& /Elements/Submit,
-    Label => loc('Create'),
-    Name => 'Create',
-&>
-% }
-
 </form>
 <%ARGS>
 $Queue => 0

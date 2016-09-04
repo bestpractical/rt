@@ -193,6 +193,14 @@ sub IsApplicable  {
   return(undef);
 }
 
+=head2 IsUserEditable
+Return 1 if the condition can be edited by a user, otherwise 0.
+=cut
+sub IsUserEditable {
+    my $self = shift;
+    return 0;
+}
+
 sub DESTROY {
     my $self = shift;
 

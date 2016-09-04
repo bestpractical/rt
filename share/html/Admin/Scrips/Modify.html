@@ -88,11 +88,6 @@
 
 <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
 
-% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
-<& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
-<& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
-% }
-
 </form>
 <%ARGS>
 $id     => undef

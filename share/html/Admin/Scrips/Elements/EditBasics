@@ -56,19 +56,88 @@
     Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id,
 &></td></tr>
 
+% if ($canExecuteCode) {
+<tr class="CustomIsApplicableCode <% $editableConditionInitiallyHidden ? 'hidden' : '' %>">
+<td class="label"><&|/l&>Condition code</&>:</td><td class="value">\
+% my $conditionCode = $ARGS{ CustomIsApplicableCode } || $Scrip->CustomIsApplicableCode() || '';
+<textarea cols="80" rows="6" name="CustomIsApplicableCode"><% $conditionCode %></textarea>
+</td></tr>
+% }
+
 <tr><td class="label"><&|/l&>Action</&>:</td><td class="value">\
 <& /Admin/Elements/SelectScripAction,
     Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id,
 &></td></tr>
+
+% if ($canExecuteCode) {
+<tr class="CustomPrepareCode <% $editableActionInitiallyHidden ? 'hidden' : '' %>">
+<td class="label"><&|/l&>Prepare code</&>:</td><td class="value">\
+% my $prepareCode = $ARGS{ CustomPrepareCode } || $Scrip->CustomPrepareCode() || '';
+<textarea cols="80" rows="6" name="CustomPrepareCode"><% $prepareCode %></textarea>
+</td></tr>
+
+<tr class="CustomCommitCode <% $editableActionInitiallyHidden ? 'hidden' : '' %>">
+<td class="label"><&|/l&>Commit code</&>:</td><td class="value">\
+% my $commitCode = $ARGS{ CustomCommitCode } || $Scrip->CustomCommitCode() || '';
+<textarea cols="80" rows="6" name="CustomCommitCode"><% $commitCode %></textarea>
+</td></tr>
+% }
 
 <tr><td class="label"><&|/l&>Template</&>:</td><td class="value">\
 <& SelectTemplate,
     Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue,
 &></td></tr>
 
+<script type="text/javascript">
+jQuery(function () {
+    jQuery("select[name=ScripCondition]").change(function (e) {
+        var scripConditionId = parseInt(jQuery(this).val());
+        var userEditableIDs = [<% join( ', ', @editableConditionIDs) %>]
+        if (userEditableIDs.indexOf(scripConditionId) > -1) {
+            jQuery(".CustomIsApplicableCode").removeClass('hidden');
+        }else{
+            jQuery(".CustomIsApplicableCode").addClass('hidden');
+        }
+    });
+
+    jQuery("select[name=ScripAction]").change(function (e) {
+        var scripConditionId = parseInt(jQuery(this).val());
+        var userEditableIDs = [<% join( ', ', @editableActionIDs) %>]
+        if (userEditableIDs.indexOf(scripConditionId) > -1) {
+            jQuery(".CustomPrepareCode, .CustomCommitCode").removeClass('hidden');
+        }else{
+            jQuery(".CustomPrepareCode, .CustomCommitCode").addClass('hidden');
+        }
+    });
+});
+</script>
+
 <%ARGS>
 $Scrip
 $Queue => undef
 </%ARGS>
 <%INIT>
+
+my $canExecuteCode = ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode'));
+
+my $editableConditionInitiallyHidden = ($Scrip->ConditionObj->Id) ? !$Scrip->ConditionObj->ModuleName->IsUserEditable : 1;
+my @editableConditionIDs;
+my $ScripConditions = RT::ScripConditions->new($session{'CurrentUser'});
+$ScripConditions->UnLimit;
+while (my $ScripCondition = $ScripConditions->Next) {
+    if ($ScripCondition->ModuleName->IsUserEditable) {
+        push @editableConditionIDs, $ScripCondition->Id;
+    }
+}
+
+my $editableActionInitiallyHidden = ($Scrip->ActionObj->Id) ? !$Scrip->ActionObj->ModuleName->IsUserEditable : 1;
+my @editableActionIDs;
+my $ScripActions = RT::ScripActions->new($session{'CurrentUser'});
+$ScripActions->UnLimit;
+while (my $ScripAction = $ScripActions->Next) {
+    if ($ScripAction->ModuleName->IsUserEditable) {
+        push @editableActionIDs, $ScripAction->Id;
+    }
+}
+
 </%INIT>

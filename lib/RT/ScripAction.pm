@@ -167,18 +167,32 @@ sub LoadAction  {
         $self->{'TemplateObj'} = $args{'TemplateObj'};
     }
 
-    $self->ExecModule =~ /^(\w+)$/;
-    my $module = $1;
-    my $type = "RT::Action::". $module;
-
-    $type->require or die "Require of $type action module failed.\n$@\n";
-
-    return $self->{'Action'} = $type->new(
+    $self->{'Action'} = $self->ModuleName->new(
         %args,
         Argument       => $self->Argument,
         CurrentUser    => $self->CurrentUser,
         ScripActionObj => $self,
     );
+
+    return $self->{'Action'};
+}
+
+
+=head2 ModuleName
+
+Returns the name for the actual action object as a module.
+
+=cut
+
+sub ModuleName {
+    my $self = shift;
+
+    $self->ExecModule =~ /^(\w+)$/;
+    my $type = "RT::Action::" . $1;
+
+    $type->require or die "Require of $type action module failed.\n$@\n";
+
+    return $type;
 }
 
 
@@ -241,8 +255,12 @@ Return the actual RT::Action object for this scrip.
 
 sub Action {
     my $self = shift;
+    unless (defined $self->{'Action'}) {
+        $self->LoadAction;
+    }
     return $self->{'Action'};
 }
+
 
 =head2 id
 

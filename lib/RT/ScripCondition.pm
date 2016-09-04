@@ -157,24 +157,34 @@ sub LoadCondition  {
                  TicketObj => undef,
                  @_ );
 
-    #TODO: Put this in an eval
-    $self->ExecModule =~ /^(\w+)$/;
-    my $module = $1;
-    my $type = "RT::Condition::". $module;
-
-    $type->require or die "Require of $type condition module failed.\n$@\n";
-
-    $self->{'Condition'}  = $type->new ( 'ScripConditionObj' => $self,
-                                         'TicketObj' => $args{'TicketObj'},
-                                         'ScripObj' => $args{'ScripObj'},
-                                         'TransactionObj' => $args{'TransactionObj'},
-                                         'Argument' => $self->Argument,
-                                         'ApplicableTransTypes' => $self->ApplicableTransTypes,
-                                         CurrentUser => $self->CurrentUser
-                                       );
+    $self->{'Condition'} = $self->ModuleName->new(
+        'ScripConditionObj' => $self,
+        'TicketObj' => $args{'TicketObj'},
+        'ScripObj' => $args{'ScripObj'},
+        'TransactionObj' => $args{'TransactionObj'},
+        'Argument' => $self->Argument,
+        'ApplicableTransTypes' => $self->ApplicableTransTypes,
+        CurrentUser => $self->CurrentUser
+    );
 }
 
 
+=head2 ModuleName
+
+Returns the name for the actual condition object as a module.
+
+=cut
+
+sub ModuleName {
+    my $self = shift;
+
+    $self->ExecModule =~ /^(\w+)$/;
+    my $type = "RT::Condition::". $1;
+
+    $type->require or die "Require of $type condition module failed.\n$@\n";
+
+    return $type;
+}
 
 
 =head2 Describe 
@@ -189,6 +199,19 @@ sub Describe  {
     
 }
 
+=head2 Condition
+
+Return the actual RT::Condition object for this scrip.
+
+=cut
+
+sub Condition {
+    my $self = shift;
+    unless (defined $self->{'Condition'}) {
+        $self->LoadCondition;
+    }
+    return $self->{'Condition'};
+}
 
 =head2 IsApplicable
 
