@@ -84,6 +84,17 @@ sub Name {
     return $self->{name};
 }
 
+=head2 Version
+
+Returns the extension version.
+
+=cut
+
+sub Version {
+    my $self = shift;
+    return $self->Name->VERSION;
+}
+
 =head2 Path
 
 Takes a name of sub directory and returns its full path, for example:
