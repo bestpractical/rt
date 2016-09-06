@@ -1373,6 +1373,10 @@ sub _CanonicalizeRoleName {
         $principal->Load($self->Field);
         return ("Removed from group '[_1]'", $principal->Object->Name); #loc()
     },
+    TicketViewed => sub {
+        my $self = shift;
+        return ("Viewed ticket"); #loc()
+    },
 );
 
 

@@ -153,8 +153,12 @@ if ($ARGS{'id'} eq 'new') {
     unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
         Abort("No permission to view newly created ticket #".$TicketObj->id.".");
     }
-} else { 
+} else {
     $TicketObj ||= LoadTicket($ARGS{'id'});
+
+    if ($TicketObj) {
+        $TicketObj->_NewTransaction(Type => "TicketViewed");
+    }
 
     $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
