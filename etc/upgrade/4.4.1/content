@@ -56,7 +56,8 @@ our @Initial = (
         while ( my $attr = $attrs->Next ) {
             my $content = $attr->Content;
 
-            next unless lc($content->{SearchType}) eq 'chart';
+            next unless $content->{SearchType}
+                and lc($content->{SearchType}) eq 'chart';
 
             next if $content->{ChartStyle}
                  && $content->{GroupBy}
