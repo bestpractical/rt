@@ -156,7 +156,7 @@ unless ($ExcludeCustomRoles) {
 # inflate the marker for custom roles into the field specs for each one
 @fields = map { ($_->{special}||'') eq 'roles' ? @role_fields : $_ } @fields;
 
-$m->callback( CallbackName => 'MassageFields', %ARGS, TicketObj => $TicketObj, Fields => \@fields );
+$m->callback( CallbackName => 'MassageFields', %ARGS, TicketObj => $TicketObj, Fields => \@fields, QueueObj => $QueueObj );
 
 # Process the field list, skipping if html is provided and running the
 # components otherwise
