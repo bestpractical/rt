@@ -600,6 +600,10 @@ jQuery(function () {
         editor.find(':input:visible:enabled:first').focus();
     });
 
+    jQuery(document).on('change', 'td.editable form :input', function () {
+        jQuery(this).closest('form').data('changed', true);
+    });
+
     jQuery(document).on('focusout', 'td.editing form', function () {
         if (!inlineEditEnabled) {
             return;
@@ -610,6 +614,11 @@ jQuery(function () {
         var tbody = cell.closest('tbody');
         var table = tbody.closest('table');
         var value = cell.find('.value');
+
+        if (!editor.data('changed')) {
+            cell.removeClass('editing');
+            return;
+        }
 
         var params = editor.serialize();
 
