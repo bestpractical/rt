@@ -561,6 +561,48 @@ our %META;
             Description => 'Hide unset fields?' # loc
         }
     },
+    InlineEdit => {
+        Section => 'Ticket display',
+        Overridable => 1,
+        SortOrder => 12,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enable inline edit?' # loc
+        }
+    },
+
+    InlineEditPanelBehavior => {
+        Type            => 'HASH',
+        PostLoadCheck   => sub {
+            my $config = shift;
+            # use scalar context intentionally to avoid not a hash error
+            my $behavior = $config->Get('InlineEditPanelBehavior') || {};
+
+            unless (ref($behavior) eq 'HASH') {
+                RT->Logger->error("Config option \%InlineEditPanelBehavior is a @{[ref $behavior]} not a HASH; ignoring");
+                $behavior = {};
+            }
+
+            my %valid = map { $_ => 1 } qw/link click always hide/;
+            for my $class (keys %$behavior) {
+                if (ref($behavior->{$class}) eq 'HASH') {
+                    for my $panel (keys %{ $behavior->{$class} }) {
+                        my $value = $behavior->{$class}{$panel};
+                        if (!$valid{$value}) {
+                            RT->Logger->error("Config option \%InlineEditPanelBehavior{$class}{$panel}, which is '$value', must be one of: " . (join ', ', map { "'$_'" } sort keys %valid) . "; ignoring");
+                            delete $behavior->{$class}{$panel};
+                        }
+                    }
+                } else {
+                    RT->Logger->error("Config option \%InlineEditPanelBehavior{$class} is not a HASH; ignoring");
+                    delete $behavior->{$class};
+                    next;
+                }
+            }
+
+            $config->Set( InlineEditPanelBehavior => %$behavior );
+        },
+    },
 
     # User overridable locale options
     DateTimeFormat => {
