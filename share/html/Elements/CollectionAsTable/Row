@@ -55,6 +55,7 @@ $Warning => undef
 $ColumnMap => {}
 $Class     => 'RT__Ticket'
 $Classes => ''
+$InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
 </%ARGS>
 <%init>
 $m->out( '<tbody class="list-item" data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )  . ( $Warning ? ' data-warning=1' : ''). '>' );
@@ -105,6 +106,8 @@ foreach my $column (@Format) {
             Escape => 0,
         );
     }
+
+    delete $attrs{edit} if !$InlineEdit;
 
     $attrs{colspan} = $column->{span};
     $item += ($attrs{'colspan'} || 1);

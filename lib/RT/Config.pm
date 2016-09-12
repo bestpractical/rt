@@ -527,6 +527,15 @@ our %META;
             Description => 'Hide unset fields?' # loc
         }
     },
+    InlineEdit => {
+        Section => 'Ticket display',
+        Overridable => 1,
+        SortOrder => 12,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Enable inline edit?' # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {

@@ -1457,6 +1457,15 @@ ticket display page automatically.
 
 Set($SearchResultsAutoRedirect, 0);
 
+=item C<$InlineEdit>
+
+Allows users to update tickets directly on search results and ticket display
+pages.
+
+=cut
+
+Set($InlineEdit, 1);
+
 =back
 
 
