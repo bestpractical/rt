@@ -61,6 +61,14 @@ td.editable.loading > form.editor > .loading {
     display: inline-block;
 }
 
+td.editable form.editor.wide {
+    position: fixed;
+    background: white;
+    border: 1px solid black;
+    padding: 10px;
+    z-index: 2;
+}
+
 tbody.list-item.refreshing {
     opacity: 0.5;
 }

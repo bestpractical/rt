@@ -596,7 +596,20 @@ jQuery(function () {
         var value = cell.find('.value');
         var editor = cell.find('.editor');
 
+        var height = cell.height();
+
         cell.addClass('editing');
+
+        if (editor.find('textarea').length || editor[0].clientWidth > cell[0].clientWidth) {
+            cell.attr('height', height);
+
+            var rect = editor[0].getBoundingClientRect();
+            editor.addClass('wide');
+            var top = rect.top - parseInt(editor.css('padding-top')) - parseInt(editor.css('border-top-width'));
+            var left = rect.left - parseInt(editor.css('padding-left')) - parseInt(editor.css('border-left-width'));
+            editor.css({ top: top, left: left });
+        }
+
         editor.find(':input:visible:enabled:first').focus();
     });
 
@@ -616,7 +629,8 @@ jQuery(function () {
         var value = cell.find('.value');
 
         if (!editor.data('changed')) {
-            cell.removeClass('editing');
+            editor.removeClass('wide');
+            cell.removeClass('editing').removeAttr('height');
             return;
         }
 
