@@ -109,6 +109,9 @@ foreach my $column (@Format) {
 
     delete $attrs{edit} if !$InlineEdit;
 
+    delete $attrs{edit} if $record->isa('RT::Ticket')
+                        && !$record->CurrentUserHasRight('ModifyTicket');
+
     $attrs{colspan} = $column->{span};
     $item += ($attrs{'colspan'} || 1);
 
