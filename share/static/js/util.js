@@ -586,7 +586,7 @@ jQuery(function () {
         var value = cell.find('.value');
         var editor = cell.find('.editor');
 
-        cell.removeClass('editable').addClass('editing');
+        cell.addClass('editing');
         editor.find(':input:visible:enabled:first').focus();
     });
 
@@ -598,9 +598,8 @@ jQuery(function () {
 
         var params = editor.serialize();
 
-        cell.removeClass('editing').addClass('editable');
         editor.find(':input').attr('disabled', 'disabled');
-        cell.addClass('loading');
+        cell.removeClass('editing').addClass('loading');
 
         jQuery.ajax({
             url     : editor.attr('action'),
