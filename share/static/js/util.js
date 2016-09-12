@@ -600,11 +600,11 @@ jQuery(function () {
         editor.find(':input:visible:enabled:first').focus();
     });
 
-    jQuery(document).on('change', 'td.editable form :input', function () {
+    jQuery(document).on('change', 'td.editable.editing form :input', function () {
         jQuery(this).closest('form').data('changed', true);
     });
 
-    jQuery(document).on('focusout', 'td.editing form', function () {
+    jQuery(document).on('focusout', 'td.editable.editing form', function () {
         if (!inlineEditEnabled) {
             return;
         }
@@ -654,12 +654,12 @@ jQuery(function () {
         });
     });
 
-    jQuery(document).on('submit', 'td.editing form', function (e) {
+    jQuery(document).on('submit', 'td.editable.editing form', function (e) {
         e.preventDefault();
         jQuery(this).find(':input:focus').blur();
     });
 
-    jQuery(document).on('change', 'td.editing form select', function () {
+    jQuery(document).on('change', 'td.editable.editing form select', function () {
         jQuery(this).closest('form').trigger('submit');
     });
 
