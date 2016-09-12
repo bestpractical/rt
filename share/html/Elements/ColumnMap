@@ -141,6 +141,12 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             }
             return @values;
         },
+        edit      => sub {
+            my $self = $WCOLUMN_MAP->{CustomField};
+            my $cf = $self->{load}->(@_);
+            return unless $cf->Id;
+            return \($m->scomp('/Elements/EditCustomField', CustomField => $cf, Object => $_[0]))
+        },
     },
     CustomRole => {
         attribute => sub { return shift @_ },
