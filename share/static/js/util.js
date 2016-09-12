@@ -520,9 +520,7 @@ function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
 }
 
-function refreshCollectionListRow(tbody, success, error) {
-    var table = tbody.closest('table');
-
+function refreshCollectionListRow(tbody, table, success, error) {
     var params = {
         DisplayFormat : table.data('display-format'),
         ObjectClass   : table.data('class'),
@@ -610,6 +608,7 @@ jQuery(function () {
         var editor = jQuery(this);
         var cell = editor.closest('td');
         var tbody = cell.closest('tbody');
+        var table = tbody.closest('table');
         var value = cell.find('.value');
 
         var params = editor.serialize();
@@ -629,6 +628,7 @@ jQuery(function () {
 
                 refreshCollectionListRow(
                     tbody,
+                    table,
                     function () { },
                     function (xhr, error) {
                         jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
