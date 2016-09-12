@@ -177,6 +177,17 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
 
             return $role_obj;
         },
+        edit => sub {
+            my $self = $WCOLUMN_MAP->{CustomRole};
+            my $role   = $self->{load}->(@_);
+            return unless $role->Id;
+            if ($role->SingleValue) {
+                return \($m->scomp("/Elements/SingleUserRoleInput", role => $role, Ticket => $_[0]));
+            }
+            else {
+                return undef;
+            }
+        },
     },
 
     CheckBox => {
