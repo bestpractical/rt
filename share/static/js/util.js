@@ -593,6 +593,7 @@ jQuery(function () {
     jQuery(document).on('focusout', 'td.editing form', function () {
         var editor = jQuery(this);
         var cell = editor.closest('td');
+        var tbody = cell.closest('tbody');
         var value = cell.find('.value');
 
         var params = editor.serialize();
@@ -615,7 +616,7 @@ jQuery(function () {
             },
             complete : function () {
                 refreshCollectionListRow(
-                    cell.closest('tbody'),
+                    tbody,
                     function () { },
                     function (xhr, error) {
                         jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
