@@ -596,6 +596,10 @@ jQuery(function () {
         var value = cell.find('.value');
         var editor = cell.find('.editor');
 
+        if (cell.hasClass('editing')) {
+            return;
+        }
+
         var height = cell.height();
 
         cell.addClass('editing');
