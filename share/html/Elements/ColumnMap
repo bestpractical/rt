@@ -152,31 +152,30 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
         attribute => sub { return shift @_ },
         title     => sub { return pop @_ },
         value     => sub {
-            my $object = shift;
+            my $self = $WCOLUMN_MAP->{CustomRole};
+            my $role   = $self->{load}->(@_);
+            return unless $role->Id;
+            return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role->GroupType) ) );
+        },
+        load      => sub {
             my $role_name = pop;
 
-            my $role_type = do {
-                # Cache the role object on a per-request basis, to avoid
-                # having to load it for every row
-                my $key = "RT::CustomRole-" . $role_name;
+            # Cache the role object on a per-request basis, to avoid
+            # having to load it for every row
+            my $key = "RT::CustomRole-" . $role_name;
 
-                my $role_type = $m->notes($key);
-                if (!$role_type) {
-                    my $role_obj = RT::CustomRole->new($object->CurrentUser);
-                    $role_obj->Load($role_name);
+            my $role_obj = $m->notes($key);
+            if (!$role_obj) {
+                $role_obj = RT::CustomRole->new($_[0]->CurrentUser);
+                $role_obj->Load($role_name);
 
-                    RT->Logger->notice("Unable to load custom role $role_name")
-                        unless $role_obj->Id;
+                RT->Logger->notice("Unable to load custom role $role_name")
+                    unless $role_obj->Id;
 
-                    $role_type = $role_obj->GroupType;
-                    $m->notes($key, $role_type);
-                }
+                $m->notes($key, $role_obj);
+            }
 
-                $role_type;
-            };
-
-            return if !$role_type;
-            return \($m->scomp("/Elements/ShowPrincipal", Object => $object->RoleGroup($role_type) ) );
+            return $role_obj;
         },
     },
 
