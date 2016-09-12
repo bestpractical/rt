@@ -533,6 +533,8 @@ function refreshCollectionListRow(tbody, success, error) {
         Warning       : tbody.data('warning')
     };
 
+    tbody.addClass('refreshing');
+
     jQuery.ajax({
         url    : RT.Config.WebHomePath + '/Helpers/CollectionListRow',
         method : 'GET',
@@ -614,6 +616,7 @@ jQuery(function () {
 
         editor.find(':input').attr('disabled', 'disabled');
         cell.removeClass('editing').addClass('loading');
+        tbody.addClass('refreshing');
 
         jQuery.ajax({
             url     : editor.attr('action'),

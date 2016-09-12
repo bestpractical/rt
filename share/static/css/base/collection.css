@@ -61,3 +61,7 @@ td.editable.loading > form.editor > .loading {
     display: inline-block;
 }
 
+tbody.list-item.refreshing {
+    opacity: 0.5;
+}
+
