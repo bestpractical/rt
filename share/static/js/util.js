@@ -541,7 +541,7 @@ function refreshCollectionListRow(tbody, success, error) {
             tbody.replaceWith(response);
             if (success) { success(response) }
         },
-        error: error,
+        error: error
     });
 }
 
@@ -575,6 +575,12 @@ jQuery(function() {
 
 /* inline edit */
 jQuery(function () {
+    var inlineEditEnabled = true;
+    var disableInlineEdit = function () {
+        inlineEditEnabled = false;
+        jQuery('.editable').removeClass('editing').removeClass('loading');
+    };
+
     // stop propagation when we click a hyperlink (e.g. ticket subject) so that
     // the td.editable onclick handler doesn't also fire
     jQuery(document).on('click', 'td.editable a', function (e) {
@@ -582,6 +588,10 @@ jQuery(function () {
     });
 
     jQuery(document).on('click', 'td.editable', function (e) {
+        if (!inlineEditEnabled) {
+            return;
+        }
+
         var cell = jQuery(this);
         var value = cell.find('.value');
         var editor = cell.find('.editor');
@@ -591,6 +601,10 @@ jQuery(function () {
     });
 
     jQuery(document).on('focusout', 'td.editing form', function () {
+        if (!inlineEditEnabled) {
+            return;
+        }
+
         var editor = jQuery(this);
         var cell = editor.closest('td');
         var tbody = cell.closest('tbody');
@@ -609,19 +623,21 @@ jQuery(function () {
                 jQuery.each(results.actions, function (i, action) {
                     jQuery.jGrowl(action, { themeState: 'none' });
                 });
-            },
-            error   : function (xhr, error) {
-                jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
-            },
-            complete : function () {
+
                 refreshCollectionListRow(
                     tbody,
                     function () { },
                     function (xhr, error) {
                         jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
                         cell.addClass('error').html(loc_key('error'));
+                        disableInlineEdit();
                     }
                 );
+            },
+            error   : function (xhr, error) {
+                jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
+                cell.addClass('error').html(loc_key('error'));
+                disableInlineEdit();
             }
         });
     });
