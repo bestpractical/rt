@@ -124,7 +124,7 @@ sub Store {
     my $dropbox = $self->Dropbox;
 
     # No-op if the path exists already.  This forces a metadata read.
-    return (1) if open( $dropbox, "<", $sha);
+    return ($sha) if open( $dropbox, "<", $sha);
 
     open( $dropbox, ">", $sha )
         or return (undef, "Open for write on dropbox failed: $!");
@@ -133,7 +133,7 @@ sub Store {
     close $dropbox
         or return (undef, "Flush to dropbox failed: $!");
 
-    return (1);
+    return ($sha);
 }
 
 sub DownloadURLFor {

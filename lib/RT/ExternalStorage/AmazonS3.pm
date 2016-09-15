@@ -147,7 +147,7 @@ sub Store {
     my ($sha, $content, $attachment) = @_;
 
     # No-op if the path exists already
-    return (1) if $self->BucketObj->head_key( $sha );
+    return ($sha) if $self->BucketObj->head_key( $sha );
 
     # Without content_type, S3 can guess wrong and cause attachments downloaded
     # via a link to have a content type of binary/octet-stream
@@ -156,7 +156,7 @@ sub Store {
         { content_type => $attachment->ContentType }
     ) or return (undef, "Failed to write to AmazonS3: " . $self->S3->errstr);
 
-    return (1);
+    return ($sha);
 }
 
 sub DownloadURLFor {

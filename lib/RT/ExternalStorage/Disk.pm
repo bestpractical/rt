@@ -111,7 +111,7 @@ sub Store {
     my $dir  = $self->Path . "/$1/$2";
     my $path = "$dir/$3";
 
-    return (1) if -f $path;
+    return ($sha) if -f $path;
 
     File::Path::make_path($dir, {error => \my $err});
     return (undef, "Making directory failed") if @{$err};
@@ -120,7 +120,7 @@ sub Store {
     print $fh $content or return (undef, "Cannot write file to disk: $!");
     close $fh or return (undef, "Cannot write file to disk: $!");
 
-    return (1);
+    return ($sha);
 }
 
 sub DownloadURLFor {
