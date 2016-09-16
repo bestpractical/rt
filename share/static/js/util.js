@@ -671,14 +671,14 @@ jQuery(function () {
         jQuery(this).closest('form').data('changed', true);
     });
 
-    jQuery(document).on('focusout', 'td.editable.editing form', function () {
+    jQuery(document).on('submit', 'td.editable.editing form', function (e) {
+        e.preventDefault();
         var editor = jQuery(this);
         submitInlineEdit(editor);
     });
 
-    jQuery(document).on('submit', 'td.editable.editing form', function (e) {
-        e.preventDefault();
-        jQuery(this).find(':input:focus').blur();
+    jQuery(document).on('focusout', 'td.editable.editing form', function () {
+        jQuery(this).trigger('submit');
     });
 
     jQuery(document).on('change', 'td.editable.editing form select', function () {
