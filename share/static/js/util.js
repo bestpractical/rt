@@ -587,26 +587,32 @@ jQuery(function () {
     var inlineEditingDate = false;
     var scrollHandler = null;
 
+    var cancelInlineEdit = function (editor) {
+        var cell = editor.closest('td');
+
+        inlineEditingDate = false;
+        cell.removeClass('editing').removeAttr('height');
+        editor.removeClass('wide');
+        if (scrollHandler) {
+            jQuery(window).off('scroll', scrollHandler);
+        }
+    };
+
     var submitInlineEdit = function (editor) {
         if (!inlineEditEnabled) {
+            return;
+        }
+
+        inlineEditingDate = false;
+
+        if (!editor.data('changed')) {
+            cancelInlineEdit(editor);
             return;
         }
 
         var cell = editor.closest('td');
         var tbody = cell.closest('tbody');
         var table = tbody.closest('table');
-        var value = cell.find('.value');
-
-        inlineEditingDate = false;
-
-        if (!editor.data('changed')) {
-            cell.removeClass('editing').removeAttr('height');
-            editor.removeClass('wide');
-            if (scrollHandler) {
-                jQuery(window).off('scroll', scrollHandler);
-            }
-            return;
-        }
 
         var params = editor.serialize();
 
