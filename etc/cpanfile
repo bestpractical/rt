@@ -208,5 +208,5 @@ feature 's3' => sub {
 };
 
 feature 'dropbox' => sub {
-    requires 'File::Dropbox';
+    requires 'File::Dropbox', '>= 0.7';
 };
