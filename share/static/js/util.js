@@ -587,6 +587,47 @@ jQuery(function () {
     var inlineEditingDate = false;
     var scrollHandler = null;
 
+    var beginInlineEdit = function (cell) {
+        if (!inlineEditEnabled) {
+            return;
+        }
+
+        var value = cell.find('.value');
+        var editor = cell.find('.editor');
+
+        if (jQuery('td.editable.editing').length) {
+            return;
+        }
+
+        var height = cell.height();
+
+        cell.addClass('editing');
+
+        if (editor.find('textarea').length || editor[0].clientWidth > cell[0].clientWidth) {
+            cell.attr('height', height);
+
+            var rect = editor[0].getBoundingClientRect();
+            editor.addClass('wide');
+            var top = rect.top - parseInt(editor.css('padding-top')) - parseInt(editor.css('border-top-width'));
+            var left = rect.left - parseInt(editor.css('padding-left')) - parseInt(editor.css('border-left-width'));
+            editor.css({ top: top, left: left });
+
+            var $window = jQuery(window);
+            var initialScrollTop = top + $window.scrollTop();
+
+            scrollHandler = function (e) {
+                editor.css('top', initialScrollTop - $window.scrollTop());
+            };
+            jQuery(window).scroll(scrollHandler);
+        }
+
+        editor.find(':input:visible:enabled:first').focus();
+
+        if (editor.find('.datepicker').length) {
+            inlineEditingDate = true;
+        }
+    };
+
     var cancelInlineEdit = function (editor) {
         var cell = editor.closest('td');
 
@@ -659,45 +700,8 @@ jQuery(function () {
     });
 
     jQuery(document).on('click', 'td.editable', function (e) {
-        if (!inlineEditEnabled) {
-            return;
-        }
-
         var cell = jQuery(this);
-        var value = cell.find('.value');
-        var editor = cell.find('.editor');
-
-        if (jQuery('td.editable.editing').length) {
-            return;
-        }
-
-        var height = cell.height();
-
-        cell.addClass('editing');
-
-        if (editor.find('textarea').length || editor[0].clientWidth > cell[0].clientWidth) {
-            cell.attr('height', height);
-
-            var rect = editor[0].getBoundingClientRect();
-            editor.addClass('wide');
-            var top = rect.top - parseInt(editor.css('padding-top')) - parseInt(editor.css('border-top-width'));
-            var left = rect.left - parseInt(editor.css('padding-left')) - parseInt(editor.css('border-left-width'));
-            editor.css({ top: top, left: left });
-
-            var $window = jQuery(window);
-            var initialScrollTop = $window.scrollTop();
-
-            scrollHandler = function (e) {
-                editor.css('top', top + initialScrollTop - $window.scrollTop());
-            };
-            jQuery(window).scroll(scrollHandler);
-        }
-
-        editor.find(':input:visible:enabled:first').focus();
-
-        if (editor.find('.datepicker').length) {
-            inlineEditingDate = true;
-        }
+        beginInlineEdit(cell);
     });
 
     jQuery(document).on('change', 'td.editable.editing form :input', function () {
