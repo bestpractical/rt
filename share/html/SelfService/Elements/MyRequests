@@ -46,16 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
+  <& /Elements/CollectionList,
+    Title        => $title,
+    Format       => $Format,
+    Query        => $Query,
+    Order        => @Order,
+    OrderBy      => @OrderBy,
+    BaseURL      => $BaseURL,
+    AllowSorting => 1,
+    Class        => 'RT::Tickets',
+    Rows         => $Rows,
+    Page         => $Page,
+    InlineEdit   => 0,
+  &>
 </&>
 
 <%INIT>
