@@ -653,7 +653,7 @@ jQuery(function () {
         var value = cell.find('.value');
         var editor = cell.find('.editor');
 
-        if (cell.hasClass('editing')) {
+        if (jQuery('td.editable.editing').length) {
             return;
         }
 
