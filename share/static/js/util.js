@@ -227,7 +227,10 @@ jQuery(function() {
         changeYear: true,
         showOtherMonths: true,
         showOn: 'none',
-        selectOtherMonths: true
+        selectOtherMonths: true,
+        onClose: function() {
+            jQuery(this).trigger('datepicker:close');
+        }
     };
     jQuery(".datepicker").focus(function() {
         var val = jQuery(this).val();
