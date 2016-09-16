@@ -581,52 +581,11 @@ jQuery(function () {
         jQuery('.editable').removeClass('editing').removeClass('loading');
     };
 
-    // stop propagation when we click a hyperlink (e.g. ticket subject) so that
-    // the td.editable onclick handler doesn't also fire
-    jQuery(document).on('click', 'td.editable a', function (e) {
-        e.stopPropagation();
-    });
-
-    jQuery(document).on('click', 'td.editable', function (e) {
+    var submitInlineEdit = function (editor) {
         if (!inlineEditEnabled) {
             return;
         }
 
-        var cell = jQuery(this);
-        var value = cell.find('.value');
-        var editor = cell.find('.editor');
-
-        if (cell.hasClass('editing')) {
-            return;
-        }
-
-        var height = cell.height();
-
-        cell.addClass('editing');
-
-        if (editor.find('textarea').length || editor[0].clientWidth > cell[0].clientWidth) {
-            cell.attr('height', height);
-
-            var rect = editor[0].getBoundingClientRect();
-            editor.addClass('wide');
-            var top = rect.top - parseInt(editor.css('padding-top')) - parseInt(editor.css('border-top-width'));
-            var left = rect.left - parseInt(editor.css('padding-left')) - parseInt(editor.css('border-left-width'));
-            editor.css({ top: top, left: left });
-        }
-
-        editor.find(':input:visible:enabled:first').focus();
-    });
-
-    jQuery(document).on('change', 'td.editable.editing form :input', function () {
-        jQuery(this).closest('form').data('changed', true);
-    });
-
-    jQuery(document).on('focusout', 'td.editable.editing form', function () {
-        if (!inlineEditEnabled) {
-            return;
-        }
-
-        var editor = jQuery(this);
         var cell = editor.closest('td');
         var tbody = cell.closest('tbody');
         var table = tbody.closest('table');
@@ -670,6 +629,51 @@ jQuery(function () {
                 disableInlineEdit();
             }
         });
+    };
+
+    // stop propagation when we click a hyperlink (e.g. ticket subject) so that
+    // the td.editable onclick handler doesn't also fire
+    jQuery(document).on('click', 'td.editable a', function (e) {
+        e.stopPropagation();
+    });
+
+    jQuery(document).on('click', 'td.editable', function (e) {
+        if (!inlineEditEnabled) {
+            return;
+        }
+
+        var cell = jQuery(this);
+        var value = cell.find('.value');
+        var editor = cell.find('.editor');
+
+        if (cell.hasClass('editing')) {
+            return;
+        }
+
+        var height = cell.height();
+
+        cell.addClass('editing');
+
+        if (editor.find('textarea').length || editor[0].clientWidth > cell[0].clientWidth) {
+            cell.attr('height', height);
+
+            var rect = editor[0].getBoundingClientRect();
+            editor.addClass('wide');
+            var top = rect.top - parseInt(editor.css('padding-top')) - parseInt(editor.css('border-top-width'));
+            var left = rect.left - parseInt(editor.css('padding-left')) - parseInt(editor.css('border-left-width'));
+            editor.css({ top: top, left: left });
+        }
+
+        editor.find(':input:visible:enabled:first').focus();
+    });
+
+    jQuery(document).on('change', 'td.editable.editing form :input', function () {
+        jQuery(this).closest('form').data('changed', true);
+    });
+
+    jQuery(document).on('focusout', 'td.editable.editing form', function () {
+        var editor = jQuery(this);
+        submitInlineEdit(editor);
     });
 
     jQuery(document).on('submit', 'td.editable.editing form', function (e) {
