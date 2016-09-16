@@ -585,6 +585,7 @@ jQuery(function () {
     };
 
     var inlineEditingDate = false;
+    var scrollHandler = null;
 
     var submitInlineEdit = function (editor) {
         if (!inlineEditEnabled) {
@@ -599,8 +600,11 @@ jQuery(function () {
         inlineEditingDate = false;
 
         if (!editor.data('changed')) {
-            editor.removeClass('wide');
             cell.removeClass('editing').removeAttr('height');
+            editor.removeClass('wide');
+            if (scrollHandler) {
+                jQuery(window).off('scroll', scrollHandler);
+            }
             return;
         }
 
@@ -622,10 +626,13 @@ jQuery(function () {
                 refreshCollectionListRow(
                     tbody,
                     table,
-                    function () { },
+                    function () {
+                        jQuery(window).off('scroll', scrollHandler);
+                    },
                     function (xhr, error) {
                         jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
                         cell.addClass('error').html(loc_key('error'));
+                        jQuery(window).off('scroll', scrollHandler);
                         disableInlineEdit();
                     }
                 );
@@ -633,6 +640,7 @@ jQuery(function () {
             error   : function (xhr, error) {
                 jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
                 cell.addClass('error').html(loc_key('error'));
+                jQuery(window).off('scroll', scrollHandler);
                 disableInlineEdit();
             }
         });
@@ -669,6 +677,14 @@ jQuery(function () {
             var top = rect.top - parseInt(editor.css('padding-top')) - parseInt(editor.css('border-top-width'));
             var left = rect.left - parseInt(editor.css('padding-left')) - parseInt(editor.css('border-left-width'));
             editor.css({ top: top, left: left });
+
+            var $window = jQuery(window);
+            var initialScrollTop = $window.scrollTop();
+
+            scrollHandler = function (e) {
+                editor.css('top', top + initialScrollTop - $window.scrollTop());
+            };
+            jQuery(window).scroll(scrollHandler);
         }
 
         editor.find(':input:visible:enabled:first').focus();
