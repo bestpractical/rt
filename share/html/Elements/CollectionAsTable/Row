@@ -109,6 +109,8 @@ foreach my $column (@Format) {
 
     delete $attrs{edit} if !$InlineEdit;
 
+    delete $attrs{edit} unless $record->isa('RT::Ticket');
+
     delete $attrs{edit} if $record->isa('RT::Ticket')
                         && !$record->CurrentUserHasRight('ModifyTicket');
 
