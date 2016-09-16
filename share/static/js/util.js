@@ -586,6 +586,7 @@ jQuery(function () {
 
     var inlineEditingDate = false;
     var scrollHandler = null;
+    var escapeKeyHandler = null;
 
     var beginInlineEdit = function (cell) {
         if (!inlineEditEnabled) {
@@ -621,6 +622,14 @@ jQuery(function () {
             jQuery(window).scroll(scrollHandler);
         }
 
+        escapeKeyHandler = function (e) {
+            if (e.keyCode == 27) {
+                e.preventDefault();
+                cancelInlineEdit(editor);
+            }
+        };
+        jQuery(document).keyup(escapeKeyHandler);
+
         editor.find(':input:visible:enabled:first').focus();
 
         if (editor.find('.datepicker').length) {
@@ -636,6 +645,9 @@ jQuery(function () {
         editor.removeClass('wide');
         if (scrollHandler) {
             jQuery(window).off('scroll', scrollHandler);
+        }
+        if (escapeKeyHandler) {
+            jQuery(document).off('keyup', escapeKeyHandler);
         }
     };
 
@@ -675,11 +687,13 @@ jQuery(function () {
                     table,
                     function () {
                         jQuery(window).off('scroll', scrollHandler);
+                        jQuery(document).off('keyup', escapeKeyHandler);
                     },
                     function (xhr, error) {
                         jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
                         cell.addClass('error').html(loc_key('error'));
                         jQuery(window).off('scroll', scrollHandler);
+                        jQuery(document).off('keyup', escapeKeyHandler);
                         disableInlineEdit();
                     }
                 );
@@ -688,6 +702,7 @@ jQuery(function () {
                 jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
                 cell.addClass('error').html(loc_key('error'));
                 jQuery(window).off('scroll', scrollHandler);
+                jQuery(document).off('keyup', escapeKeyHandler);
                 disableInlineEdit();
             }
         });
