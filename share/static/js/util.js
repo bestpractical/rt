@@ -596,6 +596,8 @@ jQuery(function () {
         var table = tbody.closest('table');
         var value = cell.find('.value');
 
+        inlineEditingDate = false;
+
         if (!editor.data('changed')) {
             editor.removeClass('wide');
             cell.removeClass('editing').removeAttr('height');
@@ -604,7 +606,6 @@ jQuery(function () {
 
         var params = editor.serialize();
 
-        inlineEditingDate = false;
         editor.find(':input').attr('disabled', 'disabled');
         cell.removeClass('editing').addClass('loading');
         tbody.addClass('refreshing');
