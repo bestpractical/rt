@@ -145,6 +145,10 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             my $self = $WCOLUMN_MAP->{CustomField};
             my $cf = $self->{load}->(@_);
             return unless $cf->Id;
+
+            # uploading files should be done on the modify page
+            return if $cf->Type =~ /^(?:Binary|Image)$/;
+
             return \($m->scomp('/Elements/EditCustomField', CustomField => $cf, Object => $_[0]))
         },
     },
