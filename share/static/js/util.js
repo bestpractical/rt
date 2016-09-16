@@ -584,6 +584,8 @@ jQuery(function () {
         jQuery('.editable').removeClass('editing').removeClass('loading');
     };
 
+    var inlineEditingDate = false;
+
     var submitInlineEdit = function (editor) {
         if (!inlineEditEnabled) {
             return;
@@ -602,6 +604,7 @@ jQuery(function () {
 
         var params = editor.serialize();
 
+        inlineEditingDate = false;
         editor.find(':input').attr('disabled', 'disabled');
         cell.removeClass('editing').addClass('loading');
         tbody.addClass('refreshing');
@@ -668,6 +671,12 @@ jQuery(function () {
         }
 
         editor.find(':input:visible:enabled:first').focus();
+
+        setTimeout(function () {
+            if (jQuery('#ui-datepicker-div').css('display') != 'none') {
+                inlineEditingDate = true;
+            }
+        }, 0);
     });
 
     jQuery(document).on('change', 'td.editable.editing form :input', function () {
@@ -681,11 +690,20 @@ jQuery(function () {
     });
 
     jQuery(document).on('focusout', 'td.editable.editing form', function () {
-        jQuery(this).trigger('submit');
+        if (!inlineEditingDate) {
+            jQuery(this).trigger('submit');
+        }
     });
 
     jQuery(document).on('change', 'td.editable.editing form select', function () {
         jQuery(this).closest('form').trigger('submit');
+    });
+
+    jQuery(document).on('datepicker:close', 'td.editable.editing form .datepicker', function () {
+        var editor = jQuery(this);
+        setTimeout(function () {
+            editor.closest('form').trigger('submit');
+        }, 0);
     });
 
     jQuery('table.collection-as-table').each(function () {
