@@ -281,7 +281,8 @@ $COLUMN_MAP = {
     SLA => {
         attribute => 'SLA',
         title     => 'SLA', # loc
-        value     => sub { return $_[0]->SLA }
+        value     => sub { return $_[0]->SLA },
+        edit      => sub { return \($m->scomp('/Elements/SelectSLA', TicketObj => $_[0], DefaultFromArgs => 0)) },
     },
     UpdateStatus => {
         title => 'New messages', # loc
