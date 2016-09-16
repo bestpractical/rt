@@ -63,7 +63,8 @@
     Rows => $Rows,
     Page => $Page,
     BaseURL => RT->Config->Get('WebPath')."/Search/Bulk.html?",
-    Class => 'RT::Tickets'
+    Class => 'RT::Tickets',
+    InlineEdit => 0,
    &>
 
 % $m->callback(CallbackName => 'AfterTicketList', ARGSRef => \%ARGS);

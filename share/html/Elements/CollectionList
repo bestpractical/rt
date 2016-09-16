@@ -164,14 +164,15 @@ while ( my $record = $Collection->Next ) {
     );
 
     $m->comp('/Elements/CollectionAsTable/Row',
-        i         => $i,
-        Format    => \@Format,
-        record    => $record,
-        maxitems  => $maxitems,
-        ColumnMap => $column_map,
-        Class     => $Class,
-        Warning   => $warning,
-        Classes   => $Classes,
+        i          => $i,
+        Format     => \@Format,
+        record     => $record,
+        maxitems   => $maxitems,
+        ColumnMap  => $column_map,
+        Class      => $Class,
+        Warning    => $warning,
+        Classes    => $Classes,
+        InlineEdit => $InlineEdit,
     );
 
     $$HasResults++ if $HasResults;
@@ -219,6 +220,7 @@ $ShowNavigation => 1
 $ShowHeader     => 1
 $ShowCols       => 1
 $ShowEmpty      => 0
+$InlineEdit     => RT->Config->Get('InlineEdit', $session{CurrentUser})
 $Query => 0
 $HasResults     => undef
 </%ARGS>
