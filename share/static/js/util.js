@@ -673,11 +673,9 @@ jQuery(function () {
 
         editor.find(':input:visible:enabled:first').focus();
 
-        setTimeout(function () {
-            if (jQuery('#ui-datepicker-div').css('display') != 'none') {
-                inlineEditingDate = true;
-            }
-        }, 0);
+        if (editor.find('.datepicker').length) {
+            inlineEditingDate = true;
+        }
     });
 
     jQuery(document).on('change', 'td.editable.editing form :input', function () {
@@ -702,9 +700,7 @@ jQuery(function () {
 
     jQuery(document).on('datepicker:close', 'td.editable.editing form .datepicker', function () {
         var editor = jQuery(this);
-        setTimeout(function () {
-            editor.closest('form').trigger('submit');
-        }, 0);
+        editor.closest('form').trigger('submit');
     });
 
     jQuery('table.collection-as-table').each(function () {
