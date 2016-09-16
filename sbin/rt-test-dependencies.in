@@ -306,7 +306,7 @@ Amazon::S3
 .
 
 $deps{'DROPBOX'} = [ text_to_hash( <<'.') ];
-File::Dropbox
+File::Dropbox 0.7
 .
 
 my %AVOID = (
