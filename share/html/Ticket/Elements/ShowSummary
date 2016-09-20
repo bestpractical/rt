@@ -103,20 +103,57 @@ my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_labe
     </&>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterReminders' );
+
+<%PERL>
+my $dates_url = RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id;
+my $dates_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes($dates_url, 'h' ).'">'.$edit_label.'</a>';
+</%PERL>
     <&| /Widgets/TitleBox, title => loc("Dates"),
-        ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id) : ()),
+        ($can_modify ? (title_href => $dates_url) : ()),
         class => 'ticket-info-dates',
-    &><& /Ticket/Elements/ShowDates, Ticket => $Ticket &></&>
+        ($InlineEdit ? (titleright_raw => $dates_inline) : ()),
+    &>
+        <div <% $InlineEdit ? 'class="inline-edit-display"' : '' |n%>>
+            <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
+        </div>
+%       if ($InlineEdit) {
+            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+                <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
+                <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
+            </form>
+%       }
+</&>
 % $m->callback( %ARGS, CallbackName => 'AfterDates' );
-% my (@extra);
-% push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
 <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
+<%PERL>
+my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id;
+my $links_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes($links_url, 'h' ).'">'.$edit_label.'</a>';
+my $links_graph = '<a href="'. RT->Config->Get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>';
+
+my $links_titleright = join ' ',
+    ($InlineEdit ? $links_inline : ()),
+    (RT->Config->Get('DisableGraphViz') ? () : $links_graph);
+my @extra;
+push @extra, (titleright_raw => $links_titleright) if $links_titleright;
+</%PERL>
 % $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
     <&| /Widgets/TitleBox, title => loc('Links'),
-        ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id) : ()),
+        ($can_modify ? (title_href => $links_url) : ()),
         class => 'ticket-info-links',
         @extra,
-    &><& /Elements/ShowLinks, Object => $Ticket &></&>
+    &>
+        <div <% $InlineEdit ? 'class="inline-edit-display"' : '' |n%>>
+            <& /Elements/ShowLinks, Object => $Ticket &>
+        </div>
+%       if ($InlineEdit) {
+            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+                <& /Elements/EditLinks, Object => $Ticket, TwoColumn => 0 &>
+                <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
+            </form>
+%       }
+</&>
 % $m->callback( %ARGS, CallbackName => 'RightColumn' );
   </td>
 </tr>
