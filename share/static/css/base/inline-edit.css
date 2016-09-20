@@ -14,13 +14,14 @@ table.inline-edit tr.evenline td.editable.editing {
 }
 
 td.editable .value:hover {
-    background-color: #ffd;
+    background: #ffd url(../../../static/images/pencil.png) no-repeat top right;
+    background-size: auto 100%;
     border-color: black;
     cursor: pointer;
 }
 
 body.inline-editing td.editable .value:hover {
-    background-color: inherit;
+    background: inherit;
     border-color: transparent;
     cursor: inherit;
 }
