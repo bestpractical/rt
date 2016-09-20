@@ -9,7 +9,7 @@ table.inline-edit td .value {
     padding: 0.25em 0.25em 0.125em 0.125em;
 }
 
-body:not(.inline-editing) table.inline-edit td.editable .value:hover {
+body:not(.inline-editing) table.inline-edit td.editable:hover .value {
     background: #ffd url(../../../static/images/pencil.png) no-repeat top right;
     background-size: auto 1.5em;
     border-color: black;
