@@ -1,5 +1,16 @@
-td.editable .value {
+table.inline-edit tr.oddline td,
+table.inline-edit tr.evenline td {
+    padding: 0.25em 0.25em 0.125em 0.125em;
+}
+
+table.inline-edit td .value {
     border: 1px dashed transparent;
+    padding: 0.25em 0.25em 0.125em 0.125em;
+}
+
+table.inline-edit tr.oddline td.editable.editing,
+table.inline-edit tr.evenline td.editable.editing {
+    padding: 0.5em 0.5em 0.25em 0.25em;
 }
 
 td.editable .value:hover {
@@ -12,10 +23,6 @@ body.inline-editing td.editable .value:hover {
     background-color: inherit;
     border-color: transparent;
     cursor: inherit;
-}
-
-td.editable > .value {
-    padding-top: 0;
 }
 
 td.editable > form.editor > .loading > img,

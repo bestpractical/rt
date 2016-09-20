@@ -169,14 +169,12 @@ foreach my $column (@Format) {
         $m->out($attrs{edit});
         $m->out('<a href="#" class="cancel"><img src="'.RT->Config->Get('WebPath').'/static/images/close.png" alt="'.loc('Cancel').'" title="'.loc('Cancel').'" /></a>');
         $m->out('<span class="loading"><img src="'.RT->Config->Get('WebPath').'/static/images/loading.gif" alt="'.loc('Loading').'" title="'.loc('Loading').'" /></span>');
-        $m->out('</form><div class="value">');
+        $m->out('</form>');
     }
 
+    $m->out('<div class="value">');
     $m->out(@out) if @out;
-
-    if ($attrs{edit}) {
-        $m->out('</div>');
-    }
+    $m->out('</div>');
 
     $m->out( '</td>' . "\n" );
 }
