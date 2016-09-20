@@ -168,7 +168,7 @@ foreach my $column (@Format) {
         $m->out('<form method="POST" action="'.RT->Config->Get('WebPath').'/Helpers/TicketUpdate?id='.$record->id.'" class="editor">');
         $m->out($attrs{edit});
         $m->out('<a href="#" class="cancel"><img src="'.RT->Config->Get('WebPath').'/static/images/close.png" alt="'.loc('Cancel').'" title="'.loc('Cancel').'" /></a>');
-        $m->out('<img class="loading" src="'.RT->Config->Get('WebPath').'/static/images/loading.gif" alt="'.loc('Loading').'" title="'.loc('Loading').'" />');
+        $m->out('<span class="loading"><img src="'.RT->Config->Get('WebPath').'/static/images/loading.gif" alt="'.loc('Loading').'" title="'.loc('Loading').'" /></span>');
         $m->out('</form><div class="value">');
     }
 

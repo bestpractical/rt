@@ -2,9 +2,12 @@ td.editable > .value {
     padding-top: 0;
 }
 
-td.editable > form.editor > img.loading {
-    height: 1em;
-    width: 1em;
+td.editable > form.editor > .loading > img,
+td.editable > form.editor > .cancel > img {
+    height: 1.5em;
+    width: 1.5em;
+    margin: .25em;
+    border-style: none;
 }
 
 td.editable.error {
@@ -46,14 +49,16 @@ tbody.list-item.refreshing {
     opacity: 0.5;
 }
 
-td.editable > form.editor > a.cancel {
-    display: inline-block;
+td.editable > form.editor > .cancel,
+td.editable > form.editor > .loading {
     height: 100%;
     vertical-align: middle;
 }
 
-td.editable > form.editor > a.cancel > img {
-    height: 1.5em;
-    margin: .25em;
-    border-style: none;
+td.editable > form.editor > .cancel {
+    display: inline-block;
+}
+
+td.editable.loading > form.editor > .cancel {
+    display: none;
 }
