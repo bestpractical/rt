@@ -46,3 +46,14 @@ tbody.list-item.refreshing {
     opacity: 0.5;
 }
 
+td.editable > form.editor > a.cancel {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+td.editable > form.editor > a.cancel > img {
+    height: 1.5em;
+    margin: .25em;
+    border-style: none;
+}

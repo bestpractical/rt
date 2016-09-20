@@ -165,8 +165,11 @@ foreach my $column (@Format) {
     $m->out('>');
 
     if ($attrs{edit}) {
-        $m->out('<form method="POST" action="'.RT->Config->Get('WebPath').'/Helpers/TicketUpdate?id='.$record->id.'" class="editor">' . $attrs{edit} . '<img class="loading" src="'.RT->Config->Get('WebPath').'/static/images/loading.gif" alt="'.loc('Loading').'"/></form>');
-        $m->out('<div class="value">');
+        $m->out('<form method="POST" action="'.RT->Config->Get('WebPath').'/Helpers/TicketUpdate?id='.$record->id.'" class="editor">');
+        $m->out($attrs{edit});
+        $m->out('<a href="#" class="cancel"><img src="'.RT->Config->Get('WebPath').'/static/images/close.png" alt="'.loc('Cancel').'" title="'.loc('Cancel').'" /></a>');
+        $m->out('<img class="loading" src="'.RT->Config->Get('WebPath').'/static/images/loading.gif" alt="'.loc('Loading').'" title="'.loc('Loading').'" />');
+        $m->out('</form><div class="value">');
     }
 
     $m->out(@out) if @out;

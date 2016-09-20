@@ -667,6 +667,10 @@ jQuery(function () {
         var tbody = cell.closest('tbody');
         var table = tbody.closest('table');
 
+        if (!cell.hasClass('editing')) {
+            return;
+        }
+
         var params = editor.serialize();
 
         editor.find(':input').attr('disabled', 'disabled');
@@ -731,8 +735,17 @@ jQuery(function () {
     jQuery(document).on('focusout', 'td.editable.editing form', function () {
         var editor = jQuery(this);
         if (!inlineEditingDate) {
-            submitInlineEdit(editor);
+            // delay submit to give the `td.editable a.cancel` click handler
+            // a chance to run
+            setTimeout(function () {
+                submitInlineEdit(editor);
+            }, 100);
         }
+    });
+
+    jQuery(document).on('click', 'td.editable a.cancel', function (e) {
+        e.preventDefault();
+        cancelInlineEdit(jQuery(this).closest('form'));
     });
 
     jQuery(document).on('change', 'td.editable.editing form select', function () {
