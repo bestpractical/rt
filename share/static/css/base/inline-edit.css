@@ -8,6 +8,12 @@ td.editable .value:hover {
     cursor: pointer;
 }
 
+body.inline-editing td.editable .value:hover {
+    background-color: inherit;
+    border-color: transparent;
+    cursor: inherit;
+}
+
 td.editable > .value {
     padding-top: 0;
 }

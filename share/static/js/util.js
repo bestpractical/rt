@@ -605,6 +605,7 @@ jQuery(function () {
         var height = cell.height();
 
         cell.addClass('editing');
+        jQuery('body').addClass('inline-editing');
 
         if (editor.find('textarea').length || editor[0].clientWidth > cell[0].clientWidth) {
             cell.attr('height', height);
@@ -645,6 +646,7 @@ jQuery(function () {
         inlineEditingDate = false;
         cell.removeClass('editing').removeAttr('height');
         editor.removeClass('wide');
+        jQuery('body').removeClass('inline-editing');
 
         cell.find('form').replaceWith(inlineEditPristineForm);
         inlineEditPristineForm = null;
@@ -681,6 +683,7 @@ jQuery(function () {
 
         editor.find(':input').attr('disabled', 'disabled');
         cell.removeClass('editing').addClass('loading');
+        jQuery('body').removeClass('inline-editing');
         tbody.addClass('refreshing');
         inlineEditPristineForm = null;
 
