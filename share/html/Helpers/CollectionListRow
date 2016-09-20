@@ -49,6 +49,7 @@
 $DisplayFormat => undef
 $ObjectClass   => undef
 $MaxItems      => undef
+$InlineEdit    => undef
 
 $i             => undef
 $ObjectId      => undef
@@ -66,12 +67,13 @@ $record->Load($ObjectId);
 $m->abort unless $record->id;
 
 $m->comp('/Elements/CollectionAsTable/Row',
-    i         => $i,
-    Format    => \@Format,
-    record    => $record,
-    maxitems  => $MaxItems,
-    Class     => $record->ColumnMapClassName,
-    Warning   => $Warning,
+    i          => $i,
+    Format     => \@Format,
+    record     => $record,
+    maxitems   => $MaxItems,
+    Class      => $record->ColumnMapClassName,
+    Warning    => $Warning,
+    InlineEdit => $InlineEdit,
 );
 $m->abort;
 </%INIT>

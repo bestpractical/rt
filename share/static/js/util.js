@@ -528,6 +528,7 @@ function refreshCollectionListRow(tbody, table, success, error) {
         DisplayFormat : table.data('display-format'),
         ObjectClass   : table.data('class'),
         MaxItems      : table.data('max-items'),
+        InlineEdit    : table.hasClass('inline-edit'),
 
         i             : tbody.data('index'),
         ObjectId      : tbody.data('record-id'),
