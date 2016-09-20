@@ -5,6 +5,7 @@ table.inline-edit tr.evenline td {
 
 table.inline-edit td .value {
     border: 1px dashed transparent;
+    min-height: 1em;
     padding: 0.25em 0.25em 0.125em 0.125em;
 }
 
