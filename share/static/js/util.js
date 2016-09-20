@@ -730,7 +730,7 @@ jQuery(function () {
         e.stopPropagation();
     });
 
-    jQuery(document).on('click', 'td.editable', function (e) {
+    jQuery(document).on('click', 'table.inline-edit td.editable', function (e) {
         var cell = jQuery(this);
         beginInlineEdit(cell);
     });
