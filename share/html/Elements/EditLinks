@@ -45,9 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ($TwoColumn) {
 <table width="100%">
   <tr>
     <td valign="top" width="50%">
+% }
       <h3><&|/l&>Current Links</&></h3>
 
 <table>
@@ -105,13 +107,20 @@
   </tr>
 </table>
 
+% if ($TwoColumn) {
 </td>
 <td valign="top">
+% }
+
 <h3><&|/l&>New Links</&></h3>
 <& AddLinks, %ARGS &>
+
+% if ($TwoColumn) {
 </td>
 </tr>
 </table>
+% }
 <%ARGS>
 $Object => undef
+$TwoColumn => 1
 </%ARGS>
