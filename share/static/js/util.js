@@ -688,6 +688,14 @@ jQuery(function () {
         tbody.addClass('refreshing');
         inlineEditPristineForm = null;
 
+        var renderError = function (error) {
+            jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
+            cell.addClass('error').html(loc_key('error'));
+            jQuery(window).off('scroll', scrollHandler);
+            jQuery(document).off('keyup', escapeKeyHandler);
+            disableInlineEdit();
+        };
+
         jQuery.ajax({
             url     : editor.attr('action'),
             method  : 'POST',
@@ -705,20 +713,12 @@ jQuery(function () {
                         jQuery(document).off('keyup', escapeKeyHandler);
                     },
                     function (xhr, error) {
-                        jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
-                        cell.addClass('error').html(loc_key('error'));
-                        jQuery(window).off('scroll', scrollHandler);
-                        jQuery(document).off('keyup', escapeKeyHandler);
-                        disableInlineEdit();
+                        renderError(error);
                     }
                 );
             },
             error   : function (xhr, error) {
-                jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
-                cell.addClass('error').html(loc_key('error'));
-                jQuery(window).off('scroll', scrollHandler);
-                jQuery(document).off('keyup', escapeKeyHandler);
-                disableInlineEdit();
+                renderError(error);
             }
         });
     };
