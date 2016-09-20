@@ -587,6 +587,7 @@ jQuery(function () {
     var inlineEditingDate = false;
     var scrollHandler = null;
     var escapeKeyHandler = null;
+    var inlineEditFormPristine = null;
 
     var beginInlineEdit = function (cell) {
         if (!inlineEditEnabled) {
@@ -600,6 +601,7 @@ jQuery(function () {
             return;
         }
 
+        inlineEditPristineForm = cell.find('form').clone();
         var height = cell.height();
 
         cell.addClass('editing');
@@ -643,6 +645,10 @@ jQuery(function () {
         inlineEditingDate = false;
         cell.removeClass('editing').removeAttr('height');
         editor.removeClass('wide');
+
+        cell.find('form').replaceWith(inlineEditPristineForm);
+        inlineEditPristineForm = null;
+
         if (scrollHandler) {
             jQuery(window).off('scroll', scrollHandler);
         }
@@ -676,6 +682,7 @@ jQuery(function () {
         editor.find(':input').attr('disabled', 'disabled');
         cell.removeClass('editing').addClass('loading');
         tbody.addClass('refreshing');
+        inlineEditPristineForm = null;
 
         jQuery.ajax({
             url     : editor.attr('action'),
