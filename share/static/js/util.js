@@ -725,18 +725,18 @@ jQuery(function () {
 
     jQuery(document).on('submit', 'td.editable.editing form', function (e) {
         e.preventDefault();
-        var editor = jQuery(this);
-        submitInlineEdit(editor);
+        submitInlineEdit(jQuery(this));
     });
 
     jQuery(document).on('focusout', 'td.editable.editing form', function () {
+        var editor = jQuery(this);
         if (!inlineEditingDate) {
-            jQuery(this).trigger('submit');
+            submitInlineEdit(editor);
         }
     });
 
     jQuery(document).on('change', 'td.editable.editing form select', function () {
-        jQuery(this).closest('form').trigger('submit');
+        submitInlineEdit(jQuery(this).closest('form'));
     });
 
     jQuery(document).on('datepicker:close', 'td.editable.editing form .datepicker', function () {
