@@ -75,6 +75,7 @@ my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_labe
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
         title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
+        InlineEdit   => $InlineEdit,
         &>
 
     <&| /Widgets/TitleBox, title => loc('People'),

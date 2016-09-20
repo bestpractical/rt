@@ -47,22 +47,36 @@
 %# END BPS TAGGED BLOCK }}}
 <%perl>
 for my $group ( @Groupings ) {
+    my $modify_url = $title_href ? "$title_href?id=".$Object->id.($group?";Grouping=".$m->interp->apply_escapes($group,'u')."#".CSSClass("$css_class-$group") : "#".$css_class) : undef;
+    my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes(($modify_url||'#'), 'h' ).'">'.$edit_label.'</a>';
+
     my %grouping_args = (
         title => $group? loc($group) : loc('Custom Fields'),
         class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
         hide_empty => 1,
-        title_href => $title_href ? "$title_href?id=".$Object->id.($group?";Grouping=".$m->interp->apply_escapes($group,'u')."#".CSSClass("$css_class-$group") : "#".$css_class) : undef,
+        title_href => $modify_url,
+        ($InlineEdit ? (titleright_raw => $modify_inline) : ()),
         %$TitleBoxARGS,
     );
     $m->callback( CallbackName => 'TitleBox', Object => $Object, Grouping => $group, ARGSRef => \%grouping_args );
 </%perl>
 <&| /Widgets/TitleBox, %grouping_args &>
-<& ShowCustomFields, %ARGS, Object => $Object, Grouping => $group &>
+  <div <% $InlineEdit ? 'class="inline-edit-display"' : '' |n%>>
+    <& ShowCustomFields, %ARGS, Object => $Object, Grouping => $group &>
+  </div>
+% if ($InlineEdit) {
+  <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+    <input type="hidden" class="hidden" name="id" value="<% $Object->id %>" />
+    <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
+    <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
+  </form>
+% }
 </&>
 % }
 <%ARGS>
 $Object
 $title_href => ""
+$InlineEdit => 0
 @Groupings => ()
 </%ARGS>
 <%INIT>
@@ -73,6 +87,10 @@ $css_class = CSSClass($css_class);
 $css_class .= '-info-cfs';
 
 my $TitleBoxARGS = delete $ARGS{TitleBoxARGS} || {};
+
+$InlineEdit = 0 unless $Object->isa('RT::Ticket');
+my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
+my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
 
 @Groupings = (RT::CustomField->CustomGroupings( $Object ), '') unless @Groupings;
 </%INIT>
