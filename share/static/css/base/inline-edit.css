@@ -1,3 +1,13 @@
+td.editable .value {
+    border: 1px dashed transparent;
+}
+
+td.editable .value:hover {
+    background-color: #ffd;
+    border-color: black;
+    cursor: pointer;
+}
+
 td.editable > .value {
     padding-top: 0;
 }
