@@ -582,6 +582,7 @@ jQuery(function () {
     var disableInlineEdit = function () {
         inlineEditEnabled = false;
         jQuery('.editable').removeClass('editing').removeClass('loading');
+        jQuery('table.inline-edit').removeClass('inline-edit');
     };
 
     var inlineEditingDate = false;
