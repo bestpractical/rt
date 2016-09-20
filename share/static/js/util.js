@@ -782,6 +782,19 @@ jQuery(function () {
         });
         table.css('table-layout', 'fixed');
     });
+
+    jQuery('.inline-edit-toggle').click(function (e) {
+        e.preventDefault();
+        var link = jQuery(this);
+        var container = link.closest('.titlebox');
+        container.toggleClass('editing');
+        if (container.hasClass('editing')) {
+            link.text(link.data('cancel-label'));
+        }
+        else {
+            link.text(link.data('edit-label'));
+        }
+    });
 });
 
 // focus jquery object in window, only moving the screen when necessary

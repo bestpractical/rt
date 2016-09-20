@@ -49,10 +49,28 @@
 <tr>
   <td valign="top" class="boxcontainer">
 % $m->callback( %ARGS, CallbackName => 'LeftColumnTop' );
+
+<%PERL>
+my $modify_url = RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id;
+my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes($modify_url, 'h' ).'">'.$edit_label.'</a>';
+</%PERL>
+
     <&| /Widgets/TitleBox, title => loc('The Basics'),
-        (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
+        (($can_modify || $can_modify_cf) ? (title_href => $modify_url) : ()),
+        ($InlineEdit ? (titleright_raw => $modify_inline) : ()),
         class => 'ticket-info-basics',
-    &><& /Ticket/Elements/ShowBasics, Ticket => $Ticket &></&>
+    &>
+        <div <% $InlineEdit ? 'class="inline-edit-display"' : '' |n%>>
+            <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+        </div>
+%       if ($InlineEdit) {
+            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+                <& /Ticket/Elements/EditBasics, TicketObj => $Ticket &>
+                <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
+            </form>
+%       }
+    </&>
 % $m->callback( %ARGS, CallbackName => 'AfterBasics' );
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
@@ -105,6 +123,7 @@
 <%ARGS>
 $Ticket => undef
 $Attachments => undef
+$InlineEdit => 0
 </%ARGS>
 <%INIT>
 my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
@@ -112,4 +131,7 @@ my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
 my $can_modify_owner = $Ticket->CurrentUserCanSetOwner();
 my $can_modify_people = $Ticket->CurrentUserHasRight('Watch')
                      || $Ticket->CurrentUserHasRight('WatchAsAdminCc');
+
+my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
+my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
 </%INIT>

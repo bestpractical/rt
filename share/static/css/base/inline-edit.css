@@ -76,3 +76,13 @@ td.editable > form.editor > .cancel {
 td.editable.loading > form.editor > .cancel {
     display: none;
 }
+
+.titlebox .inline-edit,
+.titlebox.editing .inline-edit-display {
+    display: none;
+}
+
+.titlebox.editing .inline-edit,
+.titlebox .inline-edit-display {
+    display: block;
+}
