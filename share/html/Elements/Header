@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% unless (IsPJAXRequest()) {
 %# index.html gets two doctypes unless we can skip it here
 % unless ($SkipDoctype) {
 <!DOCTYPE html>
@@ -97,6 +98,8 @@
 <& /Elements/Framekiller &>
 
 </head>
+% }
+
   <body class="<% join( ' ',@{$ARGS{'BodyClass'}}) %>" <% $id && qq[id="comp-$id"] |n %>>
 
 % if ($ShowBar) {

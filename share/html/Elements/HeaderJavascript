@@ -62,6 +62,9 @@ jQuery( loadTitleBoxStates );
 % if ( $onload ) {
     jQuery( <% $onload |n %> );
 % }
+% if ( RT->Config->Get('EnablePjax') ) {
+jQuery(document).pjax('a', 'body', { timeout: 30000 });
+% }
 --></script>
 <%INIT>
 

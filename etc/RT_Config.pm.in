@@ -1210,6 +1210,17 @@ Set(@ChartColors, qw(
     33cc33 cc3333 cc9933 6633cc
 ));
 
+=item C<$EnablePjax>
+
+PJAX "uses ajax and pushState to deliver a fast browsing experience with real
+permalinks, page titles, and a working back button". It improves performance by
+requesting only the HTML body of each page load. This avoids downloading,
+parsing, and executing the JavaScript and CSS on every request.
+
+=cut
+
+Set($EnablePjax, 1);
+
 =back
 
 
