@@ -112,6 +112,11 @@ if ( $RenderType eq 'Dropdown' ) {
     $Rows = 0;
 }
 
+# Process scalar values for Default
+if ( $Default and !@Default ){
+    push @Default, $Default;
+}
+
 my ($checktype, $name);
 if ( $MaxValues == 1 and $RenderType eq 'List' ) {
     ($checktype, $name) = ('radio', $Name || $NamePrefix . $CustomField->Id . '-Value');
@@ -153,6 +158,7 @@ $NamePrefix => undef
 $Name => undef
 $BasedOnName => undef
 @Default => ()
+$Default => undef
 $Values => undef
 $Multiple => 0
 $Rows => undef
