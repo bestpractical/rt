@@ -62,6 +62,10 @@
     <meta http-equiv="refresh" content="<% "$1$URL" %>" />
 % }
 
+% if (RT->Config->Get('EnablePjax')) {
+<meta http-equiv="x-pjax-version" content="<% RT::Interface::Web::PjaxVersion() %>">
+% }
+
 <& JavascriptConfig &>
 
 % for my $cssfile ( @css_files ) {
@@ -115,6 +119,10 @@
 <%INIT>
 $r->headers_out->{'Pragma'} = 'no-cache';
 $r->headers_out->{'Cache-control'} = 'no-cache';
+
+if (RT->Config->Get('EnablePjax')) {
+    $r->headers_out->{'X-PJAX-Version'} = RT::Interface::Web::PjaxVersion();
+}
 
 my $id = $m->request_comp->path;
 $id =~ s|^/||g;

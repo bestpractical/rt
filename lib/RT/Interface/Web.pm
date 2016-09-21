@@ -1873,6 +1873,23 @@ sub RequestENV {
     return $name ? $env->{$name} : $env;
 }
 
+=head2 PjaxVersion
+
+Produces a string which must remain constant for PJAX to continue executing.
+In other words, if this version string changes, then PJAX will force a full
+page reload. Any variables (such as the currently-selected theme) which affect
+assets or layout should be represented here.
+
+=cut
+
+sub PjaxVersion {
+    my $style = $HTML::Mason::Commands::session{'CurrentUser'}
+              ? $HTML::Mason::Commands::session{'CurrentUser'}->Stylesheet
+              : RT->Config->Get('WebDefaultStylesheet');
+
+    return join '-', $RT::VERSION, $style;
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
