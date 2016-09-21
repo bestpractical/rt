@@ -56,6 +56,7 @@
 %   }
 %   $title =~ s/([\\'])/\\$1/g;
 %   $title = $m->interp->apply_escapes($title, 'h');
+%   $Dashboards->SortDashboards();
 <& /Elements/CollectionList,
     %ARGS,
     Format => qq{'<a href="__WebPath__/__ShowURL__">__Name__</a>/TITLE:$title', __Subscription__},
