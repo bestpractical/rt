@@ -415,7 +415,18 @@ sub SendEmail {
     if (my $precedence = RT->Config->Get('DefaultMailPrecedence')
         and !$args{'Entity'}->head->get("Precedence")
     ) {
-        $args{'Entity'}->head->replace( 'Precedence', Encode::encode("UTF-8",$precedence) );
+        if ($TicketObj) {
+            my $Overrides = RT->Config->Get('OverrideMailPrecedence') || {};
+            my $Queue = $TicketObj->QueueObj;
+
+            $precedence = $Overrides->{$Queue->id}
+                if exists $Overrides->{$Queue->id};
+            $precedence = $Overrides->{$Queue->Name}
+                if exists $Overrides->{$Queue->Name};
+        }
+
+        $args{'Entity'}->head->replace( 'Precedence', Encode::encode("UTF-8",$precedence) )
+            if $precedence;
     }
 
     if ( $TransactionObj && !$TicketObj
