@@ -1414,6 +1414,9 @@ our @GLOBAL_WHITELISTED_ARGS = (
     # The NotMobile flag is fine for any page; it's only used to toggle a flag
     # in the session related to which interface you get.
     'NotMobile',
+
+    # jquery-pjax adds this parameter for PJAX requests
+    '_pjax',
 );
 
 our %WHITELISTED_COMPONENT_ARGS = (
@@ -4410,6 +4413,10 @@ sub GetCustomFieldInputName {
 
 sub GetCustomFieldInputNamePrefix {
     RT::Interface::Web::GetCustomFieldInputNamePrefix(@_);
+}
+
+sub IsPjaxRequest {
+    RT::Interface::Web::RequestENV('HTTP_X_PJAX');
 }
 
 package RT::Interface::Web;

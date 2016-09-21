@@ -66,8 +66,10 @@
 <%$d->Dump() %>
 </pre>
 % }
+% unless (IsPjaxRequest()) {
   </body>
 </html>
+% }
 <%ARGS>
 $Debug => 0
 $Menu => 1
