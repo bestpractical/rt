@@ -558,6 +558,23 @@ sub Serialize {
 
     delete $store{LocalBase}   if $store{Base};
     delete $store{LocalTarget} if $store{Target};
+
+    for my $dir (qw/Base Target/) {
+        my $uri = $self->${\($dir.'URI')};
+        my $object = $self->${\($dir.'Obj')};
+
+        if ($uri->IsLocal) {
+            if ($args{serializer}->Observe(object => $object)) {
+                # no action needed; the object is being migrated
+            }
+            else {
+                # object is not being migrated and hyperlinks not desired,
+                # so drop this RT::Link altogether
+                return;
+            }
+        }
+    }
+
     return %store;
 }
 

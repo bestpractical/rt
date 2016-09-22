@@ -2098,13 +2098,27 @@ sub Serialize {
         if ($store{OldValue}) {
             my $base = RT::URI->new( $self->CurrentUser );
             $base->FromURI( $store{OldValue} );
-            $store{OldValue} = \($base->Object->UID) if $base->Resolver and $base->Object;
+            if ($base->Resolver && (my $object = $base->Object)) {
+                if ($args{serializer}->Observe(object => $object)) {
+                    $store{OldValue} = \($object->UID);
+                }
+                else {
+                    $store{OldValue} = "(not migrated)";
+                }
+            }
         }
     } elsif ($type eq "AddLink") {
         if ($store{NewValue}) {
             my $base = RT::URI->new( $self->CurrentUser );
             $base->FromURI( $store{NewValue} );
-            $store{NewValue} = \($base->Object->UID) if $base->Resolver and $base->Object;
+            if ($base->Resolver && (my $object = $base->Object)) {
+                if ($args{serializer}->Observe(object => $object)) {
+                    $store{NewValue} = \($object->UID);
+                }
+                else {
+                    $store{NewValue} = "(not migrated)";
+                }
+            }
         }
     } elsif ($type eq "Set" and $store{Field} eq "Queue") {
         for my $field (qw/OldValue NewValue/) {

@@ -488,10 +488,13 @@ sub Visit {
             \%data,
         );
     } else {
+        my %serialized = $obj->Serialize(serializer => $self);
+        return unless %serialized;
+
         @store = (
             ref($obj),
             $obj->UID,
-            { $obj->Serialize },
+            \%serialized,
         );
     }
 
