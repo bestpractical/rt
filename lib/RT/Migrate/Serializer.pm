@@ -90,6 +90,7 @@ sub Init {
                   FollowTickets
                   FollowACL
                   Queues
+                  HyperlinkUnmigrated
                   Clone
                   Incremental
               /;

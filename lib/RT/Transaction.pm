@@ -2102,6 +2102,9 @@ sub Serialize {
                 if ($args{serializer}->Observe(object => $object)) {
                     $store{OldValue} = \($object->UID);
                 }
+                elsif ($args{serializer}{HyperlinkUnmigrated}) {
+                    $store{OldValue} = $base->AsHREF;
+                }
                 else {
                     $store{OldValue} = "(not migrated)";
                 }
@@ -2114,6 +2117,9 @@ sub Serialize {
             if ($base->Resolver && (my $object = $base->Object)) {
                 if ($args{serializer}->Observe(object => $object)) {
                     $store{NewValue} = \($object->UID);
+                }
+                elsif ($args{serializer}{HyperlinkUnmigrated}) {
+                    $store{NewValue} = $base->AsHREF;
                 }
                 else {
                     $store{NewValue} = "(not migrated)";
