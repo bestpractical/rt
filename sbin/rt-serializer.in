@@ -104,6 +104,7 @@ GetOptions(
     "scrips!",
     "tickets!",
     "acls!",
+    "limit-queues=s@",
 
     "clone",
     "incremental",
@@ -127,11 +128,29 @@ $args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
 $args{FollowTickets} = $OPT{tickets}  if defined $OPT{tickets};
 $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 
+$args{HyperlinkUnmigrated} = $OPT{'hyperlink-unmigrated'} if defined $OPT{'hyperlink-unmigrated'};
+
 $args{Clone}         = $OPT{clone}       if $OPT{clone};
 $args{Incremental}   = $OPT{incremental} if $OPT{incremental};
 
 $args{GC}   = defined $OPT{gc}   ? $OPT{gc}   : 5000;
 $args{Page} = defined $OPT{page} ? $OPT{page} : 100;
+
+if ($OPT{'limit-queues'}) {
+    my @queue_ids;
+
+    for my $name (split ',', join ',', @{ $OPT{'limit-queues'} }) {
+        $name =~ s/^\s+//; $name =~ s/\s+$//;
+        my $queue = RT::Queue->new(RT->SystemUser);
+        $queue->Load($name);
+        if (!$queue->Id) {
+            die "Unable to load queue '$name'";
+        }
+        push @queue_ids, $queue->Id;
+    }
+
+    $args{Queues} = \@queue_ids;
+}
 
 if (($OPT{clone} or $OPT{incremental})
         and grep { /^(users|groups|deleted|scrips|tickets|acls)$/ } keys %OPT) {
@@ -320,6 +339,11 @@ serialized.
 =item B<--no-tickets>
 
 Skip serialization of all ticket data.
+
+=item B<--limit-queues>
+
+Takes a list of queue IDs or names separated by commas. When provided, only
+that set of queues (and the tickets in them) will be serialized.
 
 =item B<--clone>
 
