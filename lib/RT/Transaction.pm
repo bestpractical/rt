@@ -2130,7 +2130,13 @@ sub Serialize {
         for my $field (qw/OldValue NewValue/) {
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $store{$field} );
-            $store{$field} = \($queue->UID);
+            if ($args{serializer}->Observe(object => $queue)) {
+                $store{$field} = \($queue->UID);
+            }
+            else {
+                $store{$field} = "$RT::Organization: " . $queue->Name . " (not migrated)";
+
+            }
         }
     } elsif ($type =~ /^(Add|Open|Resolve)Reminder$/) {
         my $ticket = RT::Ticket->new( RT->SystemUser );
