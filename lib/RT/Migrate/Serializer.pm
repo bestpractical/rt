@@ -90,6 +90,7 @@ sub Init {
                   FollowTickets
                   FollowACL
                   Queues
+                  CustomFields
                   HyperlinkUnmigrated
                   Clone
                   Incremental
@@ -254,6 +255,11 @@ sub PushBasics {
         OPERATOR => 'IN',
         VALUE => [ qw/RT::User RT::Group RT::Queue/ ],
     );
+
+    if ($self->{CustomFields}) {
+        $cfs->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{CustomFields});
+    }
+
     $self->PushObj( $cfs );
 
     # Global attributes
@@ -416,6 +422,18 @@ sub Observe {
     } elsif ($obj->isa("RT::Queue")) {
         my $id = $obj->Id;
         return 0 if $self->{Queues} && none { $id == $_ } @{ $self->{Queues} };
+        return 1;
+    } elsif ($obj->isa("RT::CustomField")) {
+        my $id = $obj->Id;
+        return 0 if $self->{CustomFields} && none { $id == $_ } @{ $self->{CustomFields} };
+        return 1;
+    } elsif ($obj->isa("RT::ObjectCustomFieldValue")) {
+        my $id = $obj->CustomField;
+        return 0 if $self->{CustomFields} && none { $id == $_ } @{ $self->{CustomFields} };
+        return 1;
+    } elsif ($obj->isa("RT::ObjectCustomField")) {
+        my $id = $obj->CustomField;
+        return 0 if $self->{CustomFields} && none { $id == $_ } @{ $self->{CustomFields} };
         return 1;
     } elsif ($obj->isa("RT::ACE")) {
         return $self->{FollowACL};

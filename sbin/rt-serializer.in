@@ -105,6 +105,7 @@ GetOptions(
     "tickets!",
     "acls!",
     "limit-queues=s@",
+    "limit-cfs=s@",
     "hyperlink-unmigrated!",
 
     "clone",
@@ -151,6 +152,29 @@ if ($OPT{'limit-queues'}) {
     }
 
     $args{Queues} = \@queue_ids;
+}
+
+if ($OPT{'limit-cfs'}) {
+    my @cf_ids;
+
+    for my $name (split ',', join ',', @{ $OPT{'limit-cfs'} }) {
+        $name =~ s/^\s+//; $name =~ s/\s+$//;
+
+        # numeric means id
+        if ($name =~ /^\d+$/) {
+            push @cf_ids, $name;
+        }
+        else {
+            my $cfs = RT::CustomFields->new(RT->SystemUser);
+            $cfs->Limit(FIELD => 'Name', VALUE => $name);
+            if (!$cfs->Count) {
+                die "Unable to load any custom field named '$name'";
+            }
+            push @cf_ids, map { $_->Id } @{ $cfs->ItemsArrayRef };
+        }
+    }
+
+    $args{CustomFields} = \@cf_ids;
 }
 
 if (($OPT{clone} or $OPT{incremental})
@@ -345,6 +369,11 @@ Skip serialization of all ticket data.
 
 Takes a list of queue IDs or names separated by commas. When provided, only
 that set of queues (and the tickets in them) will be serialized.
+
+=item B<--limit-cfs>
+
+Takes a list of custom field IDs or names separated by commas. When provided,
+only that set of custom fields will be serialized.
 
 =item B<--hyperlink-unmigrated>
 
