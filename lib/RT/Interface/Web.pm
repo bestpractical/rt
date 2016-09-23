@@ -1884,6 +1884,8 @@ assets or layout should be represented here.
 =cut
 
 sub PjaxVersion {
+    return '-' if !RT->Config->Get('EnablePjax');
+
     my $style = $HTML::Mason::Commands::session{'CurrentUser'}
               ? $HTML::Mason::Commands::session{'CurrentUser'}->Stylesheet
               : RT->Config->Get('WebDefaultStylesheet');
@@ -4434,6 +4436,7 @@ sub GetCustomFieldInputNamePrefix {
 }
 
 sub IsPjaxRequest {
+    return 0 if !RT->Config->Get('EnablePjax');
     RT::Interface::Web::RequestENV('HTTP_X_PJAX');
 }
 
