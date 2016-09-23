@@ -77,12 +77,12 @@ td.editable.loading > form.editor > .cancel {
     display: none;
 }
 
-.titlebox .inline-edit,
+.titlebox form.inline-edit,
 .titlebox.editing .inline-edit-display {
     display: none;
 }
 
-.titlebox.editing .inline-edit,
+.titlebox.editing form.inline-edit,
 .titlebox .inline-edit-display {
     display: block;
 }
