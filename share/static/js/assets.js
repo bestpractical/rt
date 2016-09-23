@@ -1,3 +1,20 @@
+function showModal(html) {
+    jQuery("<div class='modal'></div>")
+        .append(html).appendTo("body")
+        .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
+        .modal();
+}
+
+function createLinkedTicket (ev) {
+    ev.preventDefault();
+    var url = ev.target.href.replace(/\/Asset\/CreateLinkedTicket\.html\?/g,
+                                '/Asset/Helpers/CreateLinkedTicket?');
+    jQuery.get(
+        url,
+        showModal
+    );
+}
+
 jQuery(function() {
     var showModal = function(html) {
         jQuery("<div class='modal'></div>")
@@ -24,15 +41,6 @@ jQuery(function() {
             input.val(input.val().match(/\S+/g)
                                  .map(function(x){return "asset:"+x})
                                  .join(" "));
-    });
-    jQuery("#page-actions-create-linked-ticket").click(function(ev){
-        ev.preventDefault();
-        var url = this.href.replace(/\/Asset\/CreateLinkedTicket\.html\?/g,
-                                    '/Asset/Helpers/CreateLinkedTicket?');
-        jQuery.get(
-            url,
-            showModal
-        );
     });
     jQuery("#bulk-update-create-linked-ticket").click(function(ev){
         ev.preventDefault();

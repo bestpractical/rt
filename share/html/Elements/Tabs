@@ -1011,7 +1011,9 @@ my $build_main_nav = sub {
             }
 
             my $actions = $page->child("actions", title => loc("Actions"));
-            $actions->child("create-linked-ticket", title => loc("Create linked ticket"), path => "/Asset/CreateLinkedTicket.html?Asset=$id");
+            $actions->child("create-linked-ticket", title => loc("Create linked ticket"),
+                path => "/Asset/CreateLinkedTicket.html?Asset=$id",
+                attributes => { 'onClick' => 'createLinkedTicket(event)' });
 
             my $status    = $asset->Status;
             my $lifecycle = $asset->LifecycleObj;
