@@ -127,6 +127,7 @@ sub JSFiles {
       chosen.jquery.min.js
       history-folding.js
       cascaded.js
+      combobox.js
       forms.js
       event-registration.js
       late.js

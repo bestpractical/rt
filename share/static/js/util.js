@@ -547,6 +547,9 @@ jQuery(function() {
         }, 'json');
         return false;
     });
+    jQuery('.combobox input.combo-text').each(function () {
+        ComboBox_Init(this.id)();
+    });
 });
 
 // focus jquery object in window, only moving the screen when necessary
