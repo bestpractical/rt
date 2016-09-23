@@ -48,12 +48,14 @@
 
 package RT::Interface::Web::Menu;
 
+use 5.10.1;
 use strict;
 use warnings;
 
 
 use base qw/Class::Accessor::Fast/;
 use URI;
+use URI::QueryParam;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->mk_accessors(qw(
@@ -236,18 +238,32 @@ sub child {
 
         # Activate it
         if ( defined $path and length $path ) {
-            my $base_path = $HTML::Mason::Commands::r->path_info;
-            my $query     = $HTML::Mason::Commands::m->cgi_object->query_string;
-            $base_path =~ s!/+!/!g;
-            $base_path .= "?$query" if defined $query and length $query;
+            my $got_path = $HTML::Mason::Commands::r->path_info;
+            $got_path =~ s!/+!/!g;
 
-            $base_path =~ s/index\.html$//;
-            $base_path =~ s/\/+$//;
+            $got_path =~ s/index\.html$//;
+            $got_path =~ s/\/+$//;
             $path =~ s/index\.html$//;
             $path =~ s/\/+$//;
+            (my $base_path = $path) =~ s/[?;#](.*)//;
 
-            if ( $path eq $base_path ) {
-                $self->{children}{$key}->active(1);
+            # activate this menu item if and only if the base path (ie no
+            # query parameters) match, and any query parameters that are
+            # specified by this menu item are already in ARGS. any additional
+            # ARGS provided (such as "&results=...") are ignored.
+            if ( $base_path eq $got_path ) {
+                my $uri = URI->new($path);
+                my $match = 1;
+
+                for my $key ($uri->query_param) {
+                    if (($HTML::Mason::Commands::DECODED_ARGS->{$key}//'') ne $uri->query_param($key)) {
+                        $match = 0;
+                        last;
+                    }
+                }
+
+                $self->{children}{$key}->active(1)
+                    if $match;
             }
         }
     }
