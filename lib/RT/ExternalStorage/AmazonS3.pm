@@ -97,11 +97,14 @@ sub Init {
         }
     }
 
-    my $S3 = Amazon::S3->new( {
+    my %args = (
         aws_access_key_id     => $self->AccessKeyId,
         aws_secret_access_key => $self->SecretAccessKey,
         retry                 => 1,
-    } );
+    );
+    $args{host} = $self->{Host} if $self->{Host};
+
+    my $S3 = Amazon::S3->new(\%args);
     $self->S3($S3);
 
     my $buckets = $S3->bucket( $self->Bucket );
@@ -239,6 +242,11 @@ RT what bucket name to use in your F<RT_SiteConfig.pm> file:
         SecretAccessKey => '...',
         Bucket          => '...', # Put bucket name between quotes
     );
+
+=item 7.
+
+You may specify a C<Host> option in C<Set(%ExternalStorage, ...);> to connect
+to an endpoint other than L<Amazon::S3>'s default of C<s3.amazonaws.com>.
 
 =back
 
