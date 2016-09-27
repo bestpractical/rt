@@ -117,6 +117,35 @@
 <td valign="top" class="boxcontainer">
 
 <&| /Widgets/TitleBox, title => loc('Password'), id => "user-prefs-password" &>
+
+<p><&|/l&>Tips to help you choose a more secure password:</&></p>
+<ul>
+<li><&|/l&><b>Use a full phrase.</b> Describe a vivid image or memory, so it's easy to recall.</&></li>
+<li><&|/l&><b>Avoid exact quotations</b> from movies, books, or elsewhere.</&></li>
+<li><&|/l&><b>Avoid personal information</b> like names and birthdays.</&></li>
+<li><&|/l&><b>Use each password on one site only.</b> Never re-use the same password on other sites!</&></li>
+<li><&|/l&>Poor example: <tt>Monkey123!</tt></&></li>
+<li><&|/l&>Good example: <tt>MamaLovedThe'57Chevy</tt></&></li>
+</ul>
+
+<p><&|/l&>Password requirements:</&></p>
+<ul>
+% {
+% my @checks = (
+%    ['MinimumLength', 'At least [quant,_1,character,characters] long'],
+%    ['Uppercase', 'Include at least [quant,_1,uppercase character,uppercase characters]'],
+%    ['Lowercase', 'Include at least [quant,_1,lowercase character,lowercase characters]'],
+%    ['Digits', 'Include at least [quant,_1,digit,digits]'],
+%    ['Symbols', 'Include at least [quant,_1,punctuation mark or symbol,punctuation marks or symbols]'],
+%    );
+% foreach my $check (@checks) {
+%    if ( my $limit = RT->Config->Get('PasswordPolicy')->{@$check[0]} ) {
+<li><%loc(@$check[1],$limit)%></li>
+%    }
+% }
+% }
+</ul>
+
 % if ( $UserObj->__Value('Password') ne '*NO-PASSWORD*' ) {
 <& /Elements/EditPassword,
     User => $UserObj,

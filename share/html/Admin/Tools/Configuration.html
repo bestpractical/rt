@@ -87,7 +87,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 <tr class="<% $index_conf%2 ? 'oddline' : 'evenline'%>">
 <td class="collection-as-table"><% $key %></td>
 <td class="collection-as-table">
-% if ( $key =~ /Password/i and $key !~ /MinimumPasswordLength|AllowLoginPasswordAutoComplete/ ) {
+% if ( $key =~ /Password/i and $key !~ /PasswordPolicy|AllowLoginPasswordAutoComplete/ ) {
 <em><% loc('Password not printed' ) %></em>\
 % } else {
 <% stringify($val) |n %>\
