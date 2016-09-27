@@ -2454,14 +2454,43 @@ requirements.
 
 Set($WebHttpOnlyCookies, 1);
 
-=item C<$MinimumPasswordLength>
+=item C<%PasswordPolicy>
 
-C<$MinimumPasswordLength> defines the minimum length for user
-passwords. Setting it to 0 disables this check.
+C<%PasswordPolicy> sets the requirements for a user's password. The options
+and their default values are:
+
+    MinimumLength => 8,
+    Uppercase => 0,
+    Lowercase => 0,
+    Digits => 0,
+    Symbols => 0,
+    UppercaseRegex => qr/\p{XPosixUpper}/,
+    LowercaseRegex => qr/\p{XPosixLower}/,
+    DigitsRegex => qr/\p{XPosixDigit}/,
+    SymbolsRegex => qr/\p{XPosixPunct}/,
+
+For C<Uppercase>, C<Lowercase>, C<Digits>, and C<Symbols>, set to zero to
+disable that specific check. The value indicates the number of each class
+of characters that must be present in a valid password. If other than zero,
+the web interface will inform the user of each requirement in the web
+interface.
+
+The regex definitions are exposed as an aid to localisation. Don't change
+these values unless you have a specific need to do so.
 
 =cut
 
-Set($MinimumPasswordLength, 5);
+Set(%PasswordPolicy, (
+    MinimumLength => 8,
+    Uppercase => 0,
+    Lowercase => 0,
+    Digits => 0,
+    Symbols => 0,
+    UppercaseRegex => qr/\p{XPosixUpper}/,
+    LowercaseRegex => qr/\p{XPosixLower}/,
+    DigitsRegex => qr/\p{XPosixDigit}/,
+    SymbolsRegex => qr/\p{XPosixPunct}/,
+));
 
 =back
 

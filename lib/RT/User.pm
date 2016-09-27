@@ -283,7 +283,8 @@ sub ValidateName {
 =head2 ValidatePassword STRING
 
 Returns either (0, "failure reason") or 1 depending on whether the given
-password is valid.
+password is valid. Tests for vailidity are configured by the C<%PasswordPolicy>
+settings.
 
 =cut
 
@@ -291,8 +292,23 @@ sub ValidatePassword {
     my $self = shift;
     my $password = shift;
 
-    if ( length($password) < RT->Config->Get('MinimumPasswordLength') ) {
-        return ( 0, $self->loc("Password needs to be at least [quant,_1,character,characters] long", RT->Config->Get('MinimumPasswordLength')) );
+    if ( length($password) < (my $limit = RT->Config->Get('PasswordPolicy')->{'MinimumLength'}) ) {
+        return ( 0, $self->loc("Password needs to be at least [quant,_1,character,characters] long", $limit) );
+    }
+
+    my @checks = (
+        ['Uppercase', 'UppercaseRegex', 'Password must include at least [quant,_1,uppercase character,uppercase characters]'],
+        ['Lowercase', 'LowercaseRegex', 'Password must include at least [quant,_1,lowercase character,lowercase characters]'],
+        ['Digits', 'DigitsRegex', 'Password must include at least [quant,_1,digit,digits]'],
+        ['Symbols', 'SymbolsRegex', 'Password must include at least [quant,_1,punctuation mark or symbol,punctuation marks or symbols]'],
+    );
+
+    foreach my $check (@checks) {
+        if ( my $limit = RT->Config->Get('PasswordPolicy')->{@$check[0]} ) {
+            my $re = RT->Config->Get('PasswordPolicy')->{@$check[1]};
+            my $count = () = $password =~ m/$re/g;
+            return ( 0, $self->loc(@$check[2], $limit) ) if $count < $limit;
+        }
     }
 
     return 1;
@@ -849,9 +865,8 @@ sub SetRandomPassword {
         return ( 0, $self->loc("Permission Denied") );
     }
 
-
-    my $min = ( RT->Config->Get('MinimumPasswordLength') > 6 ?  RT->Config->Get('MinimumPasswordLength') : 6);
-    my $max = ( RT->Config->Get('MinimumPasswordLength') > 8 ?  RT->Config->Get('MinimumPasswordLength') : 8);
+    my $min = ( RT->Config->Get('PasswordPolicy')->{'MinimumLength'} > 6 ?  RT->Config->Get('PasswordPolicy')->{'MinimumLength'} : 6);
+    my $max = ( RT->Config->Get('PasswordPolicy')->{'MinimumLength'} > 8 ?  RT->Config->Get('PasswordPolicy')->{'MinimumLength'} : 8);
 
     my $pass = $self->GenerateRandomPassword( $min, $max) ;
 
