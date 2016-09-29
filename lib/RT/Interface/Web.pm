@@ -115,6 +115,7 @@ sub JSFiles {
       jquery.modal.min.js
       jquery.modal-defaults.js
       jquery.cookie.js
+      jquery.tablesorter.min.js
       jquery.pjax.js
       titlebox-state.js
       i18n.js
@@ -136,6 +137,7 @@ sub JSFiles {
       assets.js
       /static/RichText/ckeditor.js
       dropzone.min.js
+      farbtastic.js
       }, RT->Config->Get('JSFiles');
 }
 

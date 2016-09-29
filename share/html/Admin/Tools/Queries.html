@@ -57,8 +57,6 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 </%init>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/jquery.tablesorter.min.js"></script>
-
 <&|/Widgets/TitleBox, title => loc('SQL Queries') &>
 % my $history = $RT::Handle->QueryHistory;
 % if (!RT->Config->Get('StatementLog')) {
@@ -66,10 +64,6 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 % } elsif (!$history) {
     <p><&|/l&>This server process has recorded no SQL queries.</&></p>
 % } else {
-    <script type="text/javascript">
-        jQuery(function () { jQuery(".tablesorter").tablesorter(); });
-    </script>
-
     <ol>
 %     my $r = 0;
 %     for my $request (@$history) {

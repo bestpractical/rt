@@ -550,6 +550,7 @@ jQuery(function() {
     jQuery('.combobox input.combo-text').each(function () {
         ComboBox_Init(this.id)();
     });
+    jQuery(".tablesorter").tablesorter();
 });
 
 // focus jquery object in window, only moving the screen when necessary
