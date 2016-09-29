@@ -218,7 +218,7 @@ function doOnLoad( js ) {
     jQuery(js);
 }
 
-jQuery(function() {
+jQuery(document).on('ready pjax:success', function() {
     var opts = {
         dateFormat: 'yy-mm-dd',
         constrainInput: false,
@@ -521,7 +521,7 @@ function escapeCssSelector(str) {
 }
 
 
-jQuery(function() {
+jQuery(document).on('ready pjax:success', function() {
     jQuery(".user-accordion").each(function(){
         jQuery(this).accordion({
             active: (jQuery(this).find("h3").length == 1 ? 0 : false),

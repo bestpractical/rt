@@ -1,5 +1,5 @@
 // Disable chosing individual objects when a scrip is applied globally
-jQuery(function() {
+jQuery(document).on('ready pjax:success', function() {
     var global_checkboxes = [
         "form[name=AddRemoveScrip] input[type=checkbox][name^=AddScrip-][value=0]",
         "form input[type=checkbox][name^=AddCustomField-][value=0]"
@@ -39,10 +39,10 @@ function ReplaceUserReferences() {
         }
     );
 }
-jQuery(ReplaceUserReferences);
+jQuery(document).on('ready pjax:success', ReplaceUserReferences);
 
 // Cascaded selects
-jQuery(function() {
+jQuery(document).on('ready pjax:success', function() {
     jQuery("select.cascade-by-optgroup").each(function(){
         var name = this.name;
         if (!name) return;
@@ -115,7 +115,7 @@ jQuery(function() {
     });
 });
 
-jQuery( function() {
+jQuery(document).on('ready pjax:success', function () {
     jQuery("input[type=file]").change( function() {
         var input = jQuery(this);
         var warning = input.next(".invalid");
@@ -135,7 +135,7 @@ jQuery( function() {
     });
 });
 
-jQuery(function() {
+jQuery(document).on('ready pjax:success', function() {
     jQuery("#UpdateType").change(function(ev) {
         jQuery(".messagebox-container")
             .removeClass("action-response action-private")

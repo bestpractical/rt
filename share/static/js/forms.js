@@ -1,4 +1,4 @@
-jQuery(function() {
+jQuery(document).on('ready', function() {
     // reset form submit info when user goes backward or forward for Safari
     // other browsers don't need this trick and they can work directly.
     if ( window.addEventListener ) {
@@ -6,7 +6,9 @@ jQuery(function() {
             jQuery('form').data('submitted', false);
         });
     }
+});
 
+jQuery(document).on('ready pjax:success', function () {
     jQuery('form').submit(function(e) {
         var form = jQuery(this);
         if (form.data('submitted') === true) {

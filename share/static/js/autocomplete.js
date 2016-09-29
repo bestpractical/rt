@@ -113,4 +113,7 @@ window.RT.Autocomplete.bind = function(from) {
             };
     });
 };
-jQuery(function(){ RT.Autocomplete.bind(document) });
+
+jQuery(document).on('ready pjax:success', function () {
+    RT.Autocomplete.bind(document);
+});

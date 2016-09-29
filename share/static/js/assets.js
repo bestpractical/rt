@@ -1,4 +1,4 @@
-jQuery(function() {
+jQuery(document).on('ready pjax:success', function() {
     var showModal = function(html) {
         jQuery("<div class='modal'></div>")
             .append(html).appendTo("body")

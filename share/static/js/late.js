@@ -1,7 +1,6 @@
 // Lower the speed limit for hover intent event
 jQuery.event.special.hover.speed = 80; // pixels per second
 
-jQuery(function() { sync_grouped_custom_fields() } );
 function sync_grouped_custom_fields() {
     var all_inputs = jQuery("input,textarea,select");
     var parse_cf = /^Object-([\w:]+)-(\d*)-CustomField(?::\w+)?-(\d+)-(.*)$/;
@@ -37,3 +36,6 @@ function sync_grouped_custom_fields() {
             elem.change( trigger_func );
     });
 }
+jQuery(document).on('ready pjax:success', function() {
+    sync_grouped_custom_fields();
+});
