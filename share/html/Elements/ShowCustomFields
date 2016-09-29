@@ -54,7 +54,12 @@
 % my $Values = $Object->CustomFieldValues( $CustomField->Id );
 % my $count = $Values->Count;
 % next if $HideEmpty and not $count;
-  <tr class="custom-field custom-field-<% $CustomField->id%><% $count ? q{} : q{ unset-field}%>" id="CF-<%$CustomField->id%>-ShowRow">
+% my @classes = (
+%   'custom-field',
+%   'custom-field-'.$CustomField->id,
+% );
+% push @classes, 'unset-field' if $count;
+  <tr class="<% @classes ? join( ' ', @classes ) : '' %>" id="CF-<%$CustomField->id%>-ShowRow">
     <td class="label"><% $CustomField->Name %>:</td>
     <td class="value<% $count ? '' : ' no-value' %>">
 % unless ( $count ) {
