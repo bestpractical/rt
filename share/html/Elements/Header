@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% unless (IsPjaxRequest()) {
+% unless ($IsPjaxRequest) {
 %# index.html gets two doctypes unless we can skip it here
 % unless ($SkipDoctype) {
 <!DOCTYPE html>
@@ -105,6 +105,11 @@
 % }
 
   <body class="<% join( ' ',@{$ARGS{'BodyClass'}}) %>" <% $id && qq[id="comp-$id"] |n %>>
+
+%# run onload and focus code for pjax requests too
+% if ($IsPjaxRequest) {
+<& HeaderJavascript, focus => $Focus, onload => $onload, include_jsfiles => 0 &>
+% }
 
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>
@@ -169,4 +174,5 @@ $onload => undef
 $LinkRel => undef
 $SkipDoctype => 0
 $BodyClass => undef
+$IsPjaxRequest => IsPjaxRequest()
 </%ARGS>

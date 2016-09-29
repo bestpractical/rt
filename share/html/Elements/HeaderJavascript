@@ -48,6 +48,7 @@
 <%args>
 $focus => undef
 $onload => undef
+$include_jsfiles => 1
 </%args>
 
 % for my $jsfile ( @js_files ) {
@@ -69,12 +70,13 @@ jQuery(document).pjax('a', 'body', { timeout: 30000 });
 <%INIT>
 
 my @js_files;
-if ( RT->Config->Get('DevelMode') ) {
-    @js_files = map { $_ =~ m{^/} ? $_ : "/static/js/$_" } RT::Interface::Web->JSFiles();
+if ($include_jsfiles) {
+    if ( RT->Config->Get('DevelMode') ) {
+        @js_files = map { $_ =~ m{^/} ? $_ : "/static/js/$_" } RT::Interface::Web->JSFiles();
+    }
+    else {
+        my $key = RT::Interface::Web::SquishedJS()->Key;
+        @js_files = "/NoAuth/js/squished-$key.js";
+    }
 }
-else {
-    my $key = RT::Interface::Web::SquishedJS()->Key;
-    @js_files = "/NoAuth/js/squished-$key.js";
-}
-
 </%INIT>
