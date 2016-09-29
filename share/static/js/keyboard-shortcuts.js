@@ -1,4 +1,6 @@
-jQuery(function() {
+jQuery(document).on('ready pjax:success', function() {
+    Mousetrap.reset();
+
     var goBack = function() {
         window.history.back();
     };
@@ -63,91 +65,89 @@ jQuery(function() {
     Mousetrap.bind('g h', goHome);
     Mousetrap.bind('/', simpleSearch);
     Mousetrap.bind('?', openHelp);
-});
 
-jQuery(function() {
     // Only load these shortcuts if there is a ticket list on the page
     var hasTicketList = jQuery('table.ticket-list').length;
-    if (!hasTicketList) return;
+    if (hasTicketList) {
+        var currentRow;
 
-    var currentRow;
+        var nextTicket = function() {
+            var nextRow;
+            var searchResultsTable = jQuery('.ticket-list.collection-as-table');
+            if (!currentRow || !(nextRow = currentRow.next('tbody.list-item')).length) {
+                nextRow = searchResultsTable.find('tbody.list-item').first();
+            }
+            setNewRow(nextRow);
+        };
 
-    var nextTicket = function() {
-        var nextRow;
-        var searchResultsTable = jQuery('.ticket-list.collection-as-table');
-        if (!currentRow || !(nextRow = currentRow.next('tbody.list-item')).length) {
-            nextRow = searchResultsTable.find('tbody.list-item').first();
-        }
-        setNewRow(nextRow);
-    };
+        var setNewRow = function(newRow) {
+            if (currentRow) currentRow.removeClass('selected-row');
+            currentRow = newRow;
+            currentRow.addClass('selected-row');
+            scrollToJQueryObject(currentRow);
+        };
 
-    var setNewRow = function(newRow) {
-        if (currentRow) currentRow.removeClass('selected-row');
-        currentRow = newRow;
-        currentRow.addClass('selected-row');
-        scrollToJQueryObject(currentRow);
-    };
+        var prevTicket = function() {
+            var prevRow, searchResultsTable = jQuery('.ticket-list.collection-as-table');
+            if (!currentRow || !(prevRow = currentRow.prev('tbody.list-item')).length) {
+                prevRow = searchResultsTable.find('tbody.list-item').last();
+            }
+            setNewRow(prevRow);
+        };
 
-    var prevTicket = function() {
-        var prevRow, searchResultsTable = jQuery('.ticket-list.collection-as-table');
-        if (!currentRow || !(prevRow = currentRow.prev('tbody.list-item')).length) {
-            prevRow = searchResultsTable.find('tbody.list-item').last();
-        }
-        setNewRow(prevRow);
-    };
+        var generateTicketLink = function(ticketId) {
+            if (!ticketId) return '';
+            return RT.Config.WebHomePath + '/Ticket/Display.html?id=' + ticketId;
+        };
 
-    var generateTicketLink = function(ticketId) {
-        if (!ticketId) return '';
-        return RT.Config.WebHomePath + '/Ticket/Display.html?id=' + ticketId;
-    };
+        var generateUpdateLink = function(ticketId, action) {
+            if (!ticketId) return '';
+            return RT.Config.WebHomePath + '/Ticket/Update.html?Action=' + action + '&id=' + ticketId;
+        };
 
-    var generateUpdateLink = function(ticketId, action) {
-        if (!ticketId) return '';
-        return RT.Config.WebHomePath + '/Ticket/Update.html?Action=' + action + '&id=' + ticketId;
-    };
+        var navigateToCurrentTicket = function() {
+            if (!currentRow) return;
 
-    var navigateToCurrentTicket = function() {
-        if (!currentRow) return;
+            var ticketId = currentRow.closest('tbody').data('recordId');
+            var ticketLink = generateTicketLink(ticketId);
+            if (!ticketLink) return;
 
-        var ticketId = currentRow.closest('tbody').data('recordId');
-        var ticketLink = generateTicketLink(ticketId);
-        if (!ticketLink) return;
+            window.location.href = ticketLink;
+        };
 
-        window.location.href = ticketLink;
-    };
+        var toggleTicketCheckbox = function() {
+            if (!currentRow) return;
+            var ticketCheckBox = currentRow.find('input[type=checkbox]');
+            if (!ticketCheckBox.length) return;
+            ticketCheckBox.prop("checked", !ticketCheckBox.prop("checked"));
+        };
 
-    var toggleTicketCheckbox = function() {
-        if (!currentRow) return;
-        var ticketCheckBox = currentRow.find('input[type=checkbox]');
-        if (!ticketCheckBox.length) return;
-        ticketCheckBox.prop("checked", !ticketCheckBox.prop("checked"));
-    };
+        var replyToTicket = function() {
+            if (!currentRow) return;
 
-    var replyToTicket = function() {
-        if (!currentRow) return;
+            var ticketId = currentRow.closest('tbody').data('recordId');
+            var replyLink = generateUpdateLink(ticketId, 'Respond');
+            if (!replyLink) return;
 
-        var ticketId = currentRow.closest('tbody').data('recordId');
-        var replyLink = generateUpdateLink(ticketId, 'Respond');
-        if (!replyLink) return;
+            window.location.href = replyLink;
+        };
 
-        window.location.href = replyLink;
-    };
+        var commentOnTicket = function() {
+            if (!currentRow) return;
 
-    var commentOnTicket = function() {
-        if (!currentRow) return;
+            var ticketId = currentRow.closest('tbody').data('recordId');
+            var commentLink = generateUpdateLink(ticketId, 'Comment');
+            if (!commentLink) return;
 
-        var ticketId = currentRow.closest('tbody').data('recordId');
-        var commentLink = generateUpdateLink(ticketId, 'Comment');
-        if (!commentLink) return;
+            window.location.href = commentLink;
+        };
 
-        window.location.href = commentLink;
-    };
-
-    Mousetrap.bind('j', nextTicket);
-    Mousetrap.bind('k', prevTicket);
-    Mousetrap.bind(['enter','o'], navigateToCurrentTicket);
-    Mousetrap.bind('r', replyToTicket);
-    Mousetrap.bind('c', commentOnTicket);
-    Mousetrap.bind('x', toggleTicketCheckbox);
+        Mousetrap.bind('j', nextTicket);
+        Mousetrap.bind('k', prevTicket);
+        Mousetrap.bind(['enter','o'], navigateToCurrentTicket);
+        Mousetrap.bind('r', replyToTicket);
+        Mousetrap.bind('c', commentOnTicket);
+        Mousetrap.bind('x', toggleTicketCheckbox);
+    }
 });
 
