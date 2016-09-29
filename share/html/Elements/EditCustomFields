@@ -64,6 +64,8 @@
 %   'edit-custom-field',
 %   "cftype-$Type",
 % );
+% $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
+%               Object => $Object, Classes => \@classes, Grouping => $Grouping );
   <<% $FIELD %> class="<% @classes ? join( ' ', @classes ) : '' %>">
     <<% $CELL %> class="cflabel">
       <span class="name"><% $CustomField->Name %>:</span><br />
