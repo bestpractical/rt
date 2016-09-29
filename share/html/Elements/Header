@@ -97,7 +97,7 @@
 % # Leave %ARGS for backward compatibility
 % $m->callback( %ARGS, CallbackName => 'Head', ARGSRef => \%ARGS );
 
-<& HeaderJavascript, focus => $Focus, onload => $onload, RichText => $RichText &>
+<& HeaderJavascript, focus => $Focus, onload => $onload &>
 
 <& /Elements/Framekiller &>
 
@@ -168,6 +168,5 @@ $RSSAutoDiscovery => undef
 $onload => undef
 $LinkRel => undef
 $SkipDoctype => 0
-$RichText => 1
 $BodyClass => undef
 </%ARGS>

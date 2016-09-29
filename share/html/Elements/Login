@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'Header' );
-<& /Elements/Header, Title => loc('Login'), Focus => '#user', RichText => 0 &>
+<& /Elements/Header, Title => loc('Login'), Focus => '#user' &>
 
 <div id="body" class="login-body">
 

@@ -60,7 +60,7 @@ $Now->SetToNow;
 
 my $SubmitURL = RT->Config->Get('WebPath') . '/Helpers/AddTimeWorked';
 </%INIT>
-<& /Elements/Header, Title => loc('Timer for #[_1]: [_2]', $Ticket->Id, $Ticket->Subject), RichText => 0, ShowBar => 0, ShowTitle => 0 &>
+<& /Elements/Header, Title => loc('Timer for #[_1]: [_2]', $Ticket->Id, $Ticket->Subject), ShowBar => 0, ShowTitle => 0 &>
 
 <script type="text/javascript">
 jQuery( function() {
