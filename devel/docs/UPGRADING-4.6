@@ -1,0 +1,71 @@
+=head1 UPGRADING FROM RT 4.4.0 and greater
+
+This documentation notes internals changes between the 4.4 and 4.6
+series that are primarily of interest to developers writing extensions
+or local customizations.  It is not an exhaustive list.
+
+=over
+
+=item *
+
+RT 4.6 adds "PJAX" support (https://github.com/defunkt/jquery-pjax) which,
+in a nutshell, augments hyperlinks to instead issue an AJAX request for only
+the C<< <body> >> tag and replace the current page with that content. This
+improves performance as JavaScript and CSS do not necessarily need to be
+downloaded, parsed, compiled, and executed on each subsequent page load.
+
+PJAX support requires some development work to take advantage of. The
+primary change is due to PJAX page loads not following the normal browser
+page request lifecycle. This means that you must make the following two
+changes to how your JavaScript is run:
+
+=over 4
+
+=item *
+
+If some subset of HTML pages include a
+C<< <script src="/path/to/foo.js"> >>
+tag to load some page-specific JavaScript, such JS will not be loaded as
+part of a PJAX page load.
+
+For extensions, you should migrate to using
+C<< RT->AddJavaScript('foo.js'); >> to unconditionally load the JavaScript
+file on all pages.
+
+For local customizations, you may instead migrate to using the C<@JSFiles>
+option in F<RT_SiteConfig.pm>.
+
+Depending on the nature of that JavaScript file, you may need to make
+additional changes to it to handle being loaded in additional places.
+
+=item *
+
+If any of your custom standalone JavaScript files includes a "document 
+ready" event registration, like any of the following ...
+
+    jQuery(function () { ... })
+    jQuery(document).ready( function () { ... } )
+    jQuery(document).on('ready', function () { ... } )
+    jQuery('img').ready( function () { ... } )
+
+... then they most likely must also listen for the C<pjax:success> event to
+register to run on PJAX page loads as well. The typical invocation looks
+like:
+
+    jQuery(document).on('ready pjax:success', function () { ... } )
+
+Note that this does I<not> apply to script tags in HTML templates like so:
+
+    <script type="text/javascript">
+        jQuery(function () {
+            ...
+        });
+    </script>
+
+Such invocations I<are> executed during PJAX page loads. This is in contrast
+to C<< <script src="..."> >> tags as mentioned earlier (which are not
+executed during PJAX page loads).
+
+=back
+
+=back
