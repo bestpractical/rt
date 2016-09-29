@@ -37,6 +37,12 @@ iframe.richtext-editor {
     background-color: #fcc !important;
 }
 
+.messagebox-container.action-private textarea,
+.messagebox-container.action-private iframe
+{
+    background-color: #ffffdd !important;
+}
+
 .sidebyside #ticket-create-metadata,
 .sidebyside #ticket-update-metadata {
     float: right;
