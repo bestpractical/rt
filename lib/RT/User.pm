@@ -1387,20 +1387,26 @@ sub HasGroupRight {
     return ($retval);
 }
 
-=head2 OwnGroups
+=head2 OwnGroups [Recursively => 1]
 
 Returns a group collection object containing the groups of which this
 user is a member.
+By default returns groups including all groups this user is an indirect member
+of, but could be changed with C<Recursively> named argument.
 
 =cut
 
 sub OwnGroups {
     my $self = shift;
+    my %args = (
+        Recursively => 1,
+        @_,
+    );
     my $groups = RT::Groups->new($self->CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember(
         PrincipalId => $self->Id,
-        Recursively => 1
+        Recursively => $args{Recursively},
     );
     return $groups;
 }
