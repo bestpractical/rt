@@ -52,7 +52,13 @@
 <select name="<%$Name%>">
 <option value="" selected="selected">-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
+% my %seen;
 % while (my $value = $values->Next) {
+% if ( $seen{$value->Name} ) {
+%     next;
+% } else {
+%     $seen{$value->Name} = 1;
+% }
 <option value="<%$value->Name%>"<% ($value->Name eq $Default) ? q[ selected="selected"] : ''%>><%$value->Name%></option>
 % }
 </select>
