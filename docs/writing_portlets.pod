@@ -38,7 +38,7 @@ They can also appear on the Self-Service interface, but have to be
 hard-coded, because Self-Service users don't have the same preferences
 available to them.  You will have to create your element in
 C</opt/rt4/local/html/SelfService/Elements>, then exend the SelfService
-interface to call it.  Copy C</opt/rt4/html/SelfService/index.html> to
+interface to call it.  Copy C</opt/rt4/share/html/SelfService/index.html> to
 C</opt/rt4/local/html/SelfService/index.html>, then edit it to add:
 
     <& /SelfService/Elements/MyPortlet &>
