@@ -1107,8 +1107,45 @@ my $build_main_nav = sub {
         PageMenu()->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
     }
 
+    AdminConditionsAndActions();
+
     $m->callback( CallbackName => 'Privileged', Path => $request_path, ARGSRef => \%ARGS );
 };
+
+sub AdminConditionsAndActions {
+    return unless $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'ModifyScrips' );
+
+    my $admin = Menu->child('admin') || Menu->child('tools')->child('config');
+    my $admin_global = $admin->child('global');
+
+    my $conditions = $admin_global->child(
+                            conditions  => title => loc('Conditions'),
+                            description => loc('Edit system conditions'),
+                            path        => '/Admin/Global/Conditions.html',
+                        );
+    $conditions->child( select => title => loc('Select'), path => "/Admin/Global/Conditions.html" );
+    $conditions->child( create => title => loc('Create'), path => "/Admin/Conditions/Create.html" );
+
+    my $request_path = $HTML::Mason::Commands::r->path_info;
+    if ( $request_path =~ qr{^/Admin(?:/Global)?/Conditions} ) {
+        my $tabs = PageMenu();
+        $tabs->child( select => title => loc('Select'), path => "/Admin/Global/Conditions.html" );
+        $tabs->child( create => title => loc('Create'), path => "/Admin/Conditions/Create.html" );
+    }
+
+    my $actions   = $admin_global->child(
+                            actions => title => loc('Actions'),
+                            description => loc('Edit system actions'),
+                            path        => '/Admin/Global/Actions.html',
+                        );
+    $actions->child( select => title => loc('Select'), path => "/Admin/Global/Actions.html" );
+    $actions->child( create => title => loc('Create'), path => "/Admin/Actions/Create.html" );
+    if ( $request_path =~ qr{^/Admin(?:/Global)?/Actions} ) {
+        my $tabs = PageMenu();
+        $tabs->child( select => title => loc('Select'), path => "/Admin/Global/Actions.html" );
+        $tabs->child( create => title => loc('Create'), path => "/Admin/Actions/Create.html" );
+    }
+}
 
 my $build_selfservice_nav = sub {
     my $queues = RT::Queues->new( $session{'CurrentUser'} );

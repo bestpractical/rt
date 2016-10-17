@@ -101,9 +101,28 @@ sub Create  {
     return($self->SUPER::Create(@_));
 }
 
-sub Delete  {
+sub Delete {
     my $self = shift;
+
+    unless ( $self->CurrentUser->HasRight( Object => RT->System, Right => 'ModifyScrips' ) ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    my $scrips = RT::Scrips->new( RT->SystemUser );
+    $scrips->Limit( FIELD => 'ScripAction', VALUE => $self->id );
+    if ( $scrips->Count ) {
+        return ( 0, $self->loc('Action is in use') );
+    }
+
     return (0, "ScripAction->Delete not implemented");
+}
+
+sub UsedBy {
+    my $self = shift;
+
+    my $scrips = RT::Scrips->new( $self->CurrentUser );
+    $scrips->Limit( FIELD => 'ScripAction', VALUE => $self->Id );
+    return $scrips;
 }
 
 

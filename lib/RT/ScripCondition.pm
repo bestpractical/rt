@@ -112,9 +112,28 @@ No API available for deleting things just yet.
 
 =cut
 
-sub Delete  {
+sub Delete {
     my $self = shift;
+
+    unless ( $self->CurrentUser->HasRight( Object => RT->System, Right => 'ModifyScrips' ) ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    my $scrips = RT::Scrips->new( RT->SystemUser );
+    $scrips->Limit( FIELD => 'ScripCondition', VALUE => $self->id );
+    if ( $scrips->Count ) {
+        return ( 0, $self->loc('Condition is in use') );
+    }
+
     return(0, $self->loc('Unimplemented'));
+}
+
+sub UsedBy {
+    my $self = shift;
+
+    my $scrips = RT::Scrips->new( $self->CurrentUser );
+    $scrips->Limit( FIELD => 'ScripCondition', VALUE => $self->Id );
+    return $scrips;
 }
 
 
