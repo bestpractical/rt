@@ -60,7 +60,9 @@
       <& /Elements/ShowUser, User => $Transaction->CreatorObj &> - <% $desc |n %>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterDescription' );
     </span>
+% if ( $Object->isa("RT::Ticket") and $Object->CurrentUserCanSeeTime ) {
     <span class="time-taken"><% $time %></span>
+% }
 % if ( $actions ) {
     <span class="actions"><% $actions |n %></span>
 % }
