@@ -121,6 +121,10 @@ while ( my $Transaction = $Transactions->Next ) {
                  not $Object->CurrentUserCanSeeTime and
                  ($Transaction->Field || '') =~ /^Time(?:Estimated|Worked|Left)$/;
 
+    $skip = 1 if $m->request_path =~ m{^/SelfService/}
+        and RT::Config->Get('SelfServiceCorrespondenceOnly')
+        and $Transaction->Type ne "Correspond";
+
     $m->callback(
         %ARGS,
         Transaction   => $Transaction,
