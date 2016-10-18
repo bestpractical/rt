@@ -868,35 +868,21 @@ sub _DecodeLOB {
             return ("");
         }
 
-        return (_decodeTextLOB($ContentType, $Content));
     }
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
     }
 
-    return (_decodeTextLOB($ContentType, $Content));
-}
+    if ( RT::I18N::IsTextualContentType($ContentType) ) {
+        my $entity = MIME::Entity->new();
+        $entity->head->add("Content-Type", $ContentType);
+        $entity->bodyhandle( MIME::Body::Scalar->new( $Content ) );
+        my $charset = RT::I18N::_FindOrGuessCharset($entity);
+        $charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
 
-=head2 _DecodeLOB C<ContentType>, C<Content>
-
-Decode text from database and external storage.
-
-=cut
-
-sub _decodeTextLOB {
-	my $ContentType     = shift || '';
-	my $Content         = shift;
-
-	if ( RT::I18N::IsTextualContentType($ContentType) ) {
-			my $entity = MIME::Entity->new();
-			$entity->head->add("Content-Type", $ContentType);
-			$entity->bodyhandle( MIME::Body::Scalar->new( $Content ) );
-			my $charset = RT::I18N::_FindOrGuessCharset($entity);
-			$charset = 'utf-8' if not $charset or not Encode::find_encoding($charset);
-			$Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ);
-	}
-
-	return $Content
+        $Content = Encode::decode($charset,$Content,Encode::FB_PERLQQ);
+    }
+    return ($Content);
 }
 
 =head2 Update  ARGSHASH
