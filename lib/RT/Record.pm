@@ -867,8 +867,6 @@ sub _DecodeLOB {
             RT->Logger->error( "Failed to load $Digest from external storage: $msg" );
             return ("");
         }
-
-        return ($Content);
     }
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
