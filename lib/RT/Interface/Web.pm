@@ -3936,12 +3936,12 @@ sub ProcessQuickCreate {
                 Arguments   => {
                     (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
                     Requestors => $ARGS{Requestors},
-		    # From is set above when CFs are OK, but not here since
-		    # we're not calling CreateTicket() directly. The proper
-		    # place to set a default for From, if desired in the
-		    # future, is in CreateTicket() itself, or at least
-		    # /Ticket/Display.html (which processes
-		    # /Ticket/Create.html). From is rarely used overall.
+                    # From is set above when CFs are OK, but not here since
+                    # we're not calling CreateTicket() directly. The proper
+                    # place to set a default for From, if desired in the
+                    # future, is in CreateTicket() itself, or at least
+                    # /Ticket/Display.html (which processes
+                    # /Ticket/Create.html). From is rarely used overall.
                 },
             );
         }
