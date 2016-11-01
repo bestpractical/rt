@@ -53,11 +53,36 @@ use warnings;
 use lib "@LOCAL_LIB_PATH@";
 use lib "@RT_LIB_PATH@";
 
+use Term::ReadKey;
+use Getopt::Long;
+
+$| = 1; # unbuffer all output.
+
+my %args;
+GetOptions(
+    \%args,
+    'dba=s', 'dba-password=s', 'prompt-for-dba-password',
+);
+
+no warnings 'once';
 use RT::Interface::CLI qw(Init);
 Init();
 
-my $db_name = RT->Config->Get('DatabaseName');
-my $db_type = RT->Config->Get('DatabaseType');
+my $db_type = RT->Config->Get('DatabaseType') || '';
+my $db_host = RT->Config->Get('DatabaseHost') || '';
+my $db_port = RT->Config->Get('DatabasePort') || '';
+my $db_name = RT->Config->Get('DatabaseName') || '';
+my $db_user = RT->Config->Get('DatabaseUser') || '';
+my $db_pass = RT->Config->Get('DatabasePassword') || '';
+
+my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || RT->Config->Get('DatabaseAdmin') || '';
+my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
+
+if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
+    $dba_pass = get_dba_password();
+    chomp $dba_pass if defined($dba_pass);
+}
+
 
 my $dbh = $RT::Handle->dbh;
 
@@ -72,16 +97,29 @@ unless ( $found_assets_tables->{rtxassets} && $found_assets_tables->{rtxcatalogs
     exit;
 }
 
+print "Working with:\n"
+    ."Type:\t$db_type\nHost:\t$db_host\nPort:\t$db_port\nName:\t$db_name\n"
+    ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n";
+
 { # port over Catalogs
     my @columns = qw(id Name Lifecycle Description Disabled Creator Created LastUpdatedBy LastUpdated);
     copy_tables('RTxCatalogs','Catalogs',\@columns);
 
+    fix_id_sequence('Catalogs', {
+        Pg     => 'catalogs_id_seq',
+        Oracle => 'Catalogs_seq',
+    });
 }
 
 
 { # port over Assets
     my @columns = qw(id Name Catalog Status Description Creator Created LastUpdatedBy LastUpdated);
     copy_tables('RTxAssets','Assets',\@columns);
+
+    fix_id_sequence('Assets', {
+        Pg     => 'assets_id_seq',
+        Oracle => 'Assets_seq',
+    });
 }
 
 sub copy_tables {
@@ -99,3 +137,66 @@ sub copy_tables {
     $RT::Logger->debug($sql);
     $dbh->do($sql);
 }
+
+sub fix_id_sequence {
+    my ($table, $sequence_per_db) = @_;
+    my $sequence = $sequence_per_db->{$db_type} or return;
+
+    my $admin_dbh = get_admin_dbh();
+
+    my ($max) = $admin_dbh->selectrow_array("SELECT MAX(id) FROM $table;");
+    my $next_id = ($max || 0) + 1;
+    RT->Logger->info("Resetting $sequence to $next_id\n");
+
+    my @sql;
+    if ($db_type eq 'Pg') {
+        @sql = "ALTER SEQUENCE $sequence RESTART WITH $next_id;";
+    }
+    elsif ($db_type eq 'Oracle') {
+        @sql = (
+            "ALTER SEQUENCE $sequence INCREMENT BY " . ($next_id - 1) . ";",
+            "SELECT $sequence.nextval FROM dual;",
+            "ALTER SEQUENCE $sequence INCREMENT BY 1;",
+        );
+    }
+
+    $RT::Logger->debug($_) for @sql;
+    $admin_dbh->do($_) for @sql;
+}
+
+sub get_dba_password {
+    return "" if $db_type eq 'SQLite';
+    print "In order to create or update your RT database,"
+        . " this script needs to connect to your "
+        . " $db_type instance on $db_host (port '$db_port') as $dba_user\n";
+    print "Please specify that user's database password below. If the user has no database\n";
+    print "password, just press return.\n\n";
+    print "Password: ";
+    ReadMode('noecho');
+    my $password = ReadLine(0);
+    ReadMode('normal');
+    print "\n";
+    return ($password);
+}
+
+sub get_admin_dbh {
+    return _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
+}
+
+sub _get_dbh {
+    my ($dsn, $user, $pass) = @_;
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
+        if ( $args{'debug'} ) {
+            require Carp; Carp::confess( $msg );
+        } else {
+            print STDERR $msg; exit -1;
+        }
+    }
+    return $dbh;
+}
+
