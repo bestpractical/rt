@@ -147,7 +147,7 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
                 RT->Logger->info("Storing $class $id");
             }
 
-            my ($key, $msg) = Store( $content );
+            my ($key, $msg) = Store( $content, $a );
             unless ($key) {
                 RT->Logger->error("Failed to store $class $id: $msg");
                 exit 1;
@@ -188,9 +188,10 @@ RT->System->SetAttribute( Name => "ExternalStorage", Content => $last );
 
 sub Store {
     my $content = shift;
+    my $attachment = shift;
 
     my $key = Digest::SHA::sha256_hex( $content );
-    my ($ok, $msg) = $ExternalStorage->Store( $key => $content );
+    my ($ok, $msg) = $ExternalStorage->Store( $key => $content, $attachment );
     return ($ok, $msg) unless defined $ok;
 
     return ($key);
