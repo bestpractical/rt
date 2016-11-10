@@ -290,6 +290,32 @@ F<RT_SiteConfig.pm> file:
 
     Set($ExternalStorageDirectLink, 1);
 
+=head1 TROUBLESHOOTING
+
+=head2 Issues Connecting to the Amazon Bucket
+
+Here are some things to check if you receive errors connecting to Amazon S3.
+
+=over
+
+=item *
+
+Double check all of the configuration parameters, including the bucket name. Remember to restart
+the server after changing values for RT to load new settings.
+
+=item *
+
+If you manually created a bucket, make sure it is in your default region. Trying to access
+a bucket in a different region may result in 400 errors.
+
+=item *
+
+Check the permissions on the bucket and make sure they are sufficient for the user RT is
+connecting as to upload and access files. If you are using the direct link option, you will
+need to open permissions further for users to access the attachment via the direct link.
+
+=back
+
 =cut
 
 RT::Base->_ImportOverlays();
