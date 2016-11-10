@@ -205,14 +205,15 @@ for my $category (@$Principals) {
                id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
         <script type="text/javascript">
         jQuery(function() {
-            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).keyup(function(){
+            var input = jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>);
+            input.keyup(function(){
                 toggle_addprincipal_validity(this, true);
             }).keydown(function(event){
                 event.stopPropagation() // Disable tabs keyboard nav
             });
 
-            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).on("autocompleteselect", addprincipal_onselect);
-            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).on("autocompletechange", addprincipal_onchange);
+            input.on("autocompleteselect", addprincipal_onselect);
+            input.on("autocompletechange", addprincipal_onchange);
         });
         </script>
 % my $type = lc $AddPrincipal eq 'user' ? loc('username') : loc($AddPrincipal);
