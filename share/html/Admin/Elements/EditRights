@@ -207,7 +207,7 @@ for my $category (@$Principals) {
         jQuery(function() {
             var input = jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>);
             input.keyup(function(){
-                toggle_addprincipal_validity(this, true);
+                addprincipal_test_validity(input);
             }).keydown(function(event){
                 event.stopPropagation() // Disable tabs keyboard nav
             });
@@ -216,8 +216,6 @@ for my $category (@$Principals) {
             input.on("autocompletechange", addprincipal_onchange);
         });
         </script>
-% my $type = lc $AddPrincipal eq 'user' ? loc('username') : loc($AddPrincipal);
-        <span class="warning"><&|/l, $type &>Invalid [_1]</&></span>
       </a>
     </li>
 % }
@@ -259,8 +257,13 @@ if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
 if ( $AddPrincipal ) {
 </%perl>
   <div id="acl-AddPrincipal">
-    <h3><&|/l, loc($AddPrincipal) &>Add rights for this [_1]</&></h3>
-    <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
+    <div class="valid-group hidden">
+      <h3><&|/l, loc($AddPrincipal) &>Add rights for this [_1]</&></h3>
+      <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
+    </div>
+    <div class="invalid-group">
+      <p><&|/l, loc($AddPrincipal)&>Please select a [_1]</&></p>
+    </div>
   </div>
 % }
 

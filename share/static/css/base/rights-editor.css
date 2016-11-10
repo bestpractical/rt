@@ -38,11 +38,6 @@ li.category ~ li.category {
     margin-top: 1em;
 }
 
-.rights-editor li.addprincipal .warning {
-    color: #a00;
-    display: none;
-}
-
 /* Position the outer-most panel */
 .rights-editor > .ui-tabs-panel {
     position: static;
@@ -143,4 +138,9 @@ span.rights-editor-label {
  */
 .category-tabs.ui-tabs .ui-tabs-nav .ui-tabs-anchor {
     padding: .5em 0.5em;
+}
+
+.rights-editor #acl-AddPrincipal .invalid-group p {
+    color: gray;
+    text-align: center;
 }
