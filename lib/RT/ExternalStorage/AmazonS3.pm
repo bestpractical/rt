@@ -141,13 +141,16 @@ sub Get {
 
 sub Store {
     my $self = shift;
-    my ($sha, $content) = @_;
+    my ($sha, $content, $a) = @_;
 
     # No-op if the path exists already
     return (1) if $self->BucketObj->head_key( $sha );
 
+    # Without content_type, S3 can guess wrong and cause attachments downloaded
+    # via a link to have a content type of binary/octet-stream
     $self->BucketObj->add_key(
-        $sha => $content
+        $sha => $content,
+        { content_type => $a->ContentType }
     ) or return (undef, "Failed to write to AmazonS3: " . $self->S3->errstr);
 
     return (1);

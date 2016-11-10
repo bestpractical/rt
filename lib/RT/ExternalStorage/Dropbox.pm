@@ -119,7 +119,7 @@ sub Get {
 
 sub Store {
     my $self = shift;
-    my ($sha, $content) = @_;
+    my ($sha, $content, $a) = @_;
 
     my $dropbox = $self->Dropbox;
 

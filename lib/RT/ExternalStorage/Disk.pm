@@ -104,7 +104,7 @@ sub Get {
 
 sub Store {
     my $self = shift;
-    my ($sha, $content) = @_;
+    my ($sha, $content, $a) = @_;
 
     # fan out to avoid one gigantic directory which slows down all file access
     $sha =~ m{^(...)(...)(.*)};
