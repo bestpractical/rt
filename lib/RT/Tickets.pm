@@ -3116,6 +3116,9 @@ sub _parser {
 
             # replace __CurrentUser__ with id
             $value = $self->CurrentUser->id if $value eq '__CurrentUser__';
+            
+            # replace __CurrentUsername__ with the username
+            $value = $self->CurrentUser->Name if $value eq '__CurrentUsername__';
 
             my $sub = $dispatch{ $class }
                 or die "No dispatch method for class '$class'";
