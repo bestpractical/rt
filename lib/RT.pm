@@ -298,9 +298,9 @@ sub InitLogging {
 
             $p{message} =~ s/(?:\r*\n)+$//;
             if ($p{level} eq 'debug') {
-                return "[$$] $p{message} ($filename:$line)\n";
+                return "[$$] $p{level}: $p{message} ($filename:$line)\n";
             } else {
-                return "[$$] $p{message}\n";
+                return "[$$] $p{level}: $p{message}\n";
             }
         };
 
