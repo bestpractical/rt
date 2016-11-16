@@ -27,6 +27,10 @@ my $cfs = {
         type => 'FreeformSingle',
         name => 'TheControlField',
     },
+    zero => {
+        type => 'FreeformSingle',
+        name => 'Zero',
+    },
 };
 
 while ( my( $label, $data ) = each %$cfs ) {
@@ -55,10 +59,13 @@ $m->submit_form_ok({
         $cfs->{area}{input} . '-Magic' => "1",
         $cfs->{text}{input}            => 'value a',
         $cfs->{text}{input} . '-Magic' => "1",
+        $cfs->{zero}{input}            => '0',
+        $cfs->{zero}{input} . '-Magic' => "1",
     },
 }, 'submitted form to initially set CFs');
 $m->content_contains('<li>TheControlField value a added</li>');
 $m->content_contains("<li>TheTextarea $content added</li>", 'content found');
+$m->content_contains("<li>Zero 0 added</li>", 'zero field found');
 
 # http://issues.bestpractical.com/Ticket/Display.html?id=30378
 # #30378: RT 4.2.6 - Very long text fields get updated even when they haven't changed
@@ -70,6 +77,10 @@ $m->submit_form_ok({
 }, 'submitted form to initially set CFs');
 $m->content_contains('<li>TheControlField value a changed to value b</li>');
 $m->content_lacks("<li>TheTextarea $content changed to $content</li>", 'textarea wasnt updated');
+
+# http://issues.bestpractical.com/Ticket/Display.html?id=32440
+# #32440: Spurious "CF changed from 0 to 0"
+$m->content_lacks("<li>Zero 0 changed to 0</li>", "Zero wasn't updated");
 
 undef $m;
 done_testing;
