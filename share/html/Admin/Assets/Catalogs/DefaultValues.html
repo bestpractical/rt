@@ -57,7 +57,6 @@
         $catalog->AssetCustomFields->LimitToDefaultValuesSupportedTypes
     },
     TitleBoxARGS => { title_class => "inverse" },
-    NamePrefix => 'Default-',
     Object => RT::Asset->new($session{CurrentUser})
 &>
 
@@ -80,13 +79,20 @@ if ( $ARGS{Reset} ) {
     }
 }
 elsif ( $ARGS{Update} ) {
-    for my $cf_id ( map { /^Default-(\d+)-/ ? $1 : ()  } keys %ARGS ) {
+    my $cfs = _ParseObjectCustomFieldArgs(\%ARGS)->{'RT::Asset'}{0};
+    for my $cf_id (keys %$cfs) {
+        # there may be multiple values submitted, pull out only the first,
+        # as our JS will make sure the values are synced
+        my %names = %{ $cfs->{$cf_id} };
+        my $value = $names{ (keys %names)[0] }{Value}
+                 // $names{ (keys %names)[0] }{Values};
+
         my $cf = RT::CustomField->new($session{CurrentUser});
         $cf->Load($cf_id);
         if ( $cf->id && $cf->SupportDefaultValues ) {
             my ($ret, $msg) = $cf->SetDefaultValues(
                 Object => $catalog,
-                Values => $ARGS{'Default-' . $cf->id . '-Value'} // $ARGS{'Default-' . $cf->id . '-Values'},
+                Values => $value,
             );
             push @results, $msg;
         }
