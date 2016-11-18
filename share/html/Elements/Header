@@ -45,7 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% unless ($IsPjaxRequest) {
+% if ($IsPjaxRequest) {
+<title><%$Title%></title>
+% } else {
 %# index.html gets two doctypes unless we can skip it here
 % unless ($SkipDoctype) {
 <!DOCTYPE html>
