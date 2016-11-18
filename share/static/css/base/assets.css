@@ -234,6 +234,7 @@ body#comp-Asset-Search .collection-as-table td {
     right: 20px;
     width: auto;
     font-size: .9em;
+    z-index: 1;
 }
 
 #assets-accordion li.has-children {
