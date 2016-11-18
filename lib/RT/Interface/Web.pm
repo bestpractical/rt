@@ -4438,7 +4438,7 @@ sub GetCustomFieldInputNamePrefix {
 }
 
 sub IsPjaxRequest {
-    return 0 if !RT->Config->Get('EnablePjax');
+    return 0 if !RT->Config->Get('EnablePjax') || $HTML::Mason::Commands::FakeRequest;
     RT::Interface::Web::RequestENV('HTTP_X_PJAX');
 }
 

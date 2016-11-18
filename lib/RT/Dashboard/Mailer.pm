@@ -313,6 +313,7 @@ SUMMARY
         return;
     }
 
+    local $HTML::Mason::Commands::FakeRequest = 1;
     local $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
