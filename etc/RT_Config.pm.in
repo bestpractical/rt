@@ -1160,17 +1160,6 @@ are extending RT.
 
 Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 
-=item C<$SelfServiceRegex>
-
-What portion of RT's URLspace should be accessible to Unprivileged
-users This does not override the redirect from F</Ticket/Display.html>
-to F</SelfService/Display.html> when Unprivileged users attempt to
-access ticked displays.
-
-=cut
-
-Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
-
 =item C<$WebFlushDbCacheEveryRequest>
 
 By default, RT clears its database cache after every page view.  This
@@ -1254,7 +1243,7 @@ This setting defines the possible homepage and search result refresh
 options. Each value is a number of seconds. You should not include a value
 of C<0>, as that is always provided as an option.
 
-See also L</HomePageRefreshInterval> and L</SearchResultsRefreshInterval>.
+See also L</$HomePageRefreshInterval> and L</$SearchResultsRefreshInterval>.
 
 =cut
 
@@ -1376,20 +1365,6 @@ Display search result count on ticket lists. Defaults to 0 (hide them).
 =cut
 
 Set($ShowSearchResultCount, 0);
-
-=item C<$DefaultSelfServiceSearchResultFormat>
-
-C<$DefaultSelfServiceSearchResultFormat> is the default format of
-searches displayed in the SelfService interface.
-
-=cut
-
-Set($DefaultSelfServiceSearchResultFormat, qq{
-   '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-   Status,
-   Requestors,
-   Owner});
 
 =item C<%FullTextSearch>
 
@@ -1609,16 +1584,6 @@ Set($UserSearchFields, {
     RealName     => 'LIKE',
 });
 
-=item C<$AllowUserAutocompleteForUnprivileged>
-
-Should unprivileged users (users of SelfService) be allowed to
-autocomplete users. Setting this option to 1 means unprivileged users
-will be able to search all your users.
-
-=cut
-
-Set($AllowUserAutocompleteForUnprivileged, 0);
-
 =item C<$TicketAutocompleteFields>
 
 Specifies which fields of L<RT::Ticket> to match against and how to match each
@@ -1708,6 +1673,26 @@ Set this to 1 to hide unset fields.
 
 Set($HideUnsetFieldsOnDisplay, 0);
 
+=back
+
+=head2 Self Service Interface
+
+The Self Service Interface is a view automatically presented to Unprivileged
+users who have a password and log into the web UI. The following options
+modify the default behavior of the Self Service pages.
+
+=over 4
+
+=item C<$SelfServiceCorrespondenceOnly>
+
+On the ticket display page, show only correspondence transactions in the
+ticket history. This hides all ticket update transactions like status changes,
+custom field updates, updates to watchers, etc.
+
+=cut
+
+Set($SelfServiceCorrespondenceOnly, 0);
+
 =item C<$HideTimeFieldsFromUnprivilegedUsers>
 
 This determines if we should hide Time Worked, Time Estimated, and
@@ -1718,8 +1703,42 @@ Set this to 1 to hide those fields.
 
 Set($HideTimeFieldsFromUnprivilegedUsers, 0);
 
-=back
+=item C<$AllowUserAutocompleteForUnprivileged>
 
+Should unprivileged users (users of SelfService) be allowed to
+autocomplete users. Setting this option to 1 means unprivileged users
+will be able to search all your users.
+
+=cut
+
+Set($AllowUserAutocompleteForUnprivileged, 0);
+
+=item C<$DefaultSelfServiceSearchResultFormat>
+
+C<$DefaultSelfServiceSearchResultFormat> is the default format of
+searches displayed in the SelfService interface.
+
+=cut
+
+Set($DefaultSelfServiceSearchResultFormat, qq{
+   '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   Status,
+   Requestors,
+   Owner});
+
+=item C<$SelfServiceRegex>
+
+What portion of RT's URLspace should be accessible to Unprivileged
+users This does not override the redirect from F</Ticket/Display.html>
+to F</SelfService/Display.html> when Unprivileged users attempt to
+access ticked displays.
+
+=cut
+
+Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
+
+=back
 
 =head2 Articles
 
