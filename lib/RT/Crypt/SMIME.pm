@@ -184,6 +184,14 @@ sub Probe {
             \$buf, \$err
         ) };
 
+        if ($err && $err =~ /Invalid command/) {
+            ($buf, $err) = ('', '');
+            safe_run_child { run3( [$bin, "list", "-commands"],
+                \undef,
+                \$buf, \$err
+            ) };
+        }
+
         if ($? or $err) {
             $RT::Logger->warning(
                 "RT's SMIME libraries couldn't successfully execute openssl.".
