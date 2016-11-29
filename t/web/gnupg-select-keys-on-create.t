@@ -269,7 +269,7 @@ diag "check encrypting of attachments";
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
-    check_text_emails( { Encrypt => 1, Attachment => 1 }, @mail );
+    check_text_emails( { Encrypt => 1, Attachment => "Attachment content" }, @mail );
 
     $m->no_warnings_ok;
 }
