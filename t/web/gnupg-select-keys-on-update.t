@@ -90,7 +90,7 @@ diag "check that things don't work if there is no key";
 diag "import first key of rt-test\@example.com";
 my $fpr1 = '';
 {
-    RT::Test->import_gnupg_key('rt-test@example.com', 'public');
+    RT::Test->import_gnupg_key('rt-test@example.com', 'secret');
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com' );
     is $res{'info'}[0]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr1 = $res{'info'}[0]{'Fingerprint'};
@@ -140,7 +140,7 @@ diag "check that things still doesn't work if key is not trusted";
 diag "import a second key of rt-test\@example.com";
 my $fpr2 = '';
 {
-    RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
+    RT::Test->import_gnupg_key('rt-test@example.com.2', 'secret');
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com' );
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr2 = $res{'info'}[2]{'Fingerprint'};

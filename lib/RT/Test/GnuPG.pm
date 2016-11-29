@@ -206,10 +206,14 @@ sub check_text_emails {
                         : $args{Attachment};
 
             if ( $args{'Encrypt'} ) {
-                unlike $mail, qr/$content/, "outgoing $type was encrypted";
+                unlike $mail, qr/$content/, "outgoing $type is not in plaintext";
+                my $entity = RT::Test::parse_mail($mail);
+                my @res = RT::Crypt->VerifyDecrypt(Entity => $entity);
+                like $res[0]{'status'}, qr/DECRYPTION_OKAY/, "Decrypts OK";
+                like $entity->as_string, qr/$content/, "outgoing decrypts to contain $type content";
             } else {
                 like $mail, qr/$content/, "outgoing $type was not encrypted";
-            } 
+            }
 
             next unless $type eq 'email';
 
