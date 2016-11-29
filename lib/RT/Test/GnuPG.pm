@@ -203,7 +203,7 @@ sub check_text_emails {
 
             my $content = $type eq 'email'
                         ? "Some content"
-                        : "Attachment content";
+                        : $args{Attachment};
 
             if ( $args{'Encrypt'} ) {
                 unlike $mail, qr/$content/, "outgoing $type was encrypted";
