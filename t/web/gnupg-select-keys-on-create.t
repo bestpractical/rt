@@ -239,37 +239,41 @@ diag "check that key selector works and we can select trusted key";
 }
 
 diag "check encrypting of attachments";
-{
+for my $encrypt (0, 1) {
     RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_name('TicketCreate');
-    $m->tick( Encrypt => 1 );
+    $m->tick( Encrypt => 1 ) if $encrypt;
     $m->field( Requestors => '' );
     $m->field( Cc => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->field( Attach => $0 );
     $m->submit;
-    $m->content_contains(
-        'You are going to encrypt outgoing email messages',
-        'problems with keys'
-    );
-    $m->content_contains(
-        'There are several keys suitable for encryption',
-        'problems with keys'
-    );
 
-    my $form = $m->form_name('TicketCreate');
-    ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-    is scalar $input->possible_values, 2, 'two options';
+    if ($encrypt) {
+        $m->content_contains(
+            'You are going to encrypt outgoing email messages',
+            'problems with keys'
+        );
+        $m->content_contains(
+            'There are several keys suitable for encryption',
+            'problems with keys'
+        );
 
-    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->submit;
+        my $form = $m->form_name('TicketCreate');
+        ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
+        is scalar $input->possible_values, 2, 'two options';
+
+        $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
+        $m->submit;
+    }
+
     $m->content_like( qr/Ticket \d+ created in queue/i, 'ticket created' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
-    check_text_emails( { Encrypt => 1, Attachment => "Attachment content" }, @mail );
+    check_text_emails( { Encrypt => $encrypt, Attachment => "Attachment content" }, @mail );
 
     $m->no_warnings_ok;
 }
