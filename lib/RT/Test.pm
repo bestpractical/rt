@@ -1733,7 +1733,9 @@ sub parse_mail {
     require RT::EmailParser;
     my $parser = RT::EmailParser->new;
     $parser->ParseMIMEEntityFromScalar( $mail );
-    return $parser->Entity;
+    my $entity = $parser->Entity;
+    $entity->{__store_link_to_object_to_avoid_early_cleanup} = $parser;
+    return $entity;
 }
 
 sub works {
