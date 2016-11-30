@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests          => 104,
+  tests          => undef,
   text_templates => 1,
   gnupg_options  => {
     passphrase    => 'rt-test',
@@ -10,7 +10,7 @@ use RT::Test::GnuPG
   };
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
-RT::Test->import_gnupg_key( 'rt-test@example.com', 'public' );
+RT::Test->import_gnupg_key( 'rt-test@example.com' );
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -23,3 +23,5 @@ my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
 create_and_test_outgoing_emails( $queue, $m );
+undef $m;
+done_testing;
