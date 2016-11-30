@@ -2184,7 +2184,7 @@ sub CreateTicket {
         push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
 
         delete $session{'Attachments'}{ $ARGS{'Token'} || '' }
-            unless $ARGS{'KeepAttachments'};
+            unless $ARGS{'KeepAttachments'} or $Ticket->{DryRun};
         $session{'Attachments'} = $session{'Attachments'}
             if @attachments;
     }
@@ -2320,7 +2320,8 @@ sub ProcessUpdateMessage {
         push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
 
         delete $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' }
-            unless $args{'KeepAttachments'};
+            unless $args{'KeepAttachments'}
+            or ($args{TicketObj} and $args{TicketObj}{DryRun});
         $session{'Attachments'} = $session{'Attachments'}
             if @attachments;
     }
