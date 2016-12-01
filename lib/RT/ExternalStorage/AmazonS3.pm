@@ -144,13 +144,16 @@ sub Get {
 
 sub Store {
     my $self = shift;
-    my ($sha, $content) = @_;
+    my ($sha, $content, $attachment) = @_;
 
     # No-op if the path exists already
     return (1) if $self->BucketObj->head_key( $sha );
 
+    # Without content_type, S3 can guess wrong and cause attachments downloaded
+    # via a link to have a content type of binary/octet-stream
     $self->BucketObj->add_key(
-        $sha => $content
+        $sha => $content,
+        { content_type => $attachment->ContentType }
     ) or return (undef, "Failed to write to AmazonS3: " . $self->S3->errstr);
 
     return (1);
@@ -294,6 +297,32 @@ Finally, set C<$ExternalStorageDirectLink> to 1 in your
 F<RT_SiteConfig.pm> file:
 
     Set($ExternalStorageDirectLink, 1);
+
+=head1 TROUBLESHOOTING
+
+=head2 Issues Connecting to the Amazon Bucket
+
+Here are some things to check if you receive errors connecting to Amazon S3.
+
+=over
+
+=item *
+
+Double check all of the configuration parameters, including the bucket name. Remember to restart
+the server after changing values for RT to load new settings.
+
+=item *
+
+If you manually created a bucket, make sure it is in your default region. Trying to access
+a bucket in a different region may result in 400 errors.
+
+=item *
+
+Check the permissions on the bucket and make sure they are sufficient for the user RT is
+connecting as to upload and access files. If you are using the direct link option, you will
+need to open permissions further for users to access the attachment via the direct link.
+
+=back
 
 =cut
 
