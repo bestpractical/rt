@@ -64,13 +64,13 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 </%PERL>
 <div class="downloadattachment">
 % if (my $url = RT->System->ExternalStorageURLFor($message)) {
-<a href="<% $url %>">
+<a class="skip-pjax" href="<% $url %>">
 % } else {
-<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | un %>">
+<a class="skip-pjax" href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | un %>">
 % }
 <&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
 % if ( $DownloadableHeaders && ! length $name && $message->ContentType =~ /text/  ) {
- / <a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
+ / <a class="skip-pjax" href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
 % }
 % $m->callback(CallbackName => 'AfterDownloadLinks', ARGSRef => \%ARGS, Object => $Object, Transaction => $Transaction, Attachment => $message);
 <br />

@@ -68,9 +68,9 @@
 % }
 
 % if (my $url = RT->System->ExternalStorageURLFor($rev)) {
-<a href="<%$url%>">
+<a class="skip-pjax" href="<%$url%>">
 % } else {
-<a href="<%RT->Config->Get('WebPath')%>/<% $DisplayPath %>/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | un %>">
+<a class="skip-pjax" href="<%RT->Config->Get('WebPath')%>/<% $DisplayPath %>/Attachment/<%$rev->TransactionId%>/<%$rev->Id%>/<%$rev->Filename | un %>">
 % }
 % my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
 <% $desc |n%>
