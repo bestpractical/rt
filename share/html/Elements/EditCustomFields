@@ -60,8 +60,13 @@
 % }
 % for my $CustomField (@CustomFields) {
 % my $Type = $CustomField->Type || 'Unknown';
-
-  <<% $FIELD %> class="edit-custom-field cftype-<% $Type %>">
+% my @classes = (
+%   'edit-custom-field',
+%   "cftype-$Type",
+% );
+% $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
+%               Object => $Object, Classes => \@classes, Grouping => $Grouping );
+  <<% $FIELD %> class="<% join(' ', @classes) %>">
     <<% $CELL %> class="cflabel">
       <span class="name"><% $CustomField->Name %>:</span><br />
       <span class="type"><% $CustomField->EntryHint // '' %></span>
