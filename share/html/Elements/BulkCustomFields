@@ -92,7 +92,7 @@
 <td><& /Elements/EditCustomFieldAutocomplete, @del &><br />
 % } else {
     <td colspan="2"><em><&|/l&>(Unsupported custom field type)</&></em></td>
-%   $RT::Logger->crit("Unknown CustomField type: " . $cf->Type);
+%   $RT::Logger->info("Unknown CustomField type: " . $cf->Type);
 %   next
 % }
   <label><input type="checkbox" name="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" value="1">
