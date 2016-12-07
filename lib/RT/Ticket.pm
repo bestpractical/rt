@@ -3008,6 +3008,12 @@ sub Forward {
         )
     );
 
+    for my $argument (qw(Encrypt Sign)) {
+        if ( defined $args{ $argument } ) {
+            $mime->head->replace( "X-RT-$argument" => $args{$argument} ? 1 : 0 );
+        }
+    }
+
     my ( $ret, $msg ) = $self->_NewTransaction(
         $args{Transaction}
         ? (

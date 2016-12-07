@@ -56,6 +56,8 @@
 <input type="hidden" class="hidden" name="id" value="<% $id %>" /><br />
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
 
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+
 <table border="0">
 <tr><td align="right"><&|/l&>From</&>:</td>
 <td><% $from %></td></tr>
@@ -71,6 +73,15 @@
 
 <tr><td align="right"><&|/l&>Bcc</&>:</td>
 <td><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></td></tr>
+
+% if ( $gnupg_widget ) {
+<tr><td>&nbsp;</td><td>
+<& /Elements/Crypt/SignEncryptWidget,
+    self => $gnupg_widget,
+    TicketObj => $TicketObj,
+&>
+</td></tr>
+% }
 
 <tr>
 <td><&|/l&>Content</&>:</td>
@@ -91,8 +102,17 @@
 <& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
 </form>
 <%INIT>
+my ($status, $msg);
+my $checks_failure = 0;
+
 my $TicketObj = LoadTicket($id);
 $id = $ARGS{'id'} = $TicketObj->id;
+
+my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
+$m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
+    self => $gnupg_widget,
+    TicketObj => $TicketObj,
+);
 
 Abort( loc("Permission Denied") )
     unless $TicketObj->CurrentUserHasRight('ForwardMessage');
@@ -105,9 +125,18 @@ if ( $QuoteTransaction ) {
         unless $txn->id;
 }
 
-my @results;
 if ( $Forward || $ForwardAndReturn ) {
-    my ( $status, $msg ) = $TicketObj->Forward( Transaction => $txn, %ARGS );
+    $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
+        self      => $gnupg_widget,
+        TicketObj => $TicketObj,
+        Operation => 'Forward',
+    );
+    $checks_failure = 1 unless $status;
+}
+
+my @results;
+if ( !$checks_failure && ($Forward || $ForwardAndReturn) ) {
+    ( $status, $msg ) = $TicketObj->Forward( Transaction => $txn, %ARGS );
     push @results, $msg;
 
     if ( $ForwardAndReturn ) {
