@@ -70,6 +70,7 @@ In C<RT_SiteConfig.pm>:
     Set($LDAPHost,'my.ldap.host');
     Set($LDAPUser,'me');
     Set($LDAPPassword,'mypass');
+    Set($LDAPBase, 'ou=People,o=Our Place');
     Set($LDAPFilter, '(&(cn = users))');
     Set($LDAPMapping, {Name         => 'uid', # required
                        EmailAddress => 'mail',
