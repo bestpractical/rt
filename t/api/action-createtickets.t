@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 54;
+use RT::Test tests => 55;
 
 
 {
@@ -41,6 +41,14 @@ my $queue_cf = RT::CustomField->new($RT::SystemUser);
 ok($id, 'Queue-specific custom field correctly created');
 
 
+my $queue_cr = RT::CustomRole->new($RT::SystemUser);
+($id) = $queue_cr->Create(
+    Name => 'QueueCR',
+    Queue => $approvalsq->Id,
+    Description => 'Test queue CustomRole'
+);
+ok($id, 'Queue custom role successfully created');
+
 
 my $approvals = 
 '===Create-Ticket: approval
@@ -51,6 +59,7 @@ Depended-On-By: {$Tickets{"TOP"}->Id}
 Refers-To: TOP 
 CustomField-GlobalCF: A Value
 CustomField-QueueCF: Another Value
+CustomRole-QueueCR: {join ("\nCustomRole-QueueCR: ",@admins) }
 Subject: Approval for ticket: {$Tickets{"TOP"}->Id} - {$Tickets{"TOP"}->Subject}
 Due: {time + 86400}
 Content-Type: text/plain

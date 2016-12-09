@@ -227,3 +227,32 @@ body#comp-Asset-Search .collection-as-table td {
         width: 10em;
     }
 }
+
+#assets-accordion ul.toplevel {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    width: auto;
+    font-size: .9em;
+}
+
+#assets-accordion li.has-children {
+    background: transparent;
+}
+
+#assets-accordion li.has-children ul {
+    min-width: 12em;
+}
+
+#assets-accordion a {
+    border: none;
+    color: #000;
+}
+
+#assets-accordion a.sf-with-ul {
+    padding-top: .3em;
+}
+
+#assets-accordion .sf-sub-indicator {
+    top: .2em;
+}

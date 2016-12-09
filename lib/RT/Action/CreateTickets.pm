@@ -223,6 +223,10 @@ A complete list of acceptable fields:
        CF-name           => custom field value
        CustomField-name  => custom field value
 
+       CustomRole-<id#> => custom role email address
+       CR-name          => custom role email address
+       CustomRole-name  => custom role email address
+
 Fields marked with an C<*> are required.
 
 Fields marked with a C<+> may have multiple values, simply
@@ -669,6 +673,7 @@ sub ParseLines {
                 }
                 if (
                     ($tag =~ /^(requestor|cc|admincc)(group)?$/i
+                        or $tag =~ /^(customrole|cr)-?(.+)$/i
                         or grep {lc $_ eq $tag} keys %RT::Link::TYPEMAP)
                     and $args{$tag} =~ /,/
                 ) {
@@ -693,6 +698,7 @@ sub ParseLines {
         }
         $args{$date} = $dateobj->ISO;
     }
+
 
     foreach my $role (qw(requestor cc admincc)) {
         next unless my $value = $args{ $role . 'group' };
@@ -760,6 +766,16 @@ sub ParseLines {
             );
             next unless $cf->id;
             $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
+        } elsif ($orig_tag =~ /^customrole-?(\d+)$/i) {
+            my $cr = RT::CustomRole->new( $self->CurrentUser );
+            $cr->Load($1);
+            next unless $cr->id;
+            $ticketargs{ "RT::CustomRole-" . $cr->id } = $args{$tag};
+        } elsif ($orig_tag =~ /^(?:customrole|cr)-?(.+)$/i) {
+            my $cr = RT::CustomRole->new( $self->CurrentUser );
+            $cr->Load($1);
+            next unless $cr->id;
+            $ticketargs{ "RT::CustomRole-" . $cr->id } = $args{$tag};
         } elsif ($orig_tag) {
             my $cf = RT::CustomField->new( $self->CurrentUser );
             $cf->LoadByName(
@@ -768,9 +784,15 @@ sub ParseLines {
                 ObjectId      => $ticketargs{Queue},
                 IncludeGlobal => 1,
             );
-            next unless $cf->id;
-            $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
+            if ($cf->id) {
+                $ticketargs{ "CustomField-" . $cf->id } = $args{$tag};
+                next;
+            }
 
+            my $cr = RT::CustomRole->new( $self->CurrentUser );
+            $cr->Load($orig_tag);
+            next unless $cr->id;
+            $ticketargs{ "RT::CustomRole-" . $cr->id } = $args{$tag};
         }
     }
 
@@ -1053,9 +1075,12 @@ sub UpdateWatchers {
 
     my @results;
 
-    foreach my $type (qw(Requestor Cc AdminCc)) {
-        my $method  = $type . 'Addresses';
-        my $oldaddr = $ticket->$method;
+    my @types = grep /^RT::CustomRole-\d+$/, keys @$args;
+    @types = (@types, qw(Requestor Cc AdminCc));
+
+    foreach my $type (@types) {
+        # my $method  = $type . 'Addresses';
+        my $oldaddr = $ticket->RoleAddresses($type);
 
         # Skip unless we have a defined field
         next unless defined $args->{$type};
