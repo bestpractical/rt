@@ -1,0 +1,24 @@
+=head1 UPGRADING FROM RT 4.4.0 and greater
+
+The 4.6 release is a major upgrade and as such there are more changes
+than in a minor bugfix release (e.g., 4.4.0 to 4.4.1) and some of these
+changes are backward-incompatible. The following lists some of the notable
+changes, especially those that might require you to change a configuration
+option or other setting due to a change in RT. Read this section carefully
+before you upgrade and look for changes to features you currently use.
+
+See F<devel/docs/UPGRADING-4.6> for internals changes relevant to
+extension writers.
+
+=over
+
+=item *
+
+The variables which alter the set of HTML elements allowed in HTML
+scrubbing have moved; they have been renamed, and are now found under
+L<RT::Interface::Web::Scrubber>.
+
+=back
+
+=cut
+

@@ -60,6 +60,7 @@ RT::Interface::Web
 
 use strict;
 use warnings;
+use 5.010;
 
 package RT::Interface::Web;
 
@@ -68,6 +69,7 @@ use RT::CustomRoles;
 use URI qw();
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
+use RT::Interface::Web::Scrubber;
 use Digest::MD5 ();
 use List::MoreUtils qw();
 use JSON qw();
@@ -4347,129 +4349,9 @@ Removes unsafe and undesired HTML from the passed content
 
 =cut
 
-my $SCRUBBER;
 sub ScrubHTML {
-    my $Content = shift;
-    $SCRUBBER = _NewScrubber() unless $SCRUBBER;
-
-    $Content = '' if !defined($Content);
-    return $SCRUBBER->scrub($Content);
-}
-
-=head2 _NewScrubber
-
-Returns a new L<HTML::Scrubber> object.
-
-If you need to be more lax about what HTML tags and attributes are allowed,
-create C</opt/rt4/local/lib/RT/Interface/Web_Local.pm> with something like the
-following:
-
-    package HTML::Mason::Commands;
-    # Let tables through
-    push @SCRUBBER_ALLOWED_TAGS, qw(TABLE THEAD TBODY TFOOT TR TD TH);
-    1;
-
-=cut
-
-our @SCRUBBER_ALLOWED_TAGS = qw(
-    A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP S DEL STRIKE H1 H2 H3 H4 H5
-    H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO
-);
-
-our %SCRUBBER_ALLOWED_ATTRIBUTES = (
-    # Match http, https, ftp, mailto and relative urls
-    # XXX: we also scrub format strings with this module then allow simple config options
-    href   => qr{^(?:https?:|ftp:|mailto:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
-    face   => 1,
-    size   => 1,
-    color  => 1,
-    target => 1,
-    style  => qr{
-        ^(?:\s*
-            (?:(?:background-)?color: \s*
-                    (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
-                       \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
-                       [\w\-]+                                  # green, light-blue, etc.
-                       )                            |
-               text-align: \s* \w+                  |
-               font-size: \s* [\w.\-]+              |
-               font-family: \s* [\w\s"',.\-]+       |
-               font-weight: \s* [\w\-]+             |
-
-               border-style: \s* \w+                |
-               border-color: \s* [#\w]+             |
-               border-width: \s* [\s\w]+            |
-               padding: \s* [\s\w]+                 |
-               margin: \s* [\s\w]+                  |
-
-               # MS Office styles, which are probably fine.  If we don't, then any
-               # associated styles in the same attribute get stripped.
-               mso-[\w\-]+?: \s* [\w\s"',.\-]+
-            )\s* ;? \s*)
-         +$ # one or more of these allowed properties from here 'till sunset
-    }ix,
-    dir    => qr/^(rtl|ltr)$/i,
-    lang   => qr/^\w+(-\w+)?$/,
-
-    # timeworked per user attributes
-    'data-ticket-id'    => 1,
-    'data-ticket-class' => 1,
-);
-
-our %SCRUBBER_RULES = ();
-
-# If we're displaying images, let embedded ones through
-if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages')) {
-    $SCRUBBER_RULES{'img'} = {
-        '*' => 0,
-        alt => 1,
-    };
-
-    my @src;
-    push @src, qr/^cid:/i
-        if RT->Config->Get('ShowTransactionImages');
-
-    push @src, $SCRUBBER_ALLOWED_ATTRIBUTES{'href'}
-        if RT->Config->Get('ShowRemoteImages');
-
-    $SCRUBBER_RULES{'img'}->{'src'} = join "|", @src;
-}
-
-sub _NewScrubber {
-    require HTML::Scrubber;
-    my $scrubber = HTML::Scrubber->new();
-
-    if (HTML::Gumbo->require) {
-        no warnings 'redefine';
-        my $orig = \&HTML::Scrubber::scrub;
-        *HTML::Scrubber::scrub = sub {
-            my $self = shift;
-
-            eval { $_[0] = HTML::Gumbo->new->parse( $_[0] ); chomp $_[0] };
-            warn "HTML::Gumbo pre-parse failed: $@" if $@;
-            return $orig->($self, @_);
-        };
-        push @SCRUBBER_ALLOWED_TAGS, qw/TABLE THEAD TBODY TFOOT TR TD TH/;
-        $SCRUBBER_ALLOWED_ATTRIBUTES{$_} = 1 for
-            qw/colspan rowspan align valign cellspacing cellpadding border width height/;
-    }
-
-    $scrubber->default(
-        0,
-        {
-            %SCRUBBER_ALLOWED_ATTRIBUTES,
-            '*' => 0, # require attributes be explicitly allowed
-        },
-    );
-    $scrubber->deny(qw[*]);
-    $scrubber->allow(@SCRUBBER_ALLOWED_TAGS);
-    $scrubber->rules(%SCRUBBER_RULES);
-
-    # Scrubbing comments is vital since IE conditional comments can contain
-    # arbitrary HTML and we'd pass it right on through.
-    $scrubber->comment(0);
-
-    return $scrubber;
+    state $scrubber = RT::Interface::Web::Scrubber->new;
+    return $scrubber->scrub(@_);
 }
 
 =head2 JSON
