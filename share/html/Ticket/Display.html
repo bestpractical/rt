@@ -207,6 +207,7 @@ if ($ARGS{'id'} eq 'new') {
             );
             push @Actions, loc('Marked all messages as seen');
         }
+        $TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj);
     }
 }
 

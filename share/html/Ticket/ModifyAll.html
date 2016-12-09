@@ -216,6 +216,7 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
     }
 }
 
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
 
 </%INIT>
 

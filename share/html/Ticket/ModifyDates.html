@@ -71,6 +71,8 @@ push @results, ProcessTicketDates( TicketObj => $TicketObj, ARGSRef => \%ARGS);
 push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
 $TicketObj->ApplyTransactionBatch;
 
+$TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj);
+
 </%INIT>
 
 

@@ -77,6 +77,8 @@ unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
     Abort("No permission to view ticket");
 }
 
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
+
 my $attachments = $Ticket->Attachments;
 my $attachment_content = $Ticket->TextAttachments;
 

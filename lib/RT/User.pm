@@ -2054,6 +2054,64 @@ sub ToggleBookmark {
     return $is_bookmarked;
 }
 
+=head2 RecentlyViewedTickets TICKET
+
+Returns a list of two-element (ticket id, timestamp) array references ordered by recently viewed first.
+
+=cut
+
+sub RecentlyViewedTickets {
+    my $self = shift;
+    my $content = $self->FirstAttribute('RecentlyViewedTickets');
+    return $content ? @{$content->Content} : ();
+}
+
+=head2 AddRecentlyViewedTicket TICKET
+
+Takes an RT::Ticket object and adds it to the current user's RecentlyViewedTickets
+
+=cut
+
+sub AddRecentlyViewedTicket {
+    my $self   = shift;
+    my $ticket = shift;
+
+    my $maxCount = 10; #The max number of tickets to keep
+
+    #Nothing to do without a ticket
+    return unless $ticket->Id;
+
+    my @recentTickets;
+    my $content = $self->FirstAttribute('RecentlyViewedTickets');
+    $content = $content ? $content->Content : [];
+    if (defined $content) {
+        @recentTickets = @$content;
+    }
+
+    my @tickets;
+    my $i = 0;
+    for (@recentTickets) {
+        my ($ticketId, $timestamp) = @$_;
+        
+        #Skip the ticket if it exists in recents already
+        if ($ticketId != $ticket->Id) {
+            push @tickets, $_;
+            if ($i >= $maxCount - 1) {
+                last;
+            }
+        }
+        $i++;
+    }
+
+    #Add the new ticket
+    unshift @tickets, [$ticket->Id, time()];
+
+    $self->SetAttribute(
+        Name    => 'RecentlyViewedTickets',
+        Content => \@tickets,
+    );
+}
+
 =head2 Create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:

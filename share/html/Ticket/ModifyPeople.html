@@ -137,6 +137,9 @@ for my $rule (map {@{$_->Rules}} @txns) {
 
 # Use tkt squelch list to get recipients who will NOT get mail:
 $recips{$_->Content} = 0 for $Ticket->SquelchMailTo;
+
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
+
 </%INIT>
 
 
