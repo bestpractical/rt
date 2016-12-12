@@ -445,7 +445,7 @@ sub DoAuth {
             $RT::Logger->info(  "Successful login for",
                                 $session->{'CurrentUser'}->Name,
                                 "from",
-                                ($ENV{'REMOTE_ADDR'} || 'UNKNOWN') );
+                                ( RT::Interface::Web::RequestENV('REMOTE_ADDR') || 'UNKNOWN') );
             # Do not delete the session. User stays logged in and
             # autohandler will not check the password again
 
