@@ -349,6 +349,9 @@ if ( !$checks_failure && !$skip_update && exists $ARGS{SubmitTicket} ) {
     $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
 }
+
+$TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj);
+
 </%INIT>
 
 <%ARGS>
