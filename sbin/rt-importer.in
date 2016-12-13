@@ -95,6 +95,7 @@ GetOptions(
 
     "resume!",
     "originalid|i=s",
+    "exclude-organization",
 
     "ask",
     "ignore-errors",
@@ -142,11 +143,12 @@ elsif ($OPT{'ignore-errors'}) {
 }
 
 my $import = RT::Migrate::Importer::File->new(
-    Directory   => $dir,
-    OriginalId  => $OPT{originalid},
-    DumpObjects => $OPT{dump},
-    Resume      => $OPT{resume},
-    HandleError => $error_handler,
+    Directory           => $dir,
+    OriginalId          => $OPT{originalid},
+    ExcludeOrganization => $OPT{'exclude-organization'},
+    DumpObjects         => $OPT{dump},
+    Resume              => $OPT{resume},
+    HandleError         => $error_handler,
 );
 
 if ($import->Metadata and -t STDOUT and not $OPT{quiet}) {
@@ -222,6 +224,14 @@ current database; this may include users, queues, and tickets.
 It is possible to stop the import process with ^C; it can be later
 resumed by re-running the importer.
 
+Certain records (notably queues and groups) will have their original
+Organization name prepended to them on import. This is primarily to avoid
+duplicate names (for example importing a General queue into an RT that
+already has one would otherwise cause a name collision error). If you are
+confident you won't have any name collisions in queues or groups, you may
+suppress this behavior by passing the B<--exclude-organization> flag to
+C<rt-importer>.
+
 =head2 OPTIONS
 
 =over
@@ -235,6 +245,12 @@ Print a summary of the data contained in the dump.
 Places the original ticket organization and ID into a global custom
 field with the given name.  If no global ticket custom field with that
 name is found in the current database, it will create one.
+
+=item B<--exclude-organization>
+
+Ordinarily certain records (groups, queues, the B<--originalid> custom field)
+include the organization name of the original RT instance. Use this option to
+suppress that behavior and use the original name directly.
 
 =item B<--ask>
 
