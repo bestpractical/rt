@@ -58,6 +58,7 @@ sub cmp_version($$) { RT::Handle::cmp_version($_[0],$_[1]) };
 use RT::Migrate::Incremental;
 use RT::Migrate::Serializer::IncrementalRecord;
 use RT::Migrate::Serializer::IncrementalRecords;
+use List::MoreUtils 'none';
 
 sub Init {
     my $self = shift;
@@ -88,6 +89,9 @@ sub Init {
                   FollowScrips
                   FollowTickets
                   FollowACL
+                  Queues
+                  CustomFields
+                  HyperlinkUnmigrated
                   Clone
                   Incremental
               /;
@@ -251,6 +255,11 @@ sub PushBasics {
         OPERATOR => 'IN',
         VALUE => [ qw/RT::User RT::Group RT::Queue/ ],
     );
+
+    if ($self->{CustomFields}) {
+        $cfs->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{CustomFields});
+    }
+
     $self->PushObj( $cfs );
 
     # Global attributes
@@ -293,7 +302,14 @@ sub PushBasics {
         $self->PushCollections(qw(Topics Classes));
     }
 
-    $self->PushCollections(qw(Queues));
+    if ($self->{Queues}) {
+        my $queues = RT::Queues->new(RT->SystemUser);
+        $queues->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{Queues});
+        $self->PushObj($queues);
+    }
+    else {
+        $self->PushCollections(qw(Queues));
+    }
 }
 
 sub InitStream {
@@ -400,7 +416,25 @@ sub Observe {
     my $from = $args{from};
     if ($obj->isa("RT::Ticket")) {
         return 0 if $obj->Status eq "deleted" and not $self->{FollowDeleted};
+        my $queue = $obj->Queue;
+        return 0 if $self->{Queues} && none { $queue == $_ } @{ $self->{Queues} };
         return $self->{FollowTickets};
+    } elsif ($obj->isa("RT::Queue")) {
+        my $id = $obj->Id;
+        return 0 if $self->{Queues} && none { $id == $_ } @{ $self->{Queues} };
+        return 1;
+    } elsif ($obj->isa("RT::CustomField")) {
+        my $id = $obj->Id;
+        return 0 if $self->{CustomFields} && none { $id == $_ } @{ $self->{CustomFields} };
+        return 1;
+    } elsif ($obj->isa("RT::ObjectCustomFieldValue")) {
+        my $id = $obj->CustomField;
+        return 0 if $self->{CustomFields} && none { $id == $_ } @{ $self->{CustomFields} };
+        return 1;
+    } elsif ($obj->isa("RT::ObjectCustomField")) {
+        my $id = $obj->CustomField;
+        return 0 if $self->{CustomFields} && none { $id == $_ } @{ $self->{CustomFields} };
+        return 1;
     } elsif ($obj->isa("RT::ACE")) {
         return $self->{FollowACL};
     } elsif ($obj->isa("RT::Scrip") or $obj->isa("RT::Template") or $obj->isa("RT::ObjectScrip")) {
@@ -473,10 +507,13 @@ sub Visit {
             \%data,
         );
     } else {
+        my %serialized = $obj->Serialize(serializer => $self);
+        return unless %serialized;
+
         @store = (
             ref($obj),
             $obj->UID,
-            { $obj->Serialize },
+            \%serialized,
         );
     }
 
