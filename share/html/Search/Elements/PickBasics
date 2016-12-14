@@ -83,8 +83,8 @@ my @lines = (
         Field => loc('Queue'),
         Op => {
             Type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            Path => '/Elements/SelectMatch',
+#           Arguments => { TrueVal=> '=', FalseVal => '!=' },
         },
         Value => {
             Type => 'component',
