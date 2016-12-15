@@ -730,8 +730,7 @@ sub _QueueLimit {
     my $alias;
 
     if ($op eq 'LIKE' || $op eq 'NOT LIKE') {
-        $alias = $sb->Join(
-            TYPE   => 'RIGHT',
+        $alias = $sb->{_sql_aliases}{queues} ||= $sb->Join(
             ALIAS1 => 'main',
             FIELD1 => 'Queue',
             TABLE2 => 'Queues',
@@ -739,7 +738,7 @@ sub _QueueLimit {
         );
 
         return $sb->Limit(
-           LEFTJOIN      => $alias,
+           ALIAS         => $alias,
            FIELD         => 'Name',
            OPERATOR      => $op,
            VALUE         => $value,
