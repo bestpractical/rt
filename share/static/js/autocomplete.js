@@ -5,7 +5,9 @@ window.RT.Autocomplete.Classes = {
     Users: 'user',
     Groups: 'group',
     Tickets: 'tickets',
-    Queues: 'queues'
+    Queues: 'queues',
+    Assets: 'assets',
+    TicketsAssets: 'tickets-assets'
 };
 
 window.RT.Autocomplete.bind = function(from) {
@@ -49,7 +51,7 @@ window.RT.Autocomplete.bind = function(from) {
         }
 
         if (input.is('[data-autocomplete-multiple]')) {
-            if ( what != 'Tickets' ) {
+            if ( what != 'Tickets' && what != 'TicketsAssets' ) {
                 queryargs.push("delim=,");
             }
 
@@ -59,18 +61,18 @@ window.RT.Autocomplete.bind = function(from) {
             }
 
             options.select = function(event, ui) {
-                var terms = this.value.split(what == 'Tickets' ? /\s+/ : /,\s*/);
+                var terms = this.value.split((what == 'Tickets' || what == 'TicketsAssets') ? /\s+/ : /,\s*/);
                 terms.pop();                    // remove current input
                 terms.push( ui.item.value );    // add selected item
-                if ( what == 'Tickets' ) {
+                if ( what == 'Tickets' || what == 'TicketsAssets') {
                     // remove non-integers in case subject search with spaces in (like "foo bar")
                     terms = jQuery.grep(terms, function(term) {
                         var str = term + ''; // stringify integers to call .match
-                        return str.match(/^\d+$/);
+                        return str.match(/^(?:asset:)?\d+$/);
                     } );
                 }
                 terms.push(''); // add trailing delimeter so user can input another value directly
-                this.value = terms.join(what == 'Tickets' ? ' ' : ", ");
+                this.value = terms.join((what == 'Tickets' || what == 'TicketsAssets') ? ' ' : ", ");
                 jQuery(this).change();
 
                 return false;

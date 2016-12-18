@@ -55,8 +55,9 @@ my $id = ($Object and $Object->id)
     ? $Object->id
     : "new";
 
-my $exclude = qq| data-autocomplete="Tickets" data-autocomplete-multiple="1"|;
-$exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
+my $exclude = qq| data-autocomplete="TicketsAssets" data-autocomplete-multiple="1"|;
+my @excludes;
+push @excludes, $id if $Object->id;
 </%init>
 % if (ref($Object) eq 'RT::Ticket') {
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
@@ -73,27 +74,57 @@ $exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
 <table>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></td>
-    <td class="entry"><input name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude |n%>/></td>
+% my @excludes_dependson;
+% while (my $link = $Object->DependsOn->Next) {
+%   push @excludes_dependson, ((UNIVERSAL::isa($link->TargetObj, 'RT::Asset') ? 'asset:' : '') . $link->TargetObj->id);
+% }
+% my $exclude_dependson = $exclude . ' data-autocomplete-exclude="' .join(' ', (@excludes, @excludes_dependson)). '"' if @excludes_dependson || @excludes;
+    <td class="entry"><input name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude_dependson |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></td>
-    <td class="entry"><input name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude |n%>/></td>
+% my @excludes_dependedonby;
+% while (my $link = $Object->DependedOnBy->Next) {
+%   push @excludes_dependedonby, ((UNIVERSAL::isa($link->BaseObj, 'RT::Asset') ? 'asset:' : '') . $link->BaseObj->id);
+% }
+% my $exclude_dependonby = $exclude . ' data-autocomplete-exclude="' .join(' ', (@excludes, @excludes_dependedonby)). '"' if @excludes_dependedonby || @excludes;
+    <td class="entry"><input name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude_dependonby |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></td>
-    <td class="entry"><input name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude |n%>/></td>
+% my @excludes_memberof;
+% while (my $link = $Object->MemberOf->Next) {
+%   push @excludes_memberof, ((UNIVERSAL::isa($link->TargetObj, 'RT::Asset') ? 'asset:' : '') . $link->TargetObj->id);
+% }
+% my $exclude_memberof = $exclude . ' data-autocomplete-exclude="' .join(' ', (@excludes, @excludes_memberof)). '"' if @excludes_memberof || @excludes;
+    <td class="entry"><input name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude_memberof |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></td>
-    <td class="entry"> <input name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude |n%>/></td>
+% my @excludes_members;
+% while (my $link = $Object->Members->Next) {
+%   push @excludes_members, ((UNIVERSAL::isa($link->BaseObj, 'RT::Asset') ? 'asset:' : '') . $link->BaseObj->id);
+% }
+% my $exclude_members = $exclude . ' data-autocomplete-exclude="' .join(' ', (@excludes, @excludes_members)). '"' if @excludes_members || @excludes;
+    <td class="entry"> <input name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude_members |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></td>
-    <td class="entry"><input name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></td>
+% my @excludes_refersto;
+% while (my $link = $Object->RefersTo->Next) {
+%   push @excludes_refersto, ((UNIVERSAL::isa($link->TargetObj, 'RT::Asset') ? 'asset:' : '') . $link->TargetObj->id);
+% }
+% my $exclude_refersto = $exclude . ' data-autocomplete-exclude="' .join(' ', (@excludes, @excludes_refersto)). '"' if @excludes_refersto || @excludes;
+    <td class="entry"><input name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude_refersto |n%>/></td>
   </tr>
   <tr>
     <td class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></td>
-    <td class="entry"> <input name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></td>
+% my @excludes_referredtoby;
+% while (my $link = $Object->ReferredToBy->Next) {
+%   push @excludes_referredtoby, ((UNIVERSAL::isa($link->BaseObj, 'RT::Asset') ? 'asset:' : '') . $link->BaseObj->id);
+% }
+% my $exclude_referredtoby = $exclude . ' data-autocomplete-exclude="' .join(' ', (@excludes, @excludes_referredtoby)). '"' if @excludes_referredtoby || @excludes;
+    <td class="entry"> <input name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude_referredtoby |n%>/></td>
   </tr>
   <& /Elements/EditCustomFields,
         Object          => $Object,

@@ -1,0 +1,50 @@
+% $r->content_type('application/json; charset=utf-8');
+<% JSON(\@suggestions) |n %>
+% $m->abort;
+
+<%args>
+$term => undef
+$max => undef
+$exclude => ''
+$op => 'LIKE'
+$return_suggestions => 0
+</%args>
+
+<%init>
+# Verify minimum data
+$m->abort unless defined $term
+             and length $term;
+
+my $CurrentUser = $session{'CurrentUser'};
+
+# Require privileged users
+$m->abort unless $CurrentUser->Privileged;
+
+# Sanity check the operator
+$op = 'LIKE' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
+$m->callback(CallbackName => 'ModifyMaxResults', max => \$max);
+$max //= 10;
+
+# Load array of assets
+my $assets = RT::Assets->new($session{'CurrentUser'});
+
+$assets->RowsPerPage($max);
+$assets->LimitToActiveStatus;
+$assets->SimpleSearch(Term => $term);
+
+# Exclude assets we don't want
+foreach (split /\s*,\s*/, $exclude) {
+    $assets->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND', SUBCLAUSE => 'excludeautocomplete');
+}
+
+# Generate suggestions
+my @suggestions;
+while (my $asset = $assets->Next) {
+    my $formatted = loc("#[_1]: [_2] ([_3])", $asset->id, $asset->Name, $asset->Status);
+    my $suggestion = {id => $asset->id, label => $formatted, value => $asset->id};
+    $m->callback(CallbackName => "ModifySuggestion", suggestion => $suggestion, asset => $asset);
+    push @suggestions, $suggestion;
+}
+return @suggestions if $return_suggestions;
+</%init>

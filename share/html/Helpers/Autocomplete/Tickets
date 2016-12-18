@@ -53,6 +53,7 @@ $return => ''
 $term => undef
 $max => undef
 $exclude => ''
+$return_suggestions => 0
 </%ARGS>
 <%INIT>
 # Only allow certain return fields
@@ -62,6 +63,7 @@ $return = 'id'
 $m->abort unless defined $return
              and defined $term
              and length $term;
+
 
 my $CurrentUser = $session{'CurrentUser'};
 
@@ -105,5 +107,6 @@ while ( my $ticket = $tickets->Next ) {
     my $formatted = loc("#[_1]: [_2]", $ticket->Id, $ticket->Subject);
     push @suggestions, { label => $formatted, value => $ticket->$return };
 }
+return @suggestions if $return_suggestions;
 
 </%INIT>
