@@ -1212,7 +1212,7 @@ sub submit {
         while (<$handle>) {
             chomp;
             next if /^$/ || /^#/;
-            next unless m#^https?://[^ ]+ \w+ [^;,\s]+=[0-9A-Fa-f]+$#;
+            next unless m#^https?://[^ ]+ \S+ [^;,\s]+=[0-9A-Fa-f]+$#;
             my ($server, $user, $cookie) = split / /, $_;
             $sids->{$server}{$user} = $cookie;
         }
