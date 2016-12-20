@@ -83,8 +83,7 @@ my @lines = (
         Field => loc('Queue'),
         Op => {
             Type => 'component',
-            Path => '/Elements/SelectMatch',
-#           Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            Path => '/Elements/SelectMatch'
         },
         Value => {
             Type => 'component',
@@ -253,10 +252,15 @@ $m->callback( Conditions => \@lines );
     // hook the op field so that we can swap between the two input types
     var op = jQuery("[name='QueueOp']");
     op.bind('change',function() {
-        text.toggle()
-        selector.toggle()
+        if (op[0].value == "=" || op[0].value == "!=" ) {
+            text.hide()
+            selector.show()
+        } else {
+            text.show()
+            selector.hide()
+        }
     })
-    op[0].value = "=";	// select "is" by default rather than "match"
+    op[0].value = "=";        // select "is" by default rather than "match"
 
     // add the fields to the DOM
     selector.before(hidden);

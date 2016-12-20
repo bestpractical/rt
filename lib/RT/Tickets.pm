@@ -104,7 +104,6 @@ __PACKAGE__->RegisterCustomFieldJoin(@$_) for
 
 our %FIELD_METADATA = (
     Status          => [ 'STRING', ], #loc_left_pair
-#   Queue           => [ 'ENUM' => 'Queue', ], #loc_left_pair
     Queue           => [ 'QUEUE' ], #loc_left_pair
     Type            => [ 'ENUM', ], #loc_left_pair
     Creator         => [ 'ENUM' => 'User', ], #loc_left_pair
@@ -219,10 +218,10 @@ my %DefaultEA = (
         'NOT LIKE' => 'AND'
     },
     QUEUE => {
-	'='        => 'OR',
-	'!='       => 'AND',
-	'LIKE'     => 'OR',
-	'NOT LIKE' => 'AND'
+         '='        => 'OR',
+         '!='       => 'AND',
+         'LIKE'     => 'OR',
+         'NOT LIKE' => 'AND'
     },
     TRANSFIELD   => 'AND',
     TRANSDATE    => 'AND',
