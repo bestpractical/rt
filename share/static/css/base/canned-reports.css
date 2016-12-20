@@ -1,0 +1,68 @@
+
+.reports-menu {
+    background-color: transparent;
+}
+
+.reports-menu-item-btn {
+    color: black;
+    padding: 8px;
+    font-size: 18px;
+    background-color: transparent !important;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    font-style: bold;
+}
+
+.reports-menu-item-btn:hover, .reports-menu-item-btn:focus {
+    color: blue;
+}
+
+.reports-menu-item {
+    position: relative;
+    display: inline-block;
+    background-color: transparent;
+
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.reports-menu-item-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+
+    border-bottom: solid;
+    border-left: solid;
+    border-right: solid;
+    border-color: gray;
+    border-width: 1px;
+
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+
+    overflow: hidden;
+}
+
+.reports-menu-item-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+
+    border-bottom: solid;
+    border-color: gray;
+    border-width: 1px;
+    margin-bottom: -1px;
+}
+
+.reports-menu-item a:hover {
+    color: #f1f1f1;
+}
+
+.show {
+    display: block;
+}

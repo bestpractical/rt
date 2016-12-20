@@ -611,6 +611,8 @@ my $build_main_nav = sub {
         $assets->child( "create", title => loc("Create"), path => "/Asset/CreateInCatalog.html" );
         $assets->child( "search", title => loc("Search"), path => "/Asset/Search/" );
     }
+    
+    my $reports = Menu->child( reports => title => loc('Reports'), path => '/CannedReport/index.html' );
 
     my $tools = Menu->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
 
