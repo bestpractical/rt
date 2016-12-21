@@ -84,3 +84,4 @@ sub run_tests {
 run_tests();
 
 @tickets = ();
+

@@ -104,7 +104,7 @@ __PACKAGE__->RegisterCustomFieldJoin(@$_) for
 
 our %FIELD_METADATA = (
     Status          => [ 'STRING', ], #loc_left_pair
-    Queue           => [ 'ENUM' => 'Queue', ], #loc_left_pair
+    Queue           => [ 'QUEUE' ], #loc_left_pair
     Type            => [ 'ENUM', ], #loc_left_pair
     Creator         => [ 'ENUM' => 'User', ], #loc_left_pair
     LastUpdatedBy   => [ 'ENUM' => 'User', ], #loc_left_pair
@@ -184,6 +184,7 @@ our %dispatch = (
     LINK            => \&_LinkLimit,
     DATE            => \&_DateLimit,
     STRING          => \&_StringLimit,
+    QUEUE           => \&_QueueLimit,
     TRANSFIELD      => \&_TransLimit,
     TRANSCONTENT    => \&_TransContentLimit,
     TRANSDATE       => \&_TransDateLimit,
@@ -217,6 +218,12 @@ my %DefaultEA = (
         '!='       => 'AND',
         'LIKE'     => 'AND',
         'NOT LIKE' => 'AND'
+    },
+    QUEUE => {
+         '='        => 'OR',
+         '!='       => 'AND',
+         'LIKE'     => 'OR',
+         'NOT LIKE' => 'AND'
     },
     TRANSFIELD   => 'AND',
     TRANSDATE    => 'AND',
@@ -697,6 +704,49 @@ sub _StringLimit {
         $value = lc $value;
     }
 
+    $sb->Limit(
+        FIELD         => $field,
+        OPERATOR      => $op,
+        VALUE         => $value,
+        CASESENSITIVE => 0,
+        @rest,
+    );
+}
+
+=head2 _QueueLimit
+
+Handle Queue field supporting both is and match.
+
+Input should be a queue name or a paritial string.
+
+=cut
+
+sub _QueueLimit {
+    my ($sb, $field, $op, $value, @rest ) = @_;
+    my $alias;
+
+    if ($op eq 'LIKE' || $op eq 'NOT LIKE') {
+        $alias = $sb->{_sql_aliases}{queues} ||= $sb->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'Queue',
+            TABLE2 => 'Queues',
+            FIELD2 => 'id',
+        );
+
+        return $sb->Limit(
+           ALIAS         => $alias,
+           FIELD         => 'Name',
+           OPERATOR      => $op,
+           VALUE         => $value,
+           CASESENSITIVE => 0,
+           @rest,
+       );
+
+    }
+
+    my $o = RT::Queue->new( $sb->CurrentUser );
+    $o->Load($value);
+    $value = $o->Id || 0;
     $sb->Limit(
         FIELD         => $field,
         OPERATOR      => $op,
@@ -1289,7 +1339,7 @@ sub OrderByCols {
                 next;
             }
 
-            if ( $meta->[0] eq 'ENUM' && ($meta->[1]||'') eq 'Queue' ) {
+            if ( $meta->[0] eq 'QUEUE' ) {
                 my $alias = $self->Join(
                     TYPE   => 'LEFT',
                     ALIAS1 => 'main',
