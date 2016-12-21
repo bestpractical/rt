@@ -1300,7 +1300,7 @@ sub OrderByCols {
                 next;
             }
 
-            if ( $meta->[0] eq 'ENUM' && ($meta->[1]||'') eq 'Queue' ) {
+            if ( $meta->[0] eq 'QUEUE' ) {
                 my $alias = $self->Join(
                     TYPE   => 'LEFT',
                     ALIAS1 => 'main',

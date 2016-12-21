@@ -389,6 +389,7 @@ Set( \$LogToSTDERR , "warning");
 Set( \$LogToFile, 'debug' );
 Set( \$LogDir, q{$tmp{'directory'}} );
 Set( \$LogToFileNamed, 'rt.debug.log' );
+Set( \$StatementLog, 1 );
 END
 }
 

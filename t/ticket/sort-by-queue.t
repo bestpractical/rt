@@ -40,6 +40,7 @@ sub run_tests {
             my $error = 0;
             my $tix = RT::Tickets->new( RT->SystemUser );
             $tix->FromSQL( $query );
+	    print STDERR $test->{'Order'} . "\n";
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 
             ok($tix->Count, "found ticket(s)")
@@ -49,8 +50,10 @@ sub run_tests {
             while ( my $t = $tix->Next ) {
                 my $tmp;
                 if ( $order eq 'ASC' ) {
+		    print STDERR  "ASC $last vs " . $t->Subject . "\n";
                     $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
                 } else {
+		    print STDERR  "DESC $last vs " . $t->Subject . "\n";
                     $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->Subject))[-1]);
                 }
                 if ( $tmp > 0 ) {
@@ -84,3 +87,4 @@ sub run_tests {
 run_tests();
 
 @tickets = ();
+
