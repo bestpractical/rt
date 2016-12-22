@@ -25,17 +25,77 @@ function submit(path, pairs, data, completion) {
 }
 
 
-//MARK: Menu
+//MARK: Tools
+
+function getQueryParams() {
+    var qs = document.location.search.split('+').join(' ');
+
+    var params = {},
+    tokens,
+    re = /[?&]?([^=]+)=([^&]*)/g;
+
+    while (tokens = re.exec(qs)) {
+        params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+    }
+
+    return params;
+}
+
+
+//MARK: State
+
+var _parameters = getQueryParams();
+var _paramsTimer = {};
+function setParameter(key, value) {
+    _parameters[key] = value;
+    window.clearTimeout(_paramsTimer);
+    _paramsTimer = window.setTimeout(function() {paramsChanged()}, 30);
+}
+
+function paramsChanged() {
+    updateMenu();
+    setGraphNeedsUpdate();
+}
 
 jQuery(document).ready(function() {
-    jQuery(".reports-menu-item-btn").click(function() {
+    setParameter("name", "Resolved");
+})
+
+
+//MARK: Menu
+
+function updateMenu() {
+    //Report name menu item
+    var menu = jQuery("#name.reports-menu-item")
+    var label = menu.find("div").find("span")
+    label.text(_parameters["name"])
+}
+
+jQuery(document).ready(function() {
+    jQuery(".reports-menu-item-btn").on('click', '*', function() {
         jQuery('.reports-menu-item-content').hide();
-        jQuery(this).parent().find(".reports-menu-item-content").toggle();
+        var menu = jQuery(this).parents(".reports-menu-item");
+        menu.find(".reports-menu-item-content").toggle();
     })
 })
 
 window.onclick = function(event) {
-    if (!event.target.matches('.reports-menu-item-btn')) {
+    //Close open menus
+    if (!jQuery(event.target).parent().hasClass('reports-menu-item-btn')) {
         jQuery('.reports-menu-item-content').hide();
     }
 }
+
+
+//MARK: Graph
+
+function updateGraph() {
+    alert("updateGraph called :)");
+}
+
+var _graphUpdateTimer = {}
+function setGraphNeedsUpdate(key, value) {
+    window.clearTimeout(_graphUpdateTimer)
+    _graphUpdateTimer = window.setTimeout(function() {updateGraph()}, 2000)
+}
+

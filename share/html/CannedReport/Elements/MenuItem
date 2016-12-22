@@ -38,18 +38,18 @@
 
 <%ARGS>
 $title => undef
+$id => undef
 </%ARGS>
 
 <%INIT>
 my $content = $m->content;
 </%INIT>
 
-<div class="reports-menu-item">
-    <button class="reports-menu-item-btn"><% $title %>
-        <svg width="24" height="14">
-            <image xlink:href="/static/images/disclosure-down.svg" src="/static/images/disclosure-down.png" width="24" height="14" />
-        </svg>
-    </button>
+<div class="reports-menu-item" <% (defined $id) ? " id=$id" : "" %>>
+    <div class="reports-menu-item-btn">
+        <span><% $title %></span>
+        <image src="/static/images/disclosure-down.png" width="24" height="14" />
+    </div>
     <div id="ReportDropdown" class="reports-menu-item-content">
 % if ($content) {
         <% $content | n %>

@@ -48,9 +48,9 @@ my @names = $reports->AllReportNames();
 
 </%INIT>
 
-<&| ../MenuItem, title => $names[0] &>
+<&| ../MenuItem, title => $names[0], id => "name" &>
 % for my $aReportName (@names) {
-    <a href="#<% $name %>"><% $aReportName %></a>
+    <a onclick="setParameter('name', '<% $aReportName %>')"><% $aReportName %></a>
 % }
 </&>
 
