@@ -1,26 +1,21 @@
 //MARK: Helper
 
-function getReportNames(completion) {
-    submit("/Helpers/CannedReports?cmd=names", null, null, function(code, message, content) {
-           completion(code == 200, content);
-    })
-}
-
-function getReportResults(reportIndex, completion) {
-    submit("/Helpers/CannedReports?cmd=results&i=" + reportIndex, null, null, function(code, message, content) {
-           completion(code == 200, content);
-    })
-}
-
-function getReportResultsTable(reportIndex, completion) {
-    submit("/Helpers/CannedReports?cmd=results&kind=table&i=" + reportIndex, null, null, function(code, message, content) {
+function getReportResults(parameters, kind, completion) {
+    var url = "/Helpers/CannedReports?cmd=results";
+    if (kind) {
+        url += "&kind=" + kind;
+    }
+    for (var key in parameters) {
+        url += "&" + key + "=" + parameters[key];
+    }
+    submit(url, null, null, function(code, message, content) {
            completion(code == 200, content);
     })
 }
 
 function submit(path, pairs, data, completion) {
     jQuery.post(path, pairs, function(object) {
-        completion(object["Code"], object["Message"], object["Content"])
+        completion(object["code"], object["message"], object["content"])
     },'json');
 }
 
@@ -47,9 +42,11 @@ function getQueryParams() {
 var _parameters = getQueryParams();
 var _paramsTimer = {};
 function setParameter(key, value) {
-    _parameters[key] = value;
-    window.clearTimeout(_paramsTimer);
-    _paramsTimer = window.setTimeout(function() {paramsChanged()}, 30);
+    if (_parameters[key] !== value) {
+        _parameters[key] = value;
+        window.clearTimeout(_paramsTimer);
+        _paramsTimer = window.setTimeout(function() {paramsChanged()}, 30);
+    }
 }
 
 function paramsChanged() {
@@ -90,7 +87,13 @@ window.onclick = function(event) {
 //MARK: Graph
 
 function updateGraph() {
-    alert("updateGraph called :)");
+    getReportResults(_parameters, null, function (success, content) {
+        if (success) {
+            updateGraphData(content)
+        }else{
+            alert("Sorry! Graph update failed.");
+        }
+    })
 }
 
 var _graphUpdateTimer = {}

@@ -71,7 +71,7 @@ sub Reports {
 }
 
 #The user selectable options available for the provided report name
-sub Options{
+sub Options {
     my $self = shift;
     my $report = shift;
     return {};
@@ -80,7 +80,7 @@ sub Options{
 #Should return a hash of results
 sub Results {
     my $self = shift;
-    return {};
+    return [];
 }
 
 1;

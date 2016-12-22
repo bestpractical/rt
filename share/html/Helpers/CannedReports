@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
+$cmd => "results"
 $name
-$kind => "tsv"
-$cmd
+$kind => undef
 </%ARGS>
 <%init>
 
@@ -56,42 +56,28 @@ use RT::CannedReports;
 use JSON;
 
 my %object = (
-    Message => loc("Unknown Error"),
-    Code => 500,
-    Content => ["Failed"],
+    message => loc("Unknown Error"),
+    code => 500,
+    content => ["Failed"],
 );
 
 my $reports = RT::CannedReports->new($session{'CurrentUser'});
 my $report = $reports->ReportFromReportName($name);
-
 if ($cmd eq "results") {
     if (ref $report) {
-        my %results = $report->Results();
-        my $resultsOut;
-        if ($kind eq "table") {
+        my $results = $report->Results(\%ARGS);
+        if ($kind && $kind eq "table") {
             my $html = "<table>";
-            for my $key (keys %results) {
+            for my $hashRef (@$results) {
                 $html .= "\n";
-                $html .= "<tr>\n<td>" . $key . "</td>\n<td>" . $results{$key} . "</td>\n</tr>";
+                $html .= "<tr>\n<td>" . $hashRef->{name} . "</td>\n<td>" . $hashRef->{value} . "</td>\n</tr>";
             }
             $html .= "\n</table>";
-            $object{Content} = [$html];
-        }elsif ($kind eq "tsv") {
-            my $largest = 0;
-            for my $value (values %results) {
-                $largest = $value if $value > $largest;
-            }
-            my $tsv = "user\tresolved\n";
-            for my $key (keys %results) {
-                my $value = $results{$key};
-                my $chartValue = (1.0/$largest) * $value;
-                $tsv .= $key . "\t" . $chartValue . "\n";
-            }
-            warn "$tsv";
-            $m->out($tsv);
-            $m->abort();
+            $object{content} = [$html];
+            $object{code} = 200;
         }else{
-            $object{Content} = [\%results];
+            $object{content} = $results;
+            $object{code} = 200;
         }
     }
 }

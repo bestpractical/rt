@@ -72,65 +72,45 @@ sub Options {
     ];
 }
 
-#Placeholder for chosen options
-sub Config {
-    my $self = shift;
-    return {Field1 => "Resolved",
-            Field2 => "Owner",
-            Within => "7 Days", # '__Custom__' to use start & end
-            Start  => "2016/01/01",
-            End    => "2017/01/01",
-    };
-}
-
 #TODO: status shouldn't be hardcoded
 sub Results {
     my $self = shift;
-
-    my %config = %{$self->Config()};
-    my %state;#State machine for building the query
-    #type
-    #   field - add all field values
-    #   count - count tickets
+    my $parameters = shift;
 
     my $collection = RT::Tickets->new(RT->SystemUser);
 
     my $query = "";
 
-    my $f1 = lc $config{Field1};
-    if ($f1 eq "resolved" || $f1 eq "open" || $f1 eq "stalled") {
-        $query .= "status = '$f1'";
-        $state{"f1"}{"type"} = "count";
-    }elsif ($f1 eq "timeworked") {
-        $state{"f1"}{"type"} = "field";
-    }else{
-        $query .= "status = '$f1'";
-        $state{"f1"}{"type"} = "count";
-    }
-
-    my $within = $config{Within};
-    if (!$within || $within eq "__Custom__") {
-        $query .= " AND LastUpdated < '$within'";
-    }else{
-        my $start = $config{Start};
-        my $end = $config{End};
-        $query .= " AND LastUpdated > '$start' AND LastUpdated < '$end'";
+    my $name = lc $parameters->{"name"};
+    if (!$name || $name eq "resolved") { ### DEFAULT ###
+        $query .= "status = 'resolved'";
     }
 
     $collection->FromSQL($query);
     $collection->UnLimit();
     my %results;
-    my $f2 = lc $config{Field2};
-    if (lc $f2 eq "queue") {
+
+    if ($name eq "created") {
         while (my $ticket = $collection->Next) {
-            $results{$ticket->QueueObj->Name} += 1;
+            $results{$ticket->CreatorObj->Name} += 1;
         }
-    }else{#Default
+    }elsif ($name eq "time worked") {
+        while (my $ticket = $collection->Next) {
+            $results{$ticket->CreatorObj->Name} += $ticket->TimeWorked;
+        }
+    }else{#if ($name eq "Resolved") { ### DEFAULT ###
         while (my $ticket = $collection->Next) {
             $results{$ticket->OwnerObj->Name} += 1;
         }
     }
-    return %results;
+
+    my @values;
+    for my $key (keys %results) {
+        push @values, {name => $key, value => $results{$key}};
+    }
+
+    return \@values;
 }
+
 
 1;
