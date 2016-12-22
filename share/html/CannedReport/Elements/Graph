@@ -67,7 +67,7 @@ var svg = d3.select("#graph"),
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom;
 
-function updateGraphData(data) {
+function updateGraphData(data, completion) {
     d3.select("#graph").selectAll("*").remove();
 
     var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
@@ -90,6 +90,8 @@ function updateGraphData(data) {
     .attr("y", function(d) { return y(d.value); })
     .attr("width", x.bandwidth())
     .attr("height", function(d) { return height - y(d.value); });
+
+    completion();
 }
 
 </script>

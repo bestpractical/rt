@@ -14,9 +14,17 @@ function getReportResults(parameters, kind, completion) {
 }
 
 function submit(path, pairs, data, completion) {
-    jQuery.post(path, pairs, function(object) {
-        completion(object["code"], object["message"], object["content"])
-    },'json');
+//    jQuery.post(path, pairs, function(object) {
+//        completion(object["code"], object["message"], object["content"])
+//    },'json');
+
+    jQuery.ajax({url: path,
+                success: function(object) {
+                    completion(object["code"], object["message"], object["content"])
+                },
+                dataType: 'json',
+                async: true
+    });
 }
 
 
@@ -45,7 +53,7 @@ function setParameter(key, value) {
     if (_parameters[key] !== value) {
         _parameters[key] = value;
         window.clearTimeout(_paramsTimer);
-        _paramsTimer = window.setTimeout(function() {paramsChanged()}, 30);
+        _paramsTimer = window.setTimeout(function() {paramsChanged()}, 10);
     }
 }
 
@@ -85,20 +93,42 @@ window.onclick = function(event) {
 
 
 //MARK: Graph
-
-function updateGraph() {
-    getReportResults(_parameters, null, function (success, content) {
-        if (success) {
-            updateGraphData(content)
-        }else{
-            alert("Sorry! Graph update failed.");
-        }
-    })
-}
-
 var _graphUpdateTimer = {}
 function setGraphNeedsUpdate(key, value) {
     window.clearTimeout(_graphUpdateTimer)
     _graphUpdateTimer = window.setTimeout(function() {updateGraph()}, 2000)
 }
+
+var graphIsUpdating = false
+function updateGraph() {
+    if (!graphIsUpdating) {
+        graphIsUpdating = true
+        window.setTimeout(graphBeganUpdating(), 10);
+        window.setTimeout(function() {
+            getReportResults(_parameters, null, function (success, content) {
+                if (success) {
+                    updateGraphData(content, function() {
+                        graphIsUpdating = false
+                        graphFinishedUpdating()
+                    })
+                }else{
+                    alert("Sorry! Graph update failed.");
+                    graphIsUpdating = false
+                    graphFinishedUpdating()
+                }
+            })
+        }, 100);
+    }
+}
+
+function graphBeganUpdating() {
+    jQuery('.reports-menu').hide();
+    jQuery('.reports-menu-loading').show();
+}
+
+function graphFinishedUpdating() {
+    jQuery('.reports-menu-loading').hide();
+    jQuery('.reports-menu').show();
+}
+
 

@@ -1,6 +1,7 @@
 
 .reports-menu {
     background-color: transparent;
+    height: 30px;
 }
 
 .reports-menu-item-btn {
@@ -29,6 +30,18 @@
     padding-right: 3px;
 
     vertical-align: middle;
+}
+
+.reports-menu-loading {
+    position: relative;
+    background-color: transparent;
+    display: none;
+    height: 30px;
+    vertical-align: middle;
+    font-style: bold;
+    color: gray;
+    padding: 8px;
+    font-size: 18px;
 }
 
 .reports-menu-item-content {
