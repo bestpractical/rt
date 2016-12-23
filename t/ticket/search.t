@@ -150,8 +150,18 @@ is($tix->Count, 1, "matched identical subject")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL("Queue LIKE '$queue' AND CF.SearchTest = 'foo1'");
+is($tix->Count, 1, "matched identical subject and LIKE Queue")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
+
+$tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'foo1'");
 is($tix->Count, 1, "matched LIKE subject")
+    or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL("Queue LIKE '$queue' AND CF.SearchTest LIKE 'foo1'");
+is($tix->Count, 1, "matched LIKE queue and LIKE subject")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Tickets->new(RT->SystemUser);
@@ -270,6 +280,10 @@ is($tix->Count, 3, "is cf1 or null cf1");
 $tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("(CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3') AND (CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2')");
 is($tix->Count, 1, "(is cf1 or is cf1) and (is cf2 or is cf2)");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL("(Queue LIKE '$queue') AND (CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3') AND (CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2')");
+is($tix->Count, 1, "(queue LIKE) and (is cf1 or is cf1) and (is cf2 or is cf2)");
 
 $tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3' OR CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2'");
