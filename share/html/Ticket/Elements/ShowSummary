@@ -53,17 +53,21 @@
 <%PERL>
 my $modify_url = RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id;
 my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes($modify_url, 'h' ).'">'.$edit_label.'</a>';
+my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link') : 'hide';
 </%PERL>
 
     <&| /Widgets/TitleBox, title => loc('The Basics'),
         (($can_modify || $can_modify_cf) ? (title_href => $modify_url) : ()),
-        ($InlineEdit ? (titleright_raw => $modify_inline) : ()),
-        class => 'ticket-info-basics',
+        ($modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_inline) : ()),
+        class => (join " ", 'ticket-info-basics', ($modify_behavior eq 'always' ? 'editing' : ())),
+        data => { 'inline-edit-behavior' => $modify_behavior },
     &>
-        <div <% $InlineEdit ? 'class="inline-edit-display"' : '' |n%>>
-            <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
-        </div>
-%       if ($InlineEdit) {
+%       unless ($modify_behavior eq 'always') {
+            <div class="inline-edit-display">
+                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+            </div>
+%       }
+%       if ($modify_behavior ne 'hide') {
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <table>
@@ -110,16 +114,20 @@ my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_labe
 <%PERL>
 my $dates_url = RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id;
 my $dates_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes($dates_url, 'h' ).'">'.$edit_label.'</a>';
+my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit_behavior{_default} || 'link') : 'hide';
 </%PERL>
     <&| /Widgets/TitleBox, title => loc("Dates"),
         ($can_modify ? (title_href => $dates_url) : ()),
-        class => 'ticket-info-dates',
-        ($InlineEdit ? (titleright_raw => $dates_inline) : ()),
+        class => (join " ", 'ticket-info-dates', ($dates_behavior eq 'always' ? 'editing' : ())),
+        ($dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
+        data => { 'inline-edit-behavior' => $dates_behavior },
     &>
-        <div <% $InlineEdit ? 'class="inline-edit-display"' : '' |n%>>
-            <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
-        </div>
-%       if ($InlineEdit) {
+%       unless ($dates_behavior eq 'always') {
+            <div class="inline-edit-display">
+                <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
+            </div>
+%       }
+%       if ($dates_behavior ne 'hide') {
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
@@ -132,10 +140,11 @@ my $dates_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label
 <%PERL>
 my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id;
 my $links_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes($links_url, 'h' ).'">'.$edit_label.'</a>';
+my $links_behavior = $InlineEdit ? ($inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link') : 'hide';
 my $links_graph = '<a href="'. RT->Config->Get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>';
 
 my $links_titleright = join ' ',
-    ($InlineEdit ? $links_inline : ()),
+    ($links_behavior =~ /^(link|click)$/ ? ($links_inline) : ()),
     (RT->Config->Get('DisableGraphViz') ? () : $links_graph);
 my @extra;
 push @extra, (titleright_raw => $links_titleright) if $links_titleright;
@@ -143,13 +152,16 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
 % $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
     <&| /Widgets/TitleBox, title => loc('Links'),
         ($can_modify ? (title_href => $links_url) : ()),
-        class => 'ticket-info-links',
+        class => (join " ", 'ticket-info-links', ($links_behavior eq 'always' ? 'editing' : ())),
+        data => { 'inline-edit-behavior' => $links_behavior },
         @extra,
     &>
-        <div <% $InlineEdit ? 'class="inline-edit-display"' : '' |n%>>
-            <& /Elements/ShowLinks, Object => $Ticket &>
-        </div>
-%       if ($InlineEdit) {
+%       unless ($links_behavior eq 'always') {
+            <div class="inline-edit-display">
+                <& /Elements/ShowLinks, Object => $Ticket &>
+            </div>
+%       }
+%       if ($links_behavior ne 'hide') {
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Elements/EditLinks, Object => $Ticket, TwoColumn => 0 &>
@@ -179,4 +191,9 @@ my $can_modify_people = $Ticket->CurrentUserHasRight('Watch')
 
 my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
 my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
+
+my %inline_edit_behavior;
+if (RT->Config->Get('InlineEditPanelBehavior')) {
+    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Ticket'} || {} };
+}
 </%INIT>

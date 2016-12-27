@@ -783,9 +783,8 @@ jQuery(function () {
         table.css('table-layout', 'fixed');
     });
 
-    jQuery('.inline-edit-toggle').click(function (e) {
-        e.preventDefault();
-        var link = jQuery(this);
+    /* inline edit on ticket display */
+    var toggle_inline_edit = function (link) {
         var container = link.closest('.titlebox');
         container.toggleClass('editing');
         if (container.hasClass('editing')) {
@@ -794,6 +793,25 @@ jQuery(function () {
         else {
             link.text(link.data('edit-label'));
         }
+    }
+
+    jQuery('.inline-edit-toggle').click(function (e) {
+        e.preventDefault();
+        var link = jQuery(this);
+        toggle_inline_edit(link);
+    });
+
+    jQuery('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
+        if (jQuery(e.target).is('a, input, select, textarea')) {
+            return;
+        }
+
+        e.preventDefault();
+        var container = jQuery(this).closest('.titlebox');
+        if (container.hasClass('editing')) {
+            return;
+        }
+        toggle_inline_edit(container.find('.inline-edit-toggle'));
     });
 });
 

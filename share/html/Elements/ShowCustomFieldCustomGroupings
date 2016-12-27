@@ -49,22 +49,29 @@
 for my $group ( @Groupings ) {
     my $modify_url = $title_href ? "$title_href?id=".$Object->id.($group?";Grouping=".$m->interp->apply_escapes($group,'u')."#".CSSClass("$css_class-$group") : "#".$css_class) : undef;
     my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes(($modify_url||'#'), 'h' ).'">'.$edit_label.'</a>';
+    my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{$group} || $inline_edit_behavior{_default} || 'link') : 'hide';
+    my @class = $css_class;
+    push @class, CSSClass("$css_class-$group") if $group;
+    push @class, 'editing' if $modify_behavior eq 'always';
 
     my %grouping_args = (
         title => $group? loc($group) : loc('Custom Fields'),
-        class => $css_class .' '. ($group? CSSClass("$css_class-$group") : ''),
+        class => (join " ", @class),
         hide_empty => 1,
         title_href => $modify_url,
-        ($InlineEdit ? (titleright_raw => $modify_inline) : ()),
+        ($modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_inline) : ()),
+        data => { 'inline-edit-behavior' => $modify_behavior },
         %$TitleBoxARGS,
     );
     $m->callback( CallbackName => 'TitleBox', Object => $Object, Grouping => $group, ARGSRef => \%grouping_args );
 </%perl>
 <&| /Widgets/TitleBox, %grouping_args &>
-  <div <% $InlineEdit ? 'class="inline-edit-display"' : '' |n%>>
+% unless ($modify_behavior eq 'always') {
+  <div class="inline-edit-display">
     <& ShowCustomFields, %ARGS, Object => $Object, Grouping => $group &>
   </div>
-% if ($InlineEdit) {
+% }
+% if ($modify_behavior ne 'hide') {
   <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
     <input type="hidden" class="hidden" name="id" value="<% $Object->id %>" />
     <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
@@ -89,6 +96,11 @@ $css_class .= '-info-cfs';
 my $TitleBoxARGS = delete $ARGS{TitleBoxARGS} || {};
 
 $InlineEdit = 0 unless $Object->isa('RT::Ticket');
+my %inline_edit_behavior;
+if (RT->Config->Get('InlineEditPanelBehavior')) {
+    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{RT::CustomField->_GroupingClass($Object)} || {} };
+}
+
 my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );
 my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
 
