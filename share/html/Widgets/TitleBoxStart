@@ -45,7 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="titlebox<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>">
+<div class="titlebox<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>"\
+% for my $key (keys %$data) {
+ data-<% $key %>="<% $data->{$key} %>"\
+% }
+>
   <div class="titlebox-title<% $title_class ? " $title_class" : ''%>">
 % if ($hideable) {
     <span class="widget"><a href="#" onclick="return rollup(<%$tid|n,j%>);" title="Toggle visibility"></a></span>
@@ -72,6 +76,7 @@ $titleright_raw => ''
 $id => ''
 $hideable => 1
 $rolledup => 0
+$data => {}
 </%ARGS>
 
 <%init>
