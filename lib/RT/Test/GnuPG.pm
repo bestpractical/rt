@@ -64,9 +64,9 @@ sub import {
     my %args  = @_;
     my $t     = $class->builder;
 
-    $t->plan( skip_all => 'GnuPG required.' )
+    RT::Test::plan( skip_all => 'GnuPG required.' )
       unless GnuPG::Interface->require;
-    $t->plan( skip_all => 'gpg executable is required.' )
+    RT::Test::plan( skip_all => 'gpg executable is required.' )
       unless RT::Test->find_executable('gpg');
 
     $class->SUPER::import(%args);
