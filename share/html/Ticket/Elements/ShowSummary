@@ -66,7 +66,10 @@ my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_labe
 %       if ($InlineEdit) {
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
-                <& /Ticket/Elements/EditBasics, TicketObj => $Ticket &>
+                <table>
+                    <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1 &>
+                    <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
+                </table>
                 <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
             </form>
 %       }
