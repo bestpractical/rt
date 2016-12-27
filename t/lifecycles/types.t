@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-BEGIN {require  't/lifecycles/utils.pl'};
+BEGIN {require  './t/lifecycles/utils.pl'};
 
 is_deeply( [ RT::Lifecycle->ListAll ], [qw/ approvals default delivery /],
        "Get the list of all lifecycles (implicitly for for tickets)");

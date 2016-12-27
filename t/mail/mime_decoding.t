@@ -236,4 +236,14 @@ diag "quotes in filename";
     );
 }
 
+diag "Alternating encoded-words and not, space is preserved";
+{
+    my $str = q{A =?UTF-8?Q?B?= C =?UTF-8?Q?D?= E =?UTF-8?Q?F?= G};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, "Subject"),
+        q{A B C D E F G},
+        "Space is preserved between encoded-words and not"
+    );
+}
+
 done_testing;

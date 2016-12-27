@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
+% if ( $ARGS{id} && $ARGS{id} ne 'new' && RT->Config->Get('LinkArticlesOnInclude') ) {
 <input type="hidden" name="<%$ARGS{'id'}%>-RefersTo" value="<% join(' ',grep {$_} sort keys %uri) %>" />
 % }
 

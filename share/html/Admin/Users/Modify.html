@@ -93,6 +93,10 @@
 </td><td>
 <& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang//$ARGS{Lang} &>
 </td></tr>
+<tr><td align="right"><&|/l&>Timezone</&>:
+</td><td>
+<& /Elements/SelectTimezone, Name => 'Timezone', Default => $UserObj->Timezone &>
+</td></tr>
 <tr><td align="right">
 <&|/l&>Extra info</&>:
 </td><td>
@@ -244,6 +248,7 @@ delete $ARGS{Disabled} unless $ARGS{SetEnabled};
 my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo
                 Organization RealName NickName Lang Gecos HomePhone WorkPhone
                 MobilePhone PagerPhone Address1 Address2 City State Zip Country
+                Timezone
                );
 
 if ($Create) {

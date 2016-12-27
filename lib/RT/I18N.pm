@@ -56,6 +56,7 @@ package RT::I18N;
 
 use strict;
 use warnings;
+use Cwd ();
 
 
 use Locale::Maketext 1.04;
@@ -97,10 +98,10 @@ sub Init {
     @lang = ('*') unless @lang;
 
     # load default functions
-    require substr(__FILE__, 0, -3) . '/i_default.pm';
+    require substr(Cwd::abs_path(__FILE__), 0, -3) . '/i_default.pm';
 
     # Load language-specific functions
-    foreach my $file ( File::Glob::bsd_glob(substr(__FILE__, 0, -3) . "/*.pm") ) {
+    foreach my $file ( File::Glob::bsd_glob(substr(Cwd::abs_path(__FILE__), 0, -3) . "/*.pm") ) {
         my ($lang) = ($file =~ /([^\\\/]+?)\.pm$/);
         next unless grep $_ eq '*' || $_ eq $lang, @lang;
         require $file;
@@ -442,11 +443,9 @@ sub _DecodeMIMEWordsToEncoding {
         $charset  = _CanonicalizeCharset($charset);
         $encoding = lc $encoding;
 
-        $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
-
         if ( $encoding eq 'q' ) {
             use MIME::QuotedPrint;
-            $enc_str =~ tr/_/ /;                # Observed from Outlook Express
+            $enc_str =~ tr/_/ /;              # RFC 2047, 4.2 (2)
             $enc_str = decode_qp($enc_str);
         } elsif ( $encoding eq 'b' ) {
             use MIME::Base64;

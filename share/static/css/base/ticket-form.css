@@ -27,6 +27,10 @@
     list-style: none;
 }
 
+.ticket-update-suggested-cc {
+    white-space: nowrap;
+}
+
 iframe.richtext-editor {
     background-color: white !important;
 }

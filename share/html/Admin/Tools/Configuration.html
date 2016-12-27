@@ -241,6 +241,23 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 </table>
 </&>
 
+
+<&|/Widgets/TitleBox, title => loc("Loaded RT Extensions")&>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>Extension</&></th>
+<th class="collection-as-table"><&|/l&>Version</&></th>
+% my $row = 0;
+% foreach my $pluginName (grep $_, RT->Config->Get('Plugins')) {
+% my $plugin = RT::Plugin->new( name => $pluginName );
+<tr class="<% $row++ %2 ? 'oddline' : 'evenline'%>">
+<td class="collection-as-table"><%$plugin->Name%></td>
+<td class="collection-as-table"><%$plugin->Version%></td>
+</tr>
+% }
+</table>
+</&>
+
 <&|/Widgets/TitleBox, title => loc("Loaded perl modules")&>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table">

@@ -371,8 +371,14 @@ if ($chart_class eq "GD::Graph::bars") {
                 if ( $width > $x_space_for_label ) {
                     $can{'horizontal, one line'} = 0;
                 }
-                my $y_space_for_label = $Height * 0.6
-                    *( 1 - ($args{'element'}-$min_value)/($max_value-$min_value) );
+                my $y_space_for_label;
+                if ($max_value == $min_value) {
+                    $y_space_for_label = 0;
+                }
+                else {
+                    $y_space_for_label = $Height * 0.6
+                        *( 1 - ($args{'element'}-$min_value)/($max_value-$min_value) );
+                }
                 if ( $width > $y_space_for_label ) {
                     $can{'vertical, one line'} = 0;
                 }

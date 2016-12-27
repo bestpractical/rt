@@ -61,6 +61,7 @@
 <i class="label">(<&|/l&>check to add</&>)</i>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
+<span class="ticket-update-suggested-cc">
 <input
     id="UpdateCc-<%$addr%>"
     name="UpdateCc-<%$addr%>"
@@ -70,6 +71,7 @@
     onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
       <label for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
+</span>
 %}
 %if (@one_time_Ccs && $hide_cc_suggestions) {
 </div>
@@ -86,6 +88,7 @@
 <i class="label">(<&|/l&>check to add</&>)</i>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
+<span class="ticket-update-suggested-cc">
 <input
     id="UpdateBcc-<%$addr%>"
     name="UpdateBcc-<%$addr%>"
@@ -95,6 +98,7 @@
     onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
     <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
       <label for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
+</span>
 %}
 %if (@one_time_Ccs && $hide_cc_suggestions) {
 </div>
