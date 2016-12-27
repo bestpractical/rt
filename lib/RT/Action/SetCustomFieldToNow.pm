@@ -46,106 +46,34 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+package RT::Action::SetCustomFieldToNow;
+use base 'RT::Action';
+
 use strict;
 use warnings;
 
-package RT::Plugin;
-use File::ShareDir;
-
-=head1 NAME
-
-RT::Plugin
-
-=head1 METHODS
-
-=head2 new
-
-Instantiate a new L<RT::Plugin> object. Takes a paramhash. currently the only key
-it cares about is 'name', the name of this plugin.
-
-=cut
-
-sub new {
-    my $class = shift;
-    my $args ={@_};
-    my $self = bless $args, $class;
-    return $self;
-}
-
-
-=head2 Name
-
-Returns a human-readable name for this plugin.
-
-=cut
-
-sub Name { 
+sub Describe  {
     my $self = shift;
-    return $self->{name};
+    return (ref $self . " will set the value of a custom field, provided as the Argument, to the current datetime.");
 }
 
-=head2 Version
 
-Returns the extension version.
+sub Prepare  {
+    # nothing to prepare
+    return 1;
+}
 
-=cut
-
-sub Version {
+sub Commit {
     my $self = shift;
-    return $self->Name->VERSION;
+    my $DateObj = RT::Date->new($self->TicketObj->CurrentUser);
+    $DateObj->SetToNow;
+    my $value = $DateObj->ISO(Timezone => 'user');
+    my ($ret, $msg) = $self->TicketObj->AddCustomFieldValue(Field => $self->Argument, Value => $value);
+    unless ($ret) {
+        RT->Logger->error($msg);
+    }
+    return $ret;
 }
-
-=head2 Path
-
-Takes a name of sub directory and returns its full path, for example:
-
-    my $plugin_etc_dir = $plugin->Path('etc');
-
-See also L</ComponentRoot>, L</StaticDir>, L</PoDir> and other shortcut methods.
-
-=cut
-
-sub Path {
-    my $self   = shift;
-    my $subdir = shift;
-    my $res = $self->_BasePath;
-    $res .= "/$subdir" if defined $subdir && length $subdir;
-    return $res;
-}
-
-sub _BasePath {
-    my $self = shift;
-    my $base = $self->{'name'};
-    $base =~ s/::/-/g;
-    my $local_base = $RT::LocalPluginPath."/".$base;
-    my $base_base = $RT::PluginPath."/".$base;
-
-    return -d $local_base ? $local_base : $base_base;
-}
-
-=head2 ComponentRoot
-
-Returns the directory this plugin has installed its L<HTML::Mason> templates into
-
-=cut
-
-sub ComponentRoot { return $_[0]->Path('html') }
-
-=head2 StaticDir
-
-Returns the directory this plugin has installed its static files into
-
-=cut
-
-sub StaticDir { return $_[0]->Path('static') }
-
-=head2 PoDir
-
-Returns the directory this plugin has installed its message catalogs into.
-
-=cut
-
-sub PoDir { return $_[0]->Path('po') }
 
 RT::Base->_ImportOverlays();
 

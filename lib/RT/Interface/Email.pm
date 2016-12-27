@@ -739,6 +739,32 @@ sub MailError {
     FAILURE( "$args{Subject}: $args{Explanation}" ) if $args{FAILURE};
 }
 
+sub _OutgoingMailFrom {
+    my $TicketObj = shift;
+
+    my $MailFrom = RT->Config->Get('SetOutgoingMailFrom');
+    my $OutgoingMailAddress = $MailFrom =~ /\@/ ? $MailFrom : undef;
+    my $Overrides = RT->Config->Get('OverrideOutgoingMailFrom') || {};
+
+    if ($TicketObj) {
+        my $Queue = $TicketObj->QueueObj;
+        my $QueueAddressOverride = $Overrides->{$Queue->id}
+            || $Overrides->{$Queue->Name};
+
+        if ($QueueAddressOverride) {
+            $OutgoingMailAddress = $QueueAddressOverride;
+        } else {
+            $OutgoingMailAddress ||= $Queue->CorrespondAddress
+                || RT->Config->Get('CorrespondAddress');
+        }
+    }
+    elsif ($Overrides->{'Default'}) {
+        $OutgoingMailAddress = $Overrides->{'Default'};
+    }
+
+    return $OutgoingMailAddress;
+}
+
 =head2 SENDING EMAIL
 
 =head3 SendEmail Entity => undef, [ Bounce => 0, Ticket => undef, Transaction => undef ]
@@ -815,7 +841,18 @@ sub SendEmail {
     if (my $precedence = RT->Config->Get('DefaultMailPrecedence')
         and !$args{'Entity'}->head->get("Precedence")
     ) {
-        $args{'Entity'}->head->replace( 'Precedence', Encode::encode("UTF-8",$precedence) );
+        if ($TicketObj) {
+            my $Overrides = RT->Config->Get('OverrideMailPrecedence') || {};
+            my $Queue = $TicketObj->QueueObj;
+
+            $precedence = $Overrides->{$Queue->id}
+                if exists $Overrides->{$Queue->id};
+            $precedence = $Overrides->{$Queue->Name}
+                if exists $Overrides->{$Queue->Name};
+        }
+
+        $args{'Entity'}->head->replace( 'Precedence', Encode::encode("UTF-8",$precedence) )
+            if $precedence;
     }
 
     if ( $TransactionObj && !$TicketObj
@@ -863,25 +900,8 @@ sub SendEmail {
         # SetOutgoingMailFrom and bounces conflict, since they both want -f
         if ( $args{'Bounce'} ) {
             push @args, shellwords(RT->Config->Get('SendmailBounceArguments'));
-        } elsif ( my $MailFrom = RT->Config->Get('SetOutgoingMailFrom') ) {
-            my $OutgoingMailAddress = $MailFrom =~ /\@/ ? $MailFrom : undef;
-            my $Overrides = RT->Config->Get('OverrideOutgoingMailFrom') || {};
-
-            if ($TicketObj) {
-                my $Queue = $TicketObj->QueueObj;
-                my $QueueAddressOverride = $Overrides->{$Queue->id}
-                    || $Overrides->{$Queue->Name};
-
-                if ($QueueAddressOverride) {
-                    $OutgoingMailAddress = $QueueAddressOverride;
-                } else {
-                    $OutgoingMailAddress ||= $Queue->CorrespondAddress
-                        || RT->Config->Get('CorrespondAddress');
-                }
-            }
-            elsif ($Overrides->{'Default'}) {
-                $OutgoingMailAddress = $Overrides->{'Default'};
-            }
+        } elsif ( RT->Config->Get('SetOutgoingMailFrom') ) {
+            my $OutgoingMailAddress = _OutgoingMailFrom($TicketObj);
 
             push @args, "-f", $OutgoingMailAddress
                 if $OutgoingMailAddress;

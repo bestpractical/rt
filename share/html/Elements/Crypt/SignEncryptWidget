@@ -167,6 +167,9 @@ if ( $self->{'Encrypt'} ) {
         @recipients = map {$_->Recipients} $TicketObj->DryRun(
             sub { CreateTicket( %$self, TicketObj => $TicketObj ); } );
     }
+    elsif ( $Operation eq 'Forward' ) {
+        push @recipients, RT::EmailParser->ParseEmailAddress( $self->{$_} || '' ) for qw(To Cc Bcc);
+    }
     else {
         $RT::Logger->crit('Incorrect operation: '. $Operation );
     }

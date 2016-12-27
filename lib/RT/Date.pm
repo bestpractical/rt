@@ -818,7 +818,7 @@ sub LocalizedDateTime
                  @_,
                );
 
-    my $dt = $self->DateTimeObj;
+    my $dt = $self->DateTimeObj(%args);
 
     # Require valid names for the format methods
     my $date_format = $args{DateFormat} =~ /^\w+$/

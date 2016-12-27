@@ -139,6 +139,23 @@ sub BuildMainNav {
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
 
+    my $recents = $tickets->child( recent => title => loc('Recently Viewed'));
+    for ($current_user->RecentlyViewedTickets) {
+        my ($ticketId, $timestamp) = @$_;
+        my $ticket = RT::Ticket->new($current_user);
+        $ticket->Load($ticketId);
+        if ($ticket->Id) {
+            my $title = $ticket->Subject || loc("(No subject)");
+            if (length $title > 50) {
+                $title = substr($title, 0, 47);
+                $title =~ s/\s+$//;
+                $title .= "...";
+            }
+            $title = "#$ticketId: " . $title;
+            $recents->child( "$ticketId" => title => $title, path => "/Ticket/Display.html?id=" . $ticket->Id );
+        }
+    }
+
     $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" )
         if $current_user->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
@@ -389,6 +406,9 @@ sub BuildMainNav {
         }
     }
 
+    # Scope here so we can share in the Privileged callback
+    my $args      = '';
+    my $has_query = '';
     if (
         (
                $request_path =~ m{^/(?:Ticket|Search)/}
@@ -399,8 +419,6 @@ sub BuildMainNav {
       )
     {
         my $search = $top->child('search')->child('tickets');
-        my $args      = '';
-        my $has_query = '';
         my $current_search = $HTML::Mason::Commands::session{"CurrentSearchHash"} || {};
         my $search_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchLoad'} || $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
         my $chart_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
@@ -615,7 +633,7 @@ sub BuildMainNav {
     }
 
     # due to historical reasons of always having been in /Elements/Tabs
-    $HTML::Mason::Commands::m->callback( CallbackName => 'Privileged', Path => $request_path, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
+    $HTML::Mason::Commands::m->callback( CallbackName => 'Privileged', Path => $request_path, Search_Args => $args, Has_Query => $has_query, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
 }
 
 sub _BuildAssetMenu {

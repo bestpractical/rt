@@ -82,6 +82,9 @@ MaybeRedirectForResults(
     Actions     => \@results,
     Arguments   => { id => $id },
 );
+
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
+
 </%INIT>
       
       

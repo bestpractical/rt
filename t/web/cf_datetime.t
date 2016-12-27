@@ -159,8 +159,8 @@ diag 'check search build page';
       $m->find_all_inputs( type => 'text', name_regex => qr/test cf datetime/ );
 
     is_results_number( { $cf_op->name => '=', $cf_field->name => '2010-05-04', }, 1 );
-    $m->content_contains( '2010-05-04',     'got the right ticket' );
-    $m->content_lacks( '2010-05-06', 'did not get the wrong ticket' );
+    like($m->dom->at('table.ticket-list')->all_text, qr/2010-05-04/, 'got the right ticket');
+    unlike($m->dom->at('table.ticket-list')->all_text, qr/2010-05-06/, 'did not get the wrong ticket');
 
     my $shanghai = RT::Test->load_or_create_user(
         Name     => 'shanghai',

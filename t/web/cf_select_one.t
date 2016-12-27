@@ -151,6 +151,13 @@ diag "check that we can set empty value when the current is 0";
        undef, 'API returns correct value';
 }
 
+diag "check that a default value is displayed";
+{
+    my $default_ticket_id = RT::Test->create_ticket(Queue => 'General');
+    $m->get_ok("/Ticket/Modify.html?id=" . $default_ticket_id->Id . "&CustomField-$cfid=qwe");
+    $m->content_like(qr/\<option value="qwe"\s+selected="selected"/, 'Default value is selected');
+}
+
 diag 'retain selected cf values when adding attachments';
 {
     my ( $ticket, $id );

@@ -50,6 +50,7 @@ $Object
 $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
+$ScrollShowHistory => 0
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -63,6 +64,15 @@ if ( $ShowDisplayModes or $ShowTitle ) {
                     : '&nbsp;';
 
     my $titleright = '';
+    if ( $ScrollShowHistory ) {
+        $titleright .= qq{<span id="LoadAllHistoryContainer">} .
+                       qq{<a href="#" id="LoadAllHistory">} .
+                       loc('Load all history') .
+                       qq{</a>} .
+                       ($ShowDisplayModes ? '&mdash;' : '') .
+                       qq{</span>};
+    }
+
     if ( $ShowDisplayModes ) {
         if ( RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
             my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
@@ -85,6 +95,7 @@ if ( $ShowDisplayModes or $ShowTitle ) {
                            qq{</a>};
         }
     }
+
 </%perl>
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }

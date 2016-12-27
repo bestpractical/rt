@@ -27,6 +27,10 @@
     list-style: none;
 }
 
+.ticket-update-suggested-cc {
+    white-space: nowrap;
+}
+
 iframe.richtext-editor {
     background-color: white !important;
 }
@@ -35,6 +39,12 @@ iframe.richtext-editor {
 .messagebox-container.action-response iframe
 {
     background-color: #fcc !important;
+}
+
+.messagebox-container.action-private textarea,
+.messagebox-container.action-private iframe
+{
+    background-color: #ffffdd !important;
 }
 
 .sidebyside #ticket-create-metadata,

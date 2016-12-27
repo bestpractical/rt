@@ -68,6 +68,9 @@
 my $Ticket = LoadTicket($id);
 
 my @actions = ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
+
 </%INIT>
 <%ARGS>
 $id => undef

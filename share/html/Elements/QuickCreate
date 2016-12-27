@@ -49,7 +49,7 @@
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
 <form
     method="post"
-    action="<%RT->Config->Get('WebPath')%>/index.html"
+    action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
 % $m->callback(CallbackName => 'InFormElement');
 >
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 86, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
 
 use RT::Action::SendEmail;
 
@@ -90,7 +90,7 @@ diag "check that things don't work if there is no key";
 diag "import first key of rt-test\@example.com";
 my $fpr1 = '';
 {
-    RT::Test->import_gnupg_key('rt-test@example.com', 'public');
+    RT::Test->import_gnupg_key('rt-test@example.com', 'secret');
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com' );
     is $res{'info'}[0]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr1 = $res{'info'}[0]{'Fingerprint'};
@@ -140,7 +140,7 @@ diag "check that things still doesn't work if key is not trusted";
 diag "import a second key of rt-test\@example.com";
 my $fpr2 = '';
 {
-    RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
+    RT::Test->import_gnupg_key('rt-test@example.com.2', 'secret');
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com' );
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr2 = $res{'info'}[2]{'Fingerprint'};
@@ -260,37 +260,44 @@ diag "check that key selector works and we can select trusted key";
 }
 
 diag "check encrypting of attachments";
-{
+for my $encrypt (0, 1) {
     RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
     $m->form_name('TicketUpdate');
-    $m->tick( Encrypt => 1 );
+    $m->tick( Encrypt => 1 ) if $encrypt;
     $m->field( UpdateCc => 'rt-test@example.com' );
     $m->field( UpdateContent => 'Some content' );
     $m->field( Attach => $0 );
     $m->click('SubmitTicket');
-    $m->content_contains(
-        'You are going to encrypt outgoing email messages',
-        'problems with keys'
-    );
-    $m->content_contains(
-        'There are several keys suitable for encryption',
-        'problems with keys'
-    );
 
-    my $form = $m->form_name('TicketUpdate');
-    ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-    is scalar $input->possible_values, 2, 'two options';
+    if ($encrypt) {
+        $m->content_contains(
+            'You are going to encrypt outgoing email messages',
+            'problems with keys'
+        );
+        $m->content_contains(
+            'There are several keys suitable for encryption',
+            'problems with keys'
+        );
 
-    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->click('SubmitTicket');
+        my $form = $m->form_name('TicketUpdate');
+        ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
+        is scalar $input->possible_values, 2, 'two options';
+
+        $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
+        $m->click('SubmitTicket');
+    }
+
     $m->content_contains('Correspondence added', 'Correspondence added' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
-    check_text_emails( { Encrypt => 1, Attachment => 1 }, @mail );
+    check_text_emails( { Encrypt => $encrypt, Attachment => "Attachment content" }, @mail );
 
     $m->no_warnings_ok;
 }
+
+undef $m;
+done_testing;

@@ -2186,7 +2186,7 @@ sub CreateTicket {
         push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
 
         delete $session{'Attachments'}{ $ARGS{'Token'} || '' }
-            unless $ARGS{'KeepAttachments'};
+            unless $ARGS{'KeepAttachments'} or $Ticket->{DryRun};
         $session{'Attachments'} = $session{'Attachments'}
             if @attachments;
     }
@@ -2322,7 +2322,8 @@ sub ProcessUpdateMessage {
         push @attachments, grep $_, map $tmp->{$_}, sort keys %$tmp;
 
         delete $session{'Attachments'}{ $args{'ARGSRef'}{'Token'} || '' }
-            unless $args{'KeepAttachments'};
+            unless $args{'KeepAttachments'}
+            or ($args{TicketObj} and $args{TicketObj}{DryRun});
         $session{'Attachments'} = $session{'Attachments'}
             if @attachments;
     }
@@ -2932,7 +2933,6 @@ sub ProcessTicketBasics {
         FinalPriority
         Priority
         TimeEstimated
-        TimeWorked
         TimeLeft
         Type
         Status
@@ -2961,6 +2961,12 @@ sub ProcessTicketBasics {
         Object        => $TicketObj,
         ARGSRef       => $ARGSRef,
     );
+
+    if ( $ARGSRef->{'TimeWorked'} ) {
+        my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'} );
+        push( @results, $msg );
+        $txn->UpdateCustomFields( %$ARGSRef) if $txn;
+    }
 
     # We special case owner changing, so we can use ForceOwnerChange
     if ( $ARGSRef->{'Owner'}
@@ -3362,7 +3368,14 @@ sub ProcessObjectCustomFieldUpdatesForCreate {
                     );
             }
 
-            $parsed{"CustomField-$cfid"} = \@values if @values;
+            if (@values) {
+                if ( $class eq 'RT::Transaction' ) {
+                    $parsed{"Object-RT::Transaction--CustomField-$cfid"} = \@values;
+                }
+                else {
+                    $parsed{"CustomField-$cfid"} = \@values if @values;
+                }
+            }
         }
     }
 
@@ -3872,6 +3885,79 @@ sub ProcessColumnMapValue {
         }
         return $value;
     }
+}
+
+sub ProcessQuickCreate {
+    my %params = @_;
+    my %ARGS = %{ $params{ARGSRef} };
+    my $path = $params{Path};
+    my @results;
+
+    if ( $ARGS{'QuickCreate'} ) {
+        my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+        $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
+
+        my $CFs = $QueueObj->TicketCustomFields;
+
+        my ($ValidCFs, @msg) = $m->comp(
+            '/Elements/ValidateCustomFields',
+            CustomFields        => $CFs,
+            ARGSRef             => \%ARGS,
+            ValidateUnsubmitted => 1,
+        );
+
+        my $created;
+        if ( $ValidCFs ) {
+            my ($t, $msg) = CreateTicket(
+                Queue      => $ARGS{'Queue'},
+                Owner      => $ARGS{'Owner'},
+                Status     => $ARGS{'Status'},
+                Requestors => $ARGS{'Requestors'},
+                Content    => $ARGS{'Content'},
+                Subject    => $ARGS{'Subject'},
+            );
+            push @results, $msg;
+
+            if ( $t && $t->Id ) {
+                $created = 1;
+                if ( RT->Config->Get('DisplayTicketAfterQuickCreate', $session{'CurrentUser'}) ) {
+                    MaybeRedirectForResults(
+                        Actions   => \@results,
+                        Path      => '/Ticket/Display.html',
+                        Arguments => { id => $t->Id },
+                    );
+                }
+            }
+        }
+        else {
+            push @results, loc("Can't quickly create ticket in queue [_1] because custom fields are required.  Please finish by using the normal ticket creation page.", $QueueObj->Name);
+            push @results, @msg;
+
+            MaybeRedirectForResults(
+                Actions     => \@results,
+                Path        => "/Ticket/Create.html",
+                Arguments   => {
+                    (map { $_ => $ARGS{$_} } qw(Queue Owner Status Content Subject)),
+                    Requestors => $ARGS{Requestors},
+                    # From is set above when CFs are OK, but not here since
+                    # we're not calling CreateTicket() directly. The proper
+                    # place to set a default for From, if desired in the
+                    # future, is in CreateTicket() itself, or at least
+                    # /Ticket/Display.html (which processes
+                    # /Ticket/Create.html). From is rarely used overall.
+                },
+            );
+        }
+
+        $session{QuickCreate} = \%ARGS unless $created;
+
+        MaybeRedirectForResults(
+            Actions   => \@results,
+            Path      => $path,
+        );
+    }
+
+    return @results;
 }
 
 =head2 GetPrincipalsMap OBJECT, CATEGORIES

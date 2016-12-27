@@ -1061,6 +1061,7 @@ sub TransactionAddresses {
     while ( my $att = $attachments->Next ) {
         foreach my $addrlist ( values %{$att->Addresses } ) {
             foreach my $addr (@$addrlist) {
+                $addr->address( lc $addr->address ); # force lower-case
 
 # Skip addresses without a phrase (things that are just raw addresses) if we have a phrase
                 next
@@ -2650,7 +2651,7 @@ sub _Set {
     # just made the ticket unreadable to us
     $trans->{ _object_is_readable } = 1;
 
-    return ( $ret, scalar $trans->BriefDescription );
+    return ( $ret, scalar $trans->BriefDescription, $trans );
 }
 
 
@@ -3006,6 +3007,12 @@ sub Forward {
             )
         )
     );
+
+    for my $argument (qw(Encrypt Sign)) {
+        if ( defined $args{ $argument } ) {
+            $mime->head->replace( "X-RT-$argument" => $args{$argument} ? 1 : 0 );
+        }
+    }
 
     my ( $ret, $msg ) = $self->_NewTransaction(
         $args{Transaction}
