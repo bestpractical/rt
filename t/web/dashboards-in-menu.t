@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 31;
+use RT::Test tests => undef;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $system_foo = RT::Dashboard->new($RT::SystemUser);
@@ -75,11 +75,29 @@ $m->content_contains( 'Preferences saved for dashboards in menu.',
     'prefs saved' );
 $m->follow_link_ok( { text => 'self bar' }, 'follow self bar link' );
 $m->title_is( 'self bar Dashboard', 'got self bar dashboard page' );
+
+diag "Test deleting dashboard";
+$m->follow_link_ok( { text => 'self foo' }, 'follow self foo link' );
+$m->follow_link_ok( { text => 'Basics' }, 'Click dashboard Basics' );
+$m->form_name('ModifyDashboard');
+$m->click_button(name => 'Delete');
+
+diag "Reset dashboard menu";
 $m->get_ok( $baseurl."/Prefs/DashboardsInMenu.html");
 $m->form_with_fields('Reset');
 $m->click;
 $m->content_contains( 'Preferences saved', 'prefs saved' );
 ok( $m->find_link( text => 'system foo' ), 'got system foo link' );
-ok( !$m->find_link( text => 'self foo' ), 'no self foo link' );
 ok( !$m->find_link( text => 'self bar' ), 'no self bar link' );
 
+diag "Delete system dashboard";
+$m->get_ok( $baseurl . "/Dashboards/index.html" );
+$m->follow_link_ok( { text => 'system foo' }, 'follow self foo link' );
+$m->follow_link_ok( { text => 'Basics' }, 'Click dashboard Basics' );
+$m->form_name('ModifyDashboard');
+$m->click_button(name => 'Delete');
+$m->get_ok( $baseurl . "/Dashboards/index.html" );
+$m->content_lacks('system foo', 'Dashboard is deleted');
+
+undef $m;
+done_testing;

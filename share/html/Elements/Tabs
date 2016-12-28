@@ -494,7 +494,9 @@ my $build_main_nav = sub {
         if ( $status ) {
             push @dashboards, $dash;
         } else {
-            $RT::Logger->warning( "Failed to load dashboard $id: $msg" );
+            $RT::Logger->debug( "Failed to load dashboard $id: $msg, removing from menu" );
+            $home->RemoveDashboardMenuItem( DashboardId => $id, CurrentUser => $session{CurrentUser}->UserObj );
+            @{$session{'dashboards_in_menu'}} = grep { $_ != $id } @{$session{'dashboards_in_menu'}};
         }
     }
 
