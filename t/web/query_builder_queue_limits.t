@@ -89,7 +89,7 @@ is_deeply(
 
 diag "limit queue to foo";
 $m->submit_form(
-    fields => { ValueOfQueue => 'foo' },
+    fields => { ValueOfQueue => 'foo', QueueOp => '=' },
     button => 'AddClause',
 );
 
@@ -114,7 +114,7 @@ is_deeply(
 diag "limit queue to general too";
 
 $m->submit_form(
-    fields => { ValueOfQueue => 'General' },
+    fields => { ValueOfQueue => 'General', QueueOp => '=' },
     button => 'AddClause',
 );
 
