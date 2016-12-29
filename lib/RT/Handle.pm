@@ -1118,6 +1118,50 @@ sub InsertData {
 
             my $apply_to = delete $item->{'ApplyTo'};
 
+            if ($item->{'ConditionedBy'}) {
+                if ($item->{'ConditionedBy'} =~ /^\d+$/) {
+                    # Already have a cfvalue ID -- should be fine
+                } elsif ($item->{'ConditionedByCF'} ) {
+                    my $cfid;
+                    if ($item->{'ConditionedByCF'} =~ /^\d+$/) {
+                        # Already have a cf ID
+                        $cfid = $item->{'ConditionedByCF'};
+                    } elsif ($item->{'LookupType'}) {
+                        my $cf = RT::CustomField->new($RT::SystemUser);
+                        my ($ok, $msg) = $cf->LoadByCols(
+                            Name => $item->{'ConditionedByCF'},
+                            LookupType => $item->{'LookupType'},
+                            Disabled => 0);
+                        if ($ok) {
+                            $cfid = $cf->id;
+                        } else {
+                            $RT::Logger->error("Unable to load $item->{ConditionedByCF} as a $item->{LookupType} CF. Skipping ConditionedBy: $msg");
+                            delete $item->{'ConditionedBy'};
+                        }
+                    } else {
+                        $RT::Logger->error("Unable to load CF $item->{ConditionedByCF} because no LookupType was specified. Skipping ConditionedBy");
+                        delete $item->{'ConditionedBy'};
+                    }
+
+                    if ($cfid) {
+                        my $conditioned_by = RT::CustomFieldValue->new($RT::SystemUser);
+                        my ($ok, $msg) = $conditioned_by->LoadByCols(
+                            Name => $item->{'ConditionedBy'},
+                            CustomField => $cfid);
+                        if ($ok) {
+                            $item->{'ConditionedBy'} = $conditioned_by->Id;
+                        } else {
+                            $RT::Logger->error("Unable to load $item->{ConditionedByCF} as a $item->{LookupType} CF. Skipping ConditionedBy: $msg");
+                            delete $item->{'ConditionedBy'};
+                        }
+                        delete $item->{'ConditionedByCF'};
+                    }
+                } else {
+                    $RT::Logger->error("Unable to load CFValue $item->{ConditionedBy} because no ConditionedByCF was specified. Skipping ConditionedBy");
+                    delete $item->{'ConditionedBy'};
+                }
+            }
+
             if ( $item->{'BasedOn'} ) {
                 if ( $item->{'BasedOn'} =~ /^\d+$/) {
                     # Already have an ID -- should be fine
