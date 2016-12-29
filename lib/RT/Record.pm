@@ -2350,6 +2350,43 @@ sub LoadCustomFieldByIdentifier {
     return $cf;
 }
 
+=head2 ConditionNotMet IDENTIFER
+
+Check if the custom field, or any of its ancestor category, does
+I<not> met the condition set up in conditional field.
+
+Returns 1 if the condition is not met, 0 if the condition is met, and
+undef if neither the custom field, nor one of its ancestor category
+has no condition.
+
+=cut
+
+sub ConditionNotMet {
+    my $self = shift;
+    my $cf = shift;
+
+    # Recurse on ancestor category
+    unless ($cf->ConditionedByObj->id) {
+        return undef unless $cf->BasedOnObj->id;
+        return $self->ConditionNotMet($cf->BasedOnObj);
+    }
+
+    my $conditional_cf = $cf->ConditionedByObj->CustomFieldObj;
+    return undef unless $conditional_cf->id;
+
+    my $conditional_cf_values =  $self->CustomFieldValues($conditional_cf->id);
+    my $not_found = 1;
+    while (my $value = $conditional_cf_values->Next) {
+        my $content = $value->LargeContent || $value->Content;
+        if ($content eq $cf->ConditionedByObj->Name) {
+            $not_found = 0;
+            last;
+        }
+    }
+
+    return $not_found;
+}
+
 sub ACLEquivalenceObjects { } 
 
 =head2 HasRight
