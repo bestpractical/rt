@@ -2071,9 +2071,8 @@ Set($AlwaysDownloadAttachments, undef);
 
 The number of attachments to display by default on ticket display and ticket
 reply pages. Attachments beyond this count will be displayed only after the
-user clicks a "Show all attachments" link. The default value, C<undef>, means
-always show all attachments. A value of C<0> means show no attachments by
-default.
+user clicks a "Show all" link. The default value, C<undef>, means always show
+all attachments. A value of C<0> means show no attachments by default.
 
 =cut
 
