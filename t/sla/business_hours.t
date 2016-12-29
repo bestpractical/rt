@@ -62,4 +62,27 @@ diag 'check business hours' if $ENV{'TEST_VERBOSE'};
     is( $due, 1167645600, 'Due date is 2007-01-01T10:00:00Z' );
 }
 
+diag 'check that RT warns about specifying Sunday as 7 rather than 0' if $ENV{'TEST_VERBOSE'};
+{
+    my @warnings;
+    local $SIG{__WARN__} = sub {
+        push @warnings, $_[0];
+    };
+
+    RT->Config->Set(ServiceBusinessHours => (
+        Invalid => {
+            7 => {
+                Name  => 'Domingo',
+                Start => '9:00',
+                End   => '17:00'
+            }
+        },
+    ));
+
+    RT->Config->PostLoadCheck;
+
+    is(@warnings, 1);
+    like($warnings[0], qr/Config option %ServiceBusinessHours 'Invalid' erroneously specifies 'Domingo' as day 7; Sunday should be specified as day 0\./);
+}
+
 done_testing();
