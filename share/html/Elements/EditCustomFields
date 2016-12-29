@@ -59,6 +59,7 @@
 <<% $WRAP %> class="edit-custom-fields">
 % }
 % for my $CustomField (@CustomFields) {
+% next if $Object->ConditionNotMet($CustomField);
 % my $Type = $CustomField->Type || 'Unknown';
 % my @classes = (
 %   'edit-custom-field',

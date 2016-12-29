@@ -71,6 +71,7 @@
 </tr>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
+% next if $Group->ConditionNotMet($CF);
 <tr valign="top"><td align="right">
 <% $CF->Name %>:
 </td><td>

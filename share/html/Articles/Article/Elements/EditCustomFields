@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
 % while (my $CustomField = $CustomFields->Next()) {
+% next if $ArticleObj->ConditionNotMet($CustomField);
 <tr>
     <td class="cflabel">
         <span class="name"><%$CustomField->Name%>:</span><br />
