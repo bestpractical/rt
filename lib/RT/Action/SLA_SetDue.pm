@@ -121,7 +121,7 @@ sub IsOutsideActor {
     # owner is always treated as inside actor
     return 0 if $actor->id == $self->TicketObj->Owner;
 
-    if ( $RT::ServiceAgreements{'AssumeOutsideActor'} ) {
+    if ( RT->Config->Get('ServiceAgreements')->{'AssumeOutsideActor'} ) {
         # All non-admincc users are outside actors
         return 0 if $self->TicketObj          ->AdminCc->HasMemberRecursively( $actor )
                  or $self->TicketObj->QueueObj->AdminCc->HasMemberRecursively( $actor );

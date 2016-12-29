@@ -7,14 +7,14 @@ RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
 
 diag 'check that reply to requestors dont unset due date with KeepInLoop' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => {
                 KeepInLoop => { RealMinutes => 60*4, IgnoreOnStatuses => ['stalled'] },
             },
         },
-    );
+    ));
 
     my $root = RT::User->new( $RT::SystemUser );
     $root->LoadByEmail('root@localhost');
@@ -89,7 +89,7 @@ diag 'check that reply to requestors dont unset due date with KeepInLoop' if $EN
 
 diag 'Check that failing to reply to the requestors is not ignored' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => {
@@ -97,7 +97,7 @@ diag 'Check that failing to reply to the requestors is not ignored' if $ENV{'TES
                 KeepInLoop => { RealMinutes => 60*4, IgnoreOnStatuses => ['stalled'] },
             },
         },
-    );
+    ));
 
     my $root = RT::User->new( $RT::SystemUser );
     $root->LoadByEmail('root@localhost');
@@ -169,14 +169,14 @@ diag 'Check that failing to reply to the requestors is not ignored' if $ENV{'TES
 
 diag 'check the ExcludeTimeOnIgnoredStatuses option' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => {
                 Response => { RealMinutes => 60*2, IgnoreOnStatuses => ['stalled'] },
             },
         },
-    );
+    ));
 
     my $root = RT::User->new( $RT::SystemUser );
     $root->LoadByEmail('root@localhost');
@@ -236,14 +236,14 @@ diag 'check the ExcludeTimeOnIgnoredStatuses option' if $ENV{'TEST_VERBOSE'};
         ok $tmp == $due, "deadline not changed";
     }
 
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => {
                 Response => { RealMinutes => 60*2, IgnoreOnStatuses => ['stalled'], ExcludeTimeOnIgnoredStatuses => 1 },
             },
         },
-    );
+    ));
     {
         my $ticket = RT::Ticket->new( $RT::SystemUser );
         $ticket->Load( $id );

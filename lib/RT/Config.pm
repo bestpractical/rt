@@ -1173,6 +1173,14 @@ our %META;
             $self->Set( 'ExternalInfoPriority', \@values );
         },
     },
+
+    ServiceBusinessHours => {
+        Type => 'HASH',
+    },
+
+    ServiceAgreements => {
+        Type => 'HASH',
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();

@@ -13,8 +13,7 @@ RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
 diag 'check business hours' if $ENV{'TEST_VERBOSE'};
 {
 
-    no warnings 'once';
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => 'Sunday',
         Levels  => {
             Sunday => {
@@ -25,9 +24,9 @@ diag 'check business hours' if $ENV{'TEST_VERBOSE'};
                 Resolve       => { BusinessMinutes => 60 },
             },
         },
-    );
+    ));
 
-    %RT::ServiceBusinessHours = (
+    RT->Config->Set(ServiceBusinessHours => (
         Sunday => {
             0 => {
                 Name  => 'Sunday',
@@ -42,7 +41,7 @@ diag 'check business hours' if $ENV{'TEST_VERBOSE'};
                 End   => '17:00'
             },
         },
-    );
+    ));
 
     set_fixed_time('2007-01-01T00:00:00Z');
 

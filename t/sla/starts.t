@@ -14,7 +14,7 @@ my $bhours = RT::SLA->BusinessHours;
 
 diag 'check Starts date' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => 'standard',
         Levels  => {
             'standard' => {
@@ -22,8 +22,8 @@ diag 'check Starts date' if $ENV{'TEST_VERBOSE'};
                 Resolve  => 7 * 60 * 24,
             },
         },
-    );
-    %RT::ServiceBusinessHours = (
+    ));
+    RT->Config->Set(ServiceBusinessHours => (
         Default => {
             1 => {
                 Name  => 'Monday',
@@ -36,7 +36,7 @@ diag 'check Starts date' if $ENV{'TEST_VERBOSE'};
                 End   => '17:00'
             },
         }
-    );
+    ));
 
     my %time = (
         '2007-01-01T13:15:00Z' => 1167657300,    # 2007-01-01T13:15:00Z
@@ -57,7 +57,7 @@ diag 'check Starts date' if $ENV{'TEST_VERBOSE'};
 
 diag 'check Starts date with StartImmediately enabled' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => 'start immediately',
         Levels  => {
             'start immediately' => {
@@ -66,7 +66,7 @@ diag 'check Starts date with StartImmediately enabled' if $ENV{'TEST_VERBOSE'};
                 Resolve          => 7 * 60 * 24,
             },
         },
-    );
+    ));
     my $time = time;
 
     my $ticket = RT::Ticket->new($RT::SystemUser);
