@@ -80,7 +80,7 @@
 </div>
 
 <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics asset-bulk-basics", title_class => "inverse" &>
-<table>
+<table class="core-fields">
   <tr class="asset-catalog">
     <td class="label"><label for="UpdateCatalog"><&|/l&>Catalog</&></label></td>
     <td><& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', Default => $catalog_obj->id, UpdateSession => 0, &></td>
@@ -98,10 +98,15 @@
     <td><& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1, CatalogObj => $catalog_obj &></td>
   </tr>
 </table>
+%   my $cfs = $catalog_obj->AssetCustomFields;
+%   $cfs->LimitToGrouping( 'RT::Asset' => 'Basics');
+%   if ( $cfs->Count ) {
+<& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+%   }
 </&>
 
 <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people asset-bulk-people", title_class => "inverse" &>
-<table>
+<table class="core-fields">
 % for my $rname ( $asset->Roles( ACLOnly => 0 ) ) {
 % my $role = $asset->Role( $rname );
 % if ( $role->{'Single'} ) {
@@ -130,8 +135,21 @@
 </tr>
 % }
 % }
+%   my $cfs = $catalog_obj->AssetCustomFields;
+%   $cfs->LimitToGrouping( 'RT::Asset' => 'People');
+%   if ( $cfs->Count ) {
+<& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+%   }
 </table>
 </&>
+
+%   my $cfs = $catalog_obj->AssetCustomFields;
+%   $cfs->LimitToGrouping( 'RT::Asset' => 'Dates');
+%   if ( $cfs->Count ) {
+<&| /Widgets/TitleBox, title => loc("Dates"), class => "asset-dates asset-bulk-dates", title_class => "inverse" &>
+<& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+</&>
+%   }
 
 % for my $group ( RT::CustomField->CustomGroupings( 'RT::Asset' ), '' ) {
 %   my $cfs = $catalog_obj->AssetCustomFields;
@@ -145,6 +163,11 @@
 
 <&|/Widgets/TitleBox, title => loc('Edit Links'), color => "#336633"&>
 <& /Elements/BulkLinks, Collection => $assets, %ARGS &>
+%   my $cfs = $catalog_obj->AssetCustomFields;
+%   $cfs->LimitToGrouping( 'RT::Asset' => 'Links');
+%   if ( $cfs->Count ) {
+<& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+%   }
 </&>
 
 <& /Elements/Submit, Label => loc('Update'), Name => 'Update' &>
