@@ -535,6 +535,7 @@ CREATE TABLE CustomFields (
   RenderType varchar(64) NULL  ,
   MaxValues integer NOT NULL DEFAULT 0  ,
   ValuesClass varchar(64) NULL  ,
+  ConditionedBy integer NULL, 
   BasedOn integer NULL, 
   Pattern varchar(65536) NULL  ,
   LookupType varchar(255) NOT NULL  ,
