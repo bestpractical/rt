@@ -155,13 +155,13 @@
 %   my $cfs = $catalog_obj->AssetCustomFields;
 %   $cfs->LimitToGrouping( 'RT::Asset' => $group);
 %   if ( $cfs->Count ) {
-<&| /Widgets/TitleBox, class=>'asset-bulk-grouping asset-bulk-cfs', title => loc('Edit [_1]', ($group? loc($group) : loc('Custom Fields')) ) &>
+<&| /Widgets/TitleBox, class=>'asset-bulk-grouping asset-info-cfs asset-bulk-cfs', title => loc('Edit [_1]', ($group? loc($group) : loc('Custom Fields')) ), title_class => "inverse" &>
 <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
 </&>
 %   }
 % }
 
-<&|/Widgets/TitleBox, title => loc('Edit Links'), color => "#336633"&>
+<&|/Widgets/TitleBox, title => loc('Edit Links'), class => "asset-links asset-bulk-links", title_class => "inverse" &>
 <& /Elements/BulkLinks, Collection => $assets, %ARGS &>
 %   my $cfs = $catalog_obj->AssetCustomFields;
 %   $cfs->LimitToGrouping( 'RT::Asset' => 'Links');
