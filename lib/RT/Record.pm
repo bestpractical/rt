@@ -2091,6 +2091,7 @@ sub _AddCustomFieldValue {
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
             ContentType  => $args{'ContentType'},
+            ForCreation  => $args{'ForCreation'},
         );
 
         unless ( $new_value_id ) {
