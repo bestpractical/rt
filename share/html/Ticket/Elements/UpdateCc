@@ -98,4 +98,6 @@ foreach my $addr ( keys %txn_addresses) {
   next if ( grep {$addr eq $_} @req_addresses );
   push @one_time_Ccs,$addr;
 }
+
+@one_time_Ccs = sort @one_time_Ccs;
 </%init>
