@@ -1493,6 +1493,12 @@ sub GetObfuscated {
 
     my $res = $self->Get(@_);
     $res = $obfuscate->( $self, $res, $user );
+
+    #Serialized copy to dereference contents
+    my $wrapper = {'Content' => $res}; #Wrap to preserve type
+    $wrapper = JSON::decode_json(JSON::encode_json($wrapper));
+    $res = $wrapper->{'Content'}; #Unwrap
+
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
 
