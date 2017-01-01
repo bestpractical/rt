@@ -90,7 +90,7 @@ Running the import:
 
     # Run a test import
     /opt/rt4/sbin/rt-ldapimport \
-    --debug > ldapimport.debug 2>&1
+    --verbuse > ldapimport.debug 2>&1
     
     # Run for real, possibly put in cron
     /opt/rt4/sbin/rt-ldapimport \
@@ -348,9 +348,9 @@ members) should exist unless there are inconsistencies in your LDAP configuratio
 
 Executing C<rt-ldapimport> will run a test that connects to your LDAP server
 and prints out a list of the users found. To see more about these users,
-and to see more general debug information, include the C<--debug> flag.
+and to see more general debug information, include the C<--verbose> flag.
 
-That debug information is also sent to the RT log with the debug level.
+That verbose information is also sent to the RT log with the debug level.
 Errors are logged to the screen and to the RT log.
 
 Executing C<rt-ldapimport> with the C<--import> flag will cause it to import
