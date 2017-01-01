@@ -68,11 +68,6 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::Init();
-};
 
 eval { require RT::LDAPImport; 1; } or do {
     print "Unable to run rt-ldapimport without dependencies.\n";
@@ -85,17 +80,16 @@ my %OPT = (
     users  => 1,
     groups => 1,
 );
-use Getopt::Long;
-GetOptions(
+use RT::Interface::CLI qw(Init);
+Init(
     \%OPT,
-    'debug', 'help',
-    'import', 'users!', 'groups!',
-);
+    'help',
+    'import', 'users!', 'groups!');
 if ($OPT{help}) {
    print <<USAGE;
-$0: [--debug] [--import] [--help]
+$0: [--import] [--help]
      --help           This usage statement.
-     --debug          Enable debugging.
+     --verbose        Show additional logging.
      --import         Do the import.
      --no-users       Skip users.
      --no-groups      Skip groups.
@@ -104,12 +98,6 @@ USAGE
 }
 
 my $importer = RT::LDAPImport->new;
-
-if( $OPT{debug} ) {
-    RT->Config->Set( LogToSTDERR => 'debug' );
-} else {
-    RT->Config->Set( LogToSTDERR => undef );
-}
 
 if ($OPT{import}) {
     if ($OPT{users}) {
@@ -125,7 +113,7 @@ if ($OPT{import}) {
     print <<TESTING;
 Running test import, no data will be changed
 Rerun command with --import to perform the import
-Rerun command with --debug for more information
+Rerun command with --verbose for more information
 TESTING
     $importer->import_users if $OPT{users};
     if ($OPT{groups}) {
