@@ -137,7 +137,7 @@ my $format = q{
 # If it is a number, load the article with that ID.  Otherwise, search
 # on name and summary.
 if ($ARGS{'q'} && $ARGS{'q'} =~ /^(\d+)$/) {
-    return $m->comp("/Articles/Article/Display.html", id => $1);
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Articles/Article/Display.html?id=" . $1 );
 }
 # }}}
 
