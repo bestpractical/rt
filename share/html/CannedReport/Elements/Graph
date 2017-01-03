@@ -67,29 +67,54 @@ var svg = d3.select("#graph"),
             width = +svg.attr("width") - margin.left - margin.right,
             height = +svg.attr("height") - margin.top - margin.bottom;
 
+var currentGraphData
 function updateGraphData(data, completion) {
-    d3.select("#graph").selectAll("*").remove();
+
 
     var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
         y = d3.scaleLinear().rangeRound([height, 0]);
-    var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    if (currentGraphData) {
+        svg.select("g").selectAll(".bar").data(currentGraphData)
+            .transition()
+            .duration(200)
+            .ease(d3.easeLinear)
+            .attr("y", height)
+            .attr("height", 0)
+    }
+
+    setTimeout(function() {
+            svg.selectAll("*").remove();
+            currentGraphData = data
+            loadGraph(currentGraphData, completion)
+    }, 250);
+}
+
+function loadGraph(data, completion) {
+    var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
+        y = d3.scaleLinear().rangeRound([height, 0]);
 
     x.domain(data.map(function(d) { return d.name; }));
     y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
+    var g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     g.append("g")
-    .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
 
-    g.selectAll(".bar")
-    .data(data)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .attr("x", function(d) { return x(d.name); })
-    .attr("y", function(d) { return y(d.value); })
-    .attr("width", x.bandwidth())
-    .attr("height", function(d) { return height - y(d.value); });
+    g.selectAll(".bar").data(data).enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { return x(d.name); })
+        .attr("y", function(d) { return height; })
+        .attr("width", x.bandwidth())
+        .attr("height", 0)
+
+    g.selectAll(".bar").data(data).transition()
+        .duration(300)
+        .ease(d3.easeLinear)
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); })
 
     completion();
 }
