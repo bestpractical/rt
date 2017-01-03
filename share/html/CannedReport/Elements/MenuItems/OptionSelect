@@ -36,12 +36,37 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-<div class="reports-menu-container">
-    <div class="reports-menu-loading">
-        <label>Loading...</label>
-    </div>
-    <div class="reports-menu">
-        <& MenuItems/ReportSelect, Name => "Time Worked"  &>
-        <span class="reports-menu-options"></span>
-    </div>
-</div>
+<%ARGS>
+$name
+$option
+$value => undef
+</%ARGS>
+
+<%INIT>
+use RT::CannedReports;
+my $reports = RT::CannedReports->new($session{'CurrentUser'});
+my $report = $reports->ReportFromReportName($name);
+
+my $selectedOption;
+for my $availableOption (@{$report->Options}) {
+    if (!$option || $availableOption->{Option} eq $option) {
+        $selectedOption = $availableOption;
+        last;
+    }
+}
+
+my $selectedValue;
+for my $availableValue (@{$selectedOption->{Values}}) {
+    if (!$value || $availableValue->{Key} eq $value) {
+        $selectedValue = $availableValue;
+        last;
+    }
+}
+</%INIT>
+
+<&| ../MenuItem, title => $selectedValue->{Name}, id => $option &>
+% for my $optionValue (@{$selectedOption->{Values}}) {
+    <a onclick="setParameter('<% $selectedOption->{Option} %>', '<% $optionValue->{Key} %>')"><% $optionValue->{Name} %></a>
+% }
+</&>
+

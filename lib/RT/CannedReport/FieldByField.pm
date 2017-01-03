@@ -62,7 +62,6 @@ sub Reports {
 
 sub Options {
     my $self = shift;
-    my $report = shift;
     return [{Option => "field2", Values => [{Name => "By Owner",  Key => 'owner'},
                                             {Name => "By Queue",  Key => 'queue'}]
             },

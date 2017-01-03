@@ -48,7 +48,7 @@ my @names = $reports->AllReportNames();
 
 </%INIT>
 
-<&| ../MenuItem, title => $names[0], id => "name" &>
+<&| ../MenuItem, title => "", id => "name" &>
 % for my $aReportName (@names) {
     <a onclick="setParameter('name', '<% $aReportName %>')"><% $aReportName %></a>
 % }

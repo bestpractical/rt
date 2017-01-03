@@ -48,7 +48,8 @@
 <%ARGS>
 $cmd => "results"
 $name
-$kind => undef
+$key => undef
+$value => undef
 </%ARGS>
 <%init>
 
@@ -66,7 +67,7 @@ my $report = $reports->ReportFromReportName($name);
 if ($cmd eq "results") {
     if (ref $report) {
         my $results = $report->Results(\%ARGS);
-        if ($kind && $kind eq "table") {
+        if ($key && $key eq "table") {
             my $html = "<table>";
             for my $hashRef (@$results) {
                 $html .= "\n";
@@ -79,6 +80,18 @@ if ($cmd eq "results") {
             $object{content} = $results;
             $object{code} = 200;
         }
+    }
+}elsif ($cmd eq "options") {
+    if (ref $report) {
+        my $options = $report->Options;
+        $object{content} = $options;
+        $object{code} = 200;
+    }
+}elsif ($cmd eq "optionsMenuItem") {
+    if (ref $report) {
+        my $options = $report->Options;
+        $object{content} = $m->scomp('/CannedReport/Elements/MenuItems/OptionSelect', name => $name, option => $key, value => $value);
+        $object{code} = 200;
     }
 }
 

@@ -50,7 +50,7 @@ my $content = $m->content;
         <span><% $title %></span>
         <image src="/static/images/disclosure-down.png" width="24" height="14" />
     </div>
-    <div id="ReportDropdown" class="reports-menu-item-content">
+    <div id="<% $id %>" class="reports-menu-item-content">
 % if ($content) {
         <% $content | n %>
 % }
