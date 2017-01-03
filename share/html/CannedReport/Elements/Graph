@@ -78,7 +78,7 @@ function updateGraphData(data, completion) {
         svg.select("g").selectAll(".bar").data(currentGraphData)
             .transition()
             .duration(200)
-            .ease(d3.easeLinear)
+            .ease(d3.easeQuadIn)
             .attr("y", height)
             .attr("height", 0)
     }
@@ -112,7 +112,7 @@ function loadGraph(data, completion) {
 
     g.selectAll(".bar").data(data).transition()
         .duration(300)
-        .ease(d3.easeLinear)
+        .ease(d3.easeQuadInOut)
         .attr("y", function(d) { return y(d.value); })
         .attr("height", function(d) { return height - y(d.value); })
 
