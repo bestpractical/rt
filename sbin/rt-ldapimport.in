@@ -92,15 +92,9 @@ GetOptions(
     'import', 'users!', 'groups!',
 );
 if ($OPT{help}) {
-   print <<USAGE;
-$0: [--debug] [--import] [--help]
-     --help           This usage statement.
-     --debug          Enable debugging.
-     --import         Do the import.
-     --no-users       Skip users.
-     --no-groups      Skip groups.
-USAGE
-   exit 0;
+    require Pod::Usage;
+    print Pod::Usage::pod2usage(-verbose => 2);
+    exit;
 }
 
 my $importer = RT::LDAPImport->new;
@@ -134,3 +128,45 @@ TESTING
     }
     print "Finished test\n";
 }
+
+=head1 NAME
+
+rt-ldapimport - Import users and groups from an LDAP directory
+
+=head1 DESCRIPTION
+
+Please see L<RT::LDAPImport> for comprehensive documentation on this feature.
+
+=head1 SYNOPSIS
+
+    # Run a test import
+    rt-ldapimport --debug > ldapimport.debug 2>&1
+
+    # Run for real, possibly put in cron
+    rt-ldapimport --import
+
+=head1 OPTIONS
+
+=over
+
+=item --debug
+
+Enable debugging.
+
+=item --import
+
+Do the import.
+
+=item --no-users
+
+Skip users.
+
+=item --no-groups
+
+Skip groups.
+
+=item --help
+
+This usage statement
+
+=back
