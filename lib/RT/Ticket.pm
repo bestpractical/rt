@@ -1949,7 +1949,7 @@ sub SetOwner {
 
     $RT::Handle->BeginTransaction();
 
-    $self->_SetLastUpdated(); # lock the ticket
+    $self->LockForUpdate;
     $self->Load( $self->id ); # in case $self changed while waiting for lock
 
     my $OldOwnerObj = $self->OwnerObj;
