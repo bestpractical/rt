@@ -96,14 +96,14 @@ window.onclick = function(event) {
 var _graphUpdateTimer = {}
 function setGraphNeedsUpdate(key, value) {
     window.clearTimeout(_graphUpdateTimer)
-    _graphUpdateTimer = window.setTimeout(function() {updateGraph()}, 2000)
+    _graphUpdateTimer = window.setTimeout(function() {updateGraph()}, 10)
 }
 
 var graphIsUpdating = false
 function updateGraph() {
     if (!graphIsUpdating) {
         graphIsUpdating = true
-        window.setTimeout(graphBeganUpdating(), 10);
+        graphBeganUpdating()
         window.setTimeout(function() {
             getReportResults(_parameters, null, function (success, content) {
                 if (success) {
@@ -117,7 +117,7 @@ function updateGraph() {
                     graphFinishedUpdating()
                 }
             })
-        }, 100);
+        }, 10);
     }
 }
 

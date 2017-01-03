@@ -36,9 +36,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-<div class="reports-menu-loading">
-    <label>Loading...</label>
-</div>
-<div class="reports-menu">
-    <& MenuItems/ReportSelect, Name => "Time Worked"  &>
+<div class="reports-menu-container">
+    <div class="reports-menu-loading">
+        <label>Loading...</label>
+    </div>
+    <div class="reports-menu">
+        <& MenuItems/ReportSelect, Name => "Time Worked"  &>
+    </div>
 </div>

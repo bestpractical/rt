@@ -1,4 +1,9 @@
 
+.reports-menu-container {
+    background-color: transparent;
+    height: 30px;
+}
+
 .reports-menu {
     background-color: transparent;
     height: 30px;
