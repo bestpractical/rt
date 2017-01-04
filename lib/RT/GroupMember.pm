@@ -328,7 +328,6 @@ sub Delete {
     while ( my $item_to_del = $cached_submembers->Next() ) {
         my ($ok, $msg) = $item_to_del->Delete();
         unless ($ok) {
-            $RT::Logger->warning("Couldn't delete cached group submember ".$item_to_del->Id);
             $RT::Handle->Rollback();
             return ($ok, $msg);
         }
@@ -336,7 +335,7 @@ sub Delete {
 
     my ($ok, $msg) = $self->SUPER::Delete();
     unless ($ok) {
-        $RT::Logger->warning("Couldn't delete cached group submember ".$self->Id);
+        $RT::Logger->error("Couldn't delete GroupMember ".$self->Id);
         $RT::Handle->Rollback();
         return ($ok, $msg);
     }

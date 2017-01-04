@@ -1174,11 +1174,7 @@ sub _DeleteMember {
 
     # Now that we've checked ACLs and sanity, delete the groupmember
     my ($ok, $msg) = $member_obj->Delete();
-
-    unless ($ok) {
-        $RT::Logger->debug("Failed to delete group ".$self->Id." member ". $member_id);
-        return ( 0, $self->loc("Member not deleted" ));
-    }
+    return ( 0, $self->loc("Member not deleted" )) unless $ok;
 
     if ($self->RoleClass) {
         my %txn = (
