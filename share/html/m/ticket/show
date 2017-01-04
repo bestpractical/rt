@@ -73,39 +73,42 @@ if ($ARGS{'id'} eq 'new') {
     unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
         Abort("No permission to view newly created ticket #".$Ticket->id.".");
     }
-} else { 
+} else {
     $Ticket ||= LoadTicket($ARGS{'id'});
 
-    $m->callback( CallbackName => 'BeforeProcessArguments',
-        TicketObj => $Ticket,
-        ActionsRef => \@Actions, ARGSRef => \%ARGS );
-    if ( defined $ARGS{'Action'} ) {
-        if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|SetTold)$/) {
-            my $action = $1;
-            my ($res, $msg) = $Ticket->$action();
-            push(@Actions, $msg);
+    $Ticket->Atomic(sub{
+        $m->callback( CallbackName => 'BeforeProcessArguments',
+            TicketObj => $Ticket,
+            ActionsRef => \@Actions, ARGSRef => \%ARGS );
+
+        if ( defined $ARGS{'Action'} ) {
+            if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|SetTold)$/) {
+                my $action = $1;
+                my ($res, $msg) = $Ticket->$action();
+                push(@Actions, $msg);
+            }
         }
-    }
 
-    $m->callback(CallbackName => 'ProcessArguments', 
-            Ticket => $Ticket, 
-            ARGSRef => \%ARGS, 
-            Actions => \@Actions);
-    
-    push @Actions,
-        ProcessUpdateMessage(
-        ARGSRef   => \%ARGS,
-        Actions   => \@Actions,
-        TicketObj => $Ticket,
-        );
+        $m->callback(CallbackName => 'ProcessArguments',
+                Ticket => $Ticket,
+                ARGSRef => \%ARGS,
+                Actions => \@Actions);
 
-    #Process status updates
-    push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $Ticket );
-    push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $Ticket );
-    push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $Ticket );
-    push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $Ticket );
-    push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $Ticket );
-    push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $Ticket );
+        push @Actions,
+            ProcessUpdateMessage(
+            ARGSRef   => \%ARGS,
+            Actions   => \@Actions,
+            TicketObj => $Ticket,
+            );
+
+        #Process status updates
+        push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $Ticket );
+        push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $Ticket );
+        push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $Ticket );
+        push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $Ticket );
+        push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $Ticket );
+        push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $Ticket );
+    });
 
     unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
         if (@Actions) {

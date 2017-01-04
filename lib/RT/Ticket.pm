@@ -1639,6 +1639,10 @@ usual commit step.  If the subroutine dies, this function will abort
 the transaction (unless it is already aborted or committed, per
 above), and will re-die with the error.
 
+This method should be used to lock, and operate atomically on, all
+ticket changes via the UI
+(e.g. L<RT::Interface::Web/ProcessTicketBasics>).
+
 =cut
 
 sub Atomic {

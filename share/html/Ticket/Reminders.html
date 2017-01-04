@@ -67,7 +67,9 @@
 <%INIT>
 my $Ticket = LoadTicket($id);
 
-my @actions = ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
+my @actions = $Ticket->Atomic(sub{
+    ProcessTicketReminders( TicketObj => $Ticket, ARGSRef => \%ARGS );
+});
 
 $Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
 
