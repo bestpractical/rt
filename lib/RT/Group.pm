@@ -1177,8 +1177,6 @@ sub _DeleteMember {
         return ( 0, $self->loc( "Group has no such member" ));
     }
 
-    my $old_member = $member_obj->MemberId;
-
     # Now that we've checked ACLs and sanity, delete the groupmember
     my ($ok, $msg) = $member_obj->Delete();
 
@@ -1189,7 +1187,7 @@ sub _DeleteMember {
 
     if ($self->RoleClass) {
         my %txn = (
-            OldValue => $old_member,
+            OldValue => $member_id,
             Field    => $self->Name,
         );
 
