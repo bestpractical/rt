@@ -184,9 +184,7 @@ sub Create {
 =head2 Delete
 
 Deletes the current CachedGroupMember from the group it's in and
-cascades the delete to all submembers. This routine could be
-completely excised if mysql supported foreign keys with cascading
-deletes.
+cascades the delete to all submembers.
 
 =cut
 

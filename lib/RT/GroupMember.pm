@@ -292,8 +292,6 @@ sub _StashUser {
 Takes no arguments. deletes the currently loaded member from the 
 group in question.
 
-Expects to be called _outside_ a transaction
-
 =cut
 
 sub Delete {

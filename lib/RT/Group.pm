@@ -1146,11 +1146,7 @@ sub DeleteMember {
     $self->_DeleteMember($member_id, @_);
 }
 
-# A helper subroutine for DeleteMember that bypasses the ACL checks
-# this should _ONLY_ ever be called from Ticket/Queue  DeleteWatcher
-# when we want to deal with groups according to queue rights
-# In the dim future, this will all get factored out and life
-# will get better
+# A helper subroutine for DeleteMember that bypasses the ACL checks.
 
 sub _DeleteMember {
     my $self = shift;
