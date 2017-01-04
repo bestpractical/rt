@@ -1165,17 +1165,16 @@ sub _DeleteMember {
         @_,
     );
 
-
     my $member_obj =  RT::GroupMember->new( $self->CurrentUser );
-    
-    $member_obj->LoadByCols( MemberId  => $member_id,
-                             GroupId => $self->PrincipalId);
+    $member_obj->LoadByCols(
+        MemberId => $member_id,
+        GroupId  => $self->PrincipalId,
+    );
 
-
-    #If we couldn't load it, return undef.
+    # If we couldn't load it, return undef.
     unless ( $member_obj->Id() ) {
         $RT::Logger->debug("Group has no member with that id");
-        return ( 0,$self->loc( "Group has no such member" ));
+        return ( 0, $self->loc( "Group has no such member" ));
     }
 
     my $old_member = $member_obj->MemberId;
@@ -1195,12 +1194,12 @@ sub _DeleteMember {
         );
 
         if ($self->SingleMemberRoleGroup) {
-            # _AddMember creates the Set-Owner txn (for example) but we handle
-            # the SetWatcher-Owner txn below.
+            # _AddMember creates the Set-Owner txn (for example) but
+            # we handle the SetWatcher-Owner txn below.
             $self->_AddMember(
-                PrincipalId             => RT->Nobody->Id,
-                RecordTransaction       => 0,
-                RecordSetTransaction    => $args{RecordTransaction},
+                PrincipalId          => RT->Nobody->Id,
+                RecordTransaction    => 0,
+                RecordSetTransaction => $args{RecordTransaction},
             );
             $txn{Type}     = "SetWatcher";
             $txn{NewValue} = RT->Nobody->id;
