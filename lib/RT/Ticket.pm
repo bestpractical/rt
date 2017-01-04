@@ -707,7 +707,7 @@ sub SquelchMailTo {
 
 sub _SquelchMailTo {
     my $self = shift;
-    if (@_) {
+    while (@_) {
         my $attr = shift;
         $self->AddAttribute( Name => 'SquelchMailTo', Content => $attr )
             unless grep { $_->Content eq $attr }

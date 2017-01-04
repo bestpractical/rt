@@ -89,6 +89,28 @@ warnings_are {
         );
         ok $status, "replied to a ticket";
     } { Cc => 'test@localhost' };
+}[];
+
+diag "Reply to ticket with multiple requestors squelched";
+warnings_are {
+    my $ticket = RT::Ticket->new( RT::CurrentUser->new( $user ) );
+    mail_ok {
+        my ($status, undef, $msg) = $ticket->Create(
+            Queue => $queue->id,
+            Subject => 'test squelch',
+            Requestor => ['test@localhost','bob@localhost','fred@localhost' ],
+        );
+        ok $status, "created ticket";
+    } { To => 'bob@localhost, fred@localhost, test@localhost' };
+
+    mail_ok {
+        my ($status,$msg) = $ticket->Correspond(
+            Content => 'squelched email',
+            SquelchMailTo => ['bob@localhost', 'fred@localhost'],
+        );
+        ok $status, "replied to a ticket";
+    } { To => 'test@localhost' };
+
 } [];
 
 diag "Reply to ticket with requestor squelched";
@@ -133,6 +155,7 @@ warnings_are {
         );
         ok $status, "replied to a ticket";
     }  { Cc => 'test@localhost' };
+
 } [];
 
 diag "Requestor is an RT address";
