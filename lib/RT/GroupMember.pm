@@ -325,24 +325,20 @@ sub Delete {
         VALUE    => $self->GroupObj->Id
     );
 
-
-
-
-
     while ( my $item_to_del = $cached_submembers->Next() ) {
-        my $del_err = $item_to_del->Delete();
-        unless ($del_err) {
-            $RT::Handle->Rollback();
+        my ($ok, $msg) = $item_to_del->Delete();
+        unless ($ok) {
             $RT::Logger->warning("Couldn't delete cached group submember ".$item_to_del->Id);
-            return (undef);
+            $RT::Handle->Rollback();
+            return ($ok, $msg);
         }
     }
 
-    my ($err, $msg) = $self->SUPER::Delete();
-    unless ($err) {
-            $RT::Logger->warning("Couldn't delete cached group submember ".$self->Id);
+    my ($ok, $msg) = $self->SUPER::Delete();
+    unless ($ok) {
+        $RT::Logger->warning("Couldn't delete cached group submember ".$self->Id);
         $RT::Handle->Rollback();
-        return (undef);
+        return ($ok, $msg);
     }
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space. 
@@ -350,7 +346,7 @@ sub Delete {
     RT::Principal->InvalidateACLCache();
 
     $RT::Handle->Commit();
-    return ($err);
+    return ($ok, $msg);
 
 }
 

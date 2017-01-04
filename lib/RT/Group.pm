@@ -1180,10 +1180,10 @@ sub _DeleteMember {
 
     my $old_member = $member_obj->MemberId;
 
-    #Now that we've checked ACLs and sanity, delete the groupmember
-    my $val = $member_obj->Delete();
+    # Now that we've checked ACLs and sanity, delete the groupmember
+    my ($ok, $msg) = $member_obj->Delete();
 
-    unless ($val) {
+    unless ($ok) {
         $RT::Logger->debug("Failed to delete group ".$self->Id." member ". $member_id);
         return ( 0, $self->loc("Member not deleted" ));
     }
@@ -1227,7 +1227,7 @@ sub _DeleteMember {
         );
     }
 
-    return ( $val, $self->loc("Member deleted") );
+    return ( $ok, $self->loc("Member deleted") );
 }
 
 

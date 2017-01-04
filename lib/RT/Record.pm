@@ -127,9 +127,8 @@ sub Delete {
     if ($rv) {
         return ($rv, $self->loc("Object deleted"));
     } else {
-
-        return(0, $self->loc("Object could not be deleted"))
-    } 
+        return (0, $self->loc("Object could not be deleted"));
+    }
 }
 
 =head2 RecordType

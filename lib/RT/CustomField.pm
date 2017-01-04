@@ -695,11 +695,11 @@ sub DeleteValue {
         return (0, $self->loc("That is not a value for this custom field"));
     }
 
-    my $retval = $val_to_del->Delete;
-    unless ( $retval ) {
+    my ($ok, $msg) = $val_to_del->Delete;
+    unless ( $ok ) {
         return (0, $self->loc("Custom field value could not be deleted"));
     }
-    return ($retval, $self->loc("Custom field value deleted"));
+    return ($ok, $self->loc("Custom field value deleted"));
 }
 
 
@@ -1702,18 +1702,15 @@ sub RemoveFromObject {
         return ( 0, $self->loc("This custom field cannot be added to that object") );
     }
 
-    # XXX: Delete doesn't return anything
-    my $oid = $ocf->Delete;
+    my ($ok, $msg) = $ocf->Delete;
+    return ($ok, $msg) unless $ok;
 
-    my $msg;
     # If object has no id, it represents all objects
     if ($object->id) {
-        $msg = $self->loc( 'Removed custom field [_1] from [_2].', $self->Name, $object->Name );
+        return (1, $self->loc( 'Removed custom field [_1] from [_2].', $self->Name, $object->Name ) );
     } else {
-        $msg = $self->loc( 'Globally removed custom field [_1].', $self->Name );
+        return (1, $self->loc( 'Globally removed custom field [_1].', $self->Name ) );
     }
-
-    return ( $oid, $msg );
 }
 
 
@@ -1988,9 +1985,9 @@ sub DeleteValueForObject {
 
     # delete it
 
-    my $ret = $oldval->Delete();
-    unless ($ret) {
-        return(0, $self->loc("Custom field value could not be found"));
+    my ($ok, $msg) = $oldval->Delete();
+    unless ($ok) {
+        return(0, $self->loc("Custom field value could not be deleted"));
     }
     return($oldval->Id, $self->loc("Custom field value deleted"));
 }
