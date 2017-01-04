@@ -929,11 +929,6 @@ sub _AddMember {
         return(0, $self->loc("Group not found"));
     }
 
-    unless ($new_member =~ /^\d+$/) {
-        $RT::Logger->crit("_AddMember called with a parameter that's not an integer.");
-    }
-
-
     my $new_member_obj = RT::Principal->new( $self->CurrentUser );
     $new_member_obj->Load($new_member);
 
