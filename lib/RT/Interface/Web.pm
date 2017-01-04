@@ -3067,6 +3067,9 @@ sub ProcessObjectCustomFieldUpdates {
             $Object = $class->new( $session{'CurrentUser'} )
                 unless $Object && ref $Object eq $class;
 
+            # skip if we have no object to update
+            next unless $id || $Object->id;
+
             $Object->Load($id) unless ( $Object->id || 0 ) == $id;
             unless ( $Object->id ) {
                 $RT::Logger->warning("Couldn't load object $class #$id");
