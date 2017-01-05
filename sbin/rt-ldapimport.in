@@ -83,7 +83,7 @@ my %OPT = (
 use RT::Interface::CLI qw(Init);
 Init(
     \%OPT,
-    'help',
+    'debug', 'help',
     'import', 'users!', 'groups!');
 if ($OPT{help}) {
    print <<USAGE;
