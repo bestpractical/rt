@@ -350,7 +350,7 @@ Executing C<rt-ldapimport> will run a test that connects to your LDAP server
 and prints out a list of the users found. To see more about these users,
 and to see more general debug information, include the C<--verbose> flag.
 
-That verbose information is also sent to the RT log with the debug level.
+That debug information is also sent to the RT log with the debug level.
 Errors are logged to the screen and to the RT log.
 
 Executing C<rt-ldapimport> with the C<--import> flag will cause it to import
