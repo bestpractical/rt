@@ -89,12 +89,10 @@ In C<RT_SiteConfig.pm>:
 Running the import:
 
     # Run a test import
-    /opt/rt4/sbin/rt-ldapimport \
-    --verbose > ldapimport.debug 2>&1
+    /opt/rt4/sbin/rt-ldapimport --verbose > ldapimport.debug 2>&1
     
     # Run for real, possibly put in cron
-    /opt/rt4/sbin/rt-ldapimport \
-    --import
+    /opt/rt4/sbin/rt-ldapimport --import
 
 =head1 CONFIGURATION
 
