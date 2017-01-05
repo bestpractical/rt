@@ -49,8 +49,6 @@
 use strict;
 use warnings;
 
-$|++;
-
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
     require File::Spec;
@@ -83,19 +81,9 @@ my %OPT = (
 use RT::Interface::CLI qw(Init);
 Init(
     \%OPT,
-    'help',
-    'import', 'users!', 'groups!');
-if ($OPT{help}) {
-   print <<USAGE;
-$0: [--import] [--help]
-     --help           This usage statement.
-     --verbose        Show additional logging.
-     --import         Do the import.
-     --no-users       Skip users.
-     --no-groups      Skip groups.
-USAGE
-   exit 0;
-}
+    'debug',
+    'import',
+    'users!', 'groups!');
 
 my $importer = RT::LDAPImport->new;
 
@@ -122,3 +110,41 @@ TESTING
     }
     print "Finished test\n";
 }
+
+__END__
+
+=head1 NAME
+
+rt-ldapimport - Import users and groups from external sources
+
+=head1 SYNOPSIS
+
+  rt-ldapimport [--import]
+
+=head1 DESCRIPTION
+
+See L<RT::LDAPImport> for configuration instructions.
+
+=head1 OPTIONS
+
+=over
+
+=item C<--import>
+
+Without this flag, merely does a dry-run of the import.
+
+=item C<--verbose>
+
+Log more data when importing.
+
+=item C<--no-users>
+
+Skip user import.
+
+=item C<--no-groups>
+
+Skip group import.
+
+=back
+
+=cut
