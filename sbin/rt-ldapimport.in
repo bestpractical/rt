@@ -49,8 +49,6 @@
 use strict;
 use warnings;
 
-$|++;
-
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
     require File::Spec;
