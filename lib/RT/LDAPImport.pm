@@ -90,7 +90,7 @@ Running the import:
 
     # Run a test import
     /opt/rt4/sbin/rt-ldapimport \
-    --verbuse > ldapimport.debug 2>&1
+    --verbose > ldapimport.debug 2>&1
     
     # Run for real, possibly put in cron
     /opt/rt4/sbin/rt-ldapimport \
