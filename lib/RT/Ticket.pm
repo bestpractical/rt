@@ -1013,6 +1013,11 @@ sub TransactionAddresses {
     $attachments->Columns( qw( id Headers TransactionId));
 
     $attachments->Limit(
+        FIELD => 'Parent',
+        VALUE => 0,
+    );
+
+    $attachments->Limit(
         ALIAS         => $attachments->TransactionAlias,
         FIELD         => 'Type',
         OPERATOR      => 'IN',
