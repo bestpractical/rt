@@ -71,9 +71,18 @@
 <%INIT>
 my $rows = 10;
 my $i;
+
+my $Classes = RT::Classes->new($session{'CurrentUser'});
+$Classes->LimitToEnabled;
+my @classes;
+while (my $Class = $Classes->Next) {
+    push @classes, $Class->id if $Class->CurrentUserHasRight('ShowArticle');
+}
+
 my $MyArticles;
 $MyArticles = RT::Articles->new($session{'CurrentUser'});
-$MyArticles->UnLimit;
+$MyArticles->Limit(FIELD => 'Class', OPERATOR => 'IN', VALUE => \@classes)
+    if @classes;
 $MyArticles->RowsPerPage($rows);
 $MyArticles->OrderBy(FIELD => 'LastUpdated', ORDER => 'DESC');
 
