@@ -680,13 +680,14 @@ sub DeleteWatcher {
 
 
 
-=head2 SquelchMailTo [EMAIL]
+=head2 SquelchMailTo ADDRESSES
 
-Takes an optional email address to never email about updates to this ticket.
+Takes a list of email addresses to never email about updates to this ticket.
+Subsequent calls to this method add, rather than replace, the list of
+squelched addresses.
 
-
-Returns an array of the RT::Attribute objects for this ticket's 'SquelchMailTo' attributes.
-
+Returns an array of the L<RT::Attribute> objects for this ticket's
+'SquelchMailTo' attributes.
 
 =cut
 
@@ -707,7 +708,7 @@ sub SquelchMailTo {
 
 sub _SquelchMailTo {
     my $self = shift;
-    if (@_) {
+    while (@_) {
         my $attr = shift;
         $self->AddAttribute( Name => 'SquelchMailTo', Content => $attr )
             unless grep { $_->Content eq $attr }
