@@ -1241,7 +1241,8 @@ sub LoadConfig {
         delete $INC{$load};
 
         my $dir = $ENV{RT_SITE_CONFIG_DIR} || "$RT::EtcPath/RT_SiteConfig.d";
-        for my $file ( sort <$dir/*.pm> ) {
+        my $localdir = $ENV{RT_SITE_CONFIG_DIR} || "$RT::LocalEtcPath/RT_SiteConfig.d";
+        for my $file ( sort(<$dir/*.pm>), sort(<$localdir/*.pm>) ) {
             $self->_LoadConfig( %args, File => $file, Site => 1, Extension => '' );
             delete $INC{$file};
         }
