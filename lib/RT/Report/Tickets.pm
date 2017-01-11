@@ -83,6 +83,8 @@ our @GROUPINGS = (
     LastUpdated   => 'Date',            #loc_left_pair
 
     CF            => 'CustomField',     #loc_left_pair
+
+    SLA           => 'Enum',
 );
 our %GROUPINGS;
 
