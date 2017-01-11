@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $TitleBox ) {
-    <& /Widgets/TitleBoxStart, title => $Title, title_href => $url, class => $Class &>
+    <& /Widgets/TitleBoxStart, title => $Title, title_raw => $title_raw, title_href => $url, class => $Class &>
 % } else {
     <span class="label"><a href="<% $url %>"><% $Title %>:</a></span>
 % }
@@ -100,6 +100,18 @@ my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
                     Order       => $QueryProperties{'Order'},
            );
 
+my $title_raw;
+if ($ShowCount) {
+    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
+    $tickets->FromSQL($QueryProperties{Query});
+    my $count = $tickets->CountAll();
+
+    $title_raw = '<span class="results-count">' . loc('(Found [quant,_1,ticket,tickets])', $count) . '</span>';
+
+    # don't repeat the search in CollectionList
+    $QueryProperties{Collection} = $tickets;
+    $QueryProperties{TotalFound} = $count;
+}
 </%INIT>
 <%ARGS>
 $Title => ''
@@ -112,4 +124,5 @@ $Description => ''
 $TitleBox => 0
 $Format => ''
 $ShowHeader => 0
+$ShowCount => RT->Config->Get('ShowSearchResultCount')
 </%ARGS>
