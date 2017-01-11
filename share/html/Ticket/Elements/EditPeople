@@ -90,17 +90,23 @@
 <table>
 
 <tr>
-  <td class="label"><&|/l&>Requestors</&>:</td>
+  <td class="label">
+    <input type="checkbox" class="checkbox" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
+    <&|/l&>Requestors</&>:</td>
   <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></td>
 </tr>
 
 <tr>
-  <td class="label"><&|/l&>Cc</&>:</td>
+  <td class="label">
+    <input type="checkbox" class="checkbox" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
+    <&|/l&>Cc</&>:</td>
   <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></td>
 </tr>
 
 <tr>
-  <td class="label"><&|/l&>Admin Cc</&>:</td>
+  <td class="label">
+    <input type="checkbox" class="checkbox" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
+    <&|/l&>Admin Cc</&>:</td>
   <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></td>
 </tr>
 
@@ -109,7 +115,9 @@
 % while (my $role = $multi_roles->Next) {
 % my $group = $Ticket->RoleGroup($role->GroupType);
 <tr>
-  <td class="label"><% $role->Name %>:</td>
+  <td class="label">
+    <input type="checkbox" class="checkbox" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-RT::CustomRole-<% $role->Id %>-/)">
+    <% $role->Name %>:</td>
   <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></td>
 </tr>
 % }
