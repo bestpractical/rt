@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('Closed tickets') &>
 
+% $m->callback(CallbackName => 'BeforeMyRequests', ARGSRef => \%ARGS, Page => $Page);
+
 <& /SelfService/Elements/MyRequests,
     %ARGS,
     status          => '__Inactive__',
@@ -54,6 +56,8 @@
     BaseURL         => RT->Config->Get('WebPath') ."/SelfService/Closed.html?",
     Page            => $Page,
 &>
+
+% $m->callback(CallbackName => 'AfterMyRequests', ARGSRef => \%ARGS, Page => $Page);
 
 <%ARGS>
 $Page => 1

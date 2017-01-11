@@ -46,6 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('Open tickets') &>
+
+% $m->callback(CallbackName => 'BeforeMyRequests', ARGSRef => \%ARGS, Page => $Page);
+
 <& /SelfService/Elements/MyRequests,
     %ARGS,
     status  => '__Active__',
@@ -53,6 +56,8 @@
     BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
     Page    => $Page, 
 &>
+
+% $m->callback(CallbackName => 'AfterMyRequests', ARGSRef => \%ARGS, Page => $Page);
 
 <%ARGS>
 $Page => 1
