@@ -325,6 +325,13 @@ $COLUMN_MAP = {
             return \$bookmark;
         },
     },
+
+    Timer => {
+        title => ' ',
+        value => sub {
+            return \($m->scomp("/Ticket/Elements/PopupTimerLink", id => $_[0]->id ) );
+        },
+    },
 };
 </%ONCE>
 <%init>

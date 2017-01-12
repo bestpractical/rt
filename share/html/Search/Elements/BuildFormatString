@@ -95,7 +95,7 @@ my @fields = qw(
     MemberOf    Members
     Parents     Children
 
-    Bookmark
+    Bookmark    Timer
 
     NEWLINE
     NBSP
