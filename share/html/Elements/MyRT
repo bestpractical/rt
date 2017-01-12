@@ -91,6 +91,10 @@ my $show_cb = sub {
     if ( $type eq 'component' ) {
         if (!$allowed_components{$name}) {
             $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $name), "h" ) );
+            RT->Logger->info("Invalid portlet $name found on user " . $user->Name . "'s homepage");
+            if ($name eq 'QueueList' && $allowed_components{Quicksearch}) {
+                RT->Logger->warning("You may need to replace the component 'Quicksearch' in the HomepageComponents config with 'QueueList'. See the UPGRADING-4.4 document.");
+            }
         }
         else {
             $m->comp( $name, %{ $entry->{arguments} || {} } );
