@@ -1,0 +1,23 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    # fix searches without SearchType
+    sub {
+        my $attrs = RT::Attributes->new(RT->SystemUser);
+        $attrs->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+
+            next if $content->{SearchType};
+
+            $content->{SearchType} = 'Ticket';
+
+            my ($ret, $msg) = $attr->SetContent($content);
+            unless ( $ret ) {
+                RT->Logger->error("Failed to update content for SavedSearch #" . $attr->id . ": $msg");
+            }
+        }
+    },
+);
+
