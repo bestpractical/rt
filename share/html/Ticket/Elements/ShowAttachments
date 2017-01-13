@@ -109,7 +109,7 @@
     }
 </script>
 
-<a href="#" onclick="showAllAttachments(jQuery(this)); return false;" ><% loc('Show all attachments') %></a>
+<a href="#" class="button" onclick="showAllAttachments(jQuery(this)); return false;" ><% loc('Show all') %></a>
 
 </span>
 % }
