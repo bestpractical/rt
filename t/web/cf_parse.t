@@ -71,9 +71,6 @@ diag "ParseObjectCustomFieldArgs";
     my $ref3 = HTML::Mason::Commands::_ParseObjectCustomFieldArgs( \%test3, IncludeBulkUpdate => 1 );
     is_deeply $ref3, $test3Values, 'Object and Bulk CustomField parsing';
 
-    # test want array return values
-    my (@arr1) = HTML::Mason::Commands::_ParseObjectCustomFieldArgs( \%test1 );
-    is_deeply \@arr1, [ %$test1Values ], 'test want array'; 
     
 }
 
