@@ -3121,14 +3121,21 @@ sub ProcessObjectCustomFieldUpdates {
 
 sub _ParseObjectCustomFieldArgs {
     my $ARGSRef = shift || {};
+    my %args = (
+        IncludeBulkUpdate => 0,
+        @_,
+    );
     my %custom_fields_to_mod;
 
     foreach my $arg ( keys %$ARGSRef ) {
 
         # format: Object-<object class>-<object id>-CustomField[:<grouping>]-<CF id>-<commands>
-        # or: Bulk-<Add or Delete>-CustomField[:<grouping>]-<CF id>-<commands>
         # you can use GetCustomFieldInputName to generate the complement input name
-        next unless $arg =~ /^(?:Bulk-(?:Add|Delete)|Object-([\w:]+)-(\d*))-CustomField(?::(\w+))?-(\d+)-(.*)$/;
+        # or if IncludeBulkUpdate: Bulk-<Add or Delete>-CustomField[:<grouping>]-<CF id>-<commands>
+        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField(?::(\w+))?-(\d+)-(.*)$/
+                 || ($args{IncludeBulkUpdate} && $arg =~ /^Bulk-(?:Add|Delete)-()()CustomField(?::(\w+))?-(\d+)-(.*)$/);
+        # need two empty groups because we must consume $1 and $2 with empty
+        # class and ID
 
         # For each of those objects, find out what custom fields we want to work with.
         #                   Class     ID     CF  grouping command
