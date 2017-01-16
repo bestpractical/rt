@@ -68,7 +68,7 @@ unless ( exists $ARGS{ContextType} and exists $ARGS{ContextId} ) {
 # structure returned. There will be only one CF, so drill down 2 layers
 # to get the cf id, if one is there.
 
-my %custom_fields = _ParseObjectCustomFieldArgs(\%ARGS);
+my %custom_fields = _ParseObjectCustomFieldArgs(\%ARGS, IncludeBulkUpdate => 1);
 my $CustomField;
 foreach my $class ( keys %custom_fields ){
     foreach my $id ( keys %{$custom_fields{$class}} ){
