@@ -66,7 +66,7 @@ sub acl {
     # if there's already an rt_user, use it.
     my @row = $dbh->selectrow_array( "SELECT usename FROM pg_user WHERE usename = '$db_user'" );
     unless ( $row[0] ) {
-         push @acls, "CREATE USER \"$db_user\" WITH PASSWORD '$db_pass' NOCREATEDB NOCREATEUSER;";
+         push @acls, "CREATE USER \"$db_user\" WITH PASSWORD '$db_pass' NOCREATEDB NOSUPERUSER;";
     }
 
     foreach my $table (@tables) {
