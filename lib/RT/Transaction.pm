@@ -2098,19 +2098,45 @@ sub Serialize {
         if ($store{OldValue}) {
             my $base = RT::URI->new( $self->CurrentUser );
             $base->FromURI( $store{OldValue} );
-            $store{OldValue} = \($base->Object->UID) if $base->Resolver and $base->Object;
+            if ($base->Resolver && (my $object = $base->Object)) {
+                if ($args{serializer}->Observe(object => $object)) {
+                    $store{OldValue} = \($object->UID);
+                }
+                elsif ($args{serializer}{HyperlinkUnmigrated}) {
+                    $store{OldValue} = $base->AsHREF;
+                }
+                else {
+                    $store{OldValue} = "(not migrated)";
+                }
+            }
         }
     } elsif ($type eq "AddLink") {
         if ($store{NewValue}) {
             my $base = RT::URI->new( $self->CurrentUser );
             $base->FromURI( $store{NewValue} );
-            $store{NewValue} = \($base->Object->UID) if $base->Resolver and $base->Object;
+            if ($base->Resolver && (my $object = $base->Object)) {
+                if ($args{serializer}->Observe(object => $object)) {
+                    $store{NewValue} = \($object->UID);
+                }
+                elsif ($args{serializer}{HyperlinkUnmigrated}) {
+                    $store{NewValue} = $base->AsHREF;
+                }
+                else {
+                    $store{NewValue} = "(not migrated)";
+                }
+            }
         }
     } elsif ($type eq "Set" and $store{Field} eq "Queue") {
         for my $field (qw/OldValue NewValue/) {
             my $queue = RT::Queue->new( RT->SystemUser );
             $queue->Load( $store{$field} );
-            $store{$field} = \($queue->UID);
+            if ($args{serializer}->Observe(object => $queue)) {
+                $store{$field} = \($queue->UID);
+            }
+            else {
+                $store{$field} = "$RT::Organization: " . $queue->Name . " (not migrated)";
+
+            }
         }
     } elsif ($type =~ /^(Add|Open|Resolve)Reminder$/) {
         my $ticket = RT::Ticket->new( RT->SystemUser );
