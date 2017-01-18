@@ -1516,6 +1516,7 @@ Grouping" are created by the L</%CustomFieldGroupings> setting.
             'Another Grouping'  => 'click',
             'Dates'             => 'always',
             'Links'             => 'hide',
+            'People'            => 'link',
         },
     );
 

@@ -85,10 +85,31 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
         InlineEdit   => $InlineEdit,
         &>
 
+<%PERL>
+my $people_url = RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id;
+my $people_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes($people_url, 'h' ).'">'.$edit_label.'</a>';
+my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_edit_behavior{_default} || 'link') : 'hide';
+</%PERL>
     <&| /Widgets/TitleBox, title => loc('People'),
         (($can_modify || $can_modify_owner || $can_modify_people) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
-        class => 'ticket-info-people',
-    &><& /Ticket/Elements/ShowPeople, Ticket => $Ticket &></&>
+        class => (join " ", 'ticket-info-people', ($people_behavior eq 'always' ? 'editing' : ())),
+        ($people_behavior =~ /^(link|click)$/ ? (titleright_raw => $people_inline) : ()),
+        data => { 'inline-edit-behavior' => $people_behavior },
+    &>
+%       unless ($people_behavior eq 'always') {
+            <div class="inline-edit-display">
+                <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
+            </div>
+%       }
+%       if ($people_behavior ne 'hide') {
+            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+                <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
+                <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
+            </form>
+%       }
+</&>
+
 % $m->callback( %ARGS, CallbackName => 'AfterPeople' );
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments, Count => RT->Config->Get('AttachmentListCount') &>
 % $m->callback( %ARGS, CallbackName => 'AfterAttachments' );
