@@ -93,7 +93,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %          my $action = $s->ActionObj->Action;
 %          scalar(map { $action->$_ } qw(To Cc Bcc))
 %        } @scrips ) {
-<input type="checkbox" class="checkbox" name="TxnSendMailToAll" value="1">
+<input type="checkbox" class="checkbox" id="TxnSendMailToAll" name="TxnSendMailToAll" value="1">
 <label for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
 %   }
 %     for my $scrip (@scrips) {
