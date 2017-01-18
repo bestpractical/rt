@@ -10,8 +10,7 @@ ok $ru_queue && $ru_queue->id, 'created RU queue';
 my $us_queue = RT::Test->load_or_create_queue( Name => 'US', SLADisabled => 0 );
 ok $us_queue && $ru_queue->id, 'created US queue';
 
-no warnings 'once';
-%RT::ServiceAgreements = (
+RT->Config->Set(ServiceAgreements => (
     Default => 2,
     QueueDefault => {
         RU => { Timezone => 'Europe/Moscow' },
@@ -20,7 +19,7 @@ no warnings 'once';
     Levels  => {
         '2' => { Resolve => { BusinessMinutes => 60 * 2 } },
     },
-);
+));
 
 set_fixed_time('2007-01-01T22:00:00Z');
 

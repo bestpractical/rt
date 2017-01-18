@@ -1174,6 +1174,23 @@ our %META;
             $self->Set( 'ExternalInfoPriority', \@values );
         },
     },
+
+    ServiceBusinessHours => {
+        Type => 'HASH',
+        PostLoadCheck   => sub {
+            my $self = shift;
+            my $config = $self->Get('ServiceBusinessHours');
+            for my $name (keys %$config) {
+                if ($config->{$name}->{7}) {
+                    RT->Logger->error("Config option \%ServiceBusinessHours '$name' erroneously specifies '$config->{$name}->{7}->{Name}' as day 7; Sunday should be specified as day 0.");
+                }
+            }
+        },
+    },
+
+    ServiceAgreements => {
+        Type => 'HASH',
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
