@@ -52,6 +52,7 @@ $QueueObj => undef
 $InTable => 0
 %defaults => ()
 $ExcludeCustomRoles => 0
+$ExcludeOwner => 0
 </%ARGS>
 <%INIT>
 if ($TicketObj) {
@@ -151,6 +152,10 @@ unless ($ExcludeCustomRoles) {
             }
         };
     }
+}
+
+if ($ExcludeOwner) {
+    @fields = grep { ($_->{name}||'') ne 'Owner' } @fields;
 }
 
 # inflate the marker for custom roles into the field specs for each one

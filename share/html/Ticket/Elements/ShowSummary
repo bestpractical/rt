@@ -71,7 +71,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
             <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <table>
-                    <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1 &>
+                    <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
                     <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
                 </table>
                 <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>

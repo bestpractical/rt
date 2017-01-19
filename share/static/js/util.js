@@ -813,6 +813,46 @@ jQuery(function () {
         }
         toggle_inline_edit(container.find('.inline-edit-toggle'));
     });
+
+    /* on submit, pull in all the other inline edit forms' fields into
+     * the currently-being-submitted form. that way we don't lose user
+     * input */
+    jQuery('form.inline-edit').submit(function (e) {
+        var currentForm = jQuery(this);
+
+        /* limit to currently-editing forms, since cancelling inline
+         * edit merely hides the form */
+        jQuery('.titlebox.editing form.inline-edit').each(function () {
+            var siblingForm = jQuery(this);
+
+            if (siblingForm.is(currentForm)) {
+                return;
+            }
+
+            siblingForm.find(':input').each(function () {
+                var field = jQuery(this);
+
+                if (field.attr('name') == "") {
+                    return;
+                }
+
+                /* skip duplicates, such as ticket id */
+                if (currentForm.find('[name="' + field.attr('name') + '"]').length > 0) {
+                    return;
+                }
+
+                var clone = field.clone().hide().appendTo(currentForm);
+
+                /* "For performance reasons, the dynamic state of certain
+                 * form elements (e.g., user data typed into textarea
+                 * and user selections made to a select) is not copied
+                 * to the cloned elements", so manually copy them */
+                if (clone.is('select, textarea')) {
+                    clone.val(field.val());
+                }
+            });
+        });
+    });
 });
 
 // focus jquery object in window, only moving the screen when necessary
