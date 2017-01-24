@@ -1122,7 +1122,7 @@ sub IsPassword {
         my $salt = substr($hash, 0, 4, "");
         return 0 unless RT::Util::constant_time_eq(
             substr(Digest::SHA::sha256($salt . Digest::MD5::md5(Encode::encode( "UTF-8", $value))), 0, 26),
-            $hash, 1
+            $hash
         );
     } elsif (length $stored == 32) {
         # Hex nonsalted-md5
