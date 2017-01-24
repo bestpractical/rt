@@ -772,14 +772,20 @@ jQuery(function () {
     jQuery('table.collection-as-table').each(function () {
         var table = jQuery(this);
         var cols = table.find('colgroup col');
-        if (cols.length == 0) {
+        var firstRow = table.find('tr:first');
+
+        if (cols.length == 0 || firstRow.length == 0) {
             return;
         }
 
-        cols.each(function () {
+        var totalWidth = firstRow.width();
+
+        cols.each(function (index) {
             var col = jQuery(this);
-            col.attr('width', col.width());
+            var cell = firstRow.children().eq(index);
+            col.attr('width', (100 * cell.width() / totalWidth) + '%');
         });
+
         table.css('table-layout', 'fixed');
     });
 
