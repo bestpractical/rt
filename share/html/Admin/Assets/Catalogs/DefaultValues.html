@@ -81,11 +81,14 @@ if ( $ARGS{Reset} ) {
 elsif ( $ARGS{Update} ) {
     my $cfs = _ParseObjectCustomFieldArgs(\%ARGS)->{'RT::Asset'}{0};
     for my $cf_id (keys %$cfs) {
-        # there may be multiple values submitted, pull out only the first,
-        # as our JS will make sure the values are synced
-        my %names = %{ $cfs->{$cf_id} };
-        my $value = $names{ (keys %names)[0] }{Value}
-                 // $names{ (keys %names)[0] }{Values};
+        _ValidateConsistentCustomFieldValues($cf_id, $cfs->{$cf_id});
+
+        # In the case of inconsistent CFV submission,
+        # we'll pick the 1st grouping in the hash, alphabetically
+
+        my $grouping_name = (sort keys %{ $cfs->{$cf_id} })[0];
+        my $grouping = $cfs->{$cf_id}{$grouping_name};
+        my $value = $grouping->{Value} // $grouping->{Values};
 
         my $cf = RT::CustomField->new($session{CurrentUser});
         $cf->Load($cf_id);
