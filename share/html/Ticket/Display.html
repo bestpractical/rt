@@ -160,12 +160,13 @@ if ($ARGS{'id'} eq 'new') {
 
     my $SkipProcessing;
 
-    $m->callback( CallbackName => 'BeforeProcessArguments',
-        TicketObj => $TicketObj,
-        ActionsRef => \@Actions, ARGSRef => \%ARGS,
-        SkipProcessing => \$SkipProcessing );
+    $TicketObj->Atomic(sub{
+        $m->callback( CallbackName => 'BeforeProcessArguments',
+            TicketObj => $TicketObj,
+            ActionsRef => \@Actions, ARGSRef => \%ARGS,
+            SkipProcessing => \$SkipProcessing );
+        return if $SkipProcessing;
 
-    if ( !$SkipProcessing ) {
         if ( defined $ARGS{'Action'} ) {
             if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|SetTold)$/) {
                 my $action = $1;
@@ -174,11 +175,11 @@ if ($ARGS{'id'} eq 'new') {
             }
         }
 
-        $m->callback(CallbackName => 'ProcessArguments', 
-                Ticket => $TicketObj, 
-                ARGSRef => \%ARGS, 
+        $m->callback(CallbackName => 'ProcessArguments',
+                Ticket => $TicketObj,
+                ARGSRef => \%ARGS,
                 Actions => \@Actions);
-        
+
         push @Actions, ProcessUpdateMessage(
             ARGSRef   => \%ARGS,
             Actions   => \@Actions,
@@ -192,7 +193,8 @@ if ($ARGS{'id'} eq 'new') {
         push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
         push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
         push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
-
+    });
+    if ( !$SkipProcessing ) {
         unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
             if (@Actions) {
                 Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@Actions);

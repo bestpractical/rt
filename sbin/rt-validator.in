@@ -636,7 +636,89 @@ push @CHECKS, 'Tickets -> other' => sub {
              update_records( 'Tickets', { id => $id, Owner => $prop{Owner} }, { Owner => $replace_with } );
          },
     );
-    # XXX: check that owner is only member of owner role group
+
+    # there exists a GroupMember for each ticket Owner role group
+    {
+        my $query = <<END;
+SELECT Tickets.Id, Tickets.Owner
+FROM Groups
+JOIN Tickets ON Tickets.Id = Groups.Instance
+LEFT JOIN GroupMembers ON Groups.Id = GroupMembers.GroupId
+WHERE Groups.Name = 'Owner'
+AND Groups.Domain = 'RT::Ticket-Role'
+AND GroupMembers.MemberId IS NULL;
+END
+
+        my $action = sub {
+            my ($ticket_id, $owner_id) = @_;
+            return unless prompt(
+                'Create',
+                "Found a ticket that has no normalized Owner group member."
+            );
+            my $ticket = RT::Ticket->new(RT->SystemUser);
+            $ticket->Load($ticket_id);
+            my $group = $ticket->RoleGroup('Owner');
+            $group->_AddMember(
+                PrincipalId       => $owner_id,
+                InsideTransaction => 0,
+                RecordTransaction => 0,
+                Object            => $ticket,
+            );
+        };
+        my $sth = execute_query( $query );
+        while ( my ($ticket, $owner) = $sth->fetchrow_array ) {
+            $res = 0;
+            print STDERR "The owner of ticket #$ticket is inconsistent. The denormalized owner is user #$owner\n";
+            print STDERR "but there is no normalized owner.\n";
+            $action->($ticket, $owner);
+        }
+    }
+
+    # Tickets.Owner = OwnerRoleGroup.MemberId
+    {
+        my $query = <<END;
+SELECT Tickets.Id, Tickets.Owner, GroupMembers.MemberId
+FROM Groups
+JOIN GroupMembers ON Groups.Id = GroupMembers.GroupId
+JOIN Tickets ON Tickets.Id = Groups.Instance
+WHERE Groups.Name = 'Owner'
+AND Groups.Domain = 'RT::Ticket-Role'
+AND Tickets.Owner != GroupMembers.MemberId;
+END
+
+        my $action = sub {
+            my ($ticket_id, $owner_id) = @_;
+            return unless prompt(
+                'Replace',
+                "Found a ticket that has inconsistent normalized Owner group member."
+            );
+            my $ticket = RT::Ticket->new(RT->SystemUser);
+            $ticket->Load($ticket_id);
+            my $group = $ticket->RoleGroup('Owner');
+
+            # remove all current members
+            my $members = $group->MembersObj;
+            while (my $member = $members->Next) {
+                $member->Delete;
+            }
+
+            # add correct member
+            $group->_AddMember(
+                PrincipalId       => $owner_id,
+                InsideTransaction => 0,
+                RecordTransaction => 0,
+                Object            => $ticket,
+            );
+        };
+        my $sth = execute_query( $query );
+        while ( my ($ticket, $owner, $rolemember) = $sth->fetchrow_array ) {
+            $res = 0;
+            print STDERR "The owner of ticket #$ticket is inconsistent. The denormalized owner is user #$owner\n";
+            print STDERR "but there exists a normalized owner role group member, user #$rolemember.\n";
+            $action->($ticket, $owner);
+        }
+    }
+
     return $res;
 };
 

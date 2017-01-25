@@ -191,14 +191,14 @@ if ( ref ($ARGS{'Owner'} )) {
 }
 
 unless ($skip_update or $OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) {
-    push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
-    push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
-    push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
-    push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    $Ticket->ApplyTransactionBatch;
+    $Ticket->Atomic(sub {
+        push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+        push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
+        push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+        push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
+        push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    });
 
     MaybeRedirectForResults(
         Actions   => \@results,

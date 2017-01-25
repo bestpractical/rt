@@ -1626,9 +1626,76 @@ sub _RecordNote {
     return ( $Trans, $msg, $TransObj );
 }
 
+=head2 Atomic
+
+Takes one argument, a subroutine reference.  Starts a transaction,
+taking a write lock on this ticket object, and runs the subroutine in
+the context of that transaction.  Commits the transaction at the end
+of the block.  Returns whatever the subroutine returns.
+
+If the subroutine explicitly calls L<RT::Handle/Commit> or
+L<RT::Handle/Rollback>, this function respects that, and will skip is
+usual commit step.  If the subroutine dies, this function will abort
+the transaction (unless it is already aborted or committed, per
+above), and will re-die with the error.
+
+This method should be used to lock, and operate atomically on, all
+ticket changes via the UI
+(e.g. L<RT::Interface::Web/ProcessTicketBasics>).
+
+=cut
+
+sub Atomic {
+    my $self = shift;
+    my ($subref) = @_;
+    my $has_id = defined $self->id;
+    $RT::Handle->BeginTransaction;
+    my $depth = $RT::Handle->TransactionDepth;
+
+    $self->LockForUpdate if $has_id;
+    $self->Load( $self->id ) if $has_id;
+
+    my $context = wantarray;
+    my @ret;
+
+    local $@;
+    eval {
+        if ($context) {
+            @ret = $subref->();
+        } elsif (defined $context) {
+            @ret = scalar $subref->();
+        } else {
+            $subref->();
+        }
+    };
+    if ($@) {
+        $RT::Handle->Rollback if $RT::Handle->TransactionDepth == $depth;
+        die $@;
+    }
+
+    if ($RT::Handle->TransactionDepth == $depth) {
+        $self->ApplyTransactionBatch;
+        $RT::Handle->Commit;
+    }
+
+    return $context ? @ret : $ret[0];
+}
+
 
 =head2 DryRun
 
+Takes one argument, a subroutine reference.  Like L</Atomic>, starts a
+transaction and obtains a write lock on this ticket object, running
+the subroutine in the context of that transaction.
+
+In contrast to L</Atomic>, the transaction is B<always rolled back>.
+As such, the body of the function should not call L<RT::Handle/Commit>
+or L<RT::Handle/Rollback>, as that would break this method's ability
+to inspect the entire transaction.
+
+The return value of the subroutine reference is ignored.  Returns the
+set of L<RT::Transaction> objects that would have resulted from
+running the body of the transaction.
 
 =cut
 
@@ -1639,11 +1706,17 @@ sub DryRun {
 
     my @transactions;
 
+    my $has_id = defined $self->id;
+
     $RT::Handle->BeginTransaction();
     {
         # Getting nested "commit"s inside this rollback is fine
         local %DBIx::SearchBuilder::Handle::TRANSROLLBACK;
         local $self->{DryRun} = \@transactions;
+
+        # Get a write lock for this whole transaction
+        $self->LockForUpdate if $has_id;
+
         eval { $subref->() };
         warn "Error is $@" if $@;
         $self->ApplyTransactionBatch;
@@ -1947,41 +2020,32 @@ sub SetOwner {
     my $NewOwner = shift;
     my $Type     = shift || "Set";
 
-    $RT::Handle->BeginTransaction();
+    return $self->Atomic(sub{
 
-    $self->_SetLastUpdated(); # lock the ticket
-    $self->Load( $self->id ); # in case $self changed while waiting for lock
+        my $OldOwnerObj = $self->OwnerObj;
 
-    my $OldOwnerObj = $self->OwnerObj;
+        my $NewOwnerObj = RT::User->new( $self->CurrentUser );
+        $NewOwnerObj->Load( $NewOwner );
 
-    my $NewOwnerObj = RT::User->new( $self->CurrentUser );
-    $NewOwnerObj->Load( $NewOwner );
+        my ( $val, $msg ) = $self->CurrentUserCanSetOwner(
+                                NewOwnerObj => $NewOwnerObj,
+                                Type        => $Type );
+        return ( $val, $msg ) unless $val;
 
-    my ( $val, $msg ) = $self->CurrentUserCanSetOwner(
-                            NewOwnerObj => $NewOwnerObj,
-                            Type        => $Type );
+        ($val, $msg ) = $self->OwnerGroup->_AddMember(
+            PrincipalId       => $NewOwnerObj->PrincipalId,
+            InsideTransaction => 1,
+            Object            => $self,
+        );
+        unless ($val) {
+            $RT::Handle->Rollback;
+            return ( 0, $self->loc("Could not change owner: [_1]", $msg) );
+        }
 
-    unless ($val) {
-        $RT::Handle->Rollback();
-        return ( $val, $msg );
-    }
-
-    ($val, $msg ) = $self->OwnerGroup->_AddMember(
-        PrincipalId       => $NewOwnerObj->PrincipalId,
-        InsideTransaction => 1,
-        Object            => $self,
-    );
-    unless ($val) {
-        $RT::Handle->Rollback;
-        return ( 0, $self->loc("Could not change owner: [_1]", $msg) );
-    }
-
-    $msg = $self->loc( "Owner changed from [_1] to [_2]",
-                       $OldOwnerObj->Name, $NewOwnerObj->Name );
-
-    $RT::Handle->Commit();
-
-    return ( $val, $msg );
+        $msg = $self->loc( "Owner changed from [_1] to [_2]",
+                           $OldOwnerObj->Name, $NewOwnerObj->Name );
+        return ($val, $msg);
+    });
 }
 
 =head2 CurrentUserCanSetOwner

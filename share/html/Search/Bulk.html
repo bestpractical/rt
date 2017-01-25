@@ -285,9 +285,12 @@ my @linkresults;
 $Tickets->RedoSearch();
 
 unless ( $ARGS{'AddMoreAttach'} ) {
+    $RT::Handle->BeginTransaction;
     while ( my $Ticket = $Tickets->Next ) {
         my $tid = $Ticket->id;
         next unless grep $tid == $_, @UpdateTicket;
+
+        $Ticket->LockForUpdate;
 
         #Update the links
         $ARGS{'id'} = $Ticket->id;
@@ -324,6 +327,7 @@ unless ( $ARGS{'AddMoreAttach'} ) {
 
         @results = ( @results, @tempresults );
     }
+    $RT::Handle->Commit;
 
     delete $session{'Attachments'}{ $ARGS{'Token'} };
 

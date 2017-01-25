@@ -420,8 +420,8 @@ sub DeleteTopic {
         ObjectType => ref($self)
     );
     if ( $t->Id ) {
-        my $del = $t->Delete;
-        unless ($del) {
+        my ($ok, $msg) = $t->Delete;
+        unless ($ok) {
             return (
                 undef,
                 $self->loc(
