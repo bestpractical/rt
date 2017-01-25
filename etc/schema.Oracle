@@ -352,6 +352,7 @@ CREATE TABLE CustomFields (
         MaxValues         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Pattern           CLOB,
         ValuesClass       VARCHAR2(64),
+        ConditionedBy     NUMBER(11,0) NULL,
         BasedOn           NUMBER(11,0) NULL,
         Description       VARCHAR2(255),
         SortOrder         NUMBER(11,0) DEFAULT 0 NOT NULL,

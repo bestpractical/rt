@@ -381,6 +381,7 @@ CREATE TABLE CustomFields (
   RenderType varchar(64) collate NOCASE NULL  ,
   MaxValues integer,            # New -- was 'Single'(1) and 'Multiple'(0)
   Pattern varchar(65536) collate NOCASE NULL  ,        # New -- Must validate against this
+  ConditionedBy INTEGER NULL,
   BasedOn INTEGER NULL,
   ValuesClass varchar(64) collate NOCASE NULL  ,
   Description varchar(255) collate NOCASE NULL  ,

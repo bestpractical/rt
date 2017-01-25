@@ -356,6 +356,7 @@ sub Create {
         RenderType        => $args{'RenderType'},
         MaxValues         => $args{'MaxValues'},
         Pattern           => $args{'Pattern'},
+        ConditionedBy     => $args{'ConditionedBy'},
         BasedOn           => $args{'BasedOn'},
         ValuesClass       => $args{'ValuesClass'},
         Description       => $args{'Description'},
@@ -2138,6 +2139,37 @@ sub _URLTemplate {
     }
 }
 
+sub SetConditionedBy {
+    my $self = shift;
+    my $value = shift;
+
+    return $self->_Set( Field => 'ConditionedBy', Value => $value, @_ )
+        unless defined $value and length $value;
+
+    my $cf_value = RT::CustomFieldValue->new( $self->CurrentUser );
+    $cf_value->SetContextObject( $self->ContextObject );
+    $cf_value->Load( ref $value ? $value->id : $value );
+
+    return (0, "Permission Denied")
+        unless     $cf_value->id
+                && $cf_value->CustomFieldObj
+                && $cf_value->CustomFieldObj->id
+                && $cf_value->CustomFieldObj->CurrentUserCanSee;
+
+    return $self->_Set( Field => 'ConditionedBy', Value => $value, @_ )
+}
+
+sub ConditionedByObj {
+    my $self = shift;
+
+    my $obj = RT::CustomFieldValue->new( $self->CurrentUser );
+    $obj->SetContextObject( $self->ContextObject );
+    if ( $self->ConditionedBy ) {
+        $obj->Load( $self->ConditionedBy );
+    }
+    return $obj;
+}
+
 sub SetBasedOn {
     my $self = shift;
     my $value = shift;
@@ -2445,6 +2477,23 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
+=head2 ConditionedByObj
+
+Returns the current L<value|RT:CustomFieldValue> of ConditionedBy.
+(In the database, ConditionedBy is stored as int(11).)
+
+
+=head2 SetConditionedBy VALUE
+
+
+Set ConditionedBy to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, ConditionedBy will be stored as a int(11).)
+
+
+=cut
+
+
 =head2 BasedOn
 
 Returns the current value of BasedOn. 
@@ -2599,6 +2648,8 @@ sub _CoreAccessible {
         {read => 1, write => 1, sql_type => -4, length => 0,  is_blob => 1,  is_numeric => 0,  type => 'text', default => ''},
         ValuesClass => 
         {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
+        ConditionedBy => 
+        {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         BasedOn => 
         {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         Description => 
@@ -2632,6 +2683,9 @@ sub FindDependencies {
     my ($walker, $deps) = @_;
 
     $self->SUPER::FindDependencies($walker, $deps);
+
+    $deps->Add( out => $self->ConditionedByObj )
+        if $self->ConditionedByObj->id;
 
     $deps->Add( out => $self->BasedOnObj )
         if $self->BasedOnObj->id;

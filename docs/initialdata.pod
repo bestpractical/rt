@@ -240,6 +240,18 @@ value.  A clever way to do this easily is with a simple variable you increment
 each time (as above with C<$i>).  You can use the same variable throughout the
 whole file, and don't need one per CF.
 
+=item C<ConditionedBy>
+
+Name or ID of a Custom Field Value. This makes the CF be available only if
+another Select Custom Field (defined by C<ConditionedByCF>, if pased as Name,
+or directly linked to this value if passed as ID) is set with this value.
+
+=item C<ConditionedByCF>
+
+Name or ID of another Custom Field. This makes the CF be available only if
+the named Select Custom Field is set to the value defined by C<ConditionedBy>.
+Only used if C<ConditionedBy> is defined as a Name.
+
 =item C<BasedOn>
 
 Name or ID of another Select Custom Field.  This makes the named CF the source

@@ -155,6 +155,60 @@ jQuery( function() {
 <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
 </div></td></tr>
 
+% if ( $CustomFieldObj->Id ) {
+<script type="text/javascript">
+jQuery( function() {
+    var select = jQuery('select[name=ConditionalCF]');
+    select.change(function() {
+        var cf_id = jQuery(this).find('option:selected').val();
+        if (cf_id) {
+            jQuery.getJSON('/Helpers/SelectCondition', {CustomFieldId: cf_id}, function(values) {
+                if (values) {
+                    jQuery('select[name=ConditionedBy] option').each(function() {
+                        if (jQuery(this).val()) {
+                            jQuery(this).remove();
+                        }
+                    });
+                    jQuery.each(values, function(id, val) {
+                        jQuery('select[name=ConditionedBy]').append(jQuery('<option>', {value: id, text: val}));
+                    });
+                }
+            });
+            jQuery('.conditional-field-condition').show();
+        } else {
+            jQuery('select[name=ConditionedBy] option').each(function() {
+                if (jQuery(this).val()) {
+                    jQuery(this).remove();
+                }
+            });
+            jQuery('.conditional-field-condition').hide();
+        }
+    });
+});
+</script>
+<tr class="conditionedby"><td class="label"><&|/l&>Customfield is conditioned by</&></td><td>
+% my $default = 0;
+% $default = $CustomFieldObj->ConditionedByObj->CustomFieldObj if $CustomFieldObj->ConditionedByObj && $CustomFieldObj->ConditionedByObj->id;
+% $default = $ConditionalCF if $ConditionalCF;
+<& /Admin/Elements/SelectCustomField,
+    Name => "ConditionalCF",
+    LookupType => $CustomFieldObj->LookupType,
+    Default => $default,
+    Not => $CustomFieldObj->id,
+&>
+<span class="conditional-field-condition"<% $CustomFieldObj->ConditionedByObj->id || $ConditionedBy ? '' : 'style="display: none;"' |n%>>
+<span class="label">is</span>
+<select name="ConditionedBy">
+% if ($CustomFieldObj->ConditionedByObj->id || $ConditionedBy) {
+%   $ConditionedBy ||= $CustomFieldObj->ConditionedByObj->id;
+%   my $cf_values = $CustomFieldObj->ConditionedByObj->CustomFieldObj->Values;
+%   while (my $cf_value = $cf_values->Next) {
+<option value="<% $cf_value->id %>"<% $cf_value->id == $ConditionedBy ? qq[ selected="selected"] : '' |n%>><% $cf_value->Name %></option>
+%   }
+% }
+</select></span></td></tr>
+% }
+
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
 <tr class="categoriesbasedon"><td class="label"><&|/l&>Categories are based on</&></td><td>
 <& /Admin/Elements/SelectCustomField,
@@ -222,6 +276,7 @@ else {
             Pattern       => $Pattern,
             LinkValueTo   => $LinkValueTo,
             IncludeContentForValue => $IncludeContentForValue,
+            ConditionedBy => $ConditionedBy,
             BasedOn       => $BasedOn,
             Disabled      => ($Enabled ? 0 : 1),
             EntryHint     => $EntryHint,
@@ -323,6 +378,11 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     else {
         # Delete it if we no longer support render types
         $CustomFieldObj->SetRenderType( undef );
+    }
+
+    if (($CustomFieldObj->ConditionedBy||'') ne ($ConditionedBy||'')) {
+        my ($good, $msg) = $CustomFieldObj->SetConditionedBy( $ConditionedBy );
+        push @results, $msg;
     }
 
     if (($CustomFieldObj->BasedOn||'') ne ($BasedOn||'')) {
@@ -430,6 +490,8 @@ $CanonicalizeClass => undef
 $RenderType => undef
 $LinkValueTo => undef
 $IncludeContentForValue => undef
+$ConditionalCF => undef
+$ConditionedBy => undef
 $BasedOn => undef
 $EntryHint => undef
 </%ARGS>

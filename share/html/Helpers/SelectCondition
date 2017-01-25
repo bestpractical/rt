@@ -1,0 +1,18 @@
+<%args>
+$CustomFieldId => undef
+</%args>
+<%init>
+my $result = undef;
+if ($CustomFieldId) {
+    my $cf = RT::CustomField->new($session{'CurrentUser'});
+    $cf->Load($CustomFieldId);
+    if ($cf->id) {
+        my $cf_values = $cf->Values;
+        while (my $cf_value = $cf_values->Next) {
+            $result->{$cf_value->id} = $cf_value->Name;
+        }
+    }
+}
+$m->out(JSON($result));
+$m->abort;
+</%init>

@@ -51,6 +51,7 @@
 <table>
 % }
 % while ( my $CustomField = $CustomFields->Next ) {
+% next if $Object->ConditionNotMet($CustomField);
 % my $Values = $Object->CustomFieldValues( $CustomField->Id );
 % my $count = $Values->Count;
 % next if $HideEmpty and not $count;

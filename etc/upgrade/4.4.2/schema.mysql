@@ -1,2 +1,3 @@
 ALTER TABLE CustomFields ADD COLUMN UniqueValues int2 NOT NULL DEFAULT 0;
 ALTER TABLE CustomFields ADD COLUMN CanonicalizeClass varchar(64) CHARACTER SET ascii NULL;
+ALTER TABLE CustomFields ADD COLUMN ConditionedBy INTEGER NULL;

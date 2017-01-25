@@ -107,6 +107,7 @@ checked="checked"
 
 % my $CFs = $QueueObj->CustomFields;
 % while (my $CF = $CFs->Next) {
+% next if $QueueObj->ConditionNotMet($CF);
 <tr valign="top"><td align="right">
 <% $CF->Name %>:
 </td><td>
