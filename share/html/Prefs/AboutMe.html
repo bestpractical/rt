@@ -116,7 +116,7 @@
 </td>
 <td valign="top" class="boxcontainer">
 
-<&| /Widgets/TitleBox, title => loc('Password'), id => "user-prefs-password" &>
+<&| /Widgets/TitleBox, title => loc('Access control'), id => "user-prefs-access-control" &>
 % if ( $UserObj->__Value('Password') ne '*NO-PASSWORD*' ) {
 <& /Elements/EditPassword,
     User => $UserObj,
