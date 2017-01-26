@@ -868,7 +868,6 @@ sub _DecodeLOB {
             return ("");
         }
 
-        return ($Content);
     }
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
