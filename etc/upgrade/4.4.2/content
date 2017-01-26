@@ -17,6 +17,7 @@ our @Initial = (
             unless ( $ret ) {
                 RT->Logger->error("Failed to update content for SavedSearch #" . $attr->id . ": $msg");
             }
+        }
     },
 
     # fix up inconsistent denormalized owner vs owner-role group members (#32381)
