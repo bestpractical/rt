@@ -81,7 +81,7 @@ sub Squish {
         my $res = RT::Interface::Web::Handler->GetStatic($uri);
 
         if ($res->is_success) {
-            $content .= $res->decoded_content;
+            $content .= $res->decoded_content . "\n";
         } else {
             RT->Logger->error("Unable to fetch $uri for JS Squishing: " . $res->status_line);
             next;
