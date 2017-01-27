@@ -1898,8 +1898,10 @@ sub _MergeInto {
 
     # add all of this ticket's watchers to that ticket.
     for my $role ($self->Roles) {
-        next if $self->RoleGroup($role)->SingleMemberRoleGroup;
-        my $people = $self->RoleGroup($role)->MembersObj;
+        my $group = $self->RoleGroup($role);
+        next unless $group->Id; # e.g. lazily-created custom role groups
+        next if $group->SingleMemberRoleGroup;
+        my $people = $group->MembersObj;
         while ( my $watcher = $people->Next ) {
             my ($val, $msg) =  $MergeInto->AddRoleMember(
                 Type              => $role,
