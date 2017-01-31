@@ -342,6 +342,7 @@ sub _JoinForLookupType {
 sub _JOINS_FOR_LOOKUP_TYPES {
     my $class = blessed($_[0]) || $_[0];
     state %JOINS;
+    $class = 'RT::Tickets' if ( $class eq 'RT::Report::Tickets'  );
     return $JOINS{$class} ||= {};
 }
 
