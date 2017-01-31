@@ -603,15 +603,41 @@ jQuery(function () {
             return;
         }
 
+        var table = cell.closest('table');
+        while (table.length) {
+            table.closest('tr').children().each(function () {
+                var cell = jQuery(this);
+                cell.attr('width', cell.width()).addClass('width-locked');
+            });
+
+            table = table.parent().closest('table');
+        }
+
+        cell.closest('tr').children().each(function () {
+            var other = jQuery(this);
+            if (cell[0] != this) {
+                other.attr('width', other.width()).addClass('width-locked');
+            }
+        });
+
         inlineEditPristineForm = cell.find('form').clone();
-        var height = cell.height();
+
+        var displayHeight = cell.height();
+        var displayWidth = cell.width();
 
         cell.addClass('editing');
         jQuery('body').addClass('inline-editing');
 
-        if (editor.find('textarea').length || editor[0].clientWidth > cell[0].clientWidth) {
-            cell.attr('height', height);
+        var editHeight = cell.height();
+        var editWidth = cell.width();
 
+        cell.attr('height', displayHeight);
+        cell.attr('width', displayWidth);
+
+        /* we add a fudge factor for height because a small height change
+         * is both more tolerable than a small width change, and more
+         * likely due to input fields being taller than labels */
+        if (editor.find('textarea').length || editHeight > displayHeight*1.4 || editWidth > displayWidth) {
             var rect = editor[0].getBoundingClientRect();
             editor.addClass('wide');
             var top = rect.top - parseInt(editor.css('padding-top')) - parseInt(editor.css('border-top-width'));
@@ -646,7 +672,8 @@ jQuery(function () {
         var cell = editor.closest('td');
 
         inlineEditingDate = false;
-        cell.removeClass('editing').removeAttr('height');
+        cell.removeClass('editing').removeAttr('height').removeAttr('width');
+        jQuery('.width-locked').removeClass('width-locked').removeAttr('width');
         editor.removeClass('wide');
         jQuery('body').removeClass('inline-editing');
 
@@ -767,26 +794,6 @@ jQuery(function () {
     jQuery(document).on('datepicker:close', 'td.editable.editing form .datepicker', function () {
         var editor = jQuery(this);
         editor.closest('form').trigger('submit');
-    });
-
-    jQuery('table.collection-as-table').each(function () {
-        var table = jQuery(this);
-        var cols = table.find('colgroup col');
-        var firstRow = table.find('tr:first');
-
-        if (cols.length == 0 || firstRow.length == 0) {
-            return;
-        }
-
-        var totalWidth = firstRow.width();
-
-        cols.each(function (index) {
-            var col = jQuery(this);
-            var cell = firstRow.children().eq(index);
-            col.attr('width', (100 * cell.width() / totalWidth) + '%');
-        });
-
-        table.css('table-layout', 'fixed');
     });
 
     /* inline edit on ticket display */
