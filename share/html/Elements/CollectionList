@@ -116,6 +116,8 @@ if ($Class =~ /::/) { # older passed in value
     $Class =~ s/:/_/g;
 }
 
+$InlineEdit = 0 unless $Collection->isa('RT::Tickets');
+
 $m->out('<table cellspacing="0"');
 $m->out(' class="' .  ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ($InlineEdit ? ' inline-edit' : '') . ' collection-as-table"');
 $m->out(' data-display-format="' . $m->interp->apply_escapes($DisplayFormat, 'h') . '"');
