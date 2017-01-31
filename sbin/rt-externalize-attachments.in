@@ -190,11 +190,8 @@ sub Store {
     my $content = shift;
     my $attachment = shift;
 
-    my $key = Digest::SHA::sha256_hex( $content );
-    my ($ok, $msg) = $ExternalStorage->Store( $key => $content, $attachment );
-    return ($ok, $msg) unless defined $ok;
-
-    return ($key);
+    my $sha = Digest::SHA::sha256_hex( $content );
+    return $ExternalStorage->Store( $sha => $content, $attachment );
 }
 
 =head1 NAME
