@@ -60,10 +60,10 @@
 % my $rows = 5;
 % my $cf_id = $cf->id;
 % my @add = (NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows,
-%   Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25,
+%   MaxValues => $cf->MaxValues, Multiple => ($cf->MaxValues == 1 ? 0 : 1) , Cols => 25,
 %   Default => $ARGS{"Bulk-Add-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Add-CustomField-$cf_id-Value"}, );
 % my @del = (NamePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf,
-%   Rows => $rows, Multiple => 1, Cols => 25,
+%   MaxValues => 0, Rows => $rows, Multiple => 1, Cols => 25,
 %   Default => $ARGS{"Bulk-Delete-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Delete-CustomField-$cf_id-Value"}, );
 % if ($cf->Type eq 'Select') {
 <td><& /Elements/EditCustomFieldSelect, @add &></td>
