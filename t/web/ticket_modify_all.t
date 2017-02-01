@@ -31,10 +31,15 @@ $m->get_ok($url . '/Ticket/ModifyAll.html?id=' . $ticket->id);
 
 $m->form_name('TicketModifyAll');
 $m->field(Owner => 'root');
+$m->field(TimeWorked => 120);
 $m->click('SubmitTicket');
+
+$m->text_contains('Owner changed from Nobody to root');
+$m->text_contains('Worked 2 hours (120 minutes)');
 
 $m->form_name('TicketModifyAll');
 is($m->value('Owner'), 'root', 'owner was successfully changed to root');
+is($m->value('TimeWorked'), 120, 'logged 2 hours');
 
 $m->get_ok($url . "/Ticket/ModifyAll.html?id=" . $ticket->id);
 
@@ -96,6 +101,18 @@ $m->text_contains(
     "root is already Requestor",
     'no duplicate watchers',
 );
+
+$m->get( $url . '/Ticket/ModifyAll.html?id=' . $ticket->id );
+$m->form_name('TicketModifyAll');
+$m->click('SubmitTicket');
+$m->content_lacks("That is already the current value", 'no spurious messages');
+
+$m->form_name('TicketModifyAll');
+$m->field(TimeWorked => 0);
+$m->click('SubmitTicket');
+$m->text_contains('Adjusted time worked by -120 minutes');
+$m->form_name('TicketModifyAll');
+is($m->value('TimeWorked'), "", 'no time worked');
 
 undef $m;
 done_testing;

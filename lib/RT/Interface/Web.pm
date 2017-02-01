@@ -2960,7 +2960,7 @@ sub ProcessTicketBasics {
         ARGSRef       => $ARGSRef,
     );
 
-    if ( $ARGSRef->{'TimeWorked'} ) {
+    if ( defined($ARGSRef->{'TimeWorked'}) && ($ARGSRef->{'TimeWorked'} || 0) != $TicketObj->TimeWorked ) {
         my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'} );
         push( @results, $msg );
         $txn->UpdateCustomFields( %$ARGSRef) if $txn;
