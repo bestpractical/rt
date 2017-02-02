@@ -99,7 +99,9 @@ unless ( $found_assets_tables->{rtxassets} && $found_assets_tables->{rtxcatalogs
 
 print "Working with:\n"
     ."Type:\t$db_type\nHost:\t$db_host\nPort:\t$db_port\nName:\t$db_name\n"
-    ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n";
+    ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n\n";
+
+print "Upgrading asset tables...\n";
 
 { # port over Catalogs
     my @columns = qw(id Name Lifecycle Description Disabled Creator Created LastUpdatedBy LastUpdated);
@@ -121,6 +123,8 @@ print "Working with:\n"
         Oracle => 'Assets_seq',
     });
 }
+
+print "Asset table upgrades complete.\n";
 
 sub copy_tables {
     my ($source, $dest, $columns) = @_;
