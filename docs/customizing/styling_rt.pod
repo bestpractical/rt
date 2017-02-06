@@ -121,6 +121,9 @@ started:
     $ mkdir -p local/static/css/localstyle
     $ cp -R share/static/css/rudder/* local/static/css/localstyle/
 
+    $ mkdir -p local/html/NoAuth/css/localstyle
+    $ cp -R share/html/NoAuth/css/rudder/* local/html/NoAuth/css/localstyle/
+
 You can call your "localstyle" directory whatever you want and you don't
 have to copy the rudder theme to start from, but it's a good place to
 start off for RT4.
