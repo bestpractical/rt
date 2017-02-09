@@ -804,8 +804,9 @@ but new tables are expected to be consistent.
 
 =head2 The Overlay mechanism
 
-RT's classes allow "overlay" methods to be placed into files named Filename_Vendor.pm and Filename_Local.pm
-_Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customizations.
+RT's classes allow "overlay" methods to be placed into files named 
+F<Filename_Vendor.pm> and F<Filename_Local.pm>. _Vendor is for 3rd-party
+vendor add-ons, while _Local is for site-local customizations.
 
 These overlay files can contain new subs or subs to replace existing subs in this module.
 
@@ -814,6 +815,74 @@ Each of these files should begin with the line
    no warnings qw(redefine);
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
+
+Some common ways that overlays are used:
+
+=over 4
+
+=head 3 Adding Methods
+
+Create a file named F<Classname_Local.pm> as appropriate (like F<User_Local.pm>)
+in F<rt_base_dir/local/lib/RT/>.
+
+    no warnings qw(redefine);
+    
+    sub MyNewMethod {
+        my $self = shift;
+        ...
+    }
+
+    1;
+
+=head 3 Modifying Methods
+
+Copy the RT module that contains the method you want to modify to a file with
+a F<_Local.pm> suffix as appropriate, in the same F<local/lib> tree mentioned
+above.
+
+Delete all methods exept for the ones you want to modify. This makes it easier
+to update your modified code when RT is updated. It also avoids potential
+unexpected side-effects or errors that can happen.
+
+Modify the methods. You should remove the C<_ImportOverlays> call at the bottom
+of the file, but it should not cause problems if it accidentally left there.
+
+    no warnings qw(redefine);
+
+    sub ExistingMethod {
+        ... existing RT code
+        ... my special changes
+        ... existing RT code
+    }
+
+    1;
+
+=head 3 Hooking Methods
+
+Set up your local file the same way as in B<Modifying Methods> described
+above. You'll need to save the original method call before you redfine it,
+and then call it at the head or tail of your code:
+
+    no warnings qw(redefine);
+
+    # This should be the same class we are overlaying here
+    my $original_method = \&RT::Class::MethodToHook;
+
+    sub MethodToHook {
+        my $self = shift;
+        ...
+        ... my special code
+        ...
+        # Call the original method at the tail of our extra code:
+        &$original_method( $args );
+    }
+
+    1;
+
+=back
+
+B<Remember!> If you modify existing core RT methods, you will need to update your
+local modifications when you upgrade the base RT code so that it matches.
 
 =head1 TO DO
 

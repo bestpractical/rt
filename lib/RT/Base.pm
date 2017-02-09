@@ -152,6 +152,14 @@ sub loc_fuzzy {
     }
 }
 
+=head2 _ImportOverlays
+
+C<_ImportOverlays> is an internal method used to modify or add functionality
+to existing RT code. For more on how to use overlays with RT, please see the
+documentation in B<RT::StyleGuide>.
+
+=cut
+
 sub _ImportOverlays {
     my $class = shift;
     my ($package,undef,undef) = caller();
