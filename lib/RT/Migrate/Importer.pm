@@ -71,6 +71,7 @@ sub Init {
         DumpObjects         => undef,
         HandleError         => undef,
         ExcludeOrganization => undef,
+        FollowRenames       => undef,
         @_,
     );
 
@@ -78,6 +79,7 @@ sub Init {
     $self->{OriginalId} = $args{OriginalId};
 
     $self->{ExcludeOrganization} = $args{ExcludeOrganization};
+    $self->{FollowRenames} = $args{FollowRenames};
 
     $self->{Progress} = $args{Progress};
 
@@ -294,11 +296,15 @@ sub MergeBy {
 
 sub Qualify {
     my $self = shift;
-    my ($string) = @_;
-    return $string if $self->{Clone};
-    return $string if not defined $self->{Organization};
-    return $string if $self->{ExcludeOrganization};
-    return $string if $self->{Organization} eq $RT::Organization;
+    my ($string, $force) = @_;
+
+    if (!$force) {
+        return $string if $self->{Clone};
+        return $string if not defined $self->{Organization};
+        return $string if $self->{ExcludeOrganization};
+        return $string if $self->{Organization} eq $RT::Organization;
+    }
+
     return $self->{Organization}.": $string";
 }
 
@@ -342,6 +348,42 @@ sub Create {
     $obj->PostInflate( $self, $uid );
 
     return $obj;
+}
+
+sub LoadForReuse {
+    my $self = shift;
+    my ($class, $uid) = @_;
+
+    return if grep { $class eq $_ } 'RT::Transaction', 'RT::Attribute';
+
+    my $attribute = RT::Attribute->new( RT->SystemUser );
+    $attribute->LoadByCols(
+        Name       => 'ImporterOrigin',
+        ObjectType => $class,
+        Content    => $self->Qualify($uid, 1),
+    );
+    if (!$attribute->Id) {
+        return;
+    }
+
+    my $obj = $attribute->Object;
+    return $obj;
+}
+
+sub RegisterForReuse {
+    my $self = shift;
+    my ($obj, $uid) = @_;
+
+    return if grep { ref($obj) eq $_ } 'RT::Transaction', 'RT::Attribute';
+    return if $self->LoadForReuse(ref($obj), $uid);
+
+    my $attr = RT::Attribute->new(RT->SystemUser);
+    $attr->Create(
+        Object      => $obj,
+        Name        => 'ImporterOrigin',
+        Content     => $self->Qualify($uid, 1),
+        ContentType => 'text/plain',
+    );
 }
 
 sub ReadStream {
@@ -400,31 +442,47 @@ sub ReadStream {
         if $class eq "RT::Queue";
 
     my $origid = $data->{id};
-    my $obj = $self->Create( $class, $uid, $data );
-    return unless $obj;
+    my $obj;
 
-    # If it's a ticket, we might need to create a
-    # TicketCustomField for the previous ID
-    if ($class eq "RT::Ticket" and $self->{OriginalId}) {
-        my $value = $self->{ExcludeOrganization}
-                  ? $origid
-                  : $self->Organization . ":$origid";
-
-        my ($id, $msg) = $obj->AddCustomFieldValue(
-            Field             => $self->{OriginalId},
-            Value             => $value,
-            RecordTransaction => 0,
-        );
-        warn "Failed to add custom field to $uid: $msg"
-            unless $id;
+    if ($self->{FollowRenames}) {
+        $obj = $self->LoadForReuse( $class, $uid );
+        if ($obj) {
+            $self->Resolve( $uid => $class => $obj->Id );
+            #$self->MergeValues( $obj, $data );
+        }
     }
 
-    # If it's a CF, we don't know yet if it's global (the OCF
-    # hasn't been created yet) to store away the CF for later
-    # inspection
-    push @{$self->{NewCFs}}, $uid
-        if $class eq "RT::CustomField"
-            and $obj->LookupType =~ /^RT::Queue/;
+    if (!$obj) {
+        $obj = $self->Create( $class, $uid, $data );
+        return unless $obj;
+
+        if ($self->{FollowRenames}) {
+            $self->RegisterForReuse( $obj, $uid );
+        }
+
+        # If it's a ticket, we might need to create a
+        # TicketCustomField for the previous ID
+        if ($class eq "RT::Ticket" and $self->{OriginalId}) {
+            my $value = $self->{ExcludeOrganization}
+                      ? $origid
+                      : $self->Organization . ":$origid";
+
+            my ($id, $msg) = $obj->AddCustomFieldValue(
+                Field             => $self->{OriginalId},
+                Value             => $value,
+                RecordTransaction => 0,
+            );
+            warn "Failed to add custom field to $uid: $msg"
+                unless $id;
+        }
+
+        # If it's a CF, we don't know yet if it's global (the OCF
+        # hasn't been created yet) to store away the CF for later
+        # inspection
+        push @{$self->{NewCFs}}, $uid
+            if $class eq "RT::CustomField"
+                and $obj->LookupType =~ /^RT::Queue/;
+    }
 
     $self->{Progress}->($obj) if $self->{Progress};
 }

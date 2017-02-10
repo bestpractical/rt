@@ -192,7 +192,7 @@ sub SaveState {
            NewQueues NewCFs
            SkipTransactions Pending Invalid
            UIDs
-           OriginalId ExcludeOrganization Clone
+           OriginalId ExcludeOrganization FollowRenames Clone
           /;
     Storable::nstore(\%data, $self->{Statefile});
 

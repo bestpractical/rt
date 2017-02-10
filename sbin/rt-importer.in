@@ -96,6 +96,7 @@ GetOptions(
     "resume!",
     "originalid|i=s",
     "exclude-organization",
+    "follow-renames",
 
     "ask",
     "ignore-errors",
@@ -146,6 +147,7 @@ my $import = RT::Migrate::Importer::File->new(
     Directory           => $dir,
     OriginalId          => $OPT{originalid},
     ExcludeOrganization => $OPT{'exclude-organization'},
+    FollowRenames       => $OPT{'follow-renames'},
     DumpObjects         => $OPT{dump},
     Resume              => $OPT{resume},
     HandleError         => $error_handler,
@@ -251,6 +253,16 @@ name is found in the current database, it will create one.
 Ordinarily certain records (groups, queues, the B<--originalid> custom field)
 include the organization name of the original RT instance. Use this option to
 suppress that behavior and use the original name directly.
+
+=item B<--follow-renames>
+
+This advises rt-importer to try harder to reuse previously-imported
+records, such as custom fields, instead of creating new ones. This
+requires the importer to do more work for each record and so has
+performance penalty. This is intended for sites that frequently import
+small collections.
+
+This is not meant to be used with C<--clone> or C<--incremental>.
 
 =item B<--ask>
 
