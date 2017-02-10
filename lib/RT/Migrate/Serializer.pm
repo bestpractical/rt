@@ -91,6 +91,7 @@ sub Init {
                   FollowACL
                   Queues
                   CustomFields
+                  TicketIDs
                   HyperlinkUnmigrated
                   Clone
                   Incremental
@@ -302,7 +303,12 @@ sub PushBasics {
         $self->PushCollections(qw(Topics Classes));
     }
 
-    if ($self->{Queues}) {
+    if ($self->{TicketIDs}) {
+        my $tickets = RT::Tickets->new(RT->SystemUser);
+        $tickets->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{TicketIDs});
+        $self->PushObj($tickets);
+    }
+    elsif ($self->{Queues}) {
         my $queues = RT::Queues->new(RT->SystemUser);
         $queues->Limit(FIELD => 'id', OPERATOR => 'IN', VALUE => $self->{Queues});
         $self->PushObj($queues);
@@ -416,8 +422,13 @@ sub Observe {
     my $from = $args{from};
     if ($obj->isa("RT::Ticket")) {
         return 0 if $obj->Status eq "deleted" and not $self->{FollowDeleted};
+
+        my $id = $obj->EffectiveId;
+        return 0 if $self->{TicketIDs} && none { $id == $_ } @{ $self->{TicketIDs} };
+
         my $queue = $obj->Queue;
         return 0 if $self->{Queues} && none { $queue == $_ } @{ $self->{Queues} };
+
         return $self->{FollowTickets};
     } elsif ($obj->isa("RT::Queue")) {
         my $id = $obj->Id;

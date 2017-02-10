@@ -106,6 +106,7 @@ GetOptions(
     "acls!",
     "limit-queues=s@",
     "limit-cfs=s@",
+    "limit-tickets=s@",
     "hyperlink-unmigrated!",
 
     "clone",
@@ -175,6 +176,11 @@ if ($OPT{'limit-cfs'}) {
     }
 
     $args{CustomFields} = \@cf_ids;
+}
+
+if ($OPT{'limit-tickets'}) {
+    $args{FollowTickets} = 1;
+    $args{TicketIDs} = [ split ',', join ',', @{ $OPT{'limit-tickets'} } ];
 }
 
 if (($OPT{clone} or $OPT{incremental})
@@ -374,6 +380,11 @@ that set of queues (and the tickets in them) will be serialized.
 
 Takes a list of custom field IDs or names separated by commas. When provided,
 only that set of custom fields will be serialized.
+
+=item B<--limit-tickets>
+
+Takes a list of ticket IDs separated by commas. When provided, only that
+set of tickets will be serialized.
 
 =item B<--hyperlink-unmigrated>
 
