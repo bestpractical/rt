@@ -71,6 +71,7 @@ sub Init {
         FollowScrips        => 0,
         FollowTickets       => 1,
         FollowACL           => 0,
+        FollowAttributes    => 0,
 
         Clone       => 0,
         Incremental => 0,
@@ -89,6 +90,7 @@ sub Init {
                   FollowScrips
                   FollowTickets
                   FollowACL
+                  FollowAttributes
                   Queues
                   CustomFields
                   TicketIDs
@@ -264,9 +266,11 @@ sub PushBasics {
     $self->PushObj( $cfs );
 
     # Global attributes
-    my $attributes = RT::Attributes->new( RT->SystemUser );
-    $attributes->LimitToObject( $RT::System );
-    $self->PushObj( $attributes );
+    if ($self->{FollowAttributes}) {
+        my $attributes = RT::Attributes->new( RT->SystemUser );
+        $attributes->LimitToObject( $RT::System );
+        $self->PushObj( $attributes );
+    }
 
     # Global ACLs
     if ($self->{FollowACL}) {
@@ -457,6 +461,8 @@ sub Observe {
         } elsif ($grp->Domain eq "SystemInternal") {
             return 0 if $grp->UID eq $from;
         }
+    } elsif ($obj->isa("RT::Attribute")) {
+        return $self->{FollowAttributes};
     }
 
     return 1;

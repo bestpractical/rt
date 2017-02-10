@@ -104,6 +104,7 @@ GetOptions(
     "scrips!",
     "tickets!",
     "acls!",
+    "attributes!",
     "limit-queues=s@",
     "limit-cfs=s@",
     "limit-tickets=s@",
@@ -127,9 +128,10 @@ $args{AllUsers}      = $OPT{users}    if defined $OPT{users};
 $args{AllGroups}     = $OPT{groups}   if defined $OPT{groups};
 $args{FollowDeleted} = $OPT{deleted}  if defined $OPT{deleted};
 
-$args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
-$args{FollowTickets} = $OPT{tickets}  if defined $OPT{tickets};
-$args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
+$args{FollowScrips}     = $OPT{scrips}     if defined $OPT{scrips};
+$args{FollowTickets}    = $OPT{tickets}    if defined $OPT{tickets};
+$args{FollowACL}        = $OPT{acls}       if defined $OPT{acls};
+$args{FollowAttributes} = $OPT{attributes} if defined $OPT{attributes};
 
 $args{HyperlinkUnmigrated} = $OPT{'hyperlink-unmigrated'} if defined $OPT{'hyperlink-unmigrated'};
 
@@ -184,7 +186,7 @@ if ($OPT{'limit-tickets'}) {
 }
 
 if (($OPT{clone} or $OPT{incremental})
-        and grep { /^(users|groups|deleted|scrips|tickets|acls)$/ } keys %OPT) {
+        and grep { /^(users|groups|deleted|scrips|tickets|acls|attributes)$/ } keys %OPT) {
     die "You cannot specify object types when cloning.\n\nPlease see $0 --help.\n";
 }
 
@@ -366,6 +368,11 @@ scrips and templates to be serialized.
 
 No ACLs are serialized by default; this option forces all ACLs to be
 serialized.
+
+=item B<--attributes>
+
+No attributes (which include saved searches, dashboards) are serialized
+by default; this option forces all attributes to be serialized.
 
 =item B<--no-tickets>
 
