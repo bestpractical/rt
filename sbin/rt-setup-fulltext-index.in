@@ -146,9 +146,11 @@ if ($DB{'type'} eq "mysql") {
               ."Using Sphinx will require recompiling MySQL.  Which indexing solution would you\n"
               ."prefer?"
     } else {
-        $msg = "MySQL 5.6 and above support native full-text indexing; for compatibility\n"
-              ."with earlier versions of RT, the external Sphinx indexer is still supported.\n"
-              ."Which indexing solution would you prefer?"
+        $msg = "MySQL 5.6 and above, and MariaDB 10.0 and above, support native full-text indexing.\n"
+              ."For compatibility with earlier versions of RT, the external Sphinx indexer is\n"
+              ."still supported only on MySQL. Select 'mysql' indexing if you are using MariaDB.\n"
+              ."\n"
+              ."Which indexing solution would you prefer? {mysql|sphinx}"
     }
 
     while ( $index_type ne 'sphinx' and $index_type ne 'mysql' ) {
@@ -165,7 +167,7 @@ if ( $DB{'type'} eq 'mysql' ) {
     # MySQL 5.6 has FTS on InnoDB "text" columns -- which the
     # Attachments table doesn't have, but we can make it have.
     my $table = $OPT{'table'} || prompt(
-        message => "Enter the name of a new MySQL table that will be used to store the\n"
+        message => "Enter the name of a new table that will be used to store the\n"
                  . "full-text content and indexes:",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},

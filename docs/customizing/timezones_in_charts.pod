@@ -13,21 +13,25 @@ C<$ChartsTimezonesInDB> configuration option.
 
 =head1 DATABASE SPECIFIC NOTES
 
-=head2 mysql
+=head2 MySQL and MariaDB
 
 The time adjustment cannot simply be converted using a numeric time
 shift, as this shift value depends on the daylight saving time
 properties of the time zone.
 
-mysql since 4.1.3 supports named timezones, but you have to fill special
-tables with up-to-date timezone data. On modern systems, this is usually
-a simple case of:
+MariaDB and MySQL 4.1.3 and later support timezones. The database
+administrator must fill special tables with up-to-date timezone
+data. On modern systems, this is usually a simple case of:
 
     mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
 
-mysql's doc recommends you restart server after running this; you can
-read more about mysql's timezone support at
-L<http://dev.mysql.com/doc/refman/5.0/en/time-zone-support.html>
+MySQL's documentation recommends restarting the server after running this.
+
+You can read more about MySQL's timezone support at:
+L<https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html>
+
+You can read more about MariaDB's timezone support at:
+L<https://mariadb.com/kb/en/mariadb/time-zones>
 
 =head2 PostgreSQL
 
@@ -68,14 +72,15 @@ L<http://www.postgresql.org/docs/7.4/static/functions-datetime.html#FUNCTIONS-DA
 and
 L<http://www.postgresql.org/docs/7.4/static/datatype-datetime.html#DATATYPE-TIMEZONES>
 
-=head2 mysql
+=head2 MySQL and MariaDB
 
 Once timezone information is loaded into tables on the server,
 we have all the same set of named timezones in the system
 and DateTime (DateTime project has copy of the TZ data in a module).
 
-CONVERT_TZ(TS, from, to) exists since mysql 4.1.3. Note that it takes a
-timestamp, so it only supports limitted date range (usuall 1970-2038).
+MariaDB and MySQL 4.1.3 and later support CONVERT_TZ(TS, from,
+to). Note that it takes a timestamp, so it only supports limited date
+range (usually 1970-2038).
 
 =head2 Oracle
 

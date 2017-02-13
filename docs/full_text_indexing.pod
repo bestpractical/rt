@@ -56,17 +56,21 @@ C<cron>:
 
     /opt/rt4/sbin/rt-fulltext-indexer --quiet
 
-=head1 MYSQL
+=head1 MYSQL and MariaDB
 
 On MySQL, full-text search can either be done using native support
 (which may use MyISAM tables on pre-5.6 versions of MySQL), or RT can
 integrate with the external Sphinx full-text search engine.
 
-=head2 Native MySQL
+RT supports native full-text search on MariaDB versions 10.0 and
+greater. It does not support Sphinx integration on MariaDB.
 
-As RT marks attachment data as C<BINARY>, MySQL cannot index this
-content without creating an additional table.  To create the required
-table (which is InnoDB on versions of MySQL which support it), run:
+=head2 Native MySQL and MariaDB
+
+As RT marks attachment data as C<BINARY>, MySQL and MariaDB cannot
+index this content without creating an additional table.  To create
+the required table (which is InnoDB on versions of MySQL and MariaDB
+which support it), run:
 
     /opt/rt4/sbin/rt-setup-fulltext-index
 
@@ -125,6 +129,8 @@ SphinxSE) does require that you recompile MySQL from source.  Most
 distribution-provided packages for MySQL do not include SphinxSE
 integration, merely the external Sphinx tools; these are not sufficient
 for RT's needs.
+
+RT does not support MariaDB with Sphinx.
 
 =head3 Compiling MySQL and SphinxSE
 
