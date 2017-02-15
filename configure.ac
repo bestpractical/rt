@@ -478,6 +478,7 @@ AC_CONFIG_FILES([
                  sbin/rt-validator
                  sbin/rt-validate-aliases
                  sbin/rt-email-group-admin
+                 sbin/rt-search-attributes
                  sbin/rt-server
                  sbin/rt-server.fcgi
                  sbin/standalone_httpd
