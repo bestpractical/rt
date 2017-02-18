@@ -244,6 +244,8 @@ my $imgdata;
 
 my $colors;
 my $valid_image_types;
+my $updated;
+
 if (not RT->Config->Get('DisableGD') and Convert::Color->require) {
     require GD;
 
@@ -317,6 +319,7 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
             colors => $colors,
         },
     );
+    $updated = 1;
 
     push @results, loc("Unable to set UserLogo: [_1]", $msg) unless $id;
 
@@ -324,6 +327,7 @@ if (my $file_hash = _UploadedFile( 'logo-upload' )) {
 }
 elsif ($ARGS{'reset_logo'}) {
     RT->System->DeleteAttribute('UserLogo');
+    $updated = 1;
 }
 else {
     if (my $attr = RT->System->FirstAttribute('UserLogo')) {
@@ -341,11 +345,13 @@ else {
                         Description => "User-provided logo",
                         Content => $content,
                     );
+                    $updated = 1;
                 }
             }
         }
         else {
             RT->System->DeleteAttribute('UserLogo');
+            $updated = 1;
         }
     }
 }
@@ -361,6 +367,7 @@ if ($user_css) {
                                                     Content => $user_css );
         push @results, loc("Unable to set UserCSS: [_1]", $msg) unless $id;
     }
+    $updated = 1;
 }
 
 if (!$user_css) {
@@ -372,6 +379,15 @@ if (!$user_css) {
         } @sections
     );
 }
+
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => undef,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( $updated );
+
 </%INIT>
 <%ARGS>
 $user_css => ''

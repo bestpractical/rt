@@ -77,6 +77,14 @@ if ($id eq "new") {
     push @results, $msg, @{$nonfatal || []};
 
     if ($ok) {
+        # Fire the AfterUpdate callback if any updates happen.
+        $m->callback(
+            CallbackName => 'AfterUpdate',
+            Object => $catalog,
+            ARGSRef => \%ARGS,
+            Results => \@results
+        ) if ( @results and $catalog->id );
+
         MaybeRedirectForResults(
             Actions     => \@results,
             Path        => "/Admin/Assets/Catalogs/Modify.html",

@@ -180,6 +180,14 @@ if ( $MoveScripDown ) {
     }
 }
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $scrip,
+    ARGSRef => \%ARGS,
+    Results => \@actions
+) if ( @actions );
+
 </%init>
 
 <%ARGS>

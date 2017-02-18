@@ -101,6 +101,15 @@ my @panes = $m->comp(
                 Content => $conf,
             );
         }
+
+        # Fire the AfterUpdate callback if any updates happen.
+        $m->callback(
+            CallbackName => 'AfterUpdate',
+            Object => $dashboard_attr,
+            ARGSRef => \%ARGS,
+            Results => \@actions
+        ) if ( $status and $dashboard_attr->id );
+
         push @actions, $status ? loc('Global dashboards in menu saved.') : $msg;
     }
 );

@@ -173,6 +173,14 @@ elsif ( $ARGS{Update} ) {
     }
 }
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $queue,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( @results and $queue->id );
+
 MaybeRedirectForResults(
     Actions   => \@results,
     Arguments => { id => $queue->id },

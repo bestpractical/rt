@@ -65,7 +65,7 @@
 % }
 
 <%init>
-my @actions;
+my (@actions, $updated);
 my $UserObj = RT::User->new($session{'CurrentUser'});
 $UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
 my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
@@ -73,6 +73,7 @@ my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
 if ($ARGS{Reset}) {
     my ($ok, $msg) = $UserObj->SetPreferences('HomepageSettings', {});
     push @actions, $ok ? loc('Preferences saved for user [_1].', $UserObj->Name) : $msg;
+    $updated = 1;
 }
 
 my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
@@ -115,11 +116,21 @@ my @panes = $m->comp(
         my ( $conf, $pane ) = @_;
         my ($ok, $msg) = $UserObj->SetPreferences( 'HomepageSettings', $conf );
         push @actions, $ok ? loc('Preferences [_1] for user [_2].', $pane, $UserObj->Name) : $msg;
+        $updated = 1;
     }
 );
 
 $m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
     for @panes;
+
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $UserObj,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( $updated );
+
 
 </%init>
 <%ARGS>

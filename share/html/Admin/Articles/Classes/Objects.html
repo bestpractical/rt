@@ -133,6 +133,14 @@ if ( $UpdateObjs ) {
     }
 }
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $Class,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( @results );
+
 my $is_global = $Class->IsApplied(0);
 
 my $applied = $Class->AppliedTo;

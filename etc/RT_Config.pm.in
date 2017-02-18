@@ -3731,6 +3731,21 @@ Set(%AdminSearchResultRows,
     Assets       => 50,
 );
 
+
+=item C<$ConfigChangeCallback>
+
+When a user makes a configuration change in the Admin section of the web
+interface, a callback in the templates calls the function assigned to this
+option:
+
+    Set( $ConfigChangeCallback, sub {...} );
+
+This is set to undef by default.
+
+=cut
+
+Set( $ConfigChangeCallback, undef );
+
 =back
 
 

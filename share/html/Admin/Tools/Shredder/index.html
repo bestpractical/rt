@@ -179,4 +179,14 @@ if( $Plugin && ( $Search || $Wipeout ) ) { { # use additional block({}) to effec
         push @{ $messages{Success} }, loc('see object list below');
     }
 } }
+
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => undef,
+    ARGSRef => \%ARGS,
+    Results => $messages{Success}
+) if ( @{$messages{Success}} );
+
+
 </%INIT>

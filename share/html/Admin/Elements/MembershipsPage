@@ -113,6 +113,15 @@ if ( $Update ) {
         my ($status, $msg) = $group->DeleteMember( $id );
         push @results, $msg;
     }
+
+    # Fire the AfterUpdate callback if any updates happen.
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Object => $object,
+        ARGSRef => \%ARGS,
+        Results => \@results
+    ) if ( @results and $object->id );
+
     MaybeRedirectForResults(
         Arguments => { id => $id },
         Actions   => \@results,

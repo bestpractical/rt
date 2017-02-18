@@ -152,6 +152,15 @@ if ( $Update ) {
         my ($status, $msg) = $global->SetStage($Stage);
         push @results, $msg;
     }
+
+    # Fire the AfterUpdate callback if any updates happen.
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Object => $scrip,
+        ARGSRef => \%ARGS,
+        Results => \@results
+    ) if ( @results and $scrip->id );
+
     MaybeRedirectForResults(
         Actions   => \@results,
         Arguments => {

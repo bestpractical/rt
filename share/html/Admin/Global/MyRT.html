@@ -98,6 +98,14 @@ my @panes = $m->comp(
         else {
             $default_portlets->SetContent( $conf );
             push @actions, loc( 'Global portlet [_1] saved.', $pane );
+
+            # Fire the AfterUpdate callback if any updates happen.
+            $m->callback(
+                CallbackName => 'AfterUpdate',
+                Object => $default_portlets,
+                ARGSRef => \%ARGS,
+                Results => \@actions
+            );
         }
     }
 );

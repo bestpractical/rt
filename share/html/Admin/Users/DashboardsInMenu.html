@@ -112,6 +112,15 @@ my @panes = $m->comp(
 $m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
     for @panes;
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $UserObj,
+    ARGSRef => \%ARGS,
+    Results => \@actions
+) if ( @actions );
+
+
 </%init>
 <%ARGS>
 $id => undef
