@@ -59,7 +59,7 @@
         <div class="OneTimeCcs hidden">
 %   }
 <i class="label">(<&|/l&>check to add</&>)</i>
-<input type="checkbox" class="checkbox" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
+<input type="checkbox" class="checkbox" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
 <label for="AllSuggestedCc"><% loc('All recipients') %></label>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
@@ -88,7 +88,7 @@
         <div class="OneTimeCcs hidden">
 %   }
 <i class="label">(<&|/l&>check to add</&>)</i>
-<input type="checkbox" class="checkbox" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
+<input type="checkbox" class="checkbox" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
 <label for="AllSuggestedBcc"><% loc('All recipients') %></label>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
