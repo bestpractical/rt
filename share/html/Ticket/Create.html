@@ -299,8 +299,28 @@
   color => "#663366" &>
 
 <table>
-<tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &></td></tr>
-<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></td></tr>
+<tr>
+    <td class="label"><&|/l&>Starts</&>:</td>
+    <td>
+        <& /Elements/SelectDate,
+            Name    => 'Starts',
+            Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '',
+            Object  => $ticket,
+            ARGSRef => \%ARGS,
+        &>
+    </td>
+</tr>
+<tr>
+    <td class="label"><&|/l&>Due</&>:</td>
+    <td>
+        <& /Elements/SelectDate,
+            Name    => 'Due',
+            Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '',
+            Object  => $ticket,
+            ARGSRef => \%ARGS,
+        &>
+    </td>
+</tr>
 <& /Elements/EditCustomFields,
     %ARGS,
     Object => $ticket,
