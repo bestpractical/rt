@@ -2542,6 +2542,10 @@ sub PreInflate {
 sub PostInflate {
 }
 
+sub AllowsImportReuse {
+    return 1;
+}
+
 =head2 _AsInsertQuery
 
 Returns INSERT query string that duplicates current record and

@@ -2169,6 +2169,10 @@ sub PreInflate {
     return $class->SUPER::PreInflate( $importer, $uid, $data );
 }
 
+sub AllowsImportReuse {
+    return 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

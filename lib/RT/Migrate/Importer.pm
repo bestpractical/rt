@@ -354,7 +354,7 @@ sub LoadForReuse {
     my $self = shift;
     my ($class, $uid) = @_;
 
-    return if grep { $class eq $_ } 'RT::Transaction', 'RT::Attribute';
+    return unless $class->AllowsImportReuse;
 
     my $attribute = RT::Attribute->new( RT->SystemUser );
     $attribute->LoadByCols(
@@ -374,7 +374,7 @@ sub RegisterForReuse {
     my $self = shift;
     my ($obj, $uid) = @_;
 
-    return if grep { ref($obj) eq $_ } 'RT::Transaction', 'RT::Attribute';
+    return unless $obj->AllowsImportReuse;
     return if $self->LoadForReuse(ref($obj), $uid);
 
     my $attr = RT::Attribute->new(RT->SystemUser);

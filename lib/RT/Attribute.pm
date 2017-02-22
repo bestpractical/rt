@@ -913,6 +913,10 @@ sub Serialize {
     return %store;
 }
 
+sub AllowsImportReuse {
+    return 0;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
