@@ -332,7 +332,9 @@ $COLUMN_MAP = {
             return \($m->scomp("/Ticket/Elements/PopupTimerLink", id => $_[0]->id ) );
         },
     },
+
 };
+
 </%ONCE>
 <%init>
 # if no encryption support, then KeyOwnerName and KeyRequestors fall back to the regular
@@ -340,6 +342,16 @@ $COLUMN_MAP = {
 unless (RT->Config->Get('Crypt')->{'Enable'}) {
     $COLUMN_MAP->{KeyOwnerName}  = $COLUMN_MAP->{OwnerName};
     $COLUMN_MAP->{KeyRequestors} = $GenericMap->{Requestors};
+}
+
+if(RT->Config->Get('DisplayProjectTimeWorked')) {
+  $COLUMN_MAP->{ProjectTimeWorked} = {
+        attribute => 'ProjectTimeWorked',
+        title => 'Project Time Worked',
+        value => sub {
+            return $_[0]->ProjectTimeWorkedAsString;
+        },
+    }
 }
 
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );

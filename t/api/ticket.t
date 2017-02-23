@@ -330,4 +330,70 @@ diag("Test ticket types with different cases");
     is($t->Type, "approval", "Approvals, the third and final internal type, are also lc'd during Create");
 }
 
+diag("Test tickets project time worked");
+{
+    my $scrip = RT::Scrip->new(RT->SystemUser);
+    $scrip->LoadByCols(Description => 'On TimeWorked Change Update Parent TimeWorked');
+    $scrip->SetDisabled(1);
+
+    my $t1 = RT::Ticket->new(RT->SystemUser);
+    my ($ok1) = $t1->Create(
+        Queue => 'general',
+        Subject => 'project time worked test parent',
+    );
+
+    my $t2 = RT::Ticket->new(RT->SystemUser);
+    my ($ok2) = $t2->Create(
+        Queue => 'general',
+        Subject => 'project time worked test child',
+    );
+
+    my $t3 = RT::Ticket->new(RT->SystemUser);
+    my ($ok3) = $t3->Create(
+        Queue => 'general',
+        Subject => 'project time worked test child child',
+    );
+
+    my ($status1,$msg1) = $t1->AddLink(
+        Type => 'MemberOf',
+        Base => $t2->id,
+    );
+
+    my ($status2,$msg2) = $t2->AddLink(
+        Type => 'MemberOf',
+        Base => $t3->id,
+    );
+
+    my $t4 = RT::Ticket->new(RT->SystemUser);
+    my ($ok4) = $t4->Create(
+        Queue => 'general',
+        Subject => 'project time worked test other child child',
+    );
+
+    my ($status4,$msg4) = $t2->AddLink(
+        Type => 'MemberOf',
+        Base => $t4->id,
+    );
+
+    $t1->SetTimeWorked(10);
+    $t2->SetTimeWorked(20);
+    $t3->SetTimeWorked(40);
+    $t4->SetTimeWorked(50);
+
+    is $t4->TimeWorked, 50, 'set other child child time worked';
+    is $t4->TimeWorked, 50, 'check other child child time worked';
+    is $t3->TimeWorked, 40, 'check child child time worked';
+    is $t2->TimeWorked, 20, 'check child time worked';
+    is $t1->TimeWorked, 10, 'check parent time worked';
+
+    is $t1->ProjectTimeWorked, 120, 'check parent project time worked';
+    is $t2->ProjectTimeWorked, 110, 'check child project time worked';
+    is $t3->ProjectTimeWorked, 40, 'check child child project time worked';
+    is $t4->ProjectTimeWorked, 50, 'check other child child project time worked';
+
+    is $t1->ProjectTimeWorkedAsString, '2 hours (120 minutes)', 'check parent project time worked as string';
+    is $t3->ProjectTimeWorkedAsString, '40 minutes', 'check child child project time workd as string';
+}
+
+
 done_testing;

@@ -101,6 +101,9 @@ my @fields = qw(
     NBSP
 ); # loc_qw
 
+# Project time worked is an optional ColumnMap enabled for rolling up child timeworked
+push @fields, 'ProjectTimeWorked' if (RT->Config->Get('DisplayProjectTimeWorked'));
+
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %queues) {
     # Gotta load up the $queue object, since queues get stored by name now.

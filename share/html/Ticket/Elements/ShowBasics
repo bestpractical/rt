@@ -74,6 +74,12 @@
     <td class="value"><& ShowTime, minutes => $Ticket->TimeWorked &></td>
   </tr>
 % }
+% if (RT->Config->Get('DisplayProjectTimeWorked') && $Ticket->ProjectTimeWorked) {
+  <tr class="project time worked sum">
+    <td class="label"><&|/l&>Project Time Worked</&>:</td>
+    <td class="value"><& ShowTime, minutes => $Ticket->ProjectTimeWorked &></td>
+  </tr>
+% }
 % if ( keys %$time_worked ) {
 <tr class="time worked by-user">
   <td class="label"><&|/l&>Users</&>:</td>
