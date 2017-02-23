@@ -342,6 +342,16 @@ unless (RT->Config->Get('Crypt')->{'Enable'}) {
     $COLUMN_MAP->{KeyRequestors} = $GenericMap->{Requestors};
 }
 
+if(RT->Config->Get('DisplayTotalTimeWorked')) {
+  $COLUMN_MAP->{TotalTimeWorked} = {
+        attribute => 'TotalTimeWorked',
+        title => 'Total Time Worked',
+        value => sub {
+            return $_[0]->TotalTimeWorkedAsString;
+        },
+    }
+}
+
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>

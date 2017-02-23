@@ -1411,8 +1411,38 @@ sub TimeEstimatedAsString {
     return $self->_DurationAsString( $self->TimeEstimated );
 }
 
+=head2 TotalTimeWorked
 
+Returns the amount of time worked on this ticket and all child tickets
 
+=cut
+
+sub TotalTimeWorked {
+    my $self = shift;
+    my $seen = shift || {};
+    my $time = $self->TimeWorked;
+    my $links = $self->Members;
+    LINK: while (my $link = $links->Next) {
+        my $obj = $link->BaseObj;
+        next LINK unless $obj && UNIVERSAL::isa($obj,'RT::Ticket');
+        next LINK if $seen->{$obj->Id};
+        $seen->{ $obj->Id } = 1;
+        $time += $obj->TotalTimeWorked($seen);
+    }
+    return $time;
+}
+
+=head2 TotalTimeWorkedAsString
+
+Returns the amount of time worked on this ticket and all its children as a
+formatted duration string
+
+=cut
+
+sub TotalTimeWorkedAsString {
+    my $self = shift;
+    return $self->_DurationAsString( $self->TotalTimeWorked );
+}
 
 =head2 Comment
 
