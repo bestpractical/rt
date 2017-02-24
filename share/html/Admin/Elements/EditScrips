@@ -180,6 +180,14 @@ if ( $MoveScripDown ) {
     }
 }
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => undef,
+    ARGSRef => \%ARGS,
+    Results => \@actions
+) if ( (grep {defined $_ and $_ ne ''} @actions) );
+
 </%init>
 
 <%ARGS>

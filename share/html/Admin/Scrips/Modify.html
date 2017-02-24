@@ -123,6 +123,15 @@ if ( $Update ) {
         Object          => $scrip,
         ARGSRef         => \%ARGS
     );
+
+    # Fire the AfterUpdate callback if any updates happen.
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Object => $scrip,
+        ARGSRef => \%ARGS,
+        Results => \@results
+    ) if ( (grep {defined $_ and $_ ne ''} @results) and $scrip->id );
+
     MaybeRedirectForResults(
         Actions   => \@results,
         Arguments => {

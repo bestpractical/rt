@@ -153,6 +153,14 @@ my $rows = RT->Config->Get('AdminSearchResultRows')->{$collection_class} || 50;
 
 my $title = loc('Modify associated objects for [_1]', $CF->Name);
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $CF,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( (grep {defined $_ and $_ ne ''} @results) );
+
 </%INIT>
 <%ARGS>
 $id => undef

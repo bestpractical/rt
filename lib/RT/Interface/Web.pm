@@ -2685,7 +2685,8 @@ submitted.
 
 sub ProcessACLs {
     my $ARGSref = shift;
-    my (%state, @results);
+    my (%state, @results, $updated);
+    my $m = $HTML::Mason::Commands::m;
 
     my $CheckACL = $ARGSref->{'CheckACL'};
     my @check = grep { defined } (ref $CheckACL eq 'ARRAY' ? @$CheckACL : $CheckACL);
@@ -2771,6 +2772,7 @@ sub ProcessACLs {
             # Has right and shouldn't have right
             my ($val, $msg) = $principal->RevokeRight( Object => $obj, Right => $right );
             push @results, $msg;
+            $updated = 1;
         }
 
         # For everything left, they don't have the right but they should
@@ -2778,6 +2780,7 @@ sub ProcessACLs {
             delete $state{$tuple}->{$right};
             my ($val, $msg) = $principal->GrantRight( Object => $obj, Right => $right );
             push @results, $msg;
+            $updated = 1;
         }
 
         # Check our state for leftovers
@@ -2789,6 +2792,14 @@ sub ProcessACLs {
             );
         }
     }
+
+    # Fire the AfterUpdate callback if any updates happen.
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Object => undef,
+        ARGSRef => $ARGSref,
+        Results => \@results
+    ) if ( $updated );
 
     return (@results);
 }

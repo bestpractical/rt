@@ -101,6 +101,8 @@ my @panes = $m->comp(
                 Content => $conf,
             );
         }
+
+
         push @actions, $status ? loc('Global dashboards in menu saved.') : $msg;
     }
 );
@@ -108,6 +110,15 @@ my @panes = $m->comp(
 $m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
     for @panes;
 
+if ($ARGS{'dashboards_in_menu-Submit'}) {
+    # Fire the AfterUpdate callback if any updates happen.
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Object => undef,
+        ARGSRef => \%ARGS,
+        Results => \@actions
+    );
+}
 
 </%init>
 

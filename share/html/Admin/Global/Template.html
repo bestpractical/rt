@@ -89,6 +89,14 @@ if ($TemplateObj->Id()) {
                                        ARGSRef => \%ARGS);
     push @results, @aresults;
 
+    # Fire the AfterUpdate callback if any updates happen.
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Object => $TemplateObj,
+        ARGSRef => \%ARGS,
+        Results => \@results
+    ) if(grep {defined $_ and $_ ne ''} @results);
+
     my ($ok, $msg) = $TemplateObj->CompileCheck;
     push @results, $msg if !$ok;
 } else {

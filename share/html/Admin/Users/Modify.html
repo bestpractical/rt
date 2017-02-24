@@ -303,6 +303,14 @@ if ( $UserObj->Id ) {
     }
 }
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $UserObj,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( (grep {defined $_ and $_ ne ''} @results) and $UserObj->id );
+
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions   => \@results,

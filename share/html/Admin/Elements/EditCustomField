@@ -145,6 +145,13 @@ $id = $CustomFieldObj->id;
 
 }
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $CustomFieldObj,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( (grep {defined $_ and $_ ne ''} @results) );
 
 </%INIT>
 <%ARGS>

@@ -160,6 +160,15 @@ foreach my $member (grep $_, @AddMembersGroups) {
     my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
     push (@results, $msg);
 }
+
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $Group,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( (grep {defined $_ and $_ ne ''} @results) );
+
 </%INIT>
 
 <%ARGS>

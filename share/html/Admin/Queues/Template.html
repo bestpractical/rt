@@ -114,6 +114,13 @@ if ($Create) {
     $title = loc( 'Modify template [_1] for queue [_2]', loc( $TemplateObj->Name()), $QueueObj->Name  );
     $SubmitLabel = loc('Save Changes');
 }
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $TemplateObj,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( (grep {defined $_ and $_ ne ''} @results) );
 
 </%INIT>
 <%ARGS>

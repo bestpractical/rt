@@ -153,6 +153,14 @@ if  ( $Group->Id and ($SetEnabled) and ( $Disabled != $Group->Disabled) ) {
     push @results, $msg;
 }
 
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => $Group,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( (grep {defined $_ and $_ ne ''} @results) and $Group->id );
+
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions     => \@results,

@@ -97,6 +97,7 @@ if ($id and !$Object->CurrentUserHasRight('AssignCustomFields')) {
 }
 
 my @results;
+my $updated;
 
 my $lookup = $ObjectType;
 $lookup .= "-$SubType" if $SubType;
@@ -112,6 +113,7 @@ if ( $MoveCustomFieldUp ) { {
 
     my ($status, $msg) = $record->MoveUp;
     push @results, $msg;
+    $updated = 1;
 } }
 if ( $MoveCustomFieldDown ) { {
     my $record = RT::ObjectCustomField->new( $session{'CurrentUser'} );
@@ -123,6 +125,7 @@ if ( $MoveCustomFieldDown ) { {
 
     my ($status, $msg) = $record->MoveDown;
     push @results, $msg;
+    $updated = 1;
 } }
 
 if ( $UpdateCFs ) {
@@ -136,6 +139,7 @@ if ( $UpdateCFs ) {
         }
         my ($status, $msg) = $CF->AddToObject( $Object );
         push @results, $msg;
+        $updated = 1;
     }
     foreach my $cf_id ( @RemoveCustomField ) {
         my $CF = RT::CustomField->new( $session{'CurrentUser'} );
@@ -147,6 +151,7 @@ if ( $UpdateCFs ) {
         }
         my ($status, $msg) = $CF->RemoveFromObject( $Object );
         push @results, $msg;
+        $updated = 1;
     }
 }
 
@@ -169,6 +174,14 @@ my $display_format = $id
             ? ("'__RemoveCheckBox.{$id}__',". $format .", '__MoveCF.{$id}__'")
             : ("'__CheckBox.{RemoveCustomField}__',". $format .", '__MoveCF.{$id}__'");
 $m->callback(CallbackName => 'EditDisplayFormat', DisplayFormat => \$display_format, id => $id);
+
+# Fire the AfterUpdate callback if any updates happen.
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Object => undef,
+    ARGSRef => \%ARGS,
+    Results => \@results
+) if ( $updated );
 
 </%INIT>
 <%ARGS>
