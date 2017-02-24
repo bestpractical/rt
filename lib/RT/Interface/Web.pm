@@ -3095,6 +3095,9 @@ sub _ValidateConsistentCustomFieldValues {
     my $ok = 1;
 
     my @groupings = sort keys %$args;
+    return ($ok, undef) unless @groupings;
+    my $default_grouping = $groupings[0]; # Default to use if multiple are submitted
+
     if (@groupings > 1) {
         # Check for consistency, in case of JS fail
         for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
@@ -3108,13 +3111,13 @@ sub _ValidateConsistentCustomFieldValues {
                     $a ne $b
                 } @{$base}, @{$other};
 
-                warn "CF $cf submitted with multiple differing values";
+                RT::Logger->warn("CF $cf submitted with multiple differing values");
                 $ok = 0;
             }
         }
     }
 
-    return $ok;
+    return ($ok, $default_grouping);
 }
 
 sub ProcessObjectCustomFieldUpdates {
@@ -3147,12 +3150,9 @@ sub ProcessObjectCustomFieldUpdates {
                     next;
                 }
 
-                _ValidateConsistentCustomFieldValues($cf, $custom_fields_to_mod{$class}{$id}{$cf});
-
                 # In the case of inconsistent CFV submission,
-                # we'll pick the 1st grouping in the hash, alphabetically
-
-                my $grouping = (sort keys %{ $custom_fields_to_mod{$class}{$id}{$cf} })[0];
+                # we'll get the 1st grouping in the hash, alphabetically
+                my ($ret, $grouping) = _ValidateConsistentCustomFieldValues($cf, $custom_fields_to_mod{$class}{$id}{$cf});
 
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
