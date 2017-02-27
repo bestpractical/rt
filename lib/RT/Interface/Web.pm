@@ -3090,6 +3090,37 @@ sub ProcessTicketReminders {
     return @results;
 }
 
+sub _ValidateConsistentCustomFieldValues {
+    my $cf = shift;
+    my $args = shift;
+    my $ok = 1;
+
+    my @groupings = sort keys %$args;
+    return ($ok, undef) unless @groupings;
+    my $default_grouping = $groupings[0]; # Default to use if multiple are submitted
+
+    if (@groupings > 1) {
+        # Check for consistency, in case of JS fail
+        for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
+            my $base = $args->{$groupings[0]}{$key};
+            $base = [ $base ] unless ref $base;
+            for my $grouping (@groupings[1..$#groupings]) {
+                my $other = $args->{$grouping}{$key};
+                $other = [ $other ] unless ref $other;
+                next unless grep {$_} List::MoreUtils::pairwise {
+                    no warnings qw(uninitialized);
+                    $a ne $b
+                } @{$base}, @{$other};
+
+                RT::Logger->warn("CF $cf submitted with multiple differing values");
+                $ok = 0;
+            }
+        }
+    }
+
+    return ($ok, $default_grouping);
+}
+
 sub ProcessObjectCustomFieldUpdates {
     my %args    = @_;
     my $ARGSRef = $args{'ARGSRef'};
@@ -3119,34 +3150,21 @@ sub ProcessObjectCustomFieldUpdates {
                     $RT::Logger->warning("Couldn't load custom field #$cf");
                     next;
                 }
-                my @groupings = sort keys %{ $custom_fields_to_mod{$class}{$id}{$cf} };
-                if (@groupings > 1) {
-                    # Check for consistency, in case of JS fail
-                    for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
-                        my $base = $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]}{$key};
-                        $base = [ $base ] unless ref $base;
-                        for my $grouping (@groupings[1..$#groupings]) {
-                            my $other = $custom_fields_to_mod{$class}{$id}{$cf}{$grouping}{$key};
-                            $other = [ $other ] unless ref $other;
-                            warn "CF $cf submitted with multiple differing values"
-                                if grep {$_} List::MoreUtils::pairwise {
-                                    no warnings qw(uninitialized);
-                                    $a ne $b
-                                } @{$base}, @{$other};
-                        }
-                    }
-                    # We'll just be picking the 1st grouping in the hash, alphabetically
-                }
+
+                # In the case of inconsistent CFV submission,
+                # we'll get the 1st grouping in the hash, alphabetically
+                my ($ret, $grouping) = _ValidateConsistentCustomFieldValues($cf, $custom_fields_to_mod{$class}{$id}{$cf});
+
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
                         Prefix => GetCustomFieldInputNamePrefix(
                             Object      => $Object,
                             CustomField => $CustomFieldObj,
-                            Grouping    => $groupings[0],
+                            Grouping    => $grouping,
                         ),
                         Object      => $Object,
                         CustomField => $CustomFieldObj,
-                        ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{ $groupings[0] },
+                        ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{ $grouping },
                     );
             }
         }
