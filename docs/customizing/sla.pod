@@ -51,7 +51,7 @@ You also need to define what business time is:
             4 => { Name => 'Thursday', Start => '9:00', End => '18:00' },
             5 => { Name => 'Friday', Start => '9:00', End => '18:00' },
         },
-    );
+    ));
 
 =head2 Does business time support holidays?
 
@@ -66,7 +66,7 @@ Yep!
             5 => { Name => 'Friday', Start => '9:00', End => '18:00' },
             holidays => [qw(01-01 12-25 2015-10-12)],
         },
-    );
+    ));
 
 =head2 Does it support response due?
 
