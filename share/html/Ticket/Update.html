@@ -225,9 +225,11 @@ jQuery( function() {
                }
            }
        );
+       jQuery('#previewscrips div.titlebox-content').addClass('refreshing');
        jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
            jQuery('form[name=TicketUpdate]').serializeArray(),
            function() {
+               jQuery('#previewscrips div.titlebox-content').removeClass('refreshing');
                var txn_send_field = jQuery("#previewscrips input[name=TxnSendMailTo]");
                txn_send_field.change( syncCheckboxes );
                txn_send_field.click( function () { setCheckbox(this) } );
@@ -237,6 +239,7 @@ jQuery( function() {
                }
            }
        );
+       jQuery("#previewscrips input[name=TxnSendMailToAll], #previewscrips input[name=TxnSendMailTo]").attr('disabled', true);
    };
    updateScrips();
 

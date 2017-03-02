@@ -91,3 +91,7 @@ iframe.richtext-editor {
     position: absolute;
     margin-left: 0.5em;
 }
+
+.refreshing {
+    opacity: 0.3;
+}
