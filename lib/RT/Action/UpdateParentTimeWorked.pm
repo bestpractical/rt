@@ -65,6 +65,18 @@ When it fires it finds a ticket's parent tickets and increments the time on
 those tickets along with the built in behavior of incrementing the TimeWorked
 on the current ticket.
 
+With the addition of the 'Total Time Worked' setting, the associated Scrip
+is now installed 'Disabled' by default.  To enable this feature, under
+
+    Admin >> Scrips >> Select
+
+check the "Include disabled scrips in listing" checkbox and press Go.
+Then click on the "On TimeWorked Change Update Parent TimeWorked" link, and
+check the "Enabled" checkbox, saving changes.  This will renable the old
+behavior.  Please note, that if you want to use the 'Total Time Worked'
+setting all tickets created with this Scrip enabled will display the wrong
+totals.
+
 =cut
 
 sub Prepare {

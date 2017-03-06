@@ -56,5 +56,12 @@ our @Initial = (
             );
         }
     },
+
+    # disable the 'On TimeWorked Change Update Parent TimeWorked' scrip so that 'Total Time Worked' works
+    sub {
+        my $scrip = RT::Scrip->new(RT->SystemUser);
+        $scrip->LoadByCols(Description => 'On TimeWorked Change Update Parent TimeWorked');
+        $scrip->SetDisabled(1);
+    }, 
 );
 
