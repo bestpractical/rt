@@ -257,27 +257,26 @@ sub WebRemoteUserAutocreateInfo {
     # ...or any other source that sends REMOTE_USER data at user create.
     if (RT->Config->Get('WebRemoteUser')) {
 
-	my $settings = RT->Config->Get('ExternalSettingsRemoteUser');
-	my $config = $settings->{'remoteuser'};
+        my $settings = RT->Config->Get('ExternalSettingsRemoteUser');
+        my $config = $settings->{'RemoteUser'};
 
         if ($config->{'type'} eq 'shib') {
             for (keys(%{$config->{attr_map}})) {
-		my $envVar = $config->{attr_map}->{$_};
-		my $value = RequestENV("$envVar");
-		my $rtVar = $_;
-		$RT::Logger->debug("Found header: $envVar Mapped to RT variable: $rtVar \n");
-		# Make sure header is not empty before adding it, if empty; see if there's another mapping
-               if ((defined($value) and length($value)) and (not defined($user_info{"$rtVar"}))) {
-                   $user_info{"$rtVar"} = $value;
-                   $RT::Logger->debug("RT variable $rtVar set to $value taken from header $envVar\n");
-		} elsif (defined($user_info{"$rtVar"})) {
-		   # FIXME: So this will never happen with current format of ExternalSettings, would be great to
-		   #        make this work so that you can have more than 1-1 mapping in attr_map but too tired to fix.
-		   $RT::Logger->debug("RT variable $rtVar is already set to $user_info{\"$rtVar\"} so skipping header $envVar\n");
-		}
-	    }
-	}
-
+                my $rtVar = $_;
+                my @envVar = @{ $config->{attr_map}->{$_} };
+                for(my $i=0; $i < scalar(@envVar); $i++) {
+                   my $value = RequestENV("$envVar[$i]");
+                   $RT::Logger->debug("Found header: $envVar[$i] Mapped to RT variable: $rtVar \n");
+                   # Make sure header is not empty before adding it, if empty; see if there's another mapping
+                   if ((defined($value) and length($value)) and (not defined($user_info{"$rtVar"}))) {
+                      $user_info{"$rtVar"} = $value;
+                      $RT::Logger->debug("RT variable $rtVar set to $value taken from header $envVar[$i]\n");
+                   } elsif (defined($user_info{"$rtVar"})) {
+                      $RT::Logger->debug("RT variable $rtVar is already set to $user_info{\"$rtVar\"} so skipping header $envVar[$i]\n");
+                   }
+               }
+           }
+       }
     }
 
     # and return the wad of stuff
