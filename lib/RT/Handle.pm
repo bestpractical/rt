@@ -859,9 +859,66 @@ sub InsertData {
            @Catalogs, @Assets);
 
     local $@;
+
     $RT::Logger->debug("Going to load '$datafile' data file");
-    eval { require $datafile }
-      or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:". $@);
+    
+    my $datafile_content = do {
+        local $/;
+        open (my $f, '<:encoding(UTF-8)', $datafile)
+            or die "Cannot open initialdata file '$datafile' for read: $@";
+        <$f>;
+    };
+
+    my $format_handler;
+    my $handlers = RT->Config->Get('InitialdataFormatHandlers');
+    
+    foreach my $handler_candidate (@$handlers) {
+        next if $handler_candidate eq 'perl';
+        $handler_candidate->require
+            or die "Config option InitialdataFormatHandlers lists '$handler_candidate', but it failed to load:\n$@\n";
+
+        no strict 'refs';
+        if (&{"${handler_candidate}::CanLoad"}($datafile_content)) {
+            $RT::Logger->debug("Initialdata file '$datafile' can be loaded by $handler_candidate");
+            $format_handler = $handler_candidate;
+            last;
+        } else {
+            $RT::Logger->debug("Initialdata file '$datafile' can not be loaded by $handler_candidate");
+        }
+    }
+
+    if ( $format_handler ) {
+        no strict 'refs';
+        &{"${format_handler}::Load"}(
+            $datafile_content,
+            {
+                Groups          => \@Groups,
+                Users           => \@Users,
+                Members         => \@Members,
+                ACL             => \@ACL,
+                Queues          => \@Queues,
+                Classes         => \@Classes,
+                ScripActions    => \@ScripActions,
+                ScripConditions => \@ScripConditions,
+                Templates       => \@Templates,
+                CustomFields    => \@CustomFields,
+                CustomRoles     => \@CustomRoles,
+                Scrips          => \@Scrips,
+                Attributes      => \@Attributes,
+                Initial         => \@Initial,
+                Final           => \@Final,
+                Catalogs        => \@Catalogs,
+                Assets          => \@Assets,
+            },
+        ) or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:" . $@);
+    }
+    
+    if ( !$format_handler and grep(/^perl$/, @$handlers) ) {
+        # Use perl-style initialdata
+        # Note: eval of perl initialdata should only be done once
+        eval { require $datafile }
+          or return (0, "Couldn't load data from '$datafile':\nERROR:" . $@ . "\n\nDo you have the correct initialdata handler in RT_Config for this type of file?");
+    }
 
     if ( @Initial ) {
         $RT::Logger->debug("Running initial actions...");

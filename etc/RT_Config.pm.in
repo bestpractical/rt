@@ -2918,6 +2918,40 @@ Set($ExternalStorageDirectLink, 0);
 
 =back
 
+
+=head1 Initialdata Formats
+
+RT Supports pluggable data format parsers for F<initialdata> files.
+
+If you add format handlers, note that you can remove the perl entry if you
+don't want it available. B<Removing the default perl entry may cause problems
+installing plugins and RT updates>. If so, re-enable it temporarily.
+
+=over 4
+
+=item C<$InitialdataFormatHandlers>
+
+Set the C<$InitialdataFormatHandlers> to an arrayref containing a list of
+format handler modules. The 'perl' entry is the system default, and handles
+perl-style intialdata files.
+
+    Set( $InitialdataFormatHandlers,
+         [
+            'perl',
+            'RT::Extension::Initialdata::Foo',
+            ...
+         [
+       );
+
+=back
+
+=cut
+
+Set( $InitialdataFormatHandlers, [
+    'perl',
+]);
+
+
 =head1 Lifecycles
 
 =head2 Lifecycle definitions
