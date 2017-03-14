@@ -1494,11 +1494,14 @@ sub InsertData {
                 $RT::Logger->debug( $return ."." );
             }
             foreach my $q ( @queues ) {
-                my ($return, $msg) = $new_entry->AddToObject(
-                    ObjectId => $q,
-                    Stage    => $item->{'Stage'},
+                my %args = (
+                    Stage => $item->{'Stage'},
+                    (ref($q) ? %$q : (ObjectId => $q)),
                 );
-                $RT::Logger->error( "Couldn't apply scrip to $q: $msg" )
+
+                my ($return, $msg) = $new_entry->AddToObject(%args);
+
+                $RT::Logger->error( "Couldn't apply scrip to $args{ObjectId}: $msg" )
                     unless $return;
             }
         }
