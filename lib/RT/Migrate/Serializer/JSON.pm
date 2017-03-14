@@ -158,6 +158,17 @@ my %initialdataType = (
     GroupMember => 'Members',
 );
 
+sub CanonicalizeReference {
+    my $self = shift;
+    my $ref = ${ shift(@_) };
+    my $context = shift;
+
+    my ($class, $id) = $ref =~ /^(.*?)-(.*)/
+        or return $ref;
+    my $record = $self->{Records}{$class}{$ref};
+    return $record->{Name} || $ref;
+}
+
 sub WriteFile {
     my $self = shift;
     my %output;
@@ -171,7 +182,7 @@ sub WriteFile {
             my $record = $self->{Records}{$intype}{$id};
             for my $key (keys %$record) {
                 if (ref($record->{$key}) eq 'SCALAR') {
-                    $record->{$key} = ${ $record->{$key} };
+                    $record->{$key} = $self->CanonicalizeReference($record->{$key}, $record);
                 }
             }
             push @{ $output{$outtype} }, $record;
