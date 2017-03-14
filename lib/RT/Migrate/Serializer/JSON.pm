@@ -158,15 +158,24 @@ my %initialdataType = (
     GroupMember => 'Members',
 );
 
+sub _GetRecordByRef {
+    my $self = shift;
+    my $ref  = shift;
+
+    my ($class) = $ref =~ /^([\w:]+)-/
+        or return undef;
+    return $self->{Records}{$class}{$ref};
+}
+
 sub CanonicalizeReference {
     my $self    = shift;
     my $ref     = ${ shift(@_) };
     my $context = shift;
     my $for_key = shift;
 
-    my ($class, $id) = $ref =~ /^(.*?)-(.*)/
+    my $record = $self->_GetRecordByRef($ref)
         or return $ref;
-    my $record = $self->{Records}{$class}{$ref};
+
     return $record->{Name} || $ref;
 }
 
