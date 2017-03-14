@@ -164,7 +164,7 @@ sub WriteFile {
             my $record = $self->{Records}{$type}{$id};
             for my $key (keys %$record) {
                 if (ref($record->{$key}) eq 'SCALAR') {
-                    delete $record->{$key};
+                    $record->{$key} = ${ $record->{$key} };
                 }
             }
             push @{ $output{$type} }, $record;
