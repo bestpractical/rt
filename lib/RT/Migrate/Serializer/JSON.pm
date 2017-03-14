@@ -179,30 +179,64 @@ sub CanonicalizeReference {
     return $record->{Name} || $ref;
 }
 
-sub _CanonicalizeObjectType {
+sub _CanonicalizeManyToMany {
     my $self = shift;
-    my $object_class = shift;
-    my $object_primary_ref = shift;
-    my $primary_class = shift;
+    my %args = (
+        object_class => '',
+        object_primary_ref => '',
+        primary_class => '',
+        primary_key => 'ApplyTo',
+        canonicalize_object => sub { $_->{ObjectId} },
+        @_,
+    );
+
+    my $object_class = $args{object_class};
+    my $object_primary_ref = $args{object_primary_ref};
+    my $primary_class = $args{primary_class};
+    my $primary_key = $args{primary_key};
+    my $canonicalize_object = $args{canonicalize_object};
 
     if (my $objects = delete $self->{Records}{$object_class}) {
         for my $object (values %$objects) {
             my $primary = $self->{Records}{$primary_class}{ ${ $object->{$object_primary_ref} } };
-            push @{ $primary->{ApplyTo} }, $object;
+            push @{ $primary->{$primary_key} }, $object;
         }
 
         for my $primary (values %{ $self->{Records}{$primary_class} }) {
-            @{ $primary->{ApplyTo} } = map { $_->{ObjectId} }
-                                       sort { $a->{SortOrder} <=> $b->{SortOrder} }
-                                       @{ $primary->{ApplyTo} || [] };
+            @{ $primary->{$primary_key} }
+                = map &$canonicalize_object,
+                  sort { $a->{SortOrder} <=> $b->{SortOrder} }
+                  @{ $primary->{$primary_key} || [] };
         }
     }
 }
 
 sub CanonicalizeObjects {
     my $self = shift;
-    $self->_CanonicalizeObjectType('RT::ObjectCustomField' => CustomField => 'RT::CustomField');
-    $self->_CanonicalizeObjectType('RT::ObjectClass' => Class => 'RT::Class');
+
+    $self->_CanonicalizeManyToMany(
+        object_class       => 'RT::ObjectCustomField',
+        object_primary_ref => 'CustomField',
+        primary_class      => 'RT::CustomField',
+    );
+
+    $self->_CanonicalizeManyToMany(
+        object_class       => 'RT::ObjectClass',
+        object_primary_ref => 'Class',
+        primary_class      => 'RT::Class'
+    );
+
+    $self->_CanonicalizeManyToMany(
+        object_class       => 'RT::ObjectScrip',
+        object_primary_ref => 'Scrip',
+        primary_class      => 'RT::Scrip',
+        primary_key        => 'Queue',
+        canonicalize_object => sub {
+            ref($_->{ObjectId})
+                ? $self->_GetRecordByRef(${ $_->{ObjectId} })->{Name}
+                : $_->{ObjectId}
+        },
+    );
 }
 
 sub WriteFile {
