@@ -159,9 +159,10 @@ my %initialdataType = (
 );
 
 sub CanonicalizeReference {
-    my $self = shift;
-    my $ref = ${ shift(@_) };
+    my $self    = shift;
+    my $ref     = ${ shift(@_) };
     my $context = shift;
+    my $for_key = shift;
 
     my ($class, $id) = $ref =~ /^(.*?)-(.*)/
         or return $ref;
@@ -169,9 +170,26 @@ sub CanonicalizeReference {
     return $record->{Name} || $ref;
 }
 
+sub CanonicalizeObjects {
+    my $self = shift;
+
+    if (my $OCFs = delete $self->{Records}{'RT::ObjectCustomField'}) {
+        for my $OCF (values %$OCFs) {
+            my $CF = $self->{Records}{'RT::CustomField'}{ ${ $OCF->{CustomField} } };
+            push @{ $CF->{ApplyTo} }, $OCF;
+        }
+
+        for my $CF (values %{ $self->{Records}{'RT::CustomField'} }) {
+            @{ $CF->{ApplyTo} } = map { $_->{ObjectId} } sort { $a->{SortOrder} <=> $b->{SortOrder} } @{ $CF->{ApplyTo} || [] };
+        }
+    }
+}
+
 sub WriteFile {
     my $self = shift;
     my %output;
+
+    $self->CanonicalizeObjects;
 
     for my $intype (keys %{ $self->{Records} }) {
         my $outtype = $intype;
@@ -182,7 +200,7 @@ sub WriteFile {
             my $record = $self->{Records}{$intype}{$id};
             for my $key (keys %$record) {
                 if (ref($record->{$key}) eq 'SCALAR') {
-                    $record->{$key} = $self->CanonicalizeReference($record->{$key}, $record);
+                    $record->{$key} = $self->CanonicalizeReference($record->{$key}, $record, $key);
                 }
             }
             push @{ $output{$outtype} }, $record;
