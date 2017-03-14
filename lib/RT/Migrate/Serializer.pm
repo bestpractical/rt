@@ -53,7 +53,6 @@ use warnings;
 
 use base 'RT::DependencyWalker';
 
-use Storable qw//;
 sub cmp_version($$) { RT::Handle::cmp_version($_[0],$_[1]) };
 use RT::Migrate::Incremental;
 use RT::Migrate::Serializer::IncrementalRecord;
@@ -327,11 +326,8 @@ sub PushBasics {
 sub InitStream {
     my $self = shift;
 
-    # Write the initial metadata
     my $meta = $self->Metadata;
-    $! = 0;
-    Storable::nstore_fd( $meta, $self->{Filehandle} );
-    die "Failed to write metadata: $!" if $!;
+    $self->WriteMetadata($meta);
 
     return unless cmp_version($meta->{VersionFrom}, $meta->{Version}) < 0;
 
@@ -501,9 +497,7 @@ sub Visit {
         if ($self->{Transform}{"+$class"}) {
             my @extra = $self->{Transform}{"+$class"}->(\%data,\$class);
             for my $e (@extra) {
-                $! = 0;
-                Storable::nstore_fd($e, $self->{Filehandle});
-                die "Failed to write: $!" if $!;
+                $self->WriteRecord($e);
                 $self->{ObjectCount}{$e->[0]}++;
             }
         }
@@ -532,11 +526,7 @@ sub Visit {
         );
     }
 
-    # Write it out; nstore_fd doesn't trap failures to write, so we have
-    # to; by clearing $! and checking it afterwards.
-    $! = 0;
-    Storable::nstore_fd(\@store, $self->{Filehandle});
-    die "Failed to write: $!" if $!;
+    $self->WriteRecord(\@store);
 
     $self->{ObjectCount}{$store[0]}++;
 }

@@ -51,6 +51,8 @@ package RT::Migrate::Serializer::File;
 use strict;
 use warnings;
 
+use Storable qw//;
+
 use base 'RT::Migrate::Serializer';
 
 sub Init {
@@ -166,6 +168,25 @@ sub RotateFile {
     my $self = shift;
     $self->CloseFile;
     $self->OpenFile;
+}
+
+sub WriteMetadata {
+    my $self = shift;
+    my $meta = shift;
+    $! = 0;
+    Storable::nstore_fd( $meta, $self->{Filehandle} );
+    die "Failed to write metadata: $!" if $!;
+}
+
+sub WriteRecord {
+    my $self = shift;
+    my $record = shift;
+
+    # Write it out; nstore_fd doesn't trap failures to write, so we have
+    # to; by clearing $! and checking it afterwards.
+    $! = 0;
+    Storable::nstore_fd($record, $self->{Filehandle});
+    die "Failed to write: $!" if $!;
 }
 
 1;
