@@ -223,7 +223,18 @@ sub CanonicalizeObjects {
     $self->_CanonicalizeManyToMany(
         object_class       => 'RT::ObjectClass',
         object_primary_ref => 'Class',
-        primary_class      => 'RT::Class'
+        primary_class      => 'RT::Class',
+    );
+
+    $self->_CanonicalizeManyToMany(
+        object_class       => 'RT::ObjectCustomRole',
+        object_primary_ref => 'CustomRole',
+        primary_class      => 'RT::CustomRole',
+        canonicalize_object => sub {
+            ref($_->{ObjectId})
+                ? $self->_GetRecordByRef(${ $_->{ObjectId} })->{Name}
+                : $_->{ObjectId};
+        },
     );
 
     $self->_CanonicalizeManyToMany(
