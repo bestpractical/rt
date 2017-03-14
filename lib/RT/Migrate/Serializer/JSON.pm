@@ -232,9 +232,10 @@ sub CanonicalizeObjects {
         primary_class      => 'RT::Scrip',
         primary_key        => 'Queue',
         canonicalize_object => sub {
-            ref($_->{ObjectId})
+            my $object = ref($_->{ObjectId})
                 ? $self->_GetRecordByRef(${ $_->{ObjectId} })->{Name}
-                : $_->{ObjectId}
+                : $_->{ObjectId};
+            return { ObjectId => $object, Stage => $_->{Stage} };
         },
     );
 }
