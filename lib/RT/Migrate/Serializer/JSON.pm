@@ -152,7 +152,7 @@ sub WriteRecord {
     my $type = $record->[0];
     $type =~ s/^RT:://;
 
-    push @{ $self->{Records}{ $type } }, $record->[2];
+    $self->{Records}{ $type }{$record->[1]} = $record->[2];
 }
 
 sub WriteFile {
@@ -160,7 +160,8 @@ sub WriteFile {
     my %output;
 
     for my $type (keys %{ $self->{Records} }) {
-        for my $record (@{ $self->{Records}{$type} }) {
+        for my $id (keys %{ $self->{Records}{$type} }) {
+            my $record = $self->{Records}{$type}{$id};
             for my $key (keys %$record) {
                 if (ref($record->{$key}) eq 'SCALAR') {
                     delete $record->{$key};
