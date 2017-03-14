@@ -149,10 +149,7 @@ sub WriteRecord {
     my $self = shift;
     my $record = shift;
 
-    my $type = $record->[0];
-    $type =~ s/^RT:://;
-
-    $self->{Records}{ $type }{$record->[1]} = $record->[2];
+    $self->{Records}{ $record->[0] }{ $record->[1] } = $record->[2];
 }
 
 my %initialdataType = (
@@ -166,7 +163,9 @@ sub WriteFile {
     my %output;
 
     for my $intype (keys %{ $self->{Records} }) {
-        my $outtype = $initialdataType{$intype} || ($intype . 's');
+        my $outtype = $intype;
+        $outtype =~ s/^RT:://;
+        $outtype = $initialdataType{$outtype} || ($outtype . 's');
 
         for my $id (keys %{ $self->{Records}{$intype} }) {
             my $record = $self->{Records}{$intype}{$id};
