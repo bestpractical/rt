@@ -70,6 +70,7 @@ sub Init {
 
         FollowScrips        => 0,
         FollowTickets       => 1,
+        FollowTransactions  => 1,
         FollowACL           => 0,
         FollowAssets        => 1,
 
@@ -90,6 +91,7 @@ sub Init {
                   FollowDisabled
                   FollowScrips
                   FollowTickets
+                  FollowTransactions
                   FollowAssets
                   FollowACL
                   Queues
@@ -484,6 +486,8 @@ sub Observe {
                      && $obj->Object->Disabled;
         }
         return $self->{FollowACL};
+    } elsif ($obj->isa("RT::Transaction")) {
+        return $self->{FollowTransactions};
     } elsif ($obj->isa("RT::Scrip") or $obj->isa("RT::Template") or $obj->isa("RT::ObjectScrip")) {
         return $self->{FollowScrips};
     } elsif ($obj->isa("RT::GroupMember")) {
