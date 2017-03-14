@@ -258,6 +258,12 @@ jQuery( function() {
    }
 
    jQuery("#ticket-update-metadata :input, #UpdateCc, #UpdateBcc").change( updateScrips );
+
+   jQuery("body").on("submit", "form", function () {
+       jQuery("#recipients input[name=TxnSendMailToAll], #recipients input[name=TxnSendMailTo]").attr('disabled', false);
+       jQuery("#previewscrips input[name=TxnSendMailToAll], #previewscrips input[name=TxnSendMailTo]").attr('disabled', false);
+   });
+
 });
 </script>
 % }
