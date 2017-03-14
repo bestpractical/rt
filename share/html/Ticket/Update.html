@@ -213,9 +213,14 @@ jQuery( function() {
            var target = ev.target;
            jQuery("input[name=TxnSendMailTo]").filter( function() { return this.value == target.value; } ).prop("checked",jQuery(target).prop('checked'));
        };
+
+       jQuery('#recipients div.titlebox-content').addClass('refreshing');
+       jQuery('#previewscrips div.titlebox-content').addClass('refreshing');
+
        jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
            jQuery('form[name=TicketUpdate]').serializeArray(),
            function() {
+               jQuery('#recipients div.titlebox-content').removeClass('refreshing');
                var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
                txn_send_field.change( syncCheckboxes );
                txn_send_field.click( function () { setCheckbox(this) } );
@@ -225,7 +230,7 @@ jQuery( function() {
                }
            }
        );
-       jQuery('#previewscrips div.titlebox-content').addClass('refreshing');
+
        jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
            jQuery('form[name=TicketUpdate]').serializeArray(),
            function() {
@@ -239,6 +244,8 @@ jQuery( function() {
                }
            }
        );
+
+       jQuery("#recipients input[name=TxnSendMailToAll], #recipients input[name=TxnSendMailTo]").attr('disabled', true);
        jQuery("#previewscrips input[name=TxnSendMailToAll], #previewscrips input[name=TxnSendMailTo]").attr('disabled', true);
    };
    updateScrips();
