@@ -990,6 +990,10 @@ sub _CanonicalizeRoleName {
         my $self = shift;
         return ("Comments added");          #loc()
     },
+    TransCustomField => sub {
+        my $self = shift;
+        return ("Transaction custom field set"); #loc()
+    },
     CustomField => sub {
         my $self = shift;
         my $field = $self->loc('CustomField');

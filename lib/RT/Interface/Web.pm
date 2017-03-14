@@ -2344,6 +2344,7 @@ sub ProcessUpdateMessage {
     if (    not @attachments
         and not length $args{ARGSRef}->{'UpdateContent'} )
     {
+        $args{'ARGSRef'}->{'NoContentUpdate'} = 1;
         if ( $args{ARGSRef}->{'UpdateTimeWorked'} ) {
             $args{ARGSRef}->{TimeWorked} = $args{TicketObj}->TimeWorked + delete $args{ARGSRef}->{'UpdateTimeWorked'};
         }
@@ -3128,8 +3129,21 @@ sub _ValidateConsistentCustomFieldValues {
 
 sub ProcessObjectCustomFieldUpdates {
     my %args    = @_;
+    my $TicketObj = $args{'TicketObj'};
     my $ARGSRef = $args{'ARGSRef'};
     my @results;
+
+    # This processes transaction cfs with no update content.
+    # Updates with a message are handled in ProcessUpdateMessage
+
+    if ( $TicketObj
+         and $ARGSRef->{'NoContentUpdate'}
+         and grep {/^(?:Object-RT::Transaction--)?CustomField-(\d+)/} keys %$ARGSRef ){
+        my ( $ret, $msg, $TransactionObj ) = $TicketObj->_NewTransaction(
+            Type      => 'TransCustomField',
+        );
+        $TransactionObj->UpdateCustomFields( %$ARGSRef) if $TransactionObj;
+    }
 
     # Build up a list of objects that we want to work with
     my %custom_fields_to_mod = _ParseObjectCustomFieldArgs($ARGSRef);
