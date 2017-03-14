@@ -2963,7 +2963,7 @@ sub ProcessTicketBasics {
     if ( defined($ARGSRef->{'TimeWorked'}) && ($ARGSRef->{'TimeWorked'} || 0) != $TicketObj->TimeWorked ) {
         my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'} );
         push( @results, $msg );
-        $txn->UpdateCustomFields( %$ARGSRef) if $txn;
+        TxnAfterUpdateTimeWorked(TransactionObj => $txn, ARGSRef => $ARGSRef);
     }
 
     # We special case owner changing, so we can use ForceOwnerChange
@@ -2985,6 +2985,11 @@ sub ProcessTicketBasics {
     # }}}
 
     return (@results);
+}
+
+# This subroutine is a stub to allow you to attach transaction custom field updates
+# to the transaction associated with the time worked update.
+sub TxnAfterUpdateTimeWorked {
 }
 
 sub ProcessTicketReminders {
