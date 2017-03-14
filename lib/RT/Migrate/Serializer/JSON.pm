@@ -170,19 +170,30 @@ sub CanonicalizeReference {
     return $record->{Name} || $ref;
 }
 
-sub CanonicalizeObjects {
+sub _CanonicalizeObjectType {
     my $self = shift;
+    my $object_class = shift;
+    my $object_primary_ref = shift;
+    my $primary_class = shift;
 
-    if (my $OCFs = delete $self->{Records}{'RT::ObjectCustomField'}) {
-        for my $OCF (values %$OCFs) {
-            my $CF = $self->{Records}{'RT::CustomField'}{ ${ $OCF->{CustomField} } };
-            push @{ $CF->{ApplyTo} }, $OCF;
+    if (my $objects = delete $self->{Records}{$object_class}) {
+        for my $object (values %$objects) {
+            my $primary = $self->{Records}{$primary_class}{ ${ $object->{$object_primary_ref} } };
+            push @{ $primary->{ApplyTo} }, $object;
         }
 
-        for my $CF (values %{ $self->{Records}{'RT::CustomField'} }) {
-            @{ $CF->{ApplyTo} } = map { $_->{ObjectId} } sort { $a->{SortOrder} <=> $b->{SortOrder} } @{ $CF->{ApplyTo} || [] };
+        for my $primary (values %{ $self->{Records}{$primary_class} }) {
+            @{ $primary->{ApplyTo} } = map { $_->{ObjectId} }
+                                       sort { $a->{SortOrder} <=> $b->{SortOrder} }
+                                       @{ $primary->{ApplyTo} || [] };
         }
     }
+}
+
+sub CanonicalizeObjects {
+    my $self = shift;
+    $self->_CanonicalizeObjectType('RT::ObjectCustomField' => CustomField => 'RT::CustomField');
+    $self->_CanonicalizeObjectType('RT::ObjectClass' => Class => 'RT::Class');
 }
 
 sub WriteFile {
