@@ -155,19 +155,27 @@ sub WriteRecord {
     $self->{Records}{ $type }{$record->[1]} = $record->[2];
 }
 
+my %initialdataType = (
+    ACE => 'ACL',
+    Class => 'Classes',
+    GroupMember => 'Members',
+);
+
 sub WriteFile {
     my $self = shift;
     my %output;
 
-    for my $type (keys %{ $self->{Records} }) {
-        for my $id (keys %{ $self->{Records}{$type} }) {
-            my $record = $self->{Records}{$type}{$id};
+    for my $intype (keys %{ $self->{Records} }) {
+        my $outtype = $initialdataType{$intype} || ($intype . 's');
+
+        for my $id (keys %{ $self->{Records}{$intype} }) {
+            my $record = $self->{Records}{$intype}{$id};
             for my $key (keys %$record) {
                 if (ref($record->{$key}) eq 'SCALAR') {
                     $record->{$key} = ${ $record->{$key} };
                 }
             }
-            push @{ $output{$type} }, $record;
+            push @{ $output{$outtype} }, $record;
         }
     }
 
