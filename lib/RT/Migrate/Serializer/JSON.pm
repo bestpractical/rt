@@ -122,7 +122,7 @@ sub Directory {
 
 sub JSON {
     my $self = shift;
-    return $self->{JSON} ||= JSON->new->pretty;
+    return $self->{JSON} ||= JSON->new->pretty->canonical;
 }
 
 sub OpenFile {
