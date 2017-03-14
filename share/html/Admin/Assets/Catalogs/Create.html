@@ -77,6 +77,17 @@ if ($id eq "new") {
     push @results, $msg, @{$nonfatal || []};
 
     if ($ok) {
+        my $updated;
+        $updated = 1
+            if ( (grep {defined $_ and $_ ne ''} @results) and $catalog->id );
+        $m->callback(
+            CallbackName => 'AfterUpdate',
+            Updated => $updated,
+            Object => $catalog,
+            ARGSRef => \%ARGS,
+            Results => \@results
+        );
+
         MaybeRedirectForResults(
             Actions     => \@results,
             Path        => "/Admin/Assets/Catalogs/Modify.html",

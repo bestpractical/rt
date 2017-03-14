@@ -105,6 +105,16 @@ my @panes = $m->comp(
 $m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
     for @panes;
 
+my $updated;
+$updated = 1
+    if ($ARGS{'body-Submit'});
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Updated => $updated,
+    Object => $default_portlets,
+    ARGSRef => \%ARGS,
+    Results => \@actions
+);
 
 </%init>
 

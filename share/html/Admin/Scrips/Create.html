@@ -127,6 +127,17 @@ if ( $Create ) {
         CustomIsApplicableCode => $ARGS{"CustomIsApplicableCode"},
     );
 
+    my $updated;
+    $updated = 1
+        if ( (grep {defined $_ and $_ ne ''} @results) and $scrip->id );
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Updated => $updated,
+        Object => $scrip,
+        ARGSRef => \%ARGS,
+        Results => \@results
+    );
+
     MaybeRedirectForResults(
         Force     => 1,
         Actions   => [ $msg ],

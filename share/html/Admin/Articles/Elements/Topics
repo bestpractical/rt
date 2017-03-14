@@ -204,6 +204,19 @@ for my $topic (@todo) {
     push @results, "Reparented orphan ".$topic->Id." to root";
 }
 
+my $updated;
+$updated = 1
+    if ( (grep {defined $_ and $_ ne ''} @results) );
+
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Updated => $updated,
+    Object => undef,
+    ARGSRef => \%ARGS,
+    Results => \@results
+);
+
+
 </%INIT>
 
 

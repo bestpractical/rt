@@ -167,6 +167,17 @@ if ( $RoleObj->Id ) {
     $title = loc("Create a custom role");
 }
 
+my $updated;
+$updated = 1
+    if ( (grep {defined $_ and $_ ne ''} @results) and $RoleObj->id );
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Updated => $updated,
+    Object => $RoleObj,
+    ARGSRef => \%ARGS,
+    Results => \@results
+);
+
 MaybeRedirectForResults(
     Actions   => \@results,
     Arguments => { id => $RoleObj->Id },

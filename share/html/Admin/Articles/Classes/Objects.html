@@ -133,6 +133,18 @@ if ( $UpdateObjs ) {
     }
 }
 
+my $updated;
+$updated = 1
+    if ( (grep {defined $_ and $_ ne ''} @results) );
+
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Updated => $updated,
+    Object => $Class,
+    ARGSRef => \%ARGS,
+    Results => \@results
+);
+
 my $is_global = $Class->IsApplied(0);
 
 my $applied = $Class->AppliedTo;

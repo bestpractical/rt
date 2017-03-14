@@ -112,6 +112,18 @@ my @panes = $m->comp(
 $m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
     for @panes;
 
+my $updated;
+$updated = 1
+    if ( (grep {defined $_ and $_ ne ''} @actions) );
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Updated => $updated,
+    Object => $UserObj,
+    ARGSRef => \%ARGS,
+    Results => \@actions
+);
+
+
 </%init>
 <%ARGS>
 $id => undef

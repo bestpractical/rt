@@ -113,6 +113,18 @@ if ( $Update ) {
         my ($status, $msg) = $group->DeleteMember( $id );
         push @results, $msg;
     }
+
+    my $updated;
+    $updated = 1
+        if ( (grep {defined $_ and $_ ne ''} @results) and $object->id );
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Updated => $updated,
+        Object => $object,
+        ARGSRef => \%ARGS,
+        Results => \@results
+    );
+
     MaybeRedirectForResults(
         Arguments => { id => $id },
         Actions   => \@results,

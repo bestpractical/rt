@@ -114,6 +114,16 @@ if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
             if (($ARGS{'PrivateKey'}||'') ne ($UserObj->PrivateKey||'')) {
                 my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
                 push @results, $msg;
+                my $updated;
+                $updated = 1
+                    if ( (grep {defined $_ and $_ ne ''} @results) );
+                $m->callback(
+                    CallbackName => 'AfterUpdate',
+                    Updated => $updated,
+                    Object => $UserObj,
+                    ARGSRef => \%ARGS,
+                    Results => \@results
+                );
             }
         } else {
             push @results, loc("Invalid key [_1] for address '[_2]'", $ARGS{'PrivateKey'}, $email);
@@ -125,6 +135,16 @@ if (RT::Crypt->UseForOutgoing eq 'SMIME') {
     if ( $Update and ($ARGS{'SMIMECertificate'}||'') ne ($UserObj->SMIMECertificate||'') ) {
         my ($status, $msg) = $UserObj->SetSMIMECertificate( $ARGS{'SMIMECertificate'} );
         push @results, $msg;
+        my $updated;
+        $updated = 1
+            if ( (grep {defined $_ and $_ ne ''} @results) );
+        $m->callback(
+            CallbackName => 'AfterUpdate',
+            Updated => $updated,
+            Object => $UserObj,
+            ARGSRef => \%ARGS,
+            Results => \@results
+        );
     }
 }
 

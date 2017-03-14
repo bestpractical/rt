@@ -73,6 +73,17 @@ my @results;
 
 if ($Update) {
     push @results, ProcessAssetRoleMembers( $catalog => %ARGS );
+    
+    my $updated;
+    $updated = 1
+        if ( (grep {defined $_ and $_ ne ''} @results) and $catalog->id );
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Updated => $updated,
+        Object => $catalog,
+        ARGSRef => \%ARGS,
+        Results => \@results
+    );
 
     MaybeRedirectForResults(
         Actions     => \@results,

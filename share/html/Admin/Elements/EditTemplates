@@ -116,6 +116,18 @@ foreach my $id( @DeleteTemplates ) {
         push @actions, $msg;
     }
 }
+
+my $updated;
+$updated = 1
+    if ( (grep {defined $_ and $_ ne ''} @actions) );
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Updated => $updated,
+    Object => undef,
+    ARGSRef => \%ARGS,
+    Results => \@actions
+);
+
 </%INIT>
 <%ARGS>
 $id => 0

@@ -136,7 +136,7 @@
 
 <%INIT>
 
-my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
+my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg, $updated);
 
 my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($id) || Abort(loc("Couldn't load queue", $id));
@@ -151,6 +151,7 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
             my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $1,
                                                         PrincipalId => $2);
             push @results, $msg;
+            $updated = 1;
         }
     }
 
@@ -168,6 +169,7 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup) {
             PrincipalId => $id,
         );
         push @results, $msg;
+        $updated = 1;
     }
 }
  
@@ -180,7 +182,7 @@ if ( $ARGS{'UserString'} ) {
                  );
 } else {
     $user_msg = loc("No principals selected.");
-    }
+}
 
 if ( $ARGS{'GroupString'} ) {
     $Groups = RT::Groups->new( $session{'CurrentUser'} );
@@ -193,6 +195,15 @@ if ( $ARGS{'GroupString'} ) {
     $group_msg = loc("No principals selected.");
 }
 my $title = loc('People related to queue [_1]', $QueueObj->Name);
+
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Updated => $updated, 
+    Object => $QueueObj,
+    ARGSRef => \%ARGS,
+    Results => \@results
+);
+
 </%INIT>
 
 <%ARGS>

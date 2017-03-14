@@ -120,6 +120,18 @@ if ( $Update ) {
             push @results, $msg;
         }
     }
+    
+    my $updated;
+    $updated = 1
+        if ( (grep {defined $_ and $_ ne ''} @results) and $role->id );
+    $m->callback(
+        CallbackName => 'AfterUpdate',
+        Updated => $updated,
+        Object => $role,
+        ARGSRef => \%ARGS,
+        Results => \@results
+    );
+
     MaybeRedirectForResults(
         Actions   => \@results,
         Arguments => {

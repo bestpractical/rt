@@ -160,6 +160,18 @@ foreach my $member (grep $_, @AddMembersGroups) {
     my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
     push (@results, $msg);
 }
+
+my $updated;
+$updated = 1
+    if ( (grep {defined $_ and $_ ne ''} @results) );
+$m->callback(
+    CallbackName => 'AfterUpdate',
+    Updated => $updated,
+    Object => $Group,
+    ARGSRef => \%ARGS,
+    Results => \@results
+);
+
 </%INIT>
 
 <%ARGS>
