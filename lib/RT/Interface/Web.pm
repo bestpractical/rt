@@ -4344,6 +4344,96 @@ sub ProcessAssetsSearchArguments {
     );
 }
 
+=head3 SetObjectSessionCache
+
+Convenience method to stash per-user query results in the user session. This is used
+for rights-intensive queries that change infrequently, such as generating the list of
+queues a user has access to.
+
+The method handles populating the session cache and clearing it based on CacheNeedsUpdate.
+It returns the cache key so callers can use $session directly after it has been created
+or updated.
+
+Parameters:
+
+=over
+
+=item * ObjectType, required, the object for which to fetch values
+
+=item * CheckRight, the right to check for the current user in the query
+
+=item * ShowAll, boolean, ignores the rights check
+
+=item * Default, for dropdowns, a default selected value
+
+=item * CacheNeedsUpdate, date indicating when an update happened requiring a cache clear
+
+=cut
+
+sub SetObjectSessionCache {
+    my %args = (
+        CheckRight => undef,
+        ShowAll => 1,
+        Default => 0,
+        CacheNeedsUpdate => undef,
+        @_ );
+
+    my $ObjectType = $args{'ObjectType'};
+    $ObjectType = "RT::$ObjectType" unless $ObjectType =~ /::/;
+    my $CheckRight = $args{'CheckRight'};
+    my $ShowAll = $args{'ShowAll'};
+    my $CacheNeedsUpdate = $args{'CacheNeedsUpdate'};
+
+    my $cache_key = join "---", "SelectObject", $ObjectType,
+        $session{'CurrentUser'}->Id, $CheckRight || "", $ShowAll;
+
+    if ( defined $session{$cache_key} && !$session{$cache_key}{id} ) {
+        delete $session{$cache_key};
+    }
+
+    if ( defined $session{$cache_key}
+         && ref $session{$cache_key} eq 'ARRAY') {
+        delete $session{$cache_key};
+    }
+    if ( defined $session{$cache_key} && defined $CacheNeedsUpdate &&
+        $session{$cache_key}{lastupdated} <= $CacheNeedsUpdate ) {
+        delete $session{$cache_key};
+    }
+
+    if ( not defined $session{$cache_key} ) {
+        my $collection = "${ObjectType}s"->new($session{'CurrentUser'});
+        $collection->UnLimit;
+
+        $HTML::Mason::Commands::m->callback( CallbackName => 'ModifyCollection',
+            CallbackPage => '/Elements/Quicksearch',
+            ARGSRef => \%args, Collection => $collection, ObjectType => $ObjectType );
+
+        # This is included for continuity in the 4.2 series. It will be removed in 4.6.
+        $HTML::Mason::Commands::m->callback( CallbackName => 'SQLFilter',
+            CallbackPage => '/Elements/QueueSummaryByLifecycle', Queues => $collection )
+            if $ObjectType eq "RT::Queue";
+
+        $session{$cache_key}{id} = {};
+
+        while (my $object = $collection->Next) {
+            if ($ShowAll
+                or not $CheckRight
+                or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))
+            {
+                push @{$session{$cache_key}{objects}}, {
+                    Id          => $object->Id,
+                    Name        => $object->Name,
+                    Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
+                };
+                $session{$cache_key}{id}{ $object->id } = 1;
+            }
+        }
+        $session{$cache_key}{lastupdated} = time();
+    }
+
+    return $cache_key;
+}
+
 =head2 _load_container_object ( $type, $id );
 
 Instantiate container object for saving searches.
