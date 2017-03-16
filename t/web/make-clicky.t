@@ -68,6 +68,13 @@ diag "Found in other attribute";
     is_string( make_clicky($m, $url, 1), $url, "URL in image src= is a no-op" );
 }
 
+diag "Do not double encode &amp test";
+{
+    my $url = 'http://bestpractical.com/search?q=me&amp;irene;token=foo';
+    my $string = qq[<span class="clickylink"><a target="_blank" href="http://bestpractical.com/search?q=me&amp;irene;token=foo">http://bestpractical.com/search?q=me&amp;irene;token=foo</a></span>];
+    is_string( make_clicky($m,$url, 1), $string, "URL with &amp; should not rencode" );
+
+}
 
 sub make_clicky {
     my $m    = shift;
