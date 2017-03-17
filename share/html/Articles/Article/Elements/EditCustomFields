@@ -60,8 +60,8 @@
         Cols => 70
         &></td>
 </tr>
-</table>
 % }
+</table>
 <%INIT>
 my $CustomFields;
 
