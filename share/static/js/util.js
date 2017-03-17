@@ -559,6 +559,15 @@ jQuery(function() {
         }, 'json');
         return false;
     });
+
+    jQuery('form[name=TicketCreate], form[name=TicketUpdate]').keypress(function (e) {
+        if (jQuery(e.target).is('textarea')) {
+            return true;
+        }
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
 });
 
 // focus jquery object in window, only moving the screen when necessary
