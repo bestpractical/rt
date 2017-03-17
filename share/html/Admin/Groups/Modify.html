@@ -60,31 +60,34 @@
 <input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 % }
 <table>
-<tr><td align="right">
-<&|/l&>Name</&>:
-</td>
-<td><input name="Name" value="<%$Group->Name||$Name||''%>" /></td>
-</tr>
-<tr>
-<td align="right">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
-</tr>
+    <tr>
+        <td align="right"><&|/l&>Name</&>:</td>
+        <td><input name="Name" value="<%$Group->Name||$Name||''%>" size="60"/></td>
+    </tr>
+    <tr>
+        <td align="right"><&|/l&>Description</&>:</td>
+        <td><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
+    </tr>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
-<tr valign="top"><td align="right">
-<% $CF->Name %>:
-</td><td>
-<& /Elements/EditCustomField, CustomField => $CF, 
-                              Object => $Group, &>
-</td></tr>
+    <tr valign="top">
+        <td align="right"><% $CF->Name %>:</td>
+        <td>
+            <& /Elements/EditCustomField,
+                CustomField => $CF,
+                Object      => $Group,
+                Cols        => 60,
+            &>
+        </td>
+    </tr>
 % }
-<tr>
-<td colspan="2">
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
-<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
-</td>
-</tr>
+    <tr>
+        <td colspan="2">
+            <input type="hidden" class="hidden" name="SetEnabled" value="1" />
+            <input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
+            <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
+        </td>
+    </tr>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
 </table>
 % if ( $Create ) {
