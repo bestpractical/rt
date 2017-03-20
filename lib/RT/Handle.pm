@@ -1485,7 +1485,18 @@ sub InsertData {
             my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
             push @queues, 0 unless @queues; # add global queue at least
 
-            my ( $return, $msg ) = $new_entry->Create( %$item, Queue => shift @queues );
+            my %args = %$item;
+            $args{Queue} = shift @queues;
+            if (ref($args{Queue})) {
+                # transform ScripObject->Create API into Scrip->Create API
+                $args{Queue}{Queue} = delete $args{Queue}{ObjectId};
+                %args = (
+                    %args,
+                    %{ $args{Queue} },
+                );
+            }
+
+            my ( $return, $msg ) = $new_entry->Create(%args);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
                 next;
