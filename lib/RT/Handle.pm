@@ -1432,6 +1432,8 @@ sub InsertData {
                 }
             }
 
+            $item->{Right} = delete $item->{RightName} if $item->{RightName};
+
             # Grant it
             my @rights = ref($item->{'Right'}) eq 'ARRAY' ? @{$item->{'Right'}} : $item->{'Right'};
             foreach my $right ( @rights ) {
