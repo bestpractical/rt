@@ -180,9 +180,17 @@ sub _GetRecordByRef {
     my $ref  = shift;
 
     $ref = $$ref if ref($ref) eq 'SCALAR';
-    my ($class) = $ref =~ /^([\w:]+)-/
+
+    return RT->System if $ref eq 'RT::System';
+
+    my ($class, $id) = $ref =~ /^([\w:]+)-.*-(\d+)$/
         or return undef;
-    return $self->{Records}{$class}{$ref};
+
+    return $self->{Records}{$class}{$ref} || do {
+        my $obj = $class->new(RT->SystemUser);
+        $obj->Load($id);
+        $obj;
+    };
 }
 
 sub CanonicalizeReference {
