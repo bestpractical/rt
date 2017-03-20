@@ -312,6 +312,18 @@ sub CanonicalizeObjects {
     );
 
     $self->_CanonicalizeManyToMany(
+        object_class        => 'RT::CustomFieldValue',
+        object_primary_ref  => 'CustomField',
+        primary_class       => 'RT::CustomField',
+        primary_key         => 'Values',
+        canonicalize_object => sub {
+            my %object = %$_;
+            delete @object{qw/id CustomField Created LastUpdated Creator LastUpdatedBy/};
+            return \%object;
+        },
+    );
+
+    $self->_CanonicalizeManyToMany(
         object_class       => 'RT::ObjectClass',
         object_primary_ref => 'Class',
         primary_class      => 'RT::Class',
