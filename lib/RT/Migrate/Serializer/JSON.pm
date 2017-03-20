@@ -175,7 +175,7 @@ my %initialdataType = (
     GroupMember => 'Members',
 );
 
-sub _GetRecordByRef {
+sub _GetObjectByRef {
     my $self = shift;
     my $ref  = shift;
 
@@ -186,11 +186,21 @@ sub _GetRecordByRef {
     my ($class, $id) = $ref =~ /^([\w:]+)-.*-(\d+)$/
         or return undef;
 
-    return $self->{Records}{$class}{$ref} || do {
-        my $obj = $class->new(RT->SystemUser);
-        $obj->Load($id);
-        $obj;
-    };
+    my $obj = $class->new(RT->SystemUser);
+    $obj->Load($id);
+    return $obj;
+}
+
+sub _GetSerializedByRef {
+    my $self = shift;
+    my $ref  = shift;
+
+    $ref = $$ref if ref($ref) eq 'SCALAR';
+
+    my ($class) = $ref =~ /^([\w:]+)-/
+        or return undef;
+
+    return $self->{Records}{$class}{$ref};
 }
 
 sub CanonicalizeReference {
@@ -199,7 +209,7 @@ sub CanonicalizeReference {
     my $context = shift;
     my $for_key = shift;
 
-    my $record = $self->_GetRecordByRef($ref)
+    my $record = $self->_GetSerializedByRef($ref)
         or return $ref;
 
     return $record->{Name} || $ref;
@@ -241,8 +251,8 @@ sub CanonicalizeACLs {
     my $self = shift;
 
     for my $ace (values %{ $self->{Records}{'RT::ACE'} }) {
-        my $principal = $self->_GetRecordByRef(delete $ace->{PrincipalId});
-        my $object = $self->_GetRecordByRef(delete $ace->{Object});
+        my $principal = $self->_GetObjectByRef(delete $ace->{PrincipalId});
+        my $object = $self->_GetObjectByRef(delete $ace->{Object});
 
         if ($principal->IsGroup) {
             my $domain = $principal->Object->Domain;
@@ -289,7 +299,7 @@ sub CanonicalizeObjects {
         primary_class      => 'RT::CustomRole',
         canonicalize_object => sub {
             ref($_->{ObjectId})
-                ? $self->_GetRecordByRef($_->{ObjectId})->{Name}
+                ? $self->_GetSerializedByRef($_->{ObjectId})->{Name}
                 : $_->{ObjectId};
         },
     );
@@ -301,7 +311,7 @@ sub CanonicalizeObjects {
         primary_key        => 'Queue',
         canonicalize_object => sub {
             my $object = ref($_->{ObjectId})
-                ? $self->_GetRecordByRef($_->{ObjectId})->{Name}
+                ? $self->_GetSerializedByRef($_->{ObjectId})->{Name}
                 : $_->{ObjectId};
             return { ObjectId => $object, Stage => $_->{Stage} };
         },
