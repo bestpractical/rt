@@ -179,6 +179,7 @@ sub _GetRecordByRef {
     my $self = shift;
     my $ref  = shift;
 
+    $ref = $$ref if ref($ref) eq 'SCALAR';
     my ($class) = $ref =~ /^([\w:]+)-/
         or return undef;
     return $self->{Records}{$class}{$ref};
@@ -249,7 +250,7 @@ sub CanonicalizeObjects {
         primary_class      => 'RT::CustomRole',
         canonicalize_object => sub {
             ref($_->{ObjectId})
-                ? $self->_GetRecordByRef(${ $_->{ObjectId} })->{Name}
+                ? $self->_GetRecordByRef($_->{ObjectId})->{Name}
                 : $_->{ObjectId};
         },
     );
@@ -261,7 +262,7 @@ sub CanonicalizeObjects {
         primary_key        => 'Queue',
         canonicalize_object => sub {
             my $object = ref($_->{ObjectId})
-                ? $self->_GetRecordByRef(${ $_->{ObjectId} })->{Name}
+                ? $self->_GetRecordByRef($_->{ObjectId})->{Name}
                 : $_->{ObjectId};
             return { ObjectId => $object, Stage => $_->{Stage} };
         },
