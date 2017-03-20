@@ -301,9 +301,14 @@ sub CanonicalizeObjects {
     my $self = shift;
 
     $self->_CanonicalizeManyToMany(
-        object_class       => 'RT::ObjectCustomField',
-        object_primary_ref => 'CustomField',
-        primary_class      => 'RT::CustomField',
+        object_class        => 'RT::ObjectCustomField',
+        object_primary_ref  => 'CustomField',
+        primary_class       => 'RT::CustomField',
+        canonicalize_object => sub {
+            ref($_->{ObjectId})
+                ? $self->_GetSerializedByRef($_->{ObjectId})->{Name}
+                : $_->{ObjectId};
+        },
     );
 
     $self->_CanonicalizeManyToMany(
