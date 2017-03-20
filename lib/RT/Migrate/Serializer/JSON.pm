@@ -344,6 +344,7 @@ sub WriteFile {
                     $record->{$key} = $self->CanonicalizeReference($record->{$key}, $record, $key);
                 }
             }
+            delete $record->{id};
             push @{ $output{$outtype} }, $record;
         }
     }
