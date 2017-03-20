@@ -120,6 +120,23 @@ sub Directory {
     return $self->{Directory};
 }
 
+sub Observe {
+    my $self = shift;
+    my %args = @_;
+
+    my $obj = $args{object};
+
+    # avoid serializing ACLEquivalence, etc
+    if ($obj->isa("RT::Group")) {
+        return 0 unless $obj->Domain eq 'UserDefined';
+    }
+    if ($obj->isa("RT::GroupMember")) {
+        return 0 unless $obj->GroupObj->Object->Domain eq 'UserDefined';
+    }
+
+    return $self->SUPER::Observe(%args);
+}
+
 sub JSON {
     my $self = shift;
     return $self->{JSON} ||= JSON->new->pretty->canonical;
