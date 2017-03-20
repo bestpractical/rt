@@ -305,10 +305,18 @@ sub _Create {
         @_
     );
 
-    # Enforce uniqueness on user defined group names
-    if ($args{'Domain'} and $args{'Domain'} eq 'UserDefined') {
-        my ($ok, $msg) = $self->_ValidateUserDefinedName($args{'Name'});
-        return ($ok, $msg) if not $ok;
+    if ($args{'Domain'}) {
+        # Enforce uniqueness on user defined group names
+        if ($args{'Domain'} eq 'UserDefined') {
+            my ($ok, $msg) = $self->_ValidateUserDefinedName($args{'Name'});
+            return ($ok, $msg) if not $ok;
+        }
+
+        # Enforce uniqueness on SystemInternal and system role groups
+        if ($args{'Domain'} eq 'SystemInternal' || $args{'Domain'} eq 'RT::System-Role') {
+            my ($ok, $msg) = $self->_ValidateNameForDomain($args{'Name'}, $args{'Domain'});
+            return ($ok, $msg) if not $ok;
+        }
     }
 
     $RT::Handle->BeginTransaction() unless ($args{'InsideTransaction'});
@@ -398,6 +406,30 @@ sub ValidateName {
     return $self->SUPER::ValidateName($value);
 }
 
+=head2 _ValidateNameForDomain VALUE DOMAIN
+
+Returns true if the group name isn't in use in the same domain, false otherwise.
+
+=cut
+
+sub _ValidateNameForDomain {
+    my ($self, $value, $domain) = @_;
+
+    return (0, 'Name is required') unless length $value;
+
+    my $dupcheck = RT::Group->new(RT->SystemUser);
+    if ($domain eq 'UserDefined') {
+        $dupcheck->LoadUserDefinedGroup($value);
+    }
+    else {
+        $dupcheck->LoadByCols(Domain => $domain, Name => $value);
+    }
+    if ( $dupcheck->id && ( !$self->id || $self->id != $dupcheck->id ) ) {
+        return ( 0, $self->loc( "Group name '[_1]' is already in use", $value ) );
+    }
+    return 1;
+}
+
 =head2 _ValidateUserDefinedName VALUE
 
 Returns true if the user defined group name isn't in use, false otherwise.
@@ -407,14 +439,7 @@ Returns true if the user defined group name isn't in use, false otherwise.
 sub _ValidateUserDefinedName {
     my ($self, $value) = @_;
 
-    return (0, 'Name is required') unless length $value;
-
-    my $dupcheck = RT::Group->new(RT->SystemUser);
-    $dupcheck->LoadUserDefinedGroup($value);
-    if ( $dupcheck->id && ( !$self->id || $self->id != $dupcheck->id ) ) {
-        return ( 0, $self->loc( "Group name '[_1]' is already in use", $value ) );
-    }
-    return 1;
+    return $self->_ValidateNameForDomain($value, 'UserDefined');
 }
 
 =head2 _CreateACLEquivalenceGroup { Principal }
