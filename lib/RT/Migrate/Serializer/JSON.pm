@@ -283,6 +283,20 @@ sub CanonicalizeACLs {
     }
 }
 
+sub CanonicalizeUsers {
+    my $self = shift;
+
+    for my $user (values %{ $self->{Records}{'RT::User'} }) {
+        delete $user->{Principal};
+        delete $user->{PrincipalId};
+
+        my $object = RT::User->new(RT->SystemUser);
+        $object->Load($user->{id});
+
+        $user->{Privileged} = $object->Privileged ? JSON::true : JSON::false;
+    }
+}
+
 sub CanonicalizeObjects {
     my $self = shift;
 
@@ -329,6 +343,7 @@ sub WriteFile {
 
     $self->CanonicalizeObjects;
     $self->CanonicalizeACLs;
+    $self->CanonicalizeUsers;
 
     delete $self->{Records}{'RT::Attribute'};
 
