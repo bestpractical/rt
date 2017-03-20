@@ -182,9 +182,10 @@ sub _GetObjectByRef {
     $ref = $$ref if ref($ref) eq 'SCALAR';
 
     return RT->System if $ref eq 'RT::System';
+    return RT->SystemUser if $ref eq 'RT::User-RT_System';
 
     my ($class, $id) = $ref =~ /^([\w:]+)-.*-(\d+)$/
-        or return undef;
+        or do { warn "Unable to canonicalize ref '$ref'"; return undef };
 
     my $obj = $class->new(RT->SystemUser);
     $obj->Load($id);
