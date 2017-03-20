@@ -210,6 +210,10 @@ sub CanonicalizeReference {
     my $context = shift;
     my $for_key = shift;
 
+    if ($for_key eq 'Creator' || $for_key eq 'LastUpdatedBy') {
+        return $self->_GetObjectByRef($ref)->Id;
+    }
+
     my $record = $self->_GetSerializedByRef($ref)
         or return $ref;
 
