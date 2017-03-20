@@ -257,6 +257,8 @@ sub WriteFile {
 
     $self->CanonicalizeObjects;
 
+    delete $self->{Records}{'RT::Attribute'};
+
     for my $intype (keys %{ $self->{Records} }) {
         my $outtype = $intype;
         $outtype =~ s/^RT:://;
