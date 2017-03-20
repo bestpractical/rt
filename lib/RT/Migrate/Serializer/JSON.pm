@@ -297,6 +297,21 @@ sub CanonicalizeUsers {
     }
 }
 
+sub CanonicalizeGroupMembers {
+    my $self = shift;
+
+    for my $record (values %{ $self->{Records}{'RT::GroupMember'} }) {
+        my $group = $self->_GetObjectByRef(delete $record->{GroupId});
+        $record->{Group} = $group->Object->Name;
+
+        my $member = $self->_GetObjectByRef(delete $record->{MemberId});
+        $record->{Class} = ref($member->Object);
+        $record->{Name} = $member->Object->Name;
+
+        delete @$record{qw/Creator Created LastUpdated LastUpdatedBy/};
+    }
+}
+
 sub CanonicalizeObjects {
     my $self = shift;
 
@@ -361,6 +376,7 @@ sub WriteFile {
     $self->CanonicalizeObjects;
     $self->CanonicalizeACLs;
     $self->CanonicalizeUsers;
+    $self->CanonicalizeGroupMembers;
 
     delete $self->{Records}{'RT::Attribute'};
 
