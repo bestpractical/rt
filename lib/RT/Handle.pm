@@ -1232,22 +1232,25 @@ sub InsertData {
 
             my $class = $new_entry->RecordClassFromLookupType;
             if ($class) {
-                if ($new_entry->IsOnlyGlobal and $apply_to) {
-                    $RT::Logger->warn("ApplyTo provided for global custom field ".$new_entry->Name );
-                    undef $apply_to;
-                }
-                if ( !$apply_to ) {
-                    # Apply to all by default
+                $apply_to = [ $apply_to ] unless ref $apply_to;
+                for my $name ( @{ $apply_to } ) {
                     my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
-                    ( $return, $msg) = $ocf->Create( CustomField => $new_entry->Id );
-                    $RT::Logger->error( $msg ) unless $return and $ocf->Id;
-                } else {
-                    $apply_to = [ $apply_to ] unless ref $apply_to;
-                    for my $name ( @{ $apply_to } ) {
+
+                    # global CF
+                    if (!$name) {
+                        ( $return, $msg ) = $ocf->Create(
+                            CustomField => $new_entry->Id,
+                        );
+                        $RT::Logger->error( $msg ) unless $return and $ocf->Id;
+                    }
+                    else {
+                        if ($new_entry->IsOnlyGlobal) {
+                            $RT::Logger->warn("ApplyTo '$name' provided for global custom field ".$new_entry->Name );
+                        }
+
                         my $obj = $class->new(RT->SystemUser);
                         $obj->Load($name);
                         if ( $obj->Id ) {
-                            my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
                             ( $return, $msg ) = $ocf->Create(
                                 CustomField => $new_entry->Id,
                                 ObjectId    => $obj->Id,
