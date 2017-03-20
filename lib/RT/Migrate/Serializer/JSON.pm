@@ -237,6 +237,37 @@ sub _CanonicalizeManyToMany {
     }
 }
 
+sub CanonicalizeACLs {
+    my $self = shift;
+
+    for my $ace (values %{ $self->{Records}{'RT::ACE'} }) {
+        my $principal = $self->_GetRecordByRef(delete $ace->{PrincipalId});
+        my $object = $self->_GetRecordByRef(delete $ace->{Object});
+
+        if ($principal->IsGroup) {
+            my $domain = $principal->Object->Domain;
+            if ($domain eq 'ACLEquivalence') {
+                $ace->{UserId} = $principal->Object->InstanceObj->Name;
+            }
+            else {
+                $ace->{GroupDomain} = $domain;
+                if ($domain eq 'SystemInternal') {
+                    $ace->{GroupType} = $principal->Object->Name;
+                }
+                elsif ($domain eq 'RT::Queue-Role') {
+                    $ace->{Queue} = $principal->Object->Instance;
+                }
+            }
+        }
+        else {
+            $ace->{UserId} = $principal->Object->Name;
+        }
+
+        $ace->{ObjectType} = ref($object);
+        $ace->{ObjectId} = $object->Id;
+    }
+}
+
 sub CanonicalizeObjects {
     my $self = shift;
 
@@ -282,6 +313,7 @@ sub WriteFile {
     my %output;
 
     $self->CanonicalizeObjects;
+    $self->CanonicalizeACLs;
 
     delete $self->{Records}{'RT::Attribute'};
 
