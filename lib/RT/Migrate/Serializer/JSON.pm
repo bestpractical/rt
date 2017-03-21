@@ -338,14 +338,18 @@ sub CanonicalizeGroupMembers {
     my $self = shift;
 
     for my $record (values %{ $self->{Records}{'RT::GroupMember'} }) {
-        my $group = $self->_GetObjectByRef(delete $record->{GroupId});
-        $record->{Group} = $group->Object->Name;
-        $record->{GroupDomain} = $group->Object->Domain
-            unless $group->Object->Domain eq 'UserDefined';
+        my $group = $self->_GetObjectByRef(delete $record->{GroupId})->Object;
+        my $domain = $group->Domain;
 
-        my $member = $self->_GetObjectByRef(delete $record->{MemberId});
-        $record->{Class} = ref($member->Object);
-        $record->{Name} = $member->Object->Name;
+        $record->{Group} = $group->Name;
+        $record->{GroupDomain} = $domain
+            unless $domain eq 'UserDefined';
+        $record->{GroupInstance} = \($group->InstanceObj->UID)
+            if $domain =~ /-Role$/;
+
+        my $member = $self->_GetObjectByRef(delete $record->{MemberId})->Object;
+        $record->{Class} = ref($member);
+        $record->{Name} = $member->Name;
     }
 }
 
