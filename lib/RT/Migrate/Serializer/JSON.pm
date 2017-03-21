@@ -137,6 +137,15 @@ sub Observe {
     return $self->SUPER::Observe(%args);
 }
 
+sub PushBasics {
+    my $self = shift;
+    $self->SUPER::PushBasics(@_);
+
+    # we want to include all CFs, scrips, etc, not just the reachable ones
+    $self->PushCollections(qw(CustomFields CustomRoles));
+    $self->PushCollections(qw(Scrips)) if $self->{FollowScrips};
+}
+
 sub JSON {
     my $self = shift;
     return $self->{JSON} ||= JSON->new->pretty->canonical;
@@ -227,6 +236,7 @@ sub _CanonicalizeManyToMany {
         object_primary_ref => '',
         primary_class => '',
         primary_key => 'ApplyTo',
+        add_to_primary => undef,
         canonicalize_object => sub { $_->{ObjectId} },
         @_,
     );
@@ -235,6 +245,7 @@ sub _CanonicalizeManyToMany {
     my $object_primary_ref = $args{object_primary_ref};
     my $primary_class = $args{primary_class};
     my $primary_key = $args{primary_key};
+    my %add_to_primary = %{ $args{add_to_primary} || {} };
     my $canonicalize_object = $args{canonicalize_object};
 
     if (my $objects = delete $self->{Records}{$object_class}) {
@@ -248,6 +259,8 @@ sub _CanonicalizeManyToMany {
                 = map &$canonicalize_object,
                   sort { $a->{SortOrder} <=> $b->{SortOrder} }
                   @{ $primary->{$primary_key} || [] };
+
+            %$primary = (%$primary, %add_to_primary);
         }
     }
 }
@@ -356,10 +369,11 @@ sub CanonicalizeObjects {
     );
 
     $self->_CanonicalizeManyToMany(
-        object_class       => 'RT::ObjectScrip',
-        object_primary_ref => 'Scrip',
-        primary_class      => 'RT::Scrip',
-        primary_key        => 'Queue',
+        object_class        => 'RT::ObjectScrip',
+        object_primary_ref  => 'Scrip',
+        primary_class       => 'RT::Scrip',
+        primary_key         => 'Queue',
+        add_to_primary      => { NoAutoGlobal => 1 },
         canonicalize_object => sub {
             my %object = %$_;
             delete @object{qw/id Scrip Created LastUpdated Creator LastUpdatedBy/};
