@@ -853,10 +853,10 @@ sub InsertData {
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets, @OCFVs);
+           @Catalogs, @Assets, @Articles, @OCFVs);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets, @OCFVs);
+           @Catalogs, @Assets, @Articles, @OCFVs);
 
     local $@;
 
@@ -907,6 +907,7 @@ sub InsertData {
                 Final           => \@Final,
                 Catalogs        => \@Catalogs,
                 Assets          => \@Assets,
+                Articles        => \@Articles,
                 OCFVs           => \@OCFVs,
             },
         ) or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:" . $@);
@@ -1135,6 +1136,31 @@ sub InsertData {
             my $ocfvs = delete $item->{ CustomFields };
 
             my $new_entry = RT::Asset->new(RT->SystemUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
+
+            $_->{Object} = $new_entry for @{$attributes || []};
+            push @Attributes, @{$attributes || []};
+            $_->{Object} = $new_entry for @{$ocfvs || []};
+            push @OCFVs, @{$ocfvs || []};
+        }
+
+        $RT::Logger->debug("done.");
+    }
+
+    if ( @Articles ) {
+        $RT::Logger->debug("Creating Articles...");
+
+        for my $item (@Articles) {
+            my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
+
+            my $new_entry = RT::Article->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
