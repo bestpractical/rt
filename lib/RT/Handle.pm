@@ -1318,11 +1318,24 @@ sub InsertData {
         for my $item (@Members) {
             my $name = delete $item->{Group};
             my $domain = delete $item->{GroupDomain} || 'UserDefined';
+            my $instance = delete $item->{GroupInstance};
+
+            if ($domain =~ /^(.+)-Role$/) {
+                 my $class = $1;
+                 if (!$class->DOES("RT::Record::Role::Roles")) {
+                     RT->Logger->error("Invalid group domain '$domain' for group $name; skipping adding membership");
+                     next;
+                 }
+                 my $object = $class->new(RT->SystemUser);
+                 $object->Load($instance);
+                 $instance = $object->Id;
+            }
 
             my $group = RT::Group->new(RT->SystemUser);
             $group->LoadByCols(
                 Name => $name,
                 Domain => $domain,
+                (defined $instance ? (Instance => $instance) : ()),
             );
             unless ($group->Id) {
                 RT->Logger->error("Unable to find $domain group '$name' to add members to");
