@@ -1076,19 +1076,21 @@ sub InsertData {
                 $item->{'ApplyTo'} = delete $item->{'Queue'};
             }
 
-            my $apply_to = delete $item->{'ApplyTo'};
+            my $apply_to = (delete $item->{'ApplyTo'}) || 0;
+            $apply_to = [ $apply_to ] unless ref $apply_to;
+
             my $new_entry = RT::Class->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
-                if ( !$apply_to ) {
-                    ( $return, $msg) = $new_entry->AddToObject( RT::Queue->new(RT->SystemUser) );
-                    $RT::Logger->error( $msg ) unless $return;
-                } else {
-                    $apply_to = [ $apply_to ] unless ref $apply_to;
-                    for my $name ( @{ $apply_to } ) {
+
+                for my $name ( @{ $apply_to } ) {
+                    if ( !$name ) {
+                        ( $return, $msg) = $new_entry->AddToObject( RT::Queue->new(RT->SystemUser) );
+                        $RT::Logger->error( $msg ) unless $return;
+                    } else {
                         my $queue = RT::Queue->new( RT->SystemUser );
                         $queue->Load( $name );
                         if ( $queue->id ) {
