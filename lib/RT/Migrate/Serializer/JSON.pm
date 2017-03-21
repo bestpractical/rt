@@ -424,6 +424,29 @@ sub CanonicalizeObjects {
     );
 }
 
+# Exclude critical system objects that should already be present in the importing side
+sub ShouldExcludeObject {
+    my $self = shift;
+    my $class = shift;
+    my $id = shift;
+    my $record = shift;
+
+    return 1 if $class eq 'RT::User'
+             && ($record->{Name} eq 'RT_System' || $record->{Name} eq 'Nobody');
+
+    return 1 if $class eq 'RT::ACE'
+             && ((($record->{UserId}||'') eq 'Nobody' && $record->{RightName} eq 'OwnTicket')
+             || (($record->{UserId}||'') eq 'RT_System' && $record->{RightName} eq 'SuperUser'));
+
+    return 1 if $class eq 'RT::Group'
+             && ($record->{Domain} eq 'RT::System-Role' || $record->{Domain} eq 'SystemInternal');
+
+    return 1 if $class eq 'RT::Queue'
+             && $record->{Name} eq '___Approvals';
+
+    return 0;
+}
+
 sub WriteFile {
     my $self = shift;
     my %output;
@@ -449,6 +472,9 @@ sub WriteFile {
 
         for my $id (keys %{ $self->{Records}{$intype} }) {
             my $record = $self->{Records}{$intype}{$id};
+
+            next if $self->ShouldExcludeObject($intype, $id, $record);
+
             for my $key (keys %$record) {
                 if (ref($record->{$key}) eq 'SCALAR') {
                     $record->{$key} = $self->CanonicalizeReference($record->{$key}, $record, $key);
