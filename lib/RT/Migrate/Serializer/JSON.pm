@@ -306,6 +306,15 @@ sub CanonicalizeUsers {
     }
 }
 
+sub CanonicalizeGroups {
+    my $self = shift;
+
+    for my $group (values %{ $self->{Records}{'RT::Group'} }) {
+        delete $group->{Principal};
+        delete $group->{PrincipalId};
+    }
+}
+
 sub CanonicalizeGroupMembers {
     my $self = shift;
 
@@ -407,6 +416,7 @@ sub WriteFile {
     $self->CanonicalizeObjectCustomFieldValues;
     $self->CanonicalizeACLs;
     $self->CanonicalizeUsers;
+    $self->CanonicalizeGroups;
     $self->CanonicalizeGroupMembers;
 
     delete $self->{Records}{'RT::Attribute'};
