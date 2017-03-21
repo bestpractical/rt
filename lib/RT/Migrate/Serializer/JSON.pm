@@ -126,12 +126,14 @@ sub Observe {
 
     my $obj = $args{object};
 
-    # avoid serializing ACLEquivalence, etc
     if ($obj->isa("RT::Group")) {
-        return 0 unless $obj->Domain eq 'UserDefined';
+        return 0 if $obj->Domain eq 'ACLEquivalence'
+                 || $obj->Domain =~ /^RT::(Queue|Catalog)-Role$/;
     }
     if ($obj->isa("RT::GroupMember")) {
-        return 0 unless $obj->GroupObj->Object->Domain eq 'UserDefined';
+        my $domain = $obj->GroupObj->Object->Domain;
+        return 0 if $domain eq 'ACLEquivalence'
+                 || $domain eq 'SystemInternal';
     }
 
     return $self->SUPER::Observe(%args);
@@ -329,6 +331,8 @@ sub CanonicalizeGroupMembers {
     for my $record (values %{ $self->{Records}{'RT::GroupMember'} }) {
         my $group = $self->_GetObjectByRef(delete $record->{GroupId});
         $record->{Group} = $group->Object->Name;
+        $record->{GroupDomain} = $group->Object->Domain
+            unless $group->Object->Domain eq 'UserDefined';
 
         my $member = $self->_GetObjectByRef(delete $record->{MemberId});
         $record->{Class} = ref($member->Object);
@@ -443,6 +447,10 @@ sub ShouldExcludeObject {
 
     return 1 if $class eq 'RT::Queue'
              && $record->{Name} eq '___Approvals';
+
+    return 1 if $class eq 'RT::GroupMember'
+             && $record->{Group} eq 'Owner' && $record->{GroupDomain} eq 'RT::System-Role'
+             && $record->{Class} eq 'RT::User' && $record->{Name} eq 'Nobody';
 
     return 0;
 }
