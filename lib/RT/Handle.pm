@@ -1490,6 +1490,7 @@ sub InsertData {
             if (ref($args{Queue})) {
                 # transform ScripObject->Create API into Scrip->Create API
                 $args{Queue}{Queue} = delete $args{Queue}{ObjectId};
+                $args{Queue}{ObjectSortOrder} = delete $args{Queue}{SortOrder};
                 %args = (
                     %args,
                     %{ $args{Queue} },
