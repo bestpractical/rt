@@ -1488,8 +1488,16 @@ sub InsertData {
         for my $item (@Scrips) {
             my $new_entry = RT::Scrip->new(RT->SystemUser);
 
-            my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
-            push @queues, 0 unless @queues; # add global queue at least
+            my @queues = ref $item->{'Queue'} eq 'ARRAY'
+                       ? @{ $item->{'Queue'} }
+                       : ($item->{'Queue'})
+                if $item->{'Queue'};
+
+            if (!@queues) {
+                push @queues, 0 unless $item->{'NoAutoGlobal'};
+            }
+
+            my $remove_global = (delete $item->{'NoAutoGlobal'}) && !@queues;
 
             my %args = %$item;
             $args{Queue} = shift @queues;
@@ -1511,6 +1519,13 @@ sub InsertData {
             else {
                 $RT::Logger->debug( $return ."." );
             }
+
+            if ($remove_global) {
+                my ($return, $msg) = $new_entry->RemoveFromObject(ObjectId => 0);
+                $RT::Logger->error( "Couldn't unapply scrip globally: $msg" )
+                    unless $return;
+            }
+
             foreach my $q ( @queues ) {
                 my %args = (
                     Stage => $item->{'Stage'},
