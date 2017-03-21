@@ -289,8 +289,10 @@ sub CanonicalizeACLs {
             $ace->{UserId} = $principal->Object->Name;
         }
 
-        $ace->{ObjectType} = ref($object);
-        $ace->{ObjectId} = $object->Id;
+        unless ($object->isa('RT::System')) {
+            $ace->{ObjectType} = ref($object);
+            $ace->{ObjectId} = $object->Id;
+        }
     }
 }
 
