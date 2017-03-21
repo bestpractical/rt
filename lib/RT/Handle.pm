@@ -1348,9 +1348,7 @@ sub InsertData {
                   $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
                   $princ->LoadRoleGroup( Object => RT->System, Name => $item->{'GroupType'} );
-                } elsif ( $item->{'GroupDomain'} eq 'RT::Queue-Role' &&
-                          $item->{'Queue'} )
-                {
+                } elsif ( $item->{'GroupDomain'} =~ /-Role$/ ) {
                   $princ->LoadRoleGroup( Object => $object, Name => $item->{'GroupType'} );
                 } else {
                   $princ->Load( $item->{'GroupId'} );
