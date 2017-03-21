@@ -455,6 +455,8 @@ sub WriteFile {
                 }
             }
             delete $record->{id};
+            delete $record->{Disabled} if !$record->{Disabled};
+
             push @{ $output{$outtype} }, $record;
         }
     }
