@@ -361,10 +361,11 @@ sub CanonicalizeObjects {
         primary_class      => 'RT::Scrip',
         primary_key        => 'Queue',
         canonicalize_object => sub {
-            my $object = ref($_->{ObjectId})
-                ? $self->_GetSerializedByRef($_->{ObjectId})->{Name}
-                : $_->{ObjectId};
-            return { ObjectId => $object, Stage => $_->{Stage} };
+            my %object = %$_;
+            delete @object{qw/id Scrip Created LastUpdated Creator LastUpdatedBy/};
+            $object{ObjectId} = $self->_GetSerializedByRef($object{ObjectId})->{Name}
+                if $object{ObjectId}; # 0 meaning Global can stay 0
+            return \%object;
         },
     );
 }
