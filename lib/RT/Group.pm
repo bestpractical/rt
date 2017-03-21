@@ -1308,6 +1308,8 @@ sub InstanceObj {
         $class = "RT::Queue";
     } elsif ($self->Domain eq 'RT::Ticket-Role') {
         $class = "RT::Ticket";
+    } elsif ($self->Domain eq 'RT::Asset-Role') {
+        $class = "RT::Asset";
     }
 
     return unless $class;

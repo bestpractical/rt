@@ -551,6 +551,7 @@ sub _BuildTableAttributes {
         RT::ObjectTopic
         RT::Topic
         RT::Asset
+        RT::Catalog
         RT::CustomRole
         RT::ObjectCustomRole
     );

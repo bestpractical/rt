@@ -647,6 +647,32 @@ sub _CoreAccessible {
     }
 }
 
+sub FindDependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::FindDependencies($walker, $deps);
+
+    # Links
+    my $links = RT::Links->new( $self->CurrentUser );
+    $links->Limit(
+        SUBCLAUSE       => "either",
+        FIELD           => $_,
+        VALUE           => $self->URI,
+        ENTRYAGGREGATOR => 'OR'
+    ) for qw/Base Target/;
+    $deps->Add( in => $links );
+
+    # Asset role groups( Owner, HeldBy, Contact )
+    my $objs = RT::Groups->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Asset-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    $deps->Add( in => $objs );
+
+    # Catalog
+    $deps->Add( out => $self->CatalogObj );
+}
+
 RT::Base->_ImportOverlays();
 
 1;
