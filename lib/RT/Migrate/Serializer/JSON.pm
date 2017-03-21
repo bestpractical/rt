@@ -127,8 +127,7 @@ sub Observe {
     my $obj = $args{object};
 
     if ($obj->isa("RT::Group")) {
-        return 0 if $obj->Domain eq 'ACLEquivalence'
-                 || $obj->Domain =~ /^RT::(Queue|Catalog)-Role$/;
+        return 0 if $obj->Domain eq 'ACLEquivalence';
     }
     if ($obj->isa("RT::GroupMember")) {
         my $domain = $obj->GroupObj->Object->Domain;
@@ -316,7 +315,17 @@ sub CanonicalizeUsers {
 sub CanonicalizeGroups {
     my $self = shift;
 
-    for my $group (values %{ $self->{Records}{'RT::Group'} }) {
+    for my $id (keys %{ $self->{Records}{'RT::Group'} }) {
+        my $group = $self->{Records}{'RT::Group'}{$id};
+
+        # no need to serialize this because role groups are automatically
+        # created; but we can't exclude this in ->Observe because then we
+        # lose out on the group members
+        if ($group->{Domain} =~ /-Role$/) {
+            delete $self->{Records}{'RT::Group'}{$id};
+            next;
+        }
+
         delete $group->{Principal};
         delete $group->{PrincipalId};
 
@@ -452,7 +461,7 @@ sub ShouldExcludeObject {
     }
     elsif ($class eq 'RT::GroupMember') {
         return 1 if $record->{Group} eq 'Owner'
-                 && $record->{GroupDomain} eq 'RT::System-Role'
+                 && $record->{GroupDomain} =~ /-Role$/
                  && $record->{Class} eq 'RT::User'
                  && $record->{Name} eq 'Nobody';
     }
