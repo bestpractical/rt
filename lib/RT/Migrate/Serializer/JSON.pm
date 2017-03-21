@@ -325,6 +325,26 @@ sub CanonicalizeGroupMembers {
     }
 }
 
+sub CanonicalizeObjectCustomFieldValues {
+    my $self = shift;
+
+    for my $record (values %{ $self->{Records}{'RT::ObjectCustomFieldValue'} }) {
+        my $object = $self->_GetSerializedByRef(delete $record->{Object});
+
+        my $cf = $self->_GetSerializedByRef(delete $record->{CustomField});
+        $record->{CustomField} = $cf->{Name};
+
+        delete @$record{qw/id Created Creator LastUpdated LastUpdatedBy/};
+
+        $record->{Content} = $record->{LargeContent} if $record->{LargeContent};
+        delete $record->{LargeContent};
+
+        push @{ $object->{CustomFields} }, $record;
+    }
+
+    delete $self->{Records}{'RT::ObjectCustomFieldValue'};
+}
+
 sub CanonicalizeObjects {
     my $self = shift;
 
@@ -389,6 +409,7 @@ sub WriteFile {
     my %output;
 
     $self->CanonicalizeObjects;
+    $self->CanonicalizeObjectCustomFieldValues;
     $self->CanonicalizeACLs;
     $self->CanonicalizeUsers;
     $self->CanonicalizeGroupMembers;
