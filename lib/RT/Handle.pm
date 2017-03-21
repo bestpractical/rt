@@ -1315,10 +1315,16 @@ sub InsertData {
     if ( @Members ) {
         $RT::Logger->debug("Adding users and groups to groups...");
         for my $item (@Members) {
+            my $name = delete $item->{Group};
+            my $domain = delete $item->{GroupDomain} || 'UserDefined';
+
             my $group = RT::Group->new(RT->SystemUser);
-            $group->LoadUserDefinedGroup( delete $item->{Group} );
+            $group->LoadByCols(
+                $name =~ /\D/ ? ( Name => $name ) : ( id => $name ),
+                Domain => $domain,
+            );
             unless ($group->Id) {
-                RT->Logger->error("Unable to find group '$group' to add members to");
+                RT->Logger->error("Unable to find $domain group '$name' to add members to");
                 next;
             }
 
