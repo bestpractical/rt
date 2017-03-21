@@ -267,6 +267,7 @@ sub CanonicalizeACLs {
     my $self = shift;
 
     for my $ace (values %{ $self->{Records}{'RT::ACE'} }) {
+        delete $ace->{PrincipalType};
         my $principal = $self->_GetObjectByRef(delete $ace->{PrincipalId});
         my $object = $self->_GetObjectByRef(delete $ace->{Object});
 
