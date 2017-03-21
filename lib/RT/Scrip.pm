@@ -200,9 +200,10 @@ sub Create {
     return ( $id, $msg ) unless $id;
 
     (my $status, $msg) = RT::ObjectScrip->new( $self->CurrentUser )->Add(
-        Scrip    => $self,
-        Stage    => $args{'Stage'},
-        ObjectId => $args{'Queue'},
+        Scrip     => $self,
+        Stage     => $args{'Stage'},
+        ObjectId  => $args{'Queue'},
+        SortOrder => $args{'ObjectSortOrder'},
     );
     $RT::Logger->error( "Couldn't add scrip: $msg" ) unless $status;
 
