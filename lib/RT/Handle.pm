@@ -1047,33 +1047,6 @@ sub InsertData {
         }
         $RT::Logger->debug("done.");
     }
-    if ( @Members ) {
-        $RT::Logger->debug("Adding users and groups to groups...");
-        for my $item (@Members) {
-            my $group = RT::Group->new(RT->SystemUser);
-            $group->LoadUserDefinedGroup( delete $item->{Group} );
-            unless ($group->Id) {
-                RT->Logger->error("Unable to find group '$group' to add members to");
-                next;
-            }
-
-            my $class = delete $item->{Class} || 'RT::User';
-            my $member = $class->new( RT->SystemUser );
-            $item->{Domain} = 'UserDefined' if $member->isa("RT::Group");
-            $member->LoadByCols( %$item );
-            unless ($member->Id) {
-                RT->Logger->error("Unable to find $class '".($item->{id} || $item->{Name})."' to add to ".$group->Name);
-                next;
-            }
-
-            my ( $return, $msg) = $group->AddMember( $member->PrincipalObj->Id );
-            unless ( $return ) {
-                $RT::Logger->error( $msg );
-            } else {
-                $RT::Logger->debug( $return ."." );
-            }
-        }
-    }
     if ( @Queues ) {
         $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
@@ -1294,6 +1267,34 @@ sub InsertData {
         }
 
         $RT::Logger->debug("done.");
+    }
+
+    if ( @Members ) {
+        $RT::Logger->debug("Adding users and groups to groups...");
+        for my $item (@Members) {
+            my $group = RT::Group->new(RT->SystemUser);
+            $group->LoadUserDefinedGroup( delete $item->{Group} );
+            unless ($group->Id) {
+                RT->Logger->error("Unable to find group '$group' to add members to");
+                next;
+            }
+
+            my $class = delete $item->{Class} || 'RT::User';
+            my $member = $class->new( RT->SystemUser );
+            $item->{Domain} = 'UserDefined' if $member->isa("RT::Group");
+            $member->LoadByCols( %$item );
+            unless ($member->Id) {
+                RT->Logger->error("Unable to find $class '".($item->{id} || $item->{Name})."' to add to ".$group->Name);
+                next;
+            }
+
+            my ( $return, $msg) = $group->AddMember( $member->PrincipalObj->Id );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            } else {
+                $RT::Logger->debug( $return ."." );
+            }
+        }
     }
 
     if ( @ACL ) {
