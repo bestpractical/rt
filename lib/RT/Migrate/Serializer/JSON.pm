@@ -435,22 +435,27 @@ sub ShouldExcludeObject {
     my $id = shift;
     my $record = shift;
 
-    return 1 if $class eq 'RT::User'
-             && ($record->{Name} eq 'RT_System' || $record->{Name} eq 'Nobody');
-
-    return 1 if $class eq 'RT::ACE'
-             && ((($record->{UserId}||'') eq 'Nobody' && $record->{RightName} eq 'OwnTicket')
-             || (($record->{UserId}||'') eq 'RT_System' && $record->{RightName} eq 'SuperUser'));
-
-    return 1 if $class eq 'RT::Group'
-             && ($record->{Domain} eq 'RT::System-Role' || $record->{Domain} eq 'SystemInternal');
-
-    return 1 if $class eq 'RT::Queue'
-             && $record->{Name} eq '___Approvals';
-
-    return 1 if $class eq 'RT::GroupMember'
-             && $record->{Group} eq 'Owner' && $record->{GroupDomain} eq 'RT::System-Role'
-             && $record->{Class} eq 'RT::User' && $record->{Name} eq 'Nobody';
+    if ($class eq 'RT::User') {
+        return 1 if $record->{Name} eq 'RT_System'
+                 || $record->{Name} eq 'Nobody';
+    }
+    elsif ($class eq 'RT::ACE') {
+        return 1 if ($record->{UserId}||'') eq 'Nobody' && $record->{RightName} eq 'OwnTicket';
+        return 1 if ($record->{UserId}||'') eq 'RT_System' && $record->{RightName} eq 'SuperUser';
+    }
+    elsif ($class eq 'RT::Group') {
+        return 1 if $record->{Domain} eq 'RT::System-Role'
+                 || $record->{Domain} eq 'SystemInternal';
+    }
+    elsif ($class eq 'RT::Queue') {
+        return 1 if $record->{Name} eq '___Approvals';
+    }
+    elsif ($class eq 'RT::GroupMember') {
+        return 1 if $record->{Group} eq 'Owner'
+                 && $record->{GroupDomain} eq 'RT::System-Role'
+                 && $record->{Class} eq 'RT::User'
+                 && $record->{Name} eq 'Nobody';
+    }
 
     return 0;
 }
