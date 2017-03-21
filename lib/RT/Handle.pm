@@ -852,10 +852,10 @@ sub InsertData {
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets);
+           @Catalogs, @Assets, @OCFVs);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets);
+           @Catalogs, @Assets, @OCFVs);
 
     local $@;
 
@@ -906,6 +906,7 @@ sub InsertData {
                 Final           => \@Final,
                 Catalogs        => \@Catalogs,
                 Assets          => \@Assets,
+                OCFVs           => \@OCFVs,
             },
         ) or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:" . $@);
     }
@@ -929,6 +930,8 @@ sub InsertData {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
             my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
+
             my $new_entry = RT::Group->new( RT->SystemUser );
             $item->{'Domain'} ||= 'UserDefined';
             my $member_of = delete $item->{'MemberOf'};
@@ -941,6 +944,8 @@ sub InsertData {
                 $RT::Logger->debug($return .".");
                 $_->{Object} = $new_entry for @{$attributes || []};
                 push @Attributes, @{$attributes || []};
+                $_->{Object} = $new_entry for @{$ocfvs || []};
+                push @OCFVs, @{$ocfvs || []};
             }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
@@ -990,6 +995,7 @@ sub InsertData {
                 $item->{'Password'} = $root_password;
             }
             my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
 
             no warnings 'redefine';
             local *RT::User::CanonicalizeUserInfo = sub { 1 }
@@ -1003,6 +1009,8 @@ sub InsertData {
                 $RT::Logger->debug( $return ."." );
                 $_->{Object} = $new_entry for @{$attributes || []};
                 push @Attributes, @{$attributes || []};
+                $_->{Object} = $new_entry for @{$ocfvs || []};
+                push @OCFVs, @{$ocfvs || []};
             }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
@@ -1069,6 +1077,8 @@ sub InsertData {
         $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
             my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
+
             my $new_entry = RT::Queue->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
@@ -1077,6 +1087,8 @@ sub InsertData {
                 $RT::Logger->debug( $return ."." );
                 $_->{Object} = $new_entry for @{$attributes || []};
                 push @Attributes, @{$attributes || []};
+                $_->{Object} = $new_entry for @{$ocfvs || []};
+                push @OCFVs, @{$ocfvs || []};
             }
         }
         $RT::Logger->debug("done.");
@@ -1146,6 +1158,8 @@ sub InsertData {
 
         for my $item (@Assets) {
             my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
+
             my $new_entry = RT::Asset->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
@@ -1157,6 +1171,8 @@ sub InsertData {
 
             $_->{Object} = $new_entry for @{$attributes || []};
             push @Attributes, @{$attributes || []};
+            $_->{Object} = $new_entry for @{$ocfvs || []};
+            push @OCFVs, @{$ocfvs || []};
         }
 
         $RT::Logger->debug("done.");
@@ -1445,6 +1461,31 @@ sub InsertData {
         }
         $RT::Logger->debug("done.");
     }
+
+    if ( @OCFVs ) {
+        $RT::Logger->debug("Creating ObjectCustomFieldValues...");
+
+        for my $item (@OCFVs) {
+            my $obj = delete $item->{Object};
+
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+
+            $item->{Field} = delete $item->{CustomField} if $item->{CustomField};
+            $item->{Value} = delete $item->{Content} if $item->{Content};
+
+            my ( $return, $msg ) = $obj->AddCustomFieldValue (%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
+        }
+        $RT::Logger->debug("done.");
+    }
+
     if ( @Attributes ) {
         $RT::Logger->debug("Creating attributes...");
         my $sys = RT::System->new(RT->SystemUser);
