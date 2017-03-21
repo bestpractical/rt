@@ -273,17 +273,18 @@ sub CanonicalizeACLs {
         my $object = $self->_GetObjectByRef(delete $ace->{Object});
 
         if ($principal->IsGroup) {
-            my $domain = $principal->Object->Domain;
+            my $group = $principal->Object;
+            my $domain = $group->Domain;
             if ($domain eq 'ACLEquivalence') {
-                $ace->{UserId} = $principal->Object->InstanceObj->Name;
+                $ace->{UserId} = $group->InstanceObj->Name;
             }
             else {
                 $ace->{GroupDomain} = $domain;
-                if ($domain eq 'SystemInternal') {
-                    $ace->{GroupType} = $principal->Object->Name;
+                if ($domain eq 'UserDefined') {
+                    $ace->{GroupId} = $group->Name;
                 }
-                elsif ($domain eq 'RT::Queue-Role') {
-                    $ace->{Queue} = $principal->Object->Instance;
+                if ($domain eq 'SystemInternal' || $domain =~ /-Role$/) {
+                    $ace->{GroupType} = $group->Name;
                 }
             }
         }
@@ -293,7 +294,7 @@ sub CanonicalizeACLs {
 
         unless ($object->isa('RT::System')) {
             $ace->{ObjectType} = ref($object);
-            $ace->{ObjectId} = $object->Id;
+            $ace->{ObjectId} = \($object->UID);
         }
     }
 }
