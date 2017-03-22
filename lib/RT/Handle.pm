@@ -1181,6 +1181,8 @@ sub InsertData {
 
     if ( @CustomFields ) {
         $RT::Logger->debug("Creating custom fields...");
+        my @deferred_BasedOn;
+
         for my $item ( @CustomFields ) {
             my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::CustomField->new( RT->SystemUser );
@@ -1208,8 +1210,7 @@ sub InsertData {
                     if ($ok) {
                         $item->{'BasedOn'} = $basedon->Id;
                     } else {
-                        $RT::Logger->error("Unable to load $item->{BasedOn} as a $item->{LookupType} CF.  Skipping BasedOn: $msg");
-                        delete $item->{'BasedOn'};
+                        push @deferred_BasedOn, [$new_entry, delete $item->{'BasedOn'}];
                     }
                 } else {
                     $RT::Logger->error("Unable to load CF $item->{BasedOn} because no LookupType was specified.  Skipping BasedOn");
@@ -1261,6 +1262,23 @@ sub InsertData {
 
             $_->{Object} = $new_entry for @{$attributes || []};
             push @Attributes, @{$attributes || []};
+        }
+
+        for ( @deferred_BasedOn ) {
+            my ($cf, $name) = @$_;
+            my $basedon = RT::CustomField->new($RT::SystemUser);
+            my ($ok, $msg ) = $basedon->LoadByCols(
+                Name => $name,
+                LookupType => $cf->LookupType,
+                Disabled => 0,
+            );
+            if ($ok) {
+                ($ok, $msg) = $cf->SetBasedOn($basedon->Id);
+                $RT::Logger->error("Unable to set $name as a " . $cf->LookupType . " BasedOn CF: $msg") if !$ok;
+            }
+            else {
+                $RT::Logger->error("Unable to load $name as a " . $cf->LookupType . " CF.  Skipping BasedOn: $msg");
+            }
         }
 
         $RT::Logger->debug("done.");
