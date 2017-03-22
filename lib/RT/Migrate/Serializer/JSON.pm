@@ -429,6 +429,8 @@ sub CanonicalizeObjects {
         primary_key         => 'Values',
         canonicalize_object => sub {
             my %object = %$_;
+            return if $object{Disabled} && !$self->{FollowDisabled};
+
             delete @object{qw/id CustomField/};
             delete $object{Category} if !length($object{Category});
             delete $object{Description} if !length($object{Description});
