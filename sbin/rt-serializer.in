@@ -99,6 +99,7 @@ GetOptions(
 
     "users!",
     "groups!",
+    "disabled!",
     "deleted!",
 
     "scrips!",
@@ -123,9 +124,10 @@ $args{Directory}   = $OPT{directory};
 $args{Force}       = $OPT{force};
 $args{MaxFileSize} = $OPT{size} if $OPT{size};
 
-$args{AllUsers}      = $OPT{users}    if defined $OPT{users};
-$args{AllGroups}     = $OPT{groups}   if defined $OPT{groups};
-$args{FollowDeleted} = $OPT{deleted}  if defined $OPT{deleted};
+$args{AllUsers}       = $OPT{users}    if defined $OPT{users};
+$args{AllGroups}      = $OPT{groups}   if defined $OPT{groups};
+$args{FollowDeleted}  = $OPT{deleted}  if defined $OPT{deleted};
+$args{FollowDisabled} = $OPT{disabled} if defined $OPT{disabled};
 
 $args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
 $args{FollowTickets} = $OPT{tickets}  if defined $OPT{tickets};
@@ -181,7 +183,7 @@ if ($OPT{'limit-cfs'}) {
 }
 
 if (($OPT{clone} or $OPT{incremental})
-        and grep { /^(users|groups|deleted|scrips|tickets|acls|assets)$/ } keys %OPT) {
+        and grep { /^(users|groups|deleted|disabled|scrips|tickets|acls|assets)$/ } keys %OPT) {
     die "You cannot specify object types when cloning.\n\nPlease see $0 --help.\n";
 }
 
@@ -355,6 +357,12 @@ consistency.
 
 By default, all assets are serialized; passing C<--no-assets> skips
 assets during serialization.
+
+=item B<--no-disabled>
+
+By default, all queues, custom fields, etc, including disabled ones, are
+serialized; passing C<--no-disabled> skips such disabled records during
+serialization.
 
 =item B<--no-deleted>
 
