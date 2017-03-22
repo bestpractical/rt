@@ -237,6 +237,7 @@ sub _CanonicalizeManyToMany {
         primary_key => 'ApplyTo',
         add_to_primary => undef,
         sort_uniq => 0,
+        finalize => undef,
         canonicalize_object => sub { $_->{ObjectId} },
         @_,
     );
@@ -248,6 +249,7 @@ sub _CanonicalizeManyToMany {
     my $primary_key = $args{primary_key};
     my $add_to_primary = $args{add_to_primary};
     my $sort_uniq = $args{sort_uniq};
+    my $finalize = $args{finalize};
     my $canonicalize_object = $args{canonicalize_object};
 
     if (my $objects = delete $self->{Records}{$object_class}) {
@@ -268,6 +270,10 @@ sub _CanonicalizeManyToMany {
                 @{ $primary->{$primary_key} }
                     = uniq sort
                       @{ $primary->{$primary_key} };
+            }
+
+            if ($finalize) {
+                $finalize->($primary);
             }
 
             if (ref($add_to_primary) eq 'CODE') {
@@ -489,6 +495,10 @@ sub CanonicalizeObjects {
             }
 
             return \%object;
+        },
+        finalize => sub {
+            my $scrip = shift;
+            @{ $scrip->{Queue} } = sort { $a->{ObjectId} cmp $b->{ObjectId} } @{ $scrip->{Queue} };
         },
     );
 }
