@@ -1390,6 +1390,14 @@ sub InsertData {
                     RT->Logger->error("Unable to load queue ".$item->{Queue}.": $msg");
                     next;
                 }
+            } elsif ( $item->{'Group'} || ($item->{ObjectType}||'') eq 'RT::Group') {
+                my $name = $item->{'Group'} || $item->{ObjectId};
+                $object = RT::Group->new(RT->SystemUser);
+                my ($ok, $msg) = $object->LoadUserDefinedGroup($name);
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load user-defined group $name: $msg");
+                    next;
+                }
             } elsif ( $item->{ObjectType} and $item->{ObjectId}) {
                 $object = $item->{ObjectType}->new(RT->SystemUser);
                 my ($ok, $msg) = $object->Load( $item->{ObjectId} );
