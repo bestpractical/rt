@@ -325,6 +325,11 @@ sub CanonicalizeUsers {
         my $object = RT::User->new(RT->SystemUser);
         $object->Load($user->{id});
 
+        for my $key (keys %$user) {
+            my $value = $user->{$key};
+            delete $user->{$key} if !defined($value) || !length($value);
+        }
+
         $user->{Privileged} = $object->Privileged ? JSON::true : JSON::false;
     }
 }
