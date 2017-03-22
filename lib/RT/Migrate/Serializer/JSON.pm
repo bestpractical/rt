@@ -253,7 +253,8 @@ sub _CanonicalizeManyToMany {
 
         for my $primary (values %{ $self->{Records}{$primary_class} }) {
             @{ $primary->{$primary_key} }
-                = map &$canonicalize_object,
+                = grep defined,
+                  map &$canonicalize_object,
                   sort { $a->{SortOrder} <=> $b->{SortOrder} }
                   @{ $primary->{$primary_key} || [] };
 
@@ -396,9 +397,10 @@ sub CanonicalizeObjects {
         object_primary_ref  => 'CustomField',
         primary_class       => 'RT::CustomField',
         canonicalize_object => sub {
-            ref($_->{ObjectId})
-                ? $self->_GetSerializedByRef($_->{ObjectId})->{Name}
-                : $_->{ObjectId};
+            my $id = $_->{ObjectId};
+            return $id if !ref($id);
+            my $serialized = $self->_GetSerializedByRef($id);
+            return $serialized ? $serialized->{Name} : undef;
         },
     );
 
@@ -418,6 +420,12 @@ sub CanonicalizeObjects {
         object_class       => 'RT::ObjectClass',
         object_primary_ref => 'Class',
         primary_class      => 'RT::Class',
+        canonicalize_object => sub {
+            my $id = $_->{ObjectId};
+            return $id if !ref($id);
+            my $serialized = $self->_GetSerializedByRef($id);
+            return $serialized ? $serialized->{Name} : undef;
+        },
     );
 
     $self->_CanonicalizeManyToMany(
@@ -425,9 +433,10 @@ sub CanonicalizeObjects {
         object_primary_ref => 'CustomRole',
         primary_class      => 'RT::CustomRole',
         canonicalize_object => sub {
-            ref($_->{ObjectId})
-                ? $self->_GetSerializedByRef($_->{ObjectId})->{Name}
-                : $_->{ObjectId};
+            my $id = $_->{ObjectId};
+            return $id if !ref($id);
+            my $serialized = $self->_GetSerializedByRef($id);
+            return $serialized ? $serialized->{Name} : undef;
         },
     );
 
@@ -443,8 +452,13 @@ sub CanonicalizeObjects {
         canonicalize_object => sub {
             my %object = %$_;
             delete @object{qw/id Scrip/};
-            $object{ObjectId} = $self->_GetSerializedByRef($object{ObjectId})->{Name}
-                if $object{ObjectId}; # 0 meaning Global can stay 0
+
+            if (ref($_->{ObjectId})) {
+                my $serialized = $self->_GetSerializedByRef($_->{ObjectId});
+                return undef if !$serialized;
+                $object{ObjectId} = $serialized->{Name};
+            }
+
             return \%object;
         },
     );
