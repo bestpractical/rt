@@ -359,7 +359,7 @@ sub CanonicalizeCustomFields {
     my $self = shift;
 
     for my $record (values %{ $self->{Records}{'RT::CustomField'} }) {
-        delete $record->{Pattern} if $record->{Pattern} eq "";
+        delete $record->{Pattern} if ($record->{Pattern}||'') eq "";
         delete $record->{UniqueValues} if !$record->{UniqueValues};
     }
 }
