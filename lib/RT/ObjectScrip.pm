@@ -269,6 +269,8 @@ sub FindDependencies {
         my $obj = RT::Queue->new( $self->CurrentUser );
         $obj->Load( $self->ObjectId );
         $deps->Add( out => $obj );
+
+        $deps->Add( out => $self->ScripObj->TemplateObj($obj->Id) );
     }
 }
 
