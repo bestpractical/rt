@@ -430,6 +430,8 @@ sub CanonicalizeObjects {
         canonicalize_object => sub {
             my %object = %$_;
             delete @object{qw/id CustomField/};
+            delete $object{Category} if !length($object{Category});
+            delete $object{Description} if !length($object{Description});
             return \%object;
         },
     );
