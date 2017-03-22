@@ -51,6 +51,7 @@ package RT::Migrate::Serializer::JSON;
 use strict;
 use warnings;
 use JSON qw//;
+use List::MoreUtils 'uniq';
 
 use base 'RT::Migrate::Serializer';
 
@@ -231,18 +232,22 @@ sub _CanonicalizeManyToMany {
     my %args = (
         object_class => '',
         object_primary_ref => '',
+        object_sorter => '',
         primary_class => '',
         primary_key => 'ApplyTo',
         add_to_primary => undef,
+        sort_uniq => 0,
         canonicalize_object => sub { $_->{ObjectId} },
         @_,
     );
 
     my $object_class = $args{object_class};
     my $object_primary_ref = $args{object_primary_ref};
+    my $object_sorter = $args{object_sorter};
     my $primary_class = $args{primary_class};
     my $primary_key = $args{primary_key};
     my $add_to_primary = $args{add_to_primary};
+    my $sort_uniq = $args{sort_uniq};
     my $canonicalize_object = $args{canonicalize_object};
 
     if (my $objects = delete $self->{Records}{$object_class}) {
@@ -255,8 +260,15 @@ sub _CanonicalizeManyToMany {
             @{ $primary->{$primary_key} }
                 = grep defined,
                   map &$canonicalize_object,
-                  sort { $a->{SortOrder} <=> $b->{SortOrder} }
+                  sort { $a->{SortOrder} <=> $b->{SortOrder}
+                  || ($object_sorter ? $a->{$object_sorter} cmp $b->{$object_sorter} : 0) }
                   @{ $primary->{$primary_key} || [] };
+
+            if ($sort_uniq) {
+                @{ $primary->{$primary_key} }
+                    = uniq sort
+                      @{ $primary->{$primary_key} };
+            }
 
             if (ref($add_to_primary) eq 'CODE') {
                 $add_to_primary->($primary);
@@ -397,6 +409,7 @@ sub CanonicalizeObjects {
         object_class        => 'RT::ObjectCustomField',
         object_primary_ref  => 'CustomField',
         primary_class       => 'RT::CustomField',
+        sort_uniq           => 1,
         canonicalize_object => sub {
             my $id = $_->{ObjectId};
             return $id if !ref($id);
@@ -408,6 +421,7 @@ sub CanonicalizeObjects {
     $self->_CanonicalizeManyToMany(
         object_class        => 'RT::CustomFieldValue',
         object_primary_ref  => 'CustomField',
+        object_sorter       => 'Name',
         primary_class       => 'RT::CustomField',
         primary_key         => 'Values',
         canonicalize_object => sub {
@@ -421,6 +435,7 @@ sub CanonicalizeObjects {
         object_class       => 'RT::ObjectClass',
         object_primary_ref => 'Class',
         primary_class      => 'RT::Class',
+        sort_uniq           => 1,
         canonicalize_object => sub {
             my $id = $_->{ObjectId};
             return $id if !ref($id);
@@ -433,6 +448,7 @@ sub CanonicalizeObjects {
         object_class       => 'RT::ObjectCustomRole',
         object_primary_ref => 'CustomRole',
         primary_class      => 'RT::CustomRole',
+        sort_uniq           => 1,
         canonicalize_object => sub {
             my $id = $_->{ObjectId};
             return $id if !ref($id);
@@ -514,15 +530,23 @@ sub WriteFile {
     $self->CanonicalizeCustomFields;
     $self->CanonicalizeArticles;
 
-    delete $self->{Records}{'RT::Attribute'};
+    my $all_records = $self->{Records};
 
-    for my $intype (keys %{ $self->{Records} }) {
+    delete $all_records->{'RT::Attribute'};
+
+    for my $intype (keys %$all_records) {
         my $outtype = $intype;
         $outtype =~ s/^RT:://;
         $outtype = $initialdataType{$outtype} || ($outtype . 's');
 
-        for my $id (keys %{ $self->{Records}{$intype} }) {
-            my $record = $self->{Records}{$intype}{$id};
+        my $records = $all_records->{$intype};
+
+        # sort by database id then serializer id for stability
+        for my $id (sort {
+            ($records->{$a}{id} || 0) <=> ($records->{$b}{id} || 0)
+            || $a cmp $b
+        } keys %$records) {
+            my $record = $records->{$id};
 
             next if $self->ShouldExcludeObject($intype, $id, $record);
 
