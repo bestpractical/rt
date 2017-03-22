@@ -371,6 +371,7 @@ sub CanonicalizeObjectCustomFieldValues {
         my $object = $self->_GetSerializedByRef(delete $record->{Object});
 
         my $cf = $self->_GetSerializedByRef(delete $record->{CustomField});
+        next unless $cf && $cf->{Name}; # disabled CF on live object
         $record->{CustomField} = $cf->{Name};
 
         delete @$record{qw/id/};
