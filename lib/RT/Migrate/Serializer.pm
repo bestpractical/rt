@@ -414,7 +414,8 @@ sub Process {
 
             # [issues.bestpractical.com #32662]
             return if $principal->Object->Domain eq 'ACLEquivalence'
-                   && $principal->Object->InstanceObj->Disabled;
+                   && (!$principal->Object->InstanceObj->Id
+                     || $principal->Object->InstanceObj->Disabled);
 
             return if !$obj->Object->isa('RT::System')
                    && $obj->Object->Disabled;
@@ -475,8 +476,9 @@ sub Observe {
             return 0 if $principal->Disabled;
 
             # [issues.bestpractical.com #32662]
-            return 0 if $principal->Object->Domain eq 'ACLEquivalence'
-                     && $principal->Object->InstanceObj->Disabled;
+            return if $principal->Object->Domain eq 'ACLEquivalence'
+                   && (!$principal->Object->InstanceObj->Id
+                     || $principal->Object->InstanceObj->Disabled);
 
             return 0 if !$obj->Object->isa('RT::System')
                      && $obj->Object->Disabled;
