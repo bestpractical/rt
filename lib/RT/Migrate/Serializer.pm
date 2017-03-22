@@ -66,6 +66,7 @@ sub Init {
         AllUsers            => 1,
         AllGroups           => 1,
         FollowDeleted       => 1,
+        FollowDisabled      => 1,
 
         FollowScrips        => 0,
         FollowTickets       => 1,
@@ -86,6 +87,7 @@ sub Init {
                   AllUsers
                   AllGroups
                   FollowDeleted
+                  FollowDisabled
                   FollowScrips
                   FollowTickets
                   FollowAssets
@@ -197,7 +199,7 @@ sub PushCollections {
 
         $class->require or next;
         my $collection = $class->new( RT->SystemUser );
-        $collection->FindAllRows;   # be explicit
+        $collection->FindAllRows if $self->{FollowDisabled};
         $collection->CleanSlate;    # some collections (like groups and users) join in _Init
         $collection->UnLimit;
         $collection->OrderBy( FIELD => 'id' );
@@ -396,6 +398,15 @@ sub Process {
         return if $obj->isa("RT::System");
         $self->{progress}->($obj) if $self->{progress};
         return $self->Visit(%args);
+    }
+
+    if (!$self->{FollowDisabled}) {
+        return if ($obj->can('Disabled') || $obj->_Accessible('Disabled', 'read'))
+               && $obj->Disabled
+
+               # Disabled for OCFV means "old value" which we want to keep
+               # in the history
+               && !$obj->isa('RT::ObjectCustomFieldValue');
     }
 
     return $self->SUPER::Process( @_ );
