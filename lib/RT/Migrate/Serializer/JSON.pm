@@ -393,7 +393,14 @@ sub CanonicalizeCustomFields {
 sub CanonicalizeObjectCustomFieldValues {
     my $self = shift;
 
-    for my $record (values %{ $self->{Records}{'RT::ObjectCustomFieldValue'} }) {
+    for my $id (keys %{ $self->{Records}{'RT::ObjectCustomFieldValue'} }) {
+        my $record = $self->{Records}{'RT::ObjectCustomFieldValue'}{$id};
+
+        if ($record->{Disabled} && !$self->{FollowDisabled}) {
+            delete $self->{Records}{'RT::ObjectCustomFieldValue'}{$id};
+            next;
+        }
+
         my $object = $self->_GetSerializedByRef(delete $record->{Object});
 
         my $cf = $self->_GetSerializedByRef(delete $record->{CustomField});
