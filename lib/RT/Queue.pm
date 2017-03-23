@@ -280,7 +280,7 @@ sub _ValidateName {
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
+    if ( $tempqueue->Name() && ( !$self->id || $tempqueue->id != $self->id ) ) {
         return (undef, $self->loc("Queue already exists") );
     }
 
