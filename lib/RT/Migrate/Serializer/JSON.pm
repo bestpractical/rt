@@ -79,6 +79,8 @@ sub Init {
 
     $self->{Records} = {};
 
+    $self->{Sync} = $args{Sync};
+
     $self->SUPER::Init(@_);
 }
 
@@ -419,7 +421,7 @@ sub CanonicalizeObjectCustomFieldValues {
         next unless $cf && $cf->{Name}; # disabled CF on live object
         $record->{CustomField} = $cf->{Name};
 
-        delete @$record{qw/id/};
+        delete $record->{id} unless $self->{Sync};
 
         push @{ $object->{CustomFields} }, $record;
     }
@@ -459,7 +461,8 @@ sub CanonicalizeObjects {
             my %object = %$_;
             return if $object{Disabled} && !$self->{FollowDisabled};
 
-            delete @object{qw/id CustomField/};
+            delete $object{CustomField};
+            delete $object{id} unless $self->{Sync};
             delete $object{Category} if !length($object{Category});
             delete $object{Description} if !length($object{Description});
             return \%object;
@@ -503,7 +506,8 @@ sub CanonicalizeObjects {
         },
         canonicalize_object => sub {
             my %object = %$_;
-            delete @object{qw/id Scrip/};
+            delete $object{Scrip};
+            delete $object{id} unless $self->{Sync};
 
             if (ref($_->{ObjectId})) {
                 my $serialized = $self->_GetSerializedByRef($_->{ObjectId});
@@ -570,6 +574,7 @@ sub WriteFile {
     $self->CanonicalizeArticles;
 
     my $all_records = $self->{Records};
+    my $sync = $self->{Sync};
 
     delete $all_records->{'RT::Attribute'};
 
@@ -594,7 +599,7 @@ sub WriteFile {
                     $record->{$key} = $self->CanonicalizeReference($record->{$key}, $record, $key);
                 }
             }
-            delete $record->{id};
+            delete $record->{id} unless $sync;
             delete $record->{Disabled} if !$record->{Disabled};
 
             push @{ $output{$outtype} }, $record;
