@@ -252,13 +252,14 @@ sub _CanonicalizeManyToMany {
     my $finalize = $args{finalize};
     my $canonicalize_object = $args{canonicalize_object};
 
+    my $primary_records = $self->{Records}{$primary_class};
     if (my $objects = delete $self->{Records}{$object_class}) {
         for my $object (values %$objects) {
-            my $primary = $self->{Records}{$primary_class}{ ${ $object->{$object_primary_ref} } };
+            my $primary = $primary_records->{ ${ $object->{$object_primary_ref} } };
             push @{ $primary->{$primary_key} }, $object;
         }
 
-        for my $primary (values %{ $self->{Records}{$primary_class} }) {
+        for my $primary (values %$primary_records) {
             @{ $primary->{$primary_key} }
                 = grep defined,
                   map &$canonicalize_object,
@@ -343,14 +344,15 @@ sub CanonicalizeUsers {
 sub CanonicalizeGroups {
     my $self = shift;
 
-    for my $id (keys %{ $self->{Records}{'RT::Group'} }) {
-        my $group = $self->{Records}{'RT::Group'}{$id};
+    my $records = $self->{Records}{'RT::Group'};
+    for my $id (keys %$records) {
+        my $group = $records->{$id};
 
         # no need to serialize this because role groups are automatically
         # created; but we can't exclude this in ->Observe because then we
         # lose out on the group members
         if ($group->{Domain} =~ /-Role$/) {
-            delete $self->{Records}{'RT::Group'}{$id};
+            delete $records->{$id};
             next;
         }
 
@@ -393,11 +395,12 @@ sub CanonicalizeCustomFields {
 sub CanonicalizeObjectCustomFieldValues {
     my $self = shift;
 
-    for my $id (keys %{ $self->{Records}{'RT::ObjectCustomFieldValue'} }) {
-        my $record = $self->{Records}{'RT::ObjectCustomFieldValue'}{$id};
+    my $records = delete $self->{Records}{'RT::ObjectCustomFieldValue'};
+    for my $id (keys %$records) {
+        my $record = $records->{$id};
 
         if ($record->{Disabled} && !$self->{FollowDisabled}) {
-            delete $self->{Records}{'RT::ObjectCustomFieldValue'}{$id};
+            delete $records->{$id};
             next;
         }
 
@@ -411,8 +414,6 @@ sub CanonicalizeObjectCustomFieldValues {
 
         push @{ $object->{CustomFields} }, $record;
     }
-
-    delete $self->{Records}{'RT::ObjectCustomFieldValue'};
 }
 
 sub CanonicalizeArticles {
