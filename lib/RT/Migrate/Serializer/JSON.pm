@@ -59,8 +59,10 @@ sub Init {
     my $self = shift;
 
     my %args = (
-        Directory   => undef,
-        Force       => undef,
+        Directory           => undef,
+        Force               => undef,
+        FollowTickets       => 0,
+        FollowTransactions  => 0,
 
         @_,
     );
@@ -81,7 +83,7 @@ sub Init {
 
     $self->{Sync} = $args{Sync};
 
-    $self->SUPER::Init(@_);
+    $self->SUPER::Init(%args);
 }
 
 sub Export {
