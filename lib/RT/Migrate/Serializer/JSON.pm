@@ -367,9 +367,19 @@ sub CanonicalizeGroups {
 sub CanonicalizeGroupMembers {
     my $self = shift;
 
-    for my $record (values %{ $self->{Records}{'RT::GroupMember'} }) {
+    my $records = $self->{Records}{'RT::GroupMember'};
+    for my $id (keys %$records) {
+        my $record = $records->{$id};
         my $group = $self->_GetObjectByRef(delete $record->{GroupId})->Object;
+        my $member = $self->_GetObjectByRef(delete $record->{MemberId})->Object;
         my $domain = $group->Domain;
+
+        # no need to explicitly include a Nobody member
+        if ($member->isa('RT::User') && $member->Name eq 'Nobody' && $group->SingleMemberRoleGroup) {
+            delete $records->{$id};
+            next;
+        }
+
 
         $record->{Group} = $group->Name;
         $record->{GroupDomain} = $domain
@@ -377,7 +387,6 @@ sub CanonicalizeGroupMembers {
         $record->{GroupInstance} = \($group->InstanceObj->UID)
             if $domain =~ /-Role$/;
 
-        my $member = $self->_GetObjectByRef(delete $record->{MemberId})->Object;
         $record->{Class} = ref($member);
         $record->{Name} = $member->Name;
     }
