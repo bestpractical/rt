@@ -239,6 +239,7 @@ sub _CanonicalizeManyToMany {
         primary_key => 'ApplyTo',
         add_to_primary => undef,
         sort_uniq => 0,
+        delete_empty => 0,
         finalize => undef,
         canonicalize_object => sub { $_->{ObjectId} },
         @_,
@@ -251,6 +252,7 @@ sub _CanonicalizeManyToMany {
     my $primary_key = $args{primary_key};
     my $add_to_primary = $args{add_to_primary};
     my $sort_uniq = $args{sort_uniq};
+    my $delete_empty = $args{delete_empty};
     my $finalize = $args{finalize};
     my $canonicalize_object = $args{canonicalize_object};
 
@@ -273,6 +275,10 @@ sub _CanonicalizeManyToMany {
                 @{ $primary->{$primary_key} }
                     = uniq sort
                       @{ $primary->{$primary_key} };
+            }
+
+            if ($delete_empty) {
+                delete $primary->{$primary_key} if !@{ $primary->{$primary_key} };
             }
 
             if ($finalize) {
@@ -457,6 +463,7 @@ sub CanonicalizeObjects {
         object_sorter       => 'Name',
         primary_class       => 'RT::CustomField',
         primary_key         => 'Values',
+        delete_empty        => 1,
         canonicalize_object => sub {
             my %object = %$_;
             return if $object{Disabled} && !$self->{FollowDisabled};
