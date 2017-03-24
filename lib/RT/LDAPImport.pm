@@ -68,6 +68,8 @@ RT::LDAPImport - Import Users from an LDAP store
 In C<RT_SiteConfig.pm>:
 
     Set($LDAPHost,'my.ldap.host');
+    Set($LDAPTLS, {verify => 'require',
+                   cafile => '/etc/ssl/certs/CACert.pem'});
     Set($LDAPUser,'me');
     Set($LDAPPassword,'mypass');
     Set($LDAPBase, 'ou=People,o=Our Place');
@@ -106,6 +108,14 @@ advanced options.
 =item C<< Set($LDAPHost,'our.ldap.host'); >>
 
 Hostname or ldap(s):// uri:
+
+=item C<< Set($LDAPTLS... >>
+
+    Set($LDAPTLS, {verify => 'require',
+                   cafile => '/etc/ssl/certs/CACert.pem'});
+
+These values pass through to L<Net::LDAP> so check the start_tls options
+there for valid configuration options.
 
 =item C<< Set($LDAPUser, 'uid=foo,ou=users,dc=example,dc=com'); >>
 
@@ -372,6 +382,12 @@ being set in your RT Config files.
  Set($LDAPUSER,'me');
  Set($LDAPPassword,'mypass');
 
+To enable a ldap TLS connection the config variable C<$LDAPTLS> can be set
+as shown below.
+
+ Set($LDAPTLS, { 'verify' =>  'require',
+                 'cafile' =>  '/etc/ssl/certs/CACert.pem', } );
+
 LDAPUser and LDAPPassword can be blank,
 which will cause an anonymous bind.
 
@@ -390,6 +406,12 @@ sub connect_ldap {
     }
 
     my $msg;
+    # Adds support for TLS
+    # Pull in the LDAP TLS settings and call start_tls if configuration exists
+    if ($RT::LDAPTLS) {
+        $RT::Logger->debug("TLS settings $RT::LDAPTLS");
+        $msg = $ldap->start_tls( $RT::LDAPTLS );
+    }
     if ($RT::LDAPUser) {
         $RT::Logger->debug("binding as $RT::LDAPUser");
         $msg = $ldap->bind($RT::LDAPUser, password => $RT::LDAPPassword);
