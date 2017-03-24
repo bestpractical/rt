@@ -63,6 +63,8 @@ sub Init {
         Force               => undef,
         FollowTickets       => 0,
         FollowTransactions  => 0,
+        FollowScrips        => 1,
+        FollowACL           => 1,
 
         @_,
     );
