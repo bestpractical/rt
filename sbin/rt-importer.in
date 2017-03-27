@@ -97,6 +97,7 @@ GetOptions(
     "originalid|i=s",
     "exclude-organization",
     "follow-renames",
+    "update-existing=s@",
 
     "ask",
     "ignore-errors",
@@ -143,11 +144,26 @@ elsif ($OPT{'ignore-errors'}) {
     };
 }
 
+if ($OPT{'update-existing'}) {
+    die "--update-existing requires --follow-renames.\n"
+        unless $OPT{'follow-renames'};
+
+    my @types;
+
+    for my $type (split ',', join ',', @{ $OPT{'update-existing'} }) {
+        $type =~ s/^\s+//; $type =~ s/\s+$//;
+        push @types, $type;
+    }
+
+    $OPT{'update-existing'} = \@types;
+}
+
 my $import = RT::Migrate::Importer::File->new(
     Directory           => $dir,
     OriginalId          => $OPT{originalid},
     ExcludeOrganization => $OPT{'exclude-organization'},
     FollowRenames       => $OPT{'follow-renames'},
+    UpdateExisting      => $OPT{'update-existing'},
     DumpObjects         => $OPT{dump},
     Resume              => $OPT{resume},
     HandleError         => $error_handler,
@@ -263,6 +279,15 @@ performance penalty. This is intended for sites that frequently import
 small collections.
 
 This is not meant to be used with C<--clone> or C<--incremental>.
+
+=item B<--update-existing> I<types>
+
+When used with C<--follow-renames>, this I<updates> records of the
+specified types with the data from the dump. I<types> should be a
+comma-separated list of RT type names; specifically class names
+without the C<RT::> part). For example, to update queues and custom
+fields with updates from the dumped data, pass C<--update-existing
+Queue,CustomField>.
 
 =item B<--ask>
 

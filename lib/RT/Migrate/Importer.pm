@@ -50,6 +50,7 @@ package RT::Migrate::Importer;
 
 use strict;
 use warnings;
+use 5.010;
 
 use Storable qw//;
 use File::Spec;
@@ -72,6 +73,7 @@ sub Init {
         HandleError         => undef,
         ExcludeOrganization => undef,
         FollowRenames       => undef,
+        UpdateExisting      => undef,
         @_,
     );
 
@@ -80,6 +82,7 @@ sub Init {
 
     $self->{ExcludeOrganization} = $args{ExcludeOrganization};
     $self->{FollowRenames} = $args{FollowRenames};
+    $self->{UpdateExisting} = $args{UpdateExisting};
 
     $self->{Progress} = $args{Progress};
 
@@ -247,10 +250,20 @@ sub ShouldSkipTransaction {
 
 sub MergeValues {
     my $self = shift;
-    my ($obj, $data) = @_;
+    my ($obj, $data, $update) = @_;
+
     for my $col (keys %{$data}) {
-        next if defined $obj->__Value($col) and length $obj->__Value($col);
-        next unless defined $data->{$col} and length $data->{$col};
+        my $current = $obj->__Value($col);
+
+        if ($update) {
+            next if $col eq 'id';
+            next if !defined($data->{$col});
+            next if ($current // "") eq $data->{$col};
+        }
+        else {
+            next if defined $current and length $current;
+            next unless defined $data->{$col} and length $data->{$col};
+        }
 
         if (ref $data->{$col}) {
             my $uid = ${ $data->{$col} };
@@ -448,7 +461,8 @@ sub ReadStream {
         $obj = $self->LoadForReuse( $class, $uid );
         if ($obj) {
             $self->Resolve( $uid => $class => $obj->Id );
-            #$self->MergeValues( $obj, $data );
+            $self->MergeValues( $obj, $data, 1 )
+                if $self->ShouldUpdateExisting($obj, $data);
         }
     }
 
@@ -485,6 +499,16 @@ sub ReadStream {
     }
 
     $self->{Progress}->($obj) if $self->{Progress};
+}
+
+sub ShouldUpdateExisting {
+    my $self = shift;
+    my $obj = shift;
+
+    my $type = ref($obj);
+    $type =~ s/^RT:://;
+
+    return grep { lc($_) eq lc($type) } @{ $self->{UpdateExisting} || [] };
 }
 
 sub CloseStream {
