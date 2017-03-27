@@ -95,7 +95,6 @@
 % );
 
 <%ARGS>
-$id => undef
 $TicketObj => undef
 $ShowHeaders => 0
 $ForceShowHistory => 0
@@ -106,8 +105,8 @@ $ForceShowHistory => 0
 $m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 if ( ! $ARGS{'NoRedirect'} && RT::Interface::Web->MobileClient()) {
-    $id ||= $TicketObj->id if $TicketObj;
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL').'m/ticket/show?id='.$id);
+    $ARGS{'id'} ||= $TicketObj->id if $TicketObj;
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL').'m/ticket/show?id='.$ARGS{'id'});
     $m->abort;
 }
 
@@ -115,7 +114,7 @@ if ( ! $ARGS{'NoRedirect'} && RT::Interface::Web->MobileClient()) {
 my (@Actions, $title);
 
 
-unless ($id || $TicketObj) {
+unless ($ARGS{'id'} || $TicketObj) {
     Abort('No ticket specified');
 }
 
