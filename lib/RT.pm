@@ -245,6 +245,10 @@ sub InitLogging {
 
     unless ( $RT::Logger ) {
 
+        # preload UTF-8 encoding so that Encode:encode doesn't fail to load
+        # as part of throwing an exception
+        Encode::encode("UTF-8","");
+
         $RT::Logger = Log::Dispatch->new;
 
         my $stack_from_level;
