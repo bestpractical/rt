@@ -50,6 +50,8 @@
         class => 'ticket-info-attachments',
         color => "#336699",
         hide_chrome => $HideTitleBox &>
+        
+$m->callback( CallbackName => 'AfterAttachmentTitleBox', %ARGS, TicketObj => $TicketObj );        
 
 <div class="attachment-list">
 
