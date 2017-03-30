@@ -51,6 +51,8 @@
         color => "#336699",
         hide_chrome => $HideTitleBox &>
 
+% $m->callback( %ARGS, CallbackName => 'BeforeList', TicketObj => $Ticket, Attachments => $Attachments, Documents => \%documents, IsChecked => \%is_checked, ShowMore => \$show_more );
+
 <div class="attachment-list">
 
 % foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
@@ -86,6 +88,8 @@
 </ul>
 
 % }
+
+% $m->callback( %ARGS, CallbackName => 'AfterList', TicketObj => $Ticket, Attachments => $Attachments, Documents => \%documents, IsChecked => \%is_checked, ShowMore => \$show_more );
 
 % if ($show_more) {
 <span class="show-more-link">
