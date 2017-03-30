@@ -131,6 +131,10 @@
 <td class="value"> <& /Elements/SelectQueue, Name => "Queue", Default => $ARGS{Queue} &> </td></tr>
 <tr><td class="label"> <&|/l&>Make Status</&>: </td>
 <td class="value"> <& /Ticket/Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}, Queues => $seen_queues &> </td></tr>
+% if ($hasSLA) {
+<tr><td class="label"> <&|/l&>Make SLA</&>: </td>
+<td class="value"> <& /Elements/SelectSLA, Name => "SLA" &> </td></tr>
+% }
 <tr><td class="label"> <&|/l&>Make date Starts</&>: </td>
 <td class="value"> <& /Elements/SelectDate, Name => "Starts_Date", Default => $ARGS{Starts_Date} || '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Started</&>: </td>
@@ -277,6 +281,14 @@ while ( my $ticket = $Tickets->Next ) {
     while ( my $field = $custom_fields->Next ) {
         $fields->{ $field->id } = $field;
     }
+}
+
+# determine if any of the queues seen has a SLA active
+my $queue = RT::Queue->new($session{CurrentUser});
+my $hasSLA = 0;
+for (keys %$seen_queues) {
+    $queue->Load($_);
+    $hasSLA ||= ! $queue->SLADisabled();
 }
 
 #Iterate through each ticket we've been handed
