@@ -66,7 +66,7 @@
     </tr>
     <tr>
         <td align="right"><&|/l&>Description</&>:</td>
-        <td colspan="3"><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
+        <td><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
     </tr>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
