@@ -6388,7 +6388,7 @@ msgstr "Abrir tíquetes inativos"
 
 #: share/html/Elements/Tabs:1132 share/html/SelfService/index.html:48
 msgid "Open tickets"
-msgstr "Abrir tíquetes"
+msgstr "Tíquetes abertos"
 
 #: etc/initialdata:108
 msgid "Open tickets on correspondence"
