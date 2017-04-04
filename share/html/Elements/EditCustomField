@@ -140,6 +140,7 @@ return $m->comp(
     NamePrefix => $NamePrefix,
     CustomField => $CustomField,
     Name => $Name,
+    Classes => $Classes,
     $CustomField->BasedOn && $Name ? ( BasedOnName => GetCustomFieldInputName(Object => $Object, CustomField => $CustomField->BasedOnObj, Grouping => $Grouping) ) : (),
 );
 </%INIT>
@@ -151,5 +152,6 @@ $NamePrefix  => undef
 $Rows        => 5
 $Cols        => 15
 $Default     => undef
+$Classes     => undef
 $DefaultsFromTopArguments => 1,
 </%ARGS>

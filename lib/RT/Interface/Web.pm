@@ -4522,6 +4522,50 @@ sub GetCustomFieldInputNamePrefix {
     RT::Interface::Web::GetCustomFieldInputNamePrefix(@_);
 }
 
+=head2 HTMLifyClassAttribute
+
+Given a parameter list (of scalars or array references), return
+a space separated joined string of all parameters.
+
+Example:
+
+HTMLifyClassAttribute(
+    'error',
+    undef,
+    [
+        'inventory',
+        'missing',
+    ],
+    'capital equipment',
+)
+
+would return:
+
+"error inventory missing capital equipment"
+
+=cut
+
+sub HTMLifyClassAttribute {
+    my @aggregate_classes = ();
+
+    # iterate over parameters and extend array as needed...
+    for my $potential_class (@_) {
+        if (defined $potential_class) {
+            if (ref($potential_class) eq ref(q{})) {
+                # potential_class is a scalar
+                push @aggregate_classes, $potential_class;
+            }
+            elsif (ref($potential_class) eq ref([])) {
+                # potential_class is an array ref
+                push @aggregate_classes, @$potential_class;
+            }
+        }
+    }
+
+    # make array consumable by HTML...
+    return join ' ', @aggregate_classes;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
