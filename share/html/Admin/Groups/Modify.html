@@ -62,11 +62,11 @@
 <table>
     <tr>
         <td align="right"><&|/l&>Name</&>:</td>
-        <td><input name="Name" value="<%$Group->Name||$Name||''%>" /></td>
+        <td><input name="Name" value="<%$Group->Name||$Name||''%>" class="<% $input_html_classes %>" /></td>
     </tr>
     <tr>
         <td align="right"><&|/l&>Description</&>:</td>
-        <td><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
+        <td><input name="Description" value="<%$Group->Description||$Description||''%>" class="<% $input_html_classes %>" /></td>
     </tr>
 % my $CFs = $Group->CustomFields;
 % while (my $CF = $CFs->Next) {
@@ -76,6 +76,7 @@
             <& /Elements/EditCustomField,
                 CustomField => $CF,
                 Object      => $Group,
+                Classes     => $input_html_classes,
             &>
         </td>
     </tr>
@@ -165,6 +166,7 @@ push @results, @warnings;
 
 $EnabledChecked = ( $Group->Disabled() ? '' : 'checked="checked"' );
 
+my $input_html_classes = 'admin groups input';
 </%INIT>
 
 

@@ -29,7 +29,9 @@ form {
     font-style: italic;
 }
 
-
+.admin.groups.input {
+    width: 40em;
+}
 
 div.button-row {
    text-align: right;
