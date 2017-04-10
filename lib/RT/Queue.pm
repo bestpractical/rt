@@ -90,7 +90,7 @@ RT::ACE->RegisterCacheHandler(sub {
     );
 
     return unless $args{Action}    =~ /^(Grant|Revoke)$/i
-              and $args{RightName} =~ /^(SeeQueue|CreateTicket)$/;
+              and $args{RightName} =~ /^(SeeQueue|CreateTicket|AdminQueue)$/;
 
     RT->System->QueueCacheNeedsUpdate(1);
 });

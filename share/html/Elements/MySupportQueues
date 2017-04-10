@@ -47,6 +47,26 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc("Queues I'm an AdminCc for"), bodyclass => "" &>
 <& /Elements/QueueSummaryByStatus,
-   queue_filter => sub { $_->IsAdminCc($session{'CurrentUser'}->Id) },
+    queues => \@queues,
 &>
 </&>
+<%INIT>
+my $Queues = RT::Queues->new( $session{'CurrentUser'} );
+$Queues->UnLimit();
+$m->callback( CallbackName => 'SQLFilter', Queues => $Queues );
+
+my @queues;
+foreach my $queue ( @{ $Queues->ItemsArrayRef } ){
+    next unless $queue->IsAdminCc($session{'CurrentUser'}->Id);
+
+    if ( $queue->Id ) {
+        push @queues, {
+            Id          => $queue->Id,
+            Name        => $queue->Name,
+            Description => $queue->_Accessible("Description" => "read") ? $queue->Description : undef,
+            Lifecycle   => $queue->_Accessible("Lifecycle" => "read") ? $queue->Lifecycle : undef,
+        };
+    }
+}
+
+</%INIT>
