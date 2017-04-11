@@ -54,7 +54,7 @@
 <table border="0" cellspacing="0" cellpadding="1" width="100%" class="queue-summary">
 
 <tr>
-    <th class="collection-as-table"><&|/l&>Queue</&></th>
+    <th class="collection-as-table"><&|/l&>Queue for (<%$lifecycle->Name%>)</&></th>
 % for my $status ( @cur_statuses ) {
     <th class="collection-as-table"><% loc($status) %></th>
 % }
