@@ -1014,7 +1014,7 @@ will be passed through C<loc> for localization.
 
 =cut
 
-Set($LogoAltText, "Best Practical Solutions, LLC corporate logo");
+Set($LogoAltText, "Request Tracker logo");
 
 =item C<$LogoImageHeight>
 
