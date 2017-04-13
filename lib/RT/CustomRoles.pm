@@ -156,6 +156,19 @@ sub LimitToMultipleValue {
     );
 }
 
+=head2 LimitToLookupType
+
+Takes LookupType and limits collection.
+
+=cut
+
+sub LimitToLookupType  {
+    my $self = shift;
+    my $lookup = shift;
+
+    $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
+}
+
 =head2 ApplySortOrder
 
 Sort custom roles according to the order provided by the object custom roles.

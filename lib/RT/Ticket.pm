@@ -113,6 +113,50 @@ for my $role (sort keys %ROLES) {
     );
 }
 
+RT::CustomRole->RegisterLookupType(
+    CustomFieldLookupType() => {
+        FriendlyName => 'Tickets',
+        CreateGroupPredicate => sub {
+            my ($object, $role) = @_;
+            if ($object->isa('RT::Queue')) {
+                # In case queue level custom role groups got deleted
+                # somehow.  Allow to re-create them like default ones.
+                return $role->IsAdded($object->id);
+            }
+            elsif ($object->isa('RT::Ticket')) {
+                # see if the role has been applied to the ticket's queue
+                # need to walk around ACLs because of the common case of
+                # (e.g. Everyone) having the CreateTicket right but not
+                # ShowTicket
+                return $role->IsAdded($object->__Value('Queue'));
+            }
+
+            return 0;
+        },
+        AppliesToObjectPredicate => sub {
+            my ($object, $role) = @_;
+            return 0 unless $object->CurrentUserHasRight('SeeQueue');
+
+            # custom roles apply to queues, so canonicalize a ticket
+            # into its queue
+            if ($object->isa('RT::Ticket')) {
+                $object = $object->QueueObj;
+            }
+
+            if ($object->isa('RT::Queue')) {
+                return $role->IsAdded($object->Id);
+            }
+
+            return 0;
+        },
+        Subgroup => {
+            Domain => 'RT::Ticket-Role',
+            Table  => 'Tickets',
+            Parent => 'Queue',
+        },
+    }
+);
+
 our %MERGE_CACHE = (
     effective => {},
     merged => {},

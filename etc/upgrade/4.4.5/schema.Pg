@@ -1,0 +1,2 @@
+ALTER TABLE CustomRoles ADD COLUMN LookupType VARCHAR(255);
+UPDATE CustomRoles SET LookupType='RT::Queue-RT::Ticket';
