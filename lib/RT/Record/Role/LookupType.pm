@@ -85,10 +85,22 @@ with 'RT::Record::Role';
 
 =head1 PROVIDES
 
-=head2 RegisterLookupType LOOKUPTYPE FRIENDLYNAME
+=head2 RegisterLookupType LOOKUPTYPE OPTIONS
 
 Tell RT that a certain object accepts records of this role via a lookup
-type and provide a friendly name for them.
+type. I<OPTIONS> is a hash reference for which the following keys are
+used:
+
+=over 4
+
+=item FriendlyName
+
+The string to display in the UI to users for this lookup type
+
+=back
+
+For backwards compatibility, I<OPTIONS> may also be a string which is
+interpreted as specifying the I<FriendlyName>.
 
 Examples:
 
@@ -107,11 +119,15 @@ my %REGISTRY = ();
 sub RegisterLookupType {
     my $class = shift;
     my $path = shift;
-    my $friendly_name = shift;
+    my $options = shift;
 
     die "RegisterLookupType is a class method" if blessed($class);
 
-    $REGISTRY{$class}{$path} = $friendly_name;
+    $options = {
+        FriendlyName => $options,
+    } if !ref($options);
+
+    $REGISTRY{$class}{$path} = $options;
 }
 
 =head2 LookupTypes
@@ -126,6 +142,28 @@ sub LookupTypes {
     return sort keys %{ $REGISTRY{ $class } };
 }
 
+=head2 LookupTypeRegistration [PATH] [OPTION]
+
+Returns the arguments of calls to L</RegisterLookupType>. With no arguments, returns a hash of hashes,
+where the first-level key is the path (corresponding with L<RT::Record/CustomFieldLookupType>) and
+the second-level hash is the option names. If path and option are provided, it looks up in that
+nested hash structure to provide the desired information.
+
+=cut
+
+sub LookupTypeRegistration {
+    my $self = shift;
+    my $class = blessed($self) || $self;
+
+    my $path = shift
+        or return %{ $REGISTRY{$class}};
+
+    my $option = shift
+        or return %{ $REGISTRY{$class}{$path}};
+
+    return $REGISTRY{$class}{$path}{$option};
+}
+
 =head2 FriendlyLookupType
 
 Returns a localized description of the LookupType of this record
@@ -138,8 +176,9 @@ sub FriendlyLookupType {
 
     my $class = blessed($self) || $self;
 
-    return ($self->loc( $REGISTRY{$class}{$lookup} ))
-        if defined $REGISTRY{$class}{$lookup};
+    if (my $friendly = $self->LookupTypeRegistration($lookup, 'FriendlyName')) {
+        return $self->loc($friendly);
+    }
 
     my @types = map { s/^RT::// ? $self->loc($_) : $_ }
       grep { defined and length }
