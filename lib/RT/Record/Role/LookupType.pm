@@ -161,7 +161,8 @@ sub LookupTypeRegistration {
     my $option = shift
         or return %{ $REGISTRY{$class}{$path}};
 
-    return $REGISTRY{$class}{$path}{$option};
+    my $ret = $REGISTRY{$class}{$path}{$option};
+    return $ret;
 }
 
 =head2 FriendlyLookupType

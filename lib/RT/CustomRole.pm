@@ -55,6 +55,9 @@ use base 'RT::Record';
 use RT::CustomRoles;
 use RT::ObjectCustomRole;
 
+use Role::Basic 'with';
+with "RT::Record::Role::LookupType";
+
 =head1 NAME
 
 RT::CustomRole - user-defined role groups
@@ -79,6 +82,7 @@ Create takes a hash of values and creates a row in the database:
   varchar(255) 'Description'.
   int(11) 'MaxValues'.
   varchar(255) 'EntryHint'.
+  varchar(255) 'LookupType'.
   smallint(6) 'Disabled'.
 
 =cut
@@ -90,6 +94,7 @@ sub Create {
         Description => '',
         MaxValues   => 0,
         EntryHint   => '',
+        LookupType  => '',
         Disabled    => 0,
         @_,
     );
@@ -106,6 +111,9 @@ sub Create {
     $args{'Disabled'} ||= 0;
     $args{'MaxValues'} = int $args{'MaxValues'};
 
+    # backwards compatibility; used to be the only possibility
+    $args{'LookupType'} ||= 'RT::Queue-RT::Ticket';
+
     $RT::Handle->BeginTransaction;
 
     my ($ok, $msg) = $self->SUPER::Create(
@@ -113,6 +121,7 @@ sub Create {
         Description => $args{'Description'},
         MaxValues   => $args{'MaxValues'},
         EntryHint   => $args{'EntryHint'},
+        LookupType  => $args{'LookupType'},
         Disabled    => $args{'Disabled'},
     );
     unless ($ok) {
@@ -152,9 +161,9 @@ sub _RegisterAsRole {
     my $self = shift;
     my $id = $self->Id;
 
-    RT::Ticket->RegisterRole(
+    $self->ObjectTypeFromLookupType->RegisterRole(
         Name                 => $self->GroupType,
-        EquivClasses         => ['RT::Queue'],
+        EquivClasses         => [$self->RecordClassFromLookupType],
         Single               => $self->SingleValue,
         UserDefined          => 1,
 
@@ -171,17 +180,10 @@ sub _RegisterAsRole {
             my $role = RT::CustomRole->new(RT->SystemUser);
             $role->Load($id);
 
-            if ($object->isa('RT::Queue')) {
-                # In case queue level custom role groups got deleted
-                # somehow.  Allow to re-create them like default ones.
-                return $role->IsAdded($object->id);
-            }
-            elsif ($object->isa('RT::Ticket')) {
-                # see if the role has been applied to the ticket's queue
-                # need to walk around ACLs because of the common case of
-                # (e.g. Everyone) having the CreateTicket right but not
-                # ShowTicket
-                return $role->IsAdded($object->__Value('Queue'));
+            if ( $role->Id ) {
+                if (my $predicate = $role->LookupTypeRegistration($role->LookupType, 'CreateGroupPredicate')) {
+                    return $predicate->($object, $role);
+                }
             }
 
             return 0;
@@ -205,16 +207,10 @@ sub _RegisterAsRole {
             my $role = RT::CustomRole->new(RT->SystemUser);
             $role->Load($id);
 
-            if ( $object->isa('RT::Ticket') || $object->isa('RT::Queue') ) {
-                return 0 unless $object->CurrentUserHasRight('SeeQueue');
-
-                # custom roles apply to queues, so canonicalize a ticket
-                # into its queue
-                if ( $object->isa('RT::Ticket') ) {
-                    $object = $object->QueueObj;
+            if ( $role->Id ) {
+                if (my $predicate = $role->LookupTypeRegistration($role->LookupType, 'AppliesToObjectPredicate')) {
+                    return $predicate->($object, $role);
                 }
-
-                return $role->IsAdded( $object->Id );
             }
 
             return 0;
@@ -235,7 +231,7 @@ sub _RegisterAsRole {
 sub _UnregisterAsRole {
     my $self = shift;
 
-    RT::Ticket->UnregisterRole($self->GroupType);
+    $self->ObjectTypeFromLookupType->UnregisterRole($self->GroupType);
 }
 
 =head2 Load ID/NAME
@@ -375,7 +371,7 @@ sub NotAddedTo {
 
 =head2 AddToObject
 
-Adds (applies) this custom role to the provided queue (ObjectId).
+Adds (applies) this custom role to the provided object (ObjectId).
 
 Accepts a param hash of:
 
@@ -383,7 +379,7 @@ Accepts a param hash of:
 
 =item C<ObjectId>
 
-Queue name or id.
+Object id of the class corresponding with L</LookupType>.
 
 =item C<SortOrder>
 
@@ -400,26 +396,30 @@ sub AddToObject {
     my $self = shift;
     my %args = @_%2? (ObjectId => @_) : (@_);
 
-    my $queue = RT::Queue->new( $self->CurrentUser );
-    $queue->Load( $args{'ObjectId'} );
-    return (0, $self->loc('Invalid queue'))
-        unless $queue->id;
+    my $class = $self->RecordClassFromLookupType;
+    my $object = $class->new( $self->CurrentUser );
+    $object->Load( $args{'ObjectId'} );
+    unless ($object->id) {
+        RT->Logger->warn("Unable to load $class '$args{'ObjectId'}' for custom role " . $self->Id);
+        return (0, $self->loc('Unable to load [_1]', $args{'ObjectId'}))
+    }
 
-    $args{'ObjectId'} = $queue->id;
+    $args{'ObjectId'} = $object->id;
 
     return ( 0, $self->loc('Permission Denied') )
-        unless $queue->CurrentUserHasRight('AdminCustomRoles');
+        unless $object->CurrentUserHasRight('AdminCustomRoles');
+
     my $rec = RT::ObjectCustomRole->new( $self->CurrentUser );
     my ( $status, $add ) = $rec->Add( %args, CustomRole => $self );
     my $msg;
-    $msg = $self->loc("[_1] added to queue [_2]", $self->Name, $queue->Name) if $status;
+    $msg = $self->loc("[_1] added to queue [_2]", $self->Name, $object->Name) if $status;
 
     return ( $add, $msg );
 }
 
 =head2 RemoveFromObject
 
-Removes this custom role from the provided queue (ObjectId).
+Removes this custom role from the provided object (ObjectId).
 
 Accepts a param hash of:
 
@@ -427,7 +427,7 @@ Accepts a param hash of:
 
 =item C<ObjectId>
 
-Queue name or id.
+Object id of the class corresponding with L</LookupType>.
 
 =back
 
@@ -440,19 +440,25 @@ sub RemoveFromObject {
     my $self = shift;
     my %args = @_%2? (ObjectId => @_) : (@_);
 
-    my $queue = RT::Queue->new( $self->CurrentUser );
-    $queue->Load( $args{'ObjectId'} );
-    return (0, $self->loc('Invalid queue id'))
-        unless $queue->id;
+    my $class = $self->RecordClassFromLookupType;
+    my $object = $class->new( $self->CurrentUser );
+    $object->Load( $args{'ObjectId'} );
+    unless ($object->id) {
+        RT->Logger->warn("Unable to load $class '$args{'ObjectId'}' for custom role " . $self->Id);
+        return (0, $self->loc('Unable to load [_1]', $args{'ObjectId'}))
+    }
+
+    $args{'ObjectId'} = $object->id;
 
     return ( 0, $self->loc('Permission Denied') )
-        unless $queue->CurrentUserHasRight('AdminCustomRoles');
+        unless $object->CurrentUserHasRight('AdminCustomRoles');
+
     my $rec = RT::ObjectCustomRole->new( $self->CurrentUser );
     $rec->LoadByCols( CustomRole => $self->id, ObjectId => $args{'ObjectId'} );
     return (0, $self->loc('Custom role is not added') ) unless $rec->id;
     my ( $status, $delete ) = $rec->Delete;
     my $msg;
-    $msg = $self->loc("[_1] removed from queue [_2]", $self->Name, $queue->Name) if $status;
+    $msg = $self->loc("[_1] removed from queue [_2]", $self->Name, $object->Name) if $status;
 
     return ( $delete, $msg );
 }
@@ -561,6 +567,39 @@ sub SetMaxValues {
     return ($ok, $msg);
 }
 
+=head2 LookupType
+
+Returns the current value of LookupType.
+(In the database, LookupType is stored as varchar(255).)
+
+=head2 SetLookupType VALUE
+
+
+Set LookupType to VALUE.
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+(In the database, LookupType will be stored as a varchar(255).)
+
+=cut
+
+sub SetLookupType {
+    my $self = shift;
+    my $lookup = shift;
+    if ( $lookup ne $self->LookupType ) {
+        # Okay... We need to invalidate our existing relationships
+        RT::ObjectCustomRole->new($self->CurrentUser)->DeleteAll( CustomRole => $self );
+    }
+
+    $self->_UnregisterAsRole;
+
+    my ($ok, $msg) = $self->_Set(Field => 'LookupType', Value => $lookup);
+
+    # update EquivClasses declaration
+    $self->_RegisterAsRole;
+    RT->System->CustomRoleCacheNeedsUpdate(1);
+
+    return ($ok, $msg);
+}
+
 =head2 EntryHint
 
 Returns the current value of EntryHint.
@@ -615,62 +654,65 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 =cut
 
-sub _SetGroupsDisabledForQueue {
+sub _SetGroupsDisabledForObject {
     my $self = shift;
     my $value = shift;
-    my $queue = shift;
+    my $object = shift;
 
-    # set disabled on the queue group
-    my $queue_group = RT::Group->new($self->CurrentUser);
-    $queue_group->LoadRoleGroup(
+    # set disabled on the object group
+    my $object_group = RT::Group->new($self->CurrentUser);
+    $object_group->LoadRoleGroup(
         Name   => $self->GroupType,
-        Object => $queue,
+        Object => $object,
     );
 
-    if (!$queue_group->Id) {
+    if (!$object_group->Id) {
         $RT::Handle->Rollback;
-        $RT::Logger->error("Couldn't find role group for " . $self->GroupType . " on queue " . $queue->Id);
+        $RT::Logger->error("Couldn't find role group for " . $self->GroupType . " on " . ref($object) . " #" . $object->Id);
         return(undef);
     }
 
-    my ($ok, $msg) = $queue_group->SetDisabled($value);
+    my ($ok, $msg) = $object_group->SetDisabled($value);
     unless ($ok) {
         $RT::Handle->Rollback;
         $RT::Logger->error("Couldn't SetDisabled($value) on role group: $msg");
         return(undef);
     }
 
-    # disable each existant ticket group
-    my $ticket_groups = RT::Groups->new($self->CurrentUser);
+    my $subgroup_config = $self->LookupTypeRegistration($self->LookupType, 'Subgroup');
+    if ($subgroup_config) {
+        # disable each existant ticket group
+        my $groups = RT::Groups->new($self->CurrentUser);
 
-    if ($value) {
-        $ticket_groups->LimitToEnabled;
-    }
-    else {
-        $ticket_groups->LimitToDeleted;
-    }
+        if ($value) {
+            $groups->LimitToEnabled;
+        }
+        else {
+            $groups->LimitToDeleted;
+        }
 
-    $ticket_groups->Limit(FIELD => 'Domain', OPERATOR => 'LIKE', VALUE => "RT::Ticket-Role", CASESENSITIVE => 0 );
-    $ticket_groups->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $self->GroupType, CASESENSITIVE => 0);
+        $groups->Limit(FIELD => 'Domain', OPERATOR => 'LIKE', VALUE => $subgroup_config->{Domain}, CASESENSITIVE => 0 );
+        $groups->Limit(FIELD => 'Name', OPERATOR => '=', VALUE => $self->GroupType, CASESENSITIVE => 0);
 
-    my $tickets = $ticket_groups->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'Instance',
-        TABLE2 => 'Tickets',
-        FIELD2 => 'Id',
-    );
-    $ticket_groups->Limit(
-        ALIAS => $tickets,
-        FIELD => 'Queue',
-        VALUE => $queue->Id,
-    );
+        my $objects = $groups->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'Instance',
+            TABLE2 => $subgroup_config->{Table},
+            FIELD2 => 'Id',
+        );
+        $groups->Limit(
+            ALIAS => $objects,
+            FIELD => $subgroup_config->{Parent},
+            VALUE => $object->Id,
+        );
 
-    while (my $ticket_group = $ticket_groups->Next) {
-        my ($ok, $msg) = $ticket_group->SetDisabled($value);
-        unless ($ok) {
-            $RT::Handle->Rollback;
-            $RT::Logger->error("Couldn't SetDisabled($value) ticket role group: $msg");
-            return(undef);
+        while (my $group = $groups->Next) {
+            my ($ok, $msg) = $group->SetDisabled($value);
+            unless ($ok) {
+                $RT::Handle->Rollback;
+                $RT::Logger->error("Couldn't SetDisabled($value) role group: $msg");
+                return(undef);
+            }
         }
     }
 }
@@ -752,6 +794,8 @@ sub _CoreAccessible {
         MaxValues =>
         {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
         EntryHint =>
+        {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
+        LookupType =>
         {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         Creator =>
         {read => 1, auto => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
