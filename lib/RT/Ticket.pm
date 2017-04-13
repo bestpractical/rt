@@ -830,25 +830,6 @@ sub CcAddresses {
     return $self->RoleAddresses('Cc');
 }
 
-=head2 RoleAddresses
-
-Takes a role name and returns a string of all the email addresses for
-users in that role
-
-=cut
-
-sub RoleAddresses {
-    my $self = shift;
-    my $role = shift;
-
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return undef;
-    }
-    return ( $self->RoleGroup($role)->MemberEmailAddressesAsString);
-}
-
-
-
 =head2 Requestor
 
 Takes nothing.
@@ -3002,7 +2983,7 @@ sub CurrentUserCanSee {
     my ($what, $txn) = @_;
     return 0 unless $self->CurrentUserHasRight('ShowTicket');
 
-    return 1 if $what ne "Transaction";
+    return 1 if ( $what // '' ) ne "Transaction";
 
     # If it's a comment, we need to be extra special careful
     my $type = $txn->__Value('Type');
