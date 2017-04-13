@@ -545,6 +545,7 @@ CREATE TABLE CustomRoles (
   Description varchar(255) collate NOCASE NULL  ,
   MaxValues integer,
   EntryHint varchar(255) collate NOCASE NULL  ,
+  LookupType varchar(255) collate NOCASE NOT NULL,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created DATETIME NULL  ,

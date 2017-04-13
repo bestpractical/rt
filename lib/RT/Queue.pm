@@ -481,6 +481,7 @@ sub CustomRoles {
     my $roles = RT::CustomRoles->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
         $roles->LimitToObjectId( $self->Id );
+        $roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
         $roles->ApplySortOrder;
     }
     return ($roles);
@@ -1083,6 +1084,7 @@ sub FindDependencies {
     # Object Custom Roles
     $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
     $objs->LimitToObjectId($self->Id);
+    $objs->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
     $deps->Add( in => $objs );
 }
 

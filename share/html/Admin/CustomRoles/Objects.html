@@ -56,8 +56,8 @@
 <h2><&|/l&>Selected objects</&></h2>
 
 <& /Elements/CollectionList,
-    OrderBy => 'id',
-    Order => 'ASC',
+    OrderBy => $class->isa('RT::Queue') ? ['SortOrder', 'Name'] : 'id',
+    Order => $class->isa('RT::Queue') ? ['ASC', 'ASC'] : 'ASC',
     %ARGS,
     Collection => $added,
     Rows => 0,
@@ -74,8 +74,8 @@
 <h2><&|/l&>Unselected objects</&></h2>
 
 <& /Elements/CollectionList,
-    OrderBy => 'Name',
-    Order   => 'ASC',
+    OrderBy => $class->isa('RT::Queue') ? ['SortOrder', 'Name'] : 'id',
+    Order => $class->isa('RT::Queue') ? ['ASC', 'ASC'] : 'ASC',
     %ARGS,
     Collection    => $not_added,
     Rows          => $rows,
@@ -101,6 +101,8 @@ $From   => undef
 my $role = RT::CustomRole->new( $session{'CurrentUser'} );
 $role->Load($id) or Abort(loc("Could not load custom role #[_1]", $id));
 $id = $role->id;
+
+my $class = $role->RecordClassFromLookupType;
 
 if ($role->Disabled) {
     Abort(loc("Cannot modify objects of disabled custom role #[_1]", $id));
@@ -132,8 +134,12 @@ if ( $Update ) {
 my $added = $role->AddedTo;
 my $not_added = $role->NotAddedTo;
 
-my $format = RT->Config->Get('AdminSearchResultFormat')->{'Queues'};
-my $rows = RT->Config->Get('AdminSearchResultRows')->{'Queues'} || 50;
+my $collection_class = ref($added);
+$collection_class =~ s/^RT:://;
+
+my $format = RT->Config->Get('AdminSearchResultFormat')->{$collection_class}
+    || '__id__,__Name__';
+my $rows = RT->Config->Get('AdminSearchResultRows')->{$collection_class} || 50;
 
 my $title = loc('Modify associated objects for [_1]', $role->Name);
 

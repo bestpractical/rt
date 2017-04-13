@@ -57,11 +57,11 @@ use RT::ObjectCustomRoles;
 
 =head1 NAME
 
-RT::ObjectCustomRole - record representing addition of a custom role to a queue
+RT::ObjectCustomRole - record representing addition of a custom role to an object
 
 =head1 DESCRIPTION
 
-This record is created if you want to add a custom role to a queue.
+This record is created if you want to add a custom role to an object.
 
 Inherits methods from L<RT::Record::AddAndSort>.
 
@@ -79,12 +79,16 @@ sub Table {'ObjectCustomRoles'}
 
 =head2 ObjectCollectionClass
 
-Returns class name of collection of records custom roles can be added to.
-Now it's only L<RT::Queue>, so 'RT::Queues' is returned.
+Returns class name of collection of records this custom role can be added to
+by consulting the custom role's C<LookupType>.
 
 =cut
 
-sub ObjectCollectionClass {'RT::Queues'}
+sub ObjectCollectionClass {
+    my $self = shift;
+    my %args = (@_);
+    return $args{'CustomRole'}->CollectionClassFromLookupType;
+}
 
 =head2 CustomRoleObj
 
@@ -100,22 +104,30 @@ sub CustomRoleObj {
     return $obj;
 }
 
-=head2 QueueObj
+=head2 Object
 
-Returns the L<RT::Queue> object which this ObjectCustomRole is added to
+Returns the object which this ObjectCustomRole is added to
 
 =cut
 
+sub Object {
+    my $self = shift;
+    my $role = $self->CustomRoleObj;
+    my $class = $role->RecordClassFromLookupType;
+    my $object = $class->new($self->CurrentUser);
+    $object->Load($self->ObjectId);
+    return $object;
+}
+
 sub QueueObj {
     my $self = shift;
-    my $queue = RT::Queue->new($self->CurrentUser);
-    $queue->Load($self->ObjectId);
-    return $queue;
+    RT->Deprecated( Instead => "Object", Remove => '4.6' );
+    return $self->Object(@_);
 }
 
 =head2 Add
 
-Adds the custom role to the queue and creates (or re-enables) that queue's role
+Adds the custom role to the object and creates (or re-enables) that object's role
 group.
 
 =cut
@@ -132,29 +144,28 @@ sub Add {
         return(undef);
     }
 
-    my $queue = $self->QueueObj;
+    my $object = $self->Object;
     my $role = $self->CustomRoleObj;
 
     # see if we already have this role group (which can happen if you
-    # add a role to a queue, remove it, then add it back in)
+    # add a role to an object, remove it, then add it back in)
     my $existing = RT::Group->new($self->CurrentUser);
     $existing->LoadRoleGroup(
         Name   => $role->GroupType,
-        Object => $queue,
+        Object => $object,
     );
 
     if ($existing->Id) {
-        # there already was a role group for this queue, which means
+        # there already was a role group for this object, which means
         # this was previously added, then removed, and is now being re-added,
-        # which means we have to re-enable the queue group and all the
-        # ticket groups
-        $role->_SetGroupsDisabledForQueue(0, $queue);
+        # which means we have to re-enable the group
+        $role->_SetGroupsDisabledForObject(0, $object);
     }
     else {
         my $group = RT::Group->new($self->CurrentUser);
         my ($ok, $msg) = $group->CreateRoleGroup(
             Name   => $role->GroupType,
-            Object => $queue,
+            Object => $object,
         );
 
         unless ($ok) {
@@ -172,7 +183,7 @@ sub Add {
 
 =head2 Delete
 
-Removes the custom role from the queue and disables that queue's role group.
+Removes the custom role from the object and disables that object's role group.
 
 =cut
 
@@ -181,7 +192,7 @@ sub Delete {
 
     $RT::Handle->BeginTransaction;
 
-    $self->CustomRoleObj->_SetGroupsDisabledForQueue(1, $self->QueueObj);
+    $self->CustomRoleObj->_SetGroupsDisabledForObject(1, $self->Object);
 
     # remove the ObjectCustomRole record
     my ($ok, $msg) = $self->SUPER::Delete(@_);

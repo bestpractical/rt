@@ -749,6 +749,7 @@ CREATE TABLE CustomRoles (
   Description varchar(255) NULL  ,
   MaxValues integer NOT NULL DEFAULT 0  ,
   EntryHint varchar(255) NULL  ,
+  LookupType varchar(255) NOT NULL  ,
 
   Creator integer NOT NULL DEFAULT 0  ,
   Created TIMESTAMP NULL  ,

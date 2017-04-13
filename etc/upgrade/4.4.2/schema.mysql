@@ -1,0 +1,2 @@
+ALTER TABLE CustomRoles ADD COLUMN LookupType varchar(255) CHARACTER SET ascii;
+UPDATE CustomRoles SET LookupType='RT::Queue-RT::Ticket';
