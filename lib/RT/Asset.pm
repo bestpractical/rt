@@ -513,6 +513,23 @@ sub RoleGroup {
     }
 }
 
+=head2 RoleAddresses
+
+Takes a role name and returns a string of all the email addresses for
+users in that role
+
+=cut
+
+sub RoleAddresses {
+    my $self = shift;
+    my $role = shift;
+
+    if ( $self->CurrentUserCanSee ) {
+        return $self->RoleGroup($role)->MemberEmailAddressesAsString;
+    }
+    return undef;
+}
+
 =head1 INTERNAL METHODS
 
 Public methods, but you shouldn't need to call these unless you're
