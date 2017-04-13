@@ -96,8 +96,10 @@
 % }
 
 <&| /Elements/LabeledValue, Label => loc("Applies to") &>
-    <& /Admin/Elements/SelectCustomFieldLookupType,
+    <& /Admin/Elements/SelectLookupType,
+      Class => 'RT::CustomField',
       Name => "LookupType",
+      Object => $CustomFieldObj,
       Default => $CustomFieldObj->LookupType || $LookupType,
     &>
 </&>
