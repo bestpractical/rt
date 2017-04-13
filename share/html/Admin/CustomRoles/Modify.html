@@ -63,6 +63,13 @@
 <td colspan="3"><input name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" /></td>
 </tr>
 
+<tr><td align="right"><&|/l&>Applies to</&></td>
+<td><& /Admin/Elements/SelectLookupType,
+    Name    => "LookupType",
+    Object  => $RoleObj,
+    Default => $RoleObj->LookupType || $LookupType,
+&></td></tr>
+
 <tr><td align="right"><&|/l&>Entry Hint</&>:</td>
 <td colspan="3"><input name="EntryHint" value="<% $Create ? "" : $RoleObj->EntryHint || $EntryHint || '' %>" size="60" /></td>
 </tr>
@@ -127,7 +134,7 @@ unless ($Create) {
 
 if ( $RoleObj->Id ) {
     $title = loc('Configuration for role [_1]', $RoleObj->Name );
-    my @attribs = qw(Description Name EntryHint Disabled);
+    my @attribs = qw(Description Name EntryHint LookupType Disabled);
 
     # we just created the role
     if (!$id || $id eq 'new') {
@@ -185,4 +192,5 @@ $SetEnabled => undef
 $SetMultiple => undef
 $Multiple => undef
 $Enabled => undef
+$LookupType => RT::Ticket->CustomFieldLookupType
 </%ARGS>

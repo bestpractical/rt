@@ -45,11 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& SelectLookupType, %ARGS, Class => 'RT::CustomField' &>
-
+<select name="<%$Name%>">
+%for my $option ($Object->LookupTypes) {
+<option value="<%$option%>"<%defined($Default) && ($option eq $Default) && qq[ selected="selected"] |n%>><% $Object->FriendlyLookupType($option) %></option>
+%}
+</select>
 <%INIT>
-RT->Deprecated(
-    Remove => '4.6',
-    Instead => 'SelectLookupType',
-);
+$Object ||= $Class->new($session{'CurrentUser'});
 </%INIT>
+<%ARGS>
+$Default => ''
+$Name => 'LookupType'
+$Object => undef
+$Class => ''
+</%ARGS>

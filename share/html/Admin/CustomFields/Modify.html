@@ -92,8 +92,9 @@
 % }
 
 <tr><td class="label"><&|/l&>Applies to</&></td>
-<td><& /Admin/Elements/SelectCustomFieldLookupType, 
-        Name => "LookupType", 
+<td><& /Admin/Elements/SelectLookupType,
+        Name => "LookupType",
+        Object => $CustomFieldObj,
         Default => $CustomFieldObj->LookupType || $LookupType, &>
 </td></tr>
 

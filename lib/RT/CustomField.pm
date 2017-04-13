@@ -57,7 +57,8 @@ use Scalar::Util 'blessed';
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Record::Role::Rights";
+with "RT::Record::Role::Rights",
+     "RT::Record::Role::LookupType";
 
 sub Table {'CustomFields'}
 
@@ -197,7 +198,6 @@ our %FieldTypes = (
 
 
 my %BUILTIN_GROUPINGS;
-my %FRIENDLY_LOOKUP_TYPES = ();
 
 __PACKAGE__->RegisterLookupType( 'RT::Queue-RT::Ticket' => "Tickets", );    #loc
 __PACKAGE__->RegisterLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions", ); #loc
@@ -1245,120 +1245,6 @@ sub SetLookupType {
     return $self->_Set(Field => 'LookupType', Value =>$lookup);
 }
 
-=head2 LookupTypes
-
-Returns an array of LookupTypes available
-
-=cut
-
-
-sub LookupTypes {
-    my $self = shift;
-    return sort keys %FRIENDLY_LOOKUP_TYPES;
-}
-
-=head2 FriendlyLookupType
-
-Returns a localized description of the type of this custom field
-
-=cut
-
-sub FriendlyLookupType {
-    my $self = shift;
-    my $lookup = shift || $self->LookupType;
-
-    return ($self->loc( $FRIENDLY_LOOKUP_TYPES{$lookup} ))
-        if defined $FRIENDLY_LOOKUP_TYPES{$lookup};
-
-    my @types = map { s/^RT::// ? $self->loc($_) : $_ }
-      grep { defined and length }
-      split( /-/, $lookup )
-      or return;
-
-    state $LocStrings = [
-        "[_1] objects",            # loc
-        "[_1]'s [_2] objects",        # loc
-        "[_1]'s [_2]'s [_3] objects",   # loc
-    ];
-    return ( $self->loc( $LocStrings->[$#types], @types ) );
-}
-
-=head1 RecordClassFromLookupType
-
-Returns the type of Object referred to by ObjectCustomFields' ObjectId column
-
-Optionally takes a LookupType to use instead of using the value on the loaded
-record.  In this case, the method may be called on the class instead of an
-object.
-
-=cut
-
-sub RecordClassFromLookupType {
-    my $self = shift;
-    my $type = shift || $self->LookupType;
-    my ($class) = ($type =~ /^([^-]+)/);
-    unless ( $class ) {
-        if (blessed($self) and $self->LookupType eq $type) {
-            $RT::Logger->error(
-                "Custom Field #". $self->id
-                ." has incorrect LookupType '$type'"
-            );
-        } else {
-            RT->Logger->error("Invalid LookupType passed as argument: $type");
-        }
-        return undef;
-    }
-    return $class;
-}
-
-=head1 ObjectTypeFromLookupType
-
-Returns the ObjectType used in ObjectCustomFieldValues rows for this CF
-
-Optionally takes a LookupType to use instead of using the value on the loaded
-record.  In this case, the method may be called on the class instead of an
-object.
-
-=cut
-
-sub ObjectTypeFromLookupType {
-    my $self = shift;
-    my $type = shift || $self->LookupType;
-    my ($class) = ($type =~ /([^-]+)$/);
-    unless ( $class ) {
-        if (blessed($self) and $self->LookupType eq $type) {
-            $RT::Logger->error(
-                "Custom Field #". $self->id
-                ." has incorrect LookupType '$type'"
-            );
-        } else {
-            RT->Logger->error("Invalid LookupType passed as argument: $type");
-        }
-        return undef;
-    }
-    return $class;
-}
-
-sub CollectionClassFromLookupType {
-    my $self = shift;
-
-    my $record_class = $self->RecordClassFromLookupType;
-    return undef unless $record_class;
-
-    my $collection_class;
-    if ( UNIVERSAL::can($record_class.'Collection', 'new') ) {
-        $collection_class = $record_class.'Collection';
-    } elsif ( UNIVERSAL::can($record_class.'es', 'new') ) {
-        $collection_class = $record_class.'es';
-    } elsif ( UNIVERSAL::can($record_class.'s', 'new') ) {
-        $collection_class = $record_class.'s';
-    } else {
-        $RT::Logger->error("Can not find a collection class for record class '$record_class'");
-        return undef;
-    }
-    return $collection_class;
-}
-
 =head2 Groupings
 
 Returns a (sorted and lowercased) list of the groupings in which this custom
@@ -1456,20 +1342,6 @@ sub RegisterBuiltInGroupings {
         };
     }
     $BUILTIN_GROUPINGS{''} = { map { %$_ } values %BUILTIN_GROUPINGS  };
-}
-
-=head1 IsOnlyGlobal
-
-Certain custom fields (users, groups) should only be added globally;
-codify that set here for reference.
-
-=cut
-
-sub IsOnlyGlobal {
-    my $self = shift;
-
-    return ($self->LookupType =~ /^RT::(?:Group|User)/io);
-
 }
 
 =head1 AddedTo
@@ -1901,31 +1773,6 @@ sub CurrentUserCanSee {
              && $self->CurrentUserHasRight('SetInitialCustomField');
 
     return 0;
-}
-
-=head2 RegisterLookupType LOOKUPTYPE FRIENDLYNAME
-
-Tell RT that a certain object accepts custom fields via a lookup type and
-provide a friendly name for such CFs.
-
-Examples:
-
-    'RT::Queue-RT::Ticket'                 => "Tickets",                # loc
-    'RT::Queue-RT::Ticket-RT::Transaction' => "Ticket Transactions",    # loc
-    'RT::User'                             => "Users",                  # loc
-    'RT::Group'                            => "Groups",                 # loc
-    'RT::Queue'                            => "Queues",                 # loc
-
-This is a class method. 
-
-=cut
-
-sub RegisterLookupType {
-    my $self = shift;
-    my $path = shift;
-    my $friendly_name = shift;
-
-    $FRIENDLY_LOOKUP_TYPES{$path} = $friendly_name;
 }
 
 =head2 IncludeContentForValue [VALUE] (and SetIncludeContentForValue)
