@@ -97,7 +97,8 @@ sub _HandleArgument {
     my $self = shift;
     my $instance = shift;
 
-    return if ( $instance eq 'AlwaysNotifyActor' );
+    return if $instance eq 'AlwaysNotifyActor'
+           || $instance eq 'NeverNotifyActor';
 
     if ( $instance !~ /\D/ ) {
         my $obj = RT::Principal->new( $self->CurrentUser );
