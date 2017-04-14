@@ -75,8 +75,10 @@ require RT::Group;
 Sets the recipients of this message to Groups and/or Users.
 Respects RT's NotifyActor configuration.
 
-To send email to the selected receipients regardless of RT's NotifyActor
-configuration, include AlwaysNotifyActor in the list of arguments.
+To send email to the selected recipients regardless of RT's NotifyActor
+configuration, include AlwaysNotifyActor in the list of arguments. Or to
+always suppress email to the selected recipients regardless of RT's
+NotifyActor configuration, include NeverNotifyActor in the list of arguments.
 
 =cut
 
@@ -97,7 +99,8 @@ sub _HandleArgument {
     my $self = shift;
     my $instance = shift;
 
-    return if ( $instance eq 'AlwaysNotifyActor' );
+    return if $instance eq 'AlwaysNotifyActor'
+           || $instance eq 'NeverNotifyActor';
 
     if ( $instance !~ /\D/ ) {
         my $obj = RT::Principal->new( $self->CurrentUser );
