@@ -734,5 +734,25 @@ sub LabelForRole {
     return $role->{Name};
 }
 
+=head2 CustomRoleObj
+
+Returns the L<RT::CustomRole> object for this role if and only if it's
+backed by a custom role. If it's a core role (e.g. Ticket Requestors),
+returns C<undef>.
+
+=cut
+
+sub CustomRoleObj {
+    my $self = shift;
+    my $name = shift;
+
+    if (my ($id) = $name =~ /^RT::CustomRole-(\d+)$/) {
+        my $role = RT::CustomRole->new($self->CurrentUser);
+        $role->Load($id);
+        return $role;
+    }
+
+    return undef;
+}
 
 1;
