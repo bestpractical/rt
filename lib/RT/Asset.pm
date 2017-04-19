@@ -99,6 +99,46 @@ for my $role ('Owner', 'HeldBy', 'Contact') {
     );
 }
 
+RT::CustomRole->RegisterLookupType(
+    CustomFieldLookupType() => {
+        FriendlyName => 'Assets',
+        CreateGroupPredicate => sub {
+            my ($object, $role) = @_;
+            if ($object->isa('RT::Catalog')) {
+                # there's no way to apply the custom
+                # role to a catalog before that catalog is created
+                return 0;
+            }
+            elsif ($object->isa('RT::Asset')) {
+                # see if the role has been applied to the asset's catalog
+                # need to walk around ACLs
+                return $role->IsAdded($object->__Value('Catalog'));
+            }
+
+            return 0;
+        },
+        AppliesToObjectPredicate => sub {
+            my ($object, $role) = @_;
+            # custom roles apply to catalogs, so canonicalize an asset
+            # into its catalog
+            if ($object->isa('RT::Asset')) {
+                $object = $object->CatalogObj;
+            }
+
+            if ($object->isa('RT::Catalog')) {
+                return $role->IsAdded($object->Id);
+            }
+
+            return 0;
+        },
+        Subgroup => {
+            Domain => 'RT::Asset-Role',
+            Table  => 'Assets',
+            Parent => 'Catalog',
+        },
+    }
+);
+
 =head1 DESCRIPTION
 
 An Asset is a small record object upon which zero to many custom fields are

@@ -53,7 +53,7 @@ my $CatalogObj = $AssetObj->CatalogObj;
 </%init>
 <table>
 % for my $role ($AssetObj->Roles) {
-<tr><td class="label"><% loc($role) %>:
+<tr><td class="label"><% $AssetObj->LabelForRole($role) %>:
 % if ($AssetObj->Role($role)->{Single}) {
 %      my $users = $AssetObj->RoleGroup($role)->UserMembersObj(Recursively => 0);
 %      $users->FindAllRows;

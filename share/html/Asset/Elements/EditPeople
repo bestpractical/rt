@@ -49,12 +49,24 @@
 % for my $role ( $AssetObj->Roles ) {
 <tr class="asset-people-<% CSSClass($role) %>">
 <td class="label">
-<% loc($role) %>:
+<% $AssetObj->LabelForRole($role) %>:
 </td>
 <td class="value" colspan="5">
 <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1 &>
 </td>
 </tr>
+
+% my $custom_role = $AssetObj->CustomRoleObj($role);
+% if ($custom_role && $custom_role->EntryHint) {
+<tr>
+  <td class="label">&nbsp;</td>
+  <td class="comment" colspan="5">
+    <i><font size="-2">
+      <% $custom_role->EntryHint %>
+    </font></i>
+  </td>
+</tr>
+% }
 % }
 
 </table>
