@@ -486,8 +486,7 @@ sub _run_search {
         push @results, $result->entries;
 
         # Short circuit early if we're done
-        last if not $result->count
-             or $result->count < ($RT::LDAPSizeLimit || 0);
+        last if not $result->count;
 
         if ($page) {
             if (my $control = $result->control( LDAP_CONTROL_PAGED )) {
