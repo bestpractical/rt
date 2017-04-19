@@ -452,7 +452,7 @@ sub HasRights {
             if ( $custom_role->id && !$custom_role->Disabled ) {
                 my $added;
                 for my $object ( @{ $args{'EquivObjects'} } ) {
-                    next unless $object->isa('RT::Queue');
+                    next unless $object->isa('RT::Queue') || $object->isa('RT::Catalog');
                     if ( $custom_role->IsAdded( $object->id ) ) {
                         $added = 1;
                         last;
@@ -689,7 +689,7 @@ sub RolesWithRight {
             if ( $custom_role->id && !$custom_role->Disabled ) {
                 my $added;
                 for my $object ( @{ $args{'EquivObjects'} } ) {
-                    next unless $object->isa('RT::Queue');
+                    next unless $object->isa('RT::Queue') || $object->isa('RT::Catalog');
                     if ( $custom_role->IsAdded( $object->id ) ) {
                         $added = 1;
                         last;

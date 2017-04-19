@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => "asset-search-people", title => loc('People') &>
 <table>
-% for my $role (RT::Asset->Roles) {
+% for my $role ($CatalogObj->Roles) {
 <tr class="asset-role-<% CSSClass($role) %>">
-  <td class="label"><label for="Role.<% $role %>"><% loc($role) %></td>
+  <td class="label"><label for="Role.<% $role %>"><% RT::Asset->LabelForRole($role) %></td>
   <td class="value">
       <input type="text" id="Role.<% $role %>" name="Role.<% $role %>"
              data-autocomplete="Users" value="<% $ARGS{"Role.$role"} || '' %>" />
