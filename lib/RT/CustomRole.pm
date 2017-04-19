@@ -277,15 +277,6 @@ sub _ValidateName {
         return ($ok, $self->loc("'[_1]' is not a valid name.", $name));
     }
 
-    # These roles are builtin, so avoid any potential confusion
-    if ($name =~ m{^( cc
-                    | admin[ ]?cc
-                    | requestors?
-                    | owner
-                    ) $}xi) {
-        return (undef, $self->loc("Role already exists") );
-    }
-
     my $temp = RT::CustomRole->new(RT->SystemUser);
     $temp->LoadByCols(Name => $name);
 
