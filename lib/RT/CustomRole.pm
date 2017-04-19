@@ -278,13 +278,30 @@ sub _ValidateName {
         return ($ok, $self->loc("'[_1]' is not a valid name.", $name));
     }
 
-    # These roles are builtin, so avoid any potential confusion
-    if ($name =~ m{^( cc
+    if ( $type eq 'RT::Queue-RT::Ticket' ) {
+        # These roles are ticket builtin, so avoid any potential confusion
+        if (
+            $name =~ m{^( cc
                     | admin[ ]?cc
                     | requestors?
                     | owner
-                    ) $}xi) {
-        return (undef, $self->loc("Role already exists") );
+                    ) $}xi
+            )
+        {
+            return ( undef, $self->loc("Role already exists") );
+        }
+    }
+    else {
+        # These roles are asset builtin, so avoid any potential confusion
+        if (
+            $name =~ m{^( heldby
+                    | contacts?
+                    | owner
+                    ) $}xi
+            )
+        {
+            return ( undef, $self->loc("Role already exists") );
+        }
     }
 
     my $temp = RT::CustomRole->new(RT->SystemUser);

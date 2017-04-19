@@ -46,10 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => "asset-search-people", title => loc('People') &>
-% for my $role (RT::Asset->Roles) {
+% for my $role ($CatalogObj->Roles) {
   <div class="asset-role-<% CSSClass($role) %> form-row">
     <div class="label col-2">
-      <% loc($role) %>
+      <% RT::Asset->LabelForRole($role) %>
     </div>
     <div class="value col-4">
       <input class="form-control" type="text" id="Role.<% $role %>" name="Role.<% $role %>"

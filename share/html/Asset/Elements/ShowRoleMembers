@@ -51,7 +51,7 @@
 %     next if $user->id == RT->Nobody->id;
 
 <div class="accordion-item">
-  <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#<% $Role %>-user-<% $user->id %>" aria-expanded="false" aria-controls="<% $Role %>-user-<% $user->id %>" id="<% $Role %>-user-<% $user->id %>-title" >
+  <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="[id='<% $Role %>-user-<% $user->id %>']" aria-expanded="false" aria-controls="<% $Role %>-user-<% $user->id %>" id="<% $Role %>-user-<% $user->id %>-title" >
 
 % if ($Title) {
     <& /Elements/ShowUser, User => $user, Link => 1 &>
