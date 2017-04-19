@@ -46,19 +46,36 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <table border="0" cellpadding="0" cellspacing="0">
-% for my $role ( $AssetObj->Roles ) {
+% for my $role ( $object->Roles ) {
 <tr class="asset-people-<% CSSClass($role) %>">
 <td class="label">
-<% loc($role) %>:
+<% $object->LabelForRole($role) %>:
 </td>
 <td class="value" colspan="5">
-<& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1, ($AssetObj->Role($role)->{Single} ? () : (AutocompleteType => 'Principals', AutocompleteMultiple => 1)) &>
+<& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1, $object->Role($role)->{Single} ? () : (AutocompleteType => 'Principals', AutocompleteMultiple => 1) &>
 </td>
 </tr>
+
+% my $custom_role = $object->CustomRoleObj($role);
+% if ($custom_role && $custom_role->EntryHint) {
+<tr>
+  <td class="label">&nbsp;</td>
+  <td class="comment" colspan="5">
+    <i><font size="-2">
+      <% $custom_role->EntryHint %>
+    </font></i>
+  </td>
+</tr>
+% }
 % }
 
 </table>
 
+<%init>
+my $object = $AssetObj->Id ? $AssetObj : $CatalogObj;
+</%init>
+
 <%args>
 $AssetObj
+$CatalogObj
 </%args>

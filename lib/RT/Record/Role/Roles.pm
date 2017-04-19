@@ -296,9 +296,9 @@ sub Roles {
              map { [ $_, $self->_ROLES->{$_} ] }
             keys %{ $self->_ROLES };
 
-    # Cache at ticket/queue object level mainly to reduce calls of
-    # custom role's AppliesToObjectPredicate for performance.
-    if ( ref($self) =~ /RT::(?:Ticket|Queue)/ ) {
+    # Cache at object level mainly to reduce calls of custom role's
+    # AppliesToObjectPredicate for performance.
+    if ( ref($self) =~ /RT::(?:Ticket|Queue|Asset|Catalog)/ ) {
         $self->{_Roles}{$key} = \@roles;
     }
     return @roles;
