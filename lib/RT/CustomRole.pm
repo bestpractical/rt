@@ -190,6 +190,7 @@ sub _RegisterAsRole {
         # custom roles can apply to only a subset of queues
         AppliesToObjectPredicate => sub {
             my $object = shift;
+            my $args = shift;
 
             # reload the role to avoid capturing $self across requests
             my $role = RT::CustomRole->new(RT->SystemUser);
@@ -208,7 +209,7 @@ sub _RegisterAsRole {
             }
 
             if (my $predicate = $role->LookupTypeRegistration($role->LookupType, 'AppliesToObjectPredicate')) {
-                return $predicate->($object, $role);
+                return $predicate->($object, $role, $args);
             }
 
             return 0;

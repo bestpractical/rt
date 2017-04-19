@@ -118,11 +118,18 @@ RT::CustomRole->RegisterLookupType(
             return 0;
         },
         AppliesToObjectPredicate => sub {
-            my ($object, $role) = @_;
+            my ($object, $role, $args) = @_;
+
             # custom roles apply to catalogs, so canonicalize an asset
             # into its catalog
             if ($object->isa('RT::Asset')) {
                 $object = $object->CatalogObj;
+            }
+
+            # when we're creating an asset, its ->CatalogObj returns an
+            # unloaded catalog record, so we pass Catalog separately
+            if ($args->{_Catalog} && !$object->Id) {
+                $object = $args->{_Catalog};
             }
 
             if ($object->isa('RT::Catalog')) {
@@ -293,7 +300,7 @@ sub Create {
     }
 
     my $roles = {};
-    my @errors = $self->_ResolveRoles( $roles, %args );
+    my @errors = $catalog->_ResolveRoles( $roles, %args );
     return (0, @errors) if @errors;
 
     RT->DatabaseHandle->BeginTransaction();

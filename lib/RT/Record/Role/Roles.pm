@@ -282,11 +282,12 @@ sub Roles {
             grep {
                 my $ok = 1;
                 for my $k (keys %attr) {
+                    next if $k =~ /^_/;
                     $ok = 0, last if $attr{$k} xor $_->[1]{$k};
                 }
                 $ok }
             grep { !$_->[1]{AppliesToObjectPredicate}
-                 or $_->[1]{AppliesToObjectPredicate}->($self) }
+                 or $_->[1]{AppliesToObjectPredicate}->($self, \%attr) }
              map { [ $_, $self->Role($_) ] }
             keys %{ $self->_ROLES };
 }

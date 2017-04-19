@@ -72,7 +72,7 @@
   </&>
 
   <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
-    <& Elements/EditPeople, %ARGS, AssetObj => $asset &>
+    <& Elements/EditPeople, %ARGS, AssetObj => $asset, CatalogObj => $catalog &>
   </&>
   </td><td>
   <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
@@ -154,7 +154,7 @@ if ($id eq "new") {
             ProcessLinksForCreate( ARGSRef => \%ARGS ),
             map {
                 $_ => $ARGS{$_}
-            } $asset->Roles,
+            } $asset->Roles(_Catalog => $catalog),
         );
 
         # Handle basic fields
