@@ -1820,6 +1820,17 @@ Set( $AssetBasicCustomFieldsOnCreate, [ 'foo', 'bar' ] );
 
 # Set($AssetBasicCustomFieldsOnCreate, undef );
 
+=item C<$AssetMultipleOwner>
+
+By default an asset is limited to a single user as an owner. By setting
+this to a true value, you can allow multiple users and groups as owner.
+If you change this back to a false value while having multiple owners
+set on any assets, RT's behavior may be inconsistent.
+
+=cut
+
+Set($AssetMultipleOwner, 0);
+
 =back
 
 =head2 Message box properties
