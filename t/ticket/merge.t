@@ -6,6 +6,7 @@ use warnings;
 use RT;
 use RT::Test tests => '44';
 
+# note: merge code also exercised in fts/index_mysql.t
 
 # validate that when merging two tickets, the comments from both tickets
 # are integrated into the new ticket

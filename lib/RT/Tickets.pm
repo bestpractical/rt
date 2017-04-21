@@ -936,13 +936,34 @@ sub _TransContentLimit {
 
         my $alias;
         if ( $config->{'Table'} and $config->{'Table'} ne "Attachments") {
-            $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->Join(
-                TYPE   => 'LEFT',
-                ALIAS1 => $self->{'_sql_trattachalias'},
-                FIELD1 => 'id',
-                TABLE2 => $config->{'Table'},
-                FIELD2 => 'id',
-            );
+
+            if ($db_type eq 'mysql') {
+                my $attidx_alias = $self->NewAlias($config->{'Table'});
+
+                $alias = $self->Join(
+                    ALIAS1 => 'main',
+                    FIELD1 => 'id',
+                    ALIAS2 => $attidx_alias,
+                    FIELD2 => 'TicketId',
+                );
+                $self->Limit(
+                    LEFTJOIN => $alias,
+                    FIELD => 'EffectiveId',
+                    VALUE => 'main.id',
+                    QUOTEVALUE => 0,
+                    ENTRYAGGREGATOR => 'OR',
+                );
+
+                $self->{_sql_looking_at}{effectiveid} = 0;
+            } else { # not mysql
+                $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->Join(
+                    TYPE   => 'LEFT',
+                    ALIAS1 => $self->{'_sql_trattachalias'},
+                    FIELD1 => 'id',
+                    TABLE2 => $config->{'Table'},
+                    FIELD2 => 'id',
+                );
+            }
         } else {
             $alias = $self->{'_sql_trattachalias'};
         }

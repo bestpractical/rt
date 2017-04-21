@@ -44,6 +44,9 @@ sub run_test {
     my ($query, %checks) = @_;
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
 
+    # Assumes we are called by run_tests() only
+    local $Test::Builder::Level = $Test::Builder::Level + 2;
+
     my $tix = RT::Tickets->new(RT->SystemUser);
     $tix->FromSQL( "( $query_prefix ) AND ( $query )" );
 
@@ -77,6 +80,64 @@ run_tests(
     "Content LIKE 'english'" => { first => 1, second => 0, third => 0, fourth => 0 },
     "Content LIKE 'french'" => { first => 0, second => 1, third => 0, fourth => 0 },
 );
+
+# Check fulltext results for merged tickets
+# note: merge code itself is tested by ticket/merge.t
+{
+    $q = RT::Test->load_or_create_queue( Name => 'Mergers' );
+    ok ($q && $q->id, 'loaded or created queue Mergers');
+
+    # Create two tickets for merging, overwriting the @tickets used before to
+    # limit the subsequent search to just these ones
+    @tickets = RT::Test->create_tickets(
+        { Queue => $q->id },
+        { Subject => 'MergeSource1',     Content => 'pirates' },
+        { Subject => 'MergeSource2',     Content => 'ninjas'  },
+        { Subject => 'MergeDestination', Content => 'robots'  },
+    );
+
+    sync_index();
+
+    # Make sure we can see tickets as expected before the merge happens
+    run_tests(
+        "Content LIKE 'pirates'" => { MergeSource1 => 1, MergeSource2 => 0, MergeDestination => 0 },
+        "Content LIKE 'ninjas'"  => { MergeSource1 => 0, MergeSource2 => 1, MergeDestination => 0 },
+        "Content LIKE 'robots'"  => { MergeSource1 => 0, MergeSource2 => 0, MergeDestination => 1 },
+    );
+
+    my $source1 = $tickets[0];
+    my $source2 = $tickets[1];
+    my $destination = $tickets[2];
+
+    # Sanity check the array indices mean what we think
+    ok ($source1->Subject eq 'MergeSource1', 'Subject of tickets[0] should be MergeSource1');
+    ok ($source2->Subject eq 'MergeSource2', 'Subject of tickets[1] should be MergeSource2');
+    ok ($destination->Subject eq 'MergeDestination', 'Subject of tickets[2] should be MergeDestination');
+
+    # First merge
+    my ($id,$m) = $source1->MergeInto( $destination->id );
+    ok ($id,$m);
+
+    sync_index();
+
+    run_tests(
+        "Content LIKE 'pirates'" => { MergeSource1 => 0, MergeSource2 => 0, MergeDestination => 1 },
+        "Content LIKE 'ninjas'"  => { MergeSource1 => 0, MergeSource2 => 1, MergeDestination => 0 },
+        "Content LIKE 'robots'"  => { MergeSource1 => 0, MergeSource2 => 0, MergeDestination => 1 },
+    );
+
+    # Second merge
+    ($id,$m) = $source2->MergeInto( $destination->id );
+    ok ($id,$m);
+
+    sync_index();
+
+    run_tests(
+        "Content LIKE 'pirates'" => { MergeSource1 => 0, MergeSource2 => 0, MergeDestination => 1 },
+        "Content LIKE 'ninjas'"  => { MergeSource1 => 0, MergeSource2 => 0, MergeDestination => 1 },
+        "Content LIKE 'robots'"  => { MergeSource1 => 0, MergeSource2 => 0, MergeDestination => 1 },
+    );
+}
 
 @tickets = ();
 

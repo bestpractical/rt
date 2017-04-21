@@ -176,7 +176,12 @@ if ( $DB{'type'} eq 'mysql' ) {
     my $engine = $RT::Handle->dbh->{mysql_serverversion} < 50600 ? "MyISAM" : "InnoDB";
     my $schema = "CREATE TABLE $table ( "
         ."id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
-        ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET utf8";
+        ."Content LONGTEXT,"
+        ."TicketId INT UNSIGNED,"
+        ."EffectiveId INT UNSIGNED,"
+        ."KEY TicketIdKey (TicketId),"
+        ."KEY EffectiveIdKey (EffectiveId)"
+        .") ENGINE=$engine CHARACTER SET utf8";
     insert_schema( $schema );
 
     insert_data( Table => $table, Engine => $engine );

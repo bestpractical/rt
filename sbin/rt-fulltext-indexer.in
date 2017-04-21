@@ -70,6 +70,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 use RT -init;
 use RT::Interface::CLI ();
 use HTML::Entities;
+use RT::System;
 
 use Getopt::Long qw(GetOptions);
 my %OPT = ( memory => '2M', limit => 0 );
@@ -161,7 +162,7 @@ if ($db_type eq 'mysql') {
 }
 
 sub attachment_loop {
-    my $subref = shift;
+    my ($contentindexer, $denormalizer) = @_;
     my $table = $fts_config->{'Table'};
     $LAST //= 0;
 
@@ -190,10 +191,53 @@ sub attachment_loop {
         $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
         $attachments->RowsPerPage( $OPT{'limit'} );
 
-        # Call back to the DB-specific part
-        $subref->($attachments);
+        # Call back to the DB-specific part for content
+        $contentindexer->($attachments);
 
         $LAST = $attachments->Last->id if $attachments->Count;
+
+        my $db_type = RT->Config->Get('DatabaseType');
+        my $fts_config = $ENV{RT_FTS_CONFIG} ? JSON::from_json($ENV{RT_FTS_CONFIG})
+           : RT->Config->Get('FullTextSearch') || {};
+
+        if ($fts_config->{'Enable'} and $db_type eq 'mysql') {
+            # Narrow the query already used above to find only attachments that
+            # go with tickets.
+            # We use this to populate the denormalized ticket id and effective id
+            # in the fulltext-indexed table.
+
+            my $tik_alias = $attachments->Join(
+                ALIAS1 => $txn_alias,
+                FIELD1 => 'ObjectId',
+                TABLE2 => 'Tickets',
+                FIELD2 => 'id',
+            );
+
+            $attachments->Limit(
+                LEFTJOIN => $txn_alias,
+                FIELD => 'ObjectType',
+                OPERATOR => '=',
+                VALUE => 'RT::Ticket',
+                ENTRYAGGREGATOR => 'AND',
+            );
+
+            $attachments->AdditionalColumn(
+                ALIAS => $tik_alias,
+                FIELD => 'id',
+                AS => 'TicketId',
+            );
+
+            $attachments->AdditionalColumn(
+                ALIAS => $tik_alias,
+                FIELD => 'EffectiveId',
+                AS => 'EffectiveId',
+            );
+
+            $attachments->RedoSearch;
+
+            # Call back to the ticket ID denormalizer
+            $denormalizer->($attachments);
+        }
 
         redo if $OPT{'all'} and $attachments->Count == $OPT{'limit'};
     }
@@ -201,7 +245,7 @@ sub attachment_loop {
 
 sub process_bulk_insert {
     my $dbh = $RT::Handle->dbh;
-    my ($statement, $error) = @_;
+    my ($statement, $update_st, $error) = @_;
 
     # Doing large inserts is faster than individual statements, but
     # comes at a parsing cost; cache the statement handles (99% of which
@@ -250,22 +294,110 @@ sub process_bulk_insert {
             eval { $sthandles{1}->execute( "", $id ) }
                 or die "Failed to insert empty row for attachment $id: " . $dbh->errstr;
         }
+    },
+    sub {
+        # Process denormalized ticket IDs and effective IDs
+        my ($attachments) = @_;
+        my @updates;
+        my $found = 0;
+
+        my $select_st = $attachments->BuildSelectQuery;
+        my $select_sth = $dbh->prepare($select_st);
+
+        $select_sth->execute() or die("Could not execute denormalizer select query: " . $dbh->errstr);
+
+        while (my $row = $select_sth->fetchrow_hashref) {
+            debug("Denormalizing attachment #" . $row->{id});
+            push @updates, ($row->{ticketid}, $row->{effectiveid}, $row->{id});
+            $found++;
+        }
+
+        return unless $found;
+
+        my $update_sth = $dbh->prepare($update_st->());
+
+        while (@updates) {
+            my ($ticketid, $effectiveid, $attachmentid) = splice(@updates,0,3);
+            next if eval { $update_sth->execute($ticketid, $effectiveid, $attachmentid); };
+            $error->($attachmentid, "TicketId:$ticketid EffectiveId:$effectiveid");
+        }
     });
+}
+
+sub process_merged_fulltext {
+    my $update = shift;
+    my $dbh = $RT::Handle->dbh;
+    my $table = $fts_config->{'Table'};
+
+    my $mark = RT->System->FirstAttribute( 'MergeTransactionMark' );
+    my $LAST = defined $mark ? $mark->Content : 0;
+
+    debug("Processing merged tickets for fulltext index - transaction mark is $LAST");
+
+    my $select_st = "SELECT t.id AS TicketId, t.EffectiveId AS EffectiveId, tn.id AS TransactionId "
+        ."FROM Transactions tn JOIN Tickets t ON tn.ObjectId=t.id "
+        ."WHERE tn.Type='AddLink' "
+        ."AND tn.Field='MergedInto' "
+        ."AND tn.ObjectType='RT::Ticket' "
+        ."AND t.id != t.EffectiveId "
+        ."AND tn.id > ? "
+        ."LIMIT ?";
+    my $select_sth = $dbh->prepare($select_st);
+
+    {
+        $select_sth->execute($LAST, $OPT{'limit'})
+            or die("Could not select merges for fulltext update: ".$dbh->errstr);
+
+        my $rows = $select_sth->rows;
+        debug("Found $rows merges to update in $table");
+        return unless $rows;
+
+        my $update_st = "$update $table SET EffectiveId=? WHERE TicketId=?";
+        my $update_sth = $dbh->prepare($update_st);
+
+        while (my $r = $select_sth->fetchrow_hashref) {
+            debug("Updating index with TicketId:".$r->{ticketid}." EffectiveId:".$r->{effectiveid});
+            $update_sth->execute($r->{effectiveid}, $r->{ticketid})
+                or die("Could not update $table for merged tickets: ".$dbh->errstr);
+            $LAST = $r->{transactionid} if $LAST < $r->{transactionid};
+        }
+
+        redo if $OPT{'all'} and $rows == $OPT{'limit'};
+    }
+
+    RT->System->SetAttribute( Name => 'MergeTransactionMark', Content => $LAST );
+    debug("Setting last processed transaction mark $LAST");
 }
 
 sub process_mysql {
     my $dbh = $RT::Handle->dbh;
     my $table = $fts_config->{'Table'};
 
+    {
+        # Check DB schema for merged ticket support before running
+        my $db_is_updated;
+        my $sth = $dbh->prepare("SHOW COLUMNS FROM $table");
+        $sth->execute();
+        while (my $row = $sth->fetchrow_hashref() ) {
+            $db_is_updated = 1 if $row->{field} eq 'EffectiveId';
+        }
+        die("Error: You must update your MySQL schema to use the full text indexer. See docs/UPGRADING-4.4 for details.")
+            unless $db_is_updated;
+    }
+
     ($LAST) = $dbh->selectrow_array("SELECT MAX(id) FROM $table");
 
     my $insert = $fts_config->{Engine} eq "MyISAM" ? "INSERT DELAYED" : "INSERT";
+    my $update = $fts_config->{Engine} eq "MyISAM" ? "UPDATE LOW_PRIORITY" : "UPDATE";
 
     process_bulk_insert(
         sub {
             my ($n) = @_;
             return "$insert INTO $table(Content, id) VALUES "
                 . join(", ", ("(?,?)") x $n);
+        },
+        sub {
+            return "$update $table SET TicketId=?, EffectiveId=? WHERE id=?";
         },
         sub {
             my ($id) = @_;
@@ -277,6 +409,10 @@ sub process_mysql {
             }
         }
     );
+
+    my $fulltext = $ENV{RT_FTS_CONFIG} ? JSON::from_json($ENV{RT_FTS_CONFIG})
+        : RT->Config->Get('FullTextSearch') || {};
+    process_merged_fulltext($update) if ($fulltext->{'Enable'});
 }
 
 
@@ -300,6 +436,7 @@ sub process_pg_insert {
             return "INSERT INTO $table($column, id) VALUES "
                 . join(", ", ("(TO_TSVECTOR(?),?)") x $n);
         },
+        sub { return; },
         sub {
             my ($id) = @_;
             if ( $dbh->err == 7 && $dbh->state eq '54000' ) {
