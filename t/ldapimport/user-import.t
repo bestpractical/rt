@@ -43,6 +43,7 @@ $ldap->add(
 
 
 RT->Config->Set('LDAPHost',"ldap://localhost:$ldap_port");
+RT->Config->Set('LDAPOptions', [ port => $ldap_port ]);
 RT->Config->Set('LDAPMapping',
                    {Name         => 'uid',
                     EmailAddress => 'mail',
