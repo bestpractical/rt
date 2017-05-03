@@ -140,6 +140,7 @@ my @role_fields;
 unless ($ExcludeCustomRoles) {
     my $roles = $QueueObj->CustomRoles;
     $roles->LimitToSingleValue;
+    $m->callback( CallbackName => 'ModifyCustomRoles', %ARGS, CustomRoles => $roles);
     while (my $role = $roles->Next) {
         push @role_fields, {
             name => $role->Name,
