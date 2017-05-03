@@ -63,7 +63,16 @@ my $COLUMN_MAP = {
             title     => $c, attribute => $c,
             value     => sub { return $_[0]->$c() },
         } }
-        qw(Name Description EntryHint)
+        qw(Name Description LookupType EntryHint)
+    ),
+
+    map(
+        { my $c = $_; my $short = $c; $short =~ s/^Friendly//;
+          $c => {
+            title     => $short, attribute => $short,
+            value     => sub { return $_[0]->$c() },
+        } }
+        qw(FriendlyLookupType FriendlyType FriendlyPattern)
     ),
 
     MaxValues => {

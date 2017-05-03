@@ -75,11 +75,12 @@
 <em><&|/l&>No custom roles matching search criteria found.</&></em>
 % } else {
 <& /Elements/CollectionList,
-    OrderBy => 'Name',
-    Order => 'ASC',
+    OrderBy => 'LookupType|Name',
+    Order => 'ASC|ASC',
     Rows  => $Rows,
     %ARGS,
     Format => $Format,
+    DisplayFormat => ($Type? '' : '__FriendlyLookupType__,'). $Format,
     Collection => $roles,
     AllowSorting => 1,
     PassArguments => [qw(
@@ -94,6 +95,7 @@ my $title = loc("Select a Custom Role");
 
 my $roles = RT::CustomRoles->new($session{'CurrentUser'});
 $roles->FindAllRows if $FindDisabled;
+$roles->LimitToLookupType( $Type ) if $Type;
 
 if ( defined $SearchString && length $SearchString ) {
     $roles->Limit(
@@ -112,6 +114,7 @@ my $Rows = RT->Config->Get('AdminSearchResultRows')->{'CustomRoles'} || 50;
 
 </%INIT>
 <%ARGS>
+$Type => ''
 $FindDisabled => 0
 $Format       => undef
 
