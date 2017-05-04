@@ -361,20 +361,37 @@ else {
             my ($p, @msgs);
 
             my %new  = map {$_=>1} @{ vsplit($val) };
-            my %old  = map {$_=>1} $ticket->$key->MemberEmailAddresses;
+            my %old;
+
+            my $members = $ticket->$key->MembersObj;
+            while (my $member = $members->Next) {
+                my $principal = $member->MemberObj;
+                if ($principal->IsGroup) {
+                    $old{ $principal->Id } = 1;
+                }
+                else {
+                    $old{ $principal->Object->EmailAddress } = 1;
+                }
+            }
+
             my $type = $key eq 'Requestors' ? 'Requestor' : $key;
 
             foreach $p (keys %old) {
                 unless (exists $new{$p}) {
+                    my $key = "Email";
+                    $key = "PrincipalId" if $p =~ /^\d+$/;
+
                     ($s, $n) = $ticket->DeleteWatcher(Type => $type,
-                                                      Email => $p);
+                                                      $key => $p);
                     push @msgs, [ $s, $n ];
                 }
             }
             foreach $p (keys %new) {
-                unless ($ticket->IsWatcher(Type => $type, Email => $p)) {
+                my $key = "Email";
+                $key = "PrincipalId" if $p =~ /^\d+$/;
+                unless ($ticket->IsWatcher(Type => $type, $key => $p)) {
                     ($s, $n) = $ticket->AddWatcher(Type => $type,
-                                                   Email => $p);
+                                                   $key => $p);
                     push @msgs, [ $s, $n ];
                 }
             }
