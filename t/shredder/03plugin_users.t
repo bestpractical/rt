@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 21;
+use RT::Test::Shredder tests => undef;
 my $test = "RT::Test::Shredder";
 
 my @ARGS = sort qw(limit status name member_of not_member_of email replace_relations no_tickets no_ticket_transactions);
@@ -87,3 +87,57 @@ $test->create_savepoint('clean');
     $shredder->Wipeout( Object => $userA );
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+
+{ # Same as previous test, but pass Objects to PutObjects in the same form as the web interface
+    my ($uidA, $uidB, $msg);
+    my $userA = RT::User->new( RT->SystemUser );
+    ($uidA, $msg) = $userA->Create( Name => 'userA', Privileged => 1, Disabled => 0 );
+    ok( $uidA, "created user A" ) or diag "error: $msg";
+
+    my $userB = RT::User->new( RT->SystemUser );
+    ($uidB, $msg) = $userB->Create( Name => 'userB', Privileged => 1, Disabled => 0 );
+    ok( $uidB, "created user B" ) or diag "error: $msg";
+
+    my ($tid, $trid);
+    my $ticket = RT::Ticket->new( RT::CurrentUser->new($userB) );
+    ($tid, $trid, $msg) = $ticket->Create( Subject => 'UserB Ticket', Queue => 1 );
+    ok( $tid, "created new ticket") or diag "error: $msg";
+    $ticket->ApplyTransactionBatch;
+
+    my $transaction = RT::Transaction->new( RT->SystemUser );
+    $transaction->Load($trid);
+    is ( $transaction->Creator, $uidB, "ticket creator is user B" );
+
+    my $plugin = RT::Shredder::Plugin::Users->new;
+    isa_ok($plugin, 'RT::Shredder::Plugin::Users');
+
+    my $status;
+    ($status, $msg) = $plugin->TestArgs( status => 'any', name => 'userB', replace_relations => $uidA );
+    ok($status, "plugin arguments are ok") or diag "error: $msg";
+
+    my $shredder = $test->shredder_new();
+
+    my @objs;
+    ($status, @objs) = $plugin->Run;
+    ok($status, "executed plugin successfully") or diag "error: @objs";
+
+    # Same form as param coming in via the web interface
+    $shredder->PutObjects( Objects => ['RT::User-userB'] );
+
+    ($status, $msg) = $plugin->SetResolvers( Shredder => $shredder );
+    ok($status, "set conflicts resolver") or diag "error: $msg";
+
+    $shredder->WipeoutAll;
+
+    $ticket->Load( $tid );
+    is($ticket->id, $tid, 'loaded ticket');
+
+    $transaction->Load($trid);
+    is ( $transaction->Creator, $uidA, "ticket creator is now user A" );
+
+    $shredder->Wipeout( Object => $ticket );
+    $shredder->Wipeout( Object => $userA );
+}
+cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+
+done_testing();
