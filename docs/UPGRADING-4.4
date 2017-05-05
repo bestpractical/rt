@@ -525,9 +525,21 @@ AfterUpdateCustomFieldValue. It will be removed in RT 4.6.
 
 A fix for using the MySQL full text index (F<docs/full_text_indexing.pod>) with
 merged tickets requires changes to the database schema and processing to update
-the data. After you upgrade the RT code, you must drop and re-create the index.
-To do this, run the setup command as you would during initial configuration of
-the fulltext index feature:
+the data. After you upgrade the RT code, you can drop and re-create the index,
+or you can run a tool to process the existing index.
+
+B<If you have a large number of tickets, you should run the F<upgrade-database>>
+B<tool, as re-creating the index can take a very long time.>
+
+To process an existing index after running C<make upgrade-database>, run this
+tool from your RT base directory:
+
+    ./etc/upgrade/upgrade-fulltext --verbose
+
+For additional options you can use the C<--help> flag.
+
+To drop and re-create the index, run the setup command as you would during
+initial configuration of the fulltext index feature:
 
     ./sbin/rt-setup-fulltext-index
 
@@ -535,8 +547,8 @@ Please be aware that the F<sbin/rt-fulltext-indexer> tool which keeps the index
 updated requires the new schema. If you have that tool set to run automatically
 via cron or another means, it will fail after the RT upgrade until you have the
 database updated as instructed above. We recommend that you temporarily disable
-automatic running of F<rt-fulltext-indexer> until after you complete this
-upgrade.
+automatic running of F<rt-fulltext-indexer> until after you complete these
+upgrade steps.
 
 =back
 

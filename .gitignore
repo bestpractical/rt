@@ -15,6 +15,7 @@
 /etc/upgrade/upgrade-sla
 /etc/upgrade/upgrade-assets
 /etc/upgrade/vulnerable-passwords
+/etc/upgrade/upgrade-fulltext
 /lib/RT/Generated.pm
 /Makefile
 /t/data/gnupg/keyrings/random_seed

@@ -1,0 +1,219 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use 5.10.1;
+use strict;
+use warnings;
+
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
+
+use RT -init;
+use RT::Interface::CLI ();
+use Getopt::Long qw(GetOptions);
+
+my %OPT = ();
+GetOptions( \%OPT,
+    "help|h!",
+    "verbose|v!",
+    "chunksize=i",
+);
+
+$OPT{'chunksize'} ||= 10000;
+
+RT::Interface::CLI->ShowHelp if $OPT{help};
+
+=pod
+
+=head1 NAME
+
+upgrade-fulltext - Upgrade full text index schema as required by RT 4.4.2
+
+=head1 USAGE
+
+    # Run upgrade after upgrading RT to 4.4.2
+    # Read docs/UPGRADING-4.4 first
+    # From rt base dir:
+
+    ./etc/upgrade/upgrade-fulltext [-v|--verbose] [--chunksize <number>]
+    ./etc/upgrade/upgrade-fulltext [-h|--help] - print help text
+
+        --verbose   : print additional detailed output
+
+        --chunksize : Select <number> of rows at a time from index.
+                      Default is 10000
+
+        --help      : Print help text
+
+=head1 DESCRIPTION
+
+When upgrading to RT 4.4.2 you must run this command to upgrade the full text
+database schema. You only need to do this if fulltext indexing is active in
+your config, and you are using MySQL. See F<docs/UPGRADING-4.4> for more
+details.
+
+=cut
+
+sub verbose {
+    print STDERR (shift . (shift ? "" : "\n")) if $OPT{verbose};
+}
+
+verbose("Checking locks");
+use Fcntl ':flock';
+open (my $indexer_cmd_fh, '<', $RT::BasePath . '/sbin/rt-fulltext-indexer')
+    or die "Error: $!";
+if ( !flock $indexer_cmd_fh, LOCK_EX | LOCK_NB ) {
+    print STDERR "rt-fulltext-indexer is running.\nYou should disable it before running this tool.\n";
+    exit 1;
+}
+if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
+    print STDERR "Another instance of this command is running; aborting.\n";
+    exit 2;
+}
+
+verbose("Checking database type and fulltext configuration");
+my $db_type = RT->Config->Get('DatabaseType');
+unless ($db_type eq 'mysql') {
+    print STDERR "This command is only for mysql databases; aborting\n";
+    exit 3;
+}
+
+my $fts_conf = RT->Config->Get('FullTextSearch') || {};
+unless ($fts_conf->{'Enable'} and $fts_conf->{'Indexed'} and not $fts_conf->{'Sphinx'}) {
+    print STDERR "Your FullTextSearch configuration doesn't need this command; aborting\n";
+    exit 4;
+}
+
+my $index_table = $fts_conf->{'Table'};
+my $dbh = $RT::Handle->dbh;
+
+# Check if upgrade-database has been run first
+{
+    my $db_is_updated;
+    my $sth = $dbh->prepare("SHOW COLUMNS FROM $index_table");
+    $sth->execute();
+
+    while (my $row = $sth->fetchrow_hashref() ) {
+        $db_is_updated = 1 if $row->{field} eq 'EffectiveId';
+    }
+
+    die("Error: You must update your MySQL schema before running this. See docs/UPGRADING-4.4 for details.")
+        unless $db_is_updated;
+}
+
+my $chunksize = $OPT{'chunksize'};  # rows to select and process at once
+my $reporting_cadence = $chunksize; # how often to spit out a numeric progres indicator
+
+my $count_st = "SELECT COUNT(id) FROM $index_table WHERE TicketId IS NULL OR EffectiveId IS NULL";
+
+my $empty_st = "SELECT id AS attachmentid FROM $index_table "
+    . "WHERE (TicketId IS NULL OR EffectiveId IS NULL) "
+    . "AND id > ? "
+    . "ORDER BY id ASC "
+    . "LIMIT $chunksize"
+    ;
+
+my $ticket_st = "SELECT Attachments.id AS attachmentid, Tickets.id AS ticketid, Tickets.EffectiveId AS effectiveid "
+    . "FROM Attachments "
+    . "LEFT JOIN Transactions ON Attachments.TransactionId = Transactions.id "
+    . "LEFT JOIN Tickets ON Transactions.ObjectId = Tickets.id "
+    . "WHERE Attachments.id = ?"
+    ;
+
+my $update_st = "UPDATE $index_table SET TicketId=?, EffectiveId=? WHERE id=?";
+
+verbose("Preparing SQL");
+my $count_sth = $dbh->prepare($count_st);
+my $empty_sth = $dbh->prepare($empty_st);
+my $ticket_sth = $dbh->prepare($ticket_st);
+my $update_sth = $dbh->prepare($update_st);
+
+$count_sth->execute() or die("Could not execute count_st: " . $dbh->errstr);
+my $countrow = $count_sth->fetchrow_arrayref;
+my $todo = $$countrow[0]; # total count of rows that need processing
+
+my $last = 0;
+my $empty_rows_found;
+my $chunks_processed = 0;
+
+print "Processing $todo rows in $index_table. This may take some time on large databases.\n";
+verbose("Processing null attachment entries in chunks of $chunksize (one dot per chunk)");
+
+{
+    $empty_sth->execute($last) or die("Could not execute empty_st: " . $dbh->errstr);
+    $empty_rows_found = 0;
+
+    while (my $row = $empty_sth->fetchrow_hashref) {
+        $empty_rows_found++;
+
+        $ticket_sth->execute( $row->{'attachmentid'} )
+            or die ("Could not execute ticket_sth: " . $dbh->errstr);
+        my $tik = $ticket_sth->fetchrow_hashref;
+
+        $update_sth->execute( $tik->{'ticketid'}, $tik->{'effectiveid'}, $row->{'attachmentid'} )
+            or die ("Could not execute update_sth: " . $dbh->errstr);
+
+        $last = $row->{'attachmentid'};
+
+        if (($chunksize * $chunks_processed + $empty_rows_found) % $reporting_cadence == 0) {
+            verbose("");
+            print "Processed " . ($chunksize * $chunks_processed + $empty_rows_found) . " of $todo\n";
+        }
+    }
+
+    if ($empty_rows_found == $chunksize) {
+        verbose(".", 1);
+        $chunks_processed++;
+        redo;
+    }
+}
+verbose("\nDone");
+
+print "OK: Processed " . ($chunksize * $chunks_processed + $empty_rows_found) . " of $todo entries in $index_table\n\n";
+
+__DATA__

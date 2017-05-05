@@ -463,6 +463,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/upgrade-assets
                  etc/upgrade/vulnerable-passwords
                  etc/upgrade/upgrade-sla
+                 etc/upgrade/upgrade-fulltext
                  sbin/rt-ldapimport
                  sbin/rt-attributes-viewer
                  sbin/rt-preferences-viewer

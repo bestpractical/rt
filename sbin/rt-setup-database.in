@@ -72,6 +72,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 use Term::ReadKey;
 use Getopt::Long;
 use Data::GUID;
+use Text::Template;
 
 $| = 1; # unbuffer all output.
 
@@ -552,6 +553,18 @@ sub action_upgrade {
         });
 
         my %tmp = (%args, datadir => "$base_dir/$v", datafile => undef, backcompat => \@back);
+
+        if ( -e "$base_dir/$v/schema.$db_type.template" ) {
+            my $template = Text::Template->new(
+                TYPE => 'file',
+                SOURCE => "$base_dir/$v/schema.$db_type.template",
+            );
+            open(my $fh, '>', "$base_dir/$v/schema.$db_type")
+                or die "Can't open $base_dir/$v/schema.$db_type for writing template output: $!";
+            my $template_out = $template->fill_in(OUTPUT => $fh)
+                or die "Can't fill in template: $Text::Template::ERROR";
+            close $fh;
+        }
 
         if ( -e "$base_dir/$v/schema.$db_type" ) {
             ( $ret, $msg ) = action_schema( %tmp );

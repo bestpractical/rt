@@ -1,0 +1,7 @@
+ALTER TABLE CustomFields ADD COLUMN UniqueValues int2 NOT NULL DEFAULT 0;
+ALTER TABLE CustomFields ADD COLUMN CanonicalizeClass varchar(64) CHARACTER SET ascii NULL;
+
+ALTER TABLE {RT->Config->Get('FullTextSearch')->{'Table'}} ADD COLUMN TicketId INT UNSIGNED;
+ALTER TABLE {RT->Config->Get('FullTextSearch')->{'Table'}} ADD COLUMN EffectiveId INT UNSIGNED;
+ALTER TABLE {RT->Config->Get('FullTextSearch')->{'Table'}} ADD INDEX TicketIdKey (TicketId);
+ALTER TABLE {RT->Config->Get('FullTextSearch')->{'Table'}} ADD INDEX EffectiveIdKey (EffectiveId);
