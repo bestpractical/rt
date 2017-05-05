@@ -220,6 +220,7 @@ __PACKAGE__->RegisterLookupType( 'RT::Group' => "Groups", );                    
 __PACKAGE__->RegisterBuiltInGroupings(
     'RT::Ticket'    => [ qw(Basics Dates Links People) ],
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
+    'RT::Group'     => [ 'Basics' ],
 );
 
 __PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc

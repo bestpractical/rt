@@ -968,6 +968,9 @@ Set C<%CustomFieldGroupings> to a nested structure similar to the following:
             'Asset Details' => ['Serial Number', 'Manufacturer', 'Type', 'Tracking Number'],
             'Dates'         => ['Support Expiration', 'Issue Date'],
         ],
+        'RT::Group' => [
+            'Basics' => ['Department'],
+        ],
     );
 
 The first level keys are record types for which CFs may be used, and the
@@ -985,6 +988,10 @@ remove core fields.
 For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
 
 For C<RT::User>: C<Identity>, C<Access control>, C<Location>, C<Phones>
+
+For C<RT::Group>: C<Basics>
+
+For C<RT::Asset>: C<Basics>, C<Dates>, C<People>, C<Links>
 
 Extensions may also add their own built-in groupings, refer to the individual
 extension documentation for those.
