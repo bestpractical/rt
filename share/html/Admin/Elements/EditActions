@@ -1,0 +1,123 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/ListActions, actions => \@actions &>
+
+<form action="Actions.html" method="post">
+
+<h2><&|/l&>System Actions</&></h2>
+<div class="admin-hint"></div>
+% if ( $system_actions->Count ){
+<& /Elements/CollectionList, %common_applied_args, DisplayFormat => $Format, Collection => $system_actions &>
+% } else {
+<p><i><&|/l&>Click Create to add a new custom action.</&></i></p>
+% }
+
+<h2><&|/l&>Custom Actions</&></h2>
+<div class="admin-hint"></div>
+% if ( $actions->Count ){
+<& /Elements/CollectionList, %common_applied_args, Collection => $actions &>
+% } else {
+<p><i><&|/l&>Click Create to add a new custom action.</&></i></p>
+% }
+
+<& /Elements/Submit,
+    Name => 'RemoveActions',
+    Caption => loc("Delete selected actions"),
+    Label => loc("Delete"),
+&>
+
+</form>
+
+<%init>
+unless ( $session{CurrentUser}->HasRight( Object => RT->System, Right => 'ShowScrips' )
+    && $session{CurrentUser}->HasRight( Object => RT->System, Right => 'ModifyScrips' ) )
+{
+    Abort( loc('You must have ShowScrips/ModifyScrips rights to work with actions.') );
+}
+
+my (@actions);
+
+my $system_actions = RT::ScripActions->new($session{'CurrentUser'});
+$system_actions->Limit( FIELD => 'Creator', VALUE => RT->SystemUser->id );
+
+my $actions = RT::ScripActions->new($session{'CurrentUser'});
+$actions->Limit( FIELD => 'Creator', VALUE => RT->SystemUser->id, OPERATOR => '!=' );
+
+my $Format = RT->Config->Get('AdminSearchResultFormat')->{'Actions'}
+    || q{'<a href="__WebPath__/Admin/Actions/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+    . q{,'<a href="__WebPath__/Admin/Actions/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
+    . q{,'__Description__','__UsedBy__};
+
+my $DisplayFormat = "__CheckBox.{RemoveAction}__, $Format";
+
+my %common_applied_args = (
+    %ARGS,
+    Format => $Format,
+    DisplayFormat => $DisplayFormat,
+    Rows => 0,
+    Page => 1,
+    AllowSorting => 1,
+);
+
+if ( $RemoveActions ) {
+    foreach my $id ( @RemoveAction ) {
+        my $action = RT::ScripAction->new( $session{'CurrentUser'} );
+        $action->Load( $id );
+        next unless $action->id;
+
+        my ($status, $msg) = $action->Delete();
+        push @actions, $msg;
+    }
+}
+
+</%init>
+
+<%ARGS>
+@RemoveAction => ()
+$RemoveActions => undef
+</%ARGS>
