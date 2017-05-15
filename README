@@ -252,23 +252,18 @@ more information about commercial support options, please send email to
 <sales@bestpractical.com> to discuss rates and availability.
 
 
-MAILING LISTS AND WIKI
-----------------------
+COMMUNITY FORUM AND WIKI
+------------------------
 
 To keep up to date on the latest RT tips, techniques and extensions, you
-may wish to join the rt-users mailing list.  Send a message to:
+may wish to join the RT Community Forum website.  You can find it here:
 
-      rt-users-request@lists.bestpractical.com
+      https://forum.bestpractical.com
 
-with the body of the message consisting of only the word:
-
-     subscribe
-
-If you're interested in hacking on RT, you'll want to subscribe to
-<rt-devel@lists.bestpractical.com>.  Subscribe to it with instructions
-similar to those above.  Address questions about the stable release to
-the rt-users list, and questions about the development version to the
-rt-devel list.
+You'll find many different categories of discussion there including the
+RT Users category for general RT topics. If you're interested
+in customizing RT code, there is a category for RT Developers with more
+technical topics.
 
 The RT wiki, at https://rt-wiki.bestpractical.com, is also a potential
 resource.
@@ -289,7 +284,7 @@ BUGS
 
 RT's a pretty complex application, and as you get up to speed, you might
 run into some trouble. Generally, it's best to ask about things you run
-into on the rt-users mailinglist (or pick up a commercial support
+into on the Community Forum (or pick up a commercial support
 contract from Best Practical). But, sometimes people do run into
 bugs. In the exceedingly unlikely event that you hit a bug in RT, please
 report it! We'd love to hear about problems you have with RT, so we can
