@@ -80,7 +80,7 @@ if ($user_logo) {
 
 if ($OnlyCustom
     and not $user_logo
-    and ($ARGS{LogoURL}||RT->Config->Get('LogoURL')) =~ /bpslogo\.png$/)
+    and ($ARGS{LogoURL}||RT->Config->Get('LogoURL')) =~ /request-tracker-logo\.png$/)
 {
     return;
 }
