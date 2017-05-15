@@ -49,7 +49,7 @@
   <hr class="clear" />
 </div>
 % $m->callback( %ARGS );
-<div id="footer">
+<div id="footer" title="Best Practical Solutions, LLC, copyright and logo">
 % if ($m->{'rt_base_time'}) {
   <p id="time"><span><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></span></p>
 %}

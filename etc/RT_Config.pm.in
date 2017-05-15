@@ -1123,7 +1123,7 @@ This can also be configured via the web UI.
 
 =cut
 
-Set($LogoURL, RT->Config->Get('WebImagesURL') . "bpslogo.png");
+Set($LogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-logo.png");
 
 =item C<$LogoLinkURL>
 
@@ -1140,7 +1140,7 @@ will be passed through C<loc> for localization.
 
 =cut
 
-Set($LogoAltText, "Best Practical Solutions, LLC corporate logo");
+Set($LogoAltText, "Request Tracker logo");
 
 =item C<$WebNoAuthRegex>
 
