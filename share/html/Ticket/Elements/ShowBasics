@@ -126,39 +126,16 @@ $UngroupedCFs => 0
 my $time_worked;
 my $show_time_worked = $Ticket->CurrentUserCanSeeTime;
 if ( $show_time_worked && $Ticket->TimeWorked ) {
-    my $time_worked_attr = $Ticket->FirstAttribute('TimeWorked');
 
-    if ($time_worked_attr) {
-        $time_worked = $time_worked_attr->Content;
-    } else {
-        $time_worked = {};
-        my $transactions = $Ticket->Transactions;
-        $transactions->Limit(
-            FIELD     => 'Type',
-            VALUE     => 'Set',
-            SUBCLAUSE => 'timeworked',
-        );
+    my $transactions = $Ticket->Transactions;
+    $transactions->Limit(
+        FIELD           => 'TimeTaken',
+        VALUE           => 0,
+        OPERATOR        => '!=',
+    );
 
-        $transactions->Limit(
-            FIELD           => 'Field',
-            VALUE           => 'TimeWorked',
-            SUBCLAUSE       => 'timeworked',
-            ENTRYAGGREGATOR => 'AND',
-        );
-
-        $transactions->Limit(
-            FIELD           => 'TimeTaken',
-            VALUE           => 0,
-            OPERATOR        => '>',
-            SUBCLAUSE       => 'timeworked',
-            ENTRYAGGREGATOR => 'OR',
-        );
-
-        while ( my $txn = $transactions->Next ) {
-            $time_worked->{ $txn->CreatorObj->Name } += $txn->TimeTaken
-              || $txn->NewValue - $txn->OldValue;
-        }
-        $Ticket->SetAttribute( Name => 'TimeWorked', Content => $time_worked );
+    while ( my $txn = $transactions->Next ) {
+        $time_worked->{ $txn->CreatorObj->Name } += $txn->TimeTaken;
     }
 }
 
