@@ -389,8 +389,14 @@ sub CanonicalizePrincipal {
                 if RT::EmailParser->IsRTAddress( $email );
         }
     } else {
-        if ($args{User}) {
+        if (($args{User}||'') =~ /^\s*Group\s*:\s*(.+?)\s*$/) {
+            $args{Group} = $1;
+            delete $args{User};
+        }
+        elsif ($args{User}) {
             my $name = delete $args{User};
+            delete $args{Group};
+
             # Sanity check the address
             return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
                                   $name, $self->loc($args{Type}) ))
@@ -411,7 +417,8 @@ sub CanonicalizePrincipal {
             }
             $args{PrincipalId} = $user->PrincipalId;
         }
-        elsif ($args{Group}) {
+
+        if ($args{Group}) {
             my $name = delete $args{Group};
             my $group = RT::Group->new( $self->CurrentUser );
             $group->LoadUserDefinedGroup($name);
@@ -590,7 +597,18 @@ sub _ResolveRoles {
         } else {
             $roles->{$role} = [];
             my @values = ref $args{ $role } ? @{ $args{$role} } : ($args{$role});
-            for my $value (grep {defined} @values) {
+
+            while (my $value = shift @values) {
+                # extract "Group:xyz" early because Email::Address::List
+                # chokes on trying to parse that as an email address.
+                # (but not if "Group:xyz" is the very first entry, otherwise
+                # you'll get stuck in an infinite loop)
+                while ($value =~ s/,\s*(Group\s*:\s*[^,]+)($|,)/$2/) {
+                    push @values, $1;
+                }
+
+                next unless ($value||'') =~ /\S/;
+
                 if ( $value =~ /^\d+$/ ) {
                     # This implicitly allows groups, if passed by id.
                     my $principal = RT::Principal->new( $self->CurrentUser );
@@ -600,6 +618,18 @@ sub _ResolveRoles {
                     } else {
                         push @errors,
                             $self->loc("Couldn't load principal: [_1]", $msg);
+                    }
+                } elsif ($value =~ /^\s*Group\s*:\s*([^,]+),?(.*)/) {
+                    my ($name, $rest) = ($1, $2);
+                    push @values, $rest;
+
+                    my $group = RT::Group->new( $self->CurrentUser );
+                    my ($ok, $msg) = $group->LoadUserDefinedGroup( $name );
+                    if ($ok) {
+                        push @{ $roles->{$role} }, $group->PrincipalObj;
+                    } else {
+                        push @errors,
+                            $self->loc("Couldn't load group [_1]: [_1]", $name, $msg);
                     }
                 } else {
                     my @addresses = RT::EmailParser->ParseEmailAddress( $value );

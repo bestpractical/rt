@@ -463,17 +463,18 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 
 # check email addresses for RT's
 {
-    foreach my $field ( qw(Requestors Cc AdminCc) ) {
-        my $value = $ARGS{ $field };
-        next unless defined $value && length $value;
+    my $roles = {};
+    $QueueObj->_ResolveRoles( $roles, %ARGS );
 
-        my @emails = Email::Address->parse( $value );
-        foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
-            push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field =~ /^(.*?)s?$/) );
+    foreach my $field ( qw(Requestors Cc AdminCc) ) {
+        for my $principal (@{ $roles->{ $field } }) {
+            next unless $principal->IsUser;
+            my $email = $principal->Object->EmailAddress;
+            next unless RT::EmailParser->IsRTAddress($email);
+
+            push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email, loc($field =~ /^(.*?)s?$/) );
             $checks_failure = 1;
-            $email = undef;
         }
-        $ARGS{ $field } = join ', ', map $_->format, grep defined, @emails;
     }
 }
 
