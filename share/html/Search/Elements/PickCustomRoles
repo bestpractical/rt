@@ -59,6 +59,8 @@ foreach my $id (keys %queues) {
     next unless $queue->Id;
     $CustomRoles->LimitToObjectId($queue->Id);
 }
+# If there are no referenced queues, do not limit LookupType to return 0 custom roles.
+$CustomRoles->LimitToLookupType( RT::Ticket->CustomFieldLookupType ) if $CustomRoles->_isLimited;
 $m->callback(
     CallbackName => 'MassageCustomRoles',
     CustomRoles  => $CustomRoles,

@@ -211,6 +211,7 @@ else {
         next unless $queue->Id;
         $CustomRoles->LimitToObjectId( $queue->Id );
     }
+    $CustomRoles->LimitToLookupType(RT::Ticket->CustomFieldLookupType) if $CustomRoles->_isLimited;
 
     my @user_fields = qw/id Name EmailAddress Organization RealName City Country/;
     my $user_cfs    = RT::CustomFields->new( $session{CurrentUser} );
