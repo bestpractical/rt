@@ -104,7 +104,7 @@
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj &>
 </td><td>
-<& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20' &>
+<& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20', AutocompleteType => 'Principals' &>
 </td></tr>
 % }
 </table>
