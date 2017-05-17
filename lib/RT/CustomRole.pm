@@ -253,7 +253,7 @@ sub Load {
 =head2 ValidateName NAME
 
 Takes a custom role name. Returns true if it's an ok name for
-a new custom role. Returns undef if there's already a role by that name.
+a new custom role. Returns undef if it's not valid.
 
 =cut
 
@@ -275,13 +275,6 @@ sub _ValidateName {
     # Validate via the superclass first
     unless ( my $ok = $self->SUPER::ValidateName($name) ) {
         return ($ok, $self->loc("'[_1]' is not a valid name.", $name));
-    }
-
-    my $temp = RT::CustomRole->new(RT->SystemUser);
-    $temp->LoadByCols(Name => $name);
-
-    if ( $temp->Name && $temp->id != ($self->id||0))  {
-        return (undef, $self->loc("Role already exists") );
     }
 
     return (1);

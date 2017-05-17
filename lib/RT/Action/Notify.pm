@@ -141,14 +141,17 @@ sub SetRecipients {
                  || $name eq 'OtherRecipients'
                  || $name eq 'AlwaysNotifyActor';
 
-            my $roles = RT::CustomRoles->new( $self->CurrentUser );
+            my $roles = $self->TicketObj->QueueObj->CustomRoles;
             $roles->Limit( FIELD => 'Name', VALUE => $name, CASESENSITIVE => 0 );
 
-            # custom roles are named uniquely, but just in case there are
-            # multiple matches, bail out as we don't know which one to use
+            # in case there are multiple matches, bail out as we
+            # don't know which one to use
             $role = $roles->First;
             if ( $role ) {
-                $role = undef if $roles->Next;
+                if ($roles->Next) {
+                    RT->Logger->error("Ambiguous custom role named '$name' in Notify action for queue #" . $self->TicketObj->Queue . "; skipping. Perhaps specify RT::CustomRole-# instead.");
+                    $role = undef;
+                }
             }
         }
         else {

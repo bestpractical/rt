@@ -232,39 +232,6 @@ diag 'role names' if $ENV{'TEST_VERBOSE'};
     my $playground = RT::CustomRole->new(RT->SystemUser);
     ($ok, $msg) = $playground->Create(Name => 'Playground-' . $$, MaxValues => 1);
     ok($ok, "playground role: $msg");
-
-    for my $name (
-        'Programmer-' . $$,
-        'proGRAMMER-' . $$,
-        'Cc',
-        'CC',
-        'AdminCc',
-        'ADMIN CC',
-        'Requestor',
-        'requestors',
-        'Owner',
-        'OWNer',
-    ) {
-        # creating a role with that name should fail
-        my $new = RT::CustomRole->new(RT->SystemUser);
-        ($ok, $msg) = $new->Create(Name => $name, MaxValues => 1);
-        ok(!$ok, "creating a role with duplicate name $name should fail: $msg");
-
-        # updating an existing role with the dupe name should fail too
-        ($ok, $msg) = $playground->SetName($name);
-        ok(!$ok, "updating an existing role with duplicate name $name should fail: $msg");
-        is($playground->Name, 'Playground-' . $$, 'name stayed the same');
-    }
-
-    # make sure we didn't create any new roles
-    my $roles = RT::CustomRoles->new(RT->SystemUser);
-    $roles->UnLimit;
-    is($roles->Count, 3, 'three roles (original two plus playground)');
-
-    is_deeply([sort RT::System->Roles], ['AdminCc', 'Cc', 'Contact', 'HeldBy', 'Owner', 'RT::CustomRole-1', 'RT::CustomRole-2', 'RT::CustomRole-3', 'Requestor'], 'No new System->Roles');
-    is_deeply([sort RT::Queue->Roles], ['AdminCc', 'Cc', 'Owner', 'RT::CustomRole-1', 'RT::CustomRole-2', 'RT::CustomRole-3', 'Requestor'], 'No new Queue->Roles');
-    is_deeply([sort RT::Ticket->Roles], ['AdminCc', 'Cc', 'Owner', 'RT::CustomRole-1', 'RT::CustomRole-2', 'RT::CustomRole-3', 'Requestor'], 'No new Ticket->Roles');
-    is_deeply([sort RT::Queue->ManageableRoleGroupTypes], ['AdminCc', 'Cc', 'RT::CustomRole-2'], 'No new Queue->ManageableRoleGroupTypes');
 }
 
 diag 'load by name and id' if $ENV{'TEST_VERBOSE'};

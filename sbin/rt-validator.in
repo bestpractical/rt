@@ -382,22 +382,6 @@ push @CHECKS, 'User Defined Group Name uniqueness' => sub {
     );
 };
 
-push @CHECKS, 'Custom Role Name uniqueness' => sub {
-    return check_uniqueness(
-        'CustomRoles',
-        columns         => ['Name'],
-        action          => sub {
-            return unless prompt(
-                'Rename', "Found a custom role with a non-unique Name."
-            );
-
-            my $id = shift;
-            my %cols = @_;
-            update_records('CustomRoles', { id => $id }, { Name => join('-', $cols{'Name'}, $id) });
-        },
-    );
-};
-
 push @CHECKS, 'GMs -> Groups, Members' => sub {
     my $msg = "A record in GroupMembers references an object that doesn't exist."
         ." Maybe you deleted a group or principal directly from the database?"

@@ -1025,11 +1025,14 @@ sub _CustomRoleDecipher {
         $roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
         $roles->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
 
-        # custom roles are named uniquely, but just in case there are
-        # multiple matches, bail out as we don't know which one to use
+        # in case there are multiple matches, bail out as we
+        # don't know which one to use
         $role = $roles->First;
         if ( $role ) {
-            $role = undef if $roles->Next;
+            if ($roles->Next) {
+                RT->Logger->error("Ambiguous custom role named '$field' in TicketSQL; skipping. Perhaps specify __CustomRole.{id}__ instead.");
+                $role = undef;
+            }
         }
     }
     else {
