@@ -1,0 +1,142 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( \@suggestions ) |n %>
+% $m->abort;
+<%ARGS>
+$term => undef
+$delim => undef
+$max => undef
+$privileged => undef
+$exclude => ''
+$include_nobody => 0
+$include_system => 0
+</%ARGS>
+<%INIT>
+my $return = 'EmailAddress';
+my $op = 'STARTSWITH';
+
+$m->abort unless defined $return
+             and defined $term
+             and length $term;
+
+# Use our delimeter if we have one
+if ( defined $delim and length $delim ) {
+    if ( $delim eq ',' ) {
+        $delim = qr/,\s*/;
+    } else {
+        $delim = qr/\Q$delim\E/;
+    }
+
+    # If the field handles multiple values, pop the last one off
+    $term = (split $delim, $term)[-1] if $term =~ $delim;
+}
+
+my $CurrentUser = $session{'CurrentUser'};
+
+# Require privileged users or overriding config
+$m->abort unless $CurrentUser->Privileged
+              or RT->Config->Get('AllowUserAutocompleteForUnprivileged');
+
+# the API wants a list of ids
+my @exclude = split /\s*,\s*/, $exclude;
+push @exclude, RT->SystemUser->id unless $include_system;
+push @exclude, RT->Nobody->id unless $include_nobody;
+
+$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+$max //= 10;
+
+my $users = RT::Users->new($CurrentUser);
+$users->SimpleSearch( Privileged => $privileged,
+                      Return     => $return,
+                      Term       => $term,
+                      Max        => $max,
+                      Exclude    => \@exclude,
+                      # If an operator is provided, check against only
+                      # the returned field using that operator
+                      $op ? ( Fields => { $return => $op } ) : (),
+                    );
+
+(my $group_term = $term) =~ s/^\s*Group\s*:\s*//;
+my $groups = RT::Groups->new( $CurrentUser );
+$groups->RowsPerPage( $max );
+$groups->LimitToUserDefinedGroups();
+$groups->Limit(
+    FIELD           => 'Name',
+    OPERATOR        => $op,
+    VALUE           => $group_term,
+    CASESENSITIVE   => 0,
+);
+
+# Exclude groups we don't want
+foreach (@exclude) {
+    $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
+}
+
+my @suggestions;
+
+while ( my $user = $users->Next ) {
+    my $suggestion = { id => $user->id, label => $user->Format, value => $user->$return, detail => loc('User') };
+    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
+    push @suggestions, $suggestion;
+}
+
+while ( my $group = $groups->Next ) {
+    my $value = 'Group:' . $group->Name;
+
+    # if group name contains, say, a comma, then use its id instead to avoid
+    # parsing problems
+    $value = 'Group:' . $group->id if $delim && $value =~ $delim;
+
+    my $suggestion = { id => $group->Id, label => $group->Label, value => $value, detail => loc('Group') };
+    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
+    push @suggestions, $suggestion;
+
+    last if @suggestions >= $max;
+}
+</%INIT>

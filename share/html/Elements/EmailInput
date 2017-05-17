@@ -60,7 +60,7 @@
 % }
 
 % if ($Autocomplete) {
-    data-autocomplete="Users"
+    data-autocomplete="<% $AutocompleteType %>"
 % }
 
 % if ($AutocompleteMultiple) {
@@ -91,6 +91,7 @@ $Name
 $Size    => 40
 $Default => ''
 $Autocomplete => 1
+$AutocompleteType => 'Users'
 $AutocompleteMultiple => 0
 $AutocompleteReturn => ''
 $AutocompleteNobody => 0

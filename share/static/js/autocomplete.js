@@ -5,7 +5,8 @@ window.RT.Autocomplete.Classes = {
     Users: 'user',
     Groups: 'group',
     Tickets: 'tickets',
-    Queues: 'queues'
+    Queues: 'queues',
+    Principals: 'principals'
 };
 
 window.RT.Autocomplete.bind = function(from) {
@@ -105,6 +106,12 @@ window.RT.Autocomplete.bind = function(from) {
                     rendered.text( item.label );
                 else
                     rendered.html( item.html );
+
+                if (item.detail) {
+                    var detail = jQuery('<span class="detail">');
+                    detail.text(item.detail);
+                    rendered.append(detail);
+                }
 
                 return jQuery("<li/>")
                     .data( "item.autocomplete", item )
