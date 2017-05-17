@@ -157,7 +157,12 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
                 my $role_type = $m->notes($key);
                 if (!$role_type) {
                     my $role_obj = RT::CustomRole->new($object->CurrentUser);
-                    $role_obj->Load($role_name);
+                    if ($role_name =~ /^\d+$/) {
+                        $role_obj->Load($role_name);
+                    }
+                    else {
+                        $role_obj->LoadByCols(Name => $role_name, LookupType => $object->CustomFieldLookupType);
+                    }
 
                     RT->Logger->notice("Unable to load custom role $role_name")
                         unless $role_obj->Id;

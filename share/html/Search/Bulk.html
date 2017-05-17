@@ -96,6 +96,7 @@
 <td class="value"> <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc} &> </td></tr>
 
 % my $single_roles = RT::CustomRoles->new($session{CurrentUser});
+% $single_roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
 % $single_roles->LimitToSingleValue;
 % $single_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $single_roles->Next) {
@@ -106,6 +107,7 @@
 % }
 
 % my $multi_roles = RT::CustomRoles->new($session{CurrentUser});
+% $multi_roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
 % $multi_roles->LimitToMultipleValue;
 % $multi_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $multi_roles->Next) {

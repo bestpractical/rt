@@ -1022,6 +1022,7 @@ sub _CustomRoleDecipher {
 
     if ( $field =~ /\D/ ) {
         my $roles = RT::CustomRoles->new( $self->CurrentUser );
+        $roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
         $roles->Limit( FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0 );
 
         # custom roles are named uniquely, but just in case there are
