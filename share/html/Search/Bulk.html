@@ -83,17 +83,17 @@
 <label>(<input type="checkbox" class="checkbox" name="ForceOwnerChange"
 <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %> /> <&|/l&>Force change</&>)</label></td></tr>
 <tr><td class="label"> <&|/l&>Add Requestor</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor} &> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor}, AutocompleteType => 'Principals' &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor} &> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor}, AutocompleteType => 'Principals' &> </td></tr>
 <tr><td class="label"> <&|/l&>Add Cc</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc} &> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc}, AutocompleteType => 'Principals' &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Cc</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc} &> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc}, AutocompleteType => 'Principals' &> </td></tr>
 <tr><td class="label"> <&|/l&>Add AdminCc</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc} &> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc}, AutocompleteType => 'Principals' &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove AdminCc</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc} &> </td></tr>
+<td class="value"> <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc}, AutocompleteType => 'Principals' &> </td></tr>
 
 % my $single_roles = RT::CustomRoles->new($session{CurrentUser});
 % $single_roles->LimitToSingleValue;
@@ -111,11 +111,11 @@
 % while (my $role = $multi_roles->Next) {
 <tr>
 <td class="label"> <&|/l, $role->Name &>Add [_1]</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id} &> </td>
+<td class="value"> <& /Elements/MultiUserRoleInput, role => $role, Name => "AddRT::CustomRole-" . $role->Id, Size => 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &> </td>
 </tr>
 <tr>
 <td class="label"> <&|/l, $role->Name &>Remove [_1]</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id} &> </td>
+<td class="value"> <& /Elements/MultiUserRoleInput, role => $role, Name => "DeleteRT::CustomRole-" . $role->Id, Size => 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &> </td>
 </tr>
 % }
 
