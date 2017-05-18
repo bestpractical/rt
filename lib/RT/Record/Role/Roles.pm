@@ -507,14 +507,9 @@ Takes a set of key-value pairs:
 
 =over 4
 
-=item PrincipalId
+=item Principal, PrincipalId, User, or Group
 
-Optional.  The ID of the L<RT::Principal> object to remove.
-
-=item User
-
-Optional.  The Name or EmailAddress of an L<RT::User> to use as the
-principal
+Required. Canonicalized through L</CanonicalizePrincipal>.
 
 =item Type
 
@@ -528,8 +523,6 @@ status of "Permission denied".
 
 =back
 
-One, and only one, of I<PrincipalId> or I<User> is required.
-
 Returns a tuple of (principal object that was removed, message).
 
 =cut
@@ -541,20 +534,8 @@ sub DeleteRoleMember {
     return (0, $self->loc("That role is invalid for this object"))
         unless $args{Type} and $self->HasRole($args{Type});
 
-    if ($args{User}) {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( $args{User} );
-        $user->Load( $args{User} ) unless $user->id;
-        return (0, $self->loc("Could not load user '[_1]'", $args{User}) )
-            unless $user->id;
-        $args{PrincipalId} = $user->PrincipalId;
-    }
-
-    return (0, $self->loc("No valid PrincipalId"))
-        unless $args{PrincipalId};
-
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    $principal->Load( $args{PrincipalId} );
+    my ($principal, $msg) = $self->CanonicalizePrincipal(%args);
+    return (0, $msg) if !$principal;
 
     my $acl = delete $args{ACL};
     return (0, $self->loc("Permission denied"))
@@ -568,12 +549,12 @@ sub DeleteRoleMember {
                             $principal->Object->Name, $self->loc($args{Type}) ) )
         unless $group->HasMember($principal);
 
-    my ($ok, $msg) = $group->_DeleteMember($args{PrincipalId}, RecordTransaction => !$args{Silent});
+    ((my $ok), $msg) = $group->_DeleteMember($principal->Id, RecordTransaction => !$args{Silent});
     unless ($ok) {
-        $RT::Logger->error("Failed to remove $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
+        $RT::Logger->error("Failed to remove ".$principal->Id." as a member of group ".$group->Id.": ".$msg);
 
         return ( 0, $self->loc('Could not remove [_1] as a [_2]',
-                    $principal->Object->Name, $self->loc($args{Type})) );
+                    $principal->Object->Name, $group->Label) );
     }
 
     return ($principal, $msg);
