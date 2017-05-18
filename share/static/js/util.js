@@ -552,7 +552,7 @@ jQuery(function() {
         var parent = jQuery(this).closest('div');
         var name = jQuery(this).attr('data-name');
         var token = jQuery(this).closest('form').find('input[name=Token]').val();
-        jQuery.post('/Helpers/Upload/Delete', { Name: name, Token: token }, function(data) {
+        jQuery.post( RT.Config.WebHomePath + '/Helpers/Upload/Delete', { Name: name, Token: token }, function(data) {
             if ( data.status == 'success' ) {
                 parent.remove();
             }
