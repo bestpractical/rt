@@ -16,8 +16,8 @@ After a security vulnerability is reported to Best Practical and
 verified, we attempt to resolve it in as timely a fashion as possible.
 Best Practical support customers will be notified before we disclose the
 information to the public.  All security announcements will be sent to
-C<rt-announce@bestpractical.com>, which includes
-C<rt-users@bestpractical.com> and C<rt-devel@bestpractical.com>.
+C<rt-announce@bestpractical.com> and posted to the community forum at
+L<https://forum.bestpractical.com>
 
 As the tests for security vulnerabilities are often nearly identical to
 working exploits, sensitive tests will be embargoed for a period of six
