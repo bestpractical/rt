@@ -117,20 +117,22 @@ F<local/plugins/RT-Extension-ExternalStorage> from your RT installation.
 
 =item *
 
-RT now has the functionality from L<RT::Extension::ParentTimeWorked> built in.
-When a child ticket's TimeWorked field is updated, its parent ticket's
-TimeWorked field will also be incremented.
+RT now has the functionality from L<RT::Extension::ParentTimeWorked> built in,
+with some modifications. In the ParentTimeWorked extension, when a child ticket's
+TimeWorked field was updated, the parent ticket's TimeWorked field was also
+incremented. Starting with RT 4.4.2, the time from child tickets is available
+in the Total Time Worked field and the Time Worked value for the parent ticket
+is independent.
 
-It also has built-in functionality for recording time worked per user.
-When a ticket's TimeWorked field is updated, the time will be attributed
-to the currently logged in user.
+RT now also has built-in functionality to show time worked per user.
 
-Both of these functions are enabled via scrips. New installs will have these
-scrips by default. Upgrades will get them too, but set as disabled so they
-don't interfere with your existing configuration. If you would like to enable
-either of these functions, enable the 'On TimeWorked Change Update User
-TimeWorked' and/or 'On TimeWorked Change Update Parent TimeWorked' scrips. New
-deployments have these scrips enabled by default.
+For RT 4.4.0 and 4.4.1, these functions were enabled via scrips.
+New installs had these scrips by default. Upgrades got them too, but set as
+disabled so they didn't interfere with your existing configuration. These
+functions are now dynamic and no longer require these scrips.
+
+See L</"UPGRADING FROM 4.4.1 AND EARLIER"> for additional details on the changes
+introduced in 4.4.2.
 
 Users who are currently using
 L<RT::Extension::ParentTimeWorked|https://metacpan.org/pod/RT::Extension::ParentTimeWorked>
@@ -517,5 +519,80 @@ AfterUpdateCustomFieldValue. It will be removed in RT 4.6.
 
 =back
 
-=cut
+=head1 UPGRADING FROM 4.4.1 AND EARLIER
 
+=over 4
+
+=item *
+
+Changes to Time Worked Handling
+
+As noted above, in RT 4.4 we pulled in some time tracking features from
+extensions, specifically adding time worked on child tickets to the
+parent and showing time worked per user. In RT 4.4.2, we made some important
+changes to this functionality.
+
+The new features were installed but disabled for upgrades, so these changes
+are most important to RT users who installed RT starting with version 4.4.0
+or 4.4.1, or who users who upgraded from a previous RT and then manually
+enabled the time tracking scrips.
+
+=over 4
+
+=item *
+
+Parent Time Worked
+
+Based on feedback from users and our own experience, we determined that
+updating the Time Worked value on the parent ticket made it difficult
+to differentiate time recorded from children tickets from time recorded
+directly on the parent ticket. To clarify the history for these time
+entries, we created a new dynamic value called Total Time Worked that
+is a sum of Time Worked from the parent and all child tickets. You can
+activate this feature with the C<$DisplayTotalTimeWorked> configuration
+option in C<RT_SiteConfig.pm>.
+
+We generate this when displaying the ticket and we no longer update Time
+Worked on the parent ticket. This change also has the advantage that Total
+Time Worked automatically updates when a child ticket is added or removed.
+Total Time Worked is also available as a column for reports generated with
+the Query Builder.
+
+B<Important:> If you were previously using the parent time worked feature,
+the Time Worked value on parent tickets already contains time from child
+tickets. Total Time Worked will therefore be incorrect since it will add
+up all children then add the parent time (which already has the
+child time). You can choose to keep using the scrip and not show Total Time
+Worked, or update Time Worked on the parent ticket to have just parent time
+worked.
+
+Contact Best Practical at contact@bestpractical.com if you have questions
+about these changes.
+
+=item *
+
+Time Worked by User
+
+For the user time summary feature, we found some odd cases where a time
+value would not get recorded (if the scrip was mistakenly disabled, for
+example). In these cases, since the data was stored internally, it was
+difficult to update the user time values. We have made this feature
+dynamic so the user time information for the current ticket is generated
+when the ticket is displayed.
+
+If you previously used this feature, the user time data stored in an
+attribute on each ticket will still be in the database. Since it is only
+visible directly in the database, you can safely ignore it. However, if
+you want to remove it, you can locate these records with the following:
+
+    SELECT id, Name FROM Attributes WHERE ObjectType = 'RT::Ticket' AND Name = 'TimeWorked';
+
+You can delete these records from the Attributes table using a DELETE
+and the same WHERE clause. Always make sure you have a known good backup
+of your database before making updates.
+
+=back
+
+=back
+
+=cut
