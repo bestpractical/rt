@@ -7,11 +7,6 @@ our @ScripActions = (
         Description => 'Update Parent TimeWorked',    # loc
         ExecModule  => 'UpdateParentTimeWorked',
     },
-    {
-        Name        => 'Update User TimeWorked',    # loc
-        Description => 'Update User TimeWorked',    # loc
-        ExecModule  => 'UpdateUserTimeWorked',
-    },
 );
 
 
@@ -29,13 +24,6 @@ our @Scrips = (
         Description    => 'On TimeWorked Change Update Parent TimeWorked',
         ScripCondition => 'On TimeWorked Change',
         ScripAction    => 'Update Parent TimeWorked',
-        Template       => 'Blank',
-        Disabled       => 1,
-    },
-    {
-        Description    => 'On TimeWorked Change Update User TimeWorked',
-        ScripCondition => 'On TimeWorked Change',
-        ScripAction    => 'Update User TimeWorked',
         Template       => 'Blank',
         Disabled       => 1,
     },
