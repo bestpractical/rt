@@ -94,18 +94,18 @@ of all lifecycles of the appropriate type.
 sub LifecycleObj {
     my $self = shift;
     my $type = $self->LifecycleType;
-    my $fallback = $self->_Accessible( Lifecycle => "default" );
 
     unless (blessed($self) and $self->id) {
         return RT::Lifecycle->Load( Type => $type );
     }
 
-    my $name = $self->Lifecycle || $fallback;
+    my $name = $self->__Value('Lifecycle');
     my $res  = RT::Lifecycle->Load( Name => $name, Type => $type );
     unless ( $res ) {
         RT->Logger->error(
             sprintf "Lifecycle '%s' of type %s for %s #%d doesn't exist",
                     $name, $type, ref($self), $self->id);
+        my $fallback = $self->_Accessible( Lifecycle => "default" );
         return RT::Lifecycle->Load( Name => $fallback, Type => $type );
     }
     return $res;
