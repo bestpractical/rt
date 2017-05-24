@@ -95,6 +95,14 @@ quotes and underscores can be omitted.  That is, the format:
 
    id, Subject
 
+=item Custom field references
+
+If you have created custom fields applied to tickets, you can refer to
+them using C< CF. >. For example, if you are using the SLA extension
+and have created the C< SLA > custom field, you could use a format like:
+
+	'__id__', '__Subject__', 'CF.SLA'
+
 =item HTML
 
 HTML formatting can be included, which will by default be included in
@@ -110,6 +118,7 @@ the column title as well as each row.  For instance, the format:
 <tr><td><i>Bob</i></td></tr>
 <tr><td><i>Charlie</i></td></tr>
 </table>
+
 
 =begin text
 
