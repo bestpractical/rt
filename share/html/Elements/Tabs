@@ -626,6 +626,27 @@ my $build_main_nav = sub {
     $search->child( assets => title => loc("Assets"), path => "/Asset/Search/" )
         if $session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
+    my $reports = Menu->child( reports =>
+        title       => loc('Reports'),
+        description => loc('Reports summarizing ticket resolution and status'),
+        path        => loc('/Reports'),
+    );
+    $reports->child( resolvedbyowner =>
+        title       => loc('Resolved by owner'),
+        path        => '/Reports/ResolvedByOwner.html',
+        description => loc('Examine tickets resolved in a queue, grouped by owner'),
+    );
+    $reports->child( resolvedindaterange =>
+        title       => loc('Resolved in date range'),
+        path        => '/Reports/ResolvedByDates.html',
+        description => loc('Examine tickets resolved in a queue between two dates'),
+    );
+    $reports->child( createdindaterange =>
+        title       => loc('Created in a date range'),
+        path        => '/Reports/CreatedByDates.html',
+        description => loc('Examine tickets created in a queue between two dates'),
+    );
+
     if ($session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
         my $articles = Menu->child( articles => title => loc('Articles'), path => "/Articles/index.html");
         $articles->child( articles => title => loc('Overview'), path => "/Articles/index.html" );
