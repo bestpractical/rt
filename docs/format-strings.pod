@@ -95,6 +95,26 @@ quotes and underscores can be omitted.  That is, the format:
 
    id, Subject
 
+=item Custom fields
+
+If you have created custom fields applied to tickets, you can refer to
+them using C< CF. >. For example, if you have a custom field named
+C<Component>, you could use a format like:
+
+    '__id__', '__Subject__', 'CF.Component'
+
+or:
+
+    '__id__', '__Subject__', '__CustomField.{Component}__'
+
+Alternatively, you can use the custom field's numeric ID instead of its
+name. This is mostly useful if you have multiple custom fields with the
+same name and you need to disambiguate.
+
+    '__id__', '__Subject__', 'CF.3'
+
+    '__id__', '__Subject__', '__CustomField.{3}__'
+
 =item HTML
 
 HTML formatting can be included, which will by default be included in
