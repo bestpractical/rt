@@ -1,15 +1,6 @@
 use warnings;
 use strict;
 
-our @ScripActions = (
-    {
-        Name        => 'Update Parent TimeWorked',    # loc
-        Description => 'Update Parent TimeWorked',    # loc
-        ExecModule  => 'UpdateParentTimeWorked',
-    },
-);
-
-
 our @ScripConditions = (
     {
         Name                 => 'On TimeWorked Change',      # loc
@@ -19,14 +10,5 @@ our @ScripConditions = (
     },
 );
 
-our @Scrips = (
-    {
-        Description    => 'On TimeWorked Change Update Parent TimeWorked',
-        ScripCondition => 'On TimeWorked Change',
-        ScripAction    => 'Update Parent TimeWorked',
-        Template       => 'Blank',
-        Disabled       => 1,
-    },
-);
 
 1;
