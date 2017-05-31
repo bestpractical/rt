@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2016-02-04 18:00+0000\n"
+"POT-Creation-Date: 2016-07-20 22:51+0000\n"
 "PO-Revision-Date: 2015-11-09 22:58+0000\n"
 "Last-Translator: Shawn M Moore <sartak@gmail.com>\n"
 "Language-Team: English <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-05-18 19:33+0000\n"
-"X-Generator: Launchpad (build 18025)\n"
+"X-Launchpad-Export-Date: 2017-05-31 23:13+0000\n"
+"X-Generator: Launchpad (build 18391)\n"
 
 # Spaces in role names make life needlessly difficult;
 # just translate it!
@@ -23,11 +23,11 @@ msgstr ""
 msgid "HeldBy"
 msgstr "Held By"
 
-#: share/html/Elements/Tabs:523 share/html/m/_elements/header:69
+#: share/html/Elements/Tabs:551 share/html/m/_elements/header:69
 msgid "Homepage"
 msgstr "Home"
 
-#: share/html/Admin/Users/Modify.html:177 share/html/Prefs/AboutMe.html:89
+#: share/html/Admin/Users/Modify.html:181 share/html/Prefs/AboutMe.html:89
 msgid "Residence"
 msgstr "Home"
 
