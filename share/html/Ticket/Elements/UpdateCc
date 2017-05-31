@@ -139,6 +139,8 @@ foreach my $addr ( keys %txn_addresses) {
   push @one_time_Ccs,$addr;
 }
 
+@one_time_Ccs = sort @one_time_Ccs;
+
 my $hide_cc_suggestions =  RT->Config->Get('HideOneTimeSuggestions', $session{CurrentUser});
 my $show_label    = $m->interp->apply_escapes( loc("show suggestions"), 'h' );
 my $hide_label    = $m->interp->apply_escapes( loc("hide suggestions"), 'h' );

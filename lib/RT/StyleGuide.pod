@@ -20,17 +20,14 @@ degree to any Perl code written for use in RT.
 
 Note that these are all guidelines, not unbreakable rules.  If you have
 a really good need to break one of the rules herein, however, then it is
-best to ask on the B<rt-devel> mailing list first.
+best to first start a discussion in the RT Developers category on the community
+forum at L<https://forum.bestpractical.com>.
 
 Note that with much of this document, it is not so much the Right Way as
 it is Our Way.  We need to have conventions in order to make life easier
 for everyone.  So don't gripe, and just follow it, because you didn't
 get a good grade in "Plays Well With Others" in kindergarten and you
 want to make up for it now.
-
-If you have any questions, please ask us on the B<rt-devel> mailing list:
-
-        http://www.bestpractical.com/rt/lists.html
 
 We don't always follow this guide.  We are making changes throughout
 our code to be in line with it.  But just because we didn't do
@@ -723,7 +720,7 @@ This is for new programs, modules, specific APIs, or anything else.
 
 =over 4
 
-=item Present idea to rt-devel
+=item Create a topic in RT Developers on the Forum
 
 We may know of a better way to approach the problem, or know of an
 existing way to deal with it, or know someone else is working on it.
@@ -731,11 +728,11 @@ This is mostly informal, but a fairly complete explanation for the need
 and use of the code should be provided.
 
 
-=item Present complete specs to rt-devel
+=item Present specs in RT Developers
 
 The complete proposed API  should be submitted for
-approval and discussion.  For web and command-line programs, present the
-functionality and interface (op codes, command-lin switches, etc.).
+discussion.  For web and command-line programs, present the
+functionality and interface (op codes, command-line switches, etc.).
 
 The best way to do this is to take the documentation portion of the
 boilerplate and fill it in.  You can make changes later if necessary,
@@ -760,9 +757,10 @@ guide contained in this document.
 =item Finish it up
 
 After the code is done (possibly going through multiple code reviews),
-if you do not have repository access, submit it to rt-bugs@fsck.com as a
-unified diff. From that point on, it'll be handled by someone with
-repository access.
+submit your updates as a pull request on GitHub. If you don't have a GitHub
+account, you can generate patches and send email to rt-bugs@bestpractical.com
+which will create a ticket in our public issue tracker at
+L<https://issues.bestpractical.com>.
 
 =back
 

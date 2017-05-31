@@ -375,4 +375,52 @@ sub _insert_sibling {
     $parent->child( @_, sort_order => $sort_order );
 }
 
+=head2 RemoveDashboardMenuItems
+
+Remove dashboards from individual user and system dash menus.
+
+Requires a hash with DashboardId and CurrentUser object.
+
+    $menu->RemoveDashboardMenuItem( DashboardId => $id, CurrentUser => $session{CurrentUser}->UserObj );
+
+=cut
+
+sub RemoveDashboardMenuItem {
+    my $self = shift;
+    my %args = @_;
+
+    return unless $args{'DashboardId'} and $args{'CurrentUser'};
+    my $dashboard_id = $args{'DashboardId'};
+    my $current_user = $args{'CurrentUser'};
+
+    # First clear from user's dashboards
+    my $dashboards_in_menu = $current_user->Preferences('DashboardsInMenu', {} );
+
+    my @dashboards = grep { $_ != $dashboard_id } @{$dashboards_in_menu->{'dashboards'}};
+    $dashboards_in_menu->{'dashboards'} = \@dashboards || [];
+
+    my ($ret, $msg) = $current_user->SetPreferences('DashboardsInMenu', $dashboards_in_menu);
+    RT::Logger->warn("Unable to update dashboard for user " . $current_user->Name . ": $msg")
+        unless $ret;
+
+    # Now update the system dashboard
+    my $system = RT::System->new( $current_user );
+    my ($default_dashboards) = $system->Attributes->Named('DashboardsInMenu');
+
+    if ($default_dashboards) {
+        $dashboards_in_menu = $default_dashboards->Content;
+        my @dashboards = grep { $_ != $dashboard_id } @{$dashboards_in_menu->{'dashboards'}};
+
+        # Update only if we removed one
+        if ( @{$dashboards_in_menu->{'dashboards'}} > @dashboards ){
+            $dashboards_in_menu->{'dashboards'} = \@dashboards || [];
+
+            ($ret, $msg) = $default_dashboards->SetContent($dashboards_in_menu);
+            RT::Logger->warn("Unable to update system dashboard menu: $msg")
+                unless $ret;
+        }
+    }
+    return;
+}
+
 1;

@@ -179,7 +179,20 @@ ok($ret, "Removed nobody as a squelched recipient - ".$msg);
 @returned = $t->SquelchMailTo();
 is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned));
 
+@returned = $t->SquelchMailTo('somebody@example.com','nobody@example.com');
+is($#returned, 1, "The ticket has two squelched recipients, multiple args");
 
+@returned = $t->SquelchMailTo('third@example.com');
+is($#returned, 2, "The ticket has three squelched recipients, additive calls");
+
+my $t2 = RT::Ticket->new(RT->SystemUser);
+ok($t2->Create(Queue => 'general', Subject => 'SquelchTest', SquelchMailTo => [ 'nobody@example.com', 'test@example.com' ]));
+my @returned2 = $t2->SquelchMailTo();
+is($#returned2,1, "The ticket has two squelched recipients");
+
+$t2->SquelchMailTo('test@example.com');
+my @returned3 = $t2->SquelchMailTo();
+is($#returned2,1, "The ticket still has two squelched recipients, no duplicate squelchers");
 
 }
 

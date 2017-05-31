@@ -104,6 +104,9 @@ GetOptions(
     "scrips!",
     "tickets!",
     "acls!",
+    "limit-queues=s@",
+    "limit-cfs=s@",
+    "hyperlink-unmigrated!",
 
     "clone",
     "incremental",
@@ -127,11 +130,52 @@ $args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
 $args{FollowTickets} = $OPT{tickets}  if defined $OPT{tickets};
 $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 
+$args{HyperlinkUnmigrated} = $OPT{'hyperlink-unmigrated'} if defined $OPT{'hyperlink-unmigrated'};
+
 $args{Clone}         = $OPT{clone}       if $OPT{clone};
 $args{Incremental}   = $OPT{incremental} if $OPT{incremental};
 
 $args{GC}   = defined $OPT{gc}   ? $OPT{gc}   : 5000;
 $args{Page} = defined $OPT{page} ? $OPT{page} : 100;
+
+if ($OPT{'limit-queues'}) {
+    my @queue_ids;
+
+    for my $name (split ',', join ',', @{ $OPT{'limit-queues'} }) {
+        $name =~ s/^\s+//; $name =~ s/\s+$//;
+        my $queue = RT::Queue->new(RT->SystemUser);
+        $queue->Load($name);
+        if (!$queue->Id) {
+            die "Unable to load queue '$name'";
+        }
+        push @queue_ids, $queue->Id;
+    }
+
+    $args{Queues} = \@queue_ids;
+}
+
+if ($OPT{'limit-cfs'}) {
+    my @cf_ids;
+
+    for my $name (split ',', join ',', @{ $OPT{'limit-cfs'} }) {
+        $name =~ s/^\s+//; $name =~ s/\s+$//;
+
+        # numeric means id
+        if ($name =~ /^\d+$/) {
+            push @cf_ids, $name;
+        }
+        else {
+            my $cfs = RT::CustomFields->new(RT->SystemUser);
+            $cfs->Limit(FIELD => 'Name', VALUE => $name);
+            if (!$cfs->Count) {
+                die "Unable to load any custom field named '$name'";
+            }
+            push @cf_ids, map { $_->Id } @{ $cfs->ItemsArrayRef };
+        }
+    }
+
+    $args{CustomFields} = \@cf_ids;
+}
 
 if (($OPT{clone} or $OPT{incremental})
         and grep { /^(users|groups|deleted|scrips|tickets|acls)$/ } keys %OPT) {
@@ -320,6 +364,24 @@ serialized.
 =item B<--no-tickets>
 
 Skip serialization of all ticket data.
+
+=item B<--limit-queues>
+
+Takes a list of queue IDs or names separated by commas. When provided, only
+that set of queues (and the tickets in them) will be serialized.
+
+=item B<--limit-cfs>
+
+Takes a list of custom field IDs or names separated by commas. When provided,
+only that set of custom fields will be serialized.
+
+=item B<--hyperlink-unmigrated>
+
+Replace links to local records which are not being migrated with hyperlinks.
+The hyperlinks will use the serializing RT's configured URL.
+
+Without this option, such links are instead dropped, and transactions which
+had updated such links will be replaced with an explanatory message.
 
 =item B<--clone>
 
