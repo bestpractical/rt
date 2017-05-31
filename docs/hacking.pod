@@ -204,6 +204,11 @@ before the fix and succeeds after.
 
 =head1 git quickstart
 
+The process below describes how to get a copy of an RT repo,
+modify it, and submit your changes as a patch. You can also create
+an account on GitHub, fork RT, and submit a PR. GitHub has documentation
+on this process: L<https://help.github.com/articles/fork-a-repo/>.
+
 =over
 
 =item 1.
@@ -299,7 +304,8 @@ This will print out the names of the files as it creates them.
 =item 9.
 
 Attach these files to an email using your standard email client, and
-send it to C<rt-devel@bestpractical.com>.
+send it to C<rt-bugs@bestpractical.com>. This will create a ticket in
+our public RT instance at L<https://issues.bestpractical.com>.
 
 =back
 

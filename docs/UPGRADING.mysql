@@ -104,8 +104,10 @@ NOTE that 'rt3' is the default name of the RT database, change it in the
 command above if your database is named differently.
 
 This step should not produce any errors or warnings. If you see any, restore
-your database from the backup you made at step 1, and send a report to the
-rt-users@lists.bestpractical.com mailing list.
+your database from the backup you made at step 1 and examine the errors to
+determine the cause. Consult your DBA for MySQL-specific issues. For RT
+issues, you can post to the community forum at L<https://forum.bestpractical.com>
+for help or send email to sales@bestpractical.com for professional assistance.
 
 =item 8.
 
