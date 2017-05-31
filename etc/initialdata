@@ -125,14 +125,6 @@
        Description => 'Set the due date according to an agreement' , # loc
        ExecModule  => 'SLA_SetDue',
     },
-    { Name        => 'Update Parent TimeWorked',     # loc
-      Description => 'Update Parent TimeWorked',     # loc
-      ExecModule  => 'UpdateParentTimeWorked',
-    },
-    { Name        => 'Update User TimeWorked',       # loc
-      Description => 'Update User TimeWorked',       # loc
-      ExecModule  => 'UpdateUserTimeWorked',
-    },
 );
 
 @ScripConditions = (
@@ -838,14 +830,6 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition    => 'Require due set according to SLA',
        ScripAction       => 'Set due date according to SLA',
        Template          => 'Blank' },
-    {  Description    => 'On TimeWorked Change Update Parent TimeWorked',
-       ScripCondition => 'On TimeWorked Change',
-       ScripAction    => 'Update Parent TimeWorked',
-       Template       => 'Blank' },
-    {  Description    => 'On TimeWorked Change Update User TimeWorked',
-       ScripCondition => 'On TimeWorked Change',
-       ScripAction    => 'Update User TimeWorked',
-       Template       => 'Blank' },
 );
 
 @ACL = (

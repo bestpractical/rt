@@ -56,5 +56,17 @@ our @Initial = (
             );
         }
     },
-);
 
+    # Disable scrip On TimeWorked Change Update User TimeWorked
+    sub {
+        my $scrip = RT::Scrip->new(RT->SystemUser);
+        my ($ret, $msg) = $scrip->LoadByCols( Description => 'On TimeWorked Change Update User TimeWorked' );
+
+        unless ( $ret ){
+            RT->Logger->warning("Unable to load scrip On TimeWorked Change Update User TimeWorked: $msg. If you renamed this scrip, you can manually disable it as it is no longer needed.");
+            return;
+        }
+
+        $scrip->SetDisabled(1);
+    },
+);

@@ -1444,6 +1444,57 @@ sub TotalTimeWorkedAsString {
     return $self->_DurationAsString( $self->TotalTimeWorked );
 }
 
+=head2 TimeWorkedPerUser
+
+Returns a hash of user id to the amount of time worked on this ticket for
+that user
+
+=cut
+
+sub TimeWorkedPerUser {
+    my $self = shift;
+    my %time_worked;
+
+    my $transactions = $self->Transactions;
+    $transactions->Limit(
+        FIELD           => 'TimeTaken',
+        VALUE           => 0,
+        OPERATOR        => '!=',
+    );
+
+    while ( my $txn = $transactions->Next ) {
+        $time_worked{ $txn->CreatorObj->Name } += $txn->TimeTaken;
+    }
+
+    return \%time_worked;
+}
+
+=head2 TotalTimeWorkedPerUser
+
+Returns the amount of time worked on this ticket and all child tickets
+calculated per user
+
+=cut
+
+sub TotalTimeWorkedPerUser {
+    my $self = shift;
+    my $seen = shift || {};
+    my $time = $self->TimeWorkedPerUser;
+    my $links = $self->Members;
+    LINK: while (my $link = $links->Next) {
+        my $obj = $link->BaseObj;
+        next LINK unless $obj && UNIVERSAL::isa($obj,'RT::Ticket');
+        next LINK if $seen->{$obj->Id};
+        $seen->{ $obj->Id } = 1;
+
+        my $child_time = $obj->TotalTimeWorkedPerUser($seen);
+        for my $user_id (keys %$child_time) {
+            $time->{$user_id} += $child_time->{$user_id};
+        }
+    }
+    return $time;
+}
+
 =head2 Comment
 
 Comment on this ticket.
