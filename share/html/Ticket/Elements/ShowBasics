@@ -132,17 +132,12 @@ $UngroupedCFs => 0
 <%init>
 my $time_worked;
 my $show_time_worked = $Ticket->CurrentUserCanSeeTime;
-if ( $show_time_worked && $Ticket->TimeWorked ) {
-
-    my $transactions = $Ticket->Transactions;
-    $transactions->Limit(
-        FIELD           => 'TimeTaken',
-        VALUE           => 0,
-        OPERATOR        => '!=',
-    );
-
-    while ( my $txn = $transactions->Next ) {
-        $time_worked->{ $txn->CreatorObj->Name } += $txn->TimeTaken;
+if ( $show_time_worked ) {
+    if (RT->Config->Get('DisplayTotalTimeWorked')) {
+        $time_worked = $Ticket->TotalTimeWorkedPerUser;
+    }
+    else {
+        $time_worked = $Ticket->TimeWorkedPerUser;
     }
 }
 

@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set($DisplayTotalTimeWorked, 1);';
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok( $m->login, "Logged in" );
