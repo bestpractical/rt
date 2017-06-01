@@ -213,7 +213,7 @@ Locale::Maketext::Lexicon 0.32
 Locale::Maketext::Fuzzy
 MIME::Entity 5.425
 Mail::Mailer 1.57
-Email::Address
+Email::Address 1.908
 Text::Wrapper 
 Time::ParseDate
 Time::HiRes 
