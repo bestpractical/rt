@@ -646,7 +646,7 @@ JOIN Tickets ON Tickets.Id = Groups.Instance
 LEFT JOIN GroupMembers ON Groups.Id = GroupMembers.GroupId
 WHERE Groups.Name = 'Owner'
 AND Groups.Domain = 'RT::Ticket-Role'
-AND GroupMembers.MemberId IS NULL;
+AND GroupMembers.MemberId IS NULL
 END
 
         my $action = sub {
@@ -683,7 +683,7 @@ JOIN GroupMembers ON Groups.Id = GroupMembers.GroupId
 JOIN Tickets ON Tickets.Id = Groups.Instance
 WHERE Groups.Name = 'Owner'
 AND Groups.Domain = 'RT::Ticket-Role'
-AND Tickets.Owner != GroupMembers.MemberId;
+AND Tickets.Owner != GroupMembers.MemberId
 END
 
         my $action = sub {

@@ -29,7 +29,7 @@ our @Initial = (
             JOIN Tickets ON Tickets.Id = Groups.Instance
             WHERE Groups.Name = 'Owner'
             AND Groups.Domain = 'RT::Ticket-Role'
-            AND Tickets.Owner != GroupMembers.MemberId;
+            AND Tickets.Owner != GroupMembers.MemberId
         ]);
 
         $sth->execute;
