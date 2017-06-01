@@ -1443,8 +1443,8 @@ sub ObjectTypeFromLookupType {
 
 sub CollectionClassFromLookupType {
     my $self = shift;
+    my $record_class = shift || $self->RecordClassFromLookupType;
 
-    my $record_class = $self->RecordClassFromLookupType;
     return undef unless $record_class;
 
     my $collection_class;
@@ -1781,16 +1781,12 @@ sub AddValueForObject {
     }
 
     if ($self->UniqueValues) {
-        my $existing = RT::ObjectCustomFieldValue->new(RT->SystemUser);
-        $existing->LoadByCols(
-            CustomField  => $self->Id,
-            Content      => $args{'Content'},
-            LargeContent => $args{'LargeContent'},
-            ContentType  => $args{'ContentType'},
-            Disabled     => 0,
-        );
-        if ($existing->Id) {
-            $RT::Logger->debug( "Non-unique custom field value for CF #" . $self->Id ." with object custom field value " . $existing->Id );
+        my $class = $self->CollectionClassFromLookupType($self->ObjectTypeFromLookupType);
+        my $collection = $class->new(RT->SystemUser);
+        $collection->LimitCustomField(CUSTOMFIELD => $self->Id, OPERATOR => '=', VALUE => $args{'LargeContent'} // $args{'Content'});
+
+        if ($collection->Count) {
+            $RT::Logger->debug( "Non-unique custom field value for CF #" . $self->Id ." with object custom field value " . $collection->First->Id );
             $RT::Handle->Rollback();
             return ( 0, $self->loc('That is not a unique value') );
         }
