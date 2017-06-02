@@ -53,6 +53,8 @@ my $CatalogObj = $AssetObj->CatalogObj;
 </%init>
 <table>
 % for my $role ($AssetObj->Roles) {
+% my $custom_role = $AssetObj->CustomRoleObj($role);
+% next if $custom_role && !$custom_role->CurrentUserHasRight('SeeCustomRole');
 <tr><td class="label"><% $AssetObj->LabelForRole($role) %>:
 % if ($AssetObj->Role($role)->{Single}) {
 %      my $users = $AssetObj->RoleGroup($role)->UserMembersObj(Recursively => 0);

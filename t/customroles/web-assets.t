@@ -98,6 +98,15 @@ diag "Grant permissions on Licensee";
     }, "submitted rights form");
     $m->text_contains("Granted right 'ShowAsset' to Licensee");
 
+    my $privileged = RT::Group->new(RT->SystemUser);
+    $privileged->LoadSystemInternalGroup('Privileged');
+    $m->submit_form_ok({
+        with_fields => {
+            "SetRights-" . $privileged->Id . '-RT::Catalog-' . $catalog->id => 'SeeCustomRole',
+        },
+    }, "submitted rights form");
+    $m->text_contains("Granted right 'SeeCustomRole' to Privileged");
+
     RT::Principal::InvalidateACLCache();
 }
 

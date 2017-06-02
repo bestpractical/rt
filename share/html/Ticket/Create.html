@@ -188,6 +188,7 @@
 % $roles->SetContextObject($QueueObj);
 % $roles->LimitToMultipleValue;
 % while (my $role = $roles->Next) {
+% next unless $role->CurrentUserHasRight('ModifyCustomRole');
 <tr>
 <td class="label">
 <% $role->Name %>:

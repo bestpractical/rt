@@ -51,9 +51,14 @@ $Object
 <%init>
 </%init>
 % for my $role ($Object->Roles( ACLOnly => 0 )) {
+% my $custom_role = $Object->CustomRoleObj($role);
+% next if $custom_role && !$custom_role->CurrentUserHasRight('SeeCustomRole');
 <div class="role-<% CSSClass($role) %> role">
   <h3><% $Object->LabelForRole($role) %></h3>
-  <& EditRoleMembers, Group => $Object->RoleGroup($role) &>
+  <& EditRoleMembers,
+       Group => $Object->RoleGroup($role),
+       Readonly => ($custom_role && !$custom_role->CurrentUserHasRight('ModifyCustomRole'))
+  &>
 </div>
 % }
 <em><&|/l&>(Check box to delete)</&></em>

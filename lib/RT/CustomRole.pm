@@ -492,11 +492,13 @@ sub GroupType {
 
 =head2 CurrentUserCanSee
 
+If the user has SeeCustomRole they can see this custom role and its members.
+
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
-    return 1;
+    return $self->CurrentUserHasRight('SeeCustomRole');
 }
 
 =head2 id
