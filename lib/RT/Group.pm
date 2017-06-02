@@ -1743,6 +1743,7 @@ sub _CustomRoleObj {
         if ($id) {
             my $role = RT::CustomRole->new($self->CurrentUser);
             $role->Load($id);
+            $role->SetContextObject( $self->{context_object} ) if $self->{context_object};
             return $role;
         }
     }

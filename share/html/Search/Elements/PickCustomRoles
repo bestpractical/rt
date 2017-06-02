@@ -57,6 +57,7 @@ foreach my $id (keys %queues) {
     $queue->Load($id);
     next unless $queue->Id;
     $CustomRoles->LimitToObjectId($queue->Id);
+    $CustomRoles->SetContextObject( $queue ) if keys %queues == 1;
 }
 $m->callback(
     CallbackName => 'MassageCustomRoles',

@@ -349,6 +349,7 @@ sub RoleGroup {
             Object  => $self,
             Name    => $name,
         );
+        $group->{context_object} = $self;
     }
     return $group;
 }
@@ -810,6 +811,7 @@ sub CustomRoleObj {
     if (my ($id) = $name =~ /^RT::CustomRole-(\d+)$/) {
         my $role = RT::CustomRole->new($self->CurrentUser);
         $role->Load($id);
+        $role->SetContextObject($self);
         return $role;
     }
 

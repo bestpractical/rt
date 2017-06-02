@@ -56,6 +56,7 @@
   </tr>
 
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
+% $single_roles->SetContextObject($Ticket);
 % $single_roles->LimitToSingleValue;
 % $m->callback( CustomRoles => $single_roles, SingleRoles => 1, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $single_roles->Next) {
@@ -87,6 +88,7 @@
   </tr>
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
+% $multi_roles->SetContextObject($Ticket);
 % $multi_roles->LimitToMultipleValue;
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
