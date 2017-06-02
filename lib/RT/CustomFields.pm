@@ -72,6 +72,9 @@ use base 'RT::SearchBuilder';
 
 use RT::CustomField;
 
+use Role::Basic 'with';
+with "RT::SearchBuilder::Role::ContextObject";
+
 sub Table { 'CustomFields'}
 
 sub _Init {
@@ -359,31 +362,6 @@ sub ApplySortOrder {
 }
 
 
-=head2 ContextObject
-
-Returns context object for this collection of custom fields,
-but only if it's defined.
-
-=cut
-
-sub ContextObject {
-    my $self = shift;
-    return $self->{'context_object'};
-}
-
-
-=head2 SetContextObject
-
-Sets context object for this collection of custom fields.
-
-=cut
-
-sub SetContextObject {
-    my $self = shift;
-    return $self->{'context_object'} = shift;
-}
-
-
 sub _OCFAlias {
     my $self = shift;
     return RT::ObjectCustomFields->new( $self->CurrentUser )
@@ -408,21 +386,6 @@ sub AddRecord {
     return unless $record->CurrentUserCanSee;
 
     return $self->SUPER::AddRecord( $record );
-}
-
-=head2 NewItem
-
-Returns an empty new RT::CustomField item
-Overrides <RT::SearchBuilder/NewItem> to make sure </ContextObject>
-is inherited.
-
-=cut
-
-sub NewItem {
-    my $self = shift;
-    my $res = RT::CustomField->new($self->CurrentUser);
-    $res->SetContextObject($self->ContextObject);
-    return $res;
 }
 
 =head2 LimitToCatalog

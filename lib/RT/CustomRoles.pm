@@ -54,6 +54,9 @@ use base 'RT::SearchBuilder';
 
 use RT::CustomRole;
 
+use Role::Basic 'with';
+with "RT::SearchBuilder::Role::ContextObject";
+
 =head1 NAME
 
 RT::CustomRoles - collection of RT::CustomRole records
@@ -183,6 +186,24 @@ sub ApplySortOrder {
         FIELD => 'SortOrder',
         ORDER => $order,
     } );
+}
+
+=head2 AddRecord
+
+Overrides the collection to ensure that only custom roles the user can
+see are returned; also propagates down the L</ContextObject>.
+
+=cut
+
+sub AddRecord {
+    my $self = shift;
+    my ($record) = @_;
+
+    $record->SetContextObject( $self->ContextObject );
+
+    return unless $record->CurrentUserCanSee;
+
+    return $self->SUPER::AddRecord( $record );
 }
 
 RT::Base->_ImportOverlays();

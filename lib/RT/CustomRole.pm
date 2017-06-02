@@ -56,7 +56,8 @@ use RT::CustomRoles;
 use RT::ObjectCustomRole;
 
 use Role::Basic 'with';
-with "RT::Record::Role::LookupType";
+with "RT::Record::Role::LookupType",
+     "RT::Record::Role::ContextObject";
 
 =head1 NAME
 
@@ -352,6 +353,8 @@ sub NotAddedTo {
         ->NotAddedTo( CustomRole => $self );
 }
 
+sub IsGlobal { return 0 }
+
 =head2 AddToObject
 
 Adds (applies) this custom role to the provided object (ObjectId).
@@ -481,6 +484,15 @@ The C<Name> that groups for this custom role will have.
 sub GroupType {
     my $self = shift;
     return 'RT::CustomRole-' . $self->id;
+}
+
+=head2 CurrentUserCanSee
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return 1;
 }
 
 =head2 id
