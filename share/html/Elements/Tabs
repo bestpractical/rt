@@ -416,8 +416,10 @@ my $build_admin_menu = sub {
 
             if ( $obj and $obj->id ) {
                 my $tabs = PageMenu();
-                $tabs->child( basics       => title => loc('Basics'),       path => "/Admin/CustomRoles/Modify.html?id=".$id );
-                $tabs->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomRoles/Objects.html?id=" . $id );
+                $tabs->child( basics         => title => loc('Basics'),       path => "/Admin/CustomRoles/Modify.html?id=".$id );
+                $tabs->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/CustomRoles/GroupRights.html?id=".$id );
+                $tabs->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/CustomRoles/UserRights.html?id=".$id );
+                $tabs->child( 'applies-to'   => title => loc('Applies to'),   path => "/Admin/CustomRoles/Objects.html?id=".$id );
             }
         }
     }
