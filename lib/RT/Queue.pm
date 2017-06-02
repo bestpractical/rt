@@ -480,6 +480,7 @@ sub CustomRoles {
 
     my $roles = RT::CustomRoles->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
+        $roles->SetContextObject( $self );
         $roles->LimitToObjectId( $self->Id );
         $roles->LimitToLookupType(RT::Ticket->CustomFieldLookupType);
         $roles->ApplySortOrder;

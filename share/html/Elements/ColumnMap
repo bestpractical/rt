@@ -173,6 +173,8 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
                 $role_obj;
             };
 
+            $role_obj->SetContextObject($object);
+
             my $role_type = $role_obj->GroupType;
             return unless $role_type && $role_obj->CurrentUserCanSee;
             return \($m->scomp("/Elements/ShowPrincipal", Object => $object->RoleGroup($role_type) ) );
