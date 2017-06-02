@@ -49,6 +49,7 @@
 $Object
 $Role
 $Recursively => 0
+$Readonly    => 0
 </%args>
 <%init>
 my $Group = $Object->RoleGroup($Role);
@@ -58,12 +59,18 @@ my $field_name = "RemoveRoleMember-" . $Group->Name;
 % my $Users = $Group->UserMembersObj( Recursively => $Recursively );
 % if ($Object->Role($Role)->{Single}) {
 % my $user = $Users->First || RT->Nobody;
+% if ($Readonly) {
+<& /Elements/ShowUser, User => $Users->First &>
+% } else {
 <input type="text" value="<% $user->Name %>" name="SetRoleMember-<% $Role %>" id="SetRoleMember-<% $Role %>" data-autocomplete="Users" data-autocomplete-return="Name" /><br />
+% }
 % } else {
 % while ( my $user = $Users->Next ) {
 <li>
   <label>
+% if (!$Readonly) {
     <input type="checkbox" name="<% $field_name %>" value="<% $user->PrincipalId %>">
+% }
     <& /Elements/ShowUser, User => $user &>
   </label>
 </li>
@@ -73,7 +80,9 @@ my $field_name = "RemoveRoleMember-" . $Group->Name;
 % while (my $group = $Groups->Next) {
 <li>
   <label>
+% if (!$Readonly) {
     <input type="checkbox" name="<% $field_name %>" value="<% $group->PrincipalId %>">
+% }
     <&|/l&>Group</&>: <% $group->Name %>
   </label>
 </li>
