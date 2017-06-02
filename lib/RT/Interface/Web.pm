@@ -3920,8 +3920,8 @@ sub GetPrincipalsMap {
         elsif (/Roles/) {
             my $roles = RT::Groups->new($session{'CurrentUser'});
 
-            if ($object->isa("RT::CustomField")) {
-                # If we're a custom field, show the global roles for our LookupType.
+            if ($object->DOES("RT::Record::Role::LookupType")) {
+                # show the global roles for our LookupType.
                 my $class = $object->RecordClassFromLookupType;
                 if ($class and $class->DOES("RT::Record::Role::Roles")) {
                     $roles->LimitToRolesForObject(RT->System);

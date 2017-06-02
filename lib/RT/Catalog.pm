@@ -368,6 +368,24 @@ sub RoleGroup {
     }
 }
 
+=head2 CustomRoles
+
+Returns an L<RT::CustomRoles> object containing all catalog-specific roles.
+
+=cut
+
+sub CustomRoles {
+    my $self = shift;
+
+    my $roles = RT::CustomRoles->new( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('ShowCatalog') ) {
+        $roles->LimitToObjectId( $self->Id );
+        $roles->LimitToLookupType(RT::Asset->CustomFieldLookupType);
+        $roles->ApplySortOrder;
+    }
+    return ($roles);
+}
+
 =head2 AssetCustomFields
 
 Returns an L<RT::CustomFields> object containing all global and

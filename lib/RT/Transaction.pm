@@ -871,9 +871,7 @@ sub _CanonicalizeRoleName {
     my $self = shift;
     my $role_name = shift;
 
-    if ($role_name =~ /^RT::CustomRole-(\d+)$/) {
-        my $role = RT::CustomRole->new($self->CurrentUser);
-        $role->Load($1);
+    if (my $role = $self->Object->CustomRoleObj($role_name)) {
         return $role->Name;
     }
 
@@ -1424,6 +1422,11 @@ sub CurrentUserCanSee {
         $cf->SetContextObject( $self->Object );
         $cf->Load( $cf_id );
         return 0 unless $cf->CurrentUserCanSee;
+    }
+
+    # Ditto custom role
+    if ( ($type eq 'AddWatcher' || $type eq 'DelWatcher' || $type eq 'SetWatcher') && (my $role = $self->Object->CustomRoleObj($self->__Value('Field')))) {
+        return 0 unless $role->CurrentUserCanSee;
     }
 
     # Transactions that might have changed the ->Object's visibility to

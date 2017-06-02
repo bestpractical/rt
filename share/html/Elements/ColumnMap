@@ -149,14 +149,14 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             my $object = shift;
             my $role_name = pop;
 
-            my $role_type = do {
+            my $role_obj = do {
                 # Cache the role object on a per-request basis, to avoid
                 # having to load it for every row
                 my $key = "RT::CustomRole-" . $role_name;
 
-                my $role_type = $m->notes($key);
-                if (!$role_type) {
-                    my $role_obj = RT::CustomRole->new($object->CurrentUser);
+                my $role_obj = $m->notes($key);
+                if (!$role_obj) {
+                    $role_obj = RT::CustomRole->new($object->CurrentUser);
                     if ($role_name =~ /^\d+$/) {
                         $role_obj->Load($role_name);
                     }
@@ -167,14 +167,14 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
                     RT->Logger->notice("Unable to load custom role $role_name")
                         unless $role_obj->Id;
 
-                    $role_type = $role_obj->GroupType;
-                    $m->notes($key, $role_type);
+                    $m->notes($key, $role_obj);
                 }
 
-                $role_type;
+                $role_obj;
             };
 
-            return if !$role_type;
+            my $role_type = $role_obj->GroupType;
+            return unless $role_type && $role_obj->CurrentUserCanSee;
             return \($m->scomp("/Elements/ShowPrincipal", Object => $object->RoleGroup($role_type) ) );
         },
     },
