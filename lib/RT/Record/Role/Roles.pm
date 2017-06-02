@@ -695,7 +695,7 @@ sub _AddRolesOnCreate {
             my $group = $self->RoleGroup($role);
             my @left;
             for my $principal (@{$roles->{$role}}) {
-                if ($acls{$role}->($principal)) {
+                if ($acls{$role} && $acls{$role}->($principal)) {
                     next if $group->HasMember($principal);
                     my ($ok, $msg) = $group->_AddMember(
                         PrincipalId       => $principal->id,
