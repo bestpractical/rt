@@ -750,6 +750,7 @@ sub CustomRoleObj {
     if (my ($id) = $name =~ /^RT::CustomRole-(\d+)$/) {
         my $role = RT::CustomRole->new($self->CurrentUser);
         $role->Load($id);
+        $role->SetContextObject($self);
         return $role;
     }
 

@@ -73,6 +73,7 @@
 
 % my @role_fields;
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
+% $single_roles->SetContextObject($Ticket);
 % $single_roles->LimitToSingleValue;
 % while (my $role = $single_roles->Next) {
 <tr>
@@ -105,6 +106,7 @@
 </tr>
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
+% $multi_roles->SetContextObject($Ticket);
 % $multi_roles->LimitToMultipleValue;
 % while (my $role = $multi_roles->Next) {
 % my $group = $Ticket->RoleGroup($role->GroupType);

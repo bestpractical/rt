@@ -185,6 +185,7 @@
 </tr>
 
 % my $roles = $QueueObj->CustomRoles;
+% $roles->SetContextObject($QueueObj);
 % $roles->LimitToMultipleValue;
 % while (my $role = $roles->Next) {
 <tr>

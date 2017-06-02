@@ -379,6 +379,7 @@ sub CustomRoles {
 
     my $roles = RT::CustomRoles->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('ShowCatalog') ) {
+        $roles->SetContextObject( $self );
         $roles->LimitToObjectId( $self->Id );
         $roles->LimitToLookupType(RT::Asset->CustomFieldLookupType);
         $roles->ApplySortOrder;
