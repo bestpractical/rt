@@ -67,6 +67,7 @@ else {
     @types = $Queue->Roles(Single => 0);
 }
 
+my $Object = $Ticket || $Queue;
 </%INIT>
 <%ARGS>
 $AllowNull => 1
@@ -74,4 +75,5 @@ $Default=>undef
 $Scope => 'ticket'
 $Name => 'WatcherType'
 $Queue => undef
+$Ticket => undef
 </%ARGS>

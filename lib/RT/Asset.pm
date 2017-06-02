@@ -527,7 +527,7 @@ sub AddRoleMember {
     return (0, $self->loc("No permission to modify this asset"))
         unless $self->CurrentUserHasRight("ModifyAsset");
 
-    return $self->_AddRoleMember(@_);
+    return $self->_AddRoleMember(ACL => sub { $self->_HasModifyRoleMemberRight(@_) }, @_);
 }
 
 =head2 DeleteRoleMember
@@ -542,7 +542,14 @@ sub DeleteRoleMember {
     return (0, $self->loc("No permission to modify this asset"))
         unless $self->CurrentUserHasRight("ModifyAsset");
 
-    return $self->_DeleteRoleMember(@_);
+    return $self->_DeleteRoleMember(ACL => sub { $self->_HasModifyRoleMemberRight(@_) }, @_);
+}
+
+sub _HasModifyRoleMemberRight {
+    my $self = shift;
+    my ($type, $principal) = @_;
+
+    return 1;
 }
 
 =head2 RoleGroup

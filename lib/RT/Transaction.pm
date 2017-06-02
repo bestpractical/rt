@@ -1426,6 +1426,14 @@ sub CurrentUserCanSee {
         return 0 unless $cf->CurrentUserCanSee;
     }
 
+    # Ditto custom role
+    if ( ($type eq 'AddWatcher' || $type eq 'DelWatcher' || $type eq 'SetWatcher') && (my ($role_id) = $self->__Value('Field') =~ /^RT::CustomRole-(\d+)$/)) {
+        my $role = RT::CustomRole->new($self->CurrentUser);
+        $role->SetContextObject($self->Object);
+        $role->Load($role_id);
+        return 0 unless $role->CurrentUserCanSee;
+    }
+
     # Transactions that might have changed the ->Object's visibility to
     # the current user are marked readable
     return 1 if $self->{ _object_is_readable };
