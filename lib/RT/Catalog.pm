@@ -86,6 +86,9 @@ __PACKAGE__->AddRight( Staff   => ModifyAsset  => 'Modify assets' ); #loc
 __PACKAGE__->AddRight( General => SeeCustomField        => 'View custom field values' ); # loc
 __PACKAGE__->AddRight( Staff   => ModifyCustomField     => 'Modify custom field values' ); # loc
 __PACKAGE__->AddRight( Staff   => SetInitialCustomField => 'Add custom field values only at object creation time'); # loc
+__PACKAGE__->AddRight( General => SeeCustomRole         => 'View custom role members'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomRole      => 'Modify custom role members'); # loc
+__PACKAGE__->AddRight( Staff   => SetInitialCustomRole  => 'Add custom role members only at object creation time'); # loc
 
 RT::ACE->RegisterCacheHandler(sub {
     my %args = (

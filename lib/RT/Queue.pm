@@ -111,6 +111,9 @@ __PACKAGE__->AddRight( Staff   => SetInitialCustomField => 'Add custom field val
 __PACKAGE__->AddRight( Admin   => AssignCustomFields    => 'Assign and remove queue custom fields' ); # loc
 __PACKAGE__->AddRight( Admin   => ModifyTemplate        => 'Modify Scrip templates' ); # loc
 __PACKAGE__->AddRight( Admin   => ShowTemplate          => 'View Scrip templates' ); # loc
+__PACKAGE__->AddRight( General => SeeCustomRole         => 'View custom role members'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomRole      => 'Modify custom role members'); # loc
+__PACKAGE__->AddRight( Staff   => SetInitialCustomRole  => 'Add custom role members only at object creation time'); # loc
 
 __PACKAGE__->AddRight( Admin   => ModifyScrips        => 'Modify Scrips' ); # loc
 __PACKAGE__->AddRight( Admin   => ShowScrips          => 'View Scrips' ); # loc

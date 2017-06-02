@@ -56,8 +56,14 @@ use RT::CustomRoles;
 use RT::ObjectCustomRole;
 
 use Role::Basic 'with';
-with "RT::Record::Role::LookupType",
+with "RT::Record::Role::Rights",
+     "RT::Record::Role::LookupType",
      "RT::Record::Role::ContextObject";
+
+__PACKAGE__->AddRight( Admin   => AdminCustomRoles      => 'Create, modify and delete custom roles'); # loc
+__PACKAGE__->AddRight( General => SeeCustomRole         => 'View custom roles'); # loc
+__PACKAGE__->AddRight( Staff   => ModifyCustomRole      => 'Add, modify and delete custom role members'); # loc
+__PACKAGE__->AddRight( Staff   => SetInitialCustomRole  => 'Add custom role members only at object creation time'); # loc
 
 =head1 NAME
 
