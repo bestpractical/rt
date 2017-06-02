@@ -50,6 +50,8 @@
         class => 'ticket-info-attachments',
         color => "#336699",
         hide_chrome => $HideTitleBox &>
+        
+% $m->callback( %ARGS, CallbackName => 'AfterAttachmentTitleBox', TicketObj => $Ticket );        
 
 % $m->callback( %ARGS, CallbackName => 'BeforeList', TicketObj => $Ticket, Attachments => $Attachments, Documents => \%documents, IsChecked => \%is_checked, ShowMore => \$show_more );
 
