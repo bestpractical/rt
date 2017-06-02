@@ -78,7 +78,16 @@
 % while (my $role = $single_roles->Next) {
 <tr>
   <td class="label"><% $role->Name %>:</td>
+% if ($role->CurrentUserHasRight('ModifyCustomRole')) {
   <td class="value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></td>
+% } else {
+% my $group = $Ticket->RoleGroup($role->GroupType);
+% my $users = $group->UserMembersObj( Recursively => 0 );
+%# $users can be empty for tickets created before the custom role is added to the queue,
+%# so fall back to nobody
+%     my $user = $users->First || RT->Nobody;
+    <td class="value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></td>
+% }
 </tr>
 
 % }
@@ -112,7 +121,7 @@
 % my $group = $Ticket->RoleGroup($role->GroupType);
 <tr>
   <td class="label"><% $role->Name %>:</td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group, Readonly => !$role->CurrentUserHasRight('ModifyCustomRole') &></td>
 </tr>
 % }
 

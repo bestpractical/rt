@@ -325,7 +325,19 @@ sub Create {
     }
 
     # Figure out users for roles
-    push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, map { $_ => sub {1} } $self->Roles );
+    my %acls = (map { $_ => sub {1} } $self->Roles(UserDefined => 0));
+
+    my $custom_roles = $catalog->CustomRoles;
+    while (my $role = $custom_roles->Next) {
+        $acls{$role->GroupType} = sub {
+            return $self->CurrentUser->HasRight(
+                Right  => 'ModifyCustomRole',
+                Object => $role,
+            );
+        };
+    }
+
+    push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, %acls );
 
     # Add CFs
     foreach my $key (keys %args) {
@@ -548,6 +560,13 @@ sub DeleteRoleMember {
 sub _HasModifyRoleMemberRight {
     my $self = shift;
     my ($type, $principal) = @_;
+
+    if (my ($role_id) = $type =~ /^RT::CustomRole-(\d+)$/) {
+        my $role = RT::CustomRole->new($self->CurrentUser);
+        $role->SetContextObject($self);
+        $role->Load($role_id);
+        return $role->CurrentUserHasRight('ModifyCustomRole');
+    }
 
     return 1;
 }

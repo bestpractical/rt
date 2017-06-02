@@ -142,6 +142,7 @@ unless ($ExcludeCustomRoles) {
     $roles->SetContextObject($TicketObj || $QueueObj);
     $roles->LimitToSingleValue;
     while (my $role = $roles->Next) {
+        next unless $role->CurrentUserHasRight('ModifyCustomRole');
         push @role_fields, {
             name => $role->Name,
             comp => '/Elements/SingleUserRoleInput',

@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <table border="0" cellpadding="0" cellspacing="0">
 % for my $role ( $AssetObj->Roles(_Catalog => $CatalogObj) ) {
+% my $custom_role = $CatalogObj->CustomRoleObj($role);
+% next if $custom_role && !$custom_role->CurrentUserHasRight('ModifyCustomRole');
 <tr class="asset-people-<% CSSClass($role) %>">
 <td class="label">
 <% $AssetObj->LabelForRole($role) %>:
@@ -56,7 +58,6 @@
 </td>
 </tr>
 
-% my $custom_role = $AssetObj->CustomRoleObj($role);
 % if ($custom_role && $custom_role->EntryHint) {
 <tr>
   <td class="label">&nbsp;</td>
