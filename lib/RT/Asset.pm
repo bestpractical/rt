@@ -322,7 +322,22 @@ sub Create {
     }
 
     # Figure out users for roles
-    push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, map { $_ => sub {1} } $self->Roles );
+    my %acls = (map { $_ => sub {1} } $self->Roles(UserDefined => 0));
+
+    my $custom_roles = $catalog->CustomRoles( ForCreation => 1 );
+    while (my $role = $custom_roles->Next) {
+        $acls{$role->GroupType} = sub {
+            for my $right (qw/ModifyCustomRole SetInitialCustomRole/) {
+                return 1 if $self->CurrentUser->HasRight(
+                    Right  => $right,
+                    Object => $role,
+                );
+            }
+            return 0;
+        };
+    }
+
+    push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, %acls );
 
     # Add CFs
     foreach my $key (keys %args) {
@@ -524,6 +539,7 @@ Checks I<ModifyAsset> before calling L<RT::Record::Role::Roles/_AddRoleMember>.
 
 sub AddRoleMember {
     my $self = shift;
+    my %args = @_;
 
     return (0, $self->loc("No permission to modify this asset"))
         unless $self->CurrentUserHasRight("ModifyAsset");
@@ -549,6 +565,10 @@ sub DeleteRoleMember {
 sub _HasModifyRoleMemberRight {
     my $self = shift;
     my ($type, $principal) = @_;
+
+    if (my $role = $self->CustomRoleObj($type)) {
+        return $role->CurrentUserHasRight('ModifyCustomRole');
+    }
 
     return 1;
 }

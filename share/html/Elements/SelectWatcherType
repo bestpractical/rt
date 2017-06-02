@@ -50,6 +50,8 @@
 <option value="">-</option>
 % }
 %for my $value (@types) {
+% my $custom_role = $Object->CustomRoleObj($value);
+% next if $custom_role && !$custom_role->CurrentUserHasRight('ModifyCustomRole');
 <option value="<%$value%>"
 % if (defined($Default) && $value eq $Default) {
 selected="selected"
@@ -68,6 +70,7 @@ else {
 }
 
 $m->callback( Types => \@types, %ARGS, CallbackName => 'ModifyWatcherTypes' );
+my $Object = $Ticket || $Queue;
 </%INIT>
 <%ARGS>
 $AllowNull => 1

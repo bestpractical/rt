@@ -55,6 +55,8 @@ $AllowNull  => 0
   <option value=""></option>
 % }
 % for my $role ($Object->Roles( ACLOnly => 0, Single => 0 )) {
+% my $custom_role = $Object->CustomRoleObj($role);
+% next if $custom_role && !$custom_role->CurrentUserHasRight('ModifyCustomRole');
   <option value="<% $role %>"><% $Object->LabelForRole($role) %></option>
 % }
 </select>

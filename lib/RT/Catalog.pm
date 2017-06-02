@@ -371,7 +371,7 @@ sub RoleGroup {
     }
 }
 
-=head2 CustomRoles
+=head2 CustomRoles ForCreation => BOOL
 
 Returns an L<RT::CustomRoles> object containing all catalog-specific roles.
 
@@ -379,6 +379,7 @@ Returns an L<RT::CustomRoles> object containing all catalog-specific roles.
 
 sub CustomRoles {
     my $self = shift;
+    my %args = @_;
 
     my $roles = RT::CustomRoles->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('ShowCatalog') ) {
@@ -387,6 +388,11 @@ sub CustomRoles {
         $roles->LimitToLookupType(RT::Asset->CustomFieldLookupType);
         $roles->ApplySortOrder;
     }
+
+    if ( $args{ForCreation} ) {
+        $roles->{include_set_initial} = 1;
+    }
+
     return ($roles);
 }
 

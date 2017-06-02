@@ -185,11 +185,12 @@
   </td>
 </tr>
 
-% my $roles = $QueueObj->CustomRoles;
+% my $roles = $QueueObj->CustomRoles(ForCreation => 1);
 % $roles->SetContextObject($QueueObj);
 % $roles->LimitToMultipleValue;
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
+% next unless $role->CurrentUserHasRight('ModifyCustomRole') || $role->CurrentUserHasRight('SetInitialCustomRole');
 <tr>
 <td class="label">
 <% $role->Name %>:

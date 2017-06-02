@@ -138,11 +138,19 @@ unless ( @fields ) {
 my @role_fields;
 
 unless ($ExcludeCustomRoles) {
-    my $roles = $QueueObj->CustomRoles;
+    my $roles = $QueueObj->CustomRoles( $TicketObj && $TicketObj->Id ? () : ( ForCreation => 1 ) );
     $roles->SetContextObject($TicketObj || $QueueObj);
     $roles->LimitToSingleValue;
     $m->callback( CallbackName => 'ModifyCustomRoles', %ARGS, CustomRoles => $roles);
     while (my $role = $roles->Next) {
+        if ( $TicketObj && $TicketObj->Id ) {
+            next unless $role->CurrentUserHasRight('ModifyCustomRole');
+        }
+        else {
+            next
+                unless $role->CurrentUserHasRight('ModifyCustomRole')
+                || $role->CurrentUserHasRight('SetInitialCustomRole');
+        }
         push @role_fields, {
             name => $role->Name,
             comp => '/Elements/SingleUserRoleInput',

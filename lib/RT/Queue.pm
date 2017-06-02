@@ -472,7 +472,7 @@ sub TicketTransactionCustomFields {
     return ($cfs);
 }
 
-=head2 CustomRoles
+=head2 CustomRoles ForCreation => BOOL
 
 Returns an L<RT::CustomRoles> object containing all queue-specific roles.
 
@@ -480,6 +480,7 @@ Returns an L<RT::CustomRoles> object containing all queue-specific roles.
 
 sub CustomRoles {
     my $self = shift;
+    my %args = @_;
 
     my $roles = RT::CustomRoles->new( $self->CurrentUser );
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
@@ -491,6 +492,11 @@ sub CustomRoles {
     else {
         $roles->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'ACL' );
     }
+
+    if ( $args{ForCreation} ) {
+        $roles->{include_set_initial} = 1;
+    }
+
     return ($roles);
 }
 

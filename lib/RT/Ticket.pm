@@ -513,6 +513,19 @@ sub Create {
         },
     );
 
+    my $custom_roles = $QueueObj->CustomRoles( ForCreation => 1 );
+    while (my $role = $custom_roles->Next) {
+        $acls{$role->GroupType} = sub {
+            for my $right (qw/ModifyCustomRole SetInitialCustomRole/) {
+                return 1 if $self->CurrentUser->HasRight(
+                    Right  => $right,
+                    Object => $role,
+                );
+            }
+            return 0;
+        };
+    }
+
     # Populate up the role groups.  This call modifies $roles.
     push @non_fatal_errors, $self->_AddRolesOnCreate( $roles, %acls );
 
@@ -659,6 +672,10 @@ sub OwnerGroup {
 sub _HasModifyWatcherRight {
     my $self = shift;
     my ($type, $principal) = @_;
+
+    if (my $role = $self->CustomRoleObj($type)) {
+        return $role->CurrentUserHasRight('ModifyCustomRole');
+    }
 
     # ModifyTicket works in any case
     return 1 if $self->CurrentUserHasRight('ModifyTicket');

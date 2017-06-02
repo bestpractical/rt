@@ -499,11 +499,23 @@ sub GroupType {
 
 =head2 CurrentUserCanSee
 
+If the user has SeeCustomRole they can see this custom role and its members.
+
+Otherwise, if the user has SetInitialCustomRole and this is being used in a
+"create" context, then they can see this custom role and its details. This
+allows you to set up custom roles that are only visible on create pages and
+are then inaccessible.
+
 =cut
 
 sub CurrentUserCanSee {
     my $self = shift;
-    return 1;
+    return 1 if $self->CurrentUserHasRight('SeeCustomRole');
+
+    return 1 if $self->{include_set_initial}
+             && $self->CurrentUserHasRight('SetInitialCustomRole');
+
+    return 0;
 }
 
 =head2 id
@@ -582,6 +594,11 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 sub SetLookupType {
     my $self = shift;
     my $lookup = shift;
+
+    unless ( $self->CurrentUserHasRight('AdminCustomRoles') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
     if ( $lookup ne $self->LookupType ) {
         # Okay... We need to invalidate our existing relationships
         RT::ObjectCustomRole->new($self->CurrentUser)->DeleteAll( CustomRole => $self );
@@ -736,6 +753,21 @@ sub SetDisabled {
         RT->System->CustomRoleCacheNeedsUpdate(1);
         return (1, $self->loc("Custom role disabled"));
     }
+}
+
+sub _Set {
+    my $self = shift;
+    my %args = @_;
+    unless ( $self->CurrentUserHasRight('AdminCustomRoles') ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+    return $self->SUPER::_Set(@_);
+}
+
+sub _Value {
+    my $self = shift;
+    return undef unless $self->Id && $self->CurrentUserCanSee;
+    return $self->__Value(@_);
 }
 
 sub _CoreAccessible {
