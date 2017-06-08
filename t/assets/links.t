@@ -27,6 +27,7 @@ diag "RT::URI::asset";
     my %uris = (
         # URI                   => Asset Name
         "asset:1"               => { id => 1, Name => "Thinkpad T420s" },
+        "asset:01"              => { id => 1, Name => "Thinkpad T420s" },
         "asset://example.com/2" => { id => 2, Name => "Standing desk" },
         "asset:13"              => undef,
     );
@@ -94,6 +95,21 @@ diag "Linking to tickets";
     $laptop->LoadByCols( Name => "Thinkpad T420s" );
 
     my ($ok, $msg) = $ticket->AddLink( Type => 'RefersTo', Target => $laptop->URI );
+    ok $ok, "Ticket refers to asset: $msg";
+
+    my $links = $laptop->ReferredToBy;
+    is $links->Count, 1, "Found a ReferredToBy link via asset";
+
+    ($ok, $msg) = $laptop->DeleteLink( Type => 'RefersTo', Base => $ticket->URI );
+    ok $ok, "Deleted link from opposite side: $msg";
+}
+
+diag "Linking to tickets, asset leading zeros";
+{
+    my $laptop = RT::Asset->new( RT->SystemUser );
+    $laptop->LoadByCols( Name => "Thinkpad T420s" );
+
+    my ($ok, $msg) = $ticket->AddLink( Type => 'RefersTo', Target => 'asset:' . '0' . $laptop->Id );
     ok $ok, "Ticket refers to asset: $msg";
 
     my $links = $laptop->ReferredToBy;
