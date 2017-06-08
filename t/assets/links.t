@@ -49,7 +49,8 @@ diag "RT::URI::asset";
             my $parsed;
             warnings_like {
                 $parsed = $uri->FromURI($url);
-            } [qr/\Q$url\E/, qr/\Q$url\E/], "Caught warnings about unknown URI";
+            } [qr/Unable to load asset/, qr/\Q$url\E/],
+                "Caught warnings about unknown URI";
             ok !$parsed, "Failed to parse $url, as expected";
         }
     }
