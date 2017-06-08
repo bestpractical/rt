@@ -345,7 +345,7 @@ sub CallGnuPG {
         %{ $args{Options} || {} },
     );
     my $gnupg = GnuPG::Interface->new;
-    $gnupg->call( $self->GnuPGPath );
+    $gnupg->call( $self->GnuPGPath ) if defined $self->GnuPGPath;
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
     );
@@ -1828,6 +1828,8 @@ sub GnuPGPath {
     return $cache;
 }
 
+# XXX This is no longer called, since it relies on the path to gpg
+# being known, which isn't necessary
 sub Probe {
     my $self = shift;
     my $gnupg = GnuPG::Interface->new;

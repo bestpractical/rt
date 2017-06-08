@@ -725,8 +725,6 @@ our %META;
                 if (not RT::Crypt->LoadImplementation($proto)) {
                     $RT::Logger->error("You enabled $proto, but we couldn't load module RT::Crypt::$proto");
                     $opt->{'Enable'} = 0;
-                } elsif (not RT::Crypt->LoadImplementation($proto)->Probe) {
-                    $opt->{'Enable'} = 0;
                 } elsif ($META{$proto}{'PostLoadCheck'}) {
                     $META{$proto}{'PostLoadCheck'}->( $self, $self->Get( $proto ) );
                 }

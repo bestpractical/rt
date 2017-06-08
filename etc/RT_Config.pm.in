@@ -2542,7 +2542,8 @@ be found by running the command `perldoc L<RT::Crypt::GnuPG>` (or
 Set C<Enable> to 0 or 1 to disable or enable GnuPG interfaces
 for encrypting and signing outgoing messages.
 
-Set C<GnuPG> to the name or path of the gpg binary to use.
+Set C<GnuPG> to the name or path of the gpg binary to use to override
+the GnuPG::Interface default.
 
 Set C<Passphrase> to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
@@ -2555,7 +2556,6 @@ signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 
 Set(%GnuPG,
     Enable                 => @RT_GPG@,
-    GnuPG                  => 'gpg',
     Passphrase             => undef,
     OutgoingMessagesFormat => "RFC", # Inline
 );
