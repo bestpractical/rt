@@ -69,7 +69,7 @@ jQuery( function() {
         url: RT.Config.WebHomePath + '/Helpers/Upload/Add?Token=' + jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val(),
         paramName: "Attach",
         dictDefaultMessage: <% loc("Drop files here or click to attach") |n,j %>,
-        maxFilesize: 10000,
+        maxFilesize: 10,
         previewTemplate: '' +
             '<div class="dz-preview dz-file-preview">' +
             '    <div class="dz-remove-mark pointer-events" data-dz-remove>' +
