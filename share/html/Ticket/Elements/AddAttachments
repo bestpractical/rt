@@ -63,13 +63,16 @@
         <div class="dropzone" id="attach-dropzone">
         </div>
 <script type="text/javascript">
+%# Scale down the Attachment size from KiB to MiB since that is what "Dropzone" expects
+var MaxAttachmentSizeScaled = RT.Config.MaxAttachmentSize/(1024*1024) >> 0;
+
 Dropzone.autoDiscover = false;
 jQuery( function() {
     var attachDropzone = new Dropzone('#attach-dropzone', {
         url: RT.Config.WebHomePath + '/Helpers/Upload/Add?Token=' + jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val(),
         paramName: "Attach",
         dictDefaultMessage: <% loc("Drop files here or click to attach") |n,j %>,
-        maxFilesize: 10,
+        maxFilesize: MaxAttachmentSizeScaled,
         previewTemplate: '' +
             '<div class="dz-preview dz-file-preview">' +
             '    <div class="dz-remove-mark pointer-events" data-dz-remove>' +
