@@ -69,11 +69,13 @@
 
      my $content_type = $AttachmentObj->ContentType || 'text/plain';
 
-     if (RT->Config->Get('AlwaysDownloadAttachments')) {
+     my $attachment_regex = qr{^(image/svg\+xml|application/pdf)}i;
+     if ( RT->Config->Get('AlwaysDownloadAttachments') || ($content_type =~ $attachment_regex) ) {
          $r->headers_out->{'Content-Disposition'} = "attachment";
      }
      elsif (!RT->Config->Get('TrustHTMLAttachments')) {
-         $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
+         my $text_plain_regex = qr{^(text/html|application/xhtml\+xml|text/xml|application/xml)}i;
+         $content_type = 'text/plain' if ( $content_type =~ $text_plain_regex );
      }
 
      my $enc = $AttachmentObj->OriginalEncoding || 'utf-8';
