@@ -87,7 +87,7 @@ $m->content_lacks('Possible cross-site request forgery');
 $m->add_header(Referer => 'http://example.net');
 $m->get_ok($test_page);
 $m->content_contains("Possible cross-site request forgery");
-$m->content_contains("If you really intended to visit <tt>/Ticket/Create.html</tt>");
+$m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
 $m->content_contains("the Referrer header supplied by your browser (example.net:80) is not allowed");
 $m->title_is('Possible cross-site request forgery');
 
@@ -109,7 +109,7 @@ $m->title_is('#1: bad music');
 # now a non-whitelisted argument
 $m->get_ok("/Ticket/Display.html?id=1&Action=Take");
 $m->content_contains("Possible cross-site request forgery");
-$m->content_contains("If you really intended to visit <tt>/Ticket/Display.html</tt>");
+$m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Display.html</tt>");
 $m->content_contains("the Referrer header supplied by your browser (example.net:80) is not allowed");
 $m->title_is('Possible cross-site request forgery');
 
@@ -124,7 +124,7 @@ $m->content_contains('Owner changed from Nobody to root');
 $m->add_header(Referer => undef);
 $m->get_ok($test_page);
 $m->content_contains("Possible cross-site request forgery");
-$m->content_contains("If you really intended to visit <tt>/Ticket/Create.html</tt>");
+$m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
 $m->content_contains("your browser did not supply a Referrer header");
 $m->title_is('Possible cross-site request forgery');
 
@@ -138,7 +138,7 @@ $m->title_is('Create a new ticket in General');
 $m->add_header(Referer => undef);
 $m->get_ok($test_page);
 $m->content_contains("Possible cross-site request forgery");
-$m->content_contains("If you really intended to visit <tt>/Ticket/Create.html</tt>");
+$m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
 $m->content_contains("your browser did not supply a Referrer header");
 $m->title_is('Possible cross-site request forgery');
 
@@ -161,7 +161,7 @@ my ($token) = $m->content =~ m{CSRF_Token=(\w+)};
 $m->add_header(Referer => undef);
 $m->get_ok("/Admin/Queues/Modify.html?id=new&Name=test&CSRF_Token=$token");
 $m->content_contains("Possible cross-site request forgery");
-$m->content_contains("If you really intended to visit <tt>/Admin/Queues/Modify.html</tt>");
+$m->content_contains("If you really intended to visit <tt>$baseurl/Admin/Queues/Modify.html</tt>");
 $m->content_contains("your browser did not supply a Referrer header");
 $m->title_is('Possible cross-site request forgery');
 
@@ -194,7 +194,7 @@ $m->field('Attach',  $logofile);
 $m->add_header(Referer => undef);
 $m->submit;
 $m->content_contains("Possible cross-site request forgery");
-$m->content_contains("If you really intended to visit <tt>/Ticket/Create.html</tt>");
+$m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
 $m->follow_link(text_regex => qr{resume your request});
 $m->content_contains('Download bpslogo.png', 'page has file name');
 $m->follow_link_ok({text => "Download bpslogo.png"});
@@ -214,7 +214,7 @@ $m->content_contains("My open tickets", "got self-service interface");
 $m->add_header(Referer => undef);
 $m->get_ok("/SelfService/Create.html?Queue=1");
 $m->content_contains("Possible cross-site request forgery");
-$m->content_contains("If you really intended to visit <tt>/SelfService/Create.html</tt>");
+$m->content_contains("If you really intended to visit <tt>$baseurl/SelfService/Create.html</tt>");
 $m->content_contains("your browser did not supply a Referrer header");
 $m->title_is('Possible cross-site request forgery');
 

@@ -148,6 +148,14 @@ can be set for each config optin:
 our %META;
 %META = (
     # General user overridable options
+    RestrictReferrerLogin => {
+        PostLoadCheck => sub {
+            my $self = shift;
+            if (defined($self->Get('RestrictReferrerLogin'))) {
+                RT::Logger->error("The config option 'RestrictReferrerLogin' is incorrect, and should be 'RestrictLoginReferrer' instead.");
+            }
+        },
+    },
     DefaultQueue => {
         Section         => 'General',
         Overridable     => 1,
