@@ -75,7 +75,7 @@
 <ol class="dashboard-queries">
 %    for my $portlet (@portlets) {
         <li class="dashboard-query">
-            <% loc($portlet->{description}, $fields{'Rows'}) %>
+            <% loc( RT::SavedSearch->EscapeDescription($portlet->{description}), $fields{'Rows'}) %>
         </li>
 %    }
 </ol>
