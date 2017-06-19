@@ -119,7 +119,7 @@ $fields{$_} = $_ for @cfs;
 # Add all available CustomRoles to the list of sortable columns.
 my @roles = grep /^CustomRole/, @{$ARGS{AvailableColumns}};
 for my $role (@roles) {
-    my ($label) = $role =~ /^CustomRole.{(.*)}$/;
+    my ($label) = $role =~ /^CustomRole.\{(.*)\}$/;
     my $value = $role;
     $fields{$label . '.EmailAddress' } = $value . '.EmailAddress';
 }
