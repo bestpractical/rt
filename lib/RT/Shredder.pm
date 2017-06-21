@@ -182,6 +182,12 @@ shredding on most databases.
 
     CREATE INDEX SHREDDER_ATTACHMENTS1 ON Attachments(Creator);
 
+    CREATE INDEX SHREDDER_LINKS1 ON Links(Target);
+
+    CREATE INDEX SHREDDER_ACL1 ON ACL(ObjectType, ObjectId);
+
+    CREATE INDEX SHREDDER_OCFV1 ON ObjectCustomFieldValues(ObjectType, ObjectId);
+
 =head1 INFORMATION FOR DEVELOPERS
 
 =head2 General API
