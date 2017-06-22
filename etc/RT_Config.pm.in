@@ -2199,11 +2199,14 @@ Set($QuoteFolding, 1);
 
 If C<$ParseNewMessageForTicketCcs> is set to 1, RT will attempt to
 divine Ticket 'Cc' watchers from the To and Cc lines of incoming
-messages that create new Tickets. This option does not apply to replies
-or comments on existing Tickets. Be forewarned that if you have I<any>
+messages that create new tickets. This option does not apply to replies
+or comments on existing tickets. Be forewarned that if you have I<any>
 addresses which forward mail to RT automatically and you enable this
 option without modifying C<$RTAddressRegexp> below, you will get
 yourself into a heap of trouble.
+
+See also the L<RT::Action::AutoAddWatchers> extension which adds
+watchers from ticket replies on existing tickets.
 
 =cut
 
