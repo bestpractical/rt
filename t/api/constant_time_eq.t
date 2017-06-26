@@ -3,7 +3,6 @@ use warnings;
 use strict;
 use RT;
 use RT::Test tests => undef;
-use Test::Exception;
 use Encode;
 
 use_ok "RT::Util";
