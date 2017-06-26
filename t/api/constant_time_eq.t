@@ -85,6 +85,6 @@ sub _lives_and {
 }
 
 sub _dies_ok {
-    my ($t, $message) = @_;
+    my ($message) = @_;
     isnt ($@, '', $message);
 }
