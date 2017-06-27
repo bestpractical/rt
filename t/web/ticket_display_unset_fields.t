@@ -34,6 +34,7 @@ my $bar = RT::Test->create_ticket(
 $bar->SetTold;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
+diag "URL is: $baseurl";
 
 diag "test with root";
 {
@@ -75,6 +76,45 @@ diag "test without ModifyTicket right";
     $m->goto_ticket( $bar->id );
     $dom = $m->dom;
     is $dom->find(qq{tr.DependsOn:not(.unset-field)})->size, 1, "has Depends on as it is set";
+}
+
+diag "Test unset custom fields";
+{
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name        => 'TextArea',
+        Type        => 'Text',
+        Queue       => 0,
+        LookupType  => 'RT::Queue-RT::Ticket',
+    );
+    ok $cf && $cf->id, "Created TextArea CF";
+
+    $m->login( 'root', 'password', logout => 1 );
+    $m->goto_ticket( $foo->id );
+    my $dom = $m->dom;
+    my $cfid = $cf->Id;
+    is $dom->find(qq{tr.custom-field.custom-field-$cfid.unset-field})->size, 1, "found unset custom field";
+
+    # open ticket "Basics" page
+    my $EditUrl = "/Ticket/Modify.html?id=" . $foo->id;
+    $m->get_ok($EditUrl, "Fetched $EditUrl");
+    $m->content_contains('TextArea:');
+
+    my $cf_input = RT::Interface::Web::GetCustomFieldInputName(
+            Object      => $foo,
+            CustomField => $cf,
+        );
+
+    $m->submit_form_ok({
+        with_fields => {
+            $cf_input            => 'some unique content',
+            $cf_input . '-Magic' => "1",
+        },
+    }, 'submitted form to initially set CFs');
+
+    $m->goto_ticket( $foo->id );
+    $dom = $m->dom;
+    $m->content_contains('some unique content');
+    isnt $dom->find(qq{tr.customfield.unset-field})->size, 1, "no unset custom fields";
 }
 
 undef $m;
