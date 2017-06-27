@@ -58,7 +58,7 @@
 %   'custom-field',
 %   'custom-field-'.$CustomField->id,
 % );
-% push @classes, 'unset-field' if $count;
+% push @classes, 'unset-field' if not $count;
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes, Grouping => $Grouping );
   <tr class="<% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
