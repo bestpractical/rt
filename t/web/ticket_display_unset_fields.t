@@ -117,4 +117,5 @@ diag "Test unset custom fields";
     isnt $dom->find(qq{tr.customfield.unset-field})->size, 1, "no unset custom fields";
 }
 
+undef $m;
 done_testing;
