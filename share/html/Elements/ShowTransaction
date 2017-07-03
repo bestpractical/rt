@@ -156,8 +156,6 @@ if ( $txn_type =~ /EmailRecord$/ ) {
             .'&Transaction='. $Transaction->id
             .'&Attachment='. ( $Attachments->{0}[0] && $Attachments->{0}[0]->id ),
     } if $EmailRecordPath;
-
-    $ShowBody = 0;
 }
 
 # If the transaction has anything attached to it at all

@@ -57,8 +57,11 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 
     my $name = defined $message->Filename && length $message->Filename ?  $message->Filename : '';
     my $should_render_download = $message->ContentLength || $name;
+    my $should_render_body = $Transaction->Type =~ /EmailRecord$/ ? 0 : 1;
 
-    $m->callback(CallbackName => 'BeforeAttachment', ARGSRef => \%ARGS, Object => $Object, Transaction => $Transaction, Attachment => $message, Name => $name, ShouldRenderDownload => \$should_render_download);
+    $m->callback(CallbackName => 'BeforeAttachment', ARGSRef => \%ARGS, Object => $Object, Transaction => $Transaction, Attachment => $message, Name => $name, ShouldRenderDownload => \$should_render_download, ShouldRenderBody => \$should_render_body);
+
+    next if !$should_render_body;
 
     if ($should_render_download) {
 </%PERL>
