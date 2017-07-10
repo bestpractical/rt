@@ -4,6 +4,7 @@ use strict;
 use RT;
 use RT::Test tests => undef;
 use Test::Exception;
+use Encode;
 
 use_ok "RT::Util";
 
@@ -35,6 +36,14 @@ _dies_ok   (eval { RT::Util::constant_time_eq('試', 'xxx') },     'three-byte u
 _lives_and (eval { RT::Util::constant_time_eq('😎', '😎') },   1, 'both args four-byte utf8 chars is true');
 _dies_ok   (eval { RT::Util::constant_time_eq('😎', 'xxxx') },    'four-byte utf8 and four one-byte chars is false');
 _lives_and (eval { RT::Util::constant_time_eq('😎✈️'x1024, '😎✈️'x1024) }, 1, 'both long strings of utf8 chars is true');
+
+diag 'Binary strings of same length but different length after UTF-8 decode';
+_dies_ok (eval { RT::Util::constant_time_eq('¼', 'a') }, 'Dies with no binary set');
+_dies_ok (eval { RT::Util::constant_time_eq(encode_utf8('¼'), 'aa') }, 'Dies with no binary set');
+_dies_ok (eval { RT::Util::constant_time_eq('¼', 'a', 0) }, 'Dies with binary set to false');
+_dies_ok (eval { RT::Util::constant_time_eq(encode_utf8('¼'), 'aa', 0) }, 'Dies with binary set to false');
+_lives_and (eval { RT::Util::constant_time_eq('¼', 'a', 1) }, 0, 'Lives with false result with binary set to true');
+_lives_and (eval { RT::Util::constant_time_eq(encode_utf8('¼'), 'aa', 1) }, 0, 'Lives with false result with binary set to true');
 
 # Longer strings
 _lives_and (eval { RT::Util::constant_time_eq('a'x4096, 'a'x4096) },             1, 'both args equal long strings is true');
