@@ -166,6 +166,9 @@ The two string arguments B<MUST> be of equal length. If the lengths differ,
 this function will call C<die()>, as proceeding with execution would create
 a timing vulnerability. Length is defined by characters, not bytes.
 
+Strings that should be treated as binary octets rather than Unicode text
+should pass a true value for the binary flag.
+
 This code has been tested to do what it claims. Do not change it without
 thorough statistical timing analysis to validate the changes.
 
@@ -177,7 +180,7 @@ B<https://en.wikipedia.org/wiki/Timing_attack>
 =cut
 
 sub constant_time_eq {
-    my ($a, $b) = @_;
+    my ($a, $b, $binary) = @_;
 
     my $result = 0;
 
@@ -191,9 +194,18 @@ sub constant_time_eq {
         my $a_char = substr($a, $i, 1);
         my $b_char = substr($b, $i, 1);
 
-        # encode() is set to die on malformed
-        my @a_octets = unpack("C*", encode('UTF-8', $a_char, Encode::FB_CROAK));
-        my @b_octets = unpack("C*", encode('UTF-8', $b_char, Encode::FB_CROAK));
+        my (@a_octets, @b_octets);
+
+        if ($binary) {
+            @a_octets = ord($a_char);
+            @b_octets = ord($b_char);
+        }
+        else {
+            # encode() is set to die on malformed
+            @a_octets = unpack("C*", encode('UTF-8', $a_char, Encode::FB_CROAK));
+            @b_octets = unpack("C*", encode('UTF-8', $b_char, Encode::FB_CROAK));
+        }
+
         die $generic_error if (scalar @a_octets) != (scalar @b_octets);
 
         for (my $j = 0; $j < scalar @a_octets; $j++) {
