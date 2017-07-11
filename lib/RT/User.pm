@@ -946,7 +946,7 @@ sub IsPassword {
         # If it's a new-style (>= RT 4.0) password, it starts with a '!'
         my (undef, $method, $salt, undef) = split /!/, $stored;
         if ($method eq "sha512") {
-            return 0 unless RT::Util::constant_time_eq(
+            return RT::Util::constant_time_eq(
                 $self->_GeneratePassword_sha512($value, $salt),
                 $stored
             );
