@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 111;
+use RT::Test tests => undef;
 
 
 {
@@ -335,3 +335,42 @@ ok($rqv, "Revoked the right successfully - $rqm");
 
 }
 
+{
+# Test the auth token mechanisms used for iCal feeds
+
+# Set up a test user
+my $user = RT::Test->load_or_create_user(Name => "AuthTokenTestUser");
+
+ok($user && $user->id, "Create AuthTokenTestUser");
+
+# Generate an auth token
+my $token = $user->GenerateAuthToken();
+
+ok($token, "GenerateAuthToken()");
+unlike($user->AuthToken, qr/[^0-9A-Fa-f]/, "GenerateAuthToken() returns hex digits");
+
+# Protect a string with an auth token
+my $protected_string = "The quick brown RT jumped over the lazy [redacted competitor's product]";
+my $auth_string = $user->GenerateAuthString($protected_string);
+
+ok($auth_string, "GenerateAuthString() returns a string");
+unlike($auth_string, qr/[^0-9A-Fa-f]/, "GenerateAuthString() returns hex digits");
+
+# Validate a string is protected by an auth token
+ok($user->ValidateAuthString($auth_string, $protected_string),
+   "ValidateAuthString() returns true when string is protected by token");
+
+my $bad_protected_string = "This string is not protected by the token";
+
+ok( ! $user->ValidateAuthString($auth_string, $bad_protected_string),
+   "ValidateAuthString() returns false with invalid string and valid token");
+
+my $bad_auth_string = "L04DD3ADB33FC0DE";
+ok( ! $user->ValidateAuthString($bad_auth_string, $protected_string),
+   "ValidateAuthString() returns false with valid string and invalid token");
+
+ok( ! $user->ValidateAuthString($bad_auth_string, $bad_protected_string),
+   "ValidateAuthString() returns false with invalid string and invalid token");
+}
+
+done_testing();
