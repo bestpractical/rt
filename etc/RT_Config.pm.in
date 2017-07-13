@@ -3724,6 +3724,34 @@ Response SLA has only been met when the owner or AdminCc reply.
         ...
     ));
 
+=item Timezone
+
+By default, RT uses the C<$Timezone> config setting for calculating
+SLAs. You may override this default for a service level by providing the
+C<Timezone> option.
+
+    Set( %ServiceAgreements, (
+        Levels => {
+            '2h' => { Timezone => 'US/Pacific', ... },
+            '4h' => { Timezone => 'US/Eastern', ... },
+        },
+    ));
+
+You may also select a specific timezone per queue by providing a hash
+reference for that queue in C<QueueDefault> and specifying the
+C<Timezone> option. This overrides any timezone specified for the
+service level.
+
+    Set( %ServiceAgreements, (
+        QueueDefault => {
+            'General' => {
+                Level    => '2h',
+                Timezone => 'US/Eastern',
+            },
+        },
+        ...
+    ));
+
 =back
 
 =cut
