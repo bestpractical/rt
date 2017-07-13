@@ -3719,7 +3719,7 @@ this should I<not> satisfy the SLA, you may wish to set
 C<AssumeOutsideActor>.  This causes the extension to assume that the
 Response SLA has only been met when the owner or AdminCc reply.
 
-    Set ( %ServiceAgreements = (
+    Set ( %ServiceAgreements, (
         AssumeOutsideActor => 1,
         ...
     ));
