@@ -179,6 +179,7 @@ $MaxValues => 1
 % my @levels;
 % while ( my $value = $CFVs->Next ) {
 %       my $name = $value->Name;
+%       my $descr = $value->Description;
 %       my $category = $value->Category || '';
 %       my $level = (split /:/, $category, 2)[0] || '';
 %       while (@levels) {
@@ -198,6 +199,9 @@ $MaxValues => 1
 %           push @levels, $level;
 %       }
         <option value="<% $name %>"
+%       if ($descr) {
+            title="<% $descr %>"
+%       }
 %       if ( grep $_ eq lc $name, @Default )
 %       {
 %           $$SelectedRef = 1;
