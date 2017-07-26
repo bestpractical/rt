@@ -123,7 +123,7 @@ while ( my $Transaction = $Transactions->Next ) {
 
     $skip = 1 if $m->request_path =~ m{^/SelfService/}
         and RT::Config->Get('SelfServiceCorrespondenceOnly')
-        and $Transaction->Type ne "Correspond";
+        and ($Transaction->Type ne "Correspond" && $Transaction->Type ne "Create");
 
     $m->callback(
         %ARGS,

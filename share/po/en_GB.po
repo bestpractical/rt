@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2016-02-04 18:00+0000\n"
-"PO-Revision-Date: 2016-03-01 10:50+0000\n"
+"POT-Creation-Date: 2016-07-20 22:51+0000\n"
+"PO-Revision-Date: 2016-08-05 12:39+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2016-05-18 19:36+0000\n"
-"X-Generator: Launchpad (build 18025)\n"
+"X-Launchpad-Export-Date: 2017-05-31 23:12+0000\n"
+"X-Generator: Launchpad (build 18391)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -36,7 +36,7 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($name, $self->loc($args{Type}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:472 share/html/Ticket/Update.html:334 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:493 share/html/Ticket/Update.html:350 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
@@ -77,7 +77,7 @@ msgstr "Any word not recognised by RT is searched for in ticket subjects."
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Automatically suggested theme colours are not available for your image. This might be because you uploaded an image type that your installed version of GD does not support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 
-#: etc/initialdata:33
+#: etc/initialdata:34
 msgid "Autoreply To Requestors"
 msgstr "Autoreply to Requestors"
 
@@ -91,11 +91,11 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: share/html/index.html:130
+#: lib/RT/Interface/Web.pm:3959
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
-#: share/html/Asset/Elements/AssetSearchBasics:50 share/html/Asset/Elements/EditBasics:51 share/html/Asset/Elements/ShowBasics:50 share/html/Asset/Search/Bulk.html:79 share/html/Elements/RT__Asset/ColumnMap:88
+#: share/html/Asset/Elements/AssetSearchBasics:50 share/html/Asset/Elements/EditBasics:51 share/html/Asset/Elements/ShowBasics:50 share/html/Asset/Search/Bulk.html:85 share/html/Elements/RT__Asset/ColumnMap:88
 msgid "Catalog"
 msgstr "Catalogue"
 
@@ -139,7 +139,7 @@ msgstr "Catalogue Create txn failed: %1"
 msgid "Catalog create failed: %1"
 msgstr "Catalogue create failed: %1"
 
-#: share/html/Elements/Tabs:1073 share/html/Elements/Tabs:212
+#: share/html/Elements/Tabs:1142 share/html/Elements/Tabs:228
 msgid "Catalogs"
 msgstr "Catalogues"
 
@@ -201,7 +201,7 @@ msgstr "Customise Email Addresses"
 msgid "Customize Email Configuration"
 msgstr "Customise Email Configuration"
 
-#: share/html/Elements/Tabs:245
+#: share/html/Elements/Tabs:261
 msgid "Customize dashboards in menu"
 msgstr "Customise dashboards in menu"
 
@@ -209,7 +209,7 @@ msgstr "Customise dashboards in menu"
 msgid "Customize the RT theme"
 msgstr "Customise the RT theme"
 
-#: share/html/Elements/Tabs:266
+#: share/html/Elements/Tabs:282
 msgid "Customize the look of your RT"
 msgstr "Customise the look of your RT"
 
@@ -258,11 +258,11 @@ msgstr "Invalid right. Couldn't canonicalise right '%1'"
 msgid "LocalizedDateTime"
 msgstr "LocalisedDateTime"
 
-#: share/html/Elements/Tabs:213
+#: share/html/Elements/Tabs:229
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:3984
+#: lib/RT/Interface/Web.pm:4098
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -278,7 +278,7 @@ msgstr "No longer authorised"
 msgid "No permission to modify this catalog"
 msgstr "No permission to modify this catalogue"
 
-#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:132 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
+#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
 msgid "Organization"
 msgstr "Organisation"
 
@@ -290,7 +290,7 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:382
+#: lib/RT/Config.pm:420
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
@@ -298,7 +298,7 @@ msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, 
 msgid "See catalogs"
 msgstr "See catalogues"
 
-#: share/html/Elements/Tabs:179
+#: share/html/Elements/Tabs:195
 msgid "Select Custom Fields for Assets in all Catalogs"
 msgstr "Select Custom Fields for Assets in all Catalogues"
 
@@ -310,12 +310,12 @@ msgstr "Select a catalogue"
 msgid "Select a color for the section"
 msgstr "Select a colour for the section"
 
-#: etc/initialdata:28 etc/upgrade/4.3.10/content:10
+#: etc/initialdata:29 etc/upgrade/4.3.10/content:10
 msgid "The default catalog"
 msgstr "The default catalogue"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:3989
+#: lib/RT/Interface/Web.pm:4103
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
@@ -354,7 +354,7 @@ msgstr "You can also click on the logo above to get colours!"
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:3992
+#: lib/RT/Interface/Web.pm:4106
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 
