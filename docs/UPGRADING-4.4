@@ -591,6 +591,15 @@ You can delete these records from the Attributes table using a DELETE
 and the same WHERE clause. Always make sure you have a known good backup
 of your database before making updates.
 
+=item *
+
+RT now has the functionality from
+L<RT::Extension::AdminConditionsAndActions> built in. Users who are
+currently using this extension should remove it from the plugin list.
+Please also remove
+F<local/plugins/RT-Extension-AdminConditionsAndActions> from your RT
+installation.
+
 =back
 
 =back
