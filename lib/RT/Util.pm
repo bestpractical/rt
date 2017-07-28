@@ -52,7 +52,7 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child mime_recommended_filename/;
+our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage/;
 
 use Encode qw/encode/;
 
@@ -215,6 +215,30 @@ sub constant_time_eq {
     return 0 + not $result;
 }
 
+=head2 EntityLooksLikeEmailMessage( MIME::Entity )
+
+Check MIME type headers for entities that look like email.
+
+=cut
+
+sub EntityLooksLikeEmailMessage {
+    my $entity = shift;
+
+    return unless $entity;
+
+    # Use mime_type instead of effective_type to get the same headers
+    # MIME::Parser used.
+    my $mime_type = $entity->mime_type();
+
+    # This is the same list of MIME types MIME::Parser uses. The partial and
+    # external-body types are unlikely to produce usable attachments, but they
+    # are still recognized as email for the purposes of this function.
+
+    my @email_types = ('message/rfc822', 'message/partial', 'message/external-body');
+
+    return 1 if grep { $mime_type eq $_ } @email_types;
+    return 0;
+}
 
 RT::Base->_ImportOverlays();
 

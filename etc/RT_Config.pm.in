@@ -503,6 +503,23 @@ clean up intentional double newlines as well.
 
 Set( $CheckMoreMSMailHeaders, 0);
 
+=item C<$TreatAttachedEmailAsFiles>
+
+Email coming into RT can sometimes have another email attached, when
+an email is forwarded as an attachment, for example. By default, RT recognizes
+that the attached content is an email and does some processing, including
+some parsing the headers of the attached email. You can see this in suggested
+email addresses on the People page and One-time Cc on reply.
+
+If you want RT to treat attached email files as regular file attachments,
+set this option to true (1). With this option enabled, attached email will
+show up in the "Attachments" section like other types of file attachments
+and content like headers will not be processed.
+
+=cut
+
+Set( $TreatAttachedEmailAsFiles, 0);
+
 =back
 
 
