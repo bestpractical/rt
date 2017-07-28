@@ -1,0 +1,67 @@
+Return-Path: <user1@example.com>
+X-Spam-Flag: NO
+X-Spam-Score: -2.449
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.449 tagged_above=-99.9 required=10
+	tests=[AWL=0.250, BAYES_00=-1.9, DKIM_SIGNED=0.1, DKIM_VALID=-0.1,
+	DKIM_VALID_AU=-0.1, FREEMAIL_FROM=0.001, KHOP_DYNAMIC=0.001,
+	RCVD_IN_DNSWL_LOW=-0.7, SPF_PASS=-0.001] autolearn=ham
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10432:,,
+ definitions=2017-07-28_05:,, signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ clxscore=1034 suspectscore=1 malwarescore=0 phishscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1701120000 definitions=main-1707280209
+From: Jim Brandt <user1@example.com>
+Content-type: multipart/mixed;
+ boundary="Apple-Mail=_E5E623A8-7064-4736-9F2E-2A0F35E3635B"
+Subject: This is a test
+Message-id: <A23A3AC0-D9E3-4965-83DF-F29217AF28F6@mac.com>
+Date: Fri, 28 Jul 2017 09:21:48 -0400
+To: rt@example.com
+MIME-version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+X-Mailer: Apple Mail (2.3124)
+
+
+--Apple-Mail=_E5E623A8-7064-4736-9F2E-2A0F35E3635B
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii
+
+This is a test with an email file attachment.
+
+
+--Apple-Mail=_E5E623A8-7064-4736-9F2E-2A0F35E3635B
+Content-Disposition: attachment;
+	filename=test-email.eml
+Content-Type: message/rfc822;
+	name="test-email.eml"
+Content-Transfer-Encoding: binary
+
+Return-Path: <user1@example.com>
+X-Spam-Flag: NO
+X-Spam-Score: -2.199
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.199 tagged_above=-99.9 required=10
+	tests=[AWL=0.500, BAYES_00=-1.9, DKIM_SIGNED=0.1, DKIM_VALID=-0.1,
+	DKIM_VALID_AU=-0.1, FREEMAIL_FROM=0.001, KHOP_DYNAMIC=0.001,
+	RCVD_IN_DNSWL_LOW=-0.7, SPF_PASS=-0.001] autolearn=ham
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10432:,,
+ definitions=2017-07-28_05:,, signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ clxscore=1034 suspectscore=1 malwarescore=0 phishscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1701120000 definitions=main-1707280209
+From: Jim Brandt <user1@example.com>
+Content-type: text/plain; charset=us-ascii
+Content-transfer-encoding: 7bit
+Subject: This is a test
+Message-id: <8DB138B7-D410-4640-81B0-7A3363EB0180@mac.com>
+Date: Fri, 28 Jul 2017 09:19:28 -0400
+To: rt@example.com
+MIME-version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+X-Mailer: Apple Mail (2.3124)
+
+This is a test.
+
+--Apple-Mail=_E5E623A8-7064-4736-9F2E-2A0F35E3635B--
