@@ -79,7 +79,7 @@
       <option value="new-RefersTo"><% loc('Referred to by') %></option>
     </select>
     <&|/l&>Ticket in</&>
-    <& /Elements/SelectQueue, ShowNullOption => 0, Name => 'CloneQueue' &>
+    <& /Elements/SelectNewTicketQueue, ShowNullOption => 0, Name => 'CloneQueue' &>
   </form>
 % }
 <%INIT>
