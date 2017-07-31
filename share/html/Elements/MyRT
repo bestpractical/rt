@@ -73,7 +73,7 @@ unless ( $Portlets ) {
     );
 }
 
-$m->callback( CallbackName => 'MassagePortlets', Portlets => $Portlets );
+$m->callback( CallbackName => 'MassagePortlets', Portlets => $Portlets, ARGSRef => \%ARGS );
 
 my ($body, $sidebar) = @{$Portlets}{qw(body sidebar)};
 unless( $body && @$body ) {

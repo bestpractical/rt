@@ -75,7 +75,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>    
-<& /Elements/MyRT &>
+<& /Elements/MyRT, %ARGS &>
 <%init>
 
 if ( RT::Interface::Web->MobileClient()) {
