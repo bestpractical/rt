@@ -344,11 +344,12 @@ sub CastObjectsToRecords
         }
     } elsif ( UNIVERSAL::isa( $targets, 'SCALAR' ) || !ref $targets ) {
         $targets = $$targets if ref $targets;
-        my ($class, $org, $id);
-        if ($targets =~ /-.*-/) {
-            ($class, $org, $id) = split /-/, $targets;
-            RT::Shredder::Exception->throw( "Can't wipeout remote object $targets" )
-                  unless $org eq RT->Config->Get('Organization');
+        my $Organization = RT->Config->Get('Organization');
+        my ($class, $id);
+        if ($targets =~ /^([\w:]+)-\Q$Organization\E-(.+)$/) {
+            ($class, $id) = ($1, $2);
+        } elsif ($targets =~ /-.*-/) {
+            RT::Shredder::Exception->throw( "Can't wipeout remote object $targets" );
         } else {
             ($class, $id) = split /-/, $targets;
         }
