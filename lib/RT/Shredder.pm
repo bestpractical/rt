@@ -348,6 +348,8 @@ sub CastObjectsToRecords
         my ($class, $id);
         if ($targets =~ /^([\w:]+)-\Q$Organization\E-(.+)$/) {
             ($class, $id) = ($1, $2);
+        } elsif ($targets =~ /^(RT::User)-(.*)$/) {
+            ($class, $id) = ($1, $2);
         } elsif ($targets =~ /-.*-/) {
             RT::Shredder::Exception->throw( "Can't wipeout remote object $targets" );
         } else {
