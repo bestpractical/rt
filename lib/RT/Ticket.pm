@@ -1052,10 +1052,14 @@ sub TransactionAddresses {
     $attachments->LimitByTicket( $self->id );
     $attachments->Columns( qw( id Headers TransactionId));
 
-    $attachments->Limit(
-        FIELD => 'Parent',
-        VALUE => 0,
-    );
+    # If $TreatAttachedEmailAsFiles is set, don't parse child attachments
+    # for email addresses.
+    if ( RT->Config->Get('TreatAttachedEmailAsFiles') ){
+        $attachments->Limit(
+            FIELD => 'Parent',
+            VALUE => 0,
+        );
+    }
 
     $attachments->Limit(
         ALIAS         => $attachments->TransactionAlias,

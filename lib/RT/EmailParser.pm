@@ -60,6 +60,7 @@ use MIME::Entity;
 use MIME::Head;
 use MIME::Parser;
 use File::Temp qw/tempdir/;
+use RT::Util qw(mime_recommended_filename EntityLooksLikeEmailMessage);
 
 =head1 NAME
 
@@ -270,6 +271,8 @@ sub _PostProcessNewEntity {
 
     #Now we've got a parsed mime object. 
 
+    _DetectAttachedEmailFiles($self->{'entity'});
+
     # Unfold headers that are have embedded newlines
     #  Better do this before conversion or it will break
     #  with multiline encoded Subject (RFC2047) (fsck.com #5594)
@@ -277,6 +280,70 @@ sub _PostProcessNewEntity {
 
     # try to convert text parts into utf-8 charset
     RT::I18N::SetMIMEEntityToEncoding($self->{'entity'}, 'utf-8');
+}
+
+=head2 _DetectAttachedEmailFiles
+
+Email messages submitted as attachments will be processed as a nested email
+rather than an attached file. Users may prefer to treat attached emails
+as normal file attachments and not have them processed.
+
+If TreatAttachedEmailAsFiles is selected, treat attached email files
+as regular file attachments. We do this by checking MIME entities that
+have email (message/) content types and also have a defined filename,
+indicating they are attachments.
+
+See the extract_nested_messages documentation in in the L<MIME::Parser>
+module for details on how it deals with nested email messages.
+
+=cut
+
+sub _DetectAttachedEmailFiles {
+    my $entity = shift;
+
+    return unless RT->Config->Get('TreatAttachedEmailAsFiles');
+
+    my $filename = mime_recommended_filename($entity);
+
+    # This detection is based on the way MIME::Parser handles email with
+    # extract_nested_messages enabled.
+
+    if ( EntityLooksLikeEmailMessage($entity)
+         && not defined $entity->bodyhandle
+         && $filename ) {
+
+        # Fixup message
+        # TODO: Investigate proposing an option upstream in MIME::Parser to avoid the initial parse
+        if ( $entity->parts(0) ){
+            my $bodyhandle = $entity->parts(0)->bodyhandle;
+
+            # Get the headers from the part and write them back to the body.
+            # This will create a file attachment that looks like the file you get if
+            # you "Save As" and email message in your email client.
+            # If we don't save them here, the headers from the attached email will be lost.
+
+            my $headers = $entity->parts(0)->head->as_string;
+            my $body = $bodyhandle->as_string;
+
+            my $IO = $bodyhandle->open("w")
+                || RT::Logger->error("Unable to open email body: $!");
+            $IO->print($headers . "\n");
+            $IO->print($body);
+            $IO->close
+                || RT::Logger->error("Unable to close email body: $!");
+
+            $entity->parts([]);
+            $entity->bodyhandle($bodyhandle);
+            RT::Logger->debug("Manually setting bodyhandle for attached email file");
+        }
+    }
+    elsif ( $entity->parts ) {
+        foreach my $part ( $entity->parts ){
+            _DetectAttachedEmailFiles( $part );
+        }
+    }
+
+    return;
 }
 
 =head2 IsRTaddress ADDRESS
@@ -331,9 +398,6 @@ sub CullRTAddresses {
 
     return grep { !$self->IsRTAddress($_) } @addresses;
 }
-
-
-
 
 
 # LookupExternalUserInfo is a site-definable method for synchronizing
