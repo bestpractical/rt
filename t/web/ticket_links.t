@@ -1,12 +1,36 @@
 use strict;
 use warnings;
-use RT::Test tests => 146;
+use RT::Test tests => 152;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok( $m->login, "Logged in" );
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok( $queue->id, "loaded the General queue" );
+
+# Create a new queue
+my $queue_2 = RT::Test->load_or_create_queue( Name => 'NewQueue');
+ok( $queue_2->id, "New queue created, 'NewQueue'");
+
+# Create a new ticket
+$m->get_ok($baseurl . '/Ticket/Create.html?Queue=1');
+$m->form_name('TicketCreate');
+$m->field(Subject => 'testing new ticket');
+$m->click_button(value => 'Create');
+
+# Set NewQueue as default queue
+$m->get_ok($baseurl . '/Prefs/Other.html');
+$m->submit_form_ok({
+  form_name => 'ModifyPreferences',
+  fields => {
+    DefaultQueue => 'NewQueue',
+  },
+  button => 'Update'
+}, 'NewQueue set as default queue');
+
+# Verify NewQueue is the default queue on ticket page
+$m->get_ok($baseurl . '/Ticket/Display.html?id=1');
+$m->content_like(qr/selected="selected">NewQueue</);
 
 my ( $deleted, $active, $inactive ) = RT::Test->create_tickets(
     { Queue   => 'General' },
