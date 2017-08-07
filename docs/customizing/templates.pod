@@ -170,5 +170,28 @@ HTML" template is the same template formatted in HTML. The 4.2 upgrade provides
 a C<switch-templates-to> script to switch all default templates from plain text
 to HTML or the reverse. See the L<UPGRADING-4.2> notes for details.
 
+=head2 Queue-specific template overrides
+
+Each scrip in RT has a template associated with it. When a scrip goes to send
+email (or use its template for some other purpose), it first tries to load a
+queue-level template with that name. If there is no queue-level template, then
+the scrip will continue by loading the global template with that name.
+
+You can take advantage of this to customize your templates for a specific queue
+by creating a queue-level template with the exact same name as a global
+template. For example, you can make an "Autoreply" template for your Security
+queue which has a completely different message. Other queues will continue to
+use the global "Autoreply" template, but for the Security queue, its special
+"Autoreply" override will be used.
+
+One common pattern is to create a I<blank> template, which the "send email"
+action takes as a hint to avoid sending its email. So by creating a blank queue
+template you can "disable" a specific notification, such as Ticket Taken, for
+an individual queue, while still keeping the scrip globally applied to all
+queues.
+
+You can manage queue-specific templates by visiting
+Admin -> Queues -> Select -> ... -> Templates.
+
 =cut
 
