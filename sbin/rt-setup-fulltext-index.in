@@ -265,7 +265,7 @@ source rt {
         SELECT a.id, a.content FROM Attachments a \\
         JOIN Transactions txn ON a.TransactionId = txn.id AND txn.ObjectType = 'RT::Ticket' \\
         JOIN Tickets t ON txn.ObjectId = t.id \\
-        WHERE a.ContentType = 'text/plain' AND t.Status != 'deleted'
+        WHERE txn.Type != 'EmailRecord' AND txn.Type != 'CommentEmailRecord' AND (a.ContentType = 'text/plain' OR a.ContentType = 'text/html')
 
     sql_query_info  = SELECT * FROM Attachments WHERE id=\$id
 }
