@@ -3137,6 +3137,7 @@ sub Forward {
         Bcc            => '',
         Content        => '',
         ContentType    => 'text/plain',
+        From           => undef,
         @_
     );
 
@@ -3156,14 +3157,21 @@ sub Forward {
 
     $mime->head->replace( $_ => Encode::encode('UTF-8',$args{$_} ) )
       for grep defined $args{$_}, qw(Subject To Cc Bcc);
-    $mime->head->replace(
-        From => Encode::encode( 'UTF-8',
-            RT::Interface::Email::GetForwardFrom(
-                Transaction => $args{Transaction},
-                Ticket      => $self,
+
+   if ($args{From}) {
+        $mime->head->replace(
+            From => Encode::encode( 'UTF-8', $args{From} )
+        );
+    } else {       
+        $mime->head->replace(
+            From => Encode::encode( 'UTF-8',
+                RT::Interface::Email::GetForwardFrom(
+                    Transaction => $args{Transaction},
+                    Ticket      => $self,
+                )
             )
-        )
-    );
+        );
+    }
 
     for my $argument (qw(Encrypt Sign)) {
         if ( defined $args{ $argument } ) {
