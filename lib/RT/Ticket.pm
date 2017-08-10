@@ -1880,8 +1880,8 @@ sub MergeInto {
     # Can't merge into yourself
     if ( $MergeInto->Id == $self->Id ) {
         return ( 0, $self->loc("Can't merge a ticket into itself") );
-    }
-    
+    } 
+
     # Only tickets can be merged
     unless ($MergeInto->Type eq 'ticket'){
 	my $id_num = $MergeInto->Id;
