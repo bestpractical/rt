@@ -4,7 +4,7 @@ use warnings;
 
 
 use RT;
-use RT::Test tests => '44';
+use RT::Test tests => undef;
 
 
 # validate that when merging two tickets, the comments from both tickets
@@ -177,3 +177,41 @@ ok $user && $user->id, 'loaded or created user';
         is $from_history, $expected, "history is correct";
     }
 }
+
+# forbid merging tickets into non-ticket types
+{
+
+  # create two tickets
+  my $ticket_1 = RT::Test->create_ticket(
+    Queue => 'General',
+    Subject => 'test ticket 1'
+  );
+  my $ticket_2 = RT::Test->create_ticket(
+    Queue => 'General',
+    Subject => 'test ticket 2'
+  );
+
+  # create a reminder on ticket_1
+  $ticket_1->Reminders->Add(
+    Subject => 'Test Reminder',
+    Owner => 'root',
+  );
+
+  # verify reminder was created
+  my $reminders = $ticket_1->Reminders->Collection;
+  is($reminders->Count, 1, "Reminder successfully added");
+  my $reminder = $reminders->First;
+  is($reminder->Subject, "Test Reminder");
+
+  # verify ticket cannot be merged into non-ticket type
+  my($status, $msg) = $ticket_2->MergeInto($reminder->Id);
+  ok(!$status, 'Only tickets can be merged');
+  like($msg, qr/Only tickets can be merged/);
+
+  # verify non-ticket type cannot merge into a ticket
+  ($status, $msg) = $reminder->MergeInto($ticket_2->Id);
+  ok(!$status, 'Non-ticket types cannot merge into tickets');
+  like($msg, qr/Only tickets can be merged/);
+}
+
+done_testing();

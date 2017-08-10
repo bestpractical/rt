@@ -1882,6 +1882,11 @@ sub MergeInto {
         return ( 0, $self->loc("Can't merge a ticket into itself") );
     }
 
+    # Only tickets can be merged
+    unless ($MergeInto->Type eq 'ticket' && $self->Type eq 'ticket'){
+        return(0, $self->loc("Only tickets can be merged"));
+    }
+
     # Make sure the current user can modify the new ticket.
     unless ( $MergeInto->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
