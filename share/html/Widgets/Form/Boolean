@@ -88,18 +88,24 @@ $CurrentValue => undef,
       <label class="custom-control-label" for="<% $Name %>-yes"><&|/l&>Yes</&></label>
     </div>
   </div>
-
+% if ($Default) {
   <div class="col-md-auto">
     <div class="custom-control custom-radio">
       <input type="radio" id="<% $Name %>-no" name="<% $Name %>" class="custom-control-input" value="0" <% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %>>
       <label class="custom-control-label" for="<% $Name %>-no"><&|/l&>No</&></label>
     </div>
   </div>
-% if ($Default) {
   <div class="col-md-auto">
     <div class="custom-control custom-radio">
       <input type="radio" id="<% $Name %>-empty" name="<% $Name %>" class="custom-control-input" value="__empty_value__" <% !defined $CurrentValue? ' checked="checked"': '' |n %>>
       <label class="custom-control-label" for="<% $Name %>-empty"><% $DefaultLabel %></label>
+    </div>
+  </div>
+% } else {
+  <div class="col-md-auto">
+    <div class="custom-control custom-radio">
+      <input type="radio" id="<% $Name %>-no" name="<% $Name %>" class="custom-control-input" value="0" <% !$CurrentValue? ' checked="checked"': '' |n %>>
+      <label class="custom-control-label" for="<% $Name %>-no"><&|/l&>No</&></label>
     </div>
   </div>
 % }
