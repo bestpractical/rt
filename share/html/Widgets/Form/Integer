@@ -74,10 +74,11 @@ $DefaultLabel   => undef
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="text" name="<% $Name %>" value="<% $CurrentValue %>" />\
+<input type="text" name="<% $Name %>" size="<% $Size %>" value="<% $CurrentValue %>" />\
 <%ARGS>
 $Name
 $CurrentValue => '',
+$Size => 20
 </%ARGS>
 <%INIT>
 $CurrentValue = '' unless defined $CurrentValue;
