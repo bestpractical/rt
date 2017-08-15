@@ -267,6 +267,8 @@ sub HandleRequest {
         Module::Refresh->refresh;
     }
 
+    RT->Config->RefreshConfigFromDatabase();
+
     $HTML::Mason::Commands::r->content_type("text/html; charset=utf-8");
 
     $HTML::Mason::Commands::m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
