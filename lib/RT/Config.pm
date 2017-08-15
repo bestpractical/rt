@@ -55,6 +55,7 @@ use 5.010;
 use File::Spec ();
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
+use Storable;
 
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
@@ -1857,6 +1858,125 @@ sub EnableExternalAuth {
     $self->Set('ExternalAuth', 1);
     require RT::Authen::ExternalAuth;
     return;
+}
+
+my $database_config_cache_time = 0;
+my %original_setting_from_files;
+my $in_config_change_txn = 0;
+
+sub BeginDatabaseConfigChanges {
+    $in_config_change_txn = $in_config_change_txn + 1;
+}
+
+sub EndDatabaseConfigChanges {
+    $in_config_change_txn = $in_config_change_txn - 1;
+    if (!$in_config_change_txn) {
+        shift->ApplyConfigChangeToAllServerProcesses();
+    }
+}
+
+sub ApplyConfigChangeToAllServerProcesses {
+    my $self = shift;
+
+    return if $in_config_change_txn;
+
+    # first apply locally
+    $self->LoadConfigFromDatabase();
+
+    # then notify other servers
+    RT->System->ConfigCacheNeedsUpdate($database_config_cache_time);
+}
+
+sub RefreshConfigFromDatabase {
+    my $self = shift;
+    if ($in_config_change_txn) {
+        RT->Logger->error("It appears that there were unbalanced calls to BeginDatabaseConfigChanges with EndDatabaseConfigChanges; this indicates a software fault");
+        $in_config_change_txn = 0;
+    }
+
+    my $needs_update = RT->System->ConfigCacheNeedsUpdate;
+    if ($needs_update > $database_config_cache_time) {
+        $self->LoadConfigFromDatabase();
+        $database_config_cache_time = $needs_update;
+    }
+}
+
+sub LoadConfigFromDatabase {
+    my $self = shift;
+
+    $database_config_cache_time = time;
+
+    my $settings = RT::DatabaseSettings->new(RT->SystemUser);
+    $settings->UnLimit;
+
+    my %seen;
+
+    while (my $setting = $settings->Next) {
+        my $name = $setting->Name;
+        my ($value, $error) = $setting->DecodedContent;
+        next if $error;
+
+        if (!exists $original_setting_from_files{$name}) {
+            $original_setting_from_files{$name} = [
+                scalar($self->Get($name)),
+                Storable::dclone(scalar($self->Meta($name))),
+            ];
+        }
+
+        $seen{$name}++;
+
+        # are we inadvertantly overriding RT_SiteConfig.pm?
+        my $meta = $META{$name};
+        if ($meta->{'Source'}) {
+            my %source = %{ $meta->{'Source'} };
+            if ($source{'SiteConfig'} && $source{'File'} ne 'database') {
+                warn("Change of config option '$name' at $source{File} line $source{Line} has been overridden by the config setting from the database. Please remove it from $source{File} or from the database to avoid confusion.");
+            }
+        }
+
+        my $type = $meta->{Type} || 'SCALAR';
+
+        # hashes combine, but we don't want that behavior because the previous
+        # config settings will shadow any change that the database config makes
+        if ($type eq 'HASH') {
+            $self->Set($name, ());
+        }
+
+        my $val = $type eq 'ARRAY' ? $value
+                : $type eq 'HASH'  ? [ %$value ]
+                                   : [ $value ];
+
+        $self->SetFromConfig(
+            Option     => \$name,
+            Value      => $val,
+            Package    => 'N/A',
+            File       => 'database',
+            Line       => 'N/A',
+            SiteConfig => 1,
+        );
+    }
+
+    # anything that wasn't loaded from the database but has been set in
+    # %original_setting_from_files must have been disabled from the database,
+    # so we want to restore the original setting
+    for my $name (keys %original_setting_from_files) {
+        next if $seen{$name};
+
+        my ($value, $meta) = @{ $original_setting_from_files{$name} };
+        my $type = $meta->{Type} || 'SCALAR';
+
+        if ($type eq 'ARRAY') {
+            $self->Set($name, @$value);
+        }
+        elsif ($type eq 'HASH') {
+            $self->Set($name, %$value);
+        }
+        else {
+            $self->Set($name, $value);
+        }
+
+        %{ $META{$name} } = %$meta;
+    }
 }
 
 RT::Base->_ImportOverlays();

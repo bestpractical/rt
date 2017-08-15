@@ -236,6 +236,27 @@ sub CustomRoleCacheNeedsUpdate {
     }
 }
 
+=head2 ConfigCacheNeedsUpdate ( 1 )
+
+Attribute to decide when we need to flush the database settings
+and re-register any changes.  Set when settings are created, enabled/disabled, etc.
+
+If passed a true value, will update the attribute to be the current time.
+
+=cut
+
+sub ConfigCacheNeedsUpdate {
+    my $self = shift;
+    my $time = shift;
+
+    if ($time) {
+        return $self->SetAttribute(Name => 'ConfigCacheNeedsUpdate', Content => $time);
+    } else {
+        my $cache = $self->FirstAttribute('ConfigCacheNeedsUpdate');
+        return (defined $cache ? $cache->Content : 0 );
+    }
+}
+
 =head2 AddUpgradeHistory package, data
 
 Adds an entry to the upgrade history database. The package can be either C<RT>

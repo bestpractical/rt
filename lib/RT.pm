@@ -199,6 +199,7 @@ sub Init {
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses(%args);
+    RT->Config->LoadConfigFromDatabase();
     InitLogging();
     ProcessPreInitMessages();
     InitPlugins();
@@ -503,6 +504,8 @@ sub InitClasses {
     require RT::Asset;
     require RT::Assets;
     require RT::CustomFieldValues::Canonicalizer;
+    require RT::DatabaseSetting;
+    require RT::DatabaseSettings;
 
     _BuildTableAttributes();
 
