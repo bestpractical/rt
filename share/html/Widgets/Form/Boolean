@@ -78,14 +78,19 @@ $CurrentValue => undef,
     <input type="radio" name="<% $Name %>" value="1" <% $CurrentValue? ' checked="checked"': '' |n %> />\
     <% loc('Yes') %>
 </label>
+% if ($Default) {
 <label>
     <input type="radio" name="<% $Name %>" value="0" <% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %> />\
     <% loc('No') %>
 </label>
-% if ($Default) {
 <label>
     <input type="radio" name="<% $Name %>" value="__empty_value__" <% !defined $CurrentValue? ' checked="checked"': '' |n %> />\
     <% $DefaultLabel %>
+</label>
+% } else {
+<label>
+    <input type="radio" name="<% $Name %>" value="0" <% !$CurrentValue? ' checked="checked"': '' |n %> />\
+    <% loc('No') %>
 </label>
 % }
 % }
