@@ -70,10 +70,11 @@ $Name         => undef,
 $Default        => 0,
 $DefaultValue   => 0,
 $DefaultLabel   => loc( 'Use default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
+$RadioStyle     => 0
 
 $CurrentValue => undef,
 </%ARGS>
-% unless ( $Default ) {
+% if ( !$Default && !$RadioStyle ) {
 <input type="hidden" name="<% $Name %>" value="0" />\
 <div class="custom-control custom-checkbox">
   <input type="checkbox" id="<% $Name %>" name="<% $Name %>" class="custom-control-input" value="1" <% $CurrentValue? ' checked="checked"': '' |n %>>
@@ -94,13 +95,14 @@ $CurrentValue => undef,
       <label class="custom-control-label" for="<% $Name %>-no"><&|/l&>No</&></label>
     </div>
   </div>
-
+% if ($Default) {
   <div class="col-md-auto">
     <div class="custom-control custom-radio">
       <input type="radio" id="<% $Name %>-empty" name="<% $Name %>" class="custom-control-input" value="__empty_value__" <% !defined $CurrentValue? ' checked="checked"': '' |n %>>
       <label class="custom-control-label" for="<% $Name %>-empty"><% $DefaultLabel %></label>
     </div>
   </div>
+% }
 </div>
 % }
 </%METHOD>
