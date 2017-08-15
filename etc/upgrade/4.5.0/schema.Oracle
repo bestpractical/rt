@@ -1,0 +1,16 @@
+CREATE SEQUENCE DatabaseSettings_seq;
+CREATE TABLE DatabaseSettings (
+    id              NUMBER(11,0)    CONSTRAINT DatabaseSettings_key PRIMARY KEY,
+    Name            VARCHAR2(255) CONSTRAINT DatabaseSettings_Name_Unique unique  NOT NULL,
+    Content         CLOB,
+    ContentType     VARCHAR2(80),
+    Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL,
+    Creator         NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Created         DATE,
+    LastUpdatedBy   NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    LastUpdated     DATE
+);
+
+CREATE UNIQUE INDEX DatabaseSettings1 ON DatabaseSettings (LOWER(Name));
+CREATE INDEX DatabaseSettings2 ON DatabaseSettings (Disabled);
+
