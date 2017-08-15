@@ -1010,6 +1010,11 @@ sub _BuildAdminMenu {
         description => loc('Detailed information about your RT setup'),
         path        => '/Admin/Tools/Configuration.html',
     );
+    $admin_tools->child( edit_config =>
+        title       => loc('Edit Configuration'),
+        description => loc('Update your RT setup'),
+        path        => '/Admin/Tools/EditConfig.html',
+    );
     $admin_tools->child( theme =>
         title       => loc('Theme'),
         description => loc('Customize the look of your RT'),
