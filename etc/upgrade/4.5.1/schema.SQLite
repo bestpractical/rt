@@ -1,0 +1,15 @@
+CREATE TABLE DatabaseSettings (
+    id                INTEGER PRIMARY KEY,
+    Name              varchar(255)    collate NOCASE NOT NULL,
+    Content           longtext        collate NOCASE NULL,
+    ContentType       varchar(80)     collate NOCASE NULL,
+    Disabled          int2            NOT NULL DEFAULT 0,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL
+);
+
+CREATE UNIQUE INDEX DatabaseSettings1 ON DatabaseSettings (Name);
+CREATE INDEX DatabaseSettings2 ON DatabaseSettings (Disabled);
+

@@ -559,3 +559,20 @@ CREATE TABLE ObjectCustomRoles (
 ) ENGINE=InnoDB CHARACTER SET utf8;
 
 CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);
+
+CREATE TABLE DatabaseSettings (
+    id                int(11)         NOT NULL AUTO_INCREMENT,
+    Name              varchar(255)    NOT NULL,
+    Content           longblob        NULL,
+    ContentType       varchar(80)     CHARACTER SET ascii NULL,
+    Disabled          int2            NOT NULL DEFAULT 0,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           datetime                 DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       datetime                 DEFAULT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE UNIQUE INDEX DatabaseSettings1 ON DatabaseSettings (Name);
+CREATE INDEX DatabaseSettings2 ON DatabaseSettings (Disabled);
+

@@ -778,3 +778,21 @@ CREATE TABLE ObjectCustomRoles (
 );
 
 CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);
+
+CREATE SEQUENCE databasesettings_id_seq;
+CREATE TABLE DatabaseSettings (
+    id                integer         DEFAULT nextval('databasesettings_id_seq'),
+    Name              varchar(255)    NOT NULL,
+    Content           text            NULL,
+    ContentType       varchar(80)     NULL,
+    Disabled          integer         NOT NULL DEFAULT 0 ,
+    Creator           integer         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     integer         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE UNIQUE INDEX DatabaseSettings1 ON DatabaseSettings (LOWER(Name));
+CREATE INDEX DatabaseSettings2 ON DatabaseSettings (Disabled);
+
