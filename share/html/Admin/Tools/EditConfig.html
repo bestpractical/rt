@@ -1,0 +1,270 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+my $title = loc('System Configuration');
+unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+ Abort(loc('This feature is only available to system administrators'));
+}
+
+my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
+
+my @results;
+
+my $doc_version = $RT::VERSION;
+$doc_version =~ s/rc\d+//; # 4.4.2rc1 -> 4.4.2
+$doc_version =~ s/\.\d+-\d+-g\w+$//;  # 4.4.3-1-g123 -> 4.4
+
+use Data::Dumper;
+my $stringify = sub {
+    my $value = shift;
+    return "" if !defined($value);
+
+    local $Data::Dumper::Terse = 1;
+    local $Data::Dumper::Indent = 2;
+    local $Data::Dumper::Sortkeys = 1;
+    my $output = Dumper $value;
+    chomp $output;
+    return $output;
+};
+
+if (delete $ARGS{Update}) {
+    RT->Config->BeginDatabaseConfigChanges;
+    $RT::Handle->BeginTransaction;
+    my $has_error;
+
+    eval {
+        for my $key (keys %ARGS) {
+            next if $key =~ /-Current$/;
+
+            my $meta = RT->Config->Meta( $key );
+            my $widget = $meta->{Widget} || '/Widgets/Form/Code';
+            my $is_code = $widget eq '/Widgets/Form/Code';
+
+            my $val = $ARGS{$key};
+            $val = '' if $val eq '__empty_value__';
+            my $prev = $ARGS{$key . '-Current'};
+            next if $val eq $prev;
+
+            # for bools, check for truthiness since 0, '', and undef are equivalent
+            if ($widget eq '/Widgets/Form/Boolean') {
+                next if !!$val eq !!$prev;
+            }
+
+            if ( $meta->{Immutable} || $meta->{Obfuscate} || ($key =~ /Password/i and $key !~ /MinimumPasswordLength|AllowLoginPasswordAutoComplete/ )) {
+                push @results, loc("Cannot change [_1]: Permission Denied", $key);
+                $has_error++;
+                next;
+            }
+
+            if ($is_code) {
+                if (!$has_execute_code) {
+                    push @results, loc("Cannot change [_1]: Permission Denied", $key);
+                    $has_error++;
+                    next;
+                }
+
+                my $code = $val;
+                my $coderef;
+                # similar to RT::Scrip::CompileCheck
+                do {
+                    no strict 'vars';
+                    $coderef = eval "sub { $code \n }";
+                };
+                if ($@) {
+                    my $error = $@;
+                    push @results, loc("Couldn't compile [_1] codeblock '[_2]': [_3]", $key, $code, $error);
+                    $has_error++;
+                    next;
+                }
+
+                if ($coderef) {
+                    $val = eval { $coderef->() };
+                    if ($@) {
+                        my $error = $@;
+                        push @results, loc("Couldn't execute [_1] codeblock '[_2]': [_3]", $key, $code, $error);
+                        $has_error++;
+                        next;
+                    }
+                }
+            }
+
+            my $setting = RT::DatabaseSetting->new($session{CurrentUser});
+            $setting->Load($key);
+            if ($setting->Id) {
+                if ($setting->Disabled) {
+                    $setting->SetDisabled(0);
+                }
+
+                my ($ok, $msg) = $setting->SetContent($val);
+                push @results, $msg;
+                $has_error++ if !$ok;
+            }
+            else {
+                my ($ok, $msg) = $setting->Create(
+                    Name    => $key,
+                    Content => $val,
+                );
+                push @results, $msg;
+                $has_error++ if !$ok;
+            }
+        }
+    };
+
+    if ($@) {
+        push @results, $@;
+        $has_error++;
+    }
+
+    if ($has_error) {
+        push @results, loc("No changes made.");
+        $RT::Handle->Rollback;
+    }
+    else {
+        $RT::Handle->Commit;
+    }
+    RT->Config->EndDatabaseConfigChanges;
+}
+
+</%INIT>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form id="EditConfig" method="post" action="EditConfig.html">
+<input type="hidden" name="Update" value=1></input>
+
+<&|/Widgets/TitleBox, title => loc("RT Configuration") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>Option</&></th>
+<th class="collection-as-table"><&|/l&>Value</&></th>
+</tr>
+<%PERL>
+my $index_conf;
+foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
+    my $meta = RT->Config->Meta( $key );
+
+    next if $meta->{Invisible};
+
+    my $raw_value = RT->Config->Get( $key );
+    my $val = $stringify->($raw_value);
+
+    $index_conf++;
+
+    my $doc_url = "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$key";
+
+    my $widget = $meta->{'Widget'} || '/Widgets/Form/Code';
+    my $is_code = $widget eq '/Widgets/Form/Code';
+    my $is_password = ($key =~ /Password/i and $key !~ /MinimumPasswordLength|AllowLoginPasswordAutoComplete/ );
+    my $is_immutable = $meta->{Immutable}
+                    || $meta->{Obfuscate}
+                    || ($is_code && $val =~ s/sub { "DUMMY" }/sub { ... }/g)
+                    || ($is_code && !$has_execute_code);
+
+    my $current_value = $is_code ? $val : $raw_value;
+    my $args   = $meta->{'WidgetArguments'} || {};
+
+    if ($widget eq '/Widgets/Form/Boolean') {
+        %$args = (
+            Default => 0,
+            RadioStyle => 1,
+            %$args,
+        );
+    }
+    elsif ($widget eq '/Widgets/Form/String' || $widget eq '/Widgets/Form/Integer') {
+        %$args = (
+            Size => 60,
+            %$args,
+        );
+    }
+
+</%PERL>
+<tr class="<% $key %> <% $index_conf%2 ? 'oddline' : 'evenline'%>">
+<td class="collection-as-table"><a href="<% $doc_url %>" target="_blank"><% $key %></a></td>
+<td class="collection-as-table">
+
+% if ( $meta->{EditLink} ) {
+<&|/l_unsafe, "<a href=\"$meta->{EditLink}\">", loc($meta->{EditLinkLabel}), "</a>" &>Visit [_1][_2][_3] to manage this setting</&>
+% } elsif ( $key =~ /Plugins/) {
+<ul class="plugins">
+% for my $plugin (RT->Config->Get($key)) {
+<li><a href="https://metacpan.org/search?q=<% $plugin |u %>" target="_blank"><% $plugin %></a></li>
+% }
+</ul>
+<br><em><% loc('Must modify in config file' ) %></em>
+% } elsif ( $is_password ) {
+<em><% loc('Must modify in config file' ) %></em>
+% } elsif ( $is_immutable ) {
+% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
+<textarea disabled class="<% $is_code ? 'code' : '' %>" rows="6" cols="80"><% $current_value %></textarea>
+% } else {
+<input type="text" disabled width="80" value="<% $current_value %>"></input>
+% }
+<br><em><% loc('Must modify in config file' ) %></em>
+% } else {
+  <& $widget,
+    Default      => 1,
+    DefaultValue => '',
+    DefaultLabel => '(no value)',
+
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $args ) },
+    Name         => $key,
+    CurrentValue => $current_value,
+    Description  => '',
+    Hints        => '',
+  &>
+<textarea class="hidden" name="<% $key %>-Current"><% $current_value %></textarea>
+% }
+</td>
+</tr>
+% }
+</table>
+</&>
+<& /Elements/Submit, Label => loc('Save Changes') &>
+</form>
+

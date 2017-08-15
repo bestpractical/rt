@@ -280,3 +280,23 @@ ul.selectable a {
     font-weight: bold;
     text-decoration: underline;
 }
+
+/* remove unnecessary left padding for radio options */
+#EditConfig div.widget .label {
+    width: auto;
+    float: none;
+}
+
+#EditConfig textarea:disabled,
+#EditConfig input:disabled {
+    background-color: #EEE;
+}
+
+.widget.code textarea,
+textarea.code {
+    font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
+#EditConfig ul.plugins {
+    margin: 0;
+}:
