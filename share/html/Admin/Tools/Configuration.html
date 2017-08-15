@@ -70,7 +70,10 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 
     my $meta = RT->Config->Meta( $key );
     my $description = '';
-    if ( $meta->{'Source'}{'Extension'} && $meta->{'Source'}{'SiteConfig'} ) {
+    if ( $meta->{'Source'}{'Database'}) {
+        $description = loc("database");
+    }
+    elsif ( $meta->{'Source'}{'Extension'} && $meta->{'Source'}{'SiteConfig'} ) {
         $description = loc("[_1] site config", $meta->{'Source'}{'Extension'});
     }
     elsif ( $meta->{'Source'}{'Extension'} ) {

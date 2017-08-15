@@ -2181,7 +2181,7 @@ sub SetFromConfig {
     }
 
     $META{$name}->{'Type'} = $type;
-    foreach (qw(Package File Line SiteConfig Extension)) {
+    foreach (qw(Package File Line SiteConfig Extension Database)) {
         $META{$name}->{'Source'}->{$_} = $args{$_};
     }
     $self->Set( $name, @{ $args{'Value'} } );
@@ -2431,6 +2431,7 @@ sub LoadConfigFromDatabase {
             Package    => 'N/A',
             File       => 'database',
             Line       => 'N/A',
+            Database   => 1,
             SiteConfig => 1,
         );
     }
