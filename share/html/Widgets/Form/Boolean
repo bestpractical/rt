@@ -66,10 +66,11 @@ $Name         => undef,
 $Default        => 0,
 $DefaultValue   => 0,
 $DefaultLabel   => loc( 'Use default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
+$RadioStyle     => 0
 
 $CurrentValue => undef,
 </%ARGS>
-% unless ( $Default ) {
+% if ( !$Default && !$RadioStyle ) {
 <input type="hidden" name="<% $Name %>" value="0" />\
 <input type="checkbox" name="<% $Name %>" value="1" <% $CurrentValue? ' checked="checked"': '' |n %> />\
 % } else {
@@ -77,6 +78,7 @@ $CurrentValue => undef,
     <input type="radio" name="<% $Name %>" value="1" <% $CurrentValue? ' checked="checked"': '' |n %> />\
     <% loc('Yes') %>
 </label>
+% if ($Default) {
 <label>
     <input type="radio" name="<% $Name %>" value="0" <% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %> />\
     <% loc('No') %>
@@ -85,6 +87,12 @@ $CurrentValue => undef,
     <input type="radio" name="<% $Name %>" value="__empty_value__" <% !defined $CurrentValue? ' checked="checked"': '' |n %> />\
     <% $DefaultLabel %>
 </label>
+% } else {
+<label>
+    <input type="radio" name="<% $Name %>" value="0" <% !$CurrentValue? ' checked="checked"': '' |n %> />\
+    <% loc('No') %>
+</label>
+% }
 % }
 </%METHOD>
 
