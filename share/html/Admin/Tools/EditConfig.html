@@ -189,7 +189,7 @@ my $index_conf;
 foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
     my $meta = RT->Config->Meta( $key );
 
-    next if $meta->{Invisible};
+    next if $meta->{Invisible} || $meta->{Deprecated};
 
     my $raw_value = RT->Config->Get( $key );
     my $val = $stringify->($raw_value);
