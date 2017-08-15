@@ -639,6 +639,7 @@ our %META;
     Organization => {
         Type            => 'SCALAR',
         Immutable       => 1,
+        Widget          => '/Widgets/Form/String',
         PostLoadCheck   => sub {
             my ($self,$value) = @_;
             $RT::Logger->error("your \$Organization setting ($value) appears to contain whitespace.  Please fix this.")
@@ -648,6 +649,7 @@ our %META;
 
     rtname => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
 
     # Internal config options
@@ -657,27 +659,35 @@ our %META;
     },
     DatabaseAdmin => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
     DatabaseHost => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
     DatabaseName => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
     DatabasePassword => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
     DatabasePort => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/Integer',
     },
     DatabaseRTHost => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
     DatabaseType => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
     DatabaseUser => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
 
     FullTextSearch => {
@@ -736,6 +746,7 @@ our %META;
     },
     DisableGraphViz => {
         Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Boolean',
         PostLoadCheck   => sub {
             my $self  = shift;
             my $value = shift;
@@ -747,6 +758,7 @@ our %META;
     },
     DisableGD => {
         Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Boolean',
         PostLoadCheck   => sub {
             my $self  = shift;
             my $value = shift;
@@ -758,6 +770,7 @@ our %META;
     },
     MailCommand => {
         Type    => 'SCALAR',
+        Widget  => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('MailCommand');
@@ -769,6 +782,7 @@ our %META;
     },
     HTMLFormatter => {
         Type => 'SCALAR',
+        Widget => '/Widgets/Form/String',
         PostLoadCheck => sub { RT::Interface::Email->_HTMLFormatter },
     },
     Plugins => {
@@ -776,15 +790,19 @@ our %META;
     },
     RecordBaseClass => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
     WebSessionClass => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
     DevelMode => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
     },
     DisallowExecuteCode => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
     },
     MailPlugins  => {
         Type => 'ARRAY',
@@ -915,6 +933,7 @@ our %META;
     CustomFieldValuesCanonicalizers => { Type => 'ARRAY' },
     WebPath => {
         Immutable     => 1,
+        Widget        => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -941,7 +960,8 @@ our %META;
         },
     },
     WebDomain => {
-        Immutable => 1,
+        Immutable     => 1,
+        Widget        => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -969,6 +989,7 @@ our %META;
     },
     WebPort => {
         Immutable     => 1,
+        Widget        => '/Widgets/Form/Integer',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -985,6 +1006,7 @@ our %META;
     },
     WebBaseURL => {
         Immutable     => 1,
+        Widget        => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -1009,6 +1031,7 @@ our %META;
     },
     WebURL => {
         Immutable     => 1,
+        Widget => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -1156,6 +1179,7 @@ our %META;
 
     ExternalAuth => {
         Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
     },
 
     ExternalSettings => {
@@ -1286,7 +1310,6 @@ our %META;
             $self->Set( 'ExternalInfoPriority', \@values );
         },
     },
-
     ServiceBusinessHours => {
         Type => 'HASH',
         PostLoadCheck   => sub {
@@ -1299,9 +1322,407 @@ our %META;
             }
         },
     },
-
     ServiceAgreements => {
         Type => 'HASH',
+    },
+    AllowUserAutocompleteForUnprivileged => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AlwaysDownloadAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AmbiguousDayInFuture => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AmbiguousDayInPast => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ApprovalRejectionNotes => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ArticleOnTicketCreate => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AutoCreateNonExternalUsers => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AutocompleteOwnersForSearch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    CanonicalizeRedirectURLs => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    CanonicalizeURLsInFeeds => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ChartsTimezonesInDB => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    CheckMoreMSMailHeaders => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    DateDayBeforeMonth => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    DontSearchFileAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    DropLongAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    EditCustomFieldsSingleColumn => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    EnableReminders => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ExternalStorageDirectLink => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ForceApprovalsView => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ForwardFromUser => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    Framebusting => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    HideArticleSearchOnReplyCreate => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    HideResolveActionsWithDependencies => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    HideTimeFieldsFromUnprivilegedUsers => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    LoopsToRTOwner => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    MessageBoxIncludeSignature => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    MessageBoxIncludeSignatureOnComment => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    OnlySearchActiveTicketsInSimpleSearch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ParseNewMessageForTicketCcs => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    PreferDateTimeFormatNatural => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    PreviewScripMessages => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    RecordOutgoingEmail => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    RestrictLoginReferrer => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    RestrictReferrer => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SearchResultsAutoRedirect => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowBccHeader => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowMoreAboutPrivilegedUsers => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowRTPortal => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowRemoteImages => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowTransactionImages => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    StoreLoops => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    StrictLinkACL => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SuppressInlineTextFiles => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    TruncateLongAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    TrustHTMLAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseFriendlyFromLine => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseFriendlyToLine => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseOriginatorHeader => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseSQLForACLChecks => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseTransactionBatch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ValidateUserEmailAddresses => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebFallbackToRTLogin => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebFlushDbCacheEveryRequest => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebHttpOnlyCookies => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebRemoteUserAuth => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebRemoteUserAutocreate => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebRemoteUserContinuous => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebRemoteUserGecos => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebSecureCookies => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WikiImplicitLinks => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    HideOneTimeSuggestions => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    LinkArticlesOnInclude => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SelfServiceCorrespondenceOnly => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SelfServiceDownloadUserData => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SelfServiceShowGroupTickets => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowSearchResultCount => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AllowGroupAutocompleteForUnprivileged => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    AttachmentListCount => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    AutoLogoff => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    BcryptCost => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    DefaultSummaryRows => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    DropdownMenuLimit => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    ExternalStorageCutoffSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    LogoutRefresh => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxAttachmentSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxFulltextAttachmentSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MinimumPasswordLength => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MoreAboutRequestorGroupsLimit => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    TicketsItemMapSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+
+    CanonicalizeEmailAddressMatch => {
+        Widget => '/Widgets/Form/String',
+    },
+    CanonicalizeEmailAddressReplace => {
+        Widget => '/Widgets/Form/String',
+    },
+    CommentAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+    CorrespondAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+    DashboardAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+    DashboardSubject => {
+        Widget => '/Widgets/Form/String',
+    },
+    DefaultErrorMailPrecedence => {
+        Widget => '/Widgets/Form/String',
+    },
+    DefaultMailPrecedence => {
+        Widget => '/Widgets/Form/String',
+    },
+    DefaultSearchResultOrderBy => {
+        Widget => '/Widgets/Form/String',
+    },
+    EmailSubjectTagRegex => {
+        Widget => '/Widgets/Form/String',
+    },
+    EmailOutputEncoding => {
+        Widget => '/Widgets/Form/String',
+    },
+    FriendlyFromLineFormat => {
+        Widget => '/Widgets/Form/String',
+    },
+    FriendlyToLineFormat => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPHost => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPUser => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPPassword => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPGroupBase => {
+        Widget => '/Widgets/Form/String',
+    },
+    LogDir => {
+        Widget => '/Widgets/Form/String',
+    },
+    LogToFileNamed => {
+        Widget => '/Widgets/Form/String',
+    },
+    LogoAltText => {
+        Widget => '/Widgets/Form/String',
+    },
+    LogoLinkURL => {
+        Widget => '/Widgets/Form/String',
+    },
+    LogoURL => {
+        Widget => '/Widgets/Form/String',
+    },
+    OwnerEmail => {
+        Widget => '/Widgets/Form/String',
+    },
+    RedistributeAutoGeneratedMessages => {
+        Widget => '/Widgets/Form/String',
+    },
+    SelfServiceRequestUpdateQueue => {
+        Widget => '/Widgets/Form/String',
+    },
+    SendmailArguments => {
+        Widget => '/Widgets/Form/String',
+    },
+    SendmailBounceArguments => {
+        Widget => '/Widgets/Form/String',
+    },
+    SendmailPath => {
+        Widget => '/Widgets/Form/String',
+    },
+    SetOutgoingMailFrom => {
+        Widget => '/Widgets/Form/String',
+    },
+    Timezone => {
+        Widget => '/Widgets/Form/String',
+    },
+    VERPPrefix => {
+        Widget => '/Widgets/Form/String',
+        WidgetArguments => { Hints  => 'rt-', },
+    },
+    VERPDomain => {
+        Widget => '/Widgets/Form/String',
+        WidgetArguments => {
+            Callback => sub {  return { Hints => RT->Config->Get( 'Organization') } },
+        },
+    },
+    WebImagesURL => {
+        Widget => '/Widgets/Form/String',
+    },
+
+    AssetSearchFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSummaryFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSummaryRelatedTicketsFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    DefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    DefaultSelfServiceSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    MoreAboutRequestorExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    MoreAboutRequestorTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSummaryExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSummaryTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+
+    LogToSyslog => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+    LogToSTDERR => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+    LogToFile => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+    LogStackTraces => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+    StatementLog => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+
+    DefaultSearchResultOrder => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(ASC DESC)] },
     },
 );
 my %OPTIONS = ();
