@@ -638,6 +638,7 @@ our %META;
     # this tends to break extensions that stash links in ticket update pages
     Organization => {
         Type            => 'SCALAR',
+        Immutable       => 1,
         PostLoadCheck   => sub {
             my ($self,$value) = @_;
             $RT::Logger->error("your \$Organization setting ($value) appears to contain whitespace.  Please fix this.")
@@ -645,9 +646,38 @@ our %META;
         },
     },
 
+    rtname => {
+        Immutable => 1,
+    },
+
     # Internal config options
     DatabaseExtraDSN => {
-        Type => 'HASH',
+        Type      => 'HASH',
+        Immutable => 1,
+    },
+    DatabaseAdmin => {
+        Immutable => 1,
+    },
+    DatabaseHost => {
+        Immutable => 1,
+    },
+    DatabaseName => {
+        Immutable => 1,
+    },
+    DatabasePassword => {
+        Immutable => 1,
+    },
+    DatabasePort => {
+        Immutable => 1,
+    },
+    DatabaseRTHost => {
+        Immutable => 1,
+    },
+    DatabaseType => {
+        Immutable => 1,
+    },
+    DatabaseUser => {
+        Immutable => 1,
     },
 
     FullTextSearch => {
@@ -741,8 +771,24 @@ our %META;
         Type => 'SCALAR',
         PostLoadCheck => sub { RT::Interface::Email->_HTMLFormatter },
     },
+    Plugins => {
+        Immutable => 1,
+    },
+    RecordBaseClass => {
+        Immutable => 1,
+    },
+    WebSessionClass => {
+        Immutable => 1,
+    },
+    DevelMode => {
+        Immutable => 1,
+    },
+    DisallowExecuteCode => {
+        Immutable => 1,
+    },
     MailPlugins  => {
         Type => 'ARRAY',
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self = shift;
 
@@ -868,6 +914,7 @@ our %META;
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
     CustomFieldValuesCanonicalizers => { Type => 'ARRAY' },
     WebPath => {
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -894,6 +941,7 @@ our %META;
         },
     },
     WebDomain => {
+        Immutable => 1,
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -920,6 +968,7 @@ our %META;
         },
     },
     WebPort => {
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -935,6 +984,7 @@ our %META;
         },
     },
     WebBaseURL => {
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -958,6 +1008,7 @@ our %META;
         },
     },
     WebURL => {
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -1103,7 +1154,12 @@ our %META;
         },
     },
 
+    ExternalAuth => {
+        Immutable => 1,
+    },
+
     ExternalSettings => {
+        Immutable     => 1,
         Obfuscate => sub {
             # Ensure passwords are obfuscated on the System Configuration page
             my ($config, $sources, $user) = @_;
@@ -1167,6 +1223,7 @@ our %META;
     },
 
     ExternalAuthPriority => {
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
@@ -1195,6 +1252,7 @@ our %META;
     },
 
     ExternalInfoPriority => {
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
