@@ -206,7 +206,12 @@ ok $user && $user->id, 'loaded or created user';
   is($found, 1, 'Reminder successfully added');
 
   # verify ticket cannot be merged into non-ticket type
-  my($status, $msg) = $ticket_1->MergeInto($reminder);
+  my($status, $msg) = $ticket_2->MergeInto($reminder);
   ok(!$status, 'Only tickets can be merged');
+
+  # verify non-ticket type cannot merge into a ticket
+  my($st, $note) = $reminder->MergeInto($ticket_2);
+  ok(!$st, 'Non-ticket types cannot merge into tickets');
+
 }
 done_testing();

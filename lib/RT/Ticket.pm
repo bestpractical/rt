@@ -1886,7 +1886,12 @@ sub MergeInto {
     unless ($MergeInto->Type eq 'ticket'){
 	my $id_num = $MergeInto->Id;
 	return(0, $self->loc("Id $id_num is not a ticket. Only tickets can be merged."));
-    };
+    }
+    unless ($self->Type eq 'ticket'){
+        my $self_id = $self->Id;
+        my $self_type = $self->Type;
+        return(0, $self->loc("Id $self_id is a $self_type. Only tickets can be merged."));
+    }
 
     # Make sure the current user can modify the new ticket.
     unless ( $MergeInto->CurrentUserHasRight('ModifyTicket') ) {
