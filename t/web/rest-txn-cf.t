@@ -108,7 +108,7 @@ $m->post(
     Content_Type => 'form-data'
 );
 
-like($m->content, qr/CF.{txn_cf}: valid cf/, "Ticket history contains expected content - valid CF");
+like($m->content, qr/CF.\{txn_cf\}: valid cf/, "Ticket history contains expected content - valid CF");
 
 my $with_nonexistant_cf = $text . "\nText: Test with invalid CF\nCF.{other_cf}: invalid cf";
 
@@ -193,4 +193,4 @@ $m->post(
     Content_Type => 'form-data'
 );
 
-like($m->content, qr/CF.{txn_cf_multi}: Value 1,Value 2/, "Ticket history contains expected content - valid CF multi");
+like($m->content, qr/CF.\{txn_cf_multi\}: Value 1,Value 2/, "Ticket history contains expected content - valid CF multi");
