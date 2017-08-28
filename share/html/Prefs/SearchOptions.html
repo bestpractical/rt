@@ -58,7 +58,9 @@
             RowsPerPage => $RowsPerPage, 
             OrderBy => $OrderBy, 
             Order => $Order &>
-
+% if ($session{'CurrentUser'}->UserObj->Preferences("SearchDisplay")) {
+<& /Elements/Submit, Name => 'Reset', Label => loc('Restore Default Preferences')&>
+% }
 <& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes') &>
 </form>
 <%INIT>
@@ -81,6 +83,11 @@ if ($ARGS{'SavePreferences'}) {
     push @actions, $ok ? loc("Preferences saved.") : $msg;
 }
 
+# If we're restoring default preferences, delete the user's changes
+if ($Reset) {
+    my ($ok, $msg) = $session{'CurrentUser'}->UserObj->DeletePreferences("SearchDisplay");
+    push @actions, $ok ? loc("Default preferences restored.") : $msg;
+}
 
 # Read from user preferences
 my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
@@ -103,5 +110,5 @@ $Description => undef
 $Order => undef
 $OrderBy => undef
 $RowsPerPage => undef
+$Reset => undef
 </%ARGS>
-
