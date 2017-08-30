@@ -631,7 +631,7 @@ my $build_main_nav = sub {
     my $reports = Menu->child( reports =>
         title       => loc('Reports'),
         description => loc('Reports summarizing ticket resolution and status'),
-        path        => loc('/Reports'),
+        path        => '/Reports',
     );
     $reports->child( resolvedbyowner =>
         title       => loc('Resolved by owner'),
