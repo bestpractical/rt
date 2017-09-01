@@ -47,11 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="unread-messages">
 <&| /Widgets/TitleBox, title => loc('New messages'), title_href => "#txn-". $txn->id &>
+<div>
+<span class="new-messages-on-ticket">
 <&|/l&>There are unread messages on this ticket.</&>
-<&|/l, 
- RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id,
- RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id
- &>You can <a href="[_1]">jump to the first unread message</a> or <a href="[_2]">jump to the first unread message and mark all messages as seen</a>.</&>
+</span>
+<span class="new-messages-buttons">
+<a class="button small-button" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."#txn-" . $txn->id |n %>"><&|/l&>Jump to Unread</&></a>
+<a class="button small-button" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "&MarkAsSeen=1" |n %>"><&|/l&>Mark as Seen</&></a>
+<a class="button small-button" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id |n %>"><&|/l&>Jump & Mark as Seen</&></a>
+</span>
+</div>
 </&>
 </div>
 <%ARGS>
