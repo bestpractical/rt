@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More;
-use RT::Test tests => 20;
+use RT::Test tests => undef;
 
 my $plain = MIME::Entity->build(
     Subject => 'plain mime',
@@ -14,6 +14,10 @@ the rt-users\@lists.bestpractical.com.
 
 to test anchor:
 https://wiki.bestpractical.com/test#anchor
+
+and anchor with angle branckets:
+<https://bestpractical.com/test#anchor>
+
 --
 Best regards. BestPractical Team.
 END
@@ -33,7 +37,6 @@ https://wiki.bestpractical.com/test#anchor
 Best regards. BestPractical Team.
 END
 );
-
 
 my $ticket = RT::Ticket->new( RT->SystemUser );
 
@@ -93,6 +96,13 @@ diag 'test httpurl';
     );
     ok( scalar @links, 'found clicky link with anchor' );
 
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://bestpractical.com/test#anchor',
+        text => 'Open URL',
+    );
+    ok( scalar @links, 'found clicky link with anchor and angle brackets' );
+
     $m->goto_ticket($html_id);
     @links = $m->find_link(
         tag  => 'a',
@@ -137,5 +147,13 @@ diag 'test httpurl_overwrite';
         text => 'https://wiki.bestpractical.com/test#anchor',
     );
     ok( scalar @links, 'found clicky link with anchor' );
+
+    @links = $m->find_link(
+        tag  => 'a',
+        url  => 'https://bestpractical.com/test#anchor',
+        text => 'https://bestpractical.com/test#anchor',
+    );
+    ok( scalar @links, 'found clicky link with anchor and angle brackets' );
 }
 
+done_testing();
