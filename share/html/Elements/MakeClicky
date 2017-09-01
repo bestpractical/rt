@@ -80,12 +80,12 @@ my %actions = (
 my @types = (
     {
         name   => "httpurl",
-        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#[^\s<]+)?(?<![.?!,;:])/,
+        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#[^\s<]+)?(?<![.?!,;:>])/,
         action => "url",
     },
     {
         name   => "httpurl_overwrite",
-        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#[^\s<]+)?(?<![.?!,;:])/,
+        regex  => qr/$RE{URI}{HTTP}{-keep}{-scheme => 'https?'}(?:#[^\s<]+)?(?<![.?!,;:>])/,
         action => "url_overwrite",
     },
 );
