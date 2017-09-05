@@ -229,6 +229,11 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 <td class="collection-as-table">
 
 % if ( $meta->{EditLink} ) {
+% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
+<textarea disabled class="<% $is_code ? 'code' : '' %>" rows="6" cols="80"><% $current_value %></textarea><br>
+% } else {
+<input type="text" disabled width="80" value="<% $current_value %>"></input><br>
+% }
 <&|/l_unsafe, "<a href=\"$meta->{EditLink}\">", loc($meta->{EditLinkLabel}), "</a>" &>Visit [_1][_2][_3] to manage this setting</&>
 % } elsif ( $key =~ /Plugins/) {
 <ul class="plugins">
