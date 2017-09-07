@@ -1,0 +1,27 @@
+#!/bin/bash
+
+set -eu
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: add-cert username"
+    exit 1
+fi
+
+export CERTNAME=$1
+
+# Generate the key and CSR
+openssl req -config ./openssl.cnf -new -newkey rsa \
+            -keyout ${CERTNAME}@example.com.key \
+            -out ${CERTNAME}@example.com.csr \
+            -passout pass:123456
+
+# Sign it as the CA
+openssl ca -config ./openssl.cnf -passin pass:123456 -batch \
+           -out ${CERTNAME}@example.com.crt \
+           -infiles ${CERTNAME}@example.com.csr
+
+# Stitch both halves together
+cat ${CERTNAME}@example.com.crt ${CERTNAME}@example.com.key > ${CERTNAME}@example.com.pem
+
+# Update git
+git add ${CERTNAME}@example.com.{key,csr,crt,pem} demoCA/

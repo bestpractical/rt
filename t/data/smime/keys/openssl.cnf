@@ -1,0 +1,71 @@
+# This is the OpenSSL configuration file used for the demo CA.  It
+# contains the parts necessary to make SMIME private keys and CSRs,
+# followed by the configuration for the CA to sign such.
+#
+# To make a new username@example.com SMIME certificate, run:
+#     ./add-cert username
+
+
+# --------------------------------------------------------------------
+#                        shared configuration
+# --------------------------------------------------------------------
+[ cert_extensions ]                     # Referenced by `req` and `demo_ca`
+basicConstraints = critical,CA:FALSE    # We never generate or sign CA certificates
+# subjectAltName   = email:move         # Uncomment to move any emailaddress property into subjectAltName
+
+
+# --------------------------------------------------------------------
+#                            openssl req
+# --------------------------------------------------------------------
+[ req ]
+default_bits       = 512                # Small to keep things fast
+prompt             = no                 # DN section contains defaults
+distinguished_name = req_dn             # Ref below
+x509_extensions    = cert_extensions    # Ref above
+
+[ req_dn ]
+countryName          = AU               # These values are for back-compat with earlier certs
+stateOrProvinceName  = Some-State
+organizationName     = Internet Widgits Pty Ltd
+commonName           = ${ENV::CERTNAME} # Pull name and email from environment var
+emailAddress         = ${ENV::CERTNAME}@example.com
+
+
+# --------------------------------------------------------------------
+#                             openssl ca
+# --------------------------------------------------------------------
+[ ca ]
+default_ca = demo_ca                    # Ref below
+
+[ demo_ca ]
+dir             = ./demoCA              # Where everything is kept
+database        = $dir/index.txt        # database index file.
+new_certs_dir   = $dir/certs/           # This is gitignored
+certificate     = $dir/cacert.pem       # The CA certificate
+serial          = $dir/serial           # The current serial number
+private_key     = $dir/private/cakey.pem# The private key
+x509_extensions = cert_extensions       # Ref above
+default_days    = 3650                  # Make these very long-lived, as test certs
+default_md      = default               # Use public key default MD
+policy          = policy_match          # Ref below
+
+
+[ other_ca ]                            # A duplicate of demo_ca, but with a different root
+dir             = ./otherCA             # Pass `-name other_ca` to sign with this CA
+database        = $dir/index.txt
+new_certs_dir   = $dir/certs/
+certificate     = $dir/cacert.pem
+serial          = $dir/serial
+private_key     = $dir/private/cakey.pem
+x509_extensions = cert_extensions       # Ref above
+default_days    = 3650
+default_md      = default
+policy          = policy_match          # Ref below
+
+
+[ policy_match ]                        # What CSR attributes must match the CA's
+countryName             = match
+stateOrProvinceName     = match
+organizationName        = match
+commonName              = supplied
+emailAddress            = optional

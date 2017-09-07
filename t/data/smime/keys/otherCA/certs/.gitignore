@@ -1,0 +1,2 @@
+# The CA wants a place to store the certs it generates; we name them better and store them in t/data/smime/keys/ so we don't care about the ones the CA "stores."  This whole directory is thus ignored.
+*.pem
