@@ -168,12 +168,12 @@
     padding-right: 0
 }
 
-#topactions #simple-search .field {
+#topactions #simple-search #GotoTicket #ArticleSearch .field {
     margin-left: 1em;
     color: #787;
 }
 
-#topactions #simple-search .field:focus {
+#topactions #simple-search #GotoTicket #ArticleSearch .field:focus {
     color: #000
 }
 
