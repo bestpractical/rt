@@ -1314,8 +1314,9 @@ sub CurrentUserRequireToSetPassword {
         RequireCurrent => 1,
     );
 
-    if ( RT->Config->Get('WebRemoteUserAuth')
-        && !RT->Config->Get('WebFallbackToRTLogin')
+    if ( (RT->Config->Get('WebRemoteUserAuth')
+        && !RT->Config->Get('WebFallbackToRTLogin'))
+        || ( RT->Config->Get('ExternalAuth') && !$self->CurrentUser->HasPassword )
     ) {
         $res{'CanSet'} = 0;
         $res{'Reason'} = $self->loc("External authentication enabled.");
