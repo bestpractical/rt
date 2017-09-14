@@ -46,6 +46,13 @@ OpenLDAP or Active Directory server, as the authoritative repository and keeps
 RT up to date accordingly.  This can be used in tandem with any of the external
 authentication options as it does not provide any authentication itself.
 
+Note that if you start with L<Internal Authentication> and then switch to
+L<External Authentication>, your original users will still have passwords in
+the RT database. RT ignores these passwords when handling logins, but in some
+cases RT may show a password box that would normally be hidden for external
+authentication because it detects an existing password. To avoid this, you can
+clear passwords in the Users table when you switch to external authentication.
+
 =head2 Via your web server, aka C<$WebRemoteUserAuth>, aka C<REMOTE_USER>
 
 This type of external authentication is built-in to RT and bypasses the RT
