@@ -316,6 +316,31 @@ sub ClearByUser {
     $self->ClearOrphanLockFiles if $deleted;
 }
 
+=head3 ClearExpiredChartsCache
+
+Check the timestamp on the charts_cache in the session and clear any
+older than one minute.
+
+For most typical use, the charts_cache should be empty as it is cleared as
+cached items are used. However, for DBs without session locking, some keys
+can be added back as multiple processes access the session.
+
+=cut
+
+sub ClearExpiredChartsCache {
+    my $session = shift;
+
+    foreach my $cache_key ( keys %{$session->{'charts_cache'}} ){
+        my $cache_time = $session->{'charts_cache'}{$cache_key}{'timestamp'};
+        if ( (time - $cache_time) > 60 ){
+            RT::Logger->debug("Clearing expired cache key $cache_key");
+            delete $session->{'charts_cache'}{$cache_key};
+            $session->{'i'}++;
+        }
+    }
+    return;
+}
+
 sub TIEHASH {
     my $self = shift;
     my $id = shift;

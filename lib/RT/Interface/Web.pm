@@ -369,6 +369,8 @@ sub HandleRequest {
     $HTML::Mason::Commands::session{'home_refresh_interval'} = $ARGS->{'HomeRefreshInterval'}
         if ( $ARGS->{'HomeRefreshInterval'} );
 
+    RT::Interface::Web::Session::ClearExpiredChartsCache(\%HTML::Mason::Commands::session);
+
     # Process per-page global callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
 
