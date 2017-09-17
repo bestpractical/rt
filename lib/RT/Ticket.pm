@@ -3212,16 +3212,6 @@ sub CurrentUserCanSeeTime {
 
 1;
 
-=head1 AUTHOR
-
-Jesse Vincent, jesse@bestpractical.com
-
-=head1 SEE ALSO
-
-RT
-
-=cut
-
 sub Table {'Tickets'}
 
 
@@ -3715,5 +3705,15 @@ sub Serialize {
 }
 
 RT::Base->_ImportOverlays();
+
+=head1 AUTHOR
+
+Jesse Vincent, jesse@bestpractical.com
+
+=head1 SEE ALSO
+
+RT
+
+=cut
 
 1;
