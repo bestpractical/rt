@@ -481,6 +481,20 @@ sub ParseIP {
 }
 
 
+=head2 GetOCFVCacheKey
+
+Get the OCFV cache key for this object
+
+=cut
+
+sub GetOCFVCacheKey {
+    my $self = shift;
+    my $ocfv_key = "CustomField-" . $self->CustomField
+        . '-ObjectType-' . $self->ObjectType
+        . '-ObjectId-' . $self->ObjectId;
+    return $ocfv_key;
+}
+
 =head2 id
 
 Returns the current value of id.
