@@ -1518,6 +1518,8 @@ sub GetObfuscated {
 
     return $self->Get(@_) unless $obfuscate;
 
+    local $Storable::Deparse = 1;
+    local $Storable::Eval = 1;
     my $res = Storable::dclone($self->Get(@_));
     $res = $obfuscate->( $self, $res, $user );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
