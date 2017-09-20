@@ -107,6 +107,20 @@ my @lines = (
         },
     },
     {
+        Name => 'SLA',
+        Field => loc('SLA'),
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectMatch',
+            Arguments => { Default => '=' },
+        },
+        Value => {
+            Type => 'component',
+            Path => '/Elements/SelectSLA',
+            Arguments => { NamedValues => 1 },
+        },
+    },
+    {
         Name => 'Actor',
         Field => {
             Type    => 'select',
