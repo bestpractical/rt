@@ -593,6 +593,26 @@ of your database before making updates.
 
 =back
 
+* Unknown column 'UniqueValues' warnings
+
+If you have custom fields that use the "Category" feature, you may see warnings
+like this during your upgrade:
+
+    [warning]: DBD::mysql::st execute failed: Unknown column 'UniqueValues' in 'field list'
+
+RT 4.4.2 adds some new columns to CustomFields, but an earlier upgrade step tries
+to add a custom field before these new columns have been added. You can create the columns
+before running the upgrade with the following:
+
+    sbin/rt-setup-database --action schema --datadir etc/upgrade/4.4.2
+
+The upgrade script will still attempt to create the columns again at the end when
+running the 4.4.2 upgrade, producing messages like:
+
+    DBD::mysql::st execute failed: Duplicate column name 'UniqueValues'
+
+This just means the columns are already there and no other steps are required.
+
 =back
 
 =cut
