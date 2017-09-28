@@ -194,6 +194,18 @@ which will be significantly faster:
 
     make test-parallel
 
+If you want to run only a subset of the tests, you can use Perl's standard
+C<prove> utility.
+
+    prove -l t/api/ticket.t t/web/ticket_display.t
+
+If you want to run a subset of the tests in parallel, you can pass the C<-j>
+flag to C<prove> with the number of processes to use. Make sure to also set the
+C<RT_TEST_PARALLEL> environment variable to a true value to tell RT you're
+running the tests in parallel.
+
+    RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
+
 The C<*-trunk> and C<master> branches are expected to always be passing
 all tests.  While it is acceptable to break tests in an intermediate
 commit, a branch which does not pass tests will not be merged.  Ideally,
