@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use RT::Interface::REST;
 
-use RT::Test tests => 34;
+use RT::Test tests => undef;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -79,7 +79,7 @@ for ("id: ticket/1",
 }
 
 # Create ticket 2 for testing ticket links
-for (2 .. 3) {
+for (2 .. 4) {
     $m->post("$baseurl/REST/1.0/ticket/edit", [
         user    => 'root',
         pass    => 'password',
@@ -94,23 +94,24 @@ for (2 .. 3) {
         ],
         Content_Type => 'form-data',
     );
-
-    my $link_data = form_parse($m->content);
-
-    push @{$link_data->[0]->[1]}, 'DependsOn';
-    vpush($link_data->[0]->[2], 'DependsOn', $_);
-
-    $m->post(
-        "$baseurl/REST/1.0/ticket/1/links",
-        [
-            user    => 'root',
-            pass    => 'password',
-            content => form_compose($link_data),
-        ],
-        Content_Type => 'form-data',
-    );
-
 }
+
+diag "Add one link";
+
+my $link_data = <<'END_LINKS';
+id: ticket/1/links
+DependsOn: 2
+END_LINKS
+
+$m->post(
+    "$baseurl/REST/1.0/ticket/1/links",
+    [
+        user    => 'root',
+        pass    => 'password',
+        content => $link_data,
+    ],
+    Content_Type => 'form-data',
+);
 
 # See what links get reported for ticket 1.
 $m->post(
@@ -128,12 +129,48 @@ my $depends_on = vsplit($content->[0]->[2]->{DependsOn});
 @$depends_on = sort @$depends_on;
 like(
     $depends_on->[0], qr{/ticket/2$},
-    "Check ticket link.",
+    "Link to ticket 2 added.",
+) or diag("'content' obtained:\n", $m->content);
+
+diag "Add two links";
+
+$link_data = <<'END_LINKS';
+id: ticket/1/links
+DependsOn: 3,4
+END_LINKS
+
+$m->post(
+    "$baseurl/REST/1.0/ticket/1/links",
+    [
+        user    => 'root',
+        pass    => 'password',
+        content => $link_data,
+    ],
+    Content_Type => 'form-data',
+);
+
+# See what links get reported for ticket 1.
+$m->post(
+    "$baseurl/REST/1.0/ticket/1/links/show",
+    [
+        user    => 'root',
+        pass    => 'password',
+    ],
+    Content_Type => 'form-data',
+);
+
+$content = form_parse($m->content);
+$depends_on = vsplit($content->[0]->[2]->{DependsOn});
+@$depends_on = sort @$depends_on;
+
+like(
+    $depends_on->[0], qr{/ticket/3$},
+    "Link to ticket 3 found",
 ) or diag("'content' obtained:\n", $m->content);
 
 like(
-    $depends_on->[1], qr{/ticket/3$},
-    "Check ticket link.",
+    $depends_on->[1], qr{/ticket/4$},
+    "Link to ticket 4 found",
 ) or diag("'content' obtained:\n", $m->content);
 
 $m->post(
@@ -145,7 +182,7 @@ $m->post(
     Content_Type => 'form-data',
 );
 my ($link) = $m->content =~ m|DependedOnBy:.*ticket/(\d+)|;
-is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content);
+is($link, undef, "Link removed from ticket 2") or diag("'content' obtained:\n", $m->content);
 
 $m->post(
     "$baseurl/REST/1.0/ticket/3/links/show",
@@ -156,9 +193,20 @@ $m->post(
     Content_Type => 'form-data',
 );
 ($link) = $m->content =~ m|DependedOnBy:.*ticket/(\d+)|;
-is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content);
+is($link, 1, "Ticket 3 has link to 1.") or diag("'content' obtained:\n", $m->content);
 
+$m->post(
+    "$baseurl/REST/1.0/ticket/4/links/show",
+    [
+        user    => 'root',
+        pass    => 'password',
+    ],
+    Content_Type => 'form-data',
+);
+($link) = $m->content =~ m|DependedOnBy:.*ticket/(\d+)|;
+is($link, 1, "Ticket 4 has link to 1.") or diag("'content' obtained:\n", $m->content);
 
+diag "Test custom fields";
 {
     $m->post("$baseurl/REST/1.0/ticket/new", [
         user    => 'root',
@@ -325,3 +373,6 @@ is($link, 1, "Check ticket link.") or diag("'content' obtained:\n", $m->content)
         @{ $ticket->Transactions->ItemsArrayRef };
     is_deeply(\@txns, [['this', 'that']]);
 }
+
+undef $m;
+done_testing();
