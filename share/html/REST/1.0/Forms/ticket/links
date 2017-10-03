@@ -123,14 +123,12 @@ if ($changes) {
                     my $type = $lfields{$key}->{Type};
                     my $mode = $lfields{$key}->{Mode};
                     ($n, $s) = $ticket->DeleteLink(Type => $type, $mode => $u);
-                    goto SET;
                 }
             }
             foreach my $u (keys %new) {
                 my $type = $lfields{$key}->{Type};
                 my $mode = $lfields{$key}->{Mode};
                 ($n, $s) = $ticket->AddLink(Type => $type, $mode => $u);
-                goto SET;
             }
         }
         elsif ($key ne 'id' && $key ne 'type') {
