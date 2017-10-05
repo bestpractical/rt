@@ -136,6 +136,7 @@ sub JSFiles {
       assets.js
       /static/RichText/ckeditor.js
       dropzone.min.js
+      combobox.js
       }, RT->Config->Get('JSFiles');
 }
 
