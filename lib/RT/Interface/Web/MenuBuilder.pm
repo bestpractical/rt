@@ -979,6 +979,14 @@ sub _BuildAdminMenu {
         $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
     }
 
+    my $lifecycles = $admin->child( lifecycles =>
+        title => loc('Lifecycles'),
+        path  => '/Admin/Lifecycles/',
+    );
+
+    $lifecycles->child( select => title => loc('Select'), path => '/Admin/Lifecycles/');
+    $lifecycles->child( create => title => loc('Create'), path => '/Admin/Lifecycles/Create.html');
+
     my $admin_global = $admin->child( global =>
         title       => loc('Global'),
         description => loc('Manage properties and configuration which apply to all queues'),
@@ -1363,6 +1371,27 @@ sub _BuildAdminMenu {
                 HTML::Mason::Commands::PageMenu->child( select => title => loc('Select') => path => "/Admin/Scrips" );
                 HTML::Mason::Commands::PageMenu->child( create => title => loc('Create') => path => "/Admin/Scrips/Create.html" );
             }
+        }
+    }
+
+    if ( $request_path =~ m{^/Admin/Lifecycles} ) {
+        if (defined($HTML::Mason::Commands::DECODED_ARGS->{'Name'}) && defined($HTML::Mason::Commands::DECODED_ARGS->{'Type'}) ) {
+            my $LifecycleObj = RT::Lifecycle->new();
+            $LifecycleObj->Load(Name => $HTML::Mason::Commands::DECODED_ARGS->{'Name'}, Type => $HTML::Mason::Commands::DECODED_ARGS->{'Type'});
+
+            if ($LifecycleObj->Name && $LifecycleObj->{data}{type} eq $HTML::Mason::Commands::DECODED_ARGS->{'Type'}) {
+                my $Name_uri = $LifecycleObj->Name;
+                my $Type_uri = $LifecycleObj->Type;
+                RT::Interface::Web::EscapeURI(\$Name_uri);
+                RT::Interface::Web::EscapeURI(\$Type_uri);
+
+                $page->child( basics => title => loc('Modify'),  path => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . "&Name=" . $Name_uri );
+                $page->child( mappings => title => loc('Mappings'),  path => "/Admin/Lifecycles/Mappings.html?Type=" . $Type_uri . "&Name=" . $Name_uri );
+            }
+        }
+        else {
+            $page->child( select => title => loc('Select'), path => "/Admin/Lifecycles/" );
+            $page->child( create => title => loc('Create'), path => "/Admin/Lifecycles/Create.html" );
         }
     }
 
