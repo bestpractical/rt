@@ -744,6 +744,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::FutureMailgate' => '4.4',
 
     'RT::Extension::ConfigInDatabase' => '4.6',
+    'RT::Extension::LifecycleUI' => '4.6',
 );
 
 sub InitPlugins {
