@@ -1,0 +1,81 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<defs>
+  <marker id="transition_arrowhead" markerHeight=5 markerWidth=5 markerUnits="strokeWidth" orient="auto" refX=0 refY=0 viewBox="-5 -5 10 10">
+    <path d="M 0,0 m -5,-5 L 5,0 L -5,5 Z" fill="black" />
+  </marker>
+  <marker id="line_marker_arrowhead" markerHeight=5 markerWidth=5 markerUnits="strokeWidth" orient="auto" refX=0 refY=0 viewBox="-5 -5 10 10">
+    <path d="M 0,0 m -5,-5 L 5,0 L -5,5 Z" fill="black" />
+  </marker>
+  <marker id="line_marker_diamond" markerHeight=8 markerWidth=8 markerUnits="strokeWidth" orient="auto" refX=0 refY=0 viewBox="-8 -8 16 16">
+    <path d="M 0,0 m -5,0 L 0,5 L 5,0 L 0,-5 Z"  fill="white" stroke="black" stroke-width=2 stroke-dasharray="0" stroke-linecap="square" />
+  </marker>
+</defs>
+
+<filter id="focus" x="-100%" y="-100%" height="300%" width="300%">
+  <feFlood result="flood" flood-color="#FFD700" flood-opacity="1"></feFlood>
+  <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in"></feComposite>
+  <feMorphology in="mask" result="dilated" operator="dilate" radius="5"></feMorphology>
+  <feGaussianBlur in="dilated" result="blurred" stdDeviation="3"></feGaussianBlur>
+  <feMerge>
+    <feMergeNode in="blurred"></feMergeNode>
+    <feMergeNode in="SourceGraphic"></feMergeNode>
+  </feMerge>
+</filter>
+
+<filter id="hover" x="-100%" y="-100%" height="300%" width="300%">
+  <feFlood result="flood" flood-color="#80A8FF" flood-opacity="1"></feFlood>
+  <feComposite in="flood" result="mask" in2="SourceGraphic" operator="in"></feComposite>
+  <feMorphology in="mask" result="dilated" operator="dilate" radius="5"></feMorphology>
+  <feGaussianBlur in="dilated" result="blurred" stdDeviation="3"></feGaussianBlur>
+  <feMerge>
+    <feMergeNode in="blurred"></feMergeNode>
+    <feMergeNode in="SourceGraphic"></feMergeNode>
+  </feMerge>
+</filter>
+

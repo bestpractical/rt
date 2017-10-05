@@ -1,0 +1,138 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div class="status-menus">
+% for my $status (keys %menus) {
+<div class="status-menu" data-status="<% $status %>">
+% my $menu = $menus{$status};
+<& /Elements/Menu, menu => $menu &>
+</div>
+% }
+</div>
+
+<%INIT>
+my $Lifecycle = $Ticket->LifecycleObj;
+my $id = $Ticket->Id;
+my %menus;
+
+# largely borrowed from /Elements/Tabs
+my $current = $Ticket->Status;
+my $hide_resolve_with_deps = RT->Config->Get('HideResolveActionsWithDependencies')
+    && $Ticket->HasUnresolvedDependencies;
+my $query_string = sub {
+    my %args = @_;
+    my $u    = URI->new();
+    $u->query_form(map { $_ => $args{$_} } sort keys %args);
+    return $u->query;
+};
+
+for my $status ($Lifecycle->Valid) {
+    $menus{$status} = RT::Interface::Web::Menu->new();
+}
+
+my %seen_status;
+
+my $add_menu = sub {
+    my $next = shift;
+    my $info = shift || {};
+    my @class;
+    my $include_url = 1;
+
+    $seen_status{$next}++;
+
+    if (!$Lifecycle->IsTransition( $current => $next )) {
+        push @class, 'no-transition';
+        $include_url = 0;
+    }
+    else {
+        my $check = $Lifecycle->CheckRight( $current => $next );
+        if (!$Ticket->CurrentUserHasRight($check)) {
+            push @class, 'no-permission';
+            $include_url = 0;
+        }
+    }
+
+    if ($hide_resolve_with_deps
+        && $Lifecycle->IsInactive($next)
+        && !$Lifecycle->IsInactive($current)) {
+        push @class, 'hide-resolve-with-deps';
+        $include_url = 0;
+    }
+
+    my $action = $info->{'update'} || '';
+    my $url = '/Ticket/';
+    $url .= "Update.html?". $query_string->(
+        $action
+            ? (Action        => $action)
+            : (SubmitTicket  => 1, Status => $next),
+        DefaultStatus => $next,
+        id            => $id,
+    );
+    my $key = $info->{'label'} || ucfirst($next);
+    $menus{$next}->child(
+        $key =>
+        title => loc( $key ),
+        ($include_url ? (path => $url) : ()),
+        class => (join " ", @class),
+    );
+};
+
+foreach my $info ( $Lifecycle->Actions($current) ) {
+    $add_menu->($info->{to}, $info);
+}
+
+for my $status ($Lifecycle->Valid) {
+    next if $seen_status{$status};
+    $add_menu->($status);
+}
+
+$m->callback( CallbackName => 'StatusMenus', TicketObj => $Ticket, LifecycleObj => $Lifecycle, Menus => \%menus);
+
+</%INIT>
+<%ARGS>
+$Ticket => undef
+</%ARGS>

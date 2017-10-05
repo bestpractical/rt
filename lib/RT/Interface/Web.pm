@@ -137,6 +137,12 @@ sub JSFiles {
       /static/RichText/ckeditor.js
       dropzone.min.js
       combobox.js
+      d3.min.js
+      handlebars-4.0.6.min.js
+      lifecycleui-model.js
+      lifecycleui-viewer.js
+      lifecycleui-viewer-interactive.js
+      lifecycleui-editor.js
       }, RT->Config->Get('JSFiles');
 }
 

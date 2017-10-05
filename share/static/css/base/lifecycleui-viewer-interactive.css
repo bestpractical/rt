@@ -1,0 +1,54 @@
+.lifecycle-ui .status-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+}
+
+.lifecycle-ui .status-menu.selected {
+    display: block;
+}
+
+.lifecycle-ui .status-menu .sf-menu a:visited,
+.lifecycle-ui .status-menu .sf-menu a {
+    border: none;
+    color: #000;
+}
+
+.lifecycle-ui .status-menu a.not-current,
+.lifecycle-ui .status-menu a.no-transition,
+.lifecycle-ui .status-menu a.no-permission,
+.lifecycle-ui .status-menu a.hide-resolve-with-deps {
+    color: #AAAAAA;
+    cursor: default;
+    text-decoration: none;
+}
+
+.lifecycle-ui .status-menu .not-current:hover,
+.lifecycle-ui .status-menu .no-transition:hover,
+.lifecycle-ui .status-menu .no-permission:hover,
+.lifecycle-ui .status-menu .hide-resolve-with-deps:hover {
+    background-color: #fff;
+}
+
+.lifecycle-ui .status-menu .sf-menu.sf-vertical {
+    width: 10em;
+}
+
+.lifecycle-ui .status-menu .sf-menu.sf-vertical li {
+    width: 100%;
+}
+
+.lifecycle-ui .status-menu .sf-menu.sf-shadow {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -moz-box-shadow: 2px 2px 8px -2px #999;
+    -webkit-box-shadow: 2px 2px 8px -2px #999;
+    box-shadow: 2px 2px 8px -2px #999;
+}
+
+.lifecycle-ui .statuses .selected circle {
+    filter: url(#hover);
+}
+

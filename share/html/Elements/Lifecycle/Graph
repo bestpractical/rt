@@ -1,0 +1,121 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div class="lifecycle-ui<% $Editing ? ' editing' : '' %><% $Interactive ? ' interactive' : '' %><% $Zoomable ? ' zoomable' : '' %> center-<% $Center || 'origin' %>" id="lifecycle-<% $id %>">
+    <div class="lifecycle-view">
+      <div class="overlay-buttons">
+          <button class="zoom zoom-in">+</button>
+          <button class="zoom zoom-reset">0</button>
+          <button class="zoom zoom-out">-</button>
+      </div>
+      <svg>
+          <& GraphExtras, %ARGS &>
+          <g class="transform">
+            <g class="decorations"></g>
+            <g class="transitions"></g>
+            <g class="statuses"></g>
+          </g>
+      </svg>
+    </div>
+
+% if ($Editing) {
+    <& Inspector, %ARGS &>
+% }
+% if ($Interactive) {
+    <& Interactive, %ARGS &>
+% }
+    <script type="text/javascript">
+        jQuery(function () {
+            jQuery(".lifecycle-ui#lifecycle-<% $id %>").each(function () {
+                var container = this;
+                var config = <% JSON($config) |n %>;
+                var name = <% $Lifecycle | j%>;
+
+% if ($Ticket) {
+                var ticketStatus = <% $Ticket->Status | j%>;
+% } else {
+                var ticketStatus = undefined;
+% }
+
+% if ($Editing) {
+                var editor = new RT.LifecycleEditor();
+                editor.initializeEditor(container, name, config, ticketStatus);
+% } else {
+% if ($Interactive) {
+                var viewer = new RT.LifecycleViewerInteractive();
+% } else {
+                var viewer = new RT.LifecycleViewer();
+% }
+                viewer.initializeViewer(container, name, config, ticketStatus);
+% }
+            });
+        });
+    </script>
+</div>
+<%ARGS>
+$Editing => 0
+$Interactive => 0
+$Zoomable => 0
+$Center => 'origin'
+$Lifecycle => undef
+$Ticket => undef
+</%ARGS>
+<%INIT>
+$Lifecycle ||= $Ticket->Lifecycle
+    if $Ticket;
+
+my $config = RT->Config->Get('Lifecycles')->{$Lifecycle};
+Abort("Invalid Lifecycle") if !$Lifecycle || !$config;
+
+my $id = $Lifecycle . '-' . int(rand(2**31));
+
+if ($Editing) {
+    $Zoomable = 1;
+    $Center = 'origin';
+}
+
+</%INIT>

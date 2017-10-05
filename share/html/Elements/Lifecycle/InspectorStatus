@@ -1,0 +1,109 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<script type="text/x-template" class="lifecycle-inspector-template" data-type="status">
+    <div class="status">
+        <table>
+          <tr>
+            <td><&|/l&>Status</&>:</td>
+            <td><input type="text" name="name" maxlength=25 value="{{status.name}}"></td>
+          </tr>
+
+          <tr>
+            <td><&|/l&>Type</&>:</td>
+            <td><select name="type">
+              {{#select status.type}}
+              <option value="initial"><&|/l&>initial</&></option>
+              <option value="active"><&|/l&>active</&></option>
+              <option value="inactive"><&|/l&>inactive</&></option>
+              {{/select}}
+            </select></td>
+          </tr>
+
+          <tr>
+            <td><span title="<&|/l&>Can this status be selected on creation?</&>"><&|/l&>Creation</&><span class="hint" ><&|/l&>~[?~]</&></span>:</td>
+            <td><input type="checkbox" name="creation" {{#if status.creation}}checked=checked{{/if}}></td>
+          </tr>
+
+          <tr>
+            <td><&|/l&>Color</&>:</td>
+            <td>
+              <span class="color-control" data-field="color">
+                <span class="current-color" title="{{status.color}}" style="background-color: {{status.color}}">&nbsp;</span>
+                <button class="change-color"><&|/l&>Change</&></button>
+              </span>
+            </td>
+          </tr>
+          <tr class="color-widget" data-field="color">
+            <td colspan="2">
+              <div class="color-picker"></div>
+            </td>
+          </tr>
+        </table>
+
+        <ul class="toplevel sf-vertical">
+          <li><a href="javascript:void(0)" class="menu-item"><&|/l&>Add Transition...</&></a>
+            <ul>
+            {{#each lifecycle.statuses}}
+              <li class="{{#if (canAddTransition ../status.name this ../lifecycle)}}{{else}}hidden{{/if}}"><a href="javascript:void(0)" class="menu-item add-transition" data-from="{{../status.name}}" data-to="{{this}}"><&|/l, "{{this}}"&>to [_1]</&></a></li>
+            {{/each}}
+            </ul>
+          <li><a href="javascript:void(0)" class="menu-item"><&|/l&>Select Transition...</&></a>
+            <ul>
+              {{#each lifecycle.statuses}}
+                <li class="{{#if (canSelectTransition ../status.name this ../lifecycle)}}{{else}}hidden{{/if}}"><a href="#" class="menu-item select-transition" data-from="{{../status.name}}" data-to="{{this}}"><&|/l, "{{this}}"&>to [_1]</&></a></li>
+              {{/each}}
+              {{#each lifecycle.statuses}}
+                <li class="{{#if (canSelectTransition this ../status.name ../lifecycle)}}{{else}}hidden{{/if}}"><a href="#" class="menu-item select-transition" data-to="{{../status.name}}" data-from="{{this}}"><&|/l, "{{this}}"&>from [_1]</&></a></li>
+              {{/each}}
+            </ul>
+          </li>
+        </ul>
+
+        <button class="delete"><&|/l&>Delete Status</&></button>
+    </div>
+</script>

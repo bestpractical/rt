@@ -1,0 +1,153 @@
+.lifecycle-ui.editing svg {
+    display: inline-block;
+    float: left;
+    width: 809px;
+    height: 500px;
+
+    /* checkerboard pattern */
+    background: #F9F9F9 url('data:image/svg+xml,\
+        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"         fill-opacity=".05" >\
+            <rect x="200" width="200" height="200" />\
+            <rect y="200" width="200" height="200" />\
+    </svg>');
+    background-size: 25px 25px;
+}
+
+.lifecycle-ui.editing .overlay-buttons {
+    left: 700px;
+}
+
+.lifecycle-ui .inspector {
+    display: inline-block;
+    width: 250px;
+    min-height: 500px;
+    border: 1px solid black;
+}
+
+.lifecycle-ui .inspector .content {
+    padding: 1em;
+    border-top: 1px solid black;
+}
+
+.lifecycle-ui .inspector .header .toplevel {
+    padding-top: 1em;
+}
+
+.lifecycle-ui .inspector .header .controls {
+    padding: 0 0 1em 1em;
+}
+
+.lifecycle-ui .inspector input[type=text] {
+    width: 10em;
+}
+
+.lifecycle-ui .inspector .color-control span.current-color {
+    display: inline;
+    padding-left: 1em;
+    border: 1px solid black;
+}
+
+.lifecycle-ui .removing {
+    opacity: 0;
+}
+
+.lifecycle-ui .has-focus .point-handle {
+    stroke: black;
+    fill: steelblue;
+}
+
+.lifecycle-ui .inspector .actions {
+    list-style-type: none;
+    padding: 0;
+}
+
+.lifecycle-ui .inspector .actions .action {
+    border: 1px solid black;
+    margin-bottom: .5em;
+    padding: .5em;
+}
+
+.lifecycle-ui.editing svg.has-focus .decorations > * {
+    opacity: .15;
+}
+
+.lifecycle-ui.editing svg.has-focus .decorations .focus,
+.lifecycle-ui.editing svg.has-focus .transitions .focus {
+    opacity: 1;
+}
+
+.lifecycle-ui.editing svg.has-focus[data-focus-type=transition] .statuses .focus-from {
+    opacity: 1;
+}
+
+.lifecycle-ui.editing .decorations .text-background {
+    stroke: none;
+    fill: none;
+}
+
+.lifecycle-ui.editing svg.has-focus .decorations .focus.text-background {
+    fill: white;
+    filter: url(#focus);
+}
+
+.lifecycle-ui .inspector button.delete {
+    margin-top: 2em;
+}
+
+.lifecycle-ui .inspector .actions button.delete {
+    margin-top: 0;
+}
+
+.lifecycle-ui .inspector .hint {
+    vertical-align: super;
+    font-size: .8em;
+    color: gray;
+}
+
+.lifecycle-ui .invisible {
+    visibility: hidden;
+}
+
+.lifecycle-ui .inspector .sf-menu a:visited,
+.lifecycle-ui .inspector .sf-menu a {
+    border: none;
+    color: #000;
+}
+
+.lifecycle-ui .inspector .sf-menu.sf-vertical {
+    margin-left: -1em;
+}
+
+.lifecycle-ui .inspector .sf-menu.sf-vertical,
+.lifecycle-ui .inspector .sf-menu.sf-vertical > li {
+    width: 175px;
+}
+
+.lifecycle-ui .inspector .sf-vertical li:hover ul,
+.lifecycle-ui .inspector .sf-vertical li.sfHover ul {
+    left: 175px;
+}
+
+.lifecycle-ui .statuses .hover {
+    opacity: 1;
+}
+
+.lifecycle-ui .statuses .hover circle,
+.lifecycle-ui .transitions .hover,
+.lifecycle-ui .decorations :not(text).hover {
+    opacity: 1;
+    filter: url(#hover);
+}
+
+.lifecycle-ui.editing .decorations .hover.text-background {
+    fill: white;
+}
+
+.lifecycle-ui .inspector button:disabled {
+    background: hsl(222, 20%, 40%);
+    cursor: not-allowed;
+}
+
+.lifecycle-ui .inspector tr.section td {
+    padding-top: 1em;
+}

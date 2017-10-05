@@ -1,0 +1,28 @@
+body#comp-Admin-Lifecycles ul + h2 {
+    margin-top: 2em;
+}
+
+.ticket-info-lifecycle .titlebox-title .widget a {
+    background-position: center -7px
+}
+
+.ticket-info-lifecycle .titlebox-title {
+    margin-left: 1em
+}
+
+.ticket-info-lifecycle .titlebox-title .left {
+    padding-left: 2.25em;
+    margin-left: 0;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    -webkit-border-top-left-radius: 0.3em;
+    -webkit-border-top-right-radius: 0.3em;
+    -moz-border-radius-topleft: 0.3em;
+    -moz-border-radius-topright: 0.3em;
+    border-radius: 0.3em 0.3em 0 0;
+}
+
+.ticket-info-lifecycle .titlebox .titlebox-title .left {
+    background-color: #b32;
+    color: #fff;
+}

@@ -1,0 +1,119 @@
+.lifecycle-ui svg {
+    border: 1px solid black;
+    width: 500px;
+    height: 309px;
+}
+
+.lifecycle-ui.center-fit:not(.zoomable) svg {
+    border: none;
+}
+
+.lifecycle-ui .overlay-buttons {
+    position: absolute;
+    top: 1em;
+    left: 391px;
+}
+
+.lifecycle-ui .overlay-buttons .zoom {
+    display: none;
+}
+
+.lifecycle-ui.zoomable .overlay-buttons .zoom {
+    display: inline-block;
+}
+
+.lifecycle-ui .statuses circle {
+    stroke: black;
+    stroke-width: 2px;
+}
+
+.lifecycle-ui .transitions path {
+    stroke: black;
+    stroke-width: 2px;
+    fill: none;
+    opacity: .15;
+    marker-end: url(#transition_arrowhead);
+}
+
+.lifecycle-ui .dotted {
+    stroke-dasharray: 2;
+}
+
+.lifecycle-ui .dashed {
+    stroke-dasharray: 5;
+}
+
+.lifecycle-ui .statuses text {
+    text-anchor: middle;
+    alignment-baseline: middle;
+}
+
+.lifecycle-ui .decorations line {
+    stroke: #000000;
+}
+
+.lifecycle-ui .decorations polygon,
+.lifecycle-ui .decorations circle,
+.lifecycle-ui .decorations line {
+    stroke-width: 2px;
+}
+
+.lifecycle-ui text {
+    cursor: default;
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+.lifecycle-ui text::selection {
+    background: none;
+}
+
+.lifecycle-ui .statuses > *,
+.lifecycle-ui .transitions > *,
+.lifecycle-ui .decorations > * {
+    transition: opacity .2s;
+}
+
+.lifecycle-ui .has-focus .statuses > * {
+    opacity: .15;
+}
+
+.lifecycle-ui .has-focus .transitions > * {
+    opacity: 0;
+}
+
+.lifecycle-ui .has-focus .statuses .focus {
+    opacity: 1;
+}
+
+.lifecycle-ui .has-focus .statuses .focus circle {
+    stroke-width: 6px;
+}
+
+.lifecycle-ui .has-focus .statuses .focus circle,
+.lifecycle-ui .has-focus .transitions .focus,
+.lifecycle-ui .has-focus .decorations :not(text).focus {
+    filter: url(#focus);
+}
+
+.lifecycle-ui .has-focus .statuses .focus-to,
+.lifecycle-ui .has-focus .transitions .focus-to {
+    opacity: 1;
+}
+
+.lifecycle-ui .decorations text.bold {
+    font-weight: bold;
+}
+
+.lifecycle-ui .decorations text.italic {
+    font-style: italic;
+}
+
+.lifecycle-ui .lifecycle-view {
+    position: relative;
+}
+
+.lifecycle-ui .overlay-buttons button {
+    border: none;
+}

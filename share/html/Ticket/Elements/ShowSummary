@@ -84,6 +84,10 @@
     </&>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterReminders' );
+
+<& /Ticket/Elements/ShowLifecycle, Ticket => $Ticket &>
+% $m->callback( %ARGS, CallbackName => 'AfterLifecycle' );
+
     <&| /Widgets/TitleBox, title => loc("Dates"),
         ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id) : ()),
         class => 'ticket-info-dates',
