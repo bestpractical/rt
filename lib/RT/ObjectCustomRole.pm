@@ -206,6 +206,19 @@ sub FindDependencies {
     $deps->Add( out => $self->QueueObj );
 }
 
+sub Serialize {
+    my $self = shift;
+    my %args = (@_);
+    my %store = $self->SUPER::Serialize(@_);
+
+    if ($store{ObjectId}) {
+        my $obj = RT::Queue->new( RT->SystemUser );
+        $obj->Load( $store{ObjectId} );
+        $store{ObjectId} = \($obj->UID);
+    }
+    return %store;
+}
+
 =head2 id
 
 Returns the current value of id.
