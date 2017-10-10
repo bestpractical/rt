@@ -196,6 +196,15 @@ sub Delete {
     return ($ok, $msg);
 }
 
+sub FindDependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::FindDependencies($walker, $deps);
+
+    $deps->Add( out => $self->CustomRoleObj );
+    $deps->Add( out => $self->QueueObj );
+}
 
 =head2 id
 
