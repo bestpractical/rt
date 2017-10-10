@@ -1512,6 +1512,9 @@ sub FindDependencies {
     my $instance = $self->InstanceObj;
     $deps->Add( out => $instance ) if $instance;
 
+    my $custom_role = $self->_CustomRoleObj;
+    $deps->Add( out => $custom_role ) if $custom_role;
+
     # Group members records, unless we're a system group
     if ($self->Domain ne "SystemInternal") {
         my $objs = RT::GroupMembers->new( $self->CurrentUser );
@@ -1619,6 +1622,11 @@ sub Serialize {
     $store{Disabled} = $self->PrincipalObj->Disabled;
     $store{Principal} = $self->PrincipalObj->UID;
     $store{PrincipalId} = $self->PrincipalObj->Id;
+
+    if (my $role = $self->_CustomRoleObj) {
+        $store{Name} = \($role->UID);
+    }
+
     return %store;
 }
 
