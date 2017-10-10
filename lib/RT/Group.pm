@@ -1339,15 +1339,9 @@ sub Label {
         return $self->Name;
     }
 
-    if ($self->Domain =~ /-Role$/) {
-        my ($id) = $self->Name =~ /^RT::CustomRole-(\d+)$/;
-        if ($id) {
-            my $role = RT::CustomRole->new($self->CurrentUser);
-            $role->Load($id);
-
-            # don't loc user-defined role names
-            return $role->Name;
-        }
+    if (my $role = $self->_CustomRoleObj) {
+        # don't loc user-defined role names
+        return $role->Name;
     }
 
     return $self->loc($self->Name);
@@ -1700,6 +1694,21 @@ sub PostInflate {
         Member => $self->PrincipalObj,
         ImmediateParent => $self->PrincipalObj
     );
+}
+
+# If this group represents the members of a custom role, then return
+# the RT::CustomRole object. Otherwise, return undef
+sub _CustomRoleObj {
+    my $self = shift;
+    if ($self->Domain =~ /-Role$/) {
+        my ($id) = $self->Name =~ /^RT::CustomRole-(\d+)$/;
+        if ($id) {
+            my $role = RT::CustomRole->new($self->CurrentUser);
+            $role->Load($id);
+            return $role;
+        }
+    }
+    return;
 }
 
 RT::Base->_ImportOverlays();
