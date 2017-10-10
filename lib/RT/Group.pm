@@ -1638,6 +1638,11 @@ sub PreInflate {
     my $principal_id  = delete $data->{PrincipalId};
     my $disabled      = delete $data->{Disabled};
 
+    if (ref($data->{Name})) {
+        my $role = $importer->LookupObj(${ $data->{Name} });
+        $data->{Name} = $role->GroupType;
+    }
+
     # Inflate refs into their IDs
     $class->SUPER::PreInflate( $importer, $uid, $data );
 
