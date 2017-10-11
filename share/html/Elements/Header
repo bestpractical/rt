@@ -76,7 +76,7 @@
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
 
-% my $stylesheet_plugin = "/NoAuth/css/".$style."/InHeader";
+% my $stylesheet_plugin = '<!--[if lt IE 8]><link rel="stylesheet" href="<%RT->Config->Get("WebPath")%>/static/css/'.$style.'/msie.css" type="text/css" media="all" /><![endif]--><!--[if lt IE 7]><link rel="stylesheet" href="<%RT->Config->Get("WebPath")%>/static/css/'.$style.'/msie6.css" type="text/css" media="all" /><![endif]-->';
 % if ($m->comp_exists($stylesheet_plugin) ) {
 <& $stylesheet_plugin &>
 % }

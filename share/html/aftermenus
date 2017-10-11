@@ -45,26 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( $show_menu ) {
-<div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
-<div id="page-navigation"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
-% }
-<div id="topactions"><& /Elements/WidgetBar, menu => PageWidgets() &></div>
+<script type="text/javascript">
+var initMenus = function() {
+    jQuery.fn.supersubs.defaults = {
+        maxWidth: 30,
+        extraWidth: 2
+    };
 
-% if ($m->comp_exists($stylesheet_plugin) ) {
-<& $stylesheet_plugin &>
-% }
+    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ speed: 'fast' });
+    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled').supersubs().superfish({ dropShadows: false, speed: 'fast' }).supposition();
 
-<div id="body">
-% $m->callback( %ARGS, CallbackName => 'BeforeBody' );
-% $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
-<%ARGS>
-$title => $m->callers(-1)->path
-$show_menu => 1
-</%ARGS>
-<%init>
-my $style = $session{'CurrentUser'}
-          ? $session{'CurrentUser'}->Stylesheet
-          : RT->Config->Get('WebDefaultStylesheet');
-my $stylesheet_plugin = "/aftermenus";
-</%init>
+    var originalOffset = jQuery("#page-menu").offset().top;
+    var floatMenu      = function () {
+        jQuery("#page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);
+    };
+    floatMenu();
+    jQuery(window).scroll(floatMenu);
+};
+
+// If everything is loaded, init NOW.  Otherwise, defer to DOM ready.
+if (jQuery.fn.supersubs && jQuery.fn.superfish && jQuery.fn.supposition)
+    initMenus();
+else
+    jQuery(initMenus);
+</script>
