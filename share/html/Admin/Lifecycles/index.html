@@ -62,7 +62,7 @@
 <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
 <td class="collection-as-table"><a href="<% RT->Config->Get('WebURL') %>Admin/Lifecycles/Modify.html?Type=<% $lifecycle->Type |u %>&Name=<% $lifecycle->Name |u %>"><% $lifecycle->Name %></a></td>
 <td class="collection-as-table"><% loc($lifecycle->Type) %></td>
-% my $display = $lifecycle->Type eq 'ticket' ? ($lifecycle->{data}{ticket_display} || 'hidden') : '';
+% my $display = $lifecycle->Type eq 'ticket' ? ($lifecycle->{data}{ticket_display} || 'hidden') : 'hidden';
 <td class="collection-as-table"><% loc($display) %></td>
 </tr>
 % }
