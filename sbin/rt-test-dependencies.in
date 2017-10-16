@@ -199,19 +199,17 @@ set_dep( CORE => 'Symbol::Global::Name' => 0.05 ) if $] >= 5.019003;
 set_dep( CORE => CGI => 4.00 ) if $] > 5.019003;
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
-Crypt::SSLeay
 Getopt::Long
 LWP::Protocol::https
-LWP::UserAgent 6.0
+LWP::UserAgent 6.02
 Mozilla::CA
-Net::SSL
 Pod::Usage
 .
 
 $deps{'CLI'} = [ text_to_hash( << '.') ];
 Getopt::Long 2.24
 HTTP::Request::Common
-LWP
+LWP 6.02
 Term::ReadKey
 Term::ReadLine
 Text::ParseWords
