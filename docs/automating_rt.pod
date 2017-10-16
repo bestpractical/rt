@@ -78,6 +78,20 @@ The C<--action> argument is set to L<RT::Action> which is the base class
 for RT actions. Since this class doesn't perform any action itself, this
 command will just output the results of the TicketSQL search.
 
+=head2 Multiple --Action parameters
+
+    /opt/rt4/bin/rt-crontool \
+      --search RT::Search::FromSQL \
+      --search-arg "Status = 'stalled'" \
+      --action RT::Action::SetStatus  --action-arg resolved \
+      --action RT::Action::Notify \
+          --action-arg 'Requestor' \
+          --transaction last \
+          --template 'Stalled ticket resolved' \
+
+rt-crontool can also take more than one --action parameter to perform multiple steps are a time. In the example above
+two actions are completed first it checks for any tickets with a "stalled" status and then marks them as resolved.
+As well as notifies the Requestors on the ticket of the change.p
 =head1 Auto-resolve Aged Tickets
 
 You can auto-set status based on any criteria you can define in
