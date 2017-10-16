@@ -1,0 +1,49 @@
+=head1 NAME
+
+    RT::CustomField - a collection of RT CustomField objects
+
+=head1 DESCRIPTION
+
+Instructions on setting up category based Custom Fields.
+
+=head1 SYNOPSIS
+
+  use RT::CustomFields;
+
+=head1 Categories
+
+Categories allows for RT Custom Fields to be based on one another. Such that there is a parent and a child field. Thus by choosing values for the parent field the childs options can be restricted.To create these linked fields create the parent Custom Field first. Choose a Custom Field L<Type|/"SUPPORTED TYPES"> that supports C<Categories> then save the changes. From there the child can choose a parent Custom Field under the C<Categories Based On> drop down menu. From there when addding values to the child class under the C<Categories> coloumn a value from the parent Custom Field can be selected to bind the child Custom Field value.
+
+=head2 SUPPORTED TYPES
+
+=over
+
+=item Types:
+
+  Combobox: Select or enter one value
+  Select one value
+  Select multiple values
+
+=back
+
+=head2 Walkthrough
+
+=for html <img alt="Custom Fields parent class" src="images/createStates.png" width="75%" style="border: #00008B 1px solid;">
+
+First we make our parent Custom Field. This field C<States> will dictate the values available for the C<Cities> Custom Field.
+We enter our values into the custom field.
+
+=for html <img alt="Custom Fields child class" src="images/createCities.png" width="75%" style="border: #00008B 1px solid;">
+
+Then we create our C<Cities> CF and choose it to have C<Category based on States> where States is the States CF.
+Now when we enter value options for the C<Cities> CF we can choose which State they belong to with in the Categories input box.
+
+=for html <img alt="Create ticket with CustomFields" src="images/customBlank.png" width="75%" style="border: #00008B 1px solid;">
+
+Here on making our ticket we can observe what the CF's look like prior to having any values selected.
+
+=for html <img alt="Parent CustomField value chosen" src="images/chose.png" width="75%" style="border: #00008B 1px solid;">
+
+After choosing a value for C<States> CF our options for the C<Cities> CF are reduced to only the applicable values.
+
+=cut
