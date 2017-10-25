@@ -343,6 +343,7 @@ sub _FillInTemplateURL {
     # special case, whole value should be an URL
     if ( $url =~ /^__CustomField__/ ) {
         my $value = $self->Content;
+        $value = '' if !defined($value);
         # protect from potentially malicious URLs
         if ( $value =~ /^\s*(?:javascript|data):/i ) {
             my $object = $self->Object;
