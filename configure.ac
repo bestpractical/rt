@@ -454,6 +454,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/3.8-ical-extension
                  etc/upgrade/4.0-customfield-checkbox-extension
                  etc/upgrade/generate-rtaddressregexp
+                 etc/upgrade/reset-sequences
                  etc/upgrade/sanity-check-stylesheets
                  etc/upgrade/shrink-cgm-table
                  etc/upgrade/shrink-transactions-table
