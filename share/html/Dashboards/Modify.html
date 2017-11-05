@@ -92,7 +92,7 @@ my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my $method = $Create ? 'ObjectsForCreating' : 'ObjectsForModifying';
 my @privacies = $Dashboard->$method;
 
-Abort(loc("Permission Denied")) if @privacies == 0;
+Abort(loc("Permission Denied"), Code => HTTP::Status::HTTP_FORBIDDEN) if @privacies == 0;
 
 if ($Create) {
     $title = loc("Create a new dashboard");
@@ -149,10 +149,13 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
 my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
+    if (!$can_delete) {
+        Abort(loc("Couldn't delete dashboard [_1]: Permission denied", $id), Code => HTTP::Status::HTTP_FORBIDDEN);
+    }
     my ($ok, $msg) = $Dashboard->Delete();
     if (!$ok) {
-             Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
-             }
+        Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg), Code => HTTP::Status::HTTP_BAD_REQUEST);
+    }
 
     push @results, $msg;
     $redirect_to = '/Dashboards/index.html';
