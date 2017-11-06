@@ -1353,20 +1353,6 @@ sub Label {
     return $self->loc($self->Name);
 }
 
-=head1 AUTHOR
-
-Jesse Vincent, jesse@bestpractical.com
-
-=head1 SEE ALSO
-
-RT
-
-=cut
-
-
-
-
-
 =head2 id
 
 Returns the current value of id.

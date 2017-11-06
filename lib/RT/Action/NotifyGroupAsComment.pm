@@ -70,12 +70,6 @@ sub SetReturnAddress {
     return $self->SUPER::SetReturnAddress( @_, is_comment => 1 );
 }
 
-=head1 AUTHOR
-
-Ruslan U. Zakirov E<lt>ruz@bestpractical.comE<gt>
-
-=cut
-
 RT::Base->_ImportOverlays();
 
 1;
