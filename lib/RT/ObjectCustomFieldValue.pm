@@ -48,6 +48,7 @@
 
 package RT::ObjectCustomFieldValue;
 
+use 5.010;
 use strict;
 use warnings;
 use base 'RT::Record';
@@ -343,6 +344,7 @@ sub _FillInTemplateURL {
     # special case, whole value should be an URL
     if ( $url =~ /^__CustomField__/ ) {
         my $value = $self->Content;
+        $value //= '';
         # protect from potentially malicious URLs
         if ( $value =~ /^\s*(?:javascript|data):/i ) {
             my $object = $self->Object;
@@ -359,7 +361,7 @@ sub _FillInTemplateURL {
     for my $key (keys %placeholders) {
         $url =~ s{__${key}__}{
             my $value = $placeholders{$key}{'value'}->( $self );
-            $value = '' if !defined($value);
+            $value //= '';
             RT::Interface::Web::EscapeURI(\$value) if $placeholders{$key}{'escape'};
             $value
         }gxe;
