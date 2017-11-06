@@ -3210,24 +3210,7 @@ sub CurrentUserCanSeeTime {
            !RT->Config->Get('HideTimeFieldsFromUnprivilegedUsers');
 }
 
-1;
-
-=head1 AUTHOR
-
-Jesse Vincent, jesse@bestpractical.com
-
-=head1 SEE ALSO
-
-RT
-
-=cut
-
 sub Table {'Tickets'}
-
-
-
-
-
 
 =head2 id
 

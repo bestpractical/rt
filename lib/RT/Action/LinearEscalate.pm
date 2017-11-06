@@ -263,11 +263,3 @@ sub Commit {
 RT::Base->_ImportOverlays();
 
 1;
-
-=head1 AUTHORS
-
-Kevin Riggle E<lt>kevinr@bestpractical.comE<gt>
-
-Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>
-
-=cut

@@ -189,14 +189,6 @@ sub __PushUserAddress {
 }
 
 
-=head1 AUTHOR
-
-Ruslan U. Zakirov E<lt>ruz@bestpractical.comE<gt>
-
-L<RT::Action::NotifyGroupAsComment>, F<rt-email-group-admin>
-
-=cut
-
 RT::Base->_ImportOverlays();
 
 1;

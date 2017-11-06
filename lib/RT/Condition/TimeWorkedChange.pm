@@ -75,10 +75,4 @@ sub IsApplicable {
     return 0;
 }
 
-=head1 AUTHOR
-
-Best Practical Solutions, LLC E<lt>modules@bestpractical.comE<gt>
-
-=cut
-
 1;
