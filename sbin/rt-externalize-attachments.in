@@ -48,6 +48,7 @@
 # END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
+use POSIX qw(strftime);
 
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
@@ -70,13 +71,23 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "verbose|v",
+    "help|h",
+    "verbose|v",
+    "age=s",
+    "batchsize=s",
+    "dry-run",
 );
 
 if ($opts{'help'}) {
     require Pod::Usage;
     print Pod::Usage::pod2usage(-verbose => 2);
     exit;
+}
+
+if ($opts{'dry-run'}) {
+    RT->Logger->info("(DRY-RUN, no changes made)");
+    # dry-run implies verbose output
+    $opts{verbose} = 1;
 }
 
 use RT -init;
@@ -104,6 +115,7 @@ $last = $last ? $last->Content : {};
 for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
     my $column = $class eq 'RT::Attachments' ? "Content" : "LargeContent";
     my $id = $last->{$class} || 0;
+    my $batchsize = $opts{'batchsize'} || 1;
 
     while (1) {
         my $attach = $class->new($RT::SystemUser);
@@ -119,13 +131,27 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             ENTRYAGGREGATOR => 'AND',
         );
 
+        if ($opts{'age'}) {
+            my $agelimit = strftime "%F", localtime(time()-$opts{'age'}*24*60*60);
+            $attach->Limit(
+                FIELD           => 'Created',
+                OPERATOR        => '<',
+                VALUE           => $agelimit,
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
+
         if ($class eq "RT::ObjectCustomFieldValues") {
             $attach->{'find_disabled_rows'} = 1;
         }
 
         $attach->RowsPerPage(100);
-        while ( my $a = $attach->Next ) {
+        while ( my $a = $attach->Next and $batchsize > 0) {
             $id = $a->id;
+
+            if ($opts{'batchsize'}) {
+                $batchsize -= 1;
+            }
 
             my ($ok, $why) = $a->ShouldStoreExternally;
             if (!$ok) {
@@ -147,44 +173,49 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
                 RT->Logger->info("Storing $class $id");
             }
 
-            my ($key, $msg) = Store( $content, $a );
-            unless ($key) {
-                RT->Logger->error("Failed to store $class $id: $msg");
-                exit 1;
+            my ($key, $msg) = ('DRY-RUN', '');
+            if (!$opts{'dry-run'}) {
+                ($key, $msg) = Store( $content, $a );
+                unless ($key) {
+                    RT->Logger->error("Failed to store $class $id: $msg");
+                    exit 1;
+                }
+
+                $RT::Handle->dbh->begin_work;
+
+                (my $status, $msg ) = $a->__Set(
+                    Field => $column, Value => $key
+                );
+                unless ($status) {
+                    RT->Logger->error("Failed to update $column of $class $id: $msg");
+                    exit 2;
+                }
+
+                ( $status, $msg ) = $a->__Set(
+                    Field => 'ContentEncoding', Value => 'external',
+                );
+                unless ($status) {
+                    RT->Logger->error("Failed to update ContentEncoding of $class $id: $msg");
+                    exit 2;
+                }
+
+                $RT::Handle->dbh->commit;
             }
-
-            $RT::Handle->dbh->begin_work;
-
-            (my $status, $msg ) = $a->__Set(
-                Field => $column, Value => $key
-            );
-            unless ($status) {
-                RT->Logger->error("Failed to update $column of $class $id: $msg");
-                exit 2;
-            }
-
-            ( $status, $msg ) = $a->__Set(
-                Field => 'ContentEncoding', Value => 'external',
-            );
-            unless ($status) {
-                RT->Logger->error("Failed to update ContentEncoding of $class $id: $msg");
-                exit 2;
-            }
-
-            $RT::Handle->dbh->commit;
 
             if ($opts{verbose}) {
                 RT->Logger->info("Stored $class $id as $key");
             }
         }
 
-        last unless $attach->Count;
+        last unless $attach->Count and $batchsize > 0;
     }
     $last->{$class} = $id;
 }
 
-# update high-water mark for each object type
-RT->System->SetAttribute( Name => "ExternalStorage", Content => $last );
+if (!$opts{'dry-run'}) {
+    # update high-water mark for each object type
+    RT->System->SetAttribute( Name => "ExternalStorage", Content => $last );
+}
 
 sub Store {
     my $content = shift;
@@ -202,11 +233,24 @@ rt-externalize-attachments - Move attachments from database to external storage
 
     rt-externalize-attachments [options]
 
+=head1 DESCRIPTION
+
+rt-externalize-attachments is used to move attachments out of the database to
+some external storage.
+
 =head1 OPTIONS
 
-This tool supports a few options. Most are for debugging.
-
 =over 8
+
+=item --age=AGE
+
+If age is given, then only attachments older than C<AGE> days will be moved.
+By default everything is moved.
+
+=item --batchsize=NUM
+
+If batchsize is given, then only C<NUM> number of attachments will be moved.
+By default everything is moved.
 
 =item -h
 
@@ -221,7 +265,16 @@ Display this documentation
 Log a message (at level "info") for each attachment, both before its
 upload begins and after it completes.
 
+=item --dry-run
+
+Make a trial run and do no changes (mostly the same output as a real run is
+produced). C<dry-run> implies verbose output.
+
 =back
+
+=head1 SEE ALSO
+
+L<RT_Config.html/External-storage>, L<RT::ExternalStorage>
 
 =cut
 
