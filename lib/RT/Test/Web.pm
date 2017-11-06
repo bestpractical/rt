@@ -52,21 +52,20 @@ use strict;
 use warnings;
 
 use base qw(Test::WWW::Mechanize);
-use Scalar::Util qw(weaken);
 use MIME::Base64 qw//;
 use Encode 'encode_utf8';
+use Storable 'thaw';
 
 BEGIN { require RT::Test; }
 require Test::More;
 
-my $instance;
+$RT::Test::Web::INSTANCES = undef;
 
 sub new {
     my ($class, @args) = @_;
 
     push @args, app => $RT::Test::TEST_APP if $RT::Test::TEST_APP;
-    my $self = $instance = $class->SUPER::new(@args);
-    weaken $instance;
+    my $self = $class->SUPER::new(@args);
     $self->cookie_jar(HTTP::Cookies->new);
     # Clear our caches of anything that the server process may have done
     $self->add_handler(
@@ -75,7 +74,14 @@ sub new {
         },
     ) if RT::Record->can( "FlushCache" );
 
+    $RT::Test::Web::INSTANCES++;
     return $self;
+}
+
+sub clone {
+    my $self = shift;
+    $RT::Test::Web::INSTANCES++ if defined $RT::Test::Web::INSTANCES;
+    return $self->SUPER::clone();
 }
 
 sub get_ok {
@@ -207,12 +213,9 @@ sub get_warnings {
     # forms on XYZ. This is because the most recently fetched page has changed
     # from XYZ to /__test_warnings, which has no form.
     my $clone = $self->clone;
+
     return unless $clone->get_ok('/__test_warnings');
-
-    use Storable 'thaw';
-
-    my @warnings = @{ thaw $clone->content };
-    return @warnings;
+    return @{ thaw $clone->content };
 }
 
 sub warning_like {
@@ -468,19 +471,27 @@ for my $method_name (qw/
 sub DESTROY {
     my $self = shift;
 
-    if ( RT::Test->builder->{Done_Testing} ) {
-        die "RT::Test::Web object needs to be destroyed before done_testing is called";
-    }
-
-    if ( !$RT::Test::Web::DESTROY++ ) {
-        $self->no_warnings_ok;
+    if (defined $RT::Test::Web::INSTANCES) {
+        $RT::Test::Web::INSTANCES--;
+        if ($RT::Test::Web::INSTANCES == 0 ) {
+            # Ordering matters -- clean out INSTANCES before we check
+            # warnings, so the clone therein sees that we've already begun
+            # cleanups.
+            undef $RT::Test::Web::INSTANCES;
+            $self->no_warnings_ok;
+        }
     }
 }
 
 END {
-    return unless $instance;
     return if RT::Test->builder->{Original_Pid} != $$;
-    $instance->no_warnings_ok if !$RT::Test::Web::DESTROY++;
+    if (defined $RT::Test::Web::INSTANCES and $RT::Test::Web::INSTANCES == 0 ) {
+        # Ordering matters -- clean out INSTANCES after the `new`
+        # bumps it up to 1.
+        my $cleanup = RT::Test::Web->new;
+        undef $RT::Test::Web::INSTANCES;
+        $cleanup->no_warnings_ok;
+    }
 }
 
 1;
