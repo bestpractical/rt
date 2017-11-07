@@ -58,7 +58,7 @@ ok($dupcf->id, "Created the SearchTest3 CF");
 
 
 my $t1 = RT::Ticket->new(RT->SystemUser);
-my ( $id, undef $msg ) = $t1->Create(
+my ( $id, undef, $msg ) = $t1->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest1',
     Requestor  => ['search1@example.com'],
