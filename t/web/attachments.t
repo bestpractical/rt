@@ -518,6 +518,4 @@ diag "update and create";
     $m2->content_lacks('Download favicon.png', 'page has no file name');
 }
 
-undef $m;
-undef $m2;
-done_testing();
+done_testing;

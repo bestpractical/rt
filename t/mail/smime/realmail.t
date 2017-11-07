@@ -42,7 +42,6 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
     }
 }
 
-undef $m;
 done_testing;
 
 sub email_ok {

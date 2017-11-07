@@ -286,5 +286,4 @@ diag "test the operators in search page" if $ENV{'TEST_VERBOSE'};
     is_deeply( [ $op->possible_values ], [ '=', '!=', '<', '>' ], 'op values' );
 }
 
-undef $agent;
 done_testing;

@@ -198,5 +198,4 @@ RT::Test->close_mailgate_ok($mail);
 
 }
 
-undef $m;
 done_testing;

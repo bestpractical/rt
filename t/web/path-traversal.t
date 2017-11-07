@@ -46,5 +46,4 @@ is($agent->status, 200);
 $agent->get("$baseurl/index.html#/.");
 is($agent->status, 200);
 
-undef $agent;
 done_testing;

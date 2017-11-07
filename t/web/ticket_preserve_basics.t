@@ -106,5 +106,4 @@ for my $try (@form_tries) {
     }
 }
 
-undef $m;
 done_testing();

@@ -146,5 +146,4 @@ diag "checking child ticket 2 for expected timeworked data"; {
     );
 }
 
-undef $m;
 done_testing();

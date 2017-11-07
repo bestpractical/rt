@@ -60,7 +60,6 @@ diag "Login as alex";
     sessions_seen_is($m, 4);
 }
 
-undef $m;
 done_testing;
 
 sub setup_auth_source {

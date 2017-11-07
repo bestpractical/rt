@@ -44,5 +44,4 @@ for my $quick (1, 0) {
     }
 }
 
-undef $m;
 done_testing;

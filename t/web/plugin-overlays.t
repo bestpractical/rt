@@ -26,5 +26,4 @@ ok $m->content, "Received some content";
 my $info = from_json($m->content) || {};
 ok $info->{Comments}{public}, "User.Comments is marked public via overlay";
 
-undef $m;
 done_testing;

@@ -111,5 +111,4 @@ sub search_users_ok {
 
 }
 
-undef $m;
-done_testing();
+done_testing;

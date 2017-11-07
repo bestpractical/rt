@@ -125,5 +125,4 @@ $m->content_contains('customers test group removed from dashboard subscription r
 $m->follow_link_ok({ id => 'page-subscription' });
 $m->content_lacks('customers test group');
 
-undef $m;
 done_testing;

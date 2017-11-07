@@ -517,8 +517,4 @@ diag "user can take/steal ticket with ReassignTicket+OwnTicket right";
     ok !($agent_c->find_all_links( text => 'Steal' ))[0], 'no Steal link';
 }
 
-
-undef $agent_a;
-undef $agent_b;
-undef $agent_c;
 done_testing;

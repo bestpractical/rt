@@ -133,5 +133,4 @@ RT::Test->close_mailgate_ok($mail);
     like( $attach->Content, qr'orzzzz');
 }
 
-undef $m;
 done_testing;

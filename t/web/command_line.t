@@ -602,7 +602,6 @@ sub check_attachment {
 my @warnings = grep { $_ !~ /\$ampm/ } $m->get_warnings;
 is( scalar @warnings, 0, 'no extra warnings' );
 
-undef $m;
 done_testing;
 
 1; # needed to avoid a weird exit value from expect_quit

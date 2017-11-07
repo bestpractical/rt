@@ -94,5 +94,4 @@ like( $advanced, qr{Query=id%3E0},
       'Advanced link still has Query param with id search'
     );
 
-undef $m;
 done_testing;

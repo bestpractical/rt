@@ -328,7 +328,4 @@ sub is_results_number {
     $m->content_contains( "Found $number ticket", "Found $number ticket" );
 }
 
-# to make $m->DESTROY happy
-undef $m;
-
 done_testing;

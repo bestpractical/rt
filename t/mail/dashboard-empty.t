@@ -127,6 +127,5 @@ ok($ok, $msg);
     ok($contents[2] =~ qr/a computer asset/);
 }
 
-undef $m;
 done_testing;
 

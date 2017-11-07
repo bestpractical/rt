@@ -81,5 +81,4 @@ for my $tid (@tickets) {
     }
 }
 
-undef $m;
 done_testing;

@@ -39,5 +39,4 @@ ok $m->login, 'logged in';
     );
 }
 
-undef $m;
 done_testing;

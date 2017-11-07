@@ -31,6 +31,5 @@ $m->content_lacks('nottelling', 'external source 2 pass obfuscated');
 $m->content_contains('ldap_bind', 'sanity check: we do have external config dumped');
 $m->content_contains('external_db_user', 'sanity check: we do have external config dumped');
 
-undef $m;
 
 done_testing;

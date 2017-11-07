@@ -25,5 +25,4 @@ ok $m->login, 'logged in';
 
 create_and_test_outgoing_emails( $queue, $m );
 
-undef $m;
 done_testing;

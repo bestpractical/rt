@@ -219,5 +219,4 @@ for my $quote ( q{'}, q{"} ) {
     }
 }
 
-undef $m;
 done_testing;

@@ -280,5 +280,4 @@ diag "Forward Transaction with non-ascii subject" if $ENV{TEST_VERBOSE};
     $m->content_contains( $subject, 'non-ascii subject got displayed correctly' );
 }
 
-undef $m;
 done_testing;

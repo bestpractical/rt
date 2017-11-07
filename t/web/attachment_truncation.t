@@ -49,5 +49,4 @@ $m->follow_link_ok( { text => "Download $name" } );
 $m->content_contains( 'a' x 1000, 'has the first 1000 chars' );
 $m->content_lacks( 'b', 'lacks chars after that' );
 
-undef $m;
 done_testing;

@@ -248,5 +248,4 @@ diag "create a ticket with an IP of abcd:23:: and search for doesn't match 'abcd
     }
 }
 
-undef $agent;
 done_testing;

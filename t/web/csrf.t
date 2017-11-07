@@ -225,5 +225,4 @@ like($m->response->request->uri, qr{^http://[^/]+\Q/SelfService/Create.html\E\?C
 $m->title_is('Create a ticket in #1');
 $m->content_contains('Describe the issue below:');
 
-undef $m;
 done_testing;
