@@ -122,6 +122,20 @@ sub app {
         $app = Plack::Middleware::Test::StashWarnings->wrap($app);
     }
 
+    # Yell if we have reconnected to the database -- if we have, it
+    # will be shared across all children processes.
+    if ($RT::Handle and $RT::Handle->dbh) {
+        $RT::Logger->critical(<<EOT);
+
+An extension has reconnected to the database too late into
+initialization.  This will cause the connection to be shared across
+processes, which will result in undefined behavior.  Plugins must
+perform database-requiring initialization in `init`, not `to_app`;
+check for upgraded versions of your plugins which resolve this.
+
+EOT
+    }
+
     return $app;
 }
 
