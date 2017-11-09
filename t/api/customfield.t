@@ -413,4 +413,61 @@ $cf_values = $cf->ValuesForObject($ticket);
 is( $cf_values->Count, 2, 'Found 2 values' );
 is( $ticket->CustomFieldValuesAsString( $cf, Separator => ', ' ), 'forth value, fifth value', 'Current cf contents' );
 
+$cf = RT::CustomField->new( RT->SystemUser );
+$cf->LoadByName(Name => 'TestingCF', Queue => 1, IncludeDisabled => 1 );
+($ok, $msg) = $cf->SetDisabled(0);
+ok($ok, "Re-enabled CF " . $cf->Name);
+
+diag 'Test sort ordering when disabling and re-enabling CFs';
+
+# Create more CFs
+foreach my $i (2..5) {
+    ($ok, $msg) = $cf->Create(
+        Name        => "TestingCF$i",
+        Queue       => '0',
+        Description => 'Global CF',
+        Type        => 'SelectSingle'
+    );
+    ok($ok, "Created " . $cf->Name . " successfully");
+
+    $ocf = RT::ObjectCustomField->new( RT->SystemUser );
+    ( $ok, $msg ) = $ocf->LoadByCols( CustomField => $cf->id, ObjectId => 0 );
+    ok( $ok, "Found OCF " . $ocf->Id);
+    is( $ocf->SortOrder, $i, "Sort order is $i for OCF " . $ocf->Id);
+}
+
+diag 'Disable TestingCF4';
+$cf = RT::CustomField->new( RT->SystemUser );
+$cf->LoadByName(Name => 'TestingCF4', Queue => 0 );
+($ok, $msg) = $cf->SetDisabled(1);
+ok($ok, "Disabled " . $cf->Name);
+
+diag 'MoveUp TestingCF5';
+$cf = RT::CustomField->new( RT->SystemUser );
+$cf->LoadByName(Name => 'TestingCF5', Queue => 0 );
+$ocf = RT::ObjectCustomField->new( RT->SystemUser );
+( $ok, $msg ) = $ocf->LoadByCols( CustomField => $cf->id, ObjectId => 0 );
+ok( $ok, "Found OCF " . $ocf->Id . " for " . $cf->Name );
+is( $ocf->SortOrder, 5, 'Sort order before MoveUp');
+$ocf->MoveUp;
+is( $ocf->SortOrder, 3, 'Sort order after MoveUp');
+
+$cf = RT::CustomField->new( RT->SystemUser );
+$cf->LoadByName(Name => 'TestingCF3', Queue => 0 );
+$ocf = RT::ObjectCustomField->new( RT->SystemUser );
+( $ok, $msg ) = $ocf->LoadByCols( CustomField => $cf->id, ObjectId => 0 );
+ok( $ok, "Found OCF " . $ocf->Id . " for " . $cf->Name );
+is( $ocf->SortOrder, 4, 'Sort order is 4 for OCF ' . $ocf->Id);
+
+
+# Sort order should become 5 when re-enabled and not stay at 4
+$cf = RT::CustomField->new( RT->SystemUser );
+$cf->LoadByName(Name => 'TestingCF4', Queue => 0 );
+($ok, $msg) = $cf->SetDisabled(0);
+ok($ok, "Re-enabled " . $cf->Name);
+$ocf = RT::ObjectCustomField->new( RT->SystemUser );
+( $ok, $msg ) = $ocf->LoadByCols( CustomField => $cf->id, ObjectId => 0 );
+ok( $ok, "Found OCF for " . $cf->Name );
+is( $ocf->SortOrder, 5, 'Sort order is 5, CF moved to bottom of list on re-enable');
+
 done_testing;
