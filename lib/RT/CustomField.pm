@@ -1181,6 +1181,19 @@ sub SetDisabled {
         return ($status, $msg);
     }
 
+    # Set to the end of the sort list when re-enabling to prevent duplicate
+    # sort order values.
+    if ( $val == 0 ) {
+        my $ocfs = RT::ObjectCustomFields->new( $self->CurrentUser );
+        $ocfs->LimitToCustomField( $self->id );
+
+        while ( my $ocf = $ocfs->Next ) {
+            my $sort = $ocf->NextSortOrder();
+            $ocf->SetSortOrder($sort);
+            RT::Logger->debug("Set Sort Order to $sort for Object Custom Field " . $ocf->Id);
+        }
+    }
+
     if ( $val == 1 ) {
         return (1, $self->loc("Disabled"));
     } else {
