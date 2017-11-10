@@ -54,7 +54,7 @@
 
   <table width="100%" class="ticket-summary" >
       <tr>
-        <td valign="top" width="50%" class="boxcontainer">
+        <td valign="top" width="50%" class="boxcontainer summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">
           <&| /Widgets/TitleBox, title => loc('The Basics'),
                 class => 'ticket-info-basics',
                 ($LinkBasicsTitle ? (title_href => $title_box_link) : ()),
@@ -173,4 +173,5 @@ $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%A
 
 <%ARGS>
 $id => undef
+$HideUnsetFields => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
 </%ARGS>
