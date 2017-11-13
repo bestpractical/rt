@@ -1,6 +1,7 @@
 /bin/rt-crontool
 /bin/rt-mailgate
 /bin/rt
+/etc/local/
 /etc/RT_Config.pm
 /etc/upgrade/3.8-ical-extension
 /etc/upgrade/4.0-customfield-checkbox-extension

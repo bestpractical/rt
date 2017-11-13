@@ -91,18 +91,16 @@ requires 'URI::QueryParam';
 requires 'XML::RSS', '>= 1.05';
 
 # Mailgate
-requires 'Crypt::SSLeay';
 requires 'Getopt::Long';
 requires 'LWP::Protocol::https';
-requires 'LWP::UserAgent', '>= 6.0';
+requires 'LWP::UserAgent', '>= 6.02';
 requires 'Mozilla::CA';
-requires 'Net::SSL';
 requires 'Pod::Usage';
 
 # CLI
 requires 'Getopt::Long', '>= 2.24';
 requires 'HTTP::Request::Common';
-requires 'LWP';
+requires 'LWP', '>= 6.02';
 requires 'Term::ReadKey';
 requires 'Term::ReadLine';
 requires 'Text::ParseWords';

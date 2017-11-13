@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec /opt/rt4/bin/carton exec -- perl "$@"
