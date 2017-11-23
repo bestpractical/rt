@@ -154,7 +154,7 @@ feature 'mysql' => sub {
 };
 
 feature 'oracle' => sub {
-    requires 'DBD::Oracle != 1.23';
+    requires 'DBD::Oracle', '!= 1.23';
 };
 
 feature 'pg' => sub {
