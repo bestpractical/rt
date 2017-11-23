@@ -100,7 +100,7 @@ requires 'Pod::Usage';
 # CLI
 requires 'Getopt::Long', '>= 2.24';
 requires 'HTTP::Request::Common';
-requires 'LWP' '>= 6.02';
+requires 'LWP', '>= 6.02';
 requires 'Term::ReadKey';
 requires 'Term::ReadLine';
 requires 'Text::ParseWords';
