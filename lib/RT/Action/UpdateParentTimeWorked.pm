@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -61,9 +61,42 @@ worked on a parent ticket when a child ticket's TimeWorked is added to.
 
 This action is used as an action for the 'On TimeWorked Change' condition.
 
-When it fires it finds a ticket's parent tickets and increments the time on
-those tickets along with the built in behavior of incrementing the TimeWorked
-on the current ticket.
+When it fires it finds a ticket's parent tickets and increments the Time Worked
+value on those tickets along with the built-in behavior of incrementing Time
+Worked on the current ticket.
+
+=head2 Important Notes on Operation
+
+There are some important details related to the use of this scrip for time
+tracking that you should take into account when using it.
+
+=over
+
+=item * Parent and child time entries are combined on the parent
+
+This is the intended function of the scrip, but since the parent ticket has
+only one Time Worked value, it is difficult to differentiate time recorded
+directly on the parent ticket from time added from child tickets. If you record
+time only on child tickets, this is typically not an issue. If you record time
+on the parent ticket in addition to child tickets, it can make it difficult to
+pull out the time specifically logged on the parent.
+
+=item * A ticket must be linked as a child when the time is recorded
+
+For this scrip to work properly, a ticket must be linked to the parent as
+a child before time is entered. If you link a child ticket to a parent
+and it already has time recorded, that time will not be added to the parent.
+Similarly, if you remove a child ticket link from a parent, any previously
+recorded time will remain in the parent's Time Worked value. If you want the
+time removed, you must subtract it manually.
+
+=back
+
+RT has a feature called C<$DisplayTotalTimeWorked> that you can activate in
+your C<RT_SiteConfig.pm> file. This feature dynamically calculates time
+worked on child tickets and shows it on the parent. This solves the issues
+above because it doesn't modify the parent's Time Worked value and it will
+update if children tickets are added or removed.
 
 =cut
 
@@ -102,11 +135,5 @@ sub Commit {
         }
     }
 }
-
-=head1 AUTHOR
-
-Best Practical Solutions, LLC E<lt>modules@bestpractical.comE<gt>
-
-=cut
 
 1;

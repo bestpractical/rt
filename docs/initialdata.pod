@@ -100,6 +100,17 @@ It also accepts an C<Attributes> key, which is equivalent to pushing its
 arrayref of values onto C<@Attributes>, below, with C<Object> set to the
 new group.
 
+=head2 C<@CustomRoles>
+
+    push @CustomRoles, {
+        Name        => 'Support Rep',
+        Description => 'Support representative assigned for this ticket',
+    };
+
+Creates a new L<RT::CustomRole> for each hashref. The above example will
+create the role globally. To apply the role to only a specific queue,
+use the C<ApplyTo> entry as described in L</@CustomFields> below.
+
 =head2 C<@Queues>
 
     push @Queues, {
@@ -339,6 +350,17 @@ user defined group, or user you want to grant the right B<to>.
     GroupDomain => 'RT::Queue-Role',
       Queue     => 'Name',
       GroupType => 'Requestor, Owner, AdminCc, or Cc',
+
+=item A system-level custom role
+
+    GroupDomain => 'RT::System-Role',
+    CustomRole  => 'Supervisor',
+
+=item A queue-level custom role
+
+    Queue       => 'Customer Support',
+    GroupDomain => 'RT::Queue-Role',
+    CustomRole  => 'Customer',
 
 =item A group you created
 

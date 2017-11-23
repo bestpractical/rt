@@ -224,6 +224,7 @@ $m->submit_form(
         idOp => '=',
         ValueOfid => $tid,
         ValueOfQueue => 'General',
+        QueueOp => '=',
     },
     button => 'AddClause',
 );

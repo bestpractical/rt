@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,7 +63,7 @@ my %actions = (
         my %args = @_;
         my $post = "";
         $post = ")" if $args{value} !~ /\(/ and $args{value} =~ s/\)$//;
-        $args{value} = $escaper->($args{value});
+        $args{value} = $escaper->($args{value}) unless $args{html};
         my $result = qq{[<a target="_blank" href="$args{value}">}. loc('Open URL') .qq{</a>]};
         return $args{value} . qq{ <span class="clickylink">$result</span>$post};
     },
@@ -71,7 +71,7 @@ my %actions = (
         my %args = @_;
         my $post = "";
         $post = ")" if $args{value} !~ /\(/ and $args{value} =~ s/\)$//;
-        $args{value} = $escaper->($args{value});
+        $args{value} = $escaper->($args{value}) unless $args{html};
         my $result = qq{<a target="_blank" href="$args{value}">$args{value}</a>};
         return qq{<span class="clickylink">$result</span>$post};
     },
@@ -169,7 +169,7 @@ while ( $$content =~ /($regexp)/gsio ) {
         $pos += length($plain);
     }
     my $plain = $handle->(
-        %ARGS, 
+        %ARGS,
         value => $match,
         all_matches => [ $1, $2, $3, $4, $5, $6, $7, $8, $9 ],
     );

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -106,11 +106,11 @@ $Ticket->SquelchMailTo($_)
 
 # if we're trying to search for watchers and nothing else
 unless ($OnlySearchForPeople or $OnlySearchForGroup) {
-    push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    push @results, ProcessObjectCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS );
-
-    $Ticket->ApplyTransactionBatch;
+    $Ticket->Atomic(sub{
+        push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+        push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+        push @results, ProcessObjectCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    });
 }
 
 # Use the ticket's scrips to figure out the new list of recipients.

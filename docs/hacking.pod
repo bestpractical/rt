@@ -194,6 +194,18 @@ which will be significantly faster:
 
     make test-parallel
 
+If you want to run only a subset of the tests, you can use Perl's standard
+C<prove> utility.
+
+    prove -l t/api/ticket.t t/web/ticket_display.t
+
+If you want to run a subset of the tests in parallel, you can pass the C<-j>
+flag to C<prove> with the number of processes to use. Make sure to also set the
+C<RT_TEST_PARALLEL> environment variable to a true value to tell RT you're
+running the tests in parallel.
+
+    RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
+
 The C<*-trunk> and C<master> branches are expected to always be passing
 all tests.  While it is acceptable to break tests in an intermediate
 commit, a branch which does not pass tests will not be merged.  Ideally,
@@ -203,6 +215,11 @@ before the fix and succeeds after.
 
 
 =head1 git quickstart
+
+The process below describes how to get a copy of an RT repo,
+modify it, and submit your changes as a patch. You can also create
+an account on GitHub, fork RT, and submit a PR. GitHub has documentation
+on this process: L<https://help.github.com/articles/fork-a-repo/>.
 
 =over
 
@@ -299,7 +316,8 @@ This will print out the names of the files as it creates them.
 =item 9.
 
 Attach these files to an email using your standard email client, and
-send it to C<rt-devel@bestpractical.com>.
+send it to C<rt-bugs@bestpractical.com>. This will create a ticket in
+our public RT instance at L<https://issues.bestpractical.com>.
 
 =back
 

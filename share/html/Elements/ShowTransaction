@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
     <span class="date"><% $date |n %></span>
     <span class="description">
-      <& /Elements/ShowUser, User => $Transaction->CreatorObj &> - <% $desc |n %>
+      <& /Elements/ShowUser, User => $CreatorObj &> - <% $desc |n %>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterDescription' );
     </span>
 % if ( $Object->isa("RT::Ticket") and $Object->CurrentUserCanSeeTime ) {
@@ -227,6 +227,8 @@ elsif ( %$Attachments && $ShowActions ) {
     }
 }
 
+my $CreatorObj = $Transaction->CreatorObj;
+
 $m->callback(
     %ARGS,
     Transaction => $Transaction,
@@ -238,6 +240,7 @@ $m->callback(
     TimeTaken   => \$time,
     Description => \$desc,
     ShowBody    => \$ShowBody,
+    CreatorObj  => \$CreatorObj,
 );
 
 my $actions = '';

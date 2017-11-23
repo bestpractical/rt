@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,7 +49,7 @@
 % if ($DefaultValue) {
 <option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
 % }
-% for my $sla ( sort keys %{$RT::ServiceAgreements{'Levels'}} )  {
+% for my $sla ( sort keys %{RT->Config->Get('ServiceAgreements')->{'Levels'}} )  {
 <option <% $sla eq ($Default//'') ? qq[ selected="selected"] : '' |n %> value="<% $sla %>" ><% $sla %></option>
 % }
 </select>

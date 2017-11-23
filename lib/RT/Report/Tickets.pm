@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -83,6 +83,8 @@ our @GROUPINGS = (
     LastUpdated   => 'Date',            #loc_left_pair
 
     CF            => 'CustomField',     #loc_left_pair
+
+    SLA           => 'Enum',            #loc_left_pair
 );
 our %GROUPINGS;
 

@@ -457,3 +457,11 @@ div.error .titlebox-title {
 div.error div.error {
     background-color: #fcc;
 }
+
+.toggle-bookmark a img,
+.timer-link a img {
+    height: 1em;
+    width: 1em;
+    border-style: none;
+}
+

@@ -188,6 +188,12 @@ in the F<bin> directory.
 If you need to provide patches to RT for any reason, you can put them in
 a C<patches> directory. See L</"Changes to RT"> for more information.
 
+=head2 Configuration
+
+If you need to provide configuration for your extension. RT will load
+any file found in the C<etc> directory which ends in _Config.pm as additional
+configuration.
+
 =head1 Callbacks
 
 The RT codebase, mostly the Mason templates, contains hooks called callbacks

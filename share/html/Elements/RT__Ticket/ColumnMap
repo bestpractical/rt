@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -325,6 +325,13 @@ $COLUMN_MAP = {
             return \$bookmark;
         },
     },
+
+    Timer => {
+        title => ' ',
+        value => sub {
+            return \($m->scomp("/Ticket/Elements/PopupTimerLink", id => $_[0]->id ) );
+        },
+    },
 };
 </%ONCE>
 <%init>
@@ -333,6 +340,16 @@ $COLUMN_MAP = {
 unless (RT->Config->Get('Crypt')->{'Enable'}) {
     $COLUMN_MAP->{KeyOwnerName}  = $COLUMN_MAP->{OwnerName};
     $COLUMN_MAP->{KeyRequestors} = $GenericMap->{Requestors};
+}
+
+if(RT->Config->Get('DisplayTotalTimeWorked')) {
+  $COLUMN_MAP->{TotalTimeWorked} = {
+        attribute => 'TotalTimeWorked',
+        title => 'Total Time Worked',
+        value => sub {
+            return $_[0]->TotalTimeWorkedAsString;
+        },
+    }
 }
 
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );

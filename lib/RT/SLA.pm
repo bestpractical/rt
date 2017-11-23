@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -67,8 +67,9 @@ sub BusinessHours {
 
     require Business::Hours;
     my $res = new Business::Hours;
-    $res->business_hours( %{ $RT::ServiceBusinessHours{ $name } } )
-        if $RT::ServiceBusinessHours{ $name };
+    my %config = RT->Config->Get('ServiceBusinessHours');
+    $res->business_hours(%{ $config{$name} })
+        if $config{$name};
     return $res;
 }
 
@@ -83,7 +84,8 @@ sub Agreement {
         @_
     );
 
-    my $meta = $RT::ServiceAgreements{'Levels'}{ $args{'Level'} };
+    my %config = RT->Config->Get('ServiceAgreements');
+    my $meta = $config{'Levels'}{ $args{'Level'} };
     return undef unless $meta;
 
     if ( exists $meta->{'StartImmediately'} || !defined $meta->{'Starts'} ) {
@@ -115,8 +117,8 @@ sub Agreement {
     $res{'OutOfHours'} = $meta->{'OutOfHours'}{ $args{'Type'} };
 
     $args{'Queue'} ||= $args{'Ticket'}->QueueObj if $args{'Ticket'};
-    if ( $args{'Queue'} && ref $RT::ServiceAgreements{'QueueDefault'}{ $args{'Queue'}->Name } ) {
-        $res{'Timezone'} = $RT::ServiceAgreements{'QueueDefault'}{ $args{'Queue'}->Name }{'Timezone'};
+    if ( $args{'Queue'} && ref $config{'QueueDefault'}{ $args{'Queue'}->Name } ) {
+        $res{'Timezone'} = $config{'QueueDefault'}{ $args{'Queue'}->Name }{'Timezone'};
     }
     $res{'Timezone'} ||= $meta->{'Timezone'} || $RT::Timezone;
 
@@ -236,16 +238,18 @@ sub GetDefaultServiceLevel {
     if ( !$args{'Queue'} && $args{'Ticket'} ) {
         $args{'Queue'} = $args{'Ticket'}->QueueObj;
     }
+
+    my %config = RT->Config->Get('ServiceAgreements');
     if ( $args{'Queue'} ) {
         return undef if $args{Queue}->SLADisabled;
         return $args{'Queue'}->SLA if $args{'Queue'}->SLA;
-        if ( $RT::ServiceAgreements{'QueueDefault'} &&
-            ( my $info = $RT::ServiceAgreements{'QueueDefault'}{ $args{'Queue'}->Name } )) {
+        if ( $config{'QueueDefault'} &&
+            ( my $info = $config{'QueueDefault'}{ $args{'Queue'}->Name } )) {
             return $info unless ref $info;
-            return $info->{'Level'} || $RT::ServiceAgreements{'Default'};
+            return $info->{'Level'} || $config{'Default'};
         }
     }
-    return $RT::ServiceAgreements{'Default'};
+    return $config{'Default'};
 }
 
 RT::Base->_ImportOverlays();

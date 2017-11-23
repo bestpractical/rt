@@ -485,6 +485,7 @@ AC_CONFIG_FILES([
                  sbin/rt-fulltext-indexer
                  sbin/rt-serializer
                  sbin/rt-importer
+                 sbin/rt-passwd
                  bin/rt-crontool
                  bin/rt-mailgate
                  bin/rt],

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -131,6 +131,10 @@
 <td class="value"> <& /Elements/SelectQueue, Name => "Queue", Default => $ARGS{Queue} &> </td></tr>
 <tr><td class="label"> <&|/l&>Make Status</&>: </td>
 <td class="value"> <& /Ticket/Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}, Queues => $seen_queues &> </td></tr>
+% if ($hasSLA) {
+<tr><td class="label"> <&|/l&>Make SLA</&>: </td>
+<td class="value"> <& /Elements/SelectSLA, Name => "SLA", Default => $ARGS{SLA} &> </td></tr>
+% }
 <tr><td class="label"> <&|/l&>Make date Starts</&>: </td>
 <td class="value"> <& /Elements/SelectDate, Name => "Starts_Date", Default => $ARGS{Starts_Date} || '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Started</&>: </td>
@@ -279,15 +283,26 @@ while ( my $ticket = $Tickets->Next ) {
     }
 }
 
+# determine if any of the queues seen has a SLA active
+my $queue = RT::Queue->new($session{CurrentUser});
+my $hasSLA = 0;
+for (keys %$seen_queues) {
+    $queue->Load($_);
+    $hasSLA ||= ! $queue->SLADisabled();
+}
+
 #Iterate through each ticket we've been handed
 my @linkresults;
 
 $Tickets->RedoSearch();
 
 unless ( $ARGS{'AddMoreAttach'} ) {
+    $RT::Handle->BeginTransaction;
     while ( my $Ticket = $Tickets->Next ) {
         my $tid = $Ticket->id;
         next unless grep $tid == $_, @UpdateTicket;
+
+        $Ticket->LockForUpdate;
 
         #Update the links
         $ARGS{'id'} = $Ticket->id;
@@ -324,6 +339,7 @@ unless ( $ARGS{'AddMoreAttach'} ) {
 
         @results = ( @results, @tempresults );
     }
+    $RT::Handle->Commit;
 
     delete $session{'Attachments'}{ $ARGS{'Token'} };
 

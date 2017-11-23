@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1450,7 +1450,7 @@ sub IsCompCSRFWhitelisted {
     # golden.  This acts on the presumption that external forms may
     # hardcode a username and password -- if a malicious attacker knew
     # both already, CSRF is the least of your problems.
-    my $AllowLoginCSRF = not RT->Config->Get('RestrictReferrerLogin');
+    my $AllowLoginCSRF = not RT->Config->Get('RestrictLoginReferrer');
     if ($AllowLoginCSRF and defined($args{user}) and defined($args{pass})) {
         my $user_obj = RT::CurrentUser->new();
         $user_obj->Load($args{user});
@@ -1668,7 +1668,7 @@ sub MaybeShowInterstitialCSRFPage {
     my $token = StoreRequestToken($ARGS);
     $HTML::Mason::Commands::m->comp(
         '/Elements/CSRF',
-        OriginalURL => RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,
+        OriginalURL => RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . $HTML::Mason::Commands::r->path_info,
         Reason => HTML::Mason::Commands::loc( $msg, @loc ),
         Token => $token,
     );
@@ -2962,7 +2962,7 @@ sub ProcessTicketBasics {
         ARGSRef       => $ARGSRef,
     );
 
-    if ( $ARGSRef->{'TimeWorked'} ) {
+    if ( defined($ARGSRef->{'TimeWorked'}) && ($ARGSRef->{'TimeWorked'} || 0) != $TicketObj->TimeWorked ) {
         my ( $val, $msg, $txn ) = $TicketObj->SetTimeWorked( $ARGSRef->{'TimeWorked'} );
         push( @results, $msg );
         $txn->UpdateCustomFields( %$ARGSRef) if $txn;
@@ -3092,6 +3092,37 @@ sub ProcessTicketReminders {
     return @results;
 }
 
+sub _ValidateConsistentCustomFieldValues {
+    my $cf = shift;
+    my $args = shift;
+    my $ok = 1;
+
+    my @groupings = sort keys %$args;
+    return ($ok, undef) unless @groupings;
+    my $default_grouping = $groupings[0]; # Default to use if multiple are submitted
+
+    if (@groupings > 1) {
+        # Check for consistency, in case of JS fail
+        for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
+            my $base = $args->{$groupings[0]}{$key};
+            $base = [ $base ] unless ref $base;
+            for my $grouping (@groupings[1..$#groupings]) {
+                my $other = $args->{$grouping}{$key};
+                $other = [ $other ] unless ref $other;
+                next unless grep {$_} List::MoreUtils::pairwise {
+                    no warnings qw(uninitialized);
+                    $a ne $b
+                } @{$base}, @{$other};
+
+                RT::Logger->warn("CF $cf submitted with multiple differing values");
+                $ok = 0;
+            }
+        }
+    }
+
+    return ($ok, $default_grouping);
+}
+
 sub ProcessObjectCustomFieldUpdates {
     my %args    = @_;
     my $ARGSRef = $args{'ARGSRef'};
@@ -3107,6 +3138,9 @@ sub ProcessObjectCustomFieldUpdates {
             $Object = $class->new( $session{'CurrentUser'} )
                 unless $Object && ref $Object eq $class;
 
+            # skip if we have no object to update
+            next unless $id || $Object->id;
+
             $Object->Load($id) unless ( $Object->id || 0 ) == $id;
             unless ( $Object->id ) {
                 $RT::Logger->warning("Couldn't load object $class #$id");
@@ -3121,34 +3155,21 @@ sub ProcessObjectCustomFieldUpdates {
                     $RT::Logger->warning("Couldn't load custom field #$cf");
                     next;
                 }
-                my @groupings = sort keys %{ $custom_fields_to_mod{$class}{$id}{$cf} };
-                if (@groupings > 1) {
-                    # Check for consistency, in case of JS fail
-                    for my $key (qw/AddValue Value Values DeleteValues DeleteValueIds/) {
-                        my $base = $custom_fields_to_mod{$class}{$id}{$cf}{$groupings[0]}{$key};
-                        $base = [ $base ] unless ref $base;
-                        for my $grouping (@groupings[1..$#groupings]) {
-                            my $other = $custom_fields_to_mod{$class}{$id}{$cf}{$grouping}{$key};
-                            $other = [ $other ] unless ref $other;
-                            warn "CF $cf submitted with multiple differing values"
-                                if grep {$_} List::MoreUtils::pairwise {
-                                    no warnings qw(uninitialized);
-                                    $a ne $b
-                                } @{$base}, @{$other};
-                        }
-                    }
-                    # We'll just be picking the 1st grouping in the hash, alphabetically
-                }
+
+                # In the case of inconsistent CFV submission,
+                # we'll get the 1st grouping in the hash, alphabetically
+                my ($ret, $grouping) = _ValidateConsistentCustomFieldValues($cf, $custom_fields_to_mod{$class}{$id}{$cf});
+
                 push @results,
                     _ProcessObjectCustomFieldUpdates(
                         Prefix => GetCustomFieldInputNamePrefix(
                             Object      => $Object,
                             CustomField => $CustomFieldObj,
-                            Grouping    => $groupings[0],
+                            Grouping    => $grouping,
                         ),
                         Object      => $Object,
                         CustomField => $CustomFieldObj,
-                        ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{ $groupings[0] },
+                        ARGS        => $custom_fields_to_mod{$class}{$id}{$cf}{ $grouping },
                     );
             }
         }
@@ -3158,14 +3179,21 @@ sub ProcessObjectCustomFieldUpdates {
 
 sub _ParseObjectCustomFieldArgs {
     my $ARGSRef = shift || {};
+    my %args = (
+        IncludeBulkUpdate => 0,
+        @_,
+    );
     my %custom_fields_to_mod;
 
     foreach my $arg ( keys %$ARGSRef ) {
 
         # format: Object-<object class>-<object id>-CustomField[:<grouping>]-<CF id>-<commands>
-        # or: Bulk-<Add or Delete>-CustomField[:<grouping>]-<CF id>-<commands>
         # you can use GetCustomFieldInputName to generate the complement input name
-        next unless $arg =~ /^(?:Bulk-(?:Add|Delete)|Object-([\w:]+)-(\d*))-CustomField(?::(\w+))?-(\d+)-(.*)$/;
+        # or if IncludeBulkUpdate: Bulk-<Add or Delete>-CustomField[:<grouping>]-<CF id>-<commands>
+        next unless $arg =~ /^Object-([\w:]+)-(\d*)-CustomField(?::(\w+))?-(\d+)-(.*)$/
+                 || ($args{IncludeBulkUpdate} && $arg =~ /^Bulk-(?:Add|Delete)-()()CustomField(?::(\w+))?-(\d+)-(.*)$/);
+        # need two empty groups because we must consume $1 and $2 with empty
+        # class and ID
 
         # For each of those objects, find out what custom fields we want to work with.
         #                   Class     ID     CF  grouping command

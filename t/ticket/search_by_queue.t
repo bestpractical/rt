@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 34;
+use RT::Test nodata => 1, tests => undef;
 use RT::Ticket;
 
 my $qa = RT::Test->load_or_create_queue( Name => 'Queue A' );
@@ -31,7 +31,19 @@ run_tests( \@tickets,
 
     'Queue = "Bad Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0 },
     'Queue != "Bad Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1 },
+
+    'Queue LIKE "Queue A"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0 },
+    'Queue LIKE "Queue B"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1 },
+    'Queue LIKE "Bad Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0 },
+    'Queue LIKE "Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1 },
+
+    'Queue NOT LIKE "Queue B"' => { a1 => 1, a2 => 1, b1 => 0, b2 => 0 },
+    'Queue NOT LIKE "Queue A"' => { a1 => 0, a2 => 0, b1 => 1, b2 => 1 },
+    'Queue NOT LIKE "Bad Queue"' => { a1 => 1, a2 => 1, b1 => 1, b2 => 1 },
+    'Queue NOT LIKE "Queue"' => { a1 => 0, a2 => 0, b1 => 0, b2 => 0 },
 );
+
+done_testing;
 
 sub run_tests {
     my @tickets = @{ shift() };

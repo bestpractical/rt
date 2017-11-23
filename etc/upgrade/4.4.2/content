@@ -1,0 +1,72 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    # fix searches without SearchType
+    sub {
+        my $attrs = RT::Attributes->new(RT->SystemUser);
+        $attrs->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+        while ( my $attr = $attrs->Next ) {
+            my $content = $attr->Content;
+
+            next if $content->{SearchType};
+
+            $content->{SearchType} = 'Ticket';
+
+            my ($ret, $msg) = $attr->SetContent($content);
+            unless ( $ret ) {
+                RT->Logger->error("Failed to update content for SavedSearch #" . $attr->id . ": $msg");
+            }
+        }
+    },
+
+    # fix up inconsistent denormalized owner vs owner-role group members (#32381)
+    sub {
+        my $sth = RT->DatabaseHandle->dbh->prepare(q[
+            SELECT Tickets.Id, Tickets.Owner, GroupMembers.MemberId
+            FROM Groups
+            JOIN GroupMembers ON Groups.Id = GroupMembers.GroupId
+            JOIN Tickets ON Tickets.Id = Groups.Instance
+            WHERE Groups.Name = 'Owner'
+            AND Groups.Domain = 'RT::Ticket-Role'
+            AND Tickets.Owner != GroupMembers.MemberId
+        ]);
+
+        $sth->execute;
+
+        while ( my ($ticket_id, $owner_id, $rolemember_id) = $sth->fetchrow_array ) {
+            RT->Logger->warning("The owner of ticket #$ticket_id is inconsistent. The denormalized owner is user #$owner_id, but there exists a normalized owner role group member, user #$rolemember_id. Going to update normalized owner role group members to user #$owner_id.");
+
+            my $ticket = RT::Ticket->new(RT->SystemUser);
+            $ticket->Load($ticket_id);
+            my $group = $ticket->RoleGroup('Owner');
+
+            # remove all current members
+            my $members = $group->MembersObj;
+            while (my $member = $members->Next) {
+                $member->Delete;
+            }
+
+            # add correct member
+            $group->_AddMember(
+                PrincipalId       => $owner_id,
+                InsideTransaction => 0,
+                RecordTransaction => 0,
+                Object            => $ticket,
+            );
+        }
+    },
+
+    # Disable scrip On TimeWorked Change Update User TimeWorked
+    sub {
+        my $scrip = RT::Scrip->new(RT->SystemUser);
+        my ($ret, $msg) = $scrip->LoadByCols( Description => 'On TimeWorked Change Update User TimeWorked' );
+
+        unless ( $ret ){
+            RT->Logger->warning("Unable to load scrip On TimeWorked Change Update User TimeWorked: $msg. If you renamed this scrip, you can manually disable it as it is no longer needed.");
+            return;
+        }
+
+        $scrip->SetDisabled(1);
+    },
+);

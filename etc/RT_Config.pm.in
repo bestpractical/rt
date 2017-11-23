@@ -503,6 +503,23 @@ clean up intentional double newlines as well.
 
 Set( $CheckMoreMSMailHeaders, 0);
 
+=item C<$TreatAttachedEmailAsFiles>
+
+Email coming into RT can sometimes have another email attached, when
+an email is forwarded as an attachment, for example. By default, RT recognizes
+that the attached content is an email and does some processing, including
+some parsing the headers of the attached email. You can see this in suggested
+email addresses on the People page and One-time Cc on reply.
+
+If you want RT to treat attached email files as regular file attachments,
+set this option to true (1). With this option enabled, attached email will
+show up in the "Attachments" section like other types of file attachments
+and content like headers will not be processed.
+
+=cut
+
+Set( $TreatAttachedEmailAsFiles, 0);
+
 =back
 
 
@@ -968,6 +985,9 @@ Set C<%CustomFieldGroupings> to a nested structure similar to the following:
             'Asset Details' => ['Serial Number', 'Manufacturer', 'Type', 'Tracking Number'],
             'Dates'         => ['Support Expiration', 'Issue Date'],
         ],
+        'RT::Group' => [
+            'Basics' => ['Department'],
+        ],
     );
 
 The first level keys are record types for which CFs may be used, and the
@@ -985,6 +1005,10 @@ remove core fields.
 For C<RT::Ticket>, these groupings are: C<Basics>, C<Dates>, C<Links>, C<People>
 
 For C<RT::User>: C<Identity>, C<Access control>, C<Location>, C<Phones>
+
+For C<RT::Group>: C<Basics>
+
+For C<RT::Asset>: C<Basics>, C<Dates>, C<People>, C<Links>
 
 Extensions may also add their own built-in groupings, refer to the individual
 extension documentation for those.
@@ -1148,7 +1172,7 @@ This can also be configured via the web UI.
 
 =cut
 
-Set($LogoURL, RT->Config->Get('WebImagesURL') . "bpslogo.png");
+Set($LogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-logo.png");
 
 =item C<$LogoLinkURL>
 
@@ -1165,7 +1189,7 @@ will be passed through C<loc> for localization.
 
 =cut
 
-Set($LogoAltText, "Best Practical Solutions, LLC corporate logo");
+Set($LogoAltText, "Request Tracker logo");
 
 =item C<$WebNoAuthRegex>
 
@@ -2071,9 +2095,8 @@ Set($AlwaysDownloadAttachments, undef);
 
 The number of attachments to display by default on ticket display and ticket
 reply pages. Attachments beyond this count will be displayed only after the
-user clicks a "Show all attachments" link. The default value, C<undef>, means
-always show all attachments. A value of C<0> means show no attachments by
-default.
+user clicks a "Show all" link. The default value, C<undef>, means always show
+all attachments. A value of C<0> means show no attachments by default.
 
 =cut
 
@@ -2190,11 +2213,14 @@ Set($QuoteFolding, 1);
 
 If C<$ParseNewMessageForTicketCcs> is set to 1, RT will attempt to
 divine Ticket 'Cc' watchers from the To and Cc lines of incoming
-messages that create new Tickets. This option does not apply to replies
-or comments on existing Tickets. Be forewarned that if you have I<any>
+messages that create new tickets. This option does not apply to replies
+or comments on existing tickets. Be forewarned that if you have I<any>
 addresses which forward mail to RT automatically and you enable this
 option without modifying C<$RTAddressRegexp> below, you will get
 yourself into a heap of trouble.
+
+See also the L<RT::Action::AutoAddWatchers> extension which adds
+watchers from ticket replies on existing tickets.
 
 =cut
 
@@ -2370,7 +2396,7 @@ higher numbers denoting greater effort.
 
 =cut
 
-Set($BcryptCost, 11);
+Set($BcryptCost, 12);
 
 =back
 
@@ -3040,6 +3066,40 @@ Set this to 1 to link directly to files in external storage.
 Set($ExternalStorageDirectLink, 0);
 
 =back
+
+
+=head1 Initialdata Formats
+
+RT supports pluggable data format parsers for F<initialdata> files.
+
+If you add format handlers, note that you can remove the perl entry if you
+don't want it available. B<Removing the default perl entry may cause problems
+installing plugins and RT updates>. If so, re-enable it temporarily.
+
+=over 4
+
+=item C<$InitialdataFormatHandlers>
+
+Set the C<$InitialdataFormatHandlers> to an arrayref containing a list of
+format handler modules. The 'perl' entry is the system default, and handles
+perl-style intialdata files.
+
+    Set( $InitialdataFormatHandlers,
+         [
+            'perl',
+            'RT::Extension::Initialdata::Foo',
+            ...
+         [
+       );
+
+=back
+
+=cut
+
+Set( $InitialdataFormatHandlers, [
+    'perl',
+]);
+
 
 =head1 Lifecycles
 

@@ -1,8 +1,9 @@
+#!@PERL@
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,51 +46,86 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings;
+use utf8;
 
-package RT::Action::UpdateUserTimeWorked;
-use base 'RT::Action';
+# fix lib paths, some may be relative
+BEGIN { # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            $bin_path ||= ( File::Spec->splitpath(Cwd::abs_path(__FILE__)) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+use RT;
+use RT::User;
+use Getopt::Long qw/GetOptions/;
+use Term::ReadKey;
+use Pod::Usage qw/pod2usage/;
+
+RT::Init();
+
+my $help;
+
+GetOptions(
+    "help|?" => \$help,
+) or Pod::Usage::pod2usage();
+
+Pod::Usage::pod2usage(-exitval=> 0, -verbose => 1) if $help;
+Pod::Usage::pod2usage(-exitval=> 0, -verbose => 0) unless $#ARGV+1 == 1;
+
+my $uid = $ARGV[0];
+
+my $user = RT::User->new( RT->SystemUser );
+my ($ret, $msg) = $user->Load($uid);
+
+$ret || die "Can't load user: $msg\n";
+
+my $username = $user->Name;
+print "Changing password for user $username.\n";
+print "Password: ";
+ReadMode('noecho');
+chomp(my $password = <STDIN>);
+ReadMode(0);
+
+($ret, $msg) = $user->SetPassword($password);
+print "\n";
+
+die "Couldn't change password for user $username: $msg\n" unless $ret;
+
+print "Successfully changed password for user $username.\n";
+
+exit 1;
 
 =head1 NAME
 
-RT::Action::UpdateUserTimeWorked - RT's scrip action to set/update the time
-worked for a user each time they log time worked on a ticket
+rt-passwd - Set an RT user's password
 
-=head1 DESCRIPTION
+=head1 SYNOPSIS
 
-This action is used as an action for the 'On TimeWorked Change' condition.
+    rt-passwd username
+    rt-passwd user_id
 
-When it fires, a ticket attribute stores the amount of time the user updating
-the ticket worked on it.
+rt-passwd will set the password of an RT user to the value the user enters at the prompt.
 
-=cut
+=head2 OPTIONS
 
-sub Prepare {
-    return 1;
-}
+=over
 
-sub Commit {
-    my $self   = shift;
-    my $ticket = $self->TicketObj;
-    my $txn    = $self->TransactionObj;
+=item B<--help>
 
-    my $time_worked_attr = $ticket->FirstAttribute('TimeWorked');
-    # if the attribute is not defined, we will initialize it in the callback,
-    # so no need to handle it here
-    if ( $time_worked_attr ) {
-        my $time_worked = $time_worked_attr->Content;
-        $time_worked->{ $txn->CreatorObj->Name } += $txn->TimeTaken
-          || $txn->NewValue - $txn->OldValue;
-        $time_worked_attr->SetContent( $time_worked );
-    }
-}
+Print this documentation and exit.
 
-=head1 AUTHOR
-
-Best Practical Solutions, LLC E<lt>modules@bestpractical.comE<gt>
+=back
 
 =cut
-
-1;

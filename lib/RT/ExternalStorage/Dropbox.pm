@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -110,7 +110,7 @@ sub Store {
     my $dropbox = $self->Dropbox;
 
     # No-op if the path exists already.  This forces a metadata read.
-    return (1) if open( $dropbox, "<", $sha);
+    return ($sha) if open( $dropbox, "<", $sha);
 
     open( $dropbox, ">", $sha )
         or return (undef, "Open for write on dropbox failed: $!");
@@ -119,7 +119,7 @@ sub Store {
     close $dropbox
         or return (undef, "Flush to dropbox failed: $!");
 
-    return (1);
+    return ($sha);
 }
 
 sub DownloadURLFor {

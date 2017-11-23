@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -154,6 +154,9 @@ user sees all relevant warnings.  It also adds C<--quiet> and
 C<--verbose> options, which adjust the C<LogToSTDERR> value to C<error>
 or C<debug>, respectively.
 
+If C<debug> is provided as a parameter, it added as an alias for
+C<--verbose>.
+
 =cut
 
 sub Init {
@@ -185,6 +188,9 @@ sub Init {
 
     push @args, "verbose|v!" => \($hash->{verbose})
         unless $exists{verbose};
+
+    push @args, "debug!" => \($hash->{verbose})
+        if $exists{debug};
 
     push @args, "quiet|q!" => \($hash->{quiet})
         unless $exists{quiet};

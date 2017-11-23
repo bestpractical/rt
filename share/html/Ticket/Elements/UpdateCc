@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,6 +59,8 @@
         <div class="OneTimeCcs hidden">
 %   }
 <i class="label">(<&|/l&>check to add</&>)</i>
+<input type="checkbox" class="checkbox" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
+<label for="AllSuggestedCc"><% loc('All recipients') %></label>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
 <span class="ticket-update-suggested-cc">
@@ -86,6 +88,8 @@
         <div class="OneTimeCcs hidden">
 %   }
 <i class="label">(<&|/l&>check to add</&>)</i>
+<input type="checkbox" class="checkbox" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
+<label for="AllSuggestedBcc"><% loc('All recipients') %></label>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
 <span class="ticket-update-suggested-cc">
@@ -134,6 +138,8 @@ foreach my $addr ( keys %txn_addresses) {
   next if ( grep {$addr eq lc $_->address} @people_addresses );
   push @one_time_Ccs,$addr;
 }
+
+@one_time_Ccs = sort @one_time_Ccs;
 
 my $hide_cc_suggestions =  RT->Config->Get('HideOneTimeSuggestions', $session{CurrentUser});
 my $show_label    = $m->interp->apply_escapes( loc("show suggestions"), 'h' );

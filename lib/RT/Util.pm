@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,9 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child mime_recommended_filename/;
+our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage/;
+
+use Encode qw/encode/;
 
 sub safe_run_child (&) {
     my $our_pid = $$;
@@ -149,6 +151,94 @@ sub assert_bytes {
 
 }
 
+
+=head2 C<constant_time_eq($a, $b)>
+
+Compares two strings for equality in constant-time. Replacement for the C<eq>
+operator designed to avoid timing side-channel vulnerabilities. Returns zero
+or one.
+
+This is intended for use in cryptographic subsystems for comparing well-formed
+data such as hashes - not for direct use with user input or as a general
+replacement for the C<eq> operator.
+
+The two string arguments B<MUST> be of equal length. If the lengths differ,
+this function will call C<die()>, as proceeding with execution would create
+a timing vulnerability. Length is defined by characters, not bytes.
+
+Strings that should be treated as binary octets rather than Unicode text
+should pass a true value for the binary flag.
+
+This code has been tested to do what it claims. Do not change it without
+thorough statistical timing analysis to validate the changes.
+
+Added to resolve CVE-2017-5361
+
+For more on timing attacks, see this Wikipedia article:
+B<https://en.wikipedia.org/wiki/Timing_attack>
+
+=cut
+
+sub constant_time_eq {
+    my ($a, $b, $binary) = @_;
+
+    my $result = 0;
+
+    # generic error message avoids potential information leaks
+    my $generic_error = "Cannot compare values";
+    die $generic_error unless defined $a and defined $b;
+    die $generic_error unless length $a == length $b;
+    die $generic_error if ref($a) or ref($b);
+
+    for (my $i = 0; $i < length($a); $i++) {
+        my $a_char = substr($a, $i, 1);
+        my $b_char = substr($b, $i, 1);
+
+        my (@a_octets, @b_octets);
+
+        if ($binary) {
+            @a_octets = ord($a_char);
+            @b_octets = ord($b_char);
+        }
+        else {
+            # encode() is set to die on malformed
+            @a_octets = unpack("C*", encode('UTF-8', $a_char, Encode::FB_CROAK));
+            @b_octets = unpack("C*", encode('UTF-8', $b_char, Encode::FB_CROAK));
+        }
+
+        die $generic_error if (scalar @a_octets) != (scalar @b_octets);
+
+        for (my $j = 0; $j < scalar @a_octets; $j++) {
+            $result |= $a_octets[$j] ^ $b_octets[$j];
+        }
+    }
+    return 0 + not $result;
+}
+
+=head2 EntityLooksLikeEmailMessage( MIME::Entity )
+
+Check MIME type headers for entities that look like email.
+
+=cut
+
+sub EntityLooksLikeEmailMessage {
+    my $entity = shift;
+
+    return unless $entity;
+
+    # Use mime_type instead of effective_type to get the same headers
+    # MIME::Parser used.
+    my $mime_type = $entity->mime_type();
+
+    # This is the same list of MIME types MIME::Parser uses. The partial and
+    # external-body types are unlikely to produce usable attachments, but they
+    # are still recognized as email for the purposes of this function.
+
+    my @email_types = ('message/rfc822', 'message/partial', 'message/external-body');
+
+    return 1 if grep { $mime_type eq $_ } @email_types;
+    return 0;
+}
 
 RT::Base->_ImportOverlays();
 

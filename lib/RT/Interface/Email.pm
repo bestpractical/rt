@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -607,12 +607,15 @@ sub ExtractTicketId {
 
     my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') || '' );
     chomp $subject;
-    return ParseTicketId( $subject );
+    return ParseTicketId( $subject, $entity );
 }
 
 =head3 ParseTicketId
 
-Takes a string and searches for [subjecttag #id]
+Takes a string (the email subject) and searches for [subjecttag #id]
+
+For customizations, the L<MIME::Entity> object is passed as the second
+argument.
 
 Returns the id if a match is found.  Otherwise returns undef.
 
@@ -620,6 +623,7 @@ Returns the id if a match is found.  Otherwise returns undef.
 
 sub ParseTicketId {
     my $Subject = shift;
+    my $Entity = shift;
 
     my $rtname = RT->Config->Get('rtname');
     my $test_name = RT->Config->Get('EmailSubjectTagRegex') || qr/\Q$rtname\E/i;

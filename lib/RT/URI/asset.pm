@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -138,7 +138,17 @@ sub ParseURI {
 
     # canonicalize "42" and "asset:42" -> asset://example.com/42
     if ($uri =~ /^(?:\Q$scheme\E:)?(\d+)$/i) {
-        $self->{'uri'} = $self->LocalURIPrefix . $1;
+        my $asset_obj = RT::Asset->new( $self->CurrentUser );
+        my ($ret, $msg) = $asset_obj->Load($1);
+
+        if ( $ret ) {
+            $self->{'uri'} = $asset_obj->URI;
+            $self->{'object'} = $asset_obj;
+        }
+        else {
+            RT::Logger->error("Unable to load asset for id: $1: $msg");
+            return;
+        }
     }
     else {
         $self->{'uri'} = $uri;

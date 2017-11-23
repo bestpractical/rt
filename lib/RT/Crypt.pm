@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -415,7 +415,11 @@ An un-localized error message desribing the problem.
 
 sub SignEncrypt {
     my $self = shift;
-    my %args = (@_);
+    my %args = (
+        Sign => 1,
+        Encrypt => 1,
+        @_,
+    );
 
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {

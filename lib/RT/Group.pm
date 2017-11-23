@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -929,11 +929,6 @@ sub _AddMember {
         return(0, $self->loc("Group not found"));
     }
 
-    unless ($new_member =~ /^\d+$/) {
-        $RT::Logger->crit("_AddMember called with a parameter that's not an integer.");
-    }
-
-
     my $new_member_obj = RT::Principal->new( $self->CurrentUser );
     $new_member_obj->Load($new_member);
 
@@ -1151,11 +1146,7 @@ sub DeleteMember {
     $self->_DeleteMember($member_id, @_);
 }
 
-# A helper subroutine for DeleteMember that bypasses the ACL checks
-# this should _ONLY_ ever be called from Ticket/Queue  DeleteWatcher
-# when we want to deal with groups according to queue rights
-# In the dim future, this will all get factored out and life
-# will get better
+# A helper subroutine for DeleteMember that bypasses the ACL checks.
 
 sub _DeleteMember {
     my $self = shift;
@@ -1165,42 +1156,35 @@ sub _DeleteMember {
         @_,
     );
 
-
     my $member_obj =  RT::GroupMember->new( $self->CurrentUser );
-    
-    $member_obj->LoadByCols( MemberId  => $member_id,
-                             GroupId => $self->PrincipalId);
+    $member_obj->LoadByCols(
+        MemberId => $member_id,
+        GroupId  => $self->PrincipalId,
+    );
 
-
-    #If we couldn't load it, return undef.
+    # If we couldn't load it, return undef.
     unless ( $member_obj->Id() ) {
         $RT::Logger->debug("Group has no member with that id");
-        return ( 0,$self->loc( "Group has no such member" ));
+        return ( 0, $self->loc( "Group has no such member" ));
     }
 
-    my $old_member = $member_obj->MemberId;
-
-    #Now that we've checked ACLs and sanity, delete the groupmember
-    my $val = $member_obj->Delete();
-
-    unless ($val) {
-        $RT::Logger->debug("Failed to delete group ".$self->Id." member ". $member_id);
-        return ( 0, $self->loc("Member not deleted" ));
-    }
+    # Now that we've checked ACLs and sanity, delete the groupmember
+    my ($ok, $msg) = $member_obj->Delete();
+    return ( 0, $self->loc("Member not deleted" )) unless $ok;
 
     if ($self->RoleClass) {
         my %txn = (
-            OldValue => $old_member,
+            OldValue => $member_id,
             Field    => $self->Name,
         );
 
         if ($self->SingleMemberRoleGroup) {
-            # _AddMember creates the Set-Owner txn (for example) but we handle
-            # the SetWatcher-Owner txn below.
+            # _AddMember creates the Set-Owner txn (for example) but
+            # we handle the SetWatcher-Owner txn below.
             $self->_AddMember(
-                PrincipalId             => RT->Nobody->Id,
-                RecordTransaction       => 0,
-                RecordSetTransaction    => $args{RecordTransaction},
+                PrincipalId          => RT->Nobody->Id,
+                RecordTransaction    => 0,
+                RecordSetTransaction => $args{RecordTransaction},
             );
             $txn{Type}     = "SetWatcher";
             $txn{NewValue} = RT->Nobody->id;
@@ -1227,7 +1211,7 @@ sub _DeleteMember {
         );
     }
 
-    return ( $val, $self->loc("Member deleted") );
+    return ( $ok, $self->loc("Member deleted") );
 }
 
 
@@ -1368,20 +1352,6 @@ sub Label {
 
     return $self->loc($self->Name);
 }
-
-=head1 AUTHOR
-
-Jesse Vincent, jesse@bestpractical.com
-
-=head1 SEE ALSO
-
-RT
-
-=cut
-
-
-
-
 
 =head2 id
 

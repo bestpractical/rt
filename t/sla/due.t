@@ -7,13 +7,13 @@ RT::Test->load_or_create_queue( Name => 'General', SLADisabled => 0 );
 
 diag 'check change of Due date when SLA for a ticket is changed' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => { Resolve => { RealMinutes => 60*2 } },
             '4' => { Resolve => { RealMinutes => 60*4 } },
         },
-    );
+    ));
 
     my $time = time;
 
@@ -39,12 +39,12 @@ diag 'check change of Due date when SLA for a ticket is changed' if $ENV{'TEST_V
 
 diag 'when not requestor creates a ticket, we dont set due date' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => { Response => { RealMinutes => 60*2 } },
         },
-    );
+    ));
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     my ($id) = $ticket->Create(
@@ -62,12 +62,12 @@ diag 'when not requestor creates a ticket, we dont set due date' if $ENV{'TEST_V
 
 diag 'check that reply to requestors unset due date' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => { Response => { RealMinutes => 60*2 } },
         },
-    );
+    ));
 
     my $root = RT::User->new( $RT::SystemUser );
     $root->LoadByEmail('root@localhost');
@@ -160,7 +160,7 @@ diag 'check that reply to requestors unset due date' if $ENV{'TEST_VERBOSE'};
 
 diag 'check that reply to requestors dont unset due date with KeepInLoop' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => {
@@ -168,7 +168,7 @@ diag 'check that reply to requestors dont unset due date with KeepInLoop' if $EN
                 KeepInLoop => { RealMinutes => 60*4 },
             },
         },
-    );
+    ));
 
     my $root = RT::User->new( $RT::SystemUser );
     $root->LoadByEmail('root@localhost');
@@ -270,12 +270,12 @@ diag 'check that reply to requestors dont unset due date with KeepInLoop' if $EN
 
 diag 'check that replies dont affect resolve deadlines' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => { Resolve => { RealMinutes => 60*2 } },
         },
-    );
+    ));
 
     my $root = RT::User->new( $RT::SystemUser );
     $root->LoadByEmail('root@localhost');
@@ -334,12 +334,12 @@ diag 'check that replies dont affect resolve deadlines' if $ENV{'TEST_VERBOSE'};
 
 diag 'check that owner is not treated as requestor' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => { Response => { RealMinutes => 60*2 } },
         },
-    );
+    ));
 
     my $root = RT::User->new( $RT::SystemUser );
     $root->LoadByEmail('root@localhost');
@@ -367,12 +367,12 @@ diag 'check that owner is not treated as requestor' if $ENV{'TEST_VERBOSE'};
 
 diag 'check that response deadline is left alone when there is no requestor' if $ENV{'TEST_VERBOSE'};
 {
-    %RT::ServiceAgreements = (
+    RT->Config->Set(ServiceAgreements => (
         Default => '2',
         Levels => {
             '2' => { Response => { RealMinutes => 60*2 } },
         },
-    );
+    ));
 
     my $root = RT::User->new( $RT::SystemUser );
     $root->LoadByEmail('root@localhost');

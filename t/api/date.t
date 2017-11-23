@@ -212,6 +212,7 @@ my $current_user;
     is($date->ISO( Timezone => 'user' ), '2005-01-01 18:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T18:10:00+03:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 01 Jan 2005 18:10:00 +0300', "RFC2822");
+    is($date->LocalizedDateTime( Timezone => 'user' ), 'Sat, Jan 1, 2005 6:10:00 PM', "LocalizedDateTime");
 
     # DST
     $date = RT::Date->new( $current_user );
@@ -219,6 +220,7 @@ my $current_user;
     is($date->ISO( Timezone => 'user' ), '2005-07-01 19:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T19:10:00+04:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Fri, 01 Jul 2005 19:10:00 +0400', "RFC2822");
+    is($date->LocalizedDateTime( Timezone => 'user' ), 'Fri, Jul 1, 2005 7:10:00 PM', "LocalizedDateTime");
 }
 
 { # negative timezone
@@ -228,6 +230,7 @@ my $current_user;
     is($date->ISO( Timezone => 'user' ), '2005-01-01 10:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-01-01T10:10:00-05:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Sat, 01 Jan 2005 10:10:00 -0500', "RFC2822");
+    is($date->LocalizedDateTime( Timezone => 'user' ), 'Sat, Jan 1, 2005 10:10:00 AM', "LocalizedDateTime");
 
     # DST
     $date = RT::Date->new( $current_user );
@@ -235,6 +238,7 @@ my $current_user;
     is($date->ISO( Timezone => 'user' ), '2005-07-01 11:10:00', "ISO");
     is($date->W3CDTF( Timezone => 'user' ), '2005-07-01T11:10:00-04:00', "W3C DTF");
     is($date->RFC2822( Timezone => 'user' ), 'Fri, 01 Jul 2005 11:10:00 -0400', "RFC2822");
+    is($date->LocalizedDateTime( Timezone => 'user' ), 'Fri, Jul 1, 2005 11:10:00 AM', "LocalizedDateTime");
 }
 
 warning_like

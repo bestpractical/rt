@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -151,6 +151,14 @@ sub loc_fuzzy {
         return ("Critical error:$self has no CurrentUser", $self);
     }
 }
+
+=head2 _ImportOverlays
+
+C<_ImportOverlays> is an internal method used to modify or add functionality
+to existing RT code. For more on how to use overlays with RT, please see the
+documentation in L<RT::StyleGuide>.
+
+=cut
 
 sub _ImportOverlays {
     my $class = shift;

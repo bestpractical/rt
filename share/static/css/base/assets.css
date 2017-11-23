@@ -210,18 +210,18 @@ body#comp-Asset-Search .collection-as-table td {
         width: 100%;
     }
 
-    .asset-bulk-people tr,
+    .asset-bulk-people table.core-fields tr,
     .asset-search-people tr,
-    .asset-bulk-basics tr,
+    .asset-bulk-basics table.core-fields tr,
     .asset-search-basics tr {
         width: 49%;
         display: inline-block;
         white-space: nowrap;
     }
 
-    .asset-bulk-people tr>td,
+    .asset-bulk-people table.core-fields tr>td,
     .asset-search-people tr>td,
-    .asset-bulk-basics tr>td,
+    .asset-bulk-basics table.core-fields tr>td,
     .asset-search-basics tr>td {
         display: inline-block;
         width: 10em;

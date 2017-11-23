@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -445,7 +445,7 @@ sub DoAuth {
             $RT::Logger->info(  "Successful login for",
                                 $session->{'CurrentUser'}->Name,
                                 "from",
-                                ($ENV{'REMOTE_ADDR'} || 'UNKNOWN') );
+                                ( RT::Interface::Web::RequestENV('REMOTE_ADDR') || 'UNKNOWN') );
             # Do not delete the session. User stays logged in and
             # autohandler will not check the password again
 

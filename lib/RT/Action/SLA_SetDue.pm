@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -121,7 +121,7 @@ sub IsOutsideActor {
     # owner is always treated as inside actor
     return 0 if $actor->id == $self->TicketObj->Owner;
 
-    if ( $RT::ServiceAgreements{'AssumeOutsideActor'} ) {
+    if ( RT->Config->Get('ServiceAgreements')->{'AssumeOutsideActor'} ) {
         # All non-admincc users are outside actors
         return 0 if $self->TicketObj          ->AdminCc->HasMemberRecursively( $actor )
                  or $self->TicketObj->QueueObj->AdminCc->HasMemberRecursively( $actor );

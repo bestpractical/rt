@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -798,70 +798,6 @@ sub RollbackDumpTo {
 
 1;
 __END__
-
-=head1 NOTES
-
-=head2 Database transactions support
-
-Since 0.03_01 RT::Shredder uses database transactions and should be
-much safer to run on production servers.
-
-=head2 Foreign keys
-
-Mainstream RT doesn't use FKs, but at least I posted DDL script that creates them
-in mysql DB, note that if you use FKs then this two valid keys don't allow delete
-Tickets because of bug in MySQL:
-
-  ALTER TABLE Tickets ADD FOREIGN KEY (EffectiveId) REFERENCES Tickets(id);
-  ALTER TABLE CachedGroupMembers ADD FOREIGN KEY (Via) REFERENCES CachedGroupMembers(id);
-
-L<http://bugs.mysql.com/bug.php?id=4042>
-
-=head1 BUGS AND HOW TO CONTRIBUTE
-
-We need your feedback in all cases: if you use it or not,
-is it works for you or not.
-
-=head2 Testing
-
-Don't skip C<make test> step while install and send me reports if it's fails.
-Add your own tests, it's easy enough if you've writen at list one perl script
-that works with RT. Read more about testing in F<t/utils.pl>.
-
-=head2 Reporting
-
-Send reports to L</AUTHOR> or to the RT mailing lists.
-
-=head2 Documentation
-
-Many bugs in the docs: insanity, spelling, gramar and so on.
-Patches are wellcome.
-
-=head2 Todo
-
-Please, see Todo file, it has some technical notes
-about what I plan to do, when I'll do it, also it
-describes some problems code has.
-
-=head2 Repository
-
-Since RT-3.7 shredder is a part of the RT distribution.
-Versions of the RTx::Shredder extension could
-be downloaded from the CPAN. Those work with older
-RT versions or you can find repository at
-L<https://opensvn.csie.org/rtx_shredder>
-
-=head1 AUTHOR
-
-    Ruslan U. Zakirov <Ruslan.Zakirov@gmail.com>
-
-=head1 COPYRIGHT
-
-This program is free software; you can redistribute
-it and/or modify it under the same terms as Perl itself.
-
-The full text of the license can be found in the
-Perl distribution.
 
 =head1 SEE ALSO
 

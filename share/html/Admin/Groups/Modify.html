@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,34 +59,40 @@
 % } else {
 <input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 % }
+
 <table>
-<tr><td align="right">
-<&|/l&>Name</&>:
-</td>
-<td><input name="Name" value="<%$Group->Name||$Name||''%>" /></td>
-</tr>
-<tr>
-<td align="right">
-<&|/l&>Description</&>:</td><td colspan="3"><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
-</tr>
-% my $CFs = $Group->CustomFields;
-% while (my $CF = $CFs->Next) {
-<tr valign="top"><td align="right">
-<% $CF->Name %>:
-</td><td>
-<& /Elements/EditCustomField, CustomField => $CF, 
-                              Object => $Group, &>
-</td></tr>
-% }
-<tr>
-<td colspan="2">
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
-<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
-</td>
-</tr>
+  <tr>
+    <td valign="top" class="boxcontainer">
+      <&| /Widgets/TitleBox, title => loc('Basics'), class => 'group-info-basics' &>
+        <table>
+          <tr>
+            <td align="right"><&|/l&>Name</&>:</td>
+            <td><input name="Name" value="<%$Group->Name||$Name||''%>" /></td>
+          </tr>
+          <tr>
+            <td align="right"><&|/l&>Description</&>:</td>
+            <td colspan="3"><input name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
+          </tr>
+          <& /Elements/EditCustomFields, Object => $Group, Grouping => 'Basics', InTable => 1 &>
+          <tr>
+            <td colspan="2">
+              <input type="hidden" class="hidden" name="SetEnabled" value="1" />
+              <input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
+              <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
+            </td>
+          </tr>
+        </table>
+      </&>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <& /Elements/EditCustomFieldCustomGroupings , Object => $Group, &>
+    </td>
+  </tr>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
 </table>
+
 % if ( $Create ) {
 <& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
 % } else {

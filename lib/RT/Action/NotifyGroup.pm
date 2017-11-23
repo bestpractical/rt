@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -188,14 +188,6 @@ sub __PushUserAddress {
     return;
 }
 
-
-=head1 AUTHOR
-
-Ruslan U. Zakirov E<lt>ruz@bestpractical.comE<gt>
-
-L<RT::Action::NotifyGroupAsComment>, F<rt-email-group-admin>
-
-=cut
 
 RT::Base->_ImportOverlays();
 

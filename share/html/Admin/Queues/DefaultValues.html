@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,7 +66,6 @@
         Default => $queue->DefaultValue('FinalPriority'),
     &><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td></tr>
     <& /Elements/EditCustomFields,
-        NamePrefix => 'Default-',
         Object => RT::Ticket->new($session{CurrentUser}),
         CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
         Grouping => 'Basics',
@@ -82,7 +81,6 @@
     <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &></td></tr>
     <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &></td></tr>
     <& /Elements/EditCustomFields,
-        NamePrefix => 'Default-',
         Object => RT::Ticket->new($session{CurrentUser}),
         CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
         Grouping => 'Dates',
@@ -97,7 +95,6 @@
     <&|/Widgets/TitleBox, title => loc("People") &>
     <table>
     <& /Elements/EditCustomFields,
-        NamePrefix => 'Default-',
         Object => RT::Ticket->new($session{CurrentUser}),
         CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
         Grouping => 'People',
@@ -113,7 +110,6 @@
     <&|/Widgets/TitleBox, title => loc("Links") &>
     <table>
     <& /Elements/EditCustomFields,
-        NamePrefix => 'Default-',
         Object => RT::Ticket->new($session{CurrentUser}),
         CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
         Grouping => 'Links',
@@ -124,12 +120,12 @@
 </div>
 % }
 
-<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, NamePrefix => 'Default-', Object => RT::Ticket->new($session{CurrentUser}) &>
+<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}) &>
 
 <div class="ticket-info-cfs">
     <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields") &>
     <table>
-    <& /Elements/EditCustomFields, CustomFields => $queue->TicketTransactionCustomFields->LimitToDefaultValuesSupportedTypes, NamePrefix => 'Default-', Object => RT::Transaction->new($session{CurrentUser}), QueueObj => $queue, InTable => 1 &>
+    <& /Elements/EditCustomFields, CustomFields => $queue->TicketTransactionCustomFields->LimitToDefaultValuesSupportedTypes, Object => RT::Transaction->new($session{CurrentUser}), QueueObj => $queue, InTable => 1 &>
     </table>
     </&>
 </div>
@@ -160,13 +156,21 @@ elsif ( $ARGS{Update} ) {
         );
         push @results, $msg;
     }
-    for my $cf_id ( map { /^Default-(\d+)-/ ? $1 : ()  } keys %ARGS ) {
+    my $cfs = _ParseObjectCustomFieldArgs(\%ARGS)->{'RT::Ticket'}{0};
+    for my $cf_id (keys %$cfs) {
+        # In the case of inconsistent CFV submission,
+        # we'll get the 1st grouping in the hash, alphabetically
+        my ($ret, $grouping_name) = _ValidateConsistentCustomFieldValues($cf_id, $cfs->{$cf_id});
+
+        my $grouping = $cfs->{$cf_id}{$grouping_name};
+        my $value = $grouping->{Value} // $grouping->{Values};
+
         my $cf = RT::CustomField->new($session{CurrentUser});
         $cf->Load($cf_id);
         if ( $cf->id && $cf->SupportDefaultValues ) {
             my ($ret, $msg) = $cf->SetDefaultValues(
                 Object => $queue,
-                Values => $ARGS{'Default-' . $cf->id . '-Value'} // $ARGS{'Default-' . $cf->id . '-Values'},
+                Values => $value,
             );
             push @results, $msg;
         }

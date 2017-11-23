@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -220,6 +220,7 @@ __PACKAGE__->RegisterLookupType( 'RT::Group' => "Groups", );                    
 __PACKAGE__->RegisterBuiltInGroupings(
     'RT::Ticket'    => [ qw(Basics Dates Links People) ],
     'RT::User'      => [ 'Identity', 'Access control', 'Location', 'Phones' ],
+    'RT::Group'     => [ 'Basics' ],
 );
 
 __PACKAGE__->AddRight( General => SeeCustomField         => 'View custom fields'); # loc
@@ -695,11 +696,11 @@ sub DeleteValue {
         return (0, $self->loc("That is not a value for this custom field"));
     }
 
-    my $retval = $val_to_del->Delete;
-    unless ( $retval ) {
+    my ($ok, $msg) = $val_to_del->Delete;
+    unless ( $ok ) {
         return (0, $self->loc("Custom field value could not be deleted"));
     }
-    return ($retval, $self->loc("Custom field value deleted"));
+    return ($ok, $self->loc("Custom field value deleted"));
 }
 
 
@@ -1442,8 +1443,8 @@ sub ObjectTypeFromLookupType {
 
 sub CollectionClassFromLookupType {
     my $self = shift;
+    my $record_class = shift || $self->RecordClassFromLookupType;
 
-    my $record_class = $self->RecordClassFromLookupType;
     return undef unless $record_class;
 
     my $collection_class;
@@ -1702,18 +1703,15 @@ sub RemoveFromObject {
         return ( 0, $self->loc("This custom field cannot be added to that object") );
     }
 
-    # XXX: Delete doesn't return anything
-    my $oid = $ocf->Delete;
+    my ($ok, $msg) = $ocf->Delete;
+    return ($ok, $msg) unless $ok;
 
-    my $msg;
     # If object has no id, it represents all objects
     if ($object->id) {
-        $msg = $self->loc( 'Removed custom field [_1] from [_2].', $self->Name, $object->Name );
+        return (1, $self->loc( 'Removed custom field [_1] from [_2].', $self->Name, $object->Name ) );
     } else {
-        $msg = $self->loc( 'Globally removed custom field [_1].', $self->Name );
+        return (1, $self->loc( 'Globally removed custom field [_1].', $self->Name ) );
     }
-
-    return ( $oid, $msg );
 }
 
 
@@ -1783,16 +1781,12 @@ sub AddValueForObject {
     }
 
     if ($self->UniqueValues) {
-        my $existing = RT::ObjectCustomFieldValue->new(RT->SystemUser);
-        $existing->LoadByCols(
-            CustomField  => $self->Id,
-            Content      => $args{'Content'},
-            LargeContent => $args{'LargeContent'},
-            ContentType  => $args{'ContentType'},
-            Disabled     => 0,
-        );
-        if ($existing->Id) {
-            $RT::Logger->debug( "Non-unique custom field value for CF #" . $self->Id ." with object custom field value " . $existing->Id );
+        my $class = $self->CollectionClassFromLookupType($self->ObjectTypeFromLookupType);
+        my $collection = $class->new(RT->SystemUser);
+        $collection->LimitCustomField(CUSTOMFIELD => $self->Id, OPERATOR => '=', VALUE => $args{'LargeContent'} // $args{'Content'});
+
+        if ($collection->Count) {
+            $RT::Logger->debug( "Non-unique custom field value for CF #" . $self->Id ." with object custom field value " . $collection->First->Id );
             $RT::Handle->Rollback();
             return ( 0, $self->loc('That is not a unique value') );
         }
@@ -1988,9 +1982,9 @@ sub DeleteValueForObject {
 
     # delete it
 
-    my $ret = $oldval->Delete();
-    unless ($ret) {
-        return(0, $self->loc("Custom field value could not be found"));
+    my ($ok, $msg) = $oldval->Delete();
+    unless ($ok) {
+        return(0, $self->loc("Custom field value could not be deleted"));
     }
     return($oldval->Id, $self->loc("Custom field value deleted"));
 }

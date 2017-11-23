@@ -96,7 +96,8 @@ div.cke {
     width: 17em;
 }
 
-.toggle-bookmark a img {
+.toggle-bookmark a img,
+.timer-link a img {
     height: 1em;
     width: 1em;
     border-style: none;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -100,6 +100,27 @@ sub _Init {
     return (@result);
 }
 
+sub OrderByCols {
+    my $self = shift;
+    my @res  = ();
+
+    for my $row (@_) {
+        if (($row->{FIELD}||'') =~ /^CustomField\.\{(.*)\}$/) {
+            my $name = $1 || $2;
+            my $cf = RT::CustomField->new( $self->CurrentUser );
+            $cf->LoadByName(
+                Name => $name,
+                ObjectType => 'RT::User',
+            );
+            if ( $cf->id ) {
+                push @res, $self->_OrderByCF( $row, $cf->id, $cf );
+            }
+        } else {
+            push @res, $row;
+        }
+    }
+    return $self->SUPER::OrderByCols( @res );
+}
 
 =head2 PrincipalsAlias
 

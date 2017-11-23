@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -55,6 +55,7 @@ use 5.010;
 use File::Spec ();
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
+use Storable ();
 
 =head1 NAME
 
@@ -147,6 +148,14 @@ can be set for each config optin:
 our %META;
 %META = (
     # General user overridable options
+    RestrictReferrerLogin => {
+        PostLoadCheck => sub {
+            my $self = shift;
+            if (defined($self->Get('RestrictReferrerLogin'))) {
+                RT::Logger->error("The config option 'RestrictReferrerLogin' is incorrect, and should be 'RestrictLoginReferrer' instead.");
+            }
+        },
+    },
     DefaultQueue => {
         Section         => 'General',
         Overridable     => 1,
@@ -1173,6 +1182,23 @@ our %META;
             $self->Set( 'ExternalInfoPriority', \@values );
         },
     },
+
+    ServiceBusinessHours => {
+        Type => 'HASH',
+        PostLoadCheck   => sub {
+            my $self = shift;
+            my $config = $self->Get('ServiceBusinessHours');
+            for my $name (keys %$config) {
+                if ($config->{$name}->{7}) {
+                    RT->Logger->error("Config option \%ServiceBusinessHours '$name' erroneously specifies '$config->{$name}->{7}->{Name}' as day 7; Sunday should be specified as day 0.");
+                }
+            }
+        },
+    },
+
+    ServiceAgreements => {
+        Type => 'HASH',
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
@@ -1241,7 +1267,8 @@ sub LoadConfig {
         delete $INC{$load};
 
         my $dir = $ENV{RT_SITE_CONFIG_DIR} || "$RT::EtcPath/RT_SiteConfig.d";
-        for my $file ( sort <$dir/*.pm> ) {
+        my $localdir = $ENV{RT_SITE_CONFIG_DIR} || "$RT::LocalEtcPath/RT_SiteConfig.d";
+        for my $file ( sort(<$dir/*.pm>), sort(<$localdir/*.pm>) ) {
             $self->_LoadConfig( %args, File => $file, Site => 1, Extension => '' );
             delete $INC{$file};
         }
@@ -1491,7 +1518,7 @@ sub GetObfuscated {
 
     return $self->Get(@_) unless $obfuscate;
 
-    my $res = $self->Get(@_);
+    my $res = Storable::dclone($self->Get(@_));
     $res = $obfuscate->( $self, $res, $user );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }

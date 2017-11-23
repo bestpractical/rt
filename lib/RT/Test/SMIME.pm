@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -61,7 +61,7 @@ sub import {
     my %args  = @_;
     my $t     = $class->builder;
 
-    $t->plan( skip_all => 'openssl executable is required.' )
+    RT::Test::plan( skip_all => 'openssl executable is required.' )
         unless RT::Test->find_executable('openssl');
 
     require RT::Crypt;

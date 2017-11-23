@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,13 +63,15 @@
         <div class="dropzone" id="attach-dropzone">
         </div>
 <script type="text/javascript">
+var MaxAttachmentSizeMiB = RT.Config.MaxAttachmentSize/(1024*1024);
+
 Dropzone.autoDiscover = false;
 jQuery( function() {
     var attachDropzone = new Dropzone('#attach-dropzone', {
         url: RT.Config.WebHomePath + '/Helpers/Upload/Add?Token=' + jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val(),
         paramName: "Attach",
         dictDefaultMessage: <% loc("Drop files here or click to attach") |n,j %>,
-        maxFilesize: 10000,
+        maxFilesize: MaxAttachmentSizeMiB,
         previewTemplate: '' +
             '<div class="dz-preview dz-file-preview">' +
             '    <div class="dz-remove-mark pointer-events" data-dz-remove>' +

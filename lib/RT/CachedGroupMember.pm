@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -183,16 +183,15 @@ sub Create {
 
 =head2 Delete
 
-Deletes the current CachedGroupMember from the group it's in and cascades 
-the delete to all submembers. This routine could be completely excised if
-mysql supported foreign keys with cascading deletes.
+Deletes the current CachedGroupMember from the group it's in and
+cascades the delete to all submembers.
 
-=cut 
+=cut
 
 sub Delete {
     my $self = shift;
 
-    
+
     my $member = $self->MemberObj();
     if ( $member->IsGroup ) {
         my $deletable = RT::CachedGroupMembers->new( $self->CurrentUser );
@@ -205,20 +204,17 @@ sub Delete {
                            VALUE    => $self->id );
 
         while ( my $kid = $deletable->Next ) {
-            my $kid_err = $kid->Delete();
-            unless ($kid_err) {
+            my ($ok, $msg) = $kid->Delete();
+            unless ($ok) {
                 $RT::Logger->error(
-                              "Couldn't delete CachedGroupMember " . $kid->Id );
-                return (undef);
+                    "Couldn't delete CachedGroupMember " . $kid->Id );
+                return ($ok, $msg);
             }
         }
     }
-    my $ret = $self->SUPER::Delete();
-    unless ($ret) {
-        $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->Id );
-        return (undef);
-    }
-    return $ret;
+    my ($ok, $msg) = $self->SUPER::Delete();
+    $RT::Logger->error( "Couldn't delete CachedGroupMember " . $self->Id ) unless $ok;
+    return ($ok, $msg);
 }
 
 

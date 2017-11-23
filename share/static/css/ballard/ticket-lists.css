@@ -189,3 +189,7 @@ padding-bottom: 1em;
 .chart-meta .saved-search {
     display: inline-block;
 }
+
+.ticket-list .selected-row tr td:first-child {
+    border-left: 3px solid #3858a3;
+}

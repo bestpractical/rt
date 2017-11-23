@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -127,9 +127,8 @@ sub Delete {
     if ($rv) {
         return ($rv, $self->loc("Object deleted"));
     } else {
-
-        return(0, $self->loc("Object could not be deleted"))
-    } 
+        return (0, $self->loc("Object could not be deleted"));
+    }
 }
 
 =head2 RecordType
@@ -811,32 +810,31 @@ sub _EncodeLOB {
 
 =head2 _DecodeLOB C<ContentType>, C<ContentEncoding>, C<Content>
 
-Unpacks data stored in the database, which may be base64 or QP encoded
-because of our need to store binary and badly encoded data in columns
-marked as UTF-8.  Databases such as PostgreSQL and Oracle care that you
-are feeding them invalid UTF-8 and will refuse the content.  This function
-handles unpacking the encoded data.
+This function reverses the effects of L</_EncodeLOB>, by unpacking the
+data, provided as bytes (not characters!), from the database.  This
+data may also be Base64 or Quoted-Printable encoded, as given by
+C<Content-Encoding>.  This encoding layer exists because the
+underlying database column is "text", which rejects non-UTF-8 byte
+sequences.
 
 Alternatively, if the data lives in external storage, it will be read
 (or downloaded) and returned.
 
-C<_DecodeLOB> returns textual data as a UTF-8 string which has been
-processed by L<Encode>'s PERLQQ filter which will replace the invalid bytes
-with C<\x{HH}> so you can see the invalid byte but won't run into problems
-treating the data as UTF-8 later.
+This function differs in one important way from being the inverse of
+L</_EncodeLOB>: for textual data (as judged via
+L<RT::I18N/IsTextualContentType> applied to the given C<ContentType>),
+C<_DecodeLOB> returns character strings, not bytes.  The character set
+used in decoding is taken from the C<ContentType>, or UTF-8 if not
+provided; however, for all textual content inserted by current code,
+the character set used for storage is always UTF-8.
 
-This is similar to how we filter all data coming in via the web UI in
-L<RT::Interface::Web/DecodeARGS>. This filter should only end up being
-applied to old data from less UTF-8-safe versions of RT.
-
-If the passed C<ContentType> includes a character set, that will be used
-to decode textual data; the default character set is UTF-8.  This is
-necessary because while we attempt to store textual data as UTF-8, the
-definition of "textual" has migrated over time, and thus we may now need
-to attempt to decode data that was previously not transcoded on insertion.
-
-Important note: This function expects an octet string and returns a
-character string for non-binary data.
+This decoding step is done using L<Encode>'s PERLQQ filter, which
+replaces invalid byte sequences with C<\x{HH}>.  This mirrors how data
+from query parameters are parsed in L<RT::Interface::Web/DecodeARGS>.
+Since RT is now strict about the bytes it inserts, substitution
+characters should only be needed for data inserted by older versions
+of RT, or for C<ContentType>s which are now believed to be textual,
+but were not considered so on insertion (and thus not transcoded).
 
 =cut
 
@@ -867,8 +865,6 @@ sub _DecodeLOB {
             RT->Logger->error( "Failed to load $Digest from external storage: $msg" );
             return ("");
         }
-
-        return ($Content);
     }
     elsif ( $ContentEncoding && $ContentEncoding ne 'none' ) {
         return ( $self->loc( "Unknown ContentEncoding [_1]", $ContentEncoding ) );
@@ -2091,6 +2087,7 @@ sub _AddCustomFieldValue {
             Content      => $args{'Value'},
             LargeContent => $args{'LargeContent'},
             ContentType  => $args{'ContentType'},
+            ForCreation  => $args{'ForCreation'},
         );
 
         unless ( $new_value_id ) {

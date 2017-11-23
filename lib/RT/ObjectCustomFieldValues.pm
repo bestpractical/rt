@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -50,6 +50,7 @@ package RT::ObjectCustomFieldValues;
 
 use strict;
 use warnings;
+use 5.010;
 
 use base 'RT::SearchBuilder';
 
@@ -146,7 +147,7 @@ sub HasEntry {
             return $item if lc $item->Content eq lc $args->{Content};
         }
         else {
-            if ( ($item->_Value('Content') || '') eq $args->{Content} ) {
+            if ( ($item->_Value('Content') // '') eq $args->{Content} ) {
                 if ( defined $item->LargeContent ) {
                     return $item
                       if defined $args->{LargeContent}

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -263,11 +263,3 @@ sub Commit {
 RT::Base->_ImportOverlays();
 
 1;
-
-=head1 AUTHORS
-
-Kevin Riggle E<lt>kevinr@bestpractical.comE<gt>
-
-Ruslan Zakirov E<lt>ruz@bestpractical.comE<gt>
-
-=cut

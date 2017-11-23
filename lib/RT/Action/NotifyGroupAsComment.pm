@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,12 +69,6 @@ sub SetReturnAddress {
     $self->{'comment'} = 1;
     return $self->SUPER::SetReturnAddress( @_, is_comment => 1 );
 }
-
-=head1 AUTHOR
-
-Ruslan U. Zakirov E<lt>ruz@bestpractical.comE<gt>
-
-=cut
 
 RT::Base->_ImportOverlays();
 

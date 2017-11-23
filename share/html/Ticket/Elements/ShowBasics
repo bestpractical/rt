@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -74,6 +74,13 @@
     <td class="value"><& ShowTime, minutes => $Ticket->TimeWorked &></td>
   </tr>
 % }
+% my $totalTimeWorked = 0;
+% if (RT->Config->Get('DisplayTotalTimeWorked') && ($totalTimeWorked = $Ticket->TotalTimeWorked)) {
+  <tr class="total time worked sum">
+    <td class="label"><&|/l&>Total Time Worked</&>:</td>
+    <td class="value"><& ShowTime, minutes => $totalTimeWorked &></td>
+  </tr>
+% }
 % if ( keys %$time_worked ) {
 <tr class="time worked by-user">
   <td class="label"><&|/l&>Users</&>:</td>
@@ -125,40 +132,12 @@ $UngroupedCFs => 0
 <%init>
 my $time_worked;
 my $show_time_worked = $Ticket->CurrentUserCanSeeTime;
-if ( $show_time_worked && $Ticket->TimeWorked ) {
-    my $time_worked_attr = $Ticket->FirstAttribute('TimeWorked');
-
-    if ($time_worked_attr) {
-        $time_worked = $time_worked_attr->Content;
-    } else {
-        $time_worked = {};
-        my $transactions = $Ticket->Transactions;
-        $transactions->Limit(
-            FIELD     => 'Type',
-            VALUE     => 'Set',
-            SUBCLAUSE => 'timeworked',
-        );
-
-        $transactions->Limit(
-            FIELD           => 'Field',
-            VALUE           => 'TimeWorked',
-            SUBCLAUSE       => 'timeworked',
-            ENTRYAGGREGATOR => 'AND',
-        );
-
-        $transactions->Limit(
-            FIELD           => 'TimeTaken',
-            VALUE           => 0,
-            OPERATOR        => '>',
-            SUBCLAUSE       => 'timeworked',
-            ENTRYAGGREGATOR => 'OR',
-        );
-
-        while ( my $txn = $transactions->Next ) {
-            $time_worked->{ $txn->CreatorObj->Name } += $txn->TimeTaken
-              || $txn->NewValue - $txn->OldValue;
-        }
-        $Ticket->SetAttribute( Name => 'TimeWorked', Content => $time_worked );
+if ( $show_time_worked ) {
+    if (RT->Config->Get('DisplayTotalTimeWorked')) {
+        $time_worked = $Ticket->TotalTimeWorkedPerUser;
+    }
+    else {
+        $time_worked = $Ticket->TimeWorkedPerUser;
     }
 }
 

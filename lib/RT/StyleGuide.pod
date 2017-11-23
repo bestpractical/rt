@@ -20,17 +20,14 @@ degree to any Perl code written for use in RT.
 
 Note that these are all guidelines, not unbreakable rules.  If you have
 a really good need to break one of the rules herein, however, then it is
-best to ask on the B<rt-devel> mailing list first.
+best to first start a discussion in the RT Developers category on the community
+forum at L<https://forum.bestpractical.com>.
 
 Note that with much of this document, it is not so much the Right Way as
 it is Our Way.  We need to have conventions in order to make life easier
 for everyone.  So don't gripe, and just follow it, because you didn't
 get a good grade in "Plays Well With Others" in kindergarten and you
 want to make up for it now.
-
-If you have any questions, please ask us on the B<rt-devel> mailing list:
-
-        http://www.bestpractical.com/rt/lists.html
 
 We don't always follow this guide.  We are making changes throughout
 our code to be in line with it.  But just because we didn't do
@@ -723,7 +720,7 @@ This is for new programs, modules, specific APIs, or anything else.
 
 =over 4
 
-=item Present idea to rt-devel
+=item Create a topic in RT Developers on the Forum
 
 We may know of a better way to approach the problem, or know of an
 existing way to deal with it, or know someone else is working on it.
@@ -731,11 +728,11 @@ This is mostly informal, but a fairly complete explanation for the need
 and use of the code should be provided.
 
 
-=item Present complete specs to rt-devel
+=item Present specs in RT Developers
 
 The complete proposed API  should be submitted for
-approval and discussion.  For web and command-line programs, present the
-functionality and interface (op codes, command-lin switches, etc.).
+discussion.  For web and command-line programs, present the
+functionality and interface (op codes, command-line switches, etc.).
 
 The best way to do this is to take the documentation portion of the
 boilerplate and fill it in.  You can make changes later if necessary,
@@ -760,9 +757,10 @@ guide contained in this document.
 =item Finish it up
 
 After the code is done (possibly going through multiple code reviews),
-if you do not have repository access, submit it to rt-bugs@fsck.com as a
-unified diff. From that point on, it'll be handled by someone with
-repository access.
+submit your updates as a pull request on GitHub. If you don't have a GitHub
+account, you can generate patches and send email to rt-bugs@bestpractical.com
+which will create a ticket in our public issue tracker at
+L<https://issues.bestpractical.com>.
 
 =back
 
@@ -804,16 +802,83 @@ but new tables are expected to be consistent.
 
 =head2 The Overlay mechanism
 
-RT's classes allow "overlay" methods to be placed into files named Filename_Vendor.pm and Filename_Local.pm
-_Vendor is for 3rd-party vendor add-ons, while _Local is for site-local customizations.
+RT's classes allow "overlay" methods to be placed into files named
+F<Filename_Vendor.pm> and F<Filename_Local.pm>. _Vendor is for 3rd-party
+vendor add-ons, while _Local is for site-local customizations.
 
 These overlay files can contain new subs or subs to replace existing subs in this module.
 
-Each of these files should begin with the line
+Each of these files should begin with the line:
 
    no warnings qw(redefine);
 
 so that perl does not kick and scream when you redefine a subroutine or variable in your overlay.
+
+Some common ways that overlays are used:
+
+=head3 Adding Methods
+
+Create a file named F<Classname_Local.pm> as appropriate (like F<User_Local.pm>)
+in F<rt_base_dir/local/lib/RT/>.
+
+    no warnings qw(redefine);
+
+    sub MyNewMethod {
+        my $self = shift;
+        ...
+    }
+
+    1;
+
+=head3 Modifying Methods
+
+
+Create a file with a F<_Local.pm> suffix as appropriate in the same
+F<local/lib> tree mentioned above. Copy the method you need to
+modify from the original RT version of the file and paste it into your
+local version. Then modify the code to behave the way you need it to.
+
+When changing code in this way, make note of incoming values and especially
+return values since other code likely expects the existing method to return
+values a certain way.
+
+When copying code for modification, do not place the C<_ImportOverlays> call
+from the original at the bottom of your modified file.
+
+    no warnings qw(redefine);
+
+    sub ExistingMethod {
+        ... existing RT code
+        ... my special changes
+        ... existing RT code
+    }
+
+    1;
+
+=head3 Hooking Methods
+
+Set up your local file the same way as in B<Modifying Methods> described
+above. You'll need to save the original method call before you redfine it,
+and then call it at the head or tail of your code:
+
+    no warnings qw(redefine);
+
+    # This should be the same class we are overlaying here
+    my $original_method = \&RT::Class::MethodToHook;
+
+    sub MethodToHook {
+        my $self = shift;
+        ...
+        ... my special code
+        ...
+        # Call the original method at the tail of our extra code:
+        &$original_method( $args );
+    }
+
+    1;
+
+B<Remember!> If you modify existing core RT methods, you will need to update your
+local modifications when you upgrade the base RT code so that it matches.
 
 =head1 TO DO
 

@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -49,8 +49,6 @@
 use strict;
 use warnings;
 
-$|++;
-
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
     require File::Spec;
@@ -68,11 +66,6 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-BEGIN {
-    use RT;
-    RT::LoadConfig();
-    RT::Init();
-};
 
 eval { require RT::LDAPImport; 1; } or do {
     print "Unable to run rt-ldapimport without dependencies.\n";
@@ -85,31 +78,14 @@ my %OPT = (
     users  => 1,
     groups => 1,
 );
-use Getopt::Long;
-GetOptions(
+use RT::Interface::CLI qw(Init);
+Init(
     \%OPT,
-    'debug', 'help',
-    'import', 'users!', 'groups!',
-);
-if ($OPT{help}) {
-   print <<USAGE;
-$0: [--debug] [--import] [--help]
-     --help           This usage statement.
-     --debug          Enable debugging.
-     --import         Do the import.
-     --no-users       Skip users.
-     --no-groups      Skip groups.
-USAGE
-   exit 0;
-}
+    'debug',
+    'import',
+    'users!', 'groups!');
 
 my $importer = RT::LDAPImport->new;
-
-if( $OPT{debug} ) {
-    RT->Config->Set( LogToSTDERR => 'debug' );
-} else {
-    RT->Config->Set( LogToSTDERR => undef );
-}
 
 if ($OPT{import}) {
     if ($OPT{users}) {
@@ -125,7 +101,7 @@ if ($OPT{import}) {
     print <<TESTING;
 Running test import, no data will be changed
 Rerun command with --import to perform the import
-Rerun command with --debug for more information
+Rerun command with --verbose for more information
 TESTING
     $importer->import_users if $OPT{users};
     if ($OPT{groups}) {
@@ -134,3 +110,41 @@ TESTING
     }
     print "Finished test\n";
 }
+
+__END__
+
+=head1 NAME
+
+rt-ldapimport - Import users and groups from external sources
+
+=head1 SYNOPSIS
+
+  rt-ldapimport [--import]
+
+=head1 DESCRIPTION
+
+See L<RT::LDAPImport> for configuration instructions.
+
+=head1 OPTIONS
+
+=over
+
+=item C<--import>
+
+Without this flag, merely does a dry-run of the import.
+
+=item C<--verbose>
+
+Log more data when importing.
+
+=item C<--no-users>
+
+Skip user import.
+
+=item C<--no-groups>
+
+Skip group import.
+
+=back
+
+=cut
