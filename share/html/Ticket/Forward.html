@@ -154,7 +154,12 @@ my $Title = $txn
 my $from = RT::Interface::Email::GetForwardFrom(
     $txn ? ( Transaction => $txn ) : ( Ticket => $TicketObj ) );
 
-my $subject = "Fwd: ".($txn || $TicketObj)->Subject;
+my $subject = "Fwd: ";
+if ( $txn && $txn->Subject ) {
+    $subject .= $txn->Subject;
+} elsif ( $TicketObj && $TicketObj->Subject ) {
+    $subject .= $TicketObj->Subject;
+}
 
 my $attachments = RT::Interface::Email::GetForwardAttachments(
     Ticket => $TicketObj,
