@@ -31,6 +31,7 @@
 /sbin/rt-email-group-admin
 /sbin/rt-externalize-attachments
 /sbin/rt-fulltext-indexer
+/sbin/rt-passwd
 /sbin/rt-preferences-viewer
 /sbin/rt-server
 /sbin/rt-server.fcgi
