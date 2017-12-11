@@ -22,6 +22,5 @@ diag "encoded attachment filename with parameter continuations";
     $m->content_contains(Encode::decode("UTF-8","新しいテキスト ドキュメント.txt"), "found full filename");
 }
 
-undef $m;
 done_testing;
 

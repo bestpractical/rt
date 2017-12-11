@@ -299,5 +299,4 @@ for my $encrypt (0, 1) {
     $m->no_warnings_ok;
 }
 
-undef $m;
 done_testing;

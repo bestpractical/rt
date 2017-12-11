@@ -67,5 +67,4 @@ diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
     like( $mail, qr!<h1>$content</h1>!,     'mail has ticket html content <h1>$content</h1>' );
 }
 
-undef $m;
 done_testing;

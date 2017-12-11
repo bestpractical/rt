@@ -169,5 +169,4 @@ is( $config->Get('CommentAddress'), $comment, 'comment address in config' );
 
 unlink File::Spec->catfile( $RT::VarPath, $dbname );
 
-undef $m;
 done_testing;

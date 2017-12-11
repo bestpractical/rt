@@ -102,5 +102,4 @@ diag "paren in the username";
 
 $ldap->unbind();
 
-undef $m;
 done_testing;

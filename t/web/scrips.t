@@ -296,5 +296,4 @@ note "apply scrip in different stage to different queues";
     is scalar @matches, 1, 'scrip mentioned only once';
 }
 
-undef $m;
 done_testing;

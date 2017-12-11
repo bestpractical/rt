@@ -35,5 +35,4 @@ $m->submit_form_ok({ with_fields => { Lang => ''} },
 $m->text_contains("Lang changed from 'ja' to (no value)");
 $m->text_contains("Real Name", "Page content is english");
 
-undef $m;
 done_testing;

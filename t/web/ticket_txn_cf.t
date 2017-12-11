@@ -119,6 +119,5 @@ diag 'submit no value on ticket update page';
         0, 'no txn cf value in db' );
 }
 
-undef $m;
 done_testing;
 

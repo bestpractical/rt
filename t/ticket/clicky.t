@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More;
-use RT::Test tests => 20;
+use RT::Test tests => undef;
 
 my $plain = MIME::Entity->build(
     Subject => 'plain mime',
@@ -139,3 +139,4 @@ diag 'test httpurl_overwrite';
     ok( scalar @links, 'found clicky link with anchor' );
 }
 
+done_testing;

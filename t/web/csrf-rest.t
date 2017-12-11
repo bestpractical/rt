@@ -71,6 +71,5 @@ $m->content_lacks("RT at a glance", "Full UI is denied for REST sessions");
 $m->content_contains("This login session belongs to a REST client", "Tells you why");
 $m->warning_like(qr/This login session belongs to a REST client/, "Logs a warning");
 
-undef $m;
 done_testing;
 

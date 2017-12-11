@@ -25,4 +25,3 @@ $m->get_ok( "/NoAuth/Logout.html" ); # ->logout fails because it's translated
 $m->login( root => "password" );
 $m->content_contains('Copyright','Still has english copyright');
 
-undef $m;

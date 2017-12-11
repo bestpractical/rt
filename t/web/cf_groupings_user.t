@@ -106,5 +106,4 @@ ok $id, "found user's id #$id";
     }
 }
 
-undef $m;
 done_testing;

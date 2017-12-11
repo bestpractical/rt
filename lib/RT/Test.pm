@@ -1772,6 +1772,12 @@ sub done_testing {
     Test::NoWarnings::had_no_warnings();
     $check_warnings_in_end = 0;
 
+    if ($RT::Test::Web::INSTANCES) {
+        my $cleanup = RT::Test::Web->new;
+        undef $RT::Test::Web::INSTANCES;
+        $cleanup->no_warnings_ok;
+    }
+
     $builder->done_testing(@_);
 }
 

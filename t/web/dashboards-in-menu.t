@@ -99,5 +99,4 @@ $m->click_button(name => 'Delete');
 $m->get_ok( $baseurl . "/Dashboards/index.html" );
 $m->content_lacks('system foo', 'Dashboard is deleted');
 
-undef $m;
 done_testing;

@@ -114,5 +114,4 @@ $m->text_contains('Adjusted time worked by -120 minutes');
 $m->form_name('TicketModifyAll');
 is($m->value('TimeWorked'), "", 'no time worked');
 
-undef $m;
 done_testing;

@@ -54,15 +54,16 @@ my ( $baseurl, $m ) = RT::Test->started_ok();
 diag "test uri login";
 {
     ok( !$m->login( 'fakeuser', 'password' ), 'not logged in with fake user' );
+    $m->warning_like( qr/FAILED LOGIN for fakeuser/ );
     ok( $m->login( 'testuser', 'password' ), 'logged in' );
 }
 
 diag "test user creation";
 {
-my $testuser = RT::User->new($RT::SystemUser);
-my ($ok,$msg) = $testuser->Load( 'testuser' );
-ok($ok,$msg);
-is($testuser->EmailAddress,'testuser@invalid.tld');
+    my $testuser = RT::User->new($RT::SystemUser);
+    my ($ok,$msg) = $testuser->Load( 'testuser' );
+    ok($ok,$msg);
+    is($testuser->EmailAddress,'testuser@invalid.tld');
 }
 
 
@@ -81,8 +82,5 @@ like( $m->uri, qr!$baseurl/(index\.html)?!, 'privileged home page' );
 
 $ldap->unbind();
 
-$m->get_warnings;
-
-undef $m;
 done_testing;
 

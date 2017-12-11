@@ -65,5 +65,4 @@ diag "test ShowTicket right";
 }
 
 
-undef $m;
 done_testing();

@@ -83,5 +83,4 @@ if ( my $io = $handle->open('r') ) {
 }
 is( $mail_image_data, $image, 'image in mail is the same one in web' );
 
-undef $m;
 done_testing;

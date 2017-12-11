@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use Data::ICal;
-use RT::Test tests => 77;
+use RT::Test tests => undef;
 
 my $start_obj = RT::Date->new( RT->SystemUser );
 $start_obj->SetToNow;
@@ -194,3 +194,5 @@ diag 'Test iCal with date and time using query param';
     is($prop_ref->{'dtend'}->[0]->value, $due, "Got due date with time: $due");
     like( $prop_ref->{'dtend'}->[0]->as_string, qr/VALUE=DATE-TIME\:/, 'Got DATE-TIME value');
 }
+
+done_testing;

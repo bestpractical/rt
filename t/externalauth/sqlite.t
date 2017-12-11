@@ -63,16 +63,18 @@ my ( $baseurl, $m ) = RT::Test->started_ok();
 diag "test uri login";
 {
     ok( !$m->login( 'fakeuser', 'password' ), 'not logged in with fake user' );
+    $m->warning_like( qr/FAILED LOGIN for fakeuser/ );
     ok( !$m->login( 'testuser', 'wrongpassword' ), 'not logged in with wrong password' );
+    $m->warning_like( qr/FAILED LOGIN for testuser/ );
     ok( $m->login( 'testuser', 'password' ), 'logged in' );
 }
 
 diag "test user creation";
 {
-my $testuser = RT::User->new($RT::SystemUser);
-my ($ok,$msg) = $testuser->Load( 'testuser' );
-ok($ok,$msg);
-is($testuser->EmailAddress,'testuser@invalid.tld');
+    my $testuser = RT::User->new($RT::SystemUser);
+    my ($ok,$msg) = $testuser->Load( 'testuser' );
+    ok($ok,$msg);
+    is($testuser->EmailAddress,'testuser@invalid.tld');
 }
 
 diag "test form login";
@@ -107,9 +109,5 @@ diag "test with user and pass in URL";
     $m->text_contains( 'Logout', 'logged in' );
     is( $m->uri, $baseurl . '/SelfService/Closed.html?user=testuser;pass=password' );
 }
-
-$m->get_warnings;
-
-undef $m;
 
 done_testing;

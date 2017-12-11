@@ -76,5 +76,4 @@ END
     like($buf, qr'This message has been automatically generated in response');
 }
 
-undef $m;
 done_testing;

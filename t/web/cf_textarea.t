@@ -82,5 +82,4 @@ $m->content_lacks("<li>TheTextarea $content changed to $content</li>", 'textarea
 # #32440: Spurious "CF changed from 0 to 0"
 $m->content_lacks("<li>Zero 0 changed to 0</li>", "Zero wasn't updated");
 
-undef $m;
 done_testing;

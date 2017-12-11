@@ -48,5 +48,4 @@ $m->content_lacks( 'cfaaaa', 'cf value was dropped' );
 $m->follow_link_ok( { text => "Download $name" } );
 is( $m->content, 'Large attachment dropped', 'dropped $name' );
 
-undef $m;
 done_testing;

@@ -76,5 +76,4 @@ diag "Quick ticket creation";
     $m->content_contains("test quick create", "Found prefilled Subject");
 }
 
-undef $m;
 done_testing;

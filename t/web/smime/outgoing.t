@@ -298,7 +298,6 @@ sub update_ticket {
     check_text_emails( \%args, @mail );
 }
 
-undef $m;
 done_testing;
 
 sub check_text_emails {

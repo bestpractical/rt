@@ -22,5 +22,4 @@ ok( $m->login, 'logged in' );
 $m->post( "$baseurl/REST/1.0/show", [ id => 'user/14', ] );
 like( $m->content, qr/CF-foo: blabla/, 'found the cf' );
 
-undef $m;
 done_testing;

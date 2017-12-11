@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 23, config => 'Set($ShowUnreadMessageNotifications, 1);';
+use RT::Test nodata => 1, tests => undef, config => 'Set($ShowUnreadMessageNotifications, 1);';
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -93,3 +93,4 @@ diag "user B adds a message, we check that user A see notification and can clear
     );
 }
 
+done_testing;

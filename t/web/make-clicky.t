@@ -86,5 +86,4 @@ sub make_clicky {
     return $m->success ? $m->content : "";
 }
 
-undef $m;
 done_testing();

@@ -185,5 +185,4 @@ diag 'retain selected cf values when adding attachments';
        "Selected value still on form" );
 }
 
-undef $m;
 done_testing;

@@ -71,5 +71,4 @@ $m->content_contains('not-by-default.js', "found extra javascript resource");
 $m->content_contains('nottherebutwedontcare.css', "found extra css resource");
 $m->content_contains('jquery_noconflict.js', "found a default js resource");
 
-undef $m;
 done_testing;

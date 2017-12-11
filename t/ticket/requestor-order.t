@@ -16,7 +16,7 @@ my @requestors = ( ('bravo@example.com') x 6, ('alpha@example.com') x 6,
 my @subjects = ("first test", "second test", "third test", "fourth test", "fifth test") x 6;
 while (@requestors) {
     my $t = RT::Ticket->new(RT->SystemUser);
-    my ( $id, undef $msg ) = $t->Create(
+    my ( $id, undef, $msg ) = $t->Create(
         Queue      => $q->id,
         Subject    => shift @subjects,
         Requestor => [ shift @requestors ]

@@ -279,8 +279,4 @@ $m_ceo->content_lacks( 'second approval', 'ceo: second approval is gone too' );
 
 RT::Test->clean_caught_mails;
 
-undef $m;
-undef $m_ceo;
-undef $m_coo;
-
 done_testing;

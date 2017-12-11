@@ -58,5 +58,4 @@ $m->tick("Object-RT::Ticket-1-CustomField-2-DeleteValueIds", 1);
 $m->click_ok("SubmitTicket");
 $m->content_lacks("/Download/CustomFieldValue/1/bpslogo.png");
 
-undef $m;
 done_testing;

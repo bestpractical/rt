@@ -273,5 +273,4 @@ my $prefix = 'Object-RT::Ticket-'. $id .'-CustomField:';
         "Multi-select values submitted correctly";
 }
 
-undef $m;
 done_testing;

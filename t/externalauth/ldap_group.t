@@ -151,5 +151,4 @@ diag "test uri login";
 
 $ldap->unbind();
 
-undef $m;
 done_testing;
