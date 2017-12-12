@@ -3,7 +3,7 @@ use warnings;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
-use RT::Test tests => 70;
+use RT::Test tests => undef;
 
 my $cookie_jar = HTTP::Cookies->new;
 my ($baseurl, $agent) = RT::Test->started_ok;
@@ -219,6 +219,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
         "no changes, no duplicate condition with badly encoded text"
     );
 
+   $cf->SetDisabled(1);
 }
 
 diag "input a condition, select (several conditions), click delete";
@@ -324,3 +325,75 @@ diag "make sure skipped order by field doesn't break search";
         url_regex => qr{/Ticket/Display\.html},
     ), "link to the ticket" );
 }
+
+diag "make sure the list of columns available in the 'Order by' dropdowns are complete";
+{
+    $agent->get_ok($url . 'Search/Build.html');
+
+    my @orderby = qw(
+        AdminCc.EmailAddress
+        Cc.EmailAddress
+        Created
+        Creator
+        Custom.Ownership
+        Due
+        FinalPriority
+        InitialPriority
+        LastUpdated
+        LastUpdatedBy
+        Owner
+        Priority
+        Queue
+        Requestor.EmailAddress
+        Resolved
+        SLA
+        Started
+        Starts
+        Status
+        Subject
+        TimeEstimated
+        TimeLeft
+        TimeWorked
+        Told
+        Type
+        id
+    );
+
+    my $orderby = join(' ', sort @orderby);
+
+    my @scraped_orderbys = $agent->scrape_text_by_attr('name', 'OrderBy');
+
+    my $first_orderby = shift @scraped_orderbys;
+    is ($first_orderby, $orderby);
+
+    foreach my $scraped_orderby ( @scraped_orderbys ) {
+            is ($scraped_orderby, '[none] '.$orderby);
+    }
+
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name  => 'Location',
+        Queue => 'General',
+        Type  => 'FreeformSingle', );
+    isa_ok( $cf, 'RT::CustomField' );
+
+    ok($agent->form_name('BuildQuery'), "found the form");
+    $agent->field("ValueOfQueue", "General");
+    $agent->submit;
+
+    push @orderby, 'CustomField.{Location}';
+
+    $orderby = join(' ', sort @orderby);
+
+    @scraped_orderbys = $agent->scrape_text_by_attr('name', 'OrderBy');
+
+    $first_orderby = shift @scraped_orderbys;
+    is ($first_orderby, $orderby);
+
+    foreach my $scraped_orderby ( @scraped_orderbys ) {
+        is ($scraped_orderby, '[none] '.$orderby);
+    }
+
+    $cf->SetDisabled(1);
+}
+
+done_testing;
