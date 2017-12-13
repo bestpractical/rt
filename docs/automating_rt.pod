@@ -199,6 +199,26 @@ handles the "Due date not set" condition for you. It also offers some
 configuration options to control whether a transaction is recorded on the
 ticket and whether LastUpdated is modified.
 
+=head2 Running Multiple Actions
+
+If you want to make more than one change, you can run multiple actions on the
+tickets returned by your search. For example:
+
+    /opt/rt4/bin/rt-crontool \
+        --search RT::Search::FromSQL \
+        --search-arg "Status = 'stalled'" \
+        --action RT::Action::SetStatus  --action-arg resolved \
+        --action RT::Action::Notify --action-arg 'Requestor' \
+        --transaction last \
+        --template 'Stalled ticket resolved' \
+
+In this case, the stalled tickets are set to resolved and a notification is sent.
+
+Note that the C<--action-arg> arguments must come directly after the action
+they apply to. If you have an action that accepts no argument, that action
+must come last. If order matters, you can try adding a placeholder argument
+and testing to see if the action will ignore it.
+
 =head1 Transactions
 
 Many actions and conditions are also used in RT in scrips and may require
