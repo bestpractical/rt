@@ -358,14 +358,17 @@ sub BuildMainNav {
                     my $key = $info->{'label'} || ucfirst($next);
                     $actions->child( $key => title => loc( $key ), path => $url);
                 }
-
                 my ($can_take, $tmsg) = $obj->CurrentUserCanSetOwner( Type => 'Take' );
                 my ($can_steal, $smsg) = $obj->CurrentUserCanSetOwner( Type => 'Steal' );
+                my ($can_untake, $umsg) = $obj->CurrentUserCanSetOwner( Type => 'Untake' );
                 if ( $can_take ){
                     $actions->child( take => title => loc('Take'), path => "/Ticket/Display.html?Action=Take;id=" . $id );
                 }
                 elsif ( $can_steal ){
                     $actions->child( steal => title => loc('Steal'), path => "/Ticket/Display.html?Action=Steal;id=" . $id );
+                }
+                elsif ( $can_untake ){
+                       $actions->child( untake => title => loc('Untake'), path => "/Ticket/Display.html?Action=Untake;id=" . $id );
                 }
 
                 # TODO needs a "Can extract article into a class applied to this queue" check
