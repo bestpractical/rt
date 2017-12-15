@@ -423,10 +423,9 @@ sub _GetObject {
     }
 
     if (   $obj_type eq 'RT::Group'
-        && !$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)
-        && !$self->CurrentUser->HasRight( Object => $RT::System, Right => 'SuperUser' ) ) {
+        && !$self->CurrentUser->HasRight( Object => $object, Right => 'SeeGroupDashboard' ) ) {
         $RT::Logger->debug("Permission denied, ".$self->CurrentUser->Name.
-                           " is not a member of group");
+                           " does not have rights to see group dashboard" );
         return undef;
     }
 

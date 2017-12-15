@@ -402,7 +402,34 @@ sub ObjectsForLoading {
         FIELD => 'Name',
         VALUE => 'Dashboard',
     );
+    my $groups2 = RT::Groups->new($CurrentUser);
+    $groups2->LimitToUserDefinedGroups;
+    $groups2->ForWhichCurrentUserHasRight(
+        Right             => 'SeeGroupDashboard',
+        IncludeSuperusers => 0,
+    );
+    my $attrs2 = $groups2->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Attributes',
+        FIELD2 => 'ObjectId',
+    );
+    $groups2->Limit(
+        ALIAS => $attrs2,
+        FIELD => 'ObjectType',
+        VALUE => 'RT::Group',
+    );
+    $groups2->Limit(
+        ALIAS => $attrs2,
+        FIELD => 'Name',
+        VALUE => 'Dashboard',
+    );
     push @objects, @{ $groups->ItemsArrayRef };
+    push @objects, @{ $groups2->ItemsArrayRef };
+
+    # remove duplicates from @objects:
+    my %seen;
+    @objects = grep !$seen{$_->Id}++, @objects;
 
     # Finally, if you have been granted the SeeDashboard right (which
     # you could have by way of global user right or global group right),

@@ -162,6 +162,10 @@ sub _PrivacyObjects {
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
+    $groups->ForWhichCurrentUserHasRight(
+        Right             => 'ShowSavedSearches',
+        IncludeSuperusers => 0,
+    );
     $groups->WithCurrentUser;
     if ($has_attr) {
         my $attrs = $groups->Join(
@@ -181,8 +185,39 @@ sub _PrivacyObjects {
             VALUE => $has_attr,
         );
     }
+    my $groupsB = RT::Groups->new($CurrentUser);
+    $groupsB->LimitToUserDefinedGroups;
+    $groupsB->ForWhichCurrentUserHasRight(
+        Right             => 'ShowSavedSearches',
+        IncludeSuperusers => 0,
+    );
+    if ($has_attr) {
+        my $attrsB = $groupsB->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Attributes',
+            FIELD2 => 'ObjectId',
+        );
+        $groupsB->Limit(
+            ALIAS => $attrsB,
+            FIELD => 'ObjectType',
+            VALUE => 'RT::Group',
+        );
+        $groupsB->Limit(
+            ALIAS => $attrsB,
+            FIELD => 'Name',
+            VALUE => $has_attr,
+        );
+    }
+    my @objects = $CurrentUser->UserObj;
+    push @objects, @{ $groups->ItemsArrayRef };
+    push @objects, @{ $groupsB->ItemsArrayRef };
 
-    return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() } );
+    # remove duplicates:
+    my %seen;
+    @objects = grep !$seen{$_->Id}++, @objects;
+
+    return @objects;
 }
 
 sub ObjectsForLoading {
