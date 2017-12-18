@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 18;
+use RT::Test tests => undef;
 
 my $root = RT::User->new( $RT::SystemUser );
 $root->Load('root');
@@ -13,6 +13,8 @@ my $group = RT::Group->new( $RT::SystemUser );
 my ($gid) = $group->CreateUserDefinedGroup( Name => 'foo' );
 ok( $gid, 'created group foo');
 ok( $group->AddMember( $root->PrincipalId ) );
+my ( $st, $msg ) = $group->PrincipalObj->GrantRight( Right => 'ShowSavedSearches', Object => $group );
+ok( $st, $msg );
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok($m->login, 'logged in');
@@ -60,3 +62,5 @@ $m->form_name("BuildQuery");
 is($m->value('SavedSearchOwner'), "RT::System-1", "privacy is correct");
 is($m->value('SavedSearchDescription'), 'system_saved', "name is correct");
 
+undef $m;
+done_testing;

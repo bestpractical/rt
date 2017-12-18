@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 64;
+use RT::Test nodata => 1, tests => undef;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -193,3 +193,48 @@ $m->get_ok("/Dashboards/index.html");
 $m->content_contains("inner dashboard", "The dashboards list includes superuser rights");
 $m->get_ok("/Prefs/DashboardsInMenu.html");
 $m->content_lacks("inner dashboard", "But the menu skips them");
+
+# remove user from inner group
+($ok, $msg) = $outer_group->DeleteMember($inner_group->PrincipalId);
+ok($ok, "removed inner as a member of outer: $msg");
+
+# add user to outer group
+($ok, $msg) = $outer_group->AddMember($user_obj->PrincipalId);
+ok($ok, "added user as a member of outer group: $msg");
+
+# grant user right to see and create group dashboards for outer group
+$user_obj->PrincipalObj->GrantRight(
+    Right  => 'SeeGroupDashboard',
+    Object => $outer_group,
+);
+$user_obj->PrincipalObj->GrantRight(
+    Right => 'CreateGroupDashboard',
+    Object => $outer_group,
+);
+
+# create group dashboard for outer group
+$m->follow_link_ok({ id => 'home-dashboard_create'});
+$m->form_name('ModifyDashboard');
+$m->field("Name" => 'outer dashboard');
+$m->field("Privacy" => "RT::Group-" . $outer_group->Id);
+$m->click_button(value => 'Create');
+$m->content_contains("Saved dashboard outer dashboard");
+
+# check if user can see outer dashboard
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("outer dashboard", "The dashboards list includes outer dashboard");
+$m->get_ok("/Prefs/DashboardsInMenu.html");
+$m->content_contains("outer dashboard", "The dashboards menu includes outer dashboard");
+
+# remove user from outer group
+($ok, $msg) = $outer_group->DeleteMember($currentuser->PrincipalId);
+ok($ok, "removed user as a member of outer: $msg");
+
+# confirm that user can still see outer dashboard
+## this test should fail due to bug in group dashboard rights and pass when bug has been fixed
+$m->get_ok("/Dashboards/index.html");
+$m->content_contains("outer dashboard", "Non-group member granted rights' dashboards list includes outer dashboard");
+$m->get_ok("/Prefs/DashboardsInMenu.html");
+$m->content_contains("outer dashboard", "The dashboards menu includes outer dashboard");
+
+done_testing();
