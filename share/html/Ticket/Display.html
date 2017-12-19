@@ -168,7 +168,7 @@ if ($ARGS{'id'} eq 'new') {
         return if $SkipProcessing;
 
         if ( defined $ARGS{'Action'} ) {
-            if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|SetTold)$/) {
+            if ($ARGS{'Action'} =~ /^(Steal|Delete|Take|Untake|SetTold)$/) {
                 my $action = $1;
                 my ($res, $msg) = $TicketObj->$action();
                 push(@Actions, $msg);
