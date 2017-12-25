@@ -147,7 +147,7 @@ $m->title_is('Possible cross-site request forgery');
 # Create.html errors out.
 my $link = $m->find_link(text_regex => qr{resume your request});
 (my $broken_url = $link->url) =~ s/(CSRF_Token)=\w+/$1=crud/;
-$m->get_ok($broken_url);
+$m->get($broken_url);
 $m->content_like(qr/Queue\s+could not be loaded/);
 $m->title_is('RT Error');
 $m->warning_like(qr/Queue\s+could not be loaded/);

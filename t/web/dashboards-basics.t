@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use HTTP::Status qw();
 use RT::Test tests => 105;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -40,7 +41,8 @@ $m->content_lacks('<a href="/Dashboards/Modify.html?Create=1">New</a>',
 
 $m->no_warnings_ok;
 
-$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->get($url."Dashboards/Modify.html?Create=1");
+is($m->status, HTTP::Status::HTTP_FORBIDDEN);
 $m->content_contains("Permission Denied");
 $m->content_lacks("Save Changes");
 
@@ -49,7 +51,8 @@ $m->warning_like(qr/Permission Denied/, "got a permission denied warning");
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard', Object => $RT::System);
 
 # Modify itself is no longer good enough, you need Create
-$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->get($url."Dashboards/Modify.html?Create=1");
+is($m->status, HTTP::Status::HTTP_FORBIDDEN);
 $m->content_contains("Permission Denied");
 $m->content_lacks("Save Changes");
 
@@ -150,7 +153,8 @@ $m->content_unlike( qr/Bookmarked Tickets.*Bookmarked Tickets/s,
     'only dashboard queries show up' );
 $m->content_contains("dashboard test", "ticket subject");
 
-$m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
+$m->get("/Dashboards/Modify.html?id=$id&Delete=1");
+is($m->status, HTTP::Status::HTTP_FORBIDDEN);
 $m->content_contains("Permission Denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
 $m->warning_like(qr/Couldn't delete dashboard.*Permission Denied/, "got a permission denied warning when trying to delete the dashboard");
