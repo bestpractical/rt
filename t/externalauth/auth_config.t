@@ -37,6 +37,15 @@ Set($ExternalSettings, {
 END
 
 }
+
+BEGIN {
+  # $config above implicitly loads Net::LDAP because of type ldap
+  eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } or do {
+    use RT::Test tests => undef;
+    plan skip_all => 'Unable to test without Net::LDAP and Net::LDAP::Server::Test';
+  };
+}
+
 use RT::Test nodb => 1, tests => undef, config => $config;
 use Test::Warn;
 
