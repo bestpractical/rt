@@ -76,6 +76,7 @@ GetOptions( \%opts,
     "age=s",
     "batchsize=s",
     "dry-run",
+    "attachment_id=s",
 );
 
 if ($opts{'help'}) {
@@ -116,6 +117,7 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
     my $column = $class eq 'RT::Attachments' ? "Content" : "LargeContent";
     my $id = $last->{$class} || 0;
     my $batchsize = $opts{'batchsize'} || 1;
+    my $attachment_id = $opts{'attachment_id'};
 
     while (1) {
         my $attach = $class->new($RT::SystemUser);
@@ -130,7 +132,14 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
             VALUE           => 'external',
             ENTRYAGGREGATOR => 'AND',
         );
-
+        if ($opts{'attachment_id'}) {
+            $attach->Limit(
+                FIELD           => 'ID',
+                OPERATOR        => '>=',
+                VALUE           => $attachment_id,
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
         if ($opts{'age'}) {
             my $agelimit = strftime "%F", localtime(time()-$opts{'age'}*24*60*60);
             $attach->Limit(
@@ -206,7 +215,6 @@ for my $class (qw/RT::Attachments RT::ObjectCustomFieldValues/) {
                 RT->Logger->info("Stored $class $id as $key");
             }
         }
-
         last unless $attach->Count and $batchsize > 0;
     }
     $last->{$class} = $id;
@@ -270,7 +278,13 @@ upload begins and after it completes.
 Make a trial run and do no changes (mostly the same output as a real run is
 produced). C<dry-run> implies verbose output.
 
+
+=item --attachment_id
+
+Provide a attachment ID to have as the starting point of the externalize.
+
 =back
+
 
 =head1 SEE ALSO
 
