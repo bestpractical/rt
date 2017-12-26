@@ -133,7 +133,7 @@ my (@Actions, $title);
 
 
 unless ($id || $TicketObj) {
-    Abort('No ticket specified');
+    Abort('No ticket specified', Code => HTTP::Status::HTTP_BAD_REQUEST);
 }
 
 if ($ARGS{'id'} eq 'new') {
@@ -142,16 +142,16 @@ if ($ARGS{'id'} eq 'new') {
     my $Queue = RT::Queue->new( $session{'CurrentUser'} );
     $Queue->Load($ARGS{'Queue'});
     unless ( $Queue->id ) {
-        Abort('Queue not found');
+        Abort('Queue not found', Code => HTTP::Status::HTTP_NOT_FOUND);
     }
 
     unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
-        Abort('You have no permission to create tickets in that queue.');
+        Abort('You have no permission to create tickets in that queue.', Code => HTTP::Status::HTTP_FORBIDDEN);
     }
 
     ($TicketObj, @Actions) = CreateTicket( %ARGS );
     unless ( $TicketObj->CurrentUserHasRight('ShowTicket') ) {
-        Abort("No permission to view newly created ticket #".$TicketObj->id.".");
+        Abort("No permission to view newly created ticket #".$TicketObj->id.".", Code => HTTP::Status::HTTP_FORBIDDEN);
     }
 } else { 
     $TicketObj ||= LoadTicket($ARGS{'id'});
@@ -197,9 +197,9 @@ if ($ARGS{'id'} eq 'new') {
     if ( !$SkipProcessing ) {
         unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
             if (@Actions) {
-                Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@Actions);
+                Abort("A change was applied successfully, but you no longer have permissions to view the ticket", Actions => \@Actions, Code => HTTP::Status::HTTP_FORBIDDEN);
             } else {
-                Abort("No permission to view ticket");
+                Abort("No permission to view ticket", Code => HTTP::Status::HTTP_FORBIDDEN);
             }
         }
         if ( $ARGS{'MarkAsSeen'} ) {

@@ -55,6 +55,7 @@ use base qw(Test::WWW::Mechanize);
 use MIME::Base64 qw//;
 use Encode 'encode_utf8';
 use Storable 'thaw';
+use HTTP::Status qw();
 
 BEGIN { require RT::Test; }
 require Test::More;
@@ -126,7 +127,7 @@ sub logged_in_as {
     my $self = shift;
     my $user = shift || '';
 
-    unless ( $self->status == 200 ) {
+    unless ( $self->status == HTTP::Status::HTTP_OK ) {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
@@ -144,12 +145,12 @@ sub logout {
     my $url = $self->rt_base_url;
     $self->get($url);
     Test::More::diag( "error: status is ". $self->status )
-        unless $self->status == 200;
+        unless $self->status == HTTP::Status::HTTP_OK;
 
     if ( $self->content =~ /Logout/i ) {
         $self->follow_link( text => 'Logout' );
         Test::More::diag( "error: status is ". $self->status ." when tried to logout" )
-            unless $self->status == 200;
+            unless $self->status == HTTP::Status::HTTP_OK;
     }
     else {
         return 1;
@@ -167,6 +168,7 @@ sub goto_ticket {
     my $self = shift;
     my $id   = shift;
     my $view = shift || 'Display';
+    my $status = shift || HTTP::Status::HTTP_OK;
     unless ( $id && int $id ) {
         Test::More::diag( "error: wrong id ". defined $id? $id : '(undef)' );
         return 0;
@@ -175,7 +177,7 @@ sub goto_ticket {
     my $url = $self->rt_base_url;
     $url .= "Ticket/${ view }.html?id=$id";
     $self->get($url);
-    unless ( $self->status == 200 ) {
+    unless ( $self->status == $status ) {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
     }

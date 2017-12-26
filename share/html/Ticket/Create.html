@@ -366,7 +366,7 @@ my $current_user = $session{'CurrentUser'};
 if ($CloneTicket) {
     my $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
     $CloneTicketObj->Load($CloneTicket)
-        or Abort( loc("Ticket could not be loaded") );
+        or Abort( loc("Ticket could not be loaded"), Code => HTTP::Status::HTTP_BAD_REQUEST );
 
     my $clone = {
         Requestors => join( ',', $CloneTicketObj->RequestorAddresses ),
@@ -438,7 +438,7 @@ if ($CloneTicket) {
 my @results;
 
 my $QueueObj = RT::Queue->new($current_user);
-$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''));
+$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''), Code => HTTP::Status::HTTP_BAD_REQUEST);
 
 my $title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj));
 
@@ -446,7 +446,7 @@ $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARG
 
 $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
 
-$QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
+$QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."), Code => HTTP::Status::HTTP_NOT_FOUND);
 
 my $ticket = RT::Ticket->new($current_user); # empty ticket object
 
