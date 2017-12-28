@@ -80,6 +80,12 @@
 % }
 </td></tr>
 
+
+
+<tr><td align="right"><&|/l&>Article Included</&>:</td><td colspan="3">
+<& /Elements/ArticleSelect, %ARGS &>
+</td></tr>
+
 <tr><td align="right"><&|/l&>Subject Tag</&>:</td>
 <td colspan="3"><input name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $QueueObj->SubjectTag || '' ) %>" size="60" /></td>
 </tr>
@@ -169,9 +175,10 @@ checked="checked"
 
 <%INIT>
 my ($title, @results, @no_redirect_results, $Disabled, $EnabledChecked);
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
+$QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $id ) if !$id || $id eq 'new';
 
+$ARGS{QueueObj} = $QueueObj;
 $EnabledChecked = 'checked="checked"';
 
 unless ($Create) {
@@ -189,7 +196,7 @@ unless ($Create) {
 if ( $QueueObj->Id ) {
     $title = loc('Configuration for queue [_1]', $QueueObj->Name );
     my @attribs= qw(Description CorrespondAddress CommentAddress Name SortOrder
-        Sign SignAuto Encrypt Lifecycle SubjectTag SLADisabled Disabled);
+        Sign SignAuto Encrypt Lifecycle ArticleIncluded SubjectTag SLADisabled Disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $SetEnabled ) {
@@ -209,13 +216,11 @@ if ( $QueueObj->Id ) {
         AttributesRef => \@attribs,
         ARGSRef => \%ARGS,
     );
-
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
         Object => $QueueObj,
         ARGSRef => \%ARGS
     );
-
     $Disabled = $ARGS{'Disabled'} = $Enabled? 0: 1;
 
     $EnabledChecked = "" if $QueueObj->Disabled;
@@ -256,6 +261,7 @@ push @results, @no_redirect_results;
 
 
 <%ARGS>
+$QueueObj => undef
 $id => undef
 $result => undef
 $Name => undef
@@ -264,6 +270,7 @@ $Description => undef
 $CorrespondAddress => undef
 $CommentAddress => undef
 $SetSLAEnabled => undef
+$ArticleIncluded => undef
 $SetEnabled => undef
 $SetCrypt => undef
 $SLAEnabled => undef

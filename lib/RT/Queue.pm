@@ -155,6 +155,7 @@ sub Create {
         CorrespondAddress => '',
         CommentAddress    => '',
         Lifecycle         => 'default',
+        ArticleIncluded   => undef,
         SubjectTag        => undef,
         Sign              => undef,
         SignAuto          => undef,
@@ -198,8 +199,7 @@ sub Create {
         $self->_NewTransaction( Type => "Create" );
     }
     $RT::Handle->Commit;
-
-    for my $attr (qw/Sign SignAuto Encrypt SLA/) {
+    for my $attr (qw/Sign SignAuto Encrypt SLA ArticleIncluded/) {
         next unless defined $args{$attr};
         my $set = "Set" . $attr;
         my ($status, $msg) = $self->$set( $args{$attr} );
@@ -212,7 +212,43 @@ sub Create {
     return ( $id, $self->loc("Queue created") );
 }
 
+sub ArticleIncluded {
+    my $self = shift;
+    my $value = shift;
 
+    my $attr = $self->FirstAttribute('ArticleIncluded') or return 0;
+    return $attr->Content;
+}
+
+sub SetArticleIncluded {
+    my $self = shift;
+    my $value = shift;
+
+    my $MyArticle = RT::Article->new(RT->SystemUser);
+    unless ( $value =~ /^\d+$/ ) {
+        $MyArticle->LoadByCols( name => $value)
+    }else {
+        $MyArticle->LoadByCols( id => $value)
+    }
+    $value = $MyArticle->Name;
+
+    return ( 0, $self->loc('Permission Denied') )
+        unless $self->CurrentUserHasRight('AdminQueue');
+
+        $MyArticle = RT::Article->new(RT->SystemUser);
+        if ( $MyArticle->ValidateName($value) and $value ){
+            return (0, $self->loc("Invalid Article Name [_1]", $value));
+    }
+
+    my ($status, $msg) = $self->SetAttribute(
+        Name        => 'ArticleIncluded',
+        Description => 'Include Article on ticket create, for Queue.',
+        Content     => $value,
+    );
+    return ($status, $msg) unless $status;
+    if ($value){ return (1, $self->loc("Article Included updated to [_1]", $value)); }
+    return (1, $self->loc("Article Included removed"));
+}
 
 sub Delete {
     my $self = shift;
