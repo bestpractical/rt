@@ -512,6 +512,21 @@ if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} e
         $m->abort();
     }
 }
+
+if ( $QueueObj->ArticleIncluded ) {
+    my $myArticles = RT::Articles->new(RT->SystemUser);
+    $myArticles->LimitCustomField( OPERATOR => 'NOT LIKE', VALUE => 'undef' );
+    my %validArticles;
+    while (my $articles = $myArticles->Next){
+        $validArticles{$articles->Id}++;
+    }
+    my $myArticle = RT::Article->new(RT->SystemUser);
+    my $ObjectCustomFieldValue = RT::ObjectCustomFieldValue->new(RT->SystemUser);
+    $myArticle->LoadByCols(name => $QueueObj->ArticleIncluded );
+    $ObjectCustomFieldValue->LoadByCols(ObjectId => $myArticle->id);
+    if ($validArticles{$ObjectCustomFieldValue->Id}) { $ARGS{Content} = $ObjectCustomFieldValue->Content(); }
+}
+
 PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>]);
 PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>]);
 </%INIT>

@@ -239,6 +239,7 @@ sub Create {
         SLA                => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
+        ArticleIncluded    => undef,
         @_
     );
 
@@ -279,7 +280,6 @@ sub Create {
     unless ( defined $args{'Status'} && length $args{'Status'} ) {
         $args{'Status'} = $cycle->DefaultOnCreate;
     }
-
     $args{'Status'} = lc $args{'Status'};
     unless ( $cycle->IsValid( $args{'Status'} ) ) {
         return ( 0, 0,
@@ -687,7 +687,6 @@ sub AddWatcher {
                     $principal->Object->Name, $group->Label) );
     }
 }
-
 
 =head2 DeleteWatcher
 
