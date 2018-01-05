@@ -620,8 +620,20 @@ sub _ResolveRoles {
                         push @errors,
                             $self->loc("Couldn't load principal: [_1]", $msg);
                     }
-                } else {
-                    my @addresses = RT::EmailParser->ParseEmailAddress( $value );
+                }
+                else {
+                    # Check for username as input
+                    for my $person ( grep {!/\@/} split /,\s*/, $value ) {
+                        my $user = RT::User->new( RT->SystemUser );
+                            my ($id, $msg) = $user->Load( $person );
+                            if ( $id ) {
+                                push @{ $roles->{$role} }, $user->PrincipalObj;
+                            } else {
+                                push @errors,
+                                    $self->loc("Couldn't load or create user from username: [_1]", $msg);
+                            }
+                    }
+                    my @addresses = RT::EmailParser->ParseEmailAddress( grep {/\@/} split /,/, $value );
                     for my $address ( @addresses ) {
                         my $user = RT::User->new( RT->SystemUser );
                         my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
