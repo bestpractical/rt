@@ -621,26 +621,73 @@ sub _ResolveRoles {
                             $self->loc("Couldn't load principal: [_1]", $msg);
                     }
                 } else {
-                    my @addresses = RT::EmailParser->ParseEmailAddress( $value );
-                    for my $address ( @addresses ) {
-                        my $user = RT::User->new( RT->SystemUser );
-                        my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
-                        if ( $id ) {
-                            # Load it back as us, not as the system
-                            # user, to be completely safe.
-                            $user = RT::User->new( $self->CurrentUser );
-                            $user->Load( $id );
-                            push @{ $roles->{$role} }, $user->PrincipalObj;
-                        } else {
-                            push @errors,
-                                $self->loc("Couldn't load or create user: [_1]", $msg);
-                        }
-                    }
+                    my ($users, $errors) = $self->ParseInputPrincipals( $value );
+
+                    push @{ $roles->{$role} }, map { $_->PrincipalObj } @{$users};
+                    push @errors, @$errors if @$errors;
                 }
             }
         }
     }
     return (@errors);
+}
+
+=head2 ParseInputPrincipals
+
+In the RT web UI, some watcher input fields can accept RT users
+identified by email address or RT username. On the ticket Create
+and Update pages, these fields can have multiple values submitted
+as a comma-separated list. This method parses such lists and returns
+an array of user objects found or created for each parsed value.
+
+C<ParseEmailAddress> in L<RT::EmailParser> provides a similar
+function, but only handles email addresses, filtering out
+usernames. It also returns a list of L<Email::Address> objects
+rather than RT objects.
+
+Accepts: a string with usernames and email addresses
+
+Returns: arrayref of RT::User objects, arrayref of any error strings
+
+=cut
+
+sub ParseInputPrincipals {
+    my $self = shift;
+    my @list = RT::EmailParser->_ParseEmailAddress( @_ );
+
+    my @principals;    # Collect user or group objects
+    my @errors;
+
+    foreach my $e ( @list ) {
+        my $user = RT::User->new( RT->SystemUser );
+
+        if ( $e->{'type'} eq 'mailbox' ) {
+            my ( $id, $msg ) = $user->LoadOrCreateByEmail( $e->{'value'} );
+            if ( $id ) {
+                push @principals, $user;
+            }
+            else {
+                push @errors, $self->loc( "Couldn't load or create user: [_1]", $msg );
+                RT::Logger->error( "Couldn't load or create user from email address " . $e->{'value'} . ", " . $msg );
+            }
+        }
+        elsif ( $e->{'value'} =~ /^\s*(\w+)\s*$/ ) {
+
+            my ( $id, $msg ) = $user->Load( $1 );
+            if ( $id ) {
+                push @principals, $user;
+            }
+            else {
+                push @errors, $self->loc( "Couldn't load user: [_1]", $msg );
+                RT::Logger->error( "Couldn't load user from value " . $e->{'value'} . ", " . $msg );
+            }
+        }
+        else {
+            # should never reach here.
+        }
+    }
+
+    return ( \@principals, \@errors );
 }
 
 sub _CreateRoleGroup {

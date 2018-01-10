@@ -560,6 +560,37 @@ use Email::Address::List;
 
 sub ParseEmailAddress {
     my $self = shift;
+
+    my @list = $self->_ParseEmailAddress( @_ );
+
+    my @addresses;
+    foreach my $e ( @list ) {
+        if ( $e->{'type'} eq 'mailbox' ) {
+            push @addresses, $e->{'value'};
+        }
+        elsif ( $e->{'value'} =~ /^\s*(\w+)\s*$/ ) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load( $1 );
+            if ( $user->id ) {
+                push @addresses, Email::Address->new( $user->Name, $user->EmailAddress );
+            }
+            else {
+                RT->Logger->error( $e->{'value'} . " is not a valid email address and is not user name" );
+            }
+        }
+        else {
+            # should never reach here.
+        }
+    }
+
+    $self->CleanupAddresses( @addresses );
+
+    return @addresses;
+}
+
+# Returns a list of hashes, like what C<Email::Address::List::parse> returns
+sub _ParseEmailAddress {
+    my $self           = shift;
     my $address_string = shift;
 
     # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
@@ -574,30 +605,22 @@ sub ParseEmailAddress {
         "Unable to parse an email address from $address_string: ". shift
     ) };
 
-    my @addresses;
-    foreach my $e ( @list ) {
+    my @entries;
+    foreach my $e (@list) {
         if ($e->{'type'} eq 'mailbox') {
             if ($e->{'not_ascii'}) {
                 $logger->($e->{'value'} ." contains not ASCII values");
                 next;
             }
-            push @addresses, $e->{'value'}
-        } elsif ( $e->{'value'} =~ /^\s*(\w+)\s*$/ ) {
-            my $user = RT::User->new( RT->SystemUser );
-            $user->Load( $1 );
-            if ($user->id) {
-                push @addresses, Email::Address->new($user->Name, $user->EmailAddress);
-            } else {
-                $logger->($e->{'value'} ." is not a valid email address and is not user name");
-            }
+            push @entries, $e;
+        } elsif ($e->{'value'} =~ /^\s*(\w+)\s*$/) {
+            push @entries, $e;
         } else {
             $logger->($e->{'value'} ." is not a valid email address");
         }
     }
 
-    $self->CleanupAddresses(@addresses);
-
-    return @addresses;
+    return @entries;
 }
 
 =head2 CleanupAddresses ARRAY
