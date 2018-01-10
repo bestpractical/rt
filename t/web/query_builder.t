@@ -3,7 +3,7 @@ use warnings;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
-use RT::Test tests => 70;
+use RT::Test tests => undef;
 
 my $cookie_jar = HTTP::Cookies->new;
 my ($baseurl, $agent) = RT::Test->started_ok;
@@ -324,3 +324,20 @@ diag "make sure skipped order by field doesn't break search";
         url_regex => qr{/Ticket/Display\.html},
     ), "link to the ticket" );
 }
+
+diag "make sure active and inactive statuses generate the correct query";
+{
+    $agent->get_ok( $url . '/Search/Build.html?NewQuery=1' );
+    ok( $agent->form_name( 'BuildQuery' ), "found the form" );
+    $agent->field( ValueOfStatus => 'active' );
+    $agent->click( 'AddClause' );
+    is getQueryFromForm( $agent ), "Status = '__Active__'", "active status generated the correct query";
+
+    $agent->get_ok( $url . '/Search/Build.html?NewQuery=1' );
+    ok( $agent->form_name( 'BuildQuery' ), "found the form" );
+    $agent->field( ValueOfStatus => 'inactive' );
+    $agent->click( 'AddClause' );
+    is getQueryFromForm( $agent ), "Status = '__Inactive__'", "inactive status generated the correct query";
+}
+
+done_testing;
