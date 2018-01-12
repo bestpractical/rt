@@ -3042,6 +3042,17 @@ Set this to 1 to link directly to files in external storage.
 
 Set($ExternalStorageDirectLink, 0);
 
+=item C<$DoNotSerializeExternalizedData>
+
+How to handle externalized data when serializing. The default behaviour is to
+serialize everything, including the externalized data.
+
+See: L<rt-serializer/do-not-serialize-externalized-data>
+
+=cut
+
+Set($DoNotSerializeExternalizedData, 0);
+
 =back
 
 

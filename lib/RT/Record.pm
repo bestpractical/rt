@@ -852,6 +852,9 @@ sub _DecodeLOB {
     elsif ( $ContentEncoding eq 'quoted-printable' ) {
         $Content = MIME::QuotedPrint::decode($Content);
     }
+    elsif ( $ContentEncoding eq 'external' and RT->Config->Get('DoNotSerializeExternalizedData')) {
+        RT->Logger->info( "Content $Content is already externalized, so don't serialize!" );
+    }
     elsif ( $ContentEncoding eq 'external' ) {
         my $Digest = $Content;
         my $Storage = RT->System->ExternalStorage;
@@ -2499,7 +2502,14 @@ sub Serialize {
             $self->ContentEncoding,
             $self->_Value( $content_col, decode_utf8 => 0 )
         );
-        delete $store{ContentEncoding};
+        if ( $self->ContentEncoding eq 'external' and RT->Config->Get('DoNotSerializeExternalizedData')) {
+            # Do not delete ContentEncoding from store if Content is
+            # externalized and DoNotSerializeExternalizedData has been
+            # requested.
+        } else {
+            # Otherwise: Do delete it!
+            delete $store{ContentEncoding};
+        }
     }
     return %store unless $args{UIDs};
 
@@ -2535,7 +2545,13 @@ sub PreInflate {
 
     if ($ca{ContentEncoding} and $ca{ContentType}) {
         my ($content_col) = grep {exists $ca{$_}} qw/LargeContent Content/;
-        if (defined $data->{$content_col}) {
+        # The second part of the if-statement regarding ContentEncoding and
+        # external is here to match the handling externalized data set by
+        # DoNotSerializeExternalizedData while serializing. In other words:
+        #   No encoding with _EncodeLOB is needed for external content.
+        if ((defined $data->{$content_col}) and not (
+                defined $data->{ContentEncoding} and $data->{ContentEncoding} eq 'external')
+        ) {
             my ($ContentEncoding, $Content) = $class->_EncodeLOB(
                 $data->{$content_col}, $data->{ContentType},
             );
