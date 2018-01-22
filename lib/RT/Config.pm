@@ -1643,7 +1643,8 @@ sub SetFromConfig {
                 # as a site config is loaded earlier then its base config
                 # then we warn only on different extensions, for example
                 # RTIR's options is set in main site config
-                warn
+                our @ConfigChangeWarning;
+                push @ConfigChangeWarning,
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
                     ." It may be ok, but we want you to be aware."
                     ." This option has been set earlier in $source{'File'} line $source{'Line'}."

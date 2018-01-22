@@ -90,6 +90,9 @@ die "Wrong version of RT $RT::VERSION found; need @RT_VERSION_MAJOR@.@RT_VERSION
 RT->LoadConfig();
 RT->InitPluginPaths();
 RT->InitLogging();
+if ( $RT::Config::ConfigChangeWarning ) {
+    $RT::Logger->debug( $RT::Config::ConfigChangeWarning );
+}
 
 require RT::Handle;
 my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
