@@ -327,6 +327,16 @@ sub HasRight {
         };
         return $cached->{'SuperUser'} || $cached->{ $args{'Right'} }
             if $cached;
+
+        if ( ref $args{Object} ne 'RT::System' ) {
+            my $cached =
+              $_ACL_CACHE->{ $self->id . ';:;'
+                  . 'RT::System' . '-'
+                  . $RT::System->id };
+            return 1
+              if $cached
+              && ( $cached->{'SuperUser'} || $cached->{ $args{'Right'} } );
+        }
     }
 
     unshift @{ $args{'EquivObjects'} },
