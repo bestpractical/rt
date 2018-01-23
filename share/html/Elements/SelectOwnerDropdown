@@ -79,7 +79,7 @@ foreach my $object (@$Objects) {
     }
 }
 
-my $dropdown_limit = 50;
+my $dropdown_limit = RT->Config->Get( 'DropdownMenuLimit' ) || 50;
 $m->callback( CallbackName => 'ModifyDropdownLimit', DropdownLimit => \$dropdown_limit );
 
 if (keys(%user_uniq_hash) > $dropdown_limit ) {

@@ -1575,8 +1575,11 @@ builder are replaced by text fields that autocomplete.  This can
 alleviate the sometimes huge owner list for installations where many
 users have the OwnTicket right.
 
-Autocompleter is automatically turned on if list contains more than
-50 users, but penalty of executing potentially slow query is still paid.
+The Owner entry is automatically converted to an autocomplete box if the list
+of owners exceeds C<$DropdownMenuLimit> items. However, the query to generate
+the list of owners is still run and this can increase page load times. If
+your owner lists exceed the limit and you are using the autocomplete box, you
+can improve performance by explicitly setting C<$AutocompleteOwners>.
 
 Drop down doesn't show unprivileged users. If your setup allows unprivileged
 to own ticket then you have to enable autocompleting.
@@ -1584,6 +1587,22 @@ to own ticket then you have to enable autocompleting.
 =cut
 
 Set($AutocompleteOwners, 0);
+
+=item C<$DropdownMenuLimit>
+
+The Owner dropdown menu, used in various places in RT including the Query
+Builder and ticket edit pages, automatically changes from a dropdown menu to
+an autocomplete field once the menu holds more than the C<$DropdownMenuLimit>
+owners. Dropdown menus become more difficult to use when they contain a large
+number of values and the autocomplete textbox can be more usable.
+
+If you have very large numbers of users who can be owners, this can cause
+slow page loads on pages with an Owner selection. See L</$AutocompleteOwners>
+for a way to potentially speed up page loads.
+
+=cut
+
+Set($DropdownMenuLimit, 50);
 
 =item C<$AutocompleteOwnersForSearch>
 
