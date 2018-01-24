@@ -183,8 +183,8 @@ sub Set {
     elsif ( $format =~ /^(sql|datemanip|iso)$/ ) {
         $args{'Value'} =~ s!/!-!g;
 
-        if (   ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
-            || ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/ )
+        if (   ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)T?+(\d\d)(\d\d)(\d\d)$/ )
+            || ( $args{'Value'} =~ /^(\d{4})?(\d\d)(\d\d)T?+(\d\d):(\d\d):(\d\d)$/ )
             || ( $args{'Value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ )
             || ( $args{'Value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/ )
           ) {
