@@ -300,14 +300,26 @@ my $year = (localtime(time))[5] + 1900;
     $date->Set(Format => 'ISO', Value => '20051128151000');
     is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMhhmmss");
 
+    $date->Set(Format => 'ISO', Value => '20051128T151000');
+    is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMThhmmss");
+
     $date->Set(Format => 'ISO', Value => '1128151000');
     is($date->ISO, $year .'-11-28 15:10:00', "DDMMhhmmss");
+
+    $date->Set(Format => 'ISO', Value => '1128T151000');
+    is($date->ISO, $year .'-11-28 15:10:00', "DDMMThhmmss");
 
     $date->Set(Format => 'ISO', Value => '2005112815:10:00');
     is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMhh:mm:ss");
 
+    $date->Set(Format => 'ISO', Value => '20051128T15:10:00');
+    is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMThh:mm:ss");
+
     $date->Set(Format => 'ISO', Value => '112815:10:00');
     is($date->ISO, $year .'-11-28 15:10:00', "DDMMhh:mm:ss");
+
+    $date->Set(Format => 'ISO', Value => '1128T15:10:00');
+    is($date->ISO, $year .'-11-28 15:10:00', "DDMMThh:mm:ss");
 
     warning_like {
         $date->Set(Format => 'ISO', Value => '2005-13-28 15:10:00');
