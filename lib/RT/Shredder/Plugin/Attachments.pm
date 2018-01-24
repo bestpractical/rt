@@ -84,7 +84,7 @@ sub TestArgs
     my %args = @_;
     my $queue;
     if( $args{'file'} ) {
-        unless( $args{'file'} =~ /^[\w\. *?]+$/) {
+        unless( $args{'file'} =~ /^[\w\.\- *?]+$/) {
             return( 0, "Files mask '$args{file}' has invalid characters" );
         }
         $args{'file'} = $self->ConvertMaskToSQL( $args{'file'} );
