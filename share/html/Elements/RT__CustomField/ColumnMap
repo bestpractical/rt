@@ -166,6 +166,28 @@ my $COLUMN_MAP = {
             return @res;
         },
     },
+    SortOrder => {
+        title => 'Sort',
+        value => sub {
+            my $id = $_[0]->id;
+            my $queue_id = $_[2] || 0;
+
+            my $record = RT::ObjectCustomField->new( $session{CurrentUser} );
+            my $applied_id = $_[0]->IsGlobal ? 0 : $queue_id;
+            my $disabled = $applied_id == $queue_id ? '' : 'disabled="disabled"';
+
+            $record->LoadByCols( CustomField => $id, ObjectId => $applied_id );
+            if ( $record->id ) {
+                my $name = "CustomField-$id-SortOrder";
+                my $value = $record->SortOrder;
+                return \qq{<input name="}, $name, \qq{" size="5" value="$value" $disabled />};
+            }
+            else {
+                RT->Logger->warning("Custom field #$id is not applied to object #$applied_id");
+                return '';
+            }
+        },
+    },
 };
 
 $COLUMN_MAP->{'AppliedTo'} = $COLUMN_MAP->{'AddedTo'};

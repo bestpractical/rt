@@ -148,6 +148,33 @@ if ( $UpdateCFs ) {
         my ($status, $msg) = $CF->RemoveFromObject( $Object );
         push @results, $msg;
     }
+
+    my %sort = map { /CustomField-(\d+)-SortOrder/ ? ( $1 => $ARGS{$_} ) : () } keys %ARGS;
+    for my $cf_id ( sort keys %sort ) {
+        my $sort_order = $sort{$cf_id};
+        $sort_order =~ s/^\s+//;
+        $sort_order =~ s/\s+$//;
+        next unless $sort_order =~ /^-?\d+$/;
+
+        my $record = RT::ObjectCustomField->new( $session{'CurrentUser'} );
+        $record->LoadByCols( ObjectId => $id, CustomField => $cf_id );
+        unless ( $record->id ) {
+            push @results,
+              loc("Custom field #[_1] is not applied to object #[_2]", $cf_id, $id);
+            next;
+        }
+
+        if ( $record->SortOrder != $sort_order ) {
+            if ( $id && !$record->ObjectId ) {
+                # just in case, global inputs are disabled on non-global pages
+                push @results, loc("Only global pages can update SortOrder of global objects");
+                next;
+            }
+            my ( $status, $msg ) = $record->SetSortOrder( $sort_order );
+            push @results, '#' . $record->CustomField . ': ' . $msg;
+        }
+    }
+
 }
 
 $m->callback(CallbackName => 'UpdateExtraFields', Results => \@results, Object => $Object, %ARGS);
@@ -166,8 +193,8 @@ my $format = RT->Config->Get('AdminSearchResultFormat')->{'CustomFields'};
 my $rows = RT->Config->Get('AdminSearchResultRows')->{'CustomFields'} || 50;
 
 my $display_format = $id
-            ? ("'__RemoveCheckBox.{$id}__',". $format .", '__MoveCF.{$id}__'")
-            : ("'__CheckBox.{RemoveCustomField}__',". $format .", '__MoveCF.{$id}__'");
+            ? ("'__RemoveCheckBox__', ". $format .", '__SortOrder.{$id}__', '__MoveCF.{$id}__'")
+            : ("'__CheckBox.{RemoveCustomField}__', ". $format .", '__SortOrder__', '__MoveCF.{$id}__'");
 $m->callback(CallbackName => 'EditDisplayFormat', DisplayFormat => \$display_format, id => $id);
 
 </%INIT>
