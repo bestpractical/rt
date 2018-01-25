@@ -533,6 +533,29 @@ $chart->{dclrs} = [ RT->Config->Get("ChartColors") ];
         my $color_hex = $self->{dclrs}[ $_[0] % @{ $self->{dclrs} } - 1 ];
         return map { hex } ( $color_hex =~ /(..)(..)(..)/ );
     };
+
+    if ( $chart_options{cumulate} ) {
+        # Avoid "numeric" warnings caused by labels like "2 open" or absent
+        # stacks.
+        no strict 'refs';
+        my @warning_subs = ();
+        for my $pkg ( 'GD::Graph::Data::', 'GD::Graph::axestype::', 'GD::Graph::bars' ) {
+            push @warning_subs, map { $pkg . $_ } grep { /^[a-z_]+$/ } keys %$pkg;
+        }
+
+        if ( !$RT::HandledGDGraphNumericWarnings ) {
+            for my $warning_sub ( @warning_subs ) {
+                my ( $package, $sub ) = $warning_sub =~ /(.+)::(\w+)/;
+                if ( my $orig = $package->can($sub) ) {
+                    *$warning_sub = sub {
+                        local $SIG{__WARN__} = sub { warn $_[0] unless $_[0] =~ /numeric/ };
+                        $orig->( @_ );
+                    };
+                }
+            }
+            $RT::HandledGDGraphNumericWarnings = 1;
+        }
+    }
 }
 
 if (my $plot = eval { $chart->plot( \@data ) }) {
