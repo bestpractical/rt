@@ -102,6 +102,19 @@ sub Neighbors {
     return $res;
 }
 
+sub SetSortOrder {
+    my $self      = shift;
+    my $value     = shift;
+    my $old_value = $self->SortOrder;
+    my ( $ret, $msg ) = $self->_Set( Field => 'SortOrder', Value => $value );
+    if ($ret) {
+        return ( $ret, $self->loc( 'SortOrder changed from [_1] to [_2]', $old_value, $value ) );
+    }
+    else {
+        return ( $ret, $msg );
+    }
+}
+
 =head2 id
 
 Returns the current value of id.
