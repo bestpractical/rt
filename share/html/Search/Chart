@@ -172,6 +172,15 @@ my $chart = $chart_class->new( $Width => $Height );
 
 my %chart_options;
 if ($chart_class eq "GD::Graph::bars") {
+    my $text_size = sub {
+        my ($size, $text) = (@_);
+        my $font_handle = GD::Text::Align->new(
+            $chart->get('graph'), valign => 'top', 'halign' => 'center',
+        );
+        $font_handle->set_font($font, $size);
+        $font_handle->set_text($text);
+        return $font_handle;
+    };
 
     # $ChartStyle could be pie even if $chart_class is ::bars
     if ( $StackedGroupBy && $ChartStyle =~ /\bbar\b/ ) {
@@ -199,6 +208,32 @@ if ($chart_class eq "GD::Graph::bars") {
                     push @{$rows{$key}}, $data[1][$i] . ' ' . $label->[$stacked_index];
                     $i++;
                 }
+
+                # increase $Width and $Height if necessary
+                require List::Util;
+                my ( $max_sum, $min_value, $max_width );
+                for my $vertical_values ( map { $rows{join ';;;', @$_} } @new_labels ) {
+                    my $sum = List::Util::sum( map { defined $_ && /^(\d+)/ ? $1 : () } @$vertical_values );
+                    my $min_v = List::Util::min( map { defined $_ && /^(\d+)/ ? $1 : () } @$vertical_values );
+                    my $max_w = List::Util::max( map { defined $_ ? $text_size->(12, $_)->get('width') : () } @$vertical_values );
+                    $max_sum = $sum if !$max_sum || $max_sum < $sum;
+                    $min_value = $min_v if !$min_value || ( $min_v > 0 && $min_value > $min_v );
+                    $max_width = $max_w if !$max_width || $max_width < $max_w;
+                }
+
+                $chart_options{y_max_value} = int( $max_sum * 1.1 );
+                $chart_options{y_max_value} += 5 - $chart_options{y_max_value} % 5;
+                if ( $min_value ) {
+                    my $pixels = $min_value * $Height / $chart_options{y_max_value};
+                    if ( $pixels < 30 ) {
+                        $Height = int( $Height * 30 / $pixels );
+                    }
+                    $Height = 200 if $Height < 200;
+                }
+
+                my $value_width = ( $max_width + 25 ) * scalar @new_labels;
+                $Width = $value_width * 2 if $Width < $value_width * 2;
+                $Width = 200 if $Width < 200;
 
                 @data = \@new_labels;
 
@@ -248,15 +283,6 @@ if ($chart_class eq "GD::Graph::bars") {
         $chart_options{'y_label_skip'} = 2;
         $chart_options{'y_tick_number'} = 10;
     }
-    my $text_size = sub {
-        my ($size, $text) = (@_);
-        my $font_handle = GD::Text::Align->new(
-            $chart->get('graph'), valign => 'top', 'halign' => 'center',
-        );
-        $font_handle->set_font($font, $size);
-        $font_handle->set_text($text);
-        return $font_handle;
-    };
 
     my $fitter = sub {
         my %args = @_;
@@ -459,7 +485,7 @@ if ($chart_class eq "GD::Graph::bars") {
 # use a top margin enough to display values over the top line if needed
         t_margin => 18,
 # the following line to make sure there's enough space for values to show
-        y_max_value => $max_value,
+        ( $chart_options{y_max_value} || 0 ) < $max_value ? ( y_max_value => $max_value ) : (),
         y_min_value => $min_value,
 # if there're too many bars or at least one key is too long, use vertical
         bargroup_spacing => $chart_options{'bar_spacing'}*5,
