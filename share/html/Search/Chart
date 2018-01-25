@@ -49,6 +49,7 @@
 $Cache => undef
 $Query => "id > 0"
 @GroupBy => ()
+$StackedGroupBy => undef
 $ChartStyle => 'bar+table+sql'
 @ChartFunction => 'COUNT'
 $Width  => undef
@@ -171,6 +172,47 @@ my $chart = $chart_class->new( $Width => $Height );
 
 my %chart_options;
 if ($chart_class eq "GD::Graph::bars") {
+
+    # $ChartStyle could be pie even if $chart_class is ::bars
+    if ( $StackedGroupBy && $ChartStyle =~ /\bbar\b/ ) {
+        if ( scalar @data > 2 ) {
+            RT->Logger->warning( "Invalid stack option: it can't apply to multiple data rows" );
+        }
+        else {
+
+            my $labels = $data[0];
+
+            # find the stacked group index
+            require List::MoreUtils;
+            my $stacked_index = List::MoreUtils::first_index { $_ eq $StackedGroupBy } @GroupBy;
+            if ( $stacked_index >= 0 ) {
+                $chart_options{cumulate} = 1;
+                my @new_labels;
+                my %rows;
+                my $i = 0;
+
+                for my $label ( @$labels ) {
+                    my @new_label = @$label;
+                    splice @new_label, $stacked_index, 1; # remove the stacked group
+                    my $key = join ';;;', @new_label;
+                    push @new_labels, \@new_label unless $rows{$key};
+                    push @{$rows{$key}}, $data[1][$i] . ' ' . $label->[$stacked_index];
+                    $i++;
+                }
+
+                @data = \@new_labels;
+
+                my $ea = List::MoreUtils::each_arrayref( map { $rows{join ';;;', @$_} } @new_labels );
+                while ( my ( @list ) = $ea->() ) {
+                    push @data, [ map { $_ || '' } @list ];
+                }
+            }
+            else {
+                RT->Logger->warning("Invalid StackedGroupBy: $StackedGroupBy");
+            }
+        }
+    }
+
     my $count = @{ $data[0] };
     $chart_options{'bar_spacing'} =
         $count > 30 ? 1
@@ -341,7 +383,14 @@ if ($chart_class eq "GD::Graph::bars") {
     }
 
     # try to fit in values above bars
-    {
+    if ( $chart_options{cumulate} ) {
+        $chart_options{'show_values'}             = 1;
+        $chart_options{'values_vertical'}         = 0;
+        $chart_options{'values_space'}            = -25;
+        $chart_options{'values_font'}             = [ $font, 12 ];
+        $chart_options{'hide_overlapping_values'} = 1;
+    }
+    else {
         # 0.8 is guess, labels for ticks on Y axis can be wider
         # 1.5 for paddings around bars that GD::Graph adds
         my $x_space_for_label = $Width*0.8/($count*(@data - 1)+1.5);
@@ -388,15 +437,16 @@ if ($chart_class eq "GD::Graph::bars") {
         );
         $chart_options{'show_values'} = 1;
         $chart_options{'hide_overlapping_values'} = 1;
+
         if ( $found_solution ) {
             $chart_options{'values_font'} = [ $font, $found_solution ],
-            $chart_options{'values_space'} = 2;
-            $chart_options{'values_vertical'} =
+            $chart_options{'values_space'} ||= 2;
+            $chart_options{'values_vertical'} //=
                 $can{'horizontal, one line'} ? 0 : 1;
         } else {
             $chart_options{'values_font'} = [ $font, 9 ],
-            $chart_options{'values_space'} = 1;
-            $chart_options{'values_vertical'} = 1;
+            $chart_options{'values_space'} ||= 1;
+            $chart_options{'values_vertical'} //= 1;
         }
     }
 
