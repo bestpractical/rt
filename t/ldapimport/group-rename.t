@@ -10,7 +10,7 @@ eval { require RT::LDAPImport; require Net::LDAP::Server::Test; 1; } or do {
 my $importer = RT::LDAPImport->new;
 isa_ok($importer,'RT::LDAPImport');
 
-my $ldap_port = 1024 + int rand(10000) + $$ % 1024;
+my $ldap_port = RT::Test->find_idle_port;
 ok( my $server = Net::LDAP::Server::Test->new( $ldap_port, auto_schema => 1 ),
     "spawned test LDAP server on port $ldap_port");
 my $ldap = Net::LDAP->new("localhost:$ldap_port");
