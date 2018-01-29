@@ -44,6 +44,7 @@
 /sbin/rt-serializer
 /sbin/rt-importer
 /sbin/rt-ldapimport
+/sbin/rt-passwd
 /sbin/standalone_httpd
 /var/mason_data/
 /autom4te.cache/
