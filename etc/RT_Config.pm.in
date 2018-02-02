@@ -3057,6 +3057,9 @@ Set C<Passphrase> to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
 '' key is used as a default.
 
+Set C<OtherCertificatesToSend> to path to a PEM-formatted certificate file.
+Certificates in the file will be include in outgoing signed emails.
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -3070,6 +3073,7 @@ Set( %SMIME,
     CAPath => undef,
     AcceptUntrustedCAs => undef,
     Passphrase => undef,
+    OtherCertificatesToSend => undef,
 );
 
 =head2 GnuPG configuration
