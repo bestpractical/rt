@@ -122,6 +122,14 @@ if ( not defined $session{$cache_key} and not $Lite ) {
                 };
             }
         }
+        if ( ref($object) eq 'RT::Queue' ) {
+            unless ($session{CurrentUser}->HasRight( Object => $object, Right => 'SeeQueue' )) {
+                push @{$session{$cache_key}{objects}}, {
+                    Id          => undef,
+                    Name        => 'Hidden Queue',
+                };
+            }
+        }
     }
 
     while (my $object = $collection->Next) {
