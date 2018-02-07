@@ -4071,6 +4071,23 @@ Set(%AdminSearchResultRows,
     Assets       => 50,
 );
 
+=item C<%AdminAutoResolveDuplicateSortOrders>
+
+Use C<%AdminAutoResolveDuplicateSortOrders> to automatically resolve duplicate
+SortOrders on admin pages.
+
+Note that for objects like custom fields that support multiple lever apply
+approaches(globally or at queue level), updating SortOrder of global custom
+fields might cause new duplications at queue level, this config doesn't check
+or resolve those new duplicates.
+
+=cut
+
+
+Set(%AdminAutoResolveDuplicateSortOrders,
+    CustomFields => 0,
+);
+
 =back
 
 
