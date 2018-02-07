@@ -175,7 +175,8 @@ if ( $UpdateCFs ) {
         }
     }
 
-    {
+    my $config = RT->Config->Get('AdminAutoResolveDuplicatedSortOrder');
+    if ( $config && $config->{CustomFields} ) {
         my $cfs = RT::CustomFields->new( $session{'CurrentUser'} );
         $cfs->LimitToLookupType($lookup);
         $cfs->LimitToGlobalOrObjectId($id);
