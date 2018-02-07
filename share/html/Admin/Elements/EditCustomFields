@@ -175,6 +175,23 @@ if ( $UpdateCFs ) {
         }
     }
 
+    {
+        my $cfs = RT::CustomFields->new( $session{'CurrentUser'} );
+        $cfs->LimitToLookupType($lookup);
+        $cfs->LimitToGlobalOrObjectId($id);
+        $cfs->SetContextObject( $Object );
+
+        my $ocfs = RT::ObjectCustomFields->new( $session{CurrentUser} );
+        $ocfs->Limit(
+            FIELD    => 'CustomField',
+            VALUE    => [ map { $_->id } @{$cfs->ItemsArrayRef } ],
+            OPERATOR => 'IN',
+        );
+        $ocfs->Limit( FIELD => 'ObjectId', VALUE => [ 0, $id ], OPERATOR => 'IN' );
+
+        my ( $status, @msgs ) = $ocfs->ResolveDuplicatedSortOrder( ObjectId => $id );
+        push @results, @msgs;
+    }
 }
 
 $m->callback(CallbackName => 'UpdateExtraFields', Results => \@results, Object => $Object, %ARGS);

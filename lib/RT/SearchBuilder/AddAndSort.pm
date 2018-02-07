@@ -214,6 +214,94 @@ sub JoinTargetToThis {
     return $collection->{ $key } = $alias;
 }
 
+=head2 ResolveDuplicatedSortOrder( ObjectId => VALUE )
+
+Note that it could fail if it can't find an approach to resolve.
+
+Returns (1, 'Status message 1', 'Status message 2', ... ) on success and
+(0, 'Error Message') on failure.
+
+Returns 1 if there are no duplicates found.
+
+=cut
+
+sub ResolveDuplicatedSortOrder {
+    my $self = shift;
+    my %args = (
+        ObjectId => 0,
+        @_,
+    );
+
+    my ( %record, %order, %dup, %changes );
+
+    while ( my $record = $self->Next ) {
+        $record{ $record->id } = $record;
+        $order{ $record->id }  = $record->SortOrder;
+        $dup{ $record->SortOrder }++;
+    }
+
+    if ( grep { $_ > 1 } values %dup ) {
+
+        # for records having the same sort order, later updated ones win
+        my @ids =
+          sort {
+            ( $order{$a} <=> $order{$b} )
+              || ( $record{$b}->LastUpdated cmp $record{$a}->LastUpdated )
+              || ( $a <=> $b )
+          }
+          keys %record;
+        my @orders = sort { $a <=> $b } values %order;
+
+        my @new_orders;
+        my %exist;
+        for my $order ( @orders ) {
+            my $new_order = $order;
+            while ( $exist{$new_order} ) {
+                $new_order += 1;
+            }
+            push @new_orders, $new_order;
+            $exist{$new_order} = 1;
+        }
+
+        for my $id ( @ids ) {
+            my $new_order = shift @new_orders;
+            if ( $order{$id} != $new_order ) {
+                if ( !$args{ObjectId} || $record{$id}->ObjectId ) {
+                    $changes{$id} = $new_order;
+                }
+                else {
+                    return ( 0,
+                        $self->loc(
+"Failed to resolve duplicated SortOrder automatically, please resolve manually or adjust global ones first on global page"
+                          )
+                    );
+                }
+            }
+        }
+    }
+
+    if ( %changes ) {
+        my @msgs;
+        $RT::Handle->BeginTransaction;
+        for my $id ( sort { $a <=> $b } keys %changes ) {
+            my ( $ret, $msg ) =
+              $record{$id}->SetSortOrder( $changes{$id} );
+            $msg = "#" . $record{$id}->CustomField . ': ' . $msg;
+            if ( $ret ) {
+                push @msgs, $msg;
+            }
+            else {
+                $RT::Handle->Rollback;
+                return ( $ret, $msg );
+            }
+        }
+        $RT::Handle->Commit;
+        return ( 1, @msgs );
+    }
+
+    return 1;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
