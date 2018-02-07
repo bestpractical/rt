@@ -106,6 +106,15 @@
                 Default      => $ARGS{'Owner'}
             }
         },
+        { name => 'Queue',
+            comp => '/Elements/SelectQueue',
+            args => {
+            Name => 'Queue',
+            TicketObj => $TicketObj,
+            Default => $TicketObj->QueueObj->Id,
+            ShowNullOption => 0,
+            }
+        },
         { special => 'roles' },
         {   name => 'Worked',
             comp => '/Elements/EditTimeValue',
