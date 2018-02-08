@@ -486,6 +486,7 @@ AC_CONFIG_FILES([
                  sbin/rt-serializer
                  sbin/rt-importer
                  sbin/rt-passwd
+                 sbin/rt-rebuild-sort-order
                  bin/rt-crontool
                  bin/rt-mailgate
                  bin/rt],

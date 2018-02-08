@@ -150,6 +150,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-ldapimport \
 				rt-passwd \
 				rt-preferences-viewer \
+				rt-rebuild-sort-order \
 				rt-serializer \
 				rt-server \
 				rt-server.fcgi \

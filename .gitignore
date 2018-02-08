@@ -45,6 +45,7 @@
 /sbin/rt-importer
 /sbin/rt-ldapimport
 /sbin/standalone_httpd
+/sbin/rt-rebuild-sort-order
 /var/mason_data/
 /autom4te.cache/
 /configure

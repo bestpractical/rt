@@ -1,0 +1,305 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+# fix lib paths, some may be relative
+BEGIN {    # BEGIN RT CMD BOILERPLATE
+    require File::Spec;
+    require Cwd;
+    my @libs = ( "@RT_LIB_PATH@", "@LOCAL_LIB_PATH@" );
+    my $bin_path;
+
+    for my $lib ( @libs ) {
+        unless ( File::Spec->file_name_is_absolute( $lib ) ) {
+            $bin_path ||=
+              ( File::Spec->splitpath( Cwd::abs_path( __FILE__ ) ) )[1];
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+my %OPT;
+
+use RT::Interface::CLI qw(Init);
+Init( \%OPT, 'type=s', 'lookup-type=s', 'ratio=i', 'dryrun' );
+
+my %type = map { lc $_ => 1 } qw/CustomField/;
+
+my %lookup_type = map { $_->CustomFieldLookupType => 1 } qw/RT::Ticket RT::Transaction RT::Article RT::Asset/;
+
+# to support --lookup-type Ticket
+my %variant_lookup_type;
+for my $lookup_type ( keys %lookup_type ) {
+    my ( $last_word ) = $lookup_type =~ /(\w+)$/;
+    $variant_lookup_type{ lc $last_word } = $lookup_type;
+
+    # also support case insensitive
+    $variant_lookup_type{ lc $lookup_type } = $lookup_type;
+}
+
+if ( !$OPT{type} || !$type{ lc $OPT{type} } ) {
+    RT::Interface::CLI->ShowHelp(
+        Message  => 'Invalid type',
+        Sections => 'NAME|SYNOPSIS|OPTIONS',
+    );
+}
+
+my $lookup_type = $OPT{'lookup-type'};
+$lookup_type = $variant_lookup_type{ lc $lookup_type } if $lookup_type;
+
+if ( !$lookup_type ) {
+    RT::Interface::CLI->ShowHelp(
+        Message  => 'Invalid lookup-type',
+        Sections => 'NAME|SYNOPSIS|OPTIONS',
+    );
+}
+
+my $cfs = RT::CustomFields->new( RT->SystemUser );
+$cfs->LimitToLookupType( $lookup_type );
+
+$OPT{ratio} = 10 unless $OPT{ratio} >= 1;
+
+if ( $cfs->Count == 0 ) {
+    print "Nothing to change\n";
+    exit;
+}
+
+my $span = $cfs->Count * $OPT{ratio};
+
+my %order;
+my %ocf;
+
+$cfs = RT::CustomFields->new( RT->SystemUser );
+$cfs->LimitToLookupType( $lookup_type );
+$cfs->LimitToGlobalOrObjectId( 0 );
+my $ocfs = RT::ObjectCustomFields->new( RT->SystemUser );
+$ocfs->Limit(
+    FIELD    => 'CustomField',
+    VALUE    => [ map { $_->id } @{ $cfs->ItemsArrayRef } ],
+    OPERATOR => 'IN',
+);
+$ocfs->Limit( FIELD => 'ObjectId', VALUE => [0], OPERATOR => 'IN' );
+
+while ( my $ocf = $ocfs->Next ) {
+    $ocf{ $ocf->id } = $ocf;
+    push @{ $order{0} }, $ocf->id;
+}
+
+my $queues = RT::Queues->new( RT->SystemUser );
+$queues->UnLimit;
+while ( my $queue = $queues->Next ) {
+    my $cfs = RT::CustomFields->new( RT->SystemUser );
+    $cfs->LimitToLookupType( $lookup_type );
+    $cfs->LimitToGlobalOrObjectId( $queue->id );
+    next unless $cfs->Count > 1;
+    my $ocfs = RT::ObjectCustomFields->new( RT->SystemUser );
+    $ocfs->Limit(
+        FIELD    => 'CustomField',
+        VALUE    => [ map { $_->id } @{ $cfs->ItemsArrayRef } ],
+        OPERATOR => 'IN',
+    );
+    $ocfs->Limit(
+        FIELD    => 'ObjectId',
+        VALUE    => [ 0, $queue->id ],
+        OPERATOR => 'IN'
+    );
+    while ( my $ocf = $ocfs->Next ) {
+        $ocf{ $ocf->id } = $ocf;
+        push @{ $order{ $queue->id } }, $ocf->id;
+    }
+}
+
+my %sort_order;
+
+for ( my $i = 0 ; $i < @{ $order{0} } ; $i++ ) {
+    my $ocf_id = $order{0}[$i];
+    $sort_order{0}{$ocf_id} = $span * ( $i + 1 );
+}
+
+for my $q_id ( grep { $_ != 0 } keys %order ) {
+    my $base = 0;
+    my $r    = 0;    # reset every time we see global cfs
+    for ( my $i = 0 ; $i < @{ $order{$q_id} } ; $i++ ) {
+        my $ocf_id = $order{$q_id}[$i];
+        my $ocf    = $ocf{$ocf_id};
+        if ( $ocf->ObjectId == 0 ) {
+            $base = $sort_order{0}{$ocf_id};
+            $r    = 0;
+        }
+        else {
+            $sort_order{$q_id}{$ocf_id} = $base + $r;
+        }
+        $r++;
+    }
+}
+
+binmode( STDOUT, ":utf8" );
+
+$RT::Handle->BeginTransaction unless $OPT{dryrun};
+
+if ( !%sort_order ) {
+    print "Nothing need to do\n";
+    exit;
+}
+
+for my $q_id ( sort { $a <=> $b } keys %sort_order ) {
+    my $q_name;
+    if ( $q_id ) {
+        my $queue = RT::Queue->new( RT->SystemUser );
+        $queue->Load( $q_id );
+        $q_name = $queue->Name;
+    }
+    else {
+        $q_name = 'Global';
+    }
+
+    print $q_name, ":\n";
+
+    for my $ocf_id (
+        sort { $sort_order{$q_id}{$a} <=> $sort_order{$q_id}{$b} }
+        keys %{ $sort_order{$q_id} }
+      )
+    {
+        my $ocf       = $ocf{$ocf_id};
+        my $new_order = $sort_order{$q_id}{$ocf_id};
+        print "\t", $ocf->CustomFieldObj->Name, '(#' . $ocf->CustomField . '): ', $new_order, "\n";
+        if ( !$OPT{dryrun} ) {
+            if ( $ocf->SortOrder != $new_order ) {
+                my ( $ret, $msg ) =
+                  $ocf->SetSortOrder( $sort_order{$q_id}{$ocf_id} );
+                if ( !$ret ) {
+                    $RT::Handle->Rollback;
+                    RT->Logger->error( $msg );
+                    exit 1;
+                }
+            }
+        }
+    }
+}
+
+unless ( $OPT{dryrun} ) {
+    $RT::Handle->Commit;
+    print "Done.\n";
+}
+
+__END__
+
+=head1 NAME
+
+rt-rebuild-sort-order - Rebuild SortOrder of objects
+
+=head1 SYNOPSIS
+
+    rt-rebuild-sort-order --type CustomField --lookup-type RT::Queue-RT::Ticket --dryrun
+
+    rt-rebuild-sort-order --type CustomField --lookup-type RT::Queue-RT::Ticket
+    rt-rebuild-sort-order --type CustomField --lookup-type Ticket # ditto
+
+=head1 DESCRIPTION
+
+For objects like ticket custom fields that support both global and local apply
+approaches(globally or at queue level), updating SortOrder of global custom
+fields might cause duplicated SortOrder at queue level, which is annoying.
+
+This script rebuilds the whole SortOrder of related objects in a manner that
+makes global ones' SortOrder sparse enough so you can easily adjust local
+ones' later without worrying about no enough positions.
+
+=head1 OPTIONS
+
+=over
+
+=item type
+
+Available values are:
+
+=over
+
+=item C<CustomField>
+
+=back
+
+=item lookup-type
+
+Available values are:
+
+=over
+
+=item C<RT::Queue-RT::Ticket> or C<Ticket>
+
+=item C<RT::Queue-RT::Ticket-RT::Transaction> or C<Transaction>
+
+=item C<RT::Class-RT::Article> or C<Article>
+
+=item C<RT::Catalog-RT::Asset> or C<Asset>
+
+=back
+
+=item ratio
+
+Use this to specify the sparseness of global sort orders.
+
+Bigger values means more sparse global sort orders.
+
+Default value is 10.
+
+=item dryrun
+
+Show re-generated values, don't actually update.
+
+=item help
+
+Print this message
+
+--help is equal to -h
+
+=back
