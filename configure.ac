@@ -489,6 +489,7 @@ AC_CONFIG_FILES([
                  sbin/rt-importer
                  sbin/rt-passwd
                  sbin/rt-munge-attachments
+                 sbin/rt-rebuild-sort-order
                  bin/rt-crontool
                  bin/rt-mailgate
                  bin/rt],
