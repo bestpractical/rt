@@ -55,7 +55,7 @@
 %     if ($ShowNullOption) {
   <option value=""><% $DefaultLabel %></option>
 %     }
-%     for my $object (@{$session{$cache_key}{objects}}) {
+%     for my $object ($default_entry || (), @{$session{$cache_key}{objects}}) {
   <option value="<% ($NamedValues ? $object->{Name} : $object->{Id}) %>"\
 % if ($object->{Id} eq ($Default||'') || $object->{Name} eq ($Default||'')) {
  selected="selected"\
@@ -99,6 +99,9 @@ if ( defined $session{$cache_key} && defined $CacheNeedsUpdate &&
      $session{$cache_key}{lastupdated} <= $CacheNeedsUpdate ) {
     delete $session{$cache_key};
 }
+if ( defined $session{$cache_key} && !$session{$cache_key}{id} ) {
+    delete $session{$cache_key};
+}
 
 if ( not defined $session{$cache_key} and not $Lite ) {
     my $collection = "${ObjectType}s"->new($session{'CurrentUser'});
@@ -107,23 +110,7 @@ if ( not defined $session{$cache_key} and not $Lite ) {
     $m->callback( CallbackName => 'ModifyCollection', ARGSRef => \%ARGS,
                   Collection => $collection, ObjectType => $ObjectType );
 
-    if ( $Default ) {
-        my $object = $ObjectType->new($session{'CurrentUser'});
-        $object->Load( $Default );
-        unless ( $ShowAll
-                 or not $CheckRight
-                 or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ) )
-        {
-            if ( $object->id ) {
-                push @{$session{$cache_key}{objects}}, {
-                    Id          => $object->id,
-                    Name        => '#' . $object->id,
-                    Description => '#' . $object->id,
-                };
-            }
-        }
-    }
-
+    $session{$cache_key}{id} = {};
     while (my $object = $collection->Next) {
         if ($ShowAll
             or not $CheckRight
@@ -134,8 +121,23 @@ if ( not defined $session{$cache_key} and not $Lite ) {
                 Name        => $object->Name,
                 Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
             };
+            $session{$cache_key}{id}{ $object->id } = 1;
         }
     }
     $session{$cache_key}{lastupdated} = time();
 }
+
+my $default_entry;
+if ( $Default && !$Lite ) {
+    my $object = $ObjectType->new( $session{'CurrentUser'} );
+    $object->Load( $Default );
+    if ( $object->id && !$session{$cache_key}{id}{ $object->id } ) {
+        $default_entry = {
+            Id          => $object->id,
+            Name        => '#' . $object->id,
+            Description => '#' . $object->id,
+        };
+    }
+}
+
 </%init>
