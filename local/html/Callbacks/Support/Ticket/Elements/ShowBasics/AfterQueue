@@ -1,0 +1,40 @@
+% if ( $show_master_time ) {
+<tr class="Master time left">
+    <td class="label"><&|/l&>Master Ticket</&>
+    <br>
+    <&|/l&>Time Remaining</&>:</td>
+%   if ( $time_left >= 0 ) {
+        <td class="value"><% $time_left %> Minutes</td>
+%    } else {
+        <td class="value" style="color: red"><% $time_left %> Minutes</td>
+%    }
+    </tr>
+% }
+
+<%INIT>
+my $show_master_time = 0;
+
+my $parent_links = $Ticket->MemberOf;
+
+my @parent_tickets;
+while ( my $link = $parent_links->Next ) {
+    push ( @parent_tickets, $link->TargetObj );
+    next;
+}
+
+my $time_left = 0;
+
+if ( scalar @parent_tickets == 1 ) {
+    $show_master_time = 1;
+    my $parent_ticket = $parent_tickets[0];
+    my $time_estimated = $parent_ticket->TimeEstimated ? $parent_ticket->TimeEstimated: 0;
+    my $time_worked =  $parent_ticket->TimeWorked ? $parent_ticket->TimeWorked: 0;
+    $time_left = $time_estimated - $time_worked;
+} else {
+    RT::Logger->debug("Master Ticket Time Left - No single parent found")
+}
+
+</%INIT>
+<%ARGS>
+$Ticket
+</%ARGS>
