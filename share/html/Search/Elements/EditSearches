@@ -76,7 +76,7 @@
 <br />
 <hr />
 <span class="label"><&|/l&>Load saved search</&>:</span>
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
+<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@load_objects, SearchType => $Type &>
 <input type="submit" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" class="button" />
 
 </&>
@@ -93,10 +93,13 @@ my $can_modify = $session{'CurrentUser'}->HasRight(
 );
 
 use RT::SavedSearch;
-my @Objects = RT::SavedSearch->new($session{CurrentUser})->_PrivacyObjects;
-push @Objects, RT::System->new( $session{'CurrentUser'} )
-    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
-                                          Right => 'SuperUser' );
+my @Objects = RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForModifying( IncludeSuperuserGroups => 0 );
+my @load_objects = RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading( IncludeSuperuserGroups => 0 );
+
+if ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right  => 'SuperUser' ) ) {
+    push @Objects, RT::System->new( $session{'CurrentUser'} );
+    push @load_objects, RT::System->new( $session{'CurrentUser'} );
+}
 
 my $is_dirty = sub {
     my %arg = (
