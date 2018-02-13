@@ -247,6 +247,7 @@ sub PossibleHiddenSearches {
 
 sub _PrivacyObjects {
     my $self = shift;
+    RT->Deprecated( Instead => 'ObjectsForLoading', Remove => '4.6' );
 
     my @objects;
 
@@ -361,57 +362,56 @@ sub Subscription {
     return;
 }
 
-sub ObjectsForLoading {
+sub _ObjectsFor {
     my $self = shift;
-    my %args = (
-        IncludeSuperuserGroups => 1,
-        @_
-    );
+    my %args = @_;
+
     my @objects;
-
-    # If you've been granted the SeeOwnDashboard global right (which you
-    # could have by way of global user right or global group right), you
-    # get to see your own dashboards
     my $CurrentUser = $self->CurrentUser;
-    push @objects, $CurrentUser->UserObj
-        if $CurrentUser->HasRight(Object => $RT::System, Right => 'SeeOwnDashboard');
 
-    # Find groups for which: (a) you are a member of the group, and (b)
-    # you have been granted SeeGroupDashboard on (by any means), and (c)
-    # have at least one dashboard
-    my $groups = RT::Groups->new($CurrentUser);
+    # user level
+    push @objects, $CurrentUser->UserObj
+        if $CurrentUser->HasRight(Object => $RT::System, Right => "$args{Type}OwnDashboard");
+
+    # group level
+    my $groups = RT::Groups->new( $self->CurrentUser );
+    $groups->{for_shared_settings} = 1;
     $groups->LimitToUserDefinedGroups;
     $groups->ForWhichCurrentUserHasRight(
-        Right             => 'SeeGroupDashboard',
-        IncludeSuperusers => $args{IncludeSuperuserGroups},
+        Right             => "$args{Type}GroupDashboard",
+        IncludeSuperusers => $args{IncludeSuperuserGroups} // 1,
     );
-    $groups->WithCurrentUser;
-    my $attrs = $groups->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'id',
-        TABLE2 => 'Attributes',
-        FIELD2 => 'ObjectId',
-    );
-    $groups->Limit(
-        ALIAS => $attrs,
-        FIELD => 'ObjectType',
-        VALUE => 'RT::Group',
-    );
-    $groups->Limit(
-        ALIAS => $attrs,
-        FIELD => 'Name',
-        VALUE => 'Dashboard',
-    );
+    if ( $args{Type} ne 'Create' ) {
+        my $attrs = $groups->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Attributes',
+            FIELD2 => 'ObjectId',
+        );
+        $groups->Limit(
+            ALIAS => $attrs,
+            FIELD => 'ObjectType',
+            VALUE => 'RT::Group',
+        );
+        $groups->Limit(
+            ALIAS => $attrs,
+            FIELD => 'Name',
+            VALUE => 'Dashboard',
+        );
+    }
     push @objects, @{ $groups->ItemsArrayRef };
 
-    # Finally, if you have been granted the SeeDashboard right (which
-    # you could have by way of global user right or global group right),
-    # you can see system dashboards.
+    # system level
     push @objects, RT::System->new($CurrentUser)
-        if $CurrentUser->HasRight(Object => $RT::System, Right => 'SeeDashboard');
+        if $CurrentUser->HasRight(Object => $RT::System, Right => "$args{Type}Dashboard");
 
     return @objects;
 }
+
+sub ObjectsForLoading   { shift->_ObjectsFor( Type => 'See', @_) }
+sub ObjectsForCreating  { shift->_ObjectsFor( Type => 'Create', @_ ) }
+sub ObjectsForModifying { shift->_ObjectsFor( Type => 'Modify', @_ ) }
+sub ObjectsForDeleting  { shift->_ObjectsFor( Type => 'Delete', @_ ) }
 
 sub CurrentUserCanCreateAny {
     my $self = shift;

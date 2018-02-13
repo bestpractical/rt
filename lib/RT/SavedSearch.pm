@@ -158,6 +158,8 @@ sub Type {
 sub _PrivacyObjects {
     my $self        = shift;
     my ($has_attr) = @_;
+    RT->Deprecated( Instead => 'ObjectsForLoading', Remove => '4.6' );
+
     my $CurrentUser = $self->CurrentUser;
 
     my $groups = RT::Groups->new($CurrentUser);
@@ -185,10 +187,60 @@ sub _PrivacyObjects {
     return ( $CurrentUser->UserObj, @{ $groups->ItemsArrayRef() } );
 }
 
-sub ObjectsForLoading {
+sub _ObjectsFor {
     my $self = shift;
-    return grep { $self->CurrentUserCanSee($_) } $self->_PrivacyObjects( "SavedSearch" );
+    my %args = @_;
+
+    my @objects;
+    my $CurrentUser = $self->CurrentUser;
+
+    # user level
+    if ( $args{Type} eq 'Show' || $CurrentUser->HasRight(Object => $RT::System, Right => "ModifySelf") ) {
+        push @objects, $CurrentUser->UserObj;
+    }
+
+    # group level
+    my $groups = RT::Groups->new( $self->CurrentUser );
+    $groups->{for_shared_settings} = 1;
+    $groups->LimitToUserDefinedGroups;
+    $groups->ForWhichCurrentUserHasRight(
+        Right             => "$args{Type}SavedSearches",
+        IncludeSuperusers => $args{IncludeSuperuserGroups} // 1,
+    );
+    if ( $args{Type} eq 'Show' ) {
+        my $attrs = $groups->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Attributes',
+            FIELD2 => 'ObjectId',
+        );
+        $groups->Limit(
+            ALIAS => $attrs,
+            FIELD => 'ObjectType',
+            VALUE => 'RT::Group',
+        );
+        $groups->Limit(
+            ALIAS => $attrs,
+            FIELD => 'Name',
+            VALUE => 'SavedSearch',
+        );
+    }
+    push @objects, @{ $groups->ItemsArrayRef };
+
+    # TODO system level is tricky.
+    # current behavior is normal users could add system saved searches to
+    # their 'RT at a glance' on MyRT.html but can't load them on search pages
+    # let's not add it and leave it to callers to decide for now
+
+    return @objects;
 }
+
+sub ObjectsForLoading   { shift->_ObjectsFor( Type => 'Show', @_ ) }
+
+# Creating/Modifying/Deleting share the same right of "EditSavedSearches"
+sub ObjectsForCreating  { shift->_ObjectsFor( Type => 'Edit', @_ ) }
+sub ObjectsForModifying { shift->_ObjectsFor( Type => 'Edit', @_ ) }
+sub ObjectsForDeleting  { shift->_ObjectsFor( Type => 'Edit', @_ ) }
 
 RT::Base->_ImportOverlays();
 

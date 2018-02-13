@@ -110,8 +110,10 @@ sub Load {
             $self->{'Privacy'} = $privacy;
             $self->PostLoad();
 
-            return wantarray ? (0, $self->loc("Permission Denied")) : 0
-                unless $self->CurrentUserCanSee;
+            unless ( $self->CurrentUserCanSee ) {
+                undef $self->{$_} for qw/Attribute Id Privacy/;
+                return wantarray ? ( 0, $self->loc( "Permission Denied" ) ) : 0;
+            }
 
             my ($ok, $msg) = $self->PostLoadValidate;
             return wantarray ? ($ok, $msg) : $ok if !$ok;
@@ -414,19 +416,10 @@ sub _GetObject {
         return undef;
     }
 
-    # Do not allow the loading of a user object other than the current
-    # user, or of a group object of which the current user is not a member.
+    # Do not allow the loading of a user object other than the current user
 
     if ($obj_type eq 'RT::User' && $object->Id != $self->CurrentUser->UserObj->Id) {
         $RT::Logger->debug("Permission denied for user other than self");
-        return undef;
-    }
-
-    if (   $obj_type eq 'RT::Group'
-        && !$object->HasMemberRecursively($self->CurrentUser->PrincipalObj)
-        && !$self->CurrentUser->HasRight( Object => $RT::System, Right => 'SuperUser' ) ) {
-        $RT::Logger->debug("Permission denied, ".$self->CurrentUser->Name.
-                           " is not a member of group");
         return undef;
     }
 

@@ -413,7 +413,7 @@ sub AddRecord {
 
     # If we've explicitly limited to groups the user is a member of (for
     # dashboard or savedsearch privacy objects), skip the ACL.
-    return unless $self->{with_current_user}
+    return unless $self->{with_current_user} or $self->{for_shared_settings}
         or $record->CurrentUserHasRight('SeeGroup');
 
     return $self->SUPER::AddRecord( $record );
