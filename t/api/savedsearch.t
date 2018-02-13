@@ -2,7 +2,7 @@ use strict;
 use warnings;
 BEGIN { $ENV{'LANG'} = 'C' }
 
-use RT::Test tests => 27;
+use RT::Test tests => undef;
 
 use_ok('RT::SavedSearch');
 use_ok('RT::SavedSearches');
@@ -86,14 +86,19 @@ my $groupsearch = RT::SavedSearch->new($curruser);
 ok($ret, "groupsearch was created");
 
 my $othersearch = RT::SavedSearch->new($curruser);
-($ret, $msg) = $othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
-                                  Type => 'Ticket',
-                                  Name => 'searchuser requested',
-                                  SearchParams => {'Format' => $format,
-                                                   'Query' => 
-                                                       "Requestor.Name LIKE 'search'"});
+warning_like {
+    ( $ret, $msg ) = $othersearch->Save(
+        Privacy      => 'RT::Group-' . $outgroup->Id,
+        Type         => 'Ticket',
+        Name         => 'searchuser requested',
+        SearchParams => {
+            'Format' => $format,
+            'Query'  => "Requestor.Name LIKE 'search'",
+        }
+    );
+} qr/Permission Denied/;
 ok(!$ret, "othersearch NOT created");
-like($msg, qr/Failed to load object for/, "...for the right reason");
+like($msg, qr/Failed to create search attribute/, "...for the right reason");
 
 $othersearch = RT::SavedSearch->new(RT->SystemUser);
 ($ret, $msg) = $othersearch->Save(Privacy => 'RT::Group-' . $outgroup->Id,
@@ -143,9 +148,9 @@ my $loadedsearch4 = RT::SavedSearch->new($curruser);
 
 warning_like {
     $loadedsearch4->Load($othersearch->Privacy, $othersearch->Id);
-} qr/Could not load object RT::Group-\d+ when loading search/;
+} qr/Deserialization of attribute/, 'load othersearch caused content warning';
 
-isnt($loadedsearch4->Id, $othersearch->Id, "Did not load othersearch");
+is($loadedsearch4->Id, $othersearch->Id, "id is there though");
 
 # Try to update an existing search.
 $loadedsearch1->Update( SearchParams => {'Format' => $format,
@@ -179,3 +184,4 @@ ok($ret, "Deleted genericsearch");
 $allsearches->LimitToPrivacy('RT::User-'.$curruser->Id);
 is($allsearches->Count, 1, "Found all searchuser's searches after deletion");
 
+done_testing;
