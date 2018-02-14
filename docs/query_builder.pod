@@ -131,6 +131,15 @@ The same pieces of information are now spread across the display next to one
 another, which can be harder to read. So when you tell RT to display a lot of
 columns, it's usually worth adding a well-placed NEWLINE.
 
+Let's say, for example, you have a custom field named 'TransportType' that takes
+the values, 'Car', 'Bus' or 'Train'. If you were to search for all tickets that
+do not have 'TransportType' set to 'Car', this would result in a list of tickets
+with 'TransportType' values of 'Bus', 'Train', and '(no value)'. In order to ensure
+that custom fields with no set value are not included in the your search results,
+add the following to your query:
+
+AND CF.{TransportType} IS NOT NULL
+
 And there are the basics of the query builder! To implement these basics to
 build reports, please see the Dashboard & Reports document. For definitions of
 piece of RT metadata, please see the Definitions of Ticket Metadata document.
