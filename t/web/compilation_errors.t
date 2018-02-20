@@ -5,6 +5,7 @@ use File::Find;
 use HTTP::Status qw();
 
 BEGIN {
+    $ENV{RT_TEST_DEVEL} ||= 1;
     sub wanted {
         -f && /\.html$/ && $_ !~ /Logout.html$/ && $File::Find::dir !~ /RichText/;
     }
