@@ -5,7 +5,8 @@ window.RT.Autocomplete.Classes = {
     Users: 'user',
     Groups: 'group',
     Tickets: 'tickets',
-    Queues: 'queues'
+    Queues: 'queues',
+    Articles: 'articles'
 };
 
 window.RT.Autocomplete.bind = function(from) {
@@ -83,6 +84,9 @@ window.RT.Autocomplete.bind = function(from) {
                 jQuery(event.target).closest("form").submit();
             };
         }
+
+        var queue = input.attr("data-autocomplete-queue");
+        if (queue) queryargs.push("queue=" + queue);
 
         var checkRight = input.attr("data-autocomplete-checkright");
         if (checkRight) queryargs.push("right=" + checkRight);
