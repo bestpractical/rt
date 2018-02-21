@@ -48,6 +48,7 @@
 <%INIT>
 
 my $parent_args = $m->caller_args(-1);
+my @articles;
 
 my $name_prefix = '';
 $name_prefix = $ARGS{'Name'} .'-'
@@ -55,17 +56,17 @@ $name_prefix = $ARGS{'Name'} .'-'
     && grep rindex($_, "$ARGS{'Name'}-Articles-", 0) == 0,
         keys %$parent_args;
 
+my $Ticket = $ARGS{Ticket};
+if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
+    $Ticket = RT::Ticket->new($session{'CurrentUser'});
+    $Ticket->Load($parent_args->{id});
+    unless ( $Ticket->id ) {
+        $RT::Logger->error("Couldn't load ticket ". $parent_args->{id} )
+    }
+}
+
 foreach my $arg ( keys %$parent_args ) {
     next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
-
-    my $Ticket = $ARGS{Ticket};
-    if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
-        $Ticket = RT::Ticket->new($session{'CurrentUser'});
-        $Ticket->Load($parent_args->{id});
-        unless ( $Ticket->id ) {
-            $RT::Logger->error("Couldn't load ticket ". $parent_args->{id} )
-        }
-    }
 
     my $Queue = RT::Queue->new($session{CurrentUser});
     if ($Ticket && $Ticket->Id) {
@@ -79,7 +80,26 @@ foreach my $arg ( keys %$parent_args ) {
         Queue => $Queue->Id,
     );
     next unless $article && $article->id;
+    push (@articles, $article);
+}
 
+if ( !@articles && ( !$parent_args->{id} || $parent_args->{id} eq 'new' ) && $parent_args->{'Queue'} ) {
+    my $queue_id = $parent_args->{'Queue'};
+    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
+    my ($ret, $msg) = $QueueObj->Load( $queue_id );
+    $RT::Logger->error($msg) unless ($ret);
+
+    if ( $QueueObj->id && $QueueObj->DefaultValue('Article') ) {
+        my $article = RT::Article->new($session{'CurrentUser'});
+        my ($ret, $msg) = $article->Load( $QueueObj->DefaultValue('Article') );
+        $RT::Logger->error($msg) unless ($ret);
+        if ($ret) {
+            push (@articles, $article);
+        }
+    }
+}
+
+foreach my $article (@articles) {
     my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
         Article => $article, Ticket => $Ticket
     );
