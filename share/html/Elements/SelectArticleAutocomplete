@@ -45,44 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ( $autocomplete ) {
-<& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $Default, Name => $Name &>
-% } else {
-<select name="<% $Name %>">
-<option value="">-</option>
-% while (my $article = $articles->Next) {
-<option <% ( $article->Name eq $Default) ? qq[ selected="selected"] : '' |n %>
-    value="<%$article->Id%>"
-><% $article->Name %></option>
-% }
-</select>
-% }
-
-<%INIT>
-my $articles = RT::Articles->new( $session{'CurrentUser'} );
-$articles->LimitHotlistClasses;
-$articles->LimitAppliedClasses( Queue => $QueueObj );
-
-my $dropdown_limit = 50;
-$m->callback( CallbackName => 'ModifyDropdownLimit', DropdownLimit => \$dropdown_limit );
-
-my $Default = '';
-
-my $autocomplete =  $articles->Count > $dropdown_limit ? 1 : 0;
-
-my $default_article = RT::Article->new($session{'CurrentUser'});
-
-if ( my $article_id = $QueueObj->DefaultValue('Article') ) {
-    my ($ret, $msg) = $default_article->Load( $article_id );
-    if ($ret) {
-         $Default = $default_article->Name;
-    } else{
-        RT::Logger->error($msg);
-    }
-}
-</%INIT>
+<input data-autocomplete="Articles" <% $QueueObj && $QueueObj->id ? q{data-autocomplete-queue="} . $QueueObj->id . q{"} : '' |n %> data-autocomplete-return="Name" name="<% $Name %>" value="<% $Default %>">
 
 <%ARGS>
-$QueueObj
+$QueueObj => undef
+$Default => undef
 $Name => 'Article'
 </%ARGS>
