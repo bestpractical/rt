@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 43;
+use RT::Test tests => 49;
 
 my $ru_test = "\x{442}\x{435}\x{441}\x{442}";
 my $ru_support = "\x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}";
@@ -85,4 +85,24 @@ foreach my $test_str ( $ru_test, $l1_test ) {
         is $ticket->Subject, $test_str, "correct subject";
     }
 }
+
+my $article = RT::Article->new($RT::SystemUser);
+my ( $id, $msg ) = $article->Create(
+    Class   => 'General',
+    Name    => 'My Article',
+    'CustomField-Content' => 'My Article Test Content',
+);
+ok( $id, $msg );
+(my $ret, $msg) = $article->Load(1);
+ok ($ret, $msg);
+
+my $queue = RT::Queue->new(RT->SystemUser);
+$queue->Load('General');
+ok( $queue, 'Loaded General Queue' );
+($ret, $msg) = $queue->SetDefaultValue( Name => 'Article', Value => $article->Id);
+ok( $ret, $msg );
+
+ok $m->login(root => 'password'), "logged in";
+$m->goto_create_ticket('General');
+$m->scraped_id_is('Content', '#1: My Article <br />-------------- <br />Content: <br />------- <br />My Article Test Content <br />');
 
