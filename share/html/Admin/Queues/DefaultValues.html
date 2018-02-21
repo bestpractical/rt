@@ -71,6 +71,11 @@
         Grouping => 'Basics',
         InTable => 1,
     &>
+
+    <tr><td class="label"><&|/l&>Article</&>:</td>
+        <td><& /Elements/SelectArticle, QueueObj => $queue &>
+    </td></tr>
+
     </table>
     </&>
 </div>
@@ -149,7 +154,7 @@ if ( $ARGS{Reset} ) {
     }
 }
 elsif ( $ARGS{Update} ) {
-    for my $field ( qw/InitialPriority FinalPriority Starts Due/ ) {
+    for my $field ( qw/InitialPriority FinalPriority Starts Due Article/ ) {
         my ($ret, $msg) = $queue->SetDefaultValue(
             Name => $field,
             Value => $ARGS{$field},

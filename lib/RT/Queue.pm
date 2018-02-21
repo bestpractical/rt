@@ -1185,6 +1185,29 @@ sub SetDefaultValue {
         $new_value = $self->loc( '(no value)' );
     }
 
+    if ( $args{Name} eq 'Article' && $args{Value} ) {
+        my $article = RT::Article->new($self->CurrentUser);
+        my ($ret, $msg);
+        if ( $args{Value} =~ /^\d+$/ ) {
+            ($ret, $msg) = $article->Load( $args{Value} );
+        }
+        else {
+            ($ret, $msg) = $article->LoadByCols( Name => $args{Value} );
+        }
+        return ($ret, $msg ) unless $ret;
+
+        $args{Value} = $article->Id;
+        $new_value = $article->Name;
+    }
+
+    if ( $args{Name} eq 'Article' && $old_value =~ /^\d+$/ ) {
+        my $article = RT::Article->new($self->CurrentUser);
+        my ($ret, $msg) = $article->Load( $old_value );
+        if ($ret) {
+            $old_value = $article->Name;
+        }
+    }
+
     return 1 if $new_value eq $old_value;
 
     my ($ret, $msg) = $self->SetAttribute(
