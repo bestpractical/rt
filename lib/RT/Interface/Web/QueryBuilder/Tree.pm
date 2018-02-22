@@ -213,14 +213,19 @@ sub __LinearizeTree {
                 $key = "'$key'";
             }
             my $value = $clause->{Value};
-            if ( $clause->{Op} =~ /^IS( NOT)?$/i ) {
+            my $op = $clause->{Op};
+            if ( $value =~ /^NULL$/i && $op =~ /^(!?)=$/  ) {
+                $op = $1 ? 'IS NOT' : 'IS';
+            }
+
+            if ( $op =~ /^IS( NOT)?$/i ) {
                 $value = 'NULL';
             } elsif ( $value !~ /^[+-]?[0-9]+$/ ) {
                 $value =~ s/(['\\])/\\$1/g;
                 $value = "'$value'";
             }
 
-            $str .= $key ." ". $clause->{Op} . " " . $value;
+            $str .= $key ." ". $op . " " . $value;
         }
         $str =~ s/^\s+|\s+$//;
 
