@@ -165,6 +165,9 @@ sub PushAll {
     # Articles
     $self->PushCollections(qw(Articles), map { ($_, "Object$_") } qw(Classes Topics));
 
+    # Custom Roles
+    $self->PushCollections(qw(CustomRoles ObjectCustomRoles));
+
     # Custom Fields
     if (RT::ObjectCustomFields->require) {
         $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
