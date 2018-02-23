@@ -1338,7 +1338,15 @@ sub _LoadConfig {
         }
     };
     if ($@) {
-        return 1 if $is_site && $@ =~ /^Can't locate \Q$args{File}/;
+
+        if ( $is_site && $@ =~ /^Can't locate \Q$args{File}/ ) {
+
+            # Since perl 5.18, the "Can't locate ..." error message contains
+            # more details. warn to help debug if there is a permission issue.
+            warn qq{Couldn't load RT config file $args{'File'}:\n\n$@} if $@ =~ /Permission denied at/;
+            return 1;
+        }
+
         if ( $is_site || $@ !~ /^Can't locate \Q$args{File}/ ) {
             die qq{Couldn't load RT config file $args{'File'}:\n\n$@};
         }
