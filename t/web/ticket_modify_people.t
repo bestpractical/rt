@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 25;
+use RT::Test tests => undef;
 
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 my $group_foo = RT::Group->new($RT::SystemUser);
@@ -36,11 +36,11 @@ ok( $m->login( 'user', 'password' ), 'logged in' );
 $m->get_ok( $url . "/Ticket/ModifyPeople.html?id=" . $ticket->id );
 
 ok(
-    !$m->find_link(
-        text      => 'Enoch Root',
-        url_regex => qr!/Admin/Users/Modify\.html!,
+    $m->find_link(
+        text      => 'root (Enoch Root)',
+        url_regex => qr!/User/Summary\.html!,
     ),
-    'no link to modify user'
+    'contains link to user summary page'
 );
 $m->content_contains('Enoch Root', 'still has the user name' );
 
@@ -54,24 +54,6 @@ ok(
 
 $m->content_contains('group_foo', 'still has the group name' );
 
-ok( RT::Test->add_rights( { Principal => $user, Right => ['AdminUsers'] }, ),
-    'added AdminUsers right' );
-$m->reload;
-ok(
-    !$m->find_link(
-        text      => 'Enoch Root',
-        url_regex => qr!/Admin/Users/Modify\.html!,
-    ),
-    'still no link to modify user'
-);
-ok(
-    !$m->find_link(
-        text      => 'group_foo',
-        url_regex => qr!/Admin/Groups/Modify\.html!,
-    ),
-    'still no link to modify group'
-);
-
 ok(
     RT::Test->add_rights( { Principal => $user, Right => ['ShowConfigTab'] }, ),
     'added ShowConfigTab right',
@@ -81,9 +63,9 @@ $m->reload;
 ok(
     $m->find_link(
         text      => 'root (Enoch Root)',
-        url_regex => qr!/Admin/Users/Modify\.html!,
+        url_regex => qr!/User/Summary\.html!,
     ),
-    'got link to modify user'
+    'still contains link to user summary page'
 );
 
 ok(
@@ -118,6 +100,9 @@ $m->submit_form_ok({
 
 my $foo = RT::Test->load_or_create_user( EmailAddress => 'foo@example.com' );
 is $foo->RealName, "Foo Bar", "RealName matches";
+
+undef $m;
+done_testing;
 
 # TODO test Add|Delete people
 
