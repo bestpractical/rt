@@ -59,11 +59,11 @@
 my @results = ProcessACLs( \%ARGS );
 
 if (!defined $id) {
-    $m->comp("/Elements/Error", Why => loc("No Class defined"));
+    $m->comp("/Elements/Error", Why => loc("No Custom Field defined"));
 }
 
 my $CustomFieldObj = RT::CustomField->new($session{'CurrentUser'});
-$CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load Class [_1]",$id));
+$CustomFieldObj->Load($id) || $m->comp("/Elements/Error", Why => loc("Couldn't load Custom Field #[_1]",$id));
 
 my $title = loc('Modify user rights for custom field [_1]', $CustomFieldObj->Name);
 
