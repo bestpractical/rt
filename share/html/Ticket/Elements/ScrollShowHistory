@@ -61,7 +61,7 @@ $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $Ticket, Ex
 
 my $ShowDisplayModes = 1 || $extra_args{'ShowDisplayModes'};
 my $ShowTitle =        1 || $extra_args{'ShowTitle'};
-my $ShowHeaders =      0 || $extra_args{'ShowHeaders'};
+my $ShowHeaders = $extra_args{ShowHeaders} // $ARGS{ShowHeaders};
 
 my $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
 </%INIT>
@@ -140,7 +140,7 @@ jQuery(function(){
         }
 
         jQuery.ajax({
-            url: "<% $url %>" + queryString,
+            url: "<% $url |n %>" + queryString,
             success: function(html) {
                 var transactions = jQuery(html).filter('div.transaction');
                 if(html && transactions.length) {
