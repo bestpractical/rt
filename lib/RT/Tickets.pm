@@ -3029,10 +3029,11 @@ sub _parser {
 
     require RT::Interface::Web::QueryBuilder::Tree;
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
-    $tree->ParseSQL(
+    my @results = $tree->ParseSQL(
         Query => $string,
         CurrentUser => $self->CurrentUser,
     );
+    die join "; ", map { ref $_ eq 'ARRAY' ? $_->[ 0 ] : $_ } @results if @results;
 
     state ( $active_status_node, $inactive_status_node );
 
