@@ -96,5 +96,5 @@ if ( $Encrypt || $Decrypt ) {
     $encrypted = !$encrypted if $done;
 }
 
-my $title = loc("Encrypt/Decrypt transaction #[_1] of ticket #[_2]", $id, $txn->Ticket);
+my $title = loc("Encrypt/Decrypt transaction #[_1] of ticket #[_2]: [_3]", $id, $txn->Ticket, $txn->TicketObj->Subject);
 </%INIT>

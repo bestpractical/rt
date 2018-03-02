@@ -90,7 +90,7 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
         'complete user_a reminder' );
 
     $m_a->follow_link_ok( { id => 'page-reminders' } );
-    $m_a->title_is( "Reminders for ticket #" . $ticket->id );
+    $m_a->title_is("Reminders for ticket #" . $ticket->id . ": " . $ticket->Subject);
     $m_a->content_contains( 'root reminder',   'can see root reminder' );
     $m_a->content_contains( 'user_a reminder', 'can see user_a reminder' );
     $m_a->content_lacks( 'New reminder:', 'can not create a new reminder' );
@@ -126,7 +126,7 @@ qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"
         'created user_a from display reminder' );
 
     $m_a->follow_link_ok( { id => 'page-reminders' } );
-    $m_a->title_is( "Reminders for ticket #" . $ticket->id );
+    $m_a->title_is("Reminders for ticket #" . $ticket->id . ": " . $ticket->Subject);
     $m_a->content_contains( 'New reminder:', 'can create a new reminder' );
     $m_a->content_like(
 qr!<input[^/]+name="Complete-Reminder-$root_reminder_id"[^/]+disabled="disabled"!,
