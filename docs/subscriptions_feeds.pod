@@ -1,7 +1,7 @@
 =pod
 
 For directions on how to build a dashboard from saved searches, please see
-L<Dashboards and Reporting|docs/dashboards_reporting.pod> documentation.
+L<Dashboards Reporting|dashboards_reporting> documentation.
 
 =head1 Subscriptions
 

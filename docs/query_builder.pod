@@ -6,7 +6,7 @@ specify in order to perform a search. Strategies for narrowing your searches
 to find exactly what you're looking for (and no more) are discussed below.
 
 The Query Builder is the heart of reporting in RT, which is covered in the
-L<Dashboard and Reports|docs/dashboards_reporting.pod> document.
+L<Dashboards Reporting|dashboards_reporting> document.
 
 To follow along with the examples, go to
 L<issues.bestpractical.com|http://issues.bestpractical.com> and try the
