@@ -1,7 +1,7 @@
 =pod
 
 For background on how to build searches in RT, please refer to the
-L<Query Builder Documentation|docs/query_builder.pod>.
+F<docs/query_builder.pod>.
 
 =head1 Introduction
 
@@ -22,7 +22,7 @@ in the queue appropriately called "RT".
 
 First we need to build these searches, which draw upon the definitions and
 explanations listed in the
-L<Definitions of Ticket Metadata Documentation|docs/ticket_metadata.pod>.
+F<docs/ticket_metadata.pod>.
 Thankfully, we already know that we're focusing on only one queue: RT. I can
 find the dates for each of the minor releases on the RT page at our website:
 L<https://bestpractical.com/rt/>. If you go to the bottom left and click on
