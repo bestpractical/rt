@@ -138,7 +138,7 @@ foreach my $col ( @Format ) {
         $attr = ProcessColumnMapValue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
 
         my $new_order = 'ASC';
-        $new_order = $Order[0] eq 'ASC'? 'DESC': 'ASC'
+        $new_order = ($Order[0] // '') eq 'ASC'? 'DESC': 'ASC'
             if $OrderBy[0] && ($OrderBy[0] eq $attr or "$attr|$OrderBy[0]" =~ /^(Created|id)\|(Created|id)$/);
 
         $m->out(
