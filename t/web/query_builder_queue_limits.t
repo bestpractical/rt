@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 34;
+use RT::Test tests => undef;
 
 my $lifecycles = RT->Config->Get('Lifecycles');
 $lifecycles->{foo} = {
@@ -78,7 +78,7 @@ ok( !$form->find_input("ValueOfCF.{foo_cf}"), 'no foo_cf by default' );
 my $status_input = $form->find_input('ValueOfStatus');
 my @statuses     = sort $status_input->possible_values;
 is_deeply(
-    \@statuses, [ '', qw/initial new open open rejected resolved resolved stalled/], 'found all statuses'
+    \@statuses, [ '', qw/__Active__ __Inactive__ initial new open open rejected resolved resolved stalled/], 'found all statuses'
 ) or diag "Statuses are: ", explain \@statuses;
 
 my $owner_input = $form->find_input('ValueOfActor');
@@ -101,7 +101,7 @@ $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
 is_deeply(
     \@statuses,
-    [ '', qw/initial open resolved/ ],
+    [ '', qw/__Active__ __Inactive__ initial open resolved/ ],
     'found statuses from foo only'
 );
 
@@ -126,7 +126,7 @@ $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
 is_deeply(
     \@statuses,
-    [ '', qw/initial new open open rejected resolved resolved stalled/ ],
+    [ '', qw/__Active__ __Inactive__ initial new open open rejected resolved resolved stalled/ ],
     'found all statuses again'
 ) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
@@ -150,7 +150,7 @@ ok( !$form->find_input("ValueOfCF.{general_cf}"), 'no general_cf' );
 $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
 is_deeply(
-    \@statuses, [ '', qw/initial new open open rejected resolved resolved stalled/],
+    \@statuses, [ '', qw/__Active__ __Inactive__ initial new open open rejected resolved resolved stalled/],
     'found all statuses'
 ) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
@@ -173,7 +173,7 @@ $status_input = $form->find_input('ValueOfStatus');
 @statuses     = sort $status_input->possible_values;
 is_deeply(
     \@statuses,
-    [ '', qw/initial new open open rejected resolved resolved stalled/ ],
+    [ '', qw/__Active__ __Inactive__ initial new open open rejected resolved resolved stalled/ ],
     'found all statuses'
 ) or diag "Statuses are: ", explain \@statuses;
 $owner_input = $form->find_input('ValueOfActor');
@@ -181,3 +181,5 @@ $owner_input = $form->find_input('ValueOfActor');
 is_deeply(
     \@owners, [ '', qw/Nobody root user_a user_b/], 'found all users'
 );
+
+done_testing;

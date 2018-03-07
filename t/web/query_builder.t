@@ -396,4 +396,19 @@ diag "make sure the list of columns available in the 'Order by' dropdowns are co
     $cf->SetDisabled(1);
 }
 
+diag "make sure active and inactive statuses generate the correct query";
+{
+    $agent->get_ok( $url . '/Search/Build.html?NewQuery=1' );
+    ok( $agent->form_name( 'BuildQuery' ), "found the form" );
+    $agent->field( ValueOfStatus => 'active' );
+    $agent->click( 'AddClause' );
+    is getQueryFromForm( $agent ), "Status = '__Active__'", "active status generated the correct query";
+
+    $agent->get_ok( $url . '/Search/Build.html?NewQuery=1' );
+    ok( $agent->form_name( 'BuildQuery' ), "found the form" );
+    $agent->field( ValueOfStatus => 'inactive' );
+    $agent->click( 'AddClause' );
+    is getQueryFromForm( $agent ), "Status = '__Inactive__'", "inactive status generated the correct query";
+}
+
 done_testing;
