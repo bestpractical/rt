@@ -55,6 +55,8 @@ $SearchType => 'Ticket',
 % foreach my $object (@Objects) {
 % my @searches = $object->Attributes->Named('SavedSearch');
 % if ( @searches ) {
+% @searches = sort { lcfirst($a->Description) cmp lcfirst($b->Description) } @searches;
+% $m->callback( CallbackName => 'ManageSavedSearches', ARGSRef => \%ARGS, SearchesRef => \@searches );
 <optgroup label="<& SearchPrivacy, Object => $object &>">
 % foreach my $search (@searches) { 
 %     # Skip it if it is not of search type we want.
