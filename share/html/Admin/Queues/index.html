@@ -102,6 +102,7 @@ if ( defined $QueueString && length $QueueString ) {
         FIELD    => $QueueField,
         OPERATOR => $QueueOp,
         VALUE    => $QueueString,
+        CASESENSITIVE => 0
     );
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Queues/Modify.html?id=".$queues->First->id)
           if $queues->Count == 1;

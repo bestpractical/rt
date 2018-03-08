@@ -112,6 +112,7 @@ if (length $GroupString) {
             FIELD => $GroupField,
             OPERATOR => $GroupOp,
             VALUE => $GroupString,
+            CASESENSITIVE => 0
         );
     }
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Groups/Modify.html?id=".$Groups->First->id)
