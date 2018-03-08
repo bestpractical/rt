@@ -466,11 +466,13 @@ function AddAttachmentWarning() {
 
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
-        jQuery("#acl-AddPrincipal .valid-group").removeClass("hidden");
-        jQuery("#acl-AddPrincipal .invalid-group").addClass("hidden");
+        jQuery( '#acl-AddPrincipal .invalid-group').unwrap();
+        jQuery( '#acl-AddPrincipal .valid-group' ).removeClass( 'disabled-grey' );
     } else {
-        jQuery("#acl-AddPrincipal .invalid-group").removeClass("hidden");
-        jQuery("#acl-AddPrincipal .valid-group").addClass("hidden");
+        if( !jQuery( '#acl-AddPrincipal' ).find( '.invalid-group' ) ) {
+            jQuery( '#acl-AddPrincipal' ).wrapInner( '<div class="invalid-group"></div>' );
+        }
+        jQuery( '#acl-AddPrincipal .valid-group' ).addClass( 'disabled-grey' );
     }
 
     if (title == null)

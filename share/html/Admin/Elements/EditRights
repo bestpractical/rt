@@ -257,12 +257,12 @@ if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
 if ( $AddPrincipal ) {
 </%perl>
   <div id="acl-AddPrincipal">
-    <div class="valid-group hidden">
-      <h3><&|/l, loc($AddPrincipal) &>Add rights for this [_1]</&></h3>
-      <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
-    </div>
     <div class="invalid-group">
-      <p><&|/l, loc($AddPrincipal)&>Please select a [_1]</&></p>
+      <h3><&|/l, loc($AddPrincipal)&>Please select a [_1]</&></h3>
+      <div class="valid-group disabled-grey">
+        <h3><&|/l, loc($AddPrincipal) &>Add rights for this [_1]</&></h3>
+        <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
+      </div>
     </div>
   </div>
 % }
