@@ -140,7 +140,13 @@ span.rights-editor-label {
     padding: .5em 0.5em;
 }
 
-.rights-editor #acl-AddPrincipal .invalid-group p {
-    color: gray;
-    text-align: center;
+.rights-editor #acl-AddPrincipal .invalid-group {
+    background-color: rgba( 0, 0, 0, 0.1 );
+    position: center;
+    padding: 5px;
+    pointer-events: none;
+}
+
+.rights-editor #acl-AddPrincipal .disabled-grey {
+    opacity: 0.2;
 }
