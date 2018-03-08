@@ -79,7 +79,7 @@ li.category ~ li.category {
 .rights-editor li.ui-tabs-active {
     background: white !important;
     color: #222 !important;
-    border-color: #aaa !important; 
+    border-color: #aaa !important;
     font-weight: bold;
 }
 

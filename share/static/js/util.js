@@ -53,7 +53,7 @@ function delClass(id, value) {
 function rollup(id) {
     var e = jQueryWrap(id);
     var e2  = e.parent();
-    
+
     if (e.hasClass('hidden')) {
         set_rollup_state(e,e2,'shown');
         createCookie(id,1,365);
@@ -174,7 +174,7 @@ function showShredderPluginTab( plugin )
 {
     var plugin_tab_id = 'shredder-plugin-'+ plugin +'-tab';
     var root = jQuery('#shredder-plugin-tabs');
-    
+
     root.children(':not(.hidden)').addClass('hidden');
     root.children('#' + plugin_tab_id).removeClass('hidden');
 
@@ -197,7 +197,7 @@ function checkAllObjects()
     }
 }
 
-function checkboxToInput(target,checkbox,val){    
+function checkboxToInput(target,checkbox,val){
     var tar = jQuery('#' + escapeCssSelector(target));
     var box = jQuery('#' + escapeCssSelector(checkbox));
     if(box.prop('checked')){
@@ -205,7 +205,7 @@ function checkboxToInput(target,checkbox,val){
             tar.val(val);
         }
         else{
-            tar.val( val+', '+ tar.val() );        
+            tar.val( val+', '+ tar.val() );
         }
     }
     else{
