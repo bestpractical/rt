@@ -55,7 +55,6 @@ use 5.010;
 use File::Spec ();
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
-use Storable ();
 
 =head1 NAME
 
@@ -1518,7 +1517,8 @@ sub GetObfuscated {
 
     return $self->Get(@_) unless $obfuscate;
 
-    my $res = Storable::dclone($self->Get(@_));
+    require Clone;
+    my $res = Clone::clone( $self->Get( @_ ) );
     $res = $obfuscate->( $self, $res, $user );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }

@@ -117,6 +117,7 @@ CGI::Cookie 1.20
 CGI::Emulate::PSGI
 CGI::PSGI 0.12
 Class::Accessor::Fast
+Clone
 Convert::Color
 Crypt::Eksblowfish
 CSS::Minifier::XS
