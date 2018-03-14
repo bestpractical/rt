@@ -53,56 +53,22 @@ use warnings;
 
 use open qw/ :std :encoding(UTF-8) /;
 
-use File::Find;
-use File::Copy;
-use Regexp::Common;
-use Carp;
 use Locale::PO;
+
+use lib 'lib';
+use RT::I18N::Extract;
+
 $| = 1;
 
 # po dir is for extensions
 @ARGV = (<share/po/*.po>, <share/po/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
 
-our %FILECAT;
-
-# extract all strings and stuff them into %FILECAT
+# extract all strings and stuff them into %POT
 # scan html dir for extensions
-File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share html etc) );
+my $extract = RT::I18N::Extract->new;
+our %POT = $extract->all;
 
-# ensure proper escaping and [_1] => %1 transformation
-foreach my $str ( sort keys %FILECAT ) {
-    my $entry = delete $FILECAT{$str};
-    next unless @{$entry};
-
-    my ($filename, $line) = @{ $entry->[0] };
-    my $location = "$filename line $line" . (@{$entry} > 1 ? " (and ".(@{$entry}-1)." other places)" : "");
-
-    if ($str =~ /^\s/m || $str =~ /\s$/m || $str =~ /\\n$/m) {
-        warn "Extraneous whitespace in '$str' at $location\n";
-    }
-    if (grep {$_->[3]} @{$entry} and $str =~ /([\$\@]\w+)/) {
-        warn "Interpolated variable '$1' in '$str' at $location\n";
-    }
-
-    my $escape = sub { $_ = shift; s/\b_(\d+)/%$1/; $_ };
-    $str =~ s/((?<!~)(?:~~)*)\[_(\d+)\]/$1%$2/g;
-    $str =~ s/((?<!~)(?:~~)*)\[([A-Za-z#*]\w*),([^\]]+)\]/"$1%$2(".$escape->($3).")"/eg;
-    $str =~ s/~([\[\]])/$1/g;
-
-    my $po = Locale::PO->new(-msgid => $str, -msgstr => "");
-    $po->reference( join ( ' ', sort map $_->[0].":".$_->[1], @{ $entry } ) );
-    my %seen;
-    my @vars;
-    foreach my $find ( sort { $a->[2] cmp $b->[2] } grep { $_->[2] } @{ $entry } ) {
-        my ( $file, $line, $var ) = @{$find};
-        $var =~ s/^\s*,\s*//;
-        $var =~ s/\s*$//;
-        push @vars, "($var)" unless $seen{$var}++;
-    }
-    $po->automatic( join( "\n", @vars) );
-
-    $FILECAT{$po->msgid} = $po;
-}
+print "$_\n" for $extract->errors;
 
 # update all language dictionaries
 foreach my $dict (@ARGV) {
@@ -117,208 +83,6 @@ foreach my $dict (@ARGV) {
     update($lang, $dict);
 }
 
-sub extract_strings_from_code {
-    my $file = $_;
-
-    local $/;
-    return if ( -d $_ || !-e _ );
-    return
-      if ( $File::Find::dir =~
-        qr!lib/blib|lib/t/autogen|var|m4|local|share/fonts! );
-    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/ );
-    return if ( /~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
-    return if ( /StyleGuide.pod/ );
-    return if ( /^[\.#]/ );
-    return if ( -f "$_.in" );
-
-    print "Looking at $File::Find::name";
-    my $filename = $File::Find::name;
-    $filename =~ s'^\./'';
-    $filename =~ s'\.in$'';
-
-    unless (open _, '<', $file) {
-        print "\n  Cannot open $file for reading ($!), skipping.\n\n";
-        return;
-    }
-
-    my $errors = 0;
-
-    my $re_space_wo_nl = qr{(?!\n)\s};
-    my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
-    my $re_loc_qw_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_qw $re_space_wo_nl* $}mx;
-    my $re_loc_paren_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc \(\) $re_space_wo_nl* $}mx;
-    my $re_loc_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_pair $re_space_wo_nl* $}mx;
-    my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
-    my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
-
-    $_ = <_>;
-
-    # Mason filter: <&|/l>...</&> and <&|/l_unsafe>...</&>
-    my $line = 1;
-    while (m!\G(.*?<&\|/l(?:_unsafe)?(.*?)&>(.*?)</&>)!sg) {
-        my ( $all, $vars, $str ) = ( $1, $2, $3 );
-        $vars =~ s/[\n\r]//g;
-        $line += ( $all =~ tr/\n/\n/ );
-        $str =~ s/\\(['"\\])/$1/g;
-        push @{ $FILECAT{$str} }, [ $filename, $line, $vars ];
-    }
-
-    # Localization function: loc(...)
-    $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?\bloc$RE{balanced}{-parens=>'()'}{-keep})/sg) {
-        my ( $all, $match ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-
-        my ( $vars, $str );
-        next unless ( $match =~ /\(\s*($re_delim)(.*?)\s*\)$/so );
-
-        my $interp = (substr($1,0,1) eq '"' ? 1 : 0);
-        $str = substr( $1, 1, -1 );       # $str comes before $vars now
-        $vars = $9;
-
-        $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\(['"\\])/$1/g;
-
-        push @{ $FILECAT{$str} }, [ $filename, $line, $vars, $interp ];
-    }
-
-    my %seen;
-    # Comment-based mark: "..." # loc
-    $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?($re_delim)[ \{\}\)\],;]*$re_loc_suffix)/smgo) {
-        my ( $all, $str ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $str ) {
-            print "\n" unless $errors++;
-            print "  Couldn't process loc at $filename:$line:\n  $str\n";
-            next;
-        }
-        my $interp = (substr($str,0,1) eq '"' ? 1 : 0);
-        $str = substr($str, 1, -1);
-        $str =~ s/\\(['"\\])/$1/g;
-        push @{ $FILECAT{$str} }, [ $filename, $line, '', $interp ];
-    }
-
-    # Comment-based mark for list to loc():  ("...", $foo, $bar)  # loc()
-    $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*? $RE{balanced}{-parens=>'()'}{-keep} [ \{\}\)\],;]* $re_loc_paren_suffix)/sgx) {
-        my ( $all, $match ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-
-        my ( $vars, $str );
-        unless ( $match =~
-                /\(\s*($re_delim)(.*?)\s*\)$/so ) {
-            print "\n" unless $errors++;
-            print "  Failed to match delimited against $match, line $line";
-            next;
-        }
-
-        my $interp = (substr($1,0,1) eq '"' ? 1 : 0);
-        $str = substr( $1, 1, -1 );       # $str comes before $vars now
-        $vars = $9;
-        $seen{$line}++;
-
-        $vars =~ s/[\n\r]//g;
-        $str  =~ s/\\(['"\\])/$1/g;
-
-        push @{ $FILECAT{$str} }, [ $filename, $line, $vars, $interp ];
-    }
-
-    # Comment-based qw mark: "qw(...)" # loc_qw
-    $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?(?:qw\(([^)]+)\)[ \{\}\)\],;]*)?$re_loc_qw_suffix)/smgo) {
-        my ( $all, $str ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $str ) {
-            print "\n" unless $errors++;
-            print "  Couldn't process loc_qw at $filename:$line:\n  $str\n";
-            next;
-        }
-        foreach my $value (split ' ', $str) {
-            push @{ $FILECAT{$value} }, [ $filename, $line, '' ];
-        }
-    }
-
-    # Comment-based left pair mark: "..." => ... # loc_left_pair
-    $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>[^#\n]+?)?$re_loc_left_pair_suffix)/smgo) {
-        my ( $all, $key ) = ( $1, $2 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $key ) {
-            print "\n" unless $errors++;
-            print "  Couldn't process loc_left_pair at $filename:$line:\n  $key\n";
-            next;
-        }
-        my $interp = (substr($key,0,1) eq '"' ? 1 : 0);
-        $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        push @{ $FILECAT{$key} }, [ $filename, $line, '', $interp ];
-    }
-
-    # Comment-based pair mark: "..." => "..." # loc_pair
-    $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?(?:(\w+|$re_delim)\s*=>\s*($re_delim)[ \{\}\)\],;]*)?$re_loc_pair_suffix)/smgo) {
-        my ( $all, $key, $val ) = ( $1, $2, $10 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $key && defined $val ) {
-            print "\n" unless $errors++;
-            print "  Couldn't process loc_pair at $filename:$line:\n  $key\n  $val\n";
-            next;
-        }
-        my $interp_key = (substr($key,0,1) eq '"' ? 1 : 0);
-        $key =~ s/\\(['"\\])/$1/g if $key =~ s/^(['"])(.*)\1$/$2/g; # dequote potentially quoted string
-        push @{ $FILECAT{$key} }, [ $filename, $line, '', $interp_key ];
-
-        my $interp_val = (substr($val,0,1) eq '"' ? 1 : 0);
-        $val = substr($val, 1, -1);    # dequote always quoted string
-        $val  =~ s/\\(['"\\])/$1/g;
-        push @{ $FILECAT{$val} }, [ $filename, $line, '', $interp_val ];
-    }
-
-    # Specific key  foo => "...", #loc{foo}
-    $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*?(\w+|$re_delim)\s*=>\s*($re_delim)(?-s:.*?)\#$re_space_wo_nl*loc\{\2\}$re_space_wo_nl*)$/smgo) {
-        my ( $all, $key, $val ) = ( $1, $2, $10 );
-        $line += ( $all =~ tr/\n/\n/ );
-        $seen{$line}++;
-        unless ( defined $key && defined $val ) {
-            warn "Couldn't process loc_pair at $filename:$line:\n  $key\n  $val\n";
-            next;
-        }
-        $val = substr($val, 1, -1);    # dequote always quoted string
-        $val  =~ s/\\(['"])/$1/g;
-        push @{ $FILECAT{$val} }, [ $filename, $line, '' ];
-    }
-
-    # Check for ones we missed
-    $line = 1;
-    pos($_) = 0;
-    while (m/\G(.*? \# $re_space_wo_nl* (loc (_\w+|\(\)|{$re_delim})?) $re_space_wo_nl* $)/smgox) {
-        my ($all, $loc_type) = ($1, $2);
-        $line += ( $all =~ tr/\n/\n/ );
-        next if $seen{$line};
-        print "\n" unless $errors++;
-        print "  $loc_type that did not match, line $line of $filename\n";
-    }
-
-    if ($errors) {
-        print "\n"
-    } else {
-        print "\r", " " x 100, "\r";
-    }
-
-    close (_);
-}
 
 sub uniq {
     my %seen;
@@ -341,7 +105,7 @@ sub update {
 
     # Default to the empty string for new ones
     $lexicon->{$_->msgid} ||= $_
-        for values %FILECAT;
+        for values %POT;
 
     my $errors = 0;
     for my $msgid ( keys %{$lexicon} ) {
@@ -357,7 +121,7 @@ sub update {
         next if not length $entry->dequote($msgid);
 
         # Not found in source?  Drop it
-        my $source = $FILECAT{$msgid};
+        my $source = $POT{$msgid};
         if (not $source) {
             delete $lexicon->{$msgid};
             next;
