@@ -233,4 +233,12 @@ sub _DoCount {
 
 RT::Base->_ImportOverlays();
 
+# Clear the OCVF cache on exit to release connected RT::Ticket objects.
+#
+# Without this, there could be warnings generated like "Too late to safely run
+# transaction-batch scrips...". You can test this by commenting it out and running
+# some cf tests, e.g. perl -Ilib t/customfields/enter_one.t
+END { ClearOCFVCache(); }
+
+
 1;
