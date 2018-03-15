@@ -271,6 +271,7 @@ sub Create {
         EntryHint              => undef,
         UniqueValues           => 0,
         CanonicalizeClass      => undef,
+        DefaultValues          => undef,
         @_,
     );
 
@@ -375,6 +376,10 @@ sub Create {
 
         if ( exists $args{'IncludeContentForValue'}) {
             $self->SetIncludeContentForValue($args{'IncludeContentForValue'});
+        }
+
+        if ( exists $args{'DefaultValues'}) {
+            $self->SetDefaultValues( Values => $args{'DefaultValues'} );
         }
 
         return ($rv, $msg) unless exists $args{'Queue'};
