@@ -233,4 +233,10 @@ sub _DoCount {
 
 RT::Base->_ImportOverlays();
 
+# Without this, there could be warnings generated like "Too late to safely run
+# transaction-batch scrips...", you can test it by commentting it out and run
+# some cf tests, e.g. perl -Ilib t/customfields/enter_one.t
+END { ClearOCFVCache(); }
+
+
 1;
