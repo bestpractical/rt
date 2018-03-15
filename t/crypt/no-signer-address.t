@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
+use GnuPG::Interface;
+
 use RT::Test::GnuPG
   tests         => undef,
   gnupg_options => {
@@ -8,6 +10,8 @@ use RT::Test::GnuPG
     'trust-model' => 'always',
   }
 ;
+
+my $gnupg = GnuPG::Interface->new();
 
 my $queue;
 {
@@ -35,8 +39,30 @@ my ($status, undef, $msg) = $ticket->Create(
 );
 ok( $status, "created ticket" ) or diag "error: $msg";
 
-is( scalar @warnings, 1, "Got a warning" );
-like( $warnings[0], qr{signing failed: secret key not available},
-    "Found warning of no secret key");
+# Classic GnuPG doesn't emit the latter two warnings. Modern GnuPG
+# does. Test with:
+# 
+# $ touch a-file
+# $ gpg --status-file gpg-status --default-key "bob@example.com" --sign a-file
+# $ cat gpg-status
+my @gnupg_versions = split /\./, $gnupg->version;
+if ($gnupg_versions[0] >= 2 && $gnupg_versions[1] >= 1) {
+    is( scalar @warnings, 3, "Got warnings" );
+
+    like( $warnings[0], qr{signing failed: No secret key},
+         "Found warning of no secret key");
+
+    like( $warnings[1], qr{INV_SGNR},
+         "Found warning of no usable senders");
+
+    like( $warnings[2], qr{FAILURE},
+         "Found warning of failure");
+}
+else {
+    is( scalar @warnings, 1, "Got a warning" );
+
+    like( $warnings[0], qr{signing failed: secret key not available},
+         "Found warning of no secret key");
+}
 
 done_testing;
