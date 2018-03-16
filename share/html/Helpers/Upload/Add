@@ -51,8 +51,16 @@ $Token => ''
 
 <%init>
 
-ProcessAttachments( Token => $Token, ARGSRef => \%ARGS );
-$r->content_type('application/json; charset=utf-8');
-$m->out( JSON({status => 'success'}) );
+my ( $status, $msg ) = ProcessAttachments( Token => $Token, ARGSRef => \%ARGS );
+if ( $status ) {
+    $r->content_type( 'application/json; charset=utf-8' );
+    $m->out( JSON( { status => 'success' } ) );
+}
+else {
+    $r->status( 400 );
+    $r->content_type( 'text/plain; charset=utf-8' );
+    $m->out( $msg );
+}
+
 $m->abort;
 </%init>
