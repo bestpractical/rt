@@ -73,6 +73,7 @@ jQuery( function() {
         dictDefaultMessage: <% loc("Drop files here or click to attach") |n,j %>,
         maxFilesize: MaxAttachmentSizeMiB,
         parallelUploads: 1,
+        forceFallback: <% RT->Config->Get('PreferDropzone', $session{CurrentUser}) ? 0 : 1 %>,
         previewTemplate: '' +
             '<div class="dz-preview dz-file-preview">' +
             '    <div class="dz-remove-mark pointer-events" data-dz-remove>' +
