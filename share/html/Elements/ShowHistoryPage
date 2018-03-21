@@ -151,5 +151,14 @@ while ( my $Transaction = $Transactions->Next ) {
 
     $i++;
 }
+
+# For scroll, it's possible that all the transactions in this page were
+# skipped for some reasons and there are still pages left, so we need to
+# inform AJAX request that it's not done yet.
+
+if ( $i == 1 and RT->Config->Get( "ShowHistory", $session{'CurrentUser'} ) eq 'scroll' and my $txn = $Transactions->Last ) {
+    $m->out( q{<div class="hidden end-of-history-list transaction" data-transaction-id="} . $txn->id . qq{"></div>\n} );
+}
+
 </%perl>
 
