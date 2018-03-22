@@ -2050,25 +2050,11 @@ sub _AddCustomFieldValue {
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
         $new_value->Load( $new_value_id );
 
-        # Prepare to update the OCFV cache
-        my $ocfv_key = $new_value->GetOCFVCacheKey;
-
         # now that adding the new value was successful, delete the old one
         if ( $old_value ) {
-            # Remove old cached value
-            @{$RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key}} =
-                grep { $_->{'ObjectId'} == $old_value->Id } @{$RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key}};
-
             my ( $val, $msg ) = $old_value->Delete();
             return ( 0, $msg ) unless $val;
         }
-
-        # Add the new one
-        push @{$RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key}}, {
-            'ObjectId'       => $new_value->Id,
-            'CustomFieldObj' => $new_value->CustomFieldObj,
-            'Content'        => $args{'Value'},
-            'LargeContent'   => $args{'LargeContent'} };
 
         if ( $args{'RecordTransaction'} ) {
             my ( $TransactionId, $Msg, $TransactionObj ) =
@@ -2131,17 +2117,6 @@ sub _AddCustomFieldValue {
         unless ( $new_value_id ) {
             return ( 0, $self->loc( "Could not add new custom field value: [_1]", $msg ) );
         }
-
-        my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
-        $new_value->Load( $new_value_id );
-
-        # Update the OCFV cache
-        my $ocfv_key = $new_value->GetOCFVCacheKey;
-        push @{$RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key}}, {
-            'ObjectId'       => $new_value->Id,
-            'CustomFieldObj' => $new_value->CustomFieldObj,
-            'Content'        => $args{'Value'},
-            'LargeContent'   => $args{'LargeContent'} };
 
         if ( $args{'RecordTransaction'} ) {
             my ( $tid, $msg ) = $self->_NewTransaction(

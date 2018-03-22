@@ -107,7 +107,7 @@ sub Create {
         $self->_EncodeLOB( $args{'LargeContent'}, $args{'ContentType'} )
             if defined $args{'LargeContent'};
 
-    return $self->SUPER::Create(
+    ( my $id, $msg ) = $self->SUPER::Create(
         CustomField     => $args{'CustomField'},
         ObjectType      => $args{'ObjectType'},
         ObjectId        => $args{'ObjectId'},
@@ -117,6 +117,23 @@ sub Create {
         ContentType     => $args{'ContentType'},
         ContentEncoding => $args{'ContentEncoding'},
     );
+
+    if ( $id ) {
+        my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
+        $new_value->Load( $id );
+        my $ocfv_key = $new_value->GetOCFVCacheKey();
+        if ( $RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key} ) {
+            push @{ $RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key} },
+              {
+                'ObjectId'       => $new_value->Id,
+                'CustomFieldObj' => $new_value->CustomFieldObj,
+                'Content'        => $new_value->_Value('Content'),
+                'LargeContent'   => $new_value->LargeContent,
+              };
+        }
+    }
+
+    return wantarray ? ( $id, $msg ) : $id;
 }
 
 
@@ -288,7 +305,15 @@ Disable this value. Used to remove "current" values from records while leaving t
 
 sub Delete {
     my $self = shift;
-    return $self->SetDisabled(1);
+    my ( $ret, $msg ) = $self->SetDisabled( 1 );
+    if ( $ret ) {
+        my $ocfv_key = $self->GetOCFVCacheKey();
+        if ( $RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key} ) {
+            @{ $RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key} } =
+              grep { $_->{'ObjectId'} != $self->Id } @{ $RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key} };
+        }
+    }
+    return wantarray ? ( $ret, $msg ) : $ret;
 }
 
 =head2 _FillInTemplateURL URL

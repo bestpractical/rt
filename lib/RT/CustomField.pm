@@ -1843,10 +1843,6 @@ sub DeleteValueForObject {
         return ( 0, $self->loc('Input must match [_1]', $self->FriendlyPattern) );
     }
 
-    # Clear any cached values
-    my $ocfv_key = $oldval->GetOCFVCacheKey;
-    delete $RT::ObjectCustomFieldValues::_OCFV_CACHE->{$ocfv_key};
-
     # delete it
 
     my $ret = $oldval->Delete();
