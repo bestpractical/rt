@@ -106,7 +106,7 @@ if ($ARGS{'id'} eq 'new') {
         push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $Ticket );
         push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $Ticket );
         push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $Ticket );
-        push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $Ticket );
+        push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, Object => $Ticket );
         push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $Ticket );
     });
 
