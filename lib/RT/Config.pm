@@ -348,6 +348,15 @@ our %META;
             Description => 'Place signature above quote', #loc
         },
     },
+    PreferDropzone => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 11,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use dropzone if available', #loc
+        },
+    },
     RefreshIntervals => {
         Type => 'ARRAY',
         PostLoadCheck => sub {

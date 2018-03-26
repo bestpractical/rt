@@ -2026,6 +2026,20 @@ Set($MessageBoxIncludeSignatureOnComment, 1);
 
 =back
 
+=head2 Attach Files
+
+=over 4
+
+=item C<$PreferDropzone>
+
+By default, RT uses Dropzone to attach files if possible. If
+C<$PreferDropzone> is set to 0, RT will always use plain file inputs.
+
+=cut
+
+Set($PreferDropzone, 1);
+
+=back
 
 =head2 Transaction display
 
