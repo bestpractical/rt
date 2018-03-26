@@ -1137,6 +1137,14 @@ sub QueueObj {
     return ($self->{_queue_obj});
 }
 
+# Oracle treats empty strings as NULL, so it returns undef for empty subjects,
+# which could cause uninitialized warnings.
+
+sub Subject {
+    my $self = shift;
+    return $self->_Value( 'Subject' ) // '';
+}
+
 sub SetSubject {
     my $self = shift;
     my $value = shift;
