@@ -1,23 +1,23 @@
 # Slovenian translation for rt
-# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
 # This file is distributed under the same license as the rt package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 4.0.x\n"
-"Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2013-10-03 20:51+0000\n"
-"PO-Revision-Date: 2012-04-18 19:03+0000\n"
-"Last-Translator: Jernej Zajc <nejc@rubisco.com>\n"
+"Project-Id-Version: rt\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-07-27 00:01+0000\n"
+"PO-Revision-Date: 2014-05-05 18:50+0000\n"
+"Last-Translator: Alex Vandiver <Unknown>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-05-31 23:11+0000\n"
-"X-Generator: Launchpad (build 18391)\n"
+"X-Launchpad-Export-Date: 2018-03-27 15:48+0000\n"
+"X-Generator: Launchpad (build 18591)\n"
 
-#: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
+#: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61
 msgid "#"
 msgstr ""
 
@@ -28,7 +28,7 @@ msgstr ""
 #. ($object->Id, $object->Subject || '')
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
-#: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:105 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
+#: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:105 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:196 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 msgid "#%1: %2"
 msgstr ""
 
@@ -105,12 +105,12 @@ msgstr "%1 %2 pobrisan."
 #. ($self->loc($column), $args{Value})
 #: lib/RT/Record/Role/Status.pm:256
 msgid "%1 %2 does not exist"
-msgstr ""
+msgstr "%1 %2 ne obstaja"
 
 #. ($self->loc($column), $name)
 #: lib/RT/Record/Role/Status.pm:261
 msgid "%1 %2 is disabled"
-msgstr ""
+msgstr "%1 %2 je onemogočen"
 
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 #: share/html/Widgets/SavedSearch:130
@@ -151,7 +151,7 @@ msgstr "%1 (iz razdelka %2)"
 #. ("--log")
 #: bin/rt-crontool:343
 msgid "%1 - Adjust LogToSTDERR config option"
-msgstr ""
+msgstr "%1 - Nastavi 'LogToSTDERR' konfiguracijsko možnost"
 
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
@@ -213,17 +213,17 @@ msgstr ""
 #. ($package)
 #: share/html/Admin/Elements/UpgradeHistory:58
 msgid "%1 Version"
-msgstr ""
+msgstr "%1 verzija"
 
 #. ($args{'Value'}, $cf->Name)
-#: lib/RT/Record.pm:2131
+#: lib/RT/Record.pm:2132
 msgid "%1 added as a value for %2"
 msgstr "%1 dodan kot vrednost za %2"
 
 #. (join ' ', @res)
 #: lib/RT/Date.pm:433
 msgid "%1 ago"
-msgstr ""
+msgstr "%1 ."
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -261,7 +261,7 @@ msgstr "%1, %2"
 #. ($self->loc($type))
 #: lib/RT/Record/Role/Roles.pm:418
 msgid "%1 cannot be a group"
-msgstr ""
+msgstr "%1 ne more biti skupina"
 
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),                    ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")))
@@ -340,7 +340,7 @@ msgstr ""
 #. ($self->loc($column), $name)
 #: lib/RT/Record/Role/Status.pm:264
 msgid "%1 is already set to %2"
-msgstr ""
+msgstr "%1 je že nastavljen na %2"
 
 #. ($email, $self->loc($type))
 #. ($name, $self->loc($type))
@@ -356,14 +356,14 @@ msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 ni več %2 za to zadevo."
 
 #. ($old_value, $cf->Name)
-#: lib/RT/Record.pm:2196
+#: lib/RT/Record.pm:2197
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 ni več vrednost za prilagojeno polje %2"
 
 #. ($principal->Object->Name, $self->loc($args{Type}))
 #: lib/RT/Record/Role/Roles.pm:499
 msgid "%1 is not a %2"
-msgstr ""
+msgstr "%1 ni %2"
 
 #. ($args{'Lifecycle'})
 #. ($value)
@@ -374,7 +374,7 @@ msgstr "%1 ni veljavno obdobje"
 #. (RT->Config->Get('Crypt')->{'Outgoing'})
 #: share/html/Elements/Crypt/KeyIssues:50
 msgid "%1 issues"
-msgstr ""
+msgstr "%1 zadev"
 
 #. ($protocol, $res{'info'}{'Formatted'})
 #: share/html/Admin/Elements/ShowKeyInfo:61
@@ -475,7 +475,7 @@ msgstr ""
 #. ($size)
 #: lib/RT/Attachment.pm:464
 msgid "%1B"
-msgstr ""
+msgstr "%1 B"
 
 #. (int( $size / 102.4 ) / 10)
 #: lib/RT/Attachment.pm:461
@@ -484,7 +484,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:414
 msgid "%1M"
-msgstr ""
+msgstr "%1 M"
 
 #. (int( $size / 1024 / 102.4 ) / 10)
 #: lib/RT/Attachment.pm:458
@@ -498,11 +498,11 @@ msgstr "%1Nov zahtevek v%2&nbsp;%3"
 
 #: lib/RT/Date.pm:408
 msgid "%1W"
-msgstr ""
+msgstr "%1T"
 
 #: lib/RT/Date.pm:420
 msgid "%1Y"
-msgstr ""
+msgstr "%1L"
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
@@ -525,42 +525,42 @@ msgstr ""
 #. ($Articles->Count)
 #: share/html/Articles/Elements/ShowTopicLink:61
 msgid "%quant(%1,article,articles)"
-msgstr ""
+msgstr "%quant(%1,članek,člankov)"
 
 #: lib/RT/Date.pm:403
 msgid "%quant(%1,day,days)"
-msgstr ""
+msgstr "%quant(%1,dan,dni)"
 
 #: lib/RT/Date.pm:397
 msgid "%quant(%1,hour,hours)"
-msgstr ""
+msgstr "%quant(%1,ura,ur)"
 
 #. (sprintf("%.1f",$minutes / 60), $minutes)
 #: share/html/Ticket/Elements/ShowTime:51
 msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
-msgstr ""
+msgstr "%quant(%1,ura,ur) (%quant(%2,minuta,minute))"
 
 #. ($Transaction->TimeTaken)
 #. ($minutes)
 #: lib/RT/Date.pm:391 share/html/Elements/ShowTransaction:135 share/html/Ticket/Elements/ShowTime:49
 msgid "%quant(%1,minute,minutes)"
-msgstr ""
+msgstr "%quant(%1,minuta,minut)"
 
 #: lib/RT/Date.pm:415
 msgid "%quant(%1,month,months)"
-msgstr ""
+msgstr "%quant(%1,mesec,mesecev)"
 
 #: lib/RT/Date.pm:385
 msgid "%quant(%1,second,seconds)"
-msgstr ""
+msgstr "%quant(%1,sekunda,sekund)"
 
 #: lib/RT/Date.pm:409
 msgid "%quant(%1,week,weeks)"
-msgstr ""
+msgstr "%quant(%1,teden,tednov)"
 
 #: lib/RT/Date.pm:421
 msgid "%quant(%1,year,years)"
-msgstr ""
+msgstr "%quant(%1,leto,let)"
 
 #. ($name)
 #: lib/RT/Queue.pm:279
@@ -570,7 +570,7 @@ msgstr "'%1' ni veljavno ime."
 #. ($Class)
 #: share/html/Articles/Article/Edit.html:121
 msgid "'%1' isn't a valid class"
-msgstr ""
+msgstr "'%1'ni veljavna vrednost"
 
 #. ($Class)
 #: share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
@@ -591,7 +591,7 @@ msgstr "(Označi polja za izbris)"
 
 #: share/html/Elements/BulkCustomFields:99
 msgid "(Check to delete all values)"
-msgstr ""
+msgstr "(klikni za izbris vseh vrednosti)"
 
 #: share/html/m/ticket/create:389
 msgid "(Enter ticket ids or URLs, separated with spaces)"
@@ -605,11 +605,11 @@ msgstr "(Privzeta vrednost bo %1)"
 
 #: share/html/Admin/Elements/UpgradeHistoryRow:69
 msgid "(Incomplete)"
-msgstr ""
+msgstr "(nepopolno)"
 
 #: lib/RT/Report/Tickets.pm:429
 msgid "(Incorrect data)"
-msgstr ""
+msgstr "(nepravilni podatki)"
 
 #: share/html/Admin/Elements/EditCustomFields:95
 msgid "(No custom fields)"
@@ -637,7 +637,7 @@ msgstr "(Pošlje cc e-pošto seznamu (ločenem z vejico) e-poštnih naslovov. Ti
 
 #: share/html/Elements/BulkCustomFields:94
 msgid "(Unsupported custom field type)"
-msgstr ""
+msgstr "(nepodprti tip prilagojenega polja)"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:52
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -670,7 +670,7 @@ msgstr "(brez vrednosti)"
 #. ($count)
 #: share/html/Elements/RT__Ticket/ColumnMap:138
 msgid "(pending %quant(%1,other ticket,other tickets))"
-msgstr ""
+msgstr "(čakajoč %quant(%1,other ticket))"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:130
 msgid "(pending approval)"
@@ -712,15 +712,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:368
 msgid "0 seconds"
-msgstr ""
+msgstr "0 sekund"
 
 #: lib/RT/Date.pm:368
 msgid "0s"
-msgstr ""
+msgstr "0 s"
 
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:727
 msgid "A Template with that name already exists"
-msgstr ""
+msgstr "Predloga s tem imenom že obstaja"
 
 #: etc/initialdata:228
 msgid "A blank template"
@@ -874,7 +874,7 @@ msgstr "Doda, spremeni ali izbriše vrednosti prilagojenega polja"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:85
 msgid "Added"
-msgstr ""
+msgstr "Dodano"
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 #: lib/RT/Ticket.pm:650
@@ -929,7 +929,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:64
 msgid "Admin"
-msgstr ""
+msgstr "Administrator"
 
 #: share/html/Ticket/Create.html:155 share/html/m/ticket/create:284
 msgid "Admin Cc"
@@ -941,7 +941,7 @@ msgstr "Administrativni komentar"
 
 #: etc/initialdata:394 etc/upgrade/4.1.9/content:77
 msgid "Admin Comment in HTML"
-msgstr ""
+msgstr "Komentar Admina v HTML"
 
 #: etc/initialdata:340
 msgid "Admin Correspondence"
@@ -949,7 +949,7 @@ msgstr "Administrativno dopisovanje"
 
 #: etc/initialdata:351 etc/upgrade/4.1.9/content:56
 msgid "Admin Correspondence in HTML"
-msgstr ""
+msgstr "Admin koresopodenca v HTML"
 
 #: share/html/Admin/Queues/index.html:48
 msgid "Admin queues"
@@ -1013,7 +1013,7 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/index.html:52
 msgid "All Custom Fields"
-msgstr ""
+msgstr "Vsa prilagojena polja"
 
 #: share/html/Elements/Tabs:513
 msgid "All Dashboards"
@@ -1033,7 +1033,7 @@ msgstr "Vsi zahtevki"
 
 #: share/html/User/Prefs.html:173
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
-msgstr ""
+msgstr "Vsi iCal viri imajo vključen unikaten podatke za avtorazijo. Če je URL naslov iCal vira prišel v napačne roke, lahko dobiš nov naslov spodaj. <b>Vsi obstoječi iCal viri bodo s tem postali neveljavni!</b>"
 
 #: share/html/Admin/Queues/index.html:99
 msgid "All queues matching search criteria"
@@ -1065,12 +1065,12 @@ msgstr "Že kriptirano"
 
 #: etc/initialdata:30
 msgid "Always sends a message to the requestors independent of message sender"
-msgstr ""
+msgstr "Vedno pošlji sporočilo pobudnikom, neodvisno od pošiljatelja sporočila"
 
 #. (qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/customizing/articles_introduction.html">], qq[<a href="http://bestpractical.com/rt/docs/$RT::MAJOR_VERSION.$RT::MINOR_VERSION/">], '</a>')
 #: share/html/Articles/Elements/NeedsSetup:51
 msgid "An %1introduction to getting started with articles%3 is available from %2Best Practical's online documentation%3."
-msgstr ""
+msgstr "%1i predstavitev kako začeti s članki %3 je na voljo v %2Best Practical's spletni dokumentaciji %3."
 
 #: lib/RT/Group.pm:619
 msgid "An Instance must be provided"
@@ -1078,7 +1078,7 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/Wrapper:49
 msgid "An error occurred"
-msgstr ""
+msgstr "Prišlo je do napake"
 
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
@@ -1114,7 +1114,7 @@ msgstr "Shrani globalno"
 
 #: share/html/Admin/Elements/EditScrips:95
 msgid "Apply selected scrips"
-msgstr ""
+msgstr "Potrdi izbrane skripte"
 
 #: share/html/Search/Edit.html:62
 msgid "Apply your changes"
@@ -1163,7 +1163,7 @@ msgstr "Odobritev zavrnjena"
 
 #: etc/initialdata:573 etc/upgrade/4.1.9/content:162
 msgid "Approval Rejected in HTML"
-msgstr ""
+msgstr "Odobritev zavrnjena v HTML"
 
 #: share/html/Approvals/Elements/Approve:75
 msgid "Approve"
@@ -1180,7 +1180,7 @@ msgstr ""
 #. ($object->id)
 #: lib/RT/URI/fsck_com_article.pm:215
 msgid "Article #%1"
-msgstr ""
+msgstr "Članek #%1"
 
 #. ($ArticleObj->Id)
 #: share/html/Articles/Article/Delete.html:97
@@ -1190,7 +1190,7 @@ msgstr ""
 #. ($id)
 #: share/html/Articles/Article/History.html:61
 msgid "Article #%1 not found"
-msgstr ""
+msgstr "Članek #%1 ni najden"
 
 #. ($article->Id, $article->Name || loc("(no name)"))
 #. ($object->id, $object->Name)
@@ -1284,7 +1284,7 @@ msgstr "Atribut pobrisan"
 
 #: lib/RT/Attribute.pm:288
 msgid "Attribute updated"
-msgstr ""
+msgstr "Atribut je bil posodobljen"
 
 #: lib/RT/Date.pm:98
 msgid "Aug"
@@ -1292,11 +1292,11 @@ msgstr "Avg"
 
 #: lib/RT/Queue.pm:353
 msgid "AutoSigning"
-msgstr ""
+msgstr "Samodejni podpis"
 
 #: share/html/Errors/WebRemoteUser/UserAutocreateDefaultsOnLogin:48
 msgid "Automatic account setup failed"
-msgstr ""
+msgstr "Samodejna nastavitev računa je spodletela"
 
 #. ($valid_image_types)
 #: share/html/Admin/Tools/Theme.html:269
@@ -1313,7 +1313,7 @@ msgstr "Samodejno odgovori pobudnikom"
 
 #: etc/initialdata:261 etc/upgrade/4.1.9/content:8
 msgid "Autoreply in HTML"
-msgstr ""
+msgstr "Samodejni odgovor v HTML"
 
 #: share/html/Widgets/SelectionBox:170
 msgid "Available"
@@ -1345,15 +1345,15 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:212
 msgid "Average time estimated"
-msgstr ""
+msgstr "Predviden povprečen čas"
 
 #: lib/RT/Report/Tickets.pm:217
 msgid "Average time left"
-msgstr ""
+msgstr "Preostanek povprečnega časa"
 
 #: lib/RT/Report/Tickets.pm:207
 msgid "Average time worked"
-msgstr ""
+msgstr "Povprečen čas dela"
 
 #: share/html/Elements/Submit:109 share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89 share/html/Install/Global.html:65 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:64
 msgid "Back"
@@ -1378,7 +1378,7 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrips:61
 msgid "Batch scrips"
-msgstr ""
+msgstr "Batch skripte"
 
 #: share/html/Admin/Elements/EditScrips:62
 msgid "Batch scrips run after a set of related changes to a ticket."
@@ -1448,18 +1448,18 @@ msgstr ""
 
 #: share/html/Search/Chart.html:162
 msgid "Calculate"
-msgstr ""
+msgstr "Preračunaj"
 
 #: share/html/Search/Chart.html:164
 msgid "Calculate values of"
-msgstr ""
+msgstr "Preračunaj vrednosti za"
 
 #. ($ARGS{'SavedSearchLoad'})
 #: share/html/Search/Elements/EditSearches:176
 msgid "Can not load saved search \"%1\""
 msgstr "Ne morem naložiti shranjenega iskanja \"%1\""
 
-#: lib/RT/User.pm:1571
+#: lib/RT/User.pm:1591
 msgid "Can not modify system users"
 msgstr "Sistemskih uporabnikov ni možno spreminjati"
 
@@ -1471,9 +1471,9 @@ msgstr "Ne morem dodati prilagojeneg polja brez imena"
 msgid "Can't find a saved search to work with"
 msgstr "Ne najdem shranjenega iskanja"
 
-#: lib/RT/Ticket.pm:3072
+#: lib/RT/Ticket.pm:3089
 msgid "Can't forward: no valid email addresses specified"
-msgstr ""
+msgstr "Posredovanje neuspešno: ni veljavnega e-naslova"
 
 #: lib/RT/Link.pm:192
 msgid "Can't link a ticket to itself"
@@ -1483,14 +1483,14 @@ msgstr "Zahtevka ni možno povezati samega s seboj"
 msgid "Can't link to a deleted ticket"
 msgstr "Povezava do izbrisanega zahtevka ni možna"
 
-#: lib/RT/Ticket.pm:1792
+#: lib/RT/Ticket.pm:1809
 msgid "Can't merge a ticket into itself"
-msgstr ""
+msgstr "Ni možno spojiti zahtevka s samim sabo"
 
 #. ($QueueObj->Name)
 #: share/html/index.html:130
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
-msgstr ""
+msgstr "Ni možno ustvariti zahtevka v vrsti %1, ker vsebuje prilagojena polja. Za nov zahtevek prosim uporabi klasično ustvarjanje zahtevka."
 
 #. (loc($self->{SearchType}))
 #: share/html/Widgets/SavedSearch:133
@@ -1499,7 +1499,7 @@ msgstr "Ne morem shraniti %1"
 
 #: share/html/Search/Elements/EditSearches:320
 msgid "Can't save a search without a Description"
-msgstr ""
+msgstr "Shranjevanje ni možno, manjka opis"
 
 #: share/html/Search/Elements/EditSearches:323
 msgid "Can't save this search"
@@ -1543,7 +1543,7 @@ msgstr "Spremeni status zahtevka za odobritev na odprto stanje"
 
 #: share/html/Admin/Articles/Classes/Modify.html:113
 msgid "Change email subject:"
-msgstr ""
+msgstr "Spremeni zadevo sporočila:"
 
 #: share/html/SelfService/Prefs.html:70
 msgid "Change password"
@@ -1551,7 +1551,7 @@ msgstr "Spremeni geslo"
 
 #: lib/RT/Template.pm:706
 msgid "Changing queue is not implemented"
-msgstr ""
+msgstr "Spremembe vrste niso implementirane"
 
 #: share/html/Elements/Tabs:843
 msgid "Chart"
@@ -1575,7 +1575,7 @@ msgstr "Označi polje za izbris"
 
 #: share/html/Search/Elements/SelectLinks:59
 msgid "Child"
-msgstr ""
+msgstr "Podrejen"
 
 #: share/html/Elements/AddLinks:86 share/html/Elements/BulkLinks:139 share/html/Elements/BulkLinks:84 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:73 share/html/Search/Elements/BuildFormatString:100 share/html/m/ticket/create:396 share/html/m/ticket/show:433
 msgid "Children"
@@ -1590,7 +1590,7 @@ msgstr "Izberi tip baze"
 msgid "Choose from Topics for %1"
 msgstr "Izberi med temami za %1"
 
-#: lib/RT/User.pm:107 share/html/Admin/Users/Modify.html:151 share/html/Elements/RT__User/ColumnMap:111 share/html/User/Prefs.html:144
+#: lib/RT/User.pm:108 share/html/Admin/Users/Modify.html:151 share/html/Elements/RT__User/ColumnMap:111 share/html/User/Prefs.html:144
 msgid "City"
 msgstr "Mesto"
 
@@ -1642,7 +1642,7 @@ msgstr "Za kreiranje baze in vnos začetnih metapodatkov klikni \"Initialize Dat
 
 #: share/html/Admin/Tools/Theme.html:101
 msgid "Click to choose a color"
-msgstr ""
+msgstr "Kliknite za izbiro barve"
 
 #: share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:375
 msgid "Closed"
@@ -1662,7 +1662,7 @@ msgstr "Izbirnik: izberi ali vnesi eno vrednost"
 
 #: lib/RT/CustomField.pm:146
 msgid "Combobox: Select or enter up to %quant(%1,value,values)"
-msgstr ""
+msgstr "Izbirnik: Izberi ali vnesi največ %1 vrednosti"
 
 #: share/html/Elements/ShowTransaction:193 share/html/Elements/Tabs:678 share/html/Search/Elements/EditFormat:75
 msgid "Comment"
@@ -1692,7 +1692,7 @@ msgstr "Komentarji (ki niso poslani pobudnikom)"
 msgid "Comments about this user"
 msgstr "Komentarji o tem uporabniku"
 
-#: lib/RT/Ticket.pm:1639 lib/RT/Transaction.pm:975
+#: lib/RT/Ticket.pm:1656 lib/RT/Transaction.pm:975
 msgid "Comments added"
 msgstr "Komentarji so bili dodani"
 
@@ -1739,11 +1739,11 @@ msgstr "Povezava je uspela"
 #. (qq[<a href="mailto:$owner">], $owner, '</a>')
 #: share/html/Errors/WebRemoteUser/Wrapper:67
 msgid "Contact your RT administrator via %1email to %2%3."
-msgstr ""
+msgstr "Kontaktirajte vašega RT administratorja na %1email to %2%3."
 
 #: share/html/Errors/WebRemoteUser/Wrapper:69
 msgid "Contact your RT administrator."
-msgstr ""
+msgstr "Kontaktirajte vašega RT administratorja."
 
 #: lib/RT/Tickets.pm:139 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:75 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:617 share/html/Ticket/Forward.html:76 share/html/Ticket/ModifyAll.html:122
 msgid "Content"
@@ -1756,15 +1756,15 @@ msgstr ""
 
 #: lib/RT/Transaction.pm:940
 msgid "Content insert failed. See error log for details."
-msgstr ""
+msgstr "Nalaganje vsebine je spodletelo. Za več informacij prosim poglej napake v logih."
 
 #: lib/RT/CustomField.pm:1741
 msgid "Content is not a valid IP address"
-msgstr ""
+msgstr "Neveljaven IP naslov"
 
 #: lib/RT/CustomField.pm:1757
 msgid "Content is not a valid IP address range"
-msgstr ""
+msgstr "Neveljaven obseg IP naslova"
 
 #. ($self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:920
@@ -1787,13 +1787,13 @@ msgstr "Naslov za dopisovanje"
 msgid "Correspondence"
 msgstr "Dopisovanje"
 
-#: lib/RT/Ticket.pm:1641 lib/RT/Transaction.pm:971
+#: lib/RT/Ticket.pm:1658 lib/RT/Transaction.pm:971
 msgid "Correspondence added"
 msgstr "Dopisovanje dodano"
 
 #: etc/initialdata:371 etc/upgrade/4.1.9/content:68
 msgid "Correspondence in HTML"
-msgstr ""
+msgstr "Korespodenca v HTML"
 
 #. ($msg)
 #. ($value_msg)
@@ -1802,7 +1802,7 @@ msgid "Could not add new custom field value: %1"
 msgstr "Vrednosti %1 za prilagojeno polje ni bilo možno dodati"
 
 #. ($msg)
-#: lib/RT/Ticket.pm:2064
+#: lib/RT/Ticket.pm:2081
 msgid "Could not change owner: %1"
 msgstr "Lastnika ni bilo možno zamenjati: %1"
 
@@ -1824,7 +1824,7 @@ msgstr "Neuspešno iskanje: %1"
 msgid "Could not create ticket. Queue not set"
 msgstr "Zahtevka ni bilo možno ustvariti. Vrsta ni določena"
 
-#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:460
+#: lib/RT/User.pm:191 lib/RT/User.pm:205 lib/RT/User.pm:214 lib/RT/User.pm:223 lib/RT/User.pm:232 lib/RT/User.pm:246 lib/RT/User.pm:256 lib/RT/User.pm:461
 msgid "Could not create user"
 msgstr "Uporabnika ni bilo možno ustvariti"
 
@@ -1836,12 +1836,12 @@ msgstr "Iskanje %1 ni izbrisano: %2"
 #. ($name)
 #: lib/RT/Record/Role/Roles.pm:397
 msgid "Could not find group '%1'"
-msgstr ""
+msgstr "Ne najdem skupine '%1'"
 
 #. ($name)
 #: lib/RT/Record/Role/Roles.pm:387
 msgid "Could not find or create user '%1'"
-msgstr ""
+msgstr "Ni možno najti ali ustvariti uporabnika '%1'"
 
 #. ($self->ObjectName)
 #: lib/RT/SharedSetting.pm:244
@@ -1869,12 +1869,12 @@ msgstr "Objekta za %1 ni bilo možno naložiti"
 #. ($id)
 #: share/html/Admin/Scrips/Objects.html:128
 msgid "Could not load scrip #%1"
-msgstr ""
+msgstr "Ni možno naložiti skripte #%1"
 
 #. ($args{User})
 #: lib/RT/Record/Role/Roles.pm:479
 msgid "Could not load user '%1'"
-msgstr ""
+msgstr "Ni možno naložiti uporabnika '%1'"
 
 #. ($principal->Object->Name, $self->loc($type))
 #: lib/RT/Record/Role/Roles.pm:426
@@ -1886,14 +1886,14 @@ msgstr ""
 msgid "Could not remove %1 as a %2"
 msgstr ""
 
-#: lib/RT/User.pm:142
+#: lib/RT/User.pm:143
 msgid "Could not set user info"
 msgstr "Uporabniških podatkov ni bilo možno nastaviti"
 
 #. ($col, $msg)
 #: lib/RT/Group.pm:1106
 msgid "Could not update column %1: %2"
-msgstr ""
+msgstr "Ni možno posodobiti stolpca %1: %2"
 
 #: lib/RT/Record/AddAndSort.pm:200
 msgid "Couldn't add as it's global already"
@@ -1919,7 +1919,7 @@ msgstr ""
 
 #. ($Msg)
 #. ($msg)
-#: lib/RT/Record.pm:2128 lib/RT/Record.pm:2178
+#: lib/RT/Record.pm:2129 lib/RT/Record.pm:2179
 msgid "Couldn't create a transaction: %1"
 msgstr "Transakcije %1 ni bilo možno ustvariti"
 
@@ -1977,7 +1977,7 @@ msgstr "Prilagojenega polja %1 ni možno naložiti"
 #. (blessed($self), $self->Id)
 #: lib/RT/Record/Role/Status.pm:291
 msgid "Couldn't load copy of %1 #%2"
-msgstr ""
+msgstr "Kopije %1 #%2 ni možno naložiti"
 
 #. ($self->Id)
 #: lib/RT/Ticket.pm:1097
@@ -2142,15 +2142,15 @@ msgstr "Cilja '%1' ni bilo možno razrešiti v URI"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "%2: ni bilo možno nastaviti kot %1 opazavalca"
 
-#: lib/RT/User.pm:1845
+#: lib/RT/User.pm:1865
 msgid "Couldn't set private key"
 msgstr "Privatnega ključa ni bilo možno nastaviti"
 
-#: lib/RT/User.pm:1829
+#: lib/RT/User.pm:1849
 msgid "Couldn't unset private key"
 msgstr "Privatnega ključa ni bilo možno resetirati"
 
-#: lib/RT/User.pm:108 share/html/Admin/Users/Modify.html:168 share/html/Elements/RT__User/ColumnMap:126 share/html/User/Prefs.html:156
+#: lib/RT/User.pm:109 share/html/Admin/Users/Modify.html:168 share/html/Elements/RT__User/ColumnMap:126 share/html/User/Prefs.html:156
 msgid "Country"
 msgstr "Država"
 
@@ -2177,7 +2177,7 @@ msgstr "Ustvari prilagojeno polje za vrsto %1"
 
 #: share/html/Admin/Scrips/Create.html:109
 msgid "Create a global scrip"
-msgstr ""
+msgstr "Ustvari globalno skripto"
 
 #: share/html/Articles/Article/Edit.html:128 share/html/Articles/Article/Edit.html:190
 msgid "Create a new article"
@@ -2215,7 +2215,7 @@ msgstr "Ustvari vrsto"
 #. ($queue_obj->Name)
 #: share/html/Admin/Scrips/Create.html:107
 msgid "Create a scrip and add to queue %1"
-msgstr ""
+msgstr "Ustvari skripto in jo dodaj vrsti %1"
 
 #: share/html/Admin/Global/Template.html:99
 msgid "Create a template"
@@ -2227,7 +2227,7 @@ msgstr "Ustvari zahtevek"
 
 #: share/html/User/Elements/Portlets/CreateTicket:50
 msgid "Create a ticket with this user as the Requestor in Queue"
-msgstr ""
+msgstr "Kot pobudnik ustvari nov zahtevek v vrsti"
 
 #: share/html/Articles/Elements/CreateArticle:48
 msgid "Create an article"
@@ -2289,11 +2289,11 @@ msgstr "Ustvari, spremeni ali izbriše shranjena iskanja"
 msgid "Create, modify and delete users"
 msgstr "Ustvari, spremeni ali izbriše uporabnike"
 
-#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:68 share/html/Elements/ColumnMap:73 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Ustvarjeno"
 
-#: share/html/Elements/ColumnMap:79
+#: share/html/Elements/ColumnMap:78
 msgid "Created By"
 msgstr "Ustvaril"
 
@@ -2330,7 +2330,7 @@ msgstr "Kriptografija"
 
 #: lib/RT/Attachment.pm:786 lib/RT/Attachment.pm:846
 msgid "Cryptography is disabled"
-msgstr ""
+msgstr "Šifriranje je onemogočeno"
 
 #: share/html/Elements/BulkLinks:51 share/html/Elements/EditLinks:51
 msgid "Current Links"
@@ -2354,7 +2354,7 @@ msgstr "Trenutni opazovalci"
 
 #: share/html/Admin/Tools/Theme.html:108
 msgid "Custom CSS (Advanced)"
-msgstr ""
+msgstr "Prilagojen CSS (Napredno)"
 
 #: lib/RT/Graph/Tickets.pm:169 share/html/Elements/EditCustomFieldCustomGroupings:50 share/html/Elements/ShowCustomFieldCustomGroupings:51 share/html/Elements/Tabs:133 share/html/Elements/Tabs:183 share/html/Elements/Tabs:258 share/html/Elements/Tabs:300 share/html/Elements/Tabs:453 share/html/Elements/Tabs:92 share/html/m/ticket/show:252
 msgid "Custom Fields"
@@ -2409,7 +2409,7 @@ msgid "Custom field %1 has no value."
 msgstr "Prilagojeno polje %1 nima vrednosti."
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1971 lib/RT/Record.pm:2159
+#: lib/RT/Record.pm:1971 lib/RT/Record.pm:2160
 msgid "Custom field %1 not found"
 msgstr "Prilagojenega polja %1 ni bilo možno najti"
 
@@ -2456,11 +2456,11 @@ msgstr "Prilagodi e-poštno konfiguracijo"
 
 #: share/html/Elements/Tabs:212
 msgid "Customize dashboards in menu"
-msgstr ""
+msgstr "Prilagodi pregled v meniju"
 
 #: share/html/Admin/Tools/Theme.html:76
 msgid "Customize the RT theme"
-msgstr ""
+msgstr "Prilagodi temo"
 
 #: share/html/Elements/Tabs:233
 msgid "Customize the look of your RT"
@@ -2478,7 +2478,7 @@ msgstr "Uporabniško ime za dostop do baze"
 msgid "Daily"
 msgstr "Dnevno"
 
-#: lib/RT/Config.pm:563
+#: lib/RT/Config.pm:583
 msgid "Daily digest"
 msgstr "Dnevni povzetek"
 
@@ -2489,12 +2489,12 @@ msgstr "Pregled"
 #. ($Dashboard->Name, $msg)
 #: share/html/Dashboards/Modify.html:143
 msgid "Dashboard %1 could not be updated: %2"
-msgstr ""
+msgstr "Pregled %1 ni možno posodobiti: %2"
 
 #. ($Dashboard->Name)
 #: share/html/Dashboards/Modify.html:140
 msgid "Dashboard %1 updated"
-msgstr ""
+msgstr "Pregled %1 je posodobljen"
 
 #. ($msg)
 #: share/html/Dashboards/Modify.html:110
@@ -2516,12 +2516,12 @@ msgstr "Pregledi"
 
 #: share/html/Admin/Global/DashboardsInMenu.html:48 share/html/Admin/Global/DashboardsInMenu.html:54 share/html/Admin/Users/DashboardsInMenu.html:62 share/html/Elements/Tabs:211 share/html/Elements/Tabs:328 share/html/Elements/Tabs:586 share/html/Prefs/DashboardsInMenu.html:57
 msgid "Dashboards in menu"
-msgstr ""
+msgstr "Pregledi v meniju"
 
 #. ($UserObj->Name)
 #: share/html/Admin/Users/DashboardsInMenu.html:71
 msgid "Dashboards in menu for the user %1"
-msgstr ""
+msgstr "Pregledi v meniju za uporabnika %1"
 
 #: lib/RT/Installer.pm:78
 msgid "Database host"
@@ -2549,9 +2549,9 @@ msgstr "Uporabniško ime za dostop do baze za RT"
 
 #: lib/RT/Report/Tickets.pm:131 share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
-#: lib/RT/Config.pm:512
+#: lib/RT/Config.pm:532
 msgid "Date format"
 msgstr "Oblika datuma"
 
@@ -2561,19 +2561,19 @@ msgstr "Datumi"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Day"
-msgstr ""
+msgstr "Dan"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "DayOfMonth"
-msgstr ""
+msgstr "Dan v mesecu"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "DayOfWeek"
-msgstr ""
+msgstr "Dan v tednu"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "DayOfYear"
-msgstr ""
+msgstr "Dan v letu"
 
 #: lib/RT/Date.pm:102
 msgid "Dec"
@@ -2585,15 +2585,15 @@ msgstr "Dekriptiraj"
 
 #: lib/RT/Attachment.pm:875
 msgid "Decryption error; contact the administrator"
-msgstr ""
+msgstr "Error. Kontaktirajte vašega RT administratorja"
 
-#: lib/RT/Config.pm:152
+#: lib/RT/Config.pm:160
 msgid "Default queue"
 msgstr "Privzeta vrsta"
 
 #: etc/initialdata:408 etc/upgrade/4.1.16/content:7
 msgid "Default reminder template"
-msgstr ""
+msgstr "Privzeta predloga za opomnik"
 
 #. ($DefaultValue)
 #: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
@@ -2634,7 +2634,7 @@ msgstr "Izbris ni uspel: %1"
 msgid "Delete group dashboards"
 msgstr "Izbriše pregled skupine"
 
-#: lib/RT/Ticket.pm:2455 lib/RT/Ticket.pm:2455
+#: lib/RT/Ticket.pm:2472 lib/RT/Ticket.pm:2472
 msgid "Delete operation is disabled by lifecycle configuration"
 msgstr ""
 
@@ -2676,7 +2676,7 @@ msgstr "Izbrisano iskanje %1"
 msgid "Deleting this object would break referential integrity"
 msgstr "Brisanje tega objekta bi pokvarilo referenčno integriteto"
 
-#: lib/RT/User.pm:471
+#: lib/RT/User.pm:472
 msgid "Deleting this object would violate referential integrity"
 msgstr "Brisanje tega objekta bi kršilo referenčno integriteto"
 
@@ -2769,21 +2769,21 @@ msgstr "Prikaži članek %1"
 msgid "Display Columns"
 msgstr "Prikaži stolpce"
 
-#: lib/RT/Config.pm:459
+#: lib/RT/Config.pm:479
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr ""
 
-#: lib/RT/Config.pm:386
+#: lib/RT/Config.pm:406
 msgid "Display messages in rich text if available"
-msgstr ""
+msgstr "Če je možno, prikaži sporočila v obogatenem tekstu"
 
-#: lib/RT/Config.pm:458
+#: lib/RT/Config.pm:478
 msgid "Display plain-text attachments in fixed-width font"
-msgstr ""
+msgstr "Prikaži tekstovne priponke v tekstu fiksne širine"
 
-#: lib/RT/Config.pm:493
+#: lib/RT/Config.pm:513
 msgid "Display ticket after \"Quick Create\""
-msgstr ""
+msgstr "Prikaži zahtevek po \"Hitrem kreiranju\""
 
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 #: share/html/Elements/Footer:59
@@ -2802,11 +2802,11 @@ msgstr "Ime domene"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Ne vključi http://, le naprimer 'localhost', 'rt.example.com'"
 
-#: lib/RT/Config.pm:360
+#: lib/RT/Config.pm:374
 msgid "Don't refresh home page."
 msgstr "Ne osveži domače strani."
 
-#: lib/RT/Config.pm:330
+#: lib/RT/Config.pm:338
 msgid "Don't refresh search results."
 msgstr "Ne osveži rezultatov iskanja."
 
@@ -2935,7 +2935,7 @@ msgstr "Ali nimaš pravic za pregled shranjenega iskanja %1 ali pa je identifika
 
 #: share/html/Admin/Elements/UpgradeHistory:57
 msgid "Elapsed"
-msgstr ""
+msgstr "Pretečen"
 
 #: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
 msgid "Email"
@@ -2952,13 +2952,13 @@ msgstr ""
 #. ($AttachmentObj->TransactionObj->ObjectId,        $AttachmentObj->Id)
 #: share/html/Ticket/ShowEmailRecord.html:116
 msgid "Email Source for Ticket %1, Attachment %2"
-msgstr ""
+msgstr "Izvor e-sporočila za zahtevek %1, prilogo %2"
 
-#: lib/RT/User.pm:600
+#: lib/RT/User.pm:601
 msgid "Email address in use"
 msgstr "E-poštni naslov je že v uporabi"
 
-#: lib/RT/Config.pm:560
+#: lib/RT/Config.pm:580
 msgid "Email delivery"
 msgstr "E-poštna dostava"
 
@@ -2966,15 +2966,15 @@ msgstr "E-poštna dostava"
 msgid "Email template for periodic notification digests"
 msgstr "E-poštna predloga za periodične povzetke obvestil"
 
-#: lib/RT/User.pm:93
+#: lib/RT/User.pm:94
 msgid "EmailAddress"
 msgstr "E-poštni naslov"
 
 #: share/html/Elements/RT__Template/ColumnMap:77
 msgid "Empty"
-msgstr ""
+msgstr "Prazno"
 
-#: lib/RT/Config.pm:502
+#: lib/RT/Config.pm:522
 msgid "Enable quote folding?"
 msgstr ""
 
@@ -3000,7 +3000,7 @@ msgstr "Omogočeno (odkljukanje tega okvirčka onemogoči to vrsto)"
 
 #: share/html/Admin/Scrips/Create.html:67 share/html/Admin/Scrips/Modify.html:83
 msgid "Enabled (Unchecking this box disables this scrip)"
-msgstr ""
+msgstr "Omogoči (odkljukanje tega okvirčka onemogoči to skripto)"
 
 #: share/html/Admin/Articles/Classes/index.html:82
 msgid "Enabled Classes"
@@ -3035,18 +3035,18 @@ msgstr "Privzeto kriptiraj"
 msgid "Encrypt/Decrypt"
 msgstr "Kriptiraj/Dekriptiraj"
 
-#. ($id, $txn->Ticket)
+#. ($id, $txn->Ticket, $txn->TicketObj->Subject)
 #: share/html/Ticket/Crypt.html:99
-msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
-msgstr "Kriptiraj/dekriptiraj transakcijo #%1 zahtevka #%2"
+msgid "Encrypt/Decrypt transaction #%1 of ticket #%2: %3"
+msgstr ""
 
 #: lib/RT/Queue.pm:384
 msgid "Encrypting"
-msgstr ""
+msgstr "Šifriranje"
 
 #: lib/RT/Attachment.pm:824
 msgid "Encryption error; contact the administrator"
-msgstr ""
+msgstr "Error. Kontaktirajte vašega RT administratorja"
 
 #: share/html/Articles/Article/Elements/EditLinks:50
 msgid "Enter articles, tickets, or other URLs related to this article."
@@ -3098,27 +3098,27 @@ msgstr "Vnesi zahtevke ali URI vrednosti, ki jih želiš povezati. Več vnosov l
 
 #: share/html/Elements/BulkLinks:123
 msgid "Enter tickets or URIs to link to. Separate multiple entries with spaces."
-msgstr ""
+msgstr "Vnesi zahtevke ali URI vrednosti, ki jih želiš povezati. Več vnosov loči s presledki."
 
-#: lib/RT/Config.pm:306
+#: lib/RT/Config.pm:314
 msgid "Enter time in hours by default"
 msgstr "Privzeto vnesi čas v urah"
 
 #: lib/RT/CustomField.pm:193
 msgid "Enter up to %quant(%1,IP address range,IP address ranges)"
-msgstr ""
+msgstr "Vnesi do %quant(%1,obseg IP naslova,obseg IP naslovov)"
 
 #: lib/RT/CustomField.pm:184
 msgid "Enter up to %quant(%1,IP address,IP addresses)"
-msgstr ""
+msgstr "Vnesi do %quant(%1,IP naslov,IP naslovov)"
 
 #: lib/RT/CustomField.pm:99
 msgid "Enter up to %quant(%1,value,values)"
-msgstr ""
+msgstr "Vnesi največ %1 vrednosti"
 
 #: lib/RT/CustomField.pm:155
 msgid "Enter up to %quant(%1,value,values) with autocompletion"
-msgstr ""
+msgstr "Vnesi največ %1 vrednosti s samodejnim zaključevanjem"
 
 #. (map { "<strong>$_</strong>" } qw(initial active inactive any))
 #: share/html/Search/Simple.html:77
@@ -3127,7 +3127,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:307
 msgid "Environment variables"
-msgstr ""
+msgstr "Okoljske spremenljivke"
 
 #: sbin/rt-email-digest:95 share/html/Elements/Login:54 share/html/Install/Elements/Errors:49 share/html/Search/Results.html:58 share/html/m/_elements/login:53
 msgid "Error"
@@ -3135,12 +3135,12 @@ msgstr "Napaka"
 
 #: share/html/Ticket/ShowEmailRecord.html:106
 msgid "Error loading attachment"
-msgstr ""
+msgstr "Napak pri nalaganju priponke"
 
 #. ($error)
 #: share/html/Search/Chart:466
 msgid "Error plotting chart: %1"
-msgstr ""
+msgstr "Napaka pri izrisu grafikona: %1"
 
 #: etc/initialdata:647 etc/upgrade/3.7.10/content:16
 msgid "Error to RT owner: public key"
@@ -3156,7 +3156,7 @@ msgstr "Napaka: neveljavni GnuPG podatki"
 
 #: etc/initialdata:672
 msgid "Error: bad encrypted data"
-msgstr ""
+msgstr "Napaka: slabo šifrirani podatki"
 
 #: share/html/Articles/Article/Search.html:215
 msgid "Error: cannot change privacy value of existing search"
@@ -3182,7 +3182,7 @@ msgstr "Napaka: iskanje %1 ni posodobljeno: %2"
 
 #: etc/initialdata:629 etc/upgrade/4.1.22/content:77
 msgid "Error: unencrypted message"
-msgstr ""
+msgstr "Napaka: sporočilo ni šifrirano"
 
 #: bin/rt-crontool:368
 msgid "Escalate tickets"
@@ -3212,13 +3212,13 @@ msgstr "Razširjen status"
 msgid "Extension"
 msgstr ""
 
-#: lib/RT/User.pm:1041
+#: lib/RT/User.pm:1060
 msgid "External authentication enabled."
 msgstr "Eksterna avtentikacija omogočena"
 
 #: share/html/Elements/RT__User/ColumnMap:141
 msgid "Extra Info"
-msgstr ""
+msgstr "Dodatne informacije"
 
 #: share/html/Admin/Users/Modify.html:101
 msgid "Extra info"
@@ -3256,11 +3256,11 @@ msgstr "Povezava z bazo ni uspela: %1"
 msgid "Failed to create %1 attribute"
 msgstr "Ustvarjanje atributa %1 ni uspelo"
 
-#: lib/RT/User.pm:339
+#: lib/RT/User.pm:340
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "Iskanje 'Privileged' psevdo skupine ni uspelo."
 
-#: lib/RT/User.pm:346
+#: lib/RT/User.pm:347
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Iskanje 'Unprivileged' psevdo skupine ni uspelo."
 
@@ -3321,7 +3321,7 @@ msgstr ""
 #. ($self->Data)
 #: lib/RT/Transaction.pm:937
 msgid "File '%1' insert failed. See error log for details."
-msgstr ""
+msgstr "Nalaganje datoteke '%1' je spodletelo. Za podrobnosti poglej error loge."
 
 #. ($self->Data, $self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:916
@@ -3366,11 +3366,11 @@ msgstr "V to polje vnesi URL"
 
 #: lib/RT/CustomField.pm:108
 msgid "Fill in up to %quant(%1,text area,text areas)"
-msgstr ""
+msgstr "Izpolni največ %1 tekstovnih polj"
 
 #: lib/RT/CustomField.pm:117
 msgid "Fill in up to %quant(%1,wikitext area,wikitext areas)"
-msgstr ""
+msgstr "Izpolni največ %1 wiki-tekstovnih polj"
 
 #: lib/RT/Tickets.pm:1731 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:234 share/html/m/ticket/create:347
 msgid "Final Priority"
@@ -3382,7 +3382,7 @@ msgstr "Končna prioriteta"
 
 #: share/html/Elements/FindUser:48
 msgid "Find a user"
-msgstr ""
+msgstr "Najdi uporabnika"
 
 #: share/html/Admin/Users/index.html:77
 msgid "Find all users whose"
@@ -3402,7 +3402,7 @@ msgstr "Najdi zahtevke"
 
 #: etc/RT_Config.pm:1275
 msgid "FindUser"
-msgstr ""
+msgstr "Najdi uporabnika"
 
 #: share/html/Admin/Elements/ShowKeyInfo:67
 msgid "Fingerprint"
@@ -3419,7 +3419,7 @@ msgstr "Prvi"
 #. (RT->Config->Get('OwnerEmail'))
 #: share/html/Elements/LoginHelp:49
 msgid "For local help, please contact %1"
-msgstr ""
+msgstr "Za pomoč kontaktirajte %1"
 
 #. ($link_start, $link_end)
 #: share/html/Search/Simple.html:91
@@ -3434,7 +3434,7 @@ msgstr "Brezpogojna sprememba"
 msgid "Format"
 msgstr "Oblika"
 
-#: lib/RT/Config.pm:252
+#: lib/RT/Config.pm:260
 msgid "Formats iCal feed events with date and time"
 msgstr ""
 
@@ -3458,15 +3458,15 @@ msgstr "Posreduj zahtevek"
 msgid "Forward messages outside of RT"
 msgstr "Posreduje sporočilo"
 
-#. ($TicketObj->id)
+#. ($TicketObj->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:123
-msgid "Forward ticket #%1"
-msgstr "Posreduj zahtevek #%1"
+msgid "Forward ticket #%1: %2"
+msgstr ""
 
-#. ($txn->id)
+#. ($txn->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:122
-msgid "Forward transaction #%1"
-msgstr "Posreduj transakcijo #%1"
+msgid "Forward transaction #%1: %2"
+msgstr ""
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
 #: lib/RT/Transaction.pm:951
@@ -3480,17 +3480,17 @@ msgstr "Posredovan zahtevek do %1"
 
 #: etc/initialdata:614
 msgid "Forwarded message"
-msgstr ""
+msgstr "Posredovano sporočilo"
 
 #: etc/initialdata:622
 msgid "Forwarded ticket message"
-msgstr ""
+msgstr "Posredovano sporočilo zahtevka"
 
 #. ($ticketcount)
 #. ($collection->CountAll)
 #: share/html/Search/Results.html:150 share/html/m/_elements/ticket_list:83
 msgid "Found %quant(%1,ticket,tickets)"
-msgstr ""
+msgstr "Najdenih %quant(%1,ticket,zahtevkov)"
 
 #: lib/RT/Record.pm:1043
 msgid "Found Object"
@@ -3516,11 +3516,11 @@ msgstr "Od"
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
 msgstr "GD je onemogočen ali ni nameščen. Lahko dodate sliko, vendar ne boste dobili predlogov za barve."
 
-#: lib/RT/User.pm:104
+#: lib/RT/User.pm:105
 msgid "Gecos"
 msgstr ""
 
-#: lib/RT/Config.pm:201 lib/RT/Config.pm:321
+#: lib/RT/Config.pm:209 lib/RT/Config.pm:329
 msgid "General"
 msgstr "Generalno"
 
@@ -3559,7 +3559,7 @@ msgstr "Globalna konfiguracija prilagojenih polj"
 
 #: share/html/Admin/Global/DashboardsInMenu.html:104
 msgid "Global dashboards in menu saved."
-msgstr ""
+msgstr "Skupni shranjeni pregledi v meniju."
 
 #. ($args{'Template'})
 #: lib/RT/Scrip.pm:163
@@ -3574,11 +3574,11 @@ msgstr "Globalni portlet %1 je bil shranjen"
 #. ($args{'Template'})
 #: lib/RT/Scrip.pm:161
 msgid "Global template '%1' not found"
-msgstr ""
+msgstr "Splošna predloga '%1' ni najdena"
 
 #: share/html/Admin/Users/Keys.html:63
 msgid "GnuPG private key"
-msgstr ""
+msgstr "GnuPG privatni ključ"
 
 #: share/html/m/_elements/menu:67
 msgid "Go"
@@ -3631,7 +3631,7 @@ msgstr "Skupina že vsebuja člana: %1"
 
 #: share/html/Search/Chart.html:136
 msgid "Group by"
-msgstr ""
+msgstr "Združi po"
 
 #. ($create_msg)
 #: share/html/Admin/Groups/Modify.html:111
@@ -3665,16 +3665,16 @@ msgstr "Skupina ni bila najdena"
 
 #: share/html/Search/Chart.html:137
 msgid "Group tickets by"
-msgstr ""
+msgstr "Združi zahtevke po"
 
 #. ($_->Name)
 #: share/html/Elements/ShowPrincipal:64
 msgid "Group: %1"
-msgstr ""
+msgstr "Skupina: %1"
 
 #: share/html/Search/Chart.html:58
 msgid "Grouped search results"
-msgstr ""
+msgstr "Združeni rezultati iskanja"
 
 #: lib/RT/CustomField.pm:1890 lib/RT/CustomField.pm:206 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:143 share/html/Elements/Tabs:257 share/html/Elements/Tabs:75
 msgid "Groups"
@@ -3690,11 +3690,11 @@ msgstr "Skupine ki ustrezajo iskalnim kriterijem"
 
 #: share/html/Admin/Elements/MembershipsPage:55
 msgid "Groups the principal is member of (check box to delete)"
-msgstr ""
+msgstr "Skupine katerih uporabnik je član (potrdi polje za izbris)"
 
 #: share/html/Admin/Elements/MembershipsPage:69
 msgid "Groups the principal is not member of (check box to add)"
-msgstr ""
+msgstr "Skupine katerih uporabnik ni član (potrdi polje za dodajanje)"
 
 #: share/html/Ticket/Elements/ShowRequestor:120
 msgid "Groups this user belongs to"
@@ -3702,31 +3702,31 @@ msgstr "Skupine katerim pripada uporabnik"
 
 #: etc/initialdata:262 etc/upgrade/4.1.9/content:9
 msgid "HTML Autoresponse template"
-msgstr ""
+msgstr "HTML predloga za samodejne odgovore"
 
 #: etc/initialdata:454 etc/upgrade/4.1.9/content:103
 msgid "HTML Ticket Resolved"
-msgstr ""
+msgstr "HTML zaključen zahtevek"
 
 #: etc/initialdata:431 etc/upgrade/4.1.9/content:91
 msgid "HTML Ticket status changed"
-msgstr ""
+msgstr "HTML sprememba statusa zahtevka"
 
 #: etc/initialdata:395 etc/upgrade/4.1.9/content:78
 msgid "HTML admin comment template"
-msgstr ""
+msgstr "HTML admin predloga komentarjev"
 
 #: etc/initialdata:352 etc/upgrade/4.1.9/content:57
 msgid "HTML admin correspondence template"
-msgstr ""
+msgstr "HTML admin predloga korespodence"
 
 #: etc/initialdata:372 etc/upgrade/4.1.9/content:69
 msgid "HTML correspondence template"
-msgstr ""
+msgstr "HTML predloga korespodence"
 
 #: etc/initialdata:307 etc/upgrade/4.1.9/content:35
 msgid "HTML transaction template"
-msgstr ""
+msgstr "HTML predloga transakcije"
 
 #: lib/RT/Tickets.pm:127
 msgid "HasMember"
@@ -3742,7 +3742,7 @@ msgstr "Glava posredovanega sporočila"
 
 #: share/html/Search/Chart.html:184
 msgid "Height"
-msgstr ""
+msgstr "Višina"
 
 #: lib/RT/Interface/CLI.pm:75 lib/RT/Interface/CLI.pm:75
 msgid "Hello!"
@@ -3789,7 +3789,7 @@ msgstr "Zgodovina uporabnika %1"
 msgid "Home Phone"
 msgstr "Domači telefon"
 
-#: lib/RT/Config.pm:356
+#: lib/RT/Config.pm:370
 msgid "Home page refresh interval"
 msgstr "Interval osveževanja domače strani"
 
@@ -3812,7 +3812,7 @@ msgstr "Ure"
 #. (6)
 #: lib/RT/Base.pm:125
 msgid "I have %quant(%1,concrete mixer,concrete mixers)."
-msgstr ""
+msgstr "Imam %quant(%1,concrete mixer)."
 
 #: share/html/User/Prefs.html:176
 msgid "I want to reset my secret token."
@@ -3879,15 +3879,15 @@ msgstr "Neveljavna vrednost za %1"
 
 #: share/html/Elements/ShowTransactionAttachments:272
 msgid "Image displayed inline above"
-msgstr ""
+msgstr "Slika prikazana v tekstu"
 
 #: share/html/Elements/ShowTransactionAttachments:268
 msgid "Image not shown because display is disabled in system configuration."
-msgstr ""
+msgstr "Slika ni prikazana, ker je zaslon onemogočen v konfiguraciji sistema."
 
 #: share/html/Elements/ShowTransactionAttachments:276
 msgid "Image not shown because sender requested not to inline it."
-msgstr ""
+msgstr "Slika ni prikazana, ker je tako zahteval pošiljatelj."
 
 #: lib/RT/Record.pm:1038
 msgid "Immutable field"
@@ -3903,24 +3903,24 @@ msgstr "Dodaj članek:"
 
 #: share/html/Search/Chart.html:190
 msgid "Include TicketSQL query"
-msgstr ""
+msgstr "Vključi SQL poizvedbo zahtevkov"
 
 #: share/html/Admin/Articles/Classes/Modify.html:89
 msgid "Include article name"
-msgstr ""
+msgstr "Dodaj ime članka"
 
 #: share/html/Admin/Articles/Classes/Modify.html:93
 msgid "Include article summary"
-msgstr ""
+msgstr "Dodaj povzetek članka"
 
 #. ($cf->Name)
 #: share/html/Admin/Articles/Classes/Modify.html:97
 msgid "Include custom field '%1'"
-msgstr ""
+msgstr "Dodaj prilagojeno polje '%1'"
 
 #: share/html/Search/Chart.html:187
 msgid "Include data table"
-msgstr ""
+msgstr "Vključi podatkovno tabelo"
 
 #: share/html/Admin/Articles/Classes/index.html:70
 msgid "Include disabled classes in listing."
@@ -3954,16 +3954,16 @@ msgstr "Vključi stran"
 msgid "Include subtopics"
 msgstr "Vključi podteme"
 
-#: lib/RT/Config.pm:251
+#: lib/RT/Config.pm:259
 msgid "Include time in iCal feed events?"
-msgstr ""
+msgstr "Vključi čas v iCal dogodke?"
 
 #. ($row->{filename})
 #: share/html/Admin/Elements/UpgradeHistoryRow:64
 msgid "Index updates from %1"
-msgstr ""
+msgstr "Indeksiraj posodobitve od %1"
 
-#: lib/RT/Config.pm:562
+#: lib/RT/Config.pm:582
 msgid "Individual messages"
 msgstr "Individualna sporočila"
 
@@ -3981,7 +3981,7 @@ msgstr "Obvesti uporabnika, da ima poslano sporočilo neveljavne GnuPG podatke"
 
 #: etc/initialdata:674
 msgid "Inform user that a message he sent has invalid encryption data"
-msgstr ""
+msgstr "Obvestiti uporabnika, da ima poslano sporočilo neveljavno šifriranje podatkov."
 
 #: etc/initialdata:640 etc/upgrade/3.7.10/content:9
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
@@ -3993,7 +3993,7 @@ msgstr "Obvesti uporabnika da je bilo geslo ponastavljeno"
 
 #: etc/initialdata:631 etc/upgrade/4.1.22/content:79
 msgid "Inform user that their unencrypted mail has been rejected"
-msgstr ""
+msgstr "Obvesti uporabnika o zavrnjeni e-pošti"
 
 #: etc/initialdata:662 etc/upgrade/3.7.10/content:31
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
@@ -4025,7 +4025,7 @@ msgstr "Vnos se mora ujemati z %1"
 #. ($row->{filename})
 #: share/html/Admin/Elements/UpgradeHistoryRow:58
 msgid "Insert from %1"
-msgstr ""
+msgstr "Vstavi iz %1"
 
 #: lib/RT/Article.pm:282 lib/RT/Article.pm:291 lib/RT/Article.pm:300 lib/RT/Article.pm:309 lib/RT/Article.pm:318
 msgid "Internal Error"
@@ -4072,7 +4072,7 @@ msgstr ""
 
 #: lib/RT/Group.pm:623
 msgid "Invalid Group Name and Domain"
-msgstr ""
+msgstr "Neveljavno ime skupine in domena"
 
 #. ($msg)
 #: lib/RT/Class.pm:311
@@ -4118,7 +4118,7 @@ msgstr "Neveljavna vrsta"
 
 #: lib/RT/Scrip.pm:361
 msgid "Invalid queue id"
-msgstr ""
+msgstr "Neveljaven id vrste"
 
 #: lib/RT/ACE.pm:258
 msgid "Invalid right"
@@ -4129,7 +4129,7 @@ msgstr "Neveljvana pravica"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Neveljavna pravica. Ne morem posplošiti pravice '%1'"
 
-#: lib/RT/User.pm:590
+#: lib/RT/User.pm:591
 msgid "Invalid syntax for email address"
 msgstr "Neveljavna sintaksa za e-poštni naslov."
 
@@ -4145,7 +4145,7 @@ msgstr "Neveljavna vrednost za prilagojeno polje"
 
 #: lib/RT/Record/AddAndSort.pm:195
 msgid "Is already added to the object"
-msgstr ""
+msgstr "Je že dodano temu objektu"
 
 #: lib/RT/Attachment.pm:857
 msgid "Is not encrypted"
@@ -4196,7 +4196,7 @@ msgstr "Pusti 'localhost' če nisi prepričan. Pusti prazno, če se želiš pove
 msgid "Keyword and intuition-based searching"
 msgstr ""
 
-#: lib/RT/User.pm:97
+#: lib/RT/User.pm:98
 msgid "Lang"
 msgstr "Jezik"
 
@@ -4220,11 +4220,11 @@ msgstr "Zadnji kontakt"
 msgid "Last Contacted"
 msgstr "Nazadnje kontaktirano"
 
-#: share/html/Elements/ColumnMap:84 share/html/Elements/ColumnMap:89 share/html/Elements/SelectDateType:53
+#: share/html/Elements/ColumnMap:83 share/html/Elements/ColumnMap:88 share/html/Elements/SelectDateType:53
 msgid "Last Updated"
 msgstr "Nazadnje posodobljeno"
 
-#: share/html/Elements/ColumnMap:94
+#: share/html/Elements/ColumnMap:93
 msgid "Last Updated By"
 msgstr "Nazadnje posodobil"
 
@@ -4269,7 +4269,7 @@ msgstr "Levo"
 msgid "Legends"
 msgstr "Legende"
 
-#: lib/RT/Config.pm:398
+#: lib/RT/Config.pm:418
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Dolžina v znakih; Uporabi '0' za prikaz vseh sporočič 'in-line', ne glede na njihovo dolžino"
 
@@ -4305,16 +4305,16 @@ msgstr ""
 #. ($msg)
 #: lib/RT/Record.pm:1588
 msgid "Link could not be deleted: %1"
-msgstr ""
+msgstr "Izbris povezave ni možen: %1"
 
 #: lib/RT/Record.pm:1575
 msgid "Link not found"
 msgstr "Povezave ni bilo možno najti"
 
-#. ($Ticket->Id)
+#. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/ModifyLinks.html:48
-msgid "Link ticket #%1"
-msgstr "Poveži zahtevek #%1"
+msgid "Link ticket #%1: %2"
+msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:108
 msgid "Link values to"
@@ -4343,7 +4343,7 @@ msgstr "Povezave"
 
 #: share/html/Search/Elements/SelectLinks:65
 msgid "Links to"
-msgstr ""
+msgstr "Se navezuje na"
 
 #: lib/RT/CustomField.pm:84 lib/RT/CustomField.pm:88
 msgid "List"
@@ -4376,7 +4376,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:200
 msgid "Loaded config files"
-msgstr ""
+msgstr "Config datoteke so naložene"
 
 #. ($SavedSearch->{'Description'})
 #: share/html/Search/Elements/EditSearches:169
@@ -4396,7 +4396,7 @@ msgstr "Naloženo shranjeno iskanje \"%1\""
 msgid "Loading..."
 msgstr "Nalagam..."
 
-#: lib/RT/Config.pm:508 share/html/SelfService/Prefs.html:56
+#: lib/RT/Config.pm:528 share/html/SelfService/Prefs.html:56
 msgid "Locale"
 msgstr "Regija"
 
@@ -4443,7 +4443,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:212
 msgid "Logging summary"
-msgstr ""
+msgstr "Povzetek prijav"
 
 #: share/html/Elements/Login:49 share/html/Elements/Login:62 share/html/Elements/Login:91 share/html/m/_elements/login:61 share/html/m/_elements/login:76
 msgid "Login"
@@ -4467,7 +4467,7 @@ msgstr "Poišči neskladje med tipi"
 msgid "M-F at %1"
 msgstr ""
 
-#: lib/RT/Config.pm:555 lib/RT/Config.pm:570
+#: lib/RT/Config.pm:575 lib/RT/Config.pm:590
 msgid "Mail"
 msgstr "E-pošta"
 
@@ -4533,7 +4533,7 @@ msgstr "Urejanje shranjenih grafov"
 
 #: share/html/Elements/Tabs:103
 msgid "Manage scrips"
-msgstr ""
+msgstr "Uredi skripte"
 
 #: share/html/Elements/Tabs:68
 msgid "Manage users and passwords"
@@ -4542,13 +4542,13 @@ msgstr "Urejanje uporabnikov in gesel"
 #. ($old_lifecycle->Name, $new_lifecycle->Name)
 #: lib/RT/Record/Role/Status.pm:281
 msgid "Mapping between lifecycle %1 and %2 is incomplete. Contact your system administrator."
-msgstr ""
+msgstr "Povezovanje med %1 in %2 ni popolno. Kontaktiraj administratorja."
 
 #: lib/RT/Date.pm:93
 msgid "Mar"
 msgstr ""
 
-#: share/html/SelfService/Display.html:153 share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
+#: share/html/SelfService/Display.html:153 share/html/Ticket/Display.html:190 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
 msgstr "Označi vsa sporočila kot videna"
 
@@ -4584,21 +4584,21 @@ msgstr ""
 msgid "Maximum Starts-Started"
 msgstr ""
 
-#: lib/RT/Config.pm:396
+#: lib/RT/Config.pm:416
 msgid "Maximum inline message length"
 msgstr "Največja dolžina vključenega sporočila"
 
 #: lib/RT/Report/Tickets.pm:214
 msgid "Maximum time estimated"
-msgstr ""
+msgstr "Predviden maksimalni čas"
 
 #: lib/RT/Report/Tickets.pm:219
 msgid "Maximum time left"
-msgstr ""
+msgstr "Preostanek maksimalnega časa"
 
 #: lib/RT/Report/Tickets.pm:209
 msgid "Maximum time worked"
-msgstr ""
+msgstr "Maksimalni čas dela"
 
 #: lib/RT/Date.pm:95
 msgid "May"
@@ -4660,7 +4660,7 @@ msgstr "Članstva"
 #. ($object->Name)
 #: share/html/Admin/Elements/MembershipsPage:138
 msgid "Memberships of the group %1"
-msgstr ""
+msgstr "Članstva v skupini %1"
 
 #. ($id)
 #: share/html/Admin/Elements/MembershipsPage:140
@@ -4674,21 +4674,21 @@ msgstr "Članstva uporabnika %1"
 
 #: share/html/Search/Bulk.html:183 share/html/Ticket/ModifyAll.html:88 share/html/Ticket/ModifyLinks.html:63
 msgid "Merge"
-msgstr ""
+msgstr "Spoji"
 
-#: lib/RT/Ticket.pm:1952
+#: lib/RT/Ticket.pm:1969
 msgid "Merge Successful"
 msgstr "Spajanje uspešno"
 
-#: lib/RT/Ticket.pm:1832
+#: lib/RT/Ticket.pm:1849
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Spajanje ni uspelo. EffectiveId ni bilo možno nastaviti"
 
-#: lib/RT/Ticket.pm:1838
+#: lib/RT/Ticket.pm:1855
 msgid "Merge failed. Couldn't set IsMerged"
-msgstr ""
+msgstr "Spajanje ni uspelo. Ni bilo možno nastaviti IsMerged"
 
-#: lib/RT/Ticket.pm:1851
+#: lib/RT/Ticket.pm:1868
 msgid "Merge failed. Couldn't set Status"
 msgstr "Spajanje ni uspelo. Statusa ni bilo možno nastaviti"
 
@@ -4717,15 +4717,15 @@ msgstr "Telo sporočila ni prikazano ker je pošiljatelj tako zahteval."
 msgid "Message body not shown because it is not plain text."
 msgstr "Telo sporočila ni prikazano ker ni navaden tekst."
 
-#: lib/RT/Config.pm:297
+#: lib/RT/Config.pm:305
 msgid "Message box height"
 msgstr "Višina okvirja za sporočilo"
 
-#: lib/RT/Config.pm:288
+#: lib/RT/Config.pm:296
 msgid "Message box width"
 msgstr "Širina okvirja za besedilo"
 
-#: lib/RT/Ticket.pm:1635
+#: lib/RT/Ticket.pm:1652
 msgid "Message could not be recorded"
 msgstr "Sporočila ni bilo možno zabeležiti"
 
@@ -4733,7 +4733,7 @@ msgstr "Sporočila ni bilo možno zabeležiti"
 msgid "Message for user"
 msgstr "Sporočilo za uporabnika"
 
-#: lib/RT/Ticket.pm:3118
+#: lib/RT/Ticket.pm:3135
 msgid "Message recorded"
 msgstr "Sporočilo zabeleženo"
 
@@ -4767,11 +4767,11 @@ msgstr "Minimalna dolžina gesla"
 
 #: lib/RT/Report/Tickets.pm:213
 msgid "Minimum time estimated"
-msgstr ""
+msgstr "Predviden minimalni čas"
 
 #: lib/RT/Report/Tickets.pm:218
 msgid "Minimum time left"
-msgstr ""
+msgstr "Preostanek časa"
 
 #: lib/RT/Report/Tickets.pm:208
 msgid "Minimum time worked"
@@ -4846,10 +4846,15 @@ msgstr ""
 msgid "Modify custom field values"
 msgstr "Spremeni vrednost prilagojenega polja"
 
-#. ($TicketObj->Id)
-#: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:57
-msgid "Modify dates for ticket #%1"
+#. ($TicketObj->Id, $TicketObj->Subject)
+#: share/html/Ticket/ModifyDates.html:48
+msgid "Modify dates for #%1: %2"
 msgstr ""
+
+#. ($TicketObj->Id)
+#: share/html/Ticket/ModifyDates.html:57
+msgid "Modify dates for ticket #%1"
+msgstr "Spremeni datume za zahtevek #%1"
 
 #: share/html/Elements/Tabs:217
 msgid "Modify global article topics"
@@ -4916,10 +4921,14 @@ msgid "Modify or delete articles in this class"
 msgstr ""
 
 #. ($Ticket->Id)
-#. ($Ticket->id)
-#: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:58
+#: share/html/Ticket/ModifyPeople.html:58
 msgid "Modify people related to ticket #%1"
 msgstr "Spremeni osebe povezane z zahtevkom #%1"
+
+#. ($Ticket->id, $Ticket->Subject)
+#: share/html/Ticket/ModifyPeople.html:48
+msgid "Modify people related to ticket #%1: %2"
+msgstr ""
 
 #: lib/RT/Dashboard.pm:87
 msgid "Modify personal dashboards"
@@ -4932,7 +4941,7 @@ msgstr "Spremeni opazovalce na vrstah"
 #. ($id)
 #: share/html/Admin/Scrips/Modify.html:48
 msgid "Modify scrip #%1"
-msgstr ""
+msgstr "Prilagodi skripto #%1"
 
 #. ($QueueObj->Name)
 #: share/html/Admin/Queues/Scrips.html:56
@@ -5005,13 +5014,18 @@ msgid "Modify ticket # %1"
 msgstr "Spremeni zahtevek # %1"
 
 #. ($TicketObj->Id)
-#: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:58
+#: share/html/Ticket/Modify.html:58
 msgid "Modify ticket #%1"
 msgstr "Spremeni zahtevek # %1"
 
+#. ($TicketObj->Id, $TicketObj->Subject)
+#: share/html/Ticket/Modify.html:48
+msgid "Modify ticket #%1: %2"
+msgstr ""
+
 #: lib/RT/Queue.pm:130
 msgid "Modify ticket owner on owned tickets"
-msgstr ""
+msgstr "Spremeni lastnika na zahtevku, ki že ima lastnika"
 
 #: lib/RT/Queue.pm:126
 msgid "Modify tickets"
@@ -5073,7 +5087,7 @@ msgstr "Od ponedeljka do petka"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Month"
-msgstr ""
+msgstr "Mesec"
 
 #: lib/RT/Dashboard/Mailer.pm:329 lib/RT/Report/Tickets.pm:131
 msgid "Monthly"
@@ -5085,13 +5099,13 @@ msgstr "Več o pobudniku"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:140
 msgid "Move"
-msgstr ""
+msgstr "Premakni"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Move here"
 msgstr "Premakni sem"
 
-#: lib/RT/User.pm:170
+#: lib/RT/User.pm:171
 msgid "Must specify 'Name' attribute"
 msgstr "Atribut 'Ime' je potrebno določiti"
 
@@ -5122,7 +5136,7 @@ msgstr "Moje odobritve"
 
 #: share/html/SelfService/Closed.html:53
 msgid "My closed tickets"
-msgstr ""
+msgstr "Moji zaključeni zahtevki"
 
 #: share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:53
 msgid "My dashboards"
@@ -5130,7 +5144,7 @@ msgstr "Moji pregledi"
 
 #: share/html/SelfService/index.html:52
 msgid "My open tickets"
-msgstr ""
+msgstr "Moji odprti zahtevki"
 
 #: share/html/Elements/MyReminders:50 share/html/Tools/MyReminders.html:48
 msgid "My reminders"
@@ -5164,21 +5178,21 @@ msgstr ""
 msgid "NEWLINE"
 msgstr "Nova vrstica"
 
-#: lib/RT/User.pm:91 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:94 share/html/Elements/RT__User/ColumnMap:56
+#: lib/RT/User.pm:92 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:94 share/html/Elements/RT__User/ColumnMap:56
 msgid "Name"
 msgstr "Ime"
 
-#: lib/RT/Config.pm:186
+#: lib/RT/Config.pm:194
 msgid "Name and email address"
 msgstr "Ime in e-poštni naslov"
 
-#: lib/RT/Article.pm:116 lib/RT/User.pm:285
+#: lib/RT/Article.pm:116 lib/RT/User.pm:286
 msgid "Name in use"
 msgstr "Ime v uporabi"
 
 #: lib/RT/Template.pm:281 lib/RT/Template.pm:719
 msgid "Name is required"
-msgstr ""
+msgstr "Zahtevano je ime"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
@@ -5210,7 +5224,7 @@ msgstr "Nove odobritve na čakanju"
 
 #: etc/initialdata:481 etc/upgrade/4.1.9/content:111
 msgid "New Pending Approval in HTML"
-msgstr ""
+msgstr "Nova čakajoča odobritev v HTML"
 
 #: share/html/Elements/Tabs:523
 msgid "New Search"
@@ -5218,7 +5232,7 @@ msgstr "Novo iskanje"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:80
 msgid "New Value"
-msgstr ""
+msgstr "Nova vrednost"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:256 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
@@ -5228,7 +5242,7 @@ msgstr "Nova sporočila"
 msgid "New password"
 msgstr "Novo geslo"
 
-#: lib/RT/User.pm:791
+#: lib/RT/User.pm:792
 msgid "New password notification sent"
 msgstr "Obvestilo o novem geslu je bilo poslano"
 
@@ -5240,7 +5254,7 @@ msgstr "Nov opomnik:"
 msgid "New ticket"
 msgstr "Nov zahtevek"
 
-#: lib/RT/Ticket.pm:1787
+#: lib/RT/Ticket.pm:1804
 msgid "New ticket doesn't exist"
 msgstr "Nov zahtevek ne obstaja"
 
@@ -5257,7 +5271,7 @@ msgstr "Novi opazovalci"
 msgid "Next"
 msgstr "Naprej"
 
-#: lib/RT/User.pm:96
+#: lib/RT/User.pm:97
 msgid "NickName"
 msgstr "Vzdevek"
 
@@ -5306,7 +5320,7 @@ msgstr "Skupina ni definirana"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:104
 msgid "No Name"
-msgstr ""
+msgstr "Brez imena"
 
 #: lib/RT/Tickets.pm:3050
 msgid "No Query"
@@ -5370,7 +5384,7 @@ msgstr "Primernega ključa za kodiranje ni"
 msgid "No longer authorized"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1570
+#: lib/RT/Ticket.pm:1587
 msgid "No message attached"
 msgstr "Sporočilo ni pripeto"
 
@@ -5382,7 +5396,7 @@ msgstr "Ime ni določeno"
 msgid "No need to encrypt"
 msgstr "Ni potrebe po kodiranju"
 
-#: lib/RT/User.pm:860
+#: lib/RT/User.pm:861
 msgid "No password set"
 msgstr "Gelso ni nastavljeno"
 
@@ -5407,7 +5421,7 @@ msgstr ""
 msgid "No permission to save system-wide searches"
 msgstr "Ni pravic za shranjevanje sistemskih shranjenih iskanj"
 
-#: lib/RT/User.pm:1423 lib/RT/User.pm:1447
+#: lib/RT/User.pm:1443 lib/RT/User.pm:1467
 msgid "No permission to set preferences"
 msgstr "Ni pravic za nastavitev preferenc"
 
@@ -5442,7 +5456,7 @@ msgstr "Pravice niso bile najdene"
 #. ($principal->Object->Name)
 #: lib/RT/Ticket.pm:535
 msgid "No rights to add '%1' as an AdminCc on this ticket"
-msgstr ""
+msgstr "Nimate pravic dodati '%1' kot AdminCc na ta zahtevek"
 
 #: share/html/Search/Bulk.html:234
 msgid "No search to operate on."
@@ -5452,7 +5466,7 @@ msgstr "Ni iskanja na katerem bi delovali."
 msgid "No subject"
 msgstr "Brez zadeve"
 
-#: lib/RT/User.pm:1837
+#: lib/RT/User.pm:1857
 msgid "No such key or it's not suitable for signing"
 msgstr "Ni ključa ali pa ni primeren za podpisovanje"
 
@@ -5503,7 +5517,7 @@ msgstr "Neobstoječe polje?"
 
 #: lib/RT/Scrip.pm:471
 msgid "Normal"
-msgstr ""
+msgstr "Običajno"
 
 #: share/html/Admin/Elements/EditScrips:75
 msgid "Not applied scrips"
@@ -5529,7 +5543,7 @@ msgstr "Ne uporabljate mobilnega brskalnika?"
 msgid "Notes"
 msgstr "Opombe"
 
-#: lib/RT/User.pm:793
+#: lib/RT/User.pm:794
 msgid "Notification could not be sent"
 msgstr "Obvestila ni bilo možno poslati"
 
@@ -5563,7 +5577,7 @@ msgstr "Obvesti lastnika"
 
 #: etc/initialdata:61 etc/upgrade/4.1.15/content:5
 msgid "Notify Owner and AdminCcs"
-msgstr ""
+msgstr "Obvesti lastnika in AdminCcs"
 
 #: etc/initialdata:37
 msgid "Notify Owner as Comment"
@@ -5583,7 +5597,7 @@ msgstr "Obvesti lastnika, da je zahtevek bil potrjen"
 
 #: etc/initialdata:65 etc/upgrade/4.2.6/content:5
 msgid "Notify Owner or AdminCcs"
-msgstr ""
+msgstr "Obvesti lastnika ali AdminCc"
 
 #: etc/initialdata:83
 msgid "Notify Owner, Requestors, Ccs and AdminCcs"
@@ -5617,7 +5631,7 @@ msgstr "Obvesti pobudnike in osebe na Cc"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Obvesti pobudnike in osebe na Cc s komentarjem"
 
-#: lib/RT/Config.pm:431
+#: lib/RT/Config.pm:451
 msgid "Notify me of unread messages"
 msgstr "Obvesti me o neprebranih sporočilih"
 
@@ -5635,11 +5649,11 @@ msgstr "Objekt"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:60
 msgid "Object Id"
-msgstr ""
+msgstr "ID objekta"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:55
 msgid "Object Type"
-msgstr ""
+msgstr "Vrsta objekta"
 
 #: lib/RT/Record.pm:358
 msgid "Object could not be created"
@@ -5675,7 +5689,7 @@ msgstr "Okt"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:75
 msgid "Old Value"
-msgstr ""
+msgstr "Stara vrednost"
 
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
 #: lib/RT/Transaction.pm:423
@@ -5754,7 +5768,7 @@ msgstr "Enkratni Bcc"
 msgid "One-time Cc"
 msgstr "Enkratni Cc"
 
-#: lib/RT/Config.pm:307
+#: lib/RT/Config.pm:315
 msgid "Only for entry, not display"
 msgstr ""
 
@@ -5774,7 +5788,7 @@ msgstr "Prikaži le prilagojena polja za:"
 
 #: etc/initialdata:105 etc/upgrade/4.2.4/content:5
 msgid "Open Inactive Tickets"
-msgstr ""
+msgstr "Odpri neaktivne zahtevke"
 
 #: etc/RT_Config.pm:2875 etc/RT_Config.pm:2882 etc/RT_Config.pm:2919 etc/RT_Config.pm:2926
 msgid "Open It"
@@ -5790,7 +5804,7 @@ msgstr "Odpri URL"
 
 #: etc/initialdata:106 etc/upgrade/4.2.4/content:6
 msgid "Open inactive tickets"
-msgstr ""
+msgstr "Odpri neaktivne zahtevke"
 
 #: share/html/Elements/Tabs:966 share/html/SelfService/index.html:48
 msgid "Open tickets"
@@ -5802,7 +5816,7 @@ msgstr "Odprti zahtevki ob dopisovanju"
 
 #: share/html/Admin/Tools/Configuration.html:323
 msgid "Operating System"
-msgstr ""
+msgstr "Operacijski sistem"
 
 #: share/html/Admin/Tools/Configuration.html:61
 msgid "Option"
@@ -5818,13 +5832,13 @@ msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:149
 msgid "Oracle users cannot have empty passwords"
-msgstr ""
+msgstr "Oracle uporabniki ne morejo imeti praznih gesel"
 
 #: share/html/Search/Elements/EditSort:55
 msgid "Order by"
 msgstr "Naročilo"
 
-#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/User/Prefs.html:132
+#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/User/Prefs.html:132
 msgid "Organization"
 msgstr "Organizacija"
 
@@ -5841,7 +5855,7 @@ msgstr "Izhodna e-pošta o komentarju zabeležena"
 msgid "Outgoing email recorded"
 msgstr "Izhodna e-pošta zabeležena"
 
-#: lib/RT/Config.pm:575
+#: lib/RT/Config.pm:595
 msgid "Outgoing mail"
 msgstr "Izhodna e-pošta"
 
@@ -5867,7 +5881,7 @@ msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "Lastnik '%1' nima pravic, da bi postal lastnik tega zahtevka."
 
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
-#: lib/RT/Ticket.pm:2068
+#: lib/RT/Ticket.pm:2085
 msgid "Owner changed from %1 to %2"
 msgstr "Lastnik je bil spremenjen iz %1 na %2"
 
@@ -5878,13 +5892,13 @@ msgstr "Lastnik je bil na silo zamenjan iz %1 na %2"
 
 #: lib/RT/Tickets.pm:160
 msgid "OwnerGroup"
-msgstr ""
+msgstr "Lastnik skupine"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "OwnerName"
 msgstr "Ime lastnika"
 
-#: lib/RT/User.pm:105
+#: lib/RT/User.pm:106
 msgid "PGPKey"
 msgstr ""
 
@@ -5910,7 +5924,7 @@ msgstr "Številka pozivnika"
 
 #: share/html/Search/Elements/SelectLinks:60
 msgid "Parent"
-msgstr ""
+msgstr "Nadrejen"
 
 #: share/html/Elements/AddLinks:82 share/html/Elements/BulkLinks:135 share/html/Elements/BulkLinks:74 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:72 share/html/Search/Elements/BuildFormatString:100 share/html/m/ticket/create:395 share/html/m/ticket/show:429
 msgid "Parents"
@@ -5920,24 +5934,24 @@ msgstr "Nadrejen"
 msgid "Password"
 msgstr "Geslo"
 
-#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:871
+#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:872
 msgid "Password changed"
 msgstr "Geslo je bilo spremenjeno"
 
-#: lib/RT/User.pm:837
+#: lib/RT/User.pm:838
 msgid "Password has not been set."
 msgstr "Geslo ni bilo nastavljeno."
 
 #. (RT->Config->Get('MinimumPasswordLength'))
-#: lib/RT/User.pm:304
+#: lib/RT/User.pm:305
 msgid "Password needs to be at least %quant(%1,character,characters) long"
-msgstr ""
+msgstr "Geslo mora biti dolgo vsaj %1 znakov"
 
 #: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
 msgid "Password not printed"
 msgstr ""
 
-#: lib/RT/User.pm:870
+#: lib/RT/User.pm:871
 msgid "Password set"
 msgstr "Geslo nastavljeno"
 
@@ -5946,7 +5960,7 @@ msgstr "Geslo nastavljeno"
 msgid "Password: %1"
 msgstr "Geslo: %1"
 
-#: lib/RT/User.pm:856
+#: lib/RT/User.pm:857
 msgid "Password: Permission Denied"
 msgstr "Geslo: ni pravic"
 
@@ -5954,7 +5968,7 @@ msgstr "Geslo: ni pravic"
 msgid "PasswordChange"
 msgstr ""
 
-#: lib/RT/User.pm:833
+#: lib/RT/User.pm:834
 msgid "Passwords do not match."
 msgstr "Gesli se ne ujemata"
 
@@ -5965,16 +5979,16 @@ msgstr "Pot do sendmail"
 #. ($approvals)
 #: share/html/Ticket/Elements/ShowDependencyStatus:54
 msgid "Pending %quant(%1,approval,approvals)."
-msgstr ""
+msgstr "Čakam %quant(%1,odobritev,odobritev)."
 
 #. ($depends)
 #: share/html/Ticket/Elements/ShowDependencyStatus:59
 msgid "Pending %quant(%1,ticket,tickets)."
-msgstr ""
+msgstr "Čakam %quant(%1,zahtevek,zahtevkov)."
 
 #: share/html/Ticket/Elements/ShowDependencyStatus:52
 msgid "Pending approval."
-msgstr ""
+msgstr "Čakam odobritev."
 
 #: share/html/Elements/Tabs:657 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:76 share/html/m/ticket/show:282
 msgid "People"
@@ -6005,7 +6019,7 @@ msgstr "Iskalni vrstni red za Perl knjižnjice"
 msgid "Permanently wipeout data from RT"
 msgstr "Trajno izbriši podatke iz RT"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1260 lib/RT/Group.pm:1357 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1079 lib/RT/Ticket.pm:1290 lib/RT/Ticket.pm:1458 lib/RT/Ticket.pm:1508 lib/RT/Ticket.pm:1778 lib/RT/Ticket.pm:1797 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2214 lib/RT/Ticket.pm:2228 lib/RT/Ticket.pm:2233 lib/RT/Ticket.pm:2257 lib/RT/Ticket.pm:2474 lib/RT/Ticket.pm:2703 lib/RT/Ticket.pm:3067 lib/RT/Ticket.pm:740 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1139 lib/RT/User.pm:137 lib/RT/User.pm:1574 lib/RT/User.pm:1822 lib/RT/User.pm:1855 lib/RT/User.pm:326 lib/RT/User.pm:739 lib/RT/User.pm:774 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1260 lib/RT/Group.pm:1357 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1079 lib/RT/Ticket.pm:1307 lib/RT/Ticket.pm:1475 lib/RT/Ticket.pm:1525 lib/RT/Ticket.pm:1795 lib/RT/Ticket.pm:1814 lib/RT/Ticket.pm:2225 lib/RT/Ticket.pm:2231 lib/RT/Ticket.pm:2245 lib/RT/Ticket.pm:2250 lib/RT/Ticket.pm:2274 lib/RT/Ticket.pm:2491 lib/RT/Ticket.pm:2720 lib/RT/Ticket.pm:3084 lib/RT/Ticket.pm:740 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1159 lib/RT/User.pm:138 lib/RT/User.pm:1594 lib/RT/User.pm:1842 lib/RT/User.pm:1875 lib/RT/User.pm:327 lib/RT/User.pm:740 lib/RT/User.pm:775 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Ni pravic"
 
@@ -6019,7 +6033,7 @@ msgstr "Telefonske številke"
 
 #: share/html/Search/Chart.html:176
 msgid "Picture"
-msgstr ""
+msgstr "Pogled grafikona"
 
 #: etc/initialdata:232
 msgid "Plain text Autoresponse template"
@@ -6045,11 +6059,11 @@ msgstr ""
 msgid "Please check the URL and try again."
 msgstr "Preveri URL in poizkusi znova."
 
-#: lib/RT/User.pm:828
+#: lib/RT/User.pm:829
 msgid "Please enter your current password correctly."
 msgstr "Pravilno vnesi trenutno geslo."
 
-#: lib/RT/User.pm:830
+#: lib/RT/User.pm:831
 msgid "Please enter your current password."
 msgstr "Vnesi svoje trenutno geslo."
 
@@ -6082,7 +6096,7 @@ msgstr "Nastavitve %1 za uporabnika %2."
 
 #: share/html/Prefs/Search.html:96
 msgid "Preferences reset."
-msgstr ""
+msgstr "Ponastavi"
 
 #. ($pane)
 #. (loc('summary rows'))
@@ -6103,7 +6117,7 @@ msgstr "Nastavitve za uporabnika %1 so bile shranjene."
 msgid "Preferences saved."
 msgstr "Nastavitve so bile shranjene."
 
-#: lib/RT/User.pm:1451
+#: lib/RT/User.pm:1471
 msgid "Preferences were not found"
 msgstr ""
 
@@ -6164,11 +6178,11 @@ msgstr "Privatni ključ"
 #. ($EmailAddress)
 #: share/html/Admin/Elements/ShowKeyInfo:110
 msgid "Private key(s) for %1"
-msgstr ""
+msgstr "Privatni ključ(i) za %1"
 
 #: share/html/Admin/Queues/Modify.html:145 share/html/Admin/Queues/Modify.html:155 share/html/Elements/Tabs:332
 msgid "Private keys"
-msgstr ""
+msgstr "Privatni ključi"
 
 #: lib/RT/Handle.pm:739 share/html/Admin/Users/Modify.html:119
 msgid "Privileged"
@@ -6183,9 +6197,9 @@ msgstr "Priviligiran status: %1"
 msgid "Privileged users"
 msgstr "Priviligirani uporabniki"
 
-#: lib/RT/Config.pm:184
+#: lib/RT/Config.pm:192
 msgid "Privileged: usernames; Unprivileged: names and email addresses"
-msgstr ""
+msgstr "Priviligirani: uporabniška imena; Nepriviligirani: imena in poštni naslovi"
 
 #: bin/rt-crontool:173
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
@@ -6203,7 +6217,7 @@ msgstr "Javni ključ '0x%1' je potreben za preverjanje podpisa"
 #. ($EmailAddress)
 #: share/html/Admin/Elements/ShowKeyInfo:108
 msgid "Public key(s) for %1"
-msgstr ""
+msgstr "Javni ključ(i) za %1"
 
 #: share/html/Dashboards/Subscription.html:69
 msgid "Queries"
@@ -6224,7 +6238,7 @@ msgstr "Vrsta"
 #. ($Queue||'')
 #: share/html/Ticket/Create.html:383
 msgid "Queue %1 could not be loaded."
-msgstr ""
+msgstr "Vrste %1 ni možno naložiti."
 
 #. ($Queue)
 #. ($id)
@@ -6270,7 +6284,7 @@ msgstr "Administrativni cc vrste"
 
 #: lib/RT/Tickets.pm:156
 msgid "QueueCF"
-msgstr ""
+msgstr "VrstaCF"
 
 #: lib/RT/Tickets.pm:148
 msgid "QueueCc"
@@ -6348,7 +6362,7 @@ msgstr ""
 msgid "RT Size"
 msgstr "Velikost RT"
 
-#: lib/RT/Config.pm:351 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:584 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
+#: lib/RT/Config.pm:365 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:584 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT pregled"
 
@@ -6393,7 +6407,7 @@ msgstr "RT uporabljajo Fortune100 podjetja, majhni obrtniki, vladne agencije, iz
 
 #: share/html/Admin/Tools/Configuration.html:296
 msgid "RT upgrade history"
-msgstr ""
+msgstr "Zgodovina nadgradenj RT"
 
 #: lib/RT/Installer.pm:123
 msgid "RT will connect to the database using this user.  It will be created for you."
@@ -6418,7 +6432,7 @@ msgstr "RT deluje z različnimi bazami.  <b>MySQL</b>, <b>PostgreSQL</b>, <b>Ora
 
 #: share/html/Admin/Elements/LoggingSummary:86
 msgid "RT's logging configuration is summarized below:"
-msgstr ""
+msgstr "Povzetek konfiguracije prijav:"
 
 #. ($address)
 #: share/html/Admin/Queues/Modify.html:236
@@ -6431,13 +6445,13 @@ msgstr "Ponovno odpri"
 
 #: share/html/Elements/EditCustomFieldBinary:54 share/html/Elements/EditCustomFieldImage:54
 msgid "Reached maximum number, so new values will override old ones."
-msgstr ""
+msgstr "Doseženo je maksimalno število. Nove vrednosti bodo prepisale stare."
 
 #: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:61 share/html/User/Prefs.html:69
 msgid "Real Name"
 msgstr "Pravo ime"
 
-#: lib/RT/User.pm:95
+#: lib/RT/User.pm:96
 msgid "RealName"
 msgstr "Pravo ime"
 
@@ -6505,10 +6519,26 @@ msgstr "Se sklicuje na"
 msgid "Refresh"
 msgstr "Osveži"
 
+#: lib/RT/Config.pm:380
+msgid "Refresh home page every %quant(%1,minute,minutes)."
+msgstr ""
+
+#: lib/RT/Config.pm:386
+msgid "Refresh home page every %quant(%1,second,seconds)."
+msgstr ""
+
+#: lib/RT/Config.pm:344
+msgid "Refresh search results every %quant(%1,minute,minutes)."
+msgstr ""
+
+#: lib/RT/Config.pm:350
+msgid "Refresh search results every %quant(%1,second,seconds)."
+msgstr ""
+
 #. ($value/60)
 #: share/html/Elements/Refresh:60
 msgid "Refresh this page every %quant(%1,minute,minutes)."
-msgstr ""
+msgstr "Osveži to stran vsakih %1 minut."
 
 #. ($value)
 #: share/html/Elements/Refresh:62
@@ -6527,7 +6557,7 @@ msgstr ""
 msgid "Reject"
 msgstr "Zavrni"
 
-#: lib/RT/Config.pm:172
+#: lib/RT/Config.pm:180
 msgid "Remember default queue"
 msgstr "Zapomni si privzeto vrsto"
 
@@ -6554,28 +6584,28 @@ msgstr "Opomnik '%1' je bil ponovno odprt"
 #. ($old_subject || $reminder->Subject, $_)
 #: lib/RT/Interface/Web.pm:3028 lib/RT/Interface/Web.pm:3046
 msgid "Reminder '%1': %2"
-msgstr ""
+msgstr "Opomnik '%1': %2"
 
 #: lib/RT/Transaction.pm:1282
 msgid "Reminder added"
-msgstr ""
+msgstr "Opomnik dodan"
 
 #: lib/RT/Transaction.pm:1312
 msgid "Reminder completed"
-msgstr ""
+msgstr "Opomnik dokončan"
 
 #: lib/RT/Transaction.pm:1297
 msgid "Reminder reopened"
-msgstr ""
+msgstr "Opomnik ponovno odprt"
 
 #: share/html/Elements/Tabs:670 share/html/Ticket/Elements/Reminders:79 share/html/Ticket/Elements/ShowSummary:75 share/html/Ticket/Reminders.html:56 share/html/m/ticket/show:332
 msgid "Reminders"
 msgstr "Opomniki"
 
-#. ($Ticket->Id)
+#. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/Reminders.html:48
-msgid "Reminders for ticket #%1"
-msgstr "Opomniki za zahtevek #%1"
+msgid "Reminders for ticket #%1: %2"
+msgstr ""
 
 #: share/html/Search/Bulk.html:95
 msgid "Remove AdminCc"
@@ -6621,7 +6651,7 @@ msgstr ""
 msgid "Render Type"
 msgstr ""
 
-#: lib/RT/Config.pm:197
+#: lib/RT/Config.pm:205
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr "Zamenjaj spustne menije uporabnika s tekstnimi polji"
 
@@ -6672,7 +6702,7 @@ msgstr "Ponastavi na privzeto vrednost"
 
 #: share/html/Prefs/DashboardsInMenu.html:64
 msgid "Reset dashboards in menu"
-msgstr ""
+msgstr "Ponastavi preglede v meniju"
 
 #: share/html/User/Prefs.html:179
 msgid "Reset secret authentication token"
@@ -6684,11 +6714,11 @@ msgstr "Ponastavi na privzeto vrednost"
 
 #: share/html/Admin/Tools/Theme.html:70
 msgid "Reset to default RT Logo"
-msgstr ""
+msgstr "Ponastavi na privzeti RT logo"
 
 #: share/html/Admin/Tools/Theme.html:114
 msgid "Reset to default RT Theme"
-msgstr ""
+msgstr "Ponastavi na privzeto RT temo"
 
 #: share/html/Admin/Users/Modify.html:181 share/html/User/Prefs.html:89
 msgid "Residence"
@@ -6709,7 +6739,7 @@ msgstr "Rešeno"
 
 #: etc/initialdata:453 etc/upgrade/4.1.9/content:102
 msgid "Resolved in HTML"
-msgstr ""
+msgstr "Zaključeno v HTML"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ResolvedRelative"
@@ -6735,7 +6765,7 @@ msgstr "Ponovi geslo"
 msgid "Revert"
 msgstr "Vrni v prejšnje stanje"
 
-#: lib/RT/Config.pm:387
+#: lib/RT/Config.pm:407
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
@@ -6776,15 +6806,15 @@ msgstr "Uporabniške pravice"
 #. ($type)
 #: lib/RT/Record/Role/Roles.pm:411 lib/RT/Record/Role/Roles.pm:495
 msgid "Role group '%1' not found"
-msgstr ""
+msgstr "Vloga skupine '%1' ni najdena"
 
 #: lib/RT/Group.pm:636
 msgid "Role group exists already"
-msgstr ""
+msgstr "Vloga skupine že obstaja"
 
 #: lib/RT/Interface/Web.pm:3874
 msgid "Roles"
-msgstr ""
+msgstr "Vloge"
 
 #: share/html/Dashboards/Subscription.html:164
 msgid "Rows"
@@ -6800,11 +6830,11 @@ msgstr "Vrstic na stran"
 
 #: share/html/Admin/Users/Keys.html:75
 msgid "SMIME Certificate"
-msgstr ""
+msgstr "SMIME certifikat"
 
-#: lib/RT/User.pm:106
+#: lib/RT/User.pm:107
 msgid "SMIMECertificate"
-msgstr ""
+msgstr "SMIME certifikat"
 
 #: share/html/Admin/Tools/Queries.html:49 share/html/Admin/Tools/Queries.html:58 share/html/Elements/Tabs:239
 msgid "SQL Queries"
@@ -6879,7 +6909,7 @@ msgstr "Shranjeni grafikoni"
 #. ($m->interp->apply_escapes($SavedSearch, 'h'))
 #: share/html/Elements/ShowSearch:73
 msgid "Saved search %1 not found"
-msgstr ""
+msgstr "Shranjeno iskanje %1 ni najdeno"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:48 share/html/Articles/Article/Search.html:69 share/html/Search/Elements/EditSearches:136 share/html/Widgets/SavedSearch:186
 msgid "Saved searches"
@@ -6905,7 +6935,7 @@ msgstr "Skripta je bila ustvarjena"
 
 #: lib/RT/Scrip.pm:372
 msgid "Scrip is not added"
-msgstr ""
+msgstr "Skripta ni dodana"
 
 #: share/html/Admin/Elements/EditScrips:53 share/html/Elements/Tabs:102 share/html/Elements/Tabs:117 share/html/Elements/Tabs:296 share/html/Elements/Tabs:401
 msgid "Scrips"
@@ -6917,7 +6947,7 @@ msgstr "Skripte in prejemniki"
 
 #: share/html/Admin/Elements/EditScrips:54
 msgid "Scrips normally run after each individual change to a ticket."
-msgstr ""
+msgstr "Skripte se zaženejo ob vsaki posamezni spremembi zahtevka."
 
 #: share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Elements/GotoUser:58 share/html/Elements/SimpleSearch:56 share/html/Elements/Tabs:519 share/html/Elements/Tabs:535 share/html/Elements/Tabs:905 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
@@ -6955,7 +6985,7 @@ msgstr "Išči zahtevke"
 #. (@strong)
 #: share/html/Search/Simple.html:63
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
-msgstr ""
+msgstr "Iščite po unikatnih %1id%2 številkah, besedah v %1\"zadevi\"%2, po imenu %1skupine%2,  po %1uporabniškem imenu%2 lastnika, po %1e-poštnih naslovih%2 pobudnikov in %1statusih%2 zahtevkov. Iskanje po %1@domena.com%2 bo vrnilo zahtevke pobudnikov s te domene."
 
 #: share/html/Elements/Tabs:583
 msgid "Search options"
@@ -6965,13 +6995,13 @@ msgstr "Opcije iskanja"
 msgid "Search results"
 msgstr "Rezultati iskanja"
 
-#: lib/RT/Config.pm:326
+#: lib/RT/Config.pm:334
 msgid "Search results refresh interval"
 msgstr "Interval osveževanja rezultatov iskanja"
 
 #: share/html/Search/index.html:48
 msgid "Searches"
-msgstr ""
+msgstr "Iskanja"
 
 #. ($fulltext_keyword)
 #: share/html/Search/Simple.html:73
@@ -7024,7 +7054,7 @@ msgstr "Izberi prilagojeno polje"
 
 #: share/html/Admin/Scrips/index.html:48
 msgid "Select a Scrip"
-msgstr ""
+msgstr "Izberi skripto"
 
 #: share/html/Admin/Tools/Theme.html:84
 msgid "Select a color for the section"
@@ -7097,7 +7127,7 @@ msgstr "Izberi datum in čas"
 
 #: share/html/Admin/Scrips/Objects.html:65
 msgid "Select global scrip stage:"
-msgstr ""
+msgstr "Izberi stanje globalne skripte:"
 
 #: lib/RT/CustomField.pm:163
 msgid "Select multiple dates"
@@ -7121,7 +7151,7 @@ msgstr "Izberi vrste ki naj bodo vidne na \"RT pregled\" strani"
 
 #: share/html/Admin/Elements/SelectStageForAdded:53
 msgid "Select scrip stage for newly added queues:"
-msgstr ""
+msgstr "Izberi stanje skript na novo dodanih vrstah"
 
 #. ()
 #: share/html/Articles/Article/ExtractIntoClass.html:63 share/html/Articles/Article/ExtractIntoTopic.html:52
@@ -7130,7 +7160,7 @@ msgstr "Izberi teme za te članke"
 
 #: lib/RT/CustomField.pm:165
 msgid "Select up to %quant(%1,date,dates)"
-msgstr ""
+msgstr "Izberi do %quant(%1,datum,datumov)"
 
 #: lib/RT/CustomField.pm:174
 msgid "Select up to %quant(%1,datetime,datetimes)"
@@ -7138,7 +7168,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:76
 msgid "Select up to %quant(%1,value,values)"
-msgstr ""
+msgstr "Izberi do %1 vrednosti"
 
 #: share/html/Admin/Elements/EditCustomFields:55
 msgid "Selected Custom Fields"
@@ -7162,11 +7192,11 @@ msgstr "Izbire so bile spremenjene. Prosim shrani svoje spremembe."
 
 #: etc/initialdata:111
 msgid "Send Forward"
-msgstr ""
+msgstr "Posreduj"
 
 #: etc/initialdata:112
 msgid "Send forwarded message"
-msgstr ""
+msgstr "Posreduj posredovano sporočilo"
 
 #: etc/initialdata:84
 msgid "Send mail to owner and all watchers"
@@ -7186,7 +7216,7 @@ msgstr "Pobudnikom in ljudem na Cc pošlji e-pošto kot komentar"
 
 #: lib/RT/Interface/Email.pm:1821
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
-msgstr ""
+msgstr "Pošiljanje ni uspelo. Kontatkirajte vašega administratorja (več informacij v logih)."
 
 #: etc/initialdata:34
 msgid "Sends a message to the requestors"
@@ -7206,11 +7236,11 @@ msgstr "Ljudem na Cc pošlji e-pošto kot komentar"
 
 #: etc/initialdata:62 etc/upgrade/4.1.15/content:6
 msgid "Sends mail to the Owner and administrative Ccs"
-msgstr ""
+msgstr "Pošlji sporočilo lastniku in administrativnemu Cc"
 
 #: etc/initialdata:66 etc/upgrade/4.2.6/content:6
 msgid "Sends mail to the Owner if set, otherwise administrative Ccs"
-msgstr ""
+msgstr "Pošlji sporočilu lastniku, če je tako določeno, drugače administrativnemu Cc"
 
 #: etc/initialdata:58
 msgid "Sends mail to the administrative Ccs"
@@ -7232,7 +7262,7 @@ msgstr ""
 msgid "Separate multiple entries with spaces."
 msgstr "Več vrednosti loči s praznimi prostori."
 
-#: lib/RT/User.pm:1847
+#: lib/RT/User.pm:1867
 msgid "Set private key"
 msgstr "Nastavi privatni ključ"
 
@@ -7242,13 +7272,13 @@ msgstr "Nastavitve"
 
 #: share/html/Articles/Elements/NeedsSetup:49
 msgid "Setup needed"
-msgstr ""
+msgstr "Potrebne so nastavitve"
 
-#: lib/RT/Config.pm:185
+#: lib/RT/Config.pm:193
 msgid "Short usernames"
 msgstr "Kratko uporabniško ime"
 
-#: lib/RT/Config.pm:576
+#: lib/RT/Config.pm:596
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "Ali naj RT pošlje e-pošto za spremembe na zahtevkih, ki jih narediš?"
 
@@ -7258,7 +7288,7 @@ msgstr "Prikaži"
 
 #: lib/RT/System.pm:88
 msgid "Show Admin menu"
-msgstr ""
+msgstr "Prikaz administratorskega menija"
 
 #: lib/RT/System.pm:89
 msgid "Show Approvals tab"
@@ -7266,7 +7296,7 @@ msgstr "Prikaz vseh odobritev"
 
 #: lib/RT/System.pm:87
 msgid "Show Articles menu"
-msgstr ""
+msgstr "Vidi prikaz člankov v meniju"
 
 #: share/html/Search/Elements/EditFormat:54
 msgid "Show Columns"
@@ -7309,9 +7339,9 @@ msgstr ""
 msgid "Show global templates"
 msgstr "Vidi prikaz globalnih predlog"
 
-#: lib/RT/Config.pm:416
+#: lib/RT/Config.pm:436
 msgid "Show history"
-msgstr ""
+msgstr "Prikaži zgodovino"
 
 #: lib/RT/System.pm:84
 msgid "Show history of public user properties"
@@ -7321,11 +7351,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Prikaži opise povezav"
 
-#: lib/RT/Config.pm:474
+#: lib/RT/Config.pm:494
 msgid "Show no tickets for the Requestor"
 msgstr ""
 
-#: lib/RT/Config.pm:407
+#: lib/RT/Config.pm:427
 msgid "Show oldest history first"
 msgstr "Prikaži najstarejšo zgodovino najprej"
 
@@ -7341,19 +7371,19 @@ msgstr ""
 msgid "Show requests awaiting other approvals"
 msgstr "Prikaži zahtevke, ki čakajo na druge odobritve"
 
-#: lib/RT/Config.pm:484
+#: lib/RT/Config.pm:504
 msgid "Show simplified recipient list on ticket update"
-msgstr ""
+msgstr "Prikaži poenostavljen pogled prejemnikov ob posodobitvi zahtevka"
 
-#: lib/RT/Config.pm:471
+#: lib/RT/Config.pm:491
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr "Prikaži pobudnikovih 10 najvišje prioritetnih aktivnih zahtevkov"
 
-#: lib/RT/Config.pm:472
+#: lib/RT/Config.pm:492
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr "Prikaži pobudnikovih 10 najvišje prioritetnih neaktivnih zahtevkov"
 
-#: lib/RT/Config.pm:473
+#: lib/RT/Config.pm:493
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr "Prikaži pobudnikovih 10 najvišje prioritetnih zahtevkov"
 
@@ -7398,7 +7428,7 @@ msgstr "Prijavi se kot Admin CC na zahtevku ali vrsti."
 #. ($columnsplit,    $m->scomp('/Widgets/Form/Boolean:InputOnly',        Name => 'Sign', CurrentValue => $self->{'Sign'}    ),)
 #: share/html/Elements/Crypt/SignEncryptWidget:64
 msgid "Sign%1%2"
-msgstr ""
+msgstr "Vpiši %1%2"
 
 #. ($columnsplit,    $m->scomp('/Widgets/Form/Boolean:InputOnly',        Name => 'Sign', CurrentValue => $self->{'Sign'}    ),    $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ),)
 #: share/html/Elements/Crypt/SignEncryptWidget:57
@@ -7411,7 +7441,7 @@ msgstr "Podpis"
 
 #: lib/RT/Queue.pm:322
 msgid "Signing"
-msgstr ""
+msgstr "Podpisovanje"
 
 #: share/html/Admin/Elements/ModifyTemplate:65
 msgid "Simple"
@@ -7522,7 +7552,7 @@ msgstr ""
 #. ($self->loc($new), $self->loc($lifecycle->Type))
 #: lib/RT/Record/Role/Status.pm:163
 msgid "Status '%1' isn't a valid status for this %2."
-msgstr ""
+msgstr "Status '%1' ni veljavni status za ta %2."
 
 #. ($self->loc($args{'Status'}))
 #: lib/RT/Ticket.pm:286
@@ -7535,7 +7565,7 @@ msgstr "Sprememba statusa"
 
 #: etc/initialdata:430 etc/upgrade/4.1.9/content:90
 msgid "Status Change in HTML"
-msgstr ""
+msgstr "Sprememba statusa v HTML"
 
 #. ("'" . $self->loc( $canon->($self->OldValue) ) . "'",                    "'" . $self->loc( $canon->($self->NewValue) ) . "'")
 #: lib/RT/Transaction.pm:895
@@ -7552,7 +7582,7 @@ msgstr "Prevzemi"
 
 #: lib/RT/Queue.pm:129
 msgid "Steal tickets"
-msgstr "Prevzami zahtevke"
+msgstr "Prevzame zahtevek"
 
 #. (1, 7)
 #. (2, 7)
@@ -7624,7 +7654,7 @@ msgstr "Prijave ni bilo možno ustvariti: %1"
 
 #: share/html/Dashboards/Subscription.html:261
 msgid "Subscription updated"
-msgstr ""
+msgstr "Naročnina posodobljena"
 
 #: lib/RT/Attachment.pm:885
 msgid "Successfuly decrypted data"
@@ -7640,23 +7670,23 @@ msgstr "Povzetek"
 
 #: lib/RT/Report/Tickets.pm:230
 msgid "Summary of Created-LastUpdated"
-msgstr ""
+msgstr "Povzetek za nov-nazadnje posodobljen"
 
 #: lib/RT/Report/Tickets.pm:225
 msgid "Summary of Created-Resolved"
-msgstr ""
+msgstr "Povzetek za nov-zaključen"
 
 #: lib/RT/Report/Tickets.pm:220
 msgid "Summary of Created-Started"
-msgstr ""
+msgstr "Povzetek za nov-pričetek"
 
 #: lib/RT/Report/Tickets.pm:240
 msgid "Summary of Due-Resolved"
-msgstr ""
+msgstr "Povzetek za končni rok-zaključen"
 
 #: lib/RT/Report/Tickets.pm:245
 msgid "Summary of Started-Resolved"
-msgstr ""
+msgstr "Povzetek za pričetek-zaključen"
 
 #: lib/RT/Report/Tickets.pm:235
 msgid "Summary of Starts-Started"
@@ -7664,15 +7694,15 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:210
 msgid "Summary of time estimated"
-msgstr ""
+msgstr "Povzetek predvidenega časa"
 
 #: lib/RT/Report/Tickets.pm:215
 msgid "Summary of time left"
-msgstr ""
+msgstr "Povzetek preostalega časa"
 
 #: lib/RT/Report/Tickets.pm:205
 msgid "Summary of time worked"
-msgstr ""
+msgstr "Povzetek delovnega časa"
 
 #: lib/RT/Date.pm:106
 msgid "Sun"
@@ -7682,13 +7712,13 @@ msgstr "Ned"
 msgid "Sunday"
 msgstr "Nedelja"
 
-#: lib/RT/Config.pm:565
+#: lib/RT/Config.pm:585
 msgid "Suspended"
 msgstr "Suspendirano"
 
 #: lib/RT/Interface/Web.pm:3826
 msgid "System"
-msgstr ""
+msgstr "Sistem"
 
 #: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:227
 msgid "System Configuration"
@@ -7729,7 +7759,7 @@ msgstr "Vzemi"
 
 #: lib/RT/Queue.pm:128
 msgid "Take tickets"
-msgstr "Prevzemi zahtevke"
+msgstr "Vzame zahtevek"
 
 #: lib/RT/Transaction.pm:1047 lib/RT/Transaction.pm:1219
 msgid "Taken"
@@ -7750,7 +7780,7 @@ msgstr "Predloga #%1 izbrisana"
 
 #: lib/RT/Scrip.pm:170
 msgid "Template '%1' is not global"
-msgstr ""
+msgstr "Predloga '%1'  ni globalna"
 
 #: lib/RT/Scrip.pm:172
 msgid "Template '%1' is not global nor queue specific"
@@ -7776,7 +7806,7 @@ msgstr "Predloga je prazna"
 
 #: lib/RT/Template.pm:321
 msgid "Template is in use"
-msgstr ""
+msgstr "Predloga je v uporabi"
 
 #: lib/RT/Scrip.pm:156 lib/RT/Scrip.pm:839
 msgid "Template is mandatory argument"
@@ -7798,7 +7828,7 @@ msgstr ""
 #. ($msg)
 #: share/html/Admin/Scrips/Objects.html:137
 msgid "Template: %1"
-msgstr ""
+msgstr "Predloga: %1"
 
 #: share/html/Elements/Tabs:125 share/html/Elements/Tabs:292
 msgid "Templates"
@@ -7825,35 +7855,35 @@ msgstr "To je že trenutna vrednost"
 msgid "That is not a value for this custom field"
 msgstr "To ni vrednost za to prilagojeno polje"
 
-#: lib/RT/Ticket.pm:2369
+#: lib/RT/Ticket.pm:2386
 msgid "That ticket has unresolved dependencies"
 msgstr "Zahtevek ima nerešene odvisnosti"
 
-#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2282
+#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2299
 msgid "That user already owns that ticket"
 msgstr "Ta uporabnik je že lastnik tega zahtevka"
 
-#: lib/RT/Ticket.pm:2272
+#: lib/RT/Ticket.pm:2289
 msgid "That user does not exist"
 msgstr "Ta uporabnik ne obstaja"
 
-#: lib/RT/User.pm:353
+#: lib/RT/User.pm:354
 msgid "That user is already privileged"
 msgstr "Ta uporabnik je že priviligiran"
 
-#: lib/RT/User.pm:379
+#: lib/RT/User.pm:380
 msgid "That user is already unprivileged"
 msgstr "Ta uporabnik je že nepriviligiran"
 
-#: lib/RT/User.pm:372
+#: lib/RT/User.pm:373
 msgid "That user is now privileged"
 msgstr "Ta uporabnik je sedaj priviligiran"
 
-#: lib/RT/User.pm:398
+#: lib/RT/User.pm:399
 msgid "That user is now unprivileged"
 msgstr "Ta uporabnik je sedaj nepriviligiran"
 
-#: lib/RT/Ticket.pm:2277
+#: lib/RT/Ticket.pm:2294
 msgid "That user may not own tickets in that queue"
 msgstr "Ta uporabnik ne sme biti lastnik zahtevka v tej vrsti"
 
@@ -7884,7 +7914,7 @@ msgstr "Administrativni CC zahtevka"
 
 #: share/html/Ticket/ModifyPeople.html:63
 msgid "The checked users may receive email related to this ticket depending on the action taken. Uncheck users to stop sending email to them about this ticket."
-msgstr ""
+msgstr "Izbrani uporabniki bodo obveščeni o zahtevku preko e-pošte. Odznačite uporabnike za katere ne želite, da so obveščeni o zahtevku."
 
 #: lib/RT/Installer.pm:81
 msgid "The domain name of your database server (like 'db.example.com')."
@@ -7947,7 +7977,7 @@ msgstr "Nastavitve ki si jih izbral so shranjene v %1."
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr "Sistem ne more podpisati izhodnih e-sporočil. To običajno nakazuje da je geslo nastavljeno napačno, ali pa da je GPG Agent nedosegljiv. Prosim obvesti sistemskega administratorja. Naslovi ki povzročajo težave so:"
 
-#: lib/RT/Config.pm:206 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:232
+#: lib/RT/Config.pm:214 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:232
 msgid "Theme"
 msgstr "Tema"
 
@@ -7975,7 +8005,7 @@ msgstr "Za kodiranje ni primernega ključa."
 #. ($old_lifecycle->Name, $new_lifecycle->Name)
 #: lib/RT/Record/Role/Status.pm:278
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
-msgstr ""
+msgstr "Ni povezave med obdobjem %1 in %2. Kontaktiraj administratorja."
 
 #: lib/RT/Crypt.pm:730
 msgid "There is one suitable key, but trust level is not set."
@@ -8000,7 +8030,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1608
 msgid "This custom field cannot be added to that object"
-msgstr ""
+msgstr "Tega prilagojenega polja ni možno dodati temu objektu"
 
 #: lib/RT/CustomField.pm:1158 lib/RT/CustomField.pm:304
 msgid "This custom field has no Render Types"
@@ -8020,12 +8050,12 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowDependencyStatus:57
 msgid "This ticket cannot be resolved until it is approved."
-msgstr ""
+msgstr "Ta zahtevek se ne more zaključiti dokler ni odobren."
 
 #. ($depends)
 #: share/html/Ticket/Elements/ShowDependencyStatus:60
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
-msgstr ""
+msgstr "Ta zahtevek se ne more zaključiti dokler %numerate(%1,odvisen,odvisni) ni/niso zaključeni."
 
 #: bin/rt-crontool:349
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
@@ -8042,7 +8072,7 @@ msgstr ""
 
 #: share/html/User/Search.html:53
 msgid "This will search for users by looking in the following fields:"
-msgstr ""
+msgstr "Iskanje uporabnikov po poljih:"
 
 #: lib/RT/Date.pm:110
 msgid "Thu"
@@ -8091,8 +8121,8 @@ msgstr "Zahtevek %1: %2"
 
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/History.html:48
-msgid "Ticket History # %1 %2"
-msgstr "Zgodovina zahtevka # %1 %2"
+msgid "Ticket History #%1: %2"
+msgstr ""
 
 #: etc/initialdata:445
 msgid "Ticket Resolved"
@@ -8110,7 +8140,7 @@ msgstr "Transakcije zahtevka"
 msgid "Ticket and Transaction"
 msgstr "Zahtevek"
 
-#: lib/RT/Config.pm:301
+#: lib/RT/Config.pm:309
 msgid "Ticket composition"
 msgstr "Zgradba zahtevka"
 
@@ -8132,9 +8162,9 @@ msgstr "Zahtevka ni bilo možno naložiti"
 
 #: lib/RT/Report/Tickets.pm:204
 msgid "Ticket count"
-msgstr ""
+msgstr "Število zahtevkov"
 
-#: lib/RT/Config.pm:381 lib/RT/Config.pm:391 lib/RT/Config.pm:463 lib/RT/Config.pm:479
+#: lib/RT/Config.pm:401 lib/RT/Config.pm:411 lib/RT/Config.pm:483 lib/RT/Config.pm:499
 msgid "Ticket display"
 msgstr "Prikaz zahtevka"
 
@@ -8179,7 +8209,7 @@ msgstr "Zahtevki, ki so odvisni od te potrditve:"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Time"
-msgstr ""
+msgstr "Čas"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:186 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:239 share/html/m/ticket/create:353
 msgid "Time Estimated"
@@ -8191,7 +8221,7 @@ msgstr "Čas na voljo"
 
 #: share/html/Elements/RT__Transaction/ColumnMap:85
 msgid "Time Taken"
-msgstr ""
+msgstr "Porabljen čas"
 
 #: lib/RT/Tickets.pm:1754 share/html/Elements/RT__Ticket/ColumnMap:176 share/html/Search/Elements/PickBasics:178 share/html/Ticket/Create.html:244 share/html/m/ticket/create:359
 msgid "Time Worked"
@@ -8213,7 +8243,7 @@ msgstr "Preostali čas"
 msgid "TimeWorked"
 msgstr "Porabljen čas"
 
-#: lib/RT/Installer.pm:189 lib/RT/User.pm:109 share/html/Admin/Users/Modify.html:96 share/html/SelfService/Prefs.html:63 share/html/User/Prefs.html:80
+#: lib/RT/Installer.pm:189 lib/RT/User.pm:110 share/html/Admin/Users/Modify.html:96 share/html/SelfService/Prefs.html:63 share/html/User/Prefs.html:80
 msgid "Timezone"
 msgstr "Časovni pas"
 
@@ -8302,15 +8332,15 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:211
 msgid "Total time estimated"
-msgstr ""
+msgstr "Skupen predviden čas"
 
 #: lib/RT/Report/Tickets.pm:216
 msgid "Total time left"
-msgstr ""
+msgstr "Skupni preostali čas"
 
 #: lib/RT/Report/Tickets.pm:206
 msgid "Total time worked"
-msgstr ""
+msgstr "Skupno porabljen čas"
 
 #: etc/initialdata:287
 msgid "Transaction"
@@ -8327,7 +8357,7 @@ msgstr "Transakcija je bila ustvarjena"
 
 #: etc/initialdata:306 etc/upgrade/4.1.9/content:34
 msgid "Transaction in HTML"
-msgstr ""
+msgstr "Transakcija v HTML"
 
 #: lib/RT/Transaction.pm:135
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
@@ -8335,7 +8365,7 @@ msgstr "Transaction->Create ni uspelo, ker nisi specificar tipa objekta in id-ja
 
 #: lib/RT/Tickets.pm:155
 msgid "TransactionCF"
-msgstr ""
+msgstr "TransakcijaCF"
 
 #: lib/RT/Tickets.pm:142
 msgid "TransactionDate"
@@ -8343,7 +8373,7 @@ msgstr "Datum transakcije"
 
 #: share/html/Elements/Tabs:304
 msgid "Transactions"
-msgstr ""
+msgstr "Transakcije"
 
 #: lib/RT/Transaction.pm:1385
 msgid "Transactions are immutable"
@@ -8355,7 +8385,7 @@ msgstr "Verodostojnost"
 
 #: share/html/Admin/Tools/Theme.html:112
 msgid "Try"
-msgstr ""
+msgstr "Poskusi"
 
 #: lib/RT/Date.pm:108
 msgid "Tue"
@@ -8384,12 +8414,12 @@ msgstr "Tip je bil spremenjen iz '%1' v '%2'"
 
 #: share/html/Admin/Elements/EditScrips:71
 msgid "Un-apply selected scrips"
-msgstr ""
+msgstr "Odznači izbrane skripte"
 
 #. ($self->loc($type), $msg)
 #: lib/RT/Record/Role/Links.pm:128
 msgid "Unable to add %1 link: %2"
-msgstr ""
+msgstr "Ni možno dodati %1 link: %2"
 
 #. ($cf->Name, $msg)
 #: lib/RT/Class.pm:387 lib/RT/Class.pm:391
@@ -8441,11 +8471,11 @@ msgstr ""
 #. ($id)
 #: share/html/Dashboards/Subscription.html:266
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
-msgstr ""
+msgstr "Prijava na pregled %1 ni možna: dostop zavrnjen"
 
 #: share/html/Errors/WebRemoteUser/NoInternalUser:48 share/html/Errors/WebRemoteUser/NoRemoteUser:48
 msgid "Unauthorized"
-msgstr ""
+msgstr "Nepooblaščeno"
 
 #. (RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,)
 #: share/html/Ticket/Elements/PreviewScrips:60 share/html/Ticket/Elements/ShowSimplifiedRecipients:92
@@ -8531,7 +8561,7 @@ msgstr ""
 msgid "Unselected objects"
 msgstr "Neizbrani objekti"
 
-#: lib/RT/User.pm:1831
+#: lib/RT/User.pm:1851
 msgid "Unset private key"
 msgstr "Nenastavljen privatni ključ"
 
@@ -8553,7 +8583,7 @@ msgstr "Posodobi graf"
 
 #: share/html/Elements/Tabs:512
 msgid "Update This Menu"
-msgstr ""
+msgstr "Prilagodi"
 
 #: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:183 share/html/m/ticket/reply:146
 msgid "Update Ticket"
@@ -8585,11 +8615,15 @@ msgstr "Posodobi zahtevek"
 msgid "Update ticket #%1"
 msgstr "Posodobi zahtevek #%1"
 
-#. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
-#: share/html/Ticket/Update.html:221 share/html/m/ticket/reply:174
+#: share/html/m/ticket/reply:174
 msgid "Update ticket #%1 (%2)"
 msgstr "Posodobi zahtevek #%1 (%2)"
+
+#. ($TicketObj->id, $TicketObj->Subject)
+#: share/html/Ticket/Update.html:221
+msgid "Update ticket #%1: %2"
+msgstr ""
 
 #: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2394
 msgid "Update type was neither correspondence nor comment."
@@ -8605,7 +8639,7 @@ msgstr "Posodobljeno"
 
 #: share/html/Search/Elements/PickBasics:117
 msgid "Updated by"
-msgstr ""
+msgstr "Posodobil"
 
 #. ($desc)
 #: share/html/Search/Elements/EditSearches:294
@@ -8614,12 +8648,12 @@ msgstr "Posodovljeno shranjeno iskanje \"%1\""
 
 #: lib/RT/Tickets.pm:159
 msgid "UpdatedBy"
-msgstr ""
+msgstr "Posodobil"
 
 #. ($row->{'from'}, $row->{'to'})
 #: share/html/Admin/Elements/UpgradeHistoryRow:56
 msgid "Upgrade from %1 to %2"
-msgstr ""
+msgstr "Nadgradnja iz %1 na %2"
 
 #: share/html/Admin/Tools/Theme.html:71
 msgid "Upload"
@@ -8647,21 +8681,21 @@ msgstr "Prenesi eno sliko"
 
 #: lib/RT/CustomField.pm:136
 msgid "Upload up to %quant(%1,file,files)"
-msgstr ""
+msgstr "Prenesi do %1 datotek"
 
 #: lib/RT/CustomField.pm:127
 msgid "Upload up to %quant(%1,image,images)"
-msgstr ""
+msgstr "Prenesi do %1 slik"
 
 #: sbin/rt-email-digest:79
 msgid "Usage:"
 msgstr "Uporaba:"
 
-#: lib/RT/Config.pm:261
+#: lib/RT/Config.pm:269
 msgid "Use a two column layout for create and update forms?"
 msgstr "Uporabi izgled dveh stolpcov pri kreiranju in posodabljanju obrazcev?"
 
-#: lib/RT/Config.pm:196
+#: lib/RT/Config.pm:204
 msgid "Use autocomplete to find owners?"
 msgstr "Uporabi samodejne predloge pri iskanju lastnikov?"
 
@@ -8694,12 +8728,12 @@ msgstr "Uporabnik"
 #. ($User->Name)
 #: share/html/User/Summary.html:77
 msgid "User %1 is currently disabled."
-msgstr ""
+msgstr "Uporabnik %1 je trenutno onemogočen."
 
 #. ($User->Name)
 #: share/html/User/Summary.html:74
 msgid "User %1 is currently disabled. Edit the user and select \"Let this user access RT\" to enable."
-msgstr ""
+msgstr "Uporabnik %1 je trenutno onemogočen. Uredi uporabnika in izberi \"Dovoli temu uporabniku dostop do RT\"."
 
 #: share/html/Admin/Elements/ShowKeyInfo:80
 msgid "User (created - expire)"
@@ -8715,11 +8749,11 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:3844
 msgid "User Groups"
-msgstr ""
+msgstr "Pravice skupine"
 
 #: share/html/User/Elements/Portlets/ExtraInfo:48
 msgid "User Information"
-msgstr ""
+msgstr "Informacije o uporabniku"
 
 #: share/html/Elements/Tabs:201 share/html/Elements/Tabs:308 share/html/Elements/Tabs:352 share/html/Elements/Tabs:368 share/html/Elements/Tabs:455
 msgid "User Rights"
@@ -8727,11 +8761,11 @@ msgstr "Uporabniške pravice"
 
 #: share/html/User/Search.html:48
 msgid "User Search"
-msgstr ""
+msgstr "Iskanje uporabnikov"
 
 #: share/html/Elements/Tabs:334
 msgid "User Summary"
-msgstr ""
+msgstr "Povzetek uporabnika"
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 #: lib/RT/Interface/Web.pm:3256
@@ -8743,15 +8777,15 @@ msgstr "Uporabnik je zahteval neznano posodobitev za prilagojeno polje %1 za %2 
 msgid "User could not be created: %1"
 msgstr "Uporabnika ni bilo možno ustvariti: %1"
 
-#: lib/RT/User.pm:265
+#: lib/RT/User.pm:266
 msgid "User created"
 msgstr "Uporabnik je bil ustvarjen"
 
-#: lib/RT/User.pm:1154
+#: lib/RT/User.pm:1174
 msgid "User disabled"
 msgstr "Uporabnik je bil onemogočen"
 
-#: lib/RT/User.pm:1156
+#: lib/RT/User.pm:1176
 msgid "User enabled"
 msgstr "Uporabnik je bil omogočen"
 
@@ -8759,7 +8793,7 @@ msgstr "Uporabnik je bil omogočen"
 msgid "User has empty email address"
 msgstr "Uporabnik ima prazen e-poštni naslov"
 
-#: lib/RT/User.pm:543 lib/RT/User.pm:563
+#: lib/RT/User.pm:544 lib/RT/User.pm:564
 msgid "User loaded"
 msgstr "Uporabnik naložen"
 
@@ -8770,13 +8804,13 @@ msgstr "Uporabniško definirane skupine"
 #. ($User->Format)
 #: share/html/User/Summary.html:48
 msgid "User: %1"
-msgstr ""
+msgstr "Uporabnik: %1"
 
 #: share/html/Admin/Users/Modify.html:67 share/html/Elements/Login:70 share/html/Ticket/Elements/AddWatchers:58 share/html/m/_elements/login:69
 msgid "Username"
 msgstr "Uporabniško ime"
 
-#: lib/RT/Config.pm:181
+#: lib/RT/Config.pm:189
 msgid "Username format"
 msgstr "Format uporabniškega imena"
 
@@ -8877,11 +8911,11 @@ msgstr ""
 msgid "WARNING: Saving search to user-level privacy"
 msgstr ""
 
-#: lib/RT/Config.pm:279
+#: lib/RT/Config.pm:287
 msgid "WYSIWYG composer height"
 msgstr "Višina WYSIWYG urejevalnika"
 
-#: lib/RT/Config.pm:270
+#: lib/RT/Config.pm:278
 msgid "WYSIWYG message composer"
 msgstr "WYSIWYG urejevalnik"
 
@@ -8891,7 +8925,7 @@ msgstr "Opozorilo! To NI podpisano!"
 
 #: share/html/Ticket/Elements/EditMerge:49
 msgid "Warning: merging is a non-reversible action! Enter a single ticket number to be merged into."
-msgstr ""
+msgstr "Pozor: spajanje je nepovratno dejanje! Vnesite številko zahtevka s katerim želite spojiti."
 
 #: share/html/Dashboards/Subscription.html:279
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
@@ -8935,7 +8969,7 @@ msgstr "Sreda"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "WeekOfYear"
-msgstr ""
+msgstr "Teden v letu"
 
 #: lib/RT/Dashboard/Mailer.pm:326
 msgid "Weekday"
@@ -8945,7 +8979,7 @@ msgstr ""
 msgid "Weekly"
 msgstr "Tedensko"
 
-#: lib/RT/Config.pm:564
+#: lib/RT/Config.pm:584
 msgid "Weekly digest"
 msgstr "Tedenski povzetek"
 
@@ -8961,9 +8995,9 @@ msgstr "Moj dan"
 msgid "What is RT?"
 msgstr "Kaj je RT?"
 
-#: lib/RT/Config.pm:468
+#: lib/RT/Config.pm:488
 msgid "What tickets to display in the \"More about requestor\" box"
-msgstr ""
+msgstr "Kateri zahtevku se prikazujejo v polju \"Več o pobudniku\""
 
 #: lib/RT/Installer.pm:160
 msgid "When RT can't handle an email message, where should it be forwarded?"
@@ -9055,7 +9089,7 @@ msgstr "Kje naj najdem sendmail binarno datoteko."
 
 #: share/html/Search/Chart.html:180
 msgid "Width"
-msgstr ""
+msgstr "Širina"
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:63
 msgid "Wipeout"
@@ -9076,16 +9110,16 @@ msgstr "Porabljen čas"
 #. (sprintf("%.1f", $duration / 60), $duration)
 #: lib/RT/Transaction.pm:1263
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
-msgstr ""
+msgstr "Porabljen čas %quant(%1,ura,ur) (%quant(%2,minuta,minut))"
 
 #. ($duration)
 #: lib/RT/Transaction.pm:1261
 msgid "Worked %quant(%1,minute,minutes)"
-msgstr ""
+msgstr "Porabljen čas %quant(%1,minuta,minut)"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Year"
-msgstr ""
+msgstr "Leto"
 
 #: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:78
 msgid "Yes"
@@ -9094,14 +9128,14 @@ msgstr "Da"
 #. ($ARGS{User})
 #: share/html/Errors/WebRemoteUser/NoInternalUser:49
 msgid "You (%1) are not authorized to use RT."
-msgstr ""
+msgstr "Nisi (%1) pooblaščen za uporabo RT."
 
 #. ($edit, $subscription)
 #: share/html/Dashboards/Render.html:85
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr ""
 
-#: lib/RT/Ticket.pm:2252 lib/RT/Ticket.pm:2325
+#: lib/RT/Ticket.pm:2269 lib/RT/Ticket.pm:2342
 msgid "You already own this ticket"
 msgstr "Si že lastnik tega zahtevka"
 
@@ -9115,7 +9149,7 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
-msgstr ""
+msgstr "Nisi pooblaščen za uporabo RT."
 
 #. (RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
@@ -9124,7 +9158,7 @@ msgstr "Skočiš lahko na <a href=\"%1\">prvo neprebrano sporočilo</a> ali <a h
 
 #: share/html/Admin/Tools/Theme.html:86
 msgid "You can also click on the logo above to get colors!"
-msgstr ""
+msgstr "Za barve klikni na zgornji logo."
 
 #: share/html/Prefs/Search.html:54
 msgid "You can also edit the predefined search itself"
@@ -9132,25 +9166,25 @@ msgstr "Urediš lahko tudi prednastavljeno iskanje"
 
 #: share/html/Admin/Scrips/Objects.html:110
 msgid "You can change template if needed"
-msgstr ""
+msgstr "Če je potrebno, lahko spremeniš predlogo"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:59
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr ""
 
-#: lib/RT/User.pm:822
+#: lib/RT/User.pm:823
 msgid "You can not set password."
 msgstr "Gesla ne moreš nastaviti."
 
-#: lib/RT/Ticket.pm:2244
+#: lib/RT/Ticket.pm:2261
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Prerazporediš lahko le zahtevke katerih lastnik si (ali zahtevke brez lastnika)"
 
-#: lib/RT/Ticket.pm:2196
+#: lib/RT/Ticket.pm:2213
 msgid "You can only steal a ticket owned by someone else"
-msgstr ""
+msgstr "Ukradeš lahko samo zahtevek, katerega lastnik je že nekdo drug"
 
-#: lib/RT/Ticket.pm:2240
+#: lib/RT/Ticket.pm:2257
 msgid "You can only take tickets that are unowned"
 msgstr "Vzameš lahko le zahtevke brez lastnika"
 
@@ -9234,7 +9268,7 @@ msgstr "To vidiš ker si strežnik zagnal brez delujoče baze. Najverjetneje je 
 msgid "You're welcome to login again"
 msgstr "Lahko se ponovno prijaviš"
 
-#: lib/RT/User.pm:1048
+#: lib/RT/User.pm:1067
 msgid "Your password is not set."
 msgstr "Tvoje geslo ni nastavljeno."
 
@@ -9275,13 +9309,13 @@ msgstr "aktiven"
 msgid "after"
 msgstr "po"
 
-#: lib/RT/Config.pm:420
+#: lib/RT/Config.pm:440
 msgid "after clicking a link"
-msgstr ""
+msgstr "po kliku na link"
 
-#: lib/RT/Config.pm:419
+#: lib/RT/Config.pm:439
 msgid "after the rest of the page loads"
-msgstr ""
+msgstr "potem ko se naloži preostanek strani"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
@@ -9293,7 +9327,7 @@ msgstr "in ne"
 
 #: share/html/Search/Chart.html:144 share/html/Search/Chart.html:152 share/html/Search/Chart.html:167 share/html/Search/Chart.html:170
 msgid "and then"
-msgstr ""
+msgstr "in nato"
 
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
@@ -9362,11 +9396,11 @@ msgstr "Dnevno ob %1"
 
 #: lib/RT/Dashboard.pm:97
 msgid "dashboard"
-msgstr ""
+msgstr "pregled"
 
 #: share/html/Prefs/DashboardsInMenu.html:74
 msgid "dashboards in menu"
-msgstr ""
+msgstr "pregled v meniju"
 
 #: share/html/Admin/Queues/Modify.html:108
 msgid "days"
@@ -9388,15 +9422,15 @@ msgstr "prenos"
 msgid "duration"
 msgstr "trajanje"
 
-#: lib/RT/User.pm:676
+#: lib/RT/User.pm:677
 msgid "email delivery suspended"
 msgstr ""
 
-#: lib/RT/User.pm:668
+#: lib/RT/User.pm:669
 msgid "email disabled for ticket"
 msgstr ""
 
-#: lib/RT/User.pm:279
+#: lib/RT/User.pm:280
 msgid "empty name"
 msgstr "prazno ime"
 
@@ -9451,7 +9485,7 @@ msgstr "skupina"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:854
 msgid "group %1"
-msgstr ""
+msgstr "skupina %1"
 
 #. ($self->Name)
 #: lib/RT/Group.pm:115
@@ -9466,9 +9500,9 @@ msgstr ""
 msgid "id"
 msgstr ""
 
-#: lib/RT/Config.pm:421
+#: lib/RT/Config.pm:441
 msgid "immediately"
-msgstr ""
+msgstr "takoj"
 
 #. ($Class->Name)
 #. ($class->Name)
@@ -9492,7 +9526,7 @@ msgstr "indeks"
 #. ($due)
 #: lib/RT/Interface/Web.pm:3021
 msgid "invalid due date: %1"
-msgstr ""
+msgstr "neveljaven zadnji rok: %1"
 
 #: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickBasics:153 share/html/Search/Elements/PickCFs:82
 msgid "is"
@@ -9575,9 +9609,9 @@ msgstr "novo"
 msgid "no"
 msgstr "ne"
 
-#: lib/RT/User.pm:666
+#: lib/RT/User.pm:667
 msgid "no email address set"
-msgstr ""
+msgstr "e-poštni naslov ni nastavljen"
 
 #: lib/RT/Crypt/GnuPG.pm:1751 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
@@ -9640,11 +9674,11 @@ msgstr ""
 msgid "queue %1 %2"
 msgstr "vrsta %1 %2"
 
-#: lib/RT/User.pm:672
+#: lib/RT/User.pm:673
 msgid "receives daily digests"
 msgstr ""
 
-#: lib/RT/User.pm:674
+#: lib/RT/User.pm:675
 msgid "receives weekly digests"
 msgstr ""
 
@@ -9666,7 +9700,7 @@ msgstr "od desne proti levi"
 
 #: lib/RT/SavedSearch.pm:80
 msgid "search"
-msgstr ""
+msgstr "išči"
 
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
@@ -9674,7 +9708,7 @@ msgstr "poglej seznam objektov spodaj"
 
 #: etc/initialdata:867 share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
-msgstr ""
+msgstr "stranski stolpec"
 
 #: share/html/Admin/Tools/Configuration.html:80
 msgid "site config"
@@ -9704,7 +9738,7 @@ msgstr "sistemska skupina '%1'"
 
 #: share/html/Search/Elements/SelectChartType:56
 msgid "table"
-msgstr ""
+msgstr "tabela"
 
 #: lib/RT/Interface/Web.pm:1565
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"

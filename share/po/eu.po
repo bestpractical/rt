@@ -1,25 +1,23 @@
 # Basque translation for rt
-# Basque translation for rt
-# Basque translation for rt
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
+# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
 # This file is distributed under the same license as the rt package.
-# Mikel Kortabarria, 2011.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-10-03 20:51+0000\n"
-"PO-Revision-Date: 2014-09-08 10:45+0000\n"
+"POT-Creation-Date: 2017-07-27 00:01+0000\n"
+"PO-Revision-Date: 2014-09-09 09:34+0000\n"
 "Last-Translator: Mikel Kortabarria <Unknown>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-05-31 23:10+0000\n"
-"X-Generator: Launchpad (build 18391)\n"
+"X-Launchpad-Export-Date: 2018-03-27 15:48+0000\n"
+"X-Generator: Launchpad (build 18591)\n"
 
-#: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62
+#: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61
 msgid "#"
 msgstr ""
 
@@ -30,7 +28,7 @@ msgstr ""
 #. ($object->Id, $object->Subject || '')
 #. ($t->Id, $t->Subject || '')
 #. ($ticket->Id, $ticket->Subject)
-#: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:105 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:197 share/html/m/ticket/history:56 share/html/m/ticket/show:202
+#: lib/RT/URI/fsck_com_rt.pm:222 share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/Helpers/Autocomplete/Tickets:105 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:196 share/html/m/ticket/history:56 share/html/m/ticket/show:202
 msgid "#%1: %2"
 msgstr ""
 
@@ -47,17 +45,17 @@ msgstr "#%2 %1"
 #. ($self->loc($class), $self->Instance, $self->Name)
 #: lib/RT/Group.pm:131
 msgid "%1 #%2 %3"
-msgstr ""
+msgstr "#%2 %3 %1"
 
 #. (loc($record_type), $Transaction->ObjectId)
 #: share/html/Elements/ShowTransaction:128
 msgid "%1 #%2:"
-msgstr ""
+msgstr "#%2 %1:"
 
 #. ($self->ObjectType, $object->Id, $name)
 #: lib/RT/URI/fsck_com_rt.pm:227
 msgid "%1 #%2: %3"
-msgstr ""
+msgstr "#%2 %1: %3"
 
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 #: lib/RT/Tickets.pm:1434
@@ -107,12 +105,12 @@ msgstr "%1 %2 ezabatuta."
 #. ($self->loc($column), $args{Value})
 #: lib/RT/Record/Role/Status.pm:256
 msgid "%1 %2 does not exist"
-msgstr ""
+msgstr "%1 %2 ez da existitzen"
 
 #. ($self->loc($column), $name)
 #: lib/RT/Record/Role/Status.pm:261
 msgid "%1 %2 is disabled"
-msgstr ""
+msgstr "%1 %2 desgaituta dago"
 
 #. (loc($self->{SearchType}), $args->{SavedSearchDescription})
 #: share/html/Widgets/SavedSearch:130
@@ -153,7 +151,7 @@ msgstr "%1 (%2 paneletik)"
 #. ("--log")
 #: bin/rt-crontool:343
 msgid "%1 - Adjust LogToSTDERR config option"
-msgstr ""
+msgstr "%1 - LogToSTDERR konfigurazio aukera doitu"
 
 #. ("--condition-arg", "--condition")
 #. ("--search-arg", "--search")
@@ -204,7 +202,7 @@ msgstr "%1 - Zehaztu erabili nahi duzun bilaketa modulua"
 #. (loc($Class))
 #: share/html/Search/Elements/PickObjectCFs:72
 msgid "%1 CFs"
-msgstr ""
+msgstr "%1 EPak"
 
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #. ('', '', '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
@@ -215,17 +213,17 @@ msgstr "%1 RT %2 Copyright 1996-%3 %4"
 #. ($package)
 #: share/html/Admin/Elements/UpgradeHistory:58
 msgid "%1 Version"
-msgstr ""
+msgstr "%1 Bertsioa"
 
 #. ($args{'Value'}, $cf->Name)
-#: lib/RT/Record.pm:2131
+#: lib/RT/Record.pm:2132
 msgid "%1 added as a value for %2"
 msgstr "%1 gehituta %2ren balio gisa"
 
 #. (join ' ', @res)
 #: lib/RT/Date.pm:433
 msgid "%1 ago"
-msgstr ""
+msgstr "duela %1"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -263,7 +261,7 @@ msgstr "%1 %2(e)k"
 #. ($self->loc($type))
 #: lib/RT/Record/Role/Roles.pm:418
 msgid "%1 cannot be a group"
-msgstr ""
+msgstr "%1 ezin da talde bat izan"
 
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 #. ($self->loc($self->Field),                    ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")),                    ($self->NewValue? "'".$self->NewValue ."'" : $self->loc("(no value)")))
@@ -337,12 +335,12 @@ msgstr ""
 #. ($principal->Object->Name, $self->loc($type))
 #: lib/RT/Record/Role/Roles.pm:415
 msgid "%1 is already a %2"
-msgstr ""
+msgstr "%1 dagoeneko %2 bat da"
 
 #. ($self->loc($column), $name)
 #: lib/RT/Record/Role/Status.pm:264
 msgid "%1 is already set to %2"
-msgstr ""
+msgstr "%1 dagoeneko %2ra ezarrita"
 
 #. ($email, $self->loc($type))
 #. ($name, $self->loc($type))
@@ -358,14 +356,14 @@ msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1 ez da aurrerantzean lan-agindurako %2 izango"
 
 #. ($old_value, $cf->Name)
-#: lib/RT/Record.pm:2196
+#: lib/RT/Record.pm:2197
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1 ez da aurrerantzean %2 eremu pertsonalizaturako balio bat izango"
 
 #. ($principal->Object->Name, $self->loc($args{Type}))
 #: lib/RT/Record/Role/Roles.pm:499
 msgid "%1 is not a %2"
-msgstr ""
+msgstr "%1 ez da %2 bat"
 
 #. ($args{'Lifecycle'})
 #. ($value)
@@ -376,7 +374,7 @@ msgstr "%1 ez da baliozko bizitzabide bat"
 #. (RT->Config->Get('Crypt')->{'Outgoing'})
 #: share/html/Elements/Crypt/KeyIssues:50
 msgid "%1 issues"
-msgstr ""
+msgstr "%1 arazo"
 
 #. ($protocol, $res{'info'}{'Formatted'})
 #: share/html/Admin/Elements/ShowKeyInfo:61
@@ -405,7 +403,7 @@ msgstr "%1 objektu"
 #. ($self->loc($self->Field), $self->_FormatPrincipal($principal))
 #: lib/RT/Group.pm:1144 lib/RT/Transaction.pm:1087
 msgid "%1 set to %2"
-msgstr ""
+msgstr "%1 %2ra ezarrita"
 
 #. ($meta->{'Source'}{'Extension'})
 #: share/html/Admin/Tools/Configuration.html:74
@@ -450,7 +448,7 @@ msgstr "%1ren aginte-panelak"
 #. ($UserObj->Name)
 #: share/html/Admin/Users/Keys.html:48
 msgid "%1's encryption keys"
-msgstr ""
+msgstr "%1(r)en enkriptazio gakoak"
 
 #. ($Object->Format)
 #. ($Object->Name)
@@ -486,7 +484,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:414
 msgid "%1M"
-msgstr ""
+msgstr "%1H"
 
 #. (int( $size / 1024 / 102.4 ) / 10)
 #: lib/RT/Attachment.pm:458
@@ -500,19 +498,19 @@ msgstr "%1Lan-agindu berria hemen%2&nbsp;%3"
 
 #: lib/RT/Date.pm:408
 msgid "%1W"
-msgstr ""
+msgstr "%1A"
 
 #: lib/RT/Date.pm:420
 msgid "%1Y"
-msgstr ""
+msgstr "%1U"
 
 #: lib/RT/Date.pm:402
 msgid "%1d"
-msgstr ""
+msgstr "%1e"
 
 #: lib/RT/Date.pm:396
 msgid "%1h"
-msgstr ""
+msgstr "%1o"
 
 #: lib/RT/Date.pm:390
 msgid "%1m"
@@ -527,42 +525,42 @@ msgstr ""
 #. ($Articles->Count)
 #: share/html/Articles/Elements/ShowTopicLink:61
 msgid "%quant(%1,article,articles)"
-msgstr ""
+msgstr "%1 artikulu"
 
 #: lib/RT/Date.pm:403
 msgid "%quant(%1,day,days)"
-msgstr ""
+msgstr "%1 egun"
 
 #: lib/RT/Date.pm:397
 msgid "%quant(%1,hour,hours)"
-msgstr ""
+msgstr "%1 ordu"
 
 #. (sprintf("%.1f",$minutes / 60), $minutes)
 #: share/html/Ticket/Elements/ShowTime:51
 msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
-msgstr ""
+msgstr "%1 ordu %2 minutu"
 
 #. ($Transaction->TimeTaken)
 #. ($minutes)
 #: lib/RT/Date.pm:391 share/html/Elements/ShowTransaction:135 share/html/Ticket/Elements/ShowTime:49
 msgid "%quant(%1,minute,minutes)"
-msgstr ""
+msgstr "%1 minutu"
 
 #: lib/RT/Date.pm:415
 msgid "%quant(%1,month,months)"
-msgstr ""
+msgstr "%1 hilabete"
 
 #: lib/RT/Date.pm:385
 msgid "%quant(%1,second,seconds)"
-msgstr ""
+msgstr "%1 segundu"
 
 #: lib/RT/Date.pm:409
 msgid "%quant(%1,week,weeks)"
-msgstr ""
+msgstr "%1 aste"
 
 #: lib/RT/Date.pm:421
 msgid "%quant(%1,year,years)"
-msgstr ""
+msgstr "%1 urte"
 
 #. ($name)
 #: lib/RT/Queue.pm:279
@@ -572,7 +570,7 @@ msgstr "'%1' ez da baliozko izen bat."
 #. ($Class)
 #: share/html/Articles/Article/Edit.html:121
 msgid "'%1' isn't a valid class"
-msgstr ""
+msgstr "'%1' ez da baliozko klase bat"
 
 #. ($Class)
 #: share/html/Articles/Article/ExtractFromTicket.html:93 share/html/Articles/Article/ExtractIntoTopic.html:70
@@ -607,11 +605,11 @@ msgstr "(Hutsik utzi ezkero, %1 balioa hartuko du)"
 
 #: share/html/Admin/Elements/UpgradeHistoryRow:69
 msgid "(Incomplete)"
-msgstr ""
+msgstr "(Osatugabe)"
 
 #: lib/RT/Report/Tickets.pm:429
 msgid "(Incorrect data)"
-msgstr ""
+msgstr "(okerreko data)"
 
 #: share/html/Admin/Elements/EditCustomFields:95
 msgid "(No custom fields)"
@@ -672,7 +670,7 @@ msgstr "(baliorik ez)"
 #. ($count)
 #: share/html/Elements/RT__Ticket/ColumnMap:138
 msgid "(pending %quant(%1,other ticket,other tickets))"
-msgstr ""
+msgstr "(beste %1 lan-agindu zain)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:130
 msgid "(pending approval)"
@@ -714,7 +712,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:368
 msgid "0 seconds"
-msgstr ""
+msgstr "0 segundu"
 
 #: lib/RT/Date.pm:368
 msgid "0s"
@@ -722,7 +720,7 @@ msgstr ""
 
 #: lib/RT/Template.pm:287 lib/RT/Template.pm:727
 msgid "A Template with that name already exists"
-msgstr ""
+msgstr "Dagoeneko badago izen bereko txantiloi bat"
 
 #: etc/initialdata:228
 msgid "A blank template"
@@ -876,7 +874,7 @@ msgstr "Objektuen eremu pertsonalizatu balioak gehitu, aldatu eta ezabatu"
 
 #: share/html/Elements/RT__CustomField/ColumnMap:85
 msgid "Added"
-msgstr ""
+msgstr "Gehituta"
 
 #. ($principal->Object->Name, $self->loc($args{'Type'}))
 #: lib/RT/Ticket.pm:650
@@ -927,7 +925,7 @@ msgstr "Helbidea2"
 #. ($duration)
 #: lib/RT/Transaction.pm:1258
 msgid "Adjusted time worked by %quant(%1,minute,minutes)"
-msgstr ""
+msgstr "Lan egindako denbora %1 minututan doituta"
 
 #: share/html/Elements/Tabs:64
 msgid "Admin"
@@ -1015,7 +1013,7 @@ msgstr "Klase Guztiak"
 
 #: share/html/Admin/CustomFields/index.html:52
 msgid "All Custom Fields"
-msgstr ""
+msgstr "Eremu pertsonalizatu guztiak"
 
 #: share/html/Elements/Tabs:513
 msgid "All Dashboards"
@@ -1035,7 +1033,7 @@ msgstr "Lan-agindu guztiak"
 
 #: share/html/User/Prefs.html:173
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
-msgstr ""
+msgstr "iCal jario guztiek zu baimentzen zaituen token sekretu bat dute txertatuta. Zure iCal jario baten URLa mundura agerian geratu bada, sekretu berri bat lor dezakezu, beheko <b>existitzen diren iCal jario guztiak apurtuaz</b>."
 
 #: share/html/Admin/Queues/index.html:99
 msgid "All queues matching search criteria"
@@ -1076,11 +1074,11 @@ msgstr ""
 
 #: lib/RT/Group.pm:619
 msgid "An Instance must be provided"
-msgstr ""
+msgstr "Instantzia bat eman behar da"
 
 #: share/html/Errors/WebRemoteUser/Wrapper:49
 msgid "An error occurred"
-msgstr ""
+msgstr "Errore bat gertatu da"
 
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
@@ -1116,7 +1114,7 @@ msgstr "Globalki aplikatu"
 
 #: share/html/Admin/Elements/EditScrips:95
 msgid "Apply selected scrips"
-msgstr ""
+msgstr "Aukeratutako scrip-ak ezarri"
 
 #: share/html/Search/Edit.html:62
 msgid "Apply your changes"
@@ -1182,7 +1180,7 @@ msgstr "Ziur zaude artikulu hau ezabatu nahi duzula?"
 #. ($object->id)
 #: lib/RT/URI/fsck_com_article.pm:215
 msgid "Article #%1"
-msgstr ""
+msgstr "#%1 artikulua"
 
 #. ($ArticleObj->Id)
 #: share/html/Articles/Article/Delete.html:97
@@ -1192,7 +1190,7 @@ msgstr "#%1 artikulua ezabatuta"
 #. ($id)
 #: share/html/Articles/Article/History.html:61
 msgid "Article #%1 not found"
-msgstr ""
+msgstr "#%1 artikulua ez da aurkitu"
 
 #. ($article->Id, $article->Name || loc("(no name)"))
 #. ($object->id, $object->Name)
@@ -1323,27 +1321,27 @@ msgstr "Eskuragarri"
 
 #: lib/RT/Report/Tickets.pm:232
 msgid "Average Created-LastUpdated"
-msgstr ""
+msgstr "Created-LastUpdated Batazbestekoa"
 
 #: lib/RT/Report/Tickets.pm:227
 msgid "Average Created-Resolved"
-msgstr ""
+msgstr "Created-Resolved Batazbestekoa"
 
 #: lib/RT/Report/Tickets.pm:222
 msgid "Average Created-Started"
-msgstr ""
+msgstr "Created-Started Batazbestekoa"
 
 #: lib/RT/Report/Tickets.pm:242
 msgid "Average Due-Resolved"
-msgstr ""
+msgstr "Due-Resolved Batazbestekoa"
 
 #: lib/RT/Report/Tickets.pm:247
 msgid "Average Started-Resolved"
-msgstr ""
+msgstr "Started-Resolved Batazbestekoa"
 
 #: lib/RT/Report/Tickets.pm:237
 msgid "Average Starts-Started"
-msgstr ""
+msgstr "Starts-Started Batazbestekoa"
 
 #: lib/RT/Report/Tickets.pm:212
 msgid "Average time estimated"
@@ -1450,18 +1448,18 @@ msgstr "EPtan bilaketa egin daiteke goiko antzeko sintaxia erabilita %1-rekin."
 
 #: share/html/Search/Chart.html:162
 msgid "Calculate"
-msgstr ""
+msgstr "Kalkulatu"
 
 #: share/html/Search/Chart.html:164
 msgid "Calculate values of"
-msgstr ""
+msgstr "Hauen balioak kalkulatu"
 
 #. ($ARGS{'SavedSearchLoad'})
 #: share/html/Search/Elements/EditSearches:176
 msgid "Can not load saved search \"%1\""
 msgstr "Ezin da kargatu gordetako \"%1\" bilaketa"
 
-#: lib/RT/User.pm:1571
+#: lib/RT/User.pm:1591
 msgid "Can not modify system users"
 msgstr "Ezin dira aldatu sistemako erabiltzaileak"
 
@@ -1473,9 +1471,9 @@ msgstr "Ezin da eremu pertsonalizatu baten izenik gabeko balioa gehitu"
 msgid "Can't find a saved search to work with"
 msgstr "Ezin da aurkitu lan egiteko gordetako bilaketa"
 
-#: lib/RT/Ticket.pm:3072
+#: lib/RT/Ticket.pm:3089
 msgid "Can't forward: no valid email addresses specified"
-msgstr ""
+msgstr "Ezin da birbidali: ez da baliozko posta-e helbiderik eman"
 
 #: lib/RT/Link.pm:192
 msgid "Can't link a ticket to itself"
@@ -1485,14 +1483,14 @@ msgstr "Ezin da lan-agindu bat bere buruari estekatu"
 msgid "Can't link to a deleted ticket"
 msgstr "Ezin da ezabatutako lan-agindu bat estekatu"
 
-#: lib/RT/Ticket.pm:1792
+#: lib/RT/Ticket.pm:1809
 msgid "Can't merge a ticket into itself"
-msgstr ""
+msgstr "Ezin da lan-agindu bat bere buruarekin bateratu"
 
 #. ($QueueObj->Name)
 #: share/html/index.html:130
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
-msgstr ""
+msgstr "Ezin da lan-agindu sorrera azkarra burutu %1 ilaran derrigorrezko eremu pertsonalizatuak daudelako. Mesedez bukatu lan-agindu sorrera orri normala erabilita."
 
 #. (loc($self->{SearchType}))
 #: share/html/Widgets/SavedSearch:133
@@ -1501,7 +1499,7 @@ msgstr "Ezin da %1 gorde"
 
 #: share/html/Search/Elements/EditSearches:320
 msgid "Can't save a search without a Description"
-msgstr ""
+msgstr "Ezin da bilaketa bat gorde izen gabe"
 
 #: share/html/Search/Elements/EditSearches:323
 msgid "Can't save this search"
@@ -1509,7 +1507,7 @@ msgstr "Ezin da gorde bilaketa hau"
 
 #: lib/RT/Record.pm:1385 lib/RT/Record.pm:1529
 msgid "Can't specify both base and target"
-msgstr ""
+msgstr "Ezin dira zehaztu oinarri eta helburua batera"
 
 #: lib/RT/Article.pm:382
 msgid "Cannot add link to plain number"
@@ -1545,7 +1543,7 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/Modify.html:113
 msgid "Change email subject:"
-msgstr ""
+msgstr "Posta-e gaia aldatu:"
 
 #: share/html/SelfService/Prefs.html:70
 msgid "Change password"
@@ -1553,7 +1551,7 @@ msgstr "Pasahitza aldatu"
 
 #: lib/RT/Template.pm:706
 msgid "Changing queue is not implemented"
-msgstr ""
+msgstr "Ilara aldaketa ez dago inplementatuta"
 
 #: share/html/Elements/Tabs:843
 msgid "Chart"
@@ -1577,7 +1575,7 @@ msgstr "Markatu kaxa ezabatzeko"
 
 #: share/html/Search/Elements/SelectLinks:59
 msgid "Child"
-msgstr ""
+msgstr "Semea"
 
 #: share/html/Elements/AddLinks:86 share/html/Elements/BulkLinks:139 share/html/Elements/BulkLinks:84 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:73 share/html/Search/Elements/BuildFormatString:100 share/html/m/ticket/create:396 share/html/m/ticket/show:433
 msgid "Children"
@@ -1592,7 +1590,7 @@ msgstr ""
 msgid "Choose from Topics for %1"
 msgstr "Aukeratu %1(r)en Gai Zerrendatik"
 
-#: lib/RT/User.pm:107 share/html/Admin/Users/Modify.html:151 share/html/Elements/RT__User/ColumnMap:111 share/html/User/Prefs.html:144
+#: lib/RT/User.pm:108 share/html/Admin/Users/Modify.html:151 share/html/Elements/RT__User/ColumnMap:111 share/html/User/Prefs.html:144
 msgid "City"
 msgstr "Hiria"
 
@@ -1644,7 +1642,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Theme.html:101
 msgid "Click to choose a color"
-msgstr ""
+msgstr "Klik egin kolorea aukeratzeko"
 
 #: share/html/Ticket/Elements/ShowDates:80 share/html/m/ticket/show:375
 msgid "Closed"
@@ -1664,7 +1662,7 @@ msgstr "Combobox: Balio bakarra hautatu edo idatzi"
 
 #: lib/RT/CustomField.pm:146
 msgid "Combobox: Select or enter up to %quant(%1,value,values)"
-msgstr ""
+msgstr "Combobox:  %1 baliorarte hautatu edo idatzi"
 
 #: share/html/Elements/ShowTransaction:193 share/html/Elements/Tabs:678 share/html/Search/Elements/EditFormat:75
 msgid "Comment"
@@ -1694,7 +1692,7 @@ msgstr "Iruzkinak (Ez zaizkie eskatzaileei bidaliko)"
 msgid "Comments about this user"
 msgstr "Erabiltzaile honi buruzko oharrak"
 
-#: lib/RT/Ticket.pm:1639 lib/RT/Transaction.pm:975
+#: lib/RT/Ticket.pm:1656 lib/RT/Transaction.pm:975
 msgid "Comments added"
 msgstr "Iruzkinak gehituta"
 
@@ -1741,11 +1739,11 @@ msgstr ""
 #. (qq[<a href="mailto:$owner">], $owner, '</a>')
 #: share/html/Errors/WebRemoteUser/Wrapper:67
 msgid "Contact your RT administrator via %1email to %2%3."
-msgstr ""
+msgstr "Kontaktuan jarri zure RT administratzailearekin %1%2 posta-e%3 bidez."
 
 #: share/html/Errors/WebRemoteUser/Wrapper:69
 msgid "Contact your RT administrator."
-msgstr ""
+msgstr "Kontaktuan jarri zure RT administratzailearekin."
 
 #: lib/RT/Tickets.pm:139 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:53 share/html/Articles/Article/Edit.html:68 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:75 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:617 share/html/Ticket/Forward.html:76 share/html/Ticket/ModifyAll.html:122
 msgid "Content"
@@ -1754,7 +1752,7 @@ msgstr "Edukia"
 #. ($self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:931
 msgid "Content dropped because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
-msgstr ""
+msgstr "Edukia atzera bota da bere tamainak (%1 byte) konfiguratutako gehienezko tamaina (%2 byte) gainditzen duelako."
 
 #: lib/RT/Transaction.pm:940
 msgid "Content insert failed. See error log for details."
@@ -1762,16 +1760,16 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1741
 msgid "Content is not a valid IP address"
-msgstr ""
+msgstr "Edukia ez da baliozko IP helbide bat"
 
 #: lib/RT/CustomField.pm:1757
 msgid "Content is not a valid IP address range"
-msgstr ""
+msgstr "Edukia ez da baliozko IP helbide barrutia"
 
 #. ($self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:920
 msgid "Content truncated because its size (%1 bytes) exceeded configured maximum size setting (%2 bytes)."
-msgstr ""
+msgstr "Edukia moztua bere tamaina (%1 byte) konfiguratutako tamaina maximoa gainditzen duelako (%2 byte)."
 
 #: share/html/Elements/SelectAttachmentField:53
 msgid "Content-Type"
@@ -1789,7 +1787,7 @@ msgstr "Korrespondentzia helbidea"
 msgid "Correspondence"
 msgstr "Korrespondentzia"
 
-#: lib/RT/Ticket.pm:1641 lib/RT/Transaction.pm:971
+#: lib/RT/Ticket.pm:1658 lib/RT/Transaction.pm:971
 msgid "Correspondence added"
 msgstr "Korrespondentzia gehituta"
 
@@ -1804,7 +1802,7 @@ msgid "Could not add new custom field value: %1"
 msgstr "Ezin izan da eremu pertsonalizatuaren balio berri bat gehitu: %1"
 
 #. ($msg)
-#: lib/RT/Ticket.pm:2064
+#: lib/RT/Ticket.pm:2081
 msgid "Could not change owner: %1"
 msgstr "Ezin izan da jabea aldatu: %1"
 
@@ -1826,7 +1824,7 @@ msgstr "Ezin izan da bilaketa sortu: %1"
 msgid "Could not create ticket. Queue not set"
 msgstr "Ezin izan da lan-agindua sortu. Ez da ilara ezarri"
 
-#: lib/RT/User.pm:190 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:231 lib/RT/User.pm:245 lib/RT/User.pm:255 lib/RT/User.pm:460
+#: lib/RT/User.pm:191 lib/RT/User.pm:205 lib/RT/User.pm:214 lib/RT/User.pm:223 lib/RT/User.pm:232 lib/RT/User.pm:246 lib/RT/User.pm:256 lib/RT/User.pm:461
 msgid "Could not create user"
 msgstr "Ezin izan da erabiltzailea sortu"
 
@@ -1838,12 +1836,12 @@ msgstr "Ezin izan da %1 bilaketa ezabatu: %2"
 #. ($name)
 #: lib/RT/Record/Role/Roles.pm:397
 msgid "Could not find group '%1'"
-msgstr ""
+msgstr "Ezin izan da '%1' taldea aurkitu"
 
 #. ($name)
 #: lib/RT/Record/Role/Roles.pm:387
 msgid "Could not find or create user '%1'"
-msgstr ""
+msgstr "Ezin izan da '%1' erabiltzailea aurkitu edo sortu"
 
 #. ($self->ObjectName)
 #: lib/RT/SharedSetting.pm:244
@@ -1876,30 +1874,30 @@ msgstr ""
 #. ($args{User})
 #: lib/RT/Record/Role/Roles.pm:479
 msgid "Could not load user '%1'"
-msgstr ""
+msgstr "Ezin izan da '%1' erabiltzailea kargatu"
 
 #. ($principal->Object->Name, $self->loc($type))
 #: lib/RT/Record/Role/Roles.pm:426
 msgid "Could not make %1 a %2"
-msgstr ""
+msgstr "Ezin izan da %1 %2 bihurtu"
 
 #. ($principal->Object->Name, $self->loc($args{Type}))
 #: lib/RT/Record/Role/Roles.pm:507
 msgid "Could not remove %1 as a %2"
 msgstr ""
 
-#: lib/RT/User.pm:142
+#: lib/RT/User.pm:143
 msgid "Could not set user info"
 msgstr "Ezin izan da erabiltzailearen informazioa ezarri"
 
 #. ($col, $msg)
 #: lib/RT/Group.pm:1106
 msgid "Could not update column %1: %2"
-msgstr ""
+msgstr "Ezin izan da %1 zutabea eguneratu: %2"
 
 #: lib/RT/Record/AddAndSort.pm:200
 msgid "Couldn't add as it's global already"
-msgstr ""
+msgstr "Ezin izan da gehitu dagoeneko globala da eta"
 
 #: lib/RT/Transaction.pm:166
 msgid "Couldn't add attachment"
@@ -1921,7 +1919,7 @@ msgstr "Ezin izan da txantiloiaren '%1' kode-blokea konpilatu: %2"
 
 #. ($Msg)
 #. ($msg)
-#: lib/RT/Record.pm:2128 lib/RT/Record.pm:2178
+#: lib/RT/Record.pm:2129 lib/RT/Record.pm:2179
 msgid "Couldn't create a transaction: %1"
 msgstr "Ezin izan da eragiketa bat sortu: %1"
 
@@ -1979,7 +1977,7 @@ msgstr "Ezin izan da %1 EremuPertsonalizatua kargatu"
 #. (blessed($self), $self->Id)
 #: lib/RT/Record/Role/Status.pm:291
 msgid "Couldn't load copy of %1 #%2"
-msgstr ""
+msgstr "Ezin izan da %1 #%2-ren kopia kargatu"
 
 #. ($self->Id)
 #: lib/RT/Ticket.pm:1097
@@ -2112,7 +2110,7 @@ msgstr "Ezin izan da prozesatu Helburu URIa: %1"
 #. ($msg)
 #: lib/RT/Group.pm:1088
 msgid "Couldn't remove previous member: %1"
-msgstr ""
+msgstr "Ezin izan da aurreko kidea kendu: %1"
 
 #. ($msg)
 #: lib/RT/Attachment.pm:880
@@ -2127,7 +2125,7 @@ msgstr "Ezin da edukia enkriptatutako datuekin ordeztu: %1"
 #. ($remote_link)
 #: lib/RT/Record.pm:1421 lib/RT/Record.pm:1558
 msgid "Couldn't resolve '%1' into a link."
-msgstr ""
+msgstr "Ezin izan da '%1' esteka bat bihurtu"
 
 #. ($args{'Base'})
 #: lib/RT/Link.pm:155
@@ -2144,15 +2142,15 @@ msgstr "Ezin izan da '%1' helburua URI bat bihurtu"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "Ezin izan da %1(r)en begiralea ezarri: %2"
 
-#: lib/RT/User.pm:1845
+#: lib/RT/User.pm:1865
 msgid "Couldn't set private key"
 msgstr "Ezin izan da gako pribatua ezarri"
 
-#: lib/RT/User.pm:1829
+#: lib/RT/User.pm:1849
 msgid "Couldn't unset private key"
 msgstr "Ezin izan da gako pribatua kendu"
 
-#: lib/RT/User.pm:108 share/html/Admin/Users/Modify.html:168 share/html/Elements/RT__User/ColumnMap:126 share/html/User/Prefs.html:156
+#: lib/RT/User.pm:109 share/html/Admin/Users/Modify.html:168 share/html/Elements/RT__User/ColumnMap:126 share/html/User/Prefs.html:156
 msgid "Country"
 msgstr "Herrialdea"
 
@@ -2229,7 +2227,7 @@ msgstr "Lan-agindu bat sortu"
 
 #: share/html/User/Elements/Portlets/CreateTicket:50
 msgid "Create a ticket with this user as the Requestor in Queue"
-msgstr ""
+msgstr "Lan-agindu bat sortu erabiltzaile hau Eskatzaile dela Ilaran"
 
 #: share/html/Articles/Elements/CreateArticle:48
 msgid "Create an article"
@@ -2291,11 +2289,11 @@ msgstr "Gordetako bilaketak sortu, aldatu eta ezabatu"
 msgid "Create, modify and delete users"
 msgstr "Erabiltzaileak sortu, aldatu eta ezabatu"
 
-#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:137 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Elements/ColumnMap:68 share/html/Elements/ColumnMap:73 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:350
 msgid "Created"
 msgstr "Sortuta"
 
-#: share/html/Elements/ColumnMap:79
+#: share/html/Elements/ColumnMap:78
 msgid "Created By"
 msgstr "Nork Sortua"
 
@@ -2411,7 +2409,7 @@ msgid "Custom field %1 has no value."
 msgstr "%1 eremu pertsonalizatuak ez du baliorik."
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1971 lib/RT/Record.pm:2159
+#: lib/RT/Record.pm:1971 lib/RT/Record.pm:2160
 msgid "Custom field %1 not found"
 msgstr "Ez da aurkitu %1 eremu pertsonalizatua"
 
@@ -2458,7 +2456,7 @@ msgstr "Posta-e Konfigurazioa Pertsonalizatu"
 
 #: share/html/Elements/Tabs:212
 msgid "Customize dashboards in menu"
-msgstr ""
+msgstr "Menuan agertuko diren aginte-panelak pertsonalizatu"
 
 #: share/html/Admin/Tools/Theme.html:76
 msgid "Customize the RT theme"
@@ -2480,7 +2478,7 @@ msgstr ""
 msgid "Daily"
 msgstr "Egunero"
 
-#: lib/RT/Config.pm:563
+#: lib/RT/Config.pm:583
 msgid "Daily digest"
 msgstr "Eguneroko laburpena"
 
@@ -2491,12 +2489,12 @@ msgstr "Aginte-panela"
 #. ($Dashboard->Name, $msg)
 #: share/html/Dashboards/Modify.html:143
 msgid "Dashboard %1 could not be updated: %2"
-msgstr ""
+msgstr "%1 aginte-panela ezin izan da eguneratu: %2"
 
 #. ($Dashboard->Name)
 #: share/html/Dashboards/Modify.html:140
 msgid "Dashboard %1 updated"
-msgstr ""
+msgstr "%1 aginte-panela eguneratuta"
 
 #. ($msg)
 #: share/html/Dashboards/Modify.html:110
@@ -2518,12 +2516,12 @@ msgstr "Aginte-panelak"
 
 #: share/html/Admin/Global/DashboardsInMenu.html:48 share/html/Admin/Global/DashboardsInMenu.html:54 share/html/Admin/Users/DashboardsInMenu.html:62 share/html/Elements/Tabs:211 share/html/Elements/Tabs:328 share/html/Elements/Tabs:586 share/html/Prefs/DashboardsInMenu.html:57
 msgid "Dashboards in menu"
-msgstr ""
+msgstr "Aginte-panelak menuan"
 
 #. ($UserObj->Name)
 #: share/html/Admin/Users/DashboardsInMenu.html:71
 msgid "Dashboards in menu for the user %1"
-msgstr ""
+msgstr "aginte-panelak %1 erabiltzailearen menuan"
 
 #: lib/RT/Installer.pm:78
 msgid "Database host"
@@ -2551,9 +2549,9 @@ msgstr ""
 
 #: lib/RT/Report/Tickets.pm:131 share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
-msgstr ""
+msgstr "Data"
 
-#: lib/RT/Config.pm:512
+#: lib/RT/Config.pm:532
 msgid "Date format"
 msgstr "Data formatua"
 
@@ -2563,7 +2561,7 @@ msgstr "Datak"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Day"
-msgstr ""
+msgstr "Eguna"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "DayOfMonth"
@@ -2589,13 +2587,13 @@ msgstr "Dezifratu"
 msgid "Decryption error; contact the administrator"
 msgstr ""
 
-#: lib/RT/Config.pm:152
+#: lib/RT/Config.pm:160
 msgid "Default queue"
 msgstr "Ilara lehenetsia"
 
 #: etc/initialdata:408 etc/upgrade/4.1.16/content:7
 msgid "Default reminder template"
-msgstr ""
+msgstr "Oroigarri txantiloi lehenetsia"
 
 #. ($DefaultValue)
 #: share/html/Widgets/Form/Integer:61 share/html/Widgets/Form/String:69
@@ -2636,7 +2634,7 @@ msgstr "Ezabaketak huts egin du: %1"
 msgid "Delete group dashboards"
 msgstr "Taldearem aginte-panelak ezabatu"
 
-#: lib/RT/Ticket.pm:2455 lib/RT/Ticket.pm:2455
+#: lib/RT/Ticket.pm:2472 lib/RT/Ticket.pm:2472
 msgid "Delete operation is disabled by lifecycle configuration"
 msgstr "Bizitzabidearen konfigurazioak ezabaketa operazioa desgaitzen du"
 
@@ -2678,7 +2676,7 @@ msgstr "Ezabatutako %1 bilaketa"
 msgid "Deleting this object would break referential integrity"
 msgstr "Objektu hau ezabatzeak integritate erreferentziala hautsi dezake"
 
-#: lib/RT/User.pm:471
+#: lib/RT/User.pm:472
 msgid "Deleting this object would violate referential integrity"
 msgstr "Objektu hau ezabatzeak integritate erreferentziala urratu dezake"
 
@@ -2771,21 +2769,21 @@ msgstr "%1 Artikulua Bistaratu"
 msgid "Display Columns"
 msgstr "Bistaratutako Zutabeak"
 
-#: lib/RT/Config.pm:459
+#: lib/RT/Config.pm:479
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
-msgstr ""
+msgstr "Testu-plano eranskin guztiak zabalera finkoko letra-tipoan bistaratu formatua errespetatuz, baina testua egokituta beharrezko denean."
 
-#: lib/RT/Config.pm:386
+#: lib/RT/Config.pm:406
 msgid "Display messages in rich text if available"
-msgstr ""
+msgstr "Mezuak testu aberastuan bistaratu posible bada"
 
-#: lib/RT/Config.pm:458
+#: lib/RT/Config.pm:478
 msgid "Display plain-text attachments in fixed-width font"
-msgstr ""
+msgstr "Testu-plano eranskinak zabalera finkoko letra-tipoan bistaratu"
 
-#: lib/RT/Config.pm:493
+#: lib/RT/Config.pm:513
 msgid "Display ticket after \"Quick Create\""
-msgstr ""
+msgstr "Lan-agindua bistaratu \"Sorrera azkarraren\" ondoren"
 
 #. ('<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>')
 #: share/html/Elements/Footer:59
@@ -2804,11 +2802,11 @@ msgstr "Domeinu-izena"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr ""
 
-#: lib/RT/Config.pm:360
+#: lib/RT/Config.pm:374
 msgid "Don't refresh home page."
 msgstr "Ez freskatu etxeko-orria."
 
-#: lib/RT/Config.pm:330
+#: lib/RT/Config.pm:338
 msgid "Don't refresh search results."
 msgstr "Ez freskatu bilaketa emaitzak."
 
@@ -2937,7 +2935,7 @@ msgstr "Ez duzu %1 gordetako bilaketa ikusteko eskubiderik edo identifikatzailea
 
 #: share/html/Admin/Elements/UpgradeHistory:57
 msgid "Elapsed"
-msgstr ""
+msgstr "Igarotakoa"
 
 #: share/html/Admin/Users/Modify.html:72 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:65
 msgid "Email"
@@ -2954,13 +2952,13 @@ msgstr "Laburpena Postaz"
 #. ($AttachmentObj->TransactionObj->ObjectId,        $AttachmentObj->Id)
 #: share/html/Ticket/ShowEmailRecord.html:116
 msgid "Email Source for Ticket %1, Attachment %2"
-msgstr ""
+msgstr "Posta-e iturburua %1 lan-agindu, %2 eranskinarendako"
 
-#: lib/RT/User.pm:600
+#: lib/RT/User.pm:601
 msgid "Email address in use"
 msgstr "Post-e helbidea erabilita dago"
 
-#: lib/RT/Config.pm:560
+#: lib/RT/Config.pm:580
 msgid "Email delivery"
 msgstr "Posta-e banaketa"
 
@@ -2968,15 +2966,15 @@ msgstr "Posta-e banaketa"
 msgid "Email template for periodic notification digests"
 msgstr "Posta-e bidezko aldizkako laburpen jakinarazpenen txantiloia"
 
-#: lib/RT/User.pm:93
+#: lib/RT/User.pm:94
 msgid "EmailAddress"
 msgstr ""
 
 #: share/html/Elements/RT__Template/ColumnMap:77
 msgid "Empty"
-msgstr ""
+msgstr "Hutsik"
 
-#: lib/RT/Config.pm:502
+#: lib/RT/Config.pm:522
 msgid "Enable quote folding?"
 msgstr ""
 
@@ -3002,7 +3000,7 @@ msgstr "Gaituta (Kaxari marka kentzeak ilara hau desgaitzen du)"
 
 #: share/html/Admin/Scrips/Create.html:67 share/html/Admin/Scrips/Modify.html:83
 msgid "Enabled (Unchecking this box disables this scrip)"
-msgstr ""
+msgstr "Gaituta (kaxari marka kentzeak scrip hau desgaituko du)"
 
 #: share/html/Admin/Articles/Classes/index.html:82
 msgid "Enabled Classes"
@@ -3037,10 +3035,10 @@ msgstr ""
 msgid "Encrypt/Decrypt"
 msgstr ""
 
-#. ($id, $txn->Ticket)
+#. ($id, $txn->Ticket, $txn->TicketObj->Subject)
 #: share/html/Ticket/Crypt.html:99
-msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
-msgstr "#%2 lan-aginduaren #%1 eragiketa enkriptatu/desenkriptatu"
+msgid "Encrypt/Decrypt transaction #%1 of ticket #%2: %3"
+msgstr ""
 
 #: lib/RT/Queue.pm:384
 msgid "Encrypting"
@@ -3100,19 +3098,19 @@ msgstr "Idatzi lan-aginduak edo URIak lan-aginduak horietara estekatzeko. Banand
 
 #: share/html/Elements/BulkLinks:123
 msgid "Enter tickets or URIs to link to. Separate multiple entries with spaces."
-msgstr ""
+msgstr "Idatzi lan-aginduak edo URIak zeinetara estekatzeko. Balio anitzak hutsuneekin banandu."
 
-#: lib/RT/Config.pm:306
+#: lib/RT/Config.pm:314
 msgid "Enter time in hours by default"
 msgstr "Lehenetsi denbora ordutan sartzea"
 
 #: lib/RT/CustomField.pm:193
 msgid "Enter up to %quant(%1,IP address range,IP address ranges)"
-msgstr ""
+msgstr "Gehienez %1 IP helbide barruti idatzi"
 
 #: lib/RT/CustomField.pm:184
 msgid "Enter up to %quant(%1,IP address,IP addresses)"
-msgstr ""
+msgstr "Gehienez %1 IP helbide idatzi"
 
 #: lib/RT/CustomField.pm:99
 msgid "Enter up to %quant(%1,value,values)"
@@ -3137,7 +3135,7 @@ msgstr "Errorea"
 
 #: share/html/Ticket/ShowEmailRecord.html:106
 msgid "Error loading attachment"
-msgstr ""
+msgstr "Errorea eranskina kargatzerakoan"
 
 #. ($error)
 #: share/html/Search/Chart:466
@@ -3214,7 +3212,7 @@ msgstr ""
 msgid "Extension"
 msgstr ""
 
-#: lib/RT/User.pm:1041
+#: lib/RT/User.pm:1060
 msgid "External authentication enabled."
 msgstr "Kanpo-autentifikazioa gaituta."
 
@@ -3258,11 +3256,11 @@ msgstr "Datubasera konektatzeak huts egin du: %1"
 msgid "Failed to create %1 attribute"
 msgstr "%1 atributua sortzeak huts egin du"
 
-#: lib/RT/User.pm:339
+#: lib/RT/User.pm:340
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr ""
 
-#: lib/RT/User.pm:346
+#: lib/RT/User.pm:347
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr ""
 
@@ -3384,7 +3382,7 @@ msgstr ""
 
 #: share/html/Elements/FindUser:48
 msgid "Find a user"
-msgstr ""
+msgstr "Erabiltzaile bat aurkitu"
 
 #: share/html/Admin/Users/index.html:77
 msgid "Find all users whose"
@@ -3436,7 +3434,7 @@ msgstr "Aldaketa behartu"
 msgid "Format"
 msgstr "Formatua"
 
-#: lib/RT/Config.pm:252
+#: lib/RT/Config.pm:260
 msgid "Formats iCal feed events with date and time"
 msgstr ""
 
@@ -3460,20 +3458,20 @@ msgstr "Lan-agindua Birbidali"
 msgid "Forward messages outside of RT"
 msgstr "Mezuak RTtik at birbidali"
 
-#. ($TicketObj->id)
+#. ($TicketObj->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:123
-msgid "Forward ticket #%1"
-msgstr "#%1 lan-agindua birbidali"
+msgid "Forward ticket #%1: %2"
+msgstr ""
 
-#. ($txn->id)
+#. ($txn->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:122
-msgid "Forward transaction #%1"
-msgstr "#%1 eragiketa birbidali"
+msgid "Forward transaction #%1: %2"
+msgstr ""
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
 #: lib/RT/Transaction.pm:951
 msgid "Forwarded %3Transaction #%1%4 to %2"
-msgstr ""
+msgstr "%3#%1 eragiketa%4 %2(r)i birbidalita"
 
 #. ($recipients)
 #: lib/RT/Transaction.pm:959
@@ -3492,7 +3490,7 @@ msgstr ""
 #. ($collection->CountAll)
 #: share/html/Search/Results.html:150 share/html/m/_elements/ticket_list:83
 msgid "Found %quant(%1,ticket,tickets)"
-msgstr ""
+msgstr "%1 lan-agindu aurkituak"
 
 #: lib/RT/Record.pm:1043
 msgid "Found Object"
@@ -3518,11 +3516,11 @@ msgstr "Nork"
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
 msgstr "GD desgaituta edo instalatu gabe dago. Irudi bat igo dezakezu, baina ez duzu kolore iradokizun automatikorik lortuko."
 
-#: lib/RT/User.pm:104
+#: lib/RT/User.pm:105
 msgid "Gecos"
 msgstr ""
 
-#: lib/RT/Config.pm:201 lib/RT/Config.pm:321
+#: lib/RT/Config.pm:209 lib/RT/Config.pm:329
 msgid "General"
 msgstr "Orokorra"
 
@@ -3633,7 +3631,7 @@ msgstr "Kidea taldean da dagoeneko: %1"
 
 #: share/html/Search/Chart.html:136
 msgid "Group by"
-msgstr ""
+msgstr "Taldekatzea"
 
 #. ($create_msg)
 #: share/html/Admin/Groups/Modify.html:111
@@ -3667,16 +3665,16 @@ msgstr "Ez da taldea aurkitu"
 
 #: share/html/Search/Chart.html:137
 msgid "Group tickets by"
-msgstr ""
+msgstr "Lan-aginduak honela taldekatu"
 
 #. ($_->Name)
 #: share/html/Elements/ShowPrincipal:64
 msgid "Group: %1"
-msgstr ""
+msgstr "Taldea: %1"
 
 #: share/html/Search/Chart.html:58
 msgid "Grouped search results"
-msgstr ""
+msgstr "Taldekatutako bilaketa emaitzak"
 
 #: lib/RT/CustomField.pm:1890 lib/RT/CustomField.pm:206 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:102 share/html/Elements/Tabs:143 share/html/Elements/Tabs:257 share/html/Elements/Tabs:75
 msgid "Groups"
@@ -3744,7 +3742,7 @@ msgstr "Birbidalitako mezu baten goiburua"
 
 #: share/html/Search/Chart.html:184
 msgid "Height"
-msgstr ""
+msgstr "Altuera"
 
 #: lib/RT/Interface/CLI.pm:75 lib/RT/Interface/CLI.pm:75
 msgid "Hello!"
@@ -3791,7 +3789,7 @@ msgstr "%1 erabiltzailearen historia"
 msgid "Home Phone"
 msgstr "Etxeko-telefonoa"
 
-#: lib/RT/Config.pm:356
+#: lib/RT/Config.pm:370
 msgid "Home page refresh interval"
 msgstr "Etxeko orria freskatze tartea"
 
@@ -3913,12 +3911,12 @@ msgstr ""
 
 #: share/html/Admin/Articles/Classes/Modify.html:93
 msgid "Include article summary"
-msgstr ""
+msgstr "Gehitu artikulu laburpena"
 
 #. ($cf->Name)
 #: share/html/Admin/Articles/Classes/Modify.html:97
 msgid "Include custom field '%1'"
-msgstr ""
+msgstr "Gehitu '%1' eremu pertsonalizatua"
 
 #: share/html/Search/Chart.html:187
 msgid "Include data table"
@@ -3956,7 +3954,7 @@ msgstr "Orria sartu"
 msgid "Include subtopics"
 msgstr "Azpi-gaiak sartu"
 
-#: lib/RT/Config.pm:251
+#: lib/RT/Config.pm:259
 msgid "Include time in iCal feed events?"
 msgstr ""
 
@@ -3965,7 +3963,7 @@ msgstr ""
 msgid "Index updates from %1"
 msgstr ""
 
-#: lib/RT/Config.pm:562
+#: lib/RT/Config.pm:582
 msgid "Individual messages"
 msgstr "Mezuak banaka"
 
@@ -4131,7 +4129,7 @@ msgstr "Eskubide baliogabea"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr ""
 
-#: lib/RT/User.pm:590
+#: lib/RT/User.pm:591
 msgid "Invalid syntax for email address"
 msgstr ""
 
@@ -4147,7 +4145,7 @@ msgstr "Baliogabeko balioa eremu pertsonalizaturako"
 
 #: lib/RT/Record/AddAndSort.pm:195
 msgid "Is already added to the object"
-msgstr ""
+msgstr "Dagoeneko objektuari gehituta dago"
 
 #: lib/RT/Attachment.pm:857
 msgid "Is not encrypted"
@@ -4198,7 +4196,7 @@ msgstr ""
 msgid "Keyword and intuition-based searching"
 msgstr ""
 
-#: lib/RT/User.pm:97
+#: lib/RT/User.pm:98
 msgid "Lang"
 msgstr ""
 
@@ -4222,11 +4220,11 @@ msgstr "Azken Kontaktua"
 msgid "Last Contacted"
 msgstr "Azkenekoz Kontaktatuta"
 
-#: share/html/Elements/ColumnMap:84 share/html/Elements/ColumnMap:89 share/html/Elements/SelectDateType:53
+#: share/html/Elements/ColumnMap:83 share/html/Elements/ColumnMap:88 share/html/Elements/SelectDateType:53
 msgid "Last Updated"
 msgstr "Azkenekoz Eguneratua"
 
-#: share/html/Elements/ColumnMap:94
+#: share/html/Elements/ColumnMap:93
 msgid "Last Updated By"
 msgstr "Azken Eguneraketaren Egilea"
 
@@ -4271,7 +4269,7 @@ msgstr "Ezker"
 msgid "Legends"
 msgstr "Legendak"
 
-#: lib/RT/Config.pm:398
+#: lib/RT/Config.pm:418
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Luzeera karakteretan; Erabili '0' mezu guztiak linean erakusteko, luzeera kontuan izan gabe"
 
@@ -4302,21 +4300,21 @@ msgstr "Esteka existitzen da dagoeneko"
 #. ($linkmsg)
 #: lib/RT/Record.pm:1453
 msgid "Link could not be created: %1"
-msgstr ""
+msgstr "Ezin izan da esteka sortu: %1"
 
 #. ($msg)
 #: lib/RT/Record.pm:1588
 msgid "Link could not be deleted: %1"
-msgstr ""
+msgstr "Ezin izan da esteka ezabatu: %1"
 
 #: lib/RT/Record.pm:1575
 msgid "Link not found"
 msgstr "Ez da esteka aurkitu"
 
-#. ($Ticket->Id)
+#. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/ModifyLinks.html:48
-msgid "Link ticket #%1"
-msgstr "#%1 lan-agindua estekatu"
+msgid "Link ticket #%1: %2"
+msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:108
 msgid "Link values to"
@@ -4337,7 +4335,7 @@ msgstr ""
 #. ($self->loc(lc($remote_obj->RecordType)))
 #: lib/RT/Record.pm:1417
 msgid "Linking to a deleted %1 is not allowed"
-msgstr ""
+msgstr "Ez dago baimenduta ezabatutako %1 bat estekatzea"
 
 #: share/html/Articles/Article/Display.html:56 share/html/Articles/Article/Edit.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Elements/Tabs:662 share/html/Ticket/Create.html:281 share/html/Ticket/Elements/ShowSummary:95 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:386
 msgid "Links"
@@ -4398,7 +4396,7 @@ msgstr "Kargatuta gordetako \"%1\" bilaketa"
 msgid "Loading..."
 msgstr "Kargatzen..."
 
-#: lib/RT/Config.pm:508 share/html/SelfService/Prefs.html:56
+#: lib/RT/Config.pm:528 share/html/SelfService/Prefs.html:56
 msgid "Locale"
 msgstr ""
 
@@ -4469,7 +4467,7 @@ msgstr ""
 msgid "M-F at %1"
 msgstr ""
 
-#: lib/RT/Config.pm:555 lib/RT/Config.pm:570
+#: lib/RT/Config.pm:575 lib/RT/Config.pm:590
 msgid "Mail"
 msgstr "Posta"
 
@@ -4544,13 +4542,13 @@ msgstr "Erabiltzaile eta pasahitzak kudeatu"
 #. ($old_lifecycle->Name, $new_lifecycle->Name)
 #: lib/RT/Record/Role/Status.pm:281
 msgid "Mapping between lifecycle %1 and %2 is incomplete. Contact your system administrator."
-msgstr ""
+msgstr "%1 eta %2 bizitzabideen arteko elkarrekikotasuna ez da osoa. Zure sistema administratzailearekin kontaktuan jarri."
 
 #: lib/RT/Date.pm:93
 msgid "Mar"
 msgstr ""
 
-#: share/html/SelfService/Display.html:153 share/html/Ticket/Display.html:191 share/html/m/ticket/show:122
+#: share/html/SelfService/Display.html:153 share/html/Ticket/Display.html:190 share/html/m/ticket/show:122
 msgid "Marked all messages as seen"
 msgstr "Markatu mezu guztiak ikusitako gisa"
 
@@ -4586,7 +4584,7 @@ msgstr ""
 msgid "Maximum Starts-Started"
 msgstr ""
 
-#: lib/RT/Config.pm:396
+#: lib/RT/Config.pm:416
 msgid "Maximum inline message length"
 msgstr "Gehienezko lineako mezu luzeera"
 
@@ -4662,7 +4660,7 @@ msgstr "Kidetasunak"
 #. ($object->Name)
 #: share/html/Admin/Elements/MembershipsPage:138
 msgid "Memberships of the group %1"
-msgstr ""
+msgstr "%1 taldearen kideak"
 
 #. ($id)
 #: share/html/Admin/Elements/MembershipsPage:140
@@ -4676,21 +4674,21 @@ msgstr "%1 erabiltzailearen kidetasunak"
 
 #: share/html/Search/Bulk.html:183 share/html/Ticket/ModifyAll.html:88 share/html/Ticket/ModifyLinks.html:63
 msgid "Merge"
-msgstr ""
+msgstr "Bateratu"
 
-#: lib/RT/Ticket.pm:1952
+#: lib/RT/Ticket.pm:1969
 msgid "Merge Successful"
 msgstr "Bateratze Arrakastatsua"
 
-#: lib/RT/Ticket.pm:1832
+#: lib/RT/Ticket.pm:1849
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Bateratzeak huts egin du. Ezin izan da EffectiveId ezarri"
 
-#: lib/RT/Ticket.pm:1838
+#: lib/RT/Ticket.pm:1855
 msgid "Merge failed. Couldn't set IsMerged"
-msgstr ""
+msgstr "Bateratzeak huts egin du. Ezin izan da IsMerged esleitu."
 
-#: lib/RT/Ticket.pm:1851
+#: lib/RT/Ticket.pm:1868
 msgid "Merge failed. Couldn't set Status"
 msgstr "Bateratzeak huts egin du. Ezin izan da Egoera ezarri"
 
@@ -4719,15 +4717,15 @@ msgstr ""
 msgid "Message body not shown because it is not plain text."
 msgstr "Ez da mezuaren gorputza erakutsi ez delako testu arrunta"
 
-#: lib/RT/Config.pm:297
+#: lib/RT/Config.pm:305
 msgid "Message box height"
 msgstr "Mezu kaxaren altuera"
 
-#: lib/RT/Config.pm:288
+#: lib/RT/Config.pm:296
 msgid "Message box width"
 msgstr "Mezu kaxaren zabalera"
 
-#: lib/RT/Ticket.pm:1635
+#: lib/RT/Ticket.pm:1652
 msgid "Message could not be recorded"
 msgstr "Mezua ezin izan da grabatu"
 
@@ -4735,7 +4733,7 @@ msgstr "Mezua ezin izan da grabatu"
 msgid "Message for user"
 msgstr "Erabiltzailearendako mezua"
 
-#: lib/RT/Ticket.pm:3118
+#: lib/RT/Ticket.pm:3135
 msgid "Message recorded"
 msgstr "Mezua grabatuta"
 
@@ -4848,10 +4846,15 @@ msgstr ""
 msgid "Modify custom field values"
 msgstr "Eremu pertsonalizatu balioak aldatu"
 
-#. ($TicketObj->Id)
-#: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:57
-msgid "Modify dates for ticket #%1"
+#. ($TicketObj->Id, $TicketObj->Subject)
+#: share/html/Ticket/ModifyDates.html:48
+msgid "Modify dates for #%1: %2"
 msgstr ""
+
+#. ($TicketObj->Id)
+#: share/html/Ticket/ModifyDates.html:57
+msgid "Modify dates for ticket #%1"
+msgstr "#%1 lan-aginduaren datak aldatu"
 
 #: share/html/Elements/Tabs:217
 msgid "Modify global article topics"
@@ -4918,10 +4921,14 @@ msgid "Modify or delete articles in this class"
 msgstr "Klase honetako artikuluak aldatu edo ezabatu"
 
 #. ($Ticket->Id)
-#. ($Ticket->id)
-#: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:58
+#: share/html/Ticket/ModifyPeople.html:58
 msgid "Modify people related to ticket #%1"
 msgstr "#%1 lan-aginduarekin erlazionatutako jendea aldatu"
+
+#. ($Ticket->id, $Ticket->Subject)
+#: share/html/Ticket/ModifyPeople.html:48
+msgid "Modify people related to ticket #%1: %2"
+msgstr ""
 
 #: lib/RT/Dashboard.pm:87
 msgid "Modify personal dashboards"
@@ -5007,9 +5014,14 @@ msgid "Modify ticket # %1"
 msgstr "# %1 lan-agindua aldatu"
 
 #. ($TicketObj->Id)
-#: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:58
+#: share/html/Ticket/Modify.html:58
 msgid "Modify ticket #%1"
 msgstr "#%1 lan-agindua aldatu"
+
+#. ($TicketObj->Id, $TicketObj->Subject)
+#: share/html/Ticket/Modify.html:48
+msgid "Modify ticket #%1: %2"
+msgstr ""
 
 #: lib/RT/Queue.pm:130
 msgid "Modify ticket owner on owned tickets"
@@ -5075,7 +5087,7 @@ msgstr "astelehenetik ostiralera"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Month"
-msgstr ""
+msgstr "Hilabetea"
 
 #: lib/RT/Dashboard/Mailer.pm:329 lib/RT/Report/Tickets.pm:131
 msgid "Monthly"
@@ -5087,13 +5099,13 @@ msgstr "Eskatzaileei buruz gehiago"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:140
 msgid "Move"
-msgstr ""
+msgstr "Mugitu"
 
 #: share/html/Admin/Articles/Elements/Topics:108
 msgid "Move here"
 msgstr "Mugitu hona"
 
-#: lib/RT/User.pm:170
+#: lib/RT/User.pm:171
 msgid "Must specify 'Name' attribute"
 msgstr "'Name' atributua adierazi behar da"
 
@@ -5124,7 +5136,7 @@ msgstr "Nere onespenak"
 
 #: share/html/SelfService/Closed.html:53
 msgid "My closed tickets"
-msgstr ""
+msgstr "Nire amaitutako lan-aginduak"
 
 #: share/html/Dashboards/Elements/SelectPrivacy:62 share/html/Dashboards/Elements/ShowDashboards:53
 msgid "My dashboards"
@@ -5132,7 +5144,7 @@ msgstr "Nere aginte-panelak"
 
 #: share/html/SelfService/index.html:52
 msgid "My open tickets"
-msgstr ""
+msgstr "Nire irekitako lan-aginduak"
 
 #: share/html/Elements/MyReminders:50 share/html/Tools/MyReminders.html:48
 msgid "My reminders"
@@ -5166,21 +5178,21 @@ msgstr ""
 msgid "NEWLINE"
 msgstr "ERRENKADABERRIA"
 
-#: lib/RT/User.pm:91 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:94 share/html/Elements/RT__User/ColumnMap:56
+#: lib/RT/User.pm:92 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:64 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:49 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:94 share/html/Elements/RT__User/ColumnMap:56
 msgid "Name"
 msgstr "Izena"
 
-#: lib/RT/Config.pm:186
+#: lib/RT/Config.pm:194
 msgid "Name and email address"
 msgstr "Izena eta posta-e helbidea"
 
-#: lib/RT/Article.pm:116 lib/RT/User.pm:285
+#: lib/RT/Article.pm:116 lib/RT/User.pm:286
 msgid "Name in use"
 msgstr "Izena erabilita"
 
 #: lib/RT/Template.pm:281 lib/RT/Template.pm:719
 msgid "Name is required"
-msgstr ""
+msgstr "Izena behar da"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:55
 msgid "Name:"
@@ -5230,7 +5242,7 @@ msgstr "Mezu berriak"
 msgid "New password"
 msgstr "Pasahitz berria"
 
-#: lib/RT/User.pm:791
+#: lib/RT/User.pm:792
 msgid "New password notification sent"
 msgstr "Pasahitz berri jakinarazpena bidalita"
 
@@ -5242,7 +5254,7 @@ msgstr "Oroigarri berria:"
 msgid "New ticket"
 msgstr "Lan-agindu berria"
 
-#: lib/RT/Ticket.pm:1787
+#: lib/RT/Ticket.pm:1804
 msgid "New ticket doesn't exist"
 msgstr "Lan-agindu berria ez da existitzen"
 
@@ -5259,7 +5271,7 @@ msgstr "Begirale berriak"
 msgid "Next"
 msgstr "Hurrengoa"
 
-#: lib/RT/User.pm:96
+#: lib/RT/User.pm:97
 msgid "NickName"
 msgstr "Goitizena"
 
@@ -5354,7 +5366,7 @@ msgstr "Ez dago deskribapenik %1-rentzako"
 #. ($tname)
 #: lib/RT/Scrip.pm:326
 msgid "No global template %1"
-msgstr ""
+msgstr "Ez dago %1 txantiloi globalik"
 
 #: lib/RT/Users.pm:181
 msgid "No group specified"
@@ -5370,9 +5382,9 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/Deauthorized:48
 msgid "No longer authorized"
-msgstr ""
+msgstr "Ez zaude baimenduta"
 
-#: lib/RT/Ticket.pm:1570
+#: lib/RT/Ticket.pm:1587
 msgid "No message attached"
 msgstr "Ez da mezurik erantsi"
 
@@ -5384,7 +5396,7 @@ msgstr "Ez da izenik eman"
 msgid "No need to encrypt"
 msgstr ""
 
-#: lib/RT/User.pm:860
+#: lib/RT/User.pm:861
 msgid "No password set"
 msgstr "Ez da pasahitzik ezarri"
 
@@ -5409,7 +5421,7 @@ msgstr "Artikulua aldatzeko baimenik ez"
 msgid "No permission to save system-wide searches"
 msgstr "Ez duzu baimenik sistema-mailako bilaketak gordetzeko"
 
-#: lib/RT/User.pm:1423 lib/RT/User.pm:1447
+#: lib/RT/User.pm:1443 lib/RT/User.pm:1467
 msgid "No permission to set preferences"
 msgstr "Hobespenak ezarteko baimenik ez"
 
@@ -5444,7 +5456,7 @@ msgstr "Ez da eskubiderik aurkitu"
 #. ($principal->Object->Name)
 #: lib/RT/Ticket.pm:535
 msgid "No rights to add '%1' as an AdminCc on this ticket"
-msgstr ""
+msgstr "Ez duzu eskubiderik '%1' AdminCC gisa gehitzeko lan-agindu honetan"
 
 #: share/html/Search/Bulk.html:234
 msgid "No search to operate on."
@@ -5454,7 +5466,7 @@ msgstr ""
 msgid "No subject"
 msgstr "Gairik ez"
 
-#: lib/RT/User.pm:1837
+#: lib/RT/User.pm:1857
 msgid "No such key or it's not suitable for signing"
 msgstr ""
 
@@ -5531,7 +5543,7 @@ msgstr ""
 msgid "Notes"
 msgstr "Oharrak"
 
-#: lib/RT/User.pm:793
+#: lib/RT/User.pm:794
 msgid "Notification could not be sent"
 msgstr "Ezin izan da jakinarazpena bidali"
 
@@ -5619,7 +5631,7 @@ msgstr "Eskatzaile eta CC-ei jakinarazi"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Eskatzaile eta CC-ei jakinarazi iruzkin gisa"
 
-#: lib/RT/Config.pm:431
+#: lib/RT/Config.pm:451
 msgid "Notify me of unread messages"
 msgstr "Jakinarazi neri irakurri gabeko mezuak daudela"
 
@@ -5756,7 +5768,7 @@ msgstr ""
 msgid "One-time Cc"
 msgstr ""
 
-#: lib/RT/Config.pm:307
+#: lib/RT/Config.pm:315
 msgid "Only for entry, not display"
 msgstr "Sarrerarako bakarrik, ez bistaratzeko"
 
@@ -5826,7 +5838,7 @@ msgstr ""
 msgid "Order by"
 msgstr "Honegatik ordenatu"
 
-#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/User/Prefs.html:132
+#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/User/Prefs.html:132
 msgid "Organization"
 msgstr "Erakundea"
 
@@ -5843,7 +5855,7 @@ msgstr ""
 msgid "Outgoing email recorded"
 msgstr "Irteera posta-e grabatuta"
 
-#: lib/RT/Config.pm:575
+#: lib/RT/Config.pm:595
 msgid "Outgoing mail"
 msgstr "Kanpora doan posta"
 
@@ -5869,7 +5881,7 @@ msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "'%1' jabeak ez du eskubiderik lan-agindu honen jabe izateko."
 
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
-#: lib/RT/Ticket.pm:2068
+#: lib/RT/Ticket.pm:2085
 msgid "Owner changed from %1 to %2"
 msgstr "Jabea aldatua %1tik %2ra"
 
@@ -5886,7 +5898,7 @@ msgstr ""
 msgid "OwnerName"
 msgstr ""
 
-#: lib/RT/User.pm:105
+#: lib/RT/User.pm:106
 msgid "PGPKey"
 msgstr ""
 
@@ -5922,24 +5934,24 @@ msgstr "Gurasoak"
 msgid "Password"
 msgstr "Pasahitza"
 
-#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:871
+#: lib/RT/Transaction.pm:1192 lib/RT/User.pm:872
 msgid "Password changed"
 msgstr "Pasahitza aldatuta"
 
-#: lib/RT/User.pm:837
+#: lib/RT/User.pm:838
 msgid "Password has not been set."
 msgstr "Pasahitza ez da ezarria izan"
 
 #. (RT->Config->Get('MinimumPasswordLength'))
-#: lib/RT/User.pm:304
+#: lib/RT/User.pm:305
 msgid "Password needs to be at least %quant(%1,character,characters) long"
-msgstr ""
+msgstr "Pasahitzak gutxienez %1 karaktere izan behar ditu"
 
 #: share/html/Admin/Tools/Configuration.html:128 share/html/Admin/Tools/Configuration.html:91
 msgid "Password not printed"
 msgstr ""
 
-#: lib/RT/User.pm:870
+#: lib/RT/User.pm:871
 msgid "Password set"
 msgstr "Pasahitza ezarrita"
 
@@ -5948,7 +5960,7 @@ msgstr "Pasahitza ezarrita"
 msgid "Password: %1"
 msgstr "Pasahitza: %1"
 
-#: lib/RT/User.pm:856
+#: lib/RT/User.pm:857
 msgid "Password: Permission Denied"
 msgstr ""
 
@@ -5956,7 +5968,7 @@ msgstr ""
 msgid "PasswordChange"
 msgstr ""
 
-#: lib/RT/User.pm:833
+#: lib/RT/User.pm:834
 msgid "Passwords do not match."
 msgstr "Pasahitzak ez datoz bat."
 
@@ -6007,7 +6019,7 @@ msgstr ""
 msgid "Permanently wipeout data from RT"
 msgstr "RT-tik datuak behin-betiko ezabatu"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1260 lib/RT/Group.pm:1357 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1079 lib/RT/Ticket.pm:1290 lib/RT/Ticket.pm:1458 lib/RT/Ticket.pm:1508 lib/RT/Ticket.pm:1778 lib/RT/Ticket.pm:1797 lib/RT/Ticket.pm:2208 lib/RT/Ticket.pm:2214 lib/RT/Ticket.pm:2228 lib/RT/Ticket.pm:2233 lib/RT/Ticket.pm:2257 lib/RT/Ticket.pm:2474 lib/RT/Ticket.pm:2703 lib/RT/Ticket.pm:3067 lib/RT/Ticket.pm:740 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1139 lib/RT/User.pm:137 lib/RT/User.pm:1574 lib/RT/User.pm:1822 lib/RT/User.pm:1855 lib/RT/User.pm:326 lib/RT/User.pm:739 lib/RT/User.pm:774 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:113 lib/RT/Article.pm:267 lib/RT/Article.pm:373 lib/RT/Article.pm:392 lib/RT/Article.pm:444 lib/RT/Article.pm:468 lib/RT/Article.pm:532 lib/RT/Attachment.pm:783 lib/RT/Attachment.pm:784 lib/RT/Attachment.pm:843 lib/RT/Attachment.pm:844 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Class.pm:130 lib/RT/Class.pm:165 lib/RT/Class.pm:304 lib/RT/Class.pm:354 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1037 lib/RT/CustomField.pm:1574 lib/RT/CustomField.pm:1603 lib/RT/CustomField.pm:1646 lib/RT/CustomField.pm:1819 lib/RT/CustomField.pm:1969 lib/RT/CustomField.pm:260 lib/RT/CustomField.pm:277 lib/RT/CustomField.pm:288 lib/RT/CustomField.pm:629 lib/RT/CustomField.pm:656 lib/RT/CustomFieldValue.pm:116 lib/RT/CustomFieldValue.pm:89 lib/RT/Group.pm:1011 lib/RT/Group.pm:1260 lib/RT/Group.pm:1357 lib/RT/Group.pm:361 lib/RT/Group.pm:465 lib/RT/Group.pm:781 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:311 lib/RT/Queue.pm:342 lib/RT/Queue.pm:373 lib/RT/Queue.pm:783 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:108 lib/RT/Template.pm:118 lib/RT/Template.pm:123 lib/RT/Template.pm:262 lib/RT/Template.pm:267 lib/RT/Template.pm:276 lib/RT/Template.pm:317 lib/RT/Template.pm:482 lib/RT/Template.pm:744 lib/RT/Template.pm:761 lib/RT/Template.pm:779 lib/RT/Ticket.pm:1079 lib/RT/Ticket.pm:1307 lib/RT/Ticket.pm:1475 lib/RT/Ticket.pm:1525 lib/RT/Ticket.pm:1795 lib/RT/Ticket.pm:1814 lib/RT/Ticket.pm:2225 lib/RT/Ticket.pm:2231 lib/RT/Ticket.pm:2245 lib/RT/Ticket.pm:2250 lib/RT/Ticket.pm:2274 lib/RT/Ticket.pm:2491 lib/RT/Ticket.pm:2720 lib/RT/Ticket.pm:3084 lib/RT/Ticket.pm:740 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:756 lib/RT/Transaction.pm:796 lib/RT/User.pm:1159 lib/RT/User.pm:138 lib/RT/User.pm:1594 lib/RT/User.pm:1842 lib/RT/User.pm:1875 lib/RT/User.pm:327 lib/RT/User.pm:740 lib/RT/User.pm:775 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:97 share/html/Ticket/ShowEmailRecord.html:110 share/html/Ticket/ShowEmailRecord.html:111
 msgid "Permission Denied"
 msgstr "Baimena Ukatuta"
 
@@ -6021,7 +6033,7 @@ msgstr "Telefono zenbakiak"
 
 #: share/html/Search/Chart.html:176
 msgid "Picture"
-msgstr ""
+msgstr "Irudia"
 
 #: etc/initialdata:232
 msgid "Plain text Autoresponse template"
@@ -6047,11 +6059,11 @@ msgstr ""
 msgid "Please check the URL and try again."
 msgstr ""
 
-#: lib/RT/User.pm:828
+#: lib/RT/User.pm:829
 msgid "Please enter your current password correctly."
 msgstr "Mesedez zuzen sartu zure oraingo pasahitza."
 
-#: lib/RT/User.pm:830
+#: lib/RT/User.pm:831
 msgid "Please enter your current password."
 msgstr "Mesedez sartu zure oraingo pasahitza."
 
@@ -6105,7 +6117,7 @@ msgstr ""
 msgid "Preferences saved."
 msgstr "Hobespenak gordeta."
 
-#: lib/RT/User.pm:1451
+#: lib/RT/User.pm:1471
 msgid "Preferences were not found"
 msgstr ""
 
@@ -6185,7 +6197,7 @@ msgstr ""
 msgid "Privileged users"
 msgstr ""
 
-#: lib/RT/Config.pm:184
+#: lib/RT/Config.pm:192
 msgid "Privileged: usernames; Unprivileged: names and email addresses"
 msgstr ""
 
@@ -6226,7 +6238,7 @@ msgstr "Ilara"
 #. ($Queue||'')
 #: share/html/Ticket/Create.html:383
 msgid "Queue %1 could not be loaded."
-msgstr ""
+msgstr "%1 ilara ezin izan da kargatu"
 
 #. ($Queue)
 #. ($id)
@@ -6350,7 +6362,7 @@ msgstr ""
 msgid "RT Size"
 msgstr ""
 
-#: lib/RT/Config.pm:351 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:584 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
+#: lib/RT/Config.pm:365 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:206 share/html/Elements/Tabs:326 share/html/Elements/Tabs:584 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT begiratu batean"
 
@@ -6439,7 +6451,7 @@ msgstr ""
 msgid "Real Name"
 msgstr "Benetako Izena"
 
-#: lib/RT/User.pm:95
+#: lib/RT/User.pm:96
 msgid "RealName"
 msgstr ""
 
@@ -6507,10 +6519,26 @@ msgstr ""
 msgid "Refresh"
 msgstr "Freskatu"
 
+#: lib/RT/Config.pm:380
+msgid "Refresh home page every %quant(%1,minute,minutes)."
+msgstr ""
+
+#: lib/RT/Config.pm:386
+msgid "Refresh home page every %quant(%1,second,seconds)."
+msgstr ""
+
+#: lib/RT/Config.pm:344
+msgid "Refresh search results every %quant(%1,minute,minutes)."
+msgstr ""
+
+#: lib/RT/Config.pm:350
+msgid "Refresh search results every %quant(%1,second,seconds)."
+msgstr ""
+
 #. ($value/60)
 #: share/html/Elements/Refresh:60
 msgid "Refresh this page every %quant(%1,minute,minutes)."
-msgstr ""
+msgstr "Orri hau %1 minuturo freskatu."
 
 #. ($value)
 #: share/html/Elements/Refresh:62
@@ -6529,7 +6557,7 @@ msgstr ""
 msgid "Reject"
 msgstr "Baztertu"
 
-#: lib/RT/Config.pm:172
+#: lib/RT/Config.pm:180
 msgid "Remember default queue"
 msgstr "Ilara lehenetsia gogoratu"
 
@@ -6556,7 +6584,7 @@ msgstr "'%1' oroigarria berrirekita"
 #. ($old_subject || $reminder->Subject, $_)
 #: lib/RT/Interface/Web.pm:3028 lib/RT/Interface/Web.pm:3046
 msgid "Reminder '%1': %2"
-msgstr ""
+msgstr "'%1' oroigarria: %2"
 
 #: lib/RT/Transaction.pm:1282
 msgid "Reminder added"
@@ -6574,10 +6602,10 @@ msgstr ""
 msgid "Reminders"
 msgstr "Oroigarriak"
 
-#. ($Ticket->Id)
+#. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/Reminders.html:48
-msgid "Reminders for ticket #%1"
-msgstr "#%1 lan-agindurako oroigarriak"
+msgid "Reminders for ticket #%1: %2"
+msgstr ""
 
 #: share/html/Search/Bulk.html:95
 msgid "Remove AdminCc"
@@ -6623,7 +6651,7 @@ msgstr ""
 msgid "Render Type"
 msgstr ""
 
-#: lib/RT/Config.pm:197
+#: lib/RT/Config.pm:205
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr "Jabeen goitibehera-koadroak testu-kaxekin ordezkatzen du"
 
@@ -6686,11 +6714,11 @@ msgstr "Lehenetsira berrezarri"
 
 #: share/html/Admin/Tools/Theme.html:70
 msgid "Reset to default RT Logo"
-msgstr ""
+msgstr "RT Logo lehenetsira berrezarri"
 
 #: share/html/Admin/Tools/Theme.html:114
 msgid "Reset to default RT Theme"
-msgstr ""
+msgstr "RT Tema lehenetsira berrezarri"
 
 #: share/html/Admin/Users/Modify.html:181 share/html/User/Prefs.html:89
 msgid "Residence"
@@ -6737,7 +6765,7 @@ msgstr "Pasahitza berriro idatzi"
 msgid "Revert"
 msgstr "Leheneratu"
 
-#: lib/RT/Config.pm:387
+#: lib/RT/Config.pm:407
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
@@ -6804,7 +6832,7 @@ msgstr "Errenkadak orriko"
 msgid "SMIME Certificate"
 msgstr ""
 
-#: lib/RT/User.pm:106
+#: lib/RT/User.pm:107
 msgid "SMIMECertificate"
 msgstr ""
 
@@ -6881,7 +6909,7 @@ msgstr "Gordetako diagramak"
 #. ($m->interp->apply_escapes($SavedSearch, 'h'))
 #: share/html/Elements/ShowSearch:73
 msgid "Saved search %1 not found"
-msgstr ""
+msgstr "Ez da aurkitu %1 gordetako bilaketa"
 
 #: share/html/Articles/Article/Elements/ShowSavedSearches:48 share/html/Articles/Article/Search.html:69 share/html/Search/Elements/EditSearches:136 share/html/Widgets/SavedSearch:186
 msgid "Saved searches"
@@ -6894,7 +6922,7 @@ msgstr ""
 #. ($row->{filename})
 #: share/html/Admin/Elements/UpgradeHistoryRow:60
 msgid "Schema updates from %1"
-msgstr ""
+msgstr "Eskema eguneraketa %1-tik"
 
 #. ($scrip->id)
 #: share/html/Ticket/Elements/PreviewScrips:71
@@ -6957,7 +6985,7 @@ msgstr "Lan-aginduak bilatu"
 #. (@strong)
 #: share/html/Search/Simple.html:63
 msgid "Search for tickets by entering %1id%2 numbers, subject words %1\"in quotes\"%2, %1queues%2 by name, Owners by %1username%2, Requestors by %1email address%2, and ticket %1statuses%2.  Searching for %1@domainname.com%2 will return tickets with requestors from that domain."
-msgstr ""
+msgstr "Lan-aginduen bilaketa egin %1id%2 zenbakiak, gaien hitzak %1\"komatxo artean\"%2, %1ilaren%2 izenak, Jabeen %1erabiltzaile-izenak%2, Eskatzailern %1post-e helbideak%2, eta lan-aginduen %1egoerak%2 erabilita. %1@domainname.com%2 bilatuz gero, domeinu horretako eskatzaileak dituzten lan-agindu guztiak itzuliko dira."
 
 #: share/html/Elements/Tabs:583
 msgid "Search options"
@@ -6967,13 +6995,13 @@ msgstr "Bilaketa aukerak"
 msgid "Search results"
 msgstr "Bilaketa emaitzak"
 
-#: lib/RT/Config.pm:326
+#: lib/RT/Config.pm:334
 msgid "Search results refresh interval"
 msgstr "Bilaketa emaitzak freskatzeko tartea"
 
 #: share/html/Search/index.html:48
 msgid "Searches"
-msgstr ""
+msgstr "Bilaketak"
 
 #. ($fulltext_keyword)
 #: share/html/Search/Simple.html:73
@@ -7234,7 +7262,7 @@ msgstr "Ira"
 msgid "Separate multiple entries with spaces."
 msgstr "Banandu sarrera anitz hutsuneekin."
 
-#: lib/RT/User.pm:1847
+#: lib/RT/User.pm:1867
 msgid "Set private key"
 msgstr ""
 
@@ -7246,11 +7274,11 @@ msgstr "Ezarpenak"
 msgid "Setup needed"
 msgstr ""
 
-#: lib/RT/Config.pm:185
+#: lib/RT/Config.pm:193
 msgid "Short usernames"
 msgstr "Erabiltzaile-izen motzak"
 
-#: lib/RT/Config.pm:576
+#: lib/RT/Config.pm:596
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "RTk zuk egindako lan-agindu eguneraketengatik posta bidali beharko lizuke?"
 
@@ -7311,9 +7339,9 @@ msgstr "Goiburu osoak erakutsi"
 msgid "Show global templates"
 msgstr "Erakutsi txantiloi globalak"
 
-#: lib/RT/Config.pm:416
+#: lib/RT/Config.pm:436
 msgid "Show history"
-msgstr ""
+msgstr "Historia erakutsi"
 
 #: lib/RT/System.pm:84
 msgid "Show history of public user properties"
@@ -7323,11 +7351,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Esteka deskribapenak erakutsi"
 
-#: lib/RT/Config.pm:474
+#: lib/RT/Config.pm:494
 msgid "Show no tickets for the Requestor"
 msgstr "Ez erakutsi Eskatzailearen lan-agindurik"
 
-#: lib/RT/Config.pm:407
+#: lib/RT/Config.pm:427
 msgid "Show oldest history first"
 msgstr "Erakutsi historia zaharrena lehenengo"
 
@@ -7343,19 +7371,19 @@ msgstr "Aipatutako testua erakutsi"
 msgid "Show requests awaiting other approvals"
 msgstr ""
 
-#: lib/RT/Config.pm:484
+#: lib/RT/Config.pm:504
 msgid "Show simplified recipient list on ticket update"
 msgstr ""
 
-#: lib/RT/Config.pm:471
+#: lib/RT/Config.pm:491
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr "Erakutsi Eskatzailearen lehentasun handieneko 10 lan-agindu aktibo"
 
-#: lib/RT/Config.pm:472
+#: lib/RT/Config.pm:492
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr "Erakutsi Eskatzailearen lehentasun handieneko 10 lan-agindu ez-aktibo"
 
-#: lib/RT/Config.pm:473
+#: lib/RT/Config.pm:493
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr "Erakutsi Eskatzailearen 10 lehentasun handieneko lan-aginduak"
 
@@ -7684,13 +7712,13 @@ msgstr "Ig."
 msgid "Sunday"
 msgstr "Igandea"
 
-#: lib/RT/Config.pm:565
+#: lib/RT/Config.pm:585
 msgid "Suspended"
 msgstr "Geldiarazi"
 
 #: lib/RT/Interface/Web.pm:3826
 msgid "System"
-msgstr ""
+msgstr "Sistema"
 
 #: share/html/Admin/Tools/Configuration.html:50 share/html/Elements/Tabs:227
 msgid "System Configuration"
@@ -7827,35 +7855,35 @@ msgstr ""
 msgid "That is not a value for this custom field"
 msgstr "Hori ez da eremu pertsonalizatu honendako balio bat"
 
-#: lib/RT/Ticket.pm:2369
+#: lib/RT/Ticket.pm:2386
 msgid "That ticket has unresolved dependencies"
 msgstr "Lan-aginduak konpondu gabeko menpekotasunak ditu"
 
-#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2282
+#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2299
 msgid "That user already owns that ticket"
 msgstr "Erabiltzaile hori lan-aginduaren jabe da dagoeneko"
 
-#: lib/RT/Ticket.pm:2272
+#: lib/RT/Ticket.pm:2289
 msgid "That user does not exist"
 msgstr "Erabiltzaile hori ez da existitzen"
 
-#: lib/RT/User.pm:353
+#: lib/RT/User.pm:354
 msgid "That user is already privileged"
 msgstr ""
 
-#: lib/RT/User.pm:379
+#: lib/RT/User.pm:380
 msgid "That user is already unprivileged"
 msgstr ""
 
-#: lib/RT/User.pm:372
+#: lib/RT/User.pm:373
 msgid "That user is now privileged"
 msgstr ""
 
-#: lib/RT/User.pm:398
+#: lib/RT/User.pm:399
 msgid "That user is now unprivileged"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2277
+#: lib/RT/Ticket.pm:2294
 msgid "That user may not own tickets in that queue"
 msgstr "Erabiltzaile hori ezin da ilara horretako lan-aginduen jabe izan"
 
@@ -7949,7 +7977,7 @@ msgstr "Aukeratu dituzun ezarpenak %1-en gordeta daude."
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr ""
 
-#: lib/RT/Config.pm:206 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:232
+#: lib/RT/Config.pm:214 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:232
 msgid "Theme"
 msgstr "Gaia (itxura)"
 
@@ -7977,7 +8005,7 @@ msgstr ""
 #. ($old_lifecycle->Name, $new_lifecycle->Name)
 #: lib/RT/Record/Role/Status.pm:278
 msgid "There is no mapping for statuses between lifecycle %1 and %2. Contact your system administrator."
-msgstr ""
+msgstr "Ez dago %1 eta %2 bizitzabideen egoeren arteko elkarrekikotasunik. Zure sistema administratzailearekin kontaktuan jarri."
 
 #: lib/RT/Crypt.pm:730
 msgid "There is one suitable key, but trust level is not set."
@@ -8002,7 +8030,7 @@ msgstr ""
 
 #: lib/RT/CustomField.pm:1608
 msgid "This custom field cannot be added to that object"
-msgstr ""
+msgstr "Eremu pertsonalizatu hau ezin zaio objektu horri gehitu"
 
 #: lib/RT/CustomField.pm:1158 lib/RT/CustomField.pm:304
 msgid "This custom field has no Render Types"
@@ -8022,12 +8050,13 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowDependencyStatus:57
 msgid "This ticket cannot be resolved until it is approved."
-msgstr ""
+msgstr "Lan-agindu hau ezin da amaitu onartuta dagoen arte."
 
 #. ($depends)
 #: share/html/Ticket/Elements/ShowDependencyStatus:60
 msgid "This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
-msgstr ""
+msgstr "Lan-agindu hau ezin da amaitu bere %numerate(%1,dependentzia,dependentziak) amaitu arte.\\r\n"
+"This ticket cannot be resolved until its %numerate(%1,dependency is,dependencies are) resolved."
 
 #: bin/rt-crontool:349
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
@@ -8093,8 +8122,8 @@ msgstr "%1 lan-agindua: %2"
 
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/History.html:48
-msgid "Ticket History # %1 %2"
-msgstr "# %1 %2 Lan-aginduaren Historia"
+msgid "Ticket History #%1: %2"
+msgstr ""
 
 #: etc/initialdata:445
 msgid "Ticket Resolved"
@@ -8112,7 +8141,7 @@ msgstr "Lan-agindu Eragiketak"
 msgid "Ticket and Transaction"
 msgstr "Lan-agindu eta Eragiketa"
 
-#: lib/RT/Config.pm:301
+#: lib/RT/Config.pm:309
 msgid "Ticket composition"
 msgstr "Lan-agindu konposaketa"
 
@@ -8134,9 +8163,9 @@ msgstr "Ezin izan da lan-agindua kargatu"
 
 #: lib/RT/Report/Tickets.pm:204
 msgid "Ticket count"
-msgstr ""
+msgstr "Agindu kopurua"
 
-#: lib/RT/Config.pm:381 lib/RT/Config.pm:391 lib/RT/Config.pm:463 lib/RT/Config.pm:479
+#: lib/RT/Config.pm:401 lib/RT/Config.pm:411 lib/RT/Config.pm:483 lib/RT/Config.pm:499
 msgid "Ticket display"
 msgstr "Lan-agindu bistaratzea"
 
@@ -8215,7 +8244,7 @@ msgstr ""
 msgid "TimeWorked"
 msgstr ""
 
-#: lib/RT/Installer.pm:189 lib/RT/User.pm:109 share/html/Admin/Users/Modify.html:96 share/html/SelfService/Prefs.html:63 share/html/User/Prefs.html:80
+#: lib/RT/Installer.pm:189 lib/RT/User.pm:110 share/html/Admin/Users/Modify.html:96 share/html/SelfService/Prefs.html:63 share/html/User/Prefs.html:80
 msgid "Timezone"
 msgstr "Ordu-eremua"
 
@@ -8345,7 +8374,7 @@ msgstr ""
 
 #: share/html/Elements/Tabs:304
 msgid "Transactions"
-msgstr ""
+msgstr "Eragiketak"
 
 #: lib/RT/Transaction.pm:1385
 msgid "Transactions are immutable"
@@ -8357,7 +8386,7 @@ msgstr "Fidatu"
 
 #: share/html/Admin/Tools/Theme.html:112
 msgid "Try"
-msgstr ""
+msgstr "Probatu"
 
 #: lib/RT/Date.pm:108
 msgid "Tue"
@@ -8443,11 +8472,11 @@ msgstr "Ezin ezarri pribatasun objektua: %1"
 #. ($id)
 #: share/html/Dashboards/Subscription.html:266
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
-msgstr ""
+msgstr "Ezin da %1 aginte-panelera harpidetza egin: Baimena Ukatuta"
 
 #: share/html/Errors/WebRemoteUser/NoInternalUser:48 share/html/Errors/WebRemoteUser/NoRemoteUser:48
 msgid "Unauthorized"
-msgstr ""
+msgstr "Baimenik gabe"
 
 #. (RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,)
 #: share/html/Ticket/Elements/PreviewScrips:60 share/html/Ticket/Elements/ShowSimplifiedRecipients:92
@@ -8533,7 +8562,7 @@ msgstr ""
 msgid "Unselected objects"
 msgstr ""
 
-#: lib/RT/User.pm:1831
+#: lib/RT/User.pm:1851
 msgid "Unset private key"
 msgstr ""
 
@@ -8555,7 +8584,7 @@ msgstr "Grafikoa Eguneratu"
 
 #: share/html/Elements/Tabs:512
 msgid "Update This Menu"
-msgstr ""
+msgstr "Menu hau eguneratu"
 
 #: share/html/SelfService/Update.html:96 share/html/Ticket/Update.html:183 share/html/m/ticket/reply:146
 msgid "Update Ticket"
@@ -8587,11 +8616,15 @@ msgstr "Lan-agindua eguneratu"
 msgid "Update ticket #%1"
 msgstr "#%1 lan-agindua eguneratu"
 
-#. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
-#: share/html/Ticket/Update.html:221 share/html/m/ticket/reply:174
+#: share/html/m/ticket/reply:174
 msgid "Update ticket #%1 (%2)"
 msgstr "#%1 (%2) lan-agindua eguneratu"
+
+#. ($TicketObj->id, $TicketObj->Subject)
+#: share/html/Ticket/Update.html:221
+msgid "Update ticket #%1: %2"
+msgstr ""
 
 #: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2394
 msgid "Update type was neither correspondence nor comment."
@@ -8607,7 +8640,7 @@ msgstr "Eguneratuta"
 
 #: share/html/Search/Elements/PickBasics:117
 msgid "Updated by"
-msgstr ""
+msgstr "Eguneratzailea"
 
 #. ($desc)
 #: share/html/Search/Elements/EditSearches:294
@@ -8621,7 +8654,7 @@ msgstr ""
 #. ($row->{'from'}, $row->{'to'})
 #: share/html/Admin/Elements/UpgradeHistoryRow:56
 msgid "Upgrade from %1 to %2"
-msgstr ""
+msgstr "%1-tik %2-ra hobetua"
 
 #: share/html/Admin/Tools/Theme.html:71
 msgid "Upload"
@@ -8649,21 +8682,21 @@ msgstr "Irudi bakarra kargatu"
 
 #: lib/RT/CustomField.pm:136
 msgid "Upload up to %quant(%1,file,files)"
-msgstr ""
+msgstr "%1 fitxategirarte kargatu"
 
 #: lib/RT/CustomField.pm:127
 msgid "Upload up to %quant(%1,image,images)"
-msgstr ""
+msgstr "%1 irudirarte kargatu"
 
 #: sbin/rt-email-digest:79
 msgid "Usage:"
 msgstr "Erabilera:"
 
-#: lib/RT/Config.pm:261
+#: lib/RT/Config.pm:269
 msgid "Use a two column layout for create and update forms?"
 msgstr "Bi zutabeko diseinua erabili sortze eta eguneratze formularioendako?"
 
-#: lib/RT/Config.pm:196
+#: lib/RT/Config.pm:204
 msgid "Use autocomplete to find owners?"
 msgstr "Auto-osaketa erabili jabeak aurkitzeko?"
 
@@ -8696,12 +8729,12 @@ msgstr "Erabiltzailea"
 #. ($User->Name)
 #: share/html/User/Summary.html:77
 msgid "User %1 is currently disabled."
-msgstr ""
+msgstr "%1 erabiltzailea desgaituta dago une honetan"
 
 #. ($User->Name)
 #: share/html/User/Summary.html:74
 msgid "User %1 is currently disabled. Edit the user and select \"Let this user access RT\" to enable."
-msgstr ""
+msgstr "%1 erabiltzailea desgaituta dago une honetan. Editatu erabiltzailea eta aukeratu \"Erabiltzaile honi utzi RTra sartzen\" gaitzeko."
 
 #: share/html/Admin/Elements/ShowKeyInfo:80
 msgid "User (created - expire)"
@@ -8717,11 +8750,11 @@ msgstr ""
 
 #: lib/RT/Interface/Web.pm:3844
 msgid "User Groups"
-msgstr ""
+msgstr "Erabiltzaile Taldeak"
 
 #: share/html/User/Elements/Portlets/ExtraInfo:48
 msgid "User Information"
-msgstr ""
+msgstr "Erabiltzailearen informazioa"
 
 #: share/html/Elements/Tabs:201 share/html/Elements/Tabs:308 share/html/Elements/Tabs:352 share/html/Elements/Tabs:368 share/html/Elements/Tabs:455
 msgid "User Rights"
@@ -8729,11 +8762,11 @@ msgstr "Erabiltzaile Eskubideak"
 
 #: share/html/User/Search.html:48
 msgid "User Search"
-msgstr ""
+msgstr "Erabiltzaile-Bilaketa"
 
 #: share/html/Elements/Tabs:334
 msgid "User Summary"
-msgstr ""
+msgstr "Erabiltzaile Laburpena"
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 #: lib/RT/Interface/Web.pm:3256
@@ -8745,15 +8778,15 @@ msgstr ""
 msgid "User could not be created: %1"
 msgstr "Ezin izan da erabiltzailea sortu: %1"
 
-#: lib/RT/User.pm:265
+#: lib/RT/User.pm:266
 msgid "User created"
 msgstr "Erabiltzailea sortuta"
 
-#: lib/RT/User.pm:1154
+#: lib/RT/User.pm:1174
 msgid "User disabled"
 msgstr "Erabiltzailea desgaituta"
 
-#: lib/RT/User.pm:1156
+#: lib/RT/User.pm:1176
 msgid "User enabled"
 msgstr "Erabiltzailea gaituta"
 
@@ -8761,7 +8794,7 @@ msgstr "Erabiltzailea gaituta"
 msgid "User has empty email address"
 msgstr "Erabiltzaileak posta-e helbidea hutsik du"
 
-#: lib/RT/User.pm:543 lib/RT/User.pm:563
+#: lib/RT/User.pm:544 lib/RT/User.pm:564
 msgid "User loaded"
 msgstr "Erabiltzailea kargatuta"
 
@@ -8772,13 +8805,13 @@ msgstr "Erabiltzaileak definituriko taldeak"
 #. ($User->Format)
 #: share/html/User/Summary.html:48
 msgid "User: %1"
-msgstr ""
+msgstr "Erabiltzailea: %1"
 
 #: share/html/Admin/Users/Modify.html:67 share/html/Elements/Login:70 share/html/Ticket/Elements/AddWatchers:58 share/html/m/_elements/login:69
 msgid "Username"
 msgstr "Erabiltzaile-izena"
 
-#: lib/RT/Config.pm:181
+#: lib/RT/Config.pm:189
 msgid "Username format"
 msgstr "Erabiltzaile-izenaren formatua"
 
@@ -8879,11 +8912,11 @@ msgstr ""
 msgid "WARNING: Saving search to user-level privacy"
 msgstr "ADI: Bilaketa erabiltzaile-mailako pribatasunarekin gordetzen"
 
-#: lib/RT/Config.pm:279
+#: lib/RT/Config.pm:287
 msgid "WYSIWYG composer height"
 msgstr "WYSIWYG konposatzailearen altuera"
 
-#: lib/RT/Config.pm:270
+#: lib/RT/Config.pm:278
 msgid "WYSIWYG message composer"
 msgstr "WYSIWYG mezu konposatzailea"
 
@@ -8893,7 +8926,7 @@ msgstr "Adi! Hau EZ dago sinatuta!"
 
 #: share/html/Ticket/Elements/EditMerge:49
 msgid "Warning: merging is a non-reversible action! Enter a single ticket number to be merged into."
-msgstr ""
+msgstr "Adi: bateratzeak ez du atzera bueltarik! Bateratu beharreko lan-agindu zenbaki bakarra sartu."
 
 #: share/html/Dashboards/Subscription.html:279
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
@@ -8947,7 +8980,7 @@ msgstr "Asteguna"
 msgid "Weekly"
 msgstr "Astero"
 
-#: lib/RT/Config.pm:564
+#: lib/RT/Config.pm:584
 msgid "Weekly digest"
 msgstr "Asteroko laburpena"
 
@@ -8963,9 +8996,9 @@ msgstr "Gaur egin dudana"
 msgid "What is RT?"
 msgstr "Zer da RT?"
 
-#: lib/RT/Config.pm:468
+#: lib/RT/Config.pm:488
 msgid "What tickets to display in the \"More about requestor\" box"
-msgstr ""
+msgstr "Zein lan-agindu bistaratu \"Gehiago eskatzaileari buruz\" kaxan"
 
 #: lib/RT/Installer.pm:160
 msgid "When RT can't handle an email message, where should it be forwarded?"
@@ -9057,7 +9090,7 @@ msgstr ""
 
 #: share/html/Search/Chart.html:180
 msgid "Width"
-msgstr ""
+msgstr "Zabalera"
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:63
 msgid "Wipeout"
@@ -9078,16 +9111,16 @@ msgstr "Lan eginda"
 #. (sprintf("%.1f", $duration / 60), $duration)
 #: lib/RT/Transaction.pm:1263
 msgid "Worked %quant(%1,hour,hours) (%quant(%2,minute,minutes))"
-msgstr ""
+msgstr "%1 ordu (%2 minutu) lan eginda"
 
 #. ($duration)
 #: lib/RT/Transaction.pm:1261
 msgid "Worked %quant(%1,minute,minutes)"
-msgstr ""
+msgstr "%1 minutu lan eginda"
 
 #: lib/RT/Report/Tickets.pm:131
 msgid "Year"
-msgstr ""
+msgstr "Urtea"
 
 #: share/html/Articles/Article/Delete.html:70 share/html/Elements/RT__Template/ColumnMap:78 share/html/Widgets/Form/Boolean:78
 msgid "Yes"
@@ -9096,14 +9129,14 @@ msgstr "Bai"
 #. ($ARGS{User})
 #: share/html/Errors/WebRemoteUser/NoInternalUser:49
 msgid "You (%1) are not authorized to use RT."
-msgstr ""
+msgstr "Zu (%1) ez zaude RT erabiltzeko baimenduta."
 
 #. ($edit, $subscription)
 #: share/html/Dashboards/Render.html:85
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr "<a href=\"%1\">Aginte-panel hau</a> eta <a href=\"%2\">zure harpidetza</a> editatu ditzakezu RTn."
 
-#: lib/RT/Ticket.pm:2252 lib/RT/Ticket.pm:2325
+#: lib/RT/Ticket.pm:2269 lib/RT/Ticket.pm:2342
 msgid "You already own this ticket"
 msgstr "Lan-agindu honen jabe zara dagoeneko"
 
@@ -9117,7 +9150,7 @@ msgstr ""
 
 #: share/html/Errors/WebRemoteUser/NoRemoteUser:49
 msgid "You are not authorized to use RT."
-msgstr ""
+msgstr "Ez zeude RT erabiltzeko baimenduta."
 
 #. (RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id)
 #: share/html/Ticket/Elements/ShowUpdateStatus:54
@@ -9126,7 +9159,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Theme.html:86
 msgid "You can also click on the logo above to get colors!"
-msgstr ""
+msgstr "Goiko logoan klik egin dezakezu koloreak lortzeko!"
 
 #: share/html/Prefs/Search.html:54
 msgid "You can also edit the predefined search itself"
@@ -9134,25 +9167,25 @@ msgstr "Aurrez definitutako bilaketa bera ere editatu dezakezu"
 
 #: share/html/Admin/Scrips/Objects.html:110
 msgid "You can change template if needed"
-msgstr ""
+msgstr "Behar izanez gero txantiloia aldatu dezakezu"
 
 #: share/html/Articles/Article/ExtractFromTicket.html:59
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr ""
 
-#: lib/RT/User.pm:822
+#: lib/RT/User.pm:823
 msgid "You can not set password."
 msgstr "Ezin duzu pasahitza ezarri."
 
-#: lib/RT/Ticket.pm:2244
+#: lib/RT/Ticket.pm:2261
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Zureak diren edo jaberik ez duten lan-aginduak bakarrik esleitu ditzakezu"
 
-#: lib/RT/Ticket.pm:2196
+#: lib/RT/Ticket.pm:2213
 msgid "You can only steal a ticket owned by someone else"
-msgstr ""
+msgstr "Beste norbaitena den lan-aginduak bakarrik ohostu ditzakezu"
 
-#: lib/RT/Ticket.pm:2240
+#: lib/RT/Ticket.pm:2257
 msgid "You can only take tickets that are unowned"
 msgstr "Jaberik ez duten lan-aginduak bakarrik hartu ditzakezu"
 
@@ -9236,7 +9269,7 @@ msgstr ""
 msgid "You're welcome to login again"
 msgstr "Berriz saioa hasi ezkero ongietorria izango zara"
 
-#: lib/RT/User.pm:1048
+#: lib/RT/User.pm:1067
 msgid "Your password is not set."
 msgstr "Zure pasahitza ez dago ezarrita."
 
@@ -9277,13 +9310,13 @@ msgstr "aktibo"
 msgid "after"
 msgstr "ondoren"
 
-#: lib/RT/Config.pm:420
+#: lib/RT/Config.pm:440
 msgid "after clicking a link"
-msgstr ""
+msgstr "esteka baten klik egin ondoren"
 
-#: lib/RT/Config.pm:419
+#: lib/RT/Config.pm:439
 msgid "after the rest of the page loads"
-msgstr ""
+msgstr "orriaren gainontzekoa kargatu ondoren"
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:102 share/html/Articles/Article/Elements/ShowSearchCriteria:111
 msgid "and before"
@@ -9295,7 +9328,7 @@ msgstr "eta ez"
 
 #: share/html/Search/Chart.html:144 share/html/Search/Chart.html:152 share/html/Search/Chart.html:167 share/html/Search/Chart.html:170
 msgid "and then"
-msgstr ""
+msgstr "eta ondoren"
 
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
@@ -9323,7 +9356,7 @@ msgstr "markatu kaxatxoa Eremu Pertsonalizatua objektu guztiei ezartzeko"
 
 #: share/html/Admin/Scrips/Objects.html:72
 msgid "check this box to apply this scrip to all objects."
-msgstr ""
+msgstr "markatu kaxa hau scrip hau objektu guztiei aplikatzeko"
 
 #: share/html/Admin/Articles/Classes/Objects.html:58
 msgid "check this box to remove this Class globally and be able to choose specific Queues."
@@ -9364,11 +9397,11 @@ msgstr "egunero %1tan"
 
 #: lib/RT/Dashboard.pm:97
 msgid "dashboard"
-msgstr ""
+msgstr "aginte-panela"
 
 #: share/html/Prefs/DashboardsInMenu.html:74
 msgid "dashboards in menu"
-msgstr ""
+msgstr "aginte-panelak menuan"
 
 #: share/html/Admin/Queues/Modify.html:108
 msgid "days"
@@ -9390,15 +9423,15 @@ msgstr "deskargatu"
 msgid "duration"
 msgstr "iraupena"
 
-#: lib/RT/User.pm:676
+#: lib/RT/User.pm:677
 msgid "email delivery suspended"
 msgstr ""
 
-#: lib/RT/User.pm:668
+#: lib/RT/User.pm:669
 msgid "email disabled for ticket"
 msgstr ""
 
-#: lib/RT/User.pm:279
+#: lib/RT/User.pm:280
 msgid "empty name"
 msgstr "izen gabe"
 
@@ -9453,7 +9486,7 @@ msgstr "taldea"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:854
 msgid "group %1"
-msgstr ""
+msgstr "%1 taldea"
 
 #. ($self->Name)
 #: lib/RT/Group.pm:115
@@ -9468,9 +9501,9 @@ msgstr ""
 msgid "id"
 msgstr ""
 
-#: lib/RT/Config.pm:421
+#: lib/RT/Config.pm:441
 msgid "immediately"
-msgstr ""
+msgstr "berehala"
 
 #. ($Class->Name)
 #. ($class->Name)
@@ -9494,7 +9527,7 @@ msgstr "indizea"
 #. ($due)
 #: lib/RT/Interface/Web.pm:3021
 msgid "invalid due date: %1"
-msgstr ""
+msgstr "baliogabeko amaiera data: %1"
 
 #: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickBasics:153 share/html/Search/Elements/PickCFs:82
 msgid "is"
@@ -9577,7 +9610,7 @@ msgstr "berria"
 msgid "no"
 msgstr "ez"
 
-#: lib/RT/User.pm:666
+#: lib/RT/User.pm:667
 msgid "no email address set"
 msgstr ""
 
@@ -9642,11 +9675,11 @@ msgstr ""
 msgid "queue %1 %2"
 msgstr "%1 %2 ilara"
 
-#: lib/RT/User.pm:672
+#: lib/RT/User.pm:673
 msgid "receives daily digests"
 msgstr ""
 
-#: lib/RT/User.pm:674
+#: lib/RT/User.pm:675
 msgid "receives weekly digests"
 msgstr ""
 
@@ -9668,7 +9701,7 @@ msgstr "eskuinetik ezkerrera"
 
 #: lib/RT/SavedSearch.pm:80
 msgid "search"
-msgstr ""
+msgstr "bilatu"
 
 #: share/html/Admin/Tools/Shredder/index.html:179
 msgid "see object list below"
@@ -9676,7 +9709,7 @@ msgstr "Objektu zerrenda ikusi beherago"
 
 #: etc/initialdata:867 share/html/Admin/Global/MyRT.html:87
 msgid "sidebar"
-msgstr ""
+msgstr "albo-barra"
 
 #: share/html/Admin/Tools/Configuration.html:80
 msgid "site config"
