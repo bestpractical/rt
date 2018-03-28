@@ -136,7 +136,7 @@ jQuery( function() {
         }
     });
     attachDropzone.on('removedfile', function(file) {
-        jQuery.post('<% RT->Config->Get('WebPath') %>/Helpers/Upload/Delete', { Name: file.name, Token: jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val() }, 'json');
+        jQuery.post( RT.Config.WebHomePath + '/Helpers/Upload/Delete', { Name: file.name, Token: jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val() }, 'json');
     });
     attachDropzone.on('dragenter', function() {
         jQuery('#attach-dropzone').addClass('scaled');
