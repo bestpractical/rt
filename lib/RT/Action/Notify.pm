@@ -139,7 +139,8 @@ sub SetRecipients {
                  || $name eq 'AdminCc'
                  || $name eq 'Cc'
                  || $name eq 'OtherRecipients'
-                 || $name eq 'AlwaysNotifyActor';
+                 || $name eq 'AlwaysNotifyActor'
+                 || $name eq 'NeverNotifyActor';
 
             my $roles = RT::CustomRoles->new( $self->CurrentUser );
             $roles->Limit( FIELD => 'Name', VALUE => $name, CASESENSITIVE => 0 );
@@ -237,8 +238,10 @@ sub SetRecipients {
 
 Remove transaction creator as appropriate for the NotifyActor setting.
 
-To send email to the selected receipients regardless of RT's NotifyActor
-configuration, include AlwaysNotifyActor in the list of arguments.
+To send email to the selected recipients regardless of RT's NotifyActor
+configuration, include AlwaysNotifyActor in the list of arguments. Or to
+always suppress email to the selected recipients regardless of RT's
+NotifyActor configuration, include NeverNotifyActor in the list of arguments.
 
 =cut
 
@@ -255,8 +258,9 @@ sub RemoveInappropriateRecipients {
             return unless lc $_[0] eq lc $creator;
             return "not sending to $creator, creator of the transaction, due to NotifyActor setting";
         },
-    ) unless RT->Config->Get('NotifyActor',$TransactionCurrentUser)
-             || $self->Argument =~ /\bAlwaysNotifyActor\b/;
+    ) if $self->Argument =~ /\bNeverNotifyActor\b/ ||
+         (!RT->Config->Get('NotifyActor',$TransactionCurrentUser)
+         && $self->Argument !~ /\bAlwaysNotifyActor\b/);
 
     $self->SUPER::RemoveInappropriateRecipients();
 }
