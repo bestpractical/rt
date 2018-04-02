@@ -47,6 +47,19 @@
 %# END BPS TAGGED BLOCK }}}
 <%perl>
 for my $group ( @Groupings ) {
+    my $CustomFields = $Object->CustomFields;
+    $m->callback(
+        Table        => 1, # default is true
+        %ARGS,
+        CallbackPage => '/Elements/ShowCustomFields',
+        CallbackName => 'MassageCustomFields',
+        Object       => $Object,
+        CustomFields => $CustomFields,
+    );
+
+    $CustomFields->LimitToGrouping( $Object => $group );
+    next unless $CustomFields->First;
+
     my $modify_url = $title_href ? "$title_href?id=".$Object->id.($group?";Grouping=".$m->interp->apply_escapes($group,'u')."#".CSSClass("$css_class-$group") : "#".$css_class) : undef;
     my $modify_inline = '<a class="inline-edit-toggle" data-edit-label="'.$edit_label.'" data-cancel-label="'.$cancel_label.'" href="'.$m->interp->apply_escapes(($modify_url||'#'), 'h' ).'">'.$edit_label.'</a>';
     my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{$group} || $inline_edit_behavior{_default} || 'link') : 'hide';
