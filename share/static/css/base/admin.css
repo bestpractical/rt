@@ -108,3 +108,16 @@ div.inline-row i {
     text-align: left;
     width: 85%;
 }
+
+div.mason-cache {
+    min-height: 2em;
+}
+
+div.mason-cache div.mason-cache-info {
+    display: inline-block;
+    padding: 0.5em;
+}
+
+div.mason-cache a.clear-mason-cache {
+    float: right;
+}
