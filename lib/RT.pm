@@ -200,6 +200,7 @@ sub Init {
     InitSystemObjects();
     InitClasses(%args);
     InitLogging();
+    ProcessPreInitMessages();
     InitPlugins();
     _BuildTableAttributes();
     RT::I18N->Init;
@@ -372,6 +373,15 @@ sub InitLogging {
         }
     }
     InitSignalHandlers();
+}
+
+# Some messages may have been logged before the logger was available.
+# Output them here.
+
+sub ProcessPreInitMessages {
+    foreach my $message ( @RT::Config::PreInitLoggerMessages ){
+        RT->Logger->debug($message);
+    }
 }
 
 sub InitSignalHandlers {

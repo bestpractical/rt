@@ -57,6 +57,9 @@ use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
 use Storable ();
 
+# Store log messages generated before RT::Logger is available
+our @PreInitLoggerMessages;
+
 =head1 NAME
 
     RT::Config - RT's config
@@ -1635,7 +1638,7 @@ sub SetFromConfig {
             # override options that came from its main config
             if ( $args{'Extension'} ne $META{$name}->{'Source'}{'Extension'} ) {
                 my %source = %{ $META{$name}->{'Source'} };
-                warn
+                push @PreInitLoggerMessages,
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
                     ." This option earlier has been set in $source{'File'} line $source{'Line'}."
                     ." To overide this option use ". ($source{'Extension'}||'RT')
@@ -1652,7 +1655,7 @@ sub SetFromConfig {
                 # as a site config is loaded earlier then its base config
                 # then we warn only on different extensions, for example
                 # RTIR's options is set in main site config
-                warn
+                push @PreInitLoggerMessages,
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
                     ." It may be ok, but we want you to be aware."
                     ." This option has been set earlier in $source{'File'} line $source{'Line'}."
