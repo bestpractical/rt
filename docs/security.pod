@@ -62,10 +62,10 @@ CGIs or access the server where RT is running.
 =item *
 
 Be sure to protect your database.  If it does not need to talk to the
-world, then don't allow it to listen for remote connections.  With MySQL
-this can be accomplished via C<skip-networking>.  If you use your
-database for other things and must allow remote connections, be sure to
-use a strong, hard to guess password for RT.
+world, then don't allow it to listen for remote connections.  With
+MySQL and MariaDB, this can be accomplished via C<skip-networking>.
+If you use your database for other things and must allow remote
+connections, be sure to use a strong, hard to guess password for RT.
 
 
 =item *
