@@ -36,7 +36,7 @@ is( RT::Config->Meta('foo'), undef, 'foo is indeed deleted' );
 RT::Config->Set('EmailInputEncodings', qw(utf-8 iso-8859-1 us-ascii foo));
 my @encodings = qw(utf-8-strict iso-8859-1 ascii);
 
-warning_is {RT::Config->PostLoadCheck} "Unknown encoding 'foo' in \@EmailInputEncodings option",
+warning_like {RT::Config->PostLoadCheck} qr{Unknown encoding \'foo\' in \@EmailInputEncodings option},
   'Correct warning for encoding foo';
 
 RT::Config->Set( WebDefaultStylesheet => 'non-existent-skin-name' );
