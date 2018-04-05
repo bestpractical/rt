@@ -75,6 +75,12 @@ use RT::GroupMember;
 
 sub Table { 'GroupMembers'}
 
+sub _Init {
+    my $self = shift;
+
+    $self->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+    return $self->SUPER::_Init( @_ );
+}
 
 
 =head2 LimitToUsers
