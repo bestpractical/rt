@@ -990,7 +990,7 @@ our %META;
 
                 my $canonic = Encode::resolve_alias( $encoding );
                 unless ( $canonic ) {
-                    warn "Unknown encoding '$encoding' in \@EmailInputEncodings option";
+                    $RT::Logger->warning("Unknown encoding '$encoding' in \@EmailInputEncodings option");
                 }
                 elsif ( $seen{ $canonic }++ ) {
                     next;
