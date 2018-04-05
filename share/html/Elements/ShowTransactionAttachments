@@ -165,7 +165,8 @@ my $render_attachment = sub {
             !$ParentObj
 
             # or its parent isn't a multipart alternative
-            || ( $ParentObj->ContentType !~ m{^multipart/(?:alternative|related)$}i )
+            || ( $ParentObj->ContentType !~ m{^multipart/alternative$}i )
+            || ( $ParentObj->ContentType =~ m{^multipart/related$}i && !( $ParentObj->Parent && $ParentObj->ParentObj->ContentType =~ m{^multipart/alternative$}i ) )
 
             # or it's of our prefered alterative type
             || (
