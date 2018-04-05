@@ -67,7 +67,7 @@ my @dates  = qw(Created Starts Started Due Resolved Told LastUpdated);
 my @people = qw(Requestors Cc AdminCc);
 my @create = qw(Queue Requestor Subject Cc AdminCc Owner Status Priority
                 InitialPriority FinalPriority TimeEstimated TimeWorked
-                TimeLeft Starts Started Due Resolved Content-Type);
+                TimeLeft Starts Started Due Resolved Content-Type SLA);
 my @simple = qw(Subject Status Priority Disabled TimeEstimated TimeWorked
                 TimeLeft InitialPriority FinalPriority);
 my %dates  = map {lc $_ => $_} @dates;
@@ -117,7 +117,8 @@ else {
         return [
             "# Required: id, Queue",
             [ qw(id Queue Requestor Subject Cc AdminCc Owner Status Priority
-                 InitialPriority FinalPriority TimeEstimated Starts Due Attachment Text) ],
+                 InitialPriority FinalPriority TimeEstimated Starts Due),
+                 ( $queue->SLADisabled ? () : 'SLA' ), qw(Attachment Text) ],
             {
                 id               => "ticket/new",
                 Queue            => $queue->Name,
@@ -133,6 +134,7 @@ else {
                 TimeEstimated    => 0,
                 Starts           => $starts->ISO(Timezone => 'user'),
                 Due              => $due->IsSet ? $due->ISO(Timezone => 'user') : undef,
+                SLA              => '',
                 Attachment       => '',
                 Text             => "",
             },
@@ -269,6 +271,10 @@ if (!keys(%data)) {
         $val = $ticket->$key || 0;
         $val = "$val minutes" if $val;
         push @data, [ $key => $val ];
+    }
+
+    if ( !$ticket->QueueObj->SLADisabled && (!%$fields || (exists $fields->{sla})) ) {
+        push @data, [ SLA => $ticket->SLA ];
     }
 
     # Display custom fields
@@ -464,6 +470,11 @@ else {
                     }
                 }
             }
+        }
+        elsif ( $key eq 'sla' ) {
+            my $current = $ticket->SLA // '';
+            next if $val eq $current;
+            ($n, $s) = $ticket->SetSLA($val);
         }
         elsif ($key ne 'id' && $key ne 'type' && $key ne 'creator' && $key ne 'content-type' ) {
             $n = 0;

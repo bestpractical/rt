@@ -60,7 +60,7 @@ my %data = %$changes;
 my $queue = RT::Queue->new($session{CurrentUser});
 
 my @fields =
-  qw(Name Description CorrespondAddress CommentAddress Disabled);
+  qw(Name Description CorrespondAddress CommentAddress Disabled SLADisabled);
 if ( $fields && %$fields ) {
     @fields = grep { exists $fields->{ lc $_ } } @fields;
 }
@@ -84,6 +84,7 @@ else {
                 Description => "",
                 CommentAddress => "",
                 CorrespondAddress => "",
+                SLADisabled => 1,
             },
             0
         ];
