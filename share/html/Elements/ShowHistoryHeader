@@ -58,7 +58,7 @@ my $histid      = "\L$record_type\E-" . $Object->id . "-history";
 </%INIT>
 <div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
-if ( $ShowDisplayModes or $ShowTitle ) {
+if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my $title = $ShowTitle
                     ? loc('History')
                     : '&nbsp;';
