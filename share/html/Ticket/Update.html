@@ -217,15 +217,7 @@ jQuery( function() {
        jQuery('#recipients div.titlebox-content').addClass('refreshing');
        jQuery('#previewscrips div.titlebox-content').addClass('refreshing');
 
-       /* temporarily re-enable the checkboxes so they will be included in
-          payload */
-       jQuery("#recipients input[name=TxnSendMailToAll], #recipients input[name=TxnSendMailTo]").attr('disabled', false);
-       jQuery("#previewscrips input[name=TxnSendMailToAll], #previewscrips input[name=TxnSendMailTo]").attr('disabled', false);
-
        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
-
-       jQuery("#recipients input[name=TxnSendMailToAll], #recipients input[name=TxnSendMailTo]").attr('disabled', true);
-       jQuery("#previewscrips input[name=TxnSendMailToAll], #previewscrips input[name=TxnSendMailTo]").attr('disabled', true);
 
        jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
            payload,
@@ -265,11 +257,6 @@ jQuery( function() {
    }
 
    jQuery("#ticket-update-metadata :input, #UpdateCc, #UpdateBcc").change( updateScrips );
-
-   jQuery("body").on("submit", "form", function () {
-       jQuery("#recipients input[name=TxnSendMailToAll], #recipients input[name=TxnSendMailTo]").attr('disabled', false);
-       jQuery("#previewscrips input[name=TxnSendMailToAll], #previewscrips input[name=TxnSendMailTo]").attr('disabled', false);
-   });
 
 });
 </script>
