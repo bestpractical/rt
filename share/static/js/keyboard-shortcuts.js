@@ -12,6 +12,16 @@ jQuery(function() {
         window.location.href = homeLink.attr('href');
     };
 
+    var goToDashboard = function(e){
+      var dashBoardID = Number(e.key);
+      // Acquire the items on the dropdown menu
+      var dashBoards = document.getElementById("li-home").getElementsByTagName("li");
+      // Keep in range
+      if(dashBoards.length >= dashBoardID){
+        window.location.href = dashBoards[dashBoardID-1].children[0].href;
+      }
+    };
+
     var simpleSearch = function() {
         var searchInput = jQuery('#simple-search').find('input');
         if (!searchInput.length) { // try SelfService simple search
@@ -38,7 +48,7 @@ jQuery(function() {
         var url = RT.Config.WebHomePath + '/Helpers/ShortcutHelp' +
                   '?show_search=' + ( is_search || is_bulk_update ? '1' : '0' ) +
                   '&show_bulk_update=' + ( is_bulk_update ? '1' : '0' );
-
+        console.log(url)
         jQuery.ajax({
             url: url,
             success: showModal,
@@ -57,6 +67,12 @@ jQuery(function() {
             .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
             .modal();
     };
+
+    for(i = 1; i < 10; i++){
+      // No sign of any regex support for Mousetrap
+      var string = 'g ' + i.toString()
+      Mousetrap.bind(string, function(e){goToDashboard(e)});
+    }
 
     Mousetrap.bind('g b', goBack);
     Mousetrap.bind('g f', goForward);
@@ -150,4 +166,3 @@ jQuery(function() {
     Mousetrap.bind('c', commentOnTicket);
     Mousetrap.bind('x', toggleTicketCheckbox);
 });
-

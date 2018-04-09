@@ -73,6 +73,10 @@ $show_bulk_update => 0
                     <td><span class="keyboard-shortcuts-key">gb</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">gf</span></td>
                     <td><&|/l&>Go back / forward</&></td>
                 </tr>
+                <tr>
+                    <td><span class="keyboard-shortcuts-key">g(1-9)</span></td>
+                    <td><&|/l&>Jump to dashboard</&></td>
+                </tr>
             </table>
         </div>
     </div>
