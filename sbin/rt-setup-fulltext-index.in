@@ -49,6 +49,7 @@
 use strict;
 use warnings;
 no warnings 'once';
+use Term::ReadKey;
 
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
@@ -650,6 +651,17 @@ sub dba_handle {
         $ENV{'NLS_NCHAR'} = "AL32UTF8";
     }
     my $dsn = do { my $h = new RT::Handle; $h->BuildDSN; $h->DSN };
+    my $password;
+    if ( defined $DB{'admin_password'} || defined $ENV{'RT_DBA_PASSWORD'} ) {
+        $password = $DB{'admin_password'} // $ENV{'RT_DBA_PASSWORD'};
+    } else {
+        print "Please enter $DB{'type'} admin password: ";
+        ReadMode('noecho');
+        chomp($password = ReadLine(0));
+        ReadMode('normal');
+        print "\n";
+    }
+    $DB{'admin_password'} = $password;
     my $dbh = DBI->connect(
         $dsn, $DB{admin}, $DB{admin_password},
         { RaiseError => 1, PrintError => 1 },
