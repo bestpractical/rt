@@ -61,7 +61,7 @@ $Format .= "$_, " for RT::Asset->Roles;
 my $CFs = RT::CustomFields->new( $session{CurrentUser} );
 $CFs->LimitToCatalog( $catalog_obj->Id );
 $CFs->LimitToObjectId( 0 ); # LimitToGlobal but no LookupType restriction
-$Format .= "'__CF.{$_}__/TITLE:$_', " for map {$_ = $_->Name; s/['\\]/\\$1/g; $_} @{$CFs->ItemsArrayRef};
+$Format .= "'__CF.{$_}__/TITLE:$_', " for map {$_ = $_->Name; s/(['\\])/\\$1/g; $_} @{$CFs->ItemsArrayRef};
 
 $m->callback(CallbackName => "ModifyFormat", Format => \$Format );
 
