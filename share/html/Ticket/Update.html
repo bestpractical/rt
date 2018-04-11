@@ -339,6 +339,9 @@ if ( $ARGS{'SubmitTicket'} ) {
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
 
+        # Preserve non-email username inputs
+        my @usernames = grep {!/\@/} split /,/, $value;
+
         my @emails = Email::Address->parse( $value );
         foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
             push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc(substr($field, 6)) );
@@ -346,6 +349,11 @@ if ( $ARGS{'SubmitTicket'} ) {
             $email = undef;
         }
         $ARGS{ $field } = join ', ', map $_->format, grep defined, @emails;
+
+        if ( @usernames ){
+            # Restore usernames, if any
+            $ARGS{ $field } .= ', ' . join ', ', grep defined, @usernames;
+        }
     }
 }
 
