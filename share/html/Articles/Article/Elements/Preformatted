@@ -86,8 +86,13 @@
 my $class = $Article->ClassObj;
 my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
 my $cfs = $class->ArticleCustomFields;
-$include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
-$include{$_} = not $class->FirstAttribute("Skip-$_") for keys %include;
+while ( my $cf = $cfs->Next ) {
+    $include{"CF-Title-" . $cf->Id} = 1;
+    $include{"CF-Value-" . $cf->Id} = 1;
+}
+foreach my $key ( keys %include ) {
+    $include{$key} = not $class->FirstAttribute("Skip-$key");
+}
 
 my $get_content = sub {
     my $value = shift;
