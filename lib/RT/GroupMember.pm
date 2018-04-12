@@ -561,7 +561,7 @@ sub __DependsOn {
 
             return;
         },
-    );
+    ) unless $args{Shredder}->{_resolver_mark}{SingleMemberGroupResolver}++;
 
     return $self->SUPER::__DependsOn( %args );
 }
