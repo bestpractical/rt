@@ -134,6 +134,11 @@ span.rights-editor-label {
     border-radius: 6px;
 }
 
+.rights-editor label[title=SuperUser],
+.rights-editor label[title=SuperUser] * {
+    color: #c00;
+}
+
 .tab-aggregates-checked-rights {
     background: #cfcfcf;
 }
