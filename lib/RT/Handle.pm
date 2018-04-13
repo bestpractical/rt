@@ -501,17 +501,17 @@ sub InsertSchema {
         $file = $base_path;
     }
 
-    $file = $self->GetVersionFile( $dbh, $file );
-    unless ( $file ) {
+    my $version_file = $self->GetVersionFile( $dbh, $file );
+    unless ( $version_file ) {
         return (0, "Couldn't find schema file(s) '$file*'");
     }
-    unless ( -f $file && -r $file ) {
-        return (0, "File '$file' doesn't exist or couldn't be read");
+    unless ( -f $version_file && -r $version_file ) {
+        return (0, "File '$version_file' doesn't exist or couldn't be read");
     }
 
     my (@schema);
 
-    open( my $fh_schema, '<', $file ) or die $!;
+    open( my $fh_schema, '<', $version_file ) or die $!;
 
     my $has_local = 0;
     open( my $fh_schema_local, "<" . $self->GetVersionFile( $dbh, $RT::LocalEtcPath . "/schema." . $db_type ))
