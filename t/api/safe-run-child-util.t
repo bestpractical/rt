@@ -109,10 +109,11 @@ is_handle_ok();
 
 # fork+exec
 {
+    use Config;
     my $script = RT::Test->temp_directory .'/true.pl';
     open my $fh, '>', $script;
     print $fh <<END;
-#!$^X
+#!$Config{perlpath}
 
 open my \$fh, '>', '$script.res';
 print \$fh "child";
