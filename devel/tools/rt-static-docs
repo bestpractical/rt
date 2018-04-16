@@ -185,6 +185,9 @@ system_chmod("+x", $_) for <docs/UPGRADING*>;
 # Convert each POD file to HTML
 $converter->batch_convert( \@dirs, $opts{to} );
 
+# Run it again to make sure local links are linked correctly
+$converter->batch_convert( \@dirs, $opts{to} );
+
 # Remove execution bit from workaround above
 system_chmod("-x", $_) for <docs/UPGRADING*>;
 
