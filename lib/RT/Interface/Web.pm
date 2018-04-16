@@ -307,7 +307,7 @@ sub HandleRequest {
 
     # attempt external auth
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
-        if RT->Config->Get('ExternalAuth');
+        if @{ RT->Config->Get( 'ExternalAuthPriority' ) || [] };
 
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
@@ -322,7 +322,7 @@ sub HandleRequest {
 
     # attempt external auth
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
-        if RT->Config->Get('ExternalAuth');
+        if @{ RT->Config->Get( 'ExternalAuthPriority' ) || [] };
 
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
