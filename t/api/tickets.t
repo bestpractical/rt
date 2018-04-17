@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use RT;
 use RT::Test tests => undef;
+use Test::Warn;
 
 {
 
@@ -142,6 +143,22 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
     my $count = $tickets->Count();
     ok $count > 1, "Found more than one ticket";
     undef $count;
+}
+
+{
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    my ( $ret, $msg );
+    warning_like {
+        ( $ret, $msg ) = $tickets->FromSQL( "LastUpdated < yesterday" );
+    }
+    qr/Couldn't parse query: Wrong query, expecting a VALUE in 'LastUpdated < >yesterday<--here'/;
+
+    ok( !$ret, 'Invalid query' );
+    like(
+        $msg,
+        qr/Wrong query, expecting a VALUE in 'LastUpdated < >yesterday<--here'/,
+        'Invalid query message'
+    );
 }
 
 done_testing;
