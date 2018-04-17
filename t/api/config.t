@@ -46,4 +46,23 @@ warning_like {RT::Config->PostLoadCheck} qr{rudder},
 my @canonical_encodings = RT::Config->Get('EmailInputEncodings');
 is_deeply(\@encodings, \@canonical_encodings, 'Got correct encoding list');
 
+RT->Config->Set(
+    ExternalSettings => {
+        'My_LDAP' => {
+            'user'          => 'rt_ldap_username',
+            'pass'          => 'rt_ldap_password',
+            'net_ldap_args' => [
+                raw => qr/^givenName/,
+            ],
+            subroutine => sub { },
+        },
+    }
+);
+
+my $external_settings = RT::Config->GetObfuscated( 'ExternalSettings', RT->SystemUser );
+is( $external_settings->{My_LDAP}{user}, 'rt_ldap_username',     'plain value' );
+is( $external_settings->{My_LDAP}{pass}, 'Password not printed', 'obfuscated password' );
+is( $external_settings->{My_LDAP}{net_ldap_args}[ 1 ], qr/^givenName/, 'regex correct' );
+is( ref $external_settings->{My_LDAP}{subroutine},     'CODE',         'subroutine type correct' );
+
 done_testing;
