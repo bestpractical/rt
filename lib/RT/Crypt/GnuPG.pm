@@ -1698,12 +1698,15 @@ sub ParseKeysInfo {
 
     my %gpg_opt = RT->Config->Get('GnuPGOptions');
 
+    my $gnupg = GnuPG::Interface->new;
+    my @gnupg_versions = split /\./, $gnupg->version;
+
     my @res = ();
     foreach my $line( @lines ) {
         chomp $line;
         my $tag;
         ($tag, $line) = split /:/, $line, 2;
-        if ( $tag eq 'pub' ) {
+       if ( $tag eq 'pub' || $gnupg_versions[0] >= 2 && $tag eq 'sub'  ) {
             my %info;
             @info{ qw(
                 TrustChar KeyLength Algorithm Key
@@ -1731,7 +1734,7 @@ sub ParseKeysInfo {
                 foreach qw(Created Expire);
             push @res, \%info;
         }
-        elsif ( $tag eq 'sec' ) {
+        elsif ( $tag eq 'sec' || $gnupg_versions[0] >= 2 && $tag eq 'ssb' ) {
             my %info;
             @info{ qw(
                 Empty KeyLength Algorithm Key
