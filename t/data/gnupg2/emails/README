@@ -1,0 +1,28 @@
+Set of emails signed and/or encrypted using real MUAs(mutt, thunderbird).
+
+All messages have subejct 'Test Email ID:\d+'.
+ID matches number in name of the corresponding file.
+Top most entity of a message as well contains 'ID:\d+' text.
+
+Emails may have either text plain or binary attachment.
+Text of plain attachment is
+"This is a test attachment.  The magic word is:  zanzibar."
+
+Content of binary attachment is RT's favicon.png.
+
+Encrypted messages encrypted for rt-recipient@example.com.
+
+Messages signed using rt-test@example.com key.
+
+Name of a file may contain the following parts separated by dash:
+* signed
+* encrypted
+* MIME - RFC format
+* inline - inline format
+* with-attachment - text plain attachment
+* with-binary     - binary attachment
+
+In total 18 emails using all possible combinations.
+18 = 3 (signed/encrypted/both) * 2 (MIME/inline)
+    * 3 (no/text/binary)
+

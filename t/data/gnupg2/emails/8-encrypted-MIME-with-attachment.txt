@@ -1,0 +1,49 @@
+Received: by anduril (Postfix, from userid 1000)
+	id C962637F57; Fri, 10 Aug 2007 15:39:14 -0400 (EDT)
+Date: Fri, 10 Aug 2007 15:39:14 -0400
+To: rt-recipient@example.com
+Subject: Test Email ID:8
+Message-ID: <20070810193914.GC5572@mit.edu>
+MIME-Version: 1.0
+Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+	boundary="FFoLq8A0u+X9iRU8"
+Content-Disposition: inline
+User-Agent: Mutt/1.5.13 (2006-08-11)
+From: rt-test@example.com
+
+
+--FFoLq8A0u+X9iRU8
+Content-Type: application/pgp-encrypted
+Content-Disposition: attachment
+
+Version: 1
+
+--FFoLq8A0u+X9iRU8
+Content-Type: application/octet-stream
+Content-Disposition: inline; filename="msg.asc"
+
+-----BEGIN PGP MESSAGE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+hQIOA076g5OuwfIOEAgA4dZa3t55kB5pY4Q7+h4thTJVZ+wV2QxI5wZFRvMs7yw3
+MEIWqHusoe7R2zeXLxaT0gMSQj3osO+GrGJRDk4qCGjcjSneFmYKkELx8KRML59N
+X7/HeX7v8nSGpyqM5foaky38uAGxj2xBpswfvsY8qdQ37a4mNH2atESnkxYLomZb
+4vTRTSE1XtvhaG7oHaXxfmeNln0JezfbfpDGTktZJOupEX99j6/bvloimXyBT6SZ
+3wbcP/EYoqC8DQOQTtFTAisWwveTVp6FDFvi5L2BCJ2NzYZSDOBNeXrzf1AJ04dN
+9lTzbtejdE/AgwDclDnZYZByiGLM43X6nTk7c9gH1AgAlrxxvO1yz4sZchGM2rrn
+yzNJpcvcgbJLTt54gqie/BdQHSnvlCBLZzplx2xV9HIwJB7Kf29Ka2gg2p6mjyID
+YUd1451K1hDUmBHgya8jb6g2c6bBxiusUODlGfmv+c+kq/yG0tKws5d0/IGanL+Z
+h7XkcEYq3its0acCbcKizgzLSmxSqu6NK7rnDvioUOHHKG8uC9fk2JetdTdYOTBn
+AWYDxa3D+kRvOAiOWGMqtvOWAC1BZJ8hssBpesuG1+sucTh7W4ZROtQfEbqC8W51
+s6e17x1YUqE8QIs/aUYkUkX2JqObKsZPJAiVYCQkqJceIk/lT4rXNOfUwl5dAynk
+WNLAZQGKuVghSfSoRyKbFMRDimigisWN2JUudaV0Ld6E/5iO7EP7XhjqkzTlwsaN
+wui2n0Omxye2dNVMKz3q76fVp79XbznaI1ckeVjiiDmkiaQOp1Au/Sx2Bj0/wolJ
+OXnp27oqc9THy3RANLRXIQuRaYOyoxUIjVvhbOVfM3U7MlcAW3jT2kMTI7H83HWc
+ezxKfqM7nJUKkIVmRY4J/6X4uo5c8DdIxLeG+ioj+3I7BRkLfIAPYDGaeB5+BD1k
+EPcVGd3u1EW7D8f5CRARnU8aaC8DCPk5YYN6wM9JY9n0FEgIkwoniTpqHLs/UMa8
+DWGer1UCGp4qElmHvWHVV8b82nw6Ta2BhWKjA9pphf96KOTt3y4jqxfU4GbrOYDJ
+786/cggItsc0
+=qJrM
+-----END PGP MESSAGE-----
+
+--FFoLq8A0u+X9iRU8--

@@ -1,0 +1,24 @@
+Received: by anduril (Postfix, from userid 1000)
+	id 3EDA537F80; Mon, 13 Aug 2007 15:34:17 -0400 (EDT)
+Date: Mon, 13 Aug 2007 15:34:17 -0400
+To: rt-recipient@example.com
+Subject: Test Email ID:4
+Message-ID: <20070813193417.GD6392@mit.edu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; x-action=pgp-signed
+Content-Disposition: inline
+User-Agent: Mutt/1.5.13 (2006-08-11)
+From: rt-test@example.com
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+This is a test email with inline signature.
+ID:4
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFGwLI50ygDXYSIHxsRAp40AJ9ErYdLH2SVRXtgRtx7n/FVFOmKDwCgl/0T
+BeRSaF4Xbi8uGhVIkmU+YCs=
+=e4u6
+-----END PGP SIGNATURE-----
