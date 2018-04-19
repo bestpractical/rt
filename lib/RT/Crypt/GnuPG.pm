@@ -1512,10 +1512,10 @@ sub ParseStatus {
                 Class          => $props[3],
                 Timestamp      => $props[4],
                 KeyFingerprint => $props[5],
-                User           => $user_hint{ $latest_user_main_key },
+                User           => $latest_user_main_key ? $user_hint{ $latest_user_main_key } : undef,
             };
             $res[-1]->{Message} .= ' by '. $user_hint{ $latest_user_main_key }->{'EmailAddress'}
-                if $user_hint{ $latest_user_main_key };
+                if $latest_user_main_key && $user_hint{ $latest_user_main_key };
         }
         elsif ( $keyword eq 'INV_RECP' ) {
             my ($rcode, $recipient) = split /\s+/, $args, 2;
