@@ -111,7 +111,7 @@ AC_SUBST(LIBS_OWNER)
 dnl LIBS_GROUP
 AC_ARG_WITH(libs-group,
 	    AC_HELP_STRING([--with-libs-group=GROUP],
-	    		   [group that will own RT binaries (default bin)]),
+	    		   [group that will own RT libraries (default bin)]),
             LIBS_GROUP=$withval,
             LIBS_GROUP=bin)
 AC_SUBST(LIBS_GROUP)
