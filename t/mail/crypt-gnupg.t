@@ -51,13 +51,27 @@ diag 'only signing. correct passphrase';
     my @status = RT::Crypt->ParseStatus(
         Protocol => $res{'Protocol'}, Status => $res{'status'}
     );
-    is( scalar @status, 2, 'two records: passphrase, signing');
-    is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
-    is( $status[0]->{'Status'}, 'DONE', 'good passphrase');
-    is( $status[1]->{'Operation'}, 'Sign', 'operation is correct');
-    is( $status[1]->{'Status'}, 'DONE', 'done');
-    is( $status[1]->{'User'}->{'EmailAddress'}, 'rt@example.com', 'correct email');
 
+    if ($gnupg_versions[0] < 2) {
+        is( scalar @status, 2, 'two records: passphrase, signing');
+    }
+    else {
+        is( scalar @status, 1, 'one record: signing');
+    }
+
+    if ($gnupg_versions[0] < 2) {
+        is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
+        is( $status[0]->{'Status'}, 'DONE', 'good passphrase');
+        is( $status[1]->{'Operation'}, 'Sign', 'operation is correct');
+        is( $status[1]->{'Status'}, 'DONE', 'done');
+        is( $status[1]->{'User'}->{'EmailAddress'}, 'rt@example.com', 'correct email');
+    }
+    else {
+        is( $status[0]->{'Operation'}, 'Sign', 'operation is correct');
+        is( $status[0]->{'Status'}, 'DONE', 'done');
+        is( $status[0]->{'KeyFingerprint'}, 'F23574193C1BA40ACB8DC6A4B5A462194345F7A5', 'signing key is correct');
+    }
+    
     ok( $entity->is_multipart, 'signed message is multipart' );
     is( $entity->parts, 2, 'two parts' );
 
@@ -175,7 +189,7 @@ diag 'encryption only, bad recipient';
             Entity => $entity,
             Sign   => 0,
         );
-    } qr/public key not found/;
+    } qr/(public key not found|No public key)/;
 
     ok( $res{'exit_code'}, 'no way to encrypt without keys of recipients');
     ok( $res{'logger'}, "errors are in logger" );
@@ -202,13 +216,23 @@ diag 'encryption and signing with combined method';
     my @status = RT::Crypt->ParseStatus(
         Protocol => $res{'Protocol'}, Status => $res{'status'}
     );
-    is( scalar @status, 3, 'three records: passphrase, sign and encrypt');
-    is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
-    is( $status[0]->{'Status'}, 'DONE', 'done');
-    is( $status[1]->{'Operation'}, 'Sign', 'operation is correct');
-    is( $status[1]->{'Status'}, 'DONE', 'done');
-    is( $status[2]->{'Operation'}, 'Encrypt', 'operation is correct');
-    is( $status[2]->{'Status'}, 'DONE', 'done');
+
+    if ($gnupg_versions[0] < 2) {
+        is( scalar @status, 3, 'three records: passphrase, sign and encrypt');
+        is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
+        is( $status[0]->{'Status'}, 'DONE', 'done');
+        is( $status[1]->{'Operation'}, 'Sign', 'operation is correct');
+        is( $status[1]->{'Status'}, 'DONE', 'done');
+        is( $status[2]->{'Operation'}, 'Encrypt', 'operation is correct');
+        is( $status[2]->{'Status'}, 'DONE', 'done');
+    }
+    else {
+        is( scalar @status, 2, 'two records: sign and encrypt');
+        is( $status[0]->{'Operation'}, 'Sign', 'operation is correct');
+        is( $status[0]->{'Status'}, 'DONE', 'done');
+        is( $status[1]->{'Operation'}, 'Encrypt', 'operation is correct');
+        is( $status[1]->{'Status'}, 'DONE', 'done');
+    }
 
     ok($entity, 'get an encrypted and signed part');
 
