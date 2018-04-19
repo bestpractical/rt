@@ -2,15 +2,37 @@
 use strict;
 use warnings;
 
+my $gnupg;
+my @gnupg_versions;
 my $homedir;
 BEGIN {
     require RT::Test;
-    $homedir =
-      RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
-        qw/data gnupg keyrings/ );
+    require GnuPG::Interface;
+
+    $gnupg = GnuPG::Interface->new;
+    @gnupg_versions = split /\./, $gnupg->version;
+
+    if ($gnupg_versions[0] < 2) {
+        $homedir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg keyrings/ );
+    } else {
+        $homedir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg2 keyrings/ );
+        $ENV{'GNUPGHOME'} = $homedir;
+        system('gpgconf', '--quiet', '--kill', 'gpg-agent');
+    }
 }
 
-use RT::Test::GnuPG tests => 100, gnupg_options => { homedir => $homedir };
+END {
+    if ($gnupg_versions[0] >= 2 && $gnupg_versions[1] >= 1) {
+        system('gpgconf', '--quiet', '--kill', 'gpg-agent');
+        delete $ENV{'GNUPGHOME'};
+    }
+}
+
+use RT::Test::GnuPG gnupg_options => { homedir => $homedir };
 use Test::Warn;
 
 use_ok('RT::Crypt');
