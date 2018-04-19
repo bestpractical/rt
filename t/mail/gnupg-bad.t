@@ -1,13 +1,42 @@
 use strict;
 use warnings;
 
+my $gnupg;
+my @gnupg_versions;
+my $homedir;
+BEGIN {
+    require RT::Test;
+    require GnuPG::Interface;
+    
+    $gnupg = GnuPG::Interface->new;
+    @gnupg_versions = split /\./, $gnupg->version;
+
+    if ($gnupg_versions[0] < 2) {
+	$homedir =
+	    RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+					       qw/data gnupg keyrings/ );
+    } else {
+	$homedir =
+	    RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+					       qw/data gnupg2 keyrings/ );
+	$ENV{'GNUPGHOME'} = $homedir;
+	system('gpgconf', '--quiet', '--kill', 'gpg-agent');
+    }
+
+}
+
+END {
+    if ($gnupg_versions[0] >= 2) {
+	system('gpgconf', '--quiet', '--kill', 'gpg-agent');
+	delete $ENV{'GNUPGHOME'};
+    }
+}
+
 use RT::Test::GnuPG
   tests         => 7,
   gnupg_options => {
     passphrase => 'rt-test',
-    homedir => RT::Test::get_abs_relocatable_dir(
-        File::Spec->updir(), qw/data gnupg keyrings/
-    ),
+    homedir => $homedir
   };
 
 my ($baseurl, $m) = RT::Test->started_ok;
