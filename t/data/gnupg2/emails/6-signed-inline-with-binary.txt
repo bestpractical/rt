@@ -1,0 +1,55 @@
+Message-ID: <46BCDAE6.4090803@mit.edu>
+Date: Fri, 10 Aug 2007 17:38:46 -0400
+From: rt-test@example.com
+User-Agent: Thunderbird 1.5.0.12 (X11/20070604)
+MIME-Version: 1.0
+To:  rt-recipient@example.com
+Subject: Test Email ID:6
+X-Enigmail-Version: 0.94.2.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="------------enigAEEA002E4229CA8E5445ED73"
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigAEEA002E4229CA8E5445ED73
+Content-Type: multipart/mixed;
+ boundary="------------000104020205010403010301"
+
+This is a multi-part message in MIME format.
+--------------000104020205010403010301
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+This is a email signed inline with a binary attachment.
+ID:6
+
+--------------000104020205010403010301
+Content-Type: image/png;
+ name="favicon.png"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline;
+ filename="favicon.png"
+
+iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QAAAAAAAD5Q7t/AAAB
+BElEQVR42u1WWw6DMAwz0+5FbzbvZuZk2cfUritpea77wVIRIBQ7dhsBdIQkM8AMMJImyW6d
+BXweyJ7UAMnUvQFGwHp2bizIJfUTUHZO8j/k1pt8lntvchbdH8ndtqyS+Gj3fyVPAtZAkm3N
+ffCyi/chBIQQ3iqs3cQ0TZCERzbhngDocOS4z94wXTCmu2V45LuQW8hsSWpaP8v9sy+2IRZj
+ZTP5ububbp8Az4ly5W6QqJ33YwKSkIYbZVy5uNMFsOJGLaLTBMRC8Yy7bmR/OD8TUB00DvkW
+AcPSB7FIPoji0AGQBtU4jt+Fh1R6Dcc6B2Znv4HTHTiAJkfXv+ILFy5c8PACgtsiPj7qOgAA
+AAAASUVORK5CYII=
+--------------000104020205010403010301--
+
+--------------enigAEEA002E4229CA8E5445ED73
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFGvNrm0ygDXYSIHxsRAvwSAKC4d3U6SjfhYpUHu2V/vXtgxGFa1QCfeK6p
+dyDDlvlqP9Ns4EExvHXfHuY=
+=sX3V
+-----END PGP SIGNATURE-----
+
+--------------enigAEEA002E4229CA8E5445ED73--

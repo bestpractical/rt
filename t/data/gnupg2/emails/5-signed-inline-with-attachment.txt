@@ -1,0 +1,48 @@
+Message-ID: <46BCDA81.3030308@mit.edu>
+Date: Fri, 10 Aug 2007 17:37:05 -0400
+From: rt-test@example.com
+User-Agent: Thunderbird 1.5.0.12 (X11/20070604)
+MIME-Version: 1.0
+To:  rt-recipient@example.com
+Subject: Test Email ID:5
+X-Enigmail-Version: 0.94.2.0
+Content-Type: multipart/mixed;
+ boundary="------------010302000403000103080306"
+
+This is a multi-part message in MIME format.
+--------------010302000403000103080306
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+This is a test email with a text attachment and inline signature.
+ID:5
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFGvNqA0ygDXYSIHxsRAuCHAKC0HnduLWqihY5wzGYDFGbFtA4chwCgr6+t
+mQo4oXIqu+kIZ0ExWyiUENs=
+=3ABp
+-----END PGP SIGNATURE-----
+
+--------------010302000403000103080306
+Content-Type: text/plain;
+ name="text-attachment"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="text-attachment"
+
+This is a test attachment.  The magic word is:  zanzibar.
+
+--------------010302000403000103080306
+Content-Type: application/octet-stream;
+ name="text-attachment.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="text-attachment.sig"
+
+iD8DBQBGvNqB0ygDXYSIHxsRAmkbAJ0esGNEDMr01u45ZHIIKZpCFSE8tgCfXBedq0Yu5mnZ
+zOZyASZYUIf9wSE=
+--------------010302000403000103080306--

@@ -1,0 +1,55 @@
+Received: by anduril (Postfix, from userid 1000)
+	id 9745537F7B; Mon, 13 Aug 2007 15:29:41 -0400 (EDT)
+Date: Mon, 13 Aug 2007 15:29:41 -0400
+To: rt-recipient@example.com
+Subject: Test Email ID:3
+Message-ID: <20070813192941.GC6392@mit.edu>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="pY3vCvL1qV+PayAL"
+Content-Disposition: inline
+User-Agent: Mutt/1.5.13 (2006-08-11)
+From: rt-test@example.com
+
+
+--pY3vCvL1qV+PayAL
+Content-Type: multipart/mixed; boundary="at6+YcpfzWZg/htY"
+Content-Disposition: inline
+
+
+--at6+YcpfzWZg/htY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+This is a test email with binary attachment and MIME signature.
+ID:3
+
+--at6+YcpfzWZg/htY
+Content-Type: image/png
+Content-Disposition: attachment; filename="favicon.png"
+Content-Transfer-Encoding: base64
+
+iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QAAAAAAAD5Q7t/AAAB
+BElEQVR42u1WWw6DMAwz0+5FbzbvZuZk2cfUritpea77wVIRIBQ7dhsBdIQkM8AMMJImyW6d
+BXweyJ7UAMnUvQFGwHp2bizIJfUTUHZO8j/k1pt8lntvchbdH8ndtqyS+Gj3fyVPAtZAkm3N
+ffCyi/chBIQQ3iqs3cQ0TZCERzbhngDocOS4z94wXTCmu2V45LuQW8hsSWpaP8v9sy+2IRZj
+ZTP5ububbp8Az4ly5W6QqJ33YwKSkIYbZVy5uNMFsOJGLaLTBMRC8Yy7bmR/OD8TUB00DvkW
+AcPSB7FIPoji0AGQBtU4jt+Fh1R6Dcc6B2Znv4HTHTiAJkfXv+ILFy5c8PACgtsiPj7qOgAA
+AAAASUVORK5CYII=
+
+--at6+YcpfzWZg/htY--
+
+--pY3vCvL1qV+PayAL
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFGwLEl0ygDXYSIHxsRAuYxAKDQeRS40bRiW5jmrwHNsCDN67vu7wCfV0Pd
+7T/gCO7TrbuGaJ0BVsJnJsY=
+=Pjdg
+-----END PGP SIGNATURE-----
+
+--pY3vCvL1qV+PayAL--

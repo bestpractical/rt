@@ -1,0 +1,48 @@
+Received: by anduril (Postfix, from userid 1000)
+	id 74BF637F75; Mon, 13 Aug 2007 15:23:57 -0400 (EDT)
+Date: Mon, 13 Aug 2007 15:23:57 -0400
+To: rt-recipient@example.com
+Subject: Test Email ID:2
+Message-ID: <20070813192357.GB6392@mit.edu>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="bKyqfOwhbdpXa4YI"
+Content-Disposition: inline
+User-Agent: Mutt/1.5.13 (2006-08-11)
+From: rt-test@example.com
+
+
+--bKyqfOwhbdpXa4YI
+Content-Type: multipart/mixed; boundary="DKU6Jbt7q3WqK7+M"
+Content-Disposition: inline
+
+
+--DKU6Jbt7q3WqK7+M
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+This is a test email with a text attachment.
+ID:2
+
+--DKU6Jbt7q3WqK7+M
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=text-attachment
+
+This is a test attachment.  The magic word is:  zanzibar.
+
+--DKU6Jbt7q3WqK7+M--
+
+--bKyqfOwhbdpXa4YI
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFGwK/N0ygDXYSIHxsRAlbuAJ4wxUVCNerg6dLm+w7llCj51YYbFACgvNJR
+ajbUy9MMkljajl6Of3IlqRA=
+=R6Gi
+-----END PGP SIGNATURE-----
+
+--bKyqfOwhbdpXa4YI--

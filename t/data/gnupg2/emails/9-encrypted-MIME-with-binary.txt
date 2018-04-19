@@ -1,0 +1,57 @@
+Received: by anduril (Postfix, from userid 1000)
+	id 215C737F5D; Fri, 10 Aug 2007 15:46:27 -0400 (EDT)
+Date: Fri, 10 Aug 2007 15:46:27 -0400
+To: rt-recipient@example.com
+Subject: Test Email ID:9
+Message-ID: <20070810194627.GA5815@mit.edu>
+MIME-Version: 1.0
+Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+	boundary="GID0FwUMdk1T2AWN"
+Content-Disposition: inline
+User-Agent: Mutt/1.5.13 (2006-08-11)
+From: rt-test@example.com
+
+
+--GID0FwUMdk1T2AWN
+Content-Type: application/pgp-encrypted
+Content-Disposition: attachment
+
+Version: 1
+
+--GID0FwUMdk1T2AWN
+Content-Type: application/octet-stream
+Content-Disposition: inline; filename="msg.asc"
+
+-----BEGIN PGP MESSAGE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+hQIOA076g5OuwfIOEAgAqwVRwpeOIRMvrgswuYagJfk57HvSvrAg7tVzXHaHW5LI
+zJeWpKg0PVwmJUYTG9cZN0gkfpr33SULruvniZRSX650E/vv9H03P1dVYhBbcP01
+AyfPoaySinipoqG5OK7aTJVEnPZqqsCKgzFbqEg+FdF3YjNVa1etfmKV/JvoXTxR
+il6pOqv+xUJ66GpPUoP7mCZJ/cJEF1zz/EbZoYcS9MgxoP42bOIYBhyqIv3fUh7X
+fuDpup5xnJwM3FRjkNQPlqKhgGHCgk04OGgLUw8wzRwYQ5jSyij45J/UcGoNWePi
+eVTZignbYIfrlwa5GH6776U9QA9ei7PFP3RqO2CB2Af6AiIdkeN9MfPFfiQ/ASwR
+/zePg+OOmKC6locoUHWTEuBCZhgty7XarfPZufBHlA3Z3f369Pxz9nMV07KkO22t
+thhltpsxan2pFZL4oPfwA9OdDRGeWIISn4jGc+foNfKTmERY7EZv9ruDC0lxaSvs
+HEWJC38sJ3xGdlS439qaddSbm0Lft8JbNwi6FEpThE4abBdITu+BxbkoFrjIy6aC
+UJgyJ3YtPTpU8JuT49Ocn+51YPXZTSc/ePnvlzSqRXHeJrOKp5Oyoa9001242MRM
+mpaC1lw/sfGIIAXv5t2B569RXDsZ2jIvPjFIleIdyKOG17m8qsP82nWKbN2N96am
+p9LpAb5gqid4Hw1PjjjCB0A9w7G9orQeEQuF+2V9MGWAEWOHoVbGWTRjfh4uXASz
+4PlazbNDIZZB09ACaDfxG3Y3/TI2X0sl9KJNRALFtHm4+DNbWVeWe+aKrG9ZY9Os
+xjD/UQFFQrchpNPD7xV98WWEg4+s8pkk9Mwv+Q/gNf2xBXJXDOhIm2LlY0VlhETq
+fk4YS3EUS78Ti4V99w/L9PTnoaZY/8kkI6NNjb+bqldhd9AQHXEkpV5Gh/PrsgFn
+FzBZxEwcY8wKP2yKMTp+A3rsjHwM4OChjtkDShf4KDwGS5D+E4o1RJVcM3jfh2SG
+RRKge5ewErBmIDIqeU8Wpj5cuyqS77CIB3aplSKLqUu2bC2EiLFZxs2UTg+cp5WK
+WFzt+YmH6/p0y9eyaAGOleSh3dnIZHv2BDtzF9x5fHFesjaVp3jpmMsHQ1ol53TR
+8N4fUuO140oE0Gnci61EXzLjkGCSBhzZqy/+K8PR0d1hGv+vlwfadpzsPfX8WcxZ
+DBuI1E7OcqVaXemR90/C2AbLB8qGuwQ+wTIHPqXlm8s0+6wZ4YUcUoa/F+2VLSxN
+VWGji1yioKrSaBjlBBUpHfoC/Q/0hLk2FgIrAZFIPvhHl9nF3Vq/HqlxtGZQ7gnL
+TjQtRuI+oU7IhJRR1VZbhr8xn1pirueiiwJUPub6w4XfMGyvcvlIOVpUImW5Hab7
+kg20iwrcJNLCcPJsR5iEbhJBBHLsViMtfdRbstlEV8I4wTY2tNAkfMtUtWdUhwOA
+fdx/UmHjbNZFSS6cpsGHL8+QJ2Bo1urkHIz6z1w4f1vTL31NAPeyvZ4kNstSqkNt
+6fjdrt8mBRVGQfqRQsK2b/R61ErJoFULboeqOT/ed/Dufu2Wxf/wuuRvG77S8xoq
+OiDT8nhyHh7ljjdHZZ2uLro8gg==
+=BIke
+-----END PGP MESSAGE-----
+
+--GID0FwUMdk1T2AWN--
