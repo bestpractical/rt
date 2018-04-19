@@ -1,0 +1,51 @@
+Received: by anduril (Postfix, from userid 1000)
+	id 061F037F56; Fri, 10 Aug 2007 16:12:29 -0400 (EDT)
+Date: Fri, 10 Aug 2007 16:12:29 -0400
+To: rt-recipient@example.com
+Subject: Test Email ID:14
+Message-ID: <20070810201229.GD5815@mit.edu>
+MIME-Version: 1.0
+Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+	boundary="N1GIdlSm9i+YlY4t"
+Content-Disposition: inline
+User-Agent: Mutt/1.5.13 (2006-08-11)
+From: rt-test@example.com
+
+
+--N1GIdlSm9i+YlY4t
+Content-Type: application/pgp-encrypted
+Content-Disposition: attachment
+
+Version: 1
+
+--N1GIdlSm9i+YlY4t
+Content-Type: application/octet-stream
+Content-Disposition: inline; filename="msg.asc"
+
+-----BEGIN PGP MESSAGE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+hQIOA076g5OuwfIOEAf+MEje2ZVc5yRFxINYBmz8l5oRdrDkldSFISKNlcFogKeA
+ZAwvP0Y2Utxjs+aT25gqR72uftGzCLhKdIb8X/i8CswKHX/1NnLKFTFB+T3Mmwtg
+3a9jiB6kQ5haWvcd9y1DBcm1Wnw5B51QmiHZzHu209dphl7qnoak79M0NK4KPSqr
+NKqn7yTKFOjJ3qIlCLqawQbQy++IFmtJVKMQSNZawqSX/JSGMNPz9hioyOgyjxtE
+XZlrdgV1jumnZ3nVF1bQFMGUMGpi6NAA7+TiPjSZgFkKp2zvyOXwFKjKqkVgAgUh
++295JO9kjFmRYOxpWcSfBaibX4qFSsWvJbvltNceDAf/WCCcvP6+JYHmZL32YL6+
+oSM3SnHuG3PIqaT0/99pMVIhHzhrdrmWsyR6ijcK7PRpQg3mIZDd5pzAgcae3c4M
+mYsImADyUC6CX0PvSOYYvG7CskDUiGk76fjDKTkKPkgqEFJXz1v9TA+ptx9v2PTd
+CW8cES9Du5PdwPLbltfC54ax/tCKcyyHbtgozVQJB6RfkXKhUjYI632qnXa7BDqO
+c5Pcpn7gKKik4MkGEWnf50aqQ6ph4Q9MfOZ+5hc/EBUQd2Genqn8iCTPa2rkrI49
+6sKJ9FSdXL4Xdlat09MxnD5Dw6DKF6G6Ig2SAQA/WBG5+sZxWC5NMd5oeJWHVnCz
+VNLA5QEIo0BNtY+wm2W/YH3hSHV5K+Mz+MEKEUaimYSLWKl1p6vboBjHuk0XY1Tn
+FDGmLVcO/jLBkiPOhNyibRXaCW/x3iws+xCHngjX4rDeidEtphHCxihVtS1Sh1wT
+IHHE+Kl6jlateIeBpug79RsGKcdwYTUg2SuaZXEf5A2tQtUhU6TEWYqhFc0g2dCV
+u/lkhrVRt4S+En4DYJ7myQYdMBeHym52Mz9tFZKKQ54dMWDhDsRZIe0Zy8TKBwXd
+cwc5kMpkwFK3drbhFuf3WnQUUR80oyGKCffJw3n40ET91b+nAYJ8bPvYFE+gDB+S
+vHktXvM+vk4PTAKGN21TyZfB9n8VVtIHq3DUPpStrFFQQUDKjMeZf0TDtEWVd1zl
+7jVJ2d+Su/KcAXUITXAQMl4ECXMZ3VD3fnbyRAHI375+wcBh08rM1DQRdhWd40XZ
+55rzTy6T0RVa3JcQBCtM8FYubYQvy8iU5XcA2LEDWdDn8D89IJ+UAnFHIYoeipj8
+qbYjl9JetF1gcmm3QlUwtec6nb5VSmWdQrdfnvdxrW54J3gqlGnzCQg=
+=7/EE
+-----END PGP MESSAGE-----
+
+--N1GIdlSm9i+YlY4t--

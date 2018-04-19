@@ -1,0 +1,26 @@
+To: rt-recipient@example.com
+Subject: Test Email ID:4
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+From: rt-test@example.com
+
+Forwarded email with signature quoted. RT shouldn't bother
+about it.
+
+> ------ Forwarded Message
+> From: Xxx Yyy <xxx.yyy@localhost>
+> Subject: test email
+> 
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+> 
+> This is a test email with inline signature.
+> ID:4
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.6 (GNU/Linux)
+> 
+> iD8DBQFGwLI50ygDXYSIHxsRAp40AJ9ErYdLH2SVRXtgRtx7n/FVFOmKDwCgl/0T
+> BeRSaF4Xbi8uGhVIkmU+YCs=
+> =e4u6
+> -----END PGP SIGNATURE-----
