@@ -499,6 +499,59 @@ sub _CoreAccessible {
     }
 }
 
+sub FindDependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::FindDependencies($walker, $deps);
+
+    # Role groups( HeldBy, Contact)
+    my $objs = RT::Groups->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Catalog-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    $deps->Add( in => $objs );
+
+    # Custom Fields on assets _in_ this catalog
+    $objs = RT::ObjectCustomFields->new( $self->CurrentUser );
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => $self->id,
+                  ENTRYAGGREGATOR => 'OR' );
+    $objs->Limit( FIELD           => 'ObjectId',
+                  OPERATOR        => '=',
+                  VALUE           => 0,
+                  ENTRYAGGREGATOR => 'OR' );
+    my $cfs = $objs->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'CustomField',
+        TABLE2 => 'CustomFields',
+        FIELD2 => 'id',
+    );
+    $objs->Limit( ALIAS    => $cfs,
+                  FIELD    => 'LookupType',
+                  OPERATOR => 'STARTSWITH',
+                  VALUE    => 'RT::Catalog-' );
+    $deps->Add( in => $objs );
+
+    # Assets
+    $objs = RT::Assets->new( $self->CurrentUser );
+    $objs->Limit( FIELD => "Catalog", VALUE => $self->Id );
+    $objs->{allow_deleted_search} = 1;
+    $deps->Add( in => $objs );
+
+}
+
+sub PreInflate {
+    my $class = shift;
+    my ( $importer, $uid, $data ) = @_;
+
+    $class->SUPER::PreInflate( $importer, $uid, $data );
+    $data->{Name} = $importer->Qualify( $data->{Name} );
+
+    return if $importer->MergeBy( "Name", $class, $uid, $data );
+    return 1;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

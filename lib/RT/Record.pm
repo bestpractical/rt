@@ -2432,6 +2432,8 @@ sub FindDependencies {
         or $self->isa("RT::User")
         or $self->isa("RT::Group")
         or $self->isa("RT::Article")
+        or $self->isa("RT::Asset")
+        or $self->isa("RT::Catalog")
         or $self->isa("RT::Queue") )
     {
         $objs = RT::Transactions->new( $self->CurrentUser );
@@ -2445,6 +2447,7 @@ sub FindDependencies {
          or $self->isa("RT::Ticket")
          or $self->isa("RT::User")
          or $self->isa("RT::Group")
+         or $self->isa("RT::Asset")
          or $self->isa("RT::Queue")
          or $self->isa("RT::Article") )
             and $self->can("CustomFieldValues") )

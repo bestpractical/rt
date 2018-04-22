@@ -71,6 +71,7 @@ sub Init {
         FollowScrips        => 0,
         FollowTickets       => 1,
         FollowACL           => 0,
+        FollowAssets        => 1,
 
         Clone       => 0,
         Incremental => 0,
@@ -88,6 +89,7 @@ sub Init {
                   FollowDeleted
                   FollowScrips
                   FollowTickets
+                  FollowAssets
                   FollowACL
                   Queues
                   CustomFields
@@ -168,6 +170,9 @@ sub PushAll {
     # Custom Roles
     $self->PushCollections(qw(CustomRoles ObjectCustomRoles));
 
+    # Assets
+    $self->PushCollections(qw(Catalogs Assets));
+
     # Custom Fields
     if (RT::ObjectCustomFields->require) {
         $self->PushCollections(map { ($_, "Object$_") } qw(CustomFields CustomFieldValues));
@@ -202,6 +207,9 @@ sub PushCollections {
             if ($collection->isa('RT::Tickets')) {
                 $collection->{allow_deleted_search} = 1;
                 $collection->IgnoreType; # looking_at_type
+            }
+            elsif ($collection->isa('RT::Assets')) {
+                $collection->{allow_deleted_search} = 1;
             }
             elsif ($collection->isa('RT::ObjectCustomFieldValues')) {
                 # FindAllRows (find_disabled_rows) isn't used by OCFVs
@@ -313,6 +321,7 @@ sub PushBasics {
     else {
         $self->PushCollections(qw(Queues));
     }
+    $self->PushCollections(qw(Catalogs));
 }
 
 sub InitStream {
@@ -438,6 +447,9 @@ sub Observe {
         my $id = $obj->CustomField;
         return 0 if $self->{CustomFields} && none { $id == $_ } @{ $self->{CustomFields} };
         return 1;
+    } elsif ($obj->isa("RT::Asset")) {
+        return 0 if $obj->Status eq "deleted" and not $self->{FollowDeleted};
+        return $self->{FollowAssets};
     } elsif ($obj->isa("RT::ACE")) {
         return $self->{FollowACL};
     } elsif ($obj->isa("RT::Scrip") or $obj->isa("RT::Template") or $obj->isa("RT::ObjectScrip")) {

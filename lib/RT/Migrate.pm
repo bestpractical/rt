@@ -92,7 +92,7 @@ sub progress {
         top    => sub { print "\n\n" },
         bottom => sub {},
         every  => 3,
-        bars   => [qw/Ticket Transaction Attachment User Group/],
+        bars   => [qw/Ticket Asset Transaction Attachment User Group/],
         counts => sub {},
         max    => {},
         @_,
