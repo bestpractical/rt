@@ -113,7 +113,13 @@ sub BuildMainNav {
         if ( $status ) {
             push @dashboards, $dash;
         } else {
-            $RT::Logger->warning( "Failed to load dashboard $id: $msg" );
+            $RT::Logger->debug( "Failed to load dashboard $id: $msg, removing from menu" );
+            $home->RemoveDashboardMenuItem(
+                DashboardId => $id,
+                CurrentUser => $HTML::Mason::Commands::session{CurrentUser}->UserObj,
+            );
+            @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} } =
+              grep { $_ != $id } @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} };
         }
     }
 
