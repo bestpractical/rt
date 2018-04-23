@@ -67,7 +67,7 @@ diag "adding timeworked values for child tickets"; {
         view => 'Modify',
         field => 'TimeWorked',
         form => 'TicketModify',
-        title => "Modify ticket #$child1_id",
+        title => "Modify ticket #$child1_id: child ticket 1",
         time => 45,
         user => 'user_a',
     }, {
@@ -75,7 +75,7 @@ diag "adding timeworked values for child tickets"; {
         view => 'Modify',
         field => 'TimeWorked',
         form => 'TicketModify',
-        title => "Modify ticket #$child2_id",
+        title => "Modify ticket #$child2_id: child ticket 2",
         time => 35,
         user => 'user_a',
     }, {
@@ -83,7 +83,7 @@ diag "adding timeworked values for child tickets"; {
         view => 'Update',
         field => 'UpdateTimeWorked',
         form => 'TicketUpdate',
-        title => "Update ticket #$child2_id (child ticket 2)",
+        title => "Update ticket #$child2_id: child ticket 2",
         time => 90,
         user => 'user_b',
     });

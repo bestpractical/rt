@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Modify people related to ticket #[_1]', $Ticket->id) &>
+<& /Elements/Header, Title => loc('Modify people related to ticket #[_1]: [_2]', $Ticket->id, $Ticket->Subject) &>
 <& /Elements/Tabs &>
 
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket);

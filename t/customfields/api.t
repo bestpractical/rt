@@ -3,7 +3,7 @@
 use strict;
 use warnings FATAL => 'all';
 
-use RT::Test nodata => 1, tests => 157;
+use RT::Test nodata => 1, tests => undef;
 use Test::Warn;
 
 # Before we get going, ditch all object_cfs; this will remove
@@ -224,6 +224,32 @@ warning_like {
     is($load->Id, $global_cf3->Id, "Loading by name gets non-disabled first, even with order swapped");
 }
 
+{
+    my $cf = RT::Test->load_or_create_custom_field(
+        Name  => 'HasEntry cache',
+        Type  => 'FreeformSingle',
+        Queue => 0,
+    );
+
+    my ( $ret, $msg ) = $ticket->AddCustomFieldValue( Field => $cf, Value => 'foo' );
+    ok( $ret, $msg );
+    is( $ticket->FirstCustomFieldValue( $cf ), 'foo', 'value is foo' );
+    my $ocfvs = $ticket->CustomFieldValues( $cf );
+    ok( $ocfvs->HasEntry( 'foo' ), 'foo is cached in HasEntry' );
+
+    ( $ret, $msg ) = $ticket->AddCustomFieldValue( Field => $cf, Value => 'bar' );
+    ok( $ret, $msg );
+    is( $ticket->FirstCustomFieldValue( $cf ), 'bar', 'value is bar' );
+    ok( !$ocfvs->HasEntry( 'foo' ), 'foo is not cached in HasEntry' );
+    ok( $ocfvs->HasEntry( 'bar' ),  'bar is cached in HasEntry' );
+
+    ( $ret, $msg ) = $ticket->AddCustomFieldValue( Field => $cf, Value => 'foo' );
+    ok( $ret, $msg );
+    is( $ticket->FirstCustomFieldValue( $cf ), 'foo', 'value is foo' );
+    ok( $ocfvs->HasEntry( 'foo' ),  'foo is cached in HasEntry' );
+    ok( !$ocfvs->HasEntry( 'bar' ), 'bar is not cached in HasEntry' );
+}
+
 #SKIP: {
 #       skip "TODO: should we add CF values to objects via CF Name?", 48;
 # names are not unique
@@ -298,3 +324,4 @@ my $all_classes = RT::Class->new( RT->SystemUser );
     is($msg, 'Globally removed custom field custom_field_2.', "Removing custom field globally produces appropriate message");
 }
 
+done_testing;

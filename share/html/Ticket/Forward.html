@@ -148,8 +148,8 @@ if ( !$checks_failure && ($Forward || $ForwardAndReturn) ) {
 }
 
 my $Title = $txn
-    ? loc('Forward transaction #[_1]', $txn->id)
-    : loc('Forward ticket #[_1]', $TicketObj->id);
+    ? loc('Forward transaction #[_1]: [_2]', $txn->id, $TicketObj->Subject)
+    : loc('Forward ticket #[_1]: [_2]', $TicketObj->id, $TicketObj->Subject);
 
 my $from = RT::Interface::Email::GetForwardFrom(
     $txn ? ( Transaction => $txn ) : ( Ticket => $TicketObj ) );

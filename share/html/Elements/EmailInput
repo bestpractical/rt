@@ -83,7 +83,7 @@
 % if ($EntryHint) {
 <br>
 <i><font size="-2">
-  <&|/l&><% $EntryHint %></&>
+  <% loc($EntryHint) %>
 </font></i>
 % }
 <%ARGS>

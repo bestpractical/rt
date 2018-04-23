@@ -1181,6 +1181,23 @@ sub QueueObj {
     return ($self->{_queue_obj});
 }
 
+sub Subject {
+    my $self = shift;
+
+    my $subject = $self->_Value( 'Subject' );
+    return $subject if defined $subject;
+
+    if ( RT->Config->Get( 'DatabaseType' ) eq 'Oracle' && $self->CurrentUserHasRight( 'ShowTicket' ) ) {
+
+        # Oracle treats empty strings as NULL, so it returns undef for empty subjects.
+        # Since '' is the default Subject value, returning '' is more correct.
+        return '';
+    }
+    else {
+        return undef;
+    }
+}
+
 sub SetSubject {
     my $self = shift;
     my $value = shift;

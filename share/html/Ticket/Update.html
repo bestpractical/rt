@@ -277,7 +277,7 @@ unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
 }
 
-my $title = loc("Update ticket #[_1] ([_2])", $TicketObj->id, $TicketObj->Subject||'');
+my $title = loc("Update ticket #[_1]: [_2]", $TicketObj->id, $TicketObj->Subject);
 
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:

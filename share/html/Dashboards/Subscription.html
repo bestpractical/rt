@@ -98,7 +98,7 @@
 </label>
 
 % for my $day ( qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/ ) {
-    &nbsp; <label><input name="<% $day %>" value=1 type="checkbox" <% $fields{$day} ? 'checked="checked"' : '' %>> <&|/l&><% $day %></&></label>
+    &nbsp; <label><input name="<% $day %>" value=1 type="checkbox" <% $fields{$day} ? 'checked="checked"' : '' %>> <% loc($day) %></label>
     <input type="hidden"class="hidden" name="<% $day %>-Magic" value=1 />
 % }
 

@@ -26,6 +26,11 @@ colon, then a value. So, for example, to specify a subject, you can use:
 
 =over
 
+=item RT-Attach-Message: yes
+
+This special header tells RT that any attachments that were added in the
+original message should also be included in the email notification going out.
+
 =item Content-Type: text/html
 
 The special header "Content-Type: text/html" tells RT that the template should

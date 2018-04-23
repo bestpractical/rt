@@ -54,7 +54,6 @@ $Attr  => undef
 
 use Scalar::Util;
 
-# This is scary and should totally be refactored -- jesse
 my ($COLUMN_MAP, $WCOLUMN_MAP);
 $WCOLUMN_MAP = $COLUMN_MAP = {
     id => {

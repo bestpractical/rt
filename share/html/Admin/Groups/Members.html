@@ -73,16 +73,16 @@
 <&|/l&>Users</&>
 % my $Users = $Group->UserMembersObj( Recursively => 0 );
 <%perl>
-my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
-            map { [$m->scomp("/Elements/ShowUser", User => $_), $_] }
+my @users = map {$_->[1]}
+            sort { lc($a->[0]) cmp lc($b->[0]) }
+            map { [$_->Format, $_] }
             @{ $Users->ItemsArrayRef };
 </%perl>
 <ul>
-% for (@users) {
-% my ($rendered, $user) = @$_;
+% for my $user (@users) {
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
 <li><input type="checkbox" class="checkbox" name="DeleteMember-<% $user->PrincipalObj->Id %>" value="1" />
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $user->id %>"><% $rendered |n%></a></li>
+<& /Elements/ShowUser, User => $user &></li>
 % }
 </ul>
 <&|/l&>Groups</&>

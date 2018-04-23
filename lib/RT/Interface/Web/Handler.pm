@@ -199,7 +199,7 @@ sub CleanupRequest {
     File::Temp::cleanup()
             unless $INC{'Test/WWW/Mechanize/PSGI.pm'};
 
-
+    RT::ObjectCustomFieldValues::ClearOCFVCache();
 }
 
 

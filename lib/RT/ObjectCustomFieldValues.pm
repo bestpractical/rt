@@ -56,6 +56,10 @@ use base 'RT::SearchBuilder';
 
 use RT::ObjectCustomFieldValue;
 
+# Set up the OCFV cache for faster comparison on add/update
+our $_OCFV_CACHE;
+ClearOCFVCache();
+
 sub Table { 'ObjectCustomFieldValues'}
 
 sub _Init {
@@ -75,6 +79,15 @@ sub _Init {
     return ( $self->SUPER::_Init(@_) );
 }
 
+=head2 ClearOCFVCache
+
+Cleans out and reinitializes the OCFV cache
+
+=cut
+
+sub ClearOCFVCache {
+    $_OCFV_CACHE = {}
+}
 
 # {{{ sub LimitToCustomField
 
@@ -130,10 +143,30 @@ sub HasEntry {
     my $large_content = shift;
     return undef unless defined $value && length $value;
 
+    my $first = $self->First;
+    return undef unless $first;  # No entries to check
+
+    # Key should be the same for all values of the same ocfv
+    my $ocfv_key = $first->GetOCFVCacheKey;
+
+    # This cache relieves performance issues when adding large numbers of values
+    # to a CF since each add compares against the full list each time.
+
+    unless ( $_OCFV_CACHE->{$ocfv_key} ) {
+        # Load the cache with existing values
+        foreach my $item ( @{$self->ItemsArrayRef} ) {
+            push @{$_OCFV_CACHE->{$ocfv_key}}, {
+                'ObjectId'       => $item->Id,
+                'CustomFieldObj' => $item->CustomFieldObj,
+                'Content'        => $item->_Value('Content'),
+                'LargeContent'   => $item->LargeContent };
+        }
+    }
+
     my %canon_value;
-    #TODO: this could cache and optimize a fair bit.
-    foreach my $item ( @{$self->ItemsArrayRef} ) {
-        my $cf = $item->CustomFieldObj;
+    my $item_id;
+    foreach my $item ( @{$_OCFV_CACHE->{$ocfv_key}} ) {
+        my $cf = $item->{'CustomFieldObj'};
         my $args = $canon_value{ $cf->Type };
         if ( !$args ) {
             $args = { Content => $value, LargeContent => $large_content };
@@ -144,24 +177,35 @@ sub HasEntry {
 
         if ( $cf->Type eq 'Select' ) {
             # select is case insensitive
-            return $item if lc $item->Content eq lc $args->{Content};
+            $item_id = $item->{'ObjectId'} if lc $item->{'Content'} eq lc $args->{Content};
         }
         else {
-            if ( ($item->_Value('Content') // '') eq $args->{Content} ) {
-                if ( defined $item->LargeContent ) {
-                    return $item
+            if ( ($item->{'Content'} // '') eq $args->{Content} ) {
+                if ( defined $item->{'LargeContent'} ) {
+                    $item_id = $item->{'ObjectId'}
                       if defined $args->{LargeContent}
-                      && $item->LargeContent eq $args->{LargeContent};
+                      && $item->{'LargeContent'} eq $args->{LargeContent};
                 }
                 else {
-                    return $item unless defined $args->{LargeContent};
+                    $item_id = $item->{'ObjectId'} unless defined $args->{LargeContent};
                 }
-            } elsif ( $item->LargeContent && $args->{Content} ) {
-                return $item if ($item->LargeContent eq $args->{Content});
+            } elsif ( $item->{'LargeContent'} && $args->{Content} ) {
+                $item_id = $item->{'ObjectId'} if ($item->{'LargeContent'} eq $args->{Content});
             }
         }
+        last if $item_id;
     }
-    return undef;
+
+    if ( $item_id ) {
+        my $ocfv = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
+        my ($ret, $msg) = $ocfv->Load($item_id);
+        RT::Logger->error("Unable to load object custom field value from id: $item_id $msg")
+            unless $ret;
+        return $ocfv;
+    }
+    else {
+        return undef;
+    }
 }
 
 sub _DoSearch {
@@ -187,5 +231,13 @@ sub _DoCount {
 }
 
 RT::Base->_ImportOverlays();
+
+# Clear the OCVF cache on exit to release connected RT::Ticket objects.
+#
+# Without this, there could be warnings generated like "Too late to safely run
+# transaction-batch scrips...". You can test this by commenting it out and running
+# some cf tests, e.g. perl -Ilib t/customfields/enter_one.t
+END { ClearOCFVCache(); }
+
 
 1;
