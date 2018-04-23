@@ -34,10 +34,14 @@ jQuery(function() {
 
         var is_search = jQuery('body#comp-Search-Results').length > 0;
         var is_bulk_update = jQuery('body#comp-Search-Bulk').length > 0;
+        var is_ticket_reply = jQuery('a#page-actions-reply').length > 0;
+        var is_ticket_comment = jQuery('a#page-actions-comment').length > 0;
 
         var url = RT.Config.WebHomePath + '/Helpers/ShortcutHelp' +
                   '?show_search=' + ( is_search || is_bulk_update ? '1' : '0' ) +
-                  '&show_bulk_update=' + ( is_bulk_update ? '1' : '0' );
+                  '&show_bulk_update=' + ( is_bulk_update ? '1' : '0' ) +
+                  '&show_ticket_reply=' + ( is_ticket_reply ? '1' : '0' ) +
+                  '&show_ticket_comment=' + ( is_ticket_comment ? '1' : '0' );
 
         jQuery.ajax({
             url: url,
@@ -151,3 +155,22 @@ jQuery(function() {
     Mousetrap.bind('x', toggleTicketCheckbox);
 });
 
+jQuery(function() {
+    // Only load these shortcuts if on ticket display page
+    var ticket_reply = jQuery('a#page-actions-reply');
+    var ticket_comment = jQuery('a#page-actions-comment');
+    if (!ticket_reply.length && !ticket_comment.length) return;
+
+    var replyToTicket = function() {
+        if (!ticket_reply.length) return;
+        window.location.href = ticket_reply.attr('href');
+    };
+
+    var commentOnTicket = function() {
+        if (!ticket_comment.length) return;
+        window.location.href = ticket_comment.attr('href');
+    };
+
+    Mousetrap.bind('r', replyToTicket);
+    Mousetrap.bind('c', commentOnTicket);
+});
