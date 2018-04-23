@@ -48,6 +48,8 @@
 <%args>
 $show_search      => 0
 $show_bulk_update => 0
+$show_ticket_reply => 0
+$show_ticket_comment => 0
 </%args>
 <& /Elements/ShortcutHelp, %ARGS &>
 % $m->abort;
