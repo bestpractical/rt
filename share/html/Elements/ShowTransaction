@@ -69,6 +69,17 @@
   </div>
 
   <div class="content">
+% if ( $txn_type eq 'CustomField' ) {
+    <div class="cf-details hidden" id="<% 'txn-' . $Transaction->id . '-cf-details' %>">
+% my ( $old, $new ) = $Transaction->CustomFieldValueDescriptions;
+        <div class="old-value">
+            <span class="label"><&|/l&>Old Value</&>:</span> <span class="value"><% $old %></span>
+        </div>
+        <div class="new-value">
+            <span class="label"><&|/l&>New Value</&>:</span> <span class="value"><% $new %></span>
+        </div>
+    </div>
+% }
 <%PERL>
 $m->comp('/Elements/ShowCustomFields', Object => $Transaction, HideEmpty => 1 ) if $HasTxnCFs;
 $m->comp(
@@ -159,7 +170,15 @@ if ( $txn_type =~ /EmailRecord$/ ) {
 
     $ShowBody = 0;
 }
-
+elsif ( $txn_type eq 'CustomField' ) {
+    push @actions, {
+        title  => loc('Details'),
+        hint   => loc('Toggle visibility'),
+        class  => 'cf-details',
+        onclick => sprintf( "return hideshow('txn-%s-cf-details')", $Transaction->id ),
+        path   => 'javascript:;',
+    };
+}
 # If the transaction has anything attached to it at all
 elsif ( %$Attachments && $ShowActions ) {
     my %has_right = map {
@@ -256,6 +275,14 @@ if ( @actions ) {
             )
             . ($a->{'class'}
                 ? ' class="'. $i->apply_escapes( $a->{'class'}, 'h' ) .'"'
+                : ''
+            )
+            . ($a->{'onclick'}
+                ? ' onclick="'. $i->apply_escapes( $a->{'onclick'}, 'h' ) .'"'
+                : ''
+            )
+            . ($a->{'hint'}
+                ? ' title="'. $i->apply_escapes( $a->{'hint'}, 'h' ) .'"'
                 : ''
             )
             .'>'. $i->apply_escapes( $a->{'title'}, 'h' ) .'</a>'

@@ -78,3 +78,7 @@ div.history-container {
     color: #ccc;
     display: block;
 }
+
+.transaction.custom-field div.content {
+    margin-left: 3em;
+}

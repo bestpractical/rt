@@ -82,6 +82,7 @@ div.history-container {
 }
 
 
+.transaction div.cf-details,
 .transaction .messagebody {
  font-size: 1em;
  padding-left: 1em;
@@ -147,6 +148,7 @@ padding-right:0.25em;
 .transaction.message .type { background: #069; }
 .transaction.reminders .type { background: #369; }
 .transaction.other .type { background: #abc; }
+.transaction.custom-field .type { background: #abc; }
 .transaction.error .type { background: #abc; }
 .transaction.attachment-truncate .type, .transaction.attachment-drop .type { background-color: #abc; }
 
@@ -163,3 +165,21 @@ padding-right:0.25em;
 .transaction .message-header-value.verify.done.trust-FULL      { color: #060; }
 .transaction .message-header-value.verify.done.trust-FULLY     { color: #060; }
 .transaction .message-header-value.verify.done.trust-ULTIMATE  { color: #060; }
+
+.transaction.custom-field .cf-details .label {
+    text-align: right;
+    display: inline-block;
+    min-width: 6em;
+}
+
+.transaction.custom-field .cf-details .value {
+    display: inline-block;
+}
+
+.transaction.custom-field .metadata .description {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 50%;
+    display: inline-block;
+}

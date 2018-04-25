@@ -1004,17 +1004,10 @@ sub _CanonicalizeRoleName {
         }
 
         my $new = $self->NewValue;
-        my $old = $self->OldValue;
 
         if ( $cf ) {
 
             if ( $cf->Type eq 'DateTime' ) {
-                if ($old) {
-                    my $date = RT::Date->new( $self->CurrentUser );
-                    $date->Set( Format => 'ISO', Value => $old );
-                    $old = $date->AsString;
-                }
-
                 if ($new) {
                     my $date = RT::Date->new( $self->CurrentUser );
                     $date->Set( Format => 'ISO', Value => $new );
@@ -1022,16 +1015,6 @@ sub _CanonicalizeRoleName {
                 }
             }
             elsif ( $cf->Type eq 'Date' ) {
-                if ($old) {
-                    my $date = RT::Date->new( $self->CurrentUser );
-                    $date->Set(
-                        Format   => 'unknown',
-                        Value    => $old,
-                        Timezone => 'UTC',
-                    );
-                    $old = $date->AsString( Time => 0, Timezone => 'UTC' );
-                }
-
                 if ($new) {
                     my $date = RT::Date->new( $self->CurrentUser );
                     $date->Set(
@@ -1044,15 +1027,7 @@ sub _CanonicalizeRoleName {
             }
         }
 
-        if ( !defined($old) || $old eq '' ) {
-            return ("[_1] [_2] added", $field, $new);   #loc()
-        }
-        elsif ( !defined($new) || $new eq '' ) {
-            return ("[_1] [_2] deleted", $field, $old); #loc()
-        }
-        else {
-            return ("[_1] [_2] changed to [_3]", $field, $old, $new);   #loc()
-        }
+        return ("[_1]: [_2]", $field, $new // $self->loc('(no value)'));   #loc()
     },
     Untake => sub {
         my $self = shift;
@@ -1749,6 +1724,63 @@ sub ACLEquivalenceObjects {
 }
 
 
+=head2 CustomFieldValueDescriptions
+
+For transactions with Field=CustomField, this method returns the descriptions
+of OldValue and NewValue. Right now it just converts Date/DateTime custom
+field values to the preferred format of current user.
+
+It returns an empty list for other transactions.
+
+=cut
+
+sub CustomFieldValueDescriptions {
+    my $self = shift;
+    return unless $self->Field;
+
+    my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->SetContextObject( $self->Object );
+    $cf->Load( $self->Field );
+    return unless $cf->id;
+
+    my $old = $self->OldValue;
+    my $new = $self->NewValue;
+    if ( $cf->Type eq 'DateTime' ) {
+        if ( $old ) {
+            my $date = RT::Date->new( $self->CurrentUser );
+            $date->Set( Format => 'ISO', Value => $old );
+            $old = $date->AsString;
+        }
+
+        if ( $new ) {
+            my $date = RT::Date->new( $self->CurrentUser );
+            $date->Set( Format => 'ISO', Value => $new );
+            $new = $date->AsString;
+        }
+    }
+    elsif ( $cf->Type eq 'Date' ) {
+        if ( $old ) {
+            my $date = RT::Date->new( $self->CurrentUser );
+            $date->Set(
+                Format   => 'unknown',
+                Value    => $old,
+                Timezone => 'UTC',
+            );
+            $old = $date->AsString( Time => 0, Timezone => 'UTC' );
+        }
+
+        if ( $new ) {
+            my $date = RT::Date->new( $self->CurrentUser );
+            $date->Set(
+                Format   => 'unknown',
+                Value    => $new,
+                Timezone => 'UTC',
+            );
+            $new = $date->AsString( Time => 0, Timezone => 'UTC' );
+        }
+    }
+    return ( $old // $self->loc( '(no value)' ), $new // $self->loc( '(no value)' ) );
+}
 
 
 

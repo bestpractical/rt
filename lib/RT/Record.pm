@@ -1774,6 +1774,7 @@ our %TRANSACTION_CLASSIFICATION = (
     AttachmentTruncate => 'attachment-truncate',
     AttachmentDrop => 'attachment-drop',
     AttachmentError => 'error',
+    CustomField => 'custom-field',
     __default => 'other',
 );
 
