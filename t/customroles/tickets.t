@@ -297,6 +297,15 @@ diag 'update ticket in Specs' if $ENV{'TEST_VERBOSE'};
     ($ok, $msg) = $t->AddWatcher(Type => $engineer->GroupType, Principal => $blake->PrincipalObj);
     ok($ok, "add engineer: $msg");
     is($t->RoleAddresses($engineer->GroupType), $blake->EmailAddress, 'engineer blake (single-member role so linus gets displaced)');
+    ($ok, $msg) = $blake->SetDisabled(1);
+    ok($ok, 'temporarily disable user blake');
+
+    ($ok, $msg) = $t->AddWatcher(Type => $engineer->GroupType, Principal => $moss->PrincipalObj);
+    ok($ok, "add engineer: $msg");
+    like($msg, qr/changed from blake\@example\.com to moss\@example\.com/, 'message of AddWatcher');
+    is($t->RoleAddresses($engineer->GroupType), $moss->EmailAddress, 'engineer moss (single-member role so black gets displaced)');
+    ($ok, $msg) = $blake->SetDisabled(0);
+    ok($ok, 're-enable user blake');
 
     ($ok, $msg) = $t->AddWatcher(Type => $engineer->GroupType, Principal => RT->Nobody->PrincipalObj);
     ok($ok, "add engineer: $msg");
@@ -319,6 +328,7 @@ diag 'update ticket in Specs' if $ENV{'TEST_VERBOSE'};
         qr/Sales-$$ ricky\.roma\@example\.com deleted/,
         qr/Engineer-$$ set to linus\@example\.com/,
         qr/Engineer-$$ set to blake\@example\.com/,
+        qr/Engineer-$$ set to moss\@example\.com/,
         qr/Engineer-$$ set to Nobody in particular/,
     ]);
 }
