@@ -658,6 +658,7 @@ sub AddWatcher {
     my $group = $self->RoleGroup( $args{Type} );
     if ($group->id && $group->SingleMemberRoleGroup) {
         my $users = $group->UserMembersObj( Recursively => 0 );
+        $users->{find_disabled_rows} = 1;
         $original_user = $users->First;
         if ($original_user->PrincipalId == $principal->Id) {
             return 1;

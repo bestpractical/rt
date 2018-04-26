@@ -59,9 +59,10 @@
 <%INIT>
 if (!defined($Default)) {
     if (!$User && $Ticket) {
-         my $group = $Ticket->RoleGroup($role->GroupType);
-         my $users = $group->UserMembersObj( Recursively => 0 );
-         $User = $users->First;
+        my $group = $Ticket->RoleGroup($role->GroupType);
+        my $users = $group->UserMembersObj( Recursively => 0 );
+        $users->{find_disabled_rows} = 1;
+        $User = $users->First;
     }
     $Default = (!$User || $User->Id == RT->Nobody->id ? "" : $User->Name);
 }
