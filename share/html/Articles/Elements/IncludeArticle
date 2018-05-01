@@ -84,7 +84,7 @@ foreach my $arg ( keys %$parent_args ) {
         Article => $article, Ticket => $Ticket
     );
 
-    $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article );
+    $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article, ARGSRef => \%ARGS );
 
     if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
         $formatted_article =~ s/>/&gt;/g;
