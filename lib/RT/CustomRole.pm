@@ -207,14 +207,16 @@ sub _RegisterAsRole {
                 return 1;
             }
 
-            # custom roles apply to queues, so canonicalize a ticket
-            # into its queue
-            if ($object->isa('RT::Ticket')) {
-                $object = $object->QueueObj;
-            }
+            if ( $object->isa('RT::Ticket') || $object->isa('RT::Queue') ) {
+                return 0 unless $object->CurrentUserHasRight('SeeQueue');
 
-            if ($object->isa('RT::Queue')) {
-                return $role->IsAdded($object->Id);
+                # custom roles apply to queues, so canonicalize a ticket
+                # into its queue
+                if ( $object->isa('RT::Ticket') ) {
+                    $object = $object->QueueObj;
+                }
+
+                return $role->IsAdded( $object->Id );
             }
 
             return 0;
