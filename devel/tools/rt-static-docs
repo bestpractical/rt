@@ -186,6 +186,7 @@ system_chmod("+x", $_) for <docs/UPGRADING*>;
 $converter->batch_convert( \@dirs, $opts{to} );
 
 # Run it again to make sure local links are linked correctly
+$converter->contents_file(undef);
 $converter->batch_convert( \@dirs, $opts{to} );
 
 # Remove execution bit from workaround above
