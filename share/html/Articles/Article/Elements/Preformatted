@@ -84,7 +84,7 @@
 % }
 <%init>
 my $class = $Article->ClassObj;
-my %include = (Name => 1, Summary => 1);
+my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
 my $cfs = $class->ArticleCustomFields;
 $include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
 $include{$_} = not $class->FirstAttribute("Skip-$_") for keys %include;
@@ -102,7 +102,7 @@ my $get_content = sub {
         content => \$content,
     );
 
-    if ( $content =~ /<.{1,5}>/ ) {
+    if ( $include{'EscapeHTML'} && $content =~ /<.{1,5}>/ ) {
         $content = RT::Interface::Email::ConvertHTMLToText( $content );
     }
     return $content;
