@@ -528,7 +528,7 @@ clearsign-third-party:
 	gpg --armor --detach-sign "$(SNAPSHOT)-third-party-source.tar.gz"
 
 snapshot-shasums:
-	sha1sum $(SNAPSHOT)*.tar.gz*
+	shasum -a 256 $(SNAPSHOT)*.tar.gz*
 
 vessel-import: build-snapshot
 	[ -d $(VESSEL) ] || (echo "VESSEL isn't a path to your shipwright vessel" && exit -1)
