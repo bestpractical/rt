@@ -1,0 +1,101 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+% if ( $Anonymize ) {
+% $m->redirect('/test');
+test
+% }
+<div class="modal" id="user-info-modal">
+    <p>Are you sure you want to update <% $count %> attachment records to remove <% $user->EmailAddress ? $user->EmailAddress : $user_name %></p>
+    <a href="?id=<% $id %>&UserId=<% $id %>&Anonymize=1"><button>Ok</button></a>
+    <a href="#" rel="modal:close"><button>Cancel</button></a>
+</div>
+<&|/Widgets/TitleBox,
+    class => 'user-related-info',
+    title => loc("User related info"),
+&>
+
+<div class="row">
+    <div class="col-md-12">
+        <a href="/Helpers/TSVExport?Type=User&UserId=<% $UserId %>"><button>Download My User Info</button></a>
+        <a href="/Helpers/TSVExport?<% $query_tickets %>"><button>Download My Tickets</button></a>
+        <a href="/Helpers/TSVExport?Type=Transaction&UserId=<% $UserId %>"><button>Download My Transaction Info</button></a>
+
+        <a href="#user-info-modal" rel="modal:open"><button>Anonymize User</button></a>
+        <a href="/Admin/Tools/Shredder/index.html?Plugin=Users&Objects%3Alimit=&Objects%3AACE=&Objects%3AAttachment=&Objects%3ACachedGroupMember=&Objects%3ACustomField=&Objects%3ACustomFieldValue=&Objects%3AGroupMember=&Objects%3AGroup=&Objects%3ALink=&Objects%3APrincipal=&Objects%3AQueue=&Objects%3AScrip=&Objects%3AScripAction=&Objects%3AScripCondition=&Objects%3ATemplate=&Objects%3AObjectCustomFieldValue=&Objects%3ATicket=&Objects%3ATransaction=&Objects%3AUser=&Attachments%3Alimit=&Attachments%3Afiles_only=&Attachments%3Afile=&Attachments%3Alonger=&Users%3Alimit=&Users%3Astatus=Enabled&Users%3Aname=<% $user_name %>&Users%3Aemail=&Users%3Amember_of=&Users%3Anot_member_of=&Users%3Areplace_relations=<% $user_name %>&Users%3Ano_tickets=&Users%3Ano_ticket_transactions=&Tickets%3Alimit=&Tickets%3Aquery=&Tickets%3Awith_linked=&Tickets%3Aapply_query_to_linked=&Search=Search"><button>Replace User Information</button></a>
+        <a href="/Admin/Tools/Shredder/index.html?Plugin=Users&Objects%3Alimit=&Objects%3AACE=&Objects%3AAttachment=&Objects%3ACachedGroupMember=&Objects%3ACustomField=&Objects%3ACustomFieldValue=&Objects%3AGroupMember=&Objects%3AGroup=&Objects%3ALink=&Objects%3APrincipal=&Objects%3AQueue=&Objects%3AScrip=&Objects%3AScripAction=&Objects%3AScripCondition=&Objects%3ATemplate=&Objects%3AObjectCustomFieldValue=&Objects%3ATicket=&Objects%3ATransaction=&Objects%3AUser=&Users%3Alimit=&Users%3Astatus=enabled&Users%3Aname=<% $user_name %>&Users%3Aemail=&Users%3Amember_of=&Users%3Anot_member_of=&Users%3Areplace_relations=&Users%3Ano_tickets=&Users%3Ano_ticket_transactions=&Attachments%3Alimit=&Attachments%3Afiles_only=&Attachments%3Afile=&Attachments%3Alonger=&Tickets%3Alimit=&Tickets%3Aquery=&Tickets%3Awith_linked=&Tickets%3Aapply_query_to_linked=&Search=Search"><button>Remove User Information</button></a>
+    </div>
+</div>
+</&>
+<%init>
+my $user_name;
+my $user = RT::User->new($session{'CurrentUser'});
+if ( $UserId ) {
+    $user->Load( $UserId );
+} else {
+    $user->Load($session{'CurrentUser'});
+}
+
+$user_name = $user->Name;
+
+# Build Ticket Query
+my $query_tickets = "Query=Requestor.id = " . $user->Id;
+
+# Number of records that will be Anonymized
+my $count = 0;
+foreach my $method ( qw(Creator LastUpdatedBy) ) {
+    next unless $user->_Accessible( $method => 'read' );
+    $count += 1;
+}
+</%init>
+
+<%ARGS>
+$Anonymize => undef
+$UserId    => undef
+$id        => undef
+</%ARGS>

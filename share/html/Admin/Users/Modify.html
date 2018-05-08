@@ -232,6 +232,8 @@
 % }
 </form>
 
+<& /Elements/UserRelatedInfo, UserId => $UserObj->Id, id => $id, Anonymize => $ARGS{Anonymize} &>
+
 <%INIT>
 
 my $UserObj = RT::User->new($session{'CurrentUser'});
@@ -306,6 +308,27 @@ if ( $UserObj->Id ) {
     if ( $id eq 'new' && !$status ) {
         push @results, loc("A password was not set, so user won't be able to login.");
     }
+}
+
+if ( $ARGS{Anonymize} ) {
+    my @attrs = keys %{ $UserObj->_CoreAccessible };
+
+    # Remove identifying user information from record
+    foreach my $attr (@attrs) {
+        my $method = 'Set' . $attr;
+            $UserObj->$method('');
+    }
+    my $valid_email = 1;
+    my $number = '';
+    while ( $valid_email ) {
+        my @Chars = ('1'..'9');
+        for (1..9) {
+            $number .= $Chars[int rand @Chars];
+        }
+        $valid_email = !$UserObj->ValidateEmail('anon_' . $number . '@example.com');
+    }
+    $UserObj->SetName('anon_' . $number);
+    $UserObj->SetEmailAddress('anon_' . $number . '@example.com');
 }
 
 # This code does automatic redirection if any updates happen.
