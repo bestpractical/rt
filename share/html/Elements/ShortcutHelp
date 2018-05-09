@@ -46,8 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$show_search      => 0
-$show_bulk_update => 0
+$show_bulk_update     => 0
+$show_search          => 0
+$show_ticket_reply    => 0
+$show_ticket_comment  => 0
 </%args>
 
 <div class="keyboard-shortcuts">
@@ -115,4 +117,29 @@ $show_bulk_update => 0
 
 % }
 
+% if ($show_ticket_reply || $show_ticket_comment) {
+    <div class="titlebox">
+        <div class="titlebox-title">
+            <span class="left"><&|/l&>Ticket</&></span>
+            <span class="right-empty"></span>
+        </div>
+        <div class="titlebox-content">
+            <hr class="clear">
+            <table>
+%   if ( $show_ticket_reply ) {
+                <tr>
+                    <td class="key-column"><span class="keyboard-shortcuts-key">r</span></td>
+                    <td><&|/l&>Reply to current ticket</&></td>
+                </tr>
+%   }
+%   if ( $show_ticket_comment ) {
+                <tr>
+                    <td class="key-column"><span class="keyboard-shortcuts-key">c</span></td>
+                    <td><&|/l&>Comment on current ticket</&></td>
+                </tr>
+%   }
+            </table>
+        </div>
+    </div>
+% }
 </div>
