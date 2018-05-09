@@ -1,0 +1,154 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<table width="100%" border="0">
+  <tr>
+    <td valign="top" class="boxcontainer">
+      <&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
+      <input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="label"><&|/l&>Email</&>:</td>
+          <td class="value"><%$UserObj->EmailAddress%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Real Name</&>:</td>
+          <td class="value"><%$UserObj->RealName%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Nickname</&>:</td>
+          <td class="value"><%$UserObj->NickName || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Language</&>:</td>
+% if ( $UserObj->Lang ) {
+          <td class="value"><&|/l&><%$lang%></&></td>
+% } else {
+          <td class="value"><&|/l&>English</&></td>
+% }
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Timezone</&>:</td>
+% if ( $UserObj->Timezone ) {
+          <td class="value"><%$UserObj->Timezone%></td>
+% } else {
+          <td class="value"><&|/l&>System Default</&></td>
+% }
+        </tr>
+      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Identity', InTable => 1 &>
+      </table>
+      </&>
+      <&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="label"><&|/l&>Residence</&>:</td>
+          <td class="value"><%$UserObj->HomePhone || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Work</&>:</td>
+          <td class="value"><%$UserObj->WorkPhone || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Mobile</&>:</td>
+          <td class="value"><%$UserObj->MobilePhone || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Pager</&>:</td>
+          <td class="value"><%$UserObj->PagerPhone || ''%></td>
+        </tr>
+      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Phones', InTable => 1 &>
+      </table>
+      </&>
+    </td>
+    <td valign="top" class="boxcontainer">
+      <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
+      <table cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="label"><&|/l&>Organization</&>:</td>
+          <td class="value"><%$UserObj->Organization || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Address1</&>:</td>
+          <td class="value"><%$UserObj->Address1 || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Address2</&>:</td>
+          <td class="value"><%$UserObj->Address2 || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>City</&>:</td>
+          <td class="value"><%$UserObj->City || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>State</&>:</td>
+          <td class="value"><%$UserObj->State || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Zip</&>:</td>
+          <td class="value"><%$UserObj->Zip || ''%></td>
+        </tr>
+        <tr>
+          <td class="label"><&|/l&>Country</&>:</td>
+          <td class="value"><%$UserObj->Country || ''%></td>
+        </tr>
+      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Location', InTable => 1 &>
+      </table>
+      </&>
+      <& /Elements/ShowCustomFieldCustomGroupings, Object => $UserObj &>
+    </td>
+  </tr>
+</table>
+
+<%INIT>
+use I18N::LangTags::List;
+my $lang = I18N::LangTags::List::name( $UserObj->Lang );
+</%INIT>
+
+<%ARGS>
+$UserObj
+</%ARGS>

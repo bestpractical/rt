@@ -48,6 +48,11 @@
 <& /SelfService/Elements/Header, Title => loc('Preferences') &>
 
 <& /Elements/ListActions, actions => \@results &>
+% if ( $pref eq 'full-edit' ) {
+<& /Prefs/Elements/EditAboutMe, UserObj => $user, PasswordName => $password &>
+% } elsif ( $pref eq 'view-info' ) {
+<& /Prefs/Elements/ShowAboutMe, UserObj => $user &>
+% } else {
 <form method="post">
 
 <table width="100%" border="0">
@@ -71,7 +76,7 @@
 % if ( $user->__Value('Password') ne '*NO-PASSWORD*' ) {
 <& /Elements/EditPassword,
     User => $user,
-    Name => [qw(CurrentPass NewPass1 NewPass2)],
+    Name => $password,
 &>
 % }
 </&>
@@ -81,46 +86,67 @@
 <& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
 
+% }
 
 <%INIT>
 my @results;
 
 my $user = $session{'CurrentUser'}->UserObj;
+my $password = [ qw(CurrentPass NewPass1 NewPass2) ];
 
-if (defined $NewPass1 && length $NewPass1 ) {
-    my ($status, $msg) = $user->SafeSetPassword(
-        Current      => $CurrentPass,
-        New          => $NewPass1,
-        Confirmation => $NewPass2,
+my $pref = RT->Config->Get( 'SelfServiceUserPrefs' ) || '';
+
+if ( $pref eq 'edit-prefs' || $pref eq 'full-edit' ) {
+
+    if ( defined $NewPass1 && length $NewPass1 ) {
+        my ($status, $msg) = $user->SafeSetPassword(
+            Current      => $CurrentPass,
+            New          => $NewPass1,
+            Confirmation => $NewPass2,
+        );
+        push @results, loc("Password: [_1]", $msg);
+    }
+
+    my @fields;
+
+    if ( $pref eq 'edit-prefs' ) {
+        @fields = qw( Lang Timezone );
+    } else {
+        @fields = qw(
+            Name Comments EmailAddress FreeformContactInfo Organization RealName
+            NickName Lang Gecos HomePhone WorkPhone MobilePhone PagerPhone Address1
+            Address2 City State Zip Country Timezone
+        );
+    }
+
+    $m->callback(
+        CallbackName => 'UpdateLogic',
+        fields       => \@fields,
+        results      => \@results,
+        UserObj      => $user,
+        ARGSRef      => \%ARGS,
     );
-    push @results, loc("Password: [_1]", $msg);
-}
 
-my @fields = qw(
-        Lang Timezone
+    push @results, UpdateRecordObject (
+        AttributesRef => \@fields,
+        Object => $user,
+        ARGSRef => \%ARGS,
     );
 
-$m->callback(
-    CallbackName => 'UpdateLogic',
-    fields       => \@fields,
-    results      => \@results,
-    UserObj      => $user,
-    ARGSRef      => \%ARGS,
-);
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $user );
 
-push @results, UpdateRecordObject (
-    AttributesRef => \@fields,
-    Object => $user,
-    ARGSRef => \%ARGS,
-);
+    if ( $Lang ) {
+        $session{'CurrentUser'}->LanguageHandle($Lang);
+        $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+    }
 
-if ( $Lang ) {
-    $session{'CurrentUser'}->LanguageHandle($Lang);
-    $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+    #A hack to make sure that session gets rewritten.
+    $session{'i'}++;
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+    );
 }
-
-#A hack to make sure that session gets rewritten.
-$session{'i'}++;
 </%INIT>
 
 <%ARGS>
