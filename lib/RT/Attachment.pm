@@ -637,6 +637,14 @@ This is not protection using quoted printable or base64 encoding.
 sub EncodedHeaders {
     my $self = shift;
     my $encoding = shift || 'utf8';
+
+    # Require Encode::HanExtra to handle more encodings it supports.
+    # The regex is based on the names documented in Encode::HanExtra.
+    if ( $encoding =~ /^(?:big5(?:-1984|-2003|ext|plus)|cccii|cns11643-[1-7f]|euc-tw|gb18030|unisys(?:-sosi(?:1|2))?)$/ ) {
+        unless ( Encode::HanExtra->require ) {
+            RT->Logger->error("Need Encode::HanExtra to handle $encoding");
+        }
+    }
     return Encode::encode( $encoding, $self->Headers );
 }
 
