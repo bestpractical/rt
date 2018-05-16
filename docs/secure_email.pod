@@ -1,0 +1,68 @@
+=head1 Introduction
+
+GnuPG and S/MIME can encrypt and sign messages in email before the
+user's MUA sends the mail. The mail recipient can decrypt the message
+and verify the sender's signature on the message in their MUA. The
+sender and recipient must install each other's public keys to exchange
+these messages.
+
+When a GnuPG or S/MIME user sends a message to multiple recipients,
+they must have installed all of the recipients' public keys. Each of
+the recipients must have installed the sender's key to verify the
+message.
+
+RT can use GnuPG and S/MIME to decrypt, encrypt, sign, and verify mail
+as an intermediary. Unlike the workflows described above, senders and
+recipients only need to install the RT instance's public key. Instead
+of encrypting a message to the final mail recipients, a sender only
+needs to encrypt the message to the RT instance's key. RT will decrypt
+and verify the message. Then, RT will encrypt the message to each of
+the ticket's watchers individually and sign the message with its own
+key.
+
+This document describes how to implement an RT workflow using GnuPG or
+S/MIME to protect the content and integrity of messages in email.
+
+=head1 Background
+
+TLS encrypts the IMAP, POP, and SMTP connections from users' MUAs to
+mail servers. It also encrypts the SMTP connections between mail
+servers. This prevents entities like ISPs from eavesdropping on email
+in transit between at any point between users' email clients. But TLS
+does not prevent mail servers from eavesdropping on email messages. It
+also does not protect mail from man-in-the-middle attacks against TLS
+connections.
+
+GnuPG and S/MIME protect messages in email while it is in transit
+between the individual users' email clients and while email is at rest
+on a mail server. Mail servers cannot read the messages in encrypted
+mails that they relay or store.
+
+GnuPG and S/MIME only protect messages in email. They cannot hide mail
+headers.
+
+RT can store the encrypted messages as they were received and decrypt
+them on display. Or RT can decrypt the messages on receipt and store
+the decrypted content.
+
+=head2 GnuPG background
+
+GnuPG does not depend on a trusted authority to distribute or verify
+keys. Users can install any public key from any source and decide how
+much they trust that key. But it is up to the user to verify the
+authenticity of that key.
+
+RT administrators must manage RT's GnuPG keyring manually.
+
+=head2 S/MIME background
+
+S/MIME depends on a trusted authority to verify the authenticity of
+other users' public keys.
+
+...
+
+RT administrators must install the trusted authority keys, certificate
+authorities, that sign the keys of users that want to communicate with
+it.
+
+=cut
