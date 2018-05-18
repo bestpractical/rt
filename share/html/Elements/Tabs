@@ -982,7 +982,7 @@ my $build_main_nav = sub {
 
             my $more = $current_search_menu->child( more => title => loc('Feeds') );
 
-            $more->child( spreadsheet => title => loc('Spreadsheet'), path => "/Search/Results.tsv$args" );
+            $more->child( spreadsheet => title => loc('Spreadsheet'), path => "/Helpers/TSVExport$args" );
 
             my %rss_data = map {
                 $_ => $QueryArgs->{$_} || $fallback_query_args{$_} || '' }
