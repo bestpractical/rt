@@ -210,10 +210,16 @@
 % $m->callback( %ARGS, CallbackName => 'RightColumnBottom', UserObj => $UserObj );
 </td></tr>
 <tr>
-<td colspan="2">
+<td>
 <&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
 <textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
 </&>
+</td>
+<td>
+<& /Elements/UserRelatedInfo, UserObj => $UserObj &>
+</td></tr>
+
+<tr><td>
 %if (!$Create && $UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
