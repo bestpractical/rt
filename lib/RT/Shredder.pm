@@ -367,7 +367,7 @@ sub CastObjectsToRecords
         if ( $id =~ /^\d+$/ && $id ne $obj->Id ){
             die 'Loaded object id ' . $obj->Id . " is different from passed id $id";
         }
-        elsif ( $id ne $obj->Name ){
+        elsif ( $class eq 'RT::User' && $id ne $obj->Name ){
             die 'Loaded object name ' . $obj->Name . " is different from passed name $id";
         }
         push @res, $obj;
