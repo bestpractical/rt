@@ -241,6 +241,8 @@ $m->callback(
     Description => \$desc,
     ShowBody    => \$ShowBody,
     CreatorObj  => \$CreatorObj,
+    HasTxnCFs   => \$HasTxnCFs,
+    ARGSRef     => \%ARGS,
 );
 
 my $actions = '';
