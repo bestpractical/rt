@@ -364,11 +364,15 @@ sub CastObjectsToRecords
             RT::Shredder::Exception::Info->throw( 'CouldntLoadObject' );
         }
 
-        if ( $id =~ /^\d+$/ && $id ne $obj->Id ){
-            die 'Loaded object id ' . $obj->Id . " is different from passed id $id";
+        if ( $id =~ /^\d+$/ ) {
+            if ( $id ne $obj->Id ) {
+                die 'Loaded object id ' . $obj->Id . " is different from passed id $id";
+            }
         }
-        elsif ( $id ne $obj->Name ){
-            die 'Loaded object name ' . $obj->Name . " is different from passed name $id";
+        else {
+            if ( $obj->_Accessible( 'Name', 'read' ) && $id ne $obj->Name ) {
+                die 'Loaded object name ' . $obj->Name . " is different from passed name $id";
+            }
         }
         push @res, $obj;
     } else {
