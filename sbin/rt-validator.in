@@ -165,6 +165,7 @@ $redo_on{'Create'} = {
     Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'CGM vs. GM' ],
     GroupMembers => [ 'CGM vs. GM' ],
     CachedGroupMembers => [ 'CGM vs. GM' ],
+    Tickets => [ 'Tickets <-> Role Groups' ],
 };
 $redo_on{'Update'} = {
     Groups => ['User Defined Group Name uniqueness'],
@@ -319,9 +320,24 @@ push @CHECKS, 'Tickets <-> Role Groups' => sub {
     # from queue to group
     my $res = 1;
     $res *= check_integrity(
-        'Tickets', 'id' => 'Groups', 'Instance',
+        'Tickets', 'EffectiveId' => 'Groups', 'Instance',
         join_condition   => 't.Domain = ?',
         bind_values => [ 'RT::Ticket-Role' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Create', "Found a ticket that has no role groups."
+            );
+
+            my $ticket = RT::Ticket->new( RT->SystemUser );
+            $ticket->Load( $id );
+            die "Couldn't load ticket #$id" unless $ticket->id;
+
+            print "Creating role groups for ticket #$id\n" if $opt{ 'verbose' };
+            $redo_check{ $_ } = 1 foreach @{ $redo_on{ 'Create' }{ 'Tickets' } };
+            my $ret = $ticket->_CreateRoleGroups();
+            die "Couldn't create role groups for ticket $id" unless $ret;
+        },
     );
     # from group to ticket
     $res *= check_integrity(
