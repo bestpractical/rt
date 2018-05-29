@@ -591,3 +591,14 @@ function toggle_hide_unset(e) {
 
     return false;
 }
+
+var path = window.location.href;
+
+if ( path.match( /Prefs\/AboutMe\.html/ ) ) {
+  jQuery("#ResetAuthTokenContainer").hide();
+  jQuery("#ResetAuthTokenPrompt").show().click(function(ev){
+    jQuery(this).slideUp();
+    jQuery("#ResetAuthTokenContainer").slideDown();
+      ev.preventDefault();
+  });
+}

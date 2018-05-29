@@ -194,28 +194,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
     <input type="checkbox" name="ChartStyleIncludeSQL" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include TicketSQL query') %>
 </div>
 </&>
-<script type="text/javascript">
-var updateChartStyle = function() {
-    var val = jQuery(".chart-picture [name=ChartType]").val();
-    if ( val != 'table' && jQuery(".chart-picture [name=ChartStyleIncludeTable]").is(':checked') ) {
-        val += '+table';
-    }
-    if ( jQuery(".chart-picture [name=ChartStyleIncludeSQL]").is(':checked') ) {
-        val += '+sql';
-    }
-    jQuery(".chart-picture [name=ChartStyle]").val(val);
-};
-jQuery(".chart-picture [name=ChartType]").change(function(){
-    var t = jQuery(this);
-    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() == 'bar' );
-    t.closest("form").find("[name=Width]").closest(".width").toggle( t.val() !== 'table' );
-    t.closest("form .chart-picture").find("div.include-table").toggle( t.val() !== 'table' );
-    updateChartStyle();
-}).change();
-
-jQuery(".chart-picture [name=ChartStyleIncludeTable]").change( updateChartStyle );
-jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
-</script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/search.js"></script>
 
 <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
 </form>

@@ -61,3 +61,26 @@ jQuery(function() {
         );
     });
 });
+
+var path = window.location.href;
+
+if ( path.match( /Asset\/Search/ ) ) {
+  jQuery(function() {
+    var all_inputs = jQuery("#AssetSearch input, #AssetSearch select");
+    all_inputs.each(function() {
+      var elem = jQuery(this);
+      var update_elems = all_inputs.filter(function () {
+        return jQuery(this).attr("name") == elem.attr("name");
+      }).not(elem);
+      if (update_elems.length == 0) {
+        return;
+      }
+      var trigger_func = function() { update_elems.val(elem.val()) };
+      if (elem.attr("type") == "text") {
+        elem.keyup( trigger_func );
+      } else {
+        elem.change( trigger_func );
+      }
+    });
+  });
+}

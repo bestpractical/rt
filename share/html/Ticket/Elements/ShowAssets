@@ -151,13 +151,7 @@ if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
 % my $page = RT::Interface::Web::Menu->new();
 % RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, Menu(), PageWidgets(), $page, Asset => $asset );
 <& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
-<script>
-jQuery("#assets-accordion ul.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ dropShadows: false, speed: 'fast', delay: 0 }).supposition()
-    .find('a').click(function(ev){
-        ev.stopPropagation();
-        return true;
-    });
-</script>
+<script src="<%RT->Config->Get('WebPath')%>/static/js/ticket.js"></script>
 
   </h3>
   <div class="details">
