@@ -181,14 +181,7 @@
     Label       => loc('Reset secret authentication token'),
     Name        => "ResetAuthToken",
     id          => "ResetAuthTokenContainer" &>
-<script>
-    jQuery("#ResetAuthTokenContainer").hide();
-    jQuery("#ResetAuthTokenPrompt").show().click(function(ev){
-        jQuery(this).slideUp();
-        jQuery("#ResetAuthTokenContainer").slideDown();
-        ev.preventDefault();
-    });
-</script>
+<script src="<%RT->Config->Get('WebPath')%>/static/js/util.js"></script>
 </&>
 
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );

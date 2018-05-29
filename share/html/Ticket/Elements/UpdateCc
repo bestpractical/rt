@@ -106,18 +106,7 @@
 %}
 %if (@one_time_Ccs && $hide_cc_suggestions) {
 </div>
-<script type="text/javascript">
-jQuery(function() {
-    jQuery('a.ToggleSuggestions').click(function(e) {
-        e.preventDefault();
-        var toggleSuggestions = jQuery(this);
-        var oneTimeCcs = toggleSuggestions.closest('td').find('.OneTimeCcs');
-        oneTimeCcs.toggleClass('hidden');
-        var hideOrShow = oneTimeCcs.hasClass('hidden') ? toggleSuggestions.data('showLabel') : toggleSuggestions.data('hideLabel');
-        toggleSuggestions.find('i').html('(' + hideOrShow + ')');
-    });
-});
-</script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/ticket.js"></script>
 %}
 </td></tr>
 <%args>
