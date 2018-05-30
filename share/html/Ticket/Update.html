@@ -333,6 +333,15 @@ if ( $ARGS{'SubmitTicket'} ) {
     $checks_failure = 1 unless $status;
 }
 
+if ( $ARGS{UpdateTimeWorked} ) {
+    $ARGS{UpdateTimeWorked} =~ s!^\s+!!;
+    $ARGS{UpdateTimeWorked} =~ s!\s+$!!;
+    if ( $ARGS{UpdateTimeWorked} !~ /^(?:\d+)?(?:\.(?:\d+)?)?$/ ) {
+        push @results, loc('Invalid worked time, should be numeric: "[_1]"', $ARGS{UpdateTimeWorked});
+        $checks_failure = 1;
+    }
+}
+
 # check email addresses for RT's
 {
     foreach my $field ( qw(UpdateCc UpdateBcc) ) {
