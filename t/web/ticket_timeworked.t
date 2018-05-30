@@ -146,4 +146,70 @@ diag "checking child ticket 2 for expected timeworked data"; {
     );
 }
 
+diag "checking invalid and edge cased worked time on update";
+{
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => "timeworked", TimeWorked => 30, );
+    my $time = $ticket->TimeWorked;
+    is( $time, 30, "current TimeWorked" );
+
+    $m->goto_ticket( $ticket->id, 'Update' );
+    $m->submit_form_ok(
+        { form_name => 'TicketUpdate', fields => { UpdateTimeWorked => '0,1', }, button => 'SubmitTicket', },
+        'update TimeWorked with "0,1"' );
+    $m->text_contains( 'Invalid worked time, should be numeric: "0,1"' );
+
+    $ticket->Load( $ticket->id );
+    is( $ticket->TimeWorked, 30, 'TimeWorked is not updated' );
+
+
+    $m->submit_form_ok(
+        {
+            form_name => 'TicketUpdate',
+            fields    => { UpdateTimeWorked => '1.5', 'UpdateTimeWorked-TimeUnits' => 'hours' },
+            button    => 'SubmitTicket',
+        },
+        'update TimeWorked with 1.5 hours'
+    );
+    $m->text_lacks( 'Invalid worked time, should be numeric' );
+    $ticket->Load( $ticket->id );
+    is( $ticket->TimeWorked, 120, 'TimeWorked is updated' );
+
+    $m->goto_ticket( $ticket->id, 'Update' );
+    $m->submit_form_ok(
+        {
+            form_name => 'TicketUpdate',
+            fields    => { UpdateTimeWorked => '.5', 'UpdateTimeWorked-TimeUnits' => 'hours' },
+            button    => 'SubmitTicket',
+        },
+        'update TimeWorked with .5 hours'
+    );
+    $m->text_lacks( 'Invalid worked time, should be numeric' );
+    $ticket->Load( $ticket->id );
+    is( $ticket->TimeWorked, 150, 'TimeWorked is updated' );
+
+    $m->goto_ticket( $ticket->id, 'Update' );
+    $m->submit_form_ok(
+        { form_name => 'TicketUpdate', fields => { UpdateTimeWorked => '5.' }, button => 'SubmitTicket', },
+        'update TimeWorked 5. minutes' );
+    $m->text_lacks( 'Invalid worked time, should be numeric' );
+    $ticket->Load( $ticket->id );
+    is( $ticket->TimeWorked, 155, 'TimeWorked is updated' );
+
+    $m->goto_ticket( $ticket->id, 'Update' );
+    $m->submit_form_ok(
+        { form_name => 'TicketUpdate', fields => { UpdateTimeWorked => ' 15 ' }, button => 'SubmitTicket', },
+        'update TimeWorked with " 15 "' );
+    $m->text_lacks( 'Invalid worked time, should be numeric' );
+    $ticket->Load( $ticket->id );
+    is( $ticket->TimeWorked, 170, 'TimeWorked is updated' );
+
+    $m->goto_ticket( $ticket->id, 'Update' );
+    $m->submit_form_ok(
+        { form_name => 'TicketUpdate', fields => { UpdateTimeWorked => ' ' }, button => 'SubmitTicket', },
+        'update TimeWorked with just a space' );
+    $m->text_lacks( 'Invalid worked time, should be numeric' );
+    $ticket->Load( $ticket->id );
+    is( $ticket->TimeWorked, 170, 'TimeWorked is not updated' );
+}
+
 done_testing();
