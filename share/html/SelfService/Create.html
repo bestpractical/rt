@@ -137,6 +137,12 @@ my $skip_create = 0;
         push @results, @msg;
         $skip_create = 1;
     }
+
+    ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
+    unless ( $status ) {
+        push @results, @msg;
+        $skip_create = 1;
+    }
 }
 
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, results => \@results );

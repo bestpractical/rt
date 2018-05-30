@@ -464,6 +464,12 @@ my $checks_failure = 0;
         $checks_failure = 1;
         push @results, @msg;
     }
+
+    ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
+    unless ( $status ) {
+        push @results, @msg;
+        $checks_failure = 1;
+    }
 }
 
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );

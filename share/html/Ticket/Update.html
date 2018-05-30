@@ -331,6 +331,12 @@ if ( $ARGS{'SubmitTicket'} ) {
         TicketObj => $TicketObj,
     );
     $checks_failure = 1 unless $status;
+
+    ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
+    unless ( $status ) {
+        push @results, @msg;
+        $checks_failure = 1;
+    }
 }
 
 # check email addresses for RT's

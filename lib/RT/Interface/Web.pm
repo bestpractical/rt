@@ -73,6 +73,7 @@ use List::MoreUtils qw();
 use JSON qw();
 use Plack::Util;
 use HTTP::Status qw();
+use Regexp::Common;
 
 =head2 SquishedCSS $style
 
@@ -1242,18 +1243,35 @@ sub DecodeARGS {
 sub PreprocessTimeUpdates {
     my $ARGS = shift;
 
-    # This code canonicalizes time inputs in hours into minutes
+    my @msg;
+
+    # This code validates and canonicalizes time inputs(including hours into minutes)
     foreach my $field ( keys %$ARGS ) {
         next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS->{$1};
         my $local = $1;
         $ARGS->{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
                       {($1 || 0) + $3 ? $2 / $3 : 0}xe;
+
+        $ARGS->{$local} =~ s!^\s+!!;
+        $ARGS->{$local} =~ s!\s+$!!;
+        $ARGS->{$local} =~ s!,!!g;
+
+        if ( $ARGS->{$local} && $ARGS->{$local} !~ /^$RE{num}{real}$/ ) {
+            push @msg, HTML::Mason::Commands::loc( 'Invalid [_1]: it should be a number', HTML::Mason::Commands::loc( $local ) );
+            next;
+        }
         if ( $ARGS->{$field} && $ARGS->{$field} =~ /hours/i ) {
             $ARGS->{$local} *= 60;
         }
+
+        # keep decimal part as the column in db is int
+        $ARGS->{$local} = sprintf( '%.0f', $ARGS->{$local} );
+
         delete $ARGS->{$field};
     }
 
+    return 1 unless @msg;
+    return wantarray ? ( 0, @msg ) : 0;
 }
 
 sub MaybeEnableSQLStatementLog {
@@ -4528,6 +4546,10 @@ sub GetCustomFieldInputName {
 
 sub GetCustomFieldInputNamePrefix {
     RT::Interface::Web::GetCustomFieldInputNamePrefix(@_);
+}
+
+sub PreprocessTimeUpdates {
+    RT::Interface::Web::PreprocessTimeUpdates(@_);
 }
 
 package RT::Interface::Web;
