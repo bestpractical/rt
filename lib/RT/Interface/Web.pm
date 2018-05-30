@@ -291,6 +291,8 @@ sub HandleRequest {
     InitializeMenu();
     MaybeShowInstallModePage();
 
+    SetSecurityHeaders() if RT->Config->Get('SetCSPHeaders');
+
     MaybeRebuildCustomRolesCache();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
@@ -383,6 +385,13 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
 
     $HTML::Mason::Commands::m->comp( '/Elements/Footer', %$ARGS );
+}
+
+sub SetSecurityHeaders {
+    my $nonce = Digest::MD5::md5_hex( rand(1024) );
+    $HTML::Mason::Commands::m->notes->{'csp-nonce'} = $nonce;
+    $HTML::Mason::Commands::r->headers_out->{'content-security-policy'} =
+        RT->Config->Get('SetCSPHeaders') . "; script-src 'nonce-$nonce';";
 }
 
 sub _ForceLogout {
