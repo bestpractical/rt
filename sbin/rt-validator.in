@@ -756,10 +756,11 @@ push @CHECKS, 'Transactions -> other' => sub {
         },
     );
     # type = Take, Untake, Force, Steal or Give
+    # or, type = Set, SetWatcher, field = Owner
     $res *= check_integrity(
         'Transactions', 'OldValue' => 'Users', 'id',
-        condition   => 's.Type IN (?, ?, ?, ?, ?)',
-        bind_values => [ qw(Take Untake Force Steal Give) ],
+        condition   => 's.Type IN (?, ?, ?, ?, ?) OR ( s.Type IN (?, ?) AND s.Field = ? )',
+        bind_values => [ qw(Take Untake Force Steal Give), qw(Set SetWatcher Owner) ],
         action => sub {
             my $id = shift;
             return unless prompt(
@@ -772,8 +773,8 @@ push @CHECKS, 'Transactions -> other' => sub {
     );
     $res *= check_integrity(
         'Transactions', 'NewValue' => 'Users', 'id',
-        condition   => 's.Type IN (?, ?, ?, ?, ?)',
-        bind_values => [ qw(Take Untake Force Steal Give) ],
+        condition   => 's.Type IN (?, ?, ?, ?, ?) OR ( s.Type IN ( ?, ? ) AND s.Field = ? )',
+        bind_values => [ qw(Take Untake Force Steal Give), qw(Set SetWatcher Owner) ],
         action => sub {
             my $id = shift;
             return unless prompt(
