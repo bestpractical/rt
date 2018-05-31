@@ -745,6 +745,15 @@ push @CHECKS, 'Transactions -> other' => sub {
         'Transactions', 'Field' => 'CustomFields', 'id',
         condition   => 's.Type = ?',
         bind_values => [ 'CustomField' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction describing a custom field change,"
+                ." but the custom field doesn't exist anymore."
+            );
+
+            delete_record( 'Transactions', $id );
+        },
     );
     # type = Take, Untake, Force, Steal or Give
     $res *= check_integrity(
