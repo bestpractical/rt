@@ -844,6 +844,15 @@ push @CHECKS, 'Transactions -> other' => sub {
         join_condition => 't.Type = ?',
         condition      => 's.Type IN (?, ?, ?)',
         bind_values    => [ 'reminder', 'AddReminder', 'OpenReminder', 'ResolveReminder' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction describing a reminder change,"
+                ." but the reminder doesn't exist anymore."
+            );
+
+            delete_record( 'Transactions', $id );
+        },
     );
     return $res;
 };
