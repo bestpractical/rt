@@ -67,7 +67,7 @@
 <td><select name="<% $name_prefix %>Articles-Include-Article-Named-Hotlist" onchange="this.form.submit()">
 <option value="" selected><&|/l&>-</&></option>
 % while (my $article = $hotlist->Next) {
-<option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary || ''%></option>
+<option value="<% $article->id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary || ''%></option>
 % }
 </select>
 </td>
@@ -76,19 +76,19 @@
 % }
 % my %dedupe_articles;
 % while (my $article = $articles_content->Next) {
-%   $dedupe_articles{$article->Id}++;
+%   $dedupe_articles{$article->id}++;
 <tr>
 <td>&nbsp;</td>
 <td><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></td>
-<td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->Id%>" value="Go" /></td>
+<td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->id%>" value="Go" /></td>
 </tr>
 % }
 % while (my $article = $articles_basics->Next) {
-%   next if $dedupe_articles{$article->Id};
+%   next if $dedupe_articles{$article->id};
 <tr>
 <td>&nbsp;</td>
 <td><%$article->Name || loc('(no name)')%>: <%$article->Summary || ''%></td>
-<td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->Id%>" value="Go" /></td>
+<td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->id%>" value="Go" /></td>
 </tr>
 % }
 % if ( @$topics ) {
@@ -163,7 +163,7 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
             Field => substr($arg, length($name_prefix)),
             Value => $ARGS{$arg},
         );
-        if ($article->Id) {
+        if ($article->id) {
             $uri{"a:" . $article->id}++;
         }
     }
