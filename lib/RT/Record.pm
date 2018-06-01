@@ -1305,8 +1305,12 @@ sub FormatLink {
                  @_
                );
     my $text = "URI " . $args{FallBack};
-    if ($args{Object} && $args{Object}->isa("RT::Ticket")) {
-        $text = "Ticket " . $args{Object}->id;
+    if ($args{Object}) {
+        if ($args{Object}->isa("RT::Ticket")) {
+            $text = "Ticket " . $args{Object}->id;
+        } elsif ($args{Object}->isa("RT::Article")) {
+            $text = "Article " . $args{Object}->id;
+        }
     }
     return $text;
 }

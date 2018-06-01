@@ -164,7 +164,7 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
             Value => $ARGS{$arg},
         );
         if ($article->Id) {
-            $uri{$article->URI}++;
+            $uri{"a:" . $article->id}++;
         }
     }
 }
