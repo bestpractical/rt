@@ -2299,6 +2299,28 @@ defaults alone.
 
 =over 4
 
+=item C<$SetCSPHeaders>
+
+This option allows you to enable the HTTP Content Security Policy (CSP)
+in your RT. If enabled, potentially malicious code from inline javascript
+will be blocked to help prevent cross-site scripting (XSS) attacks. To
+enable, set this option to "default-src 'self'" and optionally, add any
+additional CSP directives. For example, to allow inline styling, but
+continue to block inline javascript, you can set this option as below
+using the CSP 'style-src' directive:
+
+    Set($SetCSPHeaders, "default-src 'self'; style-src 'self' 'unsafe-inline'");
+
+If you have some customizations in your RT that contain inline javascript,
+you must add the nonce attribute to the script tag to ensure the javascript
+will be added as an exception (see example below).
+
+    <script nonce='<%$m->notes->{"csp-nonce"}%>' type="text/javascript">
+
+=cut
+
+Set($SetCSPHeaders, undef);
+
 =item C<$DisallowExecuteCode>
 
 If set to 1, the C<ExecuteCode> right will be removed from
