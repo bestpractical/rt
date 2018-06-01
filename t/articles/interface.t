@@ -173,14 +173,15 @@ $m->follow_link_ok( { text => 'Modify'}, 'Article -> Modify' );
 $m->content_like(qr/Refers to/, "found links edit box");
 my $ticket_id = $ticket->Id;
 my $turi = "t:$ticket_id";
-my $a1uri = 'a:'.$article1->Id;
+my $article_uri = $article1->Id;
+my $a1uri = "a:$article_uri";
 $m->submit_form(form_name => 'EditArticle',
                 fields => { $article3->Id.'-RefersTo' => $turi,
                             'RefersTo-'.$article3->Id => $a1uri }
                 );
 
 $m->content_like(qr/Ticket.*$ticket_id/, "Ticket linkto was created");
-$m->content_like(qr/URI.*$a1uri/, "Article linkfrom was created");
+$m->content_like(qr/Article.*$article_uri/, "Article linkfrom was created");
 }
 
 # Now try to extract an article from a link.
