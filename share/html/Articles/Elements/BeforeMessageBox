@@ -154,7 +154,6 @@ if ( my $tmp = $ARGS{$name_prefix ."Articles-Include-Article"} ) {
 
 my %uri;
 if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
-    $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
 
     foreach my $arg (keys %ARGS) {
         next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
