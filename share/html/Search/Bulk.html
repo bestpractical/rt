@@ -53,6 +53,14 @@
 % foreach my $var (qw(Query Format OrderBy Order Rows Page SavedSearchId SavedChartSearchId Token)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
+
+% for my $input ( @ExtraQueryParams ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%   if ( defined $ARGS{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
+%   }
+% }
+
 <& /Elements/CollectionList, 
     Query => $Query,
     DisplayFormat => $DisplayFormat,
@@ -518,4 +526,5 @@ $Order => 'ASC'
 $OrderBy => 'id'
 $Query => undef
 @UpdateTicket => ()
+@ExtraQueryParams => ()
 </%args>

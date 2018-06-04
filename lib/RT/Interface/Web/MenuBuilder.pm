@@ -522,6 +522,13 @@ sub BuildMainNav {
             my %final_query_args = ();
             # key => callback to avoid unnecessary work
 
+            if ( my $extra_params = $query_args->{ExtraQueryParams} ) {
+                $final_query_args{ExtraQueryParams} = $extra_params;
+                for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                    $final_query_args{$param} = $query_args->{$param};
+                }
+            }
+
             for my $param (keys %fallback_query_args) {
                 $final_query_args{$param} = defined($query_args->{$param})
                                           ? $query_args->{$param}
