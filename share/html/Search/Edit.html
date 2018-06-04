@@ -55,6 +55,12 @@
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $SavedChartSearchId %>" />
 <input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
 <input type="hidden" class="hidden" name="ObjectType" value="<% $ObjectType %>" />
+% for my $input ( @ExtraQueryParams ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%   if ( defined $ARGS{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
+%   }
+% }
 
 <&|/Widgets/TitleBox, title => loc('Query'), &>
 <textarea class="form-control" name="Query" rows="8" cols="72"><% $Query %></textarea>
@@ -104,4 +110,5 @@ $Class         => 'RT::Tickets'
 $ObjectType    => 'RT::Ticket'
 
 @actions       => ()
+@ExtraQueryParams => ()
 </%ARGS>

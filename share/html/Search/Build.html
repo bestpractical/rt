@@ -75,8 +75,14 @@
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
 <input type="hidden" class="hidden" name="ObjectType" value="<% $query{'ObjectType'} %>" />
 <input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
-
-
+% if ( $query{ExtraQueryParams} ) {
+%   for my $input ( ref $query{ExtraQueryParams} eq 'ARRAY' ?  @{$query{ExtraQueryParams}} : $query{ExtraQueryParams} ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%       if ( defined $query{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $query{$input} %>" />
+%       }
+%   }
+% }
 
 <div class="row">
   <div class="col-xl-7">
@@ -134,7 +140,7 @@ else {
 }
 
 my %query;
-for( qw(Query Format OrderBy Order RowsPerPage Class ObjectType) ) {
+for( qw(Query Format OrderBy Order RowsPerPage Class ObjectType ExtraQueryParams), @ExtraQueryParams ) {
     $query{$_} = $ARGS{$_} if defined $ARGS{$_};
 }
 
@@ -155,7 +161,7 @@ if ( $NewQuery ) {
 
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
-    %query = ();
+    %query = map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } 'ExtraQueryParams', @ExtraQueryParams;
     %saved_search = ( Id => 'new' );
 
     # ..then wipe the session out..
@@ -194,6 +200,13 @@ if ( $NewQuery ) {
     if ( $query{'Format'} ) {
         # Clean unwanted junk from the format
         $query{'Format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'Format'} );
+    }
+
+    if ( !$ARGS{SavedSearchLoad} and ( my $extra_params = $current->{ExtraQueryParams} ) ) {
+        $query{ExtraQueryParams} //= $extra_params;
+        for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+            $query{$param} //= $current->{$param};
+        }
     }
 }
 
@@ -360,4 +373,5 @@ $NewQuery => 0
 @clauses => ()
 $Class => 'RT::Tickets'
 $ObjectType => 'RT::Ticket'
+@ExtraQueryParams => ()
 </%ARGS>

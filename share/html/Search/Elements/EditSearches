@@ -116,7 +116,7 @@ my $is_dirty = sub {
     my %arg = (
         Query       => {},
         SavedSearch => {},
-        SearchFields => [qw(Query Format OrderBy Order RowsPerPage ObjectType)],
+        SearchFields => [qw(Query Format OrderBy Order RowsPerPage ObjectType ExtraQueryParams), @ExtraQueryParams],
         @_
     );
 
@@ -149,6 +149,7 @@ $CurrentSearch => {}
 @SearchFields   => ()
 $AllowCopy     => 1
 $Title         => loc('Saved searches')
+@ExtraQueryParams => ()
 </%ARGS>
 
 <%METHOD Init>
@@ -182,6 +183,24 @@ if ( $ARGS{'SavedSearchLoad'} ) {
         $SavedSearch->{'Object'}      = $search;
         $SavedSearch->{'Description'} = $search->Description;
         $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
+
+        if ( my $extra_params = $search->SubValue('ExtraQueryParams') ) {
+            $Query->{ExtraQueryParams} = $extra_params;
+            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                $Query->{$param} = $search->SubValue($param);
+            }
+        }
+        else {
+            delete $Query->{ExtraQueryParams};
+        }
+
+        # Remove all extra params not set in saved search.
+        if ( my $extra_params = $ARGS{ExtraQueryParams} ) {
+            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                next if defined $search->SubValue($param);
+                delete $Query->{$param};
+            }
+        }
 
         if ( $ARGS{'SavedSearchRevert'} ) {
             push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Description'} );
@@ -242,7 +261,8 @@ return @results;
 <%ARGS>
 $Query        => {}
 $SavedSearch  => {}
-@SearchFields => qw(Query Format OrderBy Order RowsPerPage ObjectType)
+@ExtraQueryParams => ()
+@SearchFields => ( qw(Query Format OrderBy Order RowsPerPage ObjectType ExtraQueryParams), @ExtraQueryParams )
 </%ARGS>
 <%INIT>
 
@@ -254,7 +274,7 @@ my $id   = $SavedSearch->{'Id'};
 my $desc = $SavedSearch->{'Description'};
 my $privacy = $SavedSearch->{'Privacy'};
 
-my %params = map { $_ => $Query->{$_} } @SearchFields;
+my %params = map { $_ => $Query->{$_} } grep { defined $Query->{$_} } @SearchFields;
 my ($new_obj_type, $new_obj_id) = split(/\-/, ($privacy || ''));
 
 if ( $obj && $obj->id ) {
