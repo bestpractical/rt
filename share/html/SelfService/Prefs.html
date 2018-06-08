@@ -119,20 +119,11 @@ if ( $Lang ) {
     $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
 }
 
-if ($Signature) {
-    $Signature =~ s/(\r\n|\r)/\n/g;
-    if ($Signature ne $user->Signature) {
-        my ($val, $msg) = $user->SetSignature($Signature);
-        push (@results, "Signature: ".$msg);
-    }
-}
-
 #A hack to make sure that session gets rewritten.
 $session{'i'}++;
 </%INIT>
 
 <%ARGS>
-$Signature => undef
 $CurrentPass => undef
 $NewPass1 => undef
 $NewPass2 => undef
