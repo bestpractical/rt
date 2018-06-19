@@ -131,7 +131,7 @@ my $data     = {};
 my $statuses = {};
 
 use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new( RT->SystemUser );
+my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
 my $query =
     "(Status = '__Active__') AND (".
     join(' OR ', map "Queue = ".$_->{Id}, @$queues)
