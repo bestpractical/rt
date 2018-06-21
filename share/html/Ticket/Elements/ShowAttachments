@@ -57,7 +57,12 @@
 
 % foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
 
-<%$key%><br />
+% my ($last_rev) = grep { $_->ContentLength } @{$documents{$key}};
+% if (my $url = RT->System->ExternalStorageURLFor($last_rev)) {
+<a href="<%$url%>"><%$key%></a><br />
+% } else {
+<a href="<%RT->Config->Get('WebPath')%>/<% $DisplayPath %>/Attachment/<%$last_rev->TransactionId%>/<%$last_rev->Id%>/<%$last_rev->Filename | un %>"><%$key%></a><br />
+% }
 <ul <% $Selectable ? 'class="selectable"' : '' |n %> >
 % foreach my $rev (@{$documents{$key}}) {
 % if ($rev->ContentLength) {
