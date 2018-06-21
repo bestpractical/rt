@@ -28,7 +28,7 @@ diag "Create a CF";
 
 diag "add 'qwe', 'ASD', '0' and ' foo ' as values to the CF";
 {
-    foreach my $value(qw(qwe ASD 0), 'foo ') {
+    foreach my $value(qw(qwe ASD 0), 'foo') {
         $m->submit_form(
             form_name => "ModifyCustomField",
             fields => {
@@ -36,7 +36,7 @@ diag "add 'qwe', 'ASD', '0' and ' foo ' as values to the CF";
             },
             button => 'Update',
         );
-        $m->content_contains('Object created', 'added a value to the CF' ); # or diag $m->content;
+        $m->content_contains("Custom field value $value added", 'added a value to the CF' ); # or diag $m->content;
         my $v = $value;
         $v =~ s/^\s+$//;
         $v =~ s/\s+$//;
