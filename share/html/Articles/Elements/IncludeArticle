@@ -46,65 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+# Nothing to do if we don't get an article id
+$IncludeArticleId //= $ARGS{'IncludeArticleId'};
+return unless $IncludeArticleId;
 
-my $parent_args = $m->caller_args(-1);
-my @articles;
+my $article = RT::Article->new($session{'CurrentUser'});
+my ($ret, $msg) = $article->Load($IncludeArticleId);
 
-my $name_prefix = '';
-$name_prefix = $ARGS{'Name'} .'-'
-    if $ARGS{'Name'}
-    && grep rindex($_, "$ARGS{'Name'}-Articles-", 0) == 0,
-        keys %$parent_args;
-
-my $Ticket = $ARGS{Ticket};
-if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
-    $Ticket = RT::Ticket->new($session{'CurrentUser'});
-    $Ticket->Load($parent_args->{id});
-    unless ( $Ticket->id ) {
-        $RT::Logger->error("Couldn't load ticket ". $parent_args->{id} )
-    }
-}
-
-foreach my $arg ( keys %$parent_args ) {
-    next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
-
-    my $Queue = RT::Queue->new($session{CurrentUser});
-    if ($Ticket && $Ticket->Id) {
-        $Queue = $Ticket->QueueObj;
-    }
-
-    my $article = RT::Article->new($session{'CurrentUser'});
-    $article->LoadByInclude(
-        Field => substr($arg, length($name_prefix)),
-        Value => $parent_args->{$arg},
-        Queue => $Queue->Id,
-    );
-    next unless $article && $article->id;
-    push (@articles, $article);
-}
-
-if ( !@articles && ( !$parent_args->{id} || $parent_args->{id} eq 'new' ) && $parent_args->{'Queue'} ) {
-    my $queue_id = $parent_args->{'Queue'};
-    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-    my ($ret, $msg) = $QueueObj->Load( $queue_id );
-    $RT::Logger->error($msg) unless ($ret);
-
-    if ( $QueueObj->id && $QueueObj->DefaultValue('Article') ) {
-        my $article = RT::Article->new($session{'CurrentUser'});
-        my ($ret, $msg) = $article->Load( $QueueObj->DefaultValue('Article') );
-        $RT::Logger->error($msg) unless ($ret);
-        if ($ret) {
-            push (@articles, $article);
-        }
-    }
-}
-
-foreach my $article (@articles) {
+if ( $ret && $article->Id ){
     my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
-        Article => $article, Ticket => $Ticket
+        Article => $article
     );
 
-    $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article );
+    # Ticket is provided in this callback for backward compatibility.
+    # However, after refactoring, less work is done to make sure a Ticket is available
+    $m->callback( Article => $article, Ticket => $ARGS{'Ticket'}, formatted_article => \$formatted_article );
 
     if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
         $formatted_article =~ s/>/&gt;/g;
@@ -113,7 +69,11 @@ foreach my $article (@articles) {
         $formatted_article =~ s/\n/\n<br \/>/g;
     }
     $m->print($formatted_article);
-
 }
-return;
+else {
+    RT::Logger->error("Unable to load article $IncludeArticleId: $msg");
+}
 </%INIT>
+<%ARGS>
+$IncludeArticleId => undef
+</%ARGS>

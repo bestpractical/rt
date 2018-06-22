@@ -45,10 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<input data-autocomplete="Articles" <% $QueueObj && $QueueObj->id ? q{data-autocomplete-queue="} . $QueueObj->id . q{"} : '' |n %> data-autocomplete-return="Name" name="<% $Name %>" value="<% $Default %>">
+<input data-autocomplete="Articles" <% $QueueObj && $QueueObj->id ? q{data-autocomplete-queue="} . $QueueObj->id . q{"} : '' |n %> data-autocomplete-return="id" name="<% $Name %>" value="<% $Default %>"
+<% $AutoSubmit ? 'data-autocomplete-autosubmit=1' : '' %>>
 
 <%ARGS>
 $QueueObj => undef
 $Default => undef
 $Name => 'Article'
+$AutoSubmit => 1
 </%ARGS>

@@ -2,9 +2,10 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 56;
+use RT::Test tests => undef;
 
 my ( $url, $m ) = RT::Test->started_ok;
+diag "Running server at: $url";
 $m->login;
 
 my %class = map { $_ => '' } qw/foo bar/;
@@ -73,36 +74,8 @@ diag "update ticket to see if there is article foo"
 {
     $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
         'ticket update page' );
-    $m->content_contains( 'article foo:', 'got article foo in hotlist' );
-    $m->content_lacks( 'article bar:', 'no article bar in hotlist' );
-
-    $m->submit_form(
-        form_number => 3,
-        fields      => { 'Articles_Content' => 'article' },
-        button      => 'Go',
-    );
-    $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
-    $m->content_lacks( 'article bar', 'no article bar' );
-
-    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
-        'ticket update page' );
-    $m->submit_form(
-        form_number => 3,
-        fields      => { 'Articles-Include-Article-Named' => 'article foo' },
-        button      => 'Go',
-    );
-    $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
-    $m->content_lacks( 'article bar', 'no article bar' );
-
-    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
-        'ticket update page' );
-    $m->submit_form(
-        form_number => 3,
-        fields      => { 'Articles-Include-Article-Named' => 'articlei bar' },
-        button      => 'Go',
-    );
-    $m->content_unlike( qr/article foo.*article foo/s, 'no article foo' );
-    $m->content_lacks( 'article bar', 'no article bar' );
+    $m->content_contains( 'article foo:', 'got article foo in dropdown' );
+    $m->content_lacks( 'article bar:', 'no article bar in dropdown' );
 }
 
 diag "apply bar to globally" if $ENV{TEST_VERBOSE};
@@ -123,36 +96,15 @@ diag "update ticket to see if there are both article foo and bar"
 {
     $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
         'ticket update page' );
-    $m->content_contains( 'article foo:', 'got article foo in hotlist' );
-    $m->content_contains( 'article bar:', 'got article bar in hotlist' );
+    $m->content_contains( 'article foo:', 'got article foo in dropdown' );
+    $m->content_contains( 'article bar:', 'got article bar in dropdown' );
 
     $m->submit_form(
         form_number => 3,
-        fields      => { 'Articles_Content' => 'article' },
+        fields      => { 'IncludeArticleId' => '1' },
         button      => 'Go',
     );
     $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
-    $m->content_like( qr/article bar.*article bar/s, 'selected article bar' );
-
-    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
-        'ticket update page' );
-    $m->submit_form(
-        form_number => 3,
-        fields      => { 'Articles-Include-Article-Named' => 'article foo' },
-        button      => 'Go',
-    );
-    $m->content_like( qr/article foo.*article foo/s, 'selected article foo' );
-    $m->content_unlike( qr/article bar.*article bar/s, 'no article bar' );
-
-    $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket_id,
-        'ticket update page' );
-    $m->submit_form(
-        form_number => 3,
-        fields      => { 'Articles-Include-Article-Named' => 'article bar' },
-        button      => 'Go',
-    );
-    $m->content_like( qr/article bar.*article bar/s, 'selected article bar' );
-    $m->content_unlike( qr/article foo.*article foo/s, 'no article foo' );
 }
 
 
@@ -174,7 +126,7 @@ diag "remove both foo and bar" if $ENV{TEST_VERBOSE};
         fields      => { 'RemoveClass-' . $class{bar} => 0 },
         button      => 'UpdateObjs',
     );
-    $m->content_contains( 'Object deleted', 'remoked bar' );
+    $m->content_contains( 'Object deleted', 'removed bar' );
 }
 
 diag "update ticket to see if there are both article foo and bar"
@@ -215,3 +167,4 @@ diag "update ticket to see if there are both article foo and bar"
     $m->content_lacks( 'article bar', 'no article bar' );
 }
 
+done_testing();

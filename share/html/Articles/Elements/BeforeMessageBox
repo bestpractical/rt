@@ -52,43 +52,9 @@
 <table class="articles-select-article">
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
 <tr>
-<td><&|/l&>Search for Articles matching</&></td>
-<td><input size=20 name="<% $name_prefix %>Articles_Content" /></td>
-</tr>
-<tr>
 <td><&|/l&>Include Article:</&></td>
-<td><input size=20 name="<% $name_prefix %>Articles-Include-Article-Named" /></td>
+<td><& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &></td>
 <td><input type="submit" name="Go" value="Go" /></td>
-</tr>
-% }
-% if ($hotlist->Count) {
-<tr>
-<td><&|/l&>Select an Article to include</&></td>
-<td><select name="<% $name_prefix %>Articles-Include-Article-Named-Hotlist" onchange="this.form.submit()">
-<option value="" selected><&|/l&>-</&></option>
-% while (my $article = $hotlist->Next) {
-<option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary || ''%></option>
-% }
-</select>
-</td>
-<td><input type="submit" name="Go" value="Go" /></td>
-</tr>
-% }
-% my %dedupe_articles;
-% while (my $article = $articles_content->Next) {
-%   $dedupe_articles{$article->Id}++;
-<tr>
-<td>&nbsp;</td>
-<td><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></td>
-<td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->Id%>" value="Go" /></td>
-</tr>
-% }
-% while (my $article = $articles_basics->Next) {
-%   next if $dedupe_articles{$article->Id};
-<tr>
-<td>&nbsp;</td>
-<td><%$article->Name || loc('(no name)')%>: <%$article->Summary || ''%></td>
-<td><input type="submit" name="<% $name_prefix %>Articles-Include-Article-<%$article->Id%>" value="Go" /></td>
 </tr>
 % }
 % if ( @$topics ) {
@@ -114,7 +80,7 @@
 <&|/l, $included_topic->Name &>Select an Article from [_1]</&>
 </td>
 <td>
-<select name="<% $name_prefix %>Articles-Include-Article" onchange="this.form.submit()">
+<select name="IncludeArticleId" onchange="this.form.submit()">
 <option value="" selected>-</option>
 % while ( my $art = $topic_articles->Next ) {
 <option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
