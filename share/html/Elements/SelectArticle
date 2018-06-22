@@ -46,12 +46,12 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $autocomplete ) {
-<& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $Default, Name => $Name &>
+<& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $DefaultArticle, Name => $ArticleSelectName &>
 % } else {
-<select name="<% $Name %>">
+<select name="<% $ArticleSelectName %>">
 <option value="">-</option>
 % while (my $article = $articles->Next) {
-<option <% ( $article->Name eq $Default) ? qq[ selected="selected"] : '' |n %>
+<option <% ( $article->Name eq $DefaultArticle) ? qq[ selected="selected"] : '' |n %>
     value="<%$article->Id%>"
 ><% $article->Name %></option>
 % }
@@ -65,23 +65,24 @@ $articles->LimitAppliedClasses( Queue => $QueueObj );
 my $dropdown_limit = RT->Config->Get( 'DropdownMenuLimit' ) || 50;
 $m->callback( CallbackName => 'ModifyDropdownLimit', DropdownLimit => \$dropdown_limit );
 
-my $Default = '';
-
 my $autocomplete =  $articles->Count > $dropdown_limit ? 1 : 0;
 
-my $default_article = RT::Article->new($session{'CurrentUser'});
-
-if ( my $article_id = $QueueObj->DefaultValue('Article') ) {
-    my ($ret, $msg) = $default_article->Load( $article_id );
+if ( $DefaultArticle and $DefaultArticle =~ /^\d+$/ ){
+    # We got an id, look up the name
+    my $default_article = RT::Article->new($session{'CurrentUser'});
+    my ($ret, $msg) = $default_article->Load( $DefaultArticle );
     if ($ret) {
-         $Default = $default_article->Name;
-    } else{
-        RT::Logger->error($msg);
+         $DefaultArticle = $default_article->Name;
+    }
+    else {
+        RT::Logger->error("Unable to load article $DefaultArticle: $msg");
+        $DefaultArticle = '';
     }
 }
 </%INIT>
 
 <%ARGS>
 $QueueObj
-$Name => 'Article'
+$ArticleSelectName => 'Article'
+$DefaultArticle => ''
 </%ARGS>
