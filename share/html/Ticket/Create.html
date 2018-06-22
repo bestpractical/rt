@@ -240,9 +240,11 @@
 % }
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, IncludeDefaultArticle => 0 &>
+% } elsif ( $QuoteTransaction ) {
+<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction, IncludeDefaultArticle => 0 &>
 % } else {
-<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+<& /Elements/MessageBox, QueueObj => $QueueObj, IncludeDefaultArticle => 1 &>
 %}
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
 

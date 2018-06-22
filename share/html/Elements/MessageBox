@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <textarea autocomplete="off" class="messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">
-% $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
+% $m->comp('/Articles/Elements/IncludeArticle', %ARGS, ArticleId => $article_id) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature, DefaultRef => \$Default, MessageRef => $message );
 % if (RT->Config->Get("SignatureAboveQuote", $session{'CurrentUser'})) {
 <% $Default || '' %><% $signature %><% $message %></textarea>
@@ -101,6 +101,11 @@ if ( $IncludeSignature and $signature =~ /\S/ ) {
     $signature = '';
 }
 
+my $article_id;
+if ( $IncludeDefaultArticle && defined $QueueObj && $QueueObj->Id ) {
+    $article_id = $QueueObj->DefaultValue('Article') if $QueueObj->DefaultValue('Article');
+}
+
 # wrap="something" seems to really break IE + richtext
 my $wrap_type = $Type eq 'text/html' ? '' : 'wrap="soft"';
 
@@ -125,4 +130,6 @@ $IncludeArticle            => 1;
 $Type                      => RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
 $SuppressAttachmentWarning => 0
 $Placeholder               => ''
+$IncludeDefaultArticle            => 0  # Preload a default article based on queue settings
+$QueueObj                  => undef
 </%ARGS>
