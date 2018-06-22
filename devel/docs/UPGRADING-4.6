@@ -1,0 +1,17 @@
+=head1 UPGRADING FROM RT 4.4.0 and greater
+
+This documentation notes internals changes between the 4.4 and 4.6
+series that are primarily of interest to developers writing extensions
+or local customizations.  It is not an exhaustive list.
+
+=over
+
+=item *
+
+The default callback in C<Articles/Elements/IncludeArticle> provides a ticket
+object. However, the template itself does not need this ticket object, so it
+is no longer guaranteed to be loaded when it is passed.
+
+=back
+
+=cut
