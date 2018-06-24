@@ -45,47 +45,50 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
-% if ( $autocomplete ) {
-<& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $Default, Name => $Name &>
-% } else {
-<select name="<% $Name %>">
-<option value="">-</option>
-% while (my $article = $articles->Next) {
-<option <% ( $article->Name eq $Default) ? qq[ selected="selected"] : '' |n %>
-    value="<%$article->Id%>"
-><% $article->Name %></option>
-% }
-</select>
-% }
-
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( \@suggestions ) |n %>
+% $m->abort;
+<%ARGS>
+$term       => undef
+$max        => 10
+$op         => 'STARTSWITH'
+$right      => undef
+$return     => 'Name'
+$queue      => undef
+</%ARGS>
 <%INIT>
-my $articles = RT::Articles->new( $session{'CurrentUser'} );
-$articles->LimitAppliedClasses( Queue => $QueueObj );
+# Only allow certain return fields
+$return = 'Name'
+    unless $return =~ /^(?:id|Name)$/;
 
-my $dropdown_limit = RT->Config->Get( 'DropdownMenuLimit' ) || 50;
-$m->callback( CallbackName => 'ModifyDropdownLimit', DropdownLimit => \$dropdown_limit );
+$m->abort unless defined $return
+             and defined $term
+             and length $term;
 
-my $autocomplete =  $articles->Count > $dropdown_limit ? 1 : 0;
+# Sanity check the operator
+$op = 'STARTSWITH' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
 
-if ( $Default and $Default =~ /^\d+$/ ){
-    # We got an id, look up the name
-    my $default_article = RT::Article->new($session{'CurrentUser'});
-    my ($ret, $msg) = $default_article->Load( $Default );
+$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
 
-    if ($ret) {
-         $Default = $default_article->Name;
-    }
-    else {
-        RT::Logger->error("Unable to load article $Default: $msg");
-    }
+my $articles = RT::Articles->new( $session{CurrentUser} );
+if( $queue ) {
+    $articles->LimitAppliedClasses( Queue => $queue );
 }
 
-$Default //= '';
-</%INIT>
+$articles->RowsPerPage( $max );
+$articles->Limit(
+    FIELD           => 'Name',
+    OPERATOR        => $op,
+    VALUE           => $term,
+    ENTRYAGGREGATOR => 'OR',
+    CASESENSITIVE   => 0,
+);
 
-<%ARGS>
-$QueueObj
-$Name => 'Article'
-$Default => ''
-</%ARGS>
+my @suggestions;
+while (my $a = $articles->Next) {
+    next if $right and not $a->CurrentUserHasRight($right);
+    my $value = $a->$return;
+    push @suggestions, { label => $a->Name, value => $value };
+    $m->callback( CallbackName => "ModifySuggestion", suggestions => @suggestions, label => $a );
+}
+</%INIT>
