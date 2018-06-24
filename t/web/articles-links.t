@@ -29,7 +29,7 @@ $m->goto_ticket($ticket->id);
 $m->follow_link_ok({text => 'Reply'});
 
 $m->form_name('TicketUpdate');
-$m->field('Articles-Include-Article-Named' => $article->Name);
+$m->field('IncludeArticleId' => $article->Id);
 $m->submit;
 
 $m->content_contains('instance of ticket #17421', 'got the name of the article in the ticket');

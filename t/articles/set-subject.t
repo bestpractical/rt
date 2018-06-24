@@ -101,7 +101,7 @@ $m->get_ok( '/Ticket/Update.html?Action=Comment&id=' . $ticket->id,
 is($m->form_number(3)->find_input('UpdateSubject')->value,$ticket->Subject,'Ticket Subject Found');
 $m->submit_form(
     form_number => 3,
-    fields      => { 'Articles-Include-Article-Named' => $article->Name },
+    fields      => { 'IncludeArticleId' => $article->id },
 );
 is($m->form_number(3)->find_input('UpdateSubject')->value,$article->FirstCustomFieldValue("Subject-$$"),'Ticket Subject Clobbered');
 
