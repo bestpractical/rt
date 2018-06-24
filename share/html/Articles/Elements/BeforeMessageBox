@@ -116,15 +116,11 @@ my %uri;
 if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
     $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
 
-    foreach my $arg (keys %ARGS) {
-        next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
+    my $article = RT::Article->new($session{'CurrentUser'});
+    my ($ret, $msg) = $article->Load($ARGS{'IncludeArticleId'});
 
-        my $article = RT::Article->new($session{'CurrentUser'});
-        $article->LoadByInclude(
-            Field => substr($arg, length($name_prefix)),
-            Value => $ARGS{$arg},
-        );
-        if ($article->Id) {
+    if ($ret && $article->Id) {
+        unless ( $QueueObj && !$article->ClassObj->IsApplied(0) && !$article->ClassObj->IsApplied( $QueueObj->id ) ) {
             $uri{$article->URI}++;
         }
     }
