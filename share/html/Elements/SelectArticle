@@ -49,12 +49,13 @@
 % if ( $autocomplete ) {
 <& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $Default, Name => $Name &>
 % } else {
-<select name="<% $Name %>">
+<select name="<% $Name %>" <% $AutoSubmit ? 'onchange="this.form.submit()"' : '' |n%>>
 <option value="">-</option>
 % while (my $article = $articles->Next) {
 <option <% ( $article->Name eq $Default) ? qq[ selected="selected"] : '' |n %>
-    value="<%$article->Id%>"
-><% $article->Name %></option>
+    value="<%$article->Id%>">
+<%$article->Name || loc('(no name)')%><% $IncludeSummary ? ': ' . $article->Summary || '' : '' %>
+</option>
 % }
 </select>
 % }
@@ -86,6 +87,8 @@ $Default //= '';
 
 <%ARGS>
 $QueueObj
-$Name => 'Article'
-$Default => ''
+$Name           => 'IncludeArticleId'
+$Default        => ''
+$AutoSubmit     => 0
+$IncludeSummary => 1
 </%ARGS>

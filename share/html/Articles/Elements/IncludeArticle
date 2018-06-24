@@ -46,62 +46,39 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+# Nothing to do if we don't get an article id
+$IncludeArticleId //= $DECODED_ARGS->{'IncludeArticleId'};
+return unless $IncludeArticleId;
 
-my $parent_args = $m->caller_args(-1);
-my @articles;
+my $article = RT::Article->new($session{'CurrentUser'});
+my ($ret, $msg) = $article->Load($IncludeArticleId);
 
-my $name_prefix = '';
-$name_prefix = $ARGS{'Name'} .'-'
-    if $ARGS{'Name'}
-    && grep rindex($_, "$ARGS{'Name'}-Articles-", 0) == 0,
-        keys %$parent_args;
+if ( $ret && $article->Id ){
 
-my $Ticket = $ARGS{Ticket};
-if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
-    $Ticket = RT::Ticket->new($session{'CurrentUser'});
-    $Ticket->Load($parent_args->{id});
-    unless ( $Ticket->id ) {
-        $RT::Logger->error("Couldn't load ticket ". $parent_args->{id} )
-    }
-}
+    my $Ticket = $ARGS{Ticket};
+    my $parent_args = $m->caller_args(-1);
 
-foreach my $arg ( keys %$parent_args ) {
-    next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
-
-    my $Queue = RT::Queue->new($session{CurrentUser});
-    if ($Ticket && $Ticket->Id) {
-        $Queue = $Ticket->QueueObj;
-    }
-
-    my $article = RT::Article->new($session{'CurrentUser'});
-    $article->LoadByInclude(
-        Field => substr($arg, length($name_prefix)),
-        Value => $parent_args->{$arg},
-        Queue => $Queue->Id,
-    );
-    next unless $article && $article->id;
-    push (@articles, $article);
-}
-
-if ( !@articles && ( !$parent_args->{id} || $parent_args->{id} eq 'new' ) && $parent_args->{'Queue'} ) {
-    my $queue_id = $parent_args->{'Queue'};
-    my $QueueObj = RT::Queue->new($session{'CurrentUser'});
-    my ($ret, $msg) = $QueueObj->Load( $queue_id );
-    $RT::Logger->error($msg) unless ($ret);
-
-    if ( $QueueObj->id && $QueueObj->DefaultValue('Article') ) {
-        my $article = RT::Article->new($session{'CurrentUser'});
-        my ($ret, $msg) = $article->Load( $QueueObj->DefaultValue('Article') );
-        $RT::Logger->error($msg) unless ($ret);
-        if ($ret) {
-            push (@articles, $article);
+    if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
+        $Ticket = RT::Ticket->new($session{'CurrentUser'});
+        $Ticket->Load($parent_args->{id});
+        unless ( $Ticket->id ) {
+            $RT::Logger->error("Couldn't load ticket ".  $parent_args->{id} );
         }
     }
-}
 
-foreach my $article (@articles) {
+    my $queue_id;
+    $queue_id = $QueueObj->id if $QueueObj && $QueueObj->id;
+    $queue_id ||= $Ticket->Queue if $Ticket && $Ticket->Queue;
+    if (   $queue_id
+        && !$article->ClassObj->IsApplied(0)
+        && !$article->ClassObj->IsApplied($queue_id) )
+    {
+        RT->Logger->warning( "The Class of the Article #$IncludeArticleId is not applied to the Queue #$queue_id" );
+        return;
+    }
+
     my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
-        Article => $article, Ticket => $Ticket
+        Article => $article
     );
 
     $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article, ARGSRef => \%ARGS );
@@ -113,7 +90,12 @@ foreach my $article (@articles) {
         $formatted_article =~ s/\n/\n<br \/>/g;
     }
     $m->print($formatted_article);
-
 }
-return;
+else {
+    RT::Logger->error("Unable to load article $IncludeArticleId: $msg");
+}
 </%INIT>
+<%ARGS>
+$IncludeArticleId => undef
+$QueueObj => undef
+</%ARGS>
