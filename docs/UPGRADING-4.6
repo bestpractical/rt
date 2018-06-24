@@ -18,6 +18,12 @@ The variables which alter the set of HTML elements allowed in HTML
 scrubbing have moved; they have been renamed, and are now found under
 L<RT::Interface::Web::Scrubber>.
 
+=item *
+
+The articles interface on tickets has been simplified, now showing only
+a dropdown for selecting articles. This dropdown converts to an autocomplete
+box when the dropdown contains more than C<$DropdownMenuLimit> items.
+
 =back
 
 =cut
