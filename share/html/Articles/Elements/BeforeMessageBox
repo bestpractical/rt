@@ -112,11 +112,6 @@ if ( $ARGS{'MessageBoxName'} ) {
     $name_prefix = $ARGS{'MessageBoxName'} .'-';
 }
 
-# convert Articles-Include-Article => $id to Articles-Include-Article-$id
-if ( my $tmp = $ARGS{$name_prefix ."Articles-Include-Article"} ) {
-    $ARGS{$name_prefix ."Articles-Include-Article-$tmp"}++;
-}
-
 my %uri;
 if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
     $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
@@ -134,34 +129,6 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
         }
     }
 }
-
-use RT::Articles;
-
-my $articles_content =
-  RT::Articles->new( $session{'CurrentUser'} );
-my $articles_basics = RT::Articles->new( $session{'CurrentUser'} );
-if ( my $tmp = $ARGS{ $name_prefix ."Articles_Content" } ) {
-    $articles_content->LimitCustomField(
-        VALUE => $tmp, OPERATOR => 'LIKE'
-    );
-    $articles_content->LimitAppliedClasses( Queue => $QueueObj );
-
-    $articles_basics->Limit( SUBCLAUSE       => 'all',
-                             FIELD           => 'Name',
-                             OPERATOR        => 'LIKE',
-                             VALUE           => $tmp,
-                             ENTRYAGGREGATOR => "OR" );
-    $articles_basics->Limit( SUBCLAUSE       => 'all',
-                             FIELD           => 'Summary',
-                             OPERATOR        => 'LIKE',
-                             VALUE           => $tmp,
-                             ENTRYAGGREGATOR => "OR" );
-    $articles_basics->LimitAppliedClasses( Queue => $QueueObj );
-}
-
-my $hotlist = RT::Articles->new( $session{'CurrentUser'} );
-$hotlist->LimitHotlistClasses;
-$hotlist->LimitAppliedClasses( Queue => $QueueObj );
 
 my ( $topic_articles, $topics, $included_topic );
 $topic_articles = RT::Articles->new( $session{CurrentUser} );
