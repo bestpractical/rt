@@ -341,6 +341,9 @@ part. If $args{'Type'} is missing, it defaults to the value of
 C<$RT::Transaction::PreferredContentType>, if that's missing too, 
 defaults to textual.
 
+All the MIME attachments are excluded here, because it doesn't make much sense
+to use them as transaction content.
+
 =cut
 
 sub Content {
@@ -556,8 +559,10 @@ sub ContentObj {
     # displayable".  For now, this maintains backcompat
     my $all_parts = $self->Attachments;
     while ( my $part = $all_parts->Next ) {
-        next unless _IsDisplayableTextualContentType($part->ContentType)
-        && $part->Content;
+        next unless _IsDisplayableTextualContentType( $part->ContentType )
+          && !$part->Filename
+          && !$part->IsAttachmentContentDisposition
+          && $part->Content;
         return $part;
     }
 
@@ -571,6 +576,10 @@ sub _FindPreferredContentObj {
 
     # If we don't have any content, return undef now.
     return undef unless $Attachment;
+
+    # If it's a MIME attachment, return undef.
+    return undef if $Attachment->Filename;
+    return undef if $Attachment->IsAttachmentContentDisposition;
 
     # If it's a textual part, just return the body.
     if ( _IsDisplayableTextualContentType($Attachment->ContentType) ) {
