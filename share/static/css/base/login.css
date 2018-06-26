@@ -26,10 +26,9 @@ margin-right:auto;margin-left:auto;
 
 #login-box .input-row .label {
 
- float: left;
- width: 8em;
- text-align: right;
+ text-align: center;
  font-weight: bold;
+ left: 0;
 
 
 }
@@ -40,6 +39,7 @@ margin-right:auto;margin-left:auto;
 
 #login-box .button-row {
   margin-top: 0.5em;
+  margin-right: 4em;
 }
 
 #quick-personal {
@@ -68,4 +68,13 @@ margin-right:auto;margin-left:auto;
 
 #login-box div.login-help {
     text-align: center;
+}
+
+#login-box .titlebox form {
+    text-align: center;
+    width: 100%;
+}
+
+#login .input-row .input {
+  left: 0;
 }
