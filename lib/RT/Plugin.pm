@@ -92,7 +92,8 @@ Returns the extension version.
 
 sub Version {
     my $self = shift;
-    return $self->Name->VERSION;
+    no strict 'refs';
+    return ${$self->Name . '::VERSION'};
 }
 
 =head2 Path

@@ -7,17 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2016-07-20 22:51+0000\n"
+"POT-Creation-Date: 2017-07-26 21:00+0000\n"
 "PO-Revision-Date: 2015-11-09 10:07+0000\n"
 "Last-Translator: Shawn M Moore <sartak@gmail.com>\n"
 "Language-Team: Norwegian Nynorsk <nn@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-05-31 23:12+0000\n"
-"X-Generator: Launchpad (build 18391)\n"
+"X-Launchpad-Export-Date: 2018-05-02 18:16+0000\n"
+"X-Generator: Launchpad (build 18623)\n"
 
-#: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:62 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
+#: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
 msgid "#"
 msgstr ""
 
@@ -215,8 +215,8 @@ msgstr "%1 – søkjemodulen du vil bruka"
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2018', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2018', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996–%3 %4."
@@ -227,7 +227,7 @@ msgid "%1 Version"
 msgstr ""
 
 #. ($args{'Value'}, $cf->Name)
-#: lib/RT/Record.pm:2107
+#: lib/RT/Record.pm:2108
 msgid "%1 added as a value for %2"
 msgstr "«%1» lagt til som verdi for «%2»"
 
@@ -289,7 +289,7 @@ msgstr ""
 #. ($self->loc( $args{'Field'} ),                ( $old_val ? '"' . $old_val . '"' : $self->loc("(no value)") ),                '"' . $self->__Value( $args{'Field'}) . '"',)
 #. ($self->Field,            ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),            "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
-#: lib/RT/Record.pm:481 lib/RT/Ticket.pm:683 lib/RT/Transaction.pm:1197 lib/RT/Transaction.pm:1202 lib/RT/Transaction.pm:1216 lib/RT/Transaction.pm:1225 lib/RT/Transaction.pm:1265 lib/RT/Transaction.pm:1333 lib/RT/Transaction.pm:922
+#: lib/RT/Record.pm:481 lib/RT/Ticket.pm:684 lib/RT/Transaction.pm:1197 lib/RT/Transaction.pm:1202 lib/RT/Transaction.pm:1216 lib/RT/Transaction.pm:1225 lib/RT/Transaction.pm:1265 lib/RT/Transaction.pm:1333 lib/RT/Transaction.pm:922
 msgid "%1 changed from %2 to %3"
 msgstr "%1 endra frå %2 til %3"
 
@@ -367,7 +367,7 @@ msgstr ""
 #. ($name, $self->loc($args{Type}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:493 share/html/Ticket/Update.html:350 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:493 share/html/Ticket/Update.html:344 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 er ei adresse RT tek imot e-post på. Viss du la ho til som ein «%2», ville det oppstå ei e-postlykkje."
 
@@ -377,12 +377,12 @@ msgid "%1 is no longer %2 for this queue"
 msgstr ""
 
 #. ($principal->Object->Name,                         $group->Label)
-#: lib/RT/Ticket.pm:720
+#: lib/RT/Ticket.pm:721
 msgid "%1 is no longer %2 for this ticket"
 msgstr ""
 
 #. ($old_value, $cf->Name)
-#: lib/RT/Record.pm:2241
+#: lib/RT/Record.pm:2242
 msgid "%1 is no longer a value for custom field %2"
 msgstr "Fleksifeltet %2 har ikkje lenger verdien %1"
 
@@ -573,14 +573,14 @@ msgstr "%quant(%1,time,timar)"
 
 #. ($h, $value)
 #. (sprintf("%.2f",$minutes / 60), $minutes)
-#: lib/RT/Ticket.pm:1383 share/html/Ticket/Elements/ShowTime:51
+#: lib/RT/Ticket.pm:1405 share/html/Ticket/Elements/ShowTime:51
 msgid "%quant(%1,hour,hours) (%quant(%2,minute,minutes))"
 msgstr ""
 
 #. ($Transaction->TimeTaken)
 #. ($minutes)
 #. ($value)
-#: lib/RT/Date.pm:447 lib/RT/Ticket.pm:1380 share/html/Elements/ShowTransaction:137 share/html/Ticket/Elements/ShowTime:49
+#: lib/RT/Date.pm:447 lib/RT/Ticket.pm:1402 share/html/Elements/ShowTransaction:137 share/html/Ticket/Elements/ShowTime:49
 msgid "%quant(%1,minute,minutes)"
 msgstr "%1 minutt"
 
@@ -706,7 +706,7 @@ msgstr ""
 msgid "(no pubkey!)"
 msgstr "(manglar offentlegnøkkel)"
 
-#: lib/RT/CustomField.pm:2238 lib/RT/CustomField.pm:2239 lib/RT/Queue.pm:1180 lib/RT/Queue.pm:1185 lib/RT/Report/Tickets.pm:701 lib/RT/Report/Tickets.pm:870 lib/RT/Report/Tickets.pm:881 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1202 lib/RT/Transaction.pm:1264 lib/RT/Transaction.pm:1265 lib/RT/Transaction.pm:827 lib/RT/Transaction.pm:832 lib/RT/Transaction.pm:916 share/html/Admin/Elements/AddCustomFieldValue:69 share/html/Admin/Elements/EditCustomFieldValues:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:102 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/EditCustomFieldSelect:87 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:68 share/html/m/ticket/show:266
+#: lib/RT/CustomField.pm:2234 lib/RT/CustomField.pm:2235 lib/RT/Queue.pm:1180 lib/RT/Queue.pm:1185 lib/RT/Report/Tickets.pm:701 lib/RT/Report/Tickets.pm:870 lib/RT/Report/Tickets.pm:881 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1202 lib/RT/Transaction.pm:1264 lib/RT/Transaction.pm:1265 lib/RT/Transaction.pm:827 lib/RT/Transaction.pm:832 lib/RT/Transaction.pm:916 share/html/Admin/Elements/AddCustomFieldValue:69 share/html/Admin/Elements/EditCustomFieldValues:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:102 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/EditCustomFieldSelect:87 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:68 share/html/m/ticket/show:266
 msgid "(no value)"
 msgstr "(manglar verdi)"
 
@@ -778,14 +778,6 @@ msgstr ""
 msgid "0s"
 msgstr ""
 
-#: share/html/Elements/EmailInput:86
-msgid "<% $EntryHint %>"
-msgstr ""
-
-#: share/html/Dashboards/Subscription.html:101
-msgid "<% $day %>"
-msgstr ""
-
 #: lib/RT/Template.pm:288 lib/RT/Template.pm:740
 msgid "A Template with that name already exists"
 msgstr ""
@@ -853,8 +845,12 @@ msgstr "Handling er eit obligatorisk argument"
 msgid "Action prepared..."
 msgstr "Handling førebudd …"
 
-#: share/html/Admin/Global/Actions.html:53 share/html/Elements/Tabs:1082 share/html/Elements/Tabs:1241 share/html/Elements/Tabs:143 share/html/Elements/Tabs:761
+#: share/html/Admin/Global/Actions.html:53 share/html/Elements/Tabs:1086 share/html/Elements/Tabs:1245 share/html/Elements/Tabs:143 share/html/Elements/Tabs:761
 msgid "Actions"
+msgstr ""
+
+#: share/html/Elements/SelectStatus:53
+msgid "Active"
 msgstr ""
 
 #: share/html/Ticket/Elements/ShowRequestor:159 share/html/User/Elements/Portlets/ActiveTickets:54
@@ -897,7 +893,7 @@ msgstr "Legg til kolonnar"
 msgid "Add Criteria"
 msgstr "Legg til søkjekriterium"
 
-#: share/html/Ticket/Elements/AddAttachments:161 share/html/m/ticket/create:324 share/html/m/ticket/reply:137
+#: share/html/Ticket/Elements/AddAttachments:165 share/html/m/ticket/create:324 share/html/m/ticket/reply:137
 msgid "Add More Files"
 msgstr "Legg til fleire filer"
 
@@ -984,7 +980,7 @@ msgid "Added %1 as %2 for this queue"
 msgstr ""
 
 #. ($principal->Object->Name, $group->Label)
-#: lib/RT/Ticket.pm:687
+#: lib/RT/Ticket.pm:688
 msgid "Added %1 as %2 for this ticket"
 msgstr ""
 
@@ -1075,7 +1071,7 @@ msgstr "Administrering / globalt oppsett"
 msgid "AdminCCGroup"
 msgstr "AdminKopimottakarGruppe"
 
-#: lib/RT/Report/Tickets.pm:74 lib/RT/Ticket.pm:104 lib/RT/Tickets.pm:148 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowPeople:83 share/html/m/ticket/show:302
+#: lib/RT/Report/Tickets.pm:74 lib/RT/Ticket.pm:104 lib/RT/Tickets.pm:148 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowPeople:84 share/html/m/ticket/show:302
 msgid "AdminCc"
 msgstr "Admin-kopimottakar"
 
@@ -1087,7 +1083,7 @@ msgstr "AdminKopimottakarar"
 msgid "Administrative password"
 msgstr "Administratorpassord"
 
-#: share/html/Elements/Tabs:970
+#: share/html/Elements/Tabs:974
 msgid "Advanced"
 msgstr "Avansert"
 
@@ -1131,7 +1127,7 @@ msgstr ""
 msgid "All Dashboards"
 msgstr ""
 
-#: share/html/Admin/Queues/index.html:111
+#: share/html/Admin/Queues/index.html:112
 msgid "All Queues"
 msgstr "Alle køar"
 
@@ -1167,7 +1163,7 @@ msgstr ""
 msgid "All topics"
 msgstr ""
 
-#: etc/RT_Config.pm:3387
+#: etc/RT_Config.pm:3440
 msgid "Allocate"
 msgstr ""
 
@@ -1361,7 +1357,7 @@ msgid "Asset #"
 msgstr ""
 
 #. ($object->id)
-#: lib/RT/URI/asset.pm:205
+#: lib/RT/URI/asset.pm:215
 msgid "Asset #%1"
 msgstr ""
 
@@ -1373,7 +1369,7 @@ msgstr ""
 #. ($asset->id, $_)
 #. ($asset->id, $asset->Name)
 #. ($object->id, $object->Name)
-#: lib/RT/URI/asset.pm:203 share/html/Asset/Display.html:48 share/html/Asset/Search/Bulk.html:220 share/html/SelfService/Asset/Display.html:48
+#: lib/RT/URI/asset.pm:213 share/html/Asset/Display.html:48 share/html/Asset/Search/Bulk.html:220 share/html/SelfService/Asset/Display.html:48
 msgid "Asset #%1: %2"
 msgstr ""
 
@@ -1386,7 +1382,7 @@ msgstr ""
 msgid "Asset Create txn failed: %1"
 msgstr ""
 
-#: share/html/Elements/Tabs:1155
+#: share/html/Elements/Tabs:1159
 msgid "Asset Custom Fields"
 msgstr ""
 
@@ -1395,7 +1391,7 @@ msgstr ""
 msgid "Asset create failed: %1"
 msgstr ""
 
-#: share/html/Asset/Search/Bulk.html:48 share/html/Asset/Search/index.html:59 share/html/Asset/index.html:52 share/html/Elements/Tabs:1206 share/html/Elements/Tabs:194 share/html/Elements/Tabs:226 share/html/Elements/Tabs:628 share/html/Elements/Tabs:661 share/html/Ticket/Elements/ShowAssets:108 share/html/Ticket/Elements/ShowAssetsOnCreate:100
+#: share/html/Asset/Search/Bulk.html:48 share/html/Asset/Search/index.html:59 share/html/Asset/index.html:52 share/html/Elements/Tabs:1210 share/html/Elements/Tabs:194 share/html/Elements/Tabs:226 share/html/Elements/Tabs:628 share/html/Elements/Tabs:661 share/html/Ticket/Elements/ShowAssets:108 share/html/Ticket/Elements/ShowAssetsOnCreate:100
 msgid "Assets"
 msgstr ""
 
@@ -1535,7 +1531,7 @@ msgid "Bad privacy for attribute %1"
 msgstr "Ugyldig offentlegstatus for attributtet %1"
 
 # Dette *er* rett / ei god omsetting for dette omgrepet er i brukargrensesnittet.
-#: share/html/Admin/Actions/Create.html:54 share/html/Admin/Actions/Display.html:51 share/html/Admin/Actions/Modify.html:55 share/html/Admin/Assets/Catalogs/Create.html:55 share/html/Admin/Assets/Catalogs/Modify.html:55 share/html/Admin/Conditions/Create.html:54 share/html/Admin/Conditions/Display.html:51 share/html/Admin/Conditions/Modify.html:55 share/html/Admin/Groups/Modify.html:66 share/html/Admin/Queues/DefaultValues.html:56 share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Asset/Create.html:183 share/html/Asset/Create.html:70 share/html/Asset/Elements/AssetSearchBasics:48 share/html/Asset/Elements/ShowSummary:53 share/html/Asset/Modify.html:58 share/html/Asset/Search/Bulk.html:82 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:1066 share/html/Elements/Tabs:1152 share/html/Elements/Tabs:339 share/html/Elements/Tabs:374 share/html/Elements/Tabs:399 share/html/Elements/Tabs:417 share/html/Elements/Tabs:435 share/html/Elements/Tabs:470 share/html/Elements/Tabs:528 share/html/Elements/Tabs:744 share/html/Elements/Tabs:786 share/html/Ticket/Create.html:515 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
+#: share/html/Admin/Actions/Create.html:54 share/html/Admin/Actions/Display.html:51 share/html/Admin/Actions/Modify.html:55 share/html/Admin/Assets/Catalogs/Create.html:55 share/html/Admin/Assets/Catalogs/Modify.html:55 share/html/Admin/Conditions/Create.html:54 share/html/Admin/Conditions/Display.html:51 share/html/Admin/Conditions/Modify.html:55 share/html/Admin/Groups/Modify.html:66 share/html/Admin/Queues/DefaultValues.html:56 share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Asset/Create.html:183 share/html/Asset/Create.html:70 share/html/Asset/Elements/AssetSearchBasics:48 share/html/Asset/Elements/ShowSummary:53 share/html/Asset/Modify.html:58 share/html/Asset/Search/Bulk.html:82 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:1070 share/html/Elements/Tabs:1156 share/html/Elements/Tabs:339 share/html/Elements/Tabs:374 share/html/Elements/Tabs:399 share/html/Elements/Tabs:417 share/html/Elements/Tabs:435 share/html/Elements/Tabs:470 share/html/Elements/Tabs:528 share/html/Elements/Tabs:744 share/html/Elements/Tabs:786 share/html/Ticket/Create.html:515 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Detaljar"
 
@@ -1600,7 +1596,7 @@ msgstr ""
 msgid "Browse the SQL queries made in this process"
 msgstr ""
 
-#: share/html/Elements/Tabs:1123 share/html/Elements/Tabs:976
+#: share/html/Elements/Tabs:1127 share/html/Elements/Tabs:980
 msgid "Bulk Update"
 msgstr "Masseoppdater"
 
@@ -1631,7 +1627,7 @@ msgstr ""
 msgid "Can not load saved search \"%1\""
 msgstr "Klarte ikkje henta det lagra søket «%1»"
 
-#: lib/RT/User.pm:1681
+#: lib/RT/User.pm:1701
 msgid "Can not modify system users"
 msgstr "Kan ikkje endra systembrukarar"
 
@@ -1645,7 +1641,7 @@ msgid "Can't change default value of %1 from %2 to %3: %4"
 msgstr ""
 
 #. ($old_values, $new_values, $msg)
-#: lib/RT/CustomField.pm:2245
+#: lib/RT/CustomField.pm:2241
 msgid "Can't change default values from %1 to %2: %3"
 msgstr ""
 
@@ -1653,7 +1649,7 @@ msgstr ""
 msgid "Can't find a saved search to work with"
 msgstr "Fann ikkje eit lagra søk å arbeida med"
 
-#: lib/RT/Ticket.pm:3145
+#: lib/RT/Ticket.pm:3172
 msgid "Can't forward: no valid email addresses specified"
 msgstr ""
 
@@ -1665,12 +1661,12 @@ msgstr "Kan ikkje kopla ein sak til seg sjølv"
 msgid "Can't link to a deleted ticket"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1878
+#: lib/RT/Ticket.pm:1900
 msgid "Can't merge a ticket into itself"
 msgstr ""
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:3959
+#: lib/RT/Interface/Web.pm:3964
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr ""
 
@@ -1752,7 +1748,7 @@ msgstr ""
 msgid "Catalog create failed: %1"
 msgstr ""
 
-#: share/html/Elements/Tabs:1142 share/html/Elements/Tabs:228
+#: share/html/Elements/Tabs:1146 share/html/Elements/Tabs:228
 msgid "Catalogs"
 msgstr ""
 
@@ -1768,7 +1764,7 @@ msgstr "Kategoriar baserte på"
 msgid "Category"
 msgstr "Kategori"
 
-#: lib/RT/Report/Tickets.pm:73 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:147 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:158 share/html/Ticket/Elements/EditPeople:102 share/html/Ticket/Elements/ShowPeople:79 share/html/Ticket/Forward.html:71 share/html/m/ticket/create:275 share/html/m/ticket/show:298
+#: lib/RT/Report/Tickets.pm:73 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:147 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:158 share/html/Ticket/Elements/EditPeople:102 share/html/Ticket/Elements/ShowPeople:80 share/html/Ticket/Forward.html:71 share/html/m/ticket/create:275 share/html/m/ticket/show:298
 msgid "Cc"
 msgstr "Kopimottakar"
 
@@ -1796,7 +1792,7 @@ msgstr "Byt passord"
 msgid "Changing queue is not implemented"
 msgstr ""
 
-#: share/html/Elements/Tabs:977
+#: share/html/Elements/Tabs:981
 msgid "Chart"
 msgstr ""
 
@@ -1837,7 +1833,7 @@ msgstr "Vel databasemotor"
 msgid "Choose from Topics for %1"
 msgstr ""
 
-#: lib/RT/User.pm:100 share/html/Admin/Users/Modify.html:151 share/html/Elements/RT__User/ColumnMap:111 share/html/Prefs/AboutMe.html:146
+#: lib/RT/User.pm:101 share/html/Admin/Users/Modify.html:151 share/html/Elements/RT__User/ColumnMap:111 share/html/Prefs/AboutMe.html:146
 msgid "City"
 msgstr "Poststad"
 
@@ -1907,7 +1903,7 @@ msgstr ""
 msgid "Closed"
 msgstr "Lukka"
 
-#: share/html/Elements/Tabs:1204 share/html/SelfService/Closed.html:48
+#: share/html/Elements/Tabs:1208 share/html/SelfService/Closed.html:48
 msgid "Closed tickets"
 msgstr "Lukka saker"
 
@@ -1955,7 +1951,7 @@ msgstr "Kommentar (vert ikkje send til innmeldaren)"
 msgid "Comments about this user"
 msgstr "Kommentarar om brukaren"
 
-#: lib/RT/Ticket.pm:1709 lib/RT/Transaction.pm:991
+#: lib/RT/Ticket.pm:1731 lib/RT/Transaction.pm:991
 msgid "Comments added"
 msgstr "La til kommentarar"
 
@@ -2046,11 +2042,11 @@ msgstr ""
 msgid "Content insert failed. See error log for details."
 msgstr ""
 
-#: lib/RT/CustomField.pm:1882
+#: lib/RT/CustomField.pm:1878
 msgid "Content is not a valid IP address"
 msgstr ""
 
-#: lib/RT/CustomField.pm:1898
+#: lib/RT/CustomField.pm:1894
 msgid "Content is not a valid IP address range"
 msgstr ""
 
@@ -2083,7 +2079,7 @@ msgstr "Svaradresse"
 msgid "Correspondence"
 msgstr "Svar"
 
-#: lib/RT/Ticket.pm:1711 lib/RT/Transaction.pm:987
+#: lib/RT/Ticket.pm:1733 lib/RT/Transaction.pm:987
 msgid "Correspondence added"
 msgstr "Svar lagt til"
 
@@ -2103,7 +2099,7 @@ msgid "Could not add new custom field value: %1"
 msgstr "Klarte ikkje leggja til ny fleksifeltverdi: %1"
 
 #. ($msg)
-#: lib/RT/Ticket.pm:2131
+#: lib/RT/Ticket.pm:2158
 msgid "Could not change owner: %1"
 msgstr "Klarte ikkje endra eigar: %1"
 
@@ -2125,7 +2121,7 @@ msgstr ""
 msgid "Could not create ticket. Queue not set"
 msgstr "Klarte ikkje oppretta sak. Kø ikkje oppgjeven."
 
-#: lib/RT/User.pm:182 lib/RT/User.pm:195 lib/RT/User.pm:204 lib/RT/User.pm:213 lib/RT/User.pm:222 lib/RT/User.pm:236 lib/RT/User.pm:246 lib/RT/User.pm:450
+#: lib/RT/User.pm:183 lib/RT/User.pm:196 lib/RT/User.pm:205 lib/RT/User.pm:214 lib/RT/User.pm:223 lib/RT/User.pm:237 lib/RT/User.pm:247 lib/RT/User.pm:451
 msgid "Could not create user"
 msgstr "Klarte ikkje oppretta brukar"
 
@@ -2196,7 +2192,7 @@ msgstr ""
 msgid "Could not remove %1 as a %2"
 msgstr ""
 
-#: lib/RT/User.pm:135
+#: lib/RT/User.pm:136
 msgid "Could not set user info"
 msgstr "Klarte ikkje lagra brukarinfo"
 
@@ -2234,12 +2230,12 @@ msgstr ""
 
 #. ($Msg)
 #. ($msg)
-#: lib/RT/Record.pm:2104 lib/RT/Record.pm:2223
+#: lib/RT/Record.pm:2105 lib/RT/Record.pm:2224
 msgid "Couldn't create a transaction: %1"
 msgstr "Klarte ikkje oppretta transaksjon: %1"
 
 #. ($msg)
-#: lib/RT/CustomField.pm:1811
+#: lib/RT/CustomField.pm:1807
 msgid "Couldn't create record: %1"
 msgstr ""
 
@@ -2252,9 +2248,14 @@ msgid "Couldn't create role groups for catalog"
 msgstr ""
 
 #. ($id, $msg)
-#: share/html/Dashboards/Modify.html:154
+#: share/html/Dashboards/Modify.html:157
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "Klarte ikkje fjerna utforminga %1: %2"
+
+#. ($id)
+#: share/html/Dashboards/Modify.html:153
+msgid "Couldn't delete dashboard %1: Permission Denied"
+msgstr ""
 
 #: lib/RT/Record.pm:1012
 msgid "Couldn't find row"
@@ -2278,12 +2279,13 @@ msgid "Couldn't get %1 keys information"
 msgstr ""
 
 #. ($id)
-#: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65 share/html/Admin/CustomFields/UserRights.html:66
+#: share/html/Admin/Articles/Classes/GroupRights.html:66 share/html/Admin/Articles/Classes/UserRights.html:65
 msgid "Couldn't load Class %1"
 msgstr "Klarte ikkje lasta klassen %1"
 
 #. ($cf_id)
-#: lib/RT/CustomFieldValue.pm:119 lib/RT/CustomFieldValue.pm:86
+#. ($id)
+#: lib/RT/CustomFieldValue.pm:119 lib/RT/CustomFieldValue.pm:86 share/html/Admin/CustomFields/UserRights.html:66
 msgid "Couldn't load Custom Field #%1"
 msgstr "Klarte ikkje lasta fleksifelt %1"
 
@@ -2318,7 +2320,7 @@ msgid "Couldn't load copy of %1 #%2"
 msgstr ""
 
 #. ($self->Id)
-#: lib/RT/Ticket.pm:1137
+#: lib/RT/Ticket.pm:1142
 msgid "Couldn't load copy of ticket #%1."
 msgstr "Klarte ikkje lasta kopi av sak %1"
 
@@ -2402,7 +2404,7 @@ msgstr "Klarte ikkje lasta utløysar %1"
 msgid "Couldn't load template #%1"
 msgstr "Klarte ikkje lasta mal %1"
 
-#: lib/RT/Interface/Web.pm:2700
+#: lib/RT/Interface/Web.pm:2705
 msgid "Couldn't load the specified principal"
 msgstr ""
 
@@ -2485,23 +2487,23 @@ msgstr "Klarte ikkje gjera målet «%1» om til ei adresse"
 msgid "Couldn't set %1 watcher: %2"
 msgstr "Klarte ikkje registrera %1-overvakar: %2"
 
-#: lib/RT/User.pm:1955
+#: lib/RT/User.pm:1975
 msgid "Couldn't set private key"
 msgstr "Klarte ikkje registrera privatnøkkel"
 
-#: lib/RT/User.pm:1939
+#: lib/RT/User.pm:1959
 msgid "Couldn't unset private key"
 msgstr "Klarte ikkje fjerna privatnøkkel"
 
-#: lib/RT/User.pm:101 share/html/Admin/Users/Modify.html:168 share/html/Elements/RT__User/ColumnMap:126 share/html/Prefs/AboutMe.html:158
+#: lib/RT/User.pm:102 share/html/Admin/Users/Modify.html:168 share/html/Elements/RT__User/ColumnMap:126 share/html/Prefs/AboutMe.html:158
 msgid "Country"
 msgstr "Land"
 
-#: share/html/Admin/Actions/Create.html:61 share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/Conditions/Create.html:61 share/html/Admin/CustomFields/Modify.html:198 share/html/Admin/CustomRoles/Modify.html:98 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:100 share/html/Admin/Groups/Modify.html:97 share/html/Admin/Queues/Modify.html:162 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:229 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:78 share/html/Elements/ShowLinks:54 share/html/Elements/ShowLinks:72 share/html/Elements/Tabs:107 share/html/Elements/Tabs:1145 share/html/Elements/Tabs:117 share/html/Elements/Tabs:132 share/html/Elements/Tabs:140 share/html/Elements/Tabs:148 share/html/Elements/Tabs:156 share/html/Elements/Tabs:207 share/html/Elements/Tabs:222 share/html/Elements/Tabs:233 share/html/Elements/Tabs:242 share/html/Elements/Tabs:325 share/html/Elements/Tabs:344 share/html/Elements/Tabs:348 share/html/Elements/Tabs:468 share/html/Elements/Tabs:475 share/html/Elements/Tabs:482 share/html/Elements/Tabs:485 share/html/Elements/Tabs:488 share/html/Elements/Tabs:496 share/html/Elements/Tabs:502 share/html/Elements/Tabs:508 share/html/Elements/Tabs:514 share/html/Elements/Tabs:526 share/html/Elements/Tabs:537 share/html/Elements/Tabs:656 share/html/Elements/Tabs:662 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:256 share/html/Ticket/Create.html:355 share/html/User/Elements/Portlets/CreateAsset:57 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:405
+#: share/html/Admin/Actions/Create.html:61 share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/Conditions/Create.html:61 share/html/Admin/CustomFields/Modify.html:198 share/html/Admin/CustomRoles/Modify.html:98 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:100 share/html/Admin/Groups/Modify.html:97 share/html/Admin/Queues/Modify.html:162 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:229 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:78 share/html/Elements/ShowLinks:54 share/html/Elements/ShowLinks:72 share/html/Elements/Tabs:107 share/html/Elements/Tabs:1149 share/html/Elements/Tabs:117 share/html/Elements/Tabs:132 share/html/Elements/Tabs:140 share/html/Elements/Tabs:148 share/html/Elements/Tabs:156 share/html/Elements/Tabs:207 share/html/Elements/Tabs:222 share/html/Elements/Tabs:233 share/html/Elements/Tabs:242 share/html/Elements/Tabs:325 share/html/Elements/Tabs:344 share/html/Elements/Tabs:348 share/html/Elements/Tabs:468 share/html/Elements/Tabs:475 share/html/Elements/Tabs:482 share/html/Elements/Tabs:485 share/html/Elements/Tabs:488 share/html/Elements/Tabs:496 share/html/Elements/Tabs:502 share/html/Elements/Tabs:508 share/html/Elements/Tabs:514 share/html/Elements/Tabs:526 share/html/Elements/Tabs:537 share/html/Elements/Tabs:656 share/html/Elements/Tabs:662 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:256 share/html/Ticket/Create.html:355 share/html/User/Elements/Portlets/CreateAsset:57 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:405
 msgid "Create"
 msgstr "Ny"
 
-#: share/html/Elements/Tabs:1133
+#: share/html/Elements/Tabs:1137
 msgid "Create New"
 msgstr ""
 
@@ -2639,7 +2641,7 @@ msgstr ""
 msgid "Create group dashboards"
 msgstr ""
 
-#: share/html/Elements/Tabs:1083 share/html/Elements/Tabs:1242
+#: share/html/Elements/Tabs:1087 share/html/Elements/Tabs:1246
 msgid "Create linked ticket"
 msgstr ""
 
@@ -2709,11 +2711,11 @@ msgstr ""
 msgid "Create, modify, and disable catalogs"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:139 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Display.html:66 share/html/Articles/Article/Elements/EditBasics:74 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Asset/Elements/EditDates:50 share/html/Asset/Elements/ShowDates:50 share/html/Elements/ColumnMap:69 share/html/Elements/ColumnMap:74 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:357
+#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:139 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Display.html:66 share/html/Articles/Article/Elements/EditBasics:74 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Asset/Elements/EditDates:50 share/html/Asset/Elements/ShowDates:50 share/html/Elements/ColumnMap:68 share/html/Elements/ColumnMap:73 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:357
 msgid "Created"
 msgstr "Oppretta"
 
-#: share/html/Elements/ColumnMap:79
+#: share/html/Elements/ColumnMap:78
 msgid "Created By"
 msgstr "Oppretta av"
 
@@ -2768,7 +2770,7 @@ msgstr "Gjeldande koplingar"
 msgid "Current Recipients"
 msgstr ""
 
-#: share/html/Elements/Tabs:961
+#: share/html/Elements/Tabs:965
 msgid "Current Search"
 msgstr ""
 
@@ -2853,20 +2855,20 @@ msgid "Custom field %1 has no value."
 msgstr "Fleksifeltet %1 har ingen verdi."
 
 #. ($args{'Field'})
-#: lib/RT/Record.pm:1944 lib/RT/Record.pm:2204
+#: lib/RT/Record.pm:1944 lib/RT/Record.pm:2205
 msgid "Custom field %1 not found"
 msgstr "Fann ikkje fleksifeltet %1"
 
 #. ($args{'Content'}, $self->Name)
-#: lib/RT/CustomField.pm:1979
+#: lib/RT/CustomField.pm:1975
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Fann ikkje feltverdien %1 for fleksifeltet %2"
 
-#: lib/RT/CustomField.pm:1991 lib/RT/CustomField.pm:701
+#: lib/RT/CustomField.pm:1987 lib/RT/CustomField.pm:701
 msgid "Custom field value could not be deleted"
 msgstr "Klarte ikkje sletta feltverdien til fleksifeltet"
 
-#: lib/RT/CustomField.pm:1993 lib/RT/CustomField.pm:703
+#: lib/RT/CustomField.pm:1989 lib/RT/CustomField.pm:703
 msgid "Custom field value deleted"
 msgstr "Feltverdi til fleksifelt sletta"
 
@@ -2940,7 +2942,7 @@ msgstr "DBA-brukarnamn"
 msgid "Daily"
 msgstr ""
 
-#: lib/RT/Config.pm:598
+#: lib/RT/Config.pm:629
 msgid "Daily digest"
 msgstr "Dagleg samandrag"
 
@@ -2972,7 +2974,7 @@ msgstr "Klarte ikkje oppdatera utforminga: %1"
 msgid "Dashboard updated"
 msgstr "Utforming oppdatert"
 
-#: etc/RT_Config.pm:1296 etc/initialdata:917 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
+#: etc/RT_Config.pm:1313 etc/initialdata:917 share/html/Dashboards/index.html:48 share/html/Elements/Dashboards:49
 msgid "Dashboards"
 msgstr "Utformingar"
 
@@ -3013,11 +3015,11 @@ msgstr "Databasebrukarnamn for RT"
 msgid "Date"
 msgstr ""
 
-#: lib/RT/Config.pm:547
+#: lib/RT/Config.pm:578
 msgid "Date format"
 msgstr "Datoformat"
 
-#: share/html/Admin/Queues/DefaultValues.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Asset/Elements/ShowSummary:55 share/html/Asset/ModifyDates.html:57 share/html/Asset/Search/Bulk.html:149 share/html/Elements/Tabs:1069 share/html/Elements/Tabs:795 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:298 share/html/Ticket/Elements/ShowSummary:87 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:374 share/html/m/ticket/show:351
+#: share/html/Admin/Queues/DefaultValues.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Asset/Elements/ShowSummary:55 share/html/Asset/ModifyDates.html:57 share/html/Asset/Search/Bulk.html:149 share/html/Elements/Tabs:1073 share/html/Elements/Tabs:795 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:298 share/html/Ticket/Elements/ShowSummary:87 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:374 share/html/m/ticket/show:351
 msgid "Dates"
 msgstr "Datoar"
 
@@ -3054,7 +3056,7 @@ msgstr ""
 msgid "Default %numerate(%1,value,values)"
 msgstr ""
 
-#: share/html/Elements/Tabs:1160 share/html/Elements/Tabs:360
+#: share/html/Elements/Tabs:1164 share/html/Elements/Tabs:360
 msgid "Default Values"
 msgstr ""
 
@@ -3068,7 +3070,11 @@ msgstr ""
 msgid "Default Values for queue %1"
 msgstr ""
 
-#: lib/RT/Config.pm:157
+#: share/html/Prefs/SearchOptions.html:92
+msgid "Default preferences restored."
+msgstr ""
+
+#: lib/RT/Config.pm:167
 msgid "Default queue"
 msgstr "Standardkø"
 
@@ -3076,7 +3082,7 @@ msgstr "Standardkø"
 msgid "Default reminder template"
 msgstr ""
 
-#: lib/RT/Config.pm:510
+#: lib/RT/Config.pm:541
 msgid "Default to squelching all outgoing email notifications (from web interface) on ticket update"
 msgstr ""
 
@@ -3086,7 +3092,7 @@ msgid "Default value of %1 changed from %2 to %3"
 msgstr ""
 
 #. ($old_values, $new_values)
-#: lib/RT/CustomField.pm:2242
+#: lib/RT/CustomField.pm:2238
 msgid "Default values changed from %1 to %2"
 msgstr ""
 
@@ -3111,7 +3117,7 @@ msgstr "Standardformat"
 msgid "DefaultStarts"
 msgstr ""
 
-#: etc/RT_Config.pm:3344 etc/RT_Config.pm:3433 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:148 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Ticket/Elements/AddAttachments:54 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3397 etc/RT_Config.pm:3486 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:148 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Ticket/Elements/AddAttachments:54 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Slett"
 
@@ -3128,7 +3134,7 @@ msgstr "Feil ved sletting: %1"
 msgid "Delete group dashboards"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2520 lib/RT/Ticket.pm:2520
+#: lib/RT/Ticket.pm:2547 lib/RT/Ticket.pm:2547
 msgid "Delete operation is disabled by lifecycle configuration"
 msgstr ""
 
@@ -3178,7 +3184,7 @@ msgstr ""
 msgid "Deleting this object would break referential integrity"
 msgstr "Sletting av dette objektet vil øydeleggja referanseintegriteten"
 
-#: lib/RT/User.pm:461
+#: lib/RT/User.pm:462
 msgid "Deleting this object would violate referential integrity"
 msgstr "Sletting av dette objektet vil øydeleggja referanseintegriteten"
 
@@ -3270,7 +3276,7 @@ msgstr "Deaktivert"
 msgid "Disabled?"
 msgstr ""
 
-#: share/html/Elements/Tabs:1026 share/html/Elements/Tabs:1046 share/html/Elements/Tabs:1064 share/html/Elements/Tabs:1237 share/html/Elements/Tabs:781 share/html/Search/Elements/EditFormat:99
+#: share/html/Elements/Tabs:1030 share/html/Elements/Tabs:1050 share/html/Elements/Tabs:1068 share/html/Elements/Tabs:1241 share/html/Elements/Tabs:781 share/html/Search/Elements/EditFormat:99
 msgid "Display"
 msgstr "Vis"
 
@@ -3292,7 +3298,7 @@ msgstr "Vis kolonnar"
 msgid "Display action #%1"
 msgstr ""
 
-#: lib/RT/Config.pm:476
+#: lib/RT/Config.pm:507
 msgid "Display all plain-text attachments in a monospace font with formatting preserved, but wrapping as needed."
 msgstr ""
 
@@ -3301,15 +3307,15 @@ msgstr ""
 msgid "Display condition #%1"
 msgstr ""
 
-#: lib/RT/Config.pm:419
+#: lib/RT/Config.pm:450
 msgid "Display messages in rich text if available"
 msgstr ""
 
-#: lib/RT/Config.pm:475
+#: lib/RT/Config.pm:506
 msgid "Display plain-text attachments in fixed-width font"
 msgstr ""
 
-#: lib/RT/Config.pm:519
+#: lib/RT/Config.pm:550
 msgid "Display ticket after \"Quick Create\""
 msgstr ""
 
@@ -3330,11 +3336,11 @@ msgstr "Domenenamn"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Ta ikkje med «http://», berre vertsnamnet. Eksempel: rt.eksempel.no"
 
-#: lib/RT/Config.pm:393
+#: lib/RT/Config.pm:418
 msgid "Don't refresh home page."
 msgstr "Ikkje oppdater heimesida"
 
-#: lib/RT/Config.pm:363
+#: lib/RT/Config.pm:382
 msgid "Don't refresh search results."
 msgstr "Ikkje oppdater søkeresultata"
 
@@ -3350,7 +3356,7 @@ msgstr "Ikkje stol på denne nøkkelen"
 msgid "Download"
 msgstr "Last ned"
 
-#: share/html/Elements/Tabs:1128
+#: share/html/Elements/Tabs:1132
 msgid "Download Spreadsheet"
 msgstr ""
 
@@ -3358,7 +3364,7 @@ msgstr ""
 msgid "Download dumpfile"
 msgstr "Last ned dumpfil"
 
-#: share/html/Ticket/Elements/AddAttachments:71
+#: share/html/Ticket/Elements/AddAttachments:73
 msgid "Drop files here or click to attach"
 msgstr ""
 
@@ -3387,7 +3393,7 @@ msgstr "Enkel oppdatering av opne saker"
 msgid "Easy viewing of your reminders"
 msgstr ""
 
-#: share/html/Elements/Dashboards:51 share/html/Elements/QueueList:52 share/html/Elements/ShowSearch:52 share/html/Elements/Tabs:1168 share/html/Elements/Tabs:1176 share/html/Ticket/Elements/ShowRequestor:124
+#: share/html/Elements/Dashboards:51 share/html/Elements/QueueList:52 share/html/Elements/ShowSearch:52 share/html/Elements/Tabs:1172 share/html/Elements/Tabs:1180 share/html/Ticket/Elements/ShowRequestor:124
 msgid "Edit"
 msgstr "Rediger"
 
@@ -3437,7 +3443,7 @@ msgstr "Rediger koplingar"
 msgid "Edit Query"
 msgstr "Rediger spørjing"
 
-#: share/html/Elements/Tabs:968
+#: share/html/Elements/Tabs:972
 msgid "Edit Search"
 msgstr "Rediger søk"
 
@@ -3507,11 +3513,11 @@ msgstr "E-postsamandrag"
 msgid "Email Source for Ticket %1, Attachment %2"
 msgstr ""
 
-#: lib/RT/User.pm:590
+#: lib/RT/User.pm:591
 msgid "Email address in use"
 msgstr "E-postadressa er alt i bruk"
 
-#: lib/RT/Config.pm:595
+#: lib/RT/Config.pm:626
 msgid "Email delivery"
 msgstr "E-postlevering"
 
@@ -3519,7 +3525,7 @@ msgstr "E-postlevering"
 msgid "Email template for periodic notification digests"
 msgstr "E-postmal for regelmessige samandrag"
 
-#: lib/RT/User.pm:93
+#: lib/RT/User.pm:94
 msgid "EmailAddress"
 msgstr "E-postadresse"
 
@@ -3527,7 +3533,7 @@ msgstr "E-postadresse"
 msgid "Empty"
 msgstr ""
 
-#: lib/RT/Config.pm:528
+#: lib/RT/Config.pm:559
 msgid "Enable quote folding?"
 msgstr ""
 
@@ -3571,7 +3577,7 @@ msgstr ""
 msgid "Enabled Classes"
 msgstr ""
 
-#: share/html/Admin/Queues/index.html:112
+#: share/html/Admin/Queues/index.html:113
 msgid "Enabled Queues"
 msgstr "Aktive køar"
 
@@ -3604,10 +3610,10 @@ msgstr "Krypter som standard"
 msgid "Encrypt/Decrypt"
 msgstr "Krypter/dekrypter"
 
-#. ($id, $txn->Ticket)
+#. ($id, $txn->Ticket, $txn->TicketObj->Subject)
 #: share/html/Ticket/Crypt.html:99
-msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
-msgstr "Krypter/dekrypter transaksjon %1 av sak %2"
+msgid "Encrypt/Decrypt transaction #%1 of ticket #%2: %3"
+msgstr ""
 
 #: lib/RT/Queue.pm:381
 msgid "Encrypting"
@@ -3677,7 +3683,7 @@ msgstr "Skriv inn sakene eller nettadressene du vil kopla sakene til. Du kan ski
 msgid "Enter tickets or URIs to link to. Separate multiple entries with spaces."
 msgstr ""
 
-#: lib/RT/Config.pm:330
+#: lib/RT/Config.pm:340
 msgid "Enter time in hours by default"
 msgstr ""
 
@@ -3805,7 +3811,7 @@ msgstr "UtvidaStatus"
 msgid "Extension"
 msgstr ""
 
-#: lib/RT/User.pm:1151
+#: lib/RT/User.pm:1170
 msgid "External authentication enabled."
 msgstr "Ekstern autentisering slått på"
 
@@ -3817,7 +3823,7 @@ msgstr ""
 msgid "Extra info"
 msgstr "Tilleggsinformasjon"
 
-#: share/html/Elements/Tabs:860
+#: share/html/Elements/Tabs:864
 msgid "Extract Article"
 msgstr ""
 
@@ -3849,11 +3855,11 @@ msgstr "Klarte ikkje kopla til databasen: %1"
 msgid "Failed to create %1 attribute"
 msgstr "Klarte ikkje oppretta attributtet %1"
 
-#: lib/RT/User.pm:330
+#: lib/RT/User.pm:331
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "Fann ikkje pseudogruppa «brukarar med utvida løyve»"
 
-#: lib/RT/User.pm:337
+#: lib/RT/User.pm:338
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Fann ikkje pseudogruppa «brukarar utan utvida løyve»"
 
@@ -3898,7 +3904,7 @@ msgstr ""
 msgid "Feb"
 msgstr "feb."
 
-#: share/html/Elements/Tabs:979
+#: share/html/Elements/Tabs:983
 msgid "Feeds"
 msgstr ""
 
@@ -4009,11 +4015,11 @@ msgstr "Finn alle personane der"
 msgid "Find tickets"
 msgstr "Finn saker"
 
-#: etc/RT_Config.pm:1296
+#: etc/RT_Config.pm:1313
 msgid "FindAsset"
 msgstr ""
 
-#: etc/RT_Config.pm:1296
+#: etc/RT_Config.pm:1313
 msgid "FindUser"
 msgstr ""
 
@@ -4025,7 +4031,7 @@ msgstr ""
 msgid "Finish"
 msgstr "Fullfør"
 
-#: share/html/Elements/Tabs:878
+#: share/html/Elements/Tabs:882
 msgid "First"
 msgstr "Først"
 
@@ -4047,7 +4053,7 @@ msgstr "Tving gjennom endring"
 msgid "Format"
 msgstr ""
 
-#: lib/RT/Config.pm:267
+#: lib/RT/Config.pm:277
 msgid "Formats iCal feed events with date and time"
 msgstr ""
 
@@ -4071,15 +4077,15 @@ msgstr "Vidaresend sak"
 msgid "Forward messages outside of RT"
 msgstr ""
 
-#. ($TicketObj->id)
+#. ($TicketObj->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:152
-msgid "Forward ticket #%1"
-msgstr "Vidaresend sak %1"
+msgid "Forward ticket #%1: %2"
+msgstr ""
 
-#. ($txn->id)
+#. ($txn->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:151
-msgid "Forward transaction #%1"
-msgstr "Vidaresend transaksjon %1"
+msgid "Forward transaction #%1: %2"
+msgstr ""
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
 #: lib/RT/Transaction.pm:967
@@ -4134,11 +4140,11 @@ msgstr ""
 msgid "GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions."
 msgstr ""
 
-#: lib/RT/User.pm:98
+#: lib/RT/User.pm:99
 msgid "Gecos"
 msgstr ""
 
-#: lib/RT/Config.pm:216 lib/RT/Config.pm:354
+#: lib/RT/Config.pm:226 lib/RT/Config.pm:373
 msgid "General"
 msgstr "Generelt"
 
@@ -4261,7 +4267,7 @@ msgstr "Diagram er ikkje tilgjengelege."
 msgid "Group"
 msgstr "Gruppe"
 
-#: share/html/Elements/Tabs:1157 share/html/Elements/Tabs:245 share/html/Elements/Tabs:357 share/html/Elements/Tabs:402 share/html/Elements/Tabs:418 share/html/Elements/Tabs:531
+#: share/html/Elements/Tabs:1161 share/html/Elements/Tabs:245 share/html/Elements/Tabs:357 share/html/Elements/Tabs:402 share/html/Elements/Tabs:418 share/html/Elements/Tabs:531
 msgid "Group Rights"
 msgstr "Gruppeløyve"
 
@@ -4318,7 +4324,7 @@ msgstr ""
 msgid "Grouped search results"
 msgstr ""
 
-#: lib/RT/CustomField.pm:2051 lib/RT/CustomField.pm:218 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:109 share/html/Elements/Tabs:169 share/html/Elements/Tabs:306 share/html/Elements/Tabs:75
+#: lib/RT/CustomField.pm:2047 lib/RT/CustomField.pm:218 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:88 share/html/Admin/Queues/People.html:109 share/html/Elements/Tabs:169 share/html/Elements/Tabs:306 share/html/Elements/Tabs:75
 msgid "Groups"
 msgstr "Grupper"
 
@@ -4410,11 +4416,11 @@ msgstr ""
 msgid "Hide unset fields"
 msgstr ""
 
-#: lib/RT/Config.pm:537
+#: lib/RT/Config.pm:568
 msgid "Hide unset fields?"
 msgstr ""
 
-#: share/html/Elements/ShowHistoryHeader:63 share/html/Elements/Tabs:1027 share/html/Elements/Tabs:1047 share/html/Elements/Tabs:1065 share/html/Elements/Tabs:1171 share/html/Elements/Tabs:1238 share/html/Elements/Tabs:359 share/html/Elements/Tabs:376 share/html/Elements/Tabs:404 share/html/Elements/Tabs:782 share/html/Ticket/Elements/ClickToShowHistory:49 share/html/Ticket/Elements/DelayShowHistory:49 share/html/m/_elements/ticket_menu:64
+#: share/html/Elements/ShowHistoryHeader:63 share/html/Elements/Tabs:1031 share/html/Elements/Tabs:1051 share/html/Elements/Tabs:1069 share/html/Elements/Tabs:1175 share/html/Elements/Tabs:1242 share/html/Elements/Tabs:359 share/html/Elements/Tabs:376 share/html/Elements/Tabs:404 share/html/Elements/Tabs:782 share/html/Ticket/Elements/ClickToShowHistory:49 share/html/Ticket/Elements/DelayShowHistory:49 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "Oppdateringar"
 
@@ -4448,7 +4454,7 @@ msgstr "Brukarendringar for %1"
 msgid "Home Phone"
 msgstr ""
 
-#: lib/RT/Config.pm:389
+#: lib/RT/Config.pm:414
 msgid "Home page refresh interval"
 msgstr "Oppdater heimesida"
 
@@ -4552,6 +4558,10 @@ msgstr ""
 msgid "Immutable field"
 msgstr "Låst felt"
 
+#: share/html/Elements/SelectStatus:54
+msgid "Inactive"
+msgstr ""
+
 #: share/html/Ticket/Elements/ShowRequestor:160 share/html/User/Elements/Portlets/InactiveTickets:54
 msgid "Inactive Tickets"
 msgstr ""
@@ -4576,7 +4586,7 @@ msgstr ""
 msgid "Include article summary"
 msgstr ""
 
-#: share/html/Ticket/Elements/AddAttachments:168
+#: share/html/Ticket/Elements/AddAttachments:172
 msgid "Include attachments"
 msgstr ""
 
@@ -4629,7 +4639,7 @@ msgstr "Vis nettside"
 msgid "Include subtopics"
 msgstr ""
 
-#: lib/RT/Config.pm:266
+#: lib/RT/Config.pm:276
 msgid "Include time in iCal feed events?"
 msgstr ""
 
@@ -4638,7 +4648,7 @@ msgstr ""
 msgid "Index updates from %1"
 msgstr ""
 
-#: lib/RT/Config.pm:597
+#: lib/RT/Config.pm:628
 msgid "Individual messages"
 msgstr "Enkeltmeldingar"
 
@@ -4693,7 +4703,7 @@ msgstr "Feil i inndata"
 #. ($CF->FriendlyPattern)
 #. ($CustomField->FriendlyPattern)
 #. ($self->FriendlyPattern)
-#: lib/RT/CustomField.pm:1755 lib/RT/CustomField.pm:1984 share/html/Elements/EditCustomFields:89 share/html/Elements/ValidateCustomFields:102
+#: lib/RT/CustomField.pm:1755 lib/RT/CustomField.pm:1980 share/html/Elements/EditCustomFields:89 share/html/Elements/ValidateCustomFields:102
 msgid "Input must match %1"
 msgstr "Inndataa må vera i samsvar med %1"
 
@@ -4816,7 +4826,7 @@ msgstr "Ugyldig løyve"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Ugyldig løyve. Klarte ikkje kanonisera løyvet «%1»."
 
-#: lib/RT/User.pm:580
+#: lib/RT/User.pm:581
 msgid "Invalid syntax for email address"
 msgstr "Ugyldig syntaks for e-postadresse"
 
@@ -4891,7 +4901,7 @@ msgstr ""
 msgid "Keyword and intuition-based searching"
 msgstr ""
 
-#: lib/RT/User.pm:97
+#: lib/RT/User.pm:98
 msgid "Lang"
 msgstr ""
 
@@ -4903,7 +4913,7 @@ msgstr "Språk"
 msgid "Large"
 msgstr "Stor"
 
-#: share/html/Elements/Tabs:888
+#: share/html/Elements/Tabs:892
 msgid "Last"
 msgstr "Siste"
 
@@ -4915,11 +4925,11 @@ msgstr "Siste kontakt"
 msgid "Last Contacted"
 msgstr "Sist kontakta"
 
-#: share/html/Asset/Elements/EditDates:59 share/html/Asset/Elements/ShowDates:59 share/html/Elements/ColumnMap:84 share/html/Elements/ColumnMap:89 share/html/Elements/SelectDateType:53
+#: share/html/Asset/Elements/EditDates:59 share/html/Asset/Elements/ShowDates:59 share/html/Elements/ColumnMap:83 share/html/Elements/ColumnMap:88 share/html/Elements/SelectDateType:53
 msgid "Last Updated"
 msgstr "Sist oppdatert"
 
-#: share/html/Elements/ColumnMap:94
+#: share/html/Elements/ColumnMap:93
 msgid "Last Updated By"
 msgstr "Sist oppdatert av"
 
@@ -4959,7 +4969,7 @@ msgstr "Igjen"
 msgid "Legends"
 msgstr "Forklaring"
 
-#: lib/RT/Config.pm:431
+#: lib/RT/Config.pm:462
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Talet på teikn. Bruk «0» for å vise heile meldingane, uavhengig av meldingslengda."
 
@@ -5001,10 +5011,10 @@ msgstr ""
 msgid "Link not found"
 msgstr "Fann ikkje lenkja"
 
-#. ($Ticket->Id)
+#. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/ModifyLinks.html:48
-msgid "Link ticket #%1"
-msgstr "Kopla saman sak %1"
+msgid "Link ticket #%1: %2"
+msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:144
 msgid "Link values to"
@@ -5027,7 +5037,7 @@ msgstr "KoplaTil"
 msgid "Linking to a deleted %1 is not allowed"
 msgstr ""
 
-#: share/html/Admin/Queues/DefaultValues.html:110 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Asset/Create.html:78 share/html/Asset/Elements/ShowSummary:56 share/html/Asset/ModifyLinks.html:57 share/html/Elements/Tabs:1067 share/html/Elements/Tabs:796 share/html/Ticket/Create.html:342 share/html/Ticket/Elements/ShowSummary:96 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:393
+#: share/html/Admin/Queues/DefaultValues.html:110 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Asset/Create.html:78 share/html/Asset/Elements/ShowSummary:56 share/html/Asset/ModifyLinks.html:57 share/html/Elements/Tabs:1071 share/html/Elements/Tabs:796 share/html/Ticket/Create.html:342 share/html/Ticket/Elements/ShowSummary:96 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:393
 msgid "Links"
 msgstr "Koplingar"
 
@@ -5090,7 +5100,7 @@ msgstr "Lasta lagra søk: %1"
 msgid "Loading..."
 msgstr ""
 
-#: lib/RT/Config.pm:543 share/html/SelfService/Prefs.html:56
+#: lib/RT/Config.pm:574 share/html/SelfService/Prefs.html:56
 msgid "Locale"
 msgstr "Dato og klokkeslett"
 
@@ -5102,12 +5112,12 @@ msgstr "LokaltDatoKlokkeslett"
 msgid "Location"
 msgstr "Plassering"
 
-#: lib/RT/Interface/Web.pm:853
+#: lib/RT/Interface/Web.pm:854
 msgid "Logged in"
 msgstr ""
 
 #. ($username)
-#: share/html/Elements/Tabs:1213 share/html/Elements/Tabs:699
+#: share/html/Elements/Tabs:1217 share/html/Elements/Tabs:699
 msgid "Logged in as %1"
 msgstr "Logga inn som %1"
 
@@ -5148,7 +5158,7 @@ msgstr "Logg inn"
 msgid "LogoAltText"
 msgstr "LogoAltTekst"
 
-#: share/html/Elements/Tabs:1225 share/html/Elements/Tabs:736 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
+#: share/html/Elements/Tabs:1229 share/html/Elements/Tabs:736 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
 msgstr "Logg ut"
 
@@ -5156,7 +5166,7 @@ msgstr "Logg ut"
 msgid "Lookup type mismatch"
 msgstr "Ikkje typesamsvar ved feltoppslag"
 
-#: lib/RT/Config.pm:590 lib/RT/Config.pm:605
+#: lib/RT/Config.pm:621 lib/RT/Config.pm:636
 msgid "Mail"
 msgstr "E-post"
 
@@ -5286,7 +5296,7 @@ msgstr ""
 msgid "Maximum Starts-Started"
 msgstr ""
 
-#: lib/RT/Config.pm:429
+#: lib/RT/Config.pm:460
 msgid "Maximum inline message length"
 msgstr "Makslengd for direktevising av meldingar"
 
@@ -5378,15 +5388,15 @@ msgstr "Medlemskap til brukaren %1"
 msgid "Merge"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2026
+#: lib/RT/Ticket.pm:2053
 msgid "Merge Successful"
 msgstr "Fletting utførd"
 
-#: lib/RT/Ticket.pm:1918
+#: lib/RT/Ticket.pm:1945
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr "Feil ved fletting. Klarte ikkje lagra «EffectiveId»."
 
-#: lib/RT/Ticket.pm:1924
+#: lib/RT/Ticket.pm:1951
 msgid "Merge failed. Couldn't set IsMerged"
 msgstr ""
 
@@ -5415,15 +5425,15 @@ msgstr "Meldingsteksten vert ikkje vist, sidan avsendaren sende han som eit vedl
 msgid "Message body not shown because it is not plain text."
 msgstr "Meldingsteksten vert ikkje vist, fordi han ikkje er reintekst."
 
-#: lib/RT/Config.pm:321
+#: lib/RT/Config.pm:331
 msgid "Message box height"
 msgstr "Høgd på meldingsfelt"
 
-#: lib/RT/Config.pm:312
+#: lib/RT/Config.pm:322
 msgid "Message box width"
 msgstr "Breidd på meldingsfelt"
 
-#: lib/RT/Ticket.pm:1705
+#: lib/RT/Ticket.pm:1727
 msgid "Message could not be recorded"
 msgstr "Klarte ikkje lagra meldinga"
 
@@ -5431,7 +5441,7 @@ msgstr "Klarte ikkje lagra meldinga"
 msgid "Message for user"
 msgstr "Melding for brukar"
 
-#: lib/RT/Ticket.pm:3188
+#: lib/RT/Ticket.pm:3215
 msgid "Message recorded"
 msgstr "Melding registrert"
 
@@ -5495,7 +5505,7 @@ msgstr "Mobil"
 msgid "Mobile Phone"
 msgstr ""
 
-#: share/html/Elements/Tabs:1028 share/html/Elements/Tabs:1050 share/html/m/_elements/ticket_menu:67
+#: share/html/Elements/Tabs:1032 share/html/Elements/Tabs:1054 share/html/m/_elements/ticket_menu:67
 msgid "Modify"
 msgstr ""
 
@@ -5581,13 +5591,18 @@ msgstr ""
 msgid "Modify custom field values"
 msgstr "Endra fleksifeltverdiar"
 
+#. ($TicketObj->Id, $TicketObj->Subject)
+#: share/html/Ticket/ModifyDates.html:48
+msgid "Modify dates for #%1: %2"
+msgstr ""
+
 #. ($asset->id, $asset->Name)
 #: share/html/Asset/ModifyDates.html:48
 msgid "Modify dates for asset #%1: %2"
 msgstr ""
 
 #. ($TicketObj->Id)
-#: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:57
+#: share/html/Ticket/ModifyDates.html:57
 msgid "Modify dates for ticket #%1"
 msgstr "Endra datoar for sak %1"
 
@@ -5662,10 +5677,14 @@ msgid "Modify people related to asset #%1: %2"
 msgstr ""
 
 #. ($Ticket->Id)
-#. ($Ticket->id)
-#: share/html/Ticket/ModifyPeople.html:48 share/html/Ticket/ModifyPeople.html:58
+#: share/html/Ticket/ModifyPeople.html:58
 msgid "Modify people related to ticket #%1"
 msgstr "Endra personar knytte til sak %1"
+
+#. ($Ticket->id, $Ticket->Subject)
+#: share/html/Ticket/ModifyPeople.html:48
+msgid "Modify people related to ticket #%1: %2"
+msgstr ""
 
 #: lib/RT/Dashboard.pm:87
 msgid "Modify personal dashboards"
@@ -5752,9 +5771,14 @@ msgid "Modify ticket # %1"
 msgstr "Endra sak %1"
 
 #. ($TicketObj->Id)
-#: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:58
+#: share/html/Ticket/Modify.html:58
 msgid "Modify ticket #%1"
 msgstr "Endra sak %1"
+
+#. ($TicketObj->Id, $TicketObj->Subject)
+#: share/html/Ticket/Modify.html:48
+msgid "Modify ticket #%1: %2"
+msgstr ""
 
 #: lib/RT/Queue.pm:132
 msgid "Modify ticket owner on owned tickets"
@@ -5850,7 +5874,7 @@ msgstr ""
 msgid "Multiple users (Unchecking this box limits this role to a single user. This cannot be modified after creation)"
 msgstr ""
 
-#: lib/RT/User.pm:163
+#: lib/RT/User.pm:164
 msgid "Must specify 'Name' attribute"
 msgstr "Må oppgje «Name»-attributt"
 
@@ -5903,15 +5927,15 @@ msgstr ""
 msgid "My saved searches"
 msgstr "Mine lagra søk"
 
-#: etc/RT_Config.pm:1296
+#: etc/RT_Config.pm:1313
 msgid "MyAdminQueues"
 msgstr ""
 
-#: etc/RT_Config.pm:1296
+#: etc/RT_Config.pm:1313
 msgid "MyAssets"
 msgstr ""
 
-#: etc/RT_Config.pm:1296 etc/initialdata:909
+#: etc/RT_Config.pm:1313 etc/initialdata:909
 msgid "MyReminders"
 msgstr ""
 
@@ -5919,7 +5943,7 @@ msgstr ""
 msgid "MySQL"
 msgstr ""
 
-#: etc/RT_Config.pm:1296
+#: etc/RT_Config.pm:1313
 msgid "MySupportQueues"
 msgstr ""
 
@@ -5931,15 +5955,15 @@ msgstr ""
 msgid "NEWLINE"
 msgstr "LINJESKIFT"
 
-#: lib/RT/User.pm:91 share/html/Admin/Actions/Elements/EditBasics:49 share/html/Admin/Actions/Elements/ShowBasics:49 share/html/Admin/Assets/Catalogs/Elements/EditBasics:50 share/html/Admin/Conditions/Elements/EditBasics:49 share/html/Admin/Conditions/Elements/ShowBasics:49 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:69 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:50 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Asset/Elements/AssetSearchBasics:60 share/html/Asset/Elements/EditBasics:56 share/html/Asset/Elements/ShowBasics:54 share/html/Asset/Search/Bulk.html:89 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__ScripAction/ColumnMap:62 share/html/Elements/RT__ScripCondition/ColumnMap:62 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:94 share/html/Elements/RT__User/ColumnMap:56
+#: lib/RT/User.pm:92 share/html/Admin/Actions/Elements/EditBasics:49 share/html/Admin/Actions/Elements/ShowBasics:49 share/html/Admin/Assets/Catalogs/Elements/EditBasics:50 share/html/Admin/Conditions/Elements/EditBasics:49 share/html/Admin/Conditions/Elements/ShowBasics:49 share/html/Admin/CustomFields/Modify.html:63 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:50 share/html/Admin/Groups/Modify.html:69 share/html/Admin/Tools/Configuration.html:222 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Articles/Article/Elements/EditBasics:50 share/html/Articles/Article/Elements/ShowSearchCriteria:63 share/html/Articles/Elements/NewestArticles:52 share/html/Articles/Elements/UpdatedArticles:52 share/html/Asset/Elements/AssetSearchBasics:60 share/html/Asset/Elements/EditBasics:56 share/html/Asset/Elements/ShowBasics:54 share/html/Asset/Search/Bulk.html:89 share/html/Dashboards/Modify.html:63 share/html/Elements/BulkCustomFields:51 share/html/Elements/RT__Article/ColumnMap:61 share/html/Elements/RT__Class/ColumnMap:56 share/html/Elements/RT__Dashboard/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:72 share/html/Elements/RT__SavedSearch/ColumnMap:56 share/html/Elements/RT__ScripAction/ColumnMap:62 share/html/Elements/RT__ScripCondition/ColumnMap:62 share/html/Elements/RT__Template/ColumnMap:56 share/html/Elements/RT__Transaction/ColumnMap:94 share/html/Elements/RT__User/ColumnMap:56
 msgid "Name"
 msgstr "Namn"
 
-#: lib/RT/Config.pm:191
+#: lib/RT/Config.pm:201
 msgid "Name and email address"
 msgstr "Namn og e-postadresse"
 
-#: lib/RT/Article.pm:117 lib/RT/User.pm:276
+#: lib/RT/Article.pm:117 lib/RT/User.pm:277
 msgid "Name in use"
 msgstr "Namnet er alt i bruk"
 
@@ -5959,7 +5983,7 @@ msgstr "Aldri"
 msgid "New"
 msgstr "Ny"
 
-#: share/html/Elements/Tabs:1039
+#: share/html/Elements/Tabs:1043
 msgid "New Article"
 msgstr ""
 
@@ -6000,7 +6024,7 @@ msgstr "Nye meldingar"
 msgid "New password"
 msgstr "Nytt passord"
 
-#: lib/RT/User.pm:901
+#: lib/RT/User.pm:902
 msgid "New password notification sent"
 msgstr "Melding om nytt passord send"
 
@@ -6008,11 +6032,11 @@ msgstr "Melding om nytt passord send"
 msgid "New reminder:"
 msgstr "Ny påminning:"
 
-#: share/html/Elements/Tabs:1198 share/html/Elements/Tabs:1200 share/html/m/_elements/menu:70
+#: share/html/Elements/Tabs:1202 share/html/Elements/Tabs:1204 share/html/m/_elements/menu:70
 msgid "New ticket"
 msgstr "Ny sak"
 
-#: lib/RT/Ticket.pm:1873
+#: lib/RT/Ticket.pm:1895
 msgid "New ticket doesn't exist"
 msgstr "Den nye saka finst ikkje"
 
@@ -6029,11 +6053,11 @@ msgstr ""
 msgid "New watchers"
 msgstr "Nye overvakarar"
 
-#: share/html/Elements/Tabs:885 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
+#: share/html/Elements/Tabs:889 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:63
 msgid "Next"
 msgstr "Neste"
 
-#: lib/RT/User.pm:96
+#: lib/RT/User.pm:97
 msgid "NickName"
 msgstr "Kallenamn"
 
@@ -6060,12 +6084,16 @@ msgstr "Ingen %1 lasta"
 msgid "No Articles match %1"
 msgstr ""
 
-#: share/html/Admin/Articles/Classes/GroupRights.html:62 share/html/Admin/Articles/Classes/UserRights.html:61 share/html/Admin/CustomFields/UserRights.html:62
+#: share/html/Admin/Articles/Classes/GroupRights.html:62 share/html/Admin/Articles/Classes/UserRights.html:61
 msgid "No Class defined"
 msgstr "Ingen klasse definert"
 
 #: share/html/Admin/Articles/Classes/index.html:54
 msgid "No Classes matching search criteria found."
+msgstr ""
+
+#: share/html/Admin/CustomFields/UserRights.html:62
+msgid "No Custom Field defined"
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:237 share/html/Admin/Elements/EditCustomField:122
@@ -6084,7 +6112,7 @@ msgstr "Inga gruppe definert"
 msgid "No Name"
 msgstr ""
 
-#: lib/RT/Tickets.pm:3200
+#: lib/RT/Tickets.pm:3201
 msgid "No Query"
 msgstr "Inga spørjing"
 
@@ -6112,7 +6140,7 @@ msgstr "Ingen mal"
 msgid "No action"
 msgstr "Inga handling"
 
-#: lib/RT/Interface/Web.pm:4114
+#: lib/RT/Interface/Web.pm:4119
 msgid "No asset ID specified."
 msgstr ""
 
@@ -6120,7 +6148,7 @@ msgstr ""
 msgid "No assets matching search criteria found."
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4098
+#: lib/RT/Interface/Web.pm:4103
 msgid "No catalog specified."
 msgstr ""
 
@@ -6171,11 +6199,11 @@ msgstr "Manglar eigna krypteringsnøkkel"
 msgid "No longer authorized"
 msgstr ""
 
-#: lib/RT/Ticket.pm:1630
+#: lib/RT/Ticket.pm:1652
 msgid "No message attached"
 msgstr "Inga melding lagd ved"
 
-#: lib/RT/CustomField.pm:2719 lib/RT/CustomField.pm:491
+#: lib/RT/CustomField.pm:2715 lib/RT/CustomField.pm:491
 msgid "No name provided"
 msgstr "Namn ikkje oppgjeve"
 
@@ -6183,7 +6211,7 @@ msgstr "Namn ikkje oppgjeve"
 msgid "No need to encrypt"
 msgstr "Kryptering unødvendig"
 
-#: lib/RT/User.pm:970
+#: lib/RT/User.pm:971
 msgid "No password set"
 msgstr "Passord ikkje vald"
 
@@ -6212,7 +6240,7 @@ msgstr ""
 msgid "No permission to save system-wide searches"
 msgstr "Manglar løyve til å køyra globale søk"
 
-#: lib/RT/User.pm:1533 lib/RT/User.pm:1557
+#: lib/RT/User.pm:1553 lib/RT/User.pm:1577
 msgid "No permission to set preferences"
 msgstr "Manglar løyve til å endra innstillingane"
 
@@ -6249,7 +6277,7 @@ msgstr "Fann ingen løyve"
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr ""
 
-#: share/html/Search/Bulk.html:269
+#: share/html/Search/Bulk.html:271
 msgid "No search to operate on."
 msgstr "Manglar søk å bruka"
 
@@ -6257,7 +6285,7 @@ msgstr "Manglar søk å bruka"
 msgid "No subject"
 msgstr "Utan emne"
 
-#: lib/RT/User.pm:1947
+#: lib/RT/User.pm:1967
 msgid "No such key or it's not suitable for signing"
 msgstr "Nøkkelen manglar, eller er ikkje eigna til signering"
 
@@ -6310,7 +6338,7 @@ msgstr ""
 msgid "Not applied scrips"
 msgstr ""
 
-#: lib/RT/CustomField.pm:2756 lib/RT/CustomField.pm:532 lib/RT/CustomField.pm:610
+#: lib/RT/CustomField.pm:2752 lib/RT/CustomField.pm:532 lib/RT/CustomField.pm:610
 msgid "Not found"
 msgstr "Fann ikkje"
 
@@ -6330,7 +6358,7 @@ msgstr ""
 msgid "Notes"
 msgstr "Merknader"
 
-#: lib/RT/User.pm:903
+#: lib/RT/User.pm:904
 msgid "Notification could not be sent"
 msgstr "Klarte ikkje senda melding"
 
@@ -6418,7 +6446,7 @@ msgstr "Varsla innmeldarane og kopimottakarane"
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Varsla innmeldarane og kopimottakarane som kommentar"
 
-#: lib/RT/Config.pm:465
+#: lib/RT/Config.pm:496
 msgid "Notify me of unread messages"
 msgstr "Opplys om ulesne meldingar"
 
@@ -6426,7 +6454,7 @@ msgstr "Opplys om ulesne meldingar"
 msgid "Nov"
 msgstr "nov."
 
-#: etc/RT_Config.pm:3390
+#: etc/RT_Config.pm:3443
 msgid "Now in-use"
 msgstr ""
 
@@ -6568,7 +6596,7 @@ msgstr "Eingangsblindkopi"
 msgid "One-time Cc"
 msgstr "Eingangskopi"
 
-#: lib/RT/Config.pm:331
+#: lib/RT/Config.pm:341
 msgid "Only for entry, not display"
 msgstr ""
 
@@ -6586,11 +6614,15 @@ msgstr "Vis berre godkjenningar for saker oppretta før %1"
 msgid "Only show custom fields for:"
 msgstr "Vis berre fleksifelt for:"
 
+#: lib/RT/Ticket.pm:1905
+msgid "Only tickets can be merged"
+msgstr ""
+
 #: etc/initialdata:111 etc/upgrade/4.2.4/content:5
 msgid "Open Inactive Tickets"
 msgstr ""
 
-#: etc/RT_Config.pm:3341 etc/RT_Config.pm:3348 etc/RT_Config.pm:3430 etc/RT_Config.pm:3437
+#: etc/RT_Config.pm:3394 etc/RT_Config.pm:3401 etc/RT_Config.pm:3483 etc/RT_Config.pm:3490
 msgid "Open It"
 msgstr ""
 
@@ -6610,7 +6642,7 @@ msgstr "Opna adresse"
 msgid "Open inactive tickets"
 msgstr ""
 
-#: share/html/Elements/Tabs:1203 share/html/SelfService/index.html:48
+#: share/html/Elements/Tabs:1207 share/html/SelfService/index.html:48
 msgid "Open tickets"
 msgstr "Opne saker"
 
@@ -6642,7 +6674,7 @@ msgstr ""
 msgid "Order by"
 msgstr "Sorter etter"
 
-#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
+#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
 msgid "Organization"
 msgstr "Organisasjon"
 
@@ -6659,7 +6691,7 @@ msgstr "Utgåande e-post om ein kommentar registrert"
 msgid "Outgoing email recorded"
 msgstr "Utgåande e-post registrert"
 
-#: lib/RT/Config.pm:610
+#: lib/RT/Config.pm:641
 msgid "Outgoing mail"
 msgstr "Utgåande e-post"
 
@@ -6681,7 +6713,7 @@ msgid "Owner '%1' does not have rights to own this ticket."
 msgstr "Eigaren «%1» har ikkje løyve til å eiga denne saka."
 
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
-#: lib/RT/Ticket.pm:2135
+#: lib/RT/Ticket.pm:2162
 msgid "Owner changed from %1 to %2"
 msgstr "Eigar bytta frå %1 til %2"
 
@@ -6734,16 +6766,16 @@ msgstr "Oversaker"
 msgid "Password"
 msgstr "Passord"
 
-#: lib/RT/Transaction.pm:1208 lib/RT/User.pm:981
+#: lib/RT/Transaction.pm:1208 lib/RT/User.pm:982
 msgid "Password changed"
 msgstr "Passord endra"
 
-#: lib/RT/User.pm:947
+#: lib/RT/User.pm:948
 msgid "Password has not been set."
 msgstr "Passordet er ikkje registrert"
 
 #. (RT->Config->Get('MinimumPasswordLength'))
-#: lib/RT/User.pm:295
+#: lib/RT/User.pm:296
 msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Passordet må vera minst %1 teikn langt"
 
@@ -6751,7 +6783,7 @@ msgstr "Passordet må vera minst %1 teikn langt"
 msgid "Password not printed"
 msgstr ""
 
-#: lib/RT/User.pm:980
+#: lib/RT/User.pm:981
 msgid "Password set"
 msgstr "Passordet er registrert"
 
@@ -6760,7 +6792,7 @@ msgstr "Passordet er registrert"
 msgid "Password: %1"
 msgstr "Passord: %1"
 
-#: lib/RT/User.pm:966
+#: lib/RT/User.pm:967
 msgid "Password: Permission Denied"
 msgstr "Passord: nekta tilgang"
 
@@ -6768,7 +6800,7 @@ msgstr "Passord: nekta tilgang"
 msgid "PasswordChange"
 msgstr "PassordByte"
 
-#: lib/RT/User.pm:943
+#: lib/RT/User.pm:944
 msgid "Passwords do not match."
 msgstr "Dei to passorda er ikkje like."
 
@@ -6794,7 +6826,7 @@ msgstr ""
 msgid "Pending approval."
 msgstr ""
 
-#: share/html/Admin/Queues/DefaultValues.html:95 share/html/Asset/Create.html:74 share/html/Asset/Elements/AssetSearchPeople:48 share/html/Asset/Elements/ShowSummary:54 share/html/Asset/ModifyPeople.html:59 share/html/Asset/Search/Bulk.html:108 share/html/Elements/Tabs:1068 share/html/Elements/Tabs:791 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:76 share/html/m/ticket/show:285
+#: share/html/Admin/Queues/DefaultValues.html:95 share/html/Asset/Create.html:74 share/html/Asset/Elements/AssetSearchPeople:48 share/html/Asset/Elements/ShowSummary:54 share/html/Asset/ModifyPeople.html:59 share/html/Asset/Search/Bulk.html:108 share/html/Elements/Tabs:1072 share/html/Elements/Tabs:791 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/ShowSummary:62 share/html/Ticket/ModifyAll.html:76 share/html/m/ticket/show:285
 msgid "People"
 msgstr "Personar"
 
@@ -6823,7 +6855,7 @@ msgstr "Søkjerekkjefølgje for Perl-bibliotek"
 msgid "Permanently wipeout data from RT"
 msgstr ""
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:114 lib/RT/Article.pm:318 lib/RT/Article.pm:337 lib/RT/Article.pm:389 lib/RT/Article.pm:413 lib/RT/Article.pm:478 lib/RT/Article.pm:483 lib/RT/Asset.pm:227 lib/RT/Asset.pm:438 lib/RT/Asset.pm:595 lib/RT/Attachment.pm:801 lib/RT/Attachment.pm:802 lib/RT/Attachment.pm:861 lib/RT/Attachment.pm:862 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:443 lib/RT/Class.pm:131 lib/RT/Class.pm:166 lib/RT/Class.pm:305 lib/RT/Class.pm:355 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1132 lib/RT/CustomField.pm:1660 lib/RT/CustomField.pm:1698 lib/RT/CustomField.pm:1751 lib/RT/CustomField.pm:1960 lib/RT/CustomField.pm:2120 lib/RT/CustomField.pm:278 lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:306 lib/RT/CustomField.pm:660 lib/RT/CustomField.pm:687 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:314 lib/RT/CustomRole.pm:410 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:98 lib/RT/Group.pm:1144 lib/RT/Group.pm:1230 lib/RT/Group.pm:283 lib/RT/Group.pm:378 lib/RT/Group.pm:670 lib/RT/Group.pm:900 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1218 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:756 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/ScripAction.pm:108 lib/RT/ScripCondition.pm:119 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:757 lib/RT/Template.pm:774 lib/RT/Template.pm:792 lib/RT/Ticket.pm:1119 lib/RT/Ticket.pm:1308 lib/RT/Ticket.pm:1530 lib/RT/Ticket.pm:1575 lib/RT/Ticket.pm:1864 lib/RT/Ticket.pm:1883 lib/RT/Ticket.pm:2273 lib/RT/Ticket.pm:2279 lib/RT/Ticket.pm:2293 lib/RT/Ticket.pm:2298 lib/RT/Ticket.pm:2322 lib/RT/Ticket.pm:2539 lib/RT/Ticket.pm:2778 lib/RT/Ticket.pm:3140 lib/RT/Ticket.pm:779 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:758 lib/RT/Transaction.pm:798 lib/RT/User.pm:1249 lib/RT/User.pm:130 lib/RT/User.pm:1684 lib/RT/User.pm:1932 lib/RT/User.pm:1965 lib/RT/User.pm:317 lib/RT/User.pm:849 lib/RT/User.pm:884 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:110 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:117 share/html/Ticket/ShowEmailRecord.html:111 share/html/Ticket/ShowEmailRecord.html:112
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:114 lib/RT/Article.pm:318 lib/RT/Article.pm:337 lib/RT/Article.pm:389 lib/RT/Article.pm:413 lib/RT/Article.pm:478 lib/RT/Article.pm:483 lib/RT/Asset.pm:227 lib/RT/Asset.pm:438 lib/RT/Asset.pm:595 lib/RT/Attachment.pm:801 lib/RT/Attachment.pm:802 lib/RT/Attachment.pm:861 lib/RT/Attachment.pm:862 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:443 lib/RT/Class.pm:131 lib/RT/Class.pm:166 lib/RT/Class.pm:305 lib/RT/Class.pm:355 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1132 lib/RT/CustomField.pm:1660 lib/RT/CustomField.pm:1698 lib/RT/CustomField.pm:1751 lib/RT/CustomField.pm:1956 lib/RT/CustomField.pm:2116 lib/RT/CustomField.pm:278 lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:306 lib/RT/CustomField.pm:660 lib/RT/CustomField.pm:687 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:314 lib/RT/CustomRole.pm:410 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:98 lib/RT/Group.pm:1144 lib/RT/Group.pm:1230 lib/RT/Group.pm:283 lib/RT/Group.pm:378 lib/RT/Group.pm:670 lib/RT/Group.pm:900 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1218 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:756 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/ScripAction.pm:108 lib/RT/ScripCondition.pm:119 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:757 lib/RT/Template.pm:774 lib/RT/Template.pm:792 lib/RT/Ticket.pm:1124 lib/RT/Ticket.pm:1330 lib/RT/Ticket.pm:1552 lib/RT/Ticket.pm:1597 lib/RT/Ticket.pm:1886 lib/RT/Ticket.pm:1910 lib/RT/Ticket.pm:2300 lib/RT/Ticket.pm:2306 lib/RT/Ticket.pm:2320 lib/RT/Ticket.pm:2325 lib/RT/Ticket.pm:2349 lib/RT/Ticket.pm:2566 lib/RT/Ticket.pm:2805 lib/RT/Ticket.pm:3167 lib/RT/Ticket.pm:780 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:758 lib/RT/Transaction.pm:798 lib/RT/User.pm:1269 lib/RT/User.pm:131 lib/RT/User.pm:1704 lib/RT/User.pm:1952 lib/RT/User.pm:1985 lib/RT/User.pm:318 lib/RT/User.pm:850 lib/RT/User.pm:885 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:110 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:117 share/html/Ticket/ShowEmailRecord.html:111 share/html/Ticket/ShowEmailRecord.html:112
 msgid "Permission Denied"
 msgstr "Nekta tilgang"
 
@@ -6839,7 +6871,7 @@ msgstr "Telefonnummer"
 msgid "Picture"
 msgstr ""
 
-#: lib/RT/Config.pm:340
+#: lib/RT/Config.pm:350
 msgid "Place signature above quote"
 msgstr ""
 
@@ -6867,11 +6899,11 @@ msgstr ""
 msgid "Please check the URL and try again."
 msgstr "Kontroller adressa, og prøv så på nytt."
 
-#: lib/RT/User.pm:938
+#: lib/RT/User.pm:939
 msgid "Please enter your current password correctly."
 msgstr "Skriv inn ditt noverande passord rett"
 
-#: lib/RT/User.pm:940
+#: lib/RT/User.pm:941
 msgid "Please enter your current password."
 msgstr "Skriv inn ditt noverande passord"
 
@@ -6893,7 +6925,7 @@ msgstr ""
 msgid "Predefined search %1 not found"
 msgstr ""
 
-#: share/html/Elements/Tabs:1219 share/html/Elements/Tabs:709 share/html/Prefs/AboutMe.html:48 share/html/Prefs/Other.html:80 share/html/SelfService/Prefs.html:48
+#: share/html/Elements/Tabs:1223 share/html/Elements/Tabs:709 share/html/Prefs/AboutMe.html:48 share/html/Prefs/Other.html:80 share/html/SelfService/Prefs.html:48
 msgid "Preferences"
 msgstr "Innstillingar"
 
@@ -6921,11 +6953,11 @@ msgstr ""
 msgid "Preferences saved for user %1."
 msgstr "Innstillingar lagra for brukaren %1"
 
-#: share/html/Prefs/DashboardsInMenu.html:79 share/html/Prefs/MyRT.html:102 share/html/Prefs/Other.html:103 share/html/Prefs/QueueList.html:106 share/html/Prefs/Search.html:119 share/html/Prefs/SearchOptions.html:81
+#: share/html/Prefs/DashboardsInMenu.html:79 share/html/Prefs/MyRT.html:102 share/html/Prefs/Other.html:103 share/html/Prefs/QueueList.html:106 share/html/Prefs/Search.html:119 share/html/Prefs/SearchOptions.html:85
 msgid "Preferences saved."
 msgstr "Innstillingar lagra"
 
-#: lib/RT/User.pm:1561
+#: lib/RT/User.pm:1581
 msgid "Preferences were not found"
 msgstr ""
 
@@ -6947,7 +6979,7 @@ msgstr "Førebuing klargjord"
 msgid "Press %1 to view keyboard shortcuts."
 msgstr ""
 
-#: share/html/Elements/Tabs:880
+#: share/html/Elements/Tabs:884
 msgid "Prev"
 msgstr "Førre"
 
@@ -7004,7 +7036,7 @@ msgstr "Utvida løyve: %1"
 msgid "Privileged users"
 msgstr "Brukarar med utvida løyve"
 
-#: lib/RT/Config.pm:189
+#: lib/RT/Config.pm:199
 msgid "Privileged: usernames; Unprivileged: names and email addresses"
 msgstr ""
 
@@ -7065,7 +7097,7 @@ msgstr "Køen finst frå før"
 msgid "Queue could not be created"
 msgstr "Klarte ikkje oppretta køen"
 
-#: lib/RT/Interface/Web.pm:3924 share/html/m/ticket/create:143
+#: lib/RT/Interface/Web.pm:3929 share/html/m/ticket/create:143
 msgid "Queue could not be loaded."
 msgstr "Klarte ikkje lasta køen."
 
@@ -7105,7 +7137,7 @@ msgstr ""
 msgid "QueueCc"
 msgstr "KøKopimottakar"
 
-#: etc/RT_Config.pm:1296 etc/initialdata:913
+#: etc/RT_Config.pm:1313 etc/initialdata:913
 msgid "QueueList"
 msgstr ""
 
@@ -7117,7 +7149,7 @@ msgstr "Kønamn"
 msgid "QueueWatcher"
 msgstr "KøOvervakar"
 
-#: lib/RT/CustomField.pm:2052 lib/RT/CustomField.pm:217 share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:174 share/html/Elements/Tabs:304 share/html/Elements/Tabs:83
+#: lib/RT/CustomField.pm:2048 lib/RT/CustomField.pm:217 share/html/Admin/Global/CustomFields/index.html:77 share/html/Elements/Tabs:174 share/html/Elements/Tabs:304 share/html/Elements/Tabs:83
 msgid "Queues"
 msgstr "Køar"
 
@@ -7141,7 +7173,7 @@ msgstr "Kjappsøk"
 msgid "Quick ticket creation"
 msgstr "Kjapp saksoppretting"
 
-#: etc/RT_Config.pm:1296 etc/initialdata:902
+#: etc/RT_Config.pm:1313 etc/initialdata:902
 msgid "QuickCreate"
 msgstr ""
 
@@ -7153,7 +7185,7 @@ msgstr "RFC 2616"
 msgid "RFC2822"
 msgstr "RFC 2822"
 
-#: share/html/Elements/Tabs:998
+#: share/html/Elements/Tabs:1002
 msgid "RSS"
 msgstr ""
 
@@ -7181,7 +7213,7 @@ msgstr ""
 msgid "RT Size"
 msgstr "RT-storleik"
 
-#: lib/RT/Config.pm:384 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:255 share/html/Elements/Tabs:377 share/html/Elements/Tabs:712 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
+#: lib/RT/Config.pm:409 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:54 share/html/Admin/Users/MyRT.html:62 share/html/Elements/Tabs:255 share/html/Elements/Tabs:377 share/html/Elements/Tabs:712 share/html/Prefs/MyRT.html:57 share/html/Prefs/MyRT.html:81 share/html/index.html:4
 msgid "RT at a glance"
 msgstr "RT-oversikt"
 
@@ -7258,7 +7290,7 @@ msgstr ""
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "«RTAddressRegexp»-valet i oppsettet er ikkje i samsvar med «%1»"
 
-#: etc/RT_Config.pm:3349 etc/RT_Config.pm:3350 etc/RT_Config.pm:3438 etc/RT_Config.pm:3439
+#: etc/RT_Config.pm:3402 etc/RT_Config.pm:3403 etc/RT_Config.pm:3491 etc/RT_Config.pm:3492
 msgid "Re-open"
 msgstr ""
 
@@ -7271,7 +7303,7 @@ msgid "Real Name"
 msgstr "Fullt namn"
 
 # Blir bare brukt som overskrift i en tabell, og kan derfor ha mellomrom.
-#: lib/RT/User.pm:95
+#: lib/RT/User.pm:96
 msgid "RealName"
 msgstr "Fullt namn"
 
@@ -7291,7 +7323,7 @@ msgstr "Lagra alle oppdateringane"
 msgid "Recursive member"
 msgstr "Rekursivt medlem"
 
-#: etc/RT_Config.pm:3393
+#: etc/RT_Config.pm:3446
 msgid "Recycle"
 msgstr ""
 
@@ -7339,6 +7371,22 @@ msgstr "ReferererTil"
 msgid "Refresh"
 msgstr "Oppdatering"
 
+#: lib/RT/Config.pm:424
+msgid "Refresh home page every %quant(%1,minute,minutes)."
+msgstr ""
+
+#: lib/RT/Config.pm:430
+msgid "Refresh home page every %quant(%1,second,seconds)."
+msgstr ""
+
+#: lib/RT/Config.pm:388
+msgid "Refresh search results every %quant(%1,minute,minutes)."
+msgstr ""
+
+#: lib/RT/Config.pm:394
+msgid "Refresh search results every %quant(%1,second,seconds)."
+msgstr ""
+
 #. ($value/60)
 #: share/html/Elements/Refresh:60
 msgid "Refresh this page every %quant(%1,minute,minutes)."
@@ -7349,7 +7397,7 @@ msgstr "Oppdater sida kvart %1. minutt"
 msgid "Refresh this page every %quant(%1,second,seconds)."
 msgstr ""
 
-#: etc/RT_Config.pm:1296 etc/initialdata:921
+#: etc/RT_Config.pm:1313 etc/initialdata:921
 msgid "RefreshHomepage"
 msgstr ""
 
@@ -7357,15 +7405,15 @@ msgstr ""
 msgid "Refused to add link which would create a circular relationship"
 msgstr ""
 
-#: etc/RT_Config.pm:3343 etc/RT_Config.pm:3347 etc/RT_Config.pm:3432 etc/RT_Config.pm:3436
+#: etc/RT_Config.pm:3396 etc/RT_Config.pm:3400 etc/RT_Config.pm:3485 etc/RT_Config.pm:3489
 msgid "Reject"
 msgstr ""
 
-#: etc/RT_Config.pm:1860
+#: etc/RT_Config.pm:1896
 msgid "Related tickets"
 msgstr ""
 
-#: lib/RT/Config.pm:177
+#: lib/RT/Config.pm:187
 msgid "Remember default queue"
 msgstr ""
 
@@ -7390,7 +7438,7 @@ msgstr "Påminninga «%1» gjenopna"
 
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
-#: lib/RT/Interface/Web.pm:3066 lib/RT/Interface/Web.pm:3084
+#: lib/RT/Interface/Web.pm:3071 lib/RT/Interface/Web.pm:3089
 msgid "Reminder '%1': %2"
 msgstr ""
 
@@ -7410,10 +7458,10 @@ msgstr ""
 msgid "Reminders"
 msgstr "Påminningar"
 
-#. ($Ticket->Id)
+#. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/Reminders.html:48
-msgid "Reminders for ticket #%1"
-msgstr "Påminningar for sak %1"
+msgid "Reminders for ticket #%1: %2"
+msgstr ""
 
 #: share/html/Elements/JavascriptConfig:72
 msgid "Remove"
@@ -7469,11 +7517,11 @@ msgstr ""
 msgid "Render Type"
 msgstr ""
 
-#: lib/RT/Config.pm:202
+#: lib/RT/Config.pm:212
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr ""
 
-#: lib/RT/Config.pm:212
+#: lib/RT/Config.pm:222
 msgid "Replaces the queue dropdowns with textboxes"
 msgstr ""
 
@@ -7497,7 +7545,7 @@ msgstr ""
 msgid "Reply to tickets"
 msgstr "Svar på sak"
 
-#: etc/RT_Config.pm:3396
+#: etc/RT_Config.pm:3449
 msgid "Report stolen"
 msgstr ""
 
@@ -7517,7 +7565,7 @@ msgstr "Innmeldar"
 msgid "RequestorGroup"
 msgstr "Innmeldargruppe"
 
-#: lib/RT/Graph/Tickets.pm:178 lib/RT/Tickets.pm:146 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:276 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:149 share/html/Ticket/Elements/EditPeople:95 share/html/Ticket/Elements/ShowPeople:75 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:294
+#: lib/RT/Graph/Tickets.pm:178 lib/RT/Tickets.pm:146 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:276 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:149 share/html/Ticket/Elements/EditPeople:95 share/html/Ticket/Elements/ShowPeople:76 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:294
 msgid "Requestors"
 msgstr "Innmeldar"
 
@@ -7570,7 +7618,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Heime"
 
-#: etc/RT_Config.pm:3342 etc/RT_Config.pm:3346 etc/RT_Config.pm:3431 etc/RT_Config.pm:3435 share/html/Search/Elements/EditFormat:104
+#: etc/RT_Config.pm:3395 etc/RT_Config.pm:3399 etc/RT_Config.pm:3484 etc/RT_Config.pm:3488 share/html/Search/Elements/EditFormat:104
 msgid "Resolve"
 msgstr "Løys"
 
@@ -7611,6 +7659,10 @@ msgstr "LøystRelativ"
 msgid "Respond"
 msgstr "Svar"
 
+#: share/html/Prefs/SearchOptions.html:65
+msgid "Restore Default Preferences"
+msgstr ""
+
 #: share/html/Elements/ListActions:51 share/html/Search/Elements/NewListActions:48
 msgid "Results"
 msgstr "Resultat"
@@ -7640,7 +7692,7 @@ msgstr "Tilbakestill"
 msgid "Revoked right '%1' from %2."
 msgstr ""
 
-#: lib/RT/Config.pm:420
+#: lib/RT/Config.pm:451
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr ""
 
@@ -7657,7 +7709,7 @@ msgid "Right not loaded."
 msgstr "Løyve ikkje lasta."
 
 #. ($object_type)
-#: lib/RT/Interface/Web.pm:2658 lib/RT/Interface/Web.pm:2758
+#: lib/RT/Interface/Web.pm:2663 lib/RT/Interface/Web.pm:2763
 msgid "Rights could not be granted for %1"
 msgstr "Løyve kunne ikkje tildelast for %1"
 
@@ -7687,7 +7739,7 @@ msgstr ""
 msgid "Role group exists already"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4060 share/html/Admin/Assets/Catalogs/Roles.html:55 share/html/Elements/Tabs:1153
+#: lib/RT/Interface/Web.pm:4065 share/html/Admin/Assets/Catalogs/Roles.html:55 share/html/Elements/Tabs:1157
 msgid "Roles"
 msgstr "Roller"
 
@@ -7715,7 +7767,7 @@ msgstr ""
 msgid "SMIME Certificate"
 msgstr ""
 
-#: lib/RT/User.pm:99
+#: lib/RT/User.pm:100
 msgid "SMIMECertificate"
 msgstr ""
 
@@ -7752,7 +7804,7 @@ msgstr "laurdag"
 msgid "Save"
 msgstr "Lagra"
 
-#: share/html/Admin/Actions/Modify.html:62 share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/Assets/Catalogs/DefaultValues.html:63 share/html/Admin/Assets/Catalogs/GroupRights.html:55 share/html/Admin/Assets/Catalogs/UserRights.html:55 share/html/Admin/Conditions/Modify.html:62 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:198 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/CustomRoles/Modify.html:100 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:99 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/DefaultValues.html:133 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:164 share/html/Admin/Queues/People.html:134 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:231 share/html/Articles/Article/Edit.html:91 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:208 share/html/Prefs/Other.html:76 share/html/Prefs/QueueList.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:62 share/html/SelfService/Prefs.html:81 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:82 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Actions/Modify.html:62 share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/Assets/Catalogs/DefaultValues.html:63 share/html/Admin/Assets/Catalogs/GroupRights.html:55 share/html/Admin/Assets/Catalogs/UserRights.html:55 share/html/Admin/Conditions/Modify.html:62 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:198 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/CustomRoles/Modify.html:100 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:99 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/DefaultValues.html:133 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:164 share/html/Admin/Queues/People.html:134 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:231 share/html/Articles/Article/Edit.html:91 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:208 share/html/Prefs/Other.html:76 share/html/Prefs/QueueList.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:61 share/html/SelfService/Prefs.html:81 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:82 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Lagra endringar"
 
@@ -7802,7 +7854,7 @@ msgstr ""
 msgid "Saved searches"
 msgstr "Lagra søk"
 
-#: etc/RT_Config.pm:1296
+#: etc/RT_Config.pm:1313
 msgid "SavedSearches"
 msgstr ""
 
@@ -7836,7 +7888,7 @@ msgstr "Utløysarar og mottakarar"
 msgid "Scrips normally run after each individual change to a ticket."
 msgstr ""
 
-#: share/html/Admin/Assets/Catalogs/index.html:86 share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Asset/Search/index.html:81 share/html/Asset/Search/index.html:90 share/html/Elements/FindAsset:51 share/html/Elements/GotoUser:58 share/html/Elements/ShortcutHelp:84 share/html/Elements/SimpleSearch:56 share/html/Elements/Tabs:1038 share/html/Elements/Tabs:600 share/html/Elements/Tabs:657 share/html/Elements/Tabs:663 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
+#: share/html/Admin/Assets/Catalogs/index.html:86 share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Asset/Search/index.html:81 share/html/Asset/Search/index.html:90 share/html/Elements/FindAsset:51 share/html/Elements/GotoUser:58 share/html/Elements/ShortcutHelp:84 share/html/Elements/SimpleSearch:56 share/html/Elements/Tabs:1042 share/html/Elements/Tabs:600 share/html/Elements/Tabs:657 share/html/Elements/Tabs:663 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "Søk"
 
@@ -7886,7 +7938,7 @@ msgstr "Søkjeval"
 msgid "Search results"
 msgstr ""
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:378
 msgid "Search results refresh interval"
 msgstr "Oppdater søkjeresultata"
 
@@ -7931,7 +7983,7 @@ msgstr ""
 msgid "See that this class exists"
 msgstr ""
 
-#: share/html/Elements/Tabs:106 share/html/Elements/Tabs:1144 share/html/Elements/Tabs:116 share/html/Elements/Tabs:131 share/html/Elements/Tabs:139 share/html/Elements/Tabs:147 share/html/Elements/Tabs:155 share/html/Elements/Tabs:202 share/html/Elements/Tabs:218 share/html/Elements/Tabs:232 share/html/Elements/Tabs:241 share/html/Elements/Tabs:324 share/html/Elements/Tabs:343 share/html/Elements/Tabs:347 share/html/Elements/Tabs:467 share/html/Elements/Tabs:474 share/html/Elements/Tabs:481 share/html/Elements/Tabs:484 share/html/Elements/Tabs:487 share/html/Elements/Tabs:495 share/html/Elements/Tabs:501 share/html/Elements/Tabs:507 share/html/Elements/Tabs:513 share/html/Elements/Tabs:525 share/html/Elements/Tabs:536 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
+#: share/html/Elements/Tabs:106 share/html/Elements/Tabs:1148 share/html/Elements/Tabs:116 share/html/Elements/Tabs:131 share/html/Elements/Tabs:139 share/html/Elements/Tabs:147 share/html/Elements/Tabs:155 share/html/Elements/Tabs:202 share/html/Elements/Tabs:218 share/html/Elements/Tabs:232 share/html/Elements/Tabs:241 share/html/Elements/Tabs:324 share/html/Elements/Tabs:343 share/html/Elements/Tabs:347 share/html/Elements/Tabs:467 share/html/Elements/Tabs:474 share/html/Elements/Tabs:481 share/html/Elements/Tabs:484 share/html/Elements/Tabs:487 share/html/Elements/Tabs:495 share/html/Elements/Tabs:501 share/html/Elements/Tabs:507 share/html/Elements/Tabs:513 share/html/Elements/Tabs:525 share/html/Elements/Tabs:536 share/html/Elements/Tabs:71 share/html/Elements/Tabs:79 share/html/Elements/Tabs:87 share/html/Elements/Tabs:96
 msgid "Select"
 msgstr "Vel"
 
@@ -8129,7 +8181,7 @@ msgstr "Send e-post til innmeldarar og kopimottakarar"
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Send e-post til innmeldarar og kopimottakarar som kommentar"
 
-#: lib/RT/Interface/Email.pm:1437
+#: lib/RT/Interface/Email.pm:1441
 msgid "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs."
 msgstr ""
 
@@ -8181,7 +8233,7 @@ msgstr ""
 msgid "Set due date according to SLA"
 msgstr ""
 
-#: lib/RT/User.pm:1957
+#: lib/RT/User.pm:1977
 msgid "Set private key"
 msgstr ""
 
@@ -8205,11 +8257,11 @@ msgstr "Innstillingar"
 msgid "Setup needed"
 msgstr ""
 
-#: lib/RT/Config.pm:190
+#: lib/RT/Config.pm:200
 msgid "Short usernames"
 msgstr "Korte brukarnamn"
 
-#: lib/RT/Config.pm:611
+#: lib/RT/Config.pm:642
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr "Skal RT senda deg e-post med dine eigne saksoppdateringar?"
 
@@ -8237,7 +8289,7 @@ msgstr ""
 msgid "Show Columns"
 msgstr "Vis kolonnar"
 
-#: share/html/Elements/Tabs:1118 share/html/Elements/Tabs:972
+#: share/html/Elements/Tabs:1122 share/html/Elements/Tabs:976
 msgid "Show Results"
 msgstr "Vis søkjeresultat"
 
@@ -8278,7 +8330,7 @@ msgstr ""
 msgid "Show global templates"
 msgstr ""
 
-#: lib/RT/Config.pm:449
+#: lib/RT/Config.pm:480
 msgid "Show history"
 msgstr ""
 
@@ -8290,11 +8342,11 @@ msgstr ""
 msgid "Show link descriptions"
 msgstr "Vis koplingsskildringar"
 
-#: lib/RT/Config.pm:491
+#: lib/RT/Config.pm:522
 msgid "Show no tickets for the Requestor"
 msgstr ""
 
-#: lib/RT/Config.pm:440
+#: lib/RT/Config.pm:471
 msgid "Show oldest history first"
 msgstr "Vis eldste oppdatering først"
 
@@ -8310,19 +8362,19 @@ msgstr ""
 msgid "Show requests awaiting other approvals"
 msgstr "Vis førespurnader som ventar på andre godkjenningar"
 
-#: lib/RT/Config.pm:501
+#: lib/RT/Config.pm:532
 msgid "Show simplified recipient list on ticket update"
 msgstr ""
 
-#: lib/RT/Config.pm:488
+#: lib/RT/Config.pm:519
 msgid "Show the Requestor's 10 highest priority active tickets"
 msgstr ""
 
-#: lib/RT/Config.pm:489
+#: lib/RT/Config.pm:520
 msgid "Show the Requestor's 10 highest priority inactive tickets"
 msgstr ""
 
-#: lib/RT/Config.pm:490
+#: lib/RT/Config.pm:521
 msgid "Show the Requestor's 10 highest priority tickets"
 msgstr ""
 
@@ -8334,7 +8386,7 @@ msgstr ""
 msgid "Show unset fields"
 msgstr ""
 
-#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:1015 share/html/Elements/Tabs:294
+#: share/html/Admin/Tools/Shredder/index.html:74 share/html/Elements/Tabs:1019 share/html/Elements/Tabs:294
 msgid "Shredder"
 msgstr "Makulering"
 
@@ -8446,7 +8498,7 @@ msgstr "Kjelde"
 msgid "Specify whether this is a daily or weekly run."
 msgstr "Vel om denne skal køyrast dagleg eller vekentleg."
 
-#: share/html/Elements/Tabs:981
+#: share/html/Elements/Tabs:985
 msgid "Spreadsheet"
 msgstr "Rekneark"
 
@@ -8463,7 +8515,7 @@ msgstr ""
 msgid "Stage"
 msgstr "Nivå"
 
-#: etc/RT_Config.pm:3345 etc/RT_Config.pm:3434
+#: etc/RT_Config.pm:3398 etc/RT_Config.pm:3487
 msgid "Stall"
 msgstr ""
 
@@ -8537,7 +8589,7 @@ msgstr "Status endra frå %1 til %2"
 msgid "Status changes"
 msgstr ""
 
-#: share/html/Elements/Tabs:855
+#: share/html/Elements/Tabs:856
 msgid "Steal"
 msgstr "Stel"
 
@@ -8637,7 +8689,7 @@ msgstr "Data dekryptert"
 msgid "Successfuly encrypted data"
 msgstr "Data kryptert"
 
-#: share/html/Articles/Article/Display.html:54 share/html/Articles/Article/Elements/EditBasics:54 share/html/Articles/Article/Elements/ShowSearchCriteria:67 share/html/Elements/RT__Article/ColumnMap:66 share/html/Elements/Tabs:1170
+#: share/html/Articles/Article/Display.html:54 share/html/Articles/Article/Elements/EditBasics:54 share/html/Articles/Article/Elements/ShowSearchCriteria:67 share/html/Elements/RT__Article/ColumnMap:66 share/html/Elements/Tabs:1174
 msgid "Summary"
 msgstr ""
 
@@ -8689,11 +8741,11 @@ msgstr "sundag"
 msgid "Suppress if empty (Check this to avoid sending mail if all searches have no results)"
 msgstr ""
 
-#: lib/RT/Config.pm:600
+#: lib/RT/Config.pm:631
 msgid "Suspended"
 msgstr "Stoppa"
 
-#: lib/RT/Interface/Web.pm:4012
+#: lib/RT/Interface/Web.pm:4017
 msgid "System"
 msgstr ""
 
@@ -8713,7 +8765,7 @@ msgstr "Systemoppsett"
 msgid "System Default"
 msgstr "Systemverdi"
 
-#: lib/RT/Interface/Web.pm:2658 lib/RT/Interface/Web.pm:2758 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:2663 lib/RT/Interface/Web.pm:2763 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "Systemfeil"
 
@@ -8738,7 +8790,7 @@ msgstr "Systemfeil. Løyvet vart ikkje tildelt."
 msgid "SystemRolegroup for internal use"
 msgstr "Systemrollegruppe for intern bruk"
 
-#: etc/initialdata:862 share/html/Elements/Tabs:852 share/html/Search/Elements/EditFormat:101
+#: etc/initialdata:862 share/html/Elements/Tabs:853 share/html/Search/Elements/EditFormat:101
 msgid "Take"
 msgstr "Ta"
 
@@ -8836,7 +8888,7 @@ msgstr "Tekstfila vert ikkje vist, då denne visinga er slått av i innstillinga
 msgid "That is already the current value"
 msgstr "Verdien ble ikke endret"
 
-#: lib/RT/CustomField.pm:1795 share/html/Elements/ValidateCustomFields:120
+#: lib/RT/CustomField.pm:1791 share/html/Elements/ValidateCustomFields:120
 msgid "That is not a unique value"
 msgstr ""
 
@@ -8848,35 +8900,35 @@ msgstr "Dette er ikkje ein gyldig verdi for fleksifeltet"
 msgid "That role is invalid for this object"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2434
+#: lib/RT/Ticket.pm:2461
 msgid "That ticket has unresolved dependencies"
 msgstr "Saka har uløyste avhengnader"
 
-#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2347
+#: lib/RT/Action/CreateTickets.pm:434 lib/RT/Ticket.pm:2374
 msgid "That user already owns that ticket"
 msgstr "Brukaren eig alt saka"
 
-#: lib/RT/Ticket.pm:2337
+#: lib/RT/Ticket.pm:2364
 msgid "That user does not exist"
 msgstr "Brukaren finst ikkje"
 
-#: lib/RT/User.pm:344
+#: lib/RT/User.pm:345
 msgid "That user is already privileged"
 msgstr "Brukaren har alt utvida løyve"
 
-#: lib/RT/User.pm:370
+#: lib/RT/User.pm:371
 msgid "That user is already unprivileged"
 msgstr "Brukaren har alt berre enkle løyve"
 
-#: lib/RT/User.pm:363
+#: lib/RT/User.pm:364
 msgid "That user is now privileged"
 msgstr "Brukaren har no utvida løyve"
 
-#: lib/RT/User.pm:389
+#: lib/RT/User.pm:390
 msgid "That user is now unprivileged"
 msgstr "Brukaren har no berre enkle løyve"
 
-#: lib/RT/Ticket.pm:2342
+#: lib/RT/Ticket.pm:2369
 msgid "That user may not own tickets in that queue"
 msgstr "Brukaren kan ikkje eiga saker i denne køen"
 
@@ -8975,7 +9027,7 @@ msgstr "Innstillingane du har valt er lagra i %1."
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr "Systemet kan ikkje signera utgåande e-postar. Dette tyder vanlegvis på at passfrasen er feil, eller at GPG Agent ikkje køyrer. Meld frå til systemadministratoren med ein gang. Problemadressene er:"
 
-#: lib/RT/Config.pm:221 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:281
+#: lib/RT/Config.pm:231 share/html/Admin/Tools/Theme.html:49 share/html/Elements/Tabs:281
 msgid "Theme"
 msgstr "Tema"
 
@@ -9125,14 +9177,14 @@ msgstr "Sak %1 oppretta i køen «%2»"
 
 #. ($Ticket->Id, $_)
 #. ($id, $msg)
-#: share/html/Search/Bulk.html:338 share/html/Tools/MyDay.html:90 share/html/Tools/MyDay.html:93 share/html/Tools/MyDay.html:99
+#: share/html/Search/Bulk.html:340 share/html/Tools/MyDay.html:90 share/html/Tools/MyDay.html:93 share/html/Tools/MyDay.html:99
 msgid "Ticket %1: %2"
 msgstr "Sak %1: %2"
 
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/History.html:48
-msgid "Ticket History # %1 %2"
-msgstr "Saksoppdatering %1 %2"
+msgid "Ticket History #%1: %2"
+msgstr ""
 
 #: etc/initialdata:475
 msgid "Ticket Resolved"
@@ -9142,7 +9194,7 @@ msgstr "Sak løyst"
 msgid "Ticket Search"
 msgstr "Sak-søk"
 
-#: lib/RT/CustomField.pm:2049 lib/RT/CustomField.pm:215 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:184
+#: lib/RT/CustomField.pm:2045 lib/RT/CustomField.pm:215 share/html/Admin/Global/CustomFields/index.html:89 share/html/Elements/Tabs:184
 msgid "Ticket Transactions"
 msgstr "Sakstransaksjonar"
 
@@ -9150,7 +9202,7 @@ msgstr "Sakstransaksjonar"
 msgid "Ticket and Transaction"
 msgstr ""
 
-#: lib/RT/Config.pm:289 lib/RT/Config.pm:325 lib/RT/Config.pm:335
+#: lib/RT/Config.pm:299 lib/RT/Config.pm:335 lib/RT/Config.pm:345 lib/RT/Config.pm:354
 msgid "Ticket composition"
 msgstr ""
 
@@ -9174,7 +9226,7 @@ msgstr "Klarte ikkje lasta inn sak"
 msgid "Ticket count"
 msgstr ""
 
-#: lib/RT/Config.pm:414 lib/RT/Config.pm:424 lib/RT/Config.pm:480 lib/RT/Config.pm:496 lib/RT/Config.pm:505
+#: lib/RT/Config.pm:445 lib/RT/Config.pm:455 lib/RT/Config.pm:511 lib/RT/Config.pm:527 lib/RT/Config.pm:536
 msgid "Ticket display"
 msgstr "Saksvising"
 
@@ -9199,7 +9251,7 @@ msgstr ""
 msgid "TicketSQL search module"
 msgstr "TicketSQL-søkjemodul"
 
-#: lib/RT/CustomField.pm:2048 lib/RT/CustomField.pm:214 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:1202 share/html/Elements/Tabs:179 share/html/Elements/Tabs:351 share/html/Elements/Tabs:602
+#: lib/RT/CustomField.pm:2044 lib/RT/CustomField.pm:214 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:1206 share/html/Elements/Tabs:179 share/html/Elements/Tabs:351 share/html/Elements/Tabs:602
 msgid "Tickets"
 msgstr "Saker"
 
@@ -9286,7 +9338,7 @@ msgstr ""
 msgid "Timer for #%1: %2"
 msgstr ""
 
-#: lib/RT/Installer.pm:189 lib/RT/User.pm:102 share/html/Admin/Users/Modify.html:96 share/html/Prefs/AboutMe.html:80 share/html/SelfService/Prefs.html:63
+#: lib/RT/Installer.pm:189 lib/RT/User.pm:103 share/html/Admin/Users/Modify.html:96 share/html/Prefs/AboutMe.html:80 share/html/SelfService/Prefs.html:63
 msgid "Timezone"
 msgstr "Tidssone"
 
@@ -9499,12 +9551,12 @@ msgid "Unable to determine object type or id"
 msgstr "Klarte ikkje fastsetja type eller ID til objekt"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4119
+#: lib/RT/Interface/Web.pm:4124
 msgid "Unable to find asset #%1"
 msgstr ""
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4103
+#: lib/RT/Interface/Web.pm:4108
 msgid "Unable to find catalog %1"
 msgstr ""
 
@@ -9564,7 +9616,7 @@ msgstr ""
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr ""
 
-#: etc/RT_Config.pm:3351 etc/RT_Config.pm:3440
+#: etc/RT_Config.pm:3404 etc/RT_Config.pm:3493
 msgid "Undelete"
 msgstr ""
 
@@ -9590,7 +9642,7 @@ msgid "Unknown ContentEncoding %1"
 msgstr "Ukjend teiknkoding: %1"
 
 #. ($key)
-#: lib/RT/Interface/Web/QueryBuilder/Tree.pm:272
+#: lib/RT/Interface/Web/QueryBuilder/Tree.pm:277
 msgid "Unknown field: %1"
 msgstr "Ukjent felt: %1"
 
@@ -9611,7 +9663,7 @@ msgstr "Uavgrensa"
 msgid "Unnamed dashboard"
 msgstr ""
 
-#: share/html/Articles/Article/Elements/SelectSavedSearches:60 share/html/Elements/RT__SavedSearch/ColumnMap:58 share/html/Search/Elements/SelectSearchesForObjects:63
+#: share/html/Articles/Article/Elements/SelectSavedSearches:60 share/html/Elements/RT__SavedSearch/ColumnMap:58 share/html/Search/Elements/SelectSearchesForObjects:65
 msgid "Unnamed search"
 msgstr "Namnlaust søk"
 
@@ -9639,9 +9691,13 @@ msgstr ""
 msgid "Unselected objects"
 msgstr "Ikkje-valde objekt"
 
-#: lib/RT/User.pm:1941
+#: lib/RT/User.pm:1961
 msgid "Unset private key"
 msgstr "Fjern privatnøkkel"
+
+#: share/html/Elements/Tabs:859
+msgid "Untake"
+msgstr ""
 
 #: lib/RT/Transaction.pm:1059 lib/RT/Transaction.pm:1247
 msgid "Untaken"
@@ -9675,11 +9731,11 @@ msgstr "Oppdateringstype"
 msgid "Update format and Search"
 msgstr "Oppdater format og søk"
 
-#: share/html/Search/Bulk.html:233
+#: share/html/Search/Bulk.html:237
 msgid "Update multiple tickets"
 msgstr "Oppdater fleire saker"
 
-#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2419
+#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2424
 msgid "Update not recorded."
 msgstr "Oppdatering ikkje loggførd."
 
@@ -9693,13 +9749,17 @@ msgstr "Oppdater sak"
 msgid "Update ticket #%1"
 msgstr "Oppdater sak %1"
 
-#. ($TicketObj->id, $TicketObj->Subject||'')
 #. ($t->id, $t->Subject)
-#: share/html/Ticket/Update.html:286 share/html/m/ticket/reply:174
+#: share/html/m/ticket/reply:174
 msgid "Update ticket #%1 (%2)"
 msgstr "Oppdater sak %1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2419
+#. ($TicketObj->id, $TicketObj->Subject)
+#: share/html/Ticket/Update.html:280
+msgid "Update ticket #%1: %2"
+msgstr ""
+
+#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2424
 msgid "Update type was neither correspondence nor comment."
 msgstr "Oppdateringstypen var verken svar eller kommentar."
 
@@ -9707,7 +9767,7 @@ msgstr "Oppdateringstypen var verken svar eller kommentar."
 msgid "UpdateStatus"
 msgstr "Oppdateringsstatus"
 
-#: lib/RT/CustomField.pm:2127 lib/RT/Tickets.pm:161 share/html/Articles/Article/Display.html:70 share/html/Articles/Article/Elements/EditBasics:78 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:93 share/html/m/ticket/show:386
+#: lib/RT/CustomField.pm:2123 lib/RT/Tickets.pm:161 share/html/Articles/Article/Display.html:70 share/html/Articles/Article/Elements/EditBasics:78 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:93 share/html/m/ticket/show:386
 msgid "Updated"
 msgstr "Oppdatert"
 
@@ -9761,7 +9821,7 @@ msgstr "Last opp opptil %1 filer"
 msgid "Upload up to %quant(%1,image,images)"
 msgstr "Last opp opptil %1 bilete"
 
-#: share/html/Ticket/Elements/AddAttachments:153
+#: share/html/Ticket/Elements/AddAttachments:157
 msgid "Uploading..."
 msgstr ""
 
@@ -9769,7 +9829,7 @@ msgstr ""
 msgid "Usage:"
 msgstr ""
 
-#: lib/RT/Config.pm:276
+#: lib/RT/Config.pm:286
 msgid "Use a two column layout for create and update forms?"
 msgstr ""
 
@@ -9778,11 +9838,11 @@ msgstr ""
 msgid "Use asset %1 as ticket Requestor: %2"
 msgstr ""
 
-#: lib/RT/Config.pm:201
+#: lib/RT/Config.pm:211
 msgid "Use autocomplete to find owners?"
 msgstr ""
 
-#: lib/RT/Config.pm:211
+#: lib/RT/Config.pm:221
 msgid "Use autocomplete to find queues?"
 msgstr ""
 
@@ -9790,6 +9850,10 @@ msgstr ""
 #: share/html/Widgets/Form/Boolean:68
 msgid "Use default (%1)"
 msgstr "Systemverdi (%1)"
+
+#: lib/RT/Config.pm:359
+msgid "Use dropzone if available"
+msgstr ""
 
 #: share/html/Elements/Tabs:272
 msgid "Use other RT administrative tools"
@@ -9834,7 +9898,7 @@ msgstr "Tilpassa"
 msgid "User Defined conditions and results"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4030
+#: lib/RT/Interface/Web.pm:4035
 msgid "User Groups"
 msgstr ""
 
@@ -9842,7 +9906,7 @@ msgstr ""
 msgid "User Information"
 msgstr ""
 
-#: share/html/Elements/Tabs:1158 share/html/Elements/Tabs:250 share/html/Elements/Tabs:358 share/html/Elements/Tabs:403 share/html/Elements/Tabs:419 share/html/Elements/Tabs:532
+#: share/html/Elements/Tabs:1162 share/html/Elements/Tabs:250 share/html/Elements/Tabs:358 share/html/Elements/Tabs:403 share/html/Elements/Tabs:419 share/html/Elements/Tabs:532
 msgid "User Rights"
 msgstr "Brukarløyve"
 
@@ -9855,7 +9919,7 @@ msgid "User Summary"
 msgstr ""
 
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
-#: lib/RT/Interface/Web.pm:3325
+#: lib/RT/Interface/Web.pm:3330
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Brukaren bad om ein ukjend oppdateringstype for fleksifeltet %1 for %2 objekt %3"
 
@@ -9864,15 +9928,15 @@ msgstr "Brukaren bad om ein ukjend oppdateringstype for fleksifeltet %1 for %2 o
 msgid "User could not be created: %1"
 msgstr "Klarte ikkje oppretta brukaren: %1"
 
-#: lib/RT/User.pm:256
+#: lib/RT/User.pm:257
 msgid "User created"
 msgstr "Brukar oppretta"
 
-#: lib/RT/User.pm:1264
+#: lib/RT/User.pm:1284
 msgid "User disabled"
 msgstr "Brukar deaktivert"
 
-#: lib/RT/User.pm:1266
+#: lib/RT/User.pm:1286
 msgid "User enabled"
 msgstr "Brukar aktivert"
 
@@ -9880,11 +9944,11 @@ msgstr "Brukar aktivert"
 msgid "User has empty email address"
 msgstr "Brukaren manglar e-postadresse"
 
-#: lib/RT/User.pm:536 lib/RT/User.pm:544 lib/RT/User.pm:556
+#: lib/RT/User.pm:537 lib/RT/User.pm:545 lib/RT/User.pm:557
 msgid "User loaded"
 msgstr "Brukar lasta"
 
-#: share/html/Admin/Groups/index.html:121
+#: share/html/Admin/Groups/index.html:122
 msgid "User-defined groups"
 msgstr "Brukardefinerte grupper"
 
@@ -9897,11 +9961,11 @@ msgstr ""
 msgid "Username"
 msgstr "Brukarnamn"
 
-#: lib/RT/Config.pm:186
+#: lib/RT/Config.pm:196
 msgid "Username format"
 msgstr "Format på brukarnamn"
 
-#: lib/RT/CustomField.pm:2050 lib/RT/CustomField.pm:216 lib/RT/Interface/Web.pm:4088 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:91 share/html/Elements/Tabs:164 share/html/Elements/Tabs:305 share/html/Elements/Tabs:626 share/html/Elements/Tabs:67 share/html/Ticket/Elements/ShowBasics:86
+#: lib/RT/CustomField.pm:2046 lib/RT/CustomField.pm:216 lib/RT/Interface/Web.pm:4093 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:91 share/html/Elements/Tabs:164 share/html/Elements/Tabs:305 share/html/Elements/Tabs:626 share/html/Elements/Tabs:67 share/html/Ticket/Elements/ShowBasics:86
 msgid "Users"
 msgstr "Brukarar"
 
@@ -9914,7 +9978,7 @@ msgstr "Brukarar i samsvar med søkjekriterium"
 msgid "Using transaction #%1..."
 msgstr "Brukar transaksjon %1 …"
 
-#: lib/RT/Tickets.pm:3241
+#: lib/RT/Tickets.pm:3242
 msgid "Valid Query"
 msgstr "Gyldig spørjing"
 
@@ -10002,15 +10066,15 @@ msgstr ""
 msgid "WARNING: Saving search to user-level privacy"
 msgstr ""
 
-#: lib/RT/Config.pm:303
+#: lib/RT/Config.pm:313
 msgid "WYSIWYG composer height"
 msgstr "Høgd på visuelt skrivefelt"
 
-#: lib/RT/Config.pm:285
+#: lib/RT/Config.pm:295
 msgid "WYSIWYG message composer"
 msgstr "Visuelt skrivefelt"
 
-#: lib/RT/Config.pm:294
+#: lib/RT/Config.pm:304
 msgid "WYSIWYG use browser right-click menu"
 msgstr ""
 
@@ -10042,7 +10106,7 @@ msgstr "Overvakarar"
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
 msgstr "Fann databasen, og kan kopla til som databaseadministrator. Trykk «Tilpass detaljar» for å halda fram med å setje opp RT."
 
-#: lib/RT/CustomField.pm:2155
+#: lib/RT/CustomField.pm:2151
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
 msgstr ""
 
@@ -10070,7 +10134,7 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
-#: lib/RT/Config.pm:599
+#: lib/RT/Config.pm:630
 msgid "Weekly digest"
 msgstr "Vekentleg samandrag"
 
@@ -10086,7 +10150,7 @@ msgstr "Gjort i dag"
 msgid "What is RT?"
 msgstr "Kva er RT?"
 
-#: lib/RT/Config.pm:485
+#: lib/RT/Config.pm:516
 msgid "What tickets to display in the \"More about requestor\" box"
 msgstr ""
 
@@ -10233,7 +10297,7 @@ msgstr ""
 msgid "You <a href=\"%1\">may edit this dashboard</a> and <a href=\"%2\">your subscription</a> to it in RT."
 msgstr ""
 
-#: lib/RT/Ticket.pm:2317 lib/RT/Ticket.pm:2390
+#: lib/RT/Ticket.pm:2344 lib/RT/Ticket.pm:2417
 msgid "You already own this ticket"
 msgstr "Du eig alt denne saka"
 
@@ -10270,19 +10334,19 @@ msgstr ""
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr ""
 
-#: lib/RT/User.pm:932
+#: lib/RT/User.pm:933
 msgid "You can not set password."
 msgstr "Du kan ikkje velja passord"
 
-#: lib/RT/Ticket.pm:2309
+#: lib/RT/Ticket.pm:2336
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Du kan berre velja eigar på saker som du eig, eller som manglar eigar"
 
-#: lib/RT/Ticket.pm:2261
+#: lib/RT/Ticket.pm:2288
 msgid "You can only steal a ticket owned by someone else"
 msgstr ""
 
-#: lib/RT/Ticket.pm:2305
+#: lib/RT/Ticket.pm:2332
 msgid "You can only take tickets that are unowned"
 msgstr "Du kan berre ta saker som manglar eigar"
 
@@ -10313,11 +10377,11 @@ msgstr ""
 msgid "You don't have permission to view Articles in any Class"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4122
+#: lib/RT/Interface/Web.pm:4127
 msgid "You don't have permission to view this asset."
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:4106
+#: lib/RT/Interface/Web.pm:4111
 msgid "You don't have permission to view this catalog."
 msgstr ""
 
@@ -10392,7 +10456,7 @@ msgstr "Du ser denne teksten fordi du starta ein RT-tenar utan ein fungerande da
 msgid "You're welcome to login again"
 msgstr "Velkommen tilbake"
 
-#: lib/RT/User.pm:1158
+#: lib/RT/User.pm:1177
 msgid "Your password is not set."
 msgstr "Passordet er ikkje registrert"
 
@@ -10401,7 +10465,7 @@ msgstr "Passordet er ikkje registrert"
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:828
+#: lib/RT/Interface/Web.pm:829
 msgid "Your username or password is incorrect"
 msgstr "Feil brukarnamn eller passord"
 
@@ -10426,7 +10490,7 @@ msgid "[none]"
 msgstr "[ingen]"
 
 #: share/html/Elements/JavascriptConfig:68
-msgid "\b(re)?attach"
+msgid "\\b(re)?attach"
 msgstr ""
 
 #: lib/RT/Transaction.pm:1003
@@ -10441,15 +10505,15 @@ msgstr ""
 msgid "after"
 msgstr "etter"
 
-#: lib/RT/Config.pm:453
+#: lib/RT/Config.pm:484
 msgid "after clicking a link"
 msgstr ""
 
-#: lib/RT/Config.pm:452
+#: lib/RT/Config.pm:483
 msgid "after the rest of the page loads"
 msgstr ""
 
-#: etc/RT_Config.pm:3360
+#: etc/RT_Config.pm:3413
 msgid "allocated"
 msgstr ""
 
@@ -10465,7 +10529,7 @@ msgstr ""
 msgid "and then"
 msgstr ""
 
-#: lib/RT/Config.pm:455
+#: lib/RT/Config.pm:486
 msgid "as you scroll"
 msgstr ""
 
@@ -10521,7 +10585,7 @@ msgstr "trykk for å merkja eller fjerna merkinga for alle objekta"
 msgid "core config"
 msgstr "Globalt oppsett"
 
-#: lib/RT/Interface/Web.pm:1677 lib/RT/Interface/Web.pm:1686
+#: lib/RT/Interface/Web.pm:1678 lib/RT/Interface/Web.pm:1687
 msgid "create a ticket"
 msgstr ""
 
@@ -10542,7 +10606,7 @@ msgstr ""
 msgid "dashboards in menu"
 msgstr ""
 
-#: etc/RT_Config.pm:3315 etc/RT_Config.pm:3366
+#: etc/RT_Config.pm:3368 etc/RT_Config.pm:3419
 msgid "deleted"
 msgstr "sletta"
 
@@ -10558,15 +10622,15 @@ msgstr "last ned"
 msgid "duration"
 msgstr ""
 
-#: lib/RT/User.pm:666
+#: lib/RT/User.pm:667
 msgid "email delivery suspended"
 msgstr ""
 
-#: lib/RT/User.pm:658
+#: lib/RT/User.pm:659
 msgid "email disabled for ticket"
 msgstr ""
 
-#: lib/RT/User.pm:270
+#: lib/RT/User.pm:271
 msgid "empty name"
 msgstr ""
 
@@ -10640,7 +10704,7 @@ msgstr "gruppe «%1»"
 msgid "hide suggestions"
 msgstr ""
 
-#: lib/RT/Date.pm:121 share/html/Elements/Tabs:1003
+#: lib/RT/Date.pm:121 share/html/Elements/Tabs:1007
 msgid "iCal"
 msgstr ""
 
@@ -10648,7 +10712,7 @@ msgstr ""
 msgid "id"
 msgstr "ID"
 
-#: lib/RT/Config.pm:454
+#: lib/RT/Config.pm:485
 msgid "immediately"
 msgstr ""
 
@@ -10658,7 +10722,7 @@ msgstr ""
 msgid "in class %1"
 msgstr ""
 
-#: etc/RT_Config.pm:3361
+#: etc/RT_Config.pm:3414
 msgid "in-use"
 msgstr ""
 
@@ -10676,7 +10740,7 @@ msgid "index"
 msgstr ""
 
 #. ($due)
-#: lib/RT/Interface/Web.pm:3059
+#: lib/RT/Interface/Web.pm:3064
 msgid "invalid due date: %1"
 msgstr ""
 
@@ -10724,19 +10788,19 @@ msgstr "Maksdjupn"
 msgid "minutes"
 msgstr "minutt"
 
-#: lib/RT/Interface/Web.pm:1679
+#: lib/RT/Interface/Web.pm:1680
 msgid "modify RT's configuration"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1682
+#: lib/RT/Interface/Web.pm:1683
 msgid "modify a dashboard"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1685
+#: lib/RT/Interface/Web.pm:1686
 msgid "modify or access a search"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1684
+#: lib/RT/Interface/Web.pm:1685
 msgid "modify your preferences"
 msgstr ""
 
@@ -10753,7 +10817,7 @@ msgstr "månadleg (dag %1) klokka %2"
 msgid "never"
 msgstr "aldri"
 
-#: etc/RT_Config.pm:3313 etc/RT_Config.pm:3357
+#: etc/RT_Config.pm:3366 etc/RT_Config.pm:3410
 msgid "new"
 msgstr "ny"
 
@@ -10761,7 +10825,7 @@ msgstr "ny"
 msgid "no"
 msgstr "nei"
 
-#: lib/RT/User.pm:656
+#: lib/RT/User.pm:657
 msgid "no email address set"
 msgstr ""
 
@@ -10797,7 +10861,7 @@ msgstr "på dag"
 msgid "one"
 msgstr "éin"
 
-#: etc/RT_Config.pm:3314 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3367 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr ""
 
@@ -10830,19 +10894,19 @@ msgstr ""
 msgid "queue %1 %2"
 msgstr "kø %1 %2"
 
-#: lib/RT/User.pm:662
+#: lib/RT/User.pm:663
 msgid "receives daily digests"
 msgstr ""
 
-#: lib/RT/User.pm:664
+#: lib/RT/User.pm:665
 msgid "receives weekly digests"
 msgstr ""
 
-#: etc/RT_Config.pm:3364
+#: etc/RT_Config.pm:3417
 msgid "recycled"
 msgstr ""
 
-#: etc/RT_Config.pm:3315
+#: etc/RT_Config.pm:3368
 msgid "rejected"
 msgstr "avvist"
 
@@ -10850,7 +10914,7 @@ msgstr "avvist"
 msgid "requires running rt-crontool"
 msgstr ""
 
-#: etc/RT_Config.pm:3315
+#: etc/RT_Config.pm:3368
 msgid "resolved"
 msgstr "løyst"
 
@@ -10878,7 +10942,7 @@ msgstr ""
 msgid "site config"
 msgstr "Lokalt oppsett"
 
-#: etc/RT_Config.pm:3314
+#: etc/RT_Config.pm:3367
 msgid "stalled"
 msgstr "stoppa opp"
 
@@ -10886,7 +10950,7 @@ msgstr "stoppa opp"
 msgid "statement"
 msgstr ""
 
-#: etc/RT_Config.pm:3365
+#: etc/RT_Config.pm:3418
 msgid "stolen"
 msgstr ""
 
@@ -10908,11 +10972,11 @@ msgstr "systemgruppa «%1»"
 msgid "table"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1589
+#: lib/RT/Interface/Web.pm:1590
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2)"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1582
+#: lib/RT/Interface/Web.pm:1583
 msgid "the Referrer header supplied by your browser (%1) is not allowed by RT's configured hostname (%2) or whitelisted hosts (%3)"
 msgstr ""
 
@@ -10950,15 +11014,15 @@ msgstr "uskildra gruppe %1"
 msgid "unlimited"
 msgstr "uavgrensa"
 
-#: lib/RT/Interface/Web.pm:1678 lib/RT/Interface/Web.pm:1683 lib/RT/Interface/Web.pm:1687
+#: lib/RT/Interface/Web.pm:1679 lib/RT/Interface/Web.pm:1684 lib/RT/Interface/Web.pm:1688
 msgid "update a ticket"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1680
+#: lib/RT/Interface/Web.pm:1681
 msgid "update an approval"
 msgstr ""
 
-#: lib/RT/Interface/Web.pm:1681
+#: lib/RT/Interface/Web.pm:1682
 msgid "update an article"
 msgstr ""
 
@@ -11005,7 +11069,7 @@ msgstr "med meldingshovud"
 msgid "yes"
 msgstr "ja"
 
-#: lib/RT/Interface/Web.pm:1574
+#: lib/RT/Interface/Web.pm:1575
 msgid "your browser did not supply a Referrer header"
 msgstr ""
 
