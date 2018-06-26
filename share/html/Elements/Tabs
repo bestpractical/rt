@@ -1219,7 +1219,8 @@ my $build_selfservice_nav = sub {
         sort_order   => 99,
     );
 
-    if ( $session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
+    if ( ( RT->Config->Get('SelfServiceUserPrefs') || '' ) eq 'full-view' ||
+       $session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
         $about_me->child( prefs => title => loc('Preferences'), path => '/SelfService/Prefs.html' );
     }
 

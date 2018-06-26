@@ -96,7 +96,7 @@ my $password = [ qw(CurrentPass NewPass1 NewPass2) ];
 
 my $pref = RT->Config->Get( 'SelfServiceUserPrefs' ) || '';
 
-if ( $pref eq 'edit-prefs' || $pref eq 'full-edit' ) {
+if ( $pref eq 'brief' || $pref eq 'full-edit' ) {
 
     if ( defined $NewPass1 && length $NewPass1 ) {
         my ($status, $msg) = $user->SafeSetPassword(
