@@ -104,5 +104,4 @@ diag "check that we have the CF on the create"
     $m->content_lacks('Multi Set Initial CF', 'has no CF edit field');
 }
 
-undef $m;
 done_testing;

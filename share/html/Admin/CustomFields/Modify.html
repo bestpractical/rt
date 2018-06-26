@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -369,6 +369,8 @@ if ( $ARGS{'AddValue'} ) {
                 $ARGS{$paramtag."-new-$_"} =~ s/\s+$//;
                 $_ => $ARGS{ $paramtag ."-new-$_" } } grep { defined $ARGS{ $paramtag ."-new-$_" } } qw/ Name Description SortOrder Category/
         );
+        my $cf_add = $ARGS{ $paramtag.'-new-Name' };
+        $msg = loc("Custom field value [_1] added", $cf_add) if $id;
         push (@results, $msg);
     }
 }

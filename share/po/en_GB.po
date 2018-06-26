@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2016-07-20 22:51+0000\n"
-"PO-Revision-Date: 2016-08-05 12:39+0000\n"
+"POT-Creation-Date: 2017-07-26 21:00+0000\n"
+"PO-Revision-Date: 2017-11-07 23:51+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-05-31 23:12+0000\n"
-"X-Generator: Launchpad (build 18391)\n"
+"X-Launchpad-Export-Date: 2018-05-02 18:17+0000\n"
+"X-Generator: Launchpad (build 18623)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -36,7 +36,7 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($name, $self->loc($args{Type}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:493 share/html/Ticket/Update.html:350 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:493 share/html/Ticket/Update.html:344 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
@@ -91,9 +91,13 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:3959
+#: lib/RT/Interface/Web.pm:3964
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
+
+#: share/html/Admin/CustomFields/Modify.html:95
+msgid "Canonicalizer:"
+msgstr "Canonicaliser:"
 
 #: share/html/Asset/Elements/AssetSearchBasics:50 share/html/Asset/Elements/EditBasics:51 share/html/Asset/Elements/ShowBasics:50 share/html/Asset/Search/Bulk.html:85 share/html/Elements/RT__Asset/ColumnMap:88
 msgid "Catalog"
@@ -139,7 +143,7 @@ msgstr "Catalogue Create txn failed: %1"
 msgid "Catalog create failed: %1"
 msgstr "Catalogue create failed: %1"
 
-#: share/html/Elements/Tabs:1142 share/html/Elements/Tabs:228
+#: share/html/Elements/Tabs:1146 share/html/Elements/Tabs:228
 msgid "Catalogs"
 msgstr "Catalogues"
 
@@ -171,6 +175,11 @@ msgstr "Couldn't create role groups for catalogue"
 #: share/html/Asset/Create.html:48
 msgid "Create a new asset in catalog %1"
 msgstr "Create a new asset in catalogue %1"
+
+#. ($m->scomp("/Asset/Elements/SelectCatalog", Default => $ARGS{Catalog}),)
+#: share/html/User/Elements/Portlets/CreateAsset:56
+msgid "Create a new asset in the catalog %1"
+msgstr "Create a new asset in the catalogue %1"
 
 #. ($m->scomp("/Asset/Elements/SelectCatalog"),)
 #: share/html/Asset/Elements/CreateInCatalog:51
@@ -213,6 +222,11 @@ msgstr "Customise the RT theme"
 msgid "Customize the look of your RT"
 msgstr "Customise the look of your RT"
 
+#. ($catalog->Name)
+#: share/html/Admin/Assets/Catalogs/DefaultValues.html:71
+msgid "Default Values for catalog %1"
+msgstr "Default Values for catalogue %1"
+
 #: share/html/Admin/Global/CustomFields/Catalog-Assets.html:52
 msgid "Edit Custom Fields for Assets in all Catalogs"
 msgstr "Edit Custom Fields for Assets in all Catalogues"
@@ -249,6 +263,10 @@ msgstr "Initialise Database"
 msgid "Invalid Catalog"
 msgstr "Invalid Catalogue"
 
+#: lib/RT/CustomField.pm:348 lib/RT/CustomField.pm:864
+msgid "Invalid custom field values canonicalizer"
+msgstr "Invalid custom field values canonicaliser"
+
 #. ($args{'RightName'})
 #: lib/RT/ACE.pm:123 lib/RT/ACE.pm:246
 msgid "Invalid right. Couldn't canonicalize right '%1'"
@@ -262,7 +280,7 @@ msgstr "LocalisedDateTime"
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:4098
+#: lib/RT/Interface/Web.pm:4103
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -278,7 +296,7 @@ msgstr "No longer authorised"
 msgid "No permission to modify this catalog"
 msgstr "No permission to modify this catalogue"
 
-#: lib/RT/User.pm:94 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
+#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
 msgid "Organization"
 msgstr "Organisation"
 
@@ -290,7 +308,11 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: lib/RT/Config.pm:420
+#: share/html/Elements/Tabs:633
+msgid "Reports summarizing ticket resolution and status"
+msgstr "Reports summarising ticket resolution and status"
+
+#: lib/RT/Config.pm:451
 msgid "Rich text (HTML) shows formatting such as colored text, bold, italics, and more"
 msgstr "Rich text (HTML) shows formatting such as coloured text, bold, italics, and more"
 
@@ -314,8 +336,12 @@ msgstr "Select a colour for the section"
 msgid "The default catalog"
 msgstr "The default catalogue"
 
+#: lib/RT/CustomField.pm:344 lib/RT/CustomField.pm:860
+msgid "This custom field can not have a canonicalizer"
+msgstr "This custom field can not have a canonicaliser"
+
 #. ($id)
-#: lib/RT/Interface/Web.pm:4103
+#: lib/RT/Interface/Web.pm:4108
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
@@ -354,7 +380,7 @@ msgstr "You can also click on the logo above to get colours!"
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:4106
+#: lib/RT/Interface/Web.pm:4111
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 

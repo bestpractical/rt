@@ -76,5 +76,4 @@ is( $form->find_input('PrivateKey')->value,
 
 # TODO more /Admin/Users tests
 
-undef $m;
 done_testing;

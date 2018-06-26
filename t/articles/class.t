@@ -81,5 +81,4 @@ $m->content_like(qr/Description changed from.*no value.*to .*Test Description/,'
 $m->form_number(3);
 is($m->current_form->find_input('Include-Name')->value,undef,'Disabled Including Names for this Class');
 
-undef $m;
 done_testing();

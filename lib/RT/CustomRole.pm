@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -409,9 +409,11 @@ sub AddToObject {
 
     return ( 0, $self->loc('Permission Denied') )
         unless $queue->CurrentUserHasRight('AdminCustomRoles');
-
     my $rec = RT::ObjectCustomRole->new( $self->CurrentUser );
-    return $rec->Add( %args, CustomRole => $self );
+    my ( $status, $add ) = $rec->Add( %args, CustomRole => $self );
+    my $msg = $self->loc("[_1] added to queue [_2]", $self->Name, $queue->Name) if $status;
+
+    return ( $add, $msg );
 }
 
 =head2 RemoveFromObject
@@ -444,11 +446,13 @@ sub RemoveFromObject {
 
     return ( 0, $self->loc('Permission Denied') )
         unless $queue->CurrentUserHasRight('AdminCustomRoles');
-
     my $rec = RT::ObjectCustomRole->new( $self->CurrentUser );
     $rec->LoadByCols( CustomRole => $self->id, ObjectId => $args{'ObjectId'} );
     return (0, $self->loc('Custom role is not added') ) unless $rec->id;
-    return $rec->Delete;
+    my ( $status, $delete ) = $rec->Delete;
+    my $msg = $self->loc("[_1] removed from queue [_2]", $self->Name, $queue->Name) if $status;
+
+    return ( $delete, $msg );
 }
 
 =head2 SingleValue

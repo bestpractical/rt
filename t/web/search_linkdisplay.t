@@ -59,5 +59,4 @@ $ref = $m->find_link( url_regex => qr!/Article/Display.html! );
 ok( $ref, "found article link" );
 is( $ref->text, $article->URIObj->Resolver->AsString, $article->URIObj->Resolver->AsString . " is displayed" );
 
-undef $m;
 done_testing;

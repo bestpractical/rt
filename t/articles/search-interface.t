@@ -143,7 +143,6 @@ TODO:{
     $m->text_contains('hoi polloi 4');
 }
 
-undef $m;
 done_testing;
 
 # When you send $m to this sub, it must be on a page with

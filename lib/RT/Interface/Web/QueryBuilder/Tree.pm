@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -213,14 +213,19 @@ sub __LinearizeTree {
                 $key = "'$key'";
             }
             my $value = $clause->{Value};
-            if ( $clause->{Op} =~ /^IS( NOT)?$/i ) {
+            my $op = $clause->{Op};
+            if ( $value =~ /^NULL$/i && $op =~ /^(!?)=$/  ) {
+                $op = $1 ? 'IS NOT' : 'IS';
+            }
+
+            if ( $op =~ /^IS( NOT)?$/i ) {
                 $value = 'NULL';
             } elsif ( $value !~ /^[+-]?[0-9]+$/ ) {
                 $value =~ s/(['\\])/\\$1/g;
                 $value = "'$value'";
             }
 
-            $str .= $key ." ". $clause->{Op} . " " . $value;
+            $str .= $key ." ". $op . " " . $value;
         }
         $str =~ s/^\s+|\s+$//;
 

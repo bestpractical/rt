@@ -462,5 +462,4 @@ $m->next_warning_like(qr/public key not found/);
 $m->next_warning_like(qr/public key not found/);
 $m->no_leftover_warnings_ok;
 
-undef $m;
 done_testing;

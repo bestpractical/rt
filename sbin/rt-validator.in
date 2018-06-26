@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1057,7 +1057,7 @@ push @CHECKS, 'Links: wrong organization' => sub {
             while ( my ($id, $value) = $sth->fetchrow_array ) {
                 $res = 0;
                 print STDERR "Record #$id in $table. Value of $column column most probably is an incorrect link\n";
-                my ($wrong_org) = ( $value =~ m{^\Q$scheme\E://(.+)/[^/]+/[0-9]*$} );
+                my ($wrong_org) = ( $value =~ m{^\Q$scheme\E://(.+?)/(?:[^/]+/)*[0-9]*$} );
                 next unless my $replace_with = prompt(
                     'Replace',
                     "Column $column in $table is a link.  There is record #$id that has a"

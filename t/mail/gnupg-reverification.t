@@ -87,5 +87,4 @@ foreach my $id ( @ticket_ids ) {
     $m->no_warnings_ok;
 }
 
-undef $m;
 done_testing;

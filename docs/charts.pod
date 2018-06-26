@@ -61,9 +61,10 @@ across English, many western european languages, Chinese (Traditional and
 Simplified), and Japanese.  If you prefer to use a different font, you can
 change the L<< "C<%ChartFont>"|RT_Config/ChartFont >> option.
 
-There is also an option to use database timezone conversion for PostgreSQL
-and MySQL to enable timezone conversion for time-based reports. See
-F<docs/customizing/timezones_in_charts.pod> for details.
+There is also an option to use database timezone conversion for
+PostgreSQL, MySQL, and MariaDB to enable timezone conversion for
+time-based reports. See F<docs/customizing/timezones_in_charts.pod>
+for details.
 
 Search for "Chart" entries in L<< C<RT_Config> >> for more information on these
 options.

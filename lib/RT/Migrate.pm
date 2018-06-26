@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -92,7 +92,7 @@ sub progress {
         top    => sub { print "\n\n" },
         bottom => sub {},
         every  => 3,
-        bars   => [qw/Ticket Transaction Attachment User Group/],
+        bars   => [qw/Ticket Asset Transaction Attachment User Group/],
         counts => sub {},
         max    => {},
         @_,

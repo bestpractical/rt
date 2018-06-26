@@ -27,6 +27,18 @@ src="images/search-criteria.png">
 
 =for :man [Search Criteria F<docs/images/search-criteria.png>]
 
+RT also has two meta-statuses, 'active' and 'inactive'. By selecting either of
+these from the status dropdown of the query builder, you will no longer need
+to explicitly list all of the active or inactive statuses or manually enter
+the queries: "Status = '__Active__'" or "Status = '__Inactive__'".
+
+The sets of active and inactive statuses for a queue are defined by the
+associated lifecycle. Active tickets are those listed for the 'active' and
+'initial' configurations. Inactive tickets are those defined as 'inactive'.
+For the default RT lifecycle, for example, the active statuses are new, open,
+and stalled, and the inactive statuses are resolved, rejected and deleted. See
+F<docs/customizing/lifecycles.pod> for more information.
+
 Now that I've selected some criteria, I can click either Add These Terms or
 Add These Terms and Search. I'll click the former:
 

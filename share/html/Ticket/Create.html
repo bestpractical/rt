@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -366,7 +366,7 @@ my $current_user = $session{'CurrentUser'};
 if ($CloneTicket) {
     my $CloneTicketObj = RT::Ticket->new( $session{CurrentUser} );
     $CloneTicketObj->Load($CloneTicket)
-        or Abort( loc("Ticket could not be loaded") );
+        or Abort( loc("Ticket could not be loaded"), Code => HTTP::Status::HTTP_BAD_REQUEST );
 
     my $clone = {
         Requestors => join( ',', $CloneTicketObj->RequestorAddresses ),
@@ -438,7 +438,7 @@ if ($CloneTicket) {
 my @results;
 
 my $QueueObj = RT::Queue->new($current_user);
-$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''));
+$QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''), Code => HTTP::Status::HTTP_BAD_REQUEST);
 
 my $title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj));
 
@@ -446,7 +446,7 @@ $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARG
 
 $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
 
-$QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
+$QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."), Code => HTTP::Status::HTTP_NOT_FOUND);
 
 my $ticket = RT::Ticket->new($current_user); # empty ticket object
 
@@ -505,7 +505,7 @@ $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => 
 $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
 
-if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
+if ((!exists $ARGS{'AddMoreAttach'}) and (!exists $ARGS{'Go'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
     if ( !$checks_failure && !$skip_create ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");

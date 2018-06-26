@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -49,6 +49,7 @@
 use strict;
 use warnings;
 no warnings 'once';
+use Term::ReadKey;
 
 # fix lib paths, some may be relative
 BEGIN { # BEGIN RT CMD BOILERPLATE
@@ -146,9 +147,11 @@ if ($DB{'type'} eq "mysql") {
               ."Using Sphinx will require recompiling MySQL.  Which indexing solution would you\n"
               ."prefer?"
     } else {
-        $msg = "MySQL 5.6 and above support native full-text indexing; for compatibility\n"
-              ."with earlier versions of RT, the external Sphinx indexer is still supported.\n"
-              ."Which indexing solution would you prefer?"
+        $msg = "MySQL 5.6 and above, and MariaDB 10.0 and above, support native full-text indexing.\n"
+              ."For compatibility with earlier versions of RT, the external Sphinx indexer is\n"
+              ."still supported only on MySQL. Select 'mysql' indexing if you are using MariaDB.\n"
+              ."\n"
+              ."Which indexing solution would you prefer? {mysql|sphinx}"
     }
 
     while ( $index_type ne 'sphinx' and $index_type ne 'mysql' ) {
@@ -165,7 +168,7 @@ if ( $DB{'type'} eq 'mysql' ) {
     # MySQL 5.6 has FTS on InnoDB "text" columns -- which the
     # Attachments table doesn't have, but we can make it have.
     my $table = $OPT{'table'} || prompt(
-        message => "Enter the name of a new MySQL table that will be used to store the\n"
+        message => "Enter the name of a new table that will be used to store the\n"
                  . "full-text content and indexes:",
         default => $DEFAULT{'table'},
         silent  => !$OPT{'ask'},
@@ -648,6 +651,17 @@ sub dba_handle {
         $ENV{'NLS_NCHAR'} = "AL32UTF8";
     }
     my $dsn = do { my $h = new RT::Handle; $h->BuildDSN; $h->DSN };
+    my $password;
+    if ( defined $DB{'admin_password'} || defined $ENV{'RT_DBA_PASSWORD'} ) {
+        $password = $DB{'admin_password'} // $ENV{'RT_DBA_PASSWORD'};
+    } else {
+        print "Please enter $DB{'type'} admin password: ";
+        ReadMode('noecho');
+        chomp($password = ReadLine(0));
+        ReadMode('normal');
+        print "\n";
+    }
+    $DB{'admin_password'} = $password;
     my $dbh = DBI->connect(
         $dsn, $DB{admin}, $DB{admin_password},
         { RaiseError => 1, PrintError => 1 },

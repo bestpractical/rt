@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <textarea autocomplete="off" class="messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
-% $m->callback( %ARGS, SignatureRef => \$signature, DefaultRef => \$Default, MessageRef => $message );
+% $m->callback( %ARGS, SignatureRef => \$signature, DefaultRef => \$Default, MessageRef => \$message );
 % if (RT->Config->Get("SignatureAboveQuote", $session{'CurrentUser'})) {
 <% $Default || '' %><% $signature %><% $message %></textarea>
 % }

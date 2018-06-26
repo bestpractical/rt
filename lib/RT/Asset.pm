@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -645,6 +645,32 @@ sub _CoreAccessible {
         LastUpdatedBy => { read => 1, type => 'int(11)',        default => '0', auto => 1 },
         LastUpdated   => { read => 1, type => 'datetime',       default => '',  auto => 1 },
     }
+}
+
+sub FindDependencies {
+    my $self = shift;
+    my ($walker, $deps) = @_;
+
+    $self->SUPER::FindDependencies($walker, $deps);
+
+    # Links
+    my $links = RT::Links->new( $self->CurrentUser );
+    $links->Limit(
+        SUBCLAUSE       => "either",
+        FIELD           => $_,
+        VALUE           => $self->URI,
+        ENTRYAGGREGATOR => 'OR'
+    ) for qw/Base Target/;
+    $deps->Add( in => $links );
+
+    # Asset role groups( Owner, HeldBy, Contact )
+    my $objs = RT::Groups->new( $self->CurrentUser );
+    $objs->Limit( FIELD => 'Domain', VALUE => 'RT::Asset-Role', CASESENSITIVE => 0 );
+    $objs->Limit( FIELD => 'Instance', VALUE => $self->Id );
+    $deps->Add( in => $objs );
+
+    # Catalog
+    $deps->Add( out => $self->CatalogObj );
 }
 
 RT::Base->_ImportOverlays();

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -102,6 +102,28 @@ sub _end_head {
     return $self->SUPER::_end_head(@_);
 }
 
+sub handle_text {
+    my ( $self, $text ) = @_;
+    if ( $self->{in_pod} && $self->{scratch} =~ /<a .*href=".+".*>/ && $text =~ /^"(.+)" in docs$/ ) {
+
+        # Tweak default text for local links under docs/, so
+        # q{"customizing/search_result_columns.pod/Column Map" in docs} becomes
+        # q{"Column Map Callback" in customizing/search_result_columns.pod}
+        #
+        # q{"customizing/search_result_columns.pod" in docs} becomes
+        # q{docs/customizing/search_result_columns.pod}
+
+        my $section = $1;
+        if ( $section =~ qr!(.+\.pod)/(.+)! ) {
+            $text = qq{"$2" in docs/$1};
+        }
+        else {
+            $text = "docs/$section";
+        }
+    }
+    $self->SUPER::handle_text( $text );
+}
+
 sub resolve_pod_page_link {
     my $self = shift;
     my ($name, $section) = @_;
@@ -123,6 +145,20 @@ sub resolve_local_link {
     my ($name, $section) = @_;
 
     $name .= ""; # stringify name, it may be an object
+
+    if ( $name eq 'docs' ) {
+        if ( $section =~ qr!(.+\.pod)/(.+)! ) {
+
+            # support L<docs/writing_extensions.pod/Callbacks>
+            $name .= '/' . $1;
+            $section = $2;
+        }
+        else {
+            # support L<docs/dashboards_reporting.pod>
+            $name .= '/' . $section;
+            undef $section;
+        }
+    }
 
     $section = defined $section
         ? '#' . $self->idify($section, 1)

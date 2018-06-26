@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -432,7 +432,7 @@ sub CurrentUserHasRight {
 
 =head1 TODO
 
-We should be deserializing the content on load and then enver again, rather than at every access
+We should be deserializing the content on load and then never again, rather than at every access
 
 =cut
 

@@ -593,6 +593,26 @@ of your database before making updates.
 
 =back
 
+=item *
+
+RT now has the functionality from
+L<RT::Extension::AdminConditionsAndActions> built in. Users who are
+currently using this extension should remove it from the plugin list.
+Please also remove
+F<local/plugins/RT-Extension-AdminConditionsAndActions> from your RT
+installation.
+
+=back
+
+=head1 UPGRADING FROM 4.4.2 AND EARLIER
+
+=over 4
+
+=item *
+
+The C<MessageRef> parameter of the default callback of C</Elements/MessageBox>
+now contains the reference to the message content as the name implies.
+
 =back
 
 =cut

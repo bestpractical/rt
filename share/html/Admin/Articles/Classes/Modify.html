@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -91,6 +91,10 @@
 <li>
     <input type="checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
     <label for="Include-Summary"><&|/l&>Include article summary</&></label>
+</li>
+<li>
+     <input type="checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
+     <label for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
 </li>
 % if ( $cfs ) {
 % while (my $cf = $cfs->Next) {
@@ -187,7 +191,7 @@ if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
     $Disabled = 1;
 }
 
-my %include = (Name => 1, Summary => 1);
+my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
 my $subject_cfs = [];
 my $subject_cf_labels = {};
 

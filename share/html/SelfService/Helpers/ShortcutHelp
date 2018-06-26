@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,8 @@
 <%args>
 $show_search      => 0
 $show_bulk_update => 0
+$show_ticket_reply => 0
+$show_ticket_comment => 0
 </%args>
 <& /Elements/ShortcutHelp, %ARGS &>
 % $m->abort;

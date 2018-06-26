@@ -807,7 +807,4 @@ ok( $user->HasRight( Right => 'ReplyToTicket', Object => $tick ), "owner can rep
 # +2 from take, +1 from correspond
 is( $tick->Transactions->Count, 6, "transactions added" );
 
-$m->no_warnings_ok;
-
-undef $m;
 done_testing;

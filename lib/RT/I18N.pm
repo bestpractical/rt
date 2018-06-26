@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -106,6 +106,7 @@ sub Init {
     # Load language-specific functions
     foreach my $file ( File::Glob::bsd_glob(substr(Cwd::abs_path(__FILE__), 0, -3) . "/*.pm") ) {
         my ($lang) = ($file =~ /([^\\\/]+?)\.pm$/);
+        next if $lang eq 'Extract';  # Avoid loading non-language utility module
         next unless grep $_ eq '*' || $_ eq $lang, @lang;
         require $file;
     }

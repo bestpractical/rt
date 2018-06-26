@@ -106,5 +106,5 @@ $m->submit_form(
     button      => 'Go',
 );
 is($m->form_number(3)->find_input('UpdateSubject')->value,$article->FirstCustomFieldValue("Subject-$$"),'Ticket Subject Clobbered');
-undef $m;
+
 done_testing;

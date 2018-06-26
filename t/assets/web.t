@@ -109,5 +109,4 @@ diag "Create with CFs in other groups";
 
 # XXX TODO: test other modify pages
 
-undef $m;
 done_testing;

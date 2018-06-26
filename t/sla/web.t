@@ -104,5 +104,4 @@ ok $m->login( 'user', 'password' ), 'logged in as user';
     ok( !$ticket->DueObj->Unix,    'no Due' );
 }
 
-undef $m;
-done_testing();
+done_testing;

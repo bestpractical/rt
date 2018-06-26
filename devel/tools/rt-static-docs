@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -183,6 +183,9 @@ sub system_chmod {
 system_chmod("+x", $_) for <docs/UPGRADING*>;
 
 # Convert each POD file to HTML
+$converter->batch_convert( \@dirs, $opts{to} );
+
+# Run it again to make sure local links are linked correctly
 $converter->batch_convert( \@dirs, $opts{to} );
 
 # Remove execution bit from workaround above

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -92,7 +92,8 @@ Returns the extension version.
 
 sub Version {
     my $self = shift;
-    return $self->Name->VERSION;
+    no strict 'refs';
+    return ${$self->Name . '::VERSION'};
 }
 
 =head2 Path

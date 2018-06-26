@@ -183,7 +183,7 @@ before running tests.  To do this in place without installing:
     make fixdeps
 
 Adjust the relevant database options as necessary if you want to test on
-Postgres, Oracle, or SQLite.  The default is MySQL.
+Postgres, Oracle, or SQLite.  The default is MySQL/MariaDB.
 
 To run the test suite:
 

@@ -189,5 +189,4 @@ diag "saving a chart without changing its config shows up on dashboards (I#31557
     is_deeply($search->GetParameter('ChartFunction'), ['COUNT'], 'chart correctly initialized with default ChartFunction');
 }
 
-undef $m;
 done_testing;

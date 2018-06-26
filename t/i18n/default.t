@@ -21,5 +21,3 @@ $m->content_contains( Encode::decode("UTF-8",'密碼'),
     local $TODO = "We fail to correctly advertise the langauage in the <html> block";
     $m->content_contains('<html lang="zh-tw">');
 }
-
-undef $m;

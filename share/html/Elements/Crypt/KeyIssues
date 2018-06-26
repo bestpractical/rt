@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -68,7 +68,7 @@
 % foreach my $issue ( @$Issues ) {
 <li>
 % if ( $issue->{'User'} ) {
-User <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'User'}->id %>"><&/Elements/ShowUser, User => $issue->{'User'} &></a> has a problem.
+User <&/Elements/ShowUser, User => $issue->{'User'} &> has a problem.
 % } else {
 There is a problem with key/certificate(s) for address <% $issue->{'EmailAddress'} %>, but there is no user in the DB for this address.
 % }

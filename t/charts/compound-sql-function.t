@@ -107,7 +107,7 @@ sub add_tix_from_data {
         $resolved->Set( Value => $created->Unix );
         $resolved->AddSeconds( $data[0]{'Resolved'} );
         my $t = RT::Ticket->new($RT::SystemUser);
-        my ( $id, undef $msg ) = $t->Create(
+        my ( $id, undef, $msg ) = $t->Create(
             %{ shift(@data) },
             Created => $created->ISO,
             Resolved => $resolved->ISO,

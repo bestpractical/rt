@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,21 +52,21 @@ use strict;
 use warnings;
 
 use base qw(Test::WWW::Mechanize);
-use Scalar::Util qw(weaken);
 use MIME::Base64 qw//;
 use Encode 'encode_utf8';
+use Storable 'thaw';
+use HTTP::Status qw();
 
 BEGIN { require RT::Test; }
 require Test::More;
 
-my $instance;
+$RT::Test::Web::INSTANCES = undef;
 
 sub new {
     my ($class, @args) = @_;
 
     push @args, app => $RT::Test::TEST_APP if $RT::Test::TEST_APP;
-    my $self = $instance = $class->SUPER::new(@args);
-    weaken $instance;
+    my $self = $class->SUPER::new(@args);
     $self->cookie_jar(HTTP::Cookies->new);
     # Clear our caches of anything that the server process may have done
     $self->add_handler(
@@ -75,7 +75,14 @@ sub new {
         },
     ) if RT::Record->can( "FlushCache" );
 
+    $RT::Test::Web::INSTANCES++;
     return $self;
+}
+
+sub clone {
+    my $self = shift;
+    $RT::Test::Web::INSTANCES++ if defined $RT::Test::Web::INSTANCES;
+    return $self->SUPER::clone();
 }
 
 sub get_ok {
@@ -120,7 +127,7 @@ sub logged_in_as {
     my $self = shift;
     my $user = shift || '';
 
-    unless ( $self->status == 200 ) {
+    unless ( $self->status == HTTP::Status::HTTP_OK ) {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
@@ -138,12 +145,12 @@ sub logout {
     my $url = $self->rt_base_url;
     $self->get($url);
     Test::More::diag( "error: status is ". $self->status )
-        unless $self->status == 200;
+        unless $self->status == HTTP::Status::HTTP_OK;
 
     if ( $self->content =~ /Logout/i ) {
         $self->follow_link( text => 'Logout' );
         Test::More::diag( "error: status is ". $self->status ." when tried to logout" )
-            unless $self->status == 200;
+            unless $self->status == HTTP::Status::HTTP_OK;
     }
     else {
         return 1;
@@ -161,6 +168,7 @@ sub goto_ticket {
     my $self = shift;
     my $id   = shift;
     my $view = shift || 'Display';
+    my $status = shift || HTTP::Status::HTTP_OK;
     unless ( $id && int $id ) {
         Test::More::diag( "error: wrong id ". defined $id? $id : '(undef)' );
         return 0;
@@ -169,7 +177,7 @@ sub goto_ticket {
     my $url = $self->rt_base_url;
     $url .= "Ticket/${ view }.html?id=$id";
     $self->get($url);
-    unless ( $self->status == 200 ) {
+    unless ( $self->status == $status ) {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
     }
@@ -207,12 +215,9 @@ sub get_warnings {
     # forms on XYZ. This is because the most recently fetched page has changed
     # from XYZ to /__test_warnings, which has no form.
     my $clone = $self->clone;
+
     return unless $clone->get_ok('/__test_warnings');
-
-    use Storable 'thaw';
-
-    my @warnings = @{ thaw $clone->content };
-    return @warnings;
+    return @{ thaw $clone->content };
 }
 
 sub warning_like {
@@ -468,19 +473,27 @@ for my $method_name (qw/
 sub DESTROY {
     my $self = shift;
 
-    if ( RT::Test->builder->{Done_Testing} ) {
-        die "RT::Test::Web object needs to be destroyed before done_testing is called";
-    }
-
-    if ( !$RT::Test::Web::DESTROY++ ) {
-        $self->no_warnings_ok;
+    if (defined $RT::Test::Web::INSTANCES) {
+        $RT::Test::Web::INSTANCES--;
+        if ($RT::Test::Web::INSTANCES == 0 ) {
+            # Ordering matters -- clean out INSTANCES before we check
+            # warnings, so the clone therein sees that we've already begun
+            # cleanups.
+            undef $RT::Test::Web::INSTANCES;
+            $self->no_warnings_ok;
+        }
     }
 }
 
 END {
-    return unless $instance;
     return if RT::Test->builder->{Original_Pid} != $$;
-    $instance->no_warnings_ok if !$RT::Test::Web::DESTROY++;
+    if (defined $RT::Test::Web::INSTANCES and $RT::Test::Web::INSTANCES == 0 ) {
+        # Ordering matters -- clean out INSTANCES after the `new`
+        # bumps it up to 1.
+        my $cleanup = RT::Test::Web->new;
+        undef $RT::Test::Web::INSTANCES;
+        $cleanup->no_warnings_ok;
+    }
 }
 
 1;

@@ -5,9 +5,17 @@ absolutely necessary to ensure you can recover quickly from an incident.
 
 Make sure you take backups.  Make sure they I<work>.
 
-There are many issues that can cause broken backups, such as a
-C<max_allowed_packet> too low for MySQL (in either the client or server), or
-encoding issues, or running out of disk space.
+There are many issues that can cause broken backups, such as...
+
+=over 4
+
+=item * a C<max_allowed_packet> too low for MySQL or MariaDB in either the client or server
+
+=item * encoding issues
+
+=item * running out of disk space
+
+=back
 
 Make sure your backup cronjobs notify someone if they fail instead of failing
 silently until you need them.
@@ -29,22 +37,25 @@ You should put the example commands into a shell script for backup and setup a
 cronjob.  Make sure output from cron goes to someone who reads mail!  (Or into
 RT. :)
 
-=head3 MySQL
+=head3 MySQL and MariaDB
 
     ( mysqldump rt4 --tables sessions --no-data --single-transaction; \
       mysqldump rt4 --ignore-table rt4.sessions --single-transaction ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
 
-The dump will be much faster if you can connect to the MySQL server over
-localhost.  This will use a local socket instead of the network.
+The dump will be much faster if you can connect to the MySQL or
+MariaDB server over localhost.  This will use a local socket instead
+of the network.
 
-If you find your backups taking far far too long to complete (this point should
-take quite a long time to get to on an RT database), there are some alternate
-solutions.  Percona maintains a highly regarded hot-backup tool for MySQL
-called L<XtraBackup|http://www.percona.com/software/percona-xtrabackup/>.  If
-you have more resources, you can also setup replication to a slave using binary
-logs and backup from there as necessary.  This not only duplicates the data,
-but lets you take backups without putting load on your production server.
+If you find your backups taking far far too long to complete (this
+point should take quite a long time to get to on an RT database),
+there are some alternate solutions.  Percona maintains a highly
+regarded hot-backup tool for MySQL and MariaDB called
+L<XtraBackup|http://www.percona.com/software/percona-xtrabackup/>.  If
+you have more resources, you can also setup replication to a slave
+using binary logs and backup from there as necessary.  This not only
+duplicates the data, but lets you take backups without putting load on
+your production server.
 
 =head4 Restoring from backups
 
@@ -73,14 +84,14 @@ enough rights to handle creating tables.
 
 If something terrible happened this morning and you want to roll back to
 your backups, or if you want to update a dev server using your backups,
-this is straightforward on MySQL.
+this is straightforward on MySQL and MariaDB.
 
     gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt4
 
-MySQL will drop any existing tables before recreating and repopulating
-them.  It will leave the database and the rt_user untouched.  This is
-not suitable for restoring on a fresh database install since there will
-be no rt4 database or rt_user user.
+MySQL and MariaDB will drop any existing tables before recreating and
+repopulating them.  It will leave the database and the rt_user
+untouched.  This is not suitable for restoring on a fresh database
+install since there will be no rt4 database or rt_user user.
 
 =back
 

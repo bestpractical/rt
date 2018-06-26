@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -84,10 +84,15 @@
 % }
 <%init>
 my $class = $Article->ClassObj;
-my %include = (Name => 1, Summary => 1);
+my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
 my $cfs = $class->ArticleCustomFields;
-$include{"CF-Title-".$_->Id} = $include{"CF-Value-".$_->Id} = 1 while $_ = $cfs->Next;
-$include{$_} = not $class->FirstAttribute("Skip-$_") for keys %include;
+while ( my $cf = $cfs->Next ) {
+    $include{"CF-Title-" . $cf->Id} = 1;
+    $include{"CF-Value-" . $cf->Id} = 1;
+}
+foreach my $key ( keys %include ) {
+    $include{$key} = not $class->FirstAttribute("Skip-$key");
+}
 
 my $get_content = sub {
     my $value = shift;
@@ -102,7 +107,7 @@ my $get_content = sub {
         content => \$content,
     );
 
-    if ( $content =~ /<.{1,5}>/ ) {
+    if ( $include{'EscapeHTML'} && $content =~ /<.{1,5}>/ ) {
         $content = RT::Interface::Email::ConvertHTMLToText( $content );
     }
     return $content;

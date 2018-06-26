@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -79,7 +79,7 @@ foreach my $object (@$Objects) {
     }
 }
 
-my $dropdown_limit = 50;
+my $dropdown_limit = RT->Config->Get( 'DropdownMenuLimit' ) || 50;
 $m->callback( CallbackName => 'ModifyDropdownLimit', DropdownLimit => \$dropdown_limit );
 
 if (keys(%user_uniq_hash) > $dropdown_limit ) {

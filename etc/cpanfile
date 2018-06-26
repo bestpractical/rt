@@ -8,6 +8,7 @@ requires 'CGI::Cookie', '>= 1.20';
 requires 'CGI::Emulate::PSGI';
 requires 'CGI::PSGI', '>= 0.12';
 requires 'Class::Accessor::Fast';
+requires 'Clone';
 requires 'Convert::Color';
 requires 'Crypt::Eksblowfish';
 requires 'CSS::Minifier::XS';

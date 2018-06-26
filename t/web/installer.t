@@ -102,5 +102,4 @@ diag "Walking through install screens setting defaults";
 }
 
 RT::Test::__drop_database();
-undef $m;
 done_testing;

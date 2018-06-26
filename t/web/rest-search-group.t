@@ -98,5 +98,4 @@ sub search_groups_ok {
 
 }
 
-undef $m;
-done_testing();
+done_testing;

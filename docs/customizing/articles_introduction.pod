@@ -111,6 +111,27 @@ Articles can be included by searching for them, knowing the Id of the
 article, using the Article Hotlist and using the Queue-specific
 dropdown.
 
+=head3 Disabling Escaped HTML
+
+By default, when an article is inserted into the ticket message box,
+as a security measure, HTML tags are escaped and only text is displayed.
+For example, RT will display "Me You Greeting Hello world!" from the
+following XML:
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <note>
+    <to>Me</to>
+    <from>You</from>
+    <heading>Greeting</heading>
+    <body>Hello world!</body>
+  </note>
+
+In cases as above, where the content is harmless and displaying it on the
+ticket might be necessary, there is an option to disable escaping these
+tags per article class. This can be done by unchecking the "Escape HTML"
+box on the Modify Class page. Please note this is potentially unsafe and
+its use should be limited to trusted administrators.
+
 =head2 Queue-Specific List of Articles 
 
 You can use Topics to organize a set of Queue-specific Articles.

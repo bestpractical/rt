@@ -23,7 +23,7 @@ my $cflabel = "CustomField-".$cf->id;
 
 # setup some tickets
 my $t1 = RT::Ticket->new(RT->SystemUser);
-my ( $id, undef $msg ) = $t1->Create(
+my ( $id, undef, $msg ) = $t1->Create(
     Queue      => $q->id,
     Subject    => 'SearchTest1',
     Requestor  => ['search@example.com'],

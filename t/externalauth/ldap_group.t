@@ -13,7 +13,7 @@ eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } o
 };
 
 
-my $ldap_port = 1024 + int rand(10000) + $$ % 1024;
+my $ldap_port = RT::Test->find_idle_port;
 ok( my $server = Net::LDAP::Server::Test->new( $ldap_port, auto_schema => 1 ),
     "spawned test LDAP server on port $ldap_port" );
 
@@ -151,5 +151,4 @@ diag "test uri login";
 
 $ldap->unbind();
 
-undef $m;
 done_testing;

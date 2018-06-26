@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -55,7 +55,9 @@ use 5.010;
 use File::Spec ();
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
-use Storable ();
+
+# Store log messages generated before RT::Logger is available
+our @PreInitLoggerMessages;
 
 =head1 NAME
 
@@ -348,6 +350,15 @@ our %META;
             Description => 'Place signature above quote', #loc
         },
     },
+    PreferDropzone => {
+        Section         => 'Ticket composition', #loc
+        Overridable     => 1,
+        SortOrder       => 11,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use dropzone if available', #loc
+        },
+    },
     RefreshIntervals => {
         Type => 'ARRAY',
         PostLoadCheck => sub {
@@ -373,10 +384,16 @@ our %META;
 
                 for my $value (@values) {
                     if ($value % 60 == 0) {
-                        $labels{$value} = ['Refresh search results every [quant,_1,minute,minutes].', $value / 60]; # loc
+                        $labels{$value} = [
+                            'Refresh search results every [quant,_1,minute,minutes].', #loc
+                            $value / 60
+                        ];
                     }
                     else {
-                        $labels{$value} = ['Refresh search results every [quant,_1,second,seconds].', $value]; # loc
+                        $labels{$value} = [
+                            'Refresh search results every [quant,_1,second,seconds].', #loc
+                            $value
+                        ];
                     }
                 }
 
@@ -403,10 +420,16 @@ our %META;
 
                 for my $value (@values) {
                     if ($value % 60 == 0) {
-                        $labels{$value} = ['Refresh home page every [quant,_1,minute,minutes].', $value / 60]; # loc
+                        $labels{$value} = [
+                            'Refresh home page every [quant,_1,minute,minutes].', #loc
+                            $value / 60
+                        ];
                     }
                     else {
-                        $labels{$value} = ['Refresh home page every [quant,_1,second,seconds].', $value]; # loc
+                        $labels{$value} = [
+                            'Refresh home page every [quant,_1,second,seconds].', #loc
+                            $value
+                        ];
                     }
                 }
 
@@ -978,7 +1001,7 @@ our %META;
 
                 my $canonic = Encode::resolve_alias( $encoding );
                 unless ( $canonic ) {
-                    warn "Unknown encoding '$encoding' in \@EmailInputEncodings option";
+                    $RT::Logger->warning("Unknown encoding '$encoding' in \@EmailInputEncodings option");
                 }
                 elsif ( $seen{ $canonic }++ ) {
                     next;
@@ -1518,7 +1541,8 @@ sub GetObfuscated {
 
     return $self->Get(@_) unless $obfuscate;
 
-    my $res = Storable::dclone($self->Get(@_));
+    require Clone;
+    my $res = Clone::clone( $self->Get( @_ ) );
     $res = $obfuscate->( $self, $res, $user );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
@@ -1626,7 +1650,7 @@ sub SetFromConfig {
             # override options that came from its main config
             if ( $args{'Extension'} ne $META{$name}->{'Source'}{'Extension'} ) {
                 my %source = %{ $META{$name}->{'Source'} };
-                warn
+                push @PreInitLoggerMessages,
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
                     ." This option earlier has been set in $source{'File'} line $source{'Line'}."
                     ." To overide this option use ". ($source{'Extension'}||'RT')
@@ -1643,7 +1667,7 @@ sub SetFromConfig {
                 # as a site config is loaded earlier then its base config
                 # then we warn only on different extensions, for example
                 # RTIR's options is set in main site config
-                warn
+                push @PreInitLoggerMessages,
                     "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
                     ." It may be ok, but we want you to be aware."
                     ." This option has been set earlier in $source{'File'} line $source{'Line'}."

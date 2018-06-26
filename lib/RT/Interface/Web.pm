@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -74,6 +74,7 @@ use Digest::MD5 ();
 use List::MoreUtils qw();
 use JSON qw();
 use Plack::Util;
+use HTTP::Status qw();
 
 =head2 SquishedCSS $style
 
@@ -308,7 +309,7 @@ sub HandleRequest {
 
     # attempt external auth
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
-        if RT->Config->Get('ExternalAuth');
+        if @{ RT->Config->Get( 'ExternalAuthPriority' ) || [] };
 
     # Process session-related callbacks before any auth attempts
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
@@ -323,7 +324,7 @@ sub HandleRequest {
 
     # attempt external auth
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
-        if RT->Config->Get('ExternalAuth');
+        if @{ RT->Config->Get( 'ExternalAuthPriority' ) || [] };
 
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
@@ -929,7 +930,7 @@ sub GetWebURLFromRequest {
 
 =head2 Redirect URL
 
-This routine ells the current user's browser to redirect to URL.  
+This routine tells the current user's browser to redirect to URL.  
 Additionally, it unties the user's currently active session, helping to avoid 
 A bug in Apache::Session 1.81 and earlier which clobbers sessions if we try to use 
 a cached DBI statement handle twice at the same time.
@@ -2040,6 +2041,10 @@ sub Abort {
     my $why  = shift;
     my %args = @_;
 
+    $args{Code} //= HTTP::Status::HTTP_OK;
+
+    $r->headers_out->{'Status'} = $args{Code} . ' ' . HTTP::Status::status_message($args{Code});
+
     if (   $session{'ErrorDocument'}
         && $session{'ErrorDocumentType'} )
     {
@@ -2142,11 +2147,11 @@ sub CreateTicket {
 
     my $Queue = RT::Queue->new( $current_user );
     unless ( $Queue->Load( $ARGS{'Queue'} ) ) {
-        Abort('Queue not found');
+        Abort('Queue not found', Code => HTTP::Status::HTTP_NOT_FOUND);
     }
 
     unless ( $Queue->CurrentUserHasRight('CreateTicket') ) {
-        Abort('You have no permission to create tickets in that queue.');
+        Abort('You have no permission to create tickets in that queue.', Code => HTTP::Status::HTTP_FORBIDDEN);
     }
 
     my $due;
@@ -2259,7 +2264,7 @@ sub CreateTicket {
 
     push( @Actions, split( "\n", $ErrMsg ) );
     unless ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
-        Abort( "No permission to view newly created ticket #" . $Ticket->id . "." );
+        Abort( "No permission to view newly created ticket #" . $Ticket->id . ".", Code => HTTP::Status::HTTP_FORBIDDEN );
     }
     return ( $Ticket, @Actions );
 
@@ -2284,13 +2289,13 @@ sub LoadTicket {
     }
 
     unless ($id) {
-        Abort("No ticket specified");
+        Abort("No ticket specified", Code => HTTP::Status::HTTP_BAD_REQUEST);
     }
 
     my $Ticket = RT::Ticket->new( $session{'CurrentUser'} );
     $Ticket->Load($id);
     unless ( $Ticket->id ) {
-        Abort("Could not load ticket $id");
+        Abort("Could not load ticket $id", Code => HTTP::Status::HTTP_NOT_FOUND);
     }
     return $Ticket;
 }

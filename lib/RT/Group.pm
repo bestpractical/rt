@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1308,6 +1308,8 @@ sub InstanceObj {
         $class = "RT::Queue";
     } elsif ($self->Domain eq 'RT::Ticket-Role') {
         $class = "RT::Ticket";
+    } elsif ($self->Domain eq 'RT::Asset-Role') {
+        $class = "RT::Asset";
     }
 
     return unless $class;
@@ -1339,15 +1341,9 @@ sub Label {
         return $self->Name;
     }
 
-    if ($self->Domain =~ /-Role$/) {
-        my ($id) = $self->Name =~ /^RT::CustomRole-(\d+)$/;
-        if ($id) {
-            my $role = RT::CustomRole->new($self->CurrentUser);
-            $role->Load($id);
-
-            # don't loc user-defined role names
-            return $role->Name;
-        }
+    if (my $role = $self->_CustomRoleObj) {
+        # don't loc user-defined role names
+        return $role->Name;
     }
 
     return $self->loc($self->Name);
@@ -1504,6 +1500,9 @@ sub FindDependencies {
     my $instance = $self->InstanceObj;
     $deps->Add( out => $instance ) if $instance;
 
+    my $custom_role = $self->_CustomRoleObj;
+    $deps->Add( out => $custom_role ) if $custom_role;
+
     # Group members records, unless we're a system group
     if ($self->Domain ne "SystemInternal") {
         my $objs = RT::GroupMembers->new( $self->CurrentUser );
@@ -1611,6 +1610,11 @@ sub Serialize {
     $store{Disabled} = $self->PrincipalObj->Disabled;
     $store{Principal} = $self->PrincipalObj->UID;
     $store{PrincipalId} = $self->PrincipalObj->Id;
+
+    if (my $role = $self->_CustomRoleObj) {
+        $store{Name} = \($role->UID);
+    }
+
     return %store;
 }
 
@@ -1621,6 +1625,11 @@ sub PreInflate {
     my $principal_uid = delete $data->{Principal};
     my $principal_id  = delete $data->{PrincipalId};
     my $disabled      = delete $data->{Disabled};
+
+    if (ref($data->{Name})) {
+        my $role = $importer->LookupObj(${ $data->{Name} });
+        $data->{Name} = $role->GroupType;
+    }
 
     # Inflate refs into their IDs
     $class->SUPER::PreInflate( $importer, $uid, $data );
@@ -1686,6 +1695,21 @@ sub PostInflate {
         Member => $self->PrincipalObj,
         ImmediateParent => $self->PrincipalObj
     );
+}
+
+# If this group represents the members of a custom role, then return
+# the RT::CustomRole object. Otherwise, return undef
+sub _CustomRoleObj {
+    my $self = shift;
+    if ($self->Domain =~ /-Role$/) {
+        my ($id) = $self->Name =~ /^RT::CustomRole-(\d+)$/;
+        if ($id) {
+            my $role = RT::CustomRole->new($self->CurrentUser);
+            $role->Load($id);
+            return $role;
+        }
+    }
+    return;
 }
 
 RT::Base->_ImportOverlays();

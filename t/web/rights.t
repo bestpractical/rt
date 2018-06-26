@@ -267,5 +267,4 @@ test_system_internal_queue_role ( 'General', 'Cc', 'ModifyScrips' );
 test_system_internal_queue_role ( 'General', 'Owner', 'ForwardMessage' );
 test_system_internal_queue_role ( 'General', 'Requestor', 'SeeQueue' );
 
-undef $m;
 done_testing;

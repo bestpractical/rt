@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -226,6 +226,10 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 </div>
 
 <%INIT>
+my (@results);
+
+$m->callback(CallbackName => 'Initial', ARGSRef => \%ARGS, results_ref => \@results, QueryRef => \$Query, UpdateTicketRef => \@UpdateTicket);
+
 unless ( defined $Rows ) {
     $Rows = $RowsPerPage;
     $ARGS{Rows} = $RowsPerPage;
@@ -234,8 +238,6 @@ my $title = loc("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
 map ( $ARGS{$_} =~ /^$/ && ( delete $ARGS{$_} ), keys %ARGS );
-
-my (@results);
 
 ProcessAttachments(ARGSRef => \%ARGS);
 

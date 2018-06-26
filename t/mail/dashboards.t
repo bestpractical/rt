@@ -426,5 +426,4 @@ produces_no_dashboard_mail_ok(
     Time    => $bad_time,
 );
 
-undef $m;
 done_testing;

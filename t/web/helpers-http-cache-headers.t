@@ -102,5 +102,4 @@ foreach my $endpoint ( @endpoints ) {
   );
 }
 
-undef $m;
 done_testing;

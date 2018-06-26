@@ -44,7 +44,8 @@ diag "test ShowTicket right";
         'got no permission warning' );
 
 
-    $m->goto_ticket($id);
+    $m->goto_ticket($id, undef, HTTP::Status::HTTP_FORBIDDEN);
+    is($m->status, HTTP::Status::HTTP_FORBIDDEN, 'No permission');
     $m->content_contains( "No permission to view ticket",
         'got no permission msg' );
     $m->warning_like( qr/No permission to view ticket/, 'got warning' );
@@ -65,5 +66,4 @@ diag "test ShowTicket right";
 }
 
 
-undef $m;
 done_testing();

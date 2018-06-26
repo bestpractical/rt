@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -363,7 +363,17 @@ sub CastObjectsToRecords
             $RT::Logger->error( "Couldn't load '$class' object with id '$id'" );
             RT::Shredder::Exception::Info->throw( 'CouldntLoadObject' );
         }
-        die "Loaded object has different id" unless( $id eq $obj->id );
+
+        if ( $id =~ /^\d+$/ ) {
+            if ( $id ne $obj->Id ) {
+                die 'Loaded object id ' . $obj->Id . " is different from passed id $id";
+            }
+        }
+        else {
+            if ( $obj->_Accessible( 'Name', 'read' ) && $id ne $obj->Name ) {
+                die 'Loaded object name ' . $obj->Name . " is different from passed name $id";
+            }
+        }
         push @res, $obj;
     } else {
         RT::Shredder::Exception->throw( "Unsupported type ". ref $targets );

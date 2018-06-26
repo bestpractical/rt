@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -68,6 +68,12 @@ RT::LDAPImport - Import Users from an LDAP store
 In C<RT_SiteConfig.pm>:
 
     Set($LDAPHost,'my.ldap.host');
+    Set($LDAPOptions, [ port    => 636,
+                        scheme  => 'ldaps',
+                        raw     => qr/(\;binary)/,
+                        version => 3,
+                        verify  => 'required',
+                        cafile  => '/certificate-file/path' ]);
     Set($LDAPUser,'me');
     Set($LDAPPassword,'mypass');
     Set($LDAPBase, 'ou=People,o=Our Place');
@@ -106,6 +112,11 @@ advanced options.
 =item C<< Set($LDAPHost,'our.ldap.host'); >>
 
 Hostname or ldap(s):// uri:
+
+=item C<< Set($LDAPOptions, [ port => 636 ]); >>
+
+This allows you to pass any options supported by the L<Net::LDAP>
+new method.
 
 =item C<< Set($LDAPUser, 'uid=foo,ou=users,dc=example,dc=com'); >>
 
@@ -365,10 +376,11 @@ utility in openldap can be very helpful while refining your filters.
 
 =head2 connect_ldap
 
-Relies on the config variables C<$LDAPHost>, C<$LDAPUser> and C<$LDAPPassword>
-being set in your RT Config files.
+Relies on the config variables C<$LDAPHost>, C<$LDAPOptions>, C<$LDAPUser>,
+and C<$LDAPPassword> being set in your RT Config files.
 
- Set($LDAPHost,'my.ldap.host')
+ Set($LDAPHost,'my.ldap.host');
+ Set($LDAPOptions, [ port => 636 ]);
  Set($LDAPUSER,'me');
  Set($LDAPPassword,'mypass');
 
@@ -382,10 +394,12 @@ LDAPHost can be a hostname or an ldap:// ldaps:// uri.
 sub connect_ldap {
     my $self = shift;
 
-    my $ldap = Net::LDAP->new($RT::LDAPHost);
+    $RT::LDAPOptions = [] unless $RT::LDAPOptions;
+    my $ldap = Net::LDAP->new($RT::LDAPHost, @$RT::LDAPOptions);
+
     $RT::Logger->debug("connecting to $RT::LDAPHost");
     unless ($ldap) {
-        $RT::Logger->error("Can't connect to $RT::LDAPHost");
+        $RT::Logger->error("Can't connect to $RT::LDAPHost $@");
         return;
     }
 

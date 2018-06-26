@@ -155,5 +155,4 @@ subtest "HTML, reply, before quote" => sub {
     ) };
 
 
-undef $m;
 done_testing;

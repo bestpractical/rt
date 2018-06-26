@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -72,6 +72,8 @@ jQuery( function() {
         paramName: "Attach",
         dictDefaultMessage: <% loc("Drop files here or click to attach") |n,j %>,
         maxFilesize: MaxAttachmentSizeMiB,
+        parallelUploads: 1,
+        forceFallback: <% RT->Config->Get('PreferDropzone', $session{CurrentUser}) ? 0 : 1 %>,
         previewTemplate: '' +
             '<div class="dz-preview dz-file-preview">' +
             '    <div class="dz-remove-mark pointer-events" data-dz-remove>' +
@@ -134,7 +136,7 @@ jQuery( function() {
         }
     });
     attachDropzone.on('removedfile', function(file) {
-        jQuery.post('<% RT->Config->Get('WebPath') %>/Helpers/Upload/Delete', { Name: file.name, Token: jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val() }, 'json');
+        jQuery.post( RT.Config.WebHomePath + '/Helpers/Upload/Delete', { Name: file.name, Token: jQuery('#attach-dropzone').closest('form').find('input[name=Token]').val() }, 'json');
     });
     attachDropzone.on('dragenter', function() {
         jQuery('#attach-dropzone').addClass('scaled');

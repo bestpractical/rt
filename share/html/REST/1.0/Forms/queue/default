@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,7 +60,7 @@ my %data = %$changes;
 my $queue = RT::Queue->new($session{CurrentUser});
 
 my @fields =
-  qw(Name Description CorrespondAddress CommentAddress Disabled);
+  qw(Name Description CorrespondAddress CommentAddress Disabled SLADisabled);
 if ( $fields && %$fields ) {
     @fields = grep { exists $fields->{ lc $_ } } @fields;
 }
@@ -84,6 +84,7 @@ else {
                 Description => "",
                 CommentAddress => "",
                 CorrespondAddress => "",
+                SLADisabled => 1,
             },
             0
         ];

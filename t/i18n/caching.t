@@ -28,5 +28,3 @@ $m->get_ok( "/NoAuth/Logout.html" ); # ->logout fails because it's translated
 $m->login( root => "password" );
 $m->get_ok('/Prefs/Other.html');
 $m->content_lacks('Ne pas','Lacks translated french');
-
-undef $m;

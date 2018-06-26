@@ -8,7 +8,7 @@ eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } o
 };
 
 
-my $ldap_port = 1024 + int rand(10000) + $$ % 1024;
+my $ldap_port = RT::Test->find_idle_port;
 ok( my $server = Net::LDAP::Server::Test->new( $ldap_port, auto_schema => 1 ),
     "spawned test LDAP server on port $ldap_port" );
 
@@ -56,14 +56,15 @@ my ( $baseurl, $m ) = RT::Test->started_ok();
 diag "test uri login";
 {
     ok( !$m->login( 'fakeuser', 'password' ), 'not logged in with fake user' );
+    $m->warning_like( qr/FAILED LOGIN for fakeuser/ );
     ok( $m->login( 'testuser', 'password' ), 'logged in' );
 }
 diag "test user creation";
 {
-my $testuser = RT::User->new($RT::SystemUser);
-my ($ok,$msg) = $testuser->Load( 'testuser' );
-ok($ok,$msg);
-is($testuser->EmailAddress,'testuser@invalid.tld');
+    my $testuser = RT::User->new($RT::SystemUser);
+    my ($ok,$msg) = $testuser->Load( 'testuser' );
+    ok($ok,$msg);
+    is($testuser->EmailAddress,'testuser@invalid.tld');
 }
 
 
@@ -93,9 +94,5 @@ diag "test redirect after login";
 }
 
 $ldap->unbind();
-
-$m->get_warnings;
-
-undef $m;
 
 done_testing;

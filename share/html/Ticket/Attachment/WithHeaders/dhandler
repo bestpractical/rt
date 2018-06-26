@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,13 +50,13 @@
     my ($id) = $m->dhandler_arg =~ /^(\d+)/;
     unless ( $id ) {
         # wrong url format
-        Abort("Corrupted attachment URL");
+        Abort("Corrupted attachment URL", Code => HTTP::Status::HTTP_BAD_REQUEST);
     }
 
     my $AttachmentObj = RT::Attachment->new( $session{'CurrentUser'} );
     $AttachmentObj->Load( $id );
     unless ( $AttachmentObj->id ) {
-        Abort("Couldn't load attachment #$id");
+        Abort("Couldn't load attachment #$id", Code => HTTP::Status::HTTP_NOT_FOUND);
     }
 
     my $content_type = 'text/plain';

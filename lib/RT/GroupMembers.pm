@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -75,6 +75,12 @@ use RT::GroupMember;
 
 sub Table { 'GroupMembers'}
 
+sub _Init {
+    my $self = shift;
+
+    $self->OrderBy( FIELD => 'id', ORDER => 'ASC' );
+    return $self->SUPER::_Init( @_ );
+}
 
 
 =head2 LimitToUsers

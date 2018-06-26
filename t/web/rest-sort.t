@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 25;
+use RT::Test tests => undef;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -21,7 +21,7 @@ sorted_tickets_ok('id',  ['1: uno',  '2: dos', '3: tres']);
 sorted_tickets_ok('+id', ['1: uno',  '2: dos', '3: tres']);
 sorted_tickets_ok('-id', ['3: tres', '2: dos', '1: uno']);
 
-undef $m;
+done_testing;
 
 sub sorted_tickets_ok {
     local $Test::Builder::Level = $Test::Builder::Level + 1;

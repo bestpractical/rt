@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,6 +48,10 @@
 <select name="<%$Name%>" <% $Multiple ? qq{multiple="multiple" size="$Size"} : '' |n %>>
 % if ( $DefaultValue ) {
 <option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
+% }
+% if ( $ShowActiveInactive ) {
+<option value="__Active__"><% loc('Active') %></option>
+<option value="__Inactive__"><% loc('Inactive') %></option>
 % }
 % for my $lifecycle (sort keys %statuses_by_lifecycle) {
 %     if ($group_by_lifecycle) {
@@ -140,4 +144,5 @@ $DefaultLabel => "-"
 
 $Multiple => 0
 $Size => 6
+$ShowActiveInactive => 0
 </%ARGS>

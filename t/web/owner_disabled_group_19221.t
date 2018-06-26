@@ -185,5 +185,4 @@ diag "Check MemberOfGroup";
 }
 
 
-undef $m;
 done_testing;

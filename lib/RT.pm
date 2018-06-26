@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -200,6 +200,7 @@ sub Init {
     InitSystemObjects();
     InitClasses(%args);
     InitLogging();
+    ProcessPreInitMessages();
     InitPlugins();
     _BuildTableAttributes();
     RT::I18N->Init;
@@ -372,6 +373,15 @@ sub InitLogging {
         }
     }
     InitSignalHandlers();
+}
+
+# Some messages may have been logged before the logger was available.
+# Output them here.
+
+sub ProcessPreInitMessages {
+    foreach my $message ( @RT::Config::PreInitLoggerMessages ){
+        RT->Logger->debug($message);
+    }
 }
 
 sub InitSignalHandlers {
@@ -551,6 +561,9 @@ sub _BuildTableAttributes {
         RT::ObjectTopic
         RT::Topic
         RT::Asset
+        RT::Catalog
+        RT::CustomRole
+        RT::ObjectCustomRole
     );
 }
 

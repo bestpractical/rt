@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -109,6 +109,7 @@ problem in Perl that hides the top-level optree from L<Devel::Cover>.
 
 our $port;
 our @SERVERS;
+my @ports; # keep track of all the random ports we used
 
 BEGIN {
     delete $ENV{$_} for qw/LANGUAGE LC_ALL LC_MESSAGES LANG/;
@@ -146,7 +147,7 @@ sub import {
 
     $class->bootstrap_tempdir;
 
-    $class->bootstrap_port;
+    $port = $class->find_idle_port;
 
     $class->bootstrap_plugins_paths( %args );
 
@@ -229,7 +230,7 @@ sub db_requires_no_dba {
     return 1 if $db_type eq 'SQLite';
 }
 
-sub bootstrap_port {
+sub find_idle_port {
     my $class = shift;
 
     my %ports;
@@ -245,6 +246,7 @@ sub bootstrap_port {
 
     # Pick a random port, checking that the port isn't in our in-use
     # list, and that something isn't already listening there.
+    my $port;
     {
         $port = 1024 + int rand(10_000) + $$ % 1024;
         redo if $ports{$port};
@@ -271,6 +273,8 @@ sub bootstrap_port {
     truncate(PORTS, 0);
     print PORTS "$_\n" for sort {$a <=> $b} keys %ports;
     close(PORTS) or die "Can't close ports file: $!";
+    push @ports, $port;
+    return $port;
 }
 
 sub bootstrap_tempdir {
@@ -1772,6 +1776,12 @@ sub done_testing {
     Test::NoWarnings::had_no_warnings();
     $check_warnings_in_end = 0;
 
+    if ($RT::Test::Web::INSTANCES) {
+        my $cleanup = RT::Test::Web->new;
+        undef $RT::Test::Web::INSTANCES;
+        $cleanup->no_warnings_ok;
+    }
+
     $builder->done_testing(@_);
 }
 
@@ -1803,7 +1813,7 @@ END {
 
     # Drop our port from t/tmp/ports; do this after dropping the
     # database, as our port lock is also a lock on the database name.
-    if ($port) {
+    if (@ports) {
         my %ports;
         my $portfile = "$tmp{'directory'}/../ports";
         sysopen(PORTS, $portfile, O_RDWR|O_CREAT)
@@ -1811,7 +1821,7 @@ END {
         flock(PORTS, LOCK_EX)
             or die "Can't write-lock ports file $portfile: $!";
         $ports{$_}++ for split ' ', join("",<PORTS>);
-        delete $ports{$port};
+        delete $ports{$_} for @ports;
         seek(PORTS, 0, 0);
         truncate(PORTS, 0);
         print PORTS "$_\n" for sort {$a <=> $b} keys %ports;

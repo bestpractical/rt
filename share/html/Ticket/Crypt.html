@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -96,5 +96,5 @@ if ( $Encrypt || $Decrypt ) {
     $encrypted = !$encrypted if $done;
 }
 
-my $title = loc("Encrypt/Decrypt transaction #[_1] of ticket #[_2]", $id, $txn->Ticket);
+my $title = loc("Encrypt/Decrypt transaction #[_1] of ticket #[_2]: [_3]", $id, $txn->Ticket, $txn->TicketObj->Subject);
 </%INIT>

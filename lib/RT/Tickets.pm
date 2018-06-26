@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -3029,10 +3029,11 @@ sub _parser {
 
     require RT::Interface::Web::QueryBuilder::Tree;
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
-    $tree->ParseSQL(
+    my @results = $tree->ParseSQL(
         Query => $string,
         CurrentUser => $self->CurrentUser,
     );
+    die join "; ", map { ref $_ eq 'ARRAY' ? $_->[ 0 ] : $_ } @results if @results;
 
     state ( $active_status_node, $inactive_status_node );
 

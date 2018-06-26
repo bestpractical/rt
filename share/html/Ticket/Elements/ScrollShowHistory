@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,26 +56,22 @@ delete $params{Ticket};
 my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
         $m->comp('/Elements/QueryString', %params, id => $Ticket->id );
 
-my %extra_args;
+my %extra_args = map { $_ => $ARGS{$_} // 1 } qw/ShowDisplayModes ShowTitle ScrollShowHistory/;
+$extra_args{ShowHeaders} = $ARGS{ShowHeaders};
+
 $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $Ticket, ExtraArgs => \%extra_args );
 
-my $ShowDisplayModes = 1 || $extra_args{'ShowDisplayModes'};
-my $ShowTitle =        1 || $extra_args{'ShowTitle'};
-my $ShowHeaders =      0 || $extra_args{'ShowHeaders'};
 
 my $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
 </%INIT>
 
 <& /Elements/ShowHistoryHeader,
     Object            => $Ticket,
-    ShowHeaders       => $ShowHeaders,
-    ShowTitle         => $ShowTitle,
-    ShowDisplayModes  => $ShowDisplayModes,
-    ScrollShowHistory => 1,
+    %extra_args,
     &>
 
 </div>
-% if ($ShowDisplayModes or $ShowTitle) {
+% if ($extra_args{ShowDisplayModes} or $extra_args{ShowTitle} or $extra_args{ScrollShowHistory} ) {
     <& /Widgets/TitleBoxEnd &>
 % }
 </div>
@@ -140,12 +136,18 @@ jQuery(function(){
         }
 
         jQuery.ajax({
-            url: "<% $url %>" + queryString,
+            url: "<% $url |n %>" + queryString,
             success: function(html) {
                 var transactions = jQuery(html).filter('div.transaction');
                 if(html && transactions.length) {
                     lastTransactionId = transactions.last().data('transactionId');
                     jQuery(".history-container").append(html);
+                    if ( transactions.filter(':not(.hidden.end-of-history-list)').length == 0 ) {
+                        // if none is visible, automatically load more
+                        isLoading = false;
+                        loadHistoryPage();
+                        return;
+                    }
 
                     if (hashTransactionId) { // focus transaction if we are following a link to it
                         hashTransactionId = null;
