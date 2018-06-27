@@ -137,8 +137,16 @@ print "Working with:\n"
     ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n\n";
 
 foreach my $table ( keys %$found_tables ){
+
+    my $pg_seq = '_id_seq';
+
+    # Two of the Pg sequences don't follow the standard _id_seq ending
+    if ( $table eq 'OBJECTCUSTOMFIELDS' or $table eq 'OBJECTCUSTOMFIELDVALUES' ){
+        $pg_seq = '_id_s';
+    }
+
     fix_id_sequence($table, {
-        Pg     => lc($table) . '_id_seq',
+        Pg     => lc($table) . $pg_seq,
         Oracle => $table . '_seq',
     });
 }
