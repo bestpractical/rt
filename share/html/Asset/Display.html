@@ -48,9 +48,9 @@
 <& /Elements/Header, Title => loc("Asset #[_1]: [_2]", $asset->id, $asset->Name) &>
 <& /Elements/Tabs &>
 
-% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Asset => $asset);
+% $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Asset => $asset, Results => \@results);
 
-<& /Elements/ListActions &>
+<& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
 <& Elements/ShowSummary, AssetObj => $asset &>
@@ -70,6 +70,7 @@
 $id => undef
 </%args>
 <%init>
+my @results;
 my $asset = LoadAsset($id);
-$m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Asset => $asset);
+$m->callback(CallbackName => 'BeforeDisplay', ARGSRef => \%ARGS, Asset => $asset, Results => \@results);
 </%init>
