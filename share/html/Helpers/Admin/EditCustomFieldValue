@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2014 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,26 +45,47 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/PageLayout, show_menu => $show_menu &>
-<a name="skipnav" id="skipnav" accesskey="8"></a>
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( $out ) |n %>
+% $m->abort;
 <%INIT>
 
-my $request_path = $HTML::Mason::Commands::r->path_info;
-$request_path =~ s!/{2,}!/!g;
+my $out = {};
 
-my $top     = Menu();
-my $widgets = PageWidgets();
-my $page    = PageMenu();
+if ( $cf_id ) {
+    my $cf = RT::CustomField->new($session{CurrentUser});
+    $cf->LoadById($cf_id);
+    if ( !$cf->Name ) {
+        $out = { status => 0, message => loc("Current User cannot see this Custom Field, terminating") };
+    }
+    else {
+        my ( $ret, $msg, $html );
+        if ( $action eq 'add' ) {
+            ( $ret, $msg ) = $cf->AddValue(
+                Name        => $ARGS{name},
+                SortOrder   => $ARGS{sort_order} || 0,
+                Description => $ARGS{description},
+                Category    => $ARGS{category},
+            );
+            $html  = $m->scomp('/Admin/Elements/EditCustomFieldValues', CustomField => $cf ) if $ret;
+        }
+        elsif ( $action eq 'delete' ) {
+            ( $ret, $msg ) = $cf->DeleteValue( $ARGS{value_id} );
+            $html  = $m->scomp('/Admin/Elements/EditCustomFieldValues', CustomField => $cf ) if $ret;
+        }
+        else {
+            ( $ret, $msg ) = ( 0, loc('Invalid action') );
+        }
 
-use RT::Interface::Web::MenuBuilder;
-if ( $request_path !~ m{^/SelfService/} ) {
-    RT::Interface::Web::MenuBuilder::BuildMainNav( $request_path, $top, $widgets, $page, %ARGS );
-} else {
-    RT::Interface::Web::MenuBuilder::BuildSelfServiceNav( $request_path, $top, $widgets, $page, %ARGS );
+        $out =  { status => $ret || 0, message => $msg, html => $html };
+    }
+}
+else {
+    $out = { status => 0, message => loc("No CustomField provided") };
 }
 </%INIT>
+
 <%ARGS>
-$show_menu => 1
-$QueryString => ''
-$QueryArgs => {}
+$action => ''
+$cf_id => undef
 </%ARGS>

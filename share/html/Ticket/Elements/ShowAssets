@@ -144,6 +144,21 @@ if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
 </%perl>
 <a href="<% $delete_url %>" class="unlink-asset ui-icon ui-icon-circle-close" title="Unlink asset">X</a>
 % }
+
+%# show asset actions menu
+% my $request_path = $HTML::Mason::Commands::r->path_info;
+% $request_path =~ s!/{2,}!/!g;
+% my $page = RT::Interface::Web::Menu->new();
+% RT::Interface::Web::MenuBuilder::_BuildAssetMenuActionSubmenu( $request_path, Menu(), PageWidgets(), $page, Asset => $asset );
+<& /Elements/Menu, menu => $page, id => 'asset-'.$asset->id.'-actions-menu', parent_id => 'asset-'.$asset->id &>
+<script>
+jQuery("#assets-accordion ul.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ dropShadows: false, speed: 'fast', delay: 0 }).supposition()
+    .find('a').click(function(ev){
+        ev.stopPropagation();
+        return true;
+    });
+</script>
+
   </h3>
   <div class="details">
     <& /Elements/ShowRecord,

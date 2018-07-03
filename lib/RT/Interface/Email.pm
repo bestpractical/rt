@@ -1480,12 +1480,6 @@ sub _HTMLFormatter {
             require HTML::FormatText::WithLinks::AndTables;
             $formatter = \&_HTMLFormatText;
         } else {
-            unless (HTML::FormatExternal->require) {
-                RT->Logger->warn("HTML::FormatExternal is not installed; falling back to internal perl formatter")
-                    if $wanted;
-                next;
-            }
-
             my $path = $prog =~ s{(.*/)}{} ? $1 : undef;
             my $package = "HTML::FormatText::" . ucfirst($prog);
             unless ($package->require) {
