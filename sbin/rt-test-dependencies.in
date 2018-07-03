@@ -161,6 +161,7 @@ List::MoreUtils
 Locale::Maketext 1.06
 Locale::Maketext::Fuzzy 0.11
 Locale::Maketext::Lexicon 0.32
+Locale::PO
 Log::Dispatch 2.30
 LWP::Simple
 Mail::Header 2.12
@@ -221,7 +222,6 @@ Email::Abstract
 File::Find
 File::Which
 HTML::Entities
-Locale::PO
 Log::Dispatch::Perl
 Mojo::DOM
 Plack::Middleware::Test::StashWarnings 0.08
