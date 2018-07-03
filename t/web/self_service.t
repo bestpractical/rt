@@ -58,7 +58,7 @@ diag 'Test $SelfServiceUserPrefs config';
 
   is( RT->Config->Get( 'SelfServiceUserPrefs' ), 'edit-prefs', '$SelfServiceUserPrefs is set to "edit-prefs" by default' );
 
-  for my $config ( 'edit-prefs', 'view-info', 'full-edit' ) {
+  for my $config ( 'edit-prefs', 'view-info', 'edit-prefs-view-info', 'full-edit' ) {
     RT::Test->stop_server;
     RT->Config->Set( SelfServiceUserPrefs => $config );
     ( $url, $m ) = RT::Test->started_ok;
@@ -71,6 +71,10 @@ diag 'Test $SelfServiceUserPrefs config';
     } elsif ( $config eq 'view-info' ) {
       $m->content_lacks( '<td class="value"><input name="NickName" value="" /></td>', "'View-Info' option contains no input fields for full user info" );
       $m->content_contains( '<td class="label">Nickname:</td>', "'View-Info' option contains full user info" );
+    } elsif ( $config eq 'edit-prefs-view-info' ) {
+      $m->content_contains( '<td class="value"><input type="password" name="CurrentPass"', "'Edit-Prefs-View-Info' option contains default user info" );
+      $m->content_contains( '<td class="label">Nickname:</td>', "'Edit-Prefs-View-Info' option contains full user info" );
+      $m->content_lacks( '<td class="value"><input name="NickName" value="" /></td>', "'Edit-Prefs-View-Info' option contains no input fields for full user info" );
     } else {
       RT::Test->add_rights( { Principal => $user_a, Right => ['ModifySelf'] } );
       my $nickname = 'user_a_nickname';
