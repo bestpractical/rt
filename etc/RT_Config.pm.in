@@ -1817,6 +1817,12 @@ This is the default behavior of RT.
 When set to C<view-info>, users will have full access to all their
 user information stored in RT on a read-only page.
 
+=item C<edit-prefs-view-info>
+
+When set to C<edit-prefs-view-info>, users will have full access as in
+the C<view-info> option, but also will be able to update their Locale
+and password as in the default C<edit-prefs> option.
+
 =item C<full-edit>
 
 When set to C<full-edit>, users will be able to fully view and update

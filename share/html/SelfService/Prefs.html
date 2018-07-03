@@ -49,10 +49,9 @@
 
 <& /Elements/ListActions, actions => \@results &>
 % if ( $pref eq 'full-edit' ) {
-<& /Prefs/Elements/EditAboutMe, UserObj => $user, PasswordName => $password &>
-% } elsif ( $pref eq 'view-info' ) {
-<& /Prefs/Elements/ShowAboutMe, UserObj => $user &>
-% } else {
+<& /Prefs/Elements/EditAboutMe, UserObj => $user, PasswordName => $password, AccessControlName => 'Change Password' &>
+% }
+% if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' ) {
 <form method="post">
 
 <table width="100%" border="0">
@@ -87,6 +86,9 @@
 </form>
 
 % }
+% if ( $pref eq 'view-info' || $pref eq 'edit-prefs-view-info' ) {
+<& /Prefs/Elements/ShowAboutMe, UserObj => $user &>
+% }
 
 <%INIT>
 my @results;
@@ -96,7 +98,7 @@ my $password = [ qw(CurrentPass NewPass1 NewPass2) ];
 
 my $pref = RT->Config->Get( 'SelfServiceUserPrefs' ) || '';
 
-if ( $pref eq 'brief' || $pref eq 'full-edit' ) {
+if ( $pref eq 'edit-prefs' || $pref eq 'full-edit' || $pref eq 'edit-prefs-view-info' ) {
 
     if ( defined $NewPass1 && length $NewPass1 ) {
         my ($status, $msg) = $user->SafeSetPassword(
@@ -109,7 +111,7 @@ if ( $pref eq 'brief' || $pref eq 'full-edit' ) {
 
     my @fields;
 
-    if ( $pref eq 'edit-prefs' ) {
+    if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' ) {
         @fields = qw( Lang Timezone );
     } else {
         @fields = qw(
