@@ -68,7 +68,7 @@
 % }
 % }
 
-% if ($Groups and $Groups->Count) {
+% if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'SeeGroup') and $Groups && $Groups->Count) {
 <tr><td>
 <&|/l&>Type</&>
 </td><td>
