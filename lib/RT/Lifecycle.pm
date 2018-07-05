@@ -524,8 +524,9 @@ sub Actions {
         @{ $self->{'data'}{'actions'} };
 
     # skip '* -> x' if there is '$from -> x'
+    my @temp = @res; # Create a copy for the inner grep since we modify in the loop
     foreach my $e ( grep $_->{'from'} eq '*', @res ) {
-        $e = undef if grep $_->{'from'} ne '*' && $_->{'to'} eq $e->{'to'}, @res;
+        $e = undef if grep $_->{'from'} ne '*' && $_->{'to'} eq $e->{'to'}, @temp;
     }
     return grep defined, @res;
 }
