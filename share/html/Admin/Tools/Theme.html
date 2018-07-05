@@ -125,6 +125,8 @@ my @sections = (
     ['Page content' => ['div#body']],
     ['Buttons'      => ['input[type="reset"], input[type="submit"], input[class="button"]']],
     ['Button hover' => ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover']],
+    ['Search results' => ['table.collection-as-table th.collection-as-table a']],
+    ['Portlet Text'   => ['.titlebox .titlebox-title .left a, .titlebox .titlebox-title .left']],
 );
 </%ONCE>
 <script type="text/javascript">
@@ -181,6 +183,12 @@ jQuery(function($) {
 
               /* Page title's text color is the selected color */
               if (applying[name].match(/h1/))
+                  newcss = "color: " + bg;
+
+              if (applying[name].match(/collection-as-table/))
+                  newcss = "color: " + bg;
+
+              if (applying[name].match(/titlebox/))
                   newcss = "color: " + bg;
 
               /* Nav doesn't need a background, but it wants text color */
