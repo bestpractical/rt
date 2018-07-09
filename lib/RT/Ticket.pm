@@ -476,7 +476,7 @@ sub Create {
     if ($args{'SquelchMailTo'}) {
        my @squelch = ref( $args{'SquelchMailTo'} ) ? @{ $args{'SquelchMailTo'} }
         : $args{'SquelchMailTo'};
-        $self->_SquelchMailTo( @squelch );
+        $self->_SquelchMailTo( $_ ) for @squelch;
     }
 
     # Add all the custom fields
