@@ -1213,7 +1213,11 @@ sub _CanonicalizeRoleName {
             my $q2 = RT::Queue->new( $self->CurrentUser );
             $q2->Load( $self->NewValue );
             return ("[_1] changed from [_2] to [_3]",
-                    $self->loc($self->Field), $q1->Name // '#'.$q1->id, $q2->Name // '#'.$q2->id); #loc()
+                    $self->loc($self->Field),
+                    $q1->id ? $q1->Name ? $q1->Name : '#'.$q1->id
+                            : $self->OldValue,
+                    $q2->id ? $q2->Name ? $q2->Name : '#'.$q1->id
+                            : $self->NewValue); #loc()
         }
 
         # Write the date/time change at local time:
