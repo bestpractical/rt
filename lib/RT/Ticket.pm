@@ -1613,7 +1613,7 @@ sub _RecordNote {
 
             my $addresses = join ', ', (
                 map { RT::User->CanonicalizeEmailAddress( $_->address ) }
-                    Email::Address->parse( $args{ $type . 'MessageTo' } ) );
+                    RT::EmailParser->ParseEmailAddress( $args{ $type . 'MessageTo' } ) );
             $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode( "UTF-8", $addresses ) );
         }
     }

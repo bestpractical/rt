@@ -494,7 +494,7 @@ sub SignEncryptRFC3156 {
     }
     if ( $args{'Encrypt'} ) {
         my @recipients = map $_->address,
-            map Email::Address->parse( Encode::decode( "UTF-8", $_ ) ),
+            map RT::EmailParser->ParseEmailAddress( Encode::decode( "UTF-8", $_ ) ),
             map $entity->head->get( $_ ),
             qw(To Cc Bcc);
 
@@ -1568,7 +1568,7 @@ sub _ParseUserHint {
     return (
         MainKey      => $main_key_id,
         String       => $user_str,
-        EmailAddress => (map $_->address, Email::Address->parse( $user_str ))[0],
+        EmailAddress => (map $_->address, RT::EmailParser->ParseEmailAddress( $user_str ))[0],
     );
 }
 

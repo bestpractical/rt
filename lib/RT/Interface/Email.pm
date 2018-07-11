@@ -52,7 +52,6 @@ use strict;
 use warnings;
 use 5.010;
 
-use Email::Address;
 use MIME::Entity;
 use RT::EmailParser;
 use File::Temp;
@@ -747,7 +746,7 @@ sub SignEncrypt {
     }
     return 0 unless @bad_recipients;
 
-    $_->{'AddressObj'} = (Email::Address->parse( $_->{'Recipient'} ))[0]
+    $_->{'AddressObj'} = (RT::EmailParser->ParseEmailAddress( $_->{'Recipient'} ))[0]
         foreach @bad_recipients;
 
     foreach my $recipient ( @bad_recipients ) {
@@ -955,7 +954,7 @@ sub ParseCcAddressesFromHead {
     return
         grep $_ ne $current_address && !RT::EmailParser->IsRTAddress( $_ ),
         map lc $user->CanonicalizeEmailAddress( $_->address ),
-        map RT::EmailParser->CleanupAddresses( Email::Address->parse(
+        map RT::EmailParser->CleanupAddresses( RT::EmailParser->ParseEmailAddress(
               Encode::decode( "UTF-8", $args{'Head'}->get( $_ ) ) ) ),
         qw(To Cc);
 }
@@ -1057,7 +1056,7 @@ sub DeleteRecipientsFromHead {
     foreach my $field ( qw(To Cc Bcc) ) {
         $head->replace( $field => Encode::encode( "UTF-8",
             join ', ', map $_->format, grep !$skip{ lc $_->address },
-                Email::Address->parse( Encode::decode( "UTF-8", $head->get( $field ) ) ) )
+                RT::EmailParser->ParseEmailAddress( Encode::decode( "UTF-8", $head->get( $field ) ) ) )
         );
     }
 }

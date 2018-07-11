@@ -68,7 +68,7 @@
   <li>
   <input type="hidden" name="autorecipient" value="<% $addr %>">
   <input type="checkbox" name="checked_recipient" id="checked_recipient_<%$addr%>" value="<%$addr%>" <% $recips{$addr} ? "checked" : "" %>>
-  <label for="checked_recipient_<%$addr%>"><& /Elements/ShowUser, Address => Email::Address->parse($addr) &></label>
+  <label for="checked_recipient_<%$addr%>"><& /Elements/ShowUser, Address => RT::EmailParser->ParseEmailAddress($addr) &></label>
   </li>
 % }
 </ul>

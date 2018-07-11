@@ -54,7 +54,6 @@ use warnings;
 
 use base qw(RT::Action::SendEmail);
 
-use Email::Address;
 
 =head2 Prepare
 
@@ -140,9 +139,9 @@ sub SetRecipients {
     if ( $arg =~ /\bOtherRecipients\b/ ) {
         if ( my $attachment = $self->TransactionObj->Attachments->First ) {
             push @{ $self->{'NoSquelch'}{'Cc'} ||= [] }, map $_->address,
-                Email::Address->parse( $attachment->GetHeader('RT-Send-Cc') );
+                RT::EmailParser->ParseEmailAddress( $attachment->GetHeader('RT-Send-Cc') );
             push @{ $self->{'NoSquelch'}{'Bcc'} ||= [] }, map $_->address,
-                Email::Address->parse( $attachment->GetHeader('RT-Send-Bcc') );
+                RT::EmailParser->ParseEmailAddress( $attachment->GetHeader('RT-Send-Bcc') );
         }
     }
 }

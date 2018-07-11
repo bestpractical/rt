@@ -57,7 +57,6 @@ use base qw(RT::Action);
 
 use RT::EmailParser;
 use RT::Interface::Email;
-use Email::Address;
 our @EMAIL_RECIPIENT_HEADERS = qw(To Cc Bcc);
 
 
@@ -258,7 +257,7 @@ sub AddressesFromHeader {
     my $self      = shift;
     my $field     = shift;
     my $header    = Encode::decode("UTF-8",$self->TemplateObj->MIMEObj->head->get($field));
-    my @addresses = Email::Address->parse($header);
+    my @addresses = RT::EmailParser->ParseEmailAddress($header);
 
     return (@addresses);
 }
@@ -810,7 +809,7 @@ sub RemoveInappropriateRecipients {
 
         if ( my $squelch = $attachment->GetHeader('RT-Squelch-Replies-To') ) {
             $blacklist{ $_->address } ||= 'squelch:attachment'
-                foreach Email::Address->parse( $squelch );
+                foreach RT::EmailParser->ParseEmailAddress( $squelch );
         }
     }
 
@@ -826,7 +825,7 @@ sub RemoveInappropriateRecipients {
         my $reason = delete $blacklist{ $address };
         $blacklist{ lc $_ } = $reason
             foreach map RT::User->CanonicalizeEmailAddress( $_->address ),
-            Email::Address->parse( $address );
+            RT::EmailParser->ParseEmailAddress( $address );
     }
 
     $self->RecipientFilter(

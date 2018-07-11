@@ -228,7 +228,7 @@ sub SignEncrypt {
     if ( $args{'Encrypt'} ) {
         my %seen;
         $args{'Recipients'} = [
-            grep !$seen{$_}++, map $_->address, map Email::Address->parse(Encode::decode("UTF-8",$_)),
+            grep !$seen{$_}++, map $_->address, map RT::EmailParser->ParseEmailAddress(Encode::decode("UTF-8",$_)),
             grep defined && length, map $entity->head->get($_), qw(To Cc Bcc)
         ];
     }
@@ -571,7 +571,7 @@ sub _Decrypt {
 
     my %seen;
     my @addresses =
-        grep !$seen{lc $_}++, map $_->address, map Email::Address->parse($_),
+        grep !$seen{lc $_}++, map $_->address, map RT::EmailParser->ParseEmailAddress($_),
         grep length && defined, @{$args{'Recipients'}};
 
     my ($buf, $encrypted_to, %res);

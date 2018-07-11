@@ -244,7 +244,7 @@ if (defined $ARGS{Save}) {
 
     # validation
     if ($fields{Recipient}) {
-        my @addresses = Email::Address->parse($fields{Recipient});
+        my @addresses = RT::EmailParser->ParseEmailAddress($fields{Recipient});
         if (@addresses == 0) {
             push @results, loc('Recipient must be an email address');
             $ok = 0;

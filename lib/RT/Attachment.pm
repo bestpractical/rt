@@ -581,7 +581,7 @@ sub Addresses {
         my @Addresses;
         my $line = $self->GetHeader($hdr);
         
-        foreach my $AddrObj ( Email::Address->parse( $line )) {
+        foreach my $AddrObj ( RT::EmailParser->ParseEmailAddress( $line )) {
             my $address = $AddrObj->address;
             $address = lc RT::User->CanonicalizeEmailAddress($address);
             next if $current_user_address eq $address;

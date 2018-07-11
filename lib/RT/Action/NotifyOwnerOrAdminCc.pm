@@ -53,7 +53,6 @@ use warnings;
 
 use base qw(RT::Action::Notify);
 
-use Email::Address;
 
 =head1 Notify Owner or AdminCc
 

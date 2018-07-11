@@ -587,7 +587,7 @@ sub ValidateEmailAddress {
 
     if ( RT->Config->Get('ValidateUserEmailAddresses') ) {
         # We only allow one valid email address
-        my @addresses = Email::Address->parse($Value);
+        my @addresses = RT::EmailParser->ParseEmailAddress($Value);
         return ( 0, $self->loc('Invalid syntax for email address') ) unless ( ( scalar (@addresses) == 1 ) && ( $addresses[0]->address ) );
     }
 

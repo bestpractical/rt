@@ -54,7 +54,6 @@ use warnings;
 
 use base qw(RT::Action::SendEmail);
 
-use Email::Address;
 
 =head2 Prepare
 
