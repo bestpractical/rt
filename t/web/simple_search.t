@@ -149,7 +149,6 @@ for my $quote ( q{'}, q{"} ) {
     is( ref($user), 'RT::User' );
     my ( $id, $msg ) = $user->Create(
         Name         => qq!foo${quote}bar!,
-        EmailAddress => qq!foo${quote}bar$$\@example.com !,
         Privileged   => 1,
     );
     ok ($id, "Creating user - " . $msg );
