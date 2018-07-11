@@ -533,6 +533,8 @@ sub ParseEmailAddress {
     my $self = shift;
     my $address_string = shift;
 
+    return unless defined $address_string;
+
     my @list = Email::Address::List->parse(
         $address_string,
         skip_comments => 1,
