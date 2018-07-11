@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 122;
+use RT::Test tests => undef;
+use Test::Warn;
 
 
 {
@@ -75,12 +76,18 @@ ok (!$id, $msg);
 
 # Make sur we can't create a user with multiple email adresses separated by space
 my $u9 = RT::User->new(RT->SystemUser);
-($id, $msg) = $u9->Create(Name => 'CreateTest9'.$$, EmailAddress => $$.'create-test-91@example.com '.$$.'create-test-92@example.com');
+warnings_like {
+    ($id, $msg) = $u9->Create(Name => 'CreateTest9'.$$, EmailAddress => $$.'create-test-91@example.com '.$$.'create-test-92@example.com');
+}
+qr/is not a valid email address/, "warned about invalid email address";
 ok (!$id, $msg);
 
 # Make sur we can't create a user with invalid email address
 my $u10 = RT::User->new(RT->SystemUser);
-($id, $msg) = $u10->Create(Name => 'CreateTest10'.$$, EmailAddress => $$.'create-test10}@[.com');
+warnings_like {
+    ($id, $msg) = $u10->Create(Name => 'CreateTest10'.$$, EmailAddress => $$.'create-test10}@[.com');
+}
+qr/is not a valid email address/, "warned about invalid email address";
 ok (!$id, $msg);
 RT->Config->Set('ValidateUserEmailAddresses' => undef);
 
@@ -362,3 +369,4 @@ ok($rqv, "Revoked the right successfully - $rqm");
     is $marks[0], $b_ticket->id;
 }
 
+done_testing;
