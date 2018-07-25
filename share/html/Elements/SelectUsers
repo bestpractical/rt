@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="UserField">
+<select name="<% $SelectFieldName %>">
 % foreach my $col (@fields) {
 <option <% ($UserField eq $col->[0]) ? 'selected="selected"' : '' |n %> value="<% $col->[0] %>"><% loc($col->[1]) %></option>
 % }
@@ -54,8 +54,8 @@
 <option <% ($UserField eq $val) ? 'selected="selected"' : '' |n %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->Name %></option>
 % }
 </select>
-<& /Elements/SelectMatch, Name => 'UserOp', Default => $UserOp &>
-<input size="8" name="UserString" value="<% $UserString %>" />
+<& /Elements/SelectMatch, Name => $SelectOpName, Default => $UserOp &>
+<input size="8" name="<% $InputStringName %>" value="<% $UserString %>" />
 <%INIT>
 my $CFs = RT::CustomFields->new($session{'CurrentUser'});
 $CFs->LimitToChildType('RT::User');
@@ -78,4 +78,7 @@ $UserField  => ''
 $UserOp     => ''
 $UserString => ''
 $Fields     => undef
+$SelectFieldName => 'UserField'
+$SelectOpName => 'UserOp'
+$InputStringName => 'UserString'
 </%ARGS>
