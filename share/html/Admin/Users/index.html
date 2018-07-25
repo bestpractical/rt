@@ -69,16 +69,34 @@ jQuery(function(){
 </script>
 </form>
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" name="UsersAdmin">
 % foreach my $field( qw(Format Rows Page Order OrderBy) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
-<&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields &><br />
+<table>
+    <tr><td><&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields &></td></tr>
+    <tr><td><&|/l&>And all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
+                SelectFieldName => 'UserField2',
+                SelectOpName    => 'UserOp2',
+                InputStringName => 'UserString2',
+                UserField       => $UserField2,
+                UserOp          => $UserOp2,
+                UserString      => $UserString2,
+            &></td></tr>
+    <tr><td><&|/l&>And all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
+                SelectFieldName => 'UserField3',
+                SelectOpName    => 'UserOp3',
+                InputStringName => 'UserString3',
+                UserField       => $UserField3,
+                UserOp          => $UserOp3,
+                UserString      => $UserString3,
+            &></td></tr>
+</table>
 <input type="checkbox" class="checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
 <label for="FindDisabledUsers"><&|/l&>Include disabled users in search.</&></label>
 <br />
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
+<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" name="Go" /></div> 
 </form>
 
 % unless ( $users->Count ) {
@@ -94,7 +112,7 @@ jQuery(function(){
     Format => $Format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField IdLike EmailLike FindDisabledUsers)],
+    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers)],
 &>
 
 % }
@@ -104,21 +122,30 @@ my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
 $users->FindAllRows if $FindDisabledUsers;
 
-if ( defined($UserString) && length $UserString ) {
-    $caption = loc("Users matching search criteria");
-    if ( $UserField =~ /^CustomField-(\d+)/ ) {
-        $users->LimitCustomField(
-            CUSTOMFIELD => $1,
-            OPERATOR => $UserOp,
-            VALUE => $UserString,
-        ); 
-    }
-    else {
-        $users->Limit(
-            FIELD => $UserField,
-            OPERATOR => $UserOp,
-            VALUE => $UserString,
-        ); 
+$caption = loc("Users matching search criteria");
+my @users_queries = ();
+push @users_queries, { field => $UserField, op => $UserOp, string => $UserString } if length $UserString;
+push @users_queries, { field => $UserField2, op => $UserOp2, string => $UserString2 } if length $UserString2;
+push @users_queries, { field => $UserField3, op => $UserOp3, string => $UserString3 } if length $UserString3;
+
+if ( scalar @users_queries ) {
+    foreach my $user ( @users_queries ) {
+        if ( $user->{'field'} =~ /^CustomField-(\d+)/ ) {
+            $users->LimitCustomField(
+                CUSTOMFIELD => $1,
+                OPERATOR => $user->{'op'},
+                VALUE => $user->{'string'},
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
+        else {
+            $users->Limit(
+                FIELD => $user->{'field'},
+                OPERATOR => $user->{'op'},
+                VALUE => $user->{'string'},
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
     }
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Users/Modify.html?id=".$users->First->id)
           if $users->Count == 1;
@@ -159,8 +186,14 @@ for my $name (@attrs) {
 $Format => undef,
 
 $UserString => undef
-$UserOp => '='
+$UserOp => undef
 $UserField => 'Name'
+$UserString2 => undef
+$UserOp2 => undef
+$UserField2 => 'Name'
+$UserString3 => undef
+$UserOp3 => undef
+$UserField3 => 'Name'
 $IdLike => undef
 $EmailLike => undef
 
