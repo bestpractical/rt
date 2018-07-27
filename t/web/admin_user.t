@@ -74,6 +74,64 @@ $m->submit_form_ok(
 is( $form->find_input('PrivateKey')->value,
     'C798591AA831DBFB', 'set private key' );
 
+
+diag "Test user searches";
+
+my @cf_names = qw( CF1 CF2 CF3 );
+my @cfs = ();
+foreach my $cf_name ( @cf_names ) {
+    my $cf = RT::CustomField->new( RT->SystemUser );
+    my ( $id, $msg ) = $cf->Create(
+        Name => $cf_name,
+        TypeComposite => 'Freeform-1',
+        LookupType => RT::User->CustomFieldLookupType,
+    );
+    ok( $id, $msg );
+    # Create a global ObjectCustomField record
+    my $object = $cf->RecordClassFromLookupType->new( RT->SystemUser );
+    ( $id, $msg ) = $cf->AddToObject( $object );
+    ok( $id, $msg );
+    push ( @cfs, $cf );
+}
+my $cf_1 = $cfs[0];
+my $cf_2 = $cfs[1];
+my $cf_3 = $cfs[2];
+
+my @user_names = qw( user1 user2 user3 user4 );
+my @users = ();
+foreach my $user_name ( @user_names ) {
+    my $user = RT::Test->load_or_create_user(
+        Name => $user_name, Password => 'password',
+    );
+    ok( $user && $user->id, 'Created '.$user->Name.' with id '.$user->Id );
+    push ( @users, $user );
+}
+
+$users[0]->AddCustomFieldValue( Field => $cf_1->id, Value => 'one' );
+
+$users[1]->AddCustomFieldValue( Field => $cf_1->id, Value => 'one' );
+$users[1]->AddCustomFieldValue( Field => $cf_2->id, Value => 'two' );
+
+$users[2]->AddCustomFieldValue( Field => $cf_1->id, Value => 'one' );
+$users[2]->AddCustomFieldValue( Field => $cf_2->id, Value => 'two' );
+$users[2]->AddCustomFieldValue( Field => $cf_3->id, Value => 'three' );
+
+$m->get_ok( $url . '/Admin/Users/index.html' );
+ok( $m->form_name( 'UsersAdmin' ), 'found the filter admin users form');
+$m->select( UserField => 'Name', UserOp => 'LIKE' );
+$m->field( UserString => 'user' );
+$m->select( UserField2 => 'CustomField: '.$cf_1->Name, UserOp2 => 'LIKE' );
+$m->field( UserString2 => 'one' );
+$m->select( UserField3 => 'CustomField: '.$cf_2->Name, UserOp3 => 'LIKE' );
+$m->field( UserString3 => 'two' );
+$m->click( 'Go' );
+
+diag "Verify results contain users 2 & 3, but not 1 & 4";
+$m->content_contains( $users[1]->Name );
+$m->content_contains( $users[2]->Name );
+$m->content_lacks( $users[0]->Name );
+$m->content_lacks( $users[3]->Name );
+
 # TODO more /Admin/Users tests
 
 done_testing;
