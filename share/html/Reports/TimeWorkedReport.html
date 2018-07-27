@@ -1,0 +1,245 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc("User Time Worked") &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<div class="user-timeworked-form-content">
+    <form method="POST">
+      <table>
+        <tr>
+          <td align="right">
+            <label>User:</label>
+          </td>
+          <td align="right">
+            <input style="width: 17em" class="user-time-worked-input" name="user_req"
+              data-autocomplete="Users"
+              data-autocomplete-return="Name"
+              placeholder="<% loc("Find a user...") %>" Value = <% $user_req %>
+            >
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <label><&|/l&>Start Date</&>:</label>
+          </td>
+          <td align="right">
+            <& /Elements/SelectDate, ShowTime => 1, Name => 'startdate', Default => $startdate &>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <label><&|/l&>End Date</&>:</label>
+          </td>
+          <td align="">
+            <& /Elements/SelectDate, ShowTime => 1, Name => 'enddate', Default => $enddate  &>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <label><&|/l&>Sort By</&>:</label>
+          </td>
+          <td>
+            <select name="SortBy">
+              <option value="Date" <% $SortBy eq 'Date' ? 'selected="selected"' : '' |n%>><&|/l&>Date time worked</&></option>
+              <option value="User" <% $SortBy eq 'User' ? 'selected="selected"' : '' |n%>><&|/l&>By User</&></option>
+              <option value="Ticket" <% $SortBy eq 'Ticket' ? 'selected="selected"' : '' |n%>><&|/l&>By Ticket</&></option>
+              <option value="Queue" <% $SortBy eq 'Queue' ? 'selected="selected"' : '' |n%>><&|/l&>By Queue</&></option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td align="right">
+            <label><&|/l&>Queue</&>:</label>
+          </td>
+          <td>
+            <& /Elements/SelectQueue, Name => 'queue', Id => 'queue', Default => $queue &>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td align="right"><button type="submit"><&|/l&>See Time</&></button></td>
+        </tr>
+      </table>
+    </form>
+</div>
+
+% if ( $data ) {
+<div class="user-time-content">
+%   foreach my $delimeter (sort keys %$data) {
+    <h3><% $delimeter %></h3>
+    <table class="ticket-list collection-as-table">
+      <tr class="collection-as-table">
+        <th class="collection-as-table"><&|/l&>Id</&></th>
+        <th class="collection-as-table"><&|/l&>Subject</&></th>
+        <th class="collection-as-table"><&|/l&>Queue</&></th>
+        <th class="collection-as-table"><&|/l&>Status</&></th>
+        <th class="collection-as-table"><&|/l&>Owner</&></th>
+        <th class="collection-as-table"><&|/l&>Time Worked</&></th>
+        <th class="collection-as-table"><&|/l&>Worked By</&></th>
+      </tr>
+% my $line_type = "oddline";
+% my ($total_time_mins, $total_time_hours);
+%       foreach my $time (@{$data->{$delimeter} }) {
+      <tr class="<% $line_type %>">
+        <td class="collection-as-table">
+          <a href="<% RT->Config->Get('WebBaseURL')."/Ticket/Display.html?id=$time->{Id}" %>"><% $time->{Id} %></a>
+        </td>
+        <td class="collection-as-table"><% $time->{Subject} %></td>
+        <td class="collection-as-table"><% $time->{Queue} %></td>
+        <td class="collection-as-table"><% $time->{Status} %></td>
+        <td class="collection-as-table">
+          <a href="<% RT->Config->Get('WebBaseURL')."/User/Summary.html?id=$time->{OwnerId}" %>"><% $time->{Owner} %></a>
+        </td>
+        <td class="collection-as-table"><% $time->{Time} %></td>
+        <td class="collection-as-table">
+          <a href="<% RT->Config->Get('WebBaseURL')."/User/Summary.html?id=$time->{WorkerId}" %>"><% $time->{Worker} %></a>
+        </td>
+      </tr>
+%       $line_type = $line_type eq "oddline" ? "evenline" : "oddline";
+%       $total_time_mins += $time->{TimeMin};
+%       $total_time_hours += $time->{TimeHours};
+%       }
+    </table>
+    <label>Total: <% $total_time_hours %> <&|/l&>hours</&> (<% $total_time_mins %> <&|/l&>minutes</&>)</label>
+%   }
+</div>
+% }
+% else {
+  <&|/l&>No tickets found</&>
+% }
+
+<%INIT>
+my @results;
+
+# if we are just getting here and the form values are empty, we are done
+if ( $startdate && $enddate ) {
+
+    #### DATES ####
+    my $start_date = RT::Date->new( $session{'CurrentUser'} );
+    my $end_date   = RT::Date->new( $session{'CurrentUser'} );
+
+    # If we have a value for start date, parse it into an RT::Date object
+    if ($startdate) {
+        $start_date->Set( Format => 'unknown', Value => $startdate, Timezone => 'User' );
+
+        # And then get it back as an ISO string for display purposes, in the form field and
+        # report header
+        $startdate = $start_date->AsString( Format => 'ISO', Timezone => 'User' );
+    }
+
+    # Same treatment for end date
+    if ($enddate) {
+        $end_date->Set( Format => 'unknown', Value => $enddate );
+        $enddate = $end_date->AsString( Format => 'ISO', Timezone => 'User' );
+    }
+
+    # Get a new transactions object to hold transaction search results for this ticket
+    my $trans = RT::Transactions->new( $session{'CurrentUser'} );
+
+    my $txns = RT::Transactions->new($session{CurrentUser});
+    $txns->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
+    if ( $user_req ) {
+        my $user = RT::User->new( $session{'CurrentUser'} );
+        my ($ret, $msg) = $user->Load( $user_req );
+        if ( $ret && $user->Id ) {
+            $txns->Limit( FIELD => 'Creator', VALUE => $user->id )
+        }
+        else {
+          push @results, "Could not load user, report not limited to user: $user_req";
+        }
+    }
+    $txns->Limit( FIELD => 'TimeTaken', VALUE => 0, OPERATOR => '!=' );
+    $txns->Limit( FIELD => 'Created', VALUE => $start_date->ISO(Timezone => 'user'), OPERATOR => '>=' );
+    $txns->Limit( FIELD => 'Created', VALUE => $end_date->ISO(Timezone => 'user'), OPERATOR => '<', ENTRYAGGREGATOR => 'AND');
+
+    my $total_time_worked = 0;
+
+    while ( my $txn = $txns->Next ) {
+        my $ticket = $txn->TicketObj;
+
+        my $worker = RT::User->new($session{'CurrentUser'});
+        my ($ret, $msg) = $worker->Load( $txn->Creator );
+        push @results, $msg unless $ret;
+
+        if ( $queue && $ticket->QueueObj ) {
+            next unless $queue eq $ticket->QueueObj->Id;
+        }
+
+        $total_time_worked = $total_time_worked + $txn->TimeTaken;
+
+        my $day_worked = $txn->CreatedObj->RFC2822( Time => 0, Timezone => 'user' );
+        my $time_hours = $txn->TimeTaken / 60;
+        $time_hours = int($time_hours * 10**2) / 10**2;
+
+        my $delimeter;
+        if ( $SortBy eq 'User' ) {
+            $delimeter = 'User: ' . $worker->Name;
+        } elsif ( $SortBy eq 'Ticket' ) {
+            $delimeter = $ticket->Id . ': ' . $ticket->Subject;
+        } elsif ( $SortBy eq 'Queue' ) {
+            $delimeter = 'Queue: ' . $ticket->QueueObj->Name;
+        } else {
+            $delimeter = $day_worked;
+        }
+
+        push @{$data->{$delimeter}}, {DayWorked => $day_worked, Id => $ticket->Id, Subject => $ticket->Subject, Queue => $ticket->QueueObj->Name,
+            Status => $ticket->Status, OwnerId => $ticket->OwnerObj->Id, Owner => $ticket->OwnerObj->Name, Time => $time_hours > 1 ? $time_hours . ' hours (' . $txn->TimeTaken . '  minutes)' : $txn->TimeTaken . ' minutes',
+                TimeMin => $txn->TimeTaken, TimeHours => $time_hours, Worker => $worker->Name, WorkerId => $worker->Id};
+    }
+}
+</%INIT>
+
+<%ARGS>
+$startdate    => ''
+$enddate      => ''
+$user_req     => undef
+$SortBy       => 'Date'
+$data         => undef
+$queue        => undef
+</%ARGS>
