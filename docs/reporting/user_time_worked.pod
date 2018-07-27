@@ -1,0 +1,17 @@
+=head1 Introduction
+
+The User Time Worked report allows for users to see time worked on tickets
+for an open ended date range. Users can limit the data returned by either
+User or Queue value. The data by default is organized by the date that the
+time was worked, but can also be sorted by User, Queue or Ticket.
+
+=cut
+
+=head2 Example
+
+=cut
+
+=for html <img alt="Example User Time Worked Report"
+src="images/user-time-worked-report.png">
+
+=cut
