@@ -1733,6 +1733,17 @@ Set this to 1 to hide unset fields.
 
 Set($HideUnsetFieldsOnDisplay, 0);
 
+=item C<$DisplayTotalTimeLeft>
+
+This determines if we should show "Total Time Left" on ticket display/search
+pages.
+
+Set this to 1 to show it.
+
+=cut
+
+Set($DisplayTotalTimeLeft, 0);
+
 =back
 
 =head2 Self Service Interface

@@ -1523,6 +1523,39 @@ sub TotalTimeWorkedPerUser {
     return $time;
 }
 
+=head2 TotalTimeLeft
+
+Returns the amount of time left on this ticket and all child tickets
+
+=cut
+
+sub TotalTimeLeft {
+    my $self  = shift;
+    my $seen  = shift || {};
+    my $time  = $self->TimeLeft;
+    my $links = $self->Members;
+    while ( my $link = $links->Next ) {
+        my $obj = $link->BaseObj;
+        next unless $obj && UNIVERSAL::isa( $obj, 'RT::Ticket' );
+        next if $seen->{ $obj->id };
+        $seen->{ $obj->id } = 1;
+        $time += $obj->TotalTimeLeft( $seen );
+    }
+    return $time;
+}
+
+=head2 TotalTimeLeftAsString
+
+Returns the amount of time left on this ticket and all its children as a
+formatted duration string
+
+=cut
+
+sub TotalTimeLeftAsString {
+    my $self = shift;
+    return $self->_DurationAsString( $self->TotalTimeLeft );
+}
+
 =head2 Comment
 
 Comment on this ticket.

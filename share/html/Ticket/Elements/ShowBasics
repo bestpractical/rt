@@ -103,6 +103,14 @@
     <td class="value"><& ShowTime, minutes => $Ticket->TimeLeft &></td>
   </tr>
 % }
+% if ( RT->Config->Get('DisplayTotalTimeLeft') ) {
+%   if ( my $total_time_left = $Ticket->TotalTimeLeft ) {
+      <tr class="total time left sum">
+        <td class="label"><&|/l&>Total Time Left</&>:</td>
+        <td class="value"><& ShowTime, minutes => $total_time_left &></td>
+      </tr>
+%   }
+% }
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeLeft', TicketObj => $Ticket );
   <tr class="priority">

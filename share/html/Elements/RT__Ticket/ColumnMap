@@ -352,6 +352,16 @@ if(RT->Config->Get('DisplayTotalTimeWorked')) {
     }
 }
 
+if ( RT->Config->Get( 'DisplayTotalTimeLeft' ) ) {
+    $COLUMN_MAP->{TotalTimeLeft} = {
+        attribute => 'TotalTimeLeft',
+        title     => 'Total Time Left', # loc
+        value     => sub {
+            return $_[ 0 ]->TotalTimeLeftAsString;
+        },
+    };
+}
+
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>

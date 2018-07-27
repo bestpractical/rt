@@ -104,6 +104,7 @@ my @fields = qw(
 # Total time worked is an optional ColumnMap enabled for rolling up child
 # TimeWorked
 push @fields, 'TotalTimeWorked' if (RT->Config->Get('DisplayTotalTimeWorked'));
+push @fields, 'TotalTimeLeft' if RT->Config->Get('DisplayTotalTimeLeft');
 
 my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
 foreach my $id (keys %queues) {
