@@ -266,7 +266,7 @@ diag "Role rights are checked for lifecycles at ticket level";
     my ($ret, $msg) = $ticket->Load($id);
     ok $ticket->id, 'Loaded ticket in user context';
 
-    is $ticket->QueueObj->Lifecycle, 'default', "Rights check at ticket level passes";
+    is $ticket->QueueObj->Lifecycle($ticket), 'default', "Rights check for role at ticket level passes";
 }
 
 diag "Role rights are checked for lifecycles at asset level";
@@ -293,13 +293,17 @@ diag "Role rights are checked for lifecycles at asset level";
     ok $asset->id, 'Loaded asset in user_a context';
 
     is $asset->CatalogObj->Lifecycle, undef, "user_a can\'t see lifecycle without ShowCatalog and AdminCatalog";
+    is $asset->CatalogObj->Lifecycle($asset), undef, "user_a can\'t see lifecycle without ShowCatalog and AdminCatalog";
 
     ($ret, $msg) = $asset->AddRoleMember(Type => 'Owner', User => $user_a);
     ok $ret, $msg;
 
-    is $asset->CatalogObj->Lifecycle, 'assets', 'Successfully loaded lifecycle with rights check at role level';
+    is $asset->CatalogObj->Lifecycle($asset), 'assets', 'Successfully loaded lifecycle with rights check at role level';
 
     my $lifecycle = $asset->CatalogObj->LifecycleObj;
+    is $lifecycle->Name, 'assets', 'Test LifecycleObj method';
+
+    $lifecycle = $asset->CatalogObj->LifecycleObj($asset);
     is $lifecycle->Name, 'assets', 'Test LifecycleObj method';
 }
 
