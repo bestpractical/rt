@@ -83,16 +83,18 @@ requires 'LifecycleType';
 
 =head1 PROVIDES
 
-=head2 LifecycleObj
+=head2 LifecycleObj [CONTEXT_OBJ]
 
 Returns an L<RT::Lifecycle> object for this record's C<Lifecycle>.  If called
 as a class method, returns an L<RT::Lifecycle> object which is an aggregation
-of all lifecycles of the appropriate type.
+of all lifecycles of the appropriate type. Pass an additional L<CONTEXT_OBJ>
+to check rights at the objects context.
 
 =cut
 
 sub LifecycleObj {
     my $self = shift;
+    my $context_obj = shift || undef;
     my $type = $self->LifecycleType;
     my $fallback = $self->_Accessible( Lifecycle => "default" );
 
@@ -100,7 +102,11 @@ sub LifecycleObj {
         return RT::Lifecycle->Load( Type => $type );
     }
 
-    my $name = $self->Lifecycle || $fallback;
+    my $name = $self->Lifecycle($context_obj);
+    if ( !$name ) {
+        RT::Logger->debug('Failing back to default lifecycle value');
+        $name = $fallback;
+    }
     my $res  = RT::Lifecycle->Load( Name => $name, Type => $type );
     unless ( $res ) {
         RT->Logger->error(
