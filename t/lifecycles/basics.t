@@ -242,4 +242,65 @@ diag "'!inactive -> inactive' actions are shown even if ticket has unresolved de
     );
 }
 
+diag "Role rights are checked for lifecycles at ticket level";
+{
+
+    my $user_a = RT::Test->load_or_create_user(
+        Name => 'user_a', Password => 'password',
+    );
+    ok $user_a && $user_a->id, 'loaded or created user';
+
+    RT::Test->set_rights(
+        { Principal => 'AdminCc',  Right => [qw(SeeQueue)] },
+        { Principal => 'Everyone', Right => [qw(WatchAsAdminCc)] },
+    );
+
+    my $ticket = RT::Test->create_ticket(Queue => 'General');
+    ok $ticket->id, 'Created new ticket';
+    my $id = $ticket->id;
+
+    is $ticket->QueueObj->Lifecycle, 'default', 'Successfully loaded lifecycle';
+    $ticket->AddWatcher(Type => 'AdminCc', PrincipalId => $user_a->PrincipalId);
+
+    $ticket = RT::Ticket->new($user_a);
+    my ($ret, $msg) = $ticket->Load($id);
+    ok $ticket->id, 'Loaded ticket in user context';
+
+    is $ticket->QueueObj->Lifecycle, 'default', "Rights check at ticket level passes";
+}
+
+diag "Role rights are checked for lifecycles at asset level";
+{
+    my $user_a = RT::Test->load_or_create_user(
+        Name => 'user_a', Password => 'password',
+    );
+    ok $user_a && $user_a->id, 'loaded or created user';
+
+    RT::Test->set_rights(
+        { Principal => 'Owner',  Right => [qw(ShowCatalog AdminCatalog)] },
+        { Principal => 'Everyone',  Right => [qw(ShowAsset ModifyAsset)] },
+    );
+
+    my $asset = RT::Asset->new(RT->SystemUser);
+    my ($ret, $msg) = $asset->Create(Catalog => 'General assets');
+    ok $asset->id, 'Created new asset';
+    my $id = $asset->id;
+
+    is $asset->CatalogObj->Lifecycle, 'assets', "System user can load asset without context object";
+
+    $asset = RT::Asset->new($user_a);
+    $asset->Load($id);
+    ok $asset->id, 'Loaded asset in user_a context';
+
+    is $asset->CatalogObj->Lifecycle, undef, "user_a can\'t see lifecycle without ShowCatalog and AdminCatalog";
+
+    ($ret, $msg) = $asset->AddRoleMember(Type => 'Owner', User => $user_a);
+    ok $ret, $msg;
+
+    is $asset->CatalogObj->Lifecycle, 'assets', 'Successfully loaded lifecycle with rights check at role level';
+
+    my $lifecycle = $asset->CatalogObj->LifecycleObj;
+    is $lifecycle->Name, 'assets', 'Test LifecycleObj method';
+}
+
 done_testing;
