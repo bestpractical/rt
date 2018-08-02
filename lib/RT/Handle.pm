@@ -1140,7 +1140,7 @@ sub InsertData {
     if ( @Assets ) {
         $RT::Logger->debug("Creating Assets...");
 
-        for my $item (@Catalogs) {
+        for my $item (@Assets) {
             my $new_entry = RT::Asset->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
