@@ -417,7 +417,7 @@ sub CanonicalizeObjectCustomFieldValues {
     my $self = shift;
 
     my $records = delete $self->{Records}{'RT::ObjectCustomFieldValue'};
-    for my $id (keys %$records) {
+    for my $id ( sort { $records->{$a}{id} <=> $records->{$b}{id} } keys %$records ) {
         my $record = $records->{$id};
 
         if ($record->{Disabled} && !$self->{FollowDisabled}) {
