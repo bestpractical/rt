@@ -129,9 +129,16 @@ sub progress {
 
         my %counts = $args{counts}->();
         for my $class (map {"RT::$_"} @{$args{bars}}) {
-            my $suffix = UNIVERSAL::can( $class . 'es', 'new' ) ? 'es' : 's';
-            my $display = $class;
-            $display =~ s/^RT::(.*)/@{[$1]}$suffix:/;
+            my $display;
+            if ( $class eq 'RT::ACE' ) {
+                $display = 'ACL:';
+            }
+            else {
+                $display = $class;
+                my $suffix = UNIVERSAL::can( $class . 'es', 'new' ) ? 'es' : 's';
+                $display =~ s/^RT::(.*)/@{[$1]}$suffix:/;
+            }
+
             print progress_bar(
                 label => $display,
                 now   => $counts{$class},
