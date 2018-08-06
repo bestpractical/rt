@@ -25,6 +25,7 @@
 /sbin/rt-attributes-viewer
 /sbin/rt-clean-sessions
 /sbin/rt-dump-database
+/sbin/rt-dump-initialdata
 /sbin/rt-dump-metadata
 /sbin/rt-email-dashboards
 /sbin/rt-email-digest
