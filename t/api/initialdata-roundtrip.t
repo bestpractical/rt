@@ -3,10 +3,22 @@ use strict;
 use warnings;
 use JSON;
 
-use RT::Test tests => undef, config => << 'CONFIG';
+require RT::Test;
+use Test::More;
+
+eval {
+    RT::Test->import(
+        tests => undef,
+        config => << 'CONFIG',
 Plugin('RT::Extension::Initialdata::JSON');
 Set($InitialdataFormatHandlers, [ 'perl', 'RT::Extension::Initialdata::JSON' ]);
 CONFIG
+    );
+};
+
+if ( $@ ) {
+    RT::Test::plan( skip_all => 'Unable to test without RT::Extension::Initialdata::JSON' );
+}
 
 my $general = RT::Queue->new(RT->SystemUser);
 $general->Load('General');
@@ -1060,7 +1072,7 @@ for my $test (@tests) {
     };
 }
 
-done_testing();
+RT::Test::done_testing();
 
 sub autorollback {
     my $code = shift;
