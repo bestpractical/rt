@@ -80,10 +80,10 @@ sub progress_bar {
 
     my $fraction = $args{max} ? $args{now} / $args{max} : 0;
 
-    my $max_width = $args{cols} - 30;
+    my $max_width = $args{cols} - 35;
     my $bar_width = int($max_width * $fraction);
 
-    return sprintf "%20s |%-" . $max_width . "s| %3d%%\n",
+    return sprintf "%25s |%-" . $max_width . "s| %3d%%\n",
         $args{label}, $args{char} x $bar_width, $fraction*100;
 }
 
@@ -163,9 +163,9 @@ sub progress {
             }
         }
         print "\n";
-        printf "%20s %s\n", "Elapsed time:",
+        printf "%25s %s\n", "Elapsed time:",
             format_time($elapsed);
-        printf "%20s %s\n", "Estimated left:",
+        printf "%25s %s\n", "Estimated left:",
             (defined $left) ? format_time($left) : "-";
 
         $args{bottom}->($elapsed, $rows, $cols);
