@@ -16,6 +16,10 @@ CONFIG
     );
 };
 
+eval {
+    require RT::Extension::Initialdata::JSON;
+};
+
 if ( $@ ) {
     RT::Test::plan( skip_all => 'Unable to test without RT::Extension::Initialdata::JSON' );
 }
