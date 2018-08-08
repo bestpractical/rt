@@ -58,6 +58,7 @@ use Time::HiRes;
 use HTML::Scrubber;
 use RT::Interface::Web;
 use RT::Interface::Web::Request;
+use RT::ObjectCustomFieldValues;
 use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
