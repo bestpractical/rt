@@ -1598,7 +1598,20 @@ sub InsertData {
         $RT::Logger->debug("Creating attributes...");
         my $sys = RT::System->new(RT->SystemUser);
 
-        for my $item (@Attributes) {
+        for my $item (
+            sort {
+                $a->{Name} eq 'Pref-DashboardsInMenu' ? 1
+                  : (
+                    $b->{Name} eq 'Pref-DashboardsInMenu' ? -1
+                    : (
+                          $a->{Name} =~ /(?:^Dashboard|HomepageSettings)$/ ? 1
+                        : $b->{Name} =~ /(?:^Dashboard|HomepageSettings)$/ ? -1
+                        : 0
+                    )
+                  )
+            } @Attributes
+          )
+        {
             my $obj = delete $item->{Object};
 
             if ( ref $obj eq 'CODE' ) {
@@ -1611,18 +1624,27 @@ sub InsertData {
                 elsif ( my $class = delete $item->{ObjectType} ) {
                     my $id = $obj;
                     $obj = $class->new( RT->SystemUser );
-                    $obj->Load( $id );
+                    if ( $class eq 'RT::Group') {
+                        $obj->LoadUserDefinedGroup( $id );
+                    }
+                    else {
+                        $obj->Load( $id );
+                    }
                     if ( !$obj->id ) {
-                        RT->Logger->error( "Failed to load object $class-$id" );
+                        $RT::Logger->error( "Failed to load object $class-$id" );
+                        next;
                     }
                 }
                 else {
-                    RT->Logger->error( "Invalid object $obj" );
+                    $RT::Logger->error( "Invalid object $obj" );
                     next;
                 }
             }
 
             $obj ||= $sys;
+
+            $self->_CanonilizeAttributeContent($item);
+
             my ( $return, $msg ) = $obj->AddAttribute (%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -2150,6 +2172,90 @@ sub _TableNames {
     }
 
     return @res;
+}
+
+sub _LoadObject {
+    my $self  = shift;
+    my $class = shift;
+    my $id    = shift;
+
+    if ( $class eq 'RT::System' ) {
+        return RT->System;
+    }
+
+    my $object = $class->new( RT->SystemUser );
+
+    if ( $class eq 'RT::Group' ) {
+        $object->LoadUserDefinedGroup( $id );
+    }
+    else {
+        $object->Load( $id );
+    }
+
+    return $object->id ? $object : undef;
+}
+
+sub _CanonilizeAttributeContent {
+    my $self = shift;
+    my $item = shift or return;
+    if ( $item->{Name} =~ /HomepageSettings$/ ) {
+        my $content = $item->{Content};
+        for my $type ( qw/body sidebar/ ) {
+            if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
+                for my $entry ( @{ $content->{$type} } ) {
+                    if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+                        if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                            my $attributes = $object->Attributes;
+                            $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+                            $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                            if ( my $attribute = $attributes->First ) {
+                                $entry->{name} =
+                                  ref( $object ) . '-' . $object->Id . '-SavedSearch-' . $attribute->Id;
+                            }
+                        }
+                        delete $entry->{$_} for qw/ObjectType ObjectId Description/;
+                    }
+                }
+            }
+        }
+    }
+    elsif ( $item->{Name} eq 'Dashboard' ) {
+        my $content = $item->{Content}{Panes};
+        for my $type ( qw/body sidebar/ ) {
+            if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
+                for my $entry ( @{ $content->{$type} } ) {
+                    if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+                        if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                            my $attributes = $object->Attributes;
+                            $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+                            $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                            if ( my $attribute = $attributes->First ) {
+                                $entry->{id} = $attribute->id;
+                                $entry->{privacy} = ref( $object ) . '-' . $object->Id;
+                            }
+                        }
+                        delete $entry->{$_} for qw/ObjectType ObjectId Description/;
+                    }
+                }
+            }
+        }
+    }
+    elsif ( $item->{Name} eq 'Pref-DashboardsInMenu' ) {
+        my @dashboards;
+        for my $entry ( @{ $item->{Content}{dashboards} } ) {
+            if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+                if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                    my $attributes = $object->Attributes;
+                    $attributes->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
+                    $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                    if ( my $attribute = $attributes->First ) {
+                        push @dashboards, $attribute->id;
+                    }
+                }
+            }
+        }
+        $item->{Content}{dashboards} = \@dashboards;
+    }
 }
 
 __PACKAGE__->FinalizeDatabaseType;
