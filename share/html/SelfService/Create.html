@@ -94,7 +94,7 @@
     <td colspan="2">
         <& /Elements/EditCustomFields,
             %ARGS,
-            Object          => RT::Ticket->new($session{CurrentUser}),
+            Object          => $ticket,
             CustomFields    => $queue_obj->TicketCustomFields,
             AsTable         => 0,
             ForCreation     => 1,
@@ -122,6 +122,9 @@ $Queue => undef
 my @results;
 my $queue_obj = RT::Queue->new($session{'CurrentUser'});
 $queue_obj->Load($Queue);
+
+my $ticket = RT::Ticket->new($session{CurrentUser});
+$ticket->{_queue_obj} = $queue_obj;
 
 ProcessAttachments(ARGSRef => \%ARGS);
 

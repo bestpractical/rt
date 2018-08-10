@@ -449,6 +449,7 @@ $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."), Code => HTTP::Status::HTTP_NOT_FOUND);
 
 my $ticket = RT::Ticket->new($current_user); # empty ticket object
+$ticket->{_queue_obj} = $QueueObj;
 
 ProcessAttachments(ARGSRef => \%ARGS);
 
