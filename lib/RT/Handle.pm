@@ -1603,6 +1603,23 @@ sub InsertData {
             if ( ref $obj eq 'CODE' ) {
                 $obj = $obj->();
             }
+            elsif ( $obj && !ref $obj ) {
+                if ( $obj eq 'RT::System' ) {
+                    $obj = RT->System;
+                }
+                elsif ( my $class = delete $item->{ObjectType} ) {
+                    my $id = $obj;
+                    $obj = $class->new( RT->SystemUser );
+                    $obj->Load( $id );
+                    if ( !$obj->id ) {
+                        RT->Logger->error( "Failed to load object $class-$id" );
+                    }
+                }
+                else {
+                    RT->Logger->error( "Invalid object $obj" );
+                    next;
+                }
+            }
 
             $obj ||= $sys;
             my ( $return, $msg ) = $obj->AddAttribute (%$item);
