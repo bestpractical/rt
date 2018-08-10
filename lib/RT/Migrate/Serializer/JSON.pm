@@ -445,6 +445,91 @@ sub CanonicalizeArticles {
     }
 }
 
+sub CanonicalizeAttributes {
+    my $self = shift;
+
+    for my $record (values %{ $self->{Records}{'RT::Attribute'} }) {
+        if ( ( $record->{ContentType} // '' ) eq 'storable' ) {
+            eval { $record->{Content} = RT::Attribute->_DeserializeContent( $record->{Content} ) };
+            if ( $@ ) {
+                $RT::Logger->error(
+                    "Deserialization of content for attribute $record->{id} failed. Attribute was: $record->{Content}"
+                );
+            }
+            else {
+                if ( $record->{Name} =~ /HomepageSettings$/ ) {
+                    my $content = $record->{Content};
+                    for my $type ( qw/body sidebar/ ) {
+                        if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
+                            for my $item ( @{ $content->{$type} } ) {
+                                if ( $item->{type} eq 'saved' && $item->{name} =~ /RT::\w+-\d+-SavedSearch-(\d+)/ ) {
+                                    my $id        = $1;
+                                    my $attribute = RT::Attribute->new( RT->SystemUser );
+                                    $attribute->Load( $id );
+                                    if ( $attribute->id ) {
+                                        $item->{ObjectType}  = $attribute->ObjectType;
+                                        $item->{ObjectId}    = $attribute->Object->Name;
+                                        $item->{Description} = $attribute->Description;
+                                        delete $item->{name};
+                                    }
+                                }
+                                delete $item->{uid};
+                            }
+                        }
+                    }
+                }
+                elsif ( $record->{Name} eq 'Dashboard' ) {
+                    my $content = $record->{Content}{Panes};
+                    for my $type ( qw/body sidebar/ ) {
+                        if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
+                            for my $item ( @{ $content->{$type} } ) {
+                                if ( my $id = $item->{id} ) {
+                                    my $attribute = RT::Attribute->new( RT->SystemUser );
+                                    $attribute->Load( $id );
+                                    if ( $attribute->id ) {
+                                        $item->{ObjectType}  = $attribute->ObjectType;
+                                        $item->{ObjectId}    = $attribute->Object->Name;
+                                        $item->{Description} = $attribute->Description;
+                                        delete $item->{$_} for qw/id privacy/;
+                                    }
+                                }
+                                delete $item->{uid};
+                            }
+                        }
+                    }
+                }
+                elsif ( $record->{Name} eq 'Pref-DashboardsInMenu' ) {
+                    my @dashboards;
+                    for my $item ( @{ $record->{Content}{dashboards} } ) {
+                        if ( ref $item eq 'SCALAR' && $$item =~ /(\d+)$/ ) {
+                            my $id        = $1;
+                            my $attribute = RT::Attribute->new( RT->SystemUser );
+                            $attribute->Load( $id );
+                            my $dashboard = {};
+                            if ( $attribute->id ) {
+                                $dashboard->{ObjectType}  = $attribute->ObjectType;
+                                $dashboard->{ObjectId}    = $attribute->Object->Name;
+                                $dashboard->{Description} = $attribute->Description;
+                            }
+                            push @dashboards, $dashboard;
+                        }
+                    }
+                    $record->{Content}{dashboards} = \@dashboards;
+                }
+            }
+        }
+
+        if ( ${$record->{Object}} =~ /^(RT::\w+)-/ ) {
+            $record->{ObjectType} = $1;
+        }
+    }
+    for my $key ( keys %{ $self->{Records}{'RT::Attribute'} } ) {
+        delete $self->{Records}{'RT::Attribute'}{$key}
+          if $self->{Records}{'RT::Attribute'}{$key}{Name} =~
+          /^(?:UpgradeHistory|QueueCacheNeedsUpdate|CatalogCacheNeedsUpdate|CustomRoleCacheNeedsUpdate|RecentlyViewedTickets)$/;
+    }
+}
+
 sub CanonicalizeObjects {
     my $self = shift;
 
@@ -583,11 +668,10 @@ sub WriteFile {
     $self->CanonicalizeGroupMembers;
     $self->CanonicalizeCustomFields;
     $self->CanonicalizeArticles;
+    $self->CanonicalizeAttributes;
 
     my $all_records = $self->{Records};
     my $sync = $self->{Sync};
-
-    delete $all_records->{'RT::Attribute'};
 
     for my $intype (keys %$all_records) {
         my $outtype = $intype;
