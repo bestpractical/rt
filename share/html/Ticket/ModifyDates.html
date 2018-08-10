@@ -66,11 +66,29 @@
 
 my $TicketObj = LoadTicket($id);
 my @results;
-$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, results => \@results );
-$TicketObj->Atomic(sub{
-    push @results, ProcessTicketDates( TicketObj => $TicketObj, ARGSRef => \%ARGS);
-    push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
-});
+my $skip_update;
+$m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS, results => \@results, skip_update => \$skip_update );
+
+if ( $ARGS{SubmitTicket} ) {
+    my $CFs = $TicketObj->CustomFields;
+    $CFs->LimitToGrouping( $TicketObj => "Dates" );
+    my ($cf_ok, @cf_errors) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        Object          => $TicketObj,
+        CustomFields    => $CFs,
+        ARGSRef         => \%ARGS
+    );
+    unless ( $cf_ok ) {
+        $skip_update = 1;
+        push @results, @cf_errors;
+    }
+    unless ( $skip_update ) {
+        $TicketObj->Atomic(sub{
+            push @results, ProcessTicketDates( TicketObj => $TicketObj, ARGSRef => \%ARGS);
+            push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
+        });
+    }
+}
 
 $TicketObj->CurrentUser->AddRecentlyViewedTicket($TicketObj);
 
