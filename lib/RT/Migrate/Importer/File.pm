@@ -114,6 +114,7 @@ sub Import {
 
             $self->ReadStream( $fh );
         }
+        RT->DatabaseHandle->dbh->commit unless $self->{AutoCommit};
     }
 
     $self->CloseStream;
@@ -182,6 +183,8 @@ sub RestoreState {
 
 sub SaveState {
     my $self = shift;
+
+    RT->DatabaseHandle->dbh->commit unless $self->{AutoCommit};
 
     my %data;
     unshift @{$self->{Files}}, $self->{Filename};

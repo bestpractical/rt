@@ -86,7 +86,7 @@ use Getopt::Long;
 use Pod::Usage qw//;
 use Time::HiRes qw//;
 
-my %OPT = (resume => 1);
+my %OPT = (resume => 1, 'auto-commit' => 1);
 GetOptions(
     \%OPT,
     "help|?",
@@ -99,6 +99,8 @@ GetOptions(
 
     "ask",
     "ignore-errors",
+
+    "auto-commit!",
 
     "dump=s@",
 ) or Pod::Usage::pod2usage();
@@ -142,12 +144,15 @@ elsif ($OPT{'ignore-errors'}) {
     };
 }
 
+RT->DatabaseHandle->AutoCommit(0) unless $OPT{'auto-commit'};
+
 my $import = RT::Migrate::Importer::File->new(
     Directory           => $dir,
     OriginalId          => $OPT{originalid},
     ExcludeOrganization => $OPT{'exclude-organization'},
     DumpObjects         => $OPT{dump},
     Resume              => $OPT{resume},
+    AutoCommit          => $OPT{'auto-commit'},
     HandleError         => $error_handler,
 );
 
@@ -279,6 +284,11 @@ Prints L<Data::Dumper> representations of the objects of type I<class> in the
 serialized data.  This is mostly useful for debugging.
 
 Works only in conjunction with C<--list>.
+
+=item B<--no-auto-commit>
+
+Don't auto commit to database. When this flag is used, it will commit only
+once for each data file.  This could boost performance in some cases.
 
 =back
 
