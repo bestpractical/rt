@@ -171,6 +171,13 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
 %       }
     </&>
 % $m->callback( %ARGS, CallbackName => 'AfterDates' );
+% my (@extra);
+% push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
+
+<& /Ticket/Elements/ShowLinkedQueues,
+    TicketObj => $Ticket,
+&>
+
 <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
 <%PERL>
 my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id;
