@@ -431,6 +431,11 @@ sub CanonicalizeObjectCustomFieldValues {
         next unless $cf && $cf->{Name}; # disabled CF on live object
         $record->{CustomField} = $cf->{Name};
 
+        if ( $cf->{Type} =~ /^(?:Binary|Image)$/ && $record->{LargeContent} ) {
+            $record->{ContentEncoding} = 'base64';
+            $record->{LargeContent} = MIME::Base64::encode_base64($record->{LargeContent} );
+        }
+
         delete $record->{id} unless $self->{Sync};
 
         push @{ $object->{CustomFields} }, $record;
