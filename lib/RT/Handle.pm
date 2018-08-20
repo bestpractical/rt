@@ -1349,7 +1349,7 @@ sub InsertData {
 
             my $new_entry = RT::CustomRole->new( RT->SystemUser );
 
-            my ( $ok, $msg ) = $new_entry->Create(%$item);
+            my ( $ok, $msg ) = $new_entry->Create(%$item, Disabled => 0);
             if (!$ok) {
                 $RT::Logger->error($msg);
                 next;
@@ -1365,6 +1365,13 @@ sub InsertData {
 
             $_->{Object} = $new_entry for @{$attributes || []};
             push @Attributes, @{$attributes || []};
+
+            if ( $item->{Disabled} ) {
+                ( $ok, $msg ) = $new_entry->SetDisabled( $item->{Disabled} );
+                if ( !$ok ) {
+                    $RT::Logger->error( "Couldn't set Disabled to custom role $item->{Name}: $msg" );
+                }
+            }
         }
 
         $RT::Logger->debug("done.");
