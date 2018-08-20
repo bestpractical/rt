@@ -437,6 +437,25 @@ sub CanonicalizeObjectCustomFieldValues {
     }
 }
 
+sub CanonicalizeObjectTopics {
+    my $self = shift;
+
+    my $records = delete $self->{Records}{'RT::ObjectTopic'};
+    for my $id ( sort { $records->{$a}{id} <=> $records->{$b}{id} } keys %$records ) {
+        my $record = $records->{$id};
+
+        my $object = $self->_GetSerializedByRef(delete $record->{ObjectId});
+
+        my $topic = $self->_GetSerializedByRef(delete $record->{Topic});
+        $record->{Topic} = $topic->{Name};
+
+        delete $record->{id} unless $self->{Sync};
+
+        delete $record->{ObjectType}; # unnecessary as it's always RT::Article for now
+        push @{ $object->{Topics} }, $record;
+    }
+}
+
 sub CanonicalizeArticles {
     my $self = shift;
 
@@ -662,6 +681,7 @@ sub WriteFile {
 
     $self->CanonicalizeObjects;
     $self->CanonicalizeObjectCustomFieldValues;
+    $self->CanonicalizeObjectTopics;
     $self->CanonicalizeACLs;
     $self->CanonicalizeUsers;
     $self->CanonicalizeGroups;
