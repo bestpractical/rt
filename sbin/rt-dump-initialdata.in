@@ -109,6 +109,8 @@ GetOptions(
 
     "gc=i",
     "page=i",
+
+    "base=s",
 ) or Pod::Usage::pod2usage();
 
 Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
@@ -128,7 +130,7 @@ $args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
 
 $args{FollowAssets} = $OPT{assets} if defined $OPT{assets};
 
-$args{Sync} = $OPT{sync} if $OPT{sync};
+$args{Sync} = 1 if $OPT{sync} || $OPT{base};
 
 $args{GC}   = defined $OPT{gc}   ? $OPT{gc}   : 5000;
 $args{Page} = defined $OPT{page} ? $OPT{page} : 100;
@@ -250,6 +252,141 @@ sub gnuplot {
     }
 }
 
+use JSON;
+my $JSON = JSON->new->pretty->canonical;
+
+sub find_differences {
+    my $type           = shift;
+    my $base_records   = shift || [];
+    my $edited_records = shift || [];
+
+    my ( %base_by_id, %edited_by_id );
+
+    for my $base_record ( @$base_records ) {
+        my $id = $base_record->{id};
+
+        if ( !$id ) {
+            die "Missing id for this record in base file: " . encode_json( $base_record );
+        }
+        $base_by_id{$id} = $base_record;
+    }
+
+    for my $record ( @$base_records, @$edited_records ) {
+        if ( $type eq 'CustomFields' && $record->{Values} ) {
+            delete $_->{id} for @{$record->{Values}};
+        }
+
+        if ( $record->{CustomFields} ) {
+            @{$record->{CustomFields}} = grep { !$_->{Disabled} } @{$record->{CustomFields}};
+            delete $_->{id} for @{$record->{CustomFields}};
+        }
+
+        if ( $record->{Topics} ) {
+            delete $_->{id} for @{$record->{Topics}};
+        }
+    }
+
+    my @changes;
+    for my $edited_record ( @$edited_records ) {
+        my $id = delete $edited_record->{id};
+
+        if ( my $base_record = delete $base_by_id{$id} ) {
+            delete $base_record->{id};
+            next if $JSON->encode( $base_record ) eq $JSON->encode( $edited_record );
+
+            for my $field ( keys %$edited_record ) {
+
+                if ( $field eq 'CustomFields' ) {
+                    my ( %cf_base, %cf_edited );
+                    for my $ocfv ( @{$base_record->{$field} }) {
+                        push @{$cf_base{$ocfv->{CustomField}}}, $ocfv;
+                    }
+
+                    for my $ocfv ( @{$edited_record->{$field} }) {
+                        push @{$cf_edited{$ocfv->{CustomField}}}, $ocfv;
+                    }
+
+                    for my $cf ( keys %cf_edited ) {
+                        if ( $JSON->encode( [ $cf_base{$cf} ] ) eq $JSON->encode( [ $cf_edited{$cf} ] ) ) {
+                            delete $cf_edited{$cf};
+                            delete $cf_base{$cf};
+                        }
+                    }
+                    @{ $base_record->{$field} }   = map { @{ $cf_base{$_} } } sort keys %cf_base;
+                    @{ $edited_record->{$field} } = map { @{ $cf_edited{$_} } } sort keys %cf_edited;
+                }
+
+                if ( $JSON->encode( [ $base_record->{$field} ] ) eq $JSON->encode( [ $edited_record->{$field} ] ) ) {
+                    delete $edited_record->{$field};
+                }
+            }
+            $edited_record->{_Updated} = 1;
+            $edited_record->{_Original} = $base_record;
+        }
+        push @changes, $edited_record;
+    }
+
+    for my $base_record ( values %base_by_id ) {
+        delete $base_record->{id};
+        push @changes, { _Deleted => 1, _Original => $base_record };
+    }
+    return @changes;
+}
+
+if ( $OPT{base} ) {
+    my $slurp_json = sub {
+        my $file = shift;
+        local $/;
+        open( my $f, '<encoding(UTF-8)', $file )
+          or die "Cannot open initialdata file '$file' for read: $@";
+        return JSON->new->decode( scalar <$f> );
+    };
+
+    my $base_records = $slurp_json->( $OPT{base} );
+    my $edited_records = $slurp_json->( File::Spec->catfile( $walker->{Directory}, 'initialdata.json' ) );
+
+    my %changes;
+    for my $type ( keys %$base_records ) {
+        my @changes = find_differences( $type, $base_records->{$type}, $edited_records->{$type} );
+        $changes{$type} = \@changes if @changes;
+    }
+
+    for my $type ( keys %$edited_records ) {
+        if ( !$base_records->{$type} ) {
+            my @changes = find_differences( $type, [], $edited_records->{$type} );
+            $changes{$type} = \@changes if @changes;
+        }
+    }
+
+    print "\n";
+    if ( %changes ) {
+        my $file = File::Spec->catfile( $walker->{Directory}, 'changes.json' );
+        open my $fh, '>encoding(UTF-8)', $file or die "Can't open $file to write: $!";
+        print $fh ( $JSON->encode(\%changes) );
+
+        print "Changes are saved to changes.json\n";
+        print "Changes summary:\n";
+
+        for my $name ( sort { @{$changes{$b}} <=> @{$changes{$a}} || $a cmp $b } keys %changes ) {
+            my $collection = "RT::$name";
+            $collection = 'RT::GroupMembers' if $collection eq 'RT::Members';
+            my $class;
+            if ( $collection->can('_SingularClass') ) {
+                $class = $collection->_SingularClass;
+            }
+            else {
+                $class = $collection;
+                $class =~ s!s$!!g;
+            }
+            printf "%8d %s\n", scalar @{$changes{$name}}, $class;
+        }
+    }
+    else {
+        print "There are no changes found compared to $OPT{base}\n";
+    }
+}
+
+
 =head1 NAME
 
 rt-dump-initialdata - Serialize an RT database to disk
@@ -330,6 +467,13 @@ By default, all ACLs are dumped; passing C<--no-acls> skips them.
 By default, record ids are ordinarily excluded. Pass C<--sync> to
 include record ids if you intend to use this for sync rather than
 creating a generic initialdata.
+
+=item B<--base> I<file>
+
+The file path which the to be generated I<initialdata.json> will compare to.
+If there are any changes, they will be saved to I<changes.json>.
+
+This option implies C<--sync>.
 
 =item B<--gc> I<n>
 
