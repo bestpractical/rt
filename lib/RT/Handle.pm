@@ -853,10 +853,10 @@ sub InsertData {
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets, @Articles, @OCFVs);
+           @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets, @Articles, @OCFVs);
+           @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics);
 
     local $@;
 
@@ -909,6 +909,8 @@ sub InsertData {
                 Assets          => \@Assets,
                 Articles        => \@Articles,
                 OCFVs           => \@OCFVs,
+                Topics          => \@Topics,
+                ObjectTopics    => \@ObjectTopics,
             },
         ) or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:" . $@);
     }
@@ -1130,6 +1132,54 @@ sub InsertData {
 
         $RT::Logger->debug("done.");
     }
+
+    if ( @Topics ) {
+        $RT::Logger->debug("Creating Topics...");
+
+        for my $item ( @Topics ) {
+            my $obj = delete $item->{Object};
+
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+            elsif ( !ref $obj ) {
+                my $class = RT::Class->new(RT->SystemUser);
+                $class->Load($obj);
+                if ( $class->id ) {
+                    $obj = $class;
+                }
+            }
+
+            if ( !$obj ) {
+                $RT::Logger->error( "Invalid class $obj" );
+                next;
+            }
+
+            if ( $item->{Parent} && $item->{Parent} =~ /\D/ ) {
+                my $topic = RT::Topic->new( RT->SystemUser );
+                $topic->LoadByCols( Name => $item->{Parent} );
+                if ( $topic->id ) {
+                    $item->{Parent} = $topic->id;
+                }
+                else {
+                    $RT::Logger->error( "Invalid parent $item->{Parent}" );
+                    next;
+                }
+            }
+
+            my $new_entry  = RT::Topic->new( RT->SystemUser );
+            my ( $return, $msg ) = $new_entry->Create( %$item, ObjectType => ref $obj, ObjectId => $obj->id );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return . "." );
+            }
+        }
+
+        $RT::Logger->debug("done.");
+    }
+
     if ( @Assets ) {
         $RT::Logger->debug("Creating Assets...");
 
@@ -1161,6 +1211,7 @@ sub InsertData {
         for my $item (@Articles) {
             my $attributes = delete $item->{ Attributes };
             my $ocfvs = delete $item->{ CustomFields };
+            my $object_topics = delete $item->{ Topics };
 
             my $new_entry = RT::Article->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
@@ -1175,6 +1226,8 @@ sub InsertData {
             push @Attributes, @{$attributes || []};
             $_->{Object} = $new_entry for @{$ocfvs || []};
             push @OCFVs, @{$ocfvs || []};
+            $_->{Object} = $new_entry for @{$object_topics || []};
+            push @ObjectTopics, @{$object_topics || []};
         }
 
         $RT::Logger->debug("done.");
@@ -1568,6 +1621,49 @@ sub InsertData {
             }
         }
         $RT::Logger->debug("done.");
+    }
+
+    if ( @ObjectTopics ) {
+        $RT::Logger->debug( "Creating ObjectTopics..." );
+
+        for my $item ( @ObjectTopics ) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::ObjectTopic', $item );
+                next;
+            }
+
+            my $obj = delete $item->{Object};
+
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+
+            my $topic = RT::Topic->new( RT->SystemUser );
+            if ( $item->{Topic} =~ /\D/ ) {
+                $topic->LoadByCols( Name => $item->{Topic} );
+            }
+            else {
+                $topic->Load( $item->{Topic} );
+            }
+
+            if ( !$topic->id ) {
+                $RT::Logger->error( "Couldn't load topic $item->{Topic}" );
+                next;
+            }
+
+            $item->{Topic} = $topic->id;
+
+            my ( $return, $msg ) = $obj->AddTopic( %$item );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return . "." );
+            }
+
+        }
+
+        $RT::Logger->debug( "done." );
     }
 
     if ( @OCFVs ) {
