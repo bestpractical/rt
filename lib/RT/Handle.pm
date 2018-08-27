@@ -2747,6 +2747,9 @@ sub _LoadObject {
         }
         $object->LoadByCols( Group => $group->PrincipalObj, Member => $member->PrincipalObj );
     }
+    elsif ( $class eq 'RT::Template' ) {
+        $object->LoadByName( Name => $values->{_Original}{Name}, Queue => $values->{_Original}{Queue} );
+    }
     elsif ( $class eq 'RT::Scrip' ) {
         $object->LoadByCols( Description => $values->{_Original}{Description} );
     }
