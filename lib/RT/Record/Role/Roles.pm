@@ -389,6 +389,11 @@ sub CanonicalizePrincipal {
                 if RT::EmailParser->IsRTAddress( $email );
         }
     } else {
+        if ( ( $args{User} || '' ) =~ /^\s*group\s*:\s*(\w+)\s*$/i ) {
+            $args{Group} = $1;
+            delete $args{User};
+        }
+
         if ($args{User}) {
             my $name = delete $args{User};
             # Sanity check the address
@@ -640,9 +645,8 @@ sub ParseInputPrincipals {
     my @errors;
 
     foreach my $e ( @list ) {
-        my $user = RT::User->new( RT->SystemUser );
-
         if ( $e->{'type'} eq 'mailbox' ) {
+            my $user = RT::User->new( RT->SystemUser );
             my ( $id, $msg ) = $user->LoadOrCreateByEmail( $e->{'value'} );
             if ( $id ) {
                 push @principals, $user;
@@ -652,15 +656,30 @@ sub ParseInputPrincipals {
                 RT::Logger->error( "Couldn't load or create user from email address " . $e->{'value'} . ", " . $msg );
             }
         }
-        elsif ( $e->{'value'} =~ /^\s*(\w+)\s*$/ ) {
+        elsif ( $e->{'value'} =~ /^(group:)?(\w+)$/ ) {
 
-            my ( $id, $msg ) = $user->Load( $1 );
-            if ( $id ) {
-                push @principals, $user;
+            my ( $is_group, $name ) = ( $1, $2 );
+            if ( $is_group ) {
+                my $group = RT::Group->new( RT->SystemUser );
+                my ( $id, $msg ) = $group->LoadUserDefinedGroup( $name );
+                if ( $id ) {
+                    push @principals, $group;
+                }
+                else {
+                    push @errors, $self->loc( "Couldn't load group: [_1]", $msg );
+                    RT::Logger->error( "Couldn't load group from value " . $e->{'value'} . ", " . $msg );
+                }
             }
             else {
-                push @errors, $self->loc( "Couldn't load user: [_1]", $msg );
-                RT::Logger->error( "Couldn't load user from value " . $e->{'value'} . ", " . $msg );
+                my $user = RT::User->new( RT->SystemUser );
+                my ( $id, $msg ) = $user->Load( $name );
+                if ( $id ) {
+                    push @principals, $user;
+                }
+                else {
+                    push @errors, $self->loc( "Couldn't load user: [_1]", $msg );
+                    RT::Logger->error( "Couldn't load user from value " . $e->{'value'} . ", " . $msg );
+                }
             }
         }
         else {

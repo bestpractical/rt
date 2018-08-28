@@ -568,9 +568,15 @@ sub ParseEmailAddress {
         if ( $e->{'type'} eq 'mailbox' ) {
             push @addresses, $e->{'value'};
         }
-        elsif ( $e->{'value'} =~ /^\s*(\w+)\s*$/ ) {
+        elsif ( $e->{'value'} =~ /^(group:)?(\w+)$/ ) {
+            my ( $is_group, $name ) = ( $1, $2 );
+            if ( $is_group ) {
+                RT->Logger->warning( $e->{'value'} . " is a group, skipping" );
+                next;
+            }
+
             my $user = RT::User->new( RT->SystemUser );
-            $user->Load( $1 );
+            $user->Load( $name );
             if ( $user->id ) {
                 push @addresses, Email::Address->new( $user->Name, $user->EmailAddress );
             }
@@ -599,13 +605,19 @@ sub _ParseEmailAddress {
     my @list = Email::Address::List->parse(
         $address_string,
         skip_comments => 1,
-        skip_groups => 1,
     );
     my $logger = sub { RT->Logger->error(
         "Unable to parse an email address from $address_string: ". shift
     ) };
 
     my @entries;
+
+    # If the string begins with group, e.g. "group:foo", then the first 2
+    # items returned from Email::Address::List are:
+    # { 'value' => 'group', 'type' => 'group start' },
+    # { 'value' => 'foo', 'type' => 'unknown' }
+    my $in_group;
+
     foreach my $e (@list) {
         if ($e->{'type'} eq 'mailbox') {
             if ($e->{'not_ascii'}) {
@@ -613,11 +625,20 @@ sub _ParseEmailAddress {
                 next;
             }
             push @entries, $e;
-        } elsif ($e->{'value'} =~ /^\s*(\w+)\s*$/) {
+        } elsif ($e->{'type'} eq 'group start') {
+            $in_group = 1;
+            next;
+        } elsif ($e->{'type'} eq 'group end') {
+            undef $in_group;
+            next;
+        } elsif ($e->{'value'} =~ /^\s*(group\s*:)?\s*(\w+)\s*$/i) {
+            my ( $is_group, $name ) = ( $1, $2 );
+            $e->{'value'} = $in_group || $is_group ? "group:$name" : $name;
             push @entries, $e;
         } else {
             $logger->($e->{'value'} ." is not a valid email address");
         }
+        undef $in_group;
     }
 
     return @entries;
