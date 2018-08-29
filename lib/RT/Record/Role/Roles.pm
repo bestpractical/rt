@@ -389,7 +389,7 @@ sub CanonicalizePrincipal {
                 if RT::EmailParser->IsRTAddress( $email );
         }
     } else {
-        if ( ( $args{User} || '' ) =~ /^\s*group\s*:\s*(\w+)\s*$/i ) {
+        if ( ( $args{User} || '' ) =~ /^\s*group\s*:\s*(\S.*?)\s*$/i ) {
             $args{Group} = $1;
             delete $args{User};
         }
@@ -656,7 +656,7 @@ sub ParseInputPrincipals {
                 RT::Logger->error( "Couldn't load or create user from email address " . $e->{'value'} . ", " . $msg );
             }
         }
-        elsif ( $e->{'value'} =~ /^(group:)?(\w+)$/ ) {
+        elsif ( $e->{'value'} =~ /^(group:)?(.+)$/ ) {
 
             my ( $is_group, $name ) = ( $1, $2 );
             if ( $is_group ) {

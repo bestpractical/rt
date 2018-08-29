@@ -568,7 +568,7 @@ sub ParseEmailAddress {
         if ( $e->{'type'} eq 'mailbox' ) {
             push @addresses, $e->{'value'};
         }
-        elsif ( $e->{'value'} =~ /^(group:)?(\w+)$/ ) {
+        elsif ( $e->{'value'} =~ /^(group:)?(.+)$/ ) {
             my ( $is_group, $name ) = ( $1, $2 );
             if ( $is_group ) {
                 RT->Logger->warning( $e->{'value'} . " is a group, skipping" );
@@ -631,7 +631,7 @@ sub _ParseEmailAddress {
         } elsif ($e->{'type'} eq 'group end') {
             undef $in_group;
             next;
-        } elsif ($e->{'value'} =~ /^\s*(group\s*:)?\s*(\w+)\s*$/i) {
+        } elsif ($e->{'value'} =~ /^\s*(group\s*:)?\s*(\S.*?)\s*$/i) {
             my ( $is_group, $name ) = ( $1, $2 );
             $e->{'value'} = $in_group || $is_group ? "group:$name" : $name;
             push @entries, $e;
