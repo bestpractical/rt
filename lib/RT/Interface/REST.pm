@@ -284,6 +284,8 @@ sub vpush {
 # "Normalise" a hash key that's known to be multi-valued.
 sub vsplit {
     my ($val, $strip) = @_;
+    return [] unless defined $val;
+
     my @words;
     my @values = map {split /\n/} (ref $val eq 'ARRAY' ? @$val : $val);
 
