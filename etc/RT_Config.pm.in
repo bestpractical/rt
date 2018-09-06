@@ -1834,6 +1834,18 @@ all of their stored RT user information.
 
 Set($SelfServiceUserPrefs, 'edit-prefs' );
 
+=item C<$SelfServiceRequestUpdatePortlet>
+
+Set this to 1 to allow Self Service users to request updates to
+their RT user information. When enabled, this portlet adds a quick
+ticket create portlet to the Self Service preferences page. This
+option is only available when $SelfServiceUserPrefs is set to
+'view-info' or 'edit-prefs-view-info'.
+
+=cut
+
+Set($SelfServiceRequestUpdatePortlet, 0 );
+
 =back
 
 =head2 Articles
