@@ -2739,10 +2739,10 @@ can be overridden by users in their preferences.
 
 Some examples:
 
-C<Set($DateTimeFormat, "LocalizedDateTime");>
-C<Set($DateTimeFormat, { Format => "ISO", Seconds => 0 });>
-C<Set($DateTimeFormat, "RFC2822");>
-C<Set($DateTimeFormat, { Format => "RFC2822", Seconds => 0, DayOfWeek => 0 });>
+    Set($DateTimeFormat, "LocalizedDateTime");
+    Set($DateTimeFormat, { Format => "ISO", Seconds => 0 });
+    Set($DateTimeFormat, "RFC2822");
+    Set($DateTimeFormat, { Format => "RFC2822", Seconds => 0, DayOfWeek => 0 });
 
 =cut
 
