@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Attachments'), 
-        title_class=> 'inverse',  
+<&| /Widgets/TitleBox, title => loc('Attachments'),
+        title_class=> 'inverse',
         class => 'ticket-info-attachments',
         color => "#336699",
         hide_chrome => $HideTitleBox &>
@@ -55,7 +55,7 @@
 
 <div class="attachment-list">
 
-% foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
+% foreach my $key (@documents_order) {
 
 <%$key%><br />
 <ul <% $Selectable ? 'class="selectable"' : '' |n %> >
@@ -113,7 +113,7 @@
     }
 </script>
 
-<a href="#" class="button" onclick="showAllAttachments(jQuery(this)); return false;" ><% loc('Show all') %></a>
+<a href="#" class="button" onclick="showAllAttachments(jQuery(this)); return false;" ><% loc('Show [_1] more attachments', $attachment_more_count) %></a>
 
 </span>
 % }
@@ -136,7 +136,13 @@ $Attachments = $Attachments->Clone;
 $Attachments->LimitHasFilename;
 
 my $show_more = 0;
+my @documents_order;
 my %documents;
+my $attachment_more_count = $Attachments->Count();
+
+if (defined($Count) && $Count > 0) {
+    $attachment_more_count -= $Count;
+}
 
 # show newest first
 $Attachments->OrderByCols(
@@ -150,6 +156,11 @@ while ( my $attach = $Attachments->Next() ) {
        $show_more = 1;
        last;
    }
+
+   unless (exists($documents{ $attach->Filename })) {
+       push @documents_order, $attach->Filename;
+   }
+
    push @{ $documents{ $attach->Filename } }, $attach;
 }
 
@@ -166,4 +177,3 @@ $Selectable => 0
 $Count => undef
 @Checked => ()
 </%ARGS>
-
