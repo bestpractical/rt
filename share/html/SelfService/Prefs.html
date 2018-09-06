@@ -88,6 +88,9 @@
 % }
 % if ( $pref eq 'view-info' || $pref eq 'edit-prefs-view-info' ) {
 <& /Prefs/Elements/ShowAboutMe, UserObj => $user &>
+%    if ( $request_portlet ) {
+<& Elements/RequestUpdate, User=> $user &>
+%    }
 % }
 
 <%INIT>
@@ -97,6 +100,7 @@ my $user = $session{'CurrentUser'}->UserObj;
 my $password = [ qw(CurrentPass NewPass1 NewPass2) ];
 
 my $pref = RT->Config->Get( 'SelfServiceUserPrefs' ) || '';
+my $request_portlet = RT->Config->Get( 'SelfServiceRequestUpdatePortlet' ) || undef;
 
 if ( $pref eq 'edit-prefs' || $pref eq 'full-edit' || $pref eq 'edit-prefs-view-info' ) {
 
@@ -140,6 +144,11 @@ if ( $pref eq 'edit-prefs' || $pref eq 'full-edit' || $pref eq 'edit-prefs-view-
     if ( $Lang ) {
         $session{'CurrentUser'}->LanguageHandle($Lang);
         $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+    }
+
+    if ( $pref eq 'full-view' || $pref eq 'edit-prefs-view-info' ) {
+        my $path = RT->Config->Get('WebPath') . '/SelfService/Prefs.html';
+        push @results, ProcessQuickCreate( Path => $path, ARGSRef => \%ARGS );
     }
 
     #A hack to make sure that session gets rewritten.
