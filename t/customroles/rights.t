@@ -163,7 +163,7 @@ sub sales_has_rights_for_specs_individual {
 
     my $t = $specs_individual;
 
-    if (!$has_right || $has_right == 2) {
+    if (!$has_right) {
         is($t->RoleAddresses($sales->GroupType), '', "got no salespeople $rationale");
     }
     else {
@@ -174,12 +174,6 @@ sub sales_has_rights_for_specs_individual {
         ok(!$moss->HasRight(Right => 'ShowTicket', Object => $t), "moss (ticket sales) has no right to see the ticket $rationale");
         ok(!$moss->HasRight(Right => 'CommentOnTicket', Object => $t), "moss (ticket sales) has no right to comment on the ticket $rationale");
         ok(!$ricky->HasRight(Right => 'ShowTicket', Object => $t), "ricky (ticket sales) has no right to see the ticket $rationale");
-        ok(!$ricky->HasRight(Right => 'CommentOnTicket', Object => $t), "ricky (ticket sales) has no right to comment on the ticket $rationale");
-    }
-    elsif ($has_right == 2) {
-        ok($moss->HasRight(Right => 'ShowTicket', Object => $t), 'moss (ticket sales) has right to see the ticket thru global sales right');
-        ok(!$moss->HasRight(Right => 'CommentOnTicket', Object => $t), "moss (ticket sales) has no right to comment on the ticket $rationale");
-        ok($ricky->HasRight(Right => 'ShowTicket', Object => $t), 'ricky (ticket sales) has right to see the ticket thru global sales right');
         ok(!$ricky->HasRight(Right => 'CommentOnTicket', Object => $t), "ricky (ticket sales) has no right to comment on the ticket $rationale");
     }
     else {
@@ -421,7 +415,7 @@ diag 'change queue from Specs to General' if $ENV{'TEST_VERBOSE'};
 
     sales_has_rights_for_inbox_individual(1);
     sales_has_rights_for_inbox_group(1);
-    sales_has_rights_for_specs_individual(2, 'queue changed to General');
+    sales_has_rights_for_specs_individual(0, 'queue changed to General');
 
     engineer_has_no_rights_for_inbox_individual($_) for $linus, $john;
     engineer_has_rights_for_specs_individual($linus => 0);

@@ -144,11 +144,7 @@ sub Add {
     );
 
     if ($existing->Id) {
-        # there already was a role group for this queue, which means
-        # this was previously added, then removed, and is now being re-added,
-        # which means we have to re-enable the queue group and all the
-        # ticket groups
-        $role->_SetGroupsDisabledForQueue(0, $queue);
+        RT::Principal->InvalidateACLCache();
     }
     else {
         my $group = RT::Group->new($self->CurrentUser);
@@ -179,19 +175,14 @@ Removes the custom role from the queue and disables that queue's role group.
 sub Delete {
     my $self = shift;
 
-    $RT::Handle->BeginTransaction;
-
-    $self->CustomRoleObj->_SetGroupsDisabledForQueue(1, $self->QueueObj);
-
     # remove the ObjectCustomRole record
     my ($ok, $msg) = $self->SUPER::Delete(@_);
     unless ($ok) {
-        $RT::Handle->Rollback;
         $RT::Logger->error("Couldn't add ObjectCustomRole: $msg");
         return(undef);
     }
 
-    $RT::Handle->Commit;
+    RT::Principal->InvalidateACLCache();
 
     return ($ok, $msg);
 }
