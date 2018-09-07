@@ -46,6 +46,7 @@
 /sbin/rt-ldapimport
 /sbin/rt-passwd
 /sbin/standalone_httpd
+/sbin/rt-munge-attachments
 /var/mason_data/
 /autom4te.cache/
 /configure
