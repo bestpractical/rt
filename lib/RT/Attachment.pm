@@ -743,6 +743,62 @@ sub SetHeader {
     $self->__Set( Field => 'Headers', Value => $newheader);
 }
 
+=head2 ReplaceHeaders ( Search => 'SEARCH', Replacement => 'Replacement' )
+
+Search the attachments table's Header column for the search string provided.
+When a match is found call the SetHeader() method on the header with the match,
+either set the header to empty or a replacement value.
+
+=cut
+
+sub ReplaceHeaders {
+    my $self = shift;
+    my %args = (
+        Search      => undef,
+        Replacement => '',
+        @_,
+    );
+
+    return ( 0, $self->loc('No Search string provided') ) unless $args{Search};
+
+    foreach my $header ( $self->SplitHeaders ) {
+        my ( $tag, $value ) = split /:/, $header, 2;
+        if ( $value =~ s/\Q$args{Search}\E/$args{Replacement}/ig ) {
+            my $ret = $self->SetHeader( $tag, $value );
+            RT::Logger->error("Could not set header: $tag to $value") unless $ret;
+        }
+    }
+    return ( 1, $self->loc('Headers cleared') );
+}
+
+=head2 ReplaceContent ( Search => 'SEARCH', Replacement => 'Replacement' )
+
+Search the attachments table's Content column for the search string provided.
+When a match is found either replace it with the provided replacement string or an
+empty string.
+
+=cut
+
+sub ReplaceContent {
+    my $self = shift;
+    my %args = (
+        Search      => undef,
+        Replacement => '',
+        @_,
+    );
+
+    return ( 0, $self->loc('No search string provided') ) unless $args{Search};
+
+    my $content = $self->Content;
+
+    if ( $content && $content =~ s/\Q$args{Search}\E/$args{Replacement}/ig ) {
+        my ( $ret, $msg ) = $self->_Set( Field => 'Content', Value => $content );
+        return ( $ret, 'Content replaced' );
+    }
+    return ( 1, $self->loc('No content matches found') );
+}
+
+
 sub _CanonicalizeHeaderValue {
     my $self  = shift;
     my $value = shift;
