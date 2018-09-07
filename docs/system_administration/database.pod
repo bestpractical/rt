@@ -1,4 +1,4 @@
-=head1 BACKUPS
+=head1 Backups
 
 RT is often a critical piece of businesses and organizations.  Backups are
 absolutely necessary to ensure you can recover quickly from an incident.
@@ -24,7 +24,7 @@ Test your backups regularly to discover any unknown problems B<before> they
 become an issue.  You don't want to discover problems with your backups while
 tensely restoring from them in a critical data loss situation.
 
-=head2 DATABASE
+=head2 Database
 
 You should backup the entire RT database, although for improved speed and space
 you can ignore the I<data> in the C<sessions> table.  Make sure you still get
@@ -157,8 +157,10 @@ can run C<analyze verbose>.
 
 =back
 
-=head2 FILESYSTEM
+=head2 Filesystem
 
+Although this section is mostly about database backups, there are other
+files on the filesystem you should back up to capture the state of your RT.
 You will want to back up, at the very least, the following directories and files:
 
 =over 4
@@ -220,3 +222,82 @@ Simply saving a tarball should be sufficient, with something like:
 
 Be sure to include all the directories and files you enumerated above!
 
+=head1 Migrating to a Different Database
+
+RT supports many different databases, including MySQL, MariaDB, PostgreSQL,
+and Oracle. Each of these databases is different and if you want to switch
+from one type to another, you can't just take a backup in one and try to
+restore it to another. One exception is MySQL and MariaDB, which are currently
+compatible and don't require the extra steps discussed here.
+
+RT provides tools that allow you to export your RT database
+to the filesystem and then import it back into another database through
+RT. The tools are L<rt-serializer> and L<rt-importer> and the general
+process for migrating from one database to another is described below.
+
+Plan to do a full test of this process and thoroughly check the data
+in a test version of the new database before performing a final conversion
+on your production system.
+
+The serializer and importer tools can also be used to move only part of
+your RT database, like an individual queue. The process is similar to the
+steps described here, but the options will be different.
+
+You do not need to perform these steps when upgrading RT on the same database.
+See the L<README> for upgrade instructions.
+
+=over
+
+=item Export from Current Database
+
+First run the L<rt-serializer> tool to export your database to the filesystem.
+Note that this will require space similar to the size of your database, so
+plan accordingly. If your database is very large, it can take some time.
+The documentation contains additional information on available flags.
+It's also a good idea to run the L<rt-validator> tool to detect and resolve
+any errors in your database before starting:
+
+    /opt/rt4/sbin/rt-validator --check (and maybe --resolve)
+    /opt/rt4/sbin/rt-serializer --clone --directory ~/path/to/store/serialized/data
+
+=item Setup New Database
+
+After the database serializes cleanly, you can then begin to set up your
+new database. As you are working from some existing data, you do
+not need the initial RT data inserted into the databases, but you will need
+the tables created. When you use the L<rt-importer> tool, the data will fill
+the corresponding tables.
+
+RT's L<rt-setup-database> tool can set the database up for you.
+If you are running the import in the same RT installation, you will need to
+update your database options in C<RT_SiteConfig.pm> to point to the new database
+before running this step.
+
+    /opt/rt4/sbin/rt-setup-database --action create,schema,acl
+
+=item Import Data
+
+Once you have your new database set up, you can then use L<rt-importer>
+to insert the serialized data:
+
+    /opt/rt4/sbin/rt-importer /path/to/serialized/data
+
+As with the serializer step, this will take time proportionate to the size of
+your database.
+
+=item Reset Sequences
+
+Some databases, like Postgres, use sequences for RT table values like ids. For
+these database types, you need to reset the sequences from 1, set in the newly
+created database, to the next available id for each table. The C<reset-sequences>
+script will reset these for you:
+
+    /opt/rt4/etc/upgrade/reset-sequences
+
+=item Test
+
+Test your new system and confirm all of the expected data is available. Your RT
+system should look exactly the same as before, but the backend is on an entirely
+new database.
+
+=back
