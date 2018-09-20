@@ -119,7 +119,10 @@ else {
     }
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
-        $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
+        unless ($ok) {
+            RT::Logger->error("Unable to load dashboard with $id: $msg");
+            Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
+        }
     }
 
     if ($id) {

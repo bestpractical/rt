@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use HTTP::Status qw();
-use RT::Test tests => 105;
+use RT::Test tests => undef;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -170,9 +170,10 @@ $m->content_contains("Deleted dashboard");
 
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
-$m->content_contains("Failed to load dashboard $id");
+$m->content_contains("Could not load dashboard $id");
 
-$m->warning_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
+$m->next_warning_like(qr/Failed to load dashboard/, "the dashboard was deleted");
+$m->next_warning_like(qr/Could not load dashboard/, "the dashboard was deleted");
 
 $user_obj->PrincipalObj->GrantRight(Right => "SuperUser", Object => $RT::System);
 
@@ -234,7 +235,9 @@ my ($bad_id) = $personal =~ /^search-(\d+)/;
 
 for my $page (qw/Modify Queries Render Subscription/) {
     $m->get("/Dashboards/$page.html?id=$bad_id");
-    $m->content_like(qr/Couldn.+t load dashboard $bad_id: Invalid object type/);
-    $m->warning_like(qr/Couldn't load dashboard $bad_id: Invalid object type/);
+    $m->content_like(qr/Could not load dashboard $bad_id/);
+    $m->next_warning_like(qr/Unable to load dashboard with $bad_id/);
+    $m->next_warning_like(qr/Could not load dashboard $bad_id/);
 }
 
+done_testing();
