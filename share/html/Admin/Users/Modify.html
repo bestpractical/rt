@@ -254,6 +254,7 @@ my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo
 if ($Create) {
     $title = loc("Create a new user");
 } elsif ( defined $id && $id eq 'new') {
+    $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, Fields => \@fields, Results => \@results );
     ( $val, $msg ) = $UserObj->Create(
         (map {($_ => $ARGS{$_})} @fields),
         Privileged => $ARGS{'Privileged'},
