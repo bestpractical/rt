@@ -69,7 +69,7 @@ encounters.
 
 requires 'Probe';
 
-=head2 GetPassphrase Address => ADDRESS
+=head2 GetPassphrase Address => ADDRESS, For => Encryption|Signing
 
 Returns the passphrase for the given address.  It looks at the relevant
 configuration option for the encryption protocol
@@ -82,7 +82,7 @@ it is a hash, it looks up the address (using '' as a fallback key).
 
 sub GetPassphrase {
     my $self = shift;
-    my %args = ( Address => undef, @_ );
+    my %args = ( Address => undef, For => undef, @_ );
 
     my $class = ref($self) || $self;
     $class =~ s/^RT::Crypt:://;
@@ -94,6 +94,9 @@ sub GetPassphrase {
     if (not ref $config) {
         return $config;
     } elsif (ref $config eq "HASH") {
+        if ( ref $config->{$args{Address}} eq 'HASH' ) {
+            return $config->{$args{Address}}{$args{For} // ''} || $config->{$args{Address}}{''};
+        }
         return $config->{$args{Address}}
             || $config->{''};
     } elsif (ref $config eq "CODE") {

@@ -79,6 +79,10 @@ You should start from reading L<RT::Crypt>.
         CAPath  => '/opt/rt4/var/data/smime/signing-ca.pem',
         Passphrase => {
             'queue.address@example.com' => 'passphrase',
+            'another.queue.address@example.com' => {
+                Encryption => 'passphrase for encryption certificate',
+                Signing    => 'passphrase for signing certificate',
+            },
             '' => 'fallback',
         },
     );
@@ -126,6 +130,11 @@ of the L<RT_Config/%SMIME>.  While public certificates are also stored
 on users, private SSL keys are only loaded from disk.  Keys and
 certificates should be concatenated, in in PEM format, in files named
 C<email.address@example.com.pem>, for example.
+
+For addresses that have separate certificates for encryption/decryption
+and signing, the PEM files need to be named like
+C<email.address@example.com.encryption.pem> and
+C<email.address@example.com.signing.pem>, respectively.
 
 These files need be readable by the web server user which is running
 RT's web interface; however, if you are running cronjobs or other
@@ -296,7 +305,7 @@ sub _SignEncrypt {
         foreach my $address ( @addresses ) {
             $RT::Logger->debug( "Considering encrypting message to " . $address );
 
-            my %key_info = $self->GetKeysInfo( Key => $address );
+            my %key_info = $self->GetKeysInfo( Key => $address, For => 'Encryption' );
             unless ( defined $key_info{'info'} ) {
                 $res{'exit_code'} = 1;
                 my $reason = 'Key not found';
@@ -337,7 +346,7 @@ sub _SignEncrypt {
 
     my @commands;
     if ( $args{'Sign'} ) {
-        my $file = $self->CheckKeyring( Key => $args{'Signer'} );
+        my $file = $self->CheckKeyring( Key => $args{'Signer'}, For => 'Signing' );
         unless ($file) {
             $res{'status'} .= $self->FormatStatus({
                 Operation => "KeyCheck", Status => "MISSING",
@@ -348,7 +357,7 @@ sub _SignEncrypt {
             $res{exit_code} = 1;
             return (undef, %res);
         }
-        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} )
+        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'}, For => 'Signing' )
             unless defined $args{'Passphrase'};
 
         push @commands, [
@@ -582,14 +591,14 @@ sub _Decrypt {
     my ($buf, $encrypted_to, %res);
 
     foreach my $address ( @addresses ) {
-        my $file = $self->CheckKeyring( Key => $address );
+        my $file = $self->CheckKeyring( Key => $address, For => 'Encryption' );
         unless ( $file ) {
             my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
             $RT::Logger->debug("No key found for $address in $keyring directory");
             next;
         }
 
-        local $ENV{SMIME_PASS} = $self->GetPassphrase( Address => $address );
+        local $ENV{SMIME_PASS} = $self->GetPassphrase( Address => $address, For => 'Encryption' );
         local $SIG{CHLD} = 'DEFAULT';
         my $cmd = [
             $self->OpenSSLPath,
@@ -803,7 +812,7 @@ sub GetKeysForEncryption {
     my $self = shift;
     my %args = (Recipient => undef, @_);
     my $recipient = delete $args{'Recipient'};
-    my %res = $self->GetKeysInfo( Key => $recipient, %args, Type => 'public' );
+    my %res = $self->GetKeysInfo( Key => $recipient, %args, Type => 'public', For => 'Encryption' );
     return %res unless $res{'info'};
 
     foreach my $key ( splice @{ $res{'info'} } ) {
@@ -832,7 +841,7 @@ sub GetKeysForEncryption {
 sub GetKeysForSigning {
     my $self = shift;
     my %args = (Signer => undef, @_);
-    return $self->GetKeysInfo( Key => delete $args{'Signer'}, %args, Type => 'private' );
+    return $self->GetKeysInfo( Key => delete $args{'Signer'}, %args, Type => 'private', For => 'Signing' );
 }
 
 sub GetKeysInfo {
@@ -841,6 +850,7 @@ sub GetKeysInfo {
         Key   => undef,
         Type  => 'public',
         Force => 0,
+        For   => undef,
         @_
     );
 
@@ -857,7 +867,7 @@ sub GetKeysInfo {
 
 sub GetKeyContent {
     my $self = shift;
-    my %args = ( Key => undef, @_ );
+    my %args = ( Key => undef, For => undef, @_ );
 
     my $key;
     if ( my $file = $self->CheckKeyring( %args ) ) {
@@ -878,10 +888,16 @@ sub CheckKeyring {
     my $self = shift;
     my %args = (
         Key => undef,
+        For => undef,
         @_,
     );
     my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
     return undef unless $keyring;
+
+    if ( $args{For} ) {
+        my $file = File::Spec->catfile( $keyring, $args{'Key'} . '.' . lc( $args{For} ) . '.pem' );
+        return $file if -f $file;
+    }
 
     my $file = File::Spec->catfile( $keyring, $args{'Key'} .'.pem' );
     return undef unless -f $file;
