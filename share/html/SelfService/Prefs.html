@@ -48,6 +48,10 @@
 <& /SelfService/Elements/Header, Title => loc('Preferences') &>
 
 <& /Elements/ListActions, actions => \@results &>
+% if ( $pref eq 'full-edit' ) {
+<& /Prefs/Elements/EditAboutMe, UserObj => $user, PasswordName => $password, AccessControlName => 'Change Password' &>
+% }
+% if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' ) {
 <form method="post">
 
 <table width="100%" border="0">
@@ -71,7 +75,7 @@
 % if ( $user->__Value('Password') ne '*NO-PASSWORD*' ) {
 <& /Elements/EditPassword,
     User => $user,
-    Name => [qw(CurrentPass NewPass1 NewPass2)],
+    Name => $password,
 &>
 % }
 </&>
@@ -81,58 +85,83 @@
 <& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
 
+% }
+% if ( $pref eq 'view-info' || $pref eq 'edit-prefs-view-info' ) {
+<& /Prefs/Elements/ShowAboutMe, UserObj => $user &>
+%    if ( $request_portlet ) {
+<& Elements/RequestUpdate, User=> $user &>
+%    }
+% }
 
 <%INIT>
 my @results;
 
 my $user = $session{'CurrentUser'}->UserObj;
+my $password = [ qw(CurrentPass NewPass1 NewPass2) ];
 
-if (defined $NewPass1 && length $NewPass1 ) {
-    my ($status, $msg) = $user->SafeSetPassword(
-        Current      => $CurrentPass,
-        New          => $NewPass1,
-        Confirmation => $NewPass2,
-    );
-    push @results, loc("Password: [_1]", $msg);
-}
+my $pref = RT->Config->Get( 'SelfServiceUserPrefs' ) || '';
+my $request_portlet = RT->Config->Get( 'SelfServiceRequestUpdatePortlet' );
 
-my @fields = qw(
-        Lang Timezone
-    );
+if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' || $pref eq 'full-edit' ) {
 
-$m->callback(
-    CallbackName => 'UpdateLogic',
-    fields       => \@fields,
-    results      => \@results,
-    UserObj      => $user,
-    ARGSRef      => \%ARGS,
-);
-
-push @results, UpdateRecordObject (
-    AttributesRef => \@fields,
-    Object => $user,
-    ARGSRef => \%ARGS,
-);
-
-if ( $Lang ) {
-    $session{'CurrentUser'}->LanguageHandle($Lang);
-    $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
-}
-
-if ($Signature) {
-    $Signature =~ s/(\r\n|\r)/\n/g;
-    if ($Signature ne $user->Signature) {
-        my ($val, $msg) = $user->SetSignature($Signature);
-        push (@results, "Signature: ".$msg);
+    if ( defined $NewPass1 && length $NewPass1 ) {
+        my ($status, $msg) = $user->SafeSetPassword(
+            Current      => $CurrentPass,
+            New          => $NewPass1,
+            Confirmation => $NewPass2,
+        );
+        push @results, loc("Password: [_1]", $msg);
     }
+
+    my @fields;
+
+    if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' ) {
+        @fields = qw( Lang Timezone );
+    } else {
+        @fields = qw(
+            Name Comments EmailAddress FreeformContactInfo Organization RealName
+            NickName Lang Gecos HomePhone WorkPhone MobilePhone PagerPhone Address1
+            Address2 City State Zip Country Timezone
+        );
+    }
+
+    $m->callback(
+        CallbackName => 'UpdateLogic',
+        fields       => \@fields,
+        results      => \@results,
+        UserObj      => $user,
+        ARGSRef      => \%ARGS,
+    );
+
+    push @results, UpdateRecordObject (
+        AttributesRef => \@fields,
+        Object => $user,
+        ARGSRef => \%ARGS,
+    );
+
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $user ) if $pref eq 'full-edit';
+
+    if ( $Lang ) {
+        $session{'CurrentUser'}->LanguageHandle($Lang);
+        $session{'CurrentUser'} = $session{'CurrentUser'}; # force writeback
+    }
+}
+
+if ( $request_portlet ) {
+    my $path = RT->Config->Get('WebPath') . '/SelfService/Prefs.html';
+    push @results, ProcessQuickCreate( Path => $path, ARGSRef => \%ARGS );
 }
 
 #A hack to make sure that session gets rewritten.
 $session{'i'}++;
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+);
+
 </%INIT>
 
 <%ARGS>
-$Signature => undef
 $CurrentPass => undef
 $NewPass1 => undef
 $NewPass2 => undef

@@ -1798,6 +1798,54 @@ access ticked displays.
 
 Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
 
+=item C<$SelfServiceUserPrefs>
+
+This option controls how the SelfService user preferences page is
+displayed. It accepts a string from one of the four possible modes
+below.
+
+=over
+
+=item C<edit-prefs> (the default)
+
+When set to C<edit-prefs>, self service users will be able to update
+their Timezone and Language preference and update their password.
+This is the default behavior of RT.
+
+=item C<view-info>
+
+When set to C<view-info>, users will have full access to all their
+user information stored in RT on a read-only page.
+
+=item C<edit-prefs-view-info>
+
+When set to C<edit-prefs-view-info>, users will have full access as in
+the C<view-info> option, but also will be able to update their Locale
+and password as in the default C<edit-prefs> option.
+
+=item C<full-edit>
+
+When set to C<full-edit>, users will be able to fully view and update
+all of their stored RT user information.
+
+=back
+
+=cut
+
+Set($SelfServiceUserPrefs, 'edit-prefs');
+
+=item C<$SelfServiceRequestUpdatePortlet>
+
+Set this to 1 to allow Self Service users to request updates to
+their RT user information. When enabled, this portlet adds a quick
+ticket create portlet to the Self Service preferences page. This
+option is only available when $SelfServiceUserPrefs is set to
+'view-info' or 'edit-prefs-view-info'.
+
+=cut
+
+Set($SelfServiceRequestUpdatePortlet, 0);
+
 =back
 
 =head2 Articles
