@@ -4368,6 +4368,10 @@ Parameters:
 
 =item * CacheNeedsUpdate, date indicating when an update happened requiring a cache clear
 
+=item * Exclude, hashref ({ Name => 1 }) of object Names to exclude from the cache
+
+=back
+
 =cut
 
 sub SetObjectSessionCache {
@@ -4376,6 +4380,7 @@ sub SetObjectSessionCache {
         ShowAll => 1,
         Default => 0,
         CacheNeedsUpdate => undef,
+        Exclude => undef,
         @_ );
 
     my $ObjectType = $args{'ObjectType'};
@@ -4420,10 +4425,12 @@ sub SetObjectSessionCache {
                 or not $CheckRight
                 or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))
             {
+                next if $args{'Exclude'} and exists $args{'Exclude'}->{$object->Name};
                 push @{$session{$cache_key}{objects}}, {
                     Id          => $object->Id,
                     Name        => $object->Name,
                     Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
+                    Lifecycle   => $object->_Accessible("Lifecycle" => "read") ? $object->Lifecycle : undef,
                 };
                 $session{$cache_key}{id}{ $object->id } = 1;
             }
