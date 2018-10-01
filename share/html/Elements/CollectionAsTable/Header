@@ -79,6 +79,31 @@ else {
 }
 
 my $item = 0;
+
+
+# "Requestor" has alias "Requestors", this is to handle the case where
+# OrderBy is "Requestor.Name" and result Format is "Requestors"
+my %field_alias;
+if ( $Class->can('RecordClass') && $Class->RecordClass->DOES("RT::Record::Role::Roles") ) {
+    for my $role ( $Class->RecordClass->Roles( UserDefined => 0 ) ) {
+        my $attrs = $Class->RecordClass->Role($role);
+        $field_alias{$role} = $role . 's' unless $attrs->{Single};
+    }
+}
+
+my %order_by;
+for my $i ( 0 .. $#OrderBy ) {
+    my $field = $OrderBy[$i];
+    $order_by{$field}{index} = $i;
+    $order_by{$field}{order} = $Order[$i] || 'ASC';
+    $order_by{$field}{class} = $order_by{ $OrderBy[$i] }{order} =~ /ASC/i ? 'fa-sort-up' : 'fa-sort-down';
+
+    my $alias = $field;
+    if ( $alias =~ s!^(\w+)\.!$field_alias{$1}.! ) {
+        $order_by{$alias} = $order_by{$field};
+    }
+}
+
 foreach my $col ( @Format ) {
     my $attr = $col->{'attribute'} || $col->{'last_attribute'};
 
@@ -146,18 +171,40 @@ foreach my $col ( @Format ) {
     {
         $attr = ProcessColumnMapValue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
 
-        my $new_order = 'ASC';
-        $new_order = ($Order[0] // '') eq 'ASC'? 'DESC': 'ASC'
-            if $OrderBy[0] && ($OrderBy[0] eq $attr or "$attr|$OrderBy[0]" =~ /^(Created|id)\|(Created|id)$/);
+
+        my @new_order_by = @OrderBy;
+        my @new_order = @Order;
+
+        # ASC -> DESC -> UNSET -> ASC, etc.
+        if ( $order_by{$attr} ) {
+             splice @new_order_by, $order_by{$attr}{index}, 1;
+             splice @new_order,   $order_by{$attr}{index}, 1;
+
+             if ( $order_by{$attr}{order} eq 'ASC' ) {
+                 unshift @new_order_by, $attr;
+                 unshift @new_order,   'DESC';
+             }
+        }
+        else {
+            unshift @new_order_by, $attr;
+            unshift @new_order, 'ASC';
+        }
 
         $m->out(
             '<a href="' . $m->interp->apply_escapes($BaseURL
             . $m->comp( '/Elements/QueryString',
                 %$generic_query_args,
-                OrderBy => $attr, Order => $new_order
+                OrderBy => \@new_order_by, Order => \@new_order,
             ), 'h')
             . '">'. $loc_title .'</a>'
         );
+
+        if ( $order_by{$attr} ) {
+            $m->out( qq! <span class="fas $order_by{$attr}{class}"></span>! );
+        }
+        else {
+            $m->out( qq! <span class="fas fa-sort"></span>! );
+        }
     }
     else {
         $m->out( $loc_title );
