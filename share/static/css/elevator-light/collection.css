@@ -52,3 +52,16 @@ tr:last-of-type.oddline td.collection-as-table,
 tr:last-of-type.evenline td.collection-as-table {
     padding-bottom: 0.5rem;
 }
+
+th.collection-as-table svg.fa-sort {
+    color: #ccc;
+}
+
+/* To not wrap icons in header */
+th.collection-as-table {
+    white-space: nowrap;
+}
+
+th.collection-as-table span.title {
+    white-space: normal;
+}
