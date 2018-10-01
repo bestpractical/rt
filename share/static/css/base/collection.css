@@ -24,3 +24,18 @@ table.collection td:first-child, table.collection th:first-child {
 .results-count::before {
     content: '\a0\a0\a0\a0';
 }
+
+th.collection-as-table span.order i {
+    display: inline-block;
+    background-size: 6px;
+    width: 6px;
+    height: 8px;
+}
+
+th.collection-as-table span.order i.asc {
+    background-image: url(../../../static/images/css/arrow-up.png);
+}
+
+th.collection-as-table span.order i.desc {
+    background-image: url(../../../static/images/css/arrow-down.png);
+}

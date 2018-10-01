@@ -70,6 +70,20 @@ my $generic_query_args = $GenericQueryArgs || {map { $_ => $ARGS{$_} } @PassArgu
 $generic_query_args->{'Format'} = $FormatString if grep $_ eq 'Format', @PassArguments;
 
 my $item = 0;
+
+my %order_desc = (
+    1 => loc('first'),
+    2 => loc('second'),
+    3 => loc('third'),
+    4 => loc('fourth'),
+);
+
+my %order_by;
+for my $i ( 0 .. $#OrderBy ) {
+    $order_by{ $OrderBy[ $i ] }{index} = $i + 1;
+    $order_by{ $OrderBy[ $i ] }{class} = ( $Order[ $i ] || 'ASC' ) =~ /ASC/i ? 'asc' : 'desc';
+}
+
 foreach my $col ( @Format ) {
     my $attr = $col->{'attribute'} || $col->{'last_attribute'};
 
@@ -149,6 +163,16 @@ foreach my $col ( @Format ) {
             ), 'h')
             . '">'. $loc_title .'</a>'
         );
+
+        if ( $order_by{$attr} ) {
+            my $title = loc(
+                "Results are [_1] ordered by [_2] in [_3] order.",
+                $order_desc{ $order_by{$attr}{index} } || $order_by{$attr}{index},
+                loc( $attr ),
+                $order_by{$attr}{class} eq 'asc' ? loc('ascending') : loc('descending')
+            );
+            $m->out( qq! <span class="order" title="$title">($order_by{$attr}{index}<i class="$order_by{$attr}{class}"></i>)</span>! );
+        }
     }
     else {
         $m->out( $loc_title );
