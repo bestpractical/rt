@@ -312,14 +312,17 @@ diag "make sure skipped order by field doesn't break search";
 
     $agent->follow_link_ok({id => 'page-edit_search'});
     $agent->form_name('BuildQuery');
-    $agent->field("OrderBy", 'Requestor.EmailAddress', 3);
+    $agent->field('Order', 'DESC', 1);
+    $agent->field("OrderBy", 'Requestor.Name', 3);
     $agent->submit;
     $agent->form_name('BuildQuery');
     is $agent->value('OrderBy', 1), 'id';
     is $agent->value('OrderBy', 2), '';
-    is $agent->value('OrderBy', 3), 'Requestor.EmailAddress';
+    is $agent->value('OrderBy', 3), 'Requestor.Name';
 
     $agent->follow_link_ok({id => 'page-results'});
+    $agent->content_like(qr/class="fas fa-sort-down".*class="fas fa-sort-up"/s, 'orders');
+
     ok( $agent->find_link(
         text      => $t->id,
         url_regex => qr{/Ticket/Display\.html},
