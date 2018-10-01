@@ -312,6 +312,7 @@ diag "make sure skipped order by field doesn't break search";
 
     $agent->follow_link_ok({id => 'page-edit_search'});
     $agent->form_name('BuildQuery');
+    $agent->field('Order', 'DESC', 1);
     $agent->field("OrderBy", 'Requestor.EmailAddress', 3);
     $agent->submit;
     $agent->form_name('BuildQuery');
@@ -320,6 +321,11 @@ diag "make sure skipped order by field doesn't break search";
     is $agent->value('OrderBy', 3), 'Requestor.EmailAddress';
 
     $agent->follow_link_ok({id => 'page-results'});
+    $agent->text_contains('# (1', 'order number 1');
+    $agent->content_contains('1<i class="desc"></i>', 'arrow 1');
+    $agent->text_contains('Requestor (2', 'order number 2');
+    $agent->content_contains('2<i class="asc"></i>', 'arrow 2');
+
     ok( $agent->find_link(
         text      => $t->id,
         url_regex => qr{/Ticket/Display\.html},
