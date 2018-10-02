@@ -91,6 +91,11 @@
 % $m->callback(CallbackName => 'AfterTable', Dashboard => $Dashboard, show_cb => $show_cb);
 
 % if (!$Preview) {
+
+% if ( $session{ContextUser}->id != $session{CurrentUser}->id ) {
+<p><&|/l, $Dashboard->Name, $session{CurrentUser}->Name &>This is generated from dashboard "[_1]" by the subscription of user "[_2]".</&></p>
+% }
+
 % my $edit = RT->Config->Get('WebPath') . '/Dashboards/Modify.html?id='.$id;
 % my $subscription = RT->Config->Get('WebPath') . '/Dashboards/Subscription.html?id='.$id;
 <p><&|/l, $edit, $subscription &>You <a href="[_1]">may edit this dashboard</a> and <a href="[_2]">your subscription</a> to it in RT.</&></p>
@@ -136,10 +141,11 @@ for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')
     last;
 }
 
+$session{ContextUser} ||= $session{CurrentUser};
 # otherwise honor their search preferences.. otherwise 50 rows
 # $rows == 0 means unlimited, which we don't want to ignore from above
 unless (defined($rows)) {
-    my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    my $prefs = $session{'ContextUser'}->UserObj->Preferences("SearchDisplay") || {};
     $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 50;
 }
 

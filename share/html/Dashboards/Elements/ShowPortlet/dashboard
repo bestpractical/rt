@@ -75,6 +75,7 @@ Abort("Possible recursive dashboard detected.") if $Depth > 8;
 </%init>
 
 <%perl>
+local $session{CurrentUser} = $session{ContextUser};
 for my $portlet (@panes) {
     $m->comp($portlet->{portlet_type},
         Portlet    => $portlet,

@@ -192,6 +192,29 @@
 </table>
 </&>
 
+<&| /Widgets/TitleBox, title => loc('Search Context') &>
+
+<p class="description">
+<&|/l&>Most searches show the same results for all users and can be run as the user who owns the dashboard subscription (Subscription owner).</&>
+</p>
+
+<p class="description">
+<&|/l&>For searches like "10 highest priority tickets I own" that contain __CurrentUser__ in the query, the results are specific to each recipient. For dashboards with these searches, select "Each dashboard recipient" below to run each search with the recipient set as the "Current User".</&>
+</p>
+
+<table>
+    <tr><td class="label"><&|/l&>Run Dashboard Searches As</&>:</td>
+        <td>
+            <input type="radio" id="context-subscriber" name="Context" value="subscriber" <% ($fields{'Context'} // '') ne 'recipient' ? 'checked="checked"' : "" |n %>></input>
+            <label for="context-subscriber"><&|/l&>Subscription owner</&>(<% $session{CurrentUser}->Name %>)</label>
+            <br />
+            <input type="radio" id="context-recipient" name="Context" value="recipient" <% ($fields{'Context'} // '') eq 'recipient' ? 'checked="checked"' : "" |n %>></input>
+            <label for="context-recipient"><&|/l&>Each dashboard recipient</&></label>
+        </td>
+    </tr>
+</table>
+</&>
+
 <&| /Widgets/TitleBox, title => loc('Recipients') &>
 <& Elements/SubscriptionRecipients,
     UserField => $UserField, UserString => $UserString, UserOp => $UserOp,
@@ -246,6 +269,7 @@ my %fields = (
     Counter     => 0,
     Language    => '',
     SuppressIfEmpty => 0,
+    Context     => 'subscriber',
 );
 
 $m->callback( %ARGS, CallbackName => 'SubscriptionFields', FieldsRef => \%fields,
