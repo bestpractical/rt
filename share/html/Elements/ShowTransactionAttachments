@@ -159,8 +159,38 @@ my $render_attachment = sub {
             return;
         }
 
-        if (
+        my $force_display;
+        if (   RT->Config->Get( 'GnuPG' )
+            && RT->Config->Get( 'GnuPG' )->{Enable}
+            && $ParentObj
+            && $ParentObj->ContentType eq 'multipart/alternative'
+            && RT->Config->Get( 'PreferRichText', $session{CurrentUser} ) )
+        {
 
+            my $siblings = $message->Siblings;
+            if ( $message->ContentType eq 'text/plain' ) {
+                $siblings->ContentType( VALUE => 'text/html' );
+                $siblings->LimitNotEmpty;
+                if ( my $html_message = $siblings->Next ) {
+                    if ( $html_message->Content =~ m{-----BEGIN PGP MESSAGE-----.+-----END PGP MESSAGE-----}s ) {
+                        $force_display = 1;
+                    }
+                }
+            }
+            elsif ( $message->ContentType eq 'text/html' ) {
+                if ( $message->Content =~ m{-----BEGIN PGP MESSAGE-----.+-----END PGP MESSAGE-----}s ) {
+                    $siblings->ContentType( VALUE => 'text/plain' );
+                    $siblings->LimitNotEmpty;
+                    if ( $siblings->Count ) {
+                        RT->Logger->debug( "Found partially undecrypted html, switching to alternative plain part." );
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (
+            $force_display ||
             # it's a toplevel object
             !$ParentObj
 

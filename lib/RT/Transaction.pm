@@ -595,6 +595,20 @@ sub _FindPreferredContentObj {
 
             # If we actully found a part, return its content
             if ( my $first = $plain_parts->First ) {
+                if (   $args{Type} eq 'text/html'
+                    && RT->Config->Get( 'GnuPG' )
+                    && RT->Config->Get( 'GnuPG' )->{Enable}
+                    && $Attachment->ContentType eq 'multipart/alternative'
+                    && $first->Content =~ m{-----BEGIN PGP MESSAGE-----.+-----END PGP MESSAGE-----}s )
+                {
+                    my $siblings = $first->Siblings;
+                    $siblings->ContentType( VALUE => 'text/plain' );
+                    $siblings->LimitNotEmpty;
+                    if ( my $plain_attachment = $siblings->First ) {
+                        RT->Logger->debug( "Found partially encrypted html, switching to alternative plain part." );
+                        return $plain_attachment;
+                    }
+                }
                 return $first;
             }
         } else {
