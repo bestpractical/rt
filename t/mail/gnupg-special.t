@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 25, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
 
 use Digest::MD5 qw(md5_hex);
 
@@ -86,6 +86,32 @@ $user->SetEmailAddress('recipient@example.com');
     is(md5_hex($bin->Content), '1e35f1aa90c98ca2bab85c26ae3e1ba7', "correct png");
 }
 
+{
+    my $id = send_via_mailgate('broken-html.txt');
+
+    my $tick = RT::Ticket->new( $RT::SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    my $txn = $tick->Transactions->First;
+    my $parts = $txn->Attachments->ItemsArrayRef;
+
+    is (scalar @$parts, 4, 'alternative, text, html and original');
+
+    like( $txn->Content, qr/This is decrypted plain content/, 'got decrypted content' );
+    unlike( $txn->Content, qr/BEGIN PGP MESSAGE/, 'no undecrypted content' );
+    like(
+        $txn->Content( Type => 'text/html' ),
+        qr/This is decrypted plain content/,
+        'got decrypted content with text/html'
+    );
+    unlike( $txn->Content( Type => 'text/html' ), qr/BEGIN PGP MESSAGE/, 'no undecrypted content with text/html' );
+
+    $m->goto_ticket($tick->id);
+    $m->text_contains('This is decrypted plain content', 'got decrypted content on the page');
+    $m->text_lacks('BEGIN PGP MESSAGE', 'no undecrypted content on the page');
+}
+
 sub send_via_mailgate {
     my $fname = shift;
     my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
@@ -99,3 +125,4 @@ sub send_via_mailgate {
     return $id;
 }
 
+done_testing;
