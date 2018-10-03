@@ -1,0 +1,44 @@
+From: root@localhost
+Content-Type: multipart/alternative; boundary="=-MRyJofprf2aLkeAxMXTv"
+Subject: test broken html
+
+--=-MRyJofprf2aLkeAxMXTv
+Content-Type: text/plain; charset="UTF-8"
+
+-----BEGIN PGP MESSAGE-----
+
+hQIOA076g5OuwfIOEAgAv9bYyAJKVmQ4p/LStq1pvnKzdvS//bLyMSgvGzNB1o9q
+wNl0k6KdkXCbbkaOOu0CBl64gTxNuXPUdAyCXl/ojWfXUR/b6R+0mEyPFd7TYpu5
+mJmHv62kIlR/QoUdBvHEwA2+vlvOqX4U0VuVwGh8d7c6FJrkLH5dls4kfR6g7Fgz
+6jBJIAKWN/WsVeqKY0u+EmzRdX/P5XCiYNwVEPV4eDQJ5VvcUygOmjcwNGqwz/Nq
+g9k8kUjB2fCyd/52CGn/HxEosiCn3LuxEIuyzzgeHIZNwt/Qy52cx91g9E4CCKp8
+thfebaml+asNmp+xGtizHq9Uxkj7KQpueD3xrhSV3Af+JAUhOtCH2Wkp3z5LI5s9
+0tyT/3p65GEoiwnsK6TT0NfkgRcGS1HdgLUDsFXOZubUTrZ/Gvbbdjmkk0DVpCEI
+D0Vuy07sfBa60lYYNGqIwAC3gJvX39cFJSTqKCI9+FMqkFLjdlnaD7hSNE3oFqRt
+nK6xzQ29H7PRiwm9WxQy/IvSEfiYFe4P+TuyRlVteY10K9V6PuM9G9N41rwtW44M
+QmHyf7SA0lWMiiKwGxbDGf0LjyJ7jpZYSy9nsIeFhczVZdFJ2yvVPczlbuokbaSZ
+03tz6r4XppdNO3CFuUu+t0HYAi23byHjuMdfutFr+J0PZeCIvLTqtAIlt+iYvC5s
+MdJaAYEkD9pC59khxzVUXEJrzcSlstUQbdJttP+j51oHLTLhmzjXudEY5WqcO7mk
+9W9lMl+4ZYWUYDDJi/Vx1KjcO/SUA1ttkcx6JNxXa5hatoX4ZM9d25FnoIwH
+=THDc
+-----END PGP MESSAGE-----
+--=-MRyJofprf2aLkeAxMXTv
+Content-Type: text/html; charset="utf-8"
+
+<html><body>-----BEGIN PGP MESSAGE-----
+hQIOA076g5OuwfIOEAgAv9bYyAJKVmQ4p/LStq1pvnKzdvS//bLyMSgvGzNB1o9q
+wNl0k6KdkXCbbkaOOu0CBl64gTxNuXPUdAyCXl/ojWfXUR/b6R+0mEyPFd7TYpu5
+mJmHv62kIlR/QoUdBvHEwA2+vlvOqX4U0VuVwGh8d7c6FJrkLH5dls4kfR6g7Fgz
+6jBJIAKWN/WsVeqKY0u+EmzRdX/P5XCiYNwVEPV4eDQJ5VvcUygOmjcwNGqwz/Nq
+g9k8kUjB2fCyd/52CGn/HxEosiCn3LuxEIuyzzgeHIZNwt/Qy52cx91g9E4CCKp8
+thfebaml+asNmp+xGtizHq9Uxkj7KQpueD3xrhSV3Af+JAUhOtCH2Wkp3z5LI5s9
+0tyT/3p65GEoiwnsK6TT0NfkgRcGS1HdgLUDsFXOZubUTrZ/Gvbbdjmkk0DVpCEI
+D0Vuy07sfBa60lYYNGqIwAC3gJvX39cFJSTqKCI9+FMqkFLjdlnaD7hSNE3oFqRt
+nK6xzQ29H7PRiwm9WxQy/IvSEfiYFe4P+TuyRlVteY10K9V6PuM9G9N41rwtW44M
+QmHyf7SA0lWMiiKwGxbDGf0LjyJ7jpZYSy9nsIeFhczVZdFJ2yvVPczlbuokbaSZ
+03tz6r4XppdNO3CFuUu+t0HYAi23byHjuMdfutFr+J0PZeCIvLTqtAIlt+iYvC5s
+MdJaAYEkD9pC59khxzVUXEJrzcSlstUQbdJttP+j51oHLTLhmzjXudEY5WqcO7mk
+9W9lMl+4ZYWUYDDJi/Vx1KjcO/SUA1ttkcx6JNxXa5hatoX4ZM9d25FnoIwH
+=THDc
+-----END PGP MESSAGE-----
+</body></html>
