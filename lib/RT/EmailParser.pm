@@ -634,6 +634,11 @@ in it.  it's cool to have a 'text/plain' part, but the problem is the part is
 not so right: all the "\n" in your main message will become "\n\n" :/
 
 this method will fix this bug, i.e. replaces "\n\n" to "\n".
+
+Similarly, if the message is HTML-only, the same problem is present there:
+between each paragraph, there will be an empty one in between with only a line
+break. This method removes those line break-only paragraphs too.
+
 return 1 if it does find the problem in the entity and get it fixed.
 
 =cut
@@ -645,25 +650,32 @@ sub RescueOutlook {
 
     return unless $mime && $self->LooksLikeMSEmail($mime);
 
-    my $text_part;
+    my ($text_part, $html_part);
+
     if ( $mime->head->get('Content-Type') =~ m{multipart/mixed} ) {
         my $first = $mime->parts(0);
         if ( $first->head->get('Content-Type') =~ m{multipart/alternative} )
         {
-            my $inner_first = $first->parts(0);
-            if ( $inner_first->head->get('Content-Type') =~ m{text/plain} )
-            {
-                $text_part = $inner_first;
+            foreach my $part ($first->parts) {
+                if ( $part->head->get('Content-Type') =~ m{text/plain} && !$text_part) {
+                    $text_part = $part;
+                }
+                if ( $part->head->get('Content-Type') =~ m{text/html} && !$html_part) {
+                    $html_part = $part;
+                }
             }
         }
     }
     elsif ( $mime->head->get('Content-Type') =~ m{multipart/alternative} ) {
-        my $first = $mime->parts(0);
-        if ( $first->head->get('Content-Type') =~ m{text/plain} ) {
-            $text_part = $first;
+        foreach my $part ($mime->parts) {
+            if ( $part->head->get('Content-Type') =~ m{text/plain} && !$text_part) {
+                $text_part = $part;
+            }
+            if ( $part->head->get('Content-Type') =~ m{text/html} && !$html_part) {
+                $html_part = $part;
+            }
         }
     }
-
     # Add base64 since we've seen examples of double newlines with
     # this type too. Need an example of a multi-part base64 to
     # handle that permutation if it exists.
@@ -671,22 +683,25 @@ sub RescueOutlook {
         $text_part = $mime;    # Assuming single part, already decoded.
     }
 
+    my $ret;
+
     if ($text_part) {
 
         # use the unencoded string
-        my $content = $text_part->bodyhandle->as_string;
-        if ( $content =~ s/\n\n/\n/g ) {
+        my $text_content = $text_part->bodyhandle->as_string;
+
+        if ( $text_content =~ s/\n\n/\n/mg ) {
 
             # Outlook puts a space on extra newlines, remove it
-            $content =~ s/\ +$//mg;
+            $text_content =~ s/\ +$//mg;
 
             # only write only if we did change the content
             if ( my $io = $text_part->open("w") ) {
-                $io->print($content);
+                $io->print($text_content);
                 $io->close;
                 $RT::Logger->debug(
                     "Removed extra newlines from MS Outlook message.");
-                return 1;
+                $ret = 1;
             }
             else {
                 $RT::Logger->error("Can't write to body to fix newlines");
@@ -694,7 +709,28 @@ sub RescueOutlook {
         }
     }
 
-    return;
+    if ($html_part) {
+
+        # use the unencoded string
+        my $html_content = $html_part->bodyhandle->as_string;
+
+        if ( $html_content =~ s{<p(\s+style="[^"]*")?><br>\n?</p>}{}mg ) {
+
+            # only write only if we did change the content
+            if ( my $io = $html_part->open("w") ) {
+                $io->print($html_content);
+                $io->close;
+                $RT::Logger->debug(
+                    "Removed extra newlines from MS Outlook message.");
+                $ret = 1;
+            }
+            else {
+                $RT::Logger->error("Can't write to body to fix newlines");
+            }
+        }
+    }
+
+    return $ret;
 }
 
 =head1 LooksLikeMSEmail

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 78;
+use RT::Test tests => 90;
 
 RT->Config->Set('CheckMoreMSMailHeaders', 1);
 
@@ -36,21 +36,25 @@ Content-Type: text/html;
 \tcharset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-<html>this is fake</html>
-
+<html><body><p>here is the content</p><p><br></p><p>another paragraph</p></body></html>
 
 ------=_NextPart_000_0004_01CB045C.A5A075D0--
 
 EOF
 
-        my $content = <<EOF;
+        my $text_content = <<EOF;
 here is the content
 
 blahmm
 another line
 EOF
-        test_email( $text, $content,
-            $mailer . ' with multipart/alternative, \n\n are replaced' );
+        my $html_content = <<EOF;
+<p>here is the content</p><p>another paragraph</p>
+EOF
+        test_email( $text, $text_content,
+                    $mailer . ' with multipart/alternative, \n\n are replaced' );
+        test_email( $text, $html_content,
+                    $mailer . ' with multipart/alternative, line-break-only paragraphs removed from the HTML part', "text/html" );
     }
 
     diag "Test mail with multipart/alternative";
