@@ -113,7 +113,7 @@ sub MailDashboards {
             for my $user_id (@{ $recipients_users || [] }) {
                 my $user = RT::User->new(RT->SystemUser);
                 $user->Load($user_id);
-                next unless $user->id;
+                next unless $user->id and !$user->Disabled;
 
                 push @emails, $user->EmailAddress;
                 $recipient_language{$user->EmailAddress} = $user->Lang;
