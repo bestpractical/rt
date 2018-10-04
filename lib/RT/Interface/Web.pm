@@ -108,7 +108,7 @@ sub SquishedJS {
 
 sub JSFiles {
     return qw{
-      jquery-1.11.3.min.js
+      jquery-1.12.4.min.js
       jquery_noconflict.js
       jquery-ui.min.js
       jquery-ui-timepicker-addon.js
