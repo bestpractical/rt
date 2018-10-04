@@ -1,12 +1,13 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 25, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
 
 use Digest::MD5 qw(md5_hex);
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
+RT::Test->trust_gnupg_key('rt-test@example.com');
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -67,6 +68,20 @@ $user->SetEmailAddress('recipient@example.com');
 }
 
 {
+    my $id = send_via_mailgate('exchange-mangled.txt');
+
+    my $tick = RT::Ticket->new( RT->SystemUser );
+    $tick->Load( $id );
+    ok ($tick->id, "loaded ticket #$id");
+
+    my $txn = $tick->Transactions->First;
+    my $parts = $txn->Attachments->ItemsArrayRef;
+
+    is (scalar @$parts, 3, 'mixed, text and original');
+    is( $parts->[1]->Content, "This is decrypted plain content\n", 'decrypted content' );
+}
+
+{
     my $id = send_via_mailgate('inline-binary-attachment-with-wrap.txt');
 
     my $tick = RT::Ticket->new( $RT::SystemUser );
@@ -99,3 +114,4 @@ sub send_via_mailgate {
     return $id;
 }
 
+done_testing;
