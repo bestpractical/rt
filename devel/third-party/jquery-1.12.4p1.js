@@ -1,5 +1,5 @@
 /*!
- * jQuery JavaScript Library v1.12.4
+ * jQuery JavaScript Library v1.12.4p1
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -65,7 +65,7 @@ var support = {};
 
 
 var
-	version = "1.12.4",
+	version = "1.12.4p1",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -11003,6 +11003,13 @@ jQuery.noConflict = function( deep ) {
 if ( !noGlobal ) {
 	window.jQuery = window.$ = jQuery;
 }
+
+// Prevent auto-execution of scripts when no explicit dataType was provided (See gh-2432)
+jQuery.ajaxPrefilter( function( s ) {
+    if ( s.crossDomain ) {
+        s.contents.script = false;
+    }
+} );
 
 return jQuery;
 }));
