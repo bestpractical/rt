@@ -387,7 +387,7 @@ EOF
 }
 
 sub test_email {
-    my ( $text, $content, $msg ) = @_;
+    my ( $text, $content, $msg, $check_type ) = @_;
     my ( $status, $id ) = RT::Test->send_via_mailgate($text);
     is( $status >> 8, 0, "The mail gateway exited normally" );
     ok( $id, "Created ticket" );
@@ -400,6 +400,5 @@ sub test_email {
     $txns->Limit( FIELD => 'Type', VALUE => 'Create' );
     my $txn     = $txns->First;
 
-    is( $txn->Content, $content, $msg );
+    is( $txn->Content(Type => $check_type || "text/plain"), $content, $msg );
 }
-
