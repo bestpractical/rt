@@ -80,13 +80,9 @@ sub MailDashboards {
     # look through each user for her subscriptions
     my $Users = RT::Users->new(RT->SystemUser);
     $Users->LimitToPrivileged;
+    $Users->LimitToEnabled;
 
     while (defined(my $user = $Users->Next)) {
-        if ($user->PrincipalObj->Disabled) {
-            $RT::Logger->debug("Skipping over " . $user->Name . " due to having a disabled account.");
-            next;
-        }
-
         my ($hour, $dow, $dom) = HourDowDomIn($args{Time}, $user->Timezone || RT->Config->Get('Timezone'));
         $hour .= ':00';
         $RT::Logger->debug("Checking ".$user->Name."'s subscriptions: hour $hour, dow $dow, dom $dom");
