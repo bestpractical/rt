@@ -698,6 +698,8 @@ sub CheckIfProtected {
     # we check inline PGP block later in another sub
     return () unless $entity->is_multipart;
 
+    $self->CanonicalizeMIMEEntity( $entity );
+
     # RFC3156, multipart/{signed,encrypted}
     my $type = $entity->effective_type;
     return () unless $type =~ /^multipart\/(?:encrypted|signed)$/;
@@ -1913,6 +1915,41 @@ sub _make_gpg_handles {
     my $handles = GnuPG::Handles->new(%handle_map);
     return ($handles, \%handle_map);
 }
+
+# Exchange mangles MIME structure from
+#
+#    multipart/encrypted; protocol="application/pgp-encrypted"
+#        application/pgp-encrypted
+#        application/octet-stream; name="encrypted.acs"
+#
+# to
+#
+#    multipart/mixed
+#         text/plain
+#         application/pgp-encrypted; name="ATT00001"
+#         application/octet-stream; name="encrypted.acs"
+#
+# This method reverts this mangled structure back
+
+sub CanonicalizeMIMEEntity {
+    my $self   = shift;
+    my $entity = shift;
+
+    return unless $entity->effective_type eq 'multipart/mixed';
+    my @parts = $entity->parts;
+    return unless scalar @parts == 3;
+    return unless $parts[0]->effective_type eq 'text/plain';
+    return unless $parts[0]->stringify_body eq '';
+    return unless $parts[1]->effective_type eq 'application/pgp-encrypted';
+    return unless $parts[2]->effective_type eq 'application/octet-stream';
+
+    $entity->head->replace( 'Content-type', 'multipart/encrypted; protocol="application/pgp-encrypted"' );
+    $entity->parts( 1 )->head->delete( 'Content-Disposition' );
+    $entity->parts( 2 )->head->delete( 'Content-Disposition' );
+    $entity->parts( [ $parts[1], $parts[2] ] );
+    return 1;
+}
+
 
 RT::Base->_ImportOverlays();
 
