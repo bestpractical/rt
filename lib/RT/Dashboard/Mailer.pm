@@ -308,7 +308,8 @@ sub SendDashboard {
     if ($args{DryRun}) {
         print << "SUMMARY";
     Dashboard: @{[ $dashboard->Name ]}
-    User:   @{[ $currentuser->Name ]} <$args{Email}>
+    Subscription Owner: @{[ $currentuser->Name ]}
+    Recipient: <$args{Email}>
 SUMMARY
         return;
     }
