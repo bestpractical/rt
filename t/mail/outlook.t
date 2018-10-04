@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 66;
+use RT::Test tests => 78;
 
 RT->Config->Set('CheckMoreMSMailHeaders', 1);
 
@@ -37,6 +37,52 @@ Content-Type: text/html;
 Content-Transfer-Encoding: quoted-printable
 
 <html>this is fake</html>
+
+
+------=_NextPart_000_0004_01CB045C.A5A075D0--
+
+EOF
+
+        my $content = <<EOF;
+here is the content
+
+blahmm
+another line
+EOF
+        test_email( $text, $content,
+            $mailer . ' with multipart/alternative, \n\n are replaced' );
+    }
+
+    diag "Test mail with multipart/alternative";
+    {
+        my $text = <<EOF;
+From: root\@localhost
+X-Mailer: $mailer
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: outlook basic test
+Content-Type: multipart/alternative;
+\tboundary="----=_NextPart_000_0004_01CB045C.A5A075D0"
+
+------=_NextPart_000_0004_01CB045C.A5A075D0
+Content-Type: text/html;
+\tcharset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html>this is fake</html>
+
+
+------=_NextPart_000_0004_01CB045C.A5A075D0
+Content-Type: text/plain;
+\tcharset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+here is the content
+
+
+
+blahmm
+
+another line
 
 
 ------=_NextPart_000_0004_01CB045C.A5A075D0--
