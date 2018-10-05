@@ -93,6 +93,13 @@ $m->content_contains('customer2 added to dashboard subscription recipients');
 $m->follow_link_ok({ id => 'page-subscription' });
 $m->content_contains('customer2@example.com');
 
+# Disable user
+$search_user->SetDisabled(1);
+
+# Confirm they are not shown
+$m->follow_link_ok({ id => 'page-subscription' });
+$m->content_lacks('customer2@example.com');
+
 # Create new group to search for
 my $search_group = RT::Group->new(RT->SystemUser);
 ($ret, $msg) = $search_group->CreateUserDefinedGroup(Name => 'customers test group');
@@ -114,6 +121,15 @@ $m->content_contains('customers test group added to dashboard subscription recip
 # Make sure customers group is listed as a recipient
 $m->follow_link_ok({ id => 'page-subscription' });
 $m->content_contains('customers test group');
+
+# Disable user
+$search_group->SetDisabled(1);
+
+# Confirm they are not shown
+$m->follow_link_ok({ id => 'page-subscription' });
+$m->content_lacks('customers test group');
+$search_group->SetDisabled(0);
+$m->follow_link_ok({ id => 'page-subscription' });
 
 # Unsubscribe group
 $m->form_name('SubscribeDashboard');

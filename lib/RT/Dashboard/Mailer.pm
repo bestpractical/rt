@@ -80,13 +80,9 @@ sub MailDashboards {
     # look through each user for her subscriptions
     my $Users = RT::Users->new(RT->SystemUser);
     $Users->LimitToPrivileged;
+    $Users->LimitToEnabled;
 
     while (defined(my $user = $Users->Next)) {
-        if ($user->PrincipalObj->Disabled) {
-            $RT::Logger->debug("Skipping over " . $user->Name . " due to having a disabled account.");
-            next;
-        }
-
         my ($hour, $dow, $dom) = HourDowDomIn($args{Time}, $user->Timezone || RT->Config->Get('Timezone'));
         $hour .= ':00';
         $RT::Logger->debug("Checking ".$user->Name."'s subscriptions: hour $hour, dow $dow, dom $dom");
@@ -117,7 +113,7 @@ sub MailDashboards {
             for my $user_id (@{ $recipients_users || [] }) {
                 my $user = RT::User->new(RT->SystemUser);
                 $user->Load($user_id);
-                next unless $user->id;
+                next unless $user->id and !$user->Disabled;
 
                 push @emails, $user->EmailAddress;
                 $recipient_language{$user->EmailAddress} = $user->Lang;
@@ -308,7 +304,8 @@ sub SendDashboard {
     if ($args{DryRun}) {
         print << "SUMMARY";
     Dashboard: @{[ $dashboard->Name ]}
-    User:   @{[ $currentuser->Name ]} <$args{Email}>
+    Subscription Owner: @{[ $currentuser->Name ]}
+    Recipient: <$args{Email}>
 SUMMARY
         return;
     }
