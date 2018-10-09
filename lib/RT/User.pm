@@ -763,7 +763,7 @@ sub CanonicalizeUserInfoFromExternalAuth {
         foreach my $rt_attr (@{$config->{'attr_match_list'}}) {
             # Jump to the next attr in $args if this one isn't in the attr_match_list
             $RT::Logger->debug( "Attempting to use this canonicalization key:",$rt_attr);
-            unless(defined($args->{$rt_attr})) {
+            unless( ($args->{$rt_attr} // '') =~ /\S/ ) {
                 $RT::Logger->debug("This attribute (",
                                     $rt_attr,
                                     ") is null or incorrectly defined in the attr_map for this service (",
