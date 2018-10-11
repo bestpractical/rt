@@ -55,6 +55,7 @@ use warnings;
 use base qw(RT::Action::SendEmail);
 
 use Email::Address;
+use Regexp::Common;
 
 =head2 Prepare
 
@@ -82,66 +83,44 @@ sub SetRecipients {
     my $ticket = $self->TicketObj;
 
     my $arg = $self->Argument;
-    $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/;
 
     my ( @To, @PseudoTo, @Cc, @Bcc );
 
+    my %args = map { $_ => 1 } $self->SplitArgument;
 
-    if ( $arg =~ /\bRequestor\b/ ) {
+    if ( $args{All} ) {
+        $args{$_} ||= 1 for qw/Owner Requestor AdminCc Cc/;
+    }
+
+    if ( $args{Requestor} ) {
         push @To, $ticket->Requestors->MemberEmailAddresses;
     }
 
     # custom role syntax:   gives:
-    #   name                  (undef,    role name,  Cc)
-    #   RT::CustomRole-#      (role id,  undef,      Cc)
-    #   name/To               (undef,    role name,  To)
-    #   RT::CustomRole-#/To   (role id,  undef,      To)
-    #   name/Cc               (undef,    role name,  Cc)
-    #   RT::CustomRole-#/Cc   (role id,  undef,      Cc)
-    #   name/Bcc              (undef,    role name,  Bcc)
-    #   RT::CustomRole-#/Bcc  (role id,  undef,      Bcc)
+    #   name                  (role name,  Cc)
+    #   RT::CustomRole-#      (role with id, Cc)
+    #   name/To               (role name,  To)
+    #   RT::CustomRole-#/To   (role with id, To)
+    #   name/Cc               (role name,  Cc)
+    #   RT::CustomRole-#/Cc   (role with id, Cc)
+    #   name/Bcc              (role name,  Bcc)
+    #   RT::CustomRole-#/Bcc  (role with id, Bcc)
 
     # this has to happen early because adding To addresses affects how Cc
     # is handled
 
-    my $custom_role_re = qr!
-                           ( # $1 match everything for error reporting
+    for my $item ( sort keys %args ) {
+        next if $item =~ /^(?:All|Owner|Requestor|AdminCc|Cc|OtherRecipients|AlwaysNotifyActor|NeverNotifyActor)$/;
+        my ( $name, $type ) = ( $item =~ m{^(.+?)(?:/(To|Cc|Bcc))?$} );
+        next unless $name;
 
-                           # word boundary
-                           \b
-
-                           # then RT::CustomRole-# or a role name
-                           (?:
-                               RT::CustomRole-(\d+)    # $2 role id
-                             | ( \w+ )                 # $3 role name
-                           )
-
-                           # then, optionally, a type after a slash
-                           (?:
-                               /
-                               (To | Cc | Bcc)         # $4 type
-                           )?
-
-                           # finally another word boundary, either from
-                           # the end of role identifier or from the end of type
-                           \b
-                           )
-                         !x;
-    while ($arg =~ m/$custom_role_re/g) {
-        my ($argument, $role_id, $name, $type) = ($1, $2, $3, $4);
         my $role;
-
-        if ($name) {
-            # skip anything that is a core Notify argument
-            next if $name eq 'All'
-                 || $name eq 'Owner'
-                 || $name eq 'Requestor'
-                 || $name eq 'AdminCc'
-                 || $name eq 'Cc'
-                 || $name eq 'OtherRecipients'
-                 || $name eq 'AlwaysNotifyActor'
-                 || $name eq 'NeverNotifyActor';
-
+        if ( $name =~ /^RT::CustomRole-(\d+)$/ ) {
+            my $id = $1;
+            $role = RT::CustomRole->new( $self->CurrentUser );
+            $role->Load( $id );
+        }
+        else {
             my $roles = RT::CustomRoles->new( $self->CurrentUser );
             $roles->Limit( FIELD => 'Name', VALUE => $name, CASESENSITIVE => 0 );
 
@@ -152,13 +131,9 @@ sub SetRecipients {
                 $role = undef if $roles->Next;
             }
         }
-        else {
-            $role = RT::CustomRole->new( $self->CurrentUser );
-            $role->Load( $role_id );
-        }
 
         unless ($role && $role->id) {
-            $RT::Logger->debug("Unable to load custom role from scrip action argument '$argument'");
+            $RT::Logger->debug("Unable to load custom role from scrip action argument '$item'");
             next;
         }
 
@@ -178,7 +153,7 @@ sub SetRecipients {
         }
     }
 
-    if ( $arg =~ /\bCc\b/ ) {
+    if ( $args{Cc} ) {
 
         #If we have a To, make the Ccs, Ccs, otherwise, promote them to To
         if (@To) {
@@ -191,7 +166,7 @@ sub SetRecipients {
         }
     }
 
-    if (   $arg =~ /\bOwner\b/
+    if (   $args{Owner}
         && $ticket->OwnerObj->id != RT->Nobody->id
         && $ticket->OwnerObj->EmailAddress
         && not $ticket->OwnerObj->Disabled
@@ -207,7 +182,7 @@ sub SetRecipients {
 
     }
 
-    if ( $arg =~ /\bAdminCc\b/ ) {
+    if ( $args{AdminCc} ) {
         push ( @Bcc, $ticket->AdminCc->MemberEmailAddresses  );
         push ( @Bcc, $ticket->QueueObj->AdminCc->MemberEmailAddresses  );
     }
@@ -224,7 +199,7 @@ sub SetRecipients {
     @{ $self->{'Bcc'} }      = @Bcc;
     @{ $self->{'PseudoTo'} } = @PseudoTo;
 
-    if ( $arg =~ /\bOtherRecipients\b/ ) {
+    if ( $args{OtherRecipients} ) {
         if ( my $attachment = $self->TransactionObj->Attachments->First ) {
             push @{ $self->{'NoSquelch'}{'Cc'} ||= [] }, map $_->address,
                 Email::Address->parse( $attachment->GetHeader('RT-Send-Cc') );
@@ -253,16 +228,51 @@ sub RemoveInappropriateRecipients {
     my $TransactionCurrentUser = RT::CurrentUser->new;
     $TransactionCurrentUser->LoadByName($creatorObj->Name);
 
+    my %args = map { $_ => 1 } $self->SplitArgument;
+
     $self->RecipientFilter(
         Callback => sub {
             return unless lc $_[0] eq lc $creator;
             return "not sending to $creator, creator of the transaction, due to NotifyActor setting";
         },
-    ) if $self->Argument =~ /\bNeverNotifyActor\b/ ||
+    ) if $args{NeverNotifyActor} ||
          (!RT->Config->Get('NotifyActor',$TransactionCurrentUser)
-         && $self->Argument !~ /\bAlwaysNotifyActor\b/);
+         && !$args{AlwaysNotifyActor});
 
     $self->SUPER::RemoveInappropriateRecipients();
+}
+
+
+=head2 SplitArgument
+
+Split comma separated argument. Like CSV, it also supports quoted
+values, so values like "'foo, bar'" is treated like a single value.
+
+Return the list of the split values.
+
+=cut
+
+sub SplitArgument {
+    my $self = shift;
+    my $arg  = shift // $self->Argument;
+
+    return unless defined $arg && length $arg;
+
+    $arg =~ s!^\s+!!;
+    $arg =~ s!\s+$!!;
+
+    my @args;
+    while ( $arg =~ s/^($RE{quoted}|[^,]+)(?:,\s*|$)//g ) {
+        my $item = $1;
+        if ( $item =~ /^(['"])(.*)\1/ ) {
+            next unless length $2;
+            push @args, $2;
+        }
+        else {
+            push @args, $item;
+        }
+    }
+    return @args;
 }
 
 RT::Base->_ImportOverlays();
