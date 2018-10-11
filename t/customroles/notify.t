@@ -8,6 +8,8 @@ my $specs = RT::Test->load_or_create_queue( Name => 'Specs' );
 
 my $engineer = RT::CustomRole->new(RT->SystemUser);
 my $sales = RT::CustomRole->new(RT->SystemUser);
+my $designer = RT::CustomRole->new(RT->SystemUser);
+my $pre_sales = RT::CustomRole->new(RT->SystemUser);
 my $unapplied = RT::CustomRole->new(RT->SystemUser);
 
 my $linus = RT::Test->load_or_create_user( EmailAddress => 'linus@example.com' );
@@ -32,6 +34,18 @@ diag 'setup' if $ENV{'TEST_VERBOSE'};
     );
     ok($ok, "created Sales role: $msg");
 
+    ($ok, $msg) = $designer->Create(
+        Name      => 'UX designer',
+        MaxValues => 1,
+    );
+    ok($ok, "created UX designer role: $msg");
+
+    ($ok, $msg) = $pre_sales->Create(
+        Name      => 'Sales, Pre',
+        MaxValues => 0,
+    );
+    ok($ok, "created Sales, Pre role: $msg");
+
     ($ok, $msg) = $unapplied->Create(
         Name      => 'Unapplied',
         MaxValues => 0,
@@ -43,6 +57,12 @@ diag 'setup' if $ENV{'TEST_VERBOSE'};
 
     ($ok, $msg) = $engineer->AddToObject($specs->id);
     ok($ok, "added Engineer to Specs: $msg");
+
+    ($ok, $msg) = $designer->AddToObject($specs->id);
+    ok($ok, "added UX designer to Specs: $msg");
+
+    ($ok, $msg) = $pre_sales->AddToObject($specs->id);
+    ok($ok, "added Sales, Pre to Specs: $msg");
 
 }
 
@@ -138,7 +158,7 @@ diag 'create scrips' if $ENV{'TEST_VERBOSE'};
     ($val, $msg) = $a2->Create(
         Name       => 'Notify Sales as To',
         ExecModule => 'Notify',
-        Argument   => 'RT::CustomRole-2/To',
+        Argument   => 'RT::CustomRole-2/To, "Sales, Pre/Bcc"',
     );
     ok($val, $msg);
 
@@ -165,6 +185,23 @@ diag 'create scrips' if $ENV{'TEST_VERBOSE'};
         ScripCondition => 'On Create',
         ScripAction    => 'Notify Unapplied as Bcc',
         Template       => 'Admin Correspondence',
+    );
+    ok($val, $msg);
+
+    my $a4 = RT::ScripAction->new(RT->SystemUser);
+    ($val, $msg) = $a4->Create(
+        Name       => 'Notify UX Designer as Cc',
+        ExecModule => 'Notify',
+        Argument   => 'UX Designer',
+    );
+    ok($val, $msg);
+
+    my $s4 = RT::Scrip->new(RT->SystemUser);
+    ($val, $msg) = $s4->Create(
+        Queue          => 'Specs',
+        ScripCondition => 'On Create',
+        ScripAction    => 'Notify UX Designer as Cc',
+        Template       => 'Correspondence',
     );
     ok($val, $msg);
 }
@@ -200,9 +237,11 @@ diag 'create tickets in Specs with scrips' if $ENV{'TEST_VERBOSE'};
              Subject              => 'oops',
              Owner                => $ricky,
              $engineer->GroupType => $linus,
+             $designer->GroupType => $moss,
          );
     } { To => $ricky->EmailAddress, Cc => '', Bcc => '' },
-      { To => '', Cc => $linus->EmailAddress, Bcc => '' };
+      { To => '', Cc => $linus->EmailAddress, Bcc => '' },
+      { To => '', Cc => $moss->EmailAddress, Bcc => '' };
 
     mail_ok {
          RT::Test->create_ticket(
@@ -211,10 +250,11 @@ diag 'create tickets in Specs with scrips' if $ENV{'TEST_VERBOSE'};
              Owner                => $ricky,
              $engineer->GroupType => $linus,
              $sales->GroupType    => [$blake->EmailAddress],
+             $pre_sales->GroupType => [$williamson->EmailAddress],
          );
     } { To => $ricky->EmailAddress, Cc => '', Bcc => '' },
       { To => '', Cc => $linus->EmailAddress, Bcc => '' },
-      { To => $blake->EmailAddress, Cc => '', Bcc => '' };
+      { To => $blake->EmailAddress, Cc => '', Bcc => $williamson->EmailAddress };
 
     mail_ok {
          RT::Test->create_ticket(
