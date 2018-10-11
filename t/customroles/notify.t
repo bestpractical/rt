@@ -160,7 +160,7 @@ diag 'create scrips' if $ENV{'TEST_VERBOSE'};
     ok($val, $msg);
 
     my $s3 = RT::Scrip->new(RT->SystemUser);
-    ($val, $msg) = $s2->Create(
+    ($val, $msg) = $s3->Create(
         Queue          => 'Specs',
         ScripCondition => 'On Create',
         ScripAction    => 'Notify Unapplied as Bcc',
