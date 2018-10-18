@@ -640,7 +640,7 @@ sub _DateLimit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->SetToMidnight( Timezone => 'server' );
+        $date->SetToMidnight( Timezone => 'user' );
         my $daystart = $date->ISO;
         $date->AddDay;
         my $dayend = $date->ISO;
@@ -787,7 +787,7 @@ sub _TransDateLimit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->SetToMidnight( Timezone => 'server' );
+        $date->SetToMidnight( Timezone => 'user' );
         my $daystart = $date->ISO;
         $date->AddDay;
         my $dayend = $date->ISO;
