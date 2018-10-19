@@ -5,7 +5,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => undef;
+use RT::Test tests => undef;
 
 # setup the queue
 
@@ -327,5 +327,23 @@ $tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL('Lifecycle="approvals"');
 is($tix->Count,0,"We found 0 tickets in a queue with the approvals lifecycle");
 
+# tests for Created date
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Created = "2018-10-05"');
+is($tix->Count, 0, "We found 0 tickets created in 2018-10-05");
+
+ok($t1->__Set(Field => 'Created', Value => '2018-10-05 06:10:00'), 'Updated t1 Created to 2018-10-05 06:10:00');
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL('Created = "2018-10-05"');
+is($tix->Count, 1, "We found 1 ticket created in 2018-10-05 with system user");
+
+my $user = RT::CurrentUser->new(RT->SystemUser);
+ok($user->Load('root'),                          'Loaded root');
+ok($user->UserObj->SetTimezone('Asia/Shanghai'), 'Updated root timezone to +08:00');
+
+$tix = RT::Tickets->new($user);
+$tix->FromSQL('Created = "2018-10-05"');
+is($tix->Count, 1, "We found 1 ticket created in 2018-10-05 with user in +08:00 timezone");
 
 done_testing;
