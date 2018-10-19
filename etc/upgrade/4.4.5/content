@@ -1,0 +1,19 @@
+use warnings;
+use strict;
+
+our @ScripConditions = (
+    {
+        Name                 => 'On Create Via Email',
+        Description          => 'When a ticket is created via Email',
+        ApplicableTransTypes => 'Create',
+        Argument             => 'Email',
+        ExecModule           => 'ViaInterface',
+    },
+    {
+        Name                 => 'On Create Via Web',
+        Description          => 'When a ticket is created via Web',
+        ApplicableTransTypes => 'Create',
+        Argument             => 'Web,Mobile',
+        ExecModule           => 'ViaInterface',
+    },
+);

@@ -133,6 +133,19 @@
       ApplicableTransTypes => 'Create',
       ExecModule           => 'AnyTransaction', },
 
+    {
+        Name                 => 'On Create Via Email',
+        Description          => 'When a ticket is created via Email',
+        ApplicableTransTypes => 'Create',
+        Argument             => 'Email',
+        ExecModule           => 'ViaInterface', },
+    {
+        Name                 => 'On Create Via Web',
+        Description          => 'When a ticket is created via Web',
+        ApplicableTransTypes => 'Create',
+        Argument             => 'Web,Mobile',
+        ExecModule           => 'ViaInterface', },
+
     { Name                 => 'On Transaction',                           # loc
       Description          => 'When anything happens',                    # loc
       ApplicableTransTypes => 'Any',
