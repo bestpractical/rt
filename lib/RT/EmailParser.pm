@@ -639,8 +639,6 @@ Similarly, if the message is HTML-only, the same problem is present there:
 between each paragraph, there will be an empty one in between with only a line
 break. This method removes those line break-only paragraphs too.
 
-return 1 if it does find the problem in the entity and get it fixed.
-
 =cut
 
 
@@ -683,8 +681,6 @@ sub RescueOutlook {
         $text_part = $mime;    # Assuming single part, already decoded.
     }
 
-    my $ret;
-
     if ($text_part) {
 
         # use the unencoded string
@@ -701,7 +697,6 @@ sub RescueOutlook {
                 $io->close;
                 $RT::Logger->debug(
                     "Removed extra newlines from MS Outlook message.");
-                $ret = 1;
             }
             else {
                 $RT::Logger->error("Can't write to body to fix newlines");
@@ -722,7 +717,6 @@ sub RescueOutlook {
                 $io->close;
                 $RT::Logger->debug(
                     "Removed extra newlines from MS Outlook message.");
-                $ret = 1;
             }
             else {
                 $RT::Logger->error("Can't write to body to fix newlines");
@@ -730,7 +724,7 @@ sub RescueOutlook {
         }
     }
 
-    return $ret;
+    return;
 }
 
 =head1 LooksLikeMSEmail
