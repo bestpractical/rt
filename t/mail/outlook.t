@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 90;
+use RT::Test tests => undef;
 
 RT->Config->Set('CheckMoreMSMailHeaders', 1);
 
@@ -317,7 +317,7 @@ diag "Sample multipart email with Exchange headers";
 {
         my $text = <<EOF;
 X-MimeOLE: Produced By Microsoft Exchange V6.5
-Received: by example.com 
+Received: by example.com
         id <01CD63FC.33F4C15C\@example.com>; Tue, 17 Jul 2012 10:11:51 +0100
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
@@ -326,8 +326,8 @@ Content-class: urn:content-classes:message
 Subject: outlook basic test
 Date: Tue, 17 Jul 2012 10:11:50 +0100
 Message-ID: <AA6CEAFB02FF244999046B2A6B6B9D6F05FF9D12\@example.com>
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
 Thread-Topic: Testing Outlook HTML
 Thread-Index: Ac1j/DNs7ly963bnRt63SJw9DkGwyw==
 From: root\@localhost
@@ -452,3 +452,5 @@ sub test_email {
 
     is( $txn->Content(Type => $check_type || "text/plain"), $content, $msg );
 }
+
+done_testing;
