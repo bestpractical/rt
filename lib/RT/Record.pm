@@ -295,6 +295,31 @@ sub Create {
         }
     }
 
+    if ( $RT::Handle->{_unsafe_4bytes_utf8} ) {
+
+        # This won't be necessary when DB schema is changed to utf8mb4.
+        for my $key ( keys %attribs ) {
+            if ( $attribs{$key} && $self->_Accessible( $key, 'type' ) =~ /text|varchar/ ) {
+                my $value;
+                if ( Encode::is_utf8( $attribs{$key} ) ) {
+                    $value = Encode::encode( 'UTF-8', $attribs{$key} );
+                }
+                else {
+                    $value = $attribs{$key};
+                }
+
+                if ( $value =~ s!(?:[\xF0-\xF7]...)+! !g ) {
+                    RT->Logger->debug("Removed 4 bytes UTF-8 characters from $attribs{$key}");
+                    if ( Encode::is_utf8( $attribs{$key} ) ) {
+                        $attribs{$key} = Encode::decode( 'UTF-8', $value );
+                    }
+                    else {
+                        $attribs{$key} = $value;
+                    }
+                }
+            }
+        }
+    }
 
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) = gmtime();

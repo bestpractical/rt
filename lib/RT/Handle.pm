@@ -130,6 +130,13 @@ sub Connect {
         my $version = $self->DatabaseVersion;
         ($version) = $version =~ /^(\d+\.\d+)/;
         $self->dbh->do("SET NAMES 'utf8'") if $version >= 4.1;
+
+        my $sth
+          = $self->dbh->prepare(
+            "SELECT VARIABLE_VALUE FROM performance_schema.session_variables WHERE VARIABLE_NAME = 'character_set_client'"
+          );
+        $sth->execute();
+        $self->{_unsafe_4bytes_utf8} = 1 unless $sth->fetchrow_array() eq 'utf8mb4';
     }
     elsif ( $db_type eq 'Pg' ) {
         my $version = $self->DatabaseVersion;
