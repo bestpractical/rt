@@ -237,7 +237,7 @@ sub InitLogging {
     use Log::Dispatch 1.6;
 
     my %level_to_num = (
-        map( { $_ => } 0..7 ),
+        map( { $_ => $_ } 0..7 ),
         debug     => 0,
         info      => 1,
         notice    => 2,
