@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 43;
+use RT::Test tests => undef;
 
 my $ru_test = "\x{442}\x{435}\x{441}\x{442}";
 my $ru_support = "\x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}";
@@ -63,26 +63,4 @@ foreach my $test_str ( $ru_test, $l1_test ) {
     }
 }
 
-# create a ticket with a subject and content
-foreach my $test_str ( $ru_test, $l1_test ) {
-    foreach my $support_str ( $ru_support, $l1_support ) {
-        ok $m->goto_create_ticket( $q ), "go to create ticket";
-        $m->form_name('TicketCreate');
-        $m->field( Subject => $test_str );
-        $m->field( Content => $support_str );
-        $m->submit;
-
-        $m->content_like( 
-            qr{<td\s+class="message-header-value\s*"[^>]*>\s*\Q$test_str\E\s*</td>}i,
-            'header on the page'
-        );
-        $m->content_contains(
-            $support_str,
-            'content on the page'
-        );
-
-        my $ticket = RT::Test->last_ticket;
-        is $ticket->Subject, $test_str, "correct subject";
-    }
-}
-
+done_testing;
