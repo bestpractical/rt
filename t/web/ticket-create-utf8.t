@@ -63,4 +63,10 @@ foreach my $test_str ( $ru_test, $l1_test ) {
     }
 }
 
+use utf8;
+ok $m->goto_create_ticket($q), "go to create ticket";
+$m->submit_form_ok( { form_name => 'TicketCreate', fields => { Subject => 'test😄emoji' } } );
+my $ticket = RT::Test->last_ticket;
+is $ticket->Subject, $RT::Handle->{_unsafe_4bytes_utf8} ? 'test emoji' : 'test😄emoji', "correct subject";
+
 done_testing;
