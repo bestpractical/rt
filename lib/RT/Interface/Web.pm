@@ -4389,8 +4389,8 @@ sub SetObjectSessionCache {
     my $ShowAll = $args{'ShowAll'};
     my $CacheNeedsUpdate = $args{'CacheNeedsUpdate'};
 
-    my $cache_key = join "---", "SelectObject", $ObjectType,
-        $session{'CurrentUser'}->Id, $CheckRight || "", $ShowAll;
+    my $cache_key = GetObjectSessionCacheKey( ObjectType => $ObjectType,
+        CheckRight => $CheckRight, ShowAll => $ShowAll );
 
     if ( defined $session{$cache_key} && !$session{$cache_key}{id} ) {
         delete $session{$cache_key};
@@ -4437,6 +4437,23 @@ sub SetObjectSessionCache {
         }
         $session{$cache_key}{lastupdated} = time();
     }
+
+    return $cache_key;
+}
+
+sub GetObjectSessionCacheKey {
+    my %args = (
+        CurrentUser => undef,
+        ObjectType => '',
+        CheckRight => '',
+        ShowAll => 1,
+        @_ );
+
+    my $cache_key = join "---", "SelectObject",
+        $args{'ObjectType'},
+        $session{'CurrentUser'}->Id,
+        $args{'CheckRight'},
+        $args{'ShowAll'};
 
     return $cache_key;
 }
