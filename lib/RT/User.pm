@@ -2081,9 +2081,14 @@ Returns a list of two-element (ticket id, timestamp) array references ordered by
 =cut
 
 sub RecentlyViewedTickets {
-    my $self = shift;
-    my $content = $self->FirstAttribute('RecentlyViewedTickets');
-    return $content ? @{$content->Content} : ();
+    my $self    = shift;
+
+    my $attribute = $self->FirstAttribute('RecentlyViewedTickets');
+    my $content;
+
+    $content = $attribute->Content if $attribute;
+
+    return $content ? @{$content} : ();
 }
 
 =head2 AddRecentlyViewedTicket TICKET
@@ -2102,8 +2107,12 @@ sub AddRecentlyViewedTicket {
     return unless $ticket->Id;
 
     my @recentTickets;
-    my $content = $self->FirstAttribute('RecentlyViewedTickets');
-    $content = $content ? $content->Content : [];
+    my $attribute = $self->FirstAttribute('RecentlyViewedTickets');
+    my $content;
+
+    $content = $attribute->Content if $attribute;
+
+    $content = $content ? $content : ();
     if (defined $content) {
         @recentTickets = @$content;
     }
