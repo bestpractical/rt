@@ -7,6 +7,75 @@ RT->Config->Set('CheckMoreMSMailHeaders', 1);
 
 # 12.0 is outlook 2007, 14.0 is 2010
 for my $mailer ( 'Microsoft Office Outlook 12.0', 'Microsoft Outlook 14.0' ) {
+    diag "Test mail with HTML content, office-style";
+    {
+        my $text = <<EOF;
+From: root\@localhost
+X-Mailer: $mailer
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: outlook basic test
+Content-Type: multipart/alternative;
+\tboundary="----=_NextPart_000_0004_01CB045C.A5A075D0"
+
+------=_NextPart_000_0004_01CB045C.A5A075D0
+content-type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns:m="http://schemas.microsoft.com/office/2004/12/omml" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta name="Generator" content="Microsoft Word 15 (filtered medium)">
+</head>
+<body lang="EN-US" link="blue" vlink="purple">
+<div><font color="#ff0000" size="2"><b>[External Email]</b></font></div>
+<div><br>
+</div>
+<div><br>
+</div>
+<div>
+<div class="WordSection1">
+<p class="MsoNormal"><span style="font-size:10.0pt;font-family:DengXian;color:#002060">Hi,<o:p></o:p></span></p>
+<p class="MsoNormal"><span style="font-size:10.0pt;font-family:DengXian;color:#002060"><o:p>&nbsp;</o:p></span></p>
+<p class="MsoNormal"><span style="font-size:10.0pt;font-family:DengXian;color:#002060">A normal line<o:p></o:p></span></p>
+<p class="MsoNormal"><span style="font-size:10.0pt;font-family:DengXian;color:#002060"><o:p>&nbsp;</o:p></span></p>
+<p class="MsoNormal"><span style="font-size:10.0pt;font-family:DengXian;color:#002060"><o:p>&nbsp;</o:p></span></p>
+<p class="MsoNormal"><span lang="EN-GB" style="font-size:8.0pt;font-family:&quot;Calibri Light&quot;,sans-serif;color:#002060">Regards,<o:p></o:p></span></p>
+<p class="MsoNormal"><span lang="EN-GB" style="font-size:8.0pt;font-family:&quot;Calibri Light&quot;,sans-serif;color:#002060"><o:p>&nbsp;</o:p></span></p>
+<p class="MsoNormal"><span lang="EN-GB" style="font-size:8.0pt;font-family:&quot;Calibri Light&quot;,sans-serif;color:#002060"><o:p>&nbsp;</o:p></span></p>
+</div>
+</div>
+</body>
+</html>
+------=_NextPart_000_0004_01CB045C.A5A075D0--
+
+EOF
+
+        my $html_content = <<EOF;
+
+
+
+
+
+<div><font color="#ff0000" size="2"><b>[External Email]</b></font></div>
+
+
+<div>
+<div class="WordSection1">
+<p class="MsoNormal"><span style="font-size:10.0pt;font-family:DengXian;color:#002060">Hi,<o:p></o:p></span></p>
+
+<p class="MsoNormal"><span style="font-size:10.0pt;font-family:DengXian;color:#002060">A normal line<o:p></o:p></span></p>
+
+
+<p class="MsoNormal"><span lang="EN-GB" style="font-size:8.0pt;font-family:&quot;Calibri Light&quot;,sans-serif;color:#002060">Regards,<o:p></o:p></span></p>
+
+
+</div>
+</div>
+
+EOF
+        test_email( $text, $html_content,
+                    $mailer . ' with multipart/alternative, line-break-only paragraphs removed from the HTML part', "text/html" );
+    }
+
     diag "Test mail with multipart/alternative (in-the-wild case)";
     {
         my $text = <<EOF;
