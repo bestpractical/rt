@@ -709,13 +709,11 @@ sub RescueOutlook {
         # use the unencoded string
         my $html_content = $html_part->bodyhandle->as_string;
 
-        my $changed;
-
-        $changed = $html_content =~ s{<p(\s+style="[^"]*")?>(<br>)?\n?</p>}{}mg;
-        $changed |= $html_content =~ s{<div><br>\n?</div>}{}mg;
-        $changed |= $html_content =~ s{<p(\s+[^>]+)?><span(\s+[^>]+)?><o:p>&nbsp;</o:p></span></p>}{}mg;
-
-        if ( $changed ) {
+        if ( $html_content =~ s{
+             (<p(\s+style="[^"]*")?>(<br>)?\n?</p>)|
+             (<div><br>\n?</div>)|
+             (<p(\s+[^>]+)?><span(\s+[^>]+)?><o:p>&nbsp;</o:p></span></p>)
+             } {}xmg ) {
             # only write only if we did change the content
             if ( my $io = $html_part->open("w") ) {
                 $io->print($html_content);
