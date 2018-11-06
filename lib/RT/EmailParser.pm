@@ -709,8 +709,7 @@ sub RescueOutlook {
         # use the unencoded string
         my $html_content = $html_part->bodyhandle->as_string;
 
-        if ( $html_content =~ s{<p(\s+style="[^"]*")?><br>\n?</p>}{}mg ) {
-
+        if ( $html_content =~ s{<p(\s+style="[^"]*")?>(<br>)?\n?</p>}{}mg ) {
             # only write only if we did change the content
             if ( my $io = $html_part->open("w") ) {
                 $io->print($html_content);

@@ -7,6 +7,155 @@ RT->Config->Set('CheckMoreMSMailHeaders', 1);
 
 # 12.0 is outlook 2007, 14.0 is 2010
 for my $mailer ( 'Microsoft Office Outlook 12.0', 'Microsoft Outlook 14.0' ) {
+    diag "Test mail with multipart/alternative (in-the-wild case)";
+    {
+        my $text = <<EOF;
+From: root\@localhost
+X-Mailer: $mailer
+To: rt\@@{[RT->Config->Get('rtname')]}
+Subject: outlook basic test
+Content-Type: multipart/alternative;
+\tboundary="----=_NextPart_000_0004_01CB045C.A5A075D0"
+
+------=_NextPart_000_0004_01CB045C.A5A075D0
+content-type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+
+What's the best way to add a new line in the below callback, I tried adding \\n but it didn't work.
+
+
+
+
+package RT::Transaction;
+use strict;
+use warnings;
+no warnings 'redefine';
+
+sub QuoteHeader {
+    my \$self = shift;
+    if (\$self->Object->isa('RT::Ticket')) {
+       return \$self->loc("On [_1], [_2] wrote:\nTo: [_3]\nCc: [_4]", \$self->CreatedAsString, \$self->Object->QueueObj->CorrespondAddress,\$self->TicketObj->RequestorAddresses,\$self->TicketObj->CcAddresses);
+    }
+    return \$self->loc("On [_1], [_2] wrote:\nTo: [_3]\nCc: [_4]", \$self->CreatedAsString, \$self->CreatorObj->Name,\$self->TicketObj->RequestorAddresses,\$self->TicketObj->CcAddresses);
+}
+
+1;
+
+------=_NextPart_000_0004_01CB045C.A5A075D0
+content-type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css" style="display:none;"><!-- P {margin-top:0;margin-bottom:0;} --></style>
+</head>
+<body dir="ltr">
+<div id="divtagdefaultwrapper" style="font-size:12pt;color:#000000;font-family:Calibri,Helvetica,sans-serif;" dir="ltr">
+<p style="margin-top:0;margin-bottom:0">Hi,</p>
+<p style="margin-top:0;margin-bottom:0"><br>
+</p>
+<p style="margin-top:0;margin-bottom:0">What's the best way to add a new line in the below callback, I tried adding
+<span style="background-color: rgb(255, 255, 0);">\\n</span> but it didn't work.</p>
+<p style="margin-top:0;margin-bottom:0"><br>
+</p>
+<p style="margin-top:0;margin-bottom:0"><br>
+</p>
+<p style="margin-top:0;margin-bottom:0"><br>
+</p>
+<p style="margin-top:0;margin-bottom:0"></p>
+<div><span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">package RT::Transaction;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">use strict;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">use warnings;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">no warnings 'redefine';</span><br>
+<br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">sub QuoteHeader {</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp; my \$self = shift;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp; if (\$self-&gt;Object-&gt;isa('RT::Ticket')) {</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return \$self-&gt;loc(&quot;On [_1], [_2] wrote:<span style="background-color: rgb(255, 255, 0);">\n</span>To: [_3]<span style="background-color: rgb(255, 255, 0);">\n</span>Cc:
+ [_4]&quot;, \$self-&gt;CreatedAsString, \$self-&gt;Object-&gt;QueueObj-&gt;CorrespondAddress,\$self-&gt;TicketObj-&gt;RequestorAddresses,\$self-&gt;TicketObj-&gt;CcAddresses);</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp; }&nbsp; &nbsp;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp; return \$self-&gt;loc(&quot;On [_1], [_2] wrote:<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);"><span style="background-color: rgb(255, 255, 0);">\n</span></span>To:
+ [_3]<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);"><span style="background-color: rgb(255, 255, 0);">\n</span></span>Cc: [_4]&quot;, \$self-&gt;CreatedAsString, \$self-&gt;CreatorObj-&gt;Name,\$self-&gt;TicketObj-&gt;RequestorAddresses,\$self-&gt;TicketObj-&gt;CcAddresses);</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">}</span><br>
+<br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">1;</span></div>
+<br>
+<p></p>
+</div></body></html>
+
+------=_NextPart_000_0004_01CB045C.A5A075D0--
+
+EOF
+
+        my $text_content = <<EOF;
+Hi,
+
+What's the best way to add a new line in the below callback, I tried adding \\n but it didn't work.
+
+
+package RT::Transaction;
+use strict;
+use warnings;
+no warnings 'redefine';
+sub QuoteHeader {
+    my \$self = shift;
+    if (\$self->Object->isa('RT::Ticket')) {
+       return \$self->loc("On [_1], [_2] wrote:\nTo: [_3]\nCc: [_4]", \$self->CreatedAsString, \$self->Object->QueueObj->CorrespondAddress,\$self->TicketObj->RequestorAddresses,\$self->TicketObj->CcAddresses);
+    }
+    return \$self->loc("On [_1], [_2] wrote:\nTo: [_3]\nCc: [_4]", \$self->CreatedAsString, \$self->CreatorObj->Name,\$self->TicketObj->RequestorAddresses,\$self->TicketObj->CcAddresses);
+}
+1;
+EOF
+        my $html_content = <<EOF;
+
+
+
+
+
+
+<div id="divtagdefaultwrapper" style="font-size:12pt;color:#000000;font-family:Calibri,Helvetica,sans-serif;" dir="ltr">
+<p style="margin-top:0;margin-bottom:0">Hi,</p>
+
+<p style="margin-top:0;margin-bottom:0">What's the best way to add a new line in the below callback, I tried adding
+<span style="background-color: rgb(255, 255, 0);">\\n</span> but it didn't work.</p>
+
+
+
+
+<div><span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">package RT::Transaction;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">use strict;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">use warnings;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">no warnings 'redefine';</span><br>
+<br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">sub QuoteHeader {</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp; my \$self = shift;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp; if (\$self-&gt;Object-&gt;isa('RT::Ticket')) {</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return \$self-&gt;loc(&quot;On [_1], [_2] wrote:<span style="background-color: rgb(255, 255, 0);">
+</span>To: [_3]<span style="background-color: rgb(255, 255, 0);">
+</span>Cc:
+ [_4]&quot;, \$self-&gt;CreatedAsString, \$self-&gt;Object-&gt;QueueObj-&gt;CorrespondAddress,\$self-&gt;TicketObj-&gt;RequestorAddresses,\$self-&gt;TicketObj-&gt;CcAddresses);</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp; }&nbsp; &nbsp;</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">&nbsp;&nbsp;&nbsp; return \$self-&gt;loc(&quot;On [_1], [_2] wrote:<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);"><span style="background-color: rgb(255, 255, 0);">
+</span></span>To:
+ [_3]<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);"><span style="background-color: rgb(255, 255, 0);">
+</span></span>Cc: [_4]&quot;, \$self-&gt;CreatedAsString, \$self-&gt;CreatorObj-&gt;Name,\$self-&gt;TicketObj-&gt;RequestorAddresses,\$self-&gt;TicketObj-&gt;CcAddresses);</span><br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">}</span><br>
+<br>
+<span style="font-family: Consolas, Courier, monospace; color: rgb(117, 123, 128);">1;</span></div>
+<br>
+
+</div>
+EOF
+        test_email( $text, $text_content,
+                    $mailer . ' with multipart/alternative, \n\n are replaced' );
+        test_email( $text, $html_content,
+                    $mailer . ' with multipart/alternative, line-break-only paragraphs removed from the HTML part', "text/html" );
+    }
+
     diag "Test mail with multipart/alternative";
     {
         my $text = <<EOF;
