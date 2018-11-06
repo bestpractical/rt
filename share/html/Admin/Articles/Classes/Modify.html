@@ -73,13 +73,6 @@
     <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
 </td>
 </tr>
-<tr>
-<td>&nbsp;</td>
-<td>
-    <input type="checkbox" id="HotList" name="HotList" value="1" <%$HotListChecked%>>
-    <label for="HotList"><&|/l&>All Articles in this class should be listed in a dropdown of the ticket reply page</&></label>
-</td>
-</tr>
 </table>
 
 <h3><&|/l&>When inserting articles in this class into emails:</&></h3>
@@ -176,8 +169,7 @@ if ($ClassObj->Id()) {
         );
     }
 
-    $ARGS{HotList} ||= 0 if $Submitted;
-    my @attribs= qw(Description Name HotList SubjectOverride);
+    my @attribs= qw(Description Name SubjectOverride);
     $m->callback( CallbackName => 'AttributeList', Attributes => \@attribs, ARGSRef => \%ARGS );
     push @results, UpdateRecordObject( AttributesRef => \@attribs,
                                        Object => $ClassObj,
@@ -234,7 +226,6 @@ if ( $ClassObj->id ) {
 $include{$_} = $include{$_} ? " CHECKED" : "" for keys %include;
 
 my $EnabledChecked = ($Create ? $Disabled : $ClassObj->Disabled()) ? "" : "CHECKED";
-my $HotListChecked = $ClassObj->id && $ClassObj->HotList ? "CHECKED" : "";
 </%INIT>
 
 

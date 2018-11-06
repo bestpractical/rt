@@ -463,8 +463,7 @@ Disabled smallint NOT NULL DEFAULT 0,
 Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated TIMESTAMP NULL,
-HotList smallint NOT NULL DEFAULT 0
+LastUpdated TIMESTAMP NULL
 );
 
 CREATE TABLE Articles (

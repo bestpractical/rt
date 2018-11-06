@@ -18,7 +18,7 @@ for my $name ( keys %class ) {
 
     $m->submit_form(
         form_number => 3,
-        fields      => { Name => $name, HotList => 1 },
+        fields      => { Name => $name },
     );
 
     $m->content_contains( "Modify the Class $name",
