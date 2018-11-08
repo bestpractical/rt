@@ -78,7 +78,10 @@ my @results;
 use RT::Dashboard;
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
-$ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
+unless ($ok) {
+    RT::Logger->error("Unable to load dashboard with $id: $msg");
+    Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
+}
 my $title = loc("Modify the content of dashboard [_1]", $Dashboard->Name);
 
 my %desc_of;
