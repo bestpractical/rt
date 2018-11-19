@@ -87,9 +87,13 @@
 <td><&|/l&>Content</&>:</td>
 <td>
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1 &>
+% # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
+% my $temp = $ARGS{'QuoteTransaction'};
+% delete $ARGS{'QuoteTransaction'};
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1, %ARGS &>
+% $ARGS{'QuoteTransaction'} = $temp;
 % } else {
-<& /Elements/MessageBox, SuppressAttachmentWarning => 1 &>
+<& /Elements/MessageBox, SuppressAttachmentWarning => 1, %ARGS &>
 %}
 </td>
 </tr>
