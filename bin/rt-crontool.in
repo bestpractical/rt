@@ -74,7 +74,7 @@ use Getopt::Long;
 use RT::Interface::CLI qw(GetCurrentUser loc);
 
 my ( $search, $condition, $actions, $search_arg, $condition_arg, $actions_arg,
-     $template, $template_id, $transaction, $transaction_type, $help, $log, $verbose );
+     $template, $template_id, $transaction, $transaction_type, $help, $log, $verbose, $dryrun );
 GetOptions(
     "search=s"           => \$search,
     "search-arg=s"       => \$search_arg,
@@ -88,6 +88,7 @@ GetOptions(
     "transaction-type=s" => \$transaction_type,
     "log=s"              => \$log,
     "verbose|v"          => \$verbose,
+    "dry-run"            => \$dryrun,
     "help"               => \$help,
 );
 
@@ -228,6 +229,7 @@ sub process {
         next unless $action_obj->Prepare;
         print "\t".loc("Action prepared...")."\n" if $verbose;
 
+        next if $dryrun;
         # commit our action.
         next unless $action_obj->Commit;
         print "\t".loc("Action committed.")."\n" if $verbose;
@@ -460,6 +462,11 @@ Adjust LogToSTDERR config option
 =item verbose
 
 Output status updates to STDOUT
+
+=item dry-run
+
+Actions are composed of 2 parts: "Prepare" and "Commit".  C<dry-run>
+skips the "Commit" part.
 
 =back
 
