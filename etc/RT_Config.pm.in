@@ -1386,7 +1386,8 @@ Set ($DefaultSearchResultFormat, qq{
 =item C<$UserTicketDataResultFormat>
 
 This is the format of ticket search result for "Download User Tickets" links. It
-defaults to C<DefaultSearchResultFormat> if it's not set.
+defaults to C<DefaultSearchResultFormat> for privileged users and C<DefaultSelfServiceSearchResultFormat>
+for unprivileged users if it's not set.
 
 =cut
 
