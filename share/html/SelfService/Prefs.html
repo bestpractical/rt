@@ -81,7 +81,9 @@
 <& /Elements/Submit, Label => loc('Save Changes') &>
 </form>
 
+% if( RT->Config->Get('SelfServiceDownloadUserData') ) {
 <& /SelfService/User/Elements/RelatedData, UserObj => $user &>
+% }
 
 <%INIT>
 my @results;

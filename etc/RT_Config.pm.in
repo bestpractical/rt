@@ -1831,6 +1831,16 @@ access ticked displays.
 
 Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
 
+=item C<$SelfServiceDownloadUserData>
+
+Allow Self Service users to download their user information, ticket data
+and transaction data as a .tsv file. When enabled, these three options
+will appear on the /SelfService/Prefs.html page.
+
+=cut
+
+Set( $SelfServiceDownloadUserData, 0 );
+
 =back
 
 =head2 Articles
