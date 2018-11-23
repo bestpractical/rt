@@ -71,7 +71,7 @@ foreach my $column (@Format) {
         }
         $item = 0;
         $m->out( '</tr>' . "\n" );
-        $m->out(  '<tr class="'
+        $m->out(  '<tr class="' . $Classes . ' '
                 . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' )
                 . '" >'
                 . "\n" );
