@@ -1382,6 +1382,39 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+
+=item C<$UserTicketDataResultFormat>
+
+This is the format of ticket search result for "Download User Tickets" links. It
+defaults to C<DefaultSearchResultFormat> for privileged users and C<DefaultSelfServiceSearchResultFormat>
+for unprivileged users if it's not set.
+
+=cut
+
+Set($UserTicketDataResultFormat, undef );
+
+=item C<$UserDataResultFormat>
+
+This is the format of the user search result for "Download User Data" links.
+
+=cut
+
+Set($UserDataResultFormat, "'__id__', '__Name__', '__EmailAddress__', '__RealName__',\
+                            '__NickName__', '__Organization__', '__HomePhone__', '__WorkPhone__',\
+                            '__MobilePhone__', '__PagerPhone__', '__Address1__', '__Address2__',\
+                            '__City__', '__State__','__Zip__', '__Country__', '__Gecos__', '__Lang__',\
+                            '__FreeFormContactInfo__'");
+
+=item C<$UserTransactionDataResultFormat>
+
+This is the format of the user transaction search result for "Download User Transaction Data" links.
+
+=cut
+
+Set($UserTransactionDataResultFormat, "'__ObjectId__', '__id__', '__Created__', '__Description__',\
+                                        '__OldValue__', '__NewValue__', '__Content__'");
+
+
 =item C<$DefaultSearchResultOrderBy>
 
 What Tickets column should we order by for RT Ticket search results.
@@ -1845,6 +1878,17 @@ option is only available when $SelfServiceUserPrefs is set to
 =cut
 
 Set($SelfServiceRequestUpdatePortlet, 0);
+
+=item C<$SelfServiceDownloadUserData>
+
+Allow Self Service users to download their user information, ticket data
+and transaction data as a .tsv file. When enabled, these three options
+will appear on the /SelfService/Prefs.html page.
+
+=cut
+
+Set( $SelfServiceDownloadUserData, 0 );
+
 
 =back
 

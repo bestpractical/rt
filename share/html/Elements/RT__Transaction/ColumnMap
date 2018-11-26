@@ -105,6 +105,10 @@ my $COLUMN_MAP = {
             }
         },
     },
+    Content => {
+        title       => 'Content', # loc
+        value       => sub { return $_[0]->Content },
+    },
 };
 
 

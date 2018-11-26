@@ -56,6 +56,12 @@
 
 </form>
 
+<& /User/Elements/RelatedData,
+    UserObj           => $UserObj,
+    UserDataButton    => loc( 'Download My Data' ),
+    UserTicketsButton => loc( 'Download My Tickets' ),
+    UserTxnButton     => loc( 'Download My Transaction Data' ),
+&>
 
 <%INIT>
 
