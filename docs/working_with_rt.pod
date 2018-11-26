@@ -1,0 +1,65 @@
+=head1 Working with RT
+
+Request Tracker (RT) has a number of use cases and features. In this
+guide, we will go over how to use RT working from the user interface
+rather than working with RT via email.
+
+=head2 Creating a Ticket
+
+There are several ways to create a ticket in RT. From the homepage, "RT
+at a glance", you have a couple of options. One option is to select
+the desired queue from the dropdown at the top right of the page, then
+click on the "New ticket in" button. This will bring you to the Ticket
+Create page where you can add detailed information on the ticket, like
+the subject, the message and various custom fields. These available fields
+are customized by your RT administrator. You can also add attachments to
+the ticket by either dragging and dropping the file or clicking to select
+a file from your computer. Another way tickets can be created is by using
+the "Quick ticket creation" portlet on the "RT at a glance" page. Rather
+than jumping to an additional page, this portlet allows to add the most
+prominent information on a ticket without leaving your home page. Note that
+this portlet may not be available if your RT administrator removed it. With
+the proper rights, a ticket can also be created by emailing the corresponding
+email address set by an RT administrator.
+
+=head2 Actions
+
+=head3 Reply/Comment
+
+Users are able to either comment or reply on a ticket based on their needs.
+A comment is used to add a note to a ticket that is not sent out to the
+Ticket Requestor. This is commonly used internally to track progress on a
+ticket. A reply however, is sent to the Requestor and triggers each
+correspondence scrip. To distinguish the two on the Ticket Update page, the
+message box for Comments, is yellow, whereas the message box for Replies,
+is red. You can Reply/Comment on a ticket by either clicking in the Actions
+menu on the top right or by selecting Reply/Comment directly on a transaction
+in the ticket history.
+
+In order to make replying/commenting on a ticket easier, a feature as of 4.6
+has been added that allows you to quote any text on the ticket display page
+into your comment or reply. To utilize this feature, simply highlight the
+content you would like inserted in your message, then click on Comment/Reply.
+You may click on Comment/Reply from either the Actions menu or directly on
+the transaction you'd like.
+
+=for html <img alt="Selected Text on Ticket Display"
+src="images/quote-selection-highlighted.png">
+
+=for :text [Selected Text on Ticket Display F<docs/images/quote-selection-highlighted.png>]
+
+=for :man [Selected Text on Ticket Display F<docs/images/quote-selection-highlighted.png>]
+
+This will then bring you to the ticket update page where you will find your
+selected text already added to the message box.
+
+=for html <img alt="Text Added to Ticket Update"
+src="images/quote-selection-ticket-update.png">
+
+=for :text [Text Added to Ticket Update F<docs/images/quote-selection-ticket-update.png>]
+
+=for :man [Text Added to Ticket Update F<docs/images/quote-selection-ticket-update.png>]
+
+This is useful when the transaction you are commenting on or replying to has a lot
+of extraneous information, such as the user's signature, that is not needed for your
+message.
