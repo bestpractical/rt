@@ -93,6 +93,29 @@ use RT::URI;
 use RT::SLA;
 use MIME::Entity;
 use Devel::GlobalDestruction;
+use Data::Printer {
+  color => {
+     array       => 'bright_white',  # array index numbers
+     number      => 'bright_blue',   # numbers
+     string      => 'bright_yellow', # strings
+     class       => 'bright_green',  # class names
+     method      => 'bright_green',  # method names
+     undef       => 'bright_red',    # the 'undef' value
+     hash        => 'magenta',       # hash keys
+     regex       => 'yellow',        # regular expressions
+     code        => 'green',         # code references
+     glob        => 'bright_cyan',   # globs (usually file handles)
+     vstring     => 'bright_blue',   # version strings (v5.16.0, etc)
+     repeated    => 'white on_red',  # references to seen values
+     caller_info => 'bright_cyan',   # details on what's being printed
+     weak        => 'cyan',          # weak references
+     tainted     => 'red',           # tainted content
+     escaped     => 'bright_red',    # escaped characters (\t, \n, etc)
+ 
+     # potential new Perl datatypes, unknown to Data::Printer
+     unknown     => 'bright_yellow on_blue',
+  },
+};
 
 sub LifecycleColumn { "Queue" }
 
@@ -2509,6 +2532,27 @@ sub _SetStatus {
             RecordTransaction => 0,
         );
     }
+
+
+	# When we are in an active status run.
+	if(	$args{Lifecycle}->IsActive($args{Status}) ){
+		my $cnow = RT::Date->new( $self->CurrentUser );
+	    $cnow->SetToNow();
+		my @datefields = $args{Lifecycle}->DateFields($old,$args{Status});	
+		#my @datefields = $self->LifecycleObj->DateField($old, $args{Status})	
+		if(@datefields){
+			foreach my $field (@datefields){ 
+				#Data::Printer::p $field;
+				my ($ok, $e) = $self->AddCustomFieldValue( Field => $field , Value => $cnow->ISO);	
+				if(not $ok){
+					RT::Logger->error("Unable to update $field : $e");
+				}else{
+					warn "Update $field";
+				}
+			}
+		}
+		
+	}
 
     # Actually update the status
     my ($val, $msg)= $self->_Set(

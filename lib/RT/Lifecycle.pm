@@ -49,7 +49,6 @@
 use strict;
 use warnings;
 
-
 package RT::Lifecycle;
 
 our %LIFECYCLES;
@@ -454,6 +453,35 @@ sub CheckRight {
         return $check if $check;
     }
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
+}
+
+=head3 DateFields [Array]
+
+Takes two statuses (from -> to) and returns the field that should
+be updated on the ticket.
+
+Note: field -> transition is reverse, because field is unique, but transition may not be - multiple fields to update on 
+on ticket is possible this way
+
+=cut
+
+sub DateFields {
+    my $self = shift;
+    my $from = shift;
+    my $to = shift;
+	
+	my $list = $self->{'data'}{'dates'};
+	my @datefields;	
+	my %list = %$list;
+	
+	foreach my $field (keys %list) {
+		my $transition = $list->{$field};
+		if ($transition eq "$from -> $to" || $transition eq "* => *" || $transition eq "* => $to" || $transition eq "$from => *") {
+			push @datefields, $field;	
+		}
+	}
+	return @datefields;
+	
 }
 
 =head3 RightsDescription [TYPE]
