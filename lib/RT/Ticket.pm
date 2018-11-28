@@ -68,7 +68,29 @@ package RT::Ticket;
 use strict;
 use warnings;
 use base 'RT::Record';
-
+use Data::Printer {
+  color => {
+     array       => 'bright_white',  # array index numbers
+     number      => 'bright_blue',   # numbers
+     string      => 'bright_yellow', # strings
+     class       => 'bright_green',  # class names
+     method      => 'bright_green',  # method names
+     undef       => 'bright_red',    # the 'undef' value
+     hash        => 'magenta',       # hash keys
+     regex       => 'yellow',        # regular expressions
+     code        => 'green',         # code references
+     glob        => 'bright_cyan',   # globs (usually file handles)
+     vstring     => 'bright_blue',   # version strings (v5.16.0, etc)
+     repeated    => 'white on_red',  # references to seen values
+     caller_info => 'bright_cyan',   # details on what's being printed
+     weak        => 'cyan',          # weak references
+     tainted     => 'red',           # tainted content
+     escaped     => 'bright_red',    # escaped characters (\t, \n, etc)
+ 
+     # potential new Perl datatypes, unknown to Data::Printer
+     unknown     => 'bright_yellow on_blue',
+  },
+};
 use Role::Basic 'with';
 
 # SetStatus and _SetStatus are reimplemented below (using other pieces of the
@@ -93,29 +115,6 @@ use RT::URI;
 use RT::SLA;
 use MIME::Entity;
 use Devel::GlobalDestruction;
-use Data::Printer {
-  color => {
-     array       => 'bright_white',  # array index numbers
-     number      => 'bright_blue',   # numbers
-     string      => 'bright_yellow', # strings
-     class       => 'bright_green',  # class names
-     method      => 'bright_green',  # method names
-     undef       => 'bright_red',    # the 'undef' value
-     hash        => 'magenta',       # hash keys
-     regex       => 'yellow',        # regular expressions
-     code        => 'green',         # code references
-     glob        => 'bright_cyan',   # globs (usually file handles)
-     vstring     => 'bright_blue',   # version strings (v5.16.0, etc)
-     repeated    => 'white on_red',  # references to seen values
-     caller_info => 'bright_cyan',   # details on what's being printed
-     weak        => 'cyan',          # weak references
-     tainted     => 'red',           # tainted content
-     escaped     => 'bright_red',    # escaped characters (\t, \n, etc)
- 
-     # potential new Perl datatypes, unknown to Data::Printer
-     unknown     => 'bright_yellow on_blue',
-  },
-};
 
 sub LifecycleColumn { "Queue" }
 
@@ -2522,6 +2521,7 @@ sub _SetStatus {
             Value             => $now->ISO,
             RecordTransaction => 0
         );
+		
     }
 
     # When we close a ticket, set the 'Resolved' attribute to now.
@@ -2535,19 +2535,29 @@ sub _SetStatus {
     }
 	
 	# When we are in transition to an active status in THIS queue, or another queue
-	if(	$args{Lifecycle}->IsActive($args{Status}) 
-		|| $args{NewLifecycle}->IsActive($args{Status}) ) {
+	# - possible status case transition
+	#  * => active
+	#  active => inactive (and status is not resolved)
+	# NOTE: this method hands non-resolved, inactive and non->initial, new status cases
 
-		my $cnow = RT::Date->new( $self->CurrentUser );
+	if(	
+		$args{NewLifecycle}->IsActive($args{Status}) # Transing to Status is Active
+		|| ( $args{NewLifecycle}->IsInactive($args{Status})  # Inactive Status, but is NOT Resolved
+			&& $args{Status} ne 'Resolved' ) # IsInactve and Status is not 'Resolved' 
+			)
+			
+		 {
+	   	my $cnow = RT::Date->new( $self->CurrentUser );
 	    $cnow->SetToNow();
 
-		my $field= $args{Lifecycle}->DateFields($old,$args{Status});	
-	
+		my $field = $args{Lifecycle}->DateFields($old,$args{Status});	
 		if( $field ) { 
+	
 			my ( $ok, $e ) = $self->AddCustomFieldValue( Field => $field , Value => $cnow->ISO );	
 			if(not $ok){
 				RT::Logger->error("Unable to update $field : $e");
 			}
+
 		}
 		else {
 			RT::Logger->debug("No custom data field matches")

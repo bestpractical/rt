@@ -48,29 +48,7 @@
 
 use strict;
 use warnings;
-use Data::Printer {
-  color => {
-     array       => 'bright_white',  # array index numbers
-     number      => 'bright_blue',   # numbers
-     string      => 'bright_yellow', # strings
-     class       => 'bright_green',  # class names
-     method      => 'bright_green',  # method names
-     undef       => 'bright_red',    # the 'undef' value
-     hash        => 'magenta',       # hash keys
-     regex       => 'yellow',        # regular expressions
-     code        => 'green',         # code references
-     glob        => 'bright_cyan',   # globs (usually file handles)
-     vstring     => 'bright_blue',   # version strings (v5.16.0, etc)
-     repeated    => 'white on_red',  # references to seen values
-     caller_info => 'bright_cyan',   # details on what's being printed
-     weak        => 'cyan',          # weak references
-     tainted     => 'red',           # tainted content
-     escaped     => 'bright_red',    # escaped characters (\t, \n, etc)
- 
-     # potential new Perl datatypes, unknown to Data::Printer
-     unknown     => 'bright_yellow on_blue',
-  },
-};
+
 package RT::Lifecycle;
 
 our %LIFECYCLES;
@@ -486,17 +464,34 @@ be updated on the ticket.
 
 sub DateFields {
     my $self = shift;
-    my $from = shift;
-    my $to = shift;
+    my $from = shift; # ticket from-> status
+    my $to = shift; # ticket ->to status
+	my $field = undef; 
+
+	if(!$to || !$from) { 
+		RT::Logger->error("Comeing from or going to status of transition is unknown - From: [$from] or To: [$to] or From");
+		return; 
+	}
 	
-	my $list = $self->{'data'}{'dates'};
-	
-	foreach my $transition (keys %$list) {
-		my $field = $list->{$transition};
-		if ($transition eq "$from -> $to" || $transition eq "* => *" || $transition eq "* => $to" || $transition eq "$from => *") {
-			return $field;	
-		}
-	}	
+	if($self->{'data'}{'dates'}){
+		my $list = $self->{'data'}{'dates'};
+		foreach my $transition (keys %$list) {
+			
+			my $field = $list->{$transition};
+			if ($transition eq "$from -> $to" || $transition eq "* -> *" || $transition eq "* -> $to" || $transition eq "$from -> *") {
+				return $field;	
+			}
+		}	
+	}
+	else{
+		RT::Logger->debug("No custom dates section was found in Lifecycle for customer");
+		return;
+	}
+	if(!$field){
+		RT::Logger->debug("No custom date fields were found in Lifecycle.");
+		return;
+	}
+	return;
 }
 
 =head3 RightsDescription [TYPE]

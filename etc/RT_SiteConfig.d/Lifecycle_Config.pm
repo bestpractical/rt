@@ -52,8 +52,8 @@ Set(%Lifecycles,
             'escalation1 -> open' => { label => 'Re-open' }, # loc{label}
         ],
 		dates => {
-			'open -> escalation1' => 'Stalled',
-			'escalation1 -> open' => 'Setup',
+			'open -> escalation1' => 'Escalated',
+			'escalation1 -> *' => 'DeEscalated',
 		},
     },
     '__maps__' => {
