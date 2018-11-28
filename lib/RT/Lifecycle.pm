@@ -48,7 +48,29 @@
 
 use strict;
 use warnings;
-
+use Data::Printer {
+  color => {
+     array       => 'bright_white',  # array index numbers
+     number      => 'bright_blue',   # numbers
+     string      => 'bright_yellow', # strings
+     class       => 'bright_green',  # class names
+     method      => 'bright_green',  # method names
+     undef       => 'bright_red',    # the 'undef' value
+     hash        => 'magenta',       # hash keys
+     regex       => 'yellow',        # regular expressions
+     code        => 'green',         # code references
+     glob        => 'bright_cyan',   # globs (usually file handles)
+     vstring     => 'bright_blue',   # version strings (v5.16.0, etc)
+     repeated    => 'white on_red',  # references to seen values
+     caller_info => 'bright_cyan',   # details on what's being printed
+     weak        => 'cyan',          # weak references
+     tainted     => 'red',           # tainted content
+     escaped     => 'bright_red',    # escaped characters (\t, \n, etc)
+ 
+     # potential new Perl datatypes, unknown to Data::Printer
+     unknown     => 'bright_yellow on_blue',
+  },
+};
 package RT::Lifecycle;
 
 our %LIFECYCLES;
@@ -460,9 +482,6 @@ sub CheckRight {
 Takes two statuses (from -> to) and returns the field that should
 be updated on the ticket.
 
-Note: field -> transition is reverse, because field is unique, but transition may not be - multiple fields to update on 
-on ticket is possible this way
-
 =cut
 
 sub DateFields {
@@ -471,17 +490,13 @@ sub DateFields {
     my $to = shift;
 	
 	my $list = $self->{'data'}{'dates'};
-	my @datefields;	
-	my %list = %$list;
 	
-	foreach my $field (keys %list) {
-		my $transition = $list->{$field};
+	foreach my $transition (keys %$list) {
+		my $field = $list->{$transition};
 		if ($transition eq "$from -> $to" || $transition eq "* => *" || $transition eq "* => $to" || $transition eq "$from => *") {
-			push @datefields, $field;	
+			return $field;	
 		}
-	}
-	return @datefields;
-	
+	}	
 }
 
 =head3 RightsDescription [TYPE]

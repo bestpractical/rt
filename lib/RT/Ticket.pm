@@ -2499,6 +2499,7 @@ sub _SetStatus {
         Lifecycle => $self->LifecycleObj,
         @_,
     );
+	
     $args{Status} = lc $args{Status} if defined $args{Status};
     $args{NewLifecycle} ||= $args{Lifecycle};
 
@@ -2532,24 +2533,24 @@ sub _SetStatus {
             RecordTransaction => 0,
         );
     }
+	
+	# When we are in transition to an active status in THIS queue, or another queue
+	if(	$args{Lifecycle}->IsActive($args{Status}) 
+		|| $args{NewLifecycle}->IsActive($args{Status}) ) {
 
-
-	# When we are in an active status run.
-	if(	$args{Lifecycle}->IsActive($args{Status}) ){
 		my $cnow = RT::Date->new( $self->CurrentUser );
 	    $cnow->SetToNow();
-		my @datefields = $args{Lifecycle}->DateFields($old,$args{Status});	
-		#my @datefields = $self->LifecycleObj->DateField($old, $args{Status})	
-		if(@datefields){
-			foreach my $field (@datefields){ 
-				#Data::Printer::p $field;
-				my ($ok, $e) = $self->AddCustomFieldValue( Field => $field , Value => $cnow->ISO);	
-				if(not $ok){
-					RT::Logger->error("Unable to update $field : $e");
-				}else{
-					warn "Update $field";
-				}
+
+		my $field= $args{Lifecycle}->DateFields($old,$args{Status});	
+	
+		if( $field ) { 
+			my ( $ok, $e ) = $self->AddCustomFieldValue( Field => $field , Value => $cnow->ISO );	
+			if(not $ok){
+				RT::Logger->error("Unable to update $field : $e");
 			}
+		}
+		else {
+			RT::Logger->debug("No custom data field matches")
 		}
 		
 	}
