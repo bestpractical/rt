@@ -209,8 +209,8 @@ jQuery(function($) {
   });
 
     // Setup the canvas color picker
-    $("#logo-theme-editor img").load(function() {
-        var logo      = $(this);
+    $(window).load(function() {
+        var logo      = $("#logo-theme-editor img");
         var canvas    = $("#logo-color-picker");
         var el_canvas = canvas.get(0);
 
