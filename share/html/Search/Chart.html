@@ -217,6 +217,19 @@ jQuery(".chart-picture [name=ChartStyleIncludeTable]").change( updateChartStyle 
 jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 </script>
 
+<&| /Widgets/TitleBox, title => loc('Chart Axis Options') &>
+<div class="chart-table">
+    <div class="chart-input-row">
+        <span class="label"><&|/l&>Chart Y Min Value</&>:</span>
+        <input class="chart-input" type="number" name="ChartMin" value="<% $ARGS{ChartMin} %>" />
+    </div>
+    <div class="chart-input-row">
+        <span class="label"><&|/l&>Chart Y Max Value</&>:</span>
+        <input class="chart-input" type="number" name="ChartMax" value="<% $ARGS{ChartMax} %>" />
+    </div>
+</div>
+</&>
+
 <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
 </form>
 

@@ -53,6 +53,8 @@ $ChartStyle => 'bar+table+sql'
 @ChartFunction => 'COUNT'
 $Width  => undef
 $Height => undef
+$ChartMax => undef
+$ChartMin => undef
 </%args>
 <%init>
 use GD;
@@ -119,8 +121,8 @@ if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
 }
 
 my @data = ([],[]);
-my $max_value = 0;
-my $min_value;
+my $max_value = $ChartMax || 0;
+my $min_value = $ChartMin;
 my $max_key_length = 0;
 while ( my $entry = $report->Next ) {
     push @{ $data[0] }, [ map $entry->LabelValue( $_ ), @{ $columns{'Groups'} } ];
@@ -144,7 +146,7 @@ while ( my $entry = $report->Next ) {
 
     foreach my $v ( @values ) {
         $max_value = $v if $max_value < $v;
-        $min_value = $v if !defined $min_value || $min_value > $v;
+        $min_value = $v if !$ChartMin && (!length $min_value || $min_value > $v);
     }
 }
 

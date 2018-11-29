@@ -26,3 +26,17 @@
 .chart-wrapper .collection-as-table tr th.oddline {
     background: #ddd;
 }
+
+.chart-table {
+    display: table;
+}
+.chart-input-row {
+    display: table-row;
+}
+
+.chart-input {
+    float: right;
+    display: table-cell;
+    margin: 0 0 5px 5px;
+    size: 50px;
+}
