@@ -119,8 +119,8 @@ if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
 }
 
 my @data = ([],[]);
-my $max_value = 0;
-my $min_value;
+my $max_value = $ARGS{ChartMax} ? $ARGS{ChartMax} : 0;
+my $min_value = $ARGS{ChartMin} ? $ARGS{ChartMin} : undef;
 my $max_key_length = 0;
 while ( my $entry = $report->Next ) {
     push @{ $data[0] }, [ map $entry->LabelValue( $_ ), @{ $columns{'Groups'} } ];
