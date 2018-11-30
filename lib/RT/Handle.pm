@@ -72,6 +72,7 @@ use strict;
 use warnings;
 
 use File::Spec;
+use Cwd;
 
 =head1 METHODS
 
@@ -586,6 +587,9 @@ sub InsertIndexes {
                 ."\nError: ". $dbh->errstr;
         }
     }
+
+    # Get the full path since . is no longer in @INC after perl 5.24
+    $path = Cwd::abs_path($path);
 
     local $@;
     eval { require $path; 1 }
