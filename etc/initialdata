@@ -285,6 +285,9 @@ you may reply to this message.
 
 -------------------------------------------------------------------------
 {$Transaction->Content()}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '0',
@@ -293,8 +296,13 @@ you may reply to this message.
        Content     => q[Subject: AutoReply: {$Ticket->Subject}
 Content-Type: text/html
 
-<p>Greetings,</p>
+<h1>
+<span style="display: block; font-family: Helvetica; font-size: 26px; line-height: 1.385em">
+<strong>Greetings,</strong>
+</span>
+</h1>
 
+<span style="display: block; font-family: Helvetica; font-size: 18px; line-height: 1.444em">
 <p>This message has been automatically generated in response to the
 creation of a trouble ticket regarding <b>{$Ticket->Subject()}</b>,
 a summary of which appears below.</p>
@@ -308,9 +316,20 @@ you may reply to this message.</p>
 
 <p>Thank you,<br/>
 {$Ticket->QueueObj->CorrespondAddress()}</p>
+</span>
 
 <hr/>
+<span style="text-align: justify; color: #545454; display: block; font-family: Helvetica; font-size: 14px; line-height: 1.571em; margin-top: 10px; margin-bottom: 10px">
 {$Transaction->Content(Type => 'text/html')}
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 ],
     },
     {  Queue       => '0',
@@ -330,6 +349,9 @@ you may reply to this message.</p>
 
 
 {$Transaction->Content()}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '0',
@@ -351,7 +373,17 @@ Content-Type: text/html
 </table>
 <br/>
 <br/>
+<span style="text-align: justify; color: #545454; display: block; font-family: Helvetica; font-size: 14px; line-height: 1.571em; margin-top: 10px; margin-bottom: 10px">
 {$Transaction->Content( Type => "text/html")}
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     # Shadow the global templates of the same name to suppress duplicate
@@ -375,6 +407,9 @@ Content-Type: text/html
 <URL: {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id} >
 
 {$Transaction->Content()}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '0',
@@ -386,7 +421,17 @@ Content-Type: text/html
 Ticket URL: <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}</a>
 <br />
 <br />
+<span style="text-align: justify; color: #545454; display: block; font-family: Helvetica; font-size: 14px; line-height: 1.571em; margin-top: 10px; margin-bottom: 10px">
 {$Transaction->Content(Type => "text/html");}
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => '0',
@@ -395,6 +440,9 @@ Ticket URL: <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket-
        Content     => 'RT-Attach-Message: yes
 
 {$Transaction->Content()}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '0',
@@ -403,7 +451,17 @@ Ticket URL: <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket-
        Content     => 'RT-Attach-Message: yes
 Content-Type: text/html
 
+<span style="text-align: justify; color: #545454; display: block; font-family: Helvetica; font-size: 14px; line-height: 1.571em; margin-top: 10px; margin-bottom: 10px">
 {$Transaction->Content( Type => "text/html")}
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => '0',
@@ -418,6 +476,9 @@ RT-Attach-Message: yes
 This is a comment.  It is not sent to the Requestor(s):
 
 {$Transaction->Content()}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '0',
@@ -430,7 +491,17 @@ Content-Type: text/html
 
 <p>This is a comment about <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">ticket {$Ticket->id}</a>. It is not sent to the Requestor(s):</p>
 
+<span style="text-align: justify; color: #545454; display: block; font-family: Helvetica; font-size: 14px; line-height: 1.571em; margin-top: 10px; margin-bottom: 10px">
 {$Transaction->Content(Type => "text/html")}
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => '0',
@@ -442,6 +513,9 @@ Content-Type: text/html
 This reminder is for ticket #{$Target = $Ticket->RefersTo->First->TargetObj;$Target->Id}.
 
 {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Target->Id}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
 
@@ -454,6 +528,9 @@ This reminder is for ticket #{$Target = $Ticket->RefersTo->First->TargetObj;$Tar
 {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}
 
 {$Transaction->Content()}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '0',
@@ -465,7 +542,17 @@ Content-Type: text/html
 <a href="{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}">{RT->Config->Get("WebURL")}Ticket/Display.html?id={$Ticket->id}</a>
 <br/>
 <br/>
+<span style="text-align: justify; color: #545454; display: block; font-family: Helvetica; font-size: 14px; line-height: 1.571em; margin-top: 10px; margin-bottom: 10px">
 {$Transaction->Content(Type => "text/html")}
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {
@@ -477,6 +564,9 @@ Content-Type: text/html
 
 According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '0',
@@ -486,6 +576,14 @@ further questions or concerns, please respond to this message.
 Content-Type: text/html
 
 <p>According to our records, your request has been resolved.  If you have any further questions or concerns, please respond to this message.</p>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => '___Approvals',
@@ -505,6 +603,9 @@ batch-process all your pending approvals.
 
 -------------------------------------------------------------------------
 {$Transaction->Content()}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '___Approvals',
@@ -513,17 +614,33 @@ batch-process all your pending approvals.
        Content     => 'Subject: New Pending Approval: {$Ticket->Subject}
 Content-Type: text/html
 
-<p>Greetings,</p>
+<h1>
+<span style="display: block; font-family: Helvetica; font-size: 26px; line-height: 1.385em">
+<strong>Greetings,</strong>
+</span>
+</h1>
 
+<span style="display: block; font-family: Helvetica; font-size: 18px; line-height: 1.444em">
 <p>There is a new item pending your approval: <b>{$Ticket->Subject()}</b>,
 a summary of which appears below.</p>
 
 <p>Please <a href="{RT->Config->Get(\'WebURL\')}Approvals/Display.html?id={$Ticket->id}">approve
 or reject this ticket</a>, or visit the <a href="{RT->Config->Get(\'WebURL\')}Approvals/">approvals
 overview</a> to batch-process all your pending approvals.</p>
+</span>
 
 <hr />
+<span style="text-align: justify; color: #545454; display: block; font-family: Helvetica; font-size: 14px; line-height: 1.571em; margin-top: 10px; margin-bottom: 10px">
 {$Transaction->Content()}
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => '___Approvals',
@@ -538,6 +655,9 @@ Your ticket has been approved by { eval { $Approver->Name } }.
 Other approvals may be pending.
 
 Approver\'s notes: { $Notes }
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '___Approvals',
@@ -547,13 +667,27 @@ Approver\'s notes: { $Notes }
        Content => 'Subject: Ticket Approved: {$Ticket->Subject}
 Content-Type: text/html
 
-<p>Greetings,</p>
+<h1>
+<span style="display: block; font-family: Helvetica; font-size: 26px; line-height: 1.385em">
+<strong>Greetings,</strong>
+</span>
+</h1>
 
+<span style="display: block; font-family: Helvetica; font-size: 18px; line-height: 1.444em">
 <p>Your ticket has been approved by <b>{ eval { $Approver->Name } }</b>.
 Other approvals may be pending.</p>
 
 <p>Approver\'s notes:</p>
 <blockquote>{ $Notes }</blockquote>
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => '___Approvals',
@@ -568,6 +702,9 @@ Your ticket has been approved by { eval { $Approver->Name } }.
 Its Owner may now start to act on it.
 
 Approver\'s notes: { $Notes }
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '___Approvals',
@@ -577,13 +714,27 @@ Approver\'s notes: { $Notes }
        Content => 'Subject: Ticket Approved: {$Ticket->Subject}
 Content-Type: text/html
 
-<p>Greetings,</p>
+<h1>
+<span style="display: block; font-family: Helvetica; font-size: 26px; line-height: 1.385em">
+<strong>Greetings,</strong>
+</span>
+</h1>
 
+<span style="display: block; font-family: Helvetica; font-size: 18px; line-height: 1.444em">
 <p>Your ticket has been approved by <b>{ eval { $Approver->Name } }</b>.
 Its Owner may now start to act on it.</p>
 
 <p>Approver\'s notes:</p>
 <blockquote>{ $Notes }</blockquote>
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => '___Approvals',
@@ -597,6 +748,9 @@ Greetings,
 Your ticket has been rejected by { eval { $Approver->Name } }.
 
 Approver\'s notes: { $Notes }
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '___Approvals',
@@ -606,12 +760,26 @@ Approver\'s notes: { $Notes }
        Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
 Content-Type: text/html
 
-<p>Greetings,</p>
+<h1>
+<span style="display: block; font-family: Helvetica; font-size: 26px; line-height: 1.385em">
+<strong>Greetings,</strong>
+</span>
+</h1>
 
+<span style="display: block; font-family: Helvetica; font-size: 18px; line-height: 1.444em">
 <p>Your ticket has been rejected by <b>{ eval { $Approver->Name } }</b>.</p>
 
 <p>Approver\'s notes:</p>
 <blockquote>{ $Notes }</blockquote>
+</span>
+
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => '___Approvals',
@@ -624,6 +792,8 @@ Greetings,
 
 The ticket has been approved, you may now start to act on it.
 
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 '
     },
     {  Queue       => '___Approvals',
@@ -633,10 +803,23 @@ The ticket has been approved, you may now start to act on it.
        Content => 'Subject: Ticket Approved: {$Ticket->Subject}
 Content-Type: text/html
 
-<p>Greetings,</p>
+<h1>
+<span style="display: block; font-family: Helvetica; font-size: 26px; line-height: 1.385em">
+<strong>Greetings,</strong>
+</span>
+</h1>
 
+<span style="display: block; font-family: Helvetica; font-size: 18px; line-height: 1.444em">
 <p>The ticket has been approved, you may now start to act on it.</p>
+</span>
 
+<span style="font-size: 0.75em">
+<footer>
+  <hr/>
+  <p><i>This email was sent using <a href="https://bestpractical.com/request-tracker?source=email-footer/">Request Tracker</a>.</i>
+  </p>
+</footer>
+</span>
 '
     },
     {  Queue       => 0,
@@ -645,6 +828,9 @@ Content-Type: text/html
        Content => q{
 
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of transaction #".$Transaction->id." of ticket #". $Ticket->id }
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 }
     },
     {  Queue       => 0,
@@ -653,6 +839,9 @@ Content-Type: text/html
        Content => q{
 
 { $ForwardTransaction->Content =~ /\S/ ? $ForwardTransaction->Content : "This is a forward of ticket #". $Ticket->id }
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 }
     },
     {  Queue       => 0,
@@ -662,6 +851,9 @@ Content-Type: text/html
        Content => q{Subject: RT requires that all incoming mail be encrypted
 
 You received this message because RT received mail from you that was not encrypted.  As such, it has been rejected.
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 }
     },
     {  Queue       => 0,
@@ -671,6 +863,9 @@ You received this message because RT received mail from you that was not encrypt
        Content => q{Subject: We have no your public key or it's wrong
 
 You received this message as we have no your public PGP key or we have a problem with your key. Inform the administrator about the problem.
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 }
     },
     {  Queue       => 0,
@@ -684,7 +879,11 @@ You received this message as RT has problems with public keys of the following u
     foreach my $e ( @BadRecipients ) {
         $OUT .= "* ". $e->{'Message'} ."\n";
     }
-}}
+}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
+}
     },
     {  Queue       => 0,
        Name        => "Error: no private key",    # loc
@@ -696,7 +895,11 @@ You sent an encrypted message with subject '{ $Message->head->get('Subject') }',
 but we have no private key it's encrypted to.
 
 Please, check that you encrypt messages with correct keys
-or contact the system administrator.}
+or contact the system administrator.
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
+}
     },
     {  Queue       => 0,
        Name        => "Error: bad encrypted data",    # loc
@@ -708,7 +911,11 @@ You sent us a message that we cannot handle due to corrupted signature or encryp
 { foreach my $msg ( @Messages ) {
     $OUT .= "* $msg\n";
   }
-}}
+}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
+}
     },
     {  Queue       => 0,
        Name        => "PasswordChange",    # loc
@@ -722,6 +929,9 @@ Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {RT->Conf
 
 Your new password is:
   {$NewPassword}
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 }
     },
 
@@ -731,6 +941,9 @@ Your new password is:
                    Content => q[Subject: RT Email Digest
 
 { $Argument }
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 ],
                },
 
@@ -757,6 +970,9 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
       ? "Day of month: " . $SubscriptionObj->SubValue('Dom')
       : ''
 }
+
+-------------------------------------------------------------------------
+This email was sent using Request Tracker (https://bestpractical.com/request-tracker).
 }
 },
 );
