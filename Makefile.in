@@ -139,6 +139,7 @@ BINARIES		=	$(RT_MAILGATE_BIN) \
 				$(RT_CRON_BIN)
 
 SYSTEM_BINARIES		=	rt-attributes-viewer \
+				rt-munge-attachments \
 				rt-clean-sessions \
 				rt-dump-metadata \
 				rt-email-dashboards \

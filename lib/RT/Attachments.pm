@@ -252,6 +252,81 @@ sub AddRecord {
     return $self->SUPER::AddRecord( $record );
 }
 
+=head2 ReplaceAttachments ( Search => 'SEARCH', Replacement => 'Replacement', Header => 1, Content => 1 )
+
+Provide a search string to search the attachments table for, by default the Headers and Content
+columns will both be searched for matches.
+
+=cut
+
+sub ReplaceAttachments {
+    my $self = shift;
+    my %args = (
+        Search      => undef,
+        Replacement => '',
+        Headers     => 1,
+        Content     => 1,
+        @_,
+    );
+
+    return ( 0, $self->loc('Provide a search string to search on') ) unless $args{Search};
+
+    $self->Limit(
+        ENTRYAGGREGATOR => 'OR',
+        FIELD           => 'Headers',
+        OPERATOR        => 'LIKE',
+        VALUE           => $args{Search},
+        SUBCLAUSE       => 'Attachments',
+    ) if $args{Headers};
+    $self->Limit(
+        ENTRYAGGREGATOR => 'OR',
+        FIELD           => 'Content',
+        OPERATOR        => 'LIKE',
+        VALUE           => $args{Search},
+        SUBCLAUSE       => 'Attachments',
+    ) if $args{Content};
+    $self->Limit(
+        FIELD           => 'ContentType',
+        OPERATOR        => 'IN',
+        VALUE           => ['text/plain', 'text/html'],
+    );
+    $self->Limit(
+        FIELD           => 'ContentEncoding',
+        VALUE           => 'none',
+    );
+
+    my %tickets;
+    my ($ret, $msg);
+    while (my $attachment = $self->Next) {
+        my $content_replaced;
+        if ( $args{Headers} ) {
+            ($ret, $msg) = $attachment->ReplaceHeaders(Search => $args{Search}, Replacement => $args{Replacement});
+            $content_replaced ||= $ret;
+
+            RT::Logger->error($msg) unless $ret;
+        }
+
+        if ( $args{Content} ) {
+            ($ret, $msg) = $attachment->ReplaceContent(Search => $args{Search}, Replacement => $args{Replacement});
+            $content_replaced ||= $ret;
+
+            RT::Logger->error($msg) unless $ret;
+        }
+
+        my $ticket = $attachment->TransactionObj->TicketObj;
+        $tickets{$ticket->Id} ||= $ticket if $content_replaced;
+    }
+
+    foreach my $id ( sort { $a <=> $b } keys %tickets ) {
+        (my $transaction, $msg, my $trans) = $tickets{$id}->_NewTransaction (
+            Type     => "Munge",
+        );
+        RT::Logger->error($msg) unless $transaction;
+    }
+    my $count = scalar keys %tickets;
+    return ( 1, $self->loc( "Updated [_1] ticket's attachment content", $count ) );
+}
+
 RT::Base->_ImportOverlays();
 
 1;
