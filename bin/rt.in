@@ -2678,3 +2678,165 @@ In general, each invocation of this program should specify an action to
 perform on one or more objects, and any other arguments required to complete
 the desired action.
 
+This tool uses the RT REST1.0 interface which makes it a useful tool for investigatin
+what the REST1.0 interface can do and how to do it.
+
+=head2 ENVIRONMENT VARIABLES
+
+The following environment variables override any corresponding
+values defined in configuration files:
+
+    - RTUSER
+    - RTPASSWD
+    - RTAUTH
+    - RTSERVER
+    - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
+    - RTCONFIG      Specifies a name other than ".rtrc" for the
+                    configuration file.
+    - RTQUERY       Default RT Query for rt list
+    - RTORDERBY     Default order for rt list
+=cut
+
+=head2 CONFIG OPTIONS:
+
+Config values can be set in a .rtrc file at the RT root directory.
+
+    - server <URL>           URL to RT server.
+    - user <username>        RT username.
+    - passwd <passwd>        RT user's password.
+    - query <RT Query>       Default RT Query for list action
+    - orderby <order>        Default RT order for list action
+    - queue <queuename>      Default RT Queue for list action
+    - auth <rt|basic|gssapi> Method to authenticate via; "basic"
+                    means HTTP Basic authentication, "gssapi" means
+                    Kerberos credentials, if your RT is configured
+                    with $WebRemoteUserAuth.  For backwards
+                    compatibility, "externalauth 1" means "auth basic"
+
+=cut
+
+=head2 SYNTAX
+
+    rt <action> [options] [arguments].
+
+=cut
+
+=head2 ACTIONS
+
+You can currently perform the following actions on all objects:
+
+    - list          (list objects matching some condition)
+    - show          (display object details)
+    - edit          (edit object details)
+    - create        (create a new object)
+
+Each type may define actions specific to itself; these are listed in
+the help item about that type.
+
+For more information:
+
+    - rt help <action>      (action-specific details)
+    - rt help types         (a list of possible types)
+
+The following actions on tickets are also possible:
+
+    - comment       Add comments to a ticket
+    - correspond    Add comments to a ticket
+    - merge         Merge one ticket into another
+    - link          Link one ticket to another
+    - take          Take a ticket (steal and untake are possible as well)
+
+For several edit set subcommands that are frequently used abbreviations
+have been introduced. These abbreviations are:
+
+    - delete or del  delete a ticket           (edit set status=deleted)
+    - resolve or res resolve a ticket          (edit set status=resolved)
+    - subject        change subject of ticket  (edit set subject=string)
+    - give           give a ticket to somebody (edit set owner=user)
+
+=cut
+
+=head2 TYPES
+
+You can currently operate on the following types of objects:
+
+    - tickets
+    - users
+    - groups
+    - queues
+
+=cut
+
+=head2 EXAMPLES
+
+some useful examples
+
+All the following list requests will be restricted to the default queue.
+That can be changed by adding the option -q queuename
+
+List all tickets that are not rejected/resolved
+
+    rt ls
+
+List all tickets that are new and do not have an owner
+
+    rt ls "status=new and owner=nobody"
+
+List all tickets which I have sent or of which I am the owner
+
+    rt ls myaccount
+
+List all attributes for the ticket 6977 (ls -l instead of ls)
+
+    rt ls -l 6977
+
+Show the content of ticket 6977
+
+    rt show 6977
+
+Show all attributes in the ticket and in the history of the ticket
+
+    rt show -l 6977
+
+Comment a ticket (mail is sent to all queue watchers, i.e. AdminCc's)
+
+    rt comment 6977
+    This will open an editor and lets you add text (attribute Text:)
+    Other attributes may be changed as well, but usually don't do that.
+
+Correspond a ticket (like comment, but mail is also sent to requestors)
+
+    rt correspond 6977
+
+Edit a ticket (generic change, interactive using the editor)
+
+    rt edit 6977
+
+Change the owner of a ticket non interactively
+
+    rt edit 6977 set owner=myaccount
+        or
+    rt give 6977 account
+        or
+    rt take 6977
+
+Change the status of a ticket
+    rt edit 6977 set status=resolved
+        or
+    rt resolve 6977
+
+Change the status of all tickets I own to resolved !!!
+
+    rt ls -i owner=myaccount | rt edit - set status=resolved
+
+=cut
+
+=head2 HELP
+
+For more information:
+
+    - rt help <type>        (type-specific details)
+    - rt help objects       (how to specify objects)
+    - rt help actions       (a list of possible actions)
+
+=cut
