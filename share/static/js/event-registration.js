@@ -59,10 +59,10 @@ jQuery(function() {
             .clone(true, true)
             .attr("name", name + "-Groups")
             .find("option").remove().end()
+            .prepend( complete.find("option[value='']") )
             .find("optgroup").replaceWith(function(){
                 return jQuery("<option>").val(this.label).text(this.label);
             }).end()
-            .prepend( complete.find("option[value='']") )
             .insertBefore(this);
 
         // Synchronize the <select> we just generated
