@@ -85,16 +85,17 @@
 <h3><&|/l&>When inserting articles in this class into emails:</&></h3>
 <ul>
 <li>
+     <input type="checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
+     <label for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
+</li>
+&nbsp;
+<li>
     <input type="checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
     <label for="Include-Name"><&|/l&>Include article name</&></label>
 </li>
 <li>
     <input type="checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
     <label for="Include-Summary"><&|/l&>Include article summary</&></label>
-</li>
-<li>
-     <input type="checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
-     <label for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
 </li>
 % if ( $cfs ) {
 % while (my $cf = $cfs->Next) {
