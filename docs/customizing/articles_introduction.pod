@@ -132,6 +132,21 @@ tags per article class. This can be done by unchecking the "Escape HTML"
 box on the Modify Class page. Please note this is potentially unsafe and
 its use should be limited to trusted administrators.
 
+=head3 Disabling Ticket Linking
+
+When an article is included in a ticket's comment or response, the article
+is automatically added as a link to the ticket. This means that the article
+will be listed under the Links portlet on the Ticket Display page, and also
+on the Article display page. Having these links listed can be very useful
+and is RT's default behavior. However, some instances of RT use articles
+heavily, and having a large list of ticket links on the Ticket or Article
+display page, may not be ideal. To make this feature of RT more flexible,
+there is an option to disable ticket linking by class. This can be done by
+visiting the Modify Classes page and unchecking the "Link article to ticket"
+option under "When inserting articles in this class into emails". Note, that
+disabling this feature will only affect future comments/replies on tickets.
+Existing links to articles in the class will remain linked.
+
 =head2 Queue-Specific List of Articles 
 
 You can use Topics to organize a set of Queue-specific Articles.
