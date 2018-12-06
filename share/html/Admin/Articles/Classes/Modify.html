@@ -85,6 +85,14 @@
 <h3><&|/l&>When inserting articles in this class into emails:</&></h3>
 <ul>
 <li>
+    <input type="checkbox" id="Include-LinkToTicket" name="Include-LinkToTicket" value="1" <% $include{LinkToTicket} %>
+% if ( !RT->Config->Get('LinkArticlesOnInclude') ) {
+      disabled="disabled"
+% }
+    >
+    <label for="Include-LinkToTicket"><&|/l&>Link article to ticket</&></label>
+</li>
+<li>
     <input type="checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
     <label for="Include-Name"><&|/l&>Include article name</&></label>
 </li>
@@ -192,6 +200,8 @@ if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
 }
 
 my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
+$include{LinkToTicket} = 1 if RT->Config->Get('LinkArticlesOnInclude');
+
 my $subject_cfs = [];
 my $subject_cf_labels = {};
 
