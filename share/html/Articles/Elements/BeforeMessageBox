@@ -164,7 +164,7 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
             Field => substr($arg, length($name_prefix)),
             Value => $ARGS{$arg},
         );
-        if ($article->Id) {
+        if ($article->Id and not $article->ClassObj->FirstAttribute('Skip-TicketLinking')) {
             $uri{$article->URI}++;
         }
     }

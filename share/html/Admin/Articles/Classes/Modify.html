@@ -85,6 +85,10 @@
 <h3><&|/l&>When inserting articles in this class into emails:</&></h3>
 <ul>
 <li>
+    <input type="checkbox" id="Include-TicketLinking" name="Include-TicketLinking" value="1" <% $include{TicketLinking} %>>
+    <label for="Include-TicketLinking"><&|/l&>Link article to ticket</&></label>
+</li>
+<li>
     <input type="checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
     <label for="Include-Name"><&|/l&>Include article name</&></label>
 </li>
@@ -191,7 +195,7 @@ if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
     $Disabled = 1;
 }
 
-my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
+my %include = ( Name => 1, Summary => 1, EscapeHTML => 1, TicketLinking => 1 );
 my $subject_cfs = [];
 my $subject_cf_labels = {};
 
