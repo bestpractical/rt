@@ -15,10 +15,9 @@ searches yourself.
 =head1 Example
 
 Let's look for tickets in the "RT" queue (RT's bugtracker for itself) that have
-been resolved in the last year. (These examples assume it's currently mid June,
-2015). To do that, we specify the search criteria (Queue is RT, Status is
-resolved, and Resolved after 2014-06-15) in the upper left hand section of the
-Query Builder.
+been resolved since mid June 2014. To do that, we specify the search criteria
+(Queue is RT, Status is resolved, and Resolved after 2014-06-15) in the upper
+left hand section of the Query Builder.
 
 =for html <img alt="Search Criteria"
 src="images/search-criteria.png">
@@ -81,11 +80,11 @@ the way down and press 'Update format and Search'. This search should turn up
 a full page of tickets. Here's the top portion of the list:
 
 =for html <img alt="Search Results"
-src="images/search-results.png">
+src="images/qb-search-results.png">
 
-=for :text [Search Results F<docs/images/search-results.png>]
+=for :text [Search Results F<docs/images/qb-search-results.png>]
 
-=for :man [Search Results F<docs/images/search-results.png>]
+=for :man [Search Results F<docs/images/qb-search-results.png>]
 
 This is the default view of your results. However, like nearly everything in RT,
 it's configurable. You can select additional columns to appear in your results,
@@ -109,7 +108,14 @@ in a meaningful way. This is where the multiple sort criteria comes in handy.
 You can use a second sorting criteria to sort within the set of tickets owned by
 a single user. For example, you could add a sort by due date to see tickets
 sorted first by owner, and then tickets with the same order are ordered by due
-date.
+date. Each of the columns on the results page will display a number, indicative
+of the sort order. Next to each number, there is also an arrow pointing upwards
+when the sort order is set to ascending (ASC), and downwards when set to descending
+(DESC). These orders can quickly be reversed on the results page by clicking on
+the column title you would like to update. Note, that when you have multiple sorts
+set, reversing them in this way will reset the sort options back to one column.
+Alternatively, you can navigate back to the query builder and update the Sorting
+fields accordingly.
 
 The Display Columns tab allows you to add or eliminate information displayed in
 the results of your search. NEWLINE indicates a line break, or new row, in how
@@ -119,11 +125,11 @@ up underneath id in the following screenshot).
 Here is a search with NEWLINE where it is by default:
 
 =for html <img alt="With NEWLINE"
-src="images/with-newline.png">
+src="images/qb-search-results-with-newline.png">
 
-=for :text [With NEWLINE F<docs/images/with-newline.png>]
+=for :text [With NEWLINE F<docs/images/qb-search-results-with-newline.png>]
 
-=for :man [With NEWLINE F<docs/images/with-newline.png>]
+=for :man [With NEWLINE F<docs/images/qb-search-results-with-newline.png>]
 
 Notice that the structure of the data that's displayed is stacked: Subject on
 top of Requestor, Status on top of Created, etc.. Because we're displaying a
@@ -133,11 +139,11 @@ important for the results more comprehensible.
 Here is that same search but without the NEWLINE:
 
 =for html <img alt="Without NEWLINE"
-src="images/without-newline.png">
+src="images/qb-search-results-without-newline.png">
 
-=for :text [Without NEWLINE F<docs/images/without-newline.png>]
+=for :text [Without NEWLINE F<docs/images/qb-search-results-without-newline.png>]
 
-=for :man [Without NEWLINE F<docs/images/without-newline.png>]
+=for :man [Without NEWLINE F<docs/images/qb-search-results-without-newline.png>]
 
 The same pieces of information are now spread across the display next to one
 another, which can be harder to read. So when you tell RT to display a lot of
