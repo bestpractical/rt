@@ -1,0 +1,16 @@
+#comp-Admin .list-menu {
+    float: left
+}
+
+#rt-portal .titlebox {
+    position: relative;
+    top: 0em;
+    height: 27em;
+    right: 0em;
+    bottom: 3em;
+    width: 50%;
+    float: right;
+    margin-left: 1em;
+    padding-left: 1em;
+    padding-bottom: 1em;
+}
