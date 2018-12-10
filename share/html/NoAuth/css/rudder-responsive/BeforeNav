@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+return unless Menu; # In case we are in Installer mode
+
 my $app_overflow = Menu->child( overflow => title => loc('More'), sort_order => 99999);
 # add a child element to make sure we get a dropdown indicator
 $app_overflow->child(will_be_deleted => raw_html => '');
