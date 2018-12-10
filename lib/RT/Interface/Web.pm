@@ -119,6 +119,7 @@ sub JSFiles {
       jquery.modal-defaults.js
       jquery.cookie.js
       popper.min.js
+      bootstrap.min.js
       titlebox-state.js
       i18n.js
       util.js
