@@ -184,7 +184,7 @@ OBJECT:
                     # as the sub InsertData in RT::Handle creates a global CF
                     # when no queue is specified.
                     $rv->{Queue} = [];
-                    my $applies = $obj->AppliedTo;
+                    my $applies = $obj->AddedTo;
                     while ( my $queue = $applies->Next ) {
                         push @{ $rv->{Queue} }, $queue->Name;
                     }
