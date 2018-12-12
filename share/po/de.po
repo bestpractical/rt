@@ -2604,7 +2604,7 @@ msgstr "Neues Ticket erstellen"
 #. ($m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj))
 #: share/html/SelfService/Create.html:48
 msgid "Create a ticket in %1"
-msgstr "Erstele ein Ticket in %1"
+msgstr "Erstelle ein Ticket in %1"
 
 #: share/html/User/Elements/Portlets/CreateTicket:50
 msgid "Create a ticket with this user as the Requestor in Queue"
