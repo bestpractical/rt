@@ -47,13 +47,45 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
     class => 'user-related-info',
-    title => loc("User related info"),
+    title => loc("Manage user data"),
 &>
 
-<div>
-    <a href="/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="button"><% $UserDataButton %></a>
-    <a href="/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="button"><% $UserTicketsButton %></a>
-    <a href="/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>" class="button"><% $UserTxnButton %></a>
+<div id="manage-user-data">
+    <div class="title"><&|/l&>Download User Information</&></div>
+    <div class="download-user-data-buttons inline-row">
+        <div class="inline-cell">
+            <a class="button" href="/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>"><% $UserDataButton %></a>
+            <i class="label"><&|/l&>The basic user info</&></i>
+        </div>
+        <div class="inline-cell">
+            <a class="button" href="/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>"><% $UserTicketsButton %></a>
+            <i class="label"><&|/l&>Tickets with the user as a requestor</&></i>
+        </div>
+        <div class="inline-cell">
+            <a class="button" href="/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>"><% $UserTxnButton %></a>
+            <i class="label"><&|/l&>Ticket transactions the user created</&></i>
+        </div>
+    </div>
+
+% if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
+    <div class="title"><&|/l&>Remove User Information</&></div>
+    <div class="inline-row">
+        <div class="inline-cell">
+            <a class="button" href="#user-info-modal" rel="modal:open" name="anonymize_user"><&|/l&>Anonymize User</&></a>
+            <i class="label"><&|/l&>Remove user information with anonymous username</&></i>
+        </div>
+% if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'SuperUser' ) ) {
+        <div class="inline-cell">
+            <a class="button" href="<%RT->Config->Get('WebPath')%>/Admin/Tools/Shredder/index.html?Plugin=Users&Users%3Astatus=<% $UserObj->Disabled ? 'disabled' : 'enabled' %>&Users%3Aname=<% $UserObj->Name %>&Users%3Areplace_relations=Nobody&Search=Search" name="replace-user"><&|/l&>Replace User</&></a>
+            <i class="label"><&|/l&>Replace user links in the database with "Nobody" user</&></i>
+        </div>
+        <div class="inline-cell">
+            <a class="button" href="<%RT->Config->Get('WebPath')%>/Admin/Tools/Shredder/index.html?Plugin=Users&Users%3Astatus=<% $UserObj->Disabled ? 'disabled' : 'enabled' %>&Users%3Aname=<% $UserObj->Name %>&Users&Search=Search" name="replace-user"><&|/l&>Replace User</&></a>
+            <i class="label"><&|/l&>Remove all references to user (Tickets linked to this user must be shredded first)</&></i>
+        </div>
+% }
+    </div>
+% }
 </div>
 </&>
 
@@ -63,7 +95,7 @@ my $Format = RT->Config->Get('UserTicketDataResultFormat') || RT->Config->Get('D
 
 <%ARGS>
 $UserObj
-$UserDataButton    => loc( 'Download User Data' )
-$UserTicketsButton => loc( 'Download User Tickets' )
-$UserTxnButton     => loc( 'Download User Transaction Data' )
+$UserDataButton    => loc( 'User Data' )
+$UserTicketsButton => loc( 'User Tickets' )
+$UserTxnButton     => loc( 'User Transactions' )
 </%ARGS>
