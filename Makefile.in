@@ -151,6 +151,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-ldapimport \
 				rt-passwd \
 				rt-preferences-viewer \
+				rt-search-attributes \
 				rt-serializer \
 				rt-server \
 				rt-server.fcgi \

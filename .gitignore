@@ -32,6 +32,7 @@
 /sbin/rt-externalize-attachments
 /sbin/rt-fulltext-indexer
 /sbin/rt-preferences-viewer
+/sbin/rt-search-attributes
 /sbin/rt-server
 /sbin/rt-server.fcgi
 /sbin/rt-session-viewer
