@@ -51,6 +51,7 @@ $Query => ''
 $OrderBy => 'id'
 $Order => 'ASC'
 $PreserveNewLines => 0
+$UserData => 0
 </%ARGS>
 <%INIT>
 my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
@@ -68,5 +69,6 @@ else {
     $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
 }
 
-$m->comp( "/Elements/TSVExport", Collection => $Tickets, Format => $Format, PreserveNewLines => $PreserveNewLines );
+my $filename = $UserData ? 'UserTicketData.tsv' : undef;
+$m->comp( "/Elements/TSVExport", Collection => $Tickets, Format => $Format, PreserveNewLines => $PreserveNewLines, Filename => $filename );
 </%INIT>
