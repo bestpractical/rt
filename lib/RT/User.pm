@@ -281,6 +281,109 @@ sub ValidateName {
     }
 }
 
+=head2 GenerateAnonymousName
+
+Generate a random username proceeded by 'anon_' and then a
+random string, Returns the AnonymousName string.
+
+=cut
+
+sub GenerateAnonymousName {
+    my $self = shift;
+
+    my $name;
+    do {
+        $name = 'anon_' . Digest::MD5::md5_hex( time . {} . rand() );
+    } while !$self->ValidateName($name);
+
+    return $name;
+}
+
+=head2 AnonymizeUser { ClearCustomfields => 1|0 }
+
+Remove all personal identifying information on the user record, but keep
+the user record alive. Additionally replace the username with an
+anonymous name.  Submit ClearCustomfields in a paramhash, if true all
+customfield values applied to the user record will be cleared.
+
+=cut
+
+sub AnonymizeUser {
+    my $self = shift;
+    my %args = (
+        ClearCustomFields => undef,
+        @_,
+    );
+
+    my %skip_clear = map { $_ => 1 } qw/Name Password AuthToken/;
+    my @user_identifying_info
+      = grep { !$skip_clear{$_} && $self->_Accessible( $_, 'write' ) } keys %{ $self->_CoreAccessible() };
+
+    $RT::Handle->BeginTransaction();
+
+    # Remove identifying user information from record
+    foreach my $attr (@user_identifying_info) {
+        if ( defined $self->$attr && length $self->$attr ) {
+            my $method = 'Set' . $attr;
+            my ( $ret, $msg ) = $self->$method('');
+            unless ($ret) {
+                RT::Logger->error( "Could not clear user $attr: " . $msg );
+                $RT::Handle->Rollback();
+                return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc($attr) ) );
+            }
+        }
+    }
+
+    # Do not do anything if password is already unset
+    if ( $self->HasPassword ) {
+        my ( $ret, $msg ) = $self->_Set( Field => 'Password', Value => '*NO-PASSWORD*' );
+        unless ($ret) {
+            RT::Logger->error("Could not clear user password: $msg");
+            $RT::Handle->Rollback();
+            return ( $ret, "Could not clear user Password" );
+        }
+    }
+
+    # Generate the random anon username
+    my ( $ret, $msg ) = $self->SetName( $self->GenerateAnonymousName );
+    unless ($ret) {
+        RT::Logger->error( "Could not anonymize user Name: " . $msg );
+        $RT::Handle->Rollback();
+        return ( $ret, $self->loc( "Could not anonymize user [_1]", $self->loc('Name') ) );
+    }
+
+    # Clear AuthToken
+    if ( $self->_Value('AuthToken') ) {
+        my ( $ret, $msg ) = $self->SetAuthToken('');
+        unless ($ret) {
+            RT::Logger->error( "Could not clear user AuthToken: " . $msg );
+            $RT::Handle->Rollback();
+            return ( $ret, $self->loc( "Couldn't clear user [_1]", $self->loc('AuthToken') ) );
+        }
+    }
+
+    # Remove user customfield values
+    if ( $args{'ClearCustomFields'} ) {
+        my $cfs = RT::CustomFields->new( RT->SystemUser );
+        $cfs->LimitToLookupType('RT::User');
+
+        while ( my $cf = $cfs->Next ) {
+            my $ocfvs = $self->CustomFieldValues($cf);
+            while ( my $ocfv = $ocfvs->Next ) {
+                my ( $ret, $msg ) = $ocfv->Delete;
+                unless ($ret) {
+                    RT::Logger->error( "Could not delete ocfv #" . $ocfv->id . ": $msg" );
+                    $RT::Handle->Rollback();
+                    return ( $ret, $self->loc( "Could not clear user custom field [_1]", $cf->Name ) );
+                }
+            }
+        }
+    }
+    $RT::Handle->Commit();
+
+    return ( 1, $self->loc('User successfully anonymized') );
+}
+
 =head2 ValidatePassword STRING
 
 Returns either (0, "failure reason") or 1 depending on whether the given
