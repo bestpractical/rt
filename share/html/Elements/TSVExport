@@ -50,6 +50,7 @@ $Class => undef
 $Collection
 $Format
 $PreserveNewLines => 0
+$Filename  => undef
 </%ARGS>
 <%ONCE>
 my $no_html = HTML::Scrubber->new( deny => '*' );
@@ -59,6 +60,7 @@ require HTML::Entities;
 $Class ||= $Collection->ColumnMapClassName;
 
 $r->content_type('application/vnd.ms-excel');
+$r->header_out( 'Content-disposition' => "attachment; filename=$Filename" ) if $Filename;
 
 my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format);
 
