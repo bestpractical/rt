@@ -72,6 +72,7 @@
     border-left: none;
     background-color: #fff;
     text-color: #547CCC;
+    word-wrap: break-word;
 }
 
 #page-navigation {
