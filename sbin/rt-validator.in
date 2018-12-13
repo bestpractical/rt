@@ -336,7 +336,7 @@ push @CHECKS, 'Tickets <-> Role Groups' => sub {
     my $res = 1;
     for my $role (qw/Requestor Owner Cc AdminCc/ ) {
         $res *= check_integrity(
-            'Tickets', 'id' => 'Groups', 'Instance',
+            'Tickets', 'EffectiveId' => 'Groups', 'Instance',
             join_condition   => 't.Domain = ? AND t.Name = ?',
             bind_values => [ 'RT::Ticket-Role', $role ],
             action => sub {
