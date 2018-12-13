@@ -52,7 +52,7 @@
 
 <div>
     <a href="/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="button"><% $UserDataButton %></a>
-    <a href="/Search/Results.tsv?Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="button"><% $UserTicketsButton %></a>
+    <a href="/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="button"><% $UserTicketsButton %></a>
     <a href="/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>" class="button"><% $UserTxnButton %></a>
 </div>
 </&>
