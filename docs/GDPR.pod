@@ -1,0 +1,116 @@
+=encoding utf-8
+
+=head1 The General Data Protection Regulation (GDPR)
+
+The General Data Protection Regulation (GDPR) is a new set of regulations passed by the European
+Union and scheduled to take effect on 25 May 2018. You can read more about the new regulations on
+the GDPR website.
+
+Many of these regulations fall to the web site owner or provider of a service, so they are outside
+the scope of the deployed software itself. However, there are some features we can add to RT to make
+compliance easier for providers who run RT.
+
+=cut
+
+=head1 User Data in RT
+
+User data in RT and RTIR is typically stored on the user record. Interactions where a user may provide
+additional user information are stored on tickets. Assets and articles can also have user information
+stored with them.
+
+=cut
+
+=head1 Right to Access
+
+This defines the right of users to have access to their data in a software system managed by a company
+or service provider.
+
+=cut
+
+=head2 Self Service Users
+
+Show self service users the information RT has stored on their user record on the Prefs page.
+Use the C<Set($SelfServiceUserPrefs, "brief")> config option to set what rights the self service users have.
+
+=over
+
+=item C<edit-prefs> (the default)
+
+When set to C<edit-prefs>, self service users will be able to update
+their Timezone and Language preference and update their password.
+This is the default behavior of RT.
+
+=item C<view-info>
+
+When set to C<view-info>, users will have full access to all their
+user information stored in RT on a read-only page.
+
+=item C<edit-prefs-view-info>
+
+When set to C<edit-prefs-view-info>, users will have full access as in
+the C<view-info> option, but also will be able to update their Locale
+and password as in the default C<edit-prefs> option.
+
+=item C<full-edit>
+
+When set to C<full-edit>, users will be able to fully view and update
+all of their stored RT user information.
+
+=back
+
+=cut
+
+=head2 Download User Data
+
+Users can download the basic user information that is stored on them in RT. The format of the download
+can be set by using the C<Set($UserDataResultFormat, ""> config option.
+
+=cut
+
+=head2 Download User Tickets
+
+Users can download ticket summaries for all tickets they are a requestor on. The ticket summary
+downloaded can be configured using C<Set($UserTicketDataResultFormat, "" )> in your RT_SiteConfig.pm
+file.
+
+=cut
+
+=head2 Download User Transactions
+
+Users can download transaction summaries for all transactions on which they are the creator.
+The summary can be set using C<Set($UserTransactionDataResultFormat, "">.
+
+=cut
+
+=head1 Right to be Forgotten
+
+This provision allows users to request their data be deleted. 
+
+=cut
+
+=head2 Anonymize User
+
+This option will clear all data on the user record for the current user, while preserving the user record.
+The required fields for a user will be set to an anonymous value, for example email could be set to a value
+similar to: 'anon_12345678'.
+
+This option leaves all tickets intact, but the personal information like email address stored on the user record
+is removed.
+
+It is important to note that this action will not remove user information from ticket bodies or email headers only
+data from any RT-based sections like People, etc.
+
+=cut
+
+=head2 Replace User Information
+
+This option will then use shredder with the replace_relations option to replace the existing userid with a replacement
+userid in transactions and other records that have the id. The user record is then completely deleted.
+
+=cut
+
+=head2 Remove User Information
+
+This option uses shredder to completely remove the user and connected data by running it without the replace option.
+
+=cut
