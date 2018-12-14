@@ -61,6 +61,7 @@ use RT::Crypt::GnuPG::CRLFHandle;
 use GnuPG::Interface;
 use RT::EmailParser ();
 use RT::Util 'safe_run_child', 'mime_recommended_filename';
+use URI::Escape;
 
 =head1 NAME
 
@@ -1087,8 +1088,8 @@ sub DecryptInline {
 
             seek $block_fh, 0, 0;
 
-            my ($res_fh, $res_fn);
-            ($res_fh, $res_fn, %res) = $self->_DecryptInlineBlock(
+            my ($res_fh, $res_fn, $embedded_fn);
+            ($res_fh, $res_fn, $embedded_fn, %res) = $self->_DecryptInlineBlock(
                 %args,
                 BlockHandle => $block_fh,
             );
@@ -1123,8 +1124,8 @@ sub DecryptInline {
         # decrypt what we have, it can be just missing -----END PGP...
         seek $block_fh, 0, 0;
 
-        my ($res_fh, $res_fn);
-        ($res_fh, $res_fn, %res) = $self->_DecryptInlineBlock(
+        my ($res_fh, $res_fn, $embedded_fn);
+        ($res_fh, $res_fn, $embedded_fn, %res) = $self->_DecryptInlineBlock(
             %args,
             BlockHandle => $block_fh,
         );
@@ -1160,15 +1161,28 @@ sub _DecryptInlineBlock {
         Passphrase  => $args{'Passphrase'},
     );
 
+    my $embedded_fn = $self->_EmbeddedFilename( $res{'status'} );
+
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
     # XXX: add argument to the function to control this check
     delete $res{'message'} if $res{'status'} =~ /DECRYPTION_OKAY/;
 
-    return (undef, undef, %res) if $res{message};
+    return (undef, undef, $embedded_fn, %res) if $res{message};
 
     seek $tmp_fh, 0, 0;
-    return ($tmp_fh, $tmp_fn, %res);
+    return ($tmp_fh, $tmp_fn, $embedded_fn, %res);
+}
+
+# Encyrpted attachments have their filename obfuscated, and the original is
+# in the encrypted section. This returns the original filename returned in
+# the status-fd filehandle after decryption is done.
+sub _EmbeddedFilename {
+    my $self = shift;
+    my $status = shift;
+    my ($embedded_fn) = ( $status =~ /^\[GNUPG:\] PLAINTEXT \d+ \d+ (\S+)$/m );
+    $RT::Logger->debug("Embedded filename is $embedded_fn") if $embedded_fn;
+    return uri_unescape($embedded_fn);
 }
 
 sub DecryptAttachment {
@@ -1189,7 +1203,7 @@ sub DecryptAttachment {
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     seek $tmp_fh, 0, 0;
 
-    my ($res_fh, $res_fn, %res) = $self->_DecryptInlineBlock(
+    my ($res_fh, $res_fn, $embedded_fn, %res) = $self->_DecryptInlineBlock(
         %args,
         BlockHandle => $tmp_fh,
     );
@@ -1200,12 +1214,28 @@ sub DecryptAttachment {
 
     my $head = $args{'Data'}->head;
 
-    # we can not trust original content type
-    # TODO: and don't have way to detect, so we just use octet-stream
-    # some clients may send .asc files (encryped) as text/plain
-    $head->mime_attr( "Content-Type" => 'application/octet-stream' );
+    if ($head->recommended_filename =~ /^PGPexch\.htm/i) {
+        # Special-case for handling old-style PGP plugin for Outlook style
+        # attachements of HTML content. For more, see:
+        # http://www.ietf.org/mail-archive/web/openpgp/current/msg01811.html
+        $head->mime_attr( "Content-Type" => 'text/html' );
+        $head->mime_attr( "Content-Disposition" => "inline" );
+    } elsif ($head->recommended_filename =~ /^PGPexch\.rtf/i) {
+        # Special-case for handling old-style PGP plugin for Outlook style
+        # attachements of RTF content. These remain as attachments and are
+        # not to be inlined; RTF is for Outlook only.
+        $head->mime_attr( "Content-Type" => 'text/rtf' );
+    } else {
+        # TODO
+        # The original Content-Type of the MIME part describes the PGP-encoded
+        # data, and not the file inside it. There is no way to know the type,
+        # so we just use octet-stream.
+        # Note, some clients may send .asc files (encryped) as text/plain.
+        # (MIME::Detect::Type could be useful here)
+        $head->mime_attr( "Content-Type" => 'application/octet-stream' );
+    }
 
-    my $filename = $head->recommended_filename;
+    my $filename = $embedded_fn || $head->recommended_filename;
     $filename =~ s/\.${RE_FILE_EXTENSIONS}$//i;
     $head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
