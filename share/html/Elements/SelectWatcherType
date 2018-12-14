@@ -67,6 +67,7 @@ else {
     @types = $Queue->Roles(Single => 0);
 }
 
+$m->callback( Types => \@types, %ARGS, CallbackName => 'ModifyWatcherTypes' );
 </%INIT>
 <%ARGS>
 $AllowNull => 1
