@@ -2347,6 +2347,7 @@ sub ProcessUpdateMessage {
     # UpdateTimeWorked into adjusted TimeWorked, so that a later
     # ProcessBasics can deal -- then bail out.
     if (    not @attachments
+        and not $args{ARGSRef}->{'AttachTickets'}
         and not length $args{ARGSRef}->{'UpdateContent'} )
     {
         if ( $args{ARGSRef}->{'UpdateTimeWorked'} ) {
