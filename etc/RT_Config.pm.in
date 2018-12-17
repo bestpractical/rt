@@ -1403,7 +1403,7 @@ Set($UserDataResultFormat, "'__id__', '__Name__', '__EmailAddress__', '__RealNam
                             '__NickName__', '__Organization__', '__HomePhone__', '__WorkPhone__',\
                             '__MobilePhone__', '__PagerPhone__', '__Address1__', '__Address2__',\
                             '__City__', '__State__','__Zip__', '__Country__', '__Gecos__', '__Lang__',\
-                            '__FreeFormContactInfo__'");
+                            '__Timezone__', '__FreeFormContactInfo__'");
 
 =item C<$UserTransactionDataResultFormat>
 
