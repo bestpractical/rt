@@ -47,13 +47,23 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
     class => 'user-related-info',
-    title => loc("User related info"),
+    title => loc("Download My Data"),
 &>
 
 <div>
-    <a href="/SelfService/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="button"><% $UserDataButton %></a>
-    <a href="/SelfService/Search/Results.tsv?Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="button"><% $UserTicketsButton %></a>
-    <a href="/SelfService/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>" class="button"><% $UserTxnButton %></a>
+<div id="download-my-data" class="inline-row">
+    <div class="inline-cell">
+        <a href="/SelfService/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="button"><% $UserDataButton %></a>
+        <i class="label"><&|/l&>Base user data</&></i>
+    </div>
+    <div class="inline-cell">
+        <a href="/SelfService/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="button"><% $UserTicketsButton %></a>
+        <i class="label"><&|/l&>Tickets with you as a requestor</&></i>
+    </div>
+    <div class="inline-cell">
+        <a href="/SelfService/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>" class="button"><% $UserTxnButton %></a>
+        <i class="label"><&|/l&>Replies you sent</&></i>
+    </div>
 </div>
 </&>
 
@@ -63,7 +73,7 @@ my $Format = RT->Config->Get('UserTicketDataResultFormat') || RT->Config->Get('D
 
 <%ARGS>
 $UserObj
-$UserDataButton    => loc( 'Download My Data' )
-$UserTicketsButton => loc( 'Download My Tickets' )
-$UserTxnButton     => loc( 'Download My Transaction Data' )
+$UserDataButton    => loc( 'My Personal Data' )
+$UserTicketsButton => loc( 'My Tickets' )
+$UserTxnButton     => loc( 'My Transactions' )
 </%ARGS>
