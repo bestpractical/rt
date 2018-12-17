@@ -46,11 +46,11 @@ $agent->login( 'root' => 'password' );
 
     # TSV file for user record information
     $agent->get_ok( $url . "Admin/Users/Modify.html?id=" . $root->id );
-    $agent->follow_link_ok( { text => 'Download User Data' } );
+    $agent->follow_link_ok( { text => 'User Data' } );
 
     my $user_info_tsv = <<EOF;
-id\tName\tEmailAddress\tRealName\tNickName\tOrganization\tHomePhone\tWorkPhone\tMobilePhone\tPagerPhone\tAddress1\tAddress2\tCity\tState\tZip\tCountry\tGecos\tLang\tFreeFormContactInfo
-14\troot\troot\@localhost\tEnoch Root\t\t\t\t\t\t\t\t\t\t\t\t\troot\t\t
+id\tName\tEmailAddress\tRealName\tNickName\tOrganization\tHomePhone\tWorkPhone\tMobilePhone\tPagerPhone\tAddress1\tAddress2\tCity\tState\tZip\tCountry\tGecos\tLang\tTimezone\tFreeFormContactInfo
+14\troot\troot\@localhost\tEnoch Root\t\t\t\t\t\t\t\t\t\t\t\t\troot\t\t\t
 EOF
 
     is $agent->content, $user_info_tsv,
@@ -58,10 +58,10 @@ EOF
 
     # TSV file for Transactions
     $agent->get_ok( $url . "Admin/Users/Modify.html?id=" . $root->id );
-    $agent->follow_link_ok( { text => 'Download User Transaction Data' } );
+    $agent->follow_link_ok( { text => 'User Transactions' } );
 
     my $transaction_info_tsv = <<EOF;
-ObjectId\tid\tCreated\tDescription\tOldValue\tNewValue\tContent
+Ticket Id\tid\tCreated\tDescription\tOldValue\tNewValue\tContent
 1\t30\t$date_created\tTicket created\t\t\tThis transaction appears to have no content
 1\t32\t$date_commented\tComments added\t\t\tTest - Comment
 1\t33\t$date_correspondence\tCorrespondence added\t\t\tTest - Reply
@@ -72,7 +72,7 @@ EOF
 
     # TSV file for user's Tickets
     $agent->get_ok( $url . "Admin/Users/Modify.html?id=" . $root->id );
-    $agent->follow_link_ok( { text => 'Download User Tickets' } );
+    $agent->follow_link_ok( { text => 'User Tickets' } );
 
     my $ticket_info_tsv = <<EOF;
 id\tSubject\tStatus\tQueueName\tOwner\tPriority\tRequestors
