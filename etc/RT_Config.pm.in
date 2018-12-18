@@ -1411,7 +1411,7 @@ This is the format of the user transaction search result for "Download User Tran
 
 =cut
 
-Set($UserTransactionDataResultFormat, "'__ObjectId__', '__id__', '__Created__', '__Description__',\
+Set($UserTransactionDataResultFormat, "'__ObjectId__/TITLE:Ticket Id', '__id__', '__Created__', '__Description__',\
                                         '__OldValue__', '__NewValue__', '__Content__'");
 
 
