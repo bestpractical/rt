@@ -2668,6 +2668,13 @@ sub __DependsOn
     $objs->Limit( FIELD => 'ObjectId', VALUE => $self->id );
     push( @$list, $objs );
 
+    if ( $self->isa( 'RT::CustomField' ) ) {
+        $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => 'Type',  VALUE => 'CustomField' );
+        $objs->Limit( FIELD => 'Field', VALUE => $self->id );
+        push( @$list, $objs );
+    }
+
 # Links
     if ( $self->can('Links') ) {
         # make sure we don't skip any record
