@@ -1,0 +1,132 @@
+=head1 Roles in RT
+
+RT comes with several standard roles that define a user's relationship with
+a ticket. These core roles are Requestor, Cc, Owner, and AdminCc, and you
+can see them on tickets in the People section. Assets also have roles that
+define a user's relationship with a particular asset with Owner, Held By,
+and Contact.
+
+These roles are very useful for recording who asked for something
+(the Requestor) and who needs to take care of it (the Owner), for
+determining who should get notifications on a ticket from updates
+(replies and comments), and also for adding rights. But sometimes the default
+roles aren't enough and you'd like to add more. Custom roles allow you to
+do just that. You can create your own roles that work just like RT's
+built-in roles and selectively apply them to queues and catalogs.
+
+=head1 A Quick Example
+
+Tickets can sometimes have several people associated with them, but in
+different ways. For example, suppose an RT instance is managing questions
+that come in from potential new customers and the tickets initial go to a
+Sales Rep, who becomes the Owner. If the Sales person needs some extra technical
+information, they might assign the ticket to an Engineer by re-setting the
+Owner. This all works well until the Engineer answers the question and wants
+to set Owner back to the Sales person so they know the ticket is theirs
+again. Who was the Sales person?
+
+Of course it's all recorded in the ticket history, so the Engineer can go
+find the Sales person there. But custom roles allow you to now create
+Sales and Engineer roles on the ticket that will record each person
+throughout the life of the ticket. The participants can switch Owner back
+and forth to make it clear who should work on the ticket, but they
+retain their relationship with the ticket in the Sales and Engineer
+roles. This also allows you to create searches, set rights, and set
+notifications using these custom roles as well.
+
+=head2 Creating a New Custom Role
+
+To create a new custom role, go to Admin > Custom Roles > Create. Here, you
+have the option to give it a Name, a Description, and an Entry Hint. The
+Name field must be unique, the other fields are optional.
+Below these fields is a checkbox to allow multiple users to be assigned to this
+custom role on a ticket or asset. This works well if you have a role
+"Supervisors", for example, where more than one user might be assigned. In other
+cases you may want to restrict the role to just one user, like the Owner role.
+Either way, once the custom role is created, you can't change this multiple user
+option. If your needs change, you can always create a new custom role.
+
+=for html <img alt="Create a Custom Role"
+src="images/customroles-create-a-customrole.png">
+
+=for :text [Create a Custom Role F<docs/images/customroles-create-a-customrole.png>]
+
+=for :man [Create a Custom Role F<docs/images/customroles-create-a-customrole.png>]
+
+=head2 Enabling by Queue
+
+After creating your new custom role, you need to apply it to a queue or catalog for
+it to appear. Go to Admin > Custom Roles > [select the role] > Applies to, and you
+can select which objects the custom role should apply to.
+
+=for html <img alt="Apply Custom Role to Queue"
+src="images/customroles-apply-to-queue.png">
+
+=for :text [Apply Custom Role to Queue F<docs/images/customroles-apply-to-queue.png>]
+
+=for :man [Apply Custom Role to Queue F<docs/images/customroles-apply-to-queue.png>]
+
+=head2 Applying Rights to Specific Roles
+
+RT allows you to grants rights on users, groups, and roles like Owner and
+Requestor. The same options apply to your new custom roles and they will now show up
+on the rights pages under the core RT roles. As with standard RT roles, any rights
+granted on a role apply to a user when they are in that role, but are removed
+when the user is no longer in that role.
+
+This is useful, for example, if you have a "QA Manager" role and only they can
+modify a ticket when it is in the "QA review" status. You can assign
+ModifyTicket to that role, and if you have different QA Managers, only the one
+assigned to "QA Manager" on a given ticket can modify it.
+
+=head2 Assigning Users to a Custom Role
+
+Your new custom role will also show up in all of the places you are used to
+seeing standard roles like Requestor and Owner including on the create ticket
+page and in the People section on a ticket.
+
+To assign a user to a custom role on an existing ticket, go to the ticket
+display page and click on People. As with existing roles, you can
+search for a user or group to add it, or remove existing ones. For new
+tickets, the custom roles appear on the ticket create page below
+the default RT roles: Requestors, Cc, AdminCc.
+
+=for html <img alt="Assign Custom Role on Ticket Create"
+src="images/customroles-assign-on-ticket-create.png">
+
+=for :text [Assign Custom Role on Ticket Create F<docs/images/customroles-assign-on-ticket-create.png>]
+
+=for :man [Assign Custom Role on Ticket Create F<docs/images/customroles-assign-on-ticket-create.png>]
+
+Custom roles are also available as watchers on a queue at
+Admin > Queues > [select queue] > Watchers. Here, you will see on the left-hand
+side, all of the RT roles applied to the queue. You
+can search for a user or group and assign them to your new custom role. As
+a queue level custom role or watcher, the user will automatically be assigned as that
+role on each new ticket created in the queue and also granted the same rights on
+each of the tickets.
+
+=head2 Sending Notifications
+
+Since your new roles are custom, we don't have default notifications already set
+up in RT, but you can create new scrips to send notifications to custom roles just
+like RT's existing scrips. Starting in RT 4.4.2, you can easily copy an existing
+"Notify" action and insert your custom role in place of Owner, Cc, Requestor, or
+AdminCc.
+
+=head2 Search Tickets by Custom Role
+
+You can use RT's standard Query Builder to search for tickets with a custom role
+assigned to a specific user or group. To view the available custom roles,
+first add a queue to the query. After clicking on 'Add these terms', all
+of the custom roles applied to that queue will be listed at the bottom of the Query
+Builder criteria fields.
+
+=for html <img alt="Search by Custom Role with Query Builder"
+src="images/customroles-query-builder.png">
+
+=for :text [Search by Custom Role with Query Builder F<docs/images/customroles-query-builder.png>]
+
+=for :man [Search by Custom Role with Query Builder F<docs/images/customroles-query-builder.png>]
+
+=cut
