@@ -316,6 +316,30 @@ sub Create {
     }
 
     my $obj = $class->new( RT->SystemUser );
+
+    # Unlike MySQL and Oracle, Pg stores UTF-8 strings, without this, data
+    # could be be wrongly encoded on Pg.
+    if ( RT->Config->Get( 'DatabaseType' ) eq 'Pg' ) {
+        for my $field ( keys %$data ) {
+            if ( $data->{$field} && !utf8::is_utf8( $data->{$field} ) ) {
+
+                # Make sure decoded data is valid UTF-8, otherwise Pg won't insert
+                my $decoded;
+                eval {
+                    local $SIG{__DIE__};    # don't exit importer for errors happen here
+                    $decoded = Encode::decode( 'UTF-8', $data->{$field}, Encode::FB_CROAK );
+                };
+                if ( $@ ) {
+                    warn "$uid contains invalid UTF-8 data in $field: $@, will store encoded string instead\n"
+                      . Data::Dumper::Dumper( $data ) . "\n";
+                }
+                else {
+                    $data->{$field} = $decoded;
+                }
+            }
+        }
+    }
+
     my ($id, $msg) = eval {
         # catch and rethrow on the outside so we can provide more info
         local $SIG{__DIE__};
