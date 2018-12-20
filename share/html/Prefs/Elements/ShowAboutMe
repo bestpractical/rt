@@ -77,7 +77,7 @@
 % if ( $UserObj->Timezone ) {
           <td class="value"><%$UserObj->Timezone%></td>
 % } else {
-          <td class="value"><&|/l&>System Default</&></td>
+          <td class="value"><&|/l&>System Default</&> (<% RT->Config->Get('Timezone') %>)</td>
 % }
         </tr>
       <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Identity', InTable => 1 &>
