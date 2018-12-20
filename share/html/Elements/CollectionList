@@ -145,6 +145,11 @@ while ( my $record = $Collection->Next ) {
     my $warning = 0;
     my $Classes = '';
 
+    if ( $record->can('HighLightOnCondition') ) {
+        my $row_coloring = $record->HighLightOnCondition();
+        $Classes = join(' ', @{$row_coloring}) if $row_coloring;
+    }
+
     $m->callback(
         CallbackName => 'EachRow',
         Record       => $record,

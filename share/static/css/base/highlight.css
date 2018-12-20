@@ -1,0 +1,48 @@
+/* unset even and odd line colors. */
+tr.rowhighlight {background-color:#f0f8ff;margin:0;border:0;padding:0;spacing:0 !important; } 
+
+/* bg colors from highlight. */
+tr.row-bg-color-red td {
+ background-color: rgba(255, 85, 102, 0.1) !important
+}
+
+tr.row-bg-color-blue td {
+ background-color: rgba(0, 149, 191, 0.1) !important
+}
+
+tr.row-bg-color-green td {
+ background-color: rgba(68, 187, 119, 0.1) !important
+}
+
+tr.row-bg-color-yellow td {
+ background-color: rgba(255, 170, 68, 0.1) !important
+}
+
+tr.row-bg-color-purple td {
+ background-color: rgba(170, 68, 255, 0.1) !important
+}
+
+tr.row-bg-color-grey td {
+ background-color: rgba(153, 153, 153, 0.1) !important
+}
+
+/* Status Colours */
+tr.statusnew td {
+ background-color: rgba(255, 85, 102, 0.1) !important
+}
+
+tr.statusopen td {
+ background-color: rgba(255, 170, 68, 0.1) !important
+}
+
+tr.statusstalled td {
+ background-color: rgba(170, 68, 255, 0.1) !important
+}
+
+tr.statusresolved td {
+ background-color: rgba(68, 187, 119, 0.1) !important
+}
+
+tr.statusrejected td {
+ background-color: rgba(153, 153, 153, 0.1) !important
+}

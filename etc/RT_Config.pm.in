@@ -4127,4 +4127,26 @@ Set($HideOneTimeSuggestions, 0);
 
 =cut
 
+=head2 HighLightOnCondition
+
+Allow collections of RT objects to be highlighted a color based on conditions. This can be
+configured for any object and any attribute through the RT_SiteConfig.pm option "HighLightOnCondition",
+or color can be set per user based on ticket status under preferences.
+
+You can use "__CurrentUser__" under the Value key to have the attribute checked against the current user.
+Names of attributes should conincide with the method names for the object collection being targeted.
+
+The color condition that appears first will have the prioirty if multiple conditions are met. The available
+colors by default are blue, green, red, yellow, purple, grey.
+
+ Set(@HighLightOnCondition,
+        { "Attribute" => "Status", "Value" => "open", "Color" => "green" },
+        { "Attribute" => "Owner", "Value" => "__CurrentUser__", "Color" => "red" },
+        { "Attribute" => "id", "Value" => "__CurrentUser__", "Color" => "blue" } #highlight user collections
+  );
+
+=cut
+
+Set(@HighLightOnCondition, undef );
+
 1;
