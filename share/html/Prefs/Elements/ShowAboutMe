@@ -69,7 +69,7 @@
 % if ( $UserObj->Lang ) {
           <td class="value"><&|/l, $lang &>[_1]</&></td>
 % } else {
-          <td class="value"><&|/l&>System Default</&></td>
+          <td class="value"><&|/l&>System Default</&> (<% I18N::LangTags::List::name($session{CurrentUser}->LanguageHandle->language_tag) %>)</td>
 % }
         </tr>
         <tr>
