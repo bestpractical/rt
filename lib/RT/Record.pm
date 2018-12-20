@@ -2695,6 +2695,41 @@ sub __DependsOn
     return;
 }
 
+=head2 HighLightOnCondition
+
+Add css class to collection row if user prefs criteria are met.
+
+=cut
+
+sub HighLightOnCondition {
+    my $self = shift;
+
+    my $user = RT::User->new($self->CurrentUser);
+    my ($ret, $msg) = $user->Load($self->CurrentUser);
+    RT::Logger->error($msg) unless $ret;
+
+    my $color_config = RT::Config->Get('HighLightOnCondition', $user);
+    foreach my $condition (@{$color_config}) {
+        my ($attr, $value) = ( $condition->{Attribute}, $condition->{Value} );
+        next unless $attr and $value;
+
+        if ( !$self->_CoreAccessible->{$attr} ) {
+            next;
+        } else {
+            if ( $attr eq 'Queue' ) {
+                my $queue = RT::Queue->new($self->CurrentUser);
+                $queue->Load($value);
+                return ["row-bg-color-". $condition->{Color}] if $self->QueueObj->Name eq $queue->Name;
+            } elsif ( $value eq '__CurrentUser__' ) {
+                return ["row-bg-color-". $condition->{Color}] if $self->$attr eq $self->CurrentUser->Id;
+            }
+            elsif ( $self->$attr eq $value ) {
+                return ["row-bg-color-". $condition->{Color}];
+            }
+        }
+    }
+}
+
 # implement proxy method because some RT classes
 # override Delete method
 sub __Wipeout

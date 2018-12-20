@@ -1,0 +1,118 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div>
+% my $i = 0;
+% foreach my $color (@colors) {
+    <div>
+        <select name="Color-Argument" class="cascade-by-optgroup">
+            <optgroup label="Status">
+%               if ( $ARGS{'CurrentValue'}->[$i]->{Attribute} ) {
+                    <option selected="selected" value="<% $ARGS{'CurrentValue'}->[$i]->{Attribute} %>"><% $ARGS{'CurrentValue'}->[$i]->{Value} %></option>
+%               }
+                <option value=""<% !$ARGS{'CurrentValue'}->[$i]->{Value} && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
+%               foreach my $status (@statuses) {
+                    <option value="<% $status %>"><% $status %></option>
+%               }
+            </optgroup>
+        </select>
+        <& /Elements/SelectColor, Name  => "Color", Default => $ARGS{'CurrentValue'}->[$i]->{Color} &>
+    </div>
+% $i++;
+% }
+</div>
+<%INIT>
+my @colors = qw/blue green yellow purple grey red/;
+
+my @lifecycles = RT::Lifecycle->new($session{CurrentUser})->ListAll;
+my @lifecycle_objs;
+
+my $LoadLifecycle = sub {
+    my $lifecycle_name = shift;
+
+    my $lifecycle = RT::Lifecycle->new($session{CurrentUser});
+    $lifecycle->Load($lifecycle_name);
+
+    return $lifecycle;
+};
+
+map { push @lifecycle_objs, $LoadLifecycle->($_) unless $_ eq 'approvals' } @lifecycles;
+
+my @statuses;
+foreach my $lifecycle (@lifecycle_objs) {
+    my @temp_statuses = $lifecycle->Valid;
+    push @statuses, @temp_statuses;
+}
+</%INIT>
+
+<%METHOD Process>
+<%INIT>
+my %args = %{$ARGS{Arguments}};
+
+my @attributes = ref $args{'Color-Argument-Groups'} eq "ARRAY" 
+    ? @{$args{'Color-Argument-Groups'}}
+    : ($args{'Color-Argument-Groups'});
+
+my @colors = ref $args{'Color'} eq "ARRAY" ? @{$args{'Color'}} : ($args{'Color'});
+my @color_arguments = ref $args{'Color-Argument'} eq 'ARRAY' ? @{$args{'Color-Argument'}}
+    : ($args{'Color-Argument'});
+
+my @HighLightOnCondition;
+my $i = 0;
+foreach my $color_argument (@color_arguments) {
+    my $value     = $color_argument;
+    my $attribute = $attributes[$i];
+    my $color     = $colors[$i];
+
+    next unless $value and $attribute and $color;
+    push @HighLightOnCondition, { Attribute => $attribute, Value => $value, Color => $color };
+    $i++;
+}
+
+return scalar @HighLightOnCondition ? \@HighLightOnCondition : undef;
+</%INIT>
+</%METHOD>

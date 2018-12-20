@@ -1222,6 +1222,14 @@ our %META;
     ServiceAgreements => {
         Type => 'HASH',
     },
+    HighLightOnCondition => {
+        Section         => 'User Color Preferences', #loc
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Criteria',
+        WidgetArguments => {
+            Description => 'Select conditions for row coloring' # loc
+        }
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
@@ -1522,6 +1530,7 @@ sub Get {
     }
     $res = $OPTIONS{$name}           unless defined $res;
     $res = $META{$name}->{'Default'} unless defined $res;
+
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
 

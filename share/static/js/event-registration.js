@@ -45,6 +45,8 @@ jQuery(ReplaceUserReferences);
 jQuery(function() {
     jQuery("select.cascade-by-optgroup").each(function(){
         var name = this.name;
+        console.log('here');
+        console.log(name);
         if (!name) return;
 
         // Generate elements for cascading based on the master <select> ...

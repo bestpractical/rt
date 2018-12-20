@@ -33,6 +33,9 @@ function filter_cascade_by_id (id, vals) {
 }
 
 function filter_cascade_select (select, complete_select, vals) {
+    console.log(select);
+    console.log(complete_select);
+    console.log(vals);
     if ( !( vals instanceof Array ) ) {
         vals = [vals];
     }
