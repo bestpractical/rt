@@ -56,7 +56,7 @@
 
 <%PERL>
 my $i = 0;
-for my $queue (@queues) {
+for my $queue (@$queues) {
     $i++;
     my $lifecycle = $lifecycle{ lc $queue->{'Lifecycle'} };
 </%PERL>
@@ -71,7 +71,7 @@ for my $queue (@queues) {
    if ( $lifecycle->IsValid( $status ) ) {
 </%perl>
 <td align="right">
-    <a href="<% $link_status->($queue, $status) %>"><% $data->{$queue->{id}}->{lc $status} || '-' %></a>
+    <a href="<% $link_status->($queue, $status) %>"><% $data->{$queue->{Id}}->{lc $status} || '-' %></a>
 </td>
 %   } else {
 <td align="right">-</td>
@@ -108,25 +108,12 @@ $m->callback(
     link_status         => \$link_status,
 );
 
-my $Queues = RT::Queues->new( $session{'CurrentUser'} );
-$Queues->UnLimit();
-$m->callback( CallbackName => 'SQLFilter', Queues => $Queues );
-
-my @queues = grep $queue_filter->($_), @{ $Queues->ItemsArrayRef };
-$m->callback( CallbackName => 'Filter', Queues => \@queues );
-
-@queues = map {
-    {  id          => $_->Id,
-       Name        => $_->Name,
-       Description => $_->Description || '',
-       Lifecycle   => $_->Lifecycle,
-    }
-} grep $_, @queues;
-
 my %lifecycle;
 
-for my $queue (@queues) {
+for my $queue (@$queues) {
     my $cycle = RT::Lifecycle->Load( Name => $queue->{'Lifecycle'} );
+    RT::Logger->error('Unable to load lifecycle for ' . $queue->{'Lifecycle'})
+        unless $cycle;
     $lifecycle{ lc $cycle->Name } = $cycle;
 }
 
@@ -145,9 +132,9 @@ use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( RT->SystemUser );
 my $query =
     "(Status = '__Active__') AND (".
-    join(' OR ', map "Queue = ".$_->{id}, @queues)
+    join(' OR ', map "Queue = ".$_->{Id}, @$queues)
     .")";
-$query = 'id < 0' unless @queues;
+$query = 'id < 0' unless @$queues;
 $report->SetupGroupings( Query => $query, GroupBy => [qw(Status Queue)] );
 
 while ( my $entry = $report->Next ) {
@@ -157,5 +144,5 @@ while ( my $entry = $report->Next ) {
 }
 </%INIT>
 <%ARGS>
-$queue_filter => undef
+$queues => undef
 </%ARGS>

@@ -53,13 +53,21 @@
     titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueList.html',
 &>
 <& $comp,
-   queue_filter => sub { $_->CurrentUserHasRight('ShowTicket') && !exists $unwanted->{$_->Name} },
+   queues => $session{$cache_key}{objects},
 &>
 </&>
 </div>
 <%INIT>
 my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QueueList', {});
 my $comp = $SplitByLifecycle? '/Elements/QueueSummaryByLifecycle' : '/Elements/QueueSummaryByStatus';
+my $cache_key = SetObjectSessionCache(
+    ObjectType => 'RT::Queue',
+    CheckRight => 'ShowTicket',
+    ShowAll => 0,
+    CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+    Exclude => $unwanted,
+);
+
 </%INIT>
 <%ARGS>
 $SplitByLifecycle => 1

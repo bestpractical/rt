@@ -104,6 +104,19 @@ if ($ARGS{'Save'}) {
 
     my ($ok, $msg) = $user->SetPreferences('QueueList', $unwanted);
     push @actions, $ok ? loc('Preferences saved.') : $msg;
+
+    # Clear queue caches
+    if ( $ok ){
+        # Clear for 'CreateTicket'
+        my $cache_key = GetObjectSessionCacheKey( ObjectType => 'RT::Queue',
+            CheckRight => 'CreateTicket', ShowAll => 0 );
+        delete $session{$cache_key};
+
+        # Clear for 'ShowTicket'
+        $cache_key = GetObjectSessionCacheKey( ObjectType => 'RT::Queue',
+            CheckRight => 'ShowTicket', ShowAll => 0 );
+        delete $session{$cache_key};
+    }
 }
 
 </%INIT>

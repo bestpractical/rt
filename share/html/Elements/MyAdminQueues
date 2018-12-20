@@ -47,6 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc("Queues I administer"), bodyclass => "" &>
 <& /Elements/QueueSummaryByStatus,
-   queue_filter => sub { $_->CurrentUserHasRight('AdminQueue') },
+   queues => $session{$cache_key}{objects},
 &>
 </&>
+<%INIT>
+my $cache_key = SetObjectSessionCache(
+    ObjectType => 'RT::Queue',
+    CheckRight => 'AdminQueue',
+    ShowAll => 0,
+    CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+);
+</%INIT>
