@@ -1,0 +1,145 @@
+=head1 General Data Protection Regulation (GDPR) Support in RT
+
+The General Data Protection Regulation (GDPR) is a new set of regulations passed by the European
+Union taking effect on 25 May 2018. You can read more about the new regulations on
+the L<GDPR website|https://ec.europa.eu/info/law/law-topic/data-protection_en>.
+
+Many of these regulations fall to the web site owner or provider of a service, so they are outside
+the scope of a software solution. However, RT provides some features that make
+compliance easier for organizations who run RT, whatever your internal GDPR policies
+might be.
+
+=head1 Viewing User Data in RT
+
+One of the GDPR provisions asserts a "right of access" for users, meaning they can request
+access to the personal data an organization has stored for them. Core user data in RT, like
+name and email address, are typically stored on a user record.
+There are different options to manage how different classes of RT users can view
+and even edit their user information.
+
+=head2 Privileged Users
+
+Privileged users in RT are typically the staff of an organization, so they likely have access
+to their information in RT. If given the ModifySelf right, Privileged users can
+see and modify their full user record at Logged in as > Settings > About Me.
+
+=head2 Unprivileged Users
+
+Unprivileged users will interact with RT via the Self Service interface or through email only.
+These users are typically customers and will have much less default access in RT. Since there
+are many different relationships with end users, RT offers several different options to
+allow Self Service users to view and edit their user data. All of the options below also
+require the users to have the ModifySelf right.
+
+L<RT_Config/SelfServiceUserPrefs> has the following options:
+
+=over
+
+=item C<edit-prefs> (default)
+
+When set to C<edit-prefs>, self service users will be able to update
+their Timezone and Language preference and update their password.
+This is the default behavior of RT.
+
+=item C<view-info>
+
+When set to C<view-info>, users will have full access to all their
+user information stored in RT on a read-only page.
+
+=item C<edit-prefs-view-info>
+
+When set to C<edit-prefs-view-info>, users will have full access as in
+the C<view-info> option, but also will be able to update their Language
+and password as in the default C<edit-prefs> option.
+
+=item C<full-edit>
+
+When set to C<full-edit>, users will be able to fully view and update
+all of their stored RT user information.
+
+=back
+
+=head1 Downloading User Data
+
+To provide RT administrators a way to give end users a copy of their data on
+request, RT provides several different options to download user data to format-neutral
+tsv files. Access to these downloads are available for admins and can also
+be offered through self service.
+
+For RT administrators, user data downloads are available on the user admin
+page at Admin > Users > Select > [find a user].
+
+To offer download to users via self service, enable the option
+L<RT_Config/SelfServiceDownloadUserData> and grant the ModifySelf right
+to unprivileged users.
+
+=head2 Download Core User Data
+
+This option provides a file with basic user information from RT. The
+format of the download can be modified by setting L<RT_Config/UserDataResultFormat>.
+
+=head2 Download User Tickets
+
+This option provides a file with ticket summaries for all tickets that have
+the selected user as a requestor. The ticket summary file format can be
+configured with L<RT_Config/UserTicketDataResultFormat>.
+
+=head2 Download User Transactions
+
+This option provides transaction summaries for all transactions on which the
+selected user is the creator. This will typically be all of the correspondence
+where they replied back to a ticket, so it contains their part of ticket
+conversations. The format can be configured with L<RT_Config/UserTransactionDataResultFormat>.
+
+=head1 Removing User Data
+
+One provision of GDPR gives users the "right to be forgotten" which means they can
+request that their data be removed from an organization's system. RT provides several
+options to remove data associated with a user. These use the L<RT::Shredder> tool and
+links are provided from the user administration page to make removal easier.
+
+=head2 Anonymize User
+
+This option will clear all data on the user record for the current user,
+while preserving the user record. The required fields for a user are set
+to anonymous values.
+
+This option leaves all tickets intact, but the personal information, like
+email address, stored on the user record is removed.
+
+It is important to note that this action will not remove user information
+from ticket message bodies or email headers, only data from any RT-based sections like
+People. To anonymize ticket data, RT provides a script C<rt-munge-attachments>
+which you should also run. It is not linked from the web UI because it can
+require a long time to run.
+
+=head2 Replace User Information
+
+This option uses shredder with the replace_relations option to replace the
+existing userid with the RT user "Nobody" in transactions and other records
+that have the id. The user record is then deleted. This option is likely the
+easiest since it automatically handles linked objects in one step.
+
+As with the Anonymize User option, this shredder configuration does not find
+references to email address or other data in the body of correspondence.
+RT provides a script C<rt-munge-attachments> which you should also run to replace
+or remove these references.
+
+To replace with a user other than Nobody, update the replace_relations argument
+on the shredder page before running.
+
+=head2 Remove User Information
+
+This option uses shredder to remove the user record by running shredder
+it without the replace option. Note that this option will fail unless if it
+finds remaining references to the user. For example, if the user is a requestor
+on a ticket and the ticket is still in the system, the user will still be connected
+to the ticket, transactions on the ticket, etc.
+
+To resolve this, you can use other shredder plugins to first remove the other
+associated objects. For tickets, for example, you could run a search for
+"RequestorEmail = 'user1@example.com'" and then shred the tickets returned.
+Once the associated objects are shredded, you can try shredding the user again.
+See L<RT::Shredder> for information on plugins for other objects.
+
+=cut
