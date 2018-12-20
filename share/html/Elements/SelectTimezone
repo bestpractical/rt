@@ -60,7 +60,7 @@ for ( @names ) {
 </%ONCE>
 <select name="<% $Name %>">
 % if ( $ShowNullOption ) {
-<option value=""><&|/l&>System Default</&></option>
+<option value=""><&|/l&>System Default</&> (<% RT->Config->Get('Timezone') %>)</option>
 % }
 % foreach my $tz (@names) {
 <option value="<% $tz %>" <% ($Default||'') eq $tz? 'selected="selected"' :''
