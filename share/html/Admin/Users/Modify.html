@@ -126,6 +126,9 @@
 <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
 
 </&>
+<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
+<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
+</&>
 % $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
 </td>
 
@@ -207,13 +210,14 @@
 
 <& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
 
+% unless ( $Create ) {
+<& /User/Elements/RelatedData, UserObj => $UserObj &>
+% }
+
 % $m->callback( %ARGS, CallbackName => 'RightColumnBottom', UserObj => $UserObj );
 </td></tr>
 <tr>
 <td colspan="2">
-<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
-<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
-</&>
 %if (!$Create && $UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
@@ -232,9 +236,6 @@
 % }
 </form>
 
-% unless ( $Create ) {
-<& /User/Elements/RelatedData, UserObj => $UserObj &>
-% }
 <%INIT>
 
 my $UserObj = RT::User->new($session{'CurrentUser'});
