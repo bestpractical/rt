@@ -232,7 +232,9 @@
 % }
 </form>
 
+% unless ( $Create ) {
 <& /User/Elements/RelatedData, UserObj => $UserObj &>
+% }
 <%INIT>
 
 my $UserObj = RT::User->new($session{'CurrentUser'});
