@@ -167,6 +167,70 @@ diag( "Test a user starting with ShowTicket and ModifyTicket rights" );
     }
 }
 
+diag( "Test a user with SuperUser granted later" );
+{
+    my $user_e = RT::Test->load_or_create_user(
+        Name     => 'user_e',
+        Password => 'password',
+    );
+    ok( $user_e && $user_e->id, 'loaded or created user' );
+
+    my $m = RT::Test::Web->new;
+    ok( $m->login( 'user_e', 'password' ), 'logged in as user E' );
+
+    check_queues( $m, [], [] );
+
+    ok(
+        RT::Test->add_rights(
+            { Principal => $user_e, Right => [qw(SuperUser)] },
+        ),
+        'add SuperUser right'
+    );
+    for my $queue ( 1, $original_test_queue->id ) {
+        check_queues( $m );
+        $m->follow_link_ok( { text => "Ticket in queue $queue" } );
+        $m->follow_link_ok( { text => 'Basics' } );
+        check_queues( $m, undef, undef, $m->uri, 'TicketModify' );
+    }
+}
+
+diag( "Test a user with ShowTicket granted later" );
+{
+    my $user_f = RT::Test->load_or_create_user(
+        Name     => 'user_f',
+        Password => 'password',
+    );
+    ok( $user_f && $user_f->id, 'loaded or created user' );
+    ok(
+        RT::Test->add_rights(
+            { Principal => $user_f, Right => [qw(SeeQueue)] },
+        ),
+        'add global SeeQueue right'
+    );
+
+    my $m = RT::Test::Web->new;
+    ok( $m->login( 'user_f', 'password' ), 'logged in as user F' );
+
+    # Links in Queue List portlet
+    for my $queue ( 'General', $original_test_queue->Name ) {
+        ok( !$m->find_link( text => 'General' ), "no link to $queue ticket search" );
+    }
+
+    ok(
+        RT::Test->add_rights(
+            { Principal => $user_f, Right => [qw(ShowTicket)] },
+        ),
+        'add global ShowTicket right'
+    );
+
+    $m->reload;
+
+    # Links in Queue List portlet
+    for my $queue ( 'General', $original_test_queue->Name ) {
+        ok( $m->find_link( text => $queue ), "found link to $queue ticket search" );
+    }
+}
+
 sub new_queue {
     my $name = shift;
     my $new_queue = RT::Queue->new(RT->SystemUser);
