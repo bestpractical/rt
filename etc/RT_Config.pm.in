@@ -2470,6 +2470,17 @@ chance of fallback to the login screen, even if REMOTE_USER failed.
 
 Set($WebFallbackToRTLogin, undef);
 
+=item C<$LogoutURL>
+
+By default, C<$LogoutURL> is set to RT's logout page. When an
+external service is used to log into RT, C<$LogoutURL> must be set
+to the identity provider's logout URL. The URL must also include
+the link's full path, for example: 'https://www.example.com'.
+
+=cut
+
+Set($LogoutURL, '/NoAuth/Logout.html');
+
 =item C<$WebRemoteUserGecos>
 
 C<$WebRemoteUserGecos> means to match 'gecos' field as the user
