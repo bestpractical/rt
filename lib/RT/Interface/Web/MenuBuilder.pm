@@ -272,10 +272,11 @@ sub BuildMainNav {
 
         }
     }
+    my $logout_url = RT->Config->Get('LogoutURL');
     if ( $current_user->Name
          && (   !RT->Config->Get('WebRemoteUserAuth')
               || RT->Config->Get('WebFallbackToRTLogin') )) {
-        $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
+        $about_me->child( logout => title => loc('Logout'), path => $logout_url );
     }
     if ( $request_path =~ m{^/Dashboards/(\d+)?}) {
         if ( my $id = ( $1 || $HTML::Mason::Commands::DECODED_ARGS->{'id'} ) ) {
@@ -1246,10 +1247,11 @@ sub BuildSelfServiceNav {
         $about_me->child( prefs => title => loc('Preferences'), path => '/SelfService/Prefs.html' );
     }
 
+    my $logout_url = RT->Config->Get('LogoutURL');
     if ( $current_user->Name
          && (   !RT->Config->Get('WebRemoteUserAuth')
               || RT->Config->Get('WebFallbackToRTLogin') )) {
-        $about_me->child( logout => title => loc('Logout'), path => '/NoAuth/Logout.html' );
+        $about_me->child( logout => title => loc('Logout'), path => $logout_url );
     }
 
     if ($current_user->HasRight( Right => 'ShowArticle', Object => RT->System )) {
