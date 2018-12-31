@@ -56,6 +56,38 @@ use base qw(RT::Shredder::Plugin::Base::Search);
 
 RT::Shredder::Plugin::Users - search plugin for wiping users.
 
+=head1 SYNOPSIS
+
+This shredder plugin removes user records from the RT system. Since users
+can be connected to many other objects in RT, these connections must be
+resolved in some way before removing a user record. RT will not
+automatically shred linked objects (i.e., tickets, transactions,
+attachments, etc.) when attempting to shred a user.
+
+RT provides the following options for handling linked objects.
+
+=head2 Replace User
+
+This option locates all records currently referenced by the user you with
+to shred and replaces the reference with a reference to the user record you
+provide. This can be another real user or a placeholder user. Once these
+references are updated, the original user can be shredded.
+
+You can use this option with the replace_relations argument.
+
+=head2 Delete Objects First
+
+If you wish to completely remove all records associated with a user, you
+can perform searches and remove objects using other shredder plugins
+first.  For example, if the user is a requestor on one or more tickets,
+first use the Tickets shredder plugin and search for
+"Requestor.EmailAddress = 'user1@example.com'".  Once all associated
+objects are removed, you may then use the users plugin to shred the user
+record.
+
+If you receive an error when trying to shred a user, it's possible it is still
+reference by other objects in RT.
+
 =head1 ARGUMENTS
 
 =head2 status - string
