@@ -57,7 +57,7 @@ sub plugin_html
 {
     my ($file, $out_fh) = @_;
     my $parser = RT::Shredder::POD::HTML->new;
-    $parser->select('ARGUMENTS', 'USAGE');
+    $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
     $parser->parse_from_file( $file, $out_fh );
     return;
 }
