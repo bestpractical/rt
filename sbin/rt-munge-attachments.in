@@ -92,32 +92,42 @@ print STDERR $msg . "\n";
 
 =head1 rt-munge-attachments
 
-rt-munge-attachments - Remove or replace string from attachments table.
+rt-munge-attachments - Remove or replace strings in attachment records
 
 =head1 SYNOPSIS
 
-    rt-munge-attachments --search="user1@example.com" --replace="Ex-Employee"
+    rt-munge-attachments --search="user1@example.com" --replace="removed-user@example.com"
 
 =cut
 
 =head1 DESCRIPTION
 
-When a match is found in the Headers column, the header is deleted unless a replacement
-value was provided. If a match is found in the Content column then the matching substring
-will be replaced with a blank or provided value.
+In RT, "attachments" contain all correspondence on tickets, not just file-based
+attachments. Although attachments are normally not modified by RT once created,
+this script provides a way to change or remove personalized data like email
+addresses that might be contained in the headers or bodies of RT attachment
+records. This allows admins to comply with GDPR regulations, but retain ticket
+histories with remaining non-personal information.
+
+A transaction is recorded when this script modifies content so there is a record that
+something was changed on the ticket. Details of the change are not recorded since
+the values would likely contain personal information which the script was run to
+remove.
+
+If modifying ticket history violates audit policies, admins should not use this
+script.
 
 =head1 OPTIONS
 
-=over 2
+=over
 
 =item --search=SEARCH
 
-Provide a string to search the header and content columns in the attachments table, if a match
-is found the content will be removed.
+Provide a string to search the header and content columns in the attachments table.
+If a match is found the content will be removed unless a replacement is provided.
 
 =item --replace=REPLACEMENT
 
-Provide a string to replace strings matching the search string for the
-attachments table.
+Provide a string to replace the value matched by the search.
 
 =back
