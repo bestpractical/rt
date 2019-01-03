@@ -1403,7 +1403,7 @@ Set($UserDataResultFormat, "'__id__', '__Name__', '__EmailAddress__', '__RealNam
                             '__NickName__', '__Organization__', '__HomePhone__', '__WorkPhone__',\
                             '__MobilePhone__', '__PagerPhone__', '__Address1__', '__Address2__',\
                             '__City__', '__State__','__Zip__', '__Country__', '__Gecos__', '__Lang__',\
-                            '__FreeFormContactInfo__'");
+                            '__Timezone__', '__FreeFormContactInfo__'");
 
 =item C<$UserTransactionDataResultFormat>
 
@@ -1411,7 +1411,7 @@ This is the format of the user transaction search result for "Download User Tran
 
 =cut
 
-Set($UserTransactionDataResultFormat, "'__ObjectId__', '__id__', '__Created__', '__Description__',\
+Set($UserTransactionDataResultFormat, "'__ObjectId__/TITLE:Ticket Id', '__id__', '__Created__', '__Description__',\
                                         '__OldValue__', '__NewValue__', '__Content__'");
 
 
@@ -1881,9 +1881,10 @@ Set($SelfServiceRequestUpdatePortlet, 0);
 
 =item C<$SelfServiceDownloadUserData>
 
-Allow Self Service users to download their user information, ticket data
-and transaction data as a .tsv file. When enabled, these three options
-will appear on the /SelfService/Prefs.html page.
+Allow Self Service users to download their user information, ticket data,
+and transaction data as a .tsv file. When enabled, these options
+will appear in the self service interface at Logged in as > Preferences.
+Users also need the ModifySelf right to have access to this page.
 
 =cut
 
