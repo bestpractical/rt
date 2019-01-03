@@ -1695,7 +1695,15 @@ sub stop_server {
     kill 'TERM', @SERVERS;
     foreach my $pid (@SERVERS) {
         if ($ENV{RT_TEST_WEB_HANDLER} =~ /^apache/) {
-            sleep 1 while kill 0, $pid;
+            my $count = 0;
+            while ( kill 0, $pid ) {
+                sleep 1;
+                last if $count++ >= 100;
+            }
+
+            # Give it a final shot and leave it.
+            # It's more important to not hang the tests
+            kill 'KILL', $pid if kill 0, $pid;
         } else {
             waitpid $pid, 0;
         }
