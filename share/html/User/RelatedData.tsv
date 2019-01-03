@@ -63,15 +63,18 @@ if ( $session{'CurrentUser'}->id ne $id ) {
 }
 
 my $Collection;
+my $filename;
 
 if ( $Type eq 'User' ) {
     $Format = RT->Config->Get('UserDataResultFormat') unless $Format;
+    $filename = 'UserData.tsv';
 
     $Collection = RT::Users->new( $session{'CurrentUser'} );
     $Collection->Limit( FIELD => 'id', VALUE => $id );
 
 } elsif ( $Type eq 'Transaction' ) {
     $Format = RT->Config->Get('UserTransactionDataResultFormat') unless $Format;
+    $filename = 'UserTransactionData.tsv';
 
     $Collection = RT::Transactions->new( $session{'CurrentUser'} );
     $Collection->Limit( FIELD => 'ObjectType', VALUE => 'RT::Ticket' );
@@ -81,5 +84,5 @@ if ( $Type eq 'User' ) {
     $Collection->Limit( FIELD => 'Type',       VALUE => 'Comment' );
 }
 
-$m->comp( "/Elements/TSVExport", Collection => $Collection, Format => $Format, PreserveNewLines => $PreserveNewLines );
+$m->comp( "/Elements/TSVExport", Collection => $Collection, Format => $Format, PreserveNewLines => $PreserveNewLines, Filename => $filename );
 </%INIT>

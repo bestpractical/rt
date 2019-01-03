@@ -146,6 +146,11 @@ my $COLUMN_MAP = {
         title     => 'Status', # loc
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
+    Timezone => {
+        title     => 'Timezone', # loc
+        attribute => 'Timezone',
+        value     => sub { return $_[0]->Timezone },
+    },
 };
 
 </%ONCE>
