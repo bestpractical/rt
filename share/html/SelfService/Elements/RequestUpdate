@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="quick-create">
-<&| /Widgets/TitleBox, title => loc('Update my user information request') &>
+<&| /Widgets/TitleBox, title => loc('Request user information update') &>
 <div><&|/l&>Please indicate which user fields you would like updated</&></div>
 <form method="post"
 action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
