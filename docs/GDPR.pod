@@ -28,8 +28,13 @@ see and modify their full user record at Logged in as > Settings > About Me.
 Unprivileged users will interact with RT via the Self Service interface or through email only.
 These users are typically customers and will have much less default access in RT. Since there
 are many different relationships with end users, RT offers several different options to
-allow Self Service users to view and edit their user data. All of the options below also
-require the users to have the ModifySelf right.
+allow Self Service users to view and edit their user data. All of the options below except
+C<view-info> also require the users to have the ModifySelf right.
+
+For options C<view-info> and C<edit-prefs-view-info>, Self Service users
+can request user infomation updates by creating tickets on Preferences
+page, the queue of these tickets is set in
+L<RT_Config/SelfServiceRequestUpdateQueue>.
 
 L<RT_Config/SelfServiceUserPrefs> has the following options:
 
