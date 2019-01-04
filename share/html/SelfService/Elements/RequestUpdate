@@ -58,10 +58,6 @@ action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
             <td class="label"><&|/l&>Subject</&>:</td>
             <td colspan="3" class="value"><input type="text" size="50" name="Subject" value="<% $args->{Subject} || '' %>" /></td>
         </tr>
-        <tr>
-            <td class="label"><&|/l&>Requestors</&>:</td>
-            <td colspan="3" class="value"><& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress &></td>
-        </tr>
         <tr class="input-row">
             <td class="labeltop"><&|/l&>Description</&>:</td>
             <td colspan="3" class="value"><textarea name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></td>

@@ -164,7 +164,7 @@ if ( $request_queue->id ) {
     push @results,
       ProcessQuickCreate(
         Path    => $path,
-        ARGSRef => { %ARGS, Queue => $request_queue->id },
+        ARGSRef => { %ARGS, Queue => $request_queue->id, Requestors => $session{CurrentUser}->EmailAddress },
       );
 }
 
