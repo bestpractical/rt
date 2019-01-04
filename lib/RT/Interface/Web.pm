@@ -2486,6 +2486,9 @@ sub ProcessAttachments {
     my %args = (
         ARGSRef => {},
         Token   => '',
+        # For back-compatibility, CheckSize is not enabled by default. But for
+        # callers that mean to check returned values, it's safe to enable.
+        CheckSize => wantarray ? 1 : 0,
         @_
     );
 
@@ -2513,11 +2516,30 @@ sub ProcessAttachments {
         # hence it was not decoded along with all of the standard
         # arguments in DecodeARGS
         my $file_path = Encode::decode( "UTF-8", "$new");
+
+        if ( $args{CheckSize} and my $max_size = RT->Config->Get( 'MaxAttachmentSize' ) ) {
+            my $content = $attachment->bodyhandle->as_string;
+
+            # The same encoding overhead as in Record.pm
+            $max_size *= 3 / 4 if !$RT::Handle->BinarySafeBLOBs && $content =~ /\x00/;
+            if ( length $content > $max_size ) {
+                my $file_name = ( File::Spec->splitpath( $file_path ) )[ 2 ];
+                return (
+                    0,
+                    loc(
+                        "File '[_1]' size([_2] bytes) exceeds limit([_3] bytes)",
+                        $file_name, length $content, $max_size
+                    )
+                );
+            }
+        }
+
         $session{'Attachments'}{ $token }{ $file_path } = $attachment;
 
         $update_session = 1;
     }
     $session{'Attachments'} = $session{'Attachments'} if $update_session;
+    return 1;
 }
 
 
