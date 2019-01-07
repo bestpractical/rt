@@ -68,7 +68,7 @@ RT provides the following options for handling linked objects.
 
 =head2 Replace User
 
-This option locates all records currently referenced by the user you with
+This option locates all records currently referenced by the user you wish
 to shred and replaces the reference with a reference to the user record you
 provide. This can be another real user or a placeholder user. Once these
 references are updated, the original user can be shredded.
