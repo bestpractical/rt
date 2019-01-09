@@ -1867,17 +1867,20 @@ all of their stored RT user information.
 
 Set($SelfServiceUserPrefs, 'edit-prefs');
 
-=item C<$SelfServiceRequestUpdatePortlet>
+=item C<$SelfServiceRequestUpdateQueue>
 
-Set this to 1 to allow Self Service users to request updates to
-their RT user information. When enabled, this portlet adds a quick
-ticket create portlet to the Self Service preferences page. This
-option is only available when $SelfServiceUserPrefs is set to
-'view-info' or 'edit-prefs-view-info'.
+Set this to the name of the queue to use for tickets requesting updates
+to user infomation from Self Service users. Once it's set, a quick
+ticket create portlet will show up on Preferences page for self service
+users. This option is only available when $SelfServiceUserPrefs is set
+to 'view-info' or 'edit-prefs-view-info'.
+
+Self service users need the CreateTicket right on this queue to create
+a ticket.
 
 =cut
 
-Set($SelfServiceRequestUpdatePortlet, 0);
+Set($SelfServiceRequestUpdateQueue, undef);
 
 =item C<$SelfServiceDownloadUserData>
 

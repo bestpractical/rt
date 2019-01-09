@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="quick-create">
-<&| /Widgets/TitleBox, title => loc('Update my user information request') &>
+<&| /Widgets/TitleBox, title => loc('Request user information update') &>
 <div><&|/l&>Please indicate which user fields you would like updated</&></div>
 <form method="post"
 action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
@@ -56,15 +56,7 @@ action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
     <table>
         <tr class="input-row">
             <td class="label"><&|/l&>Subject</&>:</td>
-            <td colspan="3" class="value"><input type="text" size="50" name="Subject" value="<% $args->{Subject} || '' %>" /></td>
-        </tr>
-        <tr class="input-row">
-            <td class="label"><&|/l&>Queue</&>:</td>
-            <td class="value"><& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &></td>
-        </tr>
-        <tr>
-            <td class="label"><&|/l&>Requestors</&>:</td>
-            <td colspan="3" class="value"><& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress &></td>
+            <td colspan="3" class="value"><input type="text" size="50" name="Subject" value="<% $args->{Subject} || loc('Please update my user information') %>" /></td>
         </tr>
         <tr class="input-row">
             <td class="labeltop"><&|/l&>Description</&>:</td>

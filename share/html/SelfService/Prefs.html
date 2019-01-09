@@ -88,7 +88,7 @@
 % }
 % if ( $pref eq 'view-info' || $pref eq 'edit-prefs-view-info' ) {
 <& /Prefs/Elements/ShowAboutMe, UserObj => $user &>
-%    if ( $request_portlet ) {
+%    if ( $request_queue->id ) {
 <& Elements/RequestUpdate, User=> $user &>
 %    }
 % }
@@ -104,7 +104,14 @@ my $user = $session{'CurrentUser'}->UserObj;
 my $password = [ qw(CurrentPass NewPass1 NewPass2) ];
 
 my $pref = RT->Config->Get( 'SelfServiceUserPrefs' ) || '';
-my $request_portlet = RT->Config->Get( 'SelfServiceRequestUpdatePortlet' );
+my $request_queue = RT::Queue->new( $session{CurrentUser} );
+
+if ( my $queue_name = RT->Config->Get('SelfServiceRequestUpdateQueue') ) {
+    $request_queue->Load($queue_name);
+    unless ( $request_queue->id ) {
+        RT->Logger->error("Couldn't load $queue_name");
+    }
+}
 
 if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' || $pref eq 'full-edit' ) {
 
@@ -151,9 +158,14 @@ if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' || $pref eq 'full-
     }
 }
 
-if ( $request_portlet ) {
+
+if ( $request_queue->id ) {
     my $path = RT->Config->Get('WebPath') . '/SelfService/Prefs.html';
-    push @results, ProcessQuickCreate( Path => $path, ARGSRef => \%ARGS );
+    push @results,
+      ProcessQuickCreate(
+        Path    => $path,
+        ARGSRef => { %ARGS, Queue => $request_queue->id, Requestors => $session{CurrentUser}->EmailAddress },
+      );
 }
 
 #A hack to make sure that session gets rewritten.
