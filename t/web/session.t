@@ -6,6 +6,13 @@ use RT::Test tests => undef;
 
 plan skip_all => 'SQLite has shared file sessions' if RT->Config->Get('DatabaseType') eq 'SQLite';
 
+# Web server hangs when processing the same session row after tied
+# %session on Oracle with non-inline web servers :/
+# Use file session instead for now.
+if ( RT->Config->Get('DatabaseType') eq 'Oracle' && ( $ENV{'RT_TEST_WEB_HANDLER'} || '' ) ne 'inline' ) {
+    RT->Config->Set( 'WebSessionClass', 'Apache::Session::File' );
+}
+
 my ($baseurl, $agent) = RT::Test->started_ok;
 my $url = $agent->rt_base_url;
 
@@ -25,15 +32,12 @@ diag "Test server running at $baseurl";
     $agent->content_contains("Logout", "Found a logout link");
 }
 
-my $ids_ref = RT::Interface::Web::Session->Ids();
-
-# Should only have one session id at this point.
-is( scalar @$ids_ref, 1, 'Got just one session id');
+my ($session_id) = $agent->cookie_jar->as_string =~ /RT_SID_[^=]+=(\w+);/;
 
 diag 'Load session for root user';
 my %session;
-tie %session, 'RT::Interface::Web::Session', $ids_ref->[0];
-is ( $session{'_session_id'}, $ids_ref->[0], 'Got session id ' . $ids_ref->[0] );
+tie %session, 'RT::Interface::Web::Session', $session_id;
+is ( $session{'_session_id'}, $session_id, 'Got session id ' . $session_id );
 is ( $session{'CurrentUser'}->Name, 'root', 'Session is for root user' );
 
 diag 'Test queues cache';
@@ -51,8 +55,8 @@ sleep 1;
 $agent->get($url);
 is ($agent->status, 200, "Loaded a page");
 
-tie %session, 'RT::Interface::Web::Session', $ids_ref->[0];
-is ( $session{'_session_id'}, $ids_ref->[0], 'Got session id ' . $ids_ref->[0] );
+tie %session, 'RT::Interface::Web::Session', $session_id;
+is ( $session{'_session_id'}, $session_id, 'Got session id ' . $session_id );
 is ( $session{'CurrentUser'}->Name, 'root', 'Session is for root user' );
 is ($last_updated, $session{'SelectObject---RT::Queue---' . $user_id . '---CreateTicket---0'}{'lastupdated'},
     "lastupdated is still $last_updated");
