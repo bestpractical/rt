@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 4.0.x\n"
 "Report-Msgid-Bugs-To: rt-devel <rt-devel@lists.bestpractical.com>\n"
-"POT-Creation-Date: 2017-07-26 21:00+0000\n"
-"PO-Revision-Date: 2016-08-03 01:37+0000\n"
-"Last-Translator: dmaniadakis <Unknown>\n"
+"POT-Creation-Date: 2018-06-26 19:30+0000\n"
+"PO-Revision-Date: 2019-01-11 19:53+0000\n"
+"Last-Translator: sunnavy <sunnavy@gmail.com>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-05-02 18:16+0000\n"
-"X-Generator: Launchpad (build 18623)\n"
+"X-Launchpad-Export-Date: 2019-01-11 20:16+0000\n"
+"X-Generator: Launchpad (build 18855)\n"
 "Language: el\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
@@ -34,8 +34,9 @@ msgstr ""
 msgid "#%1: %2"
 msgstr ""
 
+#. ($lang)
 #. ($self->Data)
-#: lib/RT/Transaction.pm:1148 lib/RT/Transaction.pm:1187
+#: lib/RT/Transaction.pm:1148 lib/RT/Transaction.pm:1187 share/html/Prefs/Elements/ShowAboutMe:69
 msgid "%1"
 msgstr ""
 
@@ -216,8 +217,8 @@ msgstr "%1 - Προσδιορίστε το άρθρωμα αναζήτησης �
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2018', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2018', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -234,9 +235,14 @@ msgstr "Προστέθηκε η τιμή %1 για %2"
 
 #. ($email)
 #. ($record->Name)
-#: share/html/Dashboards/Subscription.html:297 share/html/Dashboards/Subscription.html:325
+#: share/html/Dashboards/Subscription.html:300 share/html/Dashboards/Subscription.html:328
 msgid "%1 added to dashboard subscription recipients"
 msgstr "%1 προστέθηκε στο ταμπλό παραληπτών συνδρομής"
+
+#. ($self->Name, $queue->Name)
+#: lib/RT/CustomRole.pm:414
+msgid "%1 added to queue %2"
+msgstr ""
 
 #. (join ' ', @res)
 #: lib/RT/Date.pm:489
@@ -368,7 +374,7 @@ msgstr "%1 έχει ήδη ρυθμιστεί σε %2"
 #. ($name, $self->loc($args{Type}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:493 share/html/Ticket/Update.html:344 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:494 share/html/Ticket/Update.html:344 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "Η %1 είναι η διεύθυνση στην οποία το RT λαμβάνει αλληλογραφία. Η προσθήκη της ως '%2' θα δημιουργήσει ένα βρόχο αλληλογραφίας"
 
@@ -394,7 +400,7 @@ msgstr "Το %1 δεν είναι ένα %2"
 
 #. ($args{'Lifecycle'})
 #. ($value)
-#: lib/RT/Catalog.pm:217 lib/RT/Queue.pm:179 lib/RT/Record/Role/Lifecycle.pm:126
+#: lib/RT/Catalog.pm:217 lib/RT/Queue.pm:179 lib/RT/Record/Role/Lifecycle.pm:132
 msgid "%1 is not a valid lifecycle"
 msgstr "Το %1 δεν είναι ένας έγκυρος κύκλος ζωής"
 
@@ -432,9 +438,14 @@ msgid "%1 objects"
 msgstr "%1 αντικείμενα"
 
 #. ($record->Name)
-#: share/html/Dashboards/Subscription.html:328
+#: share/html/Dashboards/Subscription.html:331
 msgid "%1 removed from dashboard subscription recipients"
 msgstr "%1 αφαιρέθηκε από το ταμπλό παραληπτών συνδρομής"
+
+#. ($self->Name, $queue->Name)
+#: lib/RT/CustomRole.pm:453
+msgid "%1 removed from queue %2"
+msgstr ""
 
 #. ($self->loc($self->Name), $new_member_obj->Object->Name)
 #. ($self->_CanonicalizeRoleName($self->Field), $self->_FormatPrincipal($principal))
@@ -620,7 +631,7 @@ msgstr "Άκυρο αναγνωριστικό κaτηγορίας '%1'"
 msgid "(Check box to complete)"
 msgstr "(Επιλέξτε το πλαίσιο για ολοκλήρωση)"
 
-#: share/html/Admin/Elements/EditCustomFieldValues:88 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:107 share/html/Admin/Queues/People.html:64 share/html/Asset/Elements/EditCatalogPeople:59 share/html/Elements/BulkLinks:109 share/html/Elements/EditLinks:104 share/html/Ticket/Elements/EditPeople:88
+#: share/html/Admin/Elements/EditCustomFieldValues:88 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:107 share/html/Admin/Queues/People.html:64 share/html/Asset/Elements/EditCatalogPeople:59 share/html/Elements/BulkLinks:109 share/html/Elements/EditLinks:104 share/html/Ticket/Elements/EditPeople:89
 msgid "(Check box to delete)"
 msgstr "(Επιλογή πλαισίου για διαγραφή)"
 
@@ -651,7 +662,7 @@ msgstr "(Αν αφήσετε κενό, θα επιλεγεί το %1)"
 msgid "(Incomplete)"
 msgstr "(Ελλειπής)"
 
-#: lib/RT/Report/Tickets.pm:431
+#: lib/RT/Report/Tickets.pm:444
 msgid "(Incorrect data)"
 msgstr "(Εσφαλμένα δεδομένα)"
 
@@ -707,7 +718,7 @@ msgstr "(απουσία ονόματος)"
 msgid "(no pubkey!)"
 msgstr "(δεν υπάρχει δημόσιο κλειδί)"
 
-#: lib/RT/CustomField.pm:2234 lib/RT/CustomField.pm:2235 lib/RT/Queue.pm:1180 lib/RT/Queue.pm:1185 lib/RT/Report/Tickets.pm:701 lib/RT/Report/Tickets.pm:870 lib/RT/Report/Tickets.pm:881 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1202 lib/RT/Transaction.pm:1264 lib/RT/Transaction.pm:1265 lib/RT/Transaction.pm:827 lib/RT/Transaction.pm:832 lib/RT/Transaction.pm:916 share/html/Admin/Elements/AddCustomFieldValue:69 share/html/Admin/Elements/EditCustomFieldValues:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:102 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/EditCustomFieldSelect:87 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:68 share/html/m/ticket/show:266
+#: lib/RT/CustomField.pm:2234 lib/RT/CustomField.pm:2235 lib/RT/Queue.pm:1193 lib/RT/Queue.pm:1198 lib/RT/Report/Tickets.pm:714 lib/RT/Report/Tickets.pm:883 lib/RT/Report/Tickets.pm:894 lib/RT/Report/Tickets/Entry.pm:75 lib/RT/Report/Tickets/Entry.pm:80 lib/RT/Report/Tickets/Entry.pm:90 lib/RT/Transaction.pm:1202 lib/RT/Transaction.pm:1264 lib/RT/Transaction.pm:1265 lib/RT/Transaction.pm:827 lib/RT/Transaction.pm:832 lib/RT/Transaction.pm:916 share/html/Admin/Elements/AddCustomFieldValue:69 share/html/Admin/Elements/EditCustomFieldValues:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:51 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Articles/Article/Elements/SearchByCustomField:56 share/html/Elements/EditCustomFieldSelect:102 share/html/Elements/EditCustomFieldSelect:66 share/html/Elements/EditCustomFieldSelect:87 share/html/Elements/SelectCustomFieldValue:54 share/html/Elements/ShowCustomFields:72 share/html/m/ticket/show:266
 msgid "(no value)"
 msgstr "(χωρίς τιμή)"
 
@@ -787,7 +798,7 @@ msgstr "Ένα πρότυπο με αυτό το όνομα υπάρχει ήδ�
 msgid "A blank template"
 msgstr "Κενό πρότυπο σελίδας"
 
-#: share/html/Admin/Users/Modify.html:307
+#: share/html/Admin/Users/Modify.html:332
 msgid "A password was not set, so user won't be able to login."
 msgstr "Δεν ορίστηκε κωδικός, ο χρήστης δε θα μπορεί να συνδεθεί."
 
@@ -812,7 +823,7 @@ msgstr "ΚΑΙ"
 msgid "About me"
 msgstr "Σχετικά με μένα"
 
-#: share/html/Admin/Users/Modify.html:110 share/html/Prefs/AboutMe.html:119
+#: share/html/Admin/Users/Modify.html:110
 msgid "Access control"
 msgstr "Έλεγχος πρόσβασης"
 
@@ -846,7 +857,7 @@ msgstr "Η Ενέργεια είναι υποχρεωτικό όρισμα"
 msgid "Action prepared..."
 msgstr "Προετοιμασία Ενέργειας..."
 
-#: share/html/Admin/Global/Actions.html:53 share/html/Elements/Tabs:1086 share/html/Elements/Tabs:1245 share/html/Elements/Tabs:143 share/html/Elements/Tabs:761
+#: share/html/Admin/Global/Actions.html:53 share/html/Elements/Tabs:1086 share/html/Elements/Tabs:1246 share/html/Elements/Tabs:143 share/html/Elements/Tabs:761
 msgid "Actions"
 msgstr "Ενέργειες"
 
@@ -894,7 +905,7 @@ msgstr "Προσθήκη Στηλών"
 msgid "Add Criteria"
 msgstr "Προσθήκη Κριτηρίων"
 
-#: share/html/Ticket/Elements/AddAttachments:165 share/html/m/ticket/create:324 share/html/m/ticket/reply:137
+#: share/html/Ticket/Elements/AddAttachments:166 share/html/m/ticket/create:324 share/html/m/ticket/reply:137
 msgid "Add More Files"
 msgstr "Προσθήκη Περισσότερων Αρχείων"
 
@@ -1018,11 +1029,11 @@ msgstr "Διεύθυνση"
 msgid "Address 2"
 msgstr "Διεύθυνση 2"
 
-#: share/html/Admin/Users/Modify.html:141 share/html/Prefs/AboutMe.html:138
+#: share/html/Admin/Users/Modify.html:144 share/html/Prefs/Elements/EditAboutMe:133 share/html/Prefs/Elements/ShowAboutMe:115
 msgid "Address1"
 msgstr "Διεύθυνση 1"
 
-#: share/html/Admin/Users/Modify.html:146 share/html/Prefs/AboutMe.html:142
+#: share/html/Admin/Users/Modify.html:149 share/html/Prefs/Elements/EditAboutMe:137 share/html/Prefs/Elements/ShowAboutMe:119
 msgid "Address2"
 msgstr "Διεύθυνση 2"
 
@@ -1039,7 +1050,7 @@ msgstr "Διαχειριστής"
 msgid "Admin Catalogs"
 msgstr "Κατάλογοι Διαχειριστή"
 
-#: share/html/Ticket/Create.html:174 share/html/Ticket/Elements/EditPeople:109 share/html/m/ticket/create:284
+#: share/html/Ticket/Create.html:174 share/html/Ticket/Elements/EditPeople:110 share/html/m/ticket/create:284
 msgid "Admin Cc"
 msgstr ""
 
@@ -1071,7 +1082,7 @@ msgstr "Admin/Καθολικές ρυθμίσεις"
 msgid "AdminCCGroup"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:74 lib/RT/Ticket.pm:104 lib/RT/Tickets.pm:148 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowPeople:84 share/html/m/ticket/show:302
+#: lib/RT/Report/Tickets.pm:87 lib/RT/Ticket.pm:104 lib/RT/Tickets.pm:148 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowPeople:85 share/html/m/ticket/show:302
 msgid "AdminCc"
 msgstr ""
 
@@ -1131,7 +1142,7 @@ msgstr "Όλα τα ταμπλό"
 msgid "All Queues"
 msgstr "Όλες οι Ουρές"
 
-#: share/html/Admin/Scrips/index.html:80
+#: share/html/Admin/Scrips/index.html:83
 msgid "All Scrips"
 msgstr ""
 
@@ -1143,7 +1154,7 @@ msgstr "Όλα τα Αιτήματα"
 msgid "All catalogs matching search criteria"
 msgstr "Όλοι οι κατάλογοι που πληρούν τα κριτήρια αναζήτησης"
 
-#: share/html/Prefs/AboutMe.html:175
+#: share/html/Prefs/Elements/EditAboutMe:166
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "Όλες οι ροές iCal ενσωματώνουν ένα μυστικό κουπόνι που σας εξουσιοδοτεί. Αν η διεύθυνση URL κάποιας ροής εκτεθεί στον έξω κόσμο, μπορείτε να πάρετε ένα νέο μυστικό, <b>διακόπτοντας όλα τις υφιστάμενες ροές iCal</b> πιο κάτω."
 
@@ -1163,7 +1174,7 @@ msgstr "Όλα τα Αιτήματα"
 msgid "All topics"
 msgstr "Όλα τα θέματα"
 
-#: etc/RT_Config.pm:3440
+#: etc/RT_Config.pm:3536
 msgid "Allocate"
 msgstr "Διάθεση"
 
@@ -1179,7 +1190,7 @@ msgstr "Δικαίωμα φόρτωσης αποθηκευμένων αναζη�
 msgid "Allow writing Perl code in templates, scrips, etc"
 msgstr "Δικαίωμα εισαγωγής κώδικα Perl σε πρότυπα σελίδων, σεναρίων, κτλ"
 
-#: lib/RT/Attachment.pm:811
+#: lib/RT/Attachment.pm:875
 msgid "Already encrypted"
 msgstr "Έχει ήδη κρυπτογραφηθεί"
 
@@ -1204,13 +1215,25 @@ msgstr "Παρουσιάστηκε ένα σφάλμα"
 msgid "An error occurred while submitting time. Please submit your time manually."
 msgstr "Ένα σφάλμα συνέβη κατά την υποβολή του χρόνου. Παρακαλώ υποβάλετε το χρόνο χειροκίνητα."
 
+#: share/html/Admin/Users/index.html:79 share/html/Admin/Users/index.html:87
+msgid "And all users whose"
+msgstr ""
+
+#: share/html/Admin/Groups/index.html:73 share/html/Admin/Groups/index.html:81
+msgid "And groups whose"
+msgstr ""
+
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
 msgstr "Και/Ή"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "Annually"
 msgstr "Ετησίως"
+
+#: share/html/User/Elements/RelatedData:74
+msgid "Anonymize User"
+msgstr ""
 
 #: share/html/Articles/Article/Elements/ShowSearchCriteria:74
 msgid "Any field"
@@ -1300,6 +1323,11 @@ msgstr "Έγκριση"
 #: lib/RT/Date.pm:94
 msgid "Apr"
 msgstr "Απρ"
+
+#. ($UserObj->Name)
+#: share/html/Admin/Users/Modify.html:241
+msgid "Are you sure you want to anonymize user: %1?"
+msgstr ""
 
 #. ($object->id)
 #: lib/RT/URI/fsck_com_article.pm:215
@@ -1407,7 +1435,7 @@ msgstr "Ανάθεση και αφαίρεση προσαρμοσμένων πε
 msgid "Assigned Assets"
 msgstr "Περιουσιακά στοιχεία που έχουν ανατεθεί"
 
-#: share/html/Ticket/Elements/AddAttachments:61
+#: share/html/Ticket/Elements/AddAttachments:62
 msgid "Attach"
 msgstr "Επισύναψη"
 
@@ -1440,7 +1468,7 @@ msgstr "Όνομα συνημμένου αρχείου"
 msgid "Attachments"
 msgstr "Συνημμένα"
 
-#: lib/RT/Attachment.pm:806
+#: lib/RT/Attachment.pm:870
 msgid "Attachments encryption is disabled"
 msgstr "Η κρυπτογράφηση των συνημμένων έχει απενεργοποιηθεί"
 
@@ -1465,7 +1493,7 @@ msgid "Automatic account setup failed"
 msgstr "Απέτυχε η εγκατάσταση του αυτόματου λογαριασμού"
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:269
+#: share/html/Admin/Tools/Theme.html:277
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Δεν υπάρχουν αυτόματα συνιστώμενα θέματα χρωμάτων για την εικόνα σας. Αυτό μπορεί να συμβαίνει επειδή φορτώσατε ένα τύπο εικόνας που δεν υποστηρίζεται από αυτή την έκδοση του GD. Τύποι που υποστηρίζονται είναι: %1. Μπορείτε να ξανά-μεταγλωττίσετε την libgd και το GD.pm για να περιλαμβάνει υποστήριξη και άλλων τύπων εικόνας."
 
@@ -1485,39 +1513,39 @@ msgstr "Αυτόματη απάντηση σε HTML"
 msgid "Available"
 msgstr "Διαθέσιμο"
 
-#: lib/RT/Report/Tickets.pm:234
+#: lib/RT/Report/Tickets.pm:247
 msgid "Average Created-LastUpdated"
 msgstr "Ο Μέσος Όρος Δημιουργήθηκε-Τελευταία Ενημέρωση"
 
-#: lib/RT/Report/Tickets.pm:229
+#: lib/RT/Report/Tickets.pm:242
 msgid "Average Created-Resolved"
 msgstr "Ο Μέσος όρος Δημιουργήθηκε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:224
+#: lib/RT/Report/Tickets.pm:237
 msgid "Average Created-Started"
 msgstr "Ο Μέσος Όρος Δημιουργήθηκε-Ξεκίνησε"
 
-#: lib/RT/Report/Tickets.pm:244
+#: lib/RT/Report/Tickets.pm:257
 msgid "Average Due-Resolved"
 msgstr "Μέσο Οφειλόμενο - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:249
+#: lib/RT/Report/Tickets.pm:262
 msgid "Average Started-Resolved"
 msgstr "Ο Μέσος όρος Ξεκίνησε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:239
+#: lib/RT/Report/Tickets.pm:252
 msgid "Average Starts-Started"
 msgstr "Ο Μέσος όρος Ξεκινά - Ξεκίνησε"
 
-#: lib/RT/Report/Tickets.pm:214
+#: lib/RT/Report/Tickets.pm:227
 msgid "Average time estimated"
 msgstr "Μέσος εκτιμώμενος χρόνος"
 
-#: lib/RT/Report/Tickets.pm:219
+#: lib/RT/Report/Tickets.pm:232
 msgid "Average time left"
 msgstr "Μέσος χρόνος αριστερά"
 
-#: lib/RT/Report/Tickets.pm:209
+#: lib/RT/Report/Tickets.pm:222
 msgid "Average time worked"
 msgstr "Μέσος χρόνος εργασίας"
 
@@ -1530,7 +1558,11 @@ msgstr "Πίσω"
 msgid "Bad privacy for attribute %1"
 msgstr "Κακή προστασία προσωπικού απορρήτου για ιδιότητα %1"
 
-#: share/html/Admin/Actions/Create.html:54 share/html/Admin/Actions/Display.html:51 share/html/Admin/Actions/Modify.html:55 share/html/Admin/Assets/Catalogs/Create.html:55 share/html/Admin/Assets/Catalogs/Modify.html:55 share/html/Admin/Conditions/Create.html:54 share/html/Admin/Conditions/Display.html:51 share/html/Admin/Conditions/Modify.html:55 share/html/Admin/Groups/Modify.html:66 share/html/Admin/Queues/DefaultValues.html:56 share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Asset/Create.html:183 share/html/Asset/Create.html:70 share/html/Asset/Elements/AssetSearchBasics:48 share/html/Asset/Elements/ShowSummary:53 share/html/Asset/Modify.html:58 share/html/Asset/Search/Bulk.html:82 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:1070 share/html/Elements/Tabs:1156 share/html/Elements/Tabs:339 share/html/Elements/Tabs:374 share/html/Elements/Tabs:399 share/html/Elements/Tabs:417 share/html/Elements/Tabs:435 share/html/Elements/Tabs:470 share/html/Elements/Tabs:528 share/html/Elements/Tabs:744 share/html/Elements/Tabs:786 share/html/Ticket/Create.html:515 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
+#: share/html/SelfService/User/Elements/RelatedData:57
+msgid "Base user data"
+msgstr ""
+
+#: share/html/Admin/Actions/Create.html:54 share/html/Admin/Actions/Display.html:51 share/html/Admin/Actions/Modify.html:55 share/html/Admin/Assets/Catalogs/Create.html:55 share/html/Admin/Assets/Catalogs/Modify.html:55 share/html/Admin/Conditions/Create.html:54 share/html/Admin/Conditions/Display.html:51 share/html/Admin/Conditions/Modify.html:55 share/html/Admin/Groups/Modify.html:66 share/html/Admin/Queues/DefaultValues.html:56 share/html/Admin/Scrips/Create.html:56 share/html/Admin/Scrips/Modify.html:56 share/html/Articles/Article/Elements/ShowSearchCriteria:55 share/html/Asset/Create.html:183 share/html/Asset/Create.html:70 share/html/Asset/Elements/AssetSearchBasics:48 share/html/Asset/Elements/ShowSummary:53 share/html/Asset/Modify.html:58 share/html/Asset/Search/Bulk.html:82 share/html/Dashboards/Modify.html:60 share/html/Elements/Tabs:1070 share/html/Elements/Tabs:1156 share/html/Elements/Tabs:339 share/html/Elements/Tabs:374 share/html/Elements/Tabs:399 share/html/Elements/Tabs:417 share/html/Elements/Tabs:435 share/html/Elements/Tabs:470 share/html/Elements/Tabs:528 share/html/Elements/Tabs:744 share/html/Elements/Tabs:786 share/html/Ticket/Create.html:516 share/html/Ticket/Create.html:70 share/html/m/_elements/ticket_menu:60
 msgid "Basics"
 msgstr "Βασικά"
 
@@ -1563,7 +1595,7 @@ msgstr "Πριν χρησιμοποιηθούν τα άρθρα, ο RT διαχ�
 msgid "Blank"
 msgstr "Κενό"
 
-#: share/html/Dashboards/Queries.html:180
+#: share/html/Dashboards/Queries.html:183
 msgid "Body"
 msgstr "Σώμα"
 
@@ -1603,7 +1635,7 @@ msgstr "Μαζική ενημέρωση"
 msgid "CCGroup"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:85 lib/RT/Tickets.pm:156
+#: lib/RT/Report/Tickets.pm:98 lib/RT/Tickets.pm:156
 msgid "CF"
 msgstr ""
 
@@ -1625,7 +1657,7 @@ msgstr "Υπολογισμός τιμών"
 msgid "Can not load saved search \"%1\""
 msgstr "Δεν είναι δυνατή η φόρτωση της αποθηκευμένης αναζήτησης \"%1\""
 
-#: lib/RT/User.pm:1701
+#: lib/RT/User.pm:1804
 msgid "Can not modify system users"
 msgstr "Δεν είναι δυνατή η τροποποίηση των χρηστών του συστήματος"
 
@@ -1634,7 +1666,7 @@ msgid "Can't add a custom field value without a name"
 msgstr "Δεν μπορεί να γίνει προσθήκη προσαρμοσμένου πεδίου χωρίς όνομα"
 
 #. ($args{Name}, $old_value, $new_value, $msg)
-#: lib/RT/Queue.pm:1201
+#: lib/RT/Queue.pm:1214
 msgid "Can't change default value of %1 from %2 to %3: %4"
 msgstr "Αδυναμία αλλαγής της προεπιλεγμένης τιμής %1 από %2 σε %3: %4"
 
@@ -1664,7 +1696,7 @@ msgid "Can't merge a ticket into itself"
 msgstr "Δεν μπορείτε να συγχωνεύσετε κάποιο αίτημα με τον εαυτό του"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:3964
+#: lib/RT/Interface/Web.pm:3987
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Δε μπορείτε  γρήγορα να δημιουργήσετε αίτημα στην ουρά %1 επειδή τα προσαρμοσμένα πεδία είναι υποχρεωτικά. Παρακαλώ τελειώστε με τη χρήση της κανονικής σελίδας δημιουργίας  του αιτήματος."
 
@@ -1685,18 +1717,22 @@ msgstr "Δεν είναι δυνατή η αποθήκευση της αναζή
 msgid "Can't specify both base and target"
 msgstr "Δε μπορείτε να καθορίσετε τη βάση και το στόχο"
 
+#: share/html/Elements/Modal:70
+msgid "Cancel"
+msgstr ""
+
 #: lib/RT/Article.pm:327
 msgid "Cannot add link to plain number"
 msgstr "Δεν είναι δυνατή η προσθήκη συνδέσμου σε απλό αριθμό"
 
-#: share/html/Ticket/Create.html:449 share/html/m/ticket/create:147
+#: share/html/Ticket/Create.html:450 share/html/m/ticket/create:147
 msgid "Cannot create tickets in a disabled queue."
 msgstr "Δεν είναι δυνατή η δημιουργία αιτημάτων σε απενεργοποιημένη ουρά."
 
 #. ($id)
 #: share/html/Admin/CustomRoles/Objects.html:106
 msgid "Cannot modify objects of disabled custom role #%1"
-msgstr "Αδυναμία τροποποίησης"
+msgstr "Αδυναμία τροποποίησης #%1"
 
 #: share/html/Admin/CustomFields/Modify.html:95
 msgid "Canonicalizer:"
@@ -1762,7 +1798,7 @@ msgstr "Οι Κατηγορίες βασίζονται σε"
 msgid "Category"
 msgstr "Κατηγορία"
 
-#: lib/RT/Report/Tickets.pm:73 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:147 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:158 share/html/Ticket/Elements/EditPeople:102 share/html/Ticket/Elements/ShowPeople:80 share/html/Ticket/Forward.html:71 share/html/m/ticket/create:275 share/html/m/ticket/show:298
+#: lib/RT/Report/Tickets.pm:86 lib/RT/Ticket.pm:103 lib/RT/Tickets.pm:147 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:79 share/html/Ticket/Create.html:158 share/html/Ticket/Elements/EditPeople:103 share/html/Ticket/Elements/ShowPeople:81 share/html/Ticket/Forward.html:71 share/html/m/ticket/create:275 share/html/m/ticket/show:298
 msgid "Cc"
 msgstr ""
 
@@ -1778,11 +1814,11 @@ msgstr "Αλλαγή"
 msgid "Change Approval ticket to open status"
 msgstr "Αλλαγή αιτήματος Έγκρισης σε κατάσταση «Ανοικτό»"
 
-#: share/html/Admin/Articles/Classes/Modify.html:113
+#: share/html/Admin/Articles/Classes/Modify.html:117
 msgid "Change email subject:"
 msgstr "Αλλαγή θέματος email:"
 
-#: share/html/SelfService/Prefs.html:70
+#: share/html/SelfService/Prefs.html:74
 msgid "Change password"
 msgstr "Αλλαγή κωδικού πρόσβασης"
 
@@ -1814,6 +1850,10 @@ msgstr "Έλεγχος Πιστοποιητικών Βάσης Δεδομένω�
 msgid "Check box to delete"
 msgstr "Επιλογή πλαισίου για διαγραφή"
 
+#: share/html/Admin/Users/Modify.html:245
+msgid "Check to clear user custom fields"
+msgstr ""
+
 #: share/html/Search/Elements/SelectLinks:59
 msgid "Child"
 msgstr "Παιδί"
@@ -1831,7 +1871,7 @@ msgstr "Επιλογή τύπου Βάσης Δεδομένων"
 msgid "Choose from Topics for %1"
 msgstr "Επιλογή από Θέματα για %1"
 
-#: lib/RT/User.pm:101 share/html/Admin/Users/Modify.html:151 share/html/Elements/RT__User/ColumnMap:111 share/html/Prefs/AboutMe.html:146
+#: lib/RT/User.pm:101 share/html/Admin/Users/Modify.html:154 share/html/Elements/RT__User/ColumnMap:111 share/html/Prefs/Elements/EditAboutMe:141 share/html/Prefs/Elements/ShowAboutMe:123
 msgid "City"
 msgstr "Πόλη"
 
@@ -1844,7 +1884,7 @@ msgid "Class Name"
 msgstr "Όνομα Κλάσης"
 
 #. ($msg)
-#: share/html/Admin/Articles/Classes/Modify.html:149
+#: share/html/Admin/Articles/Classes/Modify.html:153
 msgid "Class could not be created: %1"
 msgstr "Η κατηγορία δεν ήταν δυνατό να δημιουργηθεί: %1"
 
@@ -1872,6 +1912,10 @@ msgstr "Καθαρισμός"
 #: share/html/Elements/Submit:104
 msgid "Clear All"
 msgstr "Καθαρισμός Όλων"
+
+#: share/html/User/Elements/RelatedData:75
+msgid "Clear core user data, set anonymous username"
+msgstr ""
 
 #: share/html/Install/Finish.html:52
 msgid "Click \"Finish Installation\" below to complete this wizard."
@@ -1929,7 +1973,11 @@ msgstr "Διεύθυνση Σχολίου"
 msgid "Comment address"
 msgstr "Διεύθυνση Σχολίου"
 
-#: share/html/Elements/ShortcutHelp:104
+#: share/html/Elements/ShortcutHelp:138
+msgid "Comment on current ticket"
+msgstr ""
+
+#: share/html/Elements/ShortcutHelp:106
 msgid "Comment on ticket"
 msgstr "Σχολιασμός αιτήματος"
 
@@ -1945,7 +1993,7 @@ msgstr "Σχόλια"
 msgid "Comments (Not sent to requestors)"
 msgstr "Σχόλια (δε θα σταλούν στους αιτούντες)"
 
-#: share/html/Admin/Users/Modify.html:214 share/html/Ticket/Elements/ShowRequestor:78
+#: share/html/Admin/Users/Modify.html:129 share/html/Ticket/Elements/ShowRequestor:78
 msgid "Comments about this user"
 msgstr "Σχόλια για το χρήστη"
 
@@ -2027,7 +2075,7 @@ msgstr "Επικοινωνήστε με τον RT διαχειριστή σας 
 msgid "Contact your RT administrator."
 msgstr "Επικοινωνήστε με τον RT διαχειριστή σας."
 
-#: lib/RT/Tickets.pm:141 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:78 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:75 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:745 share/html/Ticket/Forward.html:87 share/html/Ticket/ModifyAll.html:122
+#: lib/RT/Tickets.pm:141 share/html/Admin/Elements/ModifyTemplate:70 share/html/Articles/Article/Display.html:78 share/html/Articles/Article/Elements/ShowSearchCriteria:71 share/html/Elements/QuickCreate:75 share/html/Elements/RT__Transaction/ColumnMap:109 share/html/Elements/SelectAttachmentField:51 share/html/Elements/Tabs:745 share/html/Ticket/Forward.html:87 share/html/Ticket/ModifyAll.html:122
 msgid "Content"
 msgstr "Περιεχόμενο"
 
@@ -2069,6 +2117,10 @@ msgstr ""
 msgid "Copy Condition"
 msgstr ""
 
+#: share/html/User/Elements/RelatedData:58
+msgid "Core user data"
+msgstr ""
+
 #: lib/RT/Installer.pm:174
 msgid "Correspond address"
 msgstr "Διεύθυνση αλληλογραφίας"
@@ -2086,7 +2138,7 @@ msgid "Correspondence in HTML"
 msgstr "Αλληλογραφία σε HTML"
 
 #. ($email, $msg)
-#: share/html/Dashboards/Subscription.html:289
+#: share/html/Dashboards/Subscription.html:292
 msgid "Could not add %1 as a recipient: %2"
 msgstr "Δεν είναι δυνατή η προσθήκη %1 ως παραλήπτη: %2"
 
@@ -2096,10 +2148,20 @@ msgstr "Δεν είναι δυνατή η προσθήκη %1 ως παραλή�
 msgid "Could not add new custom field value: %1"
 msgstr "Δεν έχει προστεθεί η νέα τιμή προσαρμοσμένου πεδίου: %1"
 
+#. ($self->loc('Name'))
+#: lib/RT/User.pm:352
+msgid "Could not anonymize user %1"
+msgstr ""
+
 #. ($msg)
 #: lib/RT/Ticket.pm:2158
 msgid "Could not change owner: %1"
 msgstr "Δεν ήταν δυνατή η αλλαγή υπευθύνου: %1"
+
+#. ($cf->Name)
+#: lib/RT/User.pm:377
+msgid "Could not clear user custom field %1"
+msgstr ""
 
 #. ($msg)
 #: share/html/Admin/CustomFields/Modify.html:229 share/html/Admin/Elements/EditCustomField:116
@@ -2119,7 +2181,7 @@ msgstr "Δεν ήταν δυνατή η δημιουργία αναζήτηση�
 msgid "Could not create ticket. Queue not set"
 msgstr "Δεν ήταν δυνατή η δημιουργία αιτήματος. Δεν έχει οριστεί ουρά"
 
-#: lib/RT/User.pm:183 lib/RT/User.pm:196 lib/RT/User.pm:205 lib/RT/User.pm:214 lib/RT/User.pm:223 lib/RT/User.pm:237 lib/RT/User.pm:247 lib/RT/User.pm:451
+#: lib/RT/User.pm:183 lib/RT/User.pm:196 lib/RT/User.pm:205 lib/RT/User.pm:214 lib/RT/User.pm:223 lib/RT/User.pm:237 lib/RT/User.pm:247 lib/RT/User.pm:554
 msgid "Could not create user"
 msgstr "Δεν ήταν δυνατή η δημιουργία του χρήστη"
 
@@ -2155,6 +2217,11 @@ msgstr "Δεν ήταν δυνατή η φόρτωση του Προσαρμοσ
 #. ($id)
 #: share/html/Admin/CustomRoles/Objects.html:102
 msgid "Could not load custom role #%1"
+msgstr ""
+
+#. ($id)
+#: share/html/Dashboards/Modify.html:124 share/html/Dashboards/Queries.html:83 share/html/Dashboards/Render.html:123 share/html/Dashboards/Subscription.html:226
+msgid "Could not load dashboard %1"
 msgstr ""
 
 #: share/html/Admin/Groups/Members.html:115
@@ -2216,6 +2283,12 @@ msgstr ""
 msgid "Couldn't add member to group"
 msgstr "Δεν ήταν δυνατή η προσθήκη μέλους στην ομάδα"
 
+#. ($self->loc($attr))
+#. ($self->loc('AuthToken'))
+#: lib/RT/User.pm:332 lib/RT/User.pm:361
+msgid "Couldn't clear user %1"
+msgstr ""
+
 #. ($method, $code, $error)
 #: lib/RT/Scrip.pm:786
 msgid "Couldn't compile %1 codeblock '%2': %3"
@@ -2246,12 +2319,12 @@ msgid "Couldn't create role groups for catalog"
 msgstr "Δεν ήταν δυνατή η δημιουργία ομάδων ρόλου για κατάλογο"
 
 #. ($id, $msg)
-#: share/html/Dashboards/Modify.html:157
+#: share/html/Dashboards/Modify.html:160
 msgid "Couldn't delete dashboard %1: %2"
 msgstr "Δεν ήταν δυνατή η διαγραφή του ταμπλό %1: %2"
 
 #. ($id)
-#: share/html/Dashboards/Modify.html:153
+#: share/html/Dashboards/Modify.html:156
 msgid "Couldn't delete dashboard %1: Permission Denied"
 msgstr ""
 
@@ -2327,11 +2400,6 @@ msgstr "Δεν ήταν δυνατή η φόρτωση αντιγράφου αι
 msgid "Couldn't load custom role '%1'"
 msgstr ""
 
-#. ($id, $msg)
-#: share/html/Dashboards/Modify.html:122 share/html/Dashboards/Queries.html:81 share/html/Dashboards/Render.html:121 share/html/Dashboards/Subscription.html:224
-msgid "Couldn't load dashboard %1: %2"
-msgstr "Δεν ήταν δυνατή η φόρτωση του ταμπλό %1: %2"
-
 #. ($gid)
 #: share/html/Admin/Elements/MembershipsPage:100 share/html/Admin/Elements/MembershipsPage:110
 msgid "Couldn't load group #%1"
@@ -2402,7 +2470,7 @@ msgstr "Δεν ήταν δυνατή η φόρτωση του σεναρίου #
 msgid "Couldn't load template #%1"
 msgstr "Δεν ήταν δυνατή η φόρτωση του προτύπου σελίδας #%1"
 
-#: lib/RT/Interface/Web.pm:2705
+#: lib/RT/Interface/Web.pm:2728
 msgid "Couldn't load the specified principal"
 msgstr "Δεν ήταν δυνατή η φόρτωση του καθορισμένου εντολέα"
 
@@ -2421,22 +2489,22 @@ msgstr "Δεν ήταν δυνατή η φόρτωση της ιδιότητας
 msgid "Couldn't load transaction #%1"
 msgstr "Δεν ήταν δυνατή η φόρτωση της συναλλαγής #%1"
 
-#: share/html/Prefs/AboutMe.html:217
+#: share/html/Prefs/AboutMe.html:71
 msgid "Couldn't load user"
 msgstr "Δεν ήταν δυνατή η φόρτωση του χρήστη"
 
 #. ($id)
-#: share/html/Admin/Users/Keys.html:95 share/html/Prefs/AboutMe.html:213
+#: share/html/Admin/Users/Keys.html:95 share/html/Prefs/AboutMe.html:67
 msgid "Couldn't load user #%1"
 msgstr "Δεν ήταν δυνατή η φόρτωση του χρήστη #%1"
 
 #. ($id, $Name)
-#: share/html/Prefs/AboutMe.html:211
+#: share/html/Prefs/AboutMe.html:65
 msgid "Couldn't load user #%1 or user '%2'"
 msgstr "Δεν ήταν δυνατή η φόρτωση του χρήστη #%1 ή του χρήστη '%2'"
 
 #. ($Name)
-#: share/html/Prefs/AboutMe.html:215
+#: share/html/Prefs/AboutMe.html:69
 msgid "Couldn't load user '%1'"
 msgstr "Δεν ήταν δυνατή η φόρτωση του χρήστη '%1'"
 
@@ -2456,12 +2524,12 @@ msgid "Couldn't remove previous member: %1"
 msgstr "Δεν ήταν δυνατή η κατάργηση προηγούμενου μέλους: %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:898
+#: lib/RT/Attachment.pm:962
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "Δεν ήταν δυνατή η αντικατάσταση του περιεχομένου με αποκρυπτογραφημένα δεδομένα: '%1'"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:847
+#: lib/RT/Attachment.pm:911
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Δεν ήταν δυνατή η αντικατάσταση του περιεχομένου με κρυπτογραφημένα δεδομένα: '%1'"
 
@@ -2485,19 +2553,19 @@ msgstr "Δεν ήταν δυνατή η επίλυση του στόχου '%1' 
 msgid "Couldn't set %1 watcher: %2"
 msgstr "Δεν ήταν δυνατή η προσθήκη του %1 ως παρατηρητή: %2"
 
-#: lib/RT/User.pm:1975
+#: lib/RT/User.pm:2078
 msgid "Couldn't set private key"
 msgstr "Δεν ήταν δυνατό να οριστεί ιδιωτικό κλειδί"
 
-#: lib/RT/User.pm:1959
+#: lib/RT/User.pm:2062
 msgid "Couldn't unset private key"
 msgstr "Δεν ήταν δυνατό να αναιρεθεί ιδιωτικό κλειδί"
 
-#: lib/RT/User.pm:102 share/html/Admin/Users/Modify.html:168 share/html/Elements/RT__User/ColumnMap:126 share/html/Prefs/AboutMe.html:158
+#: lib/RT/User.pm:102 share/html/Admin/Users/Modify.html:171 share/html/Elements/RT__User/ColumnMap:126 share/html/Prefs/Elements/EditAboutMe:153 share/html/Prefs/Elements/ShowAboutMe:135
 msgid "Country"
 msgstr "Χώρα"
 
-#: share/html/Admin/Actions/Create.html:61 share/html/Admin/Articles/Classes/Modify.html:128 share/html/Admin/Conditions/Create.html:61 share/html/Admin/CustomFields/Modify.html:198 share/html/Admin/CustomRoles/Modify.html:98 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:100 share/html/Admin/Groups/Modify.html:97 share/html/Admin/Queues/Modify.html:162 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:229 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:78 share/html/Elements/ShowLinks:54 share/html/Elements/ShowLinks:72 share/html/Elements/Tabs:107 share/html/Elements/Tabs:1149 share/html/Elements/Tabs:117 share/html/Elements/Tabs:132 share/html/Elements/Tabs:140 share/html/Elements/Tabs:148 share/html/Elements/Tabs:156 share/html/Elements/Tabs:207 share/html/Elements/Tabs:222 share/html/Elements/Tabs:233 share/html/Elements/Tabs:242 share/html/Elements/Tabs:325 share/html/Elements/Tabs:344 share/html/Elements/Tabs:348 share/html/Elements/Tabs:468 share/html/Elements/Tabs:475 share/html/Elements/Tabs:482 share/html/Elements/Tabs:485 share/html/Elements/Tabs:488 share/html/Elements/Tabs:496 share/html/Elements/Tabs:502 share/html/Elements/Tabs:508 share/html/Elements/Tabs:514 share/html/Elements/Tabs:526 share/html/Elements/Tabs:537 share/html/Elements/Tabs:656 share/html/Elements/Tabs:662 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:256 share/html/Ticket/Create.html:355 share/html/User/Elements/Portlets/CreateAsset:57 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:405
+#: share/html/Admin/Actions/Create.html:61 share/html/Admin/Articles/Classes/Modify.html:132 share/html/Admin/Conditions/Create.html:61 share/html/Admin/CustomFields/Modify.html:198 share/html/Admin/CustomRoles/Modify.html:98 share/html/Admin/Elements/EditCustomField:87 share/html/Admin/Global/Template.html:100 share/html/Admin/Groups/Modify.html:97 share/html/Admin/Queues/Modify.html:162 share/html/Admin/Queues/Template.html:111 share/html/Admin/Scrips/Create.html:74 share/html/Admin/Scrips/Create.html:81 share/html/Admin/Users/Modify.html:233 share/html/Articles/Article/Edit.html:91 share/html/Articles/Article/ExtractFromTicket.html:83 share/html/Articles/Article/ExtractIntoClass.html:68 share/html/Articles/Article/ExtractIntoTopic.html:60 share/html/Dashboards/Modify.html:72 share/html/Elements/QuickCreate:78 share/html/Elements/ShowLinks:54 share/html/Elements/ShowLinks:72 share/html/Elements/Tabs:107 share/html/Elements/Tabs:1149 share/html/Elements/Tabs:117 share/html/Elements/Tabs:132 share/html/Elements/Tabs:140 share/html/Elements/Tabs:148 share/html/Elements/Tabs:156 share/html/Elements/Tabs:207 share/html/Elements/Tabs:222 share/html/Elements/Tabs:233 share/html/Elements/Tabs:242 share/html/Elements/Tabs:325 share/html/Elements/Tabs:344 share/html/Elements/Tabs:348 share/html/Elements/Tabs:468 share/html/Elements/Tabs:475 share/html/Elements/Tabs:482 share/html/Elements/Tabs:485 share/html/Elements/Tabs:488 share/html/Elements/Tabs:496 share/html/Elements/Tabs:502 share/html/Elements/Tabs:508 share/html/Elements/Tabs:514 share/html/Elements/Tabs:526 share/html/Elements/Tabs:537 share/html/Elements/Tabs:656 share/html/Elements/Tabs:662 share/html/Elements/Tabs:72 share/html/Elements/Tabs:80 share/html/Elements/Tabs:88 share/html/Elements/Tabs:97 share/html/Ticket/Create.html:257 share/html/Ticket/Create.html:356 share/html/User/Elements/Portlets/CreateAsset:57 share/html/User/Elements/Portlets/CreateTicket:53 share/html/m/ticket/create:235 share/html/m/ticket/create:405
 msgid "Create"
 msgstr "Δημιουργία"
 
@@ -2509,7 +2577,7 @@ msgstr "Δημιουργία Νέου"
 msgid "Create Tickets"
 msgstr "Δημιουργία αιτημάτων"
 
-#: share/html/Admin/Articles/Classes/Modify.html:140 share/html/Admin/Articles/Classes/Modify.html:160
+#: share/html/Admin/Articles/Classes/Modify.html:144 share/html/Admin/Articles/Classes/Modify.html:164
 msgid "Create a Class"
 msgstr "Δημιουργία Κατηγορίας"
 
@@ -2553,7 +2621,7 @@ msgstr ""
 msgid "Create a new asset in the catalog %1."
 msgstr "Δημιουργία νέου περιουσιακού στοιχείου στον κατάλογο %1."
 
-#: share/html/Dashboards/Modify.html:131 share/html/Dashboards/Modify.html:98
+#: share/html/Dashboards/Modify.html:134 share/html/Dashboards/Modify.html:98
 msgid "Create a new dashboard"
 msgstr "Δημιουργία νέου ταμπλό"
 
@@ -2567,7 +2635,7 @@ msgid "Create a new template for queue %1"
 msgstr "Δημιουργία καινούργιου προτύπου σελίδας για την ουρά %1"
 
 #. ($m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj))
-#: share/html/Ticket/Create.html:443
+#: share/html/Ticket/Create.html:444
 msgid "Create a new ticket in %1"
 msgstr "Δημιουργία νέου αιτήματος στο %1"
 
@@ -2581,7 +2649,7 @@ msgstr "Δημιουργία νέου αιτήματος στην ουρά %1 σ
 msgid "Create a new ticket in the %1 queue about multiple assets."
 msgstr ""
 
-#: share/html/Admin/Users/Modify.html:255 share/html/Admin/Users/Modify.html:269
+#: share/html/Admin/Users/Modify.html:274 share/html/Admin/Users/Modify.html:289
 msgid "Create a new user"
 msgstr "Δημιουργία νέου χρήστη"
 
@@ -2639,7 +2707,7 @@ msgstr "Δημιουργία καταλόγου"
 msgid "Create group dashboards"
 msgstr "Δημιουργία ταμπλών ομάδας"
 
-#: share/html/Elements/Tabs:1087 share/html/Elements/Tabs:1246
+#: share/html/Elements/Tabs:1087 share/html/Elements/Tabs:1247
 msgid "Create linked ticket"
 msgstr "Δημιουργία συνδεδεμένου αιτήματος"
 
@@ -2709,7 +2777,7 @@ msgstr "Δημιουργία, τροποποίηση και διαγραφή χ�
 msgid "Create, modify, and disable catalogs"
 msgstr "Δημιουργία, τροποποίηση, και απενεργοποίηση καταλόγων"
 
-#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:139 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Display.html:66 share/html/Articles/Article/Elements/EditBasics:74 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Asset/Elements/EditDates:50 share/html/Asset/Elements/ShowDates:50 share/html/Elements/ColumnMap:68 share/html/Elements/ColumnMap:73 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:357
+#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:90 lib/RT/Tickets.pm:139 share/html/Admin/Elements/ShowKeyInfo:71 share/html/Articles/Article/Display.html:66 share/html/Articles/Article/Elements/EditBasics:74 share/html/Articles/Article/Elements/ShowSearchCriteria:99 share/html/Asset/Elements/EditDates:50 share/html/Asset/Elements/ShowDates:50 share/html/Elements/ColumnMap:68 share/html/Elements/ColumnMap:73 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowDates:50 share/html/m/_elements/ticket_list:97 share/html/m/ticket/show:357
 msgid "Created"
 msgstr "Δημιουργήθηκε"
 
@@ -2748,7 +2816,7 @@ msgstr ""
 msgid "CreatedRelative"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:178 lib/RT/Report/Tickets.pm:69 lib/RT/Tickets.pm:111 share/html/Articles/Article/Display.html:62 share/html/Articles/Article/Elements/EditBasics:70 share/html/Search/Elements/PickBasics:115
+#: lib/RT/Graph/Tickets.pm:178 lib/RT/Report/Tickets.pm:82 lib/RT/Tickets.pm:111 share/html/Articles/Article/Display.html:62 share/html/Articles/Article/Elements/EditBasics:70 share/html/Search/Elements/PickBasics:129
 msgid "Creator"
 msgstr "Δημιουργός"
 
@@ -2756,7 +2824,7 @@ msgstr "Δημιουργός"
 msgid "Cryptography"
 msgstr "Κρυπτογραφία"
 
-#: lib/RT/Attachment.pm:804 lib/RT/Attachment.pm:864
+#: lib/RT/Attachment.pm:868 lib/RT/Attachment.pm:928
 msgid "Cryptography is disabled"
 msgstr "Η Κρυπτογραφία έχει απενεργοποιηθεί"
 
@@ -2780,7 +2848,7 @@ msgstr "Τρέχοντα μέλη"
 msgid "Current search"
 msgstr "Τρέχουσα αναζήτηση"
 
-#: share/html/Admin/Queues/People.html:62 share/html/Ticket/Elements/EditPeople:87
+#: share/html/Admin/Queues/People.html:62 share/html/Ticket/Elements/EditPeople:88
 msgid "Current watchers"
 msgstr "Τρέχοντες παρατηρητές"
 
@@ -2857,10 +2925,20 @@ msgstr "Το προσαρμοσμένο πεδίο %1 δεν έχει τιμή"
 msgid "Custom field %1 not found"
 msgstr "Το προσαρμοσμένο πεδίο %1 δεν βρέθηκε"
 
+#. ($cf_add)
+#: share/html/Admin/CustomFields/Modify.html:375
+msgid "Custom field value %1 added"
+msgstr ""
+
 #. ($args{'Content'}, $self->Name)
 #: lib/RT/CustomField.pm:1975
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "Η τιμή προσαρμοσμένου πεδίου %1 δεν βρέθηκε για το προσαρμοσμένο πεδίο %2"
+
+#. ($cf_delete)
+#: share/html/Admin/CustomFields/Modify.html:345
+msgid "Custom field value %1 deleted"
+msgstr ""
 
 #: lib/RT/CustomField.pm:1987 lib/RT/CustomField.pm:701
 msgid "Custom field value could not be deleted"
@@ -2874,15 +2952,15 @@ msgstr "Η τιμή του προσαρμοσμένου πεδίου διαγρ�
 msgid "Custom role created"
 msgstr "Δημιουργία προσαρμοσμένου ρόλου"
 
-#: lib/RT/CustomRole.pm:699
+#: lib/RT/CustomRole.pm:703
 msgid "Custom role disabled"
 msgstr "Απενεργοποίηση προσαρμοσμένου ρόλου"
 
-#: lib/RT/CustomRole.pm:697
+#: lib/RT/CustomRole.pm:701
 msgid "Custom role enabled"
 msgstr "Ενεργοποίηση προσαρμοσμένου ρόλου"
 
-#: lib/RT/CustomRole.pm:450
+#: lib/RT/CustomRole.pm:451
 msgid "Custom role is not added"
 msgstr "Ο προσαρμοσμένος ρόλος δεν μπορεί να προστεθεί"
 
@@ -2934,7 +3012,7 @@ msgstr "Κωδικός DBA"
 msgid "DBA username"
 msgstr "Όνομα χρήστη DBA"
 
-#: lib/RT/Dashboard/Mailer.pm:418 lib/RT/Report/Tickets.pm:133
+#: lib/RT/Dashboard/Mailer.pm:415 lib/RT/Report/Tickets.pm:146
 msgid "Daily"
 msgstr "Ημερησίως"
 
@@ -2942,17 +3020,17 @@ msgstr "Ημερησίως"
 msgid "Daily digest"
 msgstr "Ημερήσια σύνοψη"
 
-#: share/html/Dashboards/Queries.html:107 share/html/Dashboards/Queries.html:107 share/html/Dashboards/Subscription.html:59 share/html/Dashboards/Subscription.html:63
+#: share/html/Dashboards/Queries.html:110 share/html/Dashboards/Queries.html:110 share/html/Dashboards/Subscription.html:59 share/html/Dashboards/Subscription.html:63
 msgid "Dashboard"
 msgstr "Ταμπλό"
 
 #. ($Dashboard->Name, $msg)
-#: share/html/Dashboards/Modify.html:143
+#: share/html/Dashboards/Modify.html:146
 msgid "Dashboard %1 could not be updated: %2"
 msgstr "Το ταμπλό %1 δε μπόρεσε να ενημερωθεί: %2"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Modify.html:140
+#: share/html/Dashboards/Modify.html:143
 msgid "Dashboard %1 updated"
 msgstr "Το ταμπλό %1 ενημερώθηκε"
 
@@ -2962,11 +3040,11 @@ msgid "Dashboard could not be created: %1"
 msgstr "Δεν ήταν δυνατή η δημιουργία του Ταμπλό: %1"
 
 #. ($msg)
-#: share/html/Dashboards/Queries.html:261
+#: share/html/Dashboards/Queries.html:264
 msgid "Dashboard could not be updated: %1"
 msgstr "Δεν ήταν δυνατή η ενημέρωση του Ταμπλό: %1"
 
-#: share/html/Dashboards/Queries.html:258
+#: share/html/Dashboards/Queries.html:261
 msgid "Dashboard updated"
 msgstr "Το Ταμπλό ενημερώθηκε"
 
@@ -3007,7 +3085,7 @@ msgstr "Τύπος βάσης δεδομένων"
 msgid "Database username for RT"
 msgstr "Όνομα χρήστη βάσης δεδομένων του RT"
 
-#: lib/RT/Report/Tickets.pm:133 share/html/Admin/Elements/UpgradeHistory:56
+#: lib/RT/Report/Tickets.pm:146 share/html/Admin/Elements/UpgradeHistory:56
 msgid "Date"
 msgstr "Ημερομηνία"
 
@@ -3015,23 +3093,23 @@ msgstr "Ημερομηνία"
 msgid "Date format"
 msgstr "Μορφή ημερομηνίας"
 
-#: share/html/Admin/Queues/DefaultValues.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Asset/Elements/ShowSummary:55 share/html/Asset/ModifyDates.html:57 share/html/Asset/Search/Bulk.html:149 share/html/Elements/Tabs:1073 share/html/Elements/Tabs:795 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:298 share/html/Ticket/Elements/ShowSummary:87 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:374 share/html/m/ticket/show:351
+#: share/html/Admin/Queues/DefaultValues.html:79 share/html/Articles/Article/Elements/ShowSearchCriteria:96 share/html/Asset/Elements/ShowSummary:55 share/html/Asset/ModifyDates.html:57 share/html/Asset/Search/Bulk.html:149 share/html/Elements/Tabs:1073 share/html/Elements/Tabs:795 share/html/SelfService/Display.html:73 share/html/Ticket/Create.html:299 share/html/Ticket/Elements/ShowSummary:87 share/html/Ticket/ModifyAll.html:69 share/html/m/ticket/create:374 share/html/m/ticket/show:351
 msgid "Dates"
 msgstr "Ημερομηνίες"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "Day"
 msgstr "Ημέρα"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "DayOfMonth"
 msgstr "Ημέρα του Μήνα"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "DayOfWeek"
 msgstr "Ημέρα της Εβδομάδας"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "DayOfYear"
 msgstr "Ημέρα του Έτους"
 
@@ -3043,7 +3121,7 @@ msgstr "Δεκ"
 msgid "Decrypt"
 msgstr "Αποκρυπτογράφηση"
 
-#: lib/RT/Attachment.pm:893
+#: lib/RT/Attachment.pm:957
 msgid "Decryption error; contact the administrator"
 msgstr "Σφάλμα αποκρυπτογράφησης, επικοινωνήστε με τον διαχειριστή"
 
@@ -3083,7 +3161,7 @@ msgid "Default to squelching all outgoing email notifications (from web interfac
 msgstr ""
 
 #. ($args{Name}, $old_value, $new_value)
-#: lib/RT/Queue.pm:1198
+#: lib/RT/Queue.pm:1211
 msgid "Default value of %1 changed from %2 to %3"
 msgstr ""
 
@@ -3113,13 +3191,17 @@ msgstr ""
 msgid "DefaultStarts"
 msgstr ""
 
-#: etc/RT_Config.pm:3397 etc/RT_Config.pm:3486 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:148 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Ticket/Elements/AddAttachments:54 share/html/Widgets/SelectionBox:196
+#: etc/RT_Config.pm:3493 etc/RT_Config.pm:3582 share/html/Admin/Elements/EditActions:71 share/html/Admin/Elements/EditConditions:71 share/html/Articles/Article/Elements/ShowSavedSearches:60 share/html/Dashboards/Modify.html:75 share/html/Search/Elements/EditFormat:148 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:64 share/html/Ticket/Elements/AddAttachments:55 share/html/Widgets/SelectionBox:196
 msgid "Delete"
 msgstr "Διαγραφή"
 
 #: share/html/Admin/Elements/EditTemplates:73
 msgid "Delete Template"
 msgstr "Διαγραφή Προτύπου"
+
+#: share/html/User/Elements/RelatedData:83
+msgid "Delete User"
+msgstr ""
 
 #. ($msg)
 #: lib/RT/SharedSetting.pm:287
@@ -3149,6 +3231,10 @@ msgstr ""
 #: lib/RT/Dashboard.pm:83
 msgid "Delete system dashboards"
 msgstr "Διαγραφή ταμπλών συστήματος"
+
+#: share/html/User/Elements/RelatedData:84
+msgid "Delete this user, tickets associated with this user must be shredded first"
+msgstr ""
 
 #: lib/RT/Queue.pm:129
 msgid "Delete tickets"
@@ -3180,7 +3266,7 @@ msgstr "Διαγραφή αναζήτησης %1"
 msgid "Deleting this object would break referential integrity"
 msgstr "ΗΔιαγραφή αυτού του αντικειμένου θα έσπαζε την αναφορική ακεραιότητα"
 
-#: lib/RT/User.pm:462
+#: lib/RT/User.pm:565
 msgid "Deleting this object would violate referential integrity"
 msgstr "Η Διαγραφή αυτού του αντικειμένου θα παραβίαζε την αναφορική ακεραιότητα"
 
@@ -3232,11 +3318,11 @@ msgstr ""
 msgid "Desc"
 msgstr ""
 
-#: share/html/SelfService/Create.html:109 share/html/Ticket/Create.html:237 share/html/m/ticket/create:231
+#: share/html/SelfService/Create.html:109 share/html/Ticket/Create.html:238 share/html/m/ticket/create:231
 msgid "Describe the issue below"
 msgstr "Περιγραφή το ζητήματος πιο κάτω"
 
-#: share/html/Admin/Actions/Elements/EditBasics:56 share/html/Admin/Actions/Elements/ShowBasics:56 share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/Assets/Catalogs/Elements/EditBasics:54 share/html/Admin/Conditions/Elements/EditBasics:56 share/html/Admin/Conditions/Elements/ShowBasics:56 share/html/Admin/CustomFields/Modify.html:66 share/html/Admin/CustomRoles/Modify.html:62 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:73 share/html/Admin/Queues/Modify.html:66 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Asset/Elements/AssetSearchBasics:64 share/html/Asset/Elements/EditBasics:60 share/html/Asset/Elements/ShowBasics:58 share/html/Asset/Search/Bulk.html:93 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Scrip/ColumnMap:105 share/html/Elements/RT__ScripAction/ColumnMap:67 share/html/Elements/RT__ScripCondition/ColumnMap:67 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__Transaction/ColumnMap:90 share/html/Search/Elements/EditSearches:56
+#: share/html/Admin/Actions/Elements/EditBasics:56 share/html/Admin/Actions/Elements/ShowBasics:56 share/html/Admin/Articles/Classes/Modify.html:66 share/html/Admin/Articles/Elements/Topics:60 share/html/Admin/Assets/Catalogs/Elements/EditBasics:54 share/html/Admin/Conditions/Elements/EditBasics:56 share/html/Admin/Conditions/Elements/ShowBasics:56 share/html/Admin/CustomFields/Modify.html:66 share/html/Admin/CustomRoles/Modify.html:62 share/html/Admin/Elements/AddCustomFieldValue:55 share/html/Admin/Elements/EditCustomField:62 share/html/Admin/Elements/EditCustomFieldValues:59 share/html/Admin/Elements/ModifyTemplate:54 share/html/Admin/Groups/Modify.html:73 share/html/Admin/Queues/Modify.html:66 share/html/Admin/Scrips/Elements/EditBasics:48 share/html/Asset/Elements/AssetSearchBasics:64 share/html/Asset/Elements/EditBasics:60 share/html/Asset/Elements/ShowBasics:58 share/html/Asset/Search/Bulk.html:93 share/html/Elements/RT__Class/ColumnMap:61 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Scrip/ColumnMap:105 share/html/Elements/RT__ScripAction/ColumnMap:67 share/html/Elements/RT__ScripCondition/ColumnMap:67 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__Transaction/ColumnMap:90 share/html/Search/Elements/EditSearches:56 share/html/SelfService/Elements/RequestUpdate:62
 msgid "Description"
 msgstr "Περιγραφή"
 
@@ -3244,7 +3330,7 @@ msgstr "Περιγραφή"
 msgid "Detailed information about your RT setup"
 msgstr "Λεπτομερείς πληροφορίες για τις ρυθμίσεις του RT σας"
 
-#: share/html/Asset/Create.html:184 share/html/Ticket/Create.html:516
+#: share/html/Asset/Create.html:184 share/html/Ticket/Create.html:517
 msgid "Details"
 msgstr "Λεπτομέρειες"
 
@@ -3272,7 +3358,7 @@ msgstr "Απενεργοποιημένα"
 msgid "Disabled?"
 msgstr "Απενεργοποιημένο;"
 
-#: share/html/Elements/Tabs:1030 share/html/Elements/Tabs:1050 share/html/Elements/Tabs:1068 share/html/Elements/Tabs:1241 share/html/Elements/Tabs:781 share/html/Search/Elements/EditFormat:99
+#: share/html/Elements/Tabs:1030 share/html/Elements/Tabs:1050 share/html/Elements/Tabs:1068 share/html/Elements/Tabs:1242 share/html/Elements/Tabs:781 share/html/Search/Elements/EditFormat:99
 msgid "Display"
 msgstr "Προβολή"
 
@@ -3344,7 +3430,7 @@ msgstr "Να μην ανανεώνονται τα αποτελέσματα αν�
 msgid "Don't refresh this page."
 msgstr "Να μην ανανεώνετε αυτή τη σελίδα"
 
-#: lib/RT/Crypt/GnuPG.pm:1738
+#: lib/RT/Crypt/GnuPG.pm:1768
 msgid "Don't trust this key at all"
 msgstr "Να μην εμπιστευτείτε καθόλου αυτό το κλειδί"
 
@@ -3352,15 +3438,23 @@ msgstr "Να μην εμπιστευτείτε καθόλου αυτό το κλ
 msgid "Download"
 msgstr "Λήψη"
 
+#: share/html/SelfService/User/Elements/RelatedData:50
+msgid "Download My Data"
+msgstr ""
+
 #: share/html/Elements/Tabs:1132
 msgid "Download Spreadsheet"
 msgstr "Λήψη Λογιστικού φύλλου"
+
+#: share/html/User/Elements/RelatedData:54
+msgid "Download User Information"
+msgstr ""
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
 msgstr "Λήψη ενδιάμεσου αρχείου"
 
-#: share/html/Ticket/Elements/AddAttachments:73
+#: share/html/Ticket/Elements/AddAttachments:74
 msgid "Drop files here or click to attach"
 msgstr "Αποθέστε τα αρχεία εδώ ή κάντε κλικ για να επισυνάψετε"
 
@@ -3368,7 +3462,7 @@ msgstr "Αποθέστε τα αρχεία εδώ ή κάντε κλικ για 
 msgid "Dropdown"
 msgstr "Αναδυόμενο μενού"
 
-#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:81 lib/RT/Tickets.pm:136 share/html/Admin/Queues/DefaultValues.html:82 share/html/Elements/RT__Ticket/ColumnMap:211 share/html/Elements/RT__Ticket/ColumnMap:244 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Create.html:315 share/html/Ticket/Elements/EditDates:92 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:76 share/html/m/ticket/create:381 share/html/m/ticket/show:373
+#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:94 lib/RT/Tickets.pm:136 share/html/Admin/Queues/DefaultValues.html:82 share/html/Elements/RT__Ticket/ColumnMap:211 share/html/Elements/RT__Ticket/ColumnMap:244 share/html/Elements/SelectDateType:55 share/html/Elements/ShowReminders:52 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Create.html:316 share/html/Ticket/Elements/EditDates:92 share/html/Ticket/Elements/Reminders:141 share/html/Ticket/Elements/Reminders:177 share/html/Ticket/Elements/Reminders:83 share/html/Ticket/Elements/ShowDates:76 share/html/m/ticket/create:381 share/html/m/ticket/show:373
 msgid "Due"
 msgstr "Έως"
 
@@ -3492,7 +3586,7 @@ msgstr "Είτε δεν έχετε τα δικαιώματα να δείτε τ�
 msgid "Elapsed"
 msgstr "Παρέλθει"
 
-#: share/html/Admin/Users/Modify.html:72 share/html/Dashboards/Elements/SubscriptionRecipients:150 share/html/Prefs/AboutMe.html:65 share/html/Ticket/Elements/AddWatchers:91
+#: share/html/Admin/Users/Modify.html:72 share/html/Dashboards/Elements/SubscriptionRecipients:150 share/html/Prefs/Elements/EditAboutMe:58 share/html/Prefs/Elements/ShowAboutMe:55 share/html/Ticket/Elements/AddWatchers:91
 msgid "Email"
 msgstr "Αλληλογραφία"
 
@@ -3509,7 +3603,7 @@ msgstr "Σύνοψη Ηλεκτρονικής Αλληλογραφίας"
 msgid "Email Source for Ticket %1, Attachment %2"
 msgstr "Πηγή ηλεκτρονικής αλληλογραφίας για αίτημα %1, Συνημμένο %2"
 
-#: lib/RT/User.pm:591
+#: lib/RT/User.pm:694
 msgid "Email address in use"
 msgstr "Η διεύθυνση αλληλογραφίας χρησιμοποιείται ήδη"
 
@@ -3577,7 +3671,7 @@ msgstr "Ενεργές Κατηγορίες"
 msgid "Enabled Queues"
 msgstr "Ενεργές Ουρές"
 
-#: share/html/Admin/Scrips/index.html:81
+#: share/html/Admin/Scrips/index.html:84
 msgid "Enabled Scrips"
 msgstr ""
 
@@ -3590,7 +3684,7 @@ msgid "Enabled queues matching search criteria"
 msgstr "Ενεργοποιημένες ουρές που ταιριάζουν στα κριτήρια αναζήτησης"
 
 #. (loc_fuzzy($msg))
-#: share/html/Admin/Articles/Classes/Modify.html:207 share/html/Admin/Elements/EditCustomField:139
+#: share/html/Admin/Articles/Classes/Modify.html:211 share/html/Admin/Elements/EditCustomField:139
 msgid "Enabled status %1"
 msgstr "Ενεργοποιημένη κατάσταση %1"
 
@@ -3615,11 +3709,11 @@ msgstr ""
 msgid "Encrypting"
 msgstr "Κρυπτογράφηση"
 
-#: lib/RT/Attachment.pm:842
+#: lib/RT/Attachment.pm:906
 msgid "Encryption error; contact the administrator"
 msgstr "Σφάλμα Κρυπτογράφησης, επικοινωνήστε με τον διαχειριστή"
 
-#: share/html/Elements/ShortcutHelp:95
+#: share/html/Elements/ShortcutHelp:97
 msgid "Enter"
 msgstr "Εισαγωγή"
 
@@ -3772,11 +3866,15 @@ msgstr "Σφάλμα: μη κρυπτογραφημένο μήνυμα"
 msgid "Escalate tickets"
 msgstr "Κλιμάκωση αιτήματος"
 
+#: share/html/Admin/Articles/Classes/Modify.html:97
+msgid "Escape HTML (Unchecking this box is potentially unsafe)"
+msgstr ""
+
 #: share/html/Ticket/Elements/ShowBasics:66 share/html/m/ticket/show:224
 msgid "Estimated"
 msgstr "Εκτιμώμενο"
 
-#: lib/RT/Handle.pm:742
+#: lib/RT/Handle.pm:746
 msgid "Everyone"
 msgstr "Όλοι"
 
@@ -3808,7 +3906,7 @@ msgstr ""
 msgid "Extension"
 msgstr ""
 
-#: lib/RT/User.pm:1170
+#: lib/RT/User.pm:1273
 msgid "External authentication enabled."
 msgstr "Ενεργοποίηση εξωτερικής πιστοποίησης"
 
@@ -3852,11 +3950,11 @@ msgstr "Αποτυχία σύνδεσης με Βάση Δεδομένων: %1"
 msgid "Failed to create %1 attribute"
 msgstr "Αποτυχία δημιουργίας ιδιότητας %1"
 
-#: lib/RT/User.pm:331
+#: lib/RT/User.pm:434
 msgid "Failed to find 'Privileged' users pseudogroup."
 msgstr "Αποτυχία εύρεσης της ψευδοομάδας χρηστών 'Προνομιούχοι'."
 
-#: lib/RT/User.pm:338
+#: lib/RT/User.pm:441
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "Αποτυχία εύρεσης της ψευδοομάδας χρηστών 'Μη Προνομιούχοι'"
 
@@ -3923,6 +4021,11 @@ msgstr ""
 msgid "File '%1' insert failed. See error log for details."
 msgstr "Η εισαγωγή του αρχείου '%1' απέτυχε. Δείτε το αρχείο καταγραφής σφαλμάτων για λεπτομέρειες."
 
+#. ($file_name, length $content, $max_size)
+#: lib/RT/Interface/Web.pm:2532
+msgid "File '%1' size(%2 bytes) exceeds limit(%3 bytes)"
+msgstr ""
+
 #. ($self->Data, $self->OldValue, $self->NewValue)
 #: lib/RT/Transaction.pm:932
 msgid "File '%1' truncated because its size (%2 bytes) exceeded configured maximum size setting (%3 bytes)."
@@ -3972,11 +4075,11 @@ msgstr "Συμπλήρωση μέχρι και %1 περιοχών κειμέν�
 msgid "Fill in up to %quant(%1,wikitext area,wikitext areas)"
 msgstr "Συμπλήρωση μέχρι και %1 περιοχών βικικειμένου"
 
-#: lib/RT/Tickets.pm:1829 share/html/Admin/Queues/DefaultValues.html:63 share/html/Search/Elements/PickBasics:202 share/html/Ticket/Create.html:275 share/html/m/ticket/create:347
+#: lib/RT/Tickets.pm:1829 share/html/Admin/Queues/DefaultValues.html:63 share/html/Search/Elements/PickBasics:216 share/html/Ticket/Create.html:276 share/html/m/ticket/create:347
 msgid "Final Priority"
 msgstr "Τελική Προτεραιότητα"
 
-#: lib/RT/Report/Tickets.pm:65 lib/RT/Tickets.pm:117 share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__Ticket/ColumnMap:165 share/html/Search/Elements/BuildFormatString:102
+#: lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:117 share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__Ticket/ColumnMap:165 share/html/Search/Elements/BuildFormatString:102
 msgid "FinalPriority"
 msgstr ""
 
@@ -3992,7 +4095,7 @@ msgstr "Βρείτε ένα χρήστη"
 msgid "Find a user..."
 msgstr "Εύρεση χρήστη..."
 
-#: share/html/Admin/Users/index.html:77
+#: share/html/Admin/Users/index.html:78
 msgid "Find all users whose"
 msgstr "Εύρεση όλων των χρηστών που"
 
@@ -4166,7 +4269,7 @@ msgstr "Δώστε έξοδο ακόμη και για τα μηνύματα π�
 msgid "Given to %1"
 msgstr "Δόθηκε σε %1"
 
-#: share/html/Admin/Scrips/Modify.html:65 share/html/Elements/RT__CustomField/ColumnMap:88 share/html/Elements/RT__Scrip/ColumnMap:58 share/html/Elements/RT__Template/ColumnMap:69 share/html/Elements/ShortcutHelp:58 share/html/Elements/Tabs:121
+#: share/html/Admin/Scrips/Modify.html:65 share/html/Elements/RT__CustomField/ColumnMap:88 share/html/Elements/RT__Scrip/ColumnMap:58 share/html/Elements/RT__Template/ColumnMap:69 share/html/Elements/ShortcutHelp:60 share/html/Elements/Tabs:121
 msgid "Global"
 msgstr "Καθολικές Ρυθμίσεις"
 
@@ -4219,9 +4322,13 @@ msgstr ""
 msgid "Go"
 msgstr "Μετάβαση"
 
-#: share/html/Elements/ShortcutHelp:74
+#: share/html/Elements/ShortcutHelp:76
 msgid "Go back / forward"
 msgstr "Μετάβαση πίσω / μπροστά"
+
+#: share/html/SelfService/Elements/GotoTicket:49
+msgid "Go to Ticket"
+msgstr ""
 
 #: share/html/Admin/Groups/index.html:55
 msgid "Go to group"
@@ -4231,13 +4338,9 @@ msgstr "Μετάβαση σε ομάδα"
 msgid "Go to user"
 msgstr "Μετάβαση σε χρήστη"
 
-#: share/html/Admin/Articles/Classes/index.html:71 share/html/Admin/CustomFields/index.html:69 share/html/Admin/CustomRoles/index.html:70 share/html/Admin/Groups/index.html:71 share/html/Admin/Queues/People.html:82 share/html/Admin/Queues/People.html:86 share/html/Admin/Queues/index.html:70 share/html/Admin/Scrips/index.html:56 share/html/Admin/Users/index.html:81 share/html/Approvals/index.html:54 share/html/Dashboards/Elements/SubscriptionRecipients:102 share/html/Dashboards/Elements/SubscriptionRecipients:112 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
+#: share/html/Admin/Articles/Classes/index.html:71 share/html/Admin/CustomFields/index.html:69 share/html/Admin/CustomRoles/index.html:70 share/html/Admin/Groups/index.html:91 share/html/Admin/Queues/People.html:82 share/html/Admin/Queues/People.html:86 share/html/Admin/Queues/index.html:70 share/html/Admin/Scrips/index.html:56 share/html/Admin/Users/index.html:99 share/html/Approvals/index.html:54 share/html/Dashboards/Elements/SubscriptionRecipients:102 share/html/Dashboards/Elements/SubscriptionRecipients:112 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59
 msgid "Go!"
 msgstr "Μετάβαση!"
-
-#: share/html/SelfService/Elements/GotoTicket:49 share/html/SelfService/Elements/GotoTicket:49
-msgid "Goto Ticket"
-msgstr "Μετάβαση σε αίτημα"
 
 #: share/html/Elements/GotoTicket:49
 msgid "Goto ticket"
@@ -4329,7 +4432,7 @@ msgstr "Ομάδες"
 msgid "Groups can't be members of their members"
 msgstr "Οι ομάδες δεν μπορούν να είναι μέλη των μελών τους"
 
-#: share/html/Admin/Groups/index.html:102
+#: share/html/Admin/Groups/index.html:121
 msgid "Groups matching search criteria"
 msgstr "Ομάδες που ταιριάζουν στα κριτήρια αναζήτησης"
 
@@ -4377,6 +4480,10 @@ msgstr "Πρότυπο συναλλαγής σε HTML"
 msgid "HasMember"
 msgstr ""
 
+#: lib/RT/Attachment.pm:779
+msgid "Headers cleared"
+msgstr ""
+
 #: etc/upgrade/3.8.6/content:7
 msgid "Heading of a forwarded Ticket"
 msgstr "Επικεφαλίδα προωθούμενου αιτήματος"
@@ -4417,7 +4524,7 @@ msgstr "Απόκρυψη πεδίων που δεν έχουν τεθεί"
 msgid "Hide unset fields?"
 msgstr "Απόκρυψη πεδίων που δεν έχουν τεθεί;"
 
-#: share/html/Elements/ShowHistoryHeader:63 share/html/Elements/Tabs:1031 share/html/Elements/Tabs:1051 share/html/Elements/Tabs:1069 share/html/Elements/Tabs:1175 share/html/Elements/Tabs:1242 share/html/Elements/Tabs:359 share/html/Elements/Tabs:376 share/html/Elements/Tabs:404 share/html/Elements/Tabs:782 share/html/Ticket/Elements/ClickToShowHistory:49 share/html/Ticket/Elements/DelayShowHistory:49 share/html/m/_elements/ticket_menu:64
+#: share/html/Elements/ShowHistoryHeader:63 share/html/Elements/Tabs:1031 share/html/Elements/Tabs:1051 share/html/Elements/Tabs:1069 share/html/Elements/Tabs:1175 share/html/Elements/Tabs:1243 share/html/Elements/Tabs:359 share/html/Elements/Tabs:376 share/html/Elements/Tabs:404 share/html/Elements/Tabs:782 share/html/Ticket/Elements/ClickToShowHistory:49 share/html/Ticket/Elements/DelayShowHistory:49 share/html/m/_elements/ticket_menu:64
 msgid "History"
 msgstr "Ιστορικό"
 
@@ -4459,11 +4566,11 @@ msgstr "Χρόνος ανανέωσης αρχικής σελίδας"
 msgid "Homepage"
 msgstr "Αρχική σελίδα"
 
-#: lib/RT/Report/Tickets.pm:133 share/html/Dashboards/Subscription.html:145
+#: lib/RT/Report/Tickets.pm:146 share/html/Dashboards/Subscription.html:145
 msgid "Hour"
 msgstr "Ώρα"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "Hourly"
 msgstr "Ωριαία"
 
@@ -4476,7 +4583,7 @@ msgstr "Ώρες"
 msgid "I have %quant(%1,concrete mixer,concrete mixers)."
 msgstr "Έχω %quant(%1,concrete mixer)."
 
-#: share/html/Prefs/AboutMe.html:178
+#: share/html/Prefs/Elements/EditAboutMe:169
 msgid "I want to reset my secret token."
 msgstr "Θέλω να επαναφέρω το μυστικό σύμβολό μου."
 
@@ -4488,11 +4595,11 @@ msgstr ""
 msgid "Id"
 msgstr ""
 
-#: share/html/Admin/Users/Modify.html:63 share/html/Prefs/AboutMe.html:60
+#: share/html/Admin/Users/Modify.html:63 share/html/Prefs/Elements/EditAboutMe:54 share/html/Prefs/Elements/ShowAboutMe:51
 msgid "Identity"
 msgstr "Ταυτότητα"
 
-#: share/html/Admin/Articles/Classes/Modify.html:114
+#: share/html/Admin/Articles/Classes/Modify.html:118
 msgid "If a Custom Field is selected, the Subject of your outgoing email will be overridden by this article."
 msgstr "Εάν έχει επιλεγεί ένα προσαρμοσμένο πεδίο, το Θέμα της εξερχόμενης ηλεκτρονικής αλληλογραφίας σας θα διαγραφεί από το παρόν άρθρο."
 
@@ -4583,12 +4690,12 @@ msgstr "Περιλαμβάνει όνομα άρθρου"
 msgid "Include article summary"
 msgstr "Περιλαμβάνει σύνοψη άρθρου"
 
-#: share/html/Ticket/Elements/AddAttachments:172
+#: share/html/Ticket/Elements/AddAttachments:173
 msgid "Include attachments"
 msgstr "Συμπερίληψη συνημμένων"
 
 #. ($cf->Name)
-#: share/html/Admin/Articles/Classes/Modify.html:97
+#: share/html/Admin/Articles/Classes/Modify.html:101
 msgid "Include custom field '%1'"
 msgstr ""
 
@@ -4612,7 +4719,7 @@ msgstr "Συμπερίληψη απενεργοποιημένων προσαρμ
 msgid "Include disabled custom roles in listing."
 msgstr "Συμπερίληψη απενεργοποιημένων προσαρμοσμένων ρόλων στην λίστα."
 
-#: share/html/Admin/Groups/index.html:70
+#: share/html/Admin/Groups/index.html:90
 msgid "Include disabled groups in listing."
 msgstr "Συμπερίληψη απενεργοποιημένων ομάδων στην λίστα."
 
@@ -4624,7 +4731,7 @@ msgstr "Συμπερίληψη απενεργοποιημένων ουρών σ�
 msgid "Include disabled scrips in listing."
 msgstr ""
 
-#: share/html/Admin/Users/index.html:79
+#: share/html/Admin/Users/index.html:97
 msgid "Include disabled users in search."
 msgstr "Συμπερίληψη απενεργοποιημένων χρηστών στην αναζήτηση."
 
@@ -4681,11 +4788,11 @@ msgstr "Ενημερώστε το χρήστη ότι η μη κρυπτογρα
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr "Ενημέρωση χρήστη σχετικά με τη λήψη ενός κρυπτογραφημένου μηνύματος ηλεκτρονικής αλληλογραφίας και της απουσίας ιδιωτικών κλειδιών για αποκρυπτογράφηση"
 
-#: lib/RT/Tickets.pm:1806 share/html/Search/Elements/PickBasics:201
+#: lib/RT/Tickets.pm:1806 share/html/Search/Elements/PickBasics:215
 msgid "Initial Priority"
 msgstr "Αρχική Προτεραιότητα"
 
-#: lib/RT/Report/Tickets.pm:64 lib/RT/Tickets.pm:116 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/BuildFormatString:102
+#: lib/RT/Report/Tickets.pm:77 lib/RT/Tickets.pm:116 share/html/Elements/RT__Queue/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/BuildFormatString:102
 msgid "InitialPriority"
 msgstr ""
 
@@ -4810,7 +4917,7 @@ msgstr "Μη έγκυρο στοιχείο πύλης %1"
 msgid "Invalid queue"
 msgstr "Άκυρη ουρά"
 
-#: lib/RT/CustomRole.pm:442 lib/RT/Scrip.pm:361
+#: lib/RT/CustomRole.pm:444 lib/RT/Scrip.pm:361
 msgid "Invalid queue id"
 msgstr "Μη έγκυρο αναγνωριστικό ουράς"
 
@@ -4823,7 +4930,7 @@ msgstr "Άκυρο δικαίωμα"
 msgid "Invalid right. Couldn't canonicalize right '%1'"
 msgstr "Άκυρο δικαίωμα. Δεν ήταν δυνατή η κανονικοποίηση του δικαιώματος '%1'"
 
-#: lib/RT/User.pm:581
+#: lib/RT/User.pm:684
 msgid "Invalid syntax for email address"
 msgstr "Άκυρη σύνταξη για διεύθυνση ηλεκτρονικής αλληλογραφίας"
 
@@ -4841,7 +4948,7 @@ msgstr "Άκυρη τιμή για προσαρμοσμένο πεδίο"
 msgid "Is already added to the object"
 msgstr "Έχει ήδη προστεθεί στο αντικείμενο"
 
-#: lib/RT/Attachment.pm:875
+#: lib/RT/Attachment.pm:939
 msgid "Is not encrypted"
 msgstr "Δεν είναι κρυπτογραφημένο"
 
@@ -4889,7 +4996,7 @@ msgstr "Ιουν"
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
 msgstr "Κρατήστε το 'localhost' αν δεν είστε σίγουρος. Αφήστε κενό για να ενωθείτε τοπικά μέσω socket"
 
-#: share/html/Elements/ShortcutHelp:54
+#: share/html/Elements/ShortcutHelp:56
 msgid "Keyboard Shortcuts"
 msgstr "Συντομεύσεις Πληκτρολογίου"
 
@@ -4902,7 +5009,7 @@ msgstr "Αναζήτηση βασισμένη σε λέξεις κλειδιά �
 msgid "Lang"
 msgstr ""
 
-#: share/html/Admin/Users/Modify.html:92 share/html/Dashboards/Subscription.html:168 share/html/Elements/RT__User/ColumnMap:136 share/html/Install/index.html:56 share/html/Prefs/AboutMe.html:76 share/html/SelfService/Prefs.html:59
+#: share/html/Admin/Users/Modify.html:92 share/html/Dashboards/Subscription.html:168 share/html/Elements/RT__User/ColumnMap:136 share/html/Install/index.html:56 share/html/Prefs/Elements/EditAboutMe:69 share/html/Prefs/Elements/ShowAboutMe:67 share/html/SelfService/Prefs.html:63
 msgid "Language"
 msgstr "Γλώσσα"
 
@@ -4934,15 +5041,15 @@ msgstr "Τελευταία ενημέρωση από"
 msgid "Last updated"
 msgstr "Τελευταία ενημέρωση"
 
-#: share/html/Search/Elements/PickBasics:116
+#: share/html/Search/Elements/PickBasics:130
 msgid "Last updated by"
 msgstr "Τελευταία ενημέρωση από"
 
-#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:83 lib/RT/Tickets.pm:138 share/html/Search/Elements/BuildFormatString:102
+#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:96 lib/RT/Tickets.pm:138 share/html/Search/Elements/BuildFormatString:102
 msgid "LastUpdated"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:178 lib/RT/Report/Tickets.pm:70 lib/RT/Tickets.pm:112 share/html/Search/Elements/BuildFormatString:102
+#: lib/RT/Graph/Tickets.pm:178 lib/RT/Report/Tickets.pm:83 lib/RT/Tickets.pm:112 share/html/Search/Elements/BuildFormatString:102
 msgid "LastUpdatedBy"
 msgstr ""
 
@@ -5034,7 +5141,7 @@ msgstr ""
 msgid "Linking to a deleted %1 is not allowed"
 msgstr "Η σύνδεση με ένα διαγραμμένο %1 δεν επιτρέπεται"
 
-#: share/html/Admin/Queues/DefaultValues.html:110 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Asset/Create.html:78 share/html/Asset/Elements/ShowSummary:56 share/html/Asset/ModifyLinks.html:57 share/html/Elements/Tabs:1071 share/html/Elements/Tabs:796 share/html/Ticket/Create.html:342 share/html/Ticket/Elements/ShowSummary:96 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:393
+#: share/html/Admin/Queues/DefaultValues.html:110 share/html/Articles/Article/Display.html:82 share/html/Articles/Article/Elements/ShowSearchCriteria:117 share/html/Asset/Create.html:78 share/html/Asset/Elements/ShowSummary:56 share/html/Asset/ModifyLinks.html:57 share/html/Elements/Tabs:1071 share/html/Elements/Tabs:796 share/html/Ticket/Create.html:343 share/html/Ticket/Elements/ShowSummary:96 share/html/Ticket/ModifyAll.html:82 share/html/m/ticket/create:387 share/html/m/ticket/show:393
 msgid "Links"
 msgstr "Σύνδεσμοι"
 
@@ -5097,7 +5204,7 @@ msgstr "Φορτώθηκε ή αποθηκευμένη αναζήτηση \"%1\"
 msgid "Loading..."
 msgstr "Φόρτωση..."
 
-#: lib/RT/Config.pm:574 share/html/SelfService/Prefs.html:56
+#: lib/RT/Config.pm:574 share/html/SelfService/Prefs.html:60
 msgid "Locale"
 msgstr "Τοποθεσία Συμβάντος"
 
@@ -5105,7 +5212,7 @@ msgstr "Τοποθεσία Συμβάντος"
 msgid "LocalizedDateTime"
 msgstr ""
 
-#: share/html/Admin/Users/Modify.html:133 share/html/Prefs/AboutMe.html:131
+#: share/html/Admin/Users/Modify.html:136 share/html/Prefs/Elements/EditAboutMe:122 share/html/Prefs/Elements/ShowAboutMe:108
 msgid "Location"
 msgstr "Τοποθεσία"
 
@@ -5155,7 +5262,7 @@ msgstr "Είσοδος"
 msgid "LogoAltText"
 msgstr ""
 
-#: share/html/Elements/Tabs:1229 share/html/Elements/Tabs:736 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
+#: share/html/Elements/Tabs:1230 share/html/Elements/Tabs:736 share/html/NoAuth/Logout.html:48 share/html/m/_elements/menu:107
 msgid "Logout"
 msgstr "Αποσύνδεση"
 
@@ -5244,6 +5351,10 @@ msgstr "Διαχείριση αποθηκευμένων γραφημάτων"
 msgid "Manage scrips"
 msgstr "Διαχείριση σεναρίων"
 
+#: share/html/User/Elements/RelatedData:50
+msgid "Manage user data"
+msgstr ""
+
 #: share/html/Elements/Tabs:68
 msgid "Manage users and passwords"
 msgstr "Διαχείριση χρηστών και κωδικών"
@@ -5269,27 +5380,27 @@ msgstr "Σειρά αναζήτησης προτύπου Mason"
 msgid "MaxValues"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:236
+#: lib/RT/Report/Tickets.pm:249
 msgid "Maximum Created-LastUpdated"
 msgstr "Το Μέγιστο Όριο Δημιουργήθηκε - Τελευταία Ενημέρωση"
 
-#: lib/RT/Report/Tickets.pm:231
+#: lib/RT/Report/Tickets.pm:244
 msgid "Maximum Created-Resolved"
 msgstr "Το Μέγιστο Όριο Δημιουργήθηκε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:226
+#: lib/RT/Report/Tickets.pm:239
 msgid "Maximum Created-Started"
 msgstr "Το Μέγιστο Όριο Δημιουργήθηκε - Ξεκίνησε"
 
-#: lib/RT/Report/Tickets.pm:246
+#: lib/RT/Report/Tickets.pm:259
 msgid "Maximum Due-Resolved"
 msgstr "Μέγιστο Οφειλόμενο - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:251
+#: lib/RT/Report/Tickets.pm:264
 msgid "Maximum Started-Resolved"
 msgstr "Το Μέγιστο Όριο Ξεκίνησε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:241
+#: lib/RT/Report/Tickets.pm:254
 msgid "Maximum Starts-Started"
 msgstr "Το Μέγιστο Όριο Ξεκινά - Ξεκίνησε"
 
@@ -5297,15 +5408,15 @@ msgstr "Το Μέγιστο Όριο Ξεκινά - Ξεκίνησε"
 msgid "Maximum inline message length"
 msgstr "Μέγιστο μέγεθος ενσωματωμένου μηνύματος"
 
-#: lib/RT/Report/Tickets.pm:216
+#: lib/RT/Report/Tickets.pm:229
 msgid "Maximum time estimated"
 msgstr "Μέγιστος εκτιμώμενος χρόνος"
 
-#: lib/RT/Report/Tickets.pm:221
+#: lib/RT/Report/Tickets.pm:234
 msgid "Maximum time left"
 msgstr "Μέγιστος χρόνος αριστερά"
 
-#: lib/RT/Report/Tickets.pm:211
+#: lib/RT/Report/Tickets.pm:224
 msgid "Maximum time worked"
 msgstr "Μέγιστος χρόνος εργασίας"
 
@@ -5442,27 +5553,27 @@ msgstr "Μήνυμα για το χρήστη"
 msgid "Message recorded"
 msgstr "Το μήνυμα καταγράφηκε"
 
-#: lib/RT/Report/Tickets.pm:235
+#: lib/RT/Report/Tickets.pm:248
 msgid "Minimum Created-LastUpdated"
 msgstr "Ελάχιστο Όριο Δημιουργήθηκε - Τελευταία Ενημέρωση"
 
-#: lib/RT/Report/Tickets.pm:230
+#: lib/RT/Report/Tickets.pm:243
 msgid "Minimum Created-Resolved"
 msgstr "Ελάχιστο Όριο Δημιουργήθηκε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:225
+#: lib/RT/Report/Tickets.pm:238
 msgid "Minimum Created-Started"
 msgstr "Ελάχιστο Όριο Δημιουργήθηκε - Ξεκίνησε"
 
-#: lib/RT/Report/Tickets.pm:245
+#: lib/RT/Report/Tickets.pm:258
 msgid "Minimum Due-Resolved"
 msgstr "Ελάχιστο Οφειλόμενο - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:250
+#: lib/RT/Report/Tickets.pm:263
 msgid "Minimum Started-Resolved"
 msgstr "Ελάχιστο Όριο Ξεκίνησε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:240
+#: lib/RT/Report/Tickets.pm:253
 msgid "Minimum Starts-Started"
 msgstr "Ελάχιστο Όριο Ξεκινά - Ξεκίνησε"
 
@@ -5470,15 +5581,15 @@ msgstr "Ελάχιστο Όριο Ξεκινά - Ξεκίνησε"
 msgid "Minimum password length"
 msgstr "Ελάχιστο μήκος κωδικού πρόσβασης"
 
-#: lib/RT/Report/Tickets.pm:215
+#: lib/RT/Report/Tickets.pm:228
 msgid "Minimum time estimated"
 msgstr "Ελάχιστος εκτιμώμενος χρόνος"
 
-#: lib/RT/Report/Tickets.pm:220
+#: lib/RT/Report/Tickets.pm:233
 msgid "Minimum time left"
 msgstr "Ελάχιστος χρόνος αριστερά"
 
-#: lib/RT/Report/Tickets.pm:210
+#: lib/RT/Report/Tickets.pm:223
 msgid "Minimum time worked"
 msgstr "Ελάχιστος χρόνος εργασίας"
 
@@ -5494,7 +5605,7 @@ msgstr "Διάφορα"
 msgid "Missing a primary key?: %1"
 msgstr "Απουσία πρωτεύοντος κλειδιού;: %1"
 
-#: share/html/Admin/Users/Modify.html:191 share/html/Prefs/AboutMe.html:97
+#: share/html/Admin/Users/Modify.html:194 share/html/Prefs/Elements/EditAboutMe:90 share/html/Prefs/Elements/ShowAboutMe:96
 msgid "Mobile"
 msgstr "Κινητό"
 
@@ -5724,17 +5835,17 @@ msgid "Modify templates which apply to all queues"
 msgstr "Τροποποίηση προτύπων που εφαρμόζονται σε όλες τις ουρές"
 
 #. ($ClassObj->Name)
-#: share/html/Admin/Articles/Classes/Modify.html:157
+#: share/html/Admin/Articles/Classes/Modify.html:161
 msgid "Modify the Class %1"
 msgstr "Τροποποίηση Κατηγορίας %1"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Queries.html:82
+#: share/html/Dashboards/Queries.html:85
 msgid "Modify the content of dashboard %1"
 msgstr "Τροποποίηση περιεχομένων του ταμπλό %1"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Modify.html:126
+#: share/html/Dashboards/Modify.html:129
 msgid "Modify the dashboard %1"
 msgstr "Τροποποίηση του ταμπλό %1"
 
@@ -5749,12 +5860,12 @@ msgid "Modify the group %1"
 msgstr "Τροποποίηση ομάδας %1"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:377
+#: share/html/Dashboards/Subscription.html:380
 msgid "Modify the subscription to dashboard %1"
 msgstr "Τροποποίηση της συνδρομής του ταμπλό %1"
 
 #. ($UserObj->Name)
-#: share/html/Admin/Users/Modify.html:266 share/html/Admin/Users/Modify.html:276
+#: share/html/Admin/Users/Modify.html:286 share/html/Admin/Users/Modify.html:296
 msgid "Modify the user %1"
 msgstr "Τροποποίηση του χρήστη %1"
 
@@ -5835,11 +5946,11 @@ msgstr "Δευ"
 msgid "Monday"
 msgstr "Δευτέρα"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "Month"
 msgstr "Μήνας"
 
-#: lib/RT/Dashboard/Mailer.pm:420 lib/RT/Report/Tickets.pm:133
+#: lib/RT/Dashboard/Mailer.pm:417 lib/RT/Report/Tickets.pm:146
 msgid "Monthly"
 msgstr "Μηνιαία"
 
@@ -5855,7 +5966,7 @@ msgstr "Μετακίνηση"
 msgid "Move here"
 msgstr "Μετακίνηση εδώ"
 
-#: share/html/Elements/ShortcutHelp:92
+#: share/html/Elements/ShortcutHelp:94
 msgid "Move up / down the list of results"
 msgstr "Μετακίνηση επάνω / κάτω στη λίστα αποτελεσμάτων"
 
@@ -5892,13 +6003,21 @@ msgstr "Τα Περιουσιακά μου στοιχεία"
 msgid "My Day"
 msgstr "Η Ημέρα μου"
 
+#: share/html/SelfService/User/Elements/RelatedData:76
+msgid "My Personal Data"
+msgstr ""
+
 #: share/html/Elements/Tabs:676
 msgid "My Reminders"
 msgstr "Οι υπενθυμίσεις μου"
 
-#: etc/initialdata:890
+#: etc/initialdata:890 share/html/SelfService/User/Elements/RelatedData:77
 msgid "My Tickets"
 msgstr "Τα αιτήματά μου"
+
+#: share/html/SelfService/User/Elements/RelatedData:78
+msgid "My Transactions"
+msgstr ""
 
 #: share/html/Approvals/index.html:48
 msgid "My approvals"
@@ -5972,7 +6091,7 @@ msgstr "Απαιτείται όνομα"
 msgid "Name:"
 msgstr "Όνομα:"
 
-#: lib/RT/Dashboard/Mailer.pm:421 share/html/Elements/RT__Dashboard/ColumnMap:99 share/html/Ticket/Elements/ShowDates:94 share/html/m/ticket/show:387
+#: lib/RT/Dashboard/Mailer.pm:418 share/html/Elements/RT__Dashboard/ColumnMap:99 share/html/Ticket/Elements/ShowDates:94 share/html/m/ticket/show:387
 msgid "Never"
 msgstr "Ποτέ"
 
@@ -6021,7 +6140,7 @@ msgstr "Νέα μηνύματα"
 msgid "New password"
 msgstr "Νέος κωδικός πρόσβασης"
 
-#: lib/RT/User.pm:902
+#: lib/RT/User.pm:1005
 msgid "New password notification sent"
 msgstr "Στάλθηκε ειδοποίηση για νέο κωδικό πρόσβασης"
 
@@ -6058,7 +6177,7 @@ msgstr "Επόμενο"
 msgid "NickName"
 msgstr ""
 
-#: share/html/Admin/Users/Modify.html:82 share/html/Elements/RT__User/ColumnMap:66 share/html/Prefs/AboutMe.html:72
+#: share/html/Admin/Users/Modify.html:82 share/html/Elements/RT__User/ColumnMap:66 share/html/Prefs/Elements/EditAboutMe:65 share/html/Prefs/Elements/ShowAboutMe:63
 msgid "Nickname"
 msgstr "Ψευδώνυμο"
 
@@ -6109,7 +6228,7 @@ msgstr "Δεν έχει οριστεί Ομάδα"
 msgid "No Name"
 msgstr "Χωρίς όνομα"
 
-#: lib/RT/Tickets.pm:3201
+#: lib/RT/Tickets.pm:3204
 msgid "No Query"
 msgstr "Απουσία αναζήτησης"
 
@@ -6121,11 +6240,15 @@ msgstr "Δεν έχει οριστεί Ουρά"
 msgid "No RT user found. Please consult your RT administrator."
 msgstr "Δεν βρέθηκε ο χρήστης RT. Παρακαλώ συμβουλευθείτε τον διαχειριστή σας στο RT"
 
+#: lib/RT/Attachment.pm:770
+msgid "No Search string provided"
+msgstr ""
+
 #: share/html/Search/Elements/ResultsRSSView:103
 msgid "No Subject"
 msgstr "Χωρίς Θέμα"
 
-#: share/html/Admin/Articles/Classes/Modify.html:118
+#: share/html/Admin/Articles/Classes/Modify.html:122
 msgid "No Subject Override"
 msgstr ""
 
@@ -6137,7 +6260,7 @@ msgstr "Χωρίς πρότυπο"
 msgid "No action"
 msgstr "Καμία ενέργεια"
 
-#: lib/RT/Interface/Web.pm:4119
+#: lib/RT/Interface/Web.pm:4142
 msgid "No asset ID specified."
 msgstr "Δεν έχει προσδιοριστεί αναγνωριστικό Περιουσιακού στοιχείου"
 
@@ -6145,7 +6268,7 @@ msgstr "Δεν έχει προσδιοριστεί αναγνωριστικό Π
 msgid "No assets matching search criteria found."
 msgstr "Δεν βρέθηκαν περιουσιακά στοιχεία να πληρούν τα κριτήρια αναζήτησης"
 
-#: lib/RT/Interface/Web.pm:4103
+#: lib/RT/Interface/Web.pm:4126
 msgid "No catalog specified."
 msgstr "Δεν έχει οριστεί κατάλογος."
 
@@ -6160,6 +6283,10 @@ msgstr "Δεν έχει οριστεί στήλη"
 #: share/html/Ticket/Elements/ShowRequestor:79
 msgid "No comment entered about this user"
 msgstr "Δεν έχουν καταχωρηθεί σχόλια για το χρήστη"
+
+#: lib/RT/Attachment.pm:806
+msgid "No content matches found"
+msgstr ""
 
 #. ($Grouping)
 #: share/html/Asset/ModifyCFs.html:78
@@ -6184,11 +6311,11 @@ msgstr "Κανένα καθολικό πρότυπο %1"
 msgid "No group specified"
 msgstr "Δεν έχει οριστεί ομάδα"
 
-#: share/html/Admin/Groups/index.html:75
+#: share/html/Admin/Groups/index.html:95
 msgid "No groups matching search criteria found."
 msgstr "Δεν βρέθηκαν ομάδες να πληρούν τα κριτήρια αναζήτησης"
 
-#: lib/RT/Attachment.pm:831
+#: lib/RT/Attachment.pm:895
 msgid "No key suitable for encryption"
 msgstr "Δεν βρέθηκε κλειδί κατάλληλο για κρυπτογράφηση"
 
@@ -6204,11 +6331,11 @@ msgstr "Δεν βρέθηκε επισυναπτόμενο μήνυμα"
 msgid "No name provided"
 msgstr "Δεν βρέθηκε όνομα"
 
-#: lib/RT/Attachment.pm:813
+#: lib/RT/Attachment.pm:877
 msgid "No need to encrypt"
 msgstr "Δεν υπάρχει ανάγκη για κρυπτογράφηση"
 
-#: lib/RT/User.pm:971
+#: lib/RT/User.pm:1074
 msgid "No password set"
 msgstr "Δεν ορίστηκε κωδικός"
 
@@ -6237,7 +6364,7 @@ msgstr "Δεν έχετε δικαίωμα τροποποίησης αυτού �
 msgid "No permission to save system-wide searches"
 msgstr "Δεν έχετε δικαίωμα αποθήκευσης καθολικών αναζητήσεων"
 
-#: lib/RT/User.pm:1553 lib/RT/User.pm:1577
+#: lib/RT/User.pm:1656 lib/RT/User.pm:1680
 msgid "No permission to set preferences"
 msgstr "Δεν έχετε δικαίωμα καθορισμού προτιμήσεων"
 
@@ -6274,6 +6401,10 @@ msgstr "Δεν βρέθηκε αυτό το δικαίωμα"
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr "Δεν υπάρχουν τα δικαιώματα του Διαχειριστή για να προσθέσετε '%1' σε αυτό το αίτημα"
 
+#: lib/RT/Attachment.pm:798
+msgid "No search string provided"
+msgstr ""
+
 #: share/html/Search/Bulk.html:271
 msgid "No search to operate on."
 msgstr "Δεν βρέθηκε αναζήτηση προς λειτουργία."
@@ -6282,7 +6413,7 @@ msgstr "Δεν βρέθηκε αναζήτηση προς λειτουργία."
 msgid "No subject"
 msgstr "Χωρίς θέμα"
 
-#: lib/RT/User.pm:1967
+#: lib/RT/User.pm:2070
 msgid "No such key or it's not suitable for signing"
 msgstr "Δεν υπάρχει τέτοιο κλειδί ή είναι ακατάλληλο για υπογραφή"
 
@@ -6303,7 +6434,7 @@ msgstr "Δεν καθορίστηκε τύπος συναλλαγής"
 msgid "No usable keys."
 msgstr "Δεν βρέθηκαν χρησιμοποιήσιμα κλειδιά"
 
-#: share/html/Admin/Users/index.html:85 share/html/User/Search.html:58
+#: share/html/Admin/Users/index.html:103 share/html/User/Search.html:58
 msgid "No users matching search criteria found."
 msgstr "Δεν βρέθηκαν χρήστες που να πληρούν τα κριτήρια αναζήτησης"
 
@@ -6355,7 +6486,7 @@ msgstr "Δε χρησιμοποιείτε φορητό φυλλομετρητή;
 msgid "Notes"
 msgstr "Σημειώσεις"
 
-#: lib/RT/User.pm:904
+#: lib/RT/User.pm:1007
 msgid "Notification could not be sent"
 msgstr "Δεν ήταν δυνατή η αποστολή της ειδοποίησης"
 
@@ -6451,13 +6582,17 @@ msgstr "Να ενημερώνομαι για μη αναγνωσμένα μην�
 msgid "Nov"
 msgstr "Νοε"
 
-#: etc/RT_Config.pm:3443
+#: etc/RT_Config.pm:3539
 msgid "Now in-use"
 msgstr "Τώρα σε χρήση"
 
 #: share/html/Elements/RT__CustomRole/ColumnMap:70
 msgid "Number"
 msgstr "Αριθμός"
+
+#: share/html/Elements/Modal:69
+msgid "OK"
+msgstr ""
 
 #: share/html/Search/Elements/SelectAndOr:49
 msgid "OR"
@@ -6618,7 +6753,7 @@ msgstr ""
 msgid "Open Inactive Tickets"
 msgstr "Ανοικτά Απενεργοποιημένα Αιτήματα"
 
-#: etc/RT_Config.pm:3394 etc/RT_Config.pm:3401 etc/RT_Config.pm:3483 etc/RT_Config.pm:3490
+#: etc/RT_Config.pm:3490 etc/RT_Config.pm:3497 etc/RT_Config.pm:3579 etc/RT_Config.pm:3586
 msgid "Open It"
 msgstr "Άνοιξε το"
 
@@ -6670,7 +6805,7 @@ msgstr "Οι χρήστες της Oracle δε μπορούν να έχουν κ
 msgid "Order by"
 msgstr "Ταξινόμηση ως προς"
 
-#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
+#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:139 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/Elements/EditAboutMe:125 share/html/Prefs/Elements/ShowAboutMe:111
 msgid "Organization"
 msgstr "Οργανισμός"
 
@@ -6699,7 +6834,7 @@ msgstr "Επισκόπηση"
 msgid "Own tickets"
 msgstr "Ανατεθημένα Αιτήματα"
 
-#: lib/RT/Asset.pm:86 lib/RT/Graph/Tickets.pm:178 lib/RT/Report/Tickets.pm:68 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:113 lib/RT/Tickets.pm:1978 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:281 share/html/Elements/RT__Ticket/ColumnMap:298 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:289
+#: lib/RT/Asset.pm:86 lib/RT/Graph/Tickets.pm:178 lib/RT/Report/Tickets.pm:81 lib/RT/Ticket.pm:101 lib/RT/Tickets.pm:113 lib/RT/Tickets.pm:1978 share/html/Elements/QuickCreate:62 share/html/Elements/RT__Ticket/ColumnMap:106 share/html/Elements/RT__Ticket/ColumnMap:281 share/html/Elements/RT__Ticket/ColumnMap:298 share/html/Search/Elements/PickBasics:128 share/html/Ticket/Elements/EditPeople:70 share/html/Ticket/Elements/Reminders:137 share/html/Ticket/Elements/Reminders:175 share/html/Ticket/Elements/Reminders:84 share/html/Ticket/Elements/ShowPeople:50 share/html/m/_elements/ticket_list:96 share/html/m/ticket/create:258 share/html/m/ticket/reply:71 share/html/m/ticket/show:289
 msgid "Owner"
 msgstr "Υπεύθυνος"
 
@@ -6738,7 +6873,7 @@ msgstr "Σελίδα 1 από 1"
 msgid "Page not found"
 msgstr "Η σελίδα δε βρέθηκε"
 
-#: share/html/Admin/Users/Modify.html:196 share/html/Prefs/AboutMe.html:101
+#: share/html/Admin/Users/Modify.html:199 share/html/Prefs/Elements/EditAboutMe:94 share/html/Prefs/Elements/ShowAboutMe:100
 msgid "Pager"
 msgstr "Βομβητής"
 
@@ -6762,16 +6897,16 @@ msgstr "Γονείς"
 msgid "Password"
 msgstr "Κωδικός πρόσβασης"
 
-#: lib/RT/Transaction.pm:1208 lib/RT/User.pm:982
+#: lib/RT/Transaction.pm:1208 lib/RT/User.pm:1085
 msgid "Password changed"
 msgstr "Ο κωδικός πρόσβασης άλλαξε"
 
-#: lib/RT/User.pm:948
+#: lib/RT/User.pm:1051
 msgid "Password has not been set."
 msgstr "Δεν έχει οριστεί κωδικός πρόσβασης."
 
 #. (RT->Config->Get('MinimumPasswordLength'))
-#: lib/RT/User.pm:296
+#: lib/RT/User.pm:399
 msgid "Password needs to be at least %quant(%1,character,characters) long"
 msgstr "Ο κωδικός πρέπει να έχει τουλάχιστον %1 χαρακτήρες"
 
@@ -6779,16 +6914,16 @@ msgstr "Ο κωδικός πρέπει να έχει τουλάχιστον %1 �
 msgid "Password not printed"
 msgstr "Αδυναμία εκτύπωσης κωδικού πρόσβασης"
 
-#: lib/RT/User.pm:981
+#: lib/RT/User.pm:1084
 msgid "Password set"
 msgstr "Ορίστηκε κωδικός πρόσβασης"
 
 #. ($msg)
-#: share/html/Prefs/AboutMe.html:264 share/html/SelfService/Prefs.html:96
+#: share/html/Prefs/AboutMe.html:118 share/html/SelfService/Prefs.html:124
 msgid "Password: %1"
 msgstr "Κωδικός πρόσβασης: %1"
 
-#: lib/RT/User.pm:967
+#: lib/RT/User.pm:1070
 msgid "Password: Permission Denied"
 msgstr "Κωδικός Πρόσβασης: Δεν επιτρέπεται η πρόσβαση"
 
@@ -6796,7 +6931,7 @@ msgstr "Κωδικός Πρόσβασης: Δεν επιτρέπεται η πρ
 msgid "PasswordChange"
 msgstr ""
 
-#: lib/RT/User.pm:944
+#: lib/RT/User.pm:1047
 msgid "Passwords do not match."
 msgstr "Οι κωδικοί πρόσβασης δεν ταιριάζουν."
 
@@ -6851,7 +6986,7 @@ msgstr "Σειρά αναζήτησης βιβλιοθηκών Perl"
 msgid "Permanently wipeout data from RT"
 msgstr "Οριστική διαγραφή δεδομένων από RT"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:114 lib/RT/Article.pm:318 lib/RT/Article.pm:337 lib/RT/Article.pm:389 lib/RT/Article.pm:413 lib/RT/Article.pm:478 lib/RT/Article.pm:483 lib/RT/Asset.pm:227 lib/RT/Asset.pm:438 lib/RT/Asset.pm:595 lib/RT/Attachment.pm:801 lib/RT/Attachment.pm:802 lib/RT/Attachment.pm:861 lib/RT/Attachment.pm:862 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:443 lib/RT/Class.pm:131 lib/RT/Class.pm:166 lib/RT/Class.pm:305 lib/RT/Class.pm:355 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1132 lib/RT/CustomField.pm:1660 lib/RT/CustomField.pm:1698 lib/RT/CustomField.pm:1751 lib/RT/CustomField.pm:1956 lib/RT/CustomField.pm:2116 lib/RT/CustomField.pm:278 lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:306 lib/RT/CustomField.pm:660 lib/RT/CustomField.pm:687 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:314 lib/RT/CustomRole.pm:410 lib/RT/CustomRole.pm:445 lib/RT/CustomRole.pm:98 lib/RT/Group.pm:1144 lib/RT/Group.pm:1230 lib/RT/Group.pm:283 lib/RT/Group.pm:378 lib/RT/Group.pm:670 lib/RT/Group.pm:900 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1218 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:756 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/ScripAction.pm:108 lib/RT/ScripCondition.pm:119 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:757 lib/RT/Template.pm:774 lib/RT/Template.pm:792 lib/RT/Ticket.pm:1124 lib/RT/Ticket.pm:1330 lib/RT/Ticket.pm:1552 lib/RT/Ticket.pm:1597 lib/RT/Ticket.pm:1886 lib/RT/Ticket.pm:1910 lib/RT/Ticket.pm:2300 lib/RT/Ticket.pm:2306 lib/RT/Ticket.pm:2320 lib/RT/Ticket.pm:2325 lib/RT/Ticket.pm:2349 lib/RT/Ticket.pm:2566 lib/RT/Ticket.pm:2805 lib/RT/Ticket.pm:3167 lib/RT/Ticket.pm:780 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:758 lib/RT/Transaction.pm:798 lib/RT/User.pm:1269 lib/RT/User.pm:131 lib/RT/User.pm:1704 lib/RT/User.pm:1952 lib/RT/User.pm:1985 lib/RT/User.pm:318 lib/RT/User.pm:850 lib/RT/User.pm:885 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:110 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:117 share/html/Ticket/ShowEmailRecord.html:111 share/html/Ticket/ShowEmailRecord.html:112
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:114 lib/RT/Article.pm:318 lib/RT/Article.pm:337 lib/RT/Article.pm:389 lib/RT/Article.pm:413 lib/RT/Article.pm:478 lib/RT/Article.pm:483 lib/RT/Asset.pm:227 lib/RT/Asset.pm:438 lib/RT/Asset.pm:595 lib/RT/Attachment.pm:865 lib/RT/Attachment.pm:866 lib/RT/Attachment.pm:925 lib/RT/Attachment.pm:926 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:443 lib/RT/Class.pm:131 lib/RT/Class.pm:166 lib/RT/Class.pm:305 lib/RT/Class.pm:355 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1132 lib/RT/CustomField.pm:1660 lib/RT/CustomField.pm:1698 lib/RT/CustomField.pm:1751 lib/RT/CustomField.pm:1956 lib/RT/CustomField.pm:2116 lib/RT/CustomField.pm:278 lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:306 lib/RT/CustomField.pm:660 lib/RT/CustomField.pm:687 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:314 lib/RT/CustomRole.pm:410 lib/RT/CustomRole.pm:447 lib/RT/CustomRole.pm:98 lib/RT/Group.pm:1144 lib/RT/Group.pm:1230 lib/RT/Group.pm:283 lib/RT/Group.pm:378 lib/RT/Group.pm:670 lib/RT/Group.pm:900 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1231 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:756 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/ScripAction.pm:108 lib/RT/ScripCondition.pm:119 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:757 lib/RT/Template.pm:774 lib/RT/Template.pm:792 lib/RT/Ticket.pm:1124 lib/RT/Ticket.pm:1330 lib/RT/Ticket.pm:1552 lib/RT/Ticket.pm:1597 lib/RT/Ticket.pm:1886 lib/RT/Ticket.pm:1910 lib/RT/Ticket.pm:2300 lib/RT/Ticket.pm:2306 lib/RT/Ticket.pm:2320 lib/RT/Ticket.pm:2325 lib/RT/Ticket.pm:2349 lib/RT/Ticket.pm:2566 lib/RT/Ticket.pm:2805 lib/RT/Ticket.pm:3167 lib/RT/Ticket.pm:780 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:758 lib/RT/Transaction.pm:798 lib/RT/User.pm:131 lib/RT/User.pm:1372 lib/RT/User.pm:1807 lib/RT/User.pm:2055 lib/RT/User.pm:2088 lib/RT/User.pm:421 lib/RT/User.pm:953 lib/RT/User.pm:988 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:110 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:117 share/html/Ticket/ShowEmailRecord.html:111 share/html/Ticket/ShowEmailRecord.html:112
 msgid "Permission Denied"
 msgstr "Δεν επιτρέπεται η πρόσβαση"
 
@@ -6859,7 +6994,7 @@ msgstr "Δεν επιτρέπεται η πρόσβαση"
 msgid "Permission denied"
 msgstr "Δεν επιτρέπεται η πρόσβαση"
 
-#: share/html/Admin/Users/Modify.html:178 share/html/Prefs/AboutMe.html:86
+#: share/html/Admin/Users/Modify.html:181 share/html/Prefs/Elements/EditAboutMe:79 share/html/Prefs/Elements/ShowAboutMe:85
 msgid "Phone numbers"
 msgstr "Αριθμοί τηλεφώνου"
 
@@ -6895,13 +7030,21 @@ msgstr "Πρότυπο συναλλαγής απλού κειμένου"
 msgid "Please check the URL and try again."
 msgstr "Παρακαλώ ελέγξτε την διεύθυνση URL και δοκιμάστε ξανά"
 
-#: lib/RT/User.pm:939
+#: lib/RT/User.pm:1042
 msgid "Please enter your current password correctly."
 msgstr "Παρακαλώ εισάγετε τον κωδικό σας σωστά."
 
-#: lib/RT/User.pm:941
+#: lib/RT/User.pm:1044
 msgid "Please enter your current password."
 msgstr "Παρακαλώ εισάγετε τον κωδικό σας."
+
+#: share/html/SelfService/Elements/RequestUpdate:50
+msgid "Please indicate which user fields you would like updated"
+msgstr ""
+
+#: share/html/SelfService/Elements/RequestUpdate:59
+msgid "Please update my user information"
+msgstr ""
 
 #: share/html/Elements/CSRF:48 share/html/Elements/CSRF:51
 msgid "Possible cross-site request forgery"
@@ -6921,7 +7064,7 @@ msgstr ""
 msgid "Predefined search %1 not found"
 msgstr "Η προκαθορισμένη αναζήτηση %1 δε βρέθηκε"
 
-#: share/html/Elements/Tabs:1223 share/html/Elements/Tabs:709 share/html/Prefs/AboutMe.html:48 share/html/Prefs/Other.html:80 share/html/SelfService/Prefs.html:48
+#: share/html/Elements/Tabs:1224 share/html/Elements/Tabs:709 share/html/Prefs/AboutMe.html:48 share/html/Prefs/Other.html:80 share/html/SelfService/Prefs.html:48
 msgid "Preferences"
 msgstr "Προτιμήσεις"
 
@@ -6953,7 +7096,7 @@ msgstr "Οι προτιμήσεις για τον χρήστη %1 αποθηκε
 msgid "Preferences saved."
 msgstr "Αποθηκεύτηκαν οι προτιμήσεις."
 
-#: lib/RT/User.pm:1581
+#: lib/RT/User.pm:1684
 msgid "Preferences were not found"
 msgstr "Οι προτιμήσεις δε βρέθηκαν"
 
@@ -6992,7 +7135,7 @@ msgstr "Εκτύπωση των αποτελεσμάτων των συνοπτι
 msgid "Print this message"
 msgstr "Εκτύπωση μηνύματος"
 
-#: lib/RT/Report/Tickets.pm:66 lib/RT/Tickets.pm:118 lib/RT/Tickets.pm:1782 share/html/Admin/Queues/DefaultValues.html:58 share/html/Elements/RT__Queue/ColumnMap:69 share/html/Elements/RT__Ticket/ColumnMap:154 share/html/Search/Elements/BuildFormatString:102 share/html/Search/Elements/PickBasics:200 share/html/Ticket/Create.html:270 share/html/Ticket/Elements/ShowBasics:109 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:241
+#: lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:118 lib/RT/Tickets.pm:1782 share/html/Admin/Queues/DefaultValues.html:58 share/html/Elements/RT__Queue/ColumnMap:69 share/html/Elements/RT__Ticket/ColumnMap:154 share/html/Search/Elements/BuildFormatString:102 share/html/Search/Elements/PickBasics:214 share/html/Ticket/Create.html:271 share/html/Ticket/Elements/ShowBasics:109 share/html/m/_elements/ticket_list:99 share/html/m/ticket/create:342 share/html/m/ticket/show:241
 msgid "Priority"
 msgstr "Προτεραιότητα"
 
@@ -7017,16 +7160,16 @@ msgstr "Ιδιωτικό κλειδί(ιά) για %1"
 msgid "Private keys"
 msgstr "Ιδιωτικά κλειδιά"
 
-#: lib/RT/Handle.pm:743 share/html/Admin/Users/Modify.html:119
+#: lib/RT/Handle.pm:747 share/html/Admin/Users/Modify.html:119
 msgid "Privileged"
 msgstr "Προνομιούχοι"
 
 #. (loc_fuzzy($msg))
-#: share/html/Admin/Users/Modify.html:288 share/html/Prefs/AboutMe.html:254
+#: share/html/Admin/Users/Modify.html:308 share/html/Prefs/AboutMe.html:108
 msgid "Privileged status: %1"
 msgstr "Κατάσταση προνομιούχων: %1"
 
-#: share/html/Admin/Users/index.html:127
+#: share/html/Admin/Users/index.html:154
 msgid "Privileged users"
 msgstr "Προνομιούχοι χρήστες"
 
@@ -7038,7 +7181,11 @@ msgstr ""
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr "Επεξεργασία άνευ συναλλαγής, κάποιες συνθήκες και ενέργειες μπορεί να αποτύχουν. Εξετάστε την χρήση της παραμέτρου --transaction"
 
-#: lib/RT/Handle.pm:756
+#: lib/RT/Attachments.pm:272
+msgid "Provide a search string to search on"
+msgstr ""
+
+#: lib/RT/Handle.pm:760
 msgid "Pseudogroup for internal use"
 msgstr "Ψευδοομάδα για εσωτερική χρήση"
 
@@ -7064,12 +7211,12 @@ msgstr "Ερώτημα"
 msgid "Query Builder"
 msgstr "Δημιουργία Ερωτημάτων"
 
-#: lib/RT/Graph/Tickets.pm:177 lib/RT/Record.pm:995 lib/RT/Report/Tickets.pm:62 lib/RT/Tickets.pm:109 lib/RT/Tickets.pm:1589 share/html/Elements/CreateTicket:53 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Reports/CreatedByDates.html:90 share/html/Reports/ResolvedByDates.html:90 share/html/Reports/ResolvedByOwner.html:69 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:116 share/html/m/ticket/create:248 share/html/m/ticket/show:245
+#: lib/RT/Graph/Tickets.pm:177 lib/RT/Record.pm:995 lib/RT/Report/Tickets.pm:75 lib/RT/Tickets.pm:109 lib/RT/Tickets.pm:1589 share/html/Elements/CreateTicket:53 share/html/Elements/QueueSummaryByLifecycle:57 share/html/Elements/QueueSummaryByStatus:51 share/html/Elements/QuickCreate:60 share/html/Elements/RT__Scrip/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:63 share/html/Elements/RT__Template/ColumnMap:66 share/html/Elements/RT__Template/ColumnMap:73 share/html/Elements/RT__Ticket/ColumnMap:102 share/html/Reports/CreatedByDates.html:90 share/html/Reports/ResolvedByDates.html:90 share/html/Reports/ResolvedByOwner.html:69 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:61 share/html/Ticket/Elements/ShowBasics:116 share/html/m/ticket/create:248 share/html/m/ticket/show:245
 msgid "Queue"
 msgstr "Ουρά"
 
 #. ($Queue||'')
-#: share/html/Ticket/Create.html:441
+#: share/html/Ticket/Create.html:442
 msgid "Queue %1 could not be loaded."
 msgstr "Η ουρά %1 δεν είναι δυνατό να φορτωθεί"
 
@@ -7091,7 +7238,7 @@ msgstr "Η ουρά υπάρχει ήδη"
 msgid "Queue could not be created"
 msgstr "Δεν ήταν δυνατή η δημιουργία της ουράς"
 
-#: lib/RT/Interface/Web.pm:3929 share/html/m/ticket/create:143
+#: lib/RT/Interface/Web.pm:3952 share/html/m/ticket/create:143
 msgid "Queue could not be loaded."
 msgstr "Δεν ήταν δυνατή η φόρτωση της ουράς"
 
@@ -7111,7 +7258,7 @@ msgstr "Λίστα ουράς"
 msgid "Queue not found"
 msgstr "Δεν βρέθηκε η ουρά"
 
-#: lib/RT/Queue.pm:1227
+#: lib/RT/Queue.pm:1240
 msgid "Queue's default service level has been changed"
 msgstr ""
 
@@ -7159,7 +7306,7 @@ msgstr "Ουρές για τις οποίες είμαι AdminCc"
 msgid "Quick asset creation"
 msgstr ""
 
-#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/ShortcutHelp:66
+#: share/html/Articles/Elements/QuickSearch:48 share/html/Elements/ShortcutHelp:68
 msgid "Quick search"
 msgstr "Γρήγορη αναζήτηση"
 
@@ -7284,7 +7431,7 @@ msgstr "Η καταγραφή της ρύθμισης του RT συνοψίζε
 msgid "RTAddressRegexp option in the config doesn't match %1"
 msgstr "Η επιλογή RTAddressRegexp στις ρυθμίσεις δεν ταυτίζεται με %1"
 
-#: etc/RT_Config.pm:3402 etc/RT_Config.pm:3403 etc/RT_Config.pm:3491 etc/RT_Config.pm:3492
+#: etc/RT_Config.pm:3498 etc/RT_Config.pm:3499 etc/RT_Config.pm:3587 etc/RT_Config.pm:3588
 msgid "Re-open"
 msgstr "Άνοιγμα ξανά"
 
@@ -7292,7 +7439,7 @@ msgstr "Άνοιγμα ξανά"
 msgid "Reached maximum number, so new values will override old ones."
 msgstr "Συμπληρώθηκε ο μέγιστος αριθμός, έτσι οι νέες τιμές θα αντικαταστήσουν τις παλιές."
 
-#: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:61 share/html/Prefs/AboutMe.html:69
+#: share/html/Admin/Users/Modify.html:77 share/html/Elements/RT__User/ColumnMap:61 share/html/Prefs/Elements/EditAboutMe:62 share/html/Prefs/Elements/ShowAboutMe:59
 msgid "Real Name"
 msgstr "Πραγματικό όνομα"
 
@@ -7316,7 +7463,7 @@ msgstr "Καταγραφή όλων των ενημερώσεων"
 msgid "Recursive member"
 msgstr "Αναδρομικό μέλος"
 
-#: etc/RT_Config.pm:3446
+#: etc/RT_Config.pm:3542
 msgid "Recycle"
 msgstr "Ανακύκλωση"
 
@@ -7398,11 +7545,11 @@ msgstr "Ανανέωση αρχικής σελίδας"
 msgid "Refused to add link which would create a circular relationship"
 msgstr "Αρνηθήκατε να προσθέσετε σύνδεσμο που θα δημιουργούσε μια κυκλική σχέση"
 
-#: etc/RT_Config.pm:3396 etc/RT_Config.pm:3400 etc/RT_Config.pm:3485 etc/RT_Config.pm:3489
+#: etc/RT_Config.pm:3492 etc/RT_Config.pm:3496 etc/RT_Config.pm:3581 etc/RT_Config.pm:3585
 msgid "Reject"
 msgstr "Απόρριψη"
 
-#: etc/RT_Config.pm:1896
+#: etc/RT_Config.pm:1992
 msgid "Related tickets"
 msgstr "Σχετικά αιτήματα"
 
@@ -7431,7 +7578,7 @@ msgstr "Επαναενεργοποίηση υπενθύμισης '%1'"
 
 #. ($args->{'NewReminder-Subject'}, loc("Created"))
 #. ($old_subject || $reminder->Subject, $_)
-#: lib/RT/Interface/Web.pm:3071 lib/RT/Interface/Web.pm:3089
+#: lib/RT/Interface/Web.pm:3094 lib/RT/Interface/Web.pm:3112
 msgid "Reminder '%1': %2"
 msgstr "Υπενθύμιση '%1': %2"
 
@@ -7482,6 +7629,10 @@ msgstr "Αφαίρεση Cc"
 msgid "Remove Requestor"
 msgstr "Αφαίρεση Αιτούντος"
 
+#: share/html/User/Elements/RelatedData:71
+msgid "Remove User Information"
+msgstr ""
+
 #: lib/RT/Class.pm:391
 msgid "Removed Subject Override"
 msgstr "Αφαιρέθηκε Θέμα Παράκαμψης"
@@ -7510,12 +7661,24 @@ msgstr ""
 msgid "Render Type"
 msgstr "Τύπος Αποτύπωσης"
 
+#: share/html/User/Elements/RelatedData:79
+msgid "Replace User"
+msgstr ""
+
+#: share/html/User/Elements/RelatedData:80
+msgid "Replace this user's activity records with \"Nobody\" user"
+msgstr ""
+
 #: lib/RT/Config.pm:212
 msgid "Replaces the owner dropdowns with textboxes"
 msgstr "Αντικατάσταση των αναδυόμενων μενού του ιδιοκτήτη με πλαίσια κειμένου"
 
 #: lib/RT/Config.pm:222
 msgid "Replaces the queue dropdowns with textboxes"
+msgstr ""
+
+#: share/html/SelfService/User/Elements/RelatedData:65
+msgid "Replies you sent"
 msgstr ""
 
 #: share/html/Elements/ShowTransaction:180 share/html/Elements/Tabs:808 share/html/m/_elements/ticket_menu:69
@@ -7526,11 +7689,15 @@ msgstr "Απάντηση"
 msgid "Reply Address"
 msgstr "Διεύθυνση απάντησης"
 
+#: share/html/Elements/ShortcutHelp:132
+msgid "Reply to current ticket"
+msgstr ""
+
 #: share/html/Search/Bulk.html:157 share/html/Ticket/ModifyAll.html:104 share/html/Ticket/Update.html:80 share/html/m/ticket/reply:95
 msgid "Reply to requestors"
 msgstr "Απάντηση στους αιτούντες"
 
-#: share/html/Elements/ShortcutHelp:100
+#: share/html/Elements/ShortcutHelp:102
 msgid "Reply to ticket"
 msgstr "Απάντηση σε αίτημα"
 
@@ -7538,7 +7705,7 @@ msgstr "Απάντηση σε αίτημα"
 msgid "Reply to tickets"
 msgstr "Απάντηση στα αιτήματα"
 
-#: etc/RT_Config.pm:3449
+#: etc/RT_Config.pm:3545
 msgid "Report stolen"
 msgstr "Αναφορά ως κλεμμένο"
 
@@ -7550,7 +7717,11 @@ msgstr ""
 msgid "Reports summarizing ticket resolution and status"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:72 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145
+#: share/html/SelfService/Elements/RequestUpdate:49
+msgid "Request user information update"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:85 lib/RT/Ticket.pm:102 lib/RT/Tickets.pm:145
 msgid "Requestor"
 msgstr "Αιτών"
 
@@ -7558,7 +7729,7 @@ msgstr "Αιτών"
 msgid "RequestorGroup"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:178 lib/RT/Tickets.pm:146 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:276 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:149 share/html/Ticket/Elements/EditPeople:95 share/html/Ticket/Elements/ShowPeople:76 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:294
+#: lib/RT/Graph/Tickets.pm:178 lib/RT/Tickets.pm:146 share/html/Elements/QuickCreate:71 share/html/Elements/RT__Ticket/ColumnMap:276 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:71 share/html/Ticket/Create.html:149 share/html/Ticket/Elements/EditPeople:96 share/html/Ticket/Elements/ShowPeople:77 share/html/m/_elements/ticket_list:94 share/html/m/ticket/create:268 share/html/m/ticket/show:294
 msgid "Requestors"
 msgstr "Αιτούντες"
 
@@ -7591,7 +7762,7 @@ msgstr "Επαναφορά του RT με μια ματιά"
 msgid "Reset dashboards in menu"
 msgstr "Επαναφορά ταμπλό στο μενού"
 
-#: share/html/Prefs/AboutMe.html:181
+#: share/html/Prefs/Elements/EditAboutMe:172
 msgid "Reset secret authentication token"
 msgstr "Επαναφορά μυστικού συμβόλου ταυτοποίησης"
 
@@ -7607,11 +7778,11 @@ msgstr "Επαναφορά του αρχικού RT λογότυπου"
 msgid "Reset to default RT Theme"
 msgstr "Επαναφορά στο αρχικό θέμα RT"
 
-#: share/html/Admin/Users/Modify.html:181 share/html/Prefs/AboutMe.html:89
+#: share/html/Admin/Users/Modify.html:184 share/html/Prefs/Elements/EditAboutMe:82 share/html/Prefs/Elements/ShowAboutMe:88
 msgid "Residence"
 msgstr "Κατοικία"
 
-#: etc/RT_Config.pm:3395 etc/RT_Config.pm:3399 etc/RT_Config.pm:3484 etc/RT_Config.pm:3488 share/html/Search/Elements/EditFormat:104
+#: etc/RT_Config.pm:3491 etc/RT_Config.pm:3495 etc/RT_Config.pm:3580 etc/RT_Config.pm:3584 share/html/Search/Elements/EditFormat:104
 msgid "Resolve"
 msgstr "Επίλυση"
 
@@ -7620,7 +7791,7 @@ msgstr "Επίλυση"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Επίλυση αιτήματος #%1 (%2)"
 
-#: etc/initialdata:474 lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:80 lib/RT/Tickets.pm:137 share/html/Elements/RT__Ticket/ColumnMap:224 share/html/Elements/RT__Ticket/ColumnMap:257 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:102
+#: etc/initialdata:474 lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:93 lib/RT/Tickets.pm:137 share/html/Elements/RT__Ticket/ColumnMap:224 share/html/Elements/RT__Ticket/ColumnMap:257 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:102
 msgid "Resolved"
 msgstr "Επιλυμένα"
 
@@ -7668,7 +7839,7 @@ msgstr "Επαναφορά Χρονομέτρου"
 msgid "Return back to the ticket"
 msgstr "Επιστροφή πίσω στο αίτημα"
 
-#: share/html/Elements/ShortcutHelp:70
+#: share/html/Elements/ShortcutHelp:72
 msgid "Return home"
 msgstr "Επιστροφή στην αρχική σελίδα"
 
@@ -7702,7 +7873,7 @@ msgid "Right not loaded."
 msgstr "Το Δικαίωμα δεν έχει φορτωθεί"
 
 #. ($object_type)
-#: lib/RT/Interface/Web.pm:2663 lib/RT/Interface/Web.pm:2763
+#: lib/RT/Interface/Web.pm:2686 lib/RT/Interface/Web.pm:2786
 msgid "Rights could not be granted for %1"
 msgstr "Τα δικαιώματα δεν μπόρεσαν να παραχωρηθούν στο %1"
 
@@ -7732,7 +7903,7 @@ msgstr "Ο ρόλος της ομάδας '%1' δε βρέθηκε"
 msgid "Role group exists already"
 msgstr "Ο ρόλος της ομάδας υπάρχει ήδη"
 
-#: lib/RT/Interface/Web.pm:4065 share/html/Admin/Assets/Catalogs/Roles.html:55 share/html/Elements/Tabs:1157
+#: lib/RT/Interface/Web.pm:4088 share/html/Admin/Assets/Catalogs/Roles.html:55 share/html/Elements/Tabs:1157
 msgid "Roles"
 msgstr "Ρόλοι"
 
@@ -7748,7 +7919,7 @@ msgstr "Γραμμές ανά πλαίσιο"
 msgid "Rows per page"
 msgstr "Γραμμές ανά σελίδα"
 
-#: lib/RT/Report/Tickets.pm:87 lib/RT/Tickets.pm:108 share/html/Elements/RT__Ticket/ColumnMap:263 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/ShowBasics:59
+#: lib/RT/Report/Tickets.pm:100 lib/RT/Tickets.pm:108 share/html/Elements/RT__Ticket/ColumnMap:263 share/html/Search/Elements/BuildFormatString:102 share/html/Search/Elements/PickBasics:111 share/html/Ticket/Elements/ShowBasics:59
 msgid "SLA"
 msgstr ""
 
@@ -7797,11 +7968,11 @@ msgstr "Σάββατο"
 msgid "Save"
 msgstr "Αποθήκευση"
 
-#: share/html/Admin/Actions/Modify.html:62 share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:130 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/Assets/Catalogs/DefaultValues.html:63 share/html/Admin/Assets/Catalogs/GroupRights.html:55 share/html/Admin/Assets/Catalogs/UserRights.html:55 share/html/Admin/Conditions/Modify.html:62 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:198 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/CustomRoles/Modify.html:100 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:99 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/DefaultValues.html:133 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:164 share/html/Admin/Queues/People.html:134 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:231 share/html/Articles/Article/Edit.html:91 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:208 share/html/Prefs/Other.html:76 share/html/Prefs/QueueList.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:61 share/html/SelfService/Prefs.html:81 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:82 share/html/Ticket/Reminders.html:63
+#: share/html/Admin/Actions/Modify.html:62 share/html/Admin/Articles/Classes/GroupRights.html:57 share/html/Admin/Articles/Classes/Modify.html:134 share/html/Admin/Articles/Classes/UserRights.html:56 share/html/Admin/Assets/Catalogs/DefaultValues.html:63 share/html/Admin/Assets/Catalogs/GroupRights.html:55 share/html/Admin/Assets/Catalogs/UserRights.html:55 share/html/Admin/Conditions/Modify.html:62 share/html/Admin/CustomFields/GroupRights.html:56 share/html/Admin/CustomFields/Modify.html:198 share/html/Admin/CustomFields/UserRights.html:55 share/html/Admin/CustomRoles/Modify.html:100 share/html/Admin/Global/GroupRights.html:54 share/html/Admin/Global/Template.html:103 share/html/Admin/Global/UserRights.html:54 share/html/Admin/Groups/GroupRights.html:55 share/html/Admin/Groups/Modify.html:99 share/html/Admin/Groups/UserRights.html:55 share/html/Admin/Queues/DefaultValues.html:133 share/html/Admin/Queues/GroupRights.html:59 share/html/Admin/Queues/Modify.html:164 share/html/Admin/Queues/People.html:134 share/html/Admin/Queues/Template.html:115 share/html/Admin/Queues/UserRights.html:60 share/html/Admin/Scrips/Modify.html:89 share/html/Admin/Scrips/Modify.html:93 share/html/Admin/Users/Keys.html:80 share/html/Admin/Users/Modify.html:235 share/html/Articles/Article/Edit.html:91 share/html/Dashboards/Modify.html:72 share/html/Dashboards/Subscription.html:208 share/html/Prefs/Other.html:76 share/html/Prefs/QueueList.html:66 share/html/Prefs/Search.html:67 share/html/Prefs/SearchOptions.html:61 share/html/SelfService/Prefs.html:85 share/html/Ticket/Modify.html:68 share/html/Ticket/ModifyAll.html:137 share/html/Ticket/ModifyDates.html:60 share/html/Ticket/ModifyLinks.html:67 share/html/Ticket/ModifyPeople.html:82 share/html/Ticket/Reminders.html:63
 msgid "Save Changes"
 msgstr "Αποθήκευση αλλαγών"
 
-#: share/html/Prefs/AboutMe.html:171
+#: share/html/Prefs/Elements/EditAboutMe:161
 msgid "Save Preferences"
 msgstr "Αποθήκευση προτιμήσεων"
 
@@ -7826,7 +7997,7 @@ msgstr "Αποθήκευση αναζήτησης"
 msgid "Saved %1 %2"
 msgstr "Αποθήκευση %1 %2"
 
-#: share/html/Admin/Global/MyRT.html:73 share/html/Admin/Users/MyRT.html:101 share/html/Dashboards/Queries.html:126 share/html/Prefs/MyRT.html:142
+#: share/html/Admin/Global/MyRT.html:73 share/html/Admin/Users/MyRT.html:101 share/html/Dashboards/Queries.html:129 share/html/Prefs/MyRT.html:142
 msgid "Saved Search"
 msgstr "Αποθηκευμένη Αναζήτηση"
 
@@ -7881,7 +8052,7 @@ msgstr "Αυτοματισμοί και Παραλήπτες"
 msgid "Scrips normally run after each individual change to a ticket."
 msgstr "Τα σενάρια τρέχουν κανονικά μετά από κάθε μεμονωμένη αλλαγή στο αίτημα."
 
-#: share/html/Admin/Assets/Catalogs/index.html:86 share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Asset/Search/index.html:81 share/html/Asset/Search/index.html:90 share/html/Elements/FindAsset:51 share/html/Elements/GotoUser:58 share/html/Elements/ShortcutHelp:84 share/html/Elements/SimpleSearch:56 share/html/Elements/Tabs:1042 share/html/Elements/Tabs:600 share/html/Elements/Tabs:657 share/html/Elements/Tabs:663 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
+#: share/html/Admin/Assets/Catalogs/index.html:86 share/html/Admin/Tools/Shredder/index.html:63 share/html/Articles/Article/Elements/ShowSearchCriteria:144 share/html/Asset/Search/index.html:81 share/html/Asset/Search/index.html:90 share/html/Elements/FindAsset:51 share/html/Elements/GotoUser:58 share/html/Elements/ShortcutHelp:86 share/html/Elements/SimpleSearch:56 share/html/Elements/Tabs:1042 share/html/Elements/Tabs:600 share/html/Elements/Tabs:657 share/html/Elements/Tabs:663 share/html/Search/Simple.html:58 share/html/m/_elements/menu:64
 msgid "Search"
 msgstr "Αναζήτηση"
 
@@ -7890,7 +8061,7 @@ msgstr "Αναζήτηση"
 msgid "Search %1 updated"
 msgstr "Ενημέρωση αναζήτησης %1"
 
-#: share/html/Articles/Elements/GotoArticle:50 share/html/SelfService/Article/Search.html:48 share/html/SelfService/Elements/SearchArticle:49 share/html/SelfService/Elements/SearchArticle:49
+#: share/html/Articles/Elements/GotoArticle:50 share/html/SelfService/Article/Search.html:48 share/html/SelfService/Elements/SearchArticle:49
 msgid "Search Articles"
 msgstr "Αναζήτηση Άρθρων"
 
@@ -7945,7 +8116,7 @@ msgstr "Αναζητήσεις"
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history by typing <b>%1<i>word</i></b>."
 msgstr "Η αναζήτηση πλήρες κειμένου σε κάθε αίτημα θα πάρει πολύ χρόνο, αλλά αν πρέπει να γίνει, μπορείτε να ψάξετε για κάποια λέξη στο πλήρες ιστορικό αιτημάτων απλά πληκτρολογώντας τη <b>%1<i>λέξη</i></b>."
 
-#: share/html/Prefs/AboutMe.html:173
+#: share/html/Prefs/Elements/EditAboutMe:164
 msgid "Secret authentication token"
 msgstr "Μυστικό σύμβολο ταυτοποίησης"
 
@@ -7953,7 +8124,7 @@ msgstr "Μυστικό σύμβολο ταυτοποίησης"
 msgid "Security:"
 msgstr "Ασφάλεια:"
 
-#: share/html/Elements/ShowCustomFields:132 share/html/m/ticket/show:194
+#: share/html/Elements/ShowCustomFields:136 share/html/m/ticket/show:194
 msgid "See also:"
 msgstr "Δείτε επίσης:"
 
@@ -8021,7 +8192,7 @@ msgstr "Επιλογή χρώματος για αυτό το τμήμα"
 msgid "Select a custom role"
 msgstr "Επιλογή ενός Προσαρμοσμένου Ρόλου"
 
-#: share/html/Admin/Groups/index.html:77 share/html/Admin/Groups/index.html:94
+#: share/html/Admin/Groups/index.html:114 share/html/Admin/Groups/index.html:97
 msgid "Select a group"
 msgstr "Επιλογή ομάδας"
 
@@ -8037,7 +8208,7 @@ msgstr "Επιλογή ουράς για το νέο σας αίτημα"
 msgid "Select a section"
 msgstr "Επιλογή τμήματος"
 
-#: share/html/Admin/Users/index.html:48 share/html/Admin/Users/index.html:87 share/html/User/Search.html:60
+#: share/html/Admin/Users/index.html:105 share/html/Admin/Users/index.html:48 share/html/User/Search.html:60
 msgid "Select a user"
 msgstr "Επιλογή χρήστη"
 
@@ -8227,7 +8398,7 @@ msgstr "Διαχωρισμός πολλαπλών καταχωρήσεων με 
 msgid "Set due date according to SLA"
 msgstr ""
 
-#: lib/RT/User.pm:1977
+#: lib/RT/User.pm:2080
 msgid "Set private key"
 msgstr "Καθορισμός ιδιωτικού κλειδιού"
 
@@ -8389,7 +8560,7 @@ msgstr "Τεμαχιστής"
 msgid "Shredder needs a directory to write dumps to. Please ensure that the directory %1 exists and that it is writable by your web server."
 msgstr "Ο τεμαχιστής χρειάζεται ένα κατάλογο για εγγραφή προσωρινών δεδομένων. Παρακαλώ βεβαιωθείτε ότι ο κατάλογος %1 υπάρχει και είναι εγγράψιμος από τον διακομιστή ιστού."
 
-#: share/html/Dashboards/Queries.html:181
+#: share/html/Dashboards/Queries.html:184
 msgid "Sidebar"
 msgstr "Πλευρική μπάρα"
 
@@ -8424,7 +8595,7 @@ msgstr "Εγγραφή%1%2"
 msgid "Sign%1%2 using %3"
 msgstr "Εγγραφή%1%2 με χρήση %3"
 
-#: share/html/Admin/Users/Modify.html:219 share/html/Prefs/AboutMe.html:109
+#: share/html/Admin/Users/Modify.html:223 share/html/Prefs/Elements/EditAboutMe:101
 msgid "Signature"
 msgstr "Υπογραφή"
 
@@ -8509,7 +8680,7 @@ msgstr "Τα ίχνη σωρού δε καταγράφονται."
 msgid "Stage"
 msgstr "Στάδιο"
 
-#: etc/RT_Config.pm:3398 etc/RT_Config.pm:3487
+#: etc/RT_Config.pm:3494 etc/RT_Config.pm:3583
 msgid "Stall"
 msgstr "Αναμονή"
 
@@ -8518,7 +8689,7 @@ msgstr "Αναμονή"
 msgid "Start the search term with the name of a supported field followed by a colon, as in %1 and %2, to explicitly specify the search type."
 msgstr "Ξεκινήστε τον όρο αναζήτησης με το όνομα ενός υποστηριζόμενου πεδίου ακολουθούμενου από άνω-κάτω τελεία (:), όπως στα %1 και %2, για να καθορίσετε συγκεκριμένα το τύπο αναζήτησης."
 
-#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:79 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:201 share/html/Elements/RT__Ticket/ColumnMap:234 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/EditDates:63 share/html/Ticket/Elements/ShowDates:60 share/html/m/ticket/show:365
+#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:92 lib/RT/Tickets.pm:135 share/html/Elements/RT__Ticket/ColumnMap:201 share/html/Elements/RT__Ticket/ColumnMap:234 share/html/Elements/SelectDateType:50 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Elements/EditDates:63 share/html/Ticket/Elements/ShowDates:60 share/html/m/ticket/show:365
 msgid "Started"
 msgstr "Ξεκίνησε"
 
@@ -8531,7 +8702,7 @@ msgstr ""
 msgid "StartedRelative"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:78 lib/RT/Tickets.pm:134 share/html/Admin/Queues/DefaultValues.html:81 share/html/Elements/RT__Ticket/ColumnMap:196 share/html/Elements/RT__Ticket/ColumnMap:229 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Create.html:304 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:55 share/html/m/ticket/create:380 share/html/m/ticket/show:361
+#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:91 lib/RT/Tickets.pm:134 share/html/Admin/Queues/DefaultValues.html:81 share/html/Elements/RT__Ticket/ColumnMap:196 share/html/Elements/RT__Ticket/ColumnMap:229 share/html/Elements/SelectDateType:54 share/html/Search/Elements/BuildFormatString:102 share/html/Ticket/Create.html:305 share/html/Ticket/Elements/EditDates:50 share/html/Ticket/Elements/ShowDates:55 share/html/m/ticket/create:380 share/html/m/ticket/show:361
 msgid "Starts"
 msgstr "Ξεκινά"
 
@@ -8539,7 +8710,7 @@ msgstr "Ξεκινά"
 msgid "StartsRelative"
 msgstr ""
 
-#: share/html/Admin/Users/Modify.html:157 share/html/Elements/RT__User/ColumnMap:116 share/html/Prefs/AboutMe.html:150
+#: share/html/Admin/Users/Modify.html:160 share/html/Elements/RT__User/ColumnMap:116 share/html/Prefs/Elements/EditAboutMe:145 share/html/Prefs/Elements/ShowAboutMe:127
 msgid "State"
 msgstr "Κατάσταση"
 
@@ -8547,7 +8718,7 @@ msgstr "Κατάσταση"
 msgid "Static file search order"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:177 lib/RT/Report/Tickets.pm:60 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1621 share/html/Asset/Elements/AssetSearchBasics:55 share/html/Asset/Elements/EditBasics:64 share/html/Asset/Elements/ShowBasics:62 share/html/Asset/Search/Bulk.html:97 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__CustomRole/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:102 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:219
+#: lib/RT/Graph/Tickets.pm:177 lib/RT/Report/Tickets.pm:73 lib/RT/Tickets.pm:107 lib/RT/Tickets.pm:1621 share/html/Asset/Elements/AssetSearchBasics:55 share/html/Asset/Elements/EditBasics:64 share/html/Asset/Elements/ShowBasics:62 share/html/Asset/Search/Bulk.html:97 share/html/Elements/RT__Class/ColumnMap:66 share/html/Elements/RT__CustomField/ColumnMap:56 share/html/Elements/RT__CustomRole/ColumnMap:56 share/html/Elements/RT__Group/ColumnMap:82 share/html/Elements/RT__Queue/ColumnMap:56 share/html/Elements/RT__Scrip/ColumnMap:110 share/html/Elements/RT__Ticket/ColumnMap:111 share/html/Elements/RT__Ticket/ColumnMap:121 share/html/Elements/RT__User/ColumnMap:146 share/html/Search/Elements/BuildFormatString:102 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:62 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Tools/MyDay.html:67 share/html/m/_elements/ticket_list:95 share/html/m/ticket/create:250 share/html/m/ticket/reply:63 share/html/m/ticket/show:219
 msgid "Status"
 msgstr "Κατάσταση"
 
@@ -8615,7 +8786,7 @@ msgstr ""
 msgid "Style"
 msgstr "Στυλ"
 
-#: lib/RT/Graph/Tickets.pm:177 lib/RT/Tickets.pm:140 lib/RT/Tickets.pm:1731 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:116 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:161 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:87 share/html/SelfService/Update.html:73 share/html/Ticket/Create.html:221 share/html/Ticket/Elements/Reminders:133 share/html/Ticket/Elements/Reminders:164 share/html/Ticket/Forward.html:65 share/html/Ticket/ModifyAll.html:111 share/html/Ticket/Update.html:156 share/html/m/ticket/create:229 share/html/m/ticket/reply:99
+#: lib/RT/Graph/Tickets.pm:177 lib/RT/Tickets.pm:140 lib/RT/Tickets.pm:1731 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:57 share/html/Elements/RT__Ticket/ColumnMap:116 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:161 share/html/Search/Elements/BuildFormatString:102 share/html/SelfService/Create.html:87 share/html/SelfService/Elements/RequestUpdate:58 share/html/SelfService/Update.html:73 share/html/Ticket/Create.html:222 share/html/Ticket/Elements/Reminders:133 share/html/Ticket/Elements/Reminders:164 share/html/Ticket/Forward.html:65 share/html/Ticket/ModifyAll.html:111 share/html/Ticket/Update.html:156 share/html/m/ticket/create:229 share/html/m/ticket/reply:99
 msgid "Subject"
 msgstr "Θέμα"
 
@@ -8632,7 +8803,7 @@ msgstr "Το θέμα άλλαξε σε %1"
 msgid "SubjectTag"
 msgstr ""
 
-#: share/html/Elements/Submit:99
+#: share/html/Elements/Submit:99 share/html/SelfService/Elements/RequestUpdate:66
 msgid "Submit"
 msgstr "Υποβολή"
 
@@ -8649,7 +8820,7 @@ msgid "Subscribe"
 msgstr "Εγγραφή"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:380
+#: share/html/Dashboards/Subscription.html:383
 msgid "Subscribe to dashboard %1"
 msgstr "Εγγραφείτε στο ταμπλό %1"
 
@@ -8658,7 +8829,7 @@ msgid "Subscribe to dashboards"
 msgstr "Εγγραφείτε στα ταμπλό"
 
 #. ($Dashboard->Name)
-#: share/html/Dashboards/Subscription.html:358
+#: share/html/Dashboards/Subscription.html:361
 msgid "Subscribed to dashboard %1"
 msgstr "Έγινε εγγραφή στο ταμπλό %1"
 
@@ -8667,19 +8838,19 @@ msgid "Subscription"
 msgstr "Εγγραφή"
 
 #. ($msg)
-#: share/html/Dashboards/Subscription.html:361
+#: share/html/Dashboards/Subscription.html:364
 msgid "Subscription could not be created: %1"
 msgstr "Η εγγραφή δεν ήταν δυνατό να δημιουργηθεί: %1"
 
-#: share/html/Dashboards/Subscription.html:341
+#: share/html/Dashboards/Subscription.html:344
 msgid "Subscription updated"
 msgstr "Η συνδρομή ενημερώθηκε"
 
-#: lib/RT/Attachment.pm:903
+#: lib/RT/Attachment.pm:967
 msgid "Successfuly decrypted data"
 msgstr "Επιτυχής αποκρυπτογράφηση δεδομένων"
 
-#: lib/RT/Attachment.pm:854
+#: lib/RT/Attachment.pm:918
 msgid "Successfuly encrypted data"
 msgstr "Επιτυχής κρυπτογράφηση δεδομένων"
 
@@ -8687,39 +8858,39 @@ msgstr "Επιτυχής κρυπτογράφηση δεδομένων"
 msgid "Summary"
 msgstr "Σύνοψη"
 
-#: lib/RT/Report/Tickets.pm:232
+#: lib/RT/Report/Tickets.pm:245
 msgid "Summary of Created-LastUpdated"
 msgstr "Σύνοψη των Δημιουργήθηκε - Τελευταία Ενημέρωση"
 
-#: lib/RT/Report/Tickets.pm:227
+#: lib/RT/Report/Tickets.pm:240
 msgid "Summary of Created-Resolved"
 msgstr "Σύνοψη των Δημιουργήθηκε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:222
+#: lib/RT/Report/Tickets.pm:235
 msgid "Summary of Created-Started"
 msgstr "Σύνοψη των  Δημιουργήθηκε - Ξεκίνησε"
 
-#: lib/RT/Report/Tickets.pm:242
+#: lib/RT/Report/Tickets.pm:255
 msgid "Summary of Due-Resolved"
 msgstr "Σύνοψη των Οφειλόμενων - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:247
+#: lib/RT/Report/Tickets.pm:260
 msgid "Summary of Started-Resolved"
 msgstr "Σύνοψη των  Ξεκίνησε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:237
+#: lib/RT/Report/Tickets.pm:250
 msgid "Summary of Starts-Started"
 msgstr "Σύνοψη των  Ξεκινά - Ξεκίνησε"
 
-#: lib/RT/Report/Tickets.pm:212
+#: lib/RT/Report/Tickets.pm:225
 msgid "Summary of time estimated"
 msgstr "Σύνοψη του εκτιμώμενου χρόνου"
 
-#: lib/RT/Report/Tickets.pm:217
+#: lib/RT/Report/Tickets.pm:230
 msgid "Summary of time left"
 msgstr "Σύνοψη του χρόνου αριστερά"
 
-#: lib/RT/Report/Tickets.pm:207
+#: lib/RT/Report/Tickets.pm:220
 msgid "Summary of time worked"
 msgstr "Σύνοψη του χρόνου εργασίας"
 
@@ -8739,7 +8910,7 @@ msgstr ""
 msgid "Suspended"
 msgstr "Παγωμένο"
 
-#: lib/RT/Interface/Web.pm:4017
+#: lib/RT/Interface/Web.pm:4040
 msgid "System"
 msgstr "Σύστημα"
 
@@ -8755,11 +8926,11 @@ msgstr ""
 msgid "System Configuration"
 msgstr "Ρυθμίσεις συστήματος"
 
-#: lib/RT/Installer.pm:200 share/html/Elements/SelectTimezone:63
+#: lib/RT/Installer.pm:200 share/html/Elements/SelectTimezone:63 share/html/Prefs/Elements/ShowAboutMe:71 share/html/Prefs/Elements/ShowAboutMe:79
 msgid "System Default"
 msgstr "Προεπιλογή Συστήματος"
 
-#: lib/RT/Interface/Web.pm:2663 lib/RT/Interface/Web.pm:2763 share/html/Admin/Elements/EditRightsCategoryTabs:60
+#: lib/RT/Interface/Web.pm:2686 lib/RT/Interface/Web.pm:2786 share/html/Admin/Elements/EditRightsCategoryTabs:60
 msgid "System Error"
 msgstr "Σφάλμα Συστήματος"
 
@@ -8780,7 +8951,7 @@ msgstr "Σφάλμα συστήματος"
 msgid "System error. Right not granted."
 msgstr "Σφάλμα συστήματος. Αδυναμία παραχώρησης δικαιώματος"
 
-#: lib/RT/CustomRole.pm:137 lib/RT/Handle.pm:807
+#: lib/RT/CustomRole.pm:137 lib/RT/Handle.pm:811
 msgid "SystemRolegroup for internal use"
 msgstr "SystemRolegroup για εσωτερική χρήση"
 
@@ -8906,19 +9077,19 @@ msgstr "Ο χρήστης είναι ήδη υπεύθυνος για το αί�
 msgid "That user does not exist"
 msgstr "Ο χρήστης δεν υπάρχει"
 
-#: lib/RT/User.pm:345
+#: lib/RT/User.pm:448
 msgid "That user is already privileged"
 msgstr "Αυτός ο χρήστης είναι ήδη προνομιούχος"
 
-#: lib/RT/User.pm:371
+#: lib/RT/User.pm:474
 msgid "That user is already unprivileged"
 msgstr "Αυτός ο χρήστης είναι ήδη μη προνομιούχος"
 
-#: lib/RT/User.pm:364
+#: lib/RT/User.pm:467
 msgid "That user is now privileged"
 msgstr "Αυτός ο χρήστης έχει γίνει προνομιούχος"
 
-#: lib/RT/User.pm:390
+#: lib/RT/User.pm:493
 msgid "That user is now unprivileged"
 msgstr "Αυτός ο χρήστης έχει γίνει μη προνομιούχος"
 
@@ -8930,7 +9101,7 @@ msgstr "Ο χρήστης δεν μπορεί να είναι υπεύθυνος
 msgid "That's not a numerical id"
 msgstr "Δεν είναι αριθμητική ταυτότητα"
 
-#: share/html/Articles/Article/Display.html:51 share/html/SelfService/Display.html:58 share/html/Ticket/Create.html:266 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:209
+#: share/html/Articles/Article/Display.html:51 share/html/SelfService/Display.html:58 share/html/Ticket/Create.html:267 share/html/Ticket/Elements/ShowSummary:52 share/html/m/ticket/create:337 share/html/m/ticket/show:209
 msgid "The Basics"
 msgstr "Βασικά"
 
@@ -8975,23 +9146,23 @@ msgstr "Τα ακόλουθα ερωτήματα έχουν διαγραφεί �
 msgid "The following queries may not be visible to all users who can see this dashboard."
 msgstr "Τα ακόλουθα ερωτήματα μπορεί να μην είναι ορατά σε όλους τους χρήστες που μπορούν να δουν αυτό το ταμπλό."
 
-#: lib/RT/Crypt/GnuPG.pm:1722
+#: lib/RT/Crypt/GnuPG.pm:1752
 msgid "The key has been disabled"
 msgstr "Το κλειδί έχει απενεργοποιηθεί"
 
-#: lib/RT/Crypt/GnuPG.pm:1728
+#: lib/RT/Crypt/GnuPG.pm:1758
 msgid "The key has been revoked"
 msgstr "Το κλειδί έχει ανακληθεί"
 
-#: lib/RT/Crypt/GnuPG.pm:1733
+#: lib/RT/Crypt/GnuPG.pm:1763
 msgid "The key has expired"
 msgstr "Το κλειδί έχει λήξει"
 
-#: lib/RT/Crypt/GnuPG.pm:1766
+#: lib/RT/Crypt/GnuPG.pm:1796
 msgid "The key is fully trusted"
 msgstr "Το κλειδί είναι πλήρως έμπιστο"
 
-#: lib/RT/Crypt/GnuPG.pm:1771
+#: lib/RT/Crypt/GnuPG.pm:1801
 msgid "The key is ultimately trusted"
 msgstr "Το κλειδί είναι απολύτως έμπιστο"
 
@@ -9032,7 +9203,7 @@ msgstr "Υπάρχουν αρκετά κλειδιά κατάλληλα για �
 msgid "There are unread messages on this ticket."
 msgstr "Υπάρχουν αδιάβαστα μηνύματα σε αυτό το αίτημα."
 
-#: lib/RT/Crypt/GnuPG.pm:1761
+#: lib/RT/Crypt/GnuPG.pm:1791
 msgid "There is marginal trust in this key"
 msgstr "Το κλειδί αυτό είναι οριακά έμπιστο"
 
@@ -9087,7 +9258,7 @@ msgstr "Αυτό το προσαρμοσμένο πεδίο δεν έχει τύ
 msgid "This feature is only available to system administrators"
 msgstr "Αυτή η λειτουργία είναι διαθέσιμη μόνο σε διαχειριστές"
 
-#: share/html/Admin/Tools/Queries.html:55 share/html/Admin/Tools/Theme.html:236
+#: share/html/Admin/Tools/Queries.html:55 share/html/Admin/Tools/Theme.html:244
 msgid "This feature is only available to system administrators."
 msgstr "Αυτή η λειτουργία είναι διαθέσιμη μόνο σε διαχειριστές."
 
@@ -9137,7 +9308,7 @@ msgstr "Πεμ"
 msgid "Thursday"
 msgstr "Πέμπτη"
 
-#: lib/RT/Record.pm:992 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShowReminders:53
+#: lib/RT/Record.pm:992 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/ShortcutHelp:123 share/html/Elements/ShowReminders:53
 msgid "Ticket"
 msgstr "Αίτημα"
 
@@ -9211,11 +9382,11 @@ msgstr "Τύπος περιεχομένου Αιτήματος"
 msgid "Ticket could not be created due to an internal error"
 msgstr "Το αίτημα δεν έχει δημιουργηθεί λόγω εσωτερικού σφάλματος"
 
-#: share/html/Ticket/Create.html:369 share/html/m/ticket/create:76
+#: share/html/Ticket/Create.html:370 share/html/m/ticket/create:76
 msgid "Ticket could not be loaded"
 msgstr "Δεν ήταν δυνατή η φόρτωση του αιτήματος"
 
-#: lib/RT/Report/Tickets.pm:206
+#: lib/RT/Report/Tickets.pm:219
 msgid "Ticket count"
 msgstr "Αρίθμηση αιτήματος"
 
@@ -9234,6 +9405,10 @@ msgstr "Μεταδεδομένα αιτήματος"
 #: etc/initialdata:450
 msgid "Ticket status changed"
 msgstr "Η κατάσταση του αιτήματος άλλαξε"
+
+#: share/html/User/Elements/RelatedData:66
+msgid "Ticket transactions this user created"
+msgstr ""
 
 #: share/html/Articles/Article/ExtractFromTicket.html:63
 msgid "Ticket update"
@@ -9282,15 +9457,23 @@ msgstr ""
 msgid "Tickets which depend on this approval:"
 msgstr "Αιτήματα που εξαρτώνται από αυτή την έγκριση:"
 
-#: lib/RT/Report/Tickets.pm:133
+#: share/html/User/Elements/RelatedData:62
+msgid "Tickets with this user as a requestor"
+msgstr ""
+
+#: share/html/SelfService/User/Elements/RelatedData:61
+msgid "Tickets with you as a requestor"
+msgstr ""
+
+#: lib/RT/Report/Tickets.pm:146
 msgid "Time"
 msgstr "Ώρα"
 
-#: share/html/Elements/RT__Ticket/ColumnMap:192 share/html/Search/Elements/PickBasics:179 share/html/Ticket/Create.html:280 share/html/m/ticket/create:353
+#: share/html/Elements/RT__Ticket/ColumnMap:192 share/html/Search/Elements/PickBasics:193 share/html/Ticket/Create.html:281 share/html/m/ticket/create:353
 msgid "Time Estimated"
 msgstr "Εκτιμώμενος χρόνος"
 
-#: lib/RT/Tickets.pm:1875 share/html/Elements/RT__Ticket/ColumnMap:187 share/html/Search/Elements/PickBasics:180 share/html/Ticket/Create.html:290 share/html/m/ticket/create:365
+#: lib/RT/Tickets.pm:1875 share/html/Elements/RT__Ticket/ColumnMap:187 share/html/Search/Elements/PickBasics:194 share/html/Ticket/Create.html:291 share/html/m/ticket/create:365
 msgid "Time Left"
 msgstr "Χρόνος που απομένει"
 
@@ -9298,7 +9481,7 @@ msgstr "Χρόνος που απομένει"
 msgid "Time Taken"
 msgstr ""
 
-#: lib/RT/Tickets.pm:1852 share/html/Elements/RT__Ticket/ColumnMap:182 share/html/Search/Elements/PickBasics:178 share/html/Ticket/Create.html:285 share/html/m/ticket/create:359
+#: lib/RT/Tickets.pm:1852 share/html/Elements/RT__Ticket/ColumnMap:182 share/html/Search/Elements/PickBasics:192 share/html/Ticket/Create.html:286 share/html/m/ticket/create:359
 msgid "Time Worked"
 msgstr "Χρόνος εργασίας"
 
@@ -9331,11 +9514,11 @@ msgstr ""
 msgid "Timer for #%1: %2"
 msgstr "Χρονόμετρο για #%1: %2"
 
-#: lib/RT/Installer.pm:189 lib/RT/User.pm:103 share/html/Admin/Users/Modify.html:96 share/html/Prefs/AboutMe.html:80 share/html/SelfService/Prefs.html:63
+#: lib/RT/Installer.pm:189 lib/RT/User.pm:103 share/html/Admin/Users/Modify.html:96 share/html/Elements/RT__User/ColumnMap:150 share/html/Prefs/Elements/EditAboutMe:73 share/html/Prefs/Elements/ShowAboutMe:75 share/html/SelfService/Prefs.html:67
 msgid "Timezone"
 msgstr "Ζώνη Ώρας"
 
-#: share/html/Admin/Articles/Classes/Modify.html:101 share/html/Search/Elements/EditFormat:110
+#: share/html/Admin/Articles/Classes/Modify.html:105 share/html/Search/Elements/EditFormat:110
 msgid "Title"
 msgstr "Τίτλος"
 
@@ -9353,7 +9536,7 @@ msgstr "Για ερωτήματα σχετικά με υποστήριξη, εκ
 msgid "Toggle %quant(%1,query,queries)"
 msgstr "Εναλλαγή %quant(%1,query,queries)"
 
-#: share/html/Elements/ShortcutHelp:109
+#: share/html/Elements/ShortcutHelp:111
 msgid "Toggle highlighted ticket's checkbox"
 msgstr ""
 
@@ -9362,7 +9545,7 @@ msgstr ""
 msgid "Toggle stack trace"
 msgstr "Εναλλαγή ανίχνευσης σωρού"
 
-#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:82 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:206 share/html/Elements/RT__Ticket/ColumnMap:239 share/html/Search/Elements/BuildFormatString:102
+#: lib/RT/Graph/Tickets.pm:179 lib/RT/Report/Tickets.pm:95 lib/RT/Tickets.pm:133 share/html/Elements/RT__Ticket/ColumnMap:206 share/html/Elements/RT__Ticket/ColumnMap:239 share/html/Search/Elements/BuildFormatString:102
 msgid "Told"
 msgstr ""
 
@@ -9394,31 +9577,31 @@ msgstr "Αδυναμία εύρεσης Θέματος"
 msgid "Topics"
 msgstr "Θέματα"
 
-#: lib/RT/Report/Tickets.pm:997
+#: lib/RT/Report/Tickets.pm:1010
 msgid "Total"
 msgstr "Σύνολο"
 
-#: lib/RT/Report/Tickets.pm:233
+#: lib/RT/Report/Tickets.pm:246
 msgid "Total Created-LastUpdated"
 msgstr "Σύνολο που Δημιουργήθηκε - Ενημερώθηκε τελευταία"
 
-#: lib/RT/Report/Tickets.pm:228
+#: lib/RT/Report/Tickets.pm:241
 msgid "Total Created-Resolved"
 msgstr "Σύνολο που Δημιουργήθηκε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:223
+#: lib/RT/Report/Tickets.pm:236
 msgid "Total Created-Started"
 msgstr "Σύνολο που Δημιουργήθηκε - Ξεκίνησε"
 
-#: lib/RT/Report/Tickets.pm:243
+#: lib/RT/Report/Tickets.pm:256
 msgid "Total Due-Resolved"
 msgstr "Οφειλόμενο Σύνολο - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:248
+#: lib/RT/Report/Tickets.pm:261
 msgid "Total Started-Resolved"
 msgstr "Σύνολο που Ξεκίνησε - Επιλύθηκε"
 
-#: lib/RT/Report/Tickets.pm:238
+#: lib/RT/Report/Tickets.pm:251
 msgid "Total Starts-Started"
 msgstr "Σύνολο που Ξεκινά - Ξεκίνησε"
 
@@ -9426,15 +9609,15 @@ msgstr "Σύνολο που Ξεκινά - Ξεκίνησε"
 msgid "Total Time Worked"
 msgstr ""
 
-#: lib/RT/Report/Tickets.pm:213
+#: lib/RT/Report/Tickets.pm:226
 msgid "Total time estimated"
 msgstr "Συνολικός εκτιμώμενος χρόνος"
 
-#: lib/RT/Report/Tickets.pm:218
+#: lib/RT/Report/Tickets.pm:231
 msgid "Total time left"
 msgstr "Συνολικός χρόνος αριστερά"
 
-#: lib/RT/Report/Tickets.pm:208
+#: lib/RT/Report/Tickets.pm:221
 msgid "Total time worked"
 msgstr "Συνολικός χρόνος εργασίας"
 
@@ -9475,7 +9658,7 @@ msgstr ""
 msgid "Transactions"
 msgstr "Συναλλαγές"
 
-#: lib/RT/Transaction.pm:1410
+#: lib/RT/Transaction.pm:1414
 msgid "Transactions are immutable"
 msgstr "Οι συναλλαγές είναι αμετάβλητες"
 
@@ -9544,12 +9727,12 @@ msgid "Unable to determine object type or id"
 msgstr "Δεν έχει καθοριστεί ο τύπος και η ταυτότητα του αντικειμένου"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4124
+#: lib/RT/Interface/Web.pm:4147
 msgid "Unable to find asset #%1"
 msgstr "Αδυναμία εύρεσης του περιουσιακού στοιχείου #%1"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4108
+#: lib/RT/Interface/Web.pm:4131
 msgid "Unable to find catalog %1"
 msgstr "Αδυναμία εύρεσης καταλόγου #%1"
 
@@ -9567,12 +9750,12 @@ msgid "Unable to open shortcut help. Reason:"
 msgstr "Αδυναμία ανοίγματος βοήθειας συντόμευσης. Αιτία:"
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:362
+#: share/html/Admin/Tools/Theme.html:370
 msgid "Unable to set UserCSS: %1"
 msgstr "Αδυναμία καθορισμού UserCSS: %1"
 
 #. ($msg)
-#: share/html/Admin/Tools/Theme.html:321
+#: share/html/Admin/Tools/Theme.html:329
 msgid "Unable to set UserLogo: %1"
 msgstr "Αδυναμία καθορισμού UserLogo: %1"
 
@@ -9596,7 +9779,7 @@ msgid "Unable to submit time. Please add it to the ticket manually. Reason:"
 msgstr ""
 
 #. ($id)
-#: share/html/Dashboards/Subscription.html:346
+#: share/html/Dashboards/Subscription.html:349
 msgid "Unable to subscribe to dashboard %1: Permission Denied"
 msgstr "Δεν είναι δυνατή η εγγραφή στο ταμπλό %1: Δεν επιτρέπεται η πρόσβαση"
 
@@ -9609,7 +9792,7 @@ msgstr "Μη εξουσιοδοτημένος"
 msgid "Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href=\"%1\">People page</a>."
 msgstr "Αποεπιλέξτε τα πλαίσια για απενεργοποίηση των ειδοποιήσεων στους εγγεγραμμένους παραλήπτες <b>μόνο για αυτή την συναλλαγή</b>. Για μονιμότερη αποσιωποίηση των ειδοποιήσεων μπορείτε να επισκεφθείτε την <a href=\"%1\">Σελίδα χρηστών</a>."
 
-#: etc/RT_Config.pm:3404 etc/RT_Config.pm:3493
+#: etc/RT_Config.pm:3500 etc/RT_Config.pm:3589
 msgid "Undelete"
 msgstr "Αποδιαγραφή"
 
@@ -9621,11 +9804,11 @@ msgstr "Δυστυχώς, το RT δε θα μπορούσε να δημιουρ
 msgid "Unix login"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:1745 lib/RT/Crypt/GnuPG.pm:1750
+#: lib/RT/Crypt/GnuPG.pm:1775 lib/RT/Crypt/GnuPG.pm:1780
 msgid "Unknown (no trust value assigned)"
 msgstr "Άγνωστο (δεν έχει καθοριστεί τιμή εμπιστοσύνης)"
 
-#: lib/RT/Crypt/GnuPG.pm:1755
+#: lib/RT/Crypt/GnuPG.pm:1785
 msgid "Unknown (this value is new to the system)"
 msgstr "Άγνωστο (αυτή η τιμή είναι καινούργια για το σύστημα"
 
@@ -9668,7 +9851,7 @@ msgstr "Αιτήματα χωρίς κάτοχο"
 msgid "Unowned tickets"
 msgstr "Αιτήματα χωρίς κάτοχο"
 
-#: lib/RT/Handle.pm:744
+#: lib/RT/Handle.pm:748
 msgid "Unprivileged"
 msgstr "Μη προνομιούχοι"
 
@@ -9684,7 +9867,7 @@ msgstr "Απεπιλεγμένες Ουρές"
 msgid "Unselected objects"
 msgstr "Απεπιλεγμένα αντικείμενα"
 
-#: lib/RT/User.pm:1961
+#: lib/RT/User.pm:2064
 msgid "Unset private key"
 msgstr "Ακύρωση ιδιωτικού κλειδιού"
 
@@ -9728,7 +9911,7 @@ msgstr "Ενημέρωση μορφής και αναζήτηση"
 msgid "Update multiple tickets"
 msgstr "Ενημέρωση πολλαπλών αιτημάτων"
 
-#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2424
+#: lib/RT/Action/CreateTickets.pm:474 lib/RT/Interface/Web.pm:2425
 msgid "Update not recorded."
 msgstr "Μη καταγραφή ενημέρωσης."
 
@@ -9752,7 +9935,7 @@ msgstr "Ενημέρωση αιτήματος #%1 (%2)"
 msgid "Update ticket #%1: %2"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2424
+#: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2425
 msgid "Update type was neither correspondence nor comment."
 msgstr "Ο τύπος ενημέρωσης δεν ήταν ούτε αλληλογραφία ούτε σχόλιο."
 
@@ -9764,7 +9947,12 @@ msgstr ""
 msgid "Updated"
 msgstr "Ενημερώθηκε"
 
-#: share/html/Search/Elements/PickBasics:117
+#. ($count)
+#: lib/RT/Attachments.pm:327
+msgid "Updated %1 ticket's attachment content"
+msgstr ""
+
+#: share/html/Search/Elements/PickBasics:131
 msgid "Updated by"
 msgstr "Ενημερώθηκε από"
 
@@ -9814,7 +10002,7 @@ msgstr "Ανέβασμα μέχρι και %1 αρχείων"
 msgid "Upload up to %quant(%1,image,images)"
 msgstr "Ανέβασμα μέχρι και %1 εικόνων"
 
-#: share/html/Ticket/Elements/AddAttachments:157
+#: share/html/Ticket/Elements/AddAttachments:158
 msgid "Uploading..."
 msgstr "Ανέβασμα..."
 
@@ -9883,6 +10071,10 @@ msgstr "Ο χρήστης %1 είναι προς το παρόν απενεργ�
 msgid "User (created - expire)"
 msgstr "Χρήστης (δημιουργήθηκε - έληξε)"
 
+#: share/html/User/Elements/RelatedData:98
+msgid "User Data"
+msgstr ""
+
 #: etc/initialdata:101 etc/initialdata:219
 msgid "User Defined"
 msgstr "Ορισμένο από χρήστη"
@@ -9891,7 +10083,7 @@ msgstr "Ορισμένο από χρήστη"
 msgid "User Defined conditions and results"
 msgstr "Από το χρήστη ορίζονται οι προϋποθέσεις και τα αποτελέσματα"
 
-#: lib/RT/Interface/Web.pm:4035
+#: lib/RT/Interface/Web.pm:4058
 msgid "User Groups"
 msgstr "Ομάδες Χρηστών"
 
@@ -9911,13 +10103,21 @@ msgstr "Αναζήτηση Χρήστη"
 msgid "User Summary"
 msgstr "Σύνοψη χρήστη"
 
+#: share/html/User/Elements/RelatedData:99
+msgid "User Tickets"
+msgstr ""
+
+#: share/html/User/Elements/RelatedData:100
+msgid "User Transactions"
+msgstr ""
+
 #. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
-#: lib/RT/Interface/Web.pm:3330
+#: lib/RT/Interface/Web.pm:3353
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Ο χρήστης ζήτησε αγνώστου τύπου ενημέρωση για το προσαρμοσμένο πεδίο %1 για το %2 αντικείμενο #%3"
 
 #. ($msg)
-#: share/html/Admin/Users/Modify.html:268
+#: share/html/Admin/Users/Modify.html:288
 msgid "User could not be created: %1"
 msgstr "Ο χρήστης δεν έχει δημιουργηθεί: %1"
 
@@ -9925,11 +10125,11 @@ msgstr "Ο χρήστης δεν έχει δημιουργηθεί: %1"
 msgid "User created"
 msgstr "Ο χρήστης  δημιουργήθηκε"
 
-#: lib/RT/User.pm:1284
+#: lib/RT/User.pm:1387
 msgid "User disabled"
 msgstr "Ο χρήστης απενεργοποιήθηκε"
 
-#: lib/RT/User.pm:1286
+#: lib/RT/User.pm:1389
 msgid "User enabled"
 msgstr "Ο χρήστης ενεργοποιήθηκε"
 
@@ -9937,11 +10137,15 @@ msgstr "Ο χρήστης ενεργοποιήθηκε"
 msgid "User has empty email address"
 msgstr "Ο χρήστης έχει κενή διεύθυνση ηλεκτρονικής αλληλογραφίας"
 
-#: lib/RT/User.pm:537 lib/RT/User.pm:545 lib/RT/User.pm:557
+#: lib/RT/User.pm:640 lib/RT/User.pm:648 lib/RT/User.pm:660
 msgid "User loaded"
 msgstr "Φόρτωση Χρήστη"
 
-#: share/html/Admin/Groups/index.html:122
+#: lib/RT/User.pm:384
+msgid "User successfully anonymized"
+msgstr ""
+
+#: share/html/Admin/Groups/index.html:151
 msgid "User-defined groups"
 msgstr "Ομάδες ορισμένες από χρήστη"
 
@@ -9958,11 +10162,11 @@ msgstr "Όνομα Χρήστη"
 msgid "Username format"
 msgstr "Μορφή Ονόματος Χρήστη"
 
-#: lib/RT/CustomField.pm:2046 lib/RT/CustomField.pm:216 lib/RT/Interface/Web.pm:4093 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:91 share/html/Elements/Tabs:164 share/html/Elements/Tabs:305 share/html/Elements/Tabs:626 share/html/Elements/Tabs:67 share/html/Ticket/Elements/ShowBasics:86
+#: lib/RT/CustomField.pm:2046 lib/RT/CustomField.pm:216 lib/RT/Interface/Web.pm:4116 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:73 share/html/Admin/Queues/People.html:91 share/html/Elements/Tabs:164 share/html/Elements/Tabs:305 share/html/Elements/Tabs:626 share/html/Elements/Tabs:67 share/html/Ticket/Elements/ShowBasics:86
 msgid "Users"
 msgstr "Χρήστες"
 
-#: share/html/Admin/Users/index.html:108
+#: share/html/Admin/Users/index.html:125
 msgid "Users matching search criteria"
 msgstr "Χρήστες που πληρούν τα κριτήρια αναζήτησης"
 
@@ -9971,7 +10175,7 @@ msgstr "Χρήστες που πληρούν τα κριτήρια αναζήτ�
 msgid "Using transaction #%1..."
 msgstr "Χρήση συναλλαγής #%1..."
 
-#: lib/RT/Tickets.pm:3242
+#: lib/RT/Tickets.pm:3245
 msgid "Valid Query"
 msgstr "Έγκυρο Ερώτημα"
 
@@ -9979,7 +10183,7 @@ msgstr "Έγκυρο Ερώτημα"
 msgid "Validation"
 msgstr "Επικύρωση"
 
-#: share/html/Admin/Articles/Classes/Modify.html:105 share/html/Admin/Tools/Configuration.html:114 share/html/Admin/Tools/Configuration.html:223 share/html/Admin/Tools/Configuration.html:311 share/html/Admin/Tools/Configuration.html:62
+#: share/html/Admin/Articles/Classes/Modify.html:109 share/html/Admin/Tools/Configuration.html:114 share/html/Admin/Tools/Configuration.html:223 share/html/Admin/Tools/Configuration.html:311 share/html/Admin/Tools/Configuration.html:62
 msgid "Value"
 msgstr "Τιμή"
 
@@ -10023,7 +10227,7 @@ msgstr "Προβολή ομάδας"
 msgid "View group dashboards"
 msgstr "Προβολή ταμπλό ομάδας"
 
-#: share/html/Elements/ShortcutHelp:96
+#: share/html/Elements/ShortcutHelp:98
 msgid "View highlighted ticket"
 msgstr "Προβολή επισημασμένου αιτήματος"
 
@@ -10075,7 +10279,7 @@ msgstr ""
 msgid "Warning! This is NOT signed!"
 msgstr "Προειδοποίηση! ΔΕΝ έχει υπογραφεί!"
 
-#: share/html/Dashboards/Subscription.html:364
+#: share/html/Dashboards/Subscription.html:367
 msgid "Warning: This dashboard has no recipients"
 msgstr ""
 
@@ -10083,7 +10287,7 @@ msgstr ""
 msgid "Warning: merging is a non-reversible action! Enter a single ticket number to be merged into."
 msgstr "Προειδοποίηση: η συγχώνευση είναι μια μη αναστρέψιμη λειτουργία! Εισάγετε έναν ενιαίο αριθμό αιτήματος για να συγχωνευθεί."
 
-#: lib/RT/Report/Tickets.pm:75 lib/RT/Tickets.pm:149
+#: lib/RT/Report/Tickets.pm:88 lib/RT/Tickets.pm:149
 msgid "Watcher"
 msgstr "Παρατηρητής"
 
@@ -10119,11 +10323,11 @@ msgstr "Τετ"
 msgid "Wednesday"
 msgstr "Τετάρτη"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "WeekOfYear"
 msgstr "Εβδομάδα του Έτους"
 
-#: lib/RT/Dashboard/Mailer.pm:419
+#: lib/RT/Dashboard/Mailer.pm:416
 msgid "Weekly"
 msgstr "Εβδομαδιαία"
 
@@ -10247,7 +10451,7 @@ msgstr "Πλάτος"
 msgid "Wipeout"
 msgstr "Ξεκαθάρισμα"
 
-#: share/html/Admin/Users/Modify.html:186 share/html/Prefs/AboutMe.html:93
+#: share/html/Admin/Users/Modify.html:189 share/html/Prefs/Elements/EditAboutMe:86 share/html/Prefs/Elements/ShowAboutMe:92
 msgid "Work"
 msgstr "Εργασία"
 
@@ -10272,7 +10476,7 @@ msgstr "Εργάστηκε %quant(%1,ώρα,ώρες) (%quant(%2,λεπτό,λε
 msgid "Worked %quant(%1,minute,minutes)"
 msgstr "Εργάστηκε %quant(%1,λεπτό,λεπτά)"
 
-#: lib/RT/Report/Tickets.pm:133
+#: lib/RT/Report/Tickets.pm:146
 msgid "Year"
 msgstr "Έτος"
 
@@ -10327,7 +10531,7 @@ msgstr "Μπορείτε να αλλάξετε το πρότυπο αν χρει
 msgid "You can insert ticket content into any freeform, text or wiki field."
 msgstr "Μπορείτε να εισαγάγετε το περιεχόμενο αιτήματος σε οποιανδήποτε φόρμα, κείμενο ή πεδίο wiki."
 
-#: lib/RT/User.pm:933
+#: lib/RT/User.pm:1036
 msgid "You can not set password."
 msgstr "Δεν μπορεί να οριστεί ο κωδικός."
 
@@ -10370,11 +10574,11 @@ msgstr "Δεν έχετε τα δικαιώματα για τη δημιουργ
 msgid "You don't have permission to view Articles in any Class"
 msgstr "Δεν έχετε τα δικαιώματα για την προβολή Άρθρων σε καμία Κατηγορία."
 
-#: lib/RT/Interface/Web.pm:4127
+#: lib/RT/Interface/Web.pm:4150
 msgid "You don't have permission to view this asset."
 msgstr "Δεν έχετε τα δικαιώματα για την προβολή αυτού του περιουσιακού στοιχείου."
 
-#: lib/RT/Interface/Web.pm:4111
+#: lib/RT/Interface/Web.pm:4134
 msgid "You don't have permission to view this catalog."
 msgstr "Δεν έχετε τα δικαιώματα για την προβολή αυτού του καταλόγου."
 
@@ -10449,7 +10653,7 @@ msgstr "Βλέπετε αυτό το μήνυμα επειδή ξεκινήσα�
 msgid "You're welcome to login again"
 msgstr "Είστε ευπρόσδεκτοι να συνδεθείτε ξανά"
 
-#: lib/RT/User.pm:1177
+#: lib/RT/User.pm:1280
 msgid "Your password is not set."
 msgstr "Ο κωδικός σας δεν έχει οριστεί."
 
@@ -10462,7 +10666,7 @@ msgstr "Το σύστημα σας υποστηρίζει αυτόματες ε�
 msgid "Your username or password is incorrect"
 msgstr "Το όνομα χρήστη ή ο κωδικός σας είναι λανθασμένος"
 
-#: share/html/Admin/Users/Modify.html:163 share/html/Elements/RT__User/ColumnMap:121 share/html/Prefs/AboutMe.html:154
+#: share/html/Admin/Users/Modify.html:166 share/html/Elements/RT__User/ColumnMap:121 share/html/Prefs/Elements/EditAboutMe:149 share/html/Prefs/Elements/ShowAboutMe:131
 msgid "Zip"
 msgstr "ΤΚ"
 
@@ -10506,7 +10710,7 @@ msgstr "αφού κάνετε κλικ σε ένα σύνδεσμο"
 msgid "after the rest of the page loads"
 msgstr "μετά από το υπόλοιπο των φορτίων της σελίδας"
 
-#: etc/RT_Config.pm:3413
+#: etc/RT_Config.pm:3509
 msgid "allocated"
 msgstr "έχει διατεθεί"
 
@@ -10599,7 +10803,7 @@ msgstr "ταμπλό"
 msgid "dashboards in menu"
 msgstr "ταμπλό στο μενού"
 
-#: etc/RT_Config.pm:3368 etc/RT_Config.pm:3419
+#: etc/RT_Config.pm:3464 etc/RT_Config.pm:3515
 msgid "deleted"
 msgstr "διαγράφηκε"
 
@@ -10615,11 +10819,11 @@ msgstr "λήψη"
 msgid "duration"
 msgstr "δειάρκια"
 
-#: lib/RT/User.pm:667
+#: lib/RT/User.pm:770
 msgid "email delivery suspended"
 msgstr "Η παράδοση ηλεκτρονικών μηνυμάτων ανεστάλη"
 
-#: lib/RT/User.pm:659
+#: lib/RT/User.pm:762
 msgid "email disabled for ticket"
 msgstr ""
 
@@ -10671,7 +10875,7 @@ msgstr ""
 msgid "explicit one-time Cc"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:1767
+#: lib/RT/Crypt/GnuPG.pm:1797
 msgid "full"
 msgstr "πλήρες"
 
@@ -10715,7 +10919,7 @@ msgstr "άμεσα"
 msgid "in class %1"
 msgstr "στη κατηγορία %1"
 
-#: etc/RT_Config.pm:3414
+#: etc/RT_Config.pm:3510
 msgid "in-use"
 msgstr "σε χρήση"
 
@@ -10733,11 +10937,11 @@ msgid "index"
 msgstr "ευρετήριο"
 
 #. ($due)
-#: lib/RT/Interface/Web.pm:3064
+#: lib/RT/Interface/Web.pm:3087
 msgid "invalid due date: %1"
 msgstr "μη έγκυρη ημερομηνία λήξης: %1"
 
-#: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickBasics:153 share/html/Search/Elements/PickCFs:82
+#: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectIPRelation:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickBasics:167 share/html/Search/Elements/PickCFs:82
 msgid "is"
 msgstr "είναι"
 
@@ -10745,15 +10949,15 @@ msgstr "είναι"
 msgid "isn't"
 msgstr "δεν είναι"
 
-#: lib/RT/Crypt/GnuPG.pm:1723
+#: lib/RT/Crypt/GnuPG.pm:1753
 msgid "key disabled"
 msgstr "το κλειδί απενεργοποιήθηκε"
 
-#: lib/RT/Crypt/GnuPG.pm:1734
+#: lib/RT/Crypt/GnuPG.pm:1764
 msgid "key expired"
 msgstr "το κλειδί έληξε"
 
-#: lib/RT/Crypt/GnuPG.pm:1729
+#: lib/RT/Crypt/GnuPG.pm:1759
 msgid "key revoked"
 msgstr "το κλειδί ανακλήθηκε"
 
@@ -10765,7 +10969,7 @@ msgstr "από αριστερά προς δεξιά"
 msgid "less than"
 msgstr "μικρότερο από"
 
-#: lib/RT/Crypt/GnuPG.pm:1762
+#: lib/RT/Crypt/GnuPG.pm:1792
 msgid "marginal"
 msgstr "οριακά"
 
@@ -10810,7 +11014,7 @@ msgstr "μηνιαίως (ημέρα %1) στις %2"
 msgid "never"
 msgstr "ποτέ"
 
-#: etc/RT_Config.pm:3366 etc/RT_Config.pm:3410
+#: etc/RT_Config.pm:3462 etc/RT_Config.pm:3506
 msgid "new"
 msgstr "νέα"
 
@@ -10818,11 +11022,11 @@ msgstr "νέα"
 msgid "no"
 msgstr "όχι"
 
-#: lib/RT/User.pm:657
+#: lib/RT/User.pm:760
 msgid "no email address set"
 msgstr "δεν έχει τεθεί διεύθυνση ηλεκτρονικού ταχυδρομείου"
 
-#: lib/RT/Crypt/GnuPG.pm:1739 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
+#: lib/RT/Crypt/GnuPG.pm:1769 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Dashboards/Subscription.html:73 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
 msgstr "κανένα"
 
@@ -10854,7 +11058,7 @@ msgstr "στις"
 msgid "one"
 msgstr "ένα"
 
-#: etc/RT_Config.pm:3367 share/html/SelfService/Elements/MyRequests:75
+#: etc/RT_Config.pm:3463 share/html/SelfService/Elements/MyRequests:75
 msgid "open"
 msgstr "ανοικτά"
 
@@ -10887,19 +11091,19 @@ msgstr "εικ"
 msgid "queue %1 %2"
 msgstr "ουρά %1 %2"
 
-#: lib/RT/User.pm:663
+#: lib/RT/User.pm:766
 msgid "receives daily digests"
 msgstr "λαμβάνει καθημερινή σύνοψη"
 
-#: lib/RT/User.pm:665
+#: lib/RT/User.pm:768
 msgid "receives weekly digests"
 msgstr "λαμβάνει εβδομαδιαία σύνοψη"
 
-#: etc/RT_Config.pm:3417
+#: etc/RT_Config.pm:3513
 msgid "recycled"
 msgstr "ανακυκλωμένο"
 
-#: etc/RT_Config.pm:3368
+#: etc/RT_Config.pm:3464
 msgid "rejected"
 msgstr "απορρίφθηκε"
 
@@ -10907,7 +11111,7 @@ msgstr "απορρίφθηκε"
 msgid "requires running rt-crontool"
 msgstr "χρειάζεται η εκτέλεση της εντολής rt-crontool"
 
-#: etc/RT_Config.pm:3368
+#: etc/RT_Config.pm:3464
 msgid "resolved"
 msgstr "επιλυμένα"
 
@@ -10935,7 +11139,7 @@ msgstr "πλαϊνή μπάρα"
 msgid "site config"
 msgstr "ρυθμίσεις ιστοτόπου"
 
-#: etc/RT_Config.pm:3367
+#: etc/RT_Config.pm:3463
 msgid "stalled"
 msgstr "σε αναμονή"
 
@@ -10943,7 +11147,7 @@ msgstr "σε αναμονή"
 msgid "statement"
 msgstr "δήλωση"
 
-#: etc/RT_Config.pm:3418
+#: etc/RT_Config.pm:3514
 msgid "stolen"
 msgstr "κλεμμένο"
 
@@ -10994,7 +11198,7 @@ msgstr "αίτημα #%1 %2"
 msgid "top to bottom"
 msgstr "από πάνω προς τα κάτω"
 
-#: lib/RT/Crypt/GnuPG.pm:1772
+#: lib/RT/Crypt/GnuPG.pm:1802
 msgid "ultimate"
 msgstr "απόλυτα"
 

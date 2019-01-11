@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-26 21:00+0000\n"
-"PO-Revision-Date: 2017-11-07 23:51+0000\n"
+"POT-Creation-Date: 2018-06-26 19:30+0000\n"
+"PO-Revision-Date: 2018-06-26 21:46+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-05-02 18:17+0000\n"
-"X-Generator: Launchpad (build 18623)\n"
+"X-Launchpad-Export-Date: 2019-01-11 20:17+0000\n"
+"X-Generator: Launchpad (build 18855)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -36,11 +36,11 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($name, $self->loc($args{Type}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:493 share/html/Ticket/Update.html:344 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:494 share/html/Ticket/Update.html:344 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
-#: share/html/Admin/Elements/EditCustomFieldValues:88 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:107 share/html/Admin/Queues/People.html:64 share/html/Asset/Elements/EditCatalogPeople:59 share/html/Elements/BulkLinks:109 share/html/Elements/EditLinks:104 share/html/Ticket/Elements/EditPeople:88
+#: share/html/Admin/Elements/EditCustomFieldValues:88 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:107 share/html/Admin/Queues/People.html:64 share/html/Asset/Elements/EditCatalogPeople:59 share/html/Elements/BulkLinks:109 share/html/Elements/EditLinks:104 share/html/Ticket/Elements/EditPeople:89
 msgid "(Check box to delete)"
 msgstr "(Tick box to delete)"
 
@@ -64,7 +64,7 @@ msgstr "All Catalogues"
 msgid "All catalogs matching search criteria"
 msgstr "All catalogues matching search criteria"
 
-#: share/html/Prefs/AboutMe.html:175
+#: share/html/Prefs/Elements/EditAboutMe:166
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "All iCal feeds embed a secret token which authorises you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 
@@ -73,7 +73,7 @@ msgid "Any word not recognized by RT is searched for in ticket subjects."
 msgstr "Any word not recognised by RT is searched for in ticket subjects."
 
 #. ($valid_image_types)
-#: share/html/Admin/Tools/Theme.html:269
+#: share/html/Admin/Tools/Theme.html:277
 msgid "Automatically suggested theme colors aren't available for your image. This might be because you uploaded an image type that your installed version of GD doesn't support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 msgstr "Automatically suggested theme colours are not available for your image. This might be because you uploaded an image type that your installed version of GD does not support. Supported types are: %1. You can recompile libgd and GD.pm to include support for other image types."
 
@@ -91,7 +91,7 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:3964
+#: lib/RT/Interface/Web.pm:3987
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
@@ -231,7 +231,7 @@ msgstr "Default Values for catalogue %1"
 msgid "Edit Custom Fields for Assets in all Catalogs"
 msgstr "Edit Custom Fields for Assets in all Catalogues"
 
-#: share/html/Admin/Users/Modify.html:72 share/html/Dashboards/Elements/SubscriptionRecipients:150 share/html/Prefs/AboutMe.html:65 share/html/Ticket/Elements/AddWatchers:91
+#: share/html/Admin/Users/Modify.html:72 share/html/Dashboards/Elements/SubscriptionRecipients:150 share/html/Prefs/Elements/EditAboutMe:58 share/html/Prefs/Elements/ShowAboutMe:55 share/html/Ticket/Elements/AddWatchers:91
 msgid "Email"
 msgstr "E-mail"
 
@@ -280,7 +280,7 @@ msgstr "LocalisedDateTime"
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:4103
+#: lib/RT/Interface/Web.pm:4126
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -296,7 +296,7 @@ msgstr "No longer authorised"
 msgid "No permission to modify this catalog"
 msgstr "No permission to modify this catalogue"
 
-#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:136 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/AboutMe.html:134
+#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:139 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/Elements/EditAboutMe:125 share/html/Prefs/Elements/ShowAboutMe:111
 msgid "Organization"
 msgstr "Organisation"
 
@@ -341,7 +341,7 @@ msgid "This custom field can not have a canonicalizer"
 msgstr "This custom field can not have a canonicaliser"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4108
+#: lib/RT/Interface/Web.pm:4131
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
@@ -380,7 +380,7 @@ msgstr "You can also click on the logo above to get colours!"
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:4111
+#: lib/RT/Interface/Web.pm:4134
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 
