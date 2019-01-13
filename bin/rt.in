@@ -1059,14 +1059,14 @@ sub submit {
         die "GSSAPI support not available; failed to load perl module LWP::Authen::Negotiate:\n$@\n"
             unless eval { require LWP::Authen::Negotiate; 1 };
     } elsif ($config{auth} eq "basic") {
-        print "   Password will be sent to $server $how\n",
-              "   Press CTRL-C now if you do not want to continue\n"
-            if ! $config{passwd};
+        print STDERR "   Password will be sent to $server $how\n",
+                     "   Press CTRL-C now if you do not want to continue\n"
+                     if ! $config{passwd};
         $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
     } elsif ( !defined $session->cookie ) {
-        print "   Password will be sent to $server $how\n",
-              "   Press CTRL-C now if you do not want to continue\n"
-            if ! $config{passwd};
+        print STDERR "   Password will be sent to $server $how\n",
+                     "   Press CTRL-C now if you do not want to continue\n"
+                     if ! $config{passwd};
         push @$data, ( user => $config{user} );
         push @$data, ( pass => $config{passwd} || read_passwd() );
     }
@@ -1498,11 +1498,11 @@ sub read_passwd {
         die "No password specified (and Term::ReadKey not installed).\n";
     }
 
-    print "Password: ";
+    print STDERR "Password: ";
     Term::ReadKey::ReadMode('noecho');
     chomp(my $passwd = Term::ReadKey::ReadLine(0));
     Term::ReadKey::ReadMode('restore');
-    print "\n";
+    print STDERR "\n";
 
     return $passwd;
 }
