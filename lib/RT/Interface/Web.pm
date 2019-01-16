@@ -116,6 +116,7 @@ sub JSFiles {
         jquery-ui-timepicker-addon.js
         jquery-ui-patch-datepicker.js
         jquery.cookie.js
+        selectize.min.js
         popper.min.js
         bootstrap.min.js
         bootstrap-select.min.js
