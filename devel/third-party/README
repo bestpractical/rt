@@ -49,3 +49,7 @@ Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
 License: Apache
 
+* selectize-0.12.6
+Description: bubble-like multiple user inputs
+Origin: https://selectize.github.io/selectize.js/
+License: Apache

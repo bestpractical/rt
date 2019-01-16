@@ -116,6 +116,7 @@ sub JSFiles {
       jquery.modal.min.js
       jquery.modal-defaults.js
       jquery.cookie.js
+      selectize.min.js
       titlebox-state.js
       i18n.js
       util.js
