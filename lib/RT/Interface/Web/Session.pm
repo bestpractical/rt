@@ -333,6 +333,18 @@ sub TIEHASH {
           . "This may mean that that the directory '$RT::MasonSessionDir' isn't writable or a database table is missing or corrupt.\n\n"
           . $@;
     }
+    elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+
+        # Apache::Session::Store::Oracle locks the row using the SQL:
+        # "SELECT a_session FROM $self->{'table_name'} WHERE id = ? FOR UPDATE".
+        #
+        # Subsequent requests(tie) will wait until the lock is freed by
+        # a commit(by updating %session) or until the db connection that
+        # created the lock is closed. To avoid this hanging issue, we
+        # forcely update %session here to make sure there is a commit.
+
+        $session{'i'}++;
+    }
 
     return tied %session;
 }
