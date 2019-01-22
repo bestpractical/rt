@@ -6,13 +6,6 @@ use RT::Test tests => undef;
 
 plan skip_all => 'SQLite has shared file sessions' if RT->Config->Get('DatabaseType') eq 'SQLite';
 
-# Web server hangs when processing the same session row after tied
-# %session on Oracle with non-inline web servers :/
-# Use file session instead for now.
-if ( RT->Config->Get('DatabaseType') eq 'Oracle' && ( $ENV{'RT_TEST_WEB_HANDLER'} || '' ) ne 'inline' ) {
-    RT->Config->Set( 'WebSessionClass', 'Apache::Session::File' );
-}
-
 my ($baseurl, $agent) = RT::Test->started_ok;
 my $url = $agent->rt_base_url;
 
