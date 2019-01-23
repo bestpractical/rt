@@ -299,6 +299,18 @@ sub ReplaceAttachments {
         SUBCLAUSE       => 'Encoding',
     );
 
+    # For QP encoding, if encoded string is equal to the decoded
+    # version, then SQL search will also work.
+    #
+    # Adding "\n" is to avoid trailing "=" in QP encoding
+    if ( MIME::QuotedPrint::encode("$args{Search}\n") eq "$args{Search}\n" ) {
+        $attachments->Limit(
+            FIELD     => 'ContentEncoding',
+            VALUE     => 'quoted-printable',
+            SUBCLAUSE => 'Encoding',
+        );
+    }
+
     if ( $args{Headers} ) {
         my $atts = $attachments->Clone;
         $atts->Limit(
