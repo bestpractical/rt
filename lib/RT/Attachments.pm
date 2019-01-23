@@ -271,60 +271,101 @@ sub ReplaceAttachments {
 
     return ( 0, $self->loc('Provide a search string to search on') ) unless $args{Search};
 
-    $self->Limit(
-        ENTRYAGGREGATOR => 'OR',
-        FIELD           => 'Headers',
-        OPERATOR        => 'LIKE',
-        VALUE           => $args{Search},
-        SUBCLAUSE       => 'Attachments',
-    ) if $args{Headers};
-    $self->Limit(
-        ENTRYAGGREGATOR => 'OR',
-        FIELD           => 'Content',
-        OPERATOR        => 'LIKE',
-        VALUE           => $args{Search},
-        SUBCLAUSE       => 'Attachments',
-    ) if $args{Content};
-    $self->Limit(
-        FIELD           => 'ContentType',
-        OPERATOR        => 'IN',
-        VALUE           => ['text/plain', 'text/html'],
+
+    my %munged;
+    my $create_munge_txn = sub {
+        my $ticket = shift;
+        if ( !$munged{ $ticket->id } ) {
+            my ( $ret, $msg ) = $ticket->_NewTransaction( Type => "Munge" );
+            if ($ret) {
+                $munged{ $ticket->id } = 1;
+            }
+            else {
+                RT::Logger->error($msg);
+            }
+        }
+    };
+
+    my $attachments = $self->Clone;
+    $attachments->Limit(
+        FIELD     => 'ContentEncoding',
+        VALUE     => 'none',
+        SUBCLAUSE => 'Encoding',
     );
-    $self->Limit(
+    $attachments->Limit(
         FIELD           => 'ContentEncoding',
-        VALUE           => 'none',
+        OPERATOR        => 'IS',
+        VALUE           => 'NULL',
+        SUBCLAUSE       => 'Encoding',
     );
 
-    my %tickets;
-    my ($ret, $msg);
-    while (my $attachment = $self->Next) {
-        my $content_replaced;
-        if ( $args{Headers} ) {
-            ($ret, $msg) = $attachment->ReplaceHeaders(Search => $args{Search}, Replacement => $args{Replacement});
-            $content_replaced ||= $ret;
-
-            RT::Logger->error($msg) unless $ret;
-        }
-
-        if ( $args{Content} ) {
-            ($ret, $msg) = $attachment->ReplaceContent(Search => $args{Search}, Replacement => $args{Replacement});
-            $content_replaced ||= $ret;
-
-            RT::Logger->error($msg) unless $ret;
-        }
-
-        my $ticket = $attachment->TransactionObj->TicketObj;
-        $tickets{$ticket->Id} ||= $ticket if $content_replaced;
-    }
-
-    foreach my $id ( sort { $a <=> $b } keys %tickets ) {
-        (my $transaction, $msg, my $trans) = $tickets{$id}->_NewTransaction (
-            Type     => "Munge",
+    if ( $args{Headers} ) {
+        my $atts = $attachments->Clone;
+        $atts->Limit(
+            FIELD    => 'Headers',
+            OPERATOR => 'LIKE',
+            VALUE    => $args{Search},
         );
-        RT::Logger->error($msg) unless $transaction;
+        $atts->Limit(
+            FIELD     => 'ContentType',
+            OPERATOR  => 'IN',
+            VALUE     => [ RT::Util::EmailContentTypes(), 'text/plain', 'text/html' ],
+            SUBCLAUSE => 'Types',
+        );
+        $atts->Limit(
+            FIELD           => 'ContentType',
+            OPERATOR        => 'STARTSWITH',
+            VALUE           => 'multipart/',
+            SUBCLAUSE       => 'Types',
+            ENTRYAGGREGATOR => 'OR',
+        );
+
+        while ( my $att = $atts->Next ) {
+            my ( $ret, $msg ) = $att->ReplaceHeaders(
+                Search      => $args{Search},
+                Replacement => $args{Replacement},
+            );
+
+            if ( $ret ) {
+                $create_munge_txn->( $att->TransactionObj->TicketObj );
+            }
+            else {
+                RT::Logger->error($msg);
+            }
+        }
     }
-    my $count = scalar keys %tickets;
-    return ( 1, $self->loc( "Updated [_1] ticket's attachment content", $count ) );
+
+    if ( $args{Content} ) {
+        my $atts = $attachments->Clone;
+        $atts->Limit(
+            FIELD     => 'Content',
+            OPERATOR  => 'LIKE',
+            VALUE     => $args{Search},
+            SUBCLAUSE => 'Content',
+        );
+        $atts->Limit(
+            FIELD    => 'ContentType',
+            OPERATOR => 'IN',
+            VALUE    => [ 'text/plain', 'text/html' ],
+        );
+
+        while ( my $att = $atts->Next ) {
+            my ( $ret, $msg ) = $att->ReplaceContent(
+                Search      => $args{Search},
+                Replacement => $args{Replacement},
+            );
+
+            if ( $ret ) {
+                $create_munge_txn->( $att->TransactionObj->TicketObj );
+            }
+            else {
+                RT::Logger->error($msg);
+            }
+        }
+    }
+
+    my $count = scalar keys %munged;
+    return ( 1, $self->loc( "Updated [quant,_1,ticket's,tickets'] attachment content", $count ) );
 }
 
 RT::Base->_ImportOverlays();
