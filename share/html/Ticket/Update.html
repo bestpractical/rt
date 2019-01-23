@@ -141,6 +141,7 @@
 
   <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
   <table width="100%" border="0">
+<& /Elements/FormatRolesInputFields, ARGSRef => \%ARGS, QueueObj => $TicketObj->QueueObj, &>
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
 % if ( $gnupg_widget ) {

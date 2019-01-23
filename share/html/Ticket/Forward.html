@@ -65,6 +65,8 @@
 <tr><td align="right"><&|/l&>Subject</&>:</td>
 <td><input name="Subject" size="60" value="<% $ARGS{'Subject'} || $subject %>" /></td></tr>
 
+<& /Elements/FormatRolesInputFields, ARGSRef => \%ARGS, QueueObj => $TicketObj->QueueObj, &>
+
 <tr><td align="right"><&|/l&>To</&>:</td>
 <td><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></td></tr>
 
