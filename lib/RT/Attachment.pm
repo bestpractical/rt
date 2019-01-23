@@ -800,7 +800,28 @@ sub ReplaceContent {
     my $content = $self->Content;
 
     if ( $content && $content =~ s/\Q$args{Search}\E/$args{Replacement}/ig ) {
-        my ( $ret, $msg ) = $self->_Set( Field => 'Content', Value => $content );
+        my ( $encoding, $encoded_content, undef, undef, $note_args )
+          = $self->_EncodeLOB( Encode::encode( 'UTF-8', $content ) );
+
+        $RT::Handle->BeginTransaction;
+        if ($note_args) {
+            $self->TransactionObj->Object->_NewTransaction(%$note_args);
+        }
+
+        my ( $ret, $msg ) = $self->_Set( Field => 'Content', Value => $encoded_content );
+        unless ($ret) {
+            $RT::Handle->Rollback;
+            return ( $ret, $msg );
+        }
+
+        if ( ( $self->ContentEncoding // '' ) ne $encoding ) {
+            my ( $ret, $msg ) = $self->_Set( Field => 'ContentEncoding', Value => $encoding );
+            unless ($ret) {
+                $RT::Handle->Rollback;
+                return ( $ret, $msg );
+            }
+        }
+        $RT::Handle->Commit;
         return ( $ret, 'Content replaced' );
     }
     return ( 1, $self->loc('No content matches found') );
