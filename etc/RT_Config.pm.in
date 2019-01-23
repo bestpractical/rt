@@ -1659,6 +1659,18 @@ preference.
 
 Set($AutocompleteQueues, 0);
 
+=item C<$AutocompleteUserInputFormat>
+
+Set the display format of the user input fields for roles on the Ticket
+Create, Ticket Update, and Ticket Forward pages. By default, the user
+will be displayed by email address. If the user does not have an email
+address, the user's username will be displayed. Available formats also
+include, 'Name' and 'RealName'.
+
+=cut
+
+Set($AutocompleteUserInputFormat, 'EmailAddress');
+
 =item C<$UserSearchFields>
 
 Used by the User Autocompleter as well as the User Search.
