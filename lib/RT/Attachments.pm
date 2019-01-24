@@ -266,6 +266,7 @@ sub ReplaceAttachments {
         Replacement => '',
         Headers     => 1,
         Content     => 1,
+        FilterBySearchString => 1,
         @_,
     );
 
@@ -287,37 +288,41 @@ sub ReplaceAttachments {
     };
 
     my $attachments = $self->Clone;
-    $attachments->Limit(
-        FIELD     => 'ContentEncoding',
-        VALUE     => 'none',
-        SUBCLAUSE => 'Encoding',
-    );
-    $attachments->Limit(
-        FIELD           => 'ContentEncoding',
-        OPERATOR        => 'IS',
-        VALUE           => 'NULL',
-        SUBCLAUSE       => 'Encoding',
-    );
-
-    # For QP encoding, if encoded string is equal to the decoded
-    # version, then SQL search will also work.
-    #
-    # Adding "\n" is to avoid trailing "=" in QP encoding
-    if ( MIME::QuotedPrint::encode("$args{Search}\n") eq "$args{Search}\n" ) {
+    if ( $args{FilterBySearchString} ) {
         $attachments->Limit(
             FIELD     => 'ContentEncoding',
-            VALUE     => 'quoted-printable',
+            VALUE     => 'none',
             SUBCLAUSE => 'Encoding',
         );
+        $attachments->Limit(
+            FIELD     => 'ContentEncoding',
+            OPERATOR  => 'IS',
+            VALUE     => 'NULL',
+            SUBCLAUSE => 'Encoding',
+        );
+
+        # For QP encoding, if encoded string is equal to the decoded
+        # version, then SQL search will also work.
+        #
+        # Adding "\n" is to avoid trailing "=" in QP encoding
+        if ( MIME::QuotedPrint::encode("$args{Search}\n") eq "$args{Search}\n" ) {
+            $attachments->Limit(
+                FIELD     => 'ContentEncoding',
+                VALUE     => 'quoted-printable',
+                SUBCLAUSE => 'Encoding',
+            );
+        }
     }
 
     if ( $args{Headers} ) {
         my $atts = $attachments->Clone;
-        $atts->Limit(
-            FIELD    => 'Headers',
-            OPERATOR => 'LIKE',
-            VALUE    => $args{Search},
-        );
+        if ( $args{FilterBySearchString} ) {
+            $atts->Limit(
+                FIELD    => 'Headers',
+                OPERATOR => 'LIKE',
+                VALUE    => $args{Search},
+            );
+        }
         $atts->Limit(
             FIELD     => 'ContentType',
             OPERATOR  => 'IN',
@@ -342,19 +347,21 @@ sub ReplaceAttachments {
                 $create_munge_txn->( $att->TransactionObj->TicketObj );
             }
             else {
-                RT::Logger->error($msg);
+                RT::Logger->debug($msg);
             }
         }
     }
 
     if ( $args{Content} ) {
         my $atts = $attachments->Clone;
-        $atts->Limit(
-            FIELD     => 'Content',
-            OPERATOR  => 'LIKE',
-            VALUE     => $args{Search},
-            SUBCLAUSE => 'Content',
-        );
+        if ( $args{FilterBySearchString} ) {
+            $atts->Limit(
+                FIELD     => 'Content',
+                OPERATOR  => 'LIKE',
+                VALUE     => $args{Search},
+                SUBCLAUSE => 'Content',
+            );
+        }
         $atts->Limit(
             FIELD    => 'ContentType',
             OPERATOR => 'IN',
@@ -371,13 +378,13 @@ sub ReplaceAttachments {
                 $create_munge_txn->( $att->TransactionObj->TicketObj );
             }
             else {
-                RT::Logger->error($msg);
+                RT::Logger->debug($msg);
             }
         }
     }
 
     my $count = scalar keys %munged;
-    return ( 1, $self->loc( "Updated [quant,_1,ticket's,tickets'] attachment content", $count ) );
+    return wantarray ? ( 1, $self->loc( "Updated [quant,_1,ticket's,tickets'] attachment content", $count ) ) : $count;
 }
 
 RT::Base->_ImportOverlays();
