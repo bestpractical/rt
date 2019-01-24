@@ -769,14 +769,27 @@ sub ReplaceHeaders {
 
     return ( 0, $self->loc('No Search string provided') ) unless $args{Search};
 
+    my $updated;
     foreach my $header ( $self->SplitHeaders ) {
         my ( $tag, $value ) = split /:/, $header, 2;
         if ( $value =~ s/\Q$args{Search}\E/$args{Replacement}/ig ) {
-            my $ret = $self->SetHeader( $tag, $value );
-            RT::Logger->error("Could not set header: $tag to $value") unless $ret;
+            my ( $ret, $msg ) = $self->SetHeader( $tag, $value );
+            if ( $ret ) {
+                $updated ||= 1;
+            }
+            else {
+                RT::Logger->error("Could not set header: $tag to $value: $msg");
+                return ( $ret, $msg );
+            }
         }
     }
-    return ( 1, $self->loc('Headers cleared') );
+
+    if ( $updated ) {
+        return ( 1, $self->loc('Headers cleared') );
+    }
+    else {
+        return ( 0, $self->loc('No header matches found') );
+    }
 }
 
 =head2 ReplaceContent ( Search => 'SEARCH', Replacement => 'Replacement' )
@@ -824,7 +837,7 @@ sub ReplaceContent {
         $RT::Handle->Commit;
         return ( $ret, 'Content replaced' );
     }
-    return ( 1, $self->loc('No content matches found') );
+    return ( 0, $self->loc('No content matches found') );
 }
 
 
