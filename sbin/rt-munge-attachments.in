@@ -113,8 +113,8 @@ else {
 }
 
 my ( $ret, $msg ) = $attachments->ReplaceAttachments(
-    Search      => $search,
-    Replacement => $replacement,
+    Search      => Encode::decode( 'UTF-8', $search ),
+    Replacement => Encode::decode( 'UTF-8', $replacement ),
     $opts{tickets} ? ( FilterBySearchString => 0 ) : (),
 );
 print STDERR $msg . "\n";

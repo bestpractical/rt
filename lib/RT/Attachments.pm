@@ -305,7 +305,9 @@ sub ReplaceAttachments {
         # version, then SQL search will also work.
         #
         # Adding "\n" is to avoid trailing "=" in QP encoding
-        if ( MIME::QuotedPrint::encode("$args{Search}\n") eq "$args{Search}\n" ) {
+        if ( MIME::QuotedPrint::encode( Encode::encode( 'UTF-8', "$args{Search}\n" ) ) eq
+            Encode::encode( 'UTF-8', "$args{Search}\n" ) )
+        {
             $attachments->Limit(
                 FIELD     => 'ContentEncoding',
                 VALUE     => 'quoted-printable',
