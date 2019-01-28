@@ -185,7 +185,7 @@ sub Create {
 
     delete $args{'Disabled'};
 
-    $self->SUPER::Create(id => $principal_id , %args);
+    $self->SUPER::Create( id => $principal_id, map { $_ => $args{$_} } grep { !/^(?:User)?CF\./ } keys %args );
     my $id = $self->Id;
 
     #If the create failed.

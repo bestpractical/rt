@@ -204,6 +204,21 @@ your authentication source. For example, an LDAP mapping might look like:
         ...
     },
 
+The keys in the mapping (i.e. the RT fields, the left hand side) may be a user
+custom field name prefixed with C<UserCF.>, for example C<< 'UserCF.Employee
+Number' => 'employeeId' >>.  Note that this only B<adds> values at the moment,
+which on single value CFs will remove any old value first.  Multiple value CFs
+may behave not quite how you expect.  If the attribute no longer exists on a
+user in external source, it will be cleared on the RT side as well.
+
+You may also prefix any RT custom field name with C<CF.> inside your mapping
+to add available values to a Select custom field.  This effectively takes user
+attributes in external source and adds the values as selectable options in a
+CF.  It does B<not> set a CF value on any RT object (User, Ticket, Queue,
+etc).  You might use this to populate a ticket Location CF with all the
+locations of your users so that tickets can be associated with the locations
+in use.
+
 =back
 
 =back
@@ -523,10 +538,13 @@ sub UpdateUserInfo {
     # run the Set method for that piece of info to change it for the user
     my @results = $UserObj->Update(
         ARGSRef         => \%args,
-        AttributesRef   => [keys %args],
+        AttributesRef   => [ grep { !/^(?:User)?CF\./ } keys %args ],
     );
     $RT::Logger->debug("UPDATED user $username: $_")
         for @results;
+
+    AddCustomFieldValue( %args );
+    UpdateObjectCustomFieldValues( %args, Object => $UserObj );
 
     # Confirm update success
     $updated = 1;
@@ -632,6 +650,75 @@ sub UserDisabled {
 
     }
     return $user_disabled;
+}
+
+sub AddCustomFieldValue {
+    my %args = @_;
+
+    foreach my $rtfield ( keys %args ) {
+        next unless $rtfield =~ /^CF\.(.+)$/i;
+        my $cf_name = $1;
+
+        my $cfv_name = $args{$rtfield} or next;
+
+        my $cf = RT::CustomField->new($RT::SystemUser);
+        my ( $status, $msg ) = $cf->Load($cf_name);
+        unless ($status) {
+            $RT::Logger->error("Couldn't load CF [$cf_name]: $msg");
+            next;
+        }
+
+        my $cfv = RT::CustomFieldValue->new($RT::SystemUser);
+        $cfv->LoadByCols(
+            CustomField => $cf->id,
+            Name        => $cfv_name
+        );
+        if ( $cfv->id ) {
+            $RT::Logger->debug("Custom Field '$cf_name' already has '$cfv_name' for a value");
+            next;
+        }
+
+        ( $status, $msg ) = $cf->AddValue( Name => $cfv_name );
+        if ($status) {
+            $RT::Logger->debug("Added '$cfv_name' to Custom Field '$cf_name' [$msg]");
+        }
+        else {
+            $RT::Logger->error("Couldn't add '$cfv_name' to '$cf_name' [$msg]");
+        }
+    }
+
+    return;
+}
+
+sub UpdateObjectCustomFieldValues {
+    my %args   = @_;
+    my $object = $args{Object};
+    foreach my $rtfield ( sort keys %args ) {
+        next unless $rtfield =~ /^UserCF\.(.+)$/i;
+        my $cf_name = $1;
+        my $value   = $args{$rtfield};
+        $value = '' unless defined $value;
+
+        my $current = $object->FirstCustomFieldValue($cf_name);
+        $current = '' unless defined $current;
+
+        if ( not length $current and not length $value ) {
+            $RT::Logger->debug("\tCF.$cf_name\tskipping, no value in RT and external source");
+            next;
+        }
+        elsif ( $current eq $value ) {
+            $RT::Logger->debug("\tCF.$cf_name\tunchanged => $value");
+            next;
+        }
+
+        $current = 'unset' unless length $current;
+        $RT::Logger->debug("\tCF.$cf_name\t$current => $value");
+
+        my ( $ok, $msg ) = $object->AddCustomFieldValue( Field => $cf_name, Value => $value );
+        $RT::Logger->error( $object->Name . ": Couldn't add value '$value' for '$cf_name': $msg" )
+          unless $ok;
+    }
+    return;
 }
 
 RT::Base->_ImportOverlays();
