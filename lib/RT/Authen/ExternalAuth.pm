@@ -192,9 +192,8 @@ C<RealName> or building name).
 
 =item attr_map
 
-Mapping of RT attributes on to attributes in the external source.
-Valid keys are attributes of an L<RT::User>. The values are attributes from
-your authentication source. For example, an LDAP mapping might look like:
+Mapping of RT attributes on to attributes in the external source.  For
+example, an LDAP mapping might look like:
 
     'attr_map' => {
         'Name'         => 'sAMAccountName',
@@ -203,6 +202,68 @@ your authentication source. For example, an LDAP mapping might look like:
         'RealName'     => 'cn',
         ...
     },
+
+The values in the mapping (i.e. the fields in external source, the right hand
+side) can be one of the following:
+
+=over 4
+
+=item an attribute/field
+
+External field to use. Only first value is used if field is multivalue(could
+happen in LDAP). For example:
+
+    EmailAddress => 'mail',
+
+=item an array reference
+
+The LDAP attributes can also be an arrayref of external fields,
+for example:
+
+    WorkPhone => [qw/CompanyPhone Extension/]
+
+which will be concatenated together with a space. First values
+of each field are used in case they have multiple values.
+
+=item a subroutine reference
+
+The external field can also be a subroutine reference that does
+mapping. E.g.
+
+    YYY => sub {
+        my %args = @_;
+
+        return 'XXX' unless $args{external_entry};
+
+        my @values = grep defined && length, $args{external_entry}->get_value('XXX');
+        return @values;
+    },
+
+The following arguments are passed into the function in a hash:
+
+=over 4
+
+=item external_entry
+
+For type "ldap", it's an instance of L<Net::LDAP::Entry>.  For type "db", it's
+a hashref of the result row.
+
+=item mapping
+
+Hash reference of the attr_map value.
+
+=item rt_field and external_field
+
+The currently processed key and value from the mapping.
+
+=back
+
+The subroutine is called in 2 modes: when called with external_entry
+specified, it should return value or list of values, otherwise, it should
+return the external field list it depends on, so RT could retrieve them at the
+beginning.
+
+=back
 
 The keys in the mapping (i.e. the RT fields, the left hand side) may be a user
 custom field name prefixed with C<UserCF.>, for example C<< 'UserCF.Employee
