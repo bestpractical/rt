@@ -14,8 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-01-11 20:17+0000\n"
-"X-Generator: Launchpad (build 18855)\n"
+"X-Launchpad-Export-Date: 2019-01-31 18:41+0000\n"
+"X-Generator: Launchpad (build 18862)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61 share/html/Elements/RT__ScripAction/ColumnMap:56 share/html/Elements/RT__ScripCondition/ColumnMap:56
 msgid "#"
@@ -1189,7 +1189,7 @@ msgstr "Дозволи учитавање сачуваних претрага"
 msgid "Allow writing Perl code in templates, scrips, etc"
 msgstr "Дозволи писање Перл кода у шаблонима, цедуљама, итд."
 
-#: lib/RT/Attachment.pm:875
+#: lib/RT/Attachment.pm:909
 msgid "Already encrypted"
 msgstr "Већ је шифровано"
 
@@ -1467,7 +1467,7 @@ msgstr "Назив датотеке прилога"
 msgid "Attachments"
 msgstr "Прилози"
 
-#: lib/RT/Attachment.pm:870
+#: lib/RT/Attachment.pm:904
 msgid "Attachments encryption is disabled"
 msgstr "Шифровање прилога је онемогућено"
 
@@ -2523,12 +2523,12 @@ msgid "Couldn't remove previous member: %1"
 msgstr ""
 
 #. ($msg)
-#: lib/RT/Attachment.pm:962
+#: lib/RT/Attachment.pm:996
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "Није успела замена садржаја са дешифрованим подацима: %1"
 
 #. ($msg)
-#: lib/RT/Attachment.pm:911
+#: lib/RT/Attachment.pm:945
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Није успела замена садржаја са шифрованим подацима: %1"
 
@@ -2823,7 +2823,7 @@ msgstr "Стваралац"
 msgid "Cryptography"
 msgstr "Шифровање"
 
-#: lib/RT/Attachment.pm:868 lib/RT/Attachment.pm:928
+#: lib/RT/Attachment.pm:902 lib/RT/Attachment.pm:962
 msgid "Cryptography is disabled"
 msgstr ""
 
@@ -3120,7 +3120,7 @@ msgstr "Дец"
 msgid "Decrypt"
 msgstr "Дешифруј"
 
-#: lib/RT/Attachment.pm:957
+#: lib/RT/Attachment.pm:991
 msgid "Decryption error; contact the administrator"
 msgstr ""
 
@@ -3708,7 +3708,7 @@ msgstr ""
 msgid "Encrypting"
 msgstr ""
 
-#: lib/RT/Attachment.pm:906
+#: lib/RT/Attachment.pm:940
 msgid "Encryption error; contact the administrator"
 msgstr ""
 
@@ -4478,7 +4478,7 @@ msgstr ""
 msgid "HasMember"
 msgstr "ИмаЧлана"
 
-#: lib/RT/Attachment.pm:779
+#: lib/RT/Attachment.pm:788
 msgid "Headers cleared"
 msgstr ""
 
@@ -4946,7 +4946,7 @@ msgstr "Неважећа вредност за прилагођено поље"
 msgid "Is already added to the object"
 msgstr ""
 
-#: lib/RT/Attachment.pm:939
+#: lib/RT/Attachment.pm:973
 msgid "Is not encrypted"
 msgstr "Није шифровано"
 
@@ -6282,7 +6282,7 @@ msgstr "Нема назначене колоне"
 msgid "No comment entered about this user"
 msgstr "Нема унетих коментара о овом кориснику"
 
-#: lib/RT/Attachment.pm:806
+#: lib/RT/Attachment.pm:840
 msgid "No content matches found"
 msgstr ""
 
@@ -6313,7 +6313,11 @@ msgstr "Нема назначене групе"
 msgid "No groups matching search criteria found."
 msgstr "Нема пронађених група које одговарају критеријуму претраге"
 
-#: lib/RT/Attachment.pm:895
+#: lib/RT/Attachment.pm:791
+msgid "No header matches found"
+msgstr ""
+
+#: lib/RT/Attachment.pm:929
 msgid "No key suitable for encryption"
 msgstr "Нема кључа погодног за шифровање"
 
@@ -6329,7 +6333,7 @@ msgstr "Нема приложених порука"
 msgid "No name provided"
 msgstr "Није обезбеђено име"
 
-#: lib/RT/Attachment.pm:877
+#: lib/RT/Attachment.pm:911
 msgid "No need to encrypt"
 msgstr "Нема потребе за шифровањем"
 
@@ -6399,7 +6403,7 @@ msgstr "Ниједно право није пронађено"
 msgid "No rights to add '%1' as an AdminCc on this ticket"
 msgstr ""
 
-#: lib/RT/Attachment.pm:798
+#: lib/RT/Attachment.pm:811
 msgid "No search string provided"
 msgstr ""
 
@@ -6729,12 +6733,12 @@ msgstr "Једнократна индиго копија"
 msgid "Only for entry, not display"
 msgstr "Само за унос, не и за приказ"
 
-#. (qq{<input size='15' class="datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />")
+#. (qq{<input size='15' class="datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' autocomplete='off' />")
 #: share/html/Approvals/Elements/PendingMyApproval:75
 msgid "Only show approvals for requests created after %1"
 msgstr "Прикажи одобрења само за захтеве направљене после %1"
 
-#. (qq{<input size='15' class="datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />")
+#. (qq{<input size='15' class="datepicker" value='}.($created_before->IsSet && $created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' autocomplete='off' />")
 #: share/html/Approvals/Elements/PendingMyApproval:73
 msgid "Only show approvals for requests created before %1"
 msgstr "Прикажи одобрења само за захтеве направљене пре %1"
@@ -6984,7 +6988,7 @@ msgstr "Редослед претраге Перл библиотека"
 msgid "Permanently wipeout data from RT"
 msgstr "Трајно обриши податке из РТ-а"
 
-#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:114 lib/RT/Article.pm:318 lib/RT/Article.pm:337 lib/RT/Article.pm:389 lib/RT/Article.pm:413 lib/RT/Article.pm:478 lib/RT/Article.pm:483 lib/RT/Asset.pm:227 lib/RT/Asset.pm:438 lib/RT/Asset.pm:595 lib/RT/Attachment.pm:865 lib/RT/Attachment.pm:866 lib/RT/Attachment.pm:925 lib/RT/Attachment.pm:926 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:443 lib/RT/Class.pm:131 lib/RT/Class.pm:166 lib/RT/Class.pm:305 lib/RT/Class.pm:355 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1132 lib/RT/CustomField.pm:1660 lib/RT/CustomField.pm:1698 lib/RT/CustomField.pm:1751 lib/RT/CustomField.pm:1956 lib/RT/CustomField.pm:2116 lib/RT/CustomField.pm:278 lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:306 lib/RT/CustomField.pm:660 lib/RT/CustomField.pm:687 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:314 lib/RT/CustomRole.pm:410 lib/RT/CustomRole.pm:447 lib/RT/CustomRole.pm:98 lib/RT/Group.pm:1144 lib/RT/Group.pm:1230 lib/RT/Group.pm:283 lib/RT/Group.pm:378 lib/RT/Group.pm:670 lib/RT/Group.pm:900 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1231 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:756 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/ScripAction.pm:108 lib/RT/ScripCondition.pm:119 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:757 lib/RT/Template.pm:774 lib/RT/Template.pm:792 lib/RT/Ticket.pm:1124 lib/RT/Ticket.pm:1330 lib/RT/Ticket.pm:1552 lib/RT/Ticket.pm:1597 lib/RT/Ticket.pm:1886 lib/RT/Ticket.pm:1910 lib/RT/Ticket.pm:2300 lib/RT/Ticket.pm:2306 lib/RT/Ticket.pm:2320 lib/RT/Ticket.pm:2325 lib/RT/Ticket.pm:2349 lib/RT/Ticket.pm:2566 lib/RT/Ticket.pm:2805 lib/RT/Ticket.pm:3167 lib/RT/Ticket.pm:780 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:758 lib/RT/Transaction.pm:798 lib/RT/User.pm:131 lib/RT/User.pm:1372 lib/RT/User.pm:1807 lib/RT/User.pm:2055 lib/RT/User.pm:2088 lib/RT/User.pm:421 lib/RT/User.pm:953 lib/RT/User.pm:988 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:110 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:117 share/html/Ticket/ShowEmailRecord.html:111 share/html/Ticket/ShowEmailRecord.html:112
+#: lib/RT/ACE.pm:232 lib/RT/ACE.pm:238 lib/RT/ACE.pm:317 lib/RT/Article.pm:114 lib/RT/Article.pm:318 lib/RT/Article.pm:337 lib/RT/Article.pm:389 lib/RT/Article.pm:413 lib/RT/Article.pm:478 lib/RT/Article.pm:483 lib/RT/Asset.pm:227 lib/RT/Asset.pm:438 lib/RT/Asset.pm:595 lib/RT/Attachment.pm:899 lib/RT/Attachment.pm:900 lib/RT/Attachment.pm:959 lib/RT/Attachment.pm:960 lib/RT/Attribute.pm:166 lib/RT/Attribute.pm:172 lib/RT/Attribute.pm:377 lib/RT/Attribute.pm:387 lib/RT/Attribute.pm:400 lib/RT/Catalog.pm:209 lib/RT/Catalog.pm:443 lib/RT/Class.pm:131 lib/RT/Class.pm:166 lib/RT/Class.pm:305 lib/RT/Class.pm:355 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomField.pm:1132 lib/RT/CustomField.pm:1660 lib/RT/CustomField.pm:1698 lib/RT/CustomField.pm:1751 lib/RT/CustomField.pm:1956 lib/RT/CustomField.pm:2116 lib/RT/CustomField.pm:278 lib/RT/CustomField.pm:295 lib/RT/CustomField.pm:306 lib/RT/CustomField.pm:660 lib/RT/CustomField.pm:687 lib/RT/CustomFieldValue.pm:123 lib/RT/CustomFieldValue.pm:89 lib/RT/CustomRole.pm:314 lib/RT/CustomRole.pm:410 lib/RT/CustomRole.pm:447 lib/RT/CustomRole.pm:98 lib/RT/Group.pm:1144 lib/RT/Group.pm:1230 lib/RT/Group.pm:283 lib/RT/Group.pm:378 lib/RT/Group.pm:670 lib/RT/Group.pm:900 lib/RT/ObjectClass.pm:70 lib/RT/Queue.pm:1231 lib/RT/Queue.pm:308 lib/RT/Queue.pm:339 lib/RT/Queue.pm:370 lib/RT/Queue.pm:756 lib/RT/Record/Role/Links.pm:149 lib/RT/Record/Role/Links.pm:168 lib/RT/Record/Role/Status.pm:172 lib/RT/Record/Role/Status.pm:267 lib/RT/Reminders.pm:129 lib/RT/Scrip.pm:123 lib/RT/Scrip.pm:131 lib/RT/Scrip.pm:142 lib/RT/Scrip.pm:224 lib/RT/Scrip.pm:312 lib/RT/Scrip.pm:364 lib/RT/Scrip.pm:697 lib/RT/Scrip.pm:705 lib/RT/Scrip.pm:714 lib/RT/Scrip.pm:719 lib/RT/Scrip.pm:727 lib/RT/ScripAction.pm:108 lib/RT/ScripCondition.pm:119 lib/RT/SharedSetting.pm:113 lib/RT/SharedSetting.pm:205 lib/RT/SharedSetting.pm:247 lib/RT/SharedSetting.pm:279 lib/RT/Template.pm:109 lib/RT/Template.pm:119 lib/RT/Template.pm:124 lib/RT/Template.pm:263 lib/RT/Template.pm:268 lib/RT/Template.pm:277 lib/RT/Template.pm:318 lib/RT/Template.pm:483 lib/RT/Template.pm:757 lib/RT/Template.pm:774 lib/RT/Template.pm:792 lib/RT/Ticket.pm:1124 lib/RT/Ticket.pm:1330 lib/RT/Ticket.pm:1552 lib/RT/Ticket.pm:1597 lib/RT/Ticket.pm:1886 lib/RT/Ticket.pm:1910 lib/RT/Ticket.pm:2300 lib/RT/Ticket.pm:2306 lib/RT/Ticket.pm:2320 lib/RT/Ticket.pm:2325 lib/RT/Ticket.pm:2349 lib/RT/Ticket.pm:2566 lib/RT/Ticket.pm:2805 lib/RT/Ticket.pm:3167 lib/RT/Ticket.pm:780 lib/RT/Topic.pm:113 lib/RT/Topic.pm:141 lib/RT/Topic.pm:207 lib/RT/Topic.pm:88 lib/RT/Transaction.pm:758 lib/RT/Transaction.pm:798 lib/RT/User.pm:131 lib/RT/User.pm:1372 lib/RT/User.pm:1807 lib/RT/User.pm:2055 lib/RT/User.pm:2088 lib/RT/User.pm:421 lib/RT/User.pm:953 lib/RT/User.pm:988 share/html/Admin/Global/DashboardsInMenu.html:91 share/html/Admin/Global/MyRT.html:96 share/html/Articles/Article/Display.html:110 share/html/Articles/Article/History.html:64 share/html/Dashboards/Modify.html:95 share/html/SelfService/Article/Display.html:64 share/html/Ticket/Forward.html:117 share/html/Ticket/ShowEmailRecord.html:111 share/html/Ticket/ShowEmailRecord.html:112
 msgid "Permission Denied"
 msgstr "Дозвола је одбијена"
 
@@ -7179,7 +7183,7 @@ msgstr ""
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr "Обрађивање без трансакције, неки услови и акције могу да неуспу. Размотрите употребу --transaction аргумента"
 
-#: lib/RT/Attachments.pm:272
+#: lib/RT/Attachments.pm:273
 msgid "Provide a search string to search on"
 msgstr ""
 
@@ -8843,11 +8847,11 @@ msgstr "Није успело прављење претплате: %1"
 msgid "Subscription updated"
 msgstr ""
 
-#: lib/RT/Attachment.pm:967
+#: lib/RT/Attachment.pm:1001
 msgid "Successfuly decrypted data"
 msgstr "Подаци су успешно дешифровани"
 
-#: lib/RT/Attachment.pm:918
+#: lib/RT/Attachment.pm:952
 msgid "Successfuly encrypted data"
 msgstr "Подаци су успешно шифровани"
 
@@ -9945,8 +9949,8 @@ msgid "Updated"
 msgstr "Ажурирано"
 
 #. ($count)
-#: lib/RT/Attachments.pm:327
-msgid "Updated %1 ticket's attachment content"
+#: lib/RT/Attachments.pm:389
+msgid "Updated %quant(%1,ticket's,tickets') attachment content"
 msgstr ""
 
 #: share/html/Search/Elements/PickBasics:131
