@@ -434,6 +434,7 @@ sub set_config_wrapper {
         # Format the new value for output
         require Data::Dumper;
         local $Data::Dumper::Terse = 1;
+        local $Data::Dumper::Deparse = 1;
         my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
         $dump =~ s/;?\s+\Z//;
         push @lines, "Set( ${sigil}${name}, \@{". $dump ."});\n";
