@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-27 00:01+0000\n"
+"POT-Creation-Date: 2018-04-23 19:12+0000\n"
 "PO-Revision-Date: 2018-03-27 13:20+0000\n"
 "Last-Translator: sunnavy <sunnavy@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-03-27 15:49+0000\n"
-"X-Generator: Launchpad (build 18591)\n"
+"X-Launchpad-Export-Date: 2019-01-31 13:10+0000\n"
+"X-Generator: Launchpad (build 18862)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61
 msgid "#"
@@ -204,8 +204,8 @@ msgstr "%1 - Especifique o módulo de busca que você quer usar"
 msgid "%1 CFs"
 msgstr "%1 CPs"
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Direitos Reservados 1996-%3 %4."
@@ -894,17 +894,17 @@ msgstr "Adicionada sobrescrita de assunto: %1"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1324
 msgid "Added group '%1'"
-msgstr ""
+msgstr "Grupo adicionado '%1'"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1343
 msgid "Added to group '%1'"
-msgstr ""
+msgstr "Adicionado ao grupo '%1'"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1321
 msgid "Added user '%1'"
-msgstr ""
+msgstr "Usuário adicionado '%1'"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1023,9 +1023,9 @@ msgstr "Todos os Painéis"
 msgid "All Queues"
 msgstr "Todas as filas"
 
-#: share/html/Admin/Scrips/index.html:80
+#: share/html/Admin/Scrips/index.html:83
 msgid "All Scrips"
-msgstr ""
+msgstr "Todos os títulos"
 
 #: share/html/Ticket/Elements/ShowRequestor:161
 msgid "All Tickets"
@@ -3010,9 +3010,9 @@ msgstr "Classes Ativadas"
 msgid "Enabled Queues"
 msgstr "Filas Ativas"
 
-#: share/html/Admin/Scrips/index.html:81
+#: share/html/Admin/Scrips/index.html:84
 msgid "Enabled Scrips"
-msgstr ""
+msgstr "Habilitar títulos"
 
 #: share/html/Admin/Queues/index.html:100
 msgid "Enabled queues matching search criteria"
@@ -3038,7 +3038,7 @@ msgstr "Encriptar/Decriptar"
 #. ($id, $txn->Ticket, $txn->TicketObj->Subject)
 #: share/html/Ticket/Crypt.html:99
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2: %3"
-msgstr ""
+msgstr "Criptografar / descriptografar a transação #%1 do ticket #%2: %3"
 
 #: lib/RT/Queue.pm:384
 msgid "Encrypting"
@@ -3210,7 +3210,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:248
 msgid "Extension"
-msgstr ""
+msgstr "Extensão"
 
 #: lib/RT/User.pm:1060
 msgid "External authentication enabled."
@@ -3461,12 +3461,12 @@ msgstr "Reencaminhar mensagens fora do RT"
 #. ($TicketObj->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:123
 msgid "Forward ticket #%1: %2"
-msgstr ""
+msgstr "Encaminhar ticket #%1: %2"
 
 #. ($txn->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:122
 msgid "Forward transaction #%1: %2"
-msgstr ""
+msgstr "Encaminhar transação #%1: %2"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
 #: lib/RT/Transaction.pm:951
@@ -3940,7 +3940,7 @@ msgstr "Incluir filas desativadas na listagem."
 
 #: share/html/Admin/Scrips/index.html:55
 msgid "Include disabled scrips in listing."
-msgstr ""
+msgstr "Incluir scripts desativados na listagem."
 
 #: share/html/Admin/Users/index.html:79
 msgid "Include disabled users in search."
@@ -4314,7 +4314,7 @@ msgstr "Vínculo não encontrado"
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/ModifyLinks.html:48
 msgid "Link ticket #%1: %2"
-msgstr ""
+msgstr "Ticket de ligação #%1: %2"
 
 #: share/html/Admin/CustomFields/Modify.html:108
 msgid "Link values to"
@@ -4372,7 +4372,7 @@ msgstr "%1 %2 carregado"
 
 #: share/html/Admin/Tools/Configuration.html:245
 msgid "Loaded RT Extensions"
-msgstr ""
+msgstr "Extensões RT carregadas"
 
 #: share/html/Admin/Tools/Configuration.html:200
 msgid "Loaded config files"
@@ -4849,7 +4849,7 @@ msgstr "Modificar valores de campos personalizados"
 #. ($TicketObj->Id, $TicketObj->Subject)
 #: share/html/Ticket/ModifyDates.html:48
 msgid "Modify dates for #%1: %2"
-msgstr ""
+msgstr "Modificar datas para #%1: %2"
 
 #. ($TicketObj->Id)
 #: share/html/Ticket/ModifyDates.html:57
@@ -4928,7 +4928,7 @@ msgstr "Modificar as pessoas relacionadas ao tíquete #%1"
 #. ($Ticket->id, $Ticket->Subject)
 #: share/html/Ticket/ModifyPeople.html:48
 msgid "Modify people related to ticket #%1: %2"
-msgstr ""
+msgstr "Modificar pessoas relacionadas ao ticket #%1: %2"
 
 #: lib/RT/Dashboard.pm:87
 msgid "Modify personal dashboards"
@@ -5021,7 +5021,7 @@ msgstr "Modificar o tíquete #%1"
 #. ($TicketObj->Id, $TicketObj->Subject)
 #: share/html/Ticket/Modify.html:48
 msgid "Modify ticket #%1: %2"
-msgstr ""
+msgstr "Modificar ticket #%1: %2"
 
 #: lib/RT/Queue.pm:130
 msgid "Modify ticket owner on owned tickets"
@@ -6521,19 +6521,19 @@ msgstr "Atualizar"
 
 #: lib/RT/Config.pm:380
 msgid "Refresh home page every %quant(%1,minute,minutes)."
-msgstr ""
+msgstr "Atualize a página inicial a cada %quant(%1,minute,minutes)."
 
 #: lib/RT/Config.pm:386
 msgid "Refresh home page every %quant(%1,second,seconds)."
-msgstr ""
+msgstr "Atualize a página inicial a cada %quant(%1,second,seconds)."
 
 #: lib/RT/Config.pm:344
 msgid "Refresh search results every %quant(%1,minute,minutes)."
-msgstr ""
+msgstr "Atualize os resultados da pesquisa a cada %quant(%1,minute,minutes)."
 
 #: lib/RT/Config.pm:350
 msgid "Refresh search results every %quant(%1,second,seconds)."
-msgstr ""
+msgstr "Atualize os resultados da pesquisa a cada %quant(%1,second,seconds)."
 
 #. ($value/60)
 #: share/html/Elements/Refresh:60
@@ -6543,7 +6543,7 @@ msgstr "Recarregar esta página a cada %1 minutos."
 #. ($value)
 #: share/html/Elements/Refresh:62
 msgid "Refresh this page every %quant(%1,second,seconds)."
-msgstr ""
+msgstr "Atualize esta página a cada %quant(%1,second,seconds)."
 
 #: etc/RT_Config.pm:1275 etc/initialdata:883
 msgid "RefreshHomepage"
@@ -6605,7 +6605,7 @@ msgstr "Lembretes"
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/Reminders.html:48
 msgid "Reminders for ticket #%1: %2"
-msgstr ""
+msgstr "Lembretes para o ticket #%1: %2"
 
 #: share/html/Search/Bulk.html:95
 msgid "Remove AdminCc"
@@ -6635,17 +6635,17 @@ msgstr "Removida Sobrescrita de Assunto"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1349
 msgid "Removed from group '%1'"
-msgstr ""
+msgstr "Removido do grupo '%1'"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1336
 msgid "Removed group '%1'"
-msgstr ""
+msgstr "Grupo removido '%1'"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1333
 msgid "Removed user '%1'"
-msgstr ""
+msgstr "Usuário removido '%1'"
 
 #: share/html/Admin/CustomFields/Modify.html:77
 msgid "Render Type"
@@ -8122,7 +8122,7 @@ msgstr "Tíquete %1: %2"
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/History.html:48
 msgid "Ticket History #%1: %2"
-msgstr ""
+msgstr "Histórico do ticket #%1: %2"
 
 #: etc/initialdata:445
 msgid "Ticket Resolved"
@@ -8623,7 +8623,7 @@ msgstr "Atualizar tíquete #%1 (%2)"
 #. ($TicketObj->id, $TicketObj->Subject)
 #: share/html/Ticket/Update.html:221
 msgid "Update ticket #%1: %2"
-msgstr ""
+msgstr "Ticket atualizado #%1: %2"
 
 #: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2394
 msgid "Update type was neither correspondence nor comment."

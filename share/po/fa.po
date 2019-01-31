@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-27 00:01+0000\n"
+"POT-Creation-Date: 2018-04-23 19:12+0000\n"
 "PO-Revision-Date: 2015-11-02 23:10+0000\n"
 "Last-Translator: Shawn M Moore <sartak@gmail.com>\n"
 "Language-Team: Persian <fa@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-03-27 15:48+0000\n"
-"X-Generator: Launchpad (build 18591)\n"
+"X-Launchpad-Export-Date: 2019-01-31 13:10+0000\n"
+"X-Generator: Launchpad (build 18862)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61
 msgid "#"
@@ -204,8 +204,8 @@ msgstr "%1 - ماژول جستجوی دلخواه خود را مشخص نمای�
 msgid "%1 CFs"
 msgstr ""
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -1023,7 +1023,7 @@ msgstr "تمام داشبوردها"
 msgid "All Queues"
 msgstr "تمام صف ها"
 
-#: share/html/Admin/Scrips/index.html:80
+#: share/html/Admin/Scrips/index.html:83
 msgid "All Scrips"
 msgstr ""
 
@@ -3010,7 +3010,7 @@ msgstr "دسته های فعال شده"
 msgid "Enabled Queues"
 msgstr "صف های فعال شده"
 
-#: share/html/Admin/Scrips/index.html:81
+#: share/html/Admin/Scrips/index.html:84
 msgid "Enabled Scrips"
 msgstr ""
 

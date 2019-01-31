@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-27 00:01+0000\n"
+"POT-Creation-Date: 2018-04-23 19:12+0000\n"
 "PO-Revision-Date: 2015-06-08 10:01+0000\n"
 "Last-Translator: Vitolis Bendinskas <Unknown>\n"
 "Language-Team: Lithuanian <lt@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-03-27 15:48+0000\n"
-"X-Generator: Launchpad (build 18591)\n"
+"X-Launchpad-Export-Date: 2019-01-31 13:09+0000\n"
+"X-Generator: Launchpad (build 18862)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61
 msgid "#"
@@ -204,8 +204,8 @@ msgstr "%1 - Nurodykite kurį paieškos modulį norite naudoti"
 msgid "%1 CFs"
 msgstr "%1 Papildomi laukai"
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr ""
@@ -637,7 +637,7 @@ msgstr "(Pranešimo kopiją siunčiama el. pašto adresatų sąrašui, atskirtų
 
 #: share/html/Elements/BulkCustomFields:94
 msgid "(Unsupported custom field type)"
-msgstr ""
+msgstr "(Nepalaikomas lauko tipas)"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:52
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -894,17 +894,17 @@ msgstr "Pridėtas pavadinimo perrašymas: %1"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1324
 msgid "Added group '%1'"
-msgstr ""
+msgstr "Pridėta grupė '%1'"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1343
 msgid "Added to group '%1'"
-msgstr ""
+msgstr "Pridėta prie grupės '%1'"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1321
 msgid "Added user '%1'"
-msgstr ""
+msgstr "Pridėtas vartotojas '%1'"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1023,9 +1023,9 @@ msgstr "Visos informacinės panelės"
 msgid "All Queues"
 msgstr "Visos eilės"
 
-#: share/html/Admin/Scrips/index.html:80
+#: share/html/Admin/Scrips/index.html:83
 msgid "All Scrips"
-msgstr ""
+msgstr "Visi skriptai"
 
 #: share/html/Ticket/Elements/ShowRequestor:161
 msgid "All Tickets"
@@ -3010,9 +3010,9 @@ msgstr "Įjungtos kategorijos"
 msgid "Enabled Queues"
 msgstr "Naudojamos eilės"
 
-#: share/html/Admin/Scrips/index.html:81
+#: share/html/Admin/Scrips/index.html:84
 msgid "Enabled Scrips"
-msgstr ""
+msgstr "Įjungti skritpus"
 
 #: share/html/Admin/Queues/index.html:100
 msgid "Enabled queues matching search criteria"
@@ -3210,7 +3210,7 @@ msgstr "Išplėstinė būsena"
 
 #: share/html/Admin/Tools/Configuration.html:248
 msgid "Extension"
-msgstr ""
+msgstr "Plėtinys"
 
 #: lib/RT/User.pm:1060
 msgid "External authentication enabled."
@@ -3940,7 +3940,7 @@ msgstr "Sąraše rodyti nenaudojamas eiles."
 
 #: share/html/Admin/Scrips/index.html:55
 msgid "Include disabled scrips in listing."
-msgstr ""
+msgstr "Sąraše rodyti išjungtus skriptus"
 
 #: share/html/Admin/Users/index.html:79
 msgid "Include disabled users in search."
@@ -4372,7 +4372,7 @@ msgstr "Užkrauta %1 %2"
 
 #: share/html/Admin/Tools/Configuration.html:245
 msgid "Loaded RT Extensions"
-msgstr ""
+msgstr "Nuskaityti RT plėtinius"
 
 #: share/html/Admin/Tools/Configuration.html:200
 msgid "Loaded config files"
@@ -6543,7 +6543,7 @@ msgstr "Automatiškai atnaujinti šį puslapį kas %1 minučių."
 #. ($value)
 #: share/html/Elements/Refresh:62
 msgid "Refresh this page every %quant(%1,second,seconds)."
-msgstr ""
+msgstr "Atnaujinti puslapį  kas %quant(%1,sekundę,sekundžių)."
 
 #: etc/RT_Config.pm:1275 etc/initialdata:883
 msgid "RefreshHomepage"
@@ -6635,17 +6635,17 @@ msgstr "Panaikinti pavadinimo perrašymą"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1349
 msgid "Removed from group '%1'"
-msgstr ""
+msgstr "Pašalintas iš grupės '%1'"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1336
 msgid "Removed group '%1'"
-msgstr ""
+msgstr "Panaikinta grupė '%1'"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1333
 msgid "Removed user '%1'"
-msgstr ""
+msgstr "Panaikintas vartotojas '%1'"
 
 #: share/html/Admin/CustomFields/Modify.html:77
 msgid "Render Type"
