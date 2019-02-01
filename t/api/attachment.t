@@ -179,16 +179,23 @@ diag 'Test clearing and replacing header and content in attachments from example
         }
     }
 
+    my $ticket_id = $ticket->id;
+
+    # ticket id could have utf8 flag on On Oracle :/
+    if ( utf8::is_utf8($ticket_id) ) {
+        $ticket_id = Encode::encode( 'UTF-8', $ticket_id );
+    }
+
     RT::Test->run_and_capture(
         command     => $RT::SbinPath . '/rt-munge-attachments',
-        tickets     => $ticket->id,
+        tickets     => $ticket_id,
         search      => 'Grüßen',
         replacement => 'anonymous',
     );
 
     RT::Test->run_and_capture(
         command     => $RT::SbinPath . '/rt-munge-attachments',
-        tickets     => $ticket->id,
+        tickets     => $ticket_id,
         search      => '"Stever, Gregor" <gst@example.com>',
         replacement => 'anon@example.com',
     );
