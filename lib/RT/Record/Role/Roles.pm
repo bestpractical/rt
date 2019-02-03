@@ -621,19 +621,27 @@ sub _ResolveRoles {
                             $self->loc("Couldn't load principal: [_1]", $msg);
                     }
                 } else {
-                    my @addresses = RT::EmailParser->ParseEmailAddress( $value );
-                    for my $address ( @addresses ) {
-                        my $user = RT::User->new( RT->SystemUser );
-                        my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
-                        if ( $id ) {
-                            # Load it back as us, not as the system
-                            # user, to be completely safe.
-                            $user = RT::User->new( $self->CurrentUser );
-                            $user->Load( $id );
-                            push @{ $roles->{$role} }, $user->PrincipalObj;
-                        } else {
-                            push @errors,
-                                $self->loc("Couldn't load or create user: [_1]", $msg);
+                    # Try loading by id, name, then email.  If all fail, catch that below
+                    my $user = RT::User->new( $self->CurrentUser );
+                    $user->Load( $value );
+
+                    if ($user->id) {
+                        push @{ $roles->{$role} }, $user->PrincipalObj;
+                    } else {
+                        my @addresses = RT::EmailParser->ParseEmailAddress( $value );
+                        for my $address ( @addresses ) {
+                            $user = RT::User->new( RT->SystemUser );
+                            my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
+                            if ( $id ) {
+                                # Load it back as us, not as the system
+                                # user, to be completely safe.
+                                $user = RT::User->new( $self->CurrentUser );
+                                $user->Load( $id );
+                                push @{ $roles->{$role} }, $user->PrincipalObj;
+                            } else {
+                                push @errors,
+                                    $self->loc("Couldn't load or create user: [_1]", $msg);
+                            }
                         }
                     }
                 }
