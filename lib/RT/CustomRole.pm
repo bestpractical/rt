@@ -330,9 +330,25 @@ Takes an object id and returns a boolean indicating whether the custom role appl
 
 sub IsAdded {
     my $self = shift;
+    my ($ObjectId, $Disabled) = (undef, undef);
+    my @args = @_;
+
+    if ( scalar @args > 1 ) {
+        my %args = @args;
+
+        $ObjectId = $args{'ObjectId'};
+        $Disabled = $args{'Disabled'};
+    } else {
+        $ObjectId = $args[0];
+        RT->Deprecated(
+            Message => "Passing only ObjectId unamed parameter is deprecated.",
+            Instead => "->IsAdded(ObjectId => $ObjectId)", Remove => '4.6',
+        );
+    }
+
     my $record = RT::ObjectCustomRole->new( $self->CurrentUser );
-    $record->LoadByCols( CustomRole => $self->id, ObjectId => shift );
-    return undef unless $record->id;
+    $record->LoadByCols( CustomRole => $self->id, ObjectId => $ObjectId );
+    return undef unless $record->id or ( $record->CustomRoleObj->Disabled and not $Disabled );
     return $record;
 }
 
