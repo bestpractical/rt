@@ -2604,7 +2604,7 @@ sub _AsInsertQuery
 
     my $dbh = $RT::Handle->dbh;
 
-    my $res = "INSERT INTO ". $dbh->quote_identifier( $self->Table );
+    my $res = "INSERT INTO ". $self->Table;
     my $values = $self->{'values'};
     $res .= "(". join( ",", map { $dbh->quote_identifier( $_ ) } sort keys %$values ) .")";
     $res .= " VALUES";
