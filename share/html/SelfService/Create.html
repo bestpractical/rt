@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& Elements/Header, Title => loc("Create a ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj)) &>
+<& Elements/Header, Title => loc("Create a ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj, Escape => 0)) &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form action="Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">

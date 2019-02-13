@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 24;
+use RT::Test tests => undef;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
 
@@ -126,3 +126,11 @@ $query =~ s/\s+/ /g;
 
 is ($query, "Subject LIKE 'aaa' AND Subject LIKE 'bbb'");
 
+{
+    my $queue = RT::Test->load_or_create_queue( Name => 'foo&bar' );
+    $agent->goto_create_ticket( $queue->id );
+    is( $agent->status, 200, "Loaded Create.html" );
+    $agent->title_is('Create a new ticket in foo&bar');
+}
+
+done_testing;

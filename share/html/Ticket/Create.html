@@ -441,7 +441,7 @@ my @results;
 my $QueueObj = RT::Queue->new($current_user);
 $QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''), Code => HTTP::Status::HTTP_BAD_REQUEST);
 
-my $title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj));
+my $title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0));
 
 $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
 
