@@ -2222,14 +2222,14 @@ Set($AlwaysDownloadAttachments, undef);
 
 =item C<$AttachmentListCount>
 
-The number of attachments to display by default on ticket display and ticket
-reply pages. Attachments beyond this count will be displayed only after the
-user clicks a "Show all" link. The default value, C<undef>, means always show
-all attachments. A value of C<0> means show no attachments by default.
+By default, the number of attachments displayed on ticket display and ticket
+reply pages is 5. Attachments beyond this count will be displayed only after the
+user clicks a "Show all" link. If this config is set C<undef>, all attachments
+will be shown. A value of C<0> means show no attachments by default.
 
 =cut
 
-Set($AttachmentListCount, undef);
+Set($AttachmentListCount, 5);
 
 =item C<$PreferRichText>
 
