@@ -217,35 +217,40 @@ jQuery( function() {
        jQuery('#recipients div.titlebox-content').addClass('refreshing');
        jQuery('#previewscrips div.titlebox-content').addClass('refreshing');
 
-       var payload = jQuery('form[name=TicketUpdate]').serializeArray();
+       // Wait a little bit in case user leaves related inputs(which
+       // could fire updateScrips) by checking/unchecking recipient
+       // checkboxes, this is to get checkboxes' latest status
+       setTimeout( function() {
+           var payload = jQuery('form[name=TicketUpdate]').serializeArray();
 
-       jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
-           payload,
-           function() {
-               jQuery('#recipients div.titlebox-content').removeClass('refreshing');
-               var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
-               txn_send_field.change( syncCheckboxes );
-               txn_send_field.click( function () { setCheckbox(this) } );
-               jQuery("#recipients input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
-               if (txn_send_field.length > 0) {
-                   setCheckbox(txn_send_field[0]);
+           jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
+               payload,
+               function() {
+                   jQuery('#recipients div.titlebox-content').removeClass('refreshing');
+                   var txn_send_field = jQuery("#recipients input[name=TxnSendMailTo]");
+                   txn_send_field.change( syncCheckboxes );
+                   txn_send_field.click( function () { setCheckbox(this) } );
+                   jQuery("#recipients input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
+                   if (txn_send_field.length > 0) {
+                       setCheckbox(txn_send_field[0]);
+                   }
                }
-           }
-       );
+           );
 
-       jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
-           payload,
-           function() {
-               jQuery('#previewscrips div.titlebox-content').removeClass('refreshing');
-               var txn_send_field = jQuery("#previewscrips input[name=TxnSendMailTo]");
-               txn_send_field.change( syncCheckboxes );
-               txn_send_field.click( function () { setCheckbox(this) } );
-               jQuery("#previewscrips input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
-               if (txn_send_field.length > 0) {
-                   setCheckbox(txn_send_field[0]);
+           jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
+               payload,
+               function() {
+                   jQuery('#previewscrips div.titlebox-content').removeClass('refreshing');
+                   var txn_send_field = jQuery("#previewscrips input[name=TxnSendMailTo]");
+                   txn_send_field.change( syncCheckboxes );
+                   txn_send_field.click( function () { setCheckbox(this) } );
+                   jQuery("#previewscrips input[name=TxnSendMailToAll]").click( function() { setCheckbox(this, 'TxnSendMailTo'); } );
+                   if (txn_send_field.length > 0) {
+                       setCheckbox(txn_send_field[0]);
+                   }
                }
-           }
-       );
+           );
+       }, 100);
    };
    updateScrips();
 
