@@ -3774,12 +3774,6 @@ sub ProcessTransactionSquelching {
         (    ref $args->{'TxnSendMailTo'} eq "ARRAY"  ? @{$args->{'TxnSendMailTo'}} :
          defined $args->{'TxnSendMailTo'}             ?  ($args->{'TxnSendMailTo'}) :
                                                                              () );
-    for my $type ( qw/Cc Bcc/ ) {
-        next unless $args->{"Update$type"};
-        for my $addr ( Email::Address->parse( $args->{"Update$type"} ) ) {
-            $checked{$addr->address} ||= 1;
-        }
-    }
     my %squelched = map { $_ => 1 } grep { not $checked{$_} } split /,/, ($args->{'TxnRecipients'}||'');
     return %squelched;
 }

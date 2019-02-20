@@ -109,7 +109,6 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
                   <li>
 %                 my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
-%                 $recips{$addr->address}++;
                   <b><%loc($type)%></b>:
 %                 my $show_checkbox = 1;
 %                 if ( grep {$_ eq $addr->address} @{$action->{NoSquelch}{$type}} ) {
@@ -117,9 +116,14 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %                 }
 
 %                 if ( $show_checkbox ) {
+%                     $recips{$addr->address}++;
                       <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
 %                 }
-                  <label for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
+                  <label
+%                   if ( $show_checkbox ) {
+                        for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"
+%                   }
+                  ><& /Elements/ShowUser, Address => $addr &></label>
 %                 $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
 %                 unless ( $show_checkbox ) {
 %                     if ( $type eq 'Cc' ) {
