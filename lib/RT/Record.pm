@@ -2117,19 +2117,23 @@ Add default values to object's empty custom fields.
 
 sub AddCustomFieldDefaultValues {
     my $self = shift;
-    my $cfs  = $self->CustomFields;
+
+    my $object = ( ref $self )->new( RT->SystemUser );
+    $object->Load( $self->id );
+
+    my $cfs  = $object->CustomFields;
     my @msgs;
     while ( my $cf = $cfs->Next ) {
-        next if $self->CustomFieldValues($cf->id)->Count || !$cf->SupportDefaultValues;
+        next if $object->CustomFieldValues($cf->id)->Count || !$cf->SupportDefaultValues;
         my ( $on ) = grep { $_->isa( $cf->RecordClassFromLookupType ) } $cf->ACLEquivalenceObjects;
         my $values = $cf->DefaultValues( Object => $on || RT->System );
         foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
-            next if $self->CustomFieldValueIsEmpty(
+            next if $object->CustomFieldValueIsEmpty(
                 Field => $cf,
                 Value => $value,
             );
 
-            my ( $status, $msg ) = $self->_AddCustomFieldValue(
+            my ( $status, $msg ) = $object->_AddCustomFieldValue(
                 Field             => $cf->id,
                 Value             => $value,
                 RecordTransaction => 0,
