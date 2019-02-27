@@ -78,7 +78,7 @@ my $titleright = qq{<a href="$url_html" data-show-label="$show_label" data-hide-
 
 % $m->callback( Ticket => $TicketObj, %ARGS, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowHistory' );
 
-% my $ShowHistory = RT->Config->Get("ShowHistory", $session{'CurrentUser'});
+% $ShowHistory //= RT->Config->Get("ShowHistory", $session{'CurrentUser'});
 % if ($ShowHistory eq "scroll") {
     <& /Ticket/Elements/ScrollShowHistory,
         Ticket => $TicketObj,
@@ -116,6 +116,7 @@ $TicketObj => undef
 $ShowHeaders => 0
 $HideUnsetFields => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
 $ForceShowHistory => 0
+$ShowHistory => undef
 </%ARGS>
 
 <%INIT>
