@@ -235,13 +235,13 @@ sub GetAuth {
     my $dbh = _GetBoundDBIObj($config);
     return 0 unless $dbh;
 
-    my $results_hashref = $dbh->selectall_hashref($query,$db_u_field,{},@params);
+    my $results = $dbh->selectall_arrayref($query,{Slice=>{}},@params);
     $dbh->disconnect();
 
-    my $num_users_returned = scalar keys %$results_hashref;
+    my $num_users_returned = scalar @$results;
     if($num_users_returned != 1) { # FAIL
         # FAIL because more than one user returned. Users MUST be unique!
-        if ((scalar keys %$results_hashref) > 1) {
+        if ($num_users_returned > 1) {
             $RT::Logger->info(  $service,
                                 "AUTH FAILED",
                                 $username,
@@ -249,7 +249,7 @@ sub GetAuth {
         }
 
         # FAIL because no users returned. Users MUST exist!
-        if ((scalar keys %$results_hashref) < 1) {
+        if ($num_users_returned < 1) {
             $RT::Logger->info(  $service,
                                 "AUTH FAILED",
                                 $username,
@@ -261,7 +261,7 @@ sub GetAuth {
     }
 
     # Get the user's password from the database query result
-    my $pass_from_db = $results_hashref->{$username}->{$db_p_field};
+    my $pass_from_db = $results->[0]->{$db_p_field};
 
     if ( $db_p_check ) {
         unless ( ref $db_p_check eq 'CODE' ) {
@@ -394,14 +394,15 @@ sub CanonicalizeUserInfo {
     # Uncomment this to trace basic DBI throughput in a log
     # DBI->trace(1,'/tmp/dbi.log');
     my $dbh = _GetBoundDBIObj($config);
-    my $results_hashref = $dbh->selectall_hashref($query,$key,{},@bind_params);
+    my $results = $dbh->selectall_arrayref($query,{Slice=>{}},@bind_params);
     $dbh->disconnect();
 
-    if ((scalar keys %$results_hashref) != 1) {
+    my $num_users_returned = scalar @$results;
+    if ($num_users_returned != 1) {
         # If returned users <> 1, we have no single unique user, so prepare to die
         my $death_msg;
 
-            if ((scalar keys %$results_hashref) == 0) {
+            if ($num_users_returned == 0) {
             # If no user...
                 $death_msg = "No User Found in External Database!";
         } else {
@@ -424,7 +425,7 @@ sub CanonicalizeUserInfo {
 
     # We haven't dropped out, so DB search must have succeeded with
     # exactly 1 result. Get the result and set $found to 1
-    my $result = $results_hashref->{$value};
+    my $result = $results->[0];
 
     # Use the result to populate %params for every key we're given in the config
     foreach my $key (keys(%{$config->{'attr_map'}})) {
@@ -450,11 +451,10 @@ sub UserExists {
 
     # Get DBI Object, do the query, disconnect
     my $dbh = _GetBoundDBIObj($config);
-    my $results_hashref = $dbh->selectall_hashref($query,$u_field,{},@bind_params);
+    my $results = $dbh->selectall_arrayref($query,{},@bind_params);
     $dbh->disconnect();
 
-    my $num_of_results = scalar keys %$results_hashref;
-
+    my $num_of_results = scalar @$results;
     if ($num_of_results > 1) {
         # If more than one result returned, die because we the username field should be unique!
         $RT::Logger->debug( "Disable Check Failed :: (",
@@ -510,11 +510,10 @@ sub UserDisabled {
 
     # Get DBI Object, do the query, disconnect
     my $dbh = _GetBoundDBIObj($config);
-    my $results_hashref = $dbh->selectall_hashref($query,$u_field,{},@bind_params);
+    my $results = $dbh->selectall_arrayref($query,{Slice=>{}},@bind_params);
     $dbh->disconnect();
 
-    my $num_of_results = scalar keys %$results_hashref;
-
+    my $num_of_results = scalar @$results;
     if ($num_of_results > 1) {
         # If more than one result returned, die because we the username field should be unique!
         $RT::Logger->debug( "Disable Check Failed :: (",
@@ -537,7 +536,7 @@ sub UserDisabled {
         # otherwise all should be well
 
         # $user_db_disable_value = The value for "disabled" returned from the DB
-        my $user_db_disable_value = $results_hashref->{$username}->{$disable_field};
+        my $user_db_disable_value = $results->[0]->{$disable_field};
 
         # For each of the values in the (list of values that we consider to mean the user is disabled)..
         foreach my $disable_value (@{$disable_values_list}){

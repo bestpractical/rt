@@ -3,16 +3,12 @@ use warnings;
 
 use RT::Test tests => undef;
 
-eval { require RT::Authen::ExternalAuth; require Net::LDAP::Server::Test; 1; } or do {
-    plan skip_all => 'Unable to test without Net::LDAP and Net::LDAP::Server::Test';
-};
-
 use DBI;
 use File::Temp;
 use Digest::MD5;
 use File::Spec;
 
-eval { require DBD::SQLite; } or do {
+eval { require RT::Authen::ExternalAuth; require DBD::SQLite; } or do {
     plan skip_all => 'Unable to test without DBD::SQLite';
 };
 
@@ -23,14 +19,19 @@ my $dbh = DBI->connect("dbi:SQLite:$dbname");
 my $password = Digest::MD5::md5_hex('password');
 my $schema = <<"EOF";
 CREATE TABLE users (
-  username varchar(200) NOT NULL,
+  username varchar(200) NOT NULL COLLATE NOCASE,
   password varchar(40) NULL,
-  email varchar(16) NULL
+  email varchar(16) NULL COLLATE NOCASE,
+  disabled int
 );
 EOF
 $dbh->do( $schema );
-$dbh->do(
-"INSERT INTO $table VALUES ( 'testuser', '$password', 'testuser\@invalid.tld')"
+$dbh->do( <<"EOF"
+INSERT INTO $table VALUES
+    ( 'testuser', '$password', 'testuser\@invalid.tld', 0),
+    ( 'testCASE', '$password', 'testcase\@invalid.tld', 0),
+    ( 'testmail', '$password', 'testMAIL\@invalid.tld', 0)
+EOF
 );
 
 RT->Config->Set( ExternalAuthPriority        => ['My_SQLite'] );
@@ -48,7 +49,8 @@ RT->Config->Set(
             'p_field'         => 'password',
             'p_enc_pkg'       => 'Digest::MD5',
             'p_enc_sub'       => 'md5_hex',
-            'attr_match_list' => ['Name'],
+            'd_field'         => 'disabled',
+            'attr_match_list' => ['Name', 'EmailAddress'],
             'attr_map'        => {
                 'Name'           => 'username',
                 'EmailAddress'   => 'email',
@@ -67,6 +69,9 @@ diag "test uri login";
     ok( !$m->login( 'testuser', 'wrongpassword' ), 'not logged in with wrong password' );
     $m->warning_like( qr/FAILED LOGIN for testuser/ );
     ok( $m->login( 'testuser', 'password' ), 'logged in' );
+
+    ok( $m->logout, 'logged out' );
+    ok( $m->login( 'testcase', 'password' ), 'logged in with case mismatch' );
 }
 
 diag "test user creation";
@@ -75,6 +80,22 @@ diag "test user creation";
     my ($ok,$msg) = $testuser->Load( 'testuser' );
     ok($ok,$msg);
     is($testuser->EmailAddress,'testuser@invalid.tld');
+}
+
+diag "test user creation with case mismatch";
+{
+    my $testuser = RT::User->new($RT::SystemUser);
+    my ($ok, $msg) = $testuser->Load( 'testCASE' );
+    ok( $ok, "create user: $msg" );
+    is( $testuser->EmailAddress, 'testcase@invalid.tld' );
+}
+
+diag "test user creation from email with case mismatch";
+{
+    my $testuser = RT::User->new($RT::SystemUser);
+    my ($ok, $msg) = $testuser->LoadOrCreateByEmail( 'testmail@invalid.tld' );
+    ok( $ok, "create user: $msg" );
+    is( $testuser->Name, 'testmail' );
 }
 
 diag "test form login";
