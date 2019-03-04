@@ -1395,6 +1395,7 @@ our %IS_WHITELISTED_COMPONENT = (
     # out what to show, but it's read only and will deny information if you
     # don't have ShowOutgoingEmail.
     '/Ticket/ShowEmailRecord.html' => 1,
+    '/Helpers/TicketHistory'       => 1
 );
 
 # Whitelist arguments that do not indicate an effectful request.
@@ -1428,6 +1429,8 @@ our %WHITELISTED_COMPONENT_ARGS = (
     '/Articles/Article/ExtractIntoClass.html' => ['Ticket'],
     # Only affects display
     '/Ticket/Display.html' => ['HideUnsetFields'],
+
+    '/Ticket/Display.html' => ['ForceShowHistory', 'ShowHeaders'],
 );
 
 # Components which are blacklisted from automatic, argument-based whitelisting.
