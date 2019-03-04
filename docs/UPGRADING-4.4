@@ -615,4 +615,16 @@ now contains the reference to the message content as the name implies.
 
 =back
 
+=head1 UPGRADING FROM 4.4.4 AND EARLIER
+
+=over 4
+
+=item *
+
+We have updated the default value of the C<AttachmentListCount> config to 5.
+If you would like to restore the previous configuration, set this config to
+C<undef> in your C<RT_SiteConfig.pm>.
+
+=back
+
 =cut
