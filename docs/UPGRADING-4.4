@@ -615,4 +615,18 @@ now contains the reference to the message content as the name implies.
 
 =back
 
+=head1 UPGRADING FROM 4.4.4 AND EARLIER
+
+=over 4
+
+=item *
+
+The C<AttachmentListCount> configuration option now defaults to 5.
+To restore the previous configuration and show all attachments,
+add the following to your C<RT_SiteConfig.pm>.
+
+    Set($AttachmentListCount, undef);
+
+=back
+
 =cut
