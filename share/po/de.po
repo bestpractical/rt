@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-27 00:01+0000\n"
-"PO-Revision-Date: 2016-08-03 11:23+0000\n"
-"Last-Translator: Christian Loos <cloos@netsandbox.de>\n"
+"POT-Creation-Date: 2018-04-23 19:12+0000\n"
+"PO-Revision-Date: 2018-10-27 16:48+0000\n"
+"Last-Translator: Stephan Woidowski <swoidowski@t-online.de>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-03-27 15:48+0000\n"
-"X-Generator: Launchpad (build 18591)\n"
+"X-Launchpad-Export-Date: 2019-01-31 13:09+0000\n"
+"X-Generator: Launchpad (build 18862)\n"
 
 #: share/html/Articles/Elements/NewestArticles:51 share/html/Articles/Elements/UpdatedArticles:51 share/html/Elements/ColumnMap:61
 msgid "#"
@@ -162,7 +162,7 @@ msgstr "%1 - Ein Argument zur Übergabe an %2"
 #. ("--action-arg", "--action")
 #: bin/rt-crontool:331
 msgid "%1 - An argument to pass to %2. This option may be repeated to pass corresponding arguments to multiple calls of %2."
-msgstr ""
+msgstr "%1 - Ein Argument, das an %2 übergeben werden soll. Diese Option kann wiederholt werden, um entsprechende Argumente an mehrere Aufrufe von %2 zu übergeben."
 
 #. ("--verbose")
 #: bin/rt-crontool:345
@@ -182,7 +182,7 @@ msgstr "%1 - Namen oder die ID der Vorlage/n angeben, die Sie verwenden möchten
 #. ("--action")
 #: bin/rt-crontool:328
 msgid "%1 - Specify the action module you want to use. This option may be repeated to apply multiple actions to found tickets."
-msgstr ""
+msgstr "%1 - Geben Sie den Aktionsmodul an, das Sie verwenden möchten. Diese Option kann wiederholt werden, um mehrere Aktionen auf gefundene Tickets anzuwenden."
 
 #. ("--transaction-type")
 #: bin/rt-crontool:340
@@ -204,8 +204,8 @@ msgstr "%1 - Gibt an, welches Search-Modul benutzt werden soll"
 msgid "%1 CFs"
 msgstr "%1 benutzerdefinierte Felder"
 
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
-#. ('', '', '2017', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('', '', '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 #: share/html/Elements/Footer:56 share/html/m/_elements/footer:51
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Alle Rechte vorbehalten 1996-%3 %4."
@@ -894,17 +894,17 @@ msgstr "Betreff überschreiben hinzugefügt: %1"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1324
 msgid "Added group '%1'"
-msgstr ""
+msgstr "Gruppe '%1' hinzugefügt"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1343
 msgid "Added to group '%1'"
-msgstr ""
+msgstr "zu Gruppe '%1' hinzugefügt"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1321
 msgid "Added user '%1'"
-msgstr ""
+msgstr "Benutzer '%1' hinzugefügt"
 
 #: share/html/Elements/RT__Queue/ColumnMap:65 share/html/Elements/RT__User/ColumnMap:101
 msgid "Address"
@@ -1023,9 +1023,9 @@ msgstr "Alle Dashboards"
 msgid "All Queues"
 msgstr "Alle Bereiche"
 
-#: share/html/Admin/Scrips/index.html:80
+#: share/html/Admin/Scrips/index.html:83
 msgid "All Scrips"
-msgstr ""
+msgstr "Alle Skripte"
 
 #: share/html/Ticket/Elements/ShowRequestor:161
 msgid "All Tickets"
@@ -2372,7 +2372,7 @@ msgstr "Benutzerdefinierte Felder für den Bereich %1"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:73
 msgid "Custom action commit code"
-msgstr ""
+msgstr "Benutzerdefinierte Aktion  Code festlegen"
 
 #: share/html/Admin/Scrips/Elements/EditCustomCode:72
 msgid "Custom action preparation code"
@@ -3011,9 +3011,9 @@ msgstr "aktivierte Klassen"
 msgid "Enabled Queues"
 msgstr "Aktivierte Bereiche"
 
-#: share/html/Admin/Scrips/index.html:81
+#: share/html/Admin/Scrips/index.html:84
 msgid "Enabled Scrips"
-msgstr ""
+msgstr "Aktiviere Scrips"
 
 #: share/html/Admin/Queues/index.html:100
 msgid "Enabled queues matching search criteria"
@@ -3039,7 +3039,7 @@ msgstr "Entschlüsseln/Verschlüsseln"
 #. ($id, $txn->Ticket, $txn->TicketObj->Subject)
 #: share/html/Ticket/Crypt.html:99
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2: %3"
-msgstr ""
+msgstr "Verschlüssele/Entschlüssele Übertragung #%1 von Ticket '%2: %3"
 
 #: lib/RT/Queue.pm:384
 msgid "Encrypting"
@@ -3211,7 +3211,7 @@ msgstr "Erweiterter Status"
 
 #: share/html/Admin/Tools/Configuration.html:248
 msgid "Extension"
-msgstr ""
+msgstr "Erweiterung"
 
 #: lib/RT/User.pm:1060
 msgid "External authentication enabled."
@@ -3462,12 +3462,12 @@ msgstr "Nachrichten weiterleiten (außerhalb von RT)"
 #. ($TicketObj->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:123
 msgid "Forward ticket #%1: %2"
-msgstr ""
+msgstr "Ticket #%1 weiterleiten: %2"
 
 #. ($txn->id, $TicketObj->Subject)
 #: share/html/Ticket/Forward.html:122
 msgid "Forward transaction #%1: %2"
-msgstr ""
+msgstr "Transaktion #%1 weiterleiten: %2"
 
 #. ($self->Field, $recipients,            [\'<a href="#txn-', $self->Field, \'">'], \'</a>')
 #: lib/RT/Transaction.pm:951
@@ -3941,7 +3941,7 @@ msgstr "Zeige auch deaktivierte Bereiche an."
 
 #: share/html/Admin/Scrips/index.html:55
 msgid "Include disabled scrips in listing."
-msgstr ""
+msgstr "Enthält deaktivierte Skripts in Auflistung."
 
 #: share/html/Admin/Users/index.html:79
 msgid "Include disabled users in search."
@@ -3982,7 +3982,7 @@ msgstr "Informiere Benutzer das seine gesendete Nachricht ungültige GnuPG-Daten
 
 #: etc/initialdata:674
 msgid "Inform user that a message he sent has invalid encryption data"
-msgstr ""
+msgstr "Informieren Sie einen Benutzer, dass eine Nachricht, die er gesendet hat, fehlerhafte Verschlüsselungsdaten enthält"
 
 #: etc/initialdata:640 etc/upgrade/3.7.10/content:9
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
@@ -3994,7 +3994,7 @@ msgstr "Informiere Benutzer über sein zurückgesetztes Passwort"
 
 #: etc/initialdata:631 etc/upgrade/4.1.22/content:79
 msgid "Inform user that their unencrypted mail has been rejected"
-msgstr ""
+msgstr "Informieren Sie die Benutzer, dass ihre unverschlüsselte Mail abgewiesen wurde."
 
 #: etc/initialdata:662 etc/upgrade/3.7.10/content:31
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
@@ -4315,7 +4315,7 @@ msgstr "Beziehung nicht gefunden"
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/ModifyLinks.html:48
 msgid "Link ticket #%1: %2"
-msgstr ""
+msgstr "Verlinke Ticket #%1: %2"
 
 #: share/html/Admin/CustomFields/Modify.html:108
 msgid "Link values to"
@@ -4373,7 +4373,7 @@ msgstr "Geladen %1 %2"
 
 #: share/html/Admin/Tools/Configuration.html:245
 msgid "Loaded RT Extensions"
-msgstr ""
+msgstr "Geladene RT Erweiterungen"
 
 #: share/html/Admin/Tools/Configuration.html:200
 msgid "Loaded config files"
@@ -4850,7 +4850,7 @@ msgstr "Werte für benutzerdefiniertes Feld anpassen"
 #. ($TicketObj->Id, $TicketObj->Subject)
 #: share/html/Ticket/ModifyDates.html:48
 msgid "Modify dates for #%1: %2"
-msgstr ""
+msgstr "Ändere Daten für #%1: %2"
 
 #. ($TicketObj->Id)
 #: share/html/Ticket/ModifyDates.html:57
@@ -4929,7 +4929,7 @@ msgstr "Ändere Personen zu Ticket #%1"
 #. ($Ticket->id, $Ticket->Subject)
 #: share/html/Ticket/ModifyPeople.html:48
 msgid "Modify people related to ticket #%1: %2"
-msgstr ""
+msgstr "Personen im Zusammenhang mit Ticket #%1 ändern: %2"
 
 #: lib/RT/Dashboard.pm:87
 msgid "Modify personal dashboards"
@@ -5022,7 +5022,7 @@ msgstr "Ändere Ticket #%1"
 #. ($TicketObj->Id, $TicketObj->Subject)
 #: share/html/Ticket/Modify.html:48
 msgid "Modify ticket #%1: %2"
-msgstr ""
+msgstr "Ändere Ticket #%1: %2"
 
 #: lib/RT/Queue.pm:130
 msgid "Modify ticket owner on owned tickets"
@@ -5157,7 +5157,7 @@ msgstr "Meine gespeicherten Suchanfragen"
 
 #: etc/RT_Config.pm:1275
 msgid "MyAdminQueues"
-msgstr ""
+msgstr "MyAdmin Warteschlangen"
 
 #: etc/RT_Config.pm:1275 etc/initialdata:871
 msgid "MyReminders"
@@ -5169,7 +5169,7 @@ msgstr ""
 
 #: etc/RT_Config.pm:1275
 msgid "MySupportQueues"
-msgstr ""
+msgstr "MySupport Warteschlangen"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "NBSP"
@@ -5225,7 +5225,7 @@ msgstr "Neue wartende Freigaben"
 
 #: etc/initialdata:481 etc/upgrade/4.1.9/content:111
 msgid "New Pending Approval in HTML"
-msgstr ""
+msgstr "Neue ausstehende Genehmigung in HTML"
 
 #: share/html/Elements/Tabs:523
 msgid "New Search"
@@ -5598,7 +5598,7 @@ msgstr "Informiere den Besitzer dass sein Ticket freigegeben wurde."
 
 #: etc/initialdata:65 etc/upgrade/4.2.6/content:5
 msgid "Notify Owner or AdminCcs"
-msgstr ""
+msgstr "Benachrichtige Besitzer oder AdminCcs"
 
 #: etc/initialdata:83
 msgid "Notify Owner, Requestors, Ccs and AdminCcs"
@@ -6038,11 +6038,11 @@ msgstr "Bild"
 
 #: etc/initialdata:232
 msgid "Plain text Autoresponse template"
-msgstr ""
+msgstr "Klartext Autoantwort-Vorlage"
 
 #: etc/initialdata:381
 msgid "Plain text admin comment template"
-msgstr ""
+msgstr "Klartext Admin-Kommentar-Vorlage"
 
 #: etc/initialdata:341
 msgid "Plain text admin correspondence template"
@@ -6400,7 +6400,7 @@ msgstr "RT hat eine mögliche %1Website-übergreifende Anfragenfälschung%2 für
 
 #: share/html/Install/index.html:71
 msgid "RT is an enterprise-grade issue tracking system designed to let you intelligently and efficiently manage tasks, issues, requests, defects or anything else that looks like an \"action item.\""
-msgstr ""
+msgstr "RT ist ein unternehmensweites Problemverfolgungssystem, mit dem Sie Aufgaben, Probleme, Anfragen, Fehler oder alles andere, was wie ein \"Action Item\" aussieht, intelligent und effizient verwalten können."
 
 #: share/html/Install/index.html:74
 msgid "RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organizations on all seven continents. (Yes, even Antarctica.)"
@@ -6425,7 +6425,7 @@ msgstr "RT wird %1 und %2 mit der Record-ID und dem Wert des benutzerdefinierten
 
 #: lib/RT/Installer.pm:138
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
-msgstr ""
+msgstr "RT verwendet diese Zeichenkette, um Ihre Installation eindeutig zu identifizieren und sucht sie im Betreff von E-Mails, um zu entscheiden, auf welches Ticket sich eine Nachricht bezieht. Wir empfehlen Ihnen, dies auf Ihre Internet-Domain einzustellen. (z.B.: example.com)"
 
 #: share/html/Install/DatabaseType.html:52
 msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
@@ -6522,19 +6522,19 @@ msgstr "Aktualisieren"
 
 #: lib/RT/Config.pm:380
 msgid "Refresh home page every %quant(%1,minute,minutes)."
-msgstr ""
+msgstr "Aktualisiere Homepage jede %Anzahl(%1,Minute,Minuten)."
 
 #: lib/RT/Config.pm:386
 msgid "Refresh home page every %quant(%1,second,seconds)."
-msgstr ""
+msgstr "Aktualisiere Homepage jede %Anzahl(%1,Minute,Minuten)."
 
 #: lib/RT/Config.pm:344
 msgid "Refresh search results every %quant(%1,minute,minutes)."
-msgstr ""
+msgstr "Aktualisiere Suchergebnisse jede %Anzahl(%1,Minute,Minuten)."
 
 #: lib/RT/Config.pm:350
 msgid "Refresh search results every %quant(%1,second,seconds)."
-msgstr ""
+msgstr "Aktualisiere Suchergebnisse jede %Anzahl(%1,Sekunde,Sekunden)."
 
 #. ($value/60)
 #: share/html/Elements/Refresh:60
@@ -6544,11 +6544,11 @@ msgstr "Seite alle %1 Minuten aktualisieren."
 #. ($value)
 #: share/html/Elements/Refresh:62
 msgid "Refresh this page every %quant(%1,second,seconds)."
-msgstr ""
+msgstr "Aktualisiere diese Seite jede %Anzahl(%1,Sekunde,Sekunden)."
 
 #: etc/RT_Config.pm:1275 etc/initialdata:883
 msgid "RefreshHomepage"
-msgstr ""
+msgstr "Homepage aktualisieren"
 
 #: lib/RT/Record.pm:1441
 msgid "Refused to add link which would create a circular relationship"
@@ -6606,7 +6606,7 @@ msgstr "Erinnerungen"
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/Reminders.html:48
 msgid "Reminders for ticket #%1: %2"
-msgstr ""
+msgstr "Erinnerungen für Ticket #%1: %2"
 
 #: share/html/Search/Bulk.html:95
 msgid "Remove AdminCc"
@@ -6636,17 +6636,17 @@ msgstr "Betreff überschreiben entfernt"
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1349
 msgid "Removed from group '%1'"
-msgstr ""
+msgstr "Aus Gruppe '%1' entfernt"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1336
 msgid "Removed group '%1'"
-msgstr ""
+msgstr "Gruppe '%1' entfernt"
 
 #. ($principal->Object->Name)
 #: lib/RT/Transaction.pm:1333
 msgid "Removed user '%1'"
-msgstr ""
+msgstr "Entfernter Benutzer '%1'"
 
 #: share/html/Admin/CustomFields/Modify.html:77
 msgid "Render Type"
@@ -6856,7 +6856,7 @@ msgstr ""
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
-msgstr ""
+msgstr "SQLite ist eine Datenbank, die keinen Server oder eine Konfiguration benötigt. Die Autoren von RT empfehlen es für Test, Demo und Entwicklung, aber es ist nicht ganz das Richtige für einen hochvolumigen Produktions-RT-Server."
 
 #: lib/RT/Date.pm:112
 msgid "Sat"
@@ -7193,7 +7193,7 @@ msgstr "Auswahl wurde geändert. Bitte speichere deine Änderungen"
 
 #: etc/initialdata:111
 msgid "Send Forward"
-msgstr ""
+msgstr "Weiterleiten"
 
 #: etc/initialdata:112
 msgid "Send forwarded message"
@@ -7237,11 +7237,11 @@ msgstr "Sendet eine E-Mail an alle CCs als Kommentar"
 
 #: etc/initialdata:62 etc/upgrade/4.1.15/content:6
 msgid "Sends mail to the Owner and administrative Ccs"
-msgstr ""
+msgstr "Sendet E-Mails an den Eigentümer und die administrativen Ccs"
 
 #: etc/initialdata:66 etc/upgrade/4.2.6/content:6
 msgid "Sends mail to the Owner if set, otherwise administrative Ccs"
-msgstr ""
+msgstr "Sendet eine E-Mail an den Besitzer, falls gesetzt, ansonsten administrative Ccs."
 
 #: etc/initialdata:58
 msgid "Sends mail to the administrative Ccs"
@@ -7768,7 +7768,7 @@ msgstr "Übernommen"
 
 #: share/html/Install/DatabaseDetails.html:53
 msgid "Tell us a little about how to find the database RT will be using"
-msgstr ""
+msgstr "Erzählen Sie uns ein wenig darüber, wie Sie die Datenbank finden, die RT verwenden wird."
 
 #: share/html/Admin/Scrips/Elements/EditBasics:64 share/html/Elements/RT__Scrip/ColumnMap:93
 msgid "Template"
@@ -8019,7 +8019,7 @@ msgstr "Während der Suche nach '%1' ist ein Fehler aufgetreten. Ihr Administrat
 
 #: share/html/Install/Basics.html:53
 msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
-msgstr ""
+msgstr "Diese Konfigurationsoptionen decken einige der Grundlagen ab, die für die Inbetriebnahme von RT erforderlich sind. Wir müssen den Namen Ihrer RT-Installation und den Domänennamen, in dem RT leben wird, kennen. Sie müssen auch ein Passwort für Ihren Standard-Administrationsbenutzer festlegen."
 
 #: lib/RT/CustomField.pm:317 lib/RT/CustomField.pm:763
 msgid "This Custom Field can not have list of values"
@@ -8123,7 +8123,7 @@ msgstr ""
 #. ($Ticket->Id, $Ticket->Subject)
 #: share/html/Ticket/History.html:48
 msgid "Ticket History #%1: %2"
-msgstr ""
+msgstr "Ticket Historie #%1: %2"
 
 #: etc/initialdata:445
 msgid "Ticket Resolved"
@@ -8366,7 +8366,7 @@ msgstr "Transaction->Create fehlgeschlagen, da Objekttyp und ID nicht angegeben 
 
 #: lib/RT/Tickets.pm:155
 msgid "TransactionCF"
-msgstr ""
+msgstr "TransaktionCF"
 
 #: lib/RT/Tickets.pm:142
 msgid "TransactionDate"
@@ -8624,7 +8624,7 @@ msgstr "Aktualisiere Ticket #%1 (%2)"
 #. ($TicketObj->id, $TicketObj->Subject)
 #: share/html/Ticket/Update.html:221
 msgid "Update ticket #%1: %2"
-msgstr ""
+msgstr "Aktualisiere Ticket #%1: %2"
 
 #: lib/RT/Action/CreateTickets.pm:472 lib/RT/Interface/Web.pm:2394
 msgid "Update type was neither correspondence nor comment."
@@ -8946,7 +8946,7 @@ msgstr "Beobachter"
 
 #: share/html/Install/DatabaseDetails.html:64
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
-msgstr ""
+msgstr "Wir sind in der Lage, Ihre Datenbank zu finden und uns als DBA zu verbinden. Sie können auf 'Grundlagen anpassen' klicken, um mit der Anpassung von RT fortzufahren."
 
 #: lib/RT/CustomField.pm:2004
 msgid "We can't currently render as a List when basing categories on another custom field.  Please use another render type."
@@ -8954,7 +8954,7 @@ msgstr "Wir können aktuell nicht als Liste anzeigen wenn Kategorien auf ein and
 
 #: share/html/Install/DatabaseDetails.html:55
 msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
-msgstr ""
+msgstr "Wir müssen den Namen der Datenbank wissen, die RT verwenden wird, und wo wir sie finden. Wir müssen auch den Benutzernamen und das Passwort des Benutzers kennen, den RT verwenden soll. RT kann die Datenbank und den Benutzer für Sie anlegen, weshalb wir nach dem Benutzernamen und dem Passwort eines Benutzers mit DBA-Rechten fragen. Während Schritt 6 des Installationsprozesses werden wir diese Informationen verwenden, um die RT-Datenbank zu erstellen und zu initialisieren."
 
 #: lib/RT/Installer.pm:216
 msgid "Web port"
@@ -9006,7 +9006,7 @@ msgstr "Wenn RT eine E-Mail nicht bearbeiten kann, wohin soll sie weitergeleitet
 
 #: share/html/Install/Global.html:54
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
-msgstr ""
+msgstr "Wenn RT eine E-Mail sendet, setzt es die Kopfzeilen From: und Reply-To:, so dass Benutzer dem Gespräch hinzufügen können, indem sie einfach auf Reply in ihrem Mail-Client klicken. Es verwendet verschiedene Adressen für Antworten und Kommentare. Diese können für jede Ihrer Warteschlangen geändert werden. Diese Adressen müssen konfiguriert werden, um das Programm <tt>rt-mailgate</tt> zu verwenden."
 
 #: etc/initialdata:118
 msgid "When a ticket is created"
@@ -9263,7 +9263,7 @@ msgstr "Sei wurden vom Authentifizierungsystemaus aus dem RT ausgeloggt . Das is
 #. (loc("Let's go!"))
 #: share/html/Install/index.html:79
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click \"%1\" below, RT will guide you through setting up your RT server and database."
-msgstr ""
+msgstr "Sie sehen diesen Bildschirm, weil Sie einen RT-Server ohne funktionierende Datenbank gestartet haben. Höchstwahrscheinlich ist dies das erste Mal, dass Sie RT ausführen. Wenn Sie unten auf \"%1\" klicken, führt Sie RT durch die Einrichtung Ihres RT-Servers und Ihrer Datenbank."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
