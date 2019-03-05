@@ -155,4 +155,63 @@ diag 'Test clearing and replacing header and content in attachments table';
     is $attachments->Count, 1, 'Headers are not replaced when flagged as false';
 }
 
+diag 'Test clearing and replacing header and content in attachments from example emails';
+{
+    my $email_file =
+      RT::Test::get_relocatable_file( 'multipart-alternative-with-umlaut',
+        ( File::Spec->updir(), 'data', 'emails' ) );
+    my $content = RT::Test->file_content($email_file);
+
+    my $parser = RT::EmailParser->new;
+    $parser->ParseMIMEEntityFromScalar($content);
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'test munge', MIMEObj => $parser->Entity );
+    my $decoded_umlaut = Encode::decode( 'UTF-8', 'Grüßen' );
+
+    my $attachments = $ticket->Attachments( WithHeaders => 1, WithContent => 1 );
+    while ( my $att = $attachments->Next ) {
+        if ( $att->Content ) {
+            like( $att->Content, qr/$decoded_umlaut/, "Content contains $decoded_umlaut" );
+            unlike( $att->Content, qr/anonymous/, 'Content lacks anonymous' );
+        }
+        else {
+            like( $att->Headers, qr/"Stever, Gregor" <gst\@example.com>/, 'Headers contain gst@example.com' );
+            unlike( $att->Headers, qr/anon\@example.com/, 'Headers lack anon@example.com' );
+        }
+    }
+
+    my $ticket_id = $ticket->id;
+
+    # ticket id could have utf8 flag on On Oracle :/
+    if ( utf8::is_utf8($ticket_id) ) {
+        $ticket_id = Encode::encode( 'UTF-8', $ticket_id );
+    }
+
+    RT::Test->run_and_capture(
+        command     => $RT::SbinPath . '/rt-munge-attachments',
+        tickets     => $ticket_id,
+        search      => 'Grüßen',
+        replacement => 'anonymous',
+    );
+
+    RT::Test->run_and_capture(
+        command     => $RT::SbinPath . '/rt-munge-attachments',
+        tickets     => $ticket_id,
+        search      => '"Stever, Gregor" <gst@example.com>',
+        replacement => 'anon@example.com',
+    );
+
+    $attachments = $ticket->Attachments( WithHeaders => 1, WithContent => 1 );
+    while ( my $att = $attachments->Next ) {
+        my $decoded_umlaut = Encode::decode( 'UTF-8', 'Grüßen' );
+        if ( $att->Content ) {
+            unlike( $att->Content, qr/$decoded_umlaut/, "Content lacks $decoded_umlaut" );
+            like( $att->Content, qr/anonymous/, 'Content contains anonymous' );
+        }
+        else {
+            unlike( $att->Headers, qr/"Stever, Gregor" <gst\@example.com>/, 'Headers lack gst@example.com' );
+            like( $att->Headers, qr/anon\@example.com/, 'Headers contain anon@example.com' );
+        }
+    }
+}
+
 done_testing();

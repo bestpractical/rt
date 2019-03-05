@@ -137,8 +137,8 @@ Devel::StackTrace 1.19
 Digest::base
 Digest::MD5 2.27
 Digest::SHA
-Email::Address 1.908
-Email::Address::List 0.02
+Email::Address 1.912
+Email::Address::List 0.06
 Encode 2.64
 Errno
 File::Glob

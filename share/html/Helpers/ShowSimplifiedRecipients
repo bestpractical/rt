@@ -69,7 +69,7 @@ my @dryrun = $TicketObj->DryRun(
         ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
         ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
         ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-        ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, Object => $TicketObj );
         ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     }
 );

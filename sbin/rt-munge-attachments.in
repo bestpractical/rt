@@ -70,7 +70,7 @@ BEGIN {    # BEGIN RT CMD BOILERPLATE
 # Read in the options
 my %opts;
 use Getopt::Long;
-GetOptions( \%opts, "help|h", "search=s", "replacement=s", );
+GetOptions( \%opts, "help|h", "search=s", "replacement=s", 'tickets=s' );
 
 if ( $opts{'help'} || !$opts{'search'} ) {
     require Pod::Usage;
@@ -84,9 +84,39 @@ my $replacement = $opts{'replacement'} || '';
 
 my $search = $opts{'search'};
 
-my $attachments = RT::Attachments->new( RT->SystemUser );
-my ($ret, $msg) = $attachments->ReplaceAttachments(Search => $search, Replacement => $replacement);
+my $attachments;
+if ( $opts{tickets} ) {
+    my @tickets = split /\s*,\s*/, $opts{tickets};
 
+    $attachments = RT::Attachments->new( RT->SystemUser );
+    my $txn_alias   = $attachments->TransactionAlias;
+    $attachments->Limit(
+        ALIAS => $txn_alias,
+        FIELD => 'ObjectType',
+        VALUE => 'RT::Ticket',
+    );
+    my $ticket_alias = $attachments->Join(
+        ALIAS1 => $txn_alias,
+        FIELD1 => 'ObjectId',
+        TABLE2 => 'Tickets',
+        FIELD2 => 'id',
+    );
+    $attachments->Limit(
+        ALIAS    => $ticket_alias,
+        FIELD    => 'EffectiveId',
+        VALUE    => \@tickets,
+        OPERATOR => 'IN',
+    );
+}
+else {
+    $attachments = RT::Attachments->new( RT->SystemUser );
+}
+
+my ( $ret, $msg ) = $attachments->ReplaceAttachments(
+    Search      => Encode::decode( 'UTF-8', $search ),
+    Replacement => Encode::decode( 'UTF-8', $replacement ),
+    $opts{tickets} ? ( FilterBySearchString => 0 ) : (),
+);
 print STDERR $msg . "\n";
 
 
@@ -129,5 +159,12 @@ If a match is found the content will be removed unless a replacement is provided
 =item --replace=REPLACEMENT
 
 Provide a string to replace the value matched by the search.
+
+=item --tickets=1,2,3
+
+Limit attachments to the specified tickets. Note that if tickets are not
+specified, RT will pre-filter attachments by the search string use SQL,
+which might bypass attachments of which contents are encoded(like
+base64). Use this option to prevent the pre-filter behavior.
 
 =back
