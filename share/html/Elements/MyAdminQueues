@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,6 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc("Queues I administer"), bodyclass => "" &>
 <& /Elements/QueueSummaryByStatus,
-   queue_filter => sub { $_->CurrentUserHasRight('AdminQueue') },
+   queues => $session{$cache_key}{objects},
 &>
 </&>
+<%INIT>
+my $cache_key = SetObjectSessionCache(
+    ObjectType => 'RT::Queue',
+    CheckRight => 'AdminQueue',
+    ShowAll => 0,
+    CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+);
+</%INIT>

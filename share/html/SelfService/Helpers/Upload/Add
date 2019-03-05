@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,8 +51,16 @@ $Token => ''
 
 <%init>
 
-ProcessAttachments( Token => $Token, ARGSRef => \%ARGS );
-$r->content_type('application/json; charset=utf-8');
-$m->out( JSON({status => 'success'}) );
+my ( $status, $msg ) = ProcessAttachments( Token => $Token, ARGSRef => \%ARGS );
+if ( $status ) {
+    $r->content_type( 'application/json; charset=utf-8' );
+    $m->out( JSON( { status => 'success' } ) );
+}
+else {
+    $r->status( 400 );
+    $r->content_type( 'text/plain; charset=utf-8' );
+    $m->out( $msg );
+}
+
 $m->abort;
 </%init>

@@ -1,0 +1,101 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<&|/Widgets/TitleBox,
+    class => 'user-related-info',
+    title => loc("Manage user data"),
+&>
+
+<div id="manage-user-data">
+    <div class="title"><&|/l&>Download User Information</&></div>
+    <div class="download-user-data-buttons inline-row">
+        <div class="inline-cell">
+            <a class="button" href="/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>"><% $UserDataButton %></a>
+            <i class="label"><&|/l&>Core user data</&></i>
+        </div>
+        <div class="inline-cell">
+            <a class="button" href="/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>"><% $UserTicketsButton %></a>
+            <i class="label"><&|/l&>Tickets with this user as a requestor</&></i>
+        </div>
+        <div class="inline-cell">
+            <a class="button" href="/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>"><% $UserTxnButton %></a>
+            <i class="label"><&|/l&>Ticket transactions this user created</&></i>
+        </div>
+    </div>
+
+% if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' ) ) {
+    <div class="title"><&|/l&>Remove User Information</&></div>
+    <div class="inline-row">
+        <div class="inline-cell">
+            <a class="button" href="#user-info-modal" rel="modal:open" name="anonymize_user"><&|/l&>Anonymize User</&></a>
+            <i class="label"><&|/l&>Clear core user data, set anonymous username</&></i>
+        </div>
+% if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'SuperUser' ) ) {
+        <div class="inline-cell">
+            <a class="button" href="<%RT->Config->Get('WebPath')%>/Admin/Tools/Shredder/index.html?Plugin=Users&Users%3Astatus=<% $UserObj->Disabled ? 'disabled' : 'enabled' %>&Users%3Aname=<% $UserObj->Name %>&Users%3Areplace_relations=Nobody&Search=Search" name="replace-user"><&|/l&>Replace User</&></a>
+            <i class="label"><&|/l&>Replace this user's activity records with "Nobody" user</&></i>
+        </div>
+        <div class="inline-cell">
+            <a class="button" href="<%RT->Config->Get('WebPath')%>/Admin/Tools/Shredder/index.html?Plugin=Users&Users%3Astatus=<% $UserObj->Disabled ? 'disabled' : 'enabled' %>&Users%3Aname=<% $UserObj->Name %>&Users&Search=Search" name="replace-user"><&|/l&>Delete User</&></a>
+            <i class="label"><&|/l&>Delete this user, tickets associated with this user must be shredded first</&></i>
+        </div>
+% }
+    </div>
+% }
+</div>
+</&>
+
+<%INIT>
+my $Format = RT->Config->Get('UserTicketDataResultFormat') || RT->Config->Get('DefaultSearchResultFormat');
+</%INIT>
+
+<%ARGS>
+$UserObj
+$UserDataButton    => loc( 'User Data' )
+$UserTicketsButton => loc( 'User Tickets' )
+$UserTxnButton     => loc( 'User Transactions' )
+</%ARGS>

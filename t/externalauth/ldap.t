@@ -93,6 +93,43 @@ diag "test redirect after login";
     is( $m->uri, $baseurl . '/SelfService/Closed.html' );
 }
 
+diag "test admin user create";
+{
+    $m->logout;
+    ok( $m->login );
+    $m->get_ok( $baseurl . '/Admin/Users/Modify.html?Create=1', 'user create page' );
+
+    my $username = 'testuser2';
+    $m->submit_form(
+        form_name => 'UserCreate',
+        fields    => { Name => $username },
+    );
+    $m->text_contains( 'User could not be created: Could not set user info' );
+    $m->text_lacks( 'User could not be created: Name in use' );
+
+    my $entry = {
+        cn           => $username,
+        mail         => "$username\@invalid.tld",
+        uid          => $username,
+        objectClass  => 'User',
+        userPassword => 'password',
+    };
+    $ldap->add( $base );
+    my $dn = "uid=$username,$base";
+    $ldap->add( $dn, attr => [ %$entry ] );
+
+    $m->submit_form(
+        form_name => 'UserCreate',
+        fields    => { Name => '', EmailAddress => "$username\@invalid.tld" },
+    );
+    $m->text_contains( 'User created' );
+    my ( $id ) = ( $m->uri =~ /id=(\d+)/ );
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load( $id );
+    is( $user->EmailAddress, "$username\@invalid.tld", 'email is not changed' );
+    is( $user->Name, $username, 'got canonicalized Name' );
+}
+
 $ldap->unbind();
 
 done_testing;

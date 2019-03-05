@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,6 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/SelfService/Article/Search.html" id="ArticleSearch">
-<input size="4" name="Articles_Content" value="<&|/l&>Search Articles</&>..." onfocus="if (this.value=='<&|/l&>Search Articles</&>...') this.value=''" />
+<input name="Articles_Content" class="field" placeholder="<&|/l&>Search Articles</&>..." type="search" />
 </form>
 

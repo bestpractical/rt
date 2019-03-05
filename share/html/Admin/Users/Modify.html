@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -126,6 +126,9 @@
 <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
 
 </&>
+<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
+<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
+</&>
 % $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
 </td>
 
@@ -207,13 +210,14 @@
 
 <& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
 
+% unless ( $Create ) {
+<& /User/Elements/RelatedData, UserObj => $UserObj &>
+% }
+
 % $m->callback( %ARGS, CallbackName => 'RightColumnBottom', UserObj => $UserObj );
 </td></tr>
 <tr>
 <td colspan="2">
-<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
-<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
-</&>
 %if (!$Create && $UserObj->Privileged) {
 <br />
 <&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
@@ -232,6 +236,21 @@
 % }
 </form>
 
+% if ( $UserObj->Id ) {
+    <& /Elements/Modal, ModalId => "user-info-modal", Method => 'POST', Action => RT->Config->Get('WebPath') . '/Admin/Users/Modify.html', Fields => [
+    { Label   => loc("Are you sure you want to anonymize user: [_1]?", $UserObj->Name) },
+    { Input => 'Hidden', Value => $UserObj->Id, Name => 'id' },
+    { Input => 'Hidden', Value => 1, Name => 'Anonymize' },
+    {
+        Label    => loc("Check to clear user custom fields") . ":",
+        Input    => 'checkbox',
+        Class    => 'checkbox',
+        Name     => 'clear_customfields',
+        Value    => 'On',
+    },
+]
+&>
+% }
 <%INIT>
 
 my $UserObj = RT::User->new($session{'CurrentUser'});
@@ -254,6 +273,7 @@ my @fields = qw(Name Comments Signature EmailAddress FreeformContactInfo
 if ($Create) {
     $title = loc("Create a new user");
 } elsif ( defined $id && $id eq 'new') {
+    $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, Fields => \@fields, Results => \@results );
     ( $val, $msg ) = $UserObj->Create(
         (map {($_ => $ARGS{$_})} @fields),
         Privileged => $ARGS{'Privileged'},
@@ -292,6 +312,11 @@ if ($Create) {
         my ($code, $msg) = $UserObj->SetDisabled($ARGS{Disabled});
         push @results, $msg;
     }
+}
+
+if ( $ARGS{'Anonymize'} and $UserObj->Id ) {
+    my ($ret, $msg) = $UserObj->AnonymizeUser(ClearCustomFields => $ARGS{'clear_customfields'});
+    push @results, $msg;
 }
 
 if ( $UserObj->Id ) {

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -139,6 +139,7 @@ BINARIES		=	$(RT_MAILGATE_BIN) \
 				$(RT_CRON_BIN)
 
 SYSTEM_BINARIES		=	rt-attributes-viewer \
+				rt-munge-attachments \
 				rt-clean-sessions \
 				rt-dump-metadata \
 				rt-email-dashboards \
@@ -150,6 +151,7 @@ SYSTEM_BINARIES		=	rt-attributes-viewer \
 				rt-ldapimport \
 				rt-passwd \
 				rt-preferences-viewer \
+				rt-search-attributes \
 				rt-serializer \
 				rt-server \
 				rt-server.fcgi \

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,5 +46,5 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/SelfService/Display.html" method="get" id="GotoTicket" name="GotoTicket">
-<input size="4" name="id" value="<&|/l&>Goto Ticket</&>..." onfocus="if (this.value=='<&|/l&>Goto Ticket</&>...') this.value=''"  />
+<input name="id" class="field" placeholder="<&|/l&>Go to Ticket</&>..." type="search"/>
 </form>

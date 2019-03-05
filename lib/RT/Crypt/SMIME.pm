@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -802,7 +802,31 @@ sub CheckIfProtected {
 sub GetKeysForEncryption {
     my $self = shift;
     my %args = (Recipient => undef, @_);
-    return $self->GetKeysInfo( Key => delete $args{'Recipient'}, %args, Type => 'public' );
+    my $recipient = delete $args{'Recipient'};
+    my %res = $self->GetKeysInfo( Key => $recipient, %args, Type => 'public' );
+    return %res unless $res{'info'};
+
+    foreach my $key ( splice @{ $res{'info'} } ) {
+        if ( not $key->{'Expire'} ) {
+            # we continue here as it's most probably a problem with the key,
+            # so later during encryption we'll get verbose errors
+            $RT::Logger->error(
+                "Trying to send an encrypted message to ". $recipient
+                .", but we couldn't get expiration date of the key."
+            );
+        }
+        elsif ( $key->{'Expire'}->Diff( time ) < 0 ) {
+            $RT::Logger->info(
+                "Trying to send an encrypted message to ". $recipient
+                .", but ignoring expired key " . $key->{Fingerprint}
+            );
+            next;
+        }
+        push @{ $res{'info'} }, $key;
+    }
+    delete $res{'info'} unless @{ $res{'info'} };
+
+    return %res;
 }
 
 sub GetKeysForSigning {

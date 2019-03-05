@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,6 +50,7 @@ $Class => undef
 $Collection
 $Format
 $PreserveNewLines => 0
+$Filename  => undef
 </%ARGS>
 <%ONCE>
 my $no_html = HTML::Scrubber->new( deny => '*' );
@@ -59,6 +60,7 @@ require HTML::Entities;
 $Class ||= $Collection->ColumnMapClassName;
 
 $r->content_type('application/vnd.ms-excel');
+$r->header_out( 'Content-disposition' => "attachment; filename=$Filename" ) if $Filename;
 
 my $DisplayFormat = $m->comp('/Elements/ScrubHTML', Content => $Format);
 

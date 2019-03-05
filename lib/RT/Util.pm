@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,7 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage/;
+our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes/;
 
 use Encode qw/encode/;
 
@@ -230,14 +230,24 @@ sub EntityLooksLikeEmailMessage {
     # MIME::Parser used.
     my $mime_type = $entity->mime_type();
 
-    # This is the same list of MIME types MIME::Parser uses. The partial and
-    # external-body types are unlikely to produce usable attachments, but they
-    # are still recognized as email for the purposes of this function.
-
-    my @email_types = ('message/rfc822', 'message/partial', 'message/external-body');
+    my @email_types = EmailContentTypes();
 
     return 1 if grep { $mime_type eq $_ } @email_types;
     return 0;
+}
+
+=head2 EmailContentTypes
+
+Return MIME types that indicate email messages.
+
+=cut
+
+sub EmailContentTypes {
+
+    # This is the same list of MIME types MIME::Parser uses. The partial and
+    # external-body types are unlikely to produce usable attachments, but they
+    # are still recognized as email for the purposes of this function.
+    return ( 'message/rfc822', 'message/partial', 'message/external-body' );
 }
 
 RT::Base->_ImportOverlays();

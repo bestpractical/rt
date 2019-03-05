@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -76,7 +76,7 @@ my @results;
 $Ticket->Atomic(sub{
     $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
-    push @results, ProcessObjectCustomFieldUpdates( TicketObj => $Ticket, ARGSRef => \%ARGS );
+    push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS );
 });
 
 MaybeRedirectForResults(

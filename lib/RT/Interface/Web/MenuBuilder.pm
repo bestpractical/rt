@@ -1243,7 +1243,8 @@ sub BuildSelfServiceNav {
         sort_order   => 99,
     );
 
-    if ( $current_user->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
+    if ( ( RT->Config->Get('SelfServiceUserPrefs') || '' ) eq 'view-info' ||
+        $current_user->HasRight( Right => 'ModifySelf', Object => RT->System ) ) {
         $about_me->child( prefs => title => loc('Preferences'), path => '/SelfService/Prefs.html' );
     }
 

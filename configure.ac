@@ -454,6 +454,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/3.8-ical-extension
                  etc/upgrade/4.0-customfield-checkbox-extension
                  etc/upgrade/generate-rtaddressregexp
+                 etc/upgrade/reset-sequences
                  etc/upgrade/sanity-check-stylesheets
                  etc/upgrade/shrink-cgm-table
                  etc/upgrade/shrink-transactions-table
@@ -478,6 +479,7 @@ AC_CONFIG_FILES([
                  sbin/rt-validator
                  sbin/rt-validate-aliases
                  sbin/rt-email-group-admin
+                 sbin/rt-search-attributes
                  sbin/rt-server
                  sbin/rt-server.fcgi
                  sbin/standalone_httpd
@@ -486,6 +488,7 @@ AC_CONFIG_FILES([
                  sbin/rt-serializer
                  sbin/rt-importer
                  sbin/rt-passwd
+                 sbin/rt-munge-attachments
                  bin/rt-crontool
                  bin/rt-mailgate
                  bin/rt],

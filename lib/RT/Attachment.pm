@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -637,6 +637,14 @@ This is not protection using quoted printable or base64 encoding.
 sub EncodedHeaders {
     my $self = shift;
     my $encoding = shift || 'utf8';
+
+    # Require Encode::HanExtra to handle more encodings it supports.
+    # The regex is based on the names documented in Encode::HanExtra.
+    if ( $encoding =~ /^(?:big5(?:-1984|-2003|ext|plus)|cccii|cns11643-[1-7f]|euc-tw|gb18030|unisys(?:-sosi(?:1|2))?)$/ ) {
+        unless ( Encode::HanExtra->require ) {
+            RT->Logger->error("Need Encode::HanExtra to handle $encoding");
+        }
+    }
     return Encode::encode( $encoding, $self->Headers );
 }
 
@@ -742,6 +750,96 @@ sub SetHeader {
     $newheader .= "$tag: $value\n" unless $replaced;
     $self->__Set( Field => 'Headers', Value => $newheader);
 }
+
+=head2 ReplaceHeaders ( Search => 'SEARCH', Replacement => 'Replacement' )
+
+Search the attachments table's Header column for the search string provided.
+When a match is found call the SetHeader() method on the header with the match,
+either set the header to empty or a replacement value.
+
+=cut
+
+sub ReplaceHeaders {
+    my $self = shift;
+    my %args = (
+        Search      => undef,
+        Replacement => '',
+        @_,
+    );
+
+    return ( 0, $self->loc('No Search string provided') ) unless $args{Search};
+
+    my $updated;
+    foreach my $header ( $self->SplitHeaders ) {
+        my ( $tag, $value ) = split /:/, $header, 2;
+        if ( $value =~ s/\Q$args{Search}\E/$args{Replacement}/ig ) {
+            my ( $ret, $msg ) = $self->SetHeader( $tag, $value );
+            if ( $ret ) {
+                $updated ||= 1;
+            }
+            else {
+                RT::Logger->error("Could not set header: $tag to $value: $msg");
+                return ( $ret, $msg );
+            }
+        }
+    }
+
+    if ( $updated ) {
+        return ( 1, $self->loc('Headers cleared') );
+    }
+    else {
+        return ( 0, $self->loc('No header matches found') );
+    }
+}
+
+=head2 ReplaceContent ( Search => 'SEARCH', Replacement => 'Replacement' )
+
+Search the attachments table's Content column for the search string provided.
+When a match is found either replace it with the provided replacement string or an
+empty string.
+
+=cut
+
+sub ReplaceContent {
+    my $self = shift;
+    my %args = (
+        Search      => undef,
+        Replacement => '',
+        @_,
+    );
+
+    return ( 0, $self->loc('No search string provided') ) unless $args{Search};
+
+    my $content = $self->Content;
+
+    if ( $content && $content =~ s/\Q$args{Search}\E/$args{Replacement}/ig ) {
+        my ( $encoding, $encoded_content, undef, undef, $note_args )
+          = $self->_EncodeLOB( Encode::encode( 'UTF-8', $content ) );
+
+        $RT::Handle->BeginTransaction;
+        if ($note_args) {
+            $self->TransactionObj->Object->_NewTransaction(%$note_args);
+        }
+
+        my ( $ret, $msg ) = $self->_Set( Field => 'Content', Value => $encoded_content );
+        unless ($ret) {
+            $RT::Handle->Rollback;
+            return ( $ret, $msg );
+        }
+
+        if ( ( $self->ContentEncoding // '' ) ne $encoding ) {
+            my ( $ret, $msg ) = $self->_Set( Field => 'ContentEncoding', Value => $encoding );
+            unless ($ret) {
+                $RT::Handle->Rollback;
+                return ( $ret, $msg );
+            }
+        }
+        $RT::Handle->Commit;
+        return ( $ret, 'Content replaced' );
+    }
+    return ( 0, $self->loc('No content matches found') );
+}
+
 
 sub _CanonicalizeHeaderValue {
     my $self  = shift;

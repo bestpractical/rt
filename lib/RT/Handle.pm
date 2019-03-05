@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -72,6 +72,7 @@ use strict;
 use warnings;
 
 use File::Spec;
+use Cwd;
 
 =head1 METHODS
 
@@ -586,6 +587,9 @@ sub InsertIndexes {
                 ."\nError: ". $dbh->errstr;
         }
     }
+
+    # Get the full path since . is no longer in @INC after perl 5.24
+    $path = Cwd::abs_path($path);
 
     local $@;
     eval { require $path; 1 }

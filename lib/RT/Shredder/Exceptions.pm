@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -85,10 +85,11 @@ message from RT log files and send a bug report.
 END
 
     NoResolver => <<END,
-Object has dependency that could be resolved, but resolver
-wasn't defined. You have to re-read the documentation of the
-plugin you're using. For example the 'Users' plugin has
-option 'replace_relations' argument.
+Shredder has found a dependency that it cannot automatically
+resolve, so the requested object was not removed. Some plugins
+do not automatically shred dependent objects for safety, but you
+may be able to shred the dependent objects directly using other plugins.
+The documentation for this plugin may have more information.
 END
 );
 

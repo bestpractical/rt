@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -524,8 +524,9 @@ sub Actions {
         @{ $self->{'data'}{'actions'} };
 
     # skip '* -> x' if there is '$from -> x'
+    my @temp = @res; # Create a copy for the inner grep since we modify in the loop
     foreach my $e ( grep $_->{'from'} eq '*', @res ) {
-        $e = undef if grep $_->{'from'} ne '*' && $_->{'to'} eq $e->{'to'}, @res;
+        $e = undef if grep $_->{'from'} ne '*' && $_->{'to'} eq $e->{'to'}, @temp;
     }
     return grep defined, @res;
 }

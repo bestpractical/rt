@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -183,7 +183,7 @@ if ($GroupString) {
 % next if $user_id == $session{'CurrentUser'}->id; # already listed current user
 % my $user = RT::User->new( $session{'CurrentUser'} );
 % $user->Load($user_id);
-% next unless $user->id;
+% next unless $user->id and !$user->Disabled;
 <li>
 <input type="checkbox" class="checkbox" name="Dashboard-Subscription-Users-<%$user_id%>" value="1" checked />
 <input type="hidden" name="Dashboard-Subscription-Users-<%$user_id%>" value="0" />
@@ -201,7 +201,7 @@ if ($GroupString) {
 % for my $group_id (@{ $recipients_groups || [] }) {
 % my $group = RT::Group->new( $session{'CurrentUser'} );
 % $group->Load($group_id);
-% next unless $group->id;
+% next unless $group->id and !$group->Disabled;
 <li>
 <input type="checkbox" class="checkbox" name="Dashboard-Subscription-Groups-<%$group_id%>" value="1" checked />
 <input type="hidden" name="Dashboard-Subscription-Groups-<%$group_id%>" value="0" />

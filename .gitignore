@@ -5,6 +5,7 @@
 /etc/upgrade/3.8-ical-extension
 /etc/upgrade/4.0-customfield-checkbox-extension
 /etc/upgrade/generate-rtaddressregexp
+/etc/upgrade/reset-sequences
 /etc/upgrade/sanity-check-stylesheets
 /etc/upgrade/shrink-cgm-table
 /etc/upgrade/shrink-transactions-table
@@ -32,6 +33,7 @@
 /sbin/rt-externalize-attachments
 /sbin/rt-fulltext-indexer
 /sbin/rt-preferences-viewer
+/sbin/rt-search-attributes
 /sbin/rt-server
 /sbin/rt-server.fcgi
 /sbin/rt-session-viewer
@@ -46,6 +48,7 @@
 /sbin/rt-ldapimport
 /sbin/rt-passwd
 /sbin/standalone_httpd
+/sbin/rt-munge-attachments
 /var/mason_data/
 /autom4te.cache/
 /configure

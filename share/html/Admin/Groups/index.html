@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,11 +64,31 @@ jQuery(function(){
 </script>
 </form>
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
-<&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html" name="GroupsAdmin">
+<&|/l&>Find groups whose</&> <& /Elements/SelectGroups,
+        GroupField      => $GroupField,
+        GroupOp         => $GroupOp,
+        GroupString     => $GroupString,
+&><br />
+<&|/l&>And groups whose</&> <& /Elements/SelectGroups,
+        SelectFieldName => 'GroupField2',
+        SelectOpName    => 'GroupOp2',
+        InputStringName => 'GroupString2',
+        GroupField      => $GroupField2,
+        GroupOp         => $GroupOp2,
+        GroupString     => $GroupString2,
+&><br />
+<&|/l&>And groups whose</&> <& /Elements/SelectGroups,
+        SelectFieldName => 'GroupField3',
+        SelectOpName    => 'GroupOp3',
+        InputStringName => 'GroupString3',
+        GroupField      => $GroupField3,
+        GroupOp         => $GroupOp3,
+        GroupString     => $GroupString3,
+&><br />
 <input type="checkbox" class="checkbox" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
 <label for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
+<div align="right"><input type="submit" class="button" name="Go" value="<&|/l&>Go!</&>" /></div>
 </form>
 
 % unless ( $Groups->Count ) {
@@ -84,7 +104,7 @@ jQuery(function(){
     Format => $Format,
     Collection => $Groups,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy GroupString GroupOp GroupField FindDisabledGroups)],
+    PassArguments => [qw(Format Rows Page Order OrderBy GroupString GroupOp GroupField GroupString2 GroupOp2 GroupField2 GroupString3 GroupOp3 GroupField3 FindDisabledGroups)],
 &>
 % }
 
@@ -98,22 +118,31 @@ if ($FindDisabledGroups) {
     $Groups->FindAllRows();
 }
 
-if (length $GroupString) {
-    $caption = loc("Groups matching search criteria");
-    if ($GroupField =~ /^CustomField-(\d+)/) {
-        $Groups->LimitCustomField(
-            CUSTOMFIELD => $1,
-            OPERATOR => $GroupOp,
-            VALUE => $GroupString,
-        );
-    }
-    else {
-        $Groups->Limit(
-            FIELD => $GroupField,
-            OPERATOR => $GroupOp,
-            VALUE => $GroupString,
-            CASESENSITIVE => 0
-        );
+$caption = loc("Groups matching search criteria");
+my @groups = ();
+push @groups, { field => $GroupField, op => $GroupOp, string => $GroupString } if length $GroupString;
+push @groups, { field => $GroupField2, op => $GroupOp2, string => $GroupString2 } if length $GroupString2;
+push @groups, { field => $GroupField3, op => $GroupOp3, string => $GroupString3 } if length $GroupString3;
+
+if ( scalar @groups ) {
+    foreach my $group ( @groups ) {
+        if ( $group->{'field'} =~ /^CustomField-(\d+)/ ) {
+            $Groups->LimitCustomField(
+                CUSTOMFIELD => $1,
+                OPERATOR => $group->{'op'},
+                VALUE => $group->{'string'},
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
+        else {
+            $Groups->Limit(
+                FIELD => $group->{'field'},
+                OPERATOR => $group->{'op'},
+                VALUE => $group->{'string'},
+                CASESENSITIVE => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+        }
     }
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Groups/Modify.html?id=".$Groups->First->id)
           if $Groups->Count == 1 and $Groups->First;
@@ -129,8 +158,14 @@ my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Groups'} || 50;
 <%ARGS>
 $Format => undef,
 
-$GroupString => '' unless defined $GroupString
-$GroupOp => '='
+$GroupString => undef
+$GroupOp => undef
 $GroupField => 'Name'
+$GroupString2 => undef
+$GroupOp2 => undef
+$GroupField2 => 'Name'
+$GroupString3 => undef
+$GroupOp3 => undef
+$GroupField3 => 'Name'
 $FindDisabledGroups => 0
 </%ARGS>
