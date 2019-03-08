@@ -573,9 +573,13 @@ FROM
         AND cgm3.MemberId          = gm2.MemberId
         AND cgm3.Via               = cgm1.id
         AND cgm3.ImmediateParentId = cgm1.MemberId )
+    LEFT JOIN Groups g ON (
+        cgm1.GroupId = g.id
+    )
 WHERE cgm1.GroupId != cgm1.MemberId
 AND gm2.GroupId = cgm1.MemberId
 AND cgm3.id IS NULL
+AND g.Domain != 'RT::Ticket-Role'
 END
 
         my $action = sub {
