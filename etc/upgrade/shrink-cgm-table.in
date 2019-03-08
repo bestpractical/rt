@@ -90,20 +90,37 @@ $cgms->Limit(
     ENTRYAGGREGATOR => 'AND',
 );
 
-my $total = $cgms->Count;
+my $cgms2 = RT::CachedGroupMembers->new( RT->SystemUser );
+$cgms2->Limit( FIELD => 'ImmediateParentId', VALUE => 'main.GroupId', OPERATOR => '!=', QUOTEVALUE => 0 );
+my $groups = $cgms2->Join(
+    ALIAS1 => 'main',
+    FIELD1 => 'GroupId',
+    TABLE2 => 'Groups',
+    FIELD2 => 'id'
+);
+$cgms2->Limit(
+    ALIAS         => $groups,
+    FIELD         => 'Domain',
+    VALUE         => 'RT::Ticket-Role',
+    CASESENSITIVE => 0,
+);
+
+my $total = $cgms->Count + $cgms2->Count;
 my $i = 0;
 
-FetchNext( $cgms, 'init' );
-while ( my $rec = FetchNext( $cgms ) ) {
-    $i++;
-    printf("\r%0.2f %%", 100 * $i / $total);
-    $RT::Handle->BeginTransaction;
-    my ($status) = $rec->Delete;
-    unless ($status) {
-        $RT::Logger->error( "Couldn't delete CGM #". $rec->id );
-        exit 1;
+for my $cgms ( $cgms, $cgms2 ) {
+    FetchNext( $cgms, 'init' );
+    while ( my $rec = FetchNext($cgms) ) {
+        $i++;
+        printf( "\r%0.2f %%", 100 * $i / $total );
+        $RT::Handle->BeginTransaction;
+        my ($status) = $rec->Delete;
+        unless ($status) {
+            $RT::Logger->error( "Couldn't delete CGM #" . $rec->id );
+            exit 1;
+        }
+        $RT::Handle->Commit;
     }
-    $RT::Handle->Commit;
 }
 
 use constant PAGE_SIZE => 10000;
