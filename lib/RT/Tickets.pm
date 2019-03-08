@@ -2693,11 +2693,16 @@ sub CurrentUserCanSee {
         if ( $join_roles ) {
             $role_group_alias = $self->_RoleGroupsJoin( New => 1 );
             $cgm_alias = $self->_GroupMembersJoin( GroupsAlias => $role_group_alias );
+
+            my $groups = RT::Groups->new( RT->SystemUser );
+            $groups->LimitToUserDefinedGroups;
+            $groups->WithMember( PrincipalId => $id, Recursively => 1 );
+
             $self->Limit(
                 LEFTJOIN   => $cgm_alias,
                 FIELD      => 'MemberId',
-                OPERATOR   => '=',
-                VALUE      => $id,
+                OPERATOR   => 'IN',
+                VALUE      => [ $id, map { $_->id } @{ $groups->ItemsArrayRef } ],
             );
         }
         my $limit_queues = sub {

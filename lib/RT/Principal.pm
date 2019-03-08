@@ -574,6 +574,10 @@ sub _HasRoleRightQuery {
                  @_
                );
 
+    my $groups = RT::Groups->new( RT->SystemUser );
+    $groups->LimitToUserDefinedGroups;
+    $groups->WithMember( PrincipalId => $self->id, Recursively => 1 );
+
     my $query =
         " FROM Groups, Principals, CachedGroupMembers WHERE "
 
@@ -589,7 +593,7 @@ sub _HasRoleRightQuery {
 # also, check to see if the right is being granted _directly_ to this principal,
 #  as is the case when we want to look up group rights
         . "AND Principals.id = CachedGroupMembers.GroupId "
-        . "AND CachedGroupMembers.MemberId = " . $self->Id . " "
+        . "AND CachedGroupMembers.MemberId IN (" . ( join ',', $self->Id, map { $_->id } @{ $groups->ItemsArrayRef } ) . ") "
     ;
 
     if ( $args{'Roles'} ) {
