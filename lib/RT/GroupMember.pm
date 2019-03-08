@@ -123,6 +123,20 @@ sub _InsertCGM {
         QUOTEVALUE => 0,
         ENTRYAGGREGATOR => 'AND',
     );
+    my $groups = $cgm->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'GroupId',
+        TABLE2 => 'Groups',
+        FIELD2 => 'id',
+    );
+    $cgm->Limit(
+        ALIAS           => $groups,
+        FIELD           => 'Domain',
+        OPERATOR        => '!=',
+        VALUE           => 'RT::Ticket-Role',
+        ENTRYAGGREGATOR => 'AND',
+        CASESENSITIVE   => 0,
+    );
 
     while ( my $parent_member = $cgm->Next ) {
         my $parent_id = $parent_member->MemberId;
