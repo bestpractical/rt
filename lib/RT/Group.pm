@@ -738,6 +738,12 @@ sub DeepMembersObj {
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
     $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+    if ( ( $self->Domain // '' ) eq 'RT::Ticket-Role' ) {
+        my $groups = $self->GroupMembersObj( Recursively => 0 );
+        while ( my $group = $groups->Next ) {
+            $members_obj->LimitToMembersOfGroup( $group->PrincipalId );
+        }
+    }
 
     return ( $members_obj );
 
@@ -790,9 +796,16 @@ sub GroupMembersObj {
         ALIAS2 => $groups->PrincipalsAlias, FIELD2 => 'id',
     );
     $groups->Limit(
-        ALIAS    => $members_alias,
-        FIELD    => 'GroupId',
-        VALUE    => $self->PrincipalId,
+        ALIAS => $members_alias,
+        FIELD => 'GroupId',
+        $args{Recursively} && ( $self->Domain // '' ) eq 'RT::Ticket-Role'
+        ? ( OPERATOR => 'IN',
+            VALUE    => [
+                $self->PrincipalId,
+                map { $_->PrincipalId } @{ $self->GroupMembersObj( Recursively => 0 )->ItemsArrayRef }
+            ]
+          )
+        : ( VALUE => $self->PrincipalId, )
     );
     $groups->Limit(
         ALIAS => $members_alias,
@@ -832,7 +845,14 @@ sub UserMembersObj {
     $users->Limit(
         ALIAS => $members_alias,
         FIELD => 'GroupId',
-        VALUE => $self->PrincipalId,
+        $args{Recursively} && ( $self->Domain // '' ) eq 'RT::Ticket-Role'
+        ? ( OPERATOR => 'IN',
+            VALUE    => [
+                $self->PrincipalId,
+                map { $_->PrincipalId } @{ $self->GroupMembersObj( Recursively => 0 )->ItemsArrayRef }
+            ]
+          )
+        : ( VALUE => $self->PrincipalId, )
     );
     $users->Limit(
         ALIAS => $members_alias,
@@ -1109,9 +1129,14 @@ sub HasMemberRecursively {
     if ( my $member_id = $member_obj->id ) {
         return $member_id;
     }
-    else {
-        return (undef);
+    elsif ( ( $self->Domain // '' ) eq 'RT::Ticket-Role' ) {
+        my $groups = $self->GroupMembersObj( Recursively => 0 );
+        while ( my $group = $groups->Next ) {
+            my $ret = $group->HasMemberRecursively($principal);
+            return $ret if $ret;
+        }
     }
+    return (undef);
 }
 
 
