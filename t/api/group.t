@@ -116,4 +116,69 @@ is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
     ok( !$id, "can't create duplicated group even case is different: $msg" );
 }
 
+diag "Ticket role group members";
+{
+    RT::Test->load_or_create_queue( Name => 'General' );
+    my $ticket    = RT::Test->create_ticket( Queue => 'General', Subject => 'test ticket role group' );
+    my $admincc   = $ticket->RoleGroup('AdminCc');
+    my $delegates = RT::Test->load_or_create_group('delegates');
+    my $core      = RT::Test->load_or_create_group('core team');
+    my $alice     = RT::Test->load_or_create_user( Name => 'alice' );
+    my $bob       = RT::Test->load_or_create_user( Name => 'bob' );
+
+    ok( $admincc->AddMember( $delegates->PrincipalId ), 'Add delegates to AdminCc' );
+    ok( $delegates->AddMember( $core->PrincipalId ),    'Add core team to delegates' );
+    ok( $delegates->AddMember( $bob->PrincipalId ),     'Add bob to delegates' );
+    ok( $core->AddMember( $alice->PrincipalId ),        'Add alice to core team' );
+
+    ok( $admincc->HasMember( $delegates->PrincipalId ),        'AdminCc has direct member of delegates' );
+    ok( !$admincc->HasMember( $core->PrincipalId ),            "AdminCc doesn't have member of core" );
+    ok( !$admincc->HasMember( $bob->PrincipalId ),             "AdminCc doesn't have member of bob" );
+    ok( !$admincc->HasMember( $alice->PrincipalId ),           "AdminCc doesn't have member of bob" );
+    ok( $admincc->HasMemberRecursively( $core->PrincipalId ),  "AdminCc recursively has member of core" );
+    ok( $admincc->HasMemberRecursively( $bob->PrincipalId ),   "AdminCc recursively has member of bob" );
+    ok( $admincc->HasMemberRecursively( $alice->PrincipalId ), "AdminCc recursively has member of alice" );
+
+    my $CGM = RT::CachedGroupMember->new( RT->SystemUser );
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $delegates->PrincipalId );
+    ok( $CGM->id, 'CGM record for admincc <-> delegates' );
+
+    $CGM->LoadByCols( GroupId => $delegates->PrincipalId, MemberId => $core->PrincipalId );
+    ok( $CGM->id, 'CGM record for delegates <-> core' );
+
+    $CGM->LoadByCols( GroupId => $core->PrincipalId, MemberId => $alice->PrincipalId );
+    ok( $CGM->id, 'CGM record for core <-> alice' );
+
+    $CGM->LoadByCols( GroupId => $delegates->PrincipalId, MemberId => $alice->PrincipalId );
+    ok( $CGM->id, 'CGM record for delegates <-> alice' );
+
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $core->PrincipalId );
+    ok( !$CGM->id, 'No CGM record for admincc <-> core' );
+
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $alice->PrincipalId );
+    ok( !$CGM->id, 'No CGM record for admincc <-> alice' );
+
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $bob->PrincipalId );
+    ok( !$CGM->id, 'No CGM record for admincc <-> bob' );
+
+    ok( $admincc->DeleteMember( $delegates->PrincipalId ), 'Delete delegates from AdminCc' );
+
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $delegates->PrincipalId );
+    ok( !$CGM->id, 'No CGM record for admincc <-> delegates' );
+
+    ok( $admincc->AddMember( $delegates->PrincipalId ), 'Add delegates to AdminCc again' );
+
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $delegates->PrincipalId );
+    ok( $CGM->id, 'CGM record for admincc <-> delegates again' );
+
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $core->PrincipalId );
+    ok( !$CGM->id, 'No CGM record for admincc <-> corei still' );
+
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $alice->PrincipalId );
+    ok( !$CGM->id, 'No CGM record for admincc <-> alice still' );
+
+    $CGM->LoadByCols( GroupId => $admincc->PrincipalId, MemberId => $bob->PrincipalId );
+    ok( !$CGM->id, 'No CGM record for admincc <-> bob still' );
+}
+
 done_testing;

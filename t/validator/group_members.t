@@ -125,4 +125,21 @@ RT::Test->db_is_valid;
     RT::Test->db_is_valid;
 }
 
+diag "CGM recurisve check for ticket role groups";
+{
+    my $ticket    = RT::Test->create_ticket( Queue => 'General', Subject => 'test ticket role group' );
+    my $admincc   = $ticket->RoleGroup('AdminCc');
+    my $delegates = RT::Test->load_or_create_group('delegates');
+    my $core      = RT::Test->load_or_create_group('core team');
+    my $alice     = RT::Test->load_or_create_user( Name => 'alice' );
+    my $bob       = RT::Test->load_or_create_user( Name => 'bob' );
+
+    ok( $admincc->AddMember( $delegates->PrincipalId ), 'Add delegates to AdminCc' );
+    ok( $delegates->AddMember( $core->PrincipalId ),    'Add core team to delegates' );
+    ok( $delegates->AddMember( $bob->PrincipalId ),     'Add bob to delegates' );
+    ok( $core->AddMember( $alice->PrincipalId ),        'Add alice to core team' );
+
+    RT::Test->db_is_valid;
+}
+
 done_testing;
