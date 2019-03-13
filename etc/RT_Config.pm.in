@@ -1514,6 +1514,22 @@ Set($SearchResultsAutoRedirect, 0);
 
 =over 4
 
+=item C<$DisplayTotalTimeWorked>
+
+If set to 1, this option will display a sum of Total Time Worked within
+the Ticket metadata Basics sub-pane of the Tickets Display view.
+
+Total Time Worked is a dynamic value containing a sum of Time Worked for
+the parent and all child tickets.  This value is generated when displaying
+the ticket and automatically updates when a child ticket is added or removed.
+
+Total Time Worked is also available as a column for reports generated with
+the Query Builder.
+
+=cut
+
+Set($DisplayTotalTimeWorked, 0);
+
 =item C<$ShowMoreAboutPrivilegedUsers>
 
 This determines if the 'More about requestor' box on
