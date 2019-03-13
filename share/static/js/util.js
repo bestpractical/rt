@@ -251,7 +251,17 @@ jQuery(function() {
         hourGrid: 6,
         minuteGrid: 15,
         showSecond: false,
-        timeFormat: 'HH:mm:ss'
+        timeFormat: 'HH:mm:ss',
+        // datetimepicker doesn't reset time part when input value is cleared,
+        // so we reset it here
+        beforeShow: function(input, dp, tp) {
+            if ( jQuery(this).val() == '' ) {
+                tp.hour = tp._defaults.hour || 0;
+                tp.minute = tp._defaults.minute || 0;
+                tp.second = tp._defaults.second || 0;
+                tp.millisec = tp._defaults.millisec || 0;
+            }
+        }
     }) ).each(function(index, el) {
         var tp = jQuery.datepicker._get( jQuery.datepicker._getInst(el), 'timepicker');
         if (!tp) return;
