@@ -1161,34 +1161,81 @@ sub _WatcherMembershipLimit {
     my $meta = $FIELD_METADATA{$field};
     my $type = $meta->[1] || '';
 
-    my ($members_alias, $members_column);
     if ( $type eq 'Owner' ) {
-        ($members_alias, $members_column) = ('main', 'Owner');
-    } else {
-        (undef, undef, $members_alias) = $self->_WatcherJoin( New => 1, Name => $type );
-        $members_column = 'id';
+        my $cgm_alias = $self->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'Owner',
+            TABLE2 => 'CachedGroupMembers',
+            FIELD2 => 'MemberId',
+        );
+        $self->Limit(
+            ALIAS    => $cgm_alias,
+            FIELD    => 'GroupId',
+            VALUE    => $value,
+            OPERATOR => $op,
+            %rest,
+        );
     }
+    else {
+        my $groups = $self->_RoleGroupsJoin( Name => $type, Class => $self->_RoleGroupClass, New => 1 );
+        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
 
-    my $cgm_alias = $self->Join(
-        ALIAS1          => $members_alias,
-        FIELD1          => $members_column,
-        TABLE2          => 'CachedGroupMembers',
-        FIELD2          => 'MemberId',
-    );
-    $self->Limit(
-        LEFTJOIN => $cgm_alias,
-        ALIAS => $cgm_alias,
-        FIELD => 'Disabled',
-        VALUE => 0,
-    );
+        my $cgm             = $self->NewAlias('CachedGroupMembers');
+        my $group_members_2 = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $group_members,
+            FIELD1 => 'MemberId',
+            ALIAS2 => $cgm,
+            FIELD2 => 'GroupId',
+        );
+        $self->Limit(
+            LEFTJOIN   => $group_members_2,
+            FIELD      => 'GroupId',
+            OPERATOR   => '!=',
+            VALUE      => "$group_members_2.MemberId",
+            QUOTEVALUE => 0,
+        );
 
-    $self->Limit(
-        ALIAS    => $cgm_alias,
-        FIELD    => 'GroupId',
-        VALUE    => $value,
-        OPERATOR => $op,
-        %rest,
-    );
+        $self->Limit(
+            LEFTJOIN        => $group_members_2,
+            ALIAS           => $cgm,
+            FIELD           => 'Disabled',
+            VALUE           => 0,
+            ENTRYAGGREGATOR => 'AND',
+        );
+
+        my $users = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $group_members_2,
+            FIELD1 => 'MemberId',
+            TABLE2 => 'Users',
+            FIELD2 => 'id',
+        );
+
+        my $cgm_2           = $self->NewAlias('CachedGroupMembers');
+        my $group_members_3 = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $users,
+            FIELD1 => 'id',
+            ALIAS2 => $cgm_2,
+            FIELD2 => 'MemberId',
+        );
+
+        $self->Limit(
+            LEFTJOIN => $cgm_2,
+            ALIAS    => $cgm_2,
+            FIELD    => 'Disabled',
+            VALUE    => 0,
+        );
+
+        $self->Limit(
+            ALIAS    => $group_members_3,
+            FIELD    => 'GroupId',
+            VALUE    => $value,
+            OPERATOR => $op,
+            %rest,
+        );
+    }
 }
 
 =head2 _CustomFieldDecipher
