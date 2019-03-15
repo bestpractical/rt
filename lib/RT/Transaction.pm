@@ -332,8 +332,9 @@ If this transaction has attached mime objects, returns the body of the first
 textual part (as defined in RT::I18N::IsTextualContentType).  Otherwise,
 returns the message "This transaction appears to have no content".
 
-Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
-at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
+Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message
+at $args{'Wrap'}.  $args{'Wrap'} is set from the $QuoteWrapWidth
+config variable.
 
 If $args{'Type'} is set to C<text/html>, this will return an HTML 
 part of the message, if available.  Otherwise it looks for a text/plain
@@ -348,7 +349,7 @@ sub Content {
     my %args = (
         Type => $PreferredContentType || '',
         Quote => 0,
-        Wrap  => 70,
+        Wrap => RT->Config->Get('QuoteWrapWidth') || 70,
         @_
     );
 
@@ -442,7 +443,9 @@ sub ApplyQuoteWrap {
         $max = length if length > $max;
     }
 
-    if ( $max > 76 ) {
+    # the addition of 6 here accounts for the extra characters added when quoting
+    # previously quoted text.
+    if ( $max > $args{cols} + 6 ) {
         require Text::Quoted;
         require Text::Wrapper;
 

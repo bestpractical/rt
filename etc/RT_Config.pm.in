@@ -2334,6 +2334,15 @@ It defaults to on.  Set this to 0 to disable it.
 
 Set($QuoteFolding, 1);
 
+=item C<$QuoteWrapWidth>
+
+C<$QuoteWrapWidth> controls the number of columns to use when wrapping
+quoted text within transactions.
+
+=cut
+
+Set($QuoteWrapWidth, 70);
+
 =back
 
 
