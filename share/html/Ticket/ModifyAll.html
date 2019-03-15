@@ -64,7 +64,7 @@
 
 % $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
 
-<& /Elements/EditCustomFieldCustomGroupings, Object => $Ticket &>
+<& /Elements/EditCustomFieldCustomGroupings, Object => $Ticket, AsTable => !!RT->Config->Get('EditCustomFieldsSingleColumn', $session{'CurrentUser'}) &>
 
 <&| /Widgets/TitleBox, title => loc('Dates'), class=>'ticket-info-dates'&>
 <& Elements/EditDates, TicketObj => $Ticket &>
