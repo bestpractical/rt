@@ -312,11 +312,21 @@ sub RoleLimit {
         if ( @users <= 1 ) {
             my $uid = 0;
             $uid = $users[0]->id if @users;
+
+            my @ids;
+            {
+                my $groups = RT::Groups->new( RT->SystemUser );
+                $groups->LimitToUserDefinedGroups;
+                $groups->WithMember( PrincipalId => $uid, Recursively => 1 );
+                @ids = ( $uid, map { $_->id } @{ $groups->ItemsArrayRef } );
+            }
+
             $self->Limit(
                 LEFTJOIN      => $group_members,
                 ALIAS         => $group_members,
                 FIELD         => 'MemberId',
-                VALUE         => $uid,
+                VALUE         => \@ids,
+                OPERATOR      => 'IN',
             );
             $self->Limit(
                 %args,
@@ -363,19 +373,43 @@ sub RoleLimit {
             GroupsAlias => $groups, New => 1, Left => 0
         );
         if ($args{FIELD} eq "id") {
+            my @ids;
+            {
+                my $groups = RT::Groups->new( RT->SystemUser );
+                $groups->LimitToUserDefinedGroups;
+                $groups->WithMember( PrincipalId => $args{VALUE}, Recursively => 1 );
+                @ids = ( $args{VALUE}, map { $_->id } @{ $groups->ItemsArrayRef } );
+            }
+
             # Save a left join to Users, if possible
             $self->Limit(
                 %args,
                 ALIAS           => $group_members,
                 FIELD           => "MemberId",
-                OPERATOR        => $args{OPERATOR},
-                VALUE           => $args{VALUE},
+                OPERATOR        => 'IN',
+                VALUE           => \@ids,
                 CASESENSITIVE   => 0,
             );
         } else {
+
+            my $cgm_2 = $self->NewAlias('CachedGroupMembers');
+            my $group_members_2 = $self->Join(
+                ALIAS1 => $group_members,
+                FIELD1 => 'MemberId',
+                ALIAS2 => $cgm_2,
+                FIELD2 => 'GroupId',
+            );
+            $self->Limit(
+                LEFTJOIN => $group_members_2,
+                ALIAS => $cgm_2,
+                FIELD => 'Disabled',
+                VALUE => 0,
+                ENTRYAGGREGATOR => 'AND',
+            );
+
             $users ||= $self->Join(
                 TYPE            => 'LEFT',
-                ALIAS1          => $group_members,
+                ALIAS1          => $group_members_2,
                 FIELD1          => 'MemberId',
                 TABLE2          => 'Users',
                 FIELD2          => 'id',
