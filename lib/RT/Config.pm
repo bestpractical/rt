@@ -359,6 +359,15 @@ our %META;
             Description => 'Use dropzone if available', #loc
         },
     },
+    EditCustomFieldsSingleColumn => {
+        Section => 'Ticket composition',
+        Overridable => 1,
+        SortOrder => 12,
+        Widget => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use one column layout for custom fields editing on ticket modify pages?' # loc
+        }
+    },
     RefreshIntervals => {
         Type => 'ARRAY',
         PostLoadCheck => sub {
