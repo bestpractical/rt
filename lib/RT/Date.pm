@@ -115,6 +115,7 @@ our @DAYS_OF_WEEK = (
 our @FORMATTERS = (
     'DefaultFormat',     # loc
     'ISO',               # loc
+    'ISOTZ',             # loc
     'W3CDTF',            # loc
     'RFC2822',           # loc
     'RFC2616',           # loc
@@ -872,6 +873,42 @@ sub ISO {
     $res .= sprintf("%04d-%02d-%02d", $year, $mon, $mday) if $args{'Date'};
     $res .= sprintf(' %02d:%02d', $hour, $min) if $args{'Time'};
     $res .= sprintf(':%02d', $sec) if $args{'Time'} && $args{'Seconds'};
+    $res =~ s/^\s+//;
+
+    return $res;
+}
+
+=head3 ISOTZ
+
+Returns the object's date in ISO format with TZ name abbreviation
+C<YYYY-MM-DD mm:hh TZ>. ISOTZ is locale-independent and is nearly
+identical to ISO, but with appended TZ name and without seconds.
+
+Supports arguments: C<Timezone>, C<Date>, and C<Time>.
+See L</Output formatters> for description of arguments.
+
+=cut
+
+sub ISOTZ {
+    my $self = shift;
+    my %args = ( Date => 1,
+                 Time => 1,
+                 Timezone => '',
+                 @_,
+               );
+       #  0    1    2     3     4    5     6     7      8      9
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime($args{'Timezone'});
+
+    # the month needs incrementing, as gmtime returns 0-11
+    $mon++;
+
+    my $dt = $self->DateTimeObj(%args);
+
+    my $res = '';
+    $res .= sprintf('%04d-%02d-%02d', $year, $mon, $mday) if $args{'Date'};
+    $res .= sprintf(' %02d:%02d', $hour, $min) if $args{'Time'};
+    $res .= sprintf(' %03s', $dt->time_zone_short_name());
     $res =~ s/^\s+//;
 
     return $res;
