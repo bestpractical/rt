@@ -1,0 +1,1 @@
+ALTER TABLE CustomFields ADD COLUMN EscapeHTML integer NOT NULL DEFAULT 0;

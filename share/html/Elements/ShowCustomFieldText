@@ -47,10 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
  my $content = $Object->LargeContent || $Object->Content;
- $content = $m->comp('/Elements/ScrubHTML', Content => $content);
- $content =~ s|\n|<br />|g;
+ if ( $EscapeHTML ) {
+    RT::Interface::Web::EscapeHTML(\$content);
+ } else {
+    $content = $m->comp('/Elements/ScrubHTML', Content => $content);
+    $content =~ s|\n|<br />|g;
+ }
 </%init>
 <%$content|n%>
 <%ARGS>
 $Object
+$EscapeHTML  => 0
 </%ARGS>

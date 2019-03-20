@@ -271,6 +271,7 @@ sub Create {
         EntryHint              => undef,
         UniqueValues           => 0,
         CanonicalizeClass      => undef,
+        EscapeHTML             => 0,
         @_,
     );
 
@@ -364,6 +365,7 @@ sub Create {
         LookupType        => $args{'LookupType'},
         UniqueValues      => $args{'UniqueValues'},
         CanonicalizeClass => $args{'CanonicalizeClass'},
+        EscapeHTML        => $args{'EscapeHTML'}
     );
 
     if ($rv) {
@@ -1185,6 +1187,30 @@ sub SetDisabled {
         return (1, $self->loc("Disabled"));
     } else {
         return (1, $self->loc("Enabled"));
+    }
+}
+
+sub EscapeHTML {
+    my $self = shift;
+    my $val  = shift;
+
+    return $self->_Value('EscapeHTML');
+}
+
+sub SetEscapeHTML {
+    my $self = shift;
+    my $val  = shift;
+
+    my ($status, $msg) = $self->_Set(Field => 'EscapeHTML', Value => $val);
+
+    unless ($status) {
+        return ($status, $msg);
+    }
+
+    if ( $val == 1 ) {
+        return (1, $self->loc("HTML escaping on display enabled"));
+    } else {
+        return (1, $self->loc("HTML escaping on display disabled"));
     }
 }
 

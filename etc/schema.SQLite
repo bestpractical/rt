@@ -396,6 +396,7 @@ CREATE TABLE CustomFields (
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
   Disabled int2 NOT NULL DEFAULT 0 ,
+  EscapeHTML int2 NOT NULL DEFAULT 0 ,
   PRIMARY KEY (id)
 ) ;
 

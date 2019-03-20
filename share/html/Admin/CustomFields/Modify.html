@@ -177,6 +177,14 @@ jQuery( function() {
 
 % $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
+% if ( grep { $CustomFieldObj->Type eq $_ } qw/Freeform Text/ ) {
+    <tr><td class="label">&nbsp;</td><td>
+    <input type="hidden" class="hidden" name="SetEscapeHTML" value="1" />
+    <input type="checkbox" class="checkbox" id="EscapeHTML" name="EscapeHTML" value="1" <% $EscapeHTMLChecked |n %> />
+    <label for="EscapeHTML"><&|/l&>Escape HTML of custom field value</&></label>
+    </td></tr>
+% }
+
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
@@ -224,6 +232,7 @@ else {
             Disabled      => ($Enabled ? 0 : 1),
             EntryHint     => $EntryHint,
             UniqueValues  => $UniqueValues,
+            EscapeHTML    => $EscapeHTML
         );
         if (!$val) {
             push @results, loc("Could not create CustomField: [_1]", $msg);
@@ -248,8 +257,9 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     # make sure the unchecked checkbox still causes an update
     $ARGS{UniqueValues} ||= 0 if $SetUniqueValues;
+    $ARGS{EscapeHTML} ||= 0 if $SetEscapeHTML;
 
-    my @attribs = qw(Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint UniqueValues);
+    my @attribs = qw(EscapeHTML Disabled Pattern Name TypeComposite LookupType Description LinkValueTo IncludeContentForValue EntryHint UniqueValues);
 
     push @results, UpdateRecordObject(
         AttributesRef => \@attribs,
@@ -410,6 +420,9 @@ MaybeRedirectForResults(
 my $EnabledChecked = qq[checked="checked"];
 $EnabledChecked = '' if $CustomFieldObj->Disabled;
 
+my $EscapeHTMLChecked = '';
+$EscapeHTMLChecked = qq[checked="checked"] if $CustomFieldObj->EscapeHTML;
+
 my $UniqueValuesChecked = qq[checked="checked"];
 $UniqueValuesChecked = '' if !$CustomFieldObj->UniqueValues;
 
@@ -442,4 +455,6 @@ $LinkValueTo => undef
 $IncludeContentForValue => undef
 $BasedOn => undef
 $EntryHint => undef
+$EscapeHTML    => 0
+$SetEscapeHTML => undef
 </%ARGS>

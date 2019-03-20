@@ -364,7 +364,8 @@ CREATE TABLE CustomFields (
         Created           DATE,
         LastUpdatedBy     NUMBER(11,0) DEFAULT 0 NOT NULL,
         LastUpdated       DATE,
-        Disabled          NUMBER(11,0) DEFAULT 0 NOT NULL
+        Disabled          NUMBER(11,0) DEFAULT 0 NOT NULL,
+        EscapeHTML        NUMBER(11,0) DEFAULT 0 NOT NULL
 );
 
 
