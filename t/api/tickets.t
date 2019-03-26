@@ -151,14 +151,31 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
     warning_like {
         ( $ret, $msg ) = $tickets->FromSQL( "LastUpdated < yesterday" );
     }
-    qr/Couldn't parse query: Wrong query, expecting a VALUE in 'LastUpdated < >yesterday<--here'/;
+    qr/Wrong query, no such column 'yesterday' in 'LastUpdated < yesterday'/;
 
     ok( !$ret, 'Invalid query' );
     like(
         $msg,
-        qr/Wrong query, expecting a VALUE in 'LastUpdated < >yesterday<--here'/,
+        qr/Wrong query, no such column 'yesterday' in 'LastUpdated < yesterday'/,
         'Invalid query message'
     );
+}
+
+{
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    ok $ticket->Load(1), "Loaded test ticket 1";
+    my $date = RT::Date->new(RT->SystemUser);
+    $date->SetToNow();
+    $date->AddDays(1);
+
+    ok $ticket->SetDue( $date->ISO ), "Set Due to tomorrow";
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    my ( $ret, $msg ) = $tickets->FromSQL("LastUpdated < Due");
+
+    ok( $ret, 'Ran query with Due as searched value' );
+    my $count = $tickets->Count();
+    ok $count == 1, "Found one ticket";
+    undef $count;
 }
 
 done_testing;
