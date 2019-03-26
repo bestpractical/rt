@@ -235,6 +235,7 @@ foreach my $arg ( keys %ARGS ) {
             Key   => $keyword,
             Op    => $op,
             Value => $value,
+            QuoteValue => $value =~ /^[+-]?[0-9]+$/ ? 0 : 1,
         };
 
         push @new_values, RT::Interface::Web::QueryBuilder::Tree->new($clause);

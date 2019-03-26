@@ -631,10 +631,14 @@ sub _DateLimit {
         );
     }
 
-    my $date = RT::Date->new( $sb->CurrentUser );
-    $date->Set( Format => 'unknown', Value => $value );
+    my $date;
+    if ( $rest{QUOTEVALUE} ) {
+        $date = RT::Date->new( $sb->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+    }
 
-    if ( $op eq "=" ) {
+
+    if ( $op eq "=" && $date ) {
 
         # if we're specifying =, that means we want everything on a
         # particular single day.  in the database, we need to check for >
@@ -667,10 +671,9 @@ sub _DateLimit {
     }
     else {
         $sb->Limit(
-            FUNCTION => $sb->NotSetDateToNullFunction,
             FIELD    => $meta->[1],
             OPERATOR => $op,
-            VALUE    => $date->ISO,
+            VALUE    => $date ? $date->ISO : $value,
             %rest,
         );
     }
@@ -3161,8 +3164,8 @@ sub _parser {
             $ea = $node->getParent->getNodeValue if $node->getIndex > 0;
             return $self->_OpenParen unless $node->isLeaf;
 
-            my ($key, $subkey, $meta, $op, $value, $bundle)
-                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle/};
+            my ($key, $subkey, $meta, $op, $value, $bundle, $quote_value)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle QuoteValue/};
 
             # normalize key and get class (type)
             my $class = $meta->[0];
@@ -3176,12 +3179,38 @@ sub _parser {
             my $sub = $dispatch{ $class }
                 or die "No dispatch method for class '$class'";
 
+            if ( !$quote_value && $value !~ /^(?:[+-]?[0-9]+|NULL)$/i ) {
+                my ( $class, $field );
+
+                # e.g. ObjectCustomFieldValues_1.Content
+                if ( $value =~ /^(\w+?)(?:_\d+)?\.(\w+)$/ ) {
+                    my $table = $1;
+                    $field = $2;
+                    $class = $table =~ /main/i ? 'RT::Tickets' : "RT::$table";
+                }
+                else {
+                    $class = 'RT::Tickets';
+                    $field = $value;
+                }
+
+                my $valid;
+                if ( $class->can('RecordClass')
+                    and ( my $record_class = $class->RecordClass ) )
+                {
+                    $valid = $record_class->_ClassAccessible->{$field}
+                        && $record_class->_ClassAccessible->{$field}{read};
+                }
+
+                die $self->loc( "Wrong query, no such column '[_1]' in '[_2]'", $value, $string ) unless $valid;
+            }
+
             # A reference to @res may be pushed onto $sub_tree{$key} from
             # above, and we fill it here.
             $sub->( $self, $key, $op, $value,
                     ENTRYAGGREGATOR => $ea,
                     SUBKEY          => $subkey,
                     BUNDLE          => $bundle,
+                    QUOTEVALUE      => $quote_value,
                   );
         },
         sub {
