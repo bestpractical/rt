@@ -70,4 +70,26 @@ diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
     like( $mail, qr!<h1>$quoted_content</h1>!,     'mail has ticket html content <h1>$content</h1>' );
 }
 
+diag('test long line mails') if $ENV{TEST_VERBOSE};
+{
+    $m->get_ok( $baseurl . '/Ticket/Create.html?Queue=1' );
+
+    $m->submit_form(
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject     => $subject,
+            Content     => 'a' x 1000,
+            ContentType => 'text/html',
+        },
+    );
+    $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
+    $m->follow_link( text => 'Show' );
+    $m->content_contains( $template, "html has $template" );
+    $m->content_contains( $subject,  "html has ticket subject $subject" );
+    $m->text_contains( 'a' x 1000, "html has 1000 continuous a" );
+    my ($mail) = RT::Test->fetch_caught_mails;
+    ok( $mail =~ /Content-Transfer-Encoding: quoted-printable/, 'mail is quoted-printable encoded' );
+    ok( $mail !~ /a{1000}/,                                     'mail lacks 1000 continuous a' );
+}
+
 done_testing;
