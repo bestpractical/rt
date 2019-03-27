@@ -61,10 +61,13 @@ diag('test real mail outgoing') if $ENV{TEST_VERBOSE};
     # $mail is utf8 encoded
     my ($mail) = RT::Test->fetch_caught_mails;
     $mail = Encode::decode("UTF-8", $mail );
-    like( $mail, qr/$template.*$template/s, 'mail has template content $template twice' );
-    like( $mail, qr/$subject.*$subject/s,   'mail has ticket subject $sujbect twice' );
-    like( $mail, qr/$content.*$content/s,   'mail has ticket content $content twice' );
-    like( $mail, qr!<h1>$content</h1>!,     'mail has ticket html content <h1>$content</h1>' );
+    my $quoted_template = MIME::QuotedPrint::encode_qp( Encode::encode( 'UTF-8', $template ), '' );
+    my $quoted_subject = MIME::QuotedPrint::encode_qp( Encode::encode( 'UTF-8', $subject ), '' );
+    my $quoted_content = MIME::QuotedPrint::encode_qp( Encode::encode( 'UTF-8', $content ), '' );
+    like( $mail, qr/$quoted_template.*$quoted_template/s, 'mail has template content $template twice' );
+    like( $mail, qr/$quoted_subject.*$quoted_subject/s,   'mail has ticket subject $sujbect twice' );
+    like( $mail, qr/$quoted_content.*$quoted_content/s,   'mail has ticket content $content twice' );
+    like( $mail, qr!<h1>$quoted_content</h1>!,     'mail has ticket html content <h1>$content</h1>' );
 }
 
 done_testing;
