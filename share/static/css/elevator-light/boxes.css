@@ -136,7 +136,8 @@ div.results .titlebox .titlebox-content {
 }
 
 .results .titlebox-content ul {
-    list-style-type: none
+    list-style-type: none;
+    margin-top: 1em;
 }
 
 .results .titlebox-title {
