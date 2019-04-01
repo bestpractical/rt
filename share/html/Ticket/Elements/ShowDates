@@ -56,7 +56,7 @@
     <span class="value"><% $Ticket->StartsObj->AsString %></span>
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterStarts', TicketObj => $Ticket );
-  <div class="date started<% $Ticket->StartedObj->Unix ? q{} : q{ unset-field}%>">
+  <div class="date field started<% $Ticket->StartedObj->Unix ? q{} : q{ unset-field}%>">
     <span class="label"><&|/l&>Started</&>:</span>\
     <span class="value"><% $Ticket->StartedObj->AsString %></span>
   </div>
