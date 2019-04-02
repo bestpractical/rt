@@ -158,3 +158,48 @@ piece of RT metadata, please see the Definitions of Ticket Metadata document.
 
 =cut
 
+=head1 Advanced
+
+In addition to the graphical query builder, RT also has an Advanced page
+where you can write and modify queries and formats directly. For example,
+you can type the following query directly in the Query box:
+
+    Status = 'resolved' AND Resolved > '2019-04-01' AND Queue = 'RT'
+
+and then click "Apply" to let RT validate it. RT will display any syntax errors
+if you make any mistakes so you can fix them.
+
+=head2 Valid Search Values
+
+In the above example, search values like C<'resolved'>, C<'2019-04-01'>,
+and C<'RT'> are all literal search terms: a status, a date, and a string
+representing the name of a queue. These are all static values that will then
+return matching tickets. However, sometimes you want to compare 2 columns
+in RT tables without knowing exact values. This is also supported, for
+example:
+
+=over
+
+=item Search tickets where LastUpdated is after (later than) Resolved
+
+    LastUpdated > Resolved
+
+This finds tickets that have been commented on or otherwise updated after
+they were resolved. Note that C<Resolved> is not quoted, indicating that it's
+the relative date value from a ticket instead of the literal string "Resolved".
+
+=item Search tickets where the Requestor is also the Owner
+
+    Requestor.id = Owner
+
+=item Search tickets where custom fields Foo and Bar have the same value
+
+    CF.Foo IS NOT NULL AND CF.Bar = ObjectCustomFieldValues_1.Content
+
+This advanced query requires some knowledge of RT's search internals,
+but following this example should allow most users to construct a
+similar query by changing the custom field names. It works because
+C<CF.Foo> appears first as a custom field in the query and RT then
+sets I<ObjectCustomFieldValues_1.Content> as its Content.
+
+=back
