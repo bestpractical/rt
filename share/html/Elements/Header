@@ -97,7 +97,7 @@
 <& /Elements/Framekiller &>
 
 </head>
-  <body class="<% join( ' ',@{$ARGS{'BodyClass'}}) %>" <% $id && qq[id="comp-$id"] |n %>>
+  <body class="<% join( ' ',@{$ARGS{'BodyClass'}}, RT->Config->Get('WebDefaultStylesheet', $session{CurrentUser}) =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
 
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>

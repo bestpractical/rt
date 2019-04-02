@@ -1,0 +1,155 @@
+@import "../elevator-light/main.css";
+
+.darkmode, .darkmode * {
+    background: #171A1F !important;
+    color: #FFF !important;
+}
+
+.darkmode input, .darkmode select {
+    background: #25292F !important;
+    border-color: #3A3C43 !important;
+}
+
+.darkmode input::-webkit-input-placeholder {
+ /* Chrome/Opera/Safari */
+    color: #7A7D8D !important;
+}
+
+.darkmode input::-moz-placeholder {
+ /* Firefox 19+ */
+    color: #7A7D8D !important;
+}
+
+.darkmode input:-ms-input-placeholder {
+ /* IE 10+ */
+    color: #7A7D8D !important;
+}
+
+.darkmode input:-moz-placeholder {
+ /* Firefox 18- */
+    color: #7A7D8D !important;
+}
+
+.darkmode input:focus {
+    border-color: #5C6273;
+    color: #FFF;
+}
+
+.darkmode .card {
+    background: #25292F;
+    border-color: #3A3C43;
+}
+
+.darkmode label {
+    color: #FFF;
+}
+
+.darkmode input, .darkmode select {
+    color: #7A7D8D;
+}
+
+.darkmode option:disabled {
+    color: #7A7D8D;
+}
+
+.darkmode p, .darkmode li span {
+    color: #B2B6BA;
+}
+
+.darkmode h1, .darkmode h2, .darkmode h3, .darkmode h4 {
+    color: #FFF;
+}
+
+.darkmode svg {
+    fill: #FFF;
+}
+
+.darkmode .radio-option, .darkmode .check-option {
+    color: #FFF;
+}
+
+.darkmode .accordian-title, .darkmode .accordian-item {
+    background: #171A1F;
+    border-color: #3A3C43;
+}
+
+.darkmode .navbar {
+    background: #171A1F;
+    border-bottom: 1px solid #3A3C43;
+    box-shadow: none;
+}
+
+.darkmode .navbar li a {
+    color: #FFF;
+}
+
+.darkmode .dropdown-toggle:after {
+    border-color: #FFF;
+}
+
+.darkmode .dropdown-menu {
+    background: #171A1F;
+    border-color: #3A3C43;
+}
+
+.darkmode .dropdown-divider {
+    border-color: #3A3C43;
+}
+
+.darkmode .dropdown-item:focus, .darkmode .dropdown-item:hover {
+    background: #25292F;
+}
+
+.darkmode .nav-tabs {
+    background: #171A1F;
+    border-color: #3A3C43;
+}
+
+.darkmode .nav-tabs .nav-link:hover {
+    border-color: #3A3C43;
+}
+
+.darkmode .nav-tabs .nav-link.active {
+    background: none;
+}
+
+.darkmode .table td {
+    color: #B2B6BA;
+}
+
+.darkmode .table a, .darkmode .table th {
+    color: #FFF;
+}
+
+.darkmode .btn:hover {
+    color: #000;
+}
+
+.darkmode .btn-group, .darkmode .btn-group .btn {
+    background: #171A1F;
+    border-color: #7A7D8D;
+    color: #FFF;
+}
+
+.darkmode .btn-group--shadow {
+    border: 1px solid #7A7D8D;
+    box-shadow: none;
+}
+
+.darkmode .select-button select {
+    border: none;
+    background: #171A1F !important;
+    color: #FFF;
+}
+
+.darkmode select.btn:hover {
+    color: #7A7D8D;
+}
+
+.darkmode .btn-outline {
+    color: #FFF;
+}
+
+.darkmode .btn-outline:hover svg {
+    fill: #171A1F;
+}

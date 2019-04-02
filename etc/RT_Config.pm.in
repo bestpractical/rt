@@ -892,6 +892,7 @@ This determines the default stylesheet the RT web interface will use.
 RT ships with several themes by default:
 
   elevator-light  The default light theme for RT 4.6
+  elevator-dark   The dark theme for RT 4.6
   rudder          The default theme for RT 4.2
   aileron         The default layout for RT 4.0
   web2            The default layout for RT 3.8
