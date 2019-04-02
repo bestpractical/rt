@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -69,7 +69,7 @@ my @dryrun = $TicketObj->DryRun(
         ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
         ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
         ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
-        ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+        ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, Object => $TicketObj );
         ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
     }
 );

@@ -289,6 +289,29 @@ $tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL("CF.SearchTest = 'foo1' OR CF.SearchTest = 'foo3' OR CF.SearchTest2 = 'bar1' OR CF.SearchTest2 = 'bar2'");
 is($tix->Count, 3, "is cf1 or is cf1 or is cf2 or is cf2");
 
+# tests with disabled CF
+$cf->SetDisabled(1);
+ok($cf->Disabled, 'cf1 is disabled');
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL("CF.SearchTest = 'foo1'");
+is($tix->Count, 0, "disabled cf1 with name");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL("CF." . $cf->id . " = 'foo1'");
+is($tix->Count, 0, "disabled cf1 with id");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL("CF.SearchTest != 'foo1'");
+is($tix->Count, 7, "disabled cf1 with name and negative operator");
+
+$tix = RT::Tickets->new(RT->SystemUser);
+$tix->FromSQL("CF." . $cf->id . " != 'foo1'");
+is($tix->Count, 7, "disabled cf1 with id and negative operator");
+
+$cf->SetDisabled(0);
+ok(!$cf->Disabled, 'cf1 is enabled');
+
 # tests with lower cased NULL
 $tix = RT::Tickets->new(RT->SystemUser);
 $tix->FromSQL('Requestor.Name IS null');

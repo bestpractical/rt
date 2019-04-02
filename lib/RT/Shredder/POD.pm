@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@ sub plugin_html
 {
     my ($file, $out_fh) = @_;
     my $parser = RT::Shredder::POD::HTML->new;
-    $parser->select('ARGUMENTS', 'USAGE');
+    $parser->select('SYNOPSIS', 'ARGUMENTS', 'USAGE');
     $parser->parse_from_file( $file, $out_fh );
     return;
 }
@@ -95,8 +95,11 @@ sub command
     my $out_fh = $self->output_handle();
     my $expansion = $self->interpolate($paragraph, $line_num);
     $expansion =~ s/^\s+|\s+$//;
+    $expansion = lc( $expansion );
+    $expansion = ucfirst( $expansion );
 
-    print $out_fh "<$tag>" if $tag;
+    print $out_fh "<$tag class=\"rt-general-header1\">" if $tag eq 'h1';
+    print $out_fh "<$tag class=\"rt-general-header2\">" if $tag eq 'h2';
     print $out_fh $expansion;
     print $out_fh "</$tag>" if $tag;
     print $out_fh "\n";
@@ -107,7 +110,7 @@ sub verbatim
 {
     my ($self, $paragraph, $line_num) = @_;
     my $out_fh = $self->output_handle();
-    print $out_fh "<pre>";
+    print $out_fh "<pre class=\"rt-general-paragraph\">";
     print $out_fh $paragraph;
     print $out_fh "</pre>";
     print $out_fh "\n";
@@ -119,7 +122,7 @@ sub textblock {
     my $out_fh = $self->output_handle();
     my $expansion = $self->interpolate($paragraph, $line_num);
     $expansion =~ s/^\s+|\s+$//;
-    print $out_fh "<p>";
+    print $out_fh "<p class=\"rt-general-paragraph\">";
     print $out_fh $expansion;
     print $out_fh "</p>";
     print $out_fh "\n";

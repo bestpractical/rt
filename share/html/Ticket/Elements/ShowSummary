@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="columns ticket-summary">
-  <div class="boxcontainer col-6">
+<div class="row ticket-summary">
+  <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, CallbackName => 'LeftColumnTop' );
     <&| /Widgets/TitleBox, title => loc('The Basics'),
         (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
@@ -68,7 +68,7 @@
     <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 % $m->callback( %ARGS, CallbackName => 'LeftColumn' );
   </div>
-  <div class="boxcontainer col-6">
+  <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, CallbackName => 'RightColumnTop' );
 % if ( RT->Config->Get('EnableReminders') ) {
     <&|/Widgets/TitleBox, title => loc("Reminders"),

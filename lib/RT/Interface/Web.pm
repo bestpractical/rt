@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -110,7 +110,7 @@ sub SquishedJS {
 
 sub JSFiles {
     return qw{
-      jquery-1.11.3.min.js
+      jquery-1.12.4p1.min.js
       jquery_noconflict.js
       jquery-ui.min.js
       jquery-ui-timepicker-addon.js
@@ -2351,6 +2351,7 @@ sub ProcessUpdateMessage {
     # UpdateTimeWorked into adjusted TimeWorked, so that a later
     # ProcessBasics can deal -- then bail out.
     if (    not @attachments
+        and not $args{ARGSRef}->{'AttachTickets'}
         and not length $args{ARGSRef}->{'UpdateContent'} )
     {
         if ( $args{ARGSRef}->{'UpdateTimeWorked'} ) {
@@ -2489,6 +2490,9 @@ sub ProcessAttachments {
     my %args = (
         ARGSRef => {},
         Token   => '',
+        # For back-compatibility, CheckSize is not enabled by default. But for
+        # callers that mean to check returned values, it's safe to enable.
+        CheckSize => wantarray ? 1 : 0,
         @_
     );
 
@@ -2516,11 +2520,30 @@ sub ProcessAttachments {
         # hence it was not decoded along with all of the standard
         # arguments in DecodeARGS
         my $file_path = Encode::decode( "UTF-8", "$new");
+
+        if ( $args{CheckSize} and my $max_size = RT->Config->Get( 'MaxAttachmentSize' ) ) {
+            my $content = $attachment->bodyhandle->as_string;
+
+            # The same encoding overhead as in Record.pm
+            $max_size *= 3 / 4 if !$RT::Handle->BinarySafeBLOBs && $content =~ /\x00/;
+            if ( length $content > $max_size ) {
+                my $file_name = ( File::Spec->splitpath( $file_path ) )[ 2 ];
+                return (
+                    0,
+                    loc(
+                        "File '[_1]' size([_2] bytes) exceeds limit([_3] bytes)",
+                        $file_name, length $content, $max_size
+                    )
+                );
+            }
+        }
+
         $session{'Attachments'}{ $token }{ $file_path } = $attachment;
 
         $update_session = 1;
     }
     $session{'Attachments'} = $session{'Attachments'} if $update_session;
+    return 1;
 }
 
 
@@ -4345,6 +4368,120 @@ sub ProcessAssetsSearchArguments {
         PassArguments   => \@PassArguments,
         Format          => $Format,
     );
+}
+
+=head3 SetObjectSessionCache
+
+Convenience method to stash per-user query results in the user session. This is used
+for rights-intensive queries that change infrequently, such as generating the list of
+queues a user has access to.
+
+The method handles populating the session cache and clearing it based on CacheNeedsUpdate.
+It returns the cache key so callers can use $session directly after it has been created
+or updated.
+
+Parameters:
+
+=over
+
+=item * ObjectType, required, the object for which to fetch values
+
+=item * CheckRight, the right to check for the current user in the query
+
+=item * ShowAll, boolean, ignores the rights check
+
+=item * Default, for dropdowns, a default selected value
+
+=item * CacheNeedsUpdate, date indicating when an update happened requiring a cache clear
+
+=item * Exclude, hashref ({ Name => 1 }) of object Names to exclude from the cache
+
+=back
+
+=cut
+
+sub SetObjectSessionCache {
+    my %args = (
+        CheckRight => undef,
+        ShowAll => 1,
+        Default => 0,
+        CacheNeedsUpdate => undef,
+        Exclude => undef,
+        @_ );
+
+    my $ObjectType = $args{'ObjectType'};
+    $ObjectType = "RT::$ObjectType" unless $ObjectType =~ /::/;
+    my $CheckRight = $args{'CheckRight'};
+    my $ShowAll = $args{'ShowAll'};
+    my $CacheNeedsUpdate = $args{'CacheNeedsUpdate'};
+
+    my $cache_key = GetObjectSessionCacheKey( ObjectType => $ObjectType,
+        CheckRight => $CheckRight, ShowAll => $ShowAll );
+
+    if ( defined $session{$cache_key} && !$session{$cache_key}{id} ) {
+        delete $session{$cache_key};
+    }
+
+    if ( defined $session{$cache_key}
+         && ref $session{$cache_key} eq 'ARRAY') {
+        delete $session{$cache_key};
+    }
+    if ( defined $session{$cache_key} && defined $CacheNeedsUpdate &&
+        $session{$cache_key}{lastupdated} <= $CacheNeedsUpdate ) {
+        delete $session{$cache_key};
+    }
+
+    if ( not defined $session{$cache_key} ) {
+        my $collection = "${ObjectType}s"->new($session{'CurrentUser'});
+        $collection->UnLimit;
+
+        $HTML::Mason::Commands::m->callback( CallbackName => 'ModifyCollection',
+            CallbackPage => '/Elements/Quicksearch',
+            ARGSRef => \%args, Collection => $collection, ObjectType => $ObjectType );
+
+        # This is included for continuity in the 4.2 series. It will be removed in 4.6.
+        $HTML::Mason::Commands::m->callback( CallbackName => 'SQLFilter',
+            CallbackPage => '/Elements/QueueSummaryByLifecycle', Queues => $collection )
+            if $ObjectType eq "RT::Queue";
+
+        $session{$cache_key}{id} = {};
+
+        while (my $object = $collection->Next) {
+            if ($ShowAll
+                or not $CheckRight
+                or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))
+            {
+                next if $args{'Exclude'} and exists $args{'Exclude'}->{$object->Name};
+                push @{$session{$cache_key}{objects}}, {
+                    Id          => $object->Id,
+                    Name        => $object->Name,
+                    Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
+                    Lifecycle   => $object->_Accessible("Lifecycle" => "read") ? $object->Lifecycle : undef,
+                };
+                $session{$cache_key}{id}{ $object->id } = 1;
+            }
+        }
+        $session{$cache_key}{lastupdated} = time();
+    }
+
+    return $cache_key;
+}
+
+sub GetObjectSessionCacheKey {
+    my %args = (
+        CurrentUser => undef,
+        ObjectType => '',
+        CheckRight => '',
+        ShowAll => 1,
+        @_ );
+
+    my $cache_key = join "---", "SelectObject",
+        $args{'ObjectType'},
+        $session{'CurrentUser'}->Id,
+        $args{'CheckRight'},
+        $args{'ShowAll'};
+
+    return $cache_key;
 }
 
 =head2 _load_container_object ( $type, $id );

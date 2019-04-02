@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -182,6 +182,7 @@
 
 % my $roles = $QueueObj->CustomRoles;
 % $roles->LimitToMultipleValue;
+% $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
 <div class="field">
 <span class="label"><% $role->Name %>:</span>
@@ -251,8 +252,8 @@
 
 <div id="Ticket-Create-details">
 <a name="details"></a>
-<div class="columns">
-<div class="boxcontainer col-6">
+<div class="row">
+<div class="boxcontainer col-md-6">
     <div class="ticket-info-basics">
           <&| /Widgets/TitleBox, title => loc('The Basics'), 
                 title_class=> 'inverse',  
@@ -321,7 +322,7 @@
 <br />
 </div>
 
-<div class="boxcontainer col-6">
+<div class="boxcontainer col-md-6">
 <div class="ticket-info-links">
 <&| /Widgets/TitleBox, title => loc('Links'), title_class=> 'inverse' &>
 <& /Elements/AddLinks,
@@ -423,7 +424,7 @@ my @results;
 my $QueueObj = RT::Queue->new($current_user);
 $QueueObj->Load($Queue) || Abort(loc("Queue [_1] could not be loaded.", $Queue||''), Code => HTTP::Status::HTTP_BAD_REQUEST);
 
-my $title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj));
+my $title = loc("Create a new ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $QueueObj, Escape => 0));
 
 $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARGSRef => \%ARGS );
 

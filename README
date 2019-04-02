@@ -20,10 +20,10 @@ o   Perl 5.10.1 or later (http://www.perl.org).
 
 o   A supported SQL database
 
-        Currently supported:  MySQL 5.1 or later with InnoDB support.
-                              MariaDB 10.0 or later with InnoDB support.
-                              Postgres 8.4 or later; 9.0 or later suggested
-                              Oracle 9iR2 or later.
+        Currently supported:  MySQL 5.1 - 5.7 with InnoDB support
+                              MariaDB 10.0 - 10.1 with InnoDB support
+                              Postgres 9.0 or later
+                              Oracle 11g or later
                               SQLite 3.0 or later; for testing only, no
                                            upgrade path guaranteed
 
@@ -286,7 +286,7 @@ fix them.  To report a bug, send email to <rt-bugs@bestpractical.com>.
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)

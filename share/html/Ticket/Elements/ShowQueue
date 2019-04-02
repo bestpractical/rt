@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,7 @@
 <%ARGS>
 $Ticket => undef
 $QueueObj
+$Escape => 1
 </%ARGS>
 <%INIT>
 my $label = $QueueObj->Name;
@@ -71,4 +72,12 @@ if ( $Ticket and $Ticket->CurrentUserHasRight('SeeQueue') ) {
 
 $label = '#'. $QueueObj->id
     unless defined $label && length $label;
+
+# Ticket create page uses this component to get queue name to generate page
+# title, which will be escaped in /Elements/Header later, so we don't need to
+# escape it here, otherwise the queue name will be wrongly escaped twice.
+if ( !$Escape ) {
+    $m->out($label);
+    return;
+}
 </%INIT>

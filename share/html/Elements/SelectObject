@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -103,42 +103,15 @@ $Hyperlink => undef
 $ObjectType = "RT::$ObjectType" unless $ObjectType =~ /::/;
 $Class    ||= "select-" . CSSClass("\L$1") if $ObjectType =~ /RT::(.+)$/;
 
-my $cache_key = join "---", "SelectObject", $ObjectType,
-    $session{'CurrentUser'}->Id, $CheckRight || "", $ShowAll;
-
-if ( defined $session{$cache_key} && ref $session{$cache_key} eq 'ARRAY') {
-    delete $session{$cache_key};
-}
-if ( defined $session{$cache_key} && defined $CacheNeedsUpdate &&
-     $session{$cache_key}{lastupdated} <= $CacheNeedsUpdate ) {
-    delete $session{$cache_key};
-}
-if ( defined $session{$cache_key} && !$session{$cache_key}{id} ) {
-    delete $session{$cache_key};
-}
-
-if ( not defined $session{$cache_key} and not $Lite ) {
-    my $collection = "${ObjectType}s"->new($session{'CurrentUser'});
-    $collection->UnLimit;
-
-    $m->callback( CallbackName => 'ModifyCollection', ARGSRef => \%ARGS,
-                  Collection => $collection, ObjectType => $ObjectType );
-
-    $session{$cache_key}{id} = {};
-    while (my $object = $collection->Next) {
-        if ($ShowAll
-            or not $CheckRight
-            or $session{CurrentUser}->HasRight( Object => $object, Right => $CheckRight ))
-        {
-            push @{$session{$cache_key}{objects}}, {
-                Id          => $object->Id,
-                Name        => $object->Name,
-                Description => $object->_Accessible("Description" => "read") ? $object->Description : undef,
-            };
-            $session{$cache_key}{id}{ $object->id } = 1;
-        }
-    }
-    $session{$cache_key}{lastupdated} = time();
+my $cache_key;
+if ( not $Lite ) {
+    $cache_key = SetObjectSessionCache(
+        ObjectType => $ObjectType,
+        CheckRight => $CheckRight,
+        ShowAll => $ShowAll,
+        Default => $Default,
+        CacheNeedsUpdate => $CacheNeedsUpdate,
+    );
 }
 
 my $default_entry;

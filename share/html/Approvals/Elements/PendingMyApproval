@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -70,9 +70,9 @@
 <input type="checkbox" class="checkbox" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
 <label for="ShowDependent"><&|/l&>Show requests awaiting other approvals</&></label><br />
 
-<&|/l_unsafe, qq{<input type='text' size='15' class="datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests created before [_1]</&><br />
+<&|/l_unsafe, qq{<input type='text' size='15' class="datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' autocomplete='off' />"&>Only show approvals for requests created before [_1]</&><br />
 
-<&|/l_unsafe, qq{<input type='text' size='15' class="datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests created after [_1]</&>
+<&|/l_unsafe, qq{<input type='text' size='15' class="datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' autocomplete='off' />"&>Only show approvals for requests created after [_1]</&>
 </&>
 
 <%init>

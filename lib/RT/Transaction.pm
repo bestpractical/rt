@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1372,6 +1372,10 @@ sub _CanonicalizeRoleName {
         my $principal = RT::Principal->new($self->CurrentUser);
         $principal->Load($self->Field);
         return ("Removed from group '[_1]'", $principal->Object->Name); #loc()
+    },
+    Munge => sub {
+        my $self = shift;
+        return "Attachment content modified";
     },
 );
 

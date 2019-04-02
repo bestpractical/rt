@@ -3,5 +3,14 @@
 }
 
 #login-box .input-row .label {
-    width: 13em
+    width: 10.5em
+}
+
+#login-box div.button-row {
+    padding-right: 0;
+    margin-top: 1em;
+}
+
+#login-box .button {
+    margin-right: -1em;
 }

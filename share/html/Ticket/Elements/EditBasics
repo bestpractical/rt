@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -140,6 +140,7 @@ my @role_fields;
 unless ($ExcludeCustomRoles) {
     my $roles = $QueueObj->CustomRoles;
     $roles->LimitToSingleValue;
+    $m->callback( CallbackName => 'ModifyCustomRoles', %ARGS, CustomRoles => $roles);
     while (my $role = $roles->Next) {
         push @role_fields, {
             name => $role->Name,

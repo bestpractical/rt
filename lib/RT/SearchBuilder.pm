@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -379,7 +379,7 @@ sub _CustomFieldJoin {
         $self->Limit(
             LEFTJOIN        => $ocfvalias,
             FIELD           => 'CustomField',
-            VALUE           => $cf->id,
+            VALUE           => $cf->Disabled ? 0 : $cf->id,
             ENTRYAGGREGATOR => 'AND'
         );
     }
@@ -434,6 +434,12 @@ sub _CustomFieldJoinByName {
         FIELD           => 'Name',
         CASESENSITIVE   => 0,
         VALUE           => $cf,
+    );
+    $self->Limit(
+        LEFTJOIN        => $CFs,
+        ENTRYAGGREGATOR => 'AND',
+        FIELD           => 'Disabled',
+        VALUE           => 0,
     );
 
     my $ocfvalias = $self->Join(

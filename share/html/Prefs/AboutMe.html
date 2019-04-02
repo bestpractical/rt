@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,157 +50,11 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Prefs/AboutMe.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>" />
-
-<table width="100%" border="0">
-<tr>
-
-<td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
-
-<input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
-<table cellspacing="0" cellpadding="0">
-  <tr>
-    <td class="label"><&|/l&>Email</&>: </td>
-    <td class="value"><input type="email" name="EmailAddress" value="<%$UserObj->EmailAddress%>" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Real Name</&>:</td>
-    <td class="value"><input type="text" name="RealName" value="<%$UserObj->RealName%>" /></td>  </tr>
-  <tr>
-    <td class="label"><&|/l&>Nickname</&>:</td>
-    <td class="value"><input type="text" name="NickName" value="<%$UserObj->NickName || ''%>" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Language</&>:</td>
-    <td class="value"><& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Timezone</&>:</td>
-    <td class="value"><& /Elements/SelectTimezone, Name => 'Timezone', Default => $UserObj->Timezone &></td>
-  </tr>
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Identity', InTable => 1 &>
-</table>
-</&>
-<&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
-<table cellspacing="0" cellpadding="0">
-  <tr>
-    <td class="label"><&|/l&>Residence</&>:</td>
-    <td class="value"><input type="tel" name="HomePhone" value="<%$UserObj->HomePhone || ''%>" size="13" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Work</&>:</td>
-    <td class="value"><input type="tel" name="WorkPhone" value="<%$UserObj->WorkPhone || ''%>" size="13" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Mobile</&>:</td>
-    <td class="value"><input type="tel" name="MobilePhone" value="<%$UserObj->MobilePhone || ''%>" size="13" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Pager</&>:</td>
-    <td class="value"><input type="tel" name="PagerPhone" value="<%$UserObj->PagerPhone || ''%>" size="13" /></td>
-  </tr>
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones', InTable => 1 &>
-</table>
-</&>
-
-%if ($UserObj->Privileged) {
-<&| /Widgets/TitleBox, title => loc('Signature'), id => "user-prefs-signature" &>
-<textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
-<%$UserObj->Signature || ''%></textarea>
-</&>
-% }
-
-% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormLeftColumn' );
-</td>
-<td valign="top" class="boxcontainer">
-
-<&| /Widgets/TitleBox, title => loc('Access control'), id => "user-prefs-access-control" &>
-% if ( $UserObj->__Value('Password') ne '*NO-PASSWORD*' ) {
-<& /Elements/EditPassword,
-    User => $UserObj,
-    Name => [qw(CurrentPass Pass1 Pass2)],
-&>
-% }
-
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
-
-</&>
-
-<&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
-<table cellspacing="0" cellpadding="0">
-  <tr>
-    <td class="label"><&|/l&>Organization</&>:</td>
-    <td class="value"><input type="text" name="Organization" value="<%$UserObj->Organization || ''%>" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Address1</&>:</td>
-    <td class="value"><input type="text" name="Address1" value="<%$UserObj->Address1 || ''%>" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Address2</&>:</td>
-    <td class="value"><input type="text" name="Address2" value="<%$UserObj->Address2 || ''%>" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>City</&>:</td>
-    <td><input type="text" name="City" value="<%$UserObj->City || ''%>" size="14" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>State</&>:</td>
-    <td class="value"><input type="text" name="State" value="<%$UserObj->State || ''%>" size="3" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Zip</&>:</td>
-    <td class="value"><input type="text" name="Zip" value="<%$UserObj->Zip || ''%>" size="9" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Country</&>:</td>
-    <td class="value"><input type="text" name="Country" value="<%$UserObj->Country || ''%>" /></td>
-  </tr>
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location', InTable => 1 &>
-</table>
-</&>
-
-
-
-<& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
-
-
-
-<& /Elements/Submit, Label => loc('Save Preferences') &>
-
-<&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
-
-<&|/l&>All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below.</&>
-
-<a href="#" id="ResetAuthTokenPrompt" style="display: none">
-  <&|/l&>I want to reset my secret token.</&>
-</a>
-<& /Elements/Submit,
-    Label       => loc('Reset secret authentication token'),
-    Name        => "ResetAuthToken",
-    id          => "ResetAuthTokenContainer" &>
-<script>
-    jQuery("#ResetAuthTokenContainer").hide();
-    jQuery("#ResetAuthTokenPrompt").show().click(function(ev){
-        jQuery(this).slideUp();
-        jQuery("#ResetAuthTokenContainer").slideDown();
-        ev.preventDefault();
-    });
-</script>
-</&>
-
-% $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
-</td>
-</tr>
-
-</table>
+<& Elements/EditAboutMe, UserObj => $UserObj, PasswordName => [ qw(CurrentPass Pass1 Pass2) ] &>
 
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormEnd' );
 
 </form>
-
 
 <%INIT>
 

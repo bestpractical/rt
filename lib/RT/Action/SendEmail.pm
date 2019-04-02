@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -542,7 +542,8 @@ sub AddTicket {
     }
     if ( $ticket_mime->parts ) {
         my $email_mime = $self->TemplateObj->MIMEObj;
-        $email_mime->make_multipart;
+        $email_mime->make_multipart( 'mixed', Force => 1 )
+            unless $email_mime->effective_type eq 'multipart/mixed';
         $email_mime->add_part($ticket_mime);
     }
     return;

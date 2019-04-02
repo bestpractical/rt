@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -55,6 +55,19 @@ use strict;
 use warnings;
 
 use Scalar::Util qw(weaken);
+
+__PACKAGE__->RegisterCustomFieldJoin(@$_) for
+    [ "RT::Transaction" => sub { $_[0]->JoinTransactions } ],
+    [ "RT::Queue"       => sub {
+            # XXX: Could avoid join and use main.Queue with some refactoring?
+            return $_[0]->{_sql_aliases}{queues} ||= $_[0]->Join(
+                ALIAS1 => 'main',
+                FIELD1 => 'Queue',
+                TABLE2 => 'Queues',
+                FIELD2 => 'id',
+            );
+        }
+    ];
 
 our @GROUPINGS = (
     Status => 'Enum',                   #loc_left_pair

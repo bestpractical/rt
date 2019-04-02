@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -2667,6 +2667,13 @@ sub __DependsOn
     $objs->Limit( FIELD => 'ObjectType', VALUE => ref $self );
     $objs->Limit( FIELD => 'ObjectId', VALUE => $self->id );
     push( @$list, $objs );
+
+    if ( $self->isa( 'RT::CustomField' ) ) {
+        $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => 'Type',  VALUE => 'CustomField' );
+        $objs->Limit( FIELD => 'Field', VALUE => $self->id );
+        push( @$list, $objs );
+    }
 
 # Links
     if ( $self->can('Links') ) {

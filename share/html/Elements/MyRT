@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,14 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeTable' );
-<div class="myrt columns">
+<div class="myrt row">
 
-<div class="boxcontainer col-8">
+<div class="boxcontainer col-md-8">
 % $show_cb->($_) foreach @$body;
 </div>
 
 % if ( $sidebar ) {
-<div class="boxcontainer col-4">
+<div class="boxcontainer col-md-4">
 % $show_cb->($_) foreach @$sidebar;
 </div>
 % }

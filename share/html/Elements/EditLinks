@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="columns ticket-summary">
-  <div class="boxcontainer col-6">
+<div class="row ticket-summary">
+  <div class="boxcontainer col-md-6">
       <h3><&|/l&>Current Links</&></h3>
 
 <div class="wide fields">
@@ -117,7 +117,7 @@
 </div>
 
   </div>
-  <div class="boxcontainer col-6">
+  <div class="boxcontainer col-md-6">
 <h3><&|/l&>New Links</&></h3>
 <& AddLinks, %ARGS &>
 </div>

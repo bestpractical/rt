@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -104,6 +104,10 @@ my $COLUMN_MAP = {
                 return loc('No Name');
             }
         },
+    },
+    Content => {
+        title       => 'Content', # loc
+        value       => sub { return $_[0]->Content },
     },
 };
 

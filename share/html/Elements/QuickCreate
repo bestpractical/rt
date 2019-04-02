@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,6 +62,9 @@
     <span class="label"><&|/l&>Queue</&>:</span>
     <span class="value">
       <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
+    </span>
+  </div>
+  <div class="field input-row">
       <span class="label"><&|/l&>Owner</&>:</span>
       <span class="value">
         <select type="select" name="Owner">  
@@ -70,7 +73,6 @@
           <option value="<%RT->Nobody->id%>" <% $default_owner == RT->Nobody->id ? 'selected="selected"' : '' |n %>><%loc('Nobody')%></option>
         </select>
       </span>
-    </span>
   </div>
   <div class="field input-row">
     <span class="label"><&|/l&>Requestors</&>:</span>

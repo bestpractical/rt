@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -116,7 +116,7 @@ my @results;
 my $queue_obj = RT::Queue->new($session{'CurrentUser'});
 $queue_obj->Load($Queue);
 
-my $title = loc("Create a ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj));
+my $title = loc("Create a ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj, Escape => 0));
 
 ProcessAttachments(ARGSRef => \%ARGS);
 

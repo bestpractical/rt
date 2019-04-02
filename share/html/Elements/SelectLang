@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
 % if ($ShowNullOption) {
-<option value="">-</option>
+<option value="">- (<% I18N::LangTags::List::name($session{CurrentUser}->LanguageHandle->language_tag) %>)</option>
 % }
 % foreach my $lang (@lang) {
 <option value="<%$lang%>"<%(defined($Default) && ($lang eq $Default)) && qq[ selected="selected"] |n%>><% $lang_to_desc{$lang} %>

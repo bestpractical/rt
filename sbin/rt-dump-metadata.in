@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -184,7 +184,7 @@ OBJECT:
                     # as the sub InsertData in RT::Handle creates a global CF
                     # when no queue is specified.
                     $rv->{Queue} = [];
-                    my $applies = $obj->AppliedTo;
+                    my $applies = $obj->AddedTo;
                     while ( my $queue = $applies->Next ) {
                         push @{ $rv->{Queue} }, $queue->Name;
                     }

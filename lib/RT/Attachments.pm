@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -250,6 +250,143 @@ sub AddRecord {
 
     return unless $record->TransactionObj->CurrentUserCanSee;
     return $self->SUPER::AddRecord( $record );
+}
+
+=head2 ReplaceAttachments ( Search => 'SEARCH', Replacement => 'Replacement', Header => 1, Content => 1 )
+
+Provide a search string to search the attachments table for, by default the Headers and Content
+columns will both be searched for matches.
+
+=cut
+
+sub ReplaceAttachments {
+    my $self = shift;
+    my %args = (
+        Search      => undef,
+        Replacement => '',
+        Headers     => 1,
+        Content     => 1,
+        FilterBySearchString => 1,
+        @_,
+    );
+
+    return ( 0, $self->loc('Provide a search string to search on') ) unless $args{Search};
+
+
+    my %munged;
+    my $create_munge_txn = sub {
+        my $ticket = shift;
+        if ( !$munged{ $ticket->id } ) {
+            my ( $ret, $msg ) = $ticket->_NewTransaction( Type => "Munge" );
+            if ($ret) {
+                $munged{ $ticket->id } = 1;
+            }
+            else {
+                RT::Logger->error($msg);
+            }
+        }
+    };
+
+    my $attachments = $self->Clone;
+    if ( $args{FilterBySearchString} ) {
+        $attachments->Limit(
+            FIELD     => 'ContentEncoding',
+            VALUE     => 'none',
+            SUBCLAUSE => 'Encoding',
+        );
+        $attachments->Limit(
+            FIELD     => 'ContentEncoding',
+            OPERATOR  => 'IS',
+            VALUE     => 'NULL',
+            SUBCLAUSE => 'Encoding',
+        );
+
+        # For QP encoding, if encoded string is equal to the decoded
+        # version, then SQL search will also work.
+        #
+        # Adding "\n" is to avoid trailing "=" in QP encoding
+        if ( MIME::QuotedPrint::encode( Encode::encode( 'UTF-8', "$args{Search}\n" ) ) eq
+            Encode::encode( 'UTF-8', "$args{Search}\n" ) )
+        {
+            $attachments->Limit(
+                FIELD     => 'ContentEncoding',
+                VALUE     => 'quoted-printable',
+                SUBCLAUSE => 'Encoding',
+            );
+        }
+    }
+
+    if ( $args{Headers} ) {
+        my $atts = $attachments->Clone;
+        if ( $args{FilterBySearchString} ) {
+            $atts->Limit(
+                FIELD    => 'Headers',
+                OPERATOR => 'LIKE',
+                VALUE    => $args{Search},
+            );
+        }
+        $atts->Limit(
+            FIELD     => 'ContentType',
+            OPERATOR  => 'IN',
+            VALUE     => [ RT::Util::EmailContentTypes(), 'text/plain', 'text/html' ],
+            SUBCLAUSE => 'Types',
+        );
+        $atts->Limit(
+            FIELD           => 'ContentType',
+            OPERATOR        => 'STARTSWITH',
+            VALUE           => 'multipart/',
+            SUBCLAUSE       => 'Types',
+            ENTRYAGGREGATOR => 'OR',
+        );
+
+        while ( my $att = $atts->Next ) {
+            my ( $ret, $msg ) = $att->ReplaceHeaders(
+                Search      => $args{Search},
+                Replacement => $args{Replacement},
+            );
+
+            if ( $ret ) {
+                $create_munge_txn->( $att->TransactionObj->TicketObj );
+            }
+            else {
+                RT::Logger->debug($msg);
+            }
+        }
+    }
+
+    if ( $args{Content} ) {
+        my $atts = $attachments->Clone;
+        if ( $args{FilterBySearchString} ) {
+            $atts->Limit(
+                FIELD     => 'Content',
+                OPERATOR  => 'LIKE',
+                VALUE     => $args{Search},
+                SUBCLAUSE => 'Content',
+            );
+        }
+        $atts->Limit(
+            FIELD    => 'ContentType',
+            OPERATOR => 'IN',
+            VALUE    => [ 'text/plain', 'text/html' ],
+        );
+
+        while ( my $att = $atts->Next ) {
+            my ( $ret, $msg ) = $att->ReplaceContent(
+                Search      => $args{Search},
+                Replacement => $args{Replacement},
+            );
+
+            if ( $ret ) {
+                $create_munge_txn->( $att->TransactionObj->TicketObj );
+            }
+            else {
+                RT::Logger->debug($msg);
+            }
+        }
+    }
+
+    my $count = scalar keys %munged;
+    return wantarray ? ( 1, $self->loc( "Updated [quant,_1,ticket's,tickets'] attachment content", $count ) ) : $count;
 }
 
 RT::Base->_ImportOverlays();

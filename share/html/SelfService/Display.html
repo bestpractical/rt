@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,8 +53,8 @@
 <& /Ticket/Elements/ShowUpdateStatus, Ticket => $Ticket &>
 
 <&| /Widgets/TitleBox, title => loc('Ticket metadata') &>
-<div class="columns ticket-summary">
-    <div class="boxcontainer col-6">
+<div class="row ticket-summary">
+    <div class="boxcontainer col-md-6">
         <&| /Widgets/TitleBox, title => loc('The Basics'),
               class => 'ticket-info-basics',
               ($LinkBasicsTitle ? (title_href => $title_box_link) : ()),
@@ -69,7 +69,7 @@
             Groupings    => [ grep {$_ !~ /^(Basics|Dates)$/} RT::CustomField->Groupings( "RT::Ticket" ) ],
         &>
     </div>
-    <div class="boxcontainer col-6">
+    <div class="boxcontainer col-md-6">
           <&| /Widgets/TitleBox, title => loc("Dates"),
                  class => 'ticket-info-dates',
                  title_class=> 'inverse',

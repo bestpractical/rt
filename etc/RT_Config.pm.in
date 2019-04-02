@@ -1383,6 +1383,39 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+
+=item C<$UserTicketDataResultFormat>
+
+This is the format of ticket search result for "Download User Tickets" links. It
+defaults to C<DefaultSearchResultFormat> for privileged users and C<DefaultSelfServiceSearchResultFormat>
+for unprivileged users if it's not set.
+
+=cut
+
+Set($UserTicketDataResultFormat, undef );
+
+=item C<$UserDataResultFormat>
+
+This is the format of the user search result for "Download User Data" links.
+
+=cut
+
+Set($UserDataResultFormat, "'__id__', '__Name__', '__EmailAddress__', '__RealName__',\
+                            '__NickName__', '__Organization__', '__HomePhone__', '__WorkPhone__',\
+                            '__MobilePhone__', '__PagerPhone__', '__Address1__', '__Address2__',\
+                            '__City__', '__State__','__Zip__', '__Country__', '__Gecos__', '__Lang__',\
+                            '__Timezone__', '__FreeFormContactInfo__'");
+
+=item C<$UserTransactionDataResultFormat>
+
+This is the format of the user transaction search result for "Download User Transaction Data" links.
+
+=cut
+
+Set($UserTransactionDataResultFormat, "'__ObjectId__/TITLE:Ticket Id', '__id__', '__Created__', '__Description__',\
+                                        '__OldValue__', '__NewValue__', '__Content__'");
+
+
 =item C<$DefaultSearchResultOrderBy>
 
 What Tickets column should we order by for RT Ticket search results.
@@ -1798,6 +1831,69 @@ access ticked displays.
 =cut
 
 Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
+
+=item C<$SelfServiceUserPrefs>
+
+This option controls how the SelfService user preferences page is
+displayed. It accepts a string from one of the four possible modes
+below.
+
+=over
+
+=item C<edit-prefs> (the default)
+
+When set to C<edit-prefs>, self service users will be able to update
+their Timezone and Language preference and update their password.
+This is the default behavior of RT.
+
+=item C<view-info>
+
+When set to C<view-info>, users will have full access to all their
+user information stored in RT on a read-only page.
+
+=item C<edit-prefs-view-info>
+
+When set to C<edit-prefs-view-info>, users will have full access as in
+the C<view-info> option, but also will be able to update their Locale
+and password as in the default C<edit-prefs> option.
+
+=item C<full-edit>
+
+When set to C<full-edit>, users will be able to fully view and update
+all of their stored RT user information.
+
+=back
+
+=cut
+
+Set($SelfServiceUserPrefs, 'edit-prefs');
+
+=item C<$SelfServiceRequestUpdateQueue>
+
+Set this to the name of the queue to use for tickets requesting updates
+to user infomation from Self Service users. Once it's set, a quick
+ticket create portlet will show up on Preferences page for self service
+users. This option is only available when $SelfServiceUserPrefs is set
+to 'view-info' or 'edit-prefs-view-info'.
+
+Self service users need the CreateTicket right on this queue to create
+a ticket.
+
+=cut
+
+Set($SelfServiceRequestUpdateQueue, undef);
+
+=item C<$SelfServiceDownloadUserData>
+
+Allow Self Service users to download their user information, ticket data,
+and transaction data as a .tsv file. When enabled, these options
+will appear in the self service interface at Logged in as > Preferences.
+Users also need the ModifySelf right to have access to this page.
+
+=cut
+
+Set( $SelfServiceDownloadUserData, 0 );
+
 
 =back
 
@@ -2470,6 +2566,17 @@ chance of fallback to the login screen, even if REMOTE_USER failed.
 =cut
 
 Set($WebFallbackToRTLogin, undef);
+
+=item C<$LogoutURL>
+
+By default, C<$LogoutURL> is set to RT's logout page. When an
+external service is used to log into RT, C<$LogoutURL> can be set
+to the identity provider's logout URL. Include the full path to the
+logout endpoint, for example: 'https://www.example.com/logout'.
+
+=cut
+
+Set($LogoutURL, '/NoAuth/Logout.html');
 
 =item C<$WebRemoteUserGecos>
 
