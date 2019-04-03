@@ -76,7 +76,19 @@
 .ticket-summary .titlebox .titlebox-title .left a, .ticket-summary .titlebox .titlebox-title .left a:visited { color: #fff;}
 
 .unread-messages .titlebox-content :link {
-    text-decoration: underline;
+    text-decoration: none;
+}
+
+.small-button {
+    padding: 0.2em 0.5em !important;
+}
+
+.new-messages-buttons {
+    display: inline-block;
+}
+
+.new-messages-on-ticket {
+    font-style: italic;
 }
 
 .ticket-inactive {
