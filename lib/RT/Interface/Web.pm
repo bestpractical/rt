@@ -120,6 +120,7 @@ sub JSFiles {
       jquery.cookie.js
       popper.min.js
       bootstrap.min.js
+      bootstrap-select.min.js
       titlebox-state.js
       i18n.js
       util.js

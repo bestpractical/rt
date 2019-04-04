@@ -1,6 +1,7 @@
 @import "../base-responsive/main.css";
 
 @import "bootstrap.css";
+@import "bootstrap-select.css";
 @import "base.css";
 @import "layout.css";
 @import "nav.css";
