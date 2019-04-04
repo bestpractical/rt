@@ -45,6 +45,6 @@ $m->form_with_fields('q');
 $m->field(q => 'fulltext:MERGEDAWAY');
 TODO:  {
     local $TODO = "We don't yet handle merged ticket content searches right";
-$m->content_contains('Found 1 ticket');
+$m->content_contains('<h1>Found 1 ticket</h1>');
 }
 $m->content_contains('base ticket', "base ticket is found, not the merged-away ticket");
