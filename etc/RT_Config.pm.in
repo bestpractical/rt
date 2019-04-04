@@ -1434,11 +1434,11 @@ Set($DefaultSearchResultOrder, 'ASC');
 
 =item C<$ShowSearchResultCount>
 
-Display search result count on ticket lists. Defaults to 0 (hide them).
+Display search result count on ticket lists. Defaults to 1 (show them).
 
 =cut
 
-Set($ShowSearchResultCount, 0);
+Set($ShowSearchResultCount, 1);
 
 =item C<%FullTextSearch>
 
