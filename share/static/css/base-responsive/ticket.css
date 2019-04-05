@@ -64,20 +64,6 @@
     font-style: normal;
 }
 
-/* Color the titlebox tabs */
-.ticket-info-cfs .titlebox .titlebox-title .left { background-color: #b32; color: #fff;}
-.ticket-info-basics .titlebox .titlebox-title .left { background-color: #b32;  color: #fff;}
-.ticket-info-people .titlebox .titlebox-title .left { background-color: #48c;  color: #fff;}
-.ticket-info-requestor .titlebox .titlebox-title .left { white-space: nowrap; background-color: #48c;  color: #fff;}
-.ticket-info-links .titlebox .titlebox-title .left { background-color: #316531;  color: #fff;}
-.ticket-info-merge .titlebox .titlebox-title .left { background-color: #8b4513;  color: #fff;}
-.ticket-info-reminders .titlebox .titlebox-title .left { background-color: #369;  color: #fff;}
-.ticket-info-dates .titlebox .titlebox-title .left { background-color: #633063;  color: #fff;}
-.ticket-info-attachments .titlebox .titlebox-title .left { background-color: #993366;  color: #fff;}
-.ticket-info-generic .titlebox .titlebox-title .left { background-color: #547ccc;  color: #fff;}
-
-.ticket-summary .titlebox .titlebox-title .left a, .ticket-summary .titlebox .titlebox-title .left a:visited { color: #fff;}
-
 .unread-messages .titlebox-content :link {
     text-decoration: underline;
 }

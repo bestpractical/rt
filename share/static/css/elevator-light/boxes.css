@@ -3,36 +3,6 @@
     margin-bottom: 2em;
 }
 
-.titlebox .titlebox-content {
-    padding: 1em;
-    border-top: 2px solid #aaa;
-    border-bottom: 1px solid #eee;
-}
-
-.titlebox.fullwidth > .titlebox-content {
-    padding-left: 0;
-    padding-right: 0;
-}
-
-* html .titlebox {
-    border-top: none;
-    border-left: none;
-}
-
-.titlebox .titlebox {
-    margin-top: 1em;
-}
-
-.titlebox .titlebox .titlebox-content {
-
-}
-
-.titlebox {
-    margin-left: 0em;
-    margin-right: 0em;
-    min-height: 1.25em;
-}
-
 .titlebox .titlebox-title {
     position: relative;
     background-color: transparent;
@@ -47,24 +17,9 @@
     text-decoration: underline
 }
 
-.titlebox.rolled-up  .titlebox-title .left,
-.titlebox.rolled-up  .titlebox-title .left a {
-    color: #ccc;
-    line-height: 1.6em;
-}
-
-.titlebox.rolled-up .titlebox-title {
-    border-bottom: 1px solid #ccc
-}
-
-.titlebox.rolled-up .titlebox-title .right {
-    display: none
-}
-
 .titlebox .titlebox-title .left {
     font-weight: bold;
     background: transparent;
-    margin-left: 1em;
     padding: 0.5em 1.25em 0.25em 1.25em;
     line-height: 1.4em;
     font-size: 1.1em;
@@ -109,23 +64,6 @@
     color: #000
 }
 
-.titlebox .titlebox-title .widget a {
-    display: block;
-    margin: 0;
-    width: 20px;
-    background: url(../../../static/images/css/rollup-arrow.gif) no-repeat;
-    background-position: center 0;
-    position: absolute;
-    top: 0.5em;
-    left: 0.5em;
-    padding: 7px 0 0 0;
-    overflow: hidden;
-}
-
-.titlebox.rolled-up .titlebox-title .widget a {
-    background-image: url(../../../static/images/css/rolldown-arrow.gif)
-}
-
 div.results .titlebox .titlebox-content {
     border: none;
     -moz-border-radius: 0.5em;
@@ -142,4 +80,47 @@ div.results .titlebox .titlebox-content {
 
 .results .titlebox-title {
     display: none
+}
+
+.results .card-body {
+    padding: 0;
+}
+
+.titlebox .titlebox-content,
+.titlebox .card-header {
+    border: none;
+}
+
+.titlebox .card-header {
+    font-size: larger;
+}
+
+.titlebox .card-body {
+    padding-top: 0;
+}
+
+.titlebox .card-header span.toggle:hover {
+    cursor: pointer;
+}
+
+.titlebox .card-header span.toggle:before {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    margin-right: 15px;
+    border: solid #B0B3BC;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(-135deg);
+    -ms-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+    transition: transform .25s;
+    position: absolute;
+    top: 1.2em;
+}
+
+.titlebox .card-header span.toggle.collapsed:before {
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
 }

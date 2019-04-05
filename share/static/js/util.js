@@ -574,6 +574,18 @@ jQuery(function() {
             showModal
         );
     });
+
+    jQuery(".card .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-target'));
+        e.on('hide.bs.collapse', function () {
+            createCookie(e.attr('id'),0,365);
+            e.closest('div.titlebox').find('div.card-header span.right').addClass('invisible');
+        });
+        e.on('show.bs.collapse', function () {
+            createCookie(e.attr('id'),1,365);
+            e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
+        });
+    });
 });
 
 // focus jquery object in window, only moving the screen when necessary

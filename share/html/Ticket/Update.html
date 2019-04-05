@@ -219,7 +219,7 @@ jQuery( function() {
 
        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
 
-       jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
+       jQuery('#recipients div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
            payload,
            function() {
                jQuery('#recipients div.titlebox-content').removeClass('refreshing');
@@ -233,7 +233,7 @@ jQuery( function() {
            }
        );
 
-       jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
+       jQuery('#previewscrips div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
            payload,
            function() {
                jQuery('#previewscrips div.titlebox-content').removeClass('refreshing');

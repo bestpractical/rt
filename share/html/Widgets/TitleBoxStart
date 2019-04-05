@@ -45,10 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="titlebox<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>">
-  <div class="titlebox-title<% $title_class ? " $title_class" : ''%>">
+<div class="titlebox card<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>">
+  <div class="titlebox-title card-header<% $title_class ? " $title_class" : ''%>">
 % if ($hideable) {
-    <span class="widget"><a href="#" onclick="return rollup(<%$tid|n,j%>);" title="Toggle visibility"></a></span>
+% if ( RT->Config->Get('WebDefaultStylesheet', $session{CurrentUser}) =~ /^elevator-/ ) {
+    <span class="toggle <% $rolledup ? " collapsed" : ""%>" data-toggle="collapse" data-target="#<%$tid|n%>" title="<% loc('Toggle visibility') %>"></span>
+% } else {
+    <span class="widget"><a href="#" onclick="return rollup(<%$tid|n,j%>);" title="<% loc('Toggle visibility') %>"></a></span>
+% }
 % }
     <span class="left"><%
             $title_href ? qq[<a href="$title_href">] : '' | n
@@ -58,7 +62,8 @@
         <% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
     </span>
   </div>
-  <div class="titlebox-content <% $bodyclass %><% $rolledup ? " hidden" : ""%>" id="<% $tid %>">
+  <div class="titlebox-content collapse<% $bodyclass %><% $rolledup ? " hidden" : " show"%>" id="<% $tid %>">
+    <div class="card-body">
 <%ARGS>
 $class => ''
 $bodyclass => ''
