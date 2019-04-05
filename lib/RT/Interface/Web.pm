@@ -109,38 +109,13 @@ sub SquishedJS {
 =cut
 
 sub JSFiles {
-    return qw{
-      jquery-1.12.4p1.min.js
-      jquery_noconflict.js
-      jquery-ui.min.js
-      jquery-ui-timepicker-addon.js
-      jquery-ui-patch-datepicker.js
-      jquery.modal.min.js
-      jquery.modal-defaults.js
-      jquery.cookie.js
-      popper.min.js
-      bootstrap.min.js
-      bootstrap-select.min.js
-      titlebox-state.js
-      i18n.js
-      util.js
-      autocomplete.js
-      jquery.event.hover-1.0.js
-      superfish.js
-      supersubs.js
-      jquery.supposition.js
-      chosen.jquery.min.js
-      history-folding.js
-      cascaded.js
-      forms.js
-      event-registration.js
-      late.js
-      mousetrap.min.js
-      keyboard-shortcuts.js
-      assets.js
-      /static/RichText/ckeditor.js
-      dropzone.min.js
-      }, RT->Config->Get('JSFiles');
+    my $theme_js     = RT->Config->Get('ThemeJSFiles');
+    my $current_user = $HTML::Mason::Commands::session{CurrentUser};
+    my @js = map { @{ $theme_js->{$_} || [] } } 'base',
+      RT->Config->Get( 'WebDefaultStylesheet', $current_user && $current_user->id ? $current_user : () );
+
+    push @js, RT->Config->Get('JSFiles');
+    return @js;
 }
 
 =head2 ClearSquished
