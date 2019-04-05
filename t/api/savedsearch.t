@@ -2,7 +2,7 @@ use strict;
 use warnings;
 BEGIN { $ENV{'LANG'} = 'C' }
 
-use RT::Test tests => 27;
+use RT::Test tests => undef;
 
 use_ok('RT::SavedSearch');
 use_ok('RT::SavedSearches');
@@ -25,10 +25,21 @@ $searchuser->PrincipalObj->GrantRight(Right => 'ModifySelf');
 my $ingroup = RT::Group->new(RT->SystemUser);
 $ingroup->CreateUserDefinedGroup(Name => 'searchgroup1'.$$);
 $ingroup->AddMember($searchuser->Id);
+
+diag('Check saved search rights');
+my @create_objects = RT::SavedSearch->new($searchuser)->ObjectsForCreating;
+
+is( scalar @create_objects, 1, 'Got one Privacy option for saving searches');
+is( $create_objects[0]->Id, $searchuser->Id, 'Privacy option is personal saved search');
+
 $searchuser->PrincipalObj->GrantRight(Right => 'EditSavedSearches',
                                       Object => $ingroup);
 $searchuser->PrincipalObj->GrantRight(Right => 'ShowSavedSearches',
                                       Object => $ingroup);
+
+@create_objects = RT::SavedSearch->new($searchuser)->ObjectsForCreating;
+is( scalar @create_objects, 2, 'Got two Privacy options for saving searches');
+is( $create_objects[1]->Id, $ingroup->Id, 'Second Privacy option is group saved search');
 
 # This is the group whose searches searchuser should not be able to see.
 my $outgroup = RT::Group->new(RT->SystemUser);
@@ -179,3 +190,4 @@ ok($ret, "Deleted genericsearch");
 $allsearches->LimitToPrivacy('RT::User-'.$curruser->Id);
 is($allsearches->Count, 1, "Found all searchuser's searches after deletion");
 
+done_testing();
