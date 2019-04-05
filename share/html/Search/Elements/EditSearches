@@ -51,7 +51,7 @@
 %# Hide all the save functionality if the user shouldn't see it.
 % if ( $can_modify ) {
 <span class="label"><&|/l&>Privacy</&>:</span>
-<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
+<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
 <br />
 <span class="label"><&|/l&>Description</&>:</span>
 <input size="25" name="SavedSearchDescription" value="<% $Description || '' %>" />
@@ -76,7 +76,7 @@
 <br />
 <hr />
 <span class="label"><&|/l&>Load saved search</&>:</span>
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
+<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
 <input type="submit" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" class="button" />
 
 </&>
@@ -93,8 +93,13 @@ my $can_modify = $session{'CurrentUser'}->HasRight(
 );
 
 use RT::SavedSearch;
-my @Objects = RT::SavedSearch->new($session{CurrentUser})->_PrivacyObjects;
-push @Objects, RT::System->new( $session{'CurrentUser'} )
+my @LoadObjects = RT::SavedSearch->new($session{CurrentUser})->ObjectsForLoading;
+push @LoadObjects, RT::System->new( $session{'CurrentUser'} )
+    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
+                                          Right => 'SuperUser' );
+
+my @CreateObjects = RT::SavedSearch->new($session{CurrentUser})->ObjectsForCreating;
+push @CreateObjects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
                                           Right => 'SuperUser' );
 
