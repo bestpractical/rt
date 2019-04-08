@@ -45,34 +45,34 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table valign="top">
-
 % for my $o (0..3) {
 % $Order[$o] ||= ''; $OrderBy[$o] ||= '';
-<tr>
-<td class="label">
+<div class="form-row">
+  <div class="col-md-4 label">
 % if ($o == 0) {
 <&|/l&>Order by</&>:
 % }
-</td>
-<td class="value">
-<select name="OrderBy">
+  </div>
+  <div class="col-md-4 value">
+    <select name="OrderBy" class="form-control selectpicker">
 % if ($o > 0) {
-<option value=""><&|/l&>~[none~]</&></option>
+      <option value=""><&|/l&>~[none~]</&></option>
 % }
 % # %fields maps display name to SQL column/function
 % foreach my $field (sort keys %fields) {
 %    next unless $field;
 %    my $fieldval = $fields{$field};
-<option value="<%$fieldval%>"
+      <option value="<%$fieldval%>"
 % if (defined $OrderBy[$o] and $fieldval eq $OrderBy[$o]) {
 selected="selected"
 % }
 ><% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
 % }
-</select>
-<select name="Order">
-<option value="ASC"
+    </select>
+  </div>
+  <div class="col-md-4">
+    <select name="Order" class="form-control selectpicker">
+      <option value="ASC"
 % unless ( ($Order[$o]||'') eq "DESC" ) {
 selected="selected"
 % }
@@ -82,20 +82,21 @@ selected="selected"
 selected="selected"
 % }
 ><&|/l&>Desc</&></option>
-</select>
-</td>
-</tr>
+    </select>
+  </div>
+</div>
 % }
-<tr>
-<td class="label">
-<&|/l&>Rows per page</&>:
-</td><td class="value">
-<& /Elements/SelectResultsPerPage, 
-    Name => "RowsPerPage", 
-    Default => $RowsPerPage &>
-</td>
-</tr>
-</table>
+
+<div class="form-row">
+  <div class="col-md-4 label">
+    <&|/l&>Rows per page</&>:
+  </div>
+  <div class="col-md-4 value">
+    <& /Elements/SelectResultsPerPage,
+        Name => "RowsPerPage",
+        Default => $RowsPerPage &>
+  </div>
+</div>
 
 <%INIT>
 my $tickets = RT::Tickets->new($session{'CurrentUser'});

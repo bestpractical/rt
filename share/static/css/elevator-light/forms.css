@@ -63,8 +63,6 @@ input[class=button],
 button {
     color: #fff;
     background: #4868b3;
-    border: 1px solid #fff;
-    padding: 0.5em;
 }
 
 .button:focus,
@@ -101,6 +99,7 @@ button {
     border-radius: 3px;
     padding-left: 0.75em;
     padding-right: 0.75em;
+    width: auto;
 }
 
 .value {
@@ -116,4 +115,8 @@ button {
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
+}
+
+.form-row {
+    margin-top: 0.5em;
 }

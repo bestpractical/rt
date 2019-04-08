@@ -20,7 +20,6 @@ form {
 }
 
 .value {
- font-size: 0.85em;
 
 }
 
@@ -123,14 +122,14 @@ div.results .titlebox-content {
 .fields .value {
     display: table-cell;
     vertical-align: middle;
-    padding-top: 0.25em;
+    padding-top: 0.5em;
 }
 
 .fields > .field:last-child > .label,
 .fields > .field:last-child > .labeltop,
 .fields > .field:last-child > .cflabel,
 .fields > .field:last-child > .value {
-    padding-bottom: 0.25em;
+    padding-bottom: 0.5em;
 }
 
 
@@ -180,16 +179,13 @@ div.results .titlebox-content {
 
 .label, .labeltop {
  text-align: right;
- font-size: 0.8em;
  padding-right: .5em;
  padding-top: .5em;
- margin-top: .5em;
  white-space: nowrap;
 }
 
 .cflabel {
  text-align: right;
- font-size: 0.8em;
  padding-right: .5em;
  width: 12em;
 }

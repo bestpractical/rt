@@ -55,15 +55,6 @@
     font: message-box;
 }
 
-#editquery,
-#editsearches {
-    position: absolute;
-    margin-top: 1.5em;
-    right: 1em;
-    left: 60%;
-    top: 1em;
-}
-
 #editquery {
     top: 1.3em
 }
@@ -73,7 +64,6 @@
 }
 
 #pick-criteria {
-    width: 58%;
     padding-top: 0em;
     margin-top: 0em;
 }
@@ -82,12 +72,7 @@
     overflow-x: auto
 }
 
-#BuildQuery .submit {
-    width: 58%
-}
-
 #sorting.titlebox {
-    width: 55%;
     padding-right: 1em;
 }
 
@@ -171,10 +156,6 @@ span#display-options .titlebox#columns table.edit-columns span.value {
     width: 7em;
 }
 
-#BuildQuery #formatbuttons.submit {
-    width: 85%
-}
-
 .refresh {
     float: left
 }
@@ -185,4 +166,24 @@ span#display-options .titlebox#columns table.edit-columns span.value {
 #SavedSearchLoad,
 #SavedSearchOwner {
     max-width: 100%
+}
+
+#pick-criteria .form-row .label .bootstrap-select {
+    margin-top: -0.5em;
+}
+
+#pick-criteria .form-row .form-check {
+    margin-top: 0.75em;
+}
+
+#pick-criteria .value .form-row {
+    margin-top: 0;
+}
+
+#pick-criteria .value {
+    max-width: 500px;
+}
+
+.edit-saved-searches .input-group input.btn {
+    margin-left: 0.5em;
 }

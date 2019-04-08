@@ -48,19 +48,21 @@
 <& NewListActions, actions => $actions &>
 <&|/Widgets/TitleBox, title => join(': ', grep defined, loc("Current search"), $Description) &>
 
-<select size="10" name="clauses" class="tall" style="width: 100%" multiple="multiple">
+<div class="form-group">
+  <select size="10" name="clauses" class="tall form-control" style="width: 100%" multiple="multiple">
 % $m->out($optionlist);
-</select>
+  </select>
+</div>
 
-<p align="center">
-<input type="submit" class="button" name="Up" value=" &uarr; " />
-<input type="submit" class="button" name="Down" value=" &darr; " />
-<input type="submit" class="button" name="Left" value=" &larr; " />
-<input type="submit" class="button" name="Right" value=" &rarr; " />
-<input type="submit" class="button" name="Toggle" value="<&|/l&>And/Or</&>" />
-<input type="submit" class="button" name="DeleteClause" value="<&|/l&>Delete</&>" />
-%#<input type="submit" class="button" name="EditQuery" value="Advanced" />
-</p>
+<div align="center" class="text-center">
+  <input type="submit" class="button btn btn-primary" name="Up" value=" &uarr; " />
+  <input type="submit" class="button btn btn-primary" name="Down" value=" &darr; " />
+  <input type="submit" class="button btn btn-primary" name="Left" value=" &larr; " />
+  <input type="submit" class="button btn btn-primary" name="Right" value=" &rarr; " />
+  <input type="submit" class="button btn btn-primary" name="Toggle" value="<&|/l&>And/Or</&>" />
+  <input type="submit" class="button btn btn-primary" name="DeleteClause" value="<&|/l&>Delete</&>" />
+%#<input type="submit" class="button btn btn-primary" name="EditQuery" value="Advanced" />
+</div>
 
 </&>
 <%ARGS>

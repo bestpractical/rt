@@ -49,7 +49,7 @@
 % $Default = "" unless defined $Default;
 % if ($CustomField->Type =~ /Select/i) {
 % my $values = $CustomField->Values;
-<select name="<%$Name%>">
+<select name="<%$Name%>" class="form-control selectpicker">
 <option value="" selected="selected">-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
 % while (my $value = $values->Next) {
@@ -72,7 +72,7 @@
 jQuery('#'+'CF-' + <% $CustomField->id %>).autocomplete({ source: <% JSON::to_json(\@options) |n %> });
 </script>
 % } else {
-<input name="<%$Name%>" size="20" value="<% $Default %>" type="text" />
+<input name="<%$Name%>" size="20" value="<% $Default %>" type="text" class="form-control" />
 % }
 <%args>
 $Name => undef

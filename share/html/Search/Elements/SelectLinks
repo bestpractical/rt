@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$Name%>" class="form-control selectpicker">
 % foreach (@fields) {
 <option value="<%$_->[0]%>"><% $_->[1] %></option>
 % }

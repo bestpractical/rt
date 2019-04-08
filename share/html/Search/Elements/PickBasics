@@ -199,10 +199,9 @@ my @lines = (
             Path => '/Elements/SelectEqualityOperator',
         },
         Value => [
-            { Type => 'text', Size => 5 },
             {
                 Type => 'component',
-                Path => '/Elements/SelectTimeUnits',
+                Path => '/Elements/EditTimeValue',
             },
         ],
     },
