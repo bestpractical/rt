@@ -130,7 +130,6 @@
 }
 
 #topactions input,
-#topactions select,
 #topactions button {
     padding-top: 0;
     padding-bottom: 0;
@@ -188,14 +187,6 @@
     -moz-transition: width 0.25s ease-in-out;
     -ms-transition: width 0.25s ease-in-out;
     transition: width 0.25s ease-in-out;
-}
-
-#topactions select {
-    -webkit-appearance: menulist-button;
-}
-
-#topactions .select-queue {
-    padding-right: 0
 }
 
 #topactions #simple-search .field {
@@ -267,7 +258,13 @@
     -webkit-border-radius: 3px;
 }
 
-#topactions input.select-queue {
-    border: none;
+#topactions .bootstrap-select.form-control {
+    height: auto;
 }
 
+/* Fix Queue name position in Queue select for Firefox */
+@-moz-document url-prefix() {
+    #topactions .bootstrap-select .dropdown-toggle .filter-option {
+        margin-top: 5px;
+    }
+}

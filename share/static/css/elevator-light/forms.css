@@ -120,3 +120,19 @@ button {
 .form-row {
     margin-top: 0.5em;
 }
+
+div.field label.select-queue {
+    display: block;
+    margin-bottom: 0;
+}
+
+#topactions .bootstrap-select.form-control {
+    height: auto;
+}
+
+/* Fix Queue name position in Queue select for Firefox */
+@-moz-document url-prefix() {
+    #topactions .bootstrap-select .dropdown-toggle .filter-option {
+        margin-top: 5px;
+    }
+}
