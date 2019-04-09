@@ -44,7 +44,7 @@ $m->content_contains( "There are unread messages on this ticket." );
 
 # mark the message as read
 $m->follow_link_ok(
-    { text => 'jump to the first unread message and mark all messages as seen' },
+    { text => 'Mark as Seen' },
     'followed mark as seen link'
 );
 
