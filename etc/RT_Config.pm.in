@@ -1100,8 +1100,8 @@ Set(%ThemeJSFiles,
           dropzone.min.js
           }
     ],
-    'elevator-light' => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js}],
-    'elevator-dark'  => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js}],
+    'elevator-light' => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js}],
+    'elevator-dark'  => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js}],
 );
 
 =item C<$UsernameFormat>
