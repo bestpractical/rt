@@ -46,8 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % my $name = $Name || $NamePrefix.$CustomField->Id.'-Values';
-<& /Elements/SelectDate, Name => $name, Default => $Default, current => 0, ShowTime => 0 &> (<%$DateObj->AsString(Time => 0, Timezone => 'utc')%>)
-
+<div class="form-row">
+  <div class="col-auto">
+    <& /Elements/SelectDate, Name => $name, Default => $Default, current => 0, ShowTime => 0 &>
+  </div>
+  <div class="col-auto">
+    <span class="current-value form-control">(<%$DateObj->AsString(Time => 0, Timezone => 'utc')%>)</span>
+  </div>
+</div>
 <%INIT>
 my $DateObj = RT::Date->new ( $session{'CurrentUser'} );
 $DateObj->Set( Format => 'unknown', Value => $Default, Timezone => 'utc' );

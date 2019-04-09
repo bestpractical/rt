@@ -49,6 +49,17 @@
 # the $z_index here is to fix wrong z-index bug in ie7
 my $z_index = 9999;
 </%once>
+
+% if ( grep { /\bbootstrap-combobox\b/ } RT::Interface::Web->JSFiles ) {
+<div class="combobox-wrapper" data-name="<% $Name %>" data-value="<% $Default // '' %>">
+  <select class="combobox" size="<% $Rows %>">
+    <option value=""></option>
+% for my $value (@Values) {
+    <option value="<% $value %>" <% ($Default // '') eq $value ? 'selected="selected"' : '' %>><% $value%></option>
+% }
+  </select>
+</div>
+% } else {
 %# reset $z_index. assuming at most 1000 comboboxx in one page
 % $z_index = 9999 if $z_index < 9000;
 <nobr>
@@ -67,6 +78,8 @@ my $z_index = 9999;
 ComboBox_InitWith(<% $Name |n,j %>);
 //--></script>
 </nobr>
+
+% }
 <%ARGS>
 $Name
 $Size    => undef

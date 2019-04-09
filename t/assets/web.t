@@ -22,9 +22,9 @@ my $material = create_cf( Name => 'Material' );
 ok $material->id, "Created CF";
 
 my %CF = (
-    Height      => ".CF-" . $height->id    . "-Edit",
-    Material    => ".CF-" . $material->id  . "-Edit",
-    Purchased   => ".CF-" . $purchased->id . "-Edit",
+    Height      => ".CF-" . $height->id    . "-Edit form-control",
+    Material    => ".CF-" . $material->id  . "-Edit form-control",
+    Purchased   => ".CF-" . $purchased->id . "-Edit form-control",
 );
 
 my ($base, $m) = RT::Test::Assets->started_ok;

@@ -46,15 +46,23 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next ) {
-<input type="checkbox" class="checkbox" name="<%$delete_name%>" class="CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>" /><& ShowCustomFieldImage, Object => $value &>
-<br />
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" id="<% $delete_name . $value->id %>" name="<%$delete_name%>" class="custom-control-input CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>">
+  <label class="custom-control-label" for="<% $delete_name . $value->id %>">
+    <& ShowCustomFieldImage, Object => $value &>
+  </label>
+</div>
 % }
 % if ($MaxValues && $Values && $Values->Count >= $MaxValues ) {
 <div class="hints">
 <&|/l&>Reached maximum number, so new values will override old ones.</&>
 </div>
 % }
-<input type="file" name="<%$name%>" class="CF-<%$CustomField->id%>-Edit" />
+
+<div class="custom-file">
+  <input type="file" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit custom-file-input" />
+  <label class="custom-file-label" for="<% $name %>"><&|/l&>Choose file</&></label>
+</div>
 
 <%INIT>
 my $name = $Name || $NamePrefix . $CustomField->Id . '-Upload';

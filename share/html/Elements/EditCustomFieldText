@@ -53,7 +53,7 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
-name="<%$name%>" class="CF-<%$CustomField->id%>-Edit"><% $value->Content %></textarea><br />
+name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control"><% $value->Content %></textarea><br />
 % }
 % if (!$MaxValues or !$Values or $Values->Count < $MaxValues) {
 <textarea \

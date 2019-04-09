@@ -53,7 +53,7 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
-name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit"><% $Default || '' %></textarea>
+name="<% $name %>" id="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control"><% $Default || '' %></textarea>
 
 <script type="text/javascript">
 var id = <% "$name" |n,j%>;
@@ -78,7 +78,7 @@ jQuery('#'+id).autocomplete( {
 }
 );
 % } else {
-<input type="text" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit" value="<% $Default || '' %>"/>
+<input type="text" id="<% $name %>" name="<% $name %>" class="CF-<%$CustomField->id%>-Edit form-control" value="<% $Default || '' %>"/>
 <script type="text/javascript">
 var id = <% $name |n,j%>;
 id = id.replace(/:/g,'\\:');

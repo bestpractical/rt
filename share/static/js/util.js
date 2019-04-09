@@ -586,6 +586,18 @@ jQuery(function() {
             e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
         });
     });
+
+    if ( jQuery('.combobox').combobox ) {
+        jQuery('.combobox').combobox({ clearIfNoMatch: false });
+        jQuery('.combobox-wrapper').each( function() {
+            jQuery(this).find('input[type=text]').prop('name', jQuery(this).data('name')).prop('value', jQuery(this).data('value'));
+        });
+    }
+
+    /* Show selected file name in UI */
+    jQuery('.custom-file input').change(function (e) {
+        jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
+    });
 });
 
 // focus jquery object in window, only moving the screen when necessary
