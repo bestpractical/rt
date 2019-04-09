@@ -62,7 +62,7 @@ unless ( @fields ) {
     my $subject = $defaults{'Subject'} || $TicketObj->Subject;
     @fields = (
         {   name => 'Subject',
-            html => '<input name="Subject" type="text" value="'.(defined($subject) ? $m->interp->apply_escapes( $subject, 'h' ) : '').'" />',
+            html => '<input name="Subject" type="text" value="'.(defined($subject) ? $m->interp->apply_escapes( $subject, 'h' ) : '').'" class="form-control" />',
         },
         {   name => 'Status',
             comp => '/Ticket/Elements/SelectStatus',

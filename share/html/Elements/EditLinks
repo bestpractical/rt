@@ -53,9 +53,11 @@
   <div class="field">
     <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></span>
     <span class="value">
-      <div class="checkboxes">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->DependsOn->Next) {
-      <& EditLink, Link => $link, Mode => 'Target' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Target' &>
+        </div>
 % }
       </div>
     </span>
@@ -63,9 +65,11 @@
   <div class="field">
     <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></span>
     <span class="value">
-      <div class="checkboxes">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->DependedOnBy->Next) {
-      <& EditLink, Link => $link, Mode => 'Base' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Base' &>
+        </div>
 % }
       </div>
     </span>
@@ -73,9 +77,11 @@
   <div class="field">
     <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></span>
     <span class="value">
-      <div class="checkboxes">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->MemberOf->Next) {
-      <& EditLink, Link => $link, Mode => 'Target' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Target' &>
+        </div>
 % }
       </div>
     </span>
@@ -83,9 +89,11 @@
   <div class="field">
     <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></span>
     <span class="value">
-      <div class="checkboxes">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->Members->Next) {
-      <& EditLink, Link => $link, Mode => 'Base' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Base' &>
+        </div>
 % }
       </div>
     </span>
@@ -93,9 +101,11 @@
   <div class="field">
     <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></span>
     <span class="value">
-      <div class="checkboxes">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->RefersTo->Next) {
-      <& EditLink, Link => $link, Mode => 'Target' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Target' &>
+        </div>
 %}
       </div>
     </span>
@@ -103,9 +113,11 @@
   <div class="field">
     <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></span>
     <span class="value">
-      <div class="checkboxes">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->ReferredToBy->Next) {
-      <& EditLink, Link => $link, Mode => 'Base' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Base' &>
+        </div>
 % }
       </div>
     </span>

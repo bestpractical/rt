@@ -73,27 +73,27 @@ $exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
 <div class="fields">
   <div class="field">
     <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></span>
-    <span class="value entry"><input type="text" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude |n%>/></span>
+    <span class="value entry"><input type="text" class="form-control" name="<%$id%>-DependsOn" value="<% $ARGSRef->{"$id-DependsOn"} || '' %>" <% $exclude |n%>/></span>
   </div>
   <div class="field">
     <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></span>
-    <span class="value entry"><input type="text" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude |n%>/></span>
+    <span class="value entry"><input type="text" class="form-control" name="DependsOn-<%$id%>" value="<% $ARGSRef->{"DependsOn-$id"} || '' %>" <% $exclude |n%>/></span>
   </div>
   <div class="field">
     <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></span>
-    <span class="value entry"><input type="text" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude |n%>/></span>
+    <span class="value entry"><input type="text" class="form-control" name="<%$id%>-MemberOf" value="<% $ARGSRef->{"$id-MemberOf"} || '' %>" <% $exclude |n%>/></span>
   </div>
   <div class="field">
     <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></span>
-    <span class="value entry"> <input type="text" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude |n%>/></span>
+    <span class="value entry"> <input type="text" class="form-control" name="MemberOf-<%$id%>" value="<% $ARGSRef->{"MemberOf-$id"} || '' %>" <% $exclude |n%>/></span>
   </div>
   <div class="field">
     <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></span>
-    <span class="value entry"><input type="text" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></span>
+    <span class="value entry"><input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></span>
   </div>
   <div class="field">
     <span class="label"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></span>
-    <span class="value entry"><input type="text" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></span>
+    <span class="value entry"><input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></span>
   </div>
   <& /Elements/EditCustomFields,
         Object          => $Object,

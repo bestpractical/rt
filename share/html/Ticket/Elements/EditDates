@@ -49,6 +49,8 @@
   <div class="field">
     <span class="label"><&|/l&>Starts</&>:</span>
     <span class="value entry">
+        <div class="form-row">
+          <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Starts',
             current     => 0,
@@ -56,12 +58,18 @@
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
-        <span class="current-value">(<% $TicketObj->StartsObj->AsString %>)</span>
+          </div>
+          <div class="col-auto">
+            <span class="current-value form-control">(<% $TicketObj->StartsObj->AsString %>)</span>
+          </div>
+        </div>
     </span>
   </div>
   <div class="field">
     <span class="label"><&|/l&>Started</&>:</span>
     <span class="value entry">
+        <div class="form-row">
+          <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Started',
             current     => 0,
@@ -69,7 +77,11 @@
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
-        <span class="current-value">(<%$TicketObj->StartedObj->AsString %>)</span>
+          </div>
+          <div class="col-auto">
+            <span class="current-value form-control">(<%$TicketObj->StartedObj->AsString %>)</span>
+          </div>
+        </div>
     </span>
   </div>
 
@@ -78,6 +90,8 @@
       <&|/l&>Last Contact</&>:
     </span>
     <span class="value entry">
+        <div class="form-row">
+          <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Told',
             current     => 0,
@@ -85,12 +99,18 @@
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
-        <span class="current-value">(<% $TicketObj->ToldObj->AsString %>)</span>
+          </div>
+          <div class="col-auto">
+        <span class="current-value form-control">(<% $TicketObj->ToldObj->AsString %>)</span>
+          </div>
+        </div>
     </span>
   </div>
   <div class="field">
     <span class="label"><&|/l&>Due</&>:</span>
     <span class="value entry">
+        <div class="form-row">
+          <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Due',
             current     => 0,
@@ -98,7 +118,11 @@
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
-        <span class="current-value">(<% $TicketObj->DueObj->AsString %>)</span>
+          </div>
+          <div class="col-auto">
+        <span class="current-value form-control">(<% $TicketObj->DueObj->AsString %>)</span>
+          </div>
+        </div>
     </span>
   </div>
   <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Dates', InTable => 1 &>

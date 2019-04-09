@@ -66,15 +66,20 @@
 <%PERL>
 my $all_recipients_checked = (grep { !$_ } values %recips) ? 0 : 1;
 </%PERL>
-<input type="checkbox" class="checkbox" id="TxnSendMailToAll" onclick="setCheckbox(this, 'checked_recipient')" <% $all_recipients_checked ? 'checked' : '' %>>
-<label for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
 
-<ul>
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" class="checkbox custom-control-input" id="TxnSendMailToAll" onclick="setCheckbox(this, 'checked_recipient')" <% $all_recipients_checked ? 'checked' : '' %>>
+  <label class="custom-control-label" for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
+</div>
+
+<ul class="list-group list-group-boardless">
 % for my $addr (sort keys %recips) {
-  <li>
-  <input type="hidden" name="autorecipient" value="<% $addr %>">
-  <input type="checkbox" name="checked_recipient" id="checked_recipient_<%$addr%>" value="<%$addr%>" <% $recips{$addr} ? "checked" : "" %>>
-  <label for="checked_recipient_<%$addr%>"><& /Elements/ShowUser, Address => Email::Address->parse($addr) &></label>
+  <li class="list-group-item">
+    <input type="hidden" name="autorecipient" value="<% $addr %>">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" name="checked_recipient" id="checked_recipient_<%$addr%>" value="<%$addr%>" <% $recips{$addr} ? "checked" : "" %>>
+        <label class="custom-control-label" for="checked_recipient_<%$addr%>"><& /Elements/ShowUser, Address => Email::Address->parse($addr) &></label>
+      </div>
   </li>
 % }
 </ul>

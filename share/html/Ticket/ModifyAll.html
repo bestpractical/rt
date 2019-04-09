@@ -95,10 +95,10 @@
 
 <&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
 <div class="fields">
-  <div class="field">
+  <div class="field input-row">
     <span class="label"><&|/l&>Update Type</&>:</span>
     <span class="value entry">
-      <select name="UpdateType" id="UpdateType">
+      <select name="UpdateType" id="UpdateType" class="form-control selectpicker">
 % if ($CanComment) {
         <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -109,18 +109,18 @@
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
     </span>
   </div>
-  <div class="field">
+  <div class="field input-row">
     <span class="label"><&|/l&>Subject</&>:</span>
-    <span class="entry"><input type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
+    <span class="value entry"><input type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" class="form-control" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
     </span>
   </div>
 
-  <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket, InTable => 1 &>
+  <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket &>
 
 <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
 
-  <div class="field">
+  <div class="field input-row">
     <span class="labeltop"><&|/l&>Message</&>:</span>
     <span class="value entry messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );

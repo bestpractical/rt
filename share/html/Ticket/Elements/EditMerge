@@ -52,7 +52,7 @@
 <div class="fields">
   <div class="field">
     <span class="label"><&|/l&>Merge into</&>:</span>
-    <span class="value entry"><input type="text" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></span>
+    <span class="value entry"><input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></span>
   </div>
 </div>
 

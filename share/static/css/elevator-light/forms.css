@@ -126,13 +126,36 @@ div.field label.select-queue {
     margin-bottom: 0;
 }
 
-#topactions .bootstrap-select.form-control {
-    height: auto;
+.col-auto .datepicker {
+    width: 17em;
 }
 
-/* Fix Queue name position in Queue select for Firefox */
-@-moz-document url-prefix() {
-    #topactions .bootstrap-select .dropdown-toggle .filter-option {
-        margin-top: 5px;
-    }
+span.current-value.form-control {
+    border: none;
+    padding-left: 0;
+}
+
+.current-watchers div.label {
+    padding-top: 0.25em;
+}
+
+.list-group-item label {
+    margin-bottom: 0;
+}
+
+.list-group-compact .list-group-item,
+.list-group-boardless .list-group-item {
+    border: none;
+}
+
+.list-group-compact .list-group-item {
+    padding: 0.25em;
+}
+
+.messagedetails .fields {
+    max-width: 1200px;
+}
+
+.bootstrap-select button:focus {
+    background: #f8f9fa;
 }
