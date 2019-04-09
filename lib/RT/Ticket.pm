@@ -146,7 +146,9 @@ sub Load {
 
     my ($ticketid, $msg) = $self->LoadById( $id );
     unless ( $self->Id ) {
-        $RT::Logger->debug("$self tried to load a bogus ticket: $id");
+        $RT::Logger->debug("$self tried to load a bogus ticket: $id")
+            # no need to emit message if Non Existent Tickets are allowed
+            unless (caller(1))[3] =~ m{LoadAllowNonExistentTickets$};
         return (undef);
     }
 
@@ -165,6 +167,18 @@ sub Load {
     return $self->Id;
 }
 
+=head2 LoadAllowNonExistentTickets
+
+Same as Load, but allows non existent tickets (that have been shredded)
+Calls Load with the same parameters, Load will then not throw a debug message
+if the ticket does not exist.
+
+=cut 
+
+sub LoadAllowNonExistentTickets {    
+  my $self= shift;
+  return $self->Load( @_);
+}
 
 
 =head2 Create (ARGS)

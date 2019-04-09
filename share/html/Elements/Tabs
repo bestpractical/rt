@@ -607,7 +607,7 @@ my $build_main_nav = sub {
     for ($session{CurrentUser}->RecentlyViewedTickets) {
         my ($ticketId, $timestamp) = @$_;
         my $ticket = RT::Ticket->new($session{CurrentUser});
-        $ticket->Load($ticketId);
+        $ticket->LoadAllowNonExistentTickets($ticketId);
         if ($ticket->Id) {
             my $title = $ticket->Subject || loc("(No subject)");
             if (length $title > 50) {
