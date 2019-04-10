@@ -82,19 +82,35 @@ my $query = join ' AND ', @clauses;
 <form method="post" action="ResolvedByDates.html">
 
 % if ($query) {
-<& /Search/Elements/Chart, Query => $query, GroupBy => 'Owner.Name' &>
+<div class="form-row">
+    <div class="col-md-9 value">
+        <& /Search/Elements/Chart, Query => $query, GroupBy => 'Owner.Name' &>
+    </div>
+</div>
 % }
 
 <hr />
+<div class="form-row">
+    <div class="col-md-3 label"><br /><&|/l&>Queue</&>:</div>
+    <div class="col-md-9 value">
+        <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+    </div>
+</div>
 
-<br /><&|/l&>Queue</&>:
-<& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+<div class="form-row">
+    <div class="col-md-3 label"><br /><&|/l&>Tickets resolved after</&>:</div>
+    <div class="col-md-9 value">
+        <& /Elements/SelectDate, Name => 'ResolvedAfter', Default => $ResolvedAfter &>
+    </div>
+</div>
 
-<br /><&|/l&>Tickets resolved after</&>:
-<& /Elements/SelectDate, Name => 'ResolvedAfter', Default => $ResolvedAfter &>
-
-<br /><&|/l&>Tickets resolved before</&>:
-<& /Elements/SelectDate, Name => 'ResolvedBefore', Default => $ResolvedBefore &>
-
-<& /Elements/Submit &>
+<div class="form-row">
+    <div class="col-md-3 label"><br /><&|/l&>Tickets resolved before</&>:</div>
+    <div class="col-md-9 value">
+        <& /Elements/SelectDate, Name => 'ResolvedBefore', Default => $ResolvedBefore &>
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-md-3 label"><& /Elements/Submit &></div>
+</div>
 </form>
