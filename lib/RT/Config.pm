@@ -462,10 +462,21 @@ our %META;
             "Length in characters; Use '0' to show all messages inline, regardless of length" #loc
         },
     },
+    MaxInlineImage => {
+        Section         => 'Ticket display',              #loc
+        Overridable     => 1,
+        SortOrder       => 2,
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Maximum inline image size',    #loc
+            Hints =>
+            "Length in bytes; Use '0' to show all images inline, regardless of their size" #loc
+        },
+    },
     OldestTransactionsFirst => {
         Section         => 'Ticket display',
         Overridable     => 1,
-        SortOrder       => 2,
+        SortOrder       => 3,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Show oldest history first',    #loc
@@ -474,7 +485,7 @@ our %META;
     ShowHistory => {
         Section         => 'Ticket display',
         Overridable     => 1,
-        SortOrder       => 3,
+        SortOrder       => 4,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Show history',                #loc
@@ -490,7 +501,7 @@ our %META;
     ShowUnreadMessageNotifications => { 
         Section         => 'Ticket display',
         Overridable     => 1,
-        SortOrder       => 4,
+        SortOrder       => 5,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Notify me of unread messages',    #loc
@@ -500,7 +511,7 @@ our %META;
     PlainTextMono => {
         Section         => 'Ticket display',
         Overridable     => 1,
-        SortOrder       => 5,
+        SortOrder       => 6,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Display plain-text attachments in fixed-width font', #loc
@@ -510,7 +521,7 @@ our %META;
     MoreAboutRequestorTicketList => {
         Section         => 'Ticket display',                       #loc
         Overridable     => 1,
-        SortOrder       => 6,
+        SortOrder       => 7,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'What tickets to display in the "More about requestor" box',                #loc
@@ -526,7 +537,7 @@ our %META;
     SimplifiedRecipients => {
         Section         => 'Ticket display',                       #loc
         Overridable     => 1,
-        SortOrder       => 7,
+        SortOrder       => 8,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => "Show simplified recipient list on ticket update",                #loc
