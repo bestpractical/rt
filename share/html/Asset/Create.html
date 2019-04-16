@@ -57,50 +57,54 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($catalog->Name) %>">
-<form method="post" enctype="multipart/form-data" id="CreateAsset" action="Create.html">
-  <input type="hidden" name="id" value="new">
-  <input type="hidden" name="Catalog" value="<% $catalog->id %>">
+  <form method="post" enctype="multipart/form-data" id="CreateAsset" action="Create.html">
+    <input type="hidden" name="id" value="new">
+    <input type="hidden" name="Catalog" value="<% $catalog->id %>">
 
-<a name="basics"></a>
-<div id="Asset-Create-basics" class="asset-metadata">
-    <table>
-        <tbody>
-        <tr>
-            <td>
-  <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
-    <& Elements/EditBasics, %ARGS, AssetObj => $asset, CatalogObj => $catalog &>
-  </&>
+    <div id="Asset-Create-basics" class="asset-metadata form-row">
+      <a name="basics"></a>
+      <div class="col-md-6">
+        <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
+          <& Elements/EditBasics, %ARGS, AssetObj => $asset, CatalogObj => $catalog &>
+        </&>
+      </div>
 
-  <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
-    <& Elements/EditPeople, %ARGS, AssetObj => $asset &>
-  </&>
-  </td><td>
-  <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
-    <& /Elements/AddLinks,
-        Object          => $asset,
-        CustomFields    => $catalog->AssetCustomFields &>
-  </&>
-  </td>
+      <div class="col-md-6">
+        <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
+            <& Elements/EditPeople, %ARGS, AssetObj => $asset &>
+        </&>
+      </div>
+    </div>
 
-  </tr>
-  </tbody>
-  </table>
-</div>
+    <div id="Asset-Create-details" class="form-row">
+      <a name="details"></a>
+      <div class="col-md-6">
+        <& /Elements/EditCustomFieldCustomGroupings,
+          Object => $asset,
+          TitleBoxARGS => { title_class => "inverse" },
+          KeepValue => 1,
+          CustomFieldGenerator => sub { $catalog->AssetCustomFields },
+          ForCreation => 1,
+        &>
+      </div>
 
-<div id="Asset-Create-details">
-<a name="details"></a>
+      <div class="col-md-6">
+        <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
+          <& /Elements/AddLinks,
+            Object          => $asset,
+            CustomFields    => $catalog->AssetCustomFields
+          &>
+        </&>
+      </div>
+    </div>
 
-  <& /Elements/EditCustomFieldCustomGroupings,
-        Object => $asset,
-        TitleBoxARGS => { title_class => "inverse" },
-        KeepValue => 1,
-        CustomFieldGenerator => sub { $catalog->AssetCustomFields },
-        ForCreation => 1,
-  &>
-</div>
+    <div class="form-row">
+      <div class="col-md-12">
+        <& /Elements/Submit, Label => loc('Create asset') &>
+      </div>
+    </div>
 
-  <& /Elements/Submit, Label => loc('Create asset') &>
-</form>
+  </form>
 </span>
 
 <%args>

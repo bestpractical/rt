@@ -46,8 +46,17 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get("WebPath") %>/Asset/Create.html" id="AssetCreateInCatalog">
-  <&|/l_unsafe,
-    $m->scomp("/Asset/Elements/SelectCatalog"),
-    &>Create a new asset in the catalog [_1].</&>
-  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled asset creation form.") &>
+  <div class="form-row">
+    <div class="col-md-12 text-center">
+      <&|/l&>Create a new asset in the catalog</&>:
+      <div class="d-inline-block">
+        <& /Asset/Elements/SelectCatalog &>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled asset creation form.") &>
+    </div>
+  </div>
 </form>

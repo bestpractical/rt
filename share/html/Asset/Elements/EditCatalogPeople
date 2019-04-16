@@ -51,9 +51,14 @@ $Object
 <%init>
 </%init>
 % for my $role ($Object->Roles( ACLOnly => 0 )) {
-<div class="role-<% CSSClass($role) %> role">
-  <h3><% loc($role) %></h3>
-  <& EditRoleMembers, Group => $Object->RoleGroup($role) &>
-</div>
+  <div class="role-<% CSSClass($role) %> role">
+    <h3><% loc($role) %></h3>
+    <& EditRoleMembers, Group => $Object->RoleGroup($role) &>
+  </div>
 % }
-<em><&|/l&>(Check box to delete)</&></em>
+
+<div class="col-md-12">
+  <div class="form-row">
+    <em><&|/l&>(Check box to delete)</&></em>
+  </div>
+</div>

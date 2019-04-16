@@ -52,28 +52,30 @@ $Recursively => 0
 <%init>
 my $field_name = "RemoveRoleMember-" . $Group->Name;
 </%init>
-<ul class="role-members">
+<ul class="role-members list-group list-group-compact">
 % my $Users = $Group->UserMembersObj( Recursively => $Recursively );
 % if ($Group->SingleMemberRoleGroup) {
-<input type="text" value="<% $Users->First->Name %>" name="SetRoleMember-<% $Group->Name %>" id="SetRoleMember-<% $Group->Name %>" data-autocomplete="Users" data-autocomplete-return="Name" /><br />
+  <li class="list-group-item">
+    <input class="form-control selectpicker" type="text" value="<% $Users->First->Name %>" name="SetRoleMember-<% $Group->Name %>" id="SetRoleMember-<% $Group->Name %>" data-autocomplete="Users" data-autocomplete-return="Name" />
+  </li>
 % } else {
 % while ( my $user = $Users->Next ) {
-<li>
-  <label>
-    <input type="checkbox" name="<% $field_name %>" value="<% $user->PrincipalId %>">
-    <& /Elements/ShowUser, User => $user &>
-  </label>
-</li>
+  <li class="list-group-item">
+    <div class="custom-control custom-checkbox">
+      <input class="checkbox custom-control-input" type="checkbox" id="checkbox-<%$field_name%>-<% $user->PrincipalId %>" name="<% $field_name %>" value="<% $user->PrincipalId %>">
+      <label class="custom-control-label" for="checkbox-<%$field_name%>-<% $user->PrincipalId %>"><& /Elements/ShowUser, User => $user &></label>
+    </div>
+  </li>
 % }
 % my $Groups = $Group->GroupMembersObj( Recursively => $Recursively );
 % $Groups->LimitToUserDefinedGroups;
 % while (my $group = $Groups->Next) {
-<li>
-  <label>
-    <input type="checkbox" name="<% $field_name %>" value="<% $group->PrincipalId %>">
-    <&|/l&>Group</&>: <% $group->Name %>
-  </label>
-</li>
+  <li class="list-group-item">
+    <div class="custom-control custom-checkbox">
+      <input class="checkbox custom-control-input" id="checkbox-<%$field_name%>-<% $group->PrincipalId %>" type="checkbox" name="<% $field_name %>" value="<% $group->PrincipalId %>">
+      <label class="custom-control-label" for="checkbox-<%$field_name%>-<% $group->PrincipalId %>"><&|/l&>Group</&>: <% $group->Name %></label>
+    </div>
+  </li>
 % }
 % }
 </ul>
