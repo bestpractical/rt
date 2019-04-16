@@ -51,26 +51,38 @@ $AssetObj
 <%init>
 my $CatalogObj = $AssetObj->CatalogObj;
 </%init>
-<table>
+<div class="col-md-12">
 % for my $role ($AssetObj->Roles) {
-<tr><td class="label"><% loc($role) %>:
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <% loc($role) %>:
+    </div>
 % if ($AssetObj->Role($role)->{Single}) {
 %      my $users = $AssetObj->RoleGroup($role)->UserMembersObj(Recursively => 0);
 %      $users->FindAllRows;
 %      my $user = $users->Next;
-<& /Elements/ShowUser, User => $user, Link => 1 &></td></tr>
-%      next if $user->id == RT->Nobody->id;
-<tr><td>
-<& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Title => 0 &>
-</div></td></tr>
+    <div class="col-md-9 value">
+      <& /Elements/ShowUser, User => $user, Link => 1 &>
+    </div>
+%      if ( $user->id == RT->Nobody->id ) {
+  </div>
+%         next;
+%      }
+    <div class="col-md-9 value">
+      <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Title => 0 &>
+    </div>
+  </div>
 % } else {
-</td></tr><tr><td class="user-accordion">
-    <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role) &>
-    <& ShowRoleMembers, Group => $CatalogObj->RoleGroup($role), Skip => $AssetObj->RoleGroup($role), Note => loc("(via this asset's catalog)") &>
-  </td></tr>
+    <div class="user-accordion col-md-9">
+      <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role) &>
+      <& ShowRoleMembers, Group => $CatalogObj->RoleGroup($role), Skip => $AssetObj->RoleGroup($role), Note => loc("(via this asset's catalog)") &>
+    </div>
+  </div>
 % }
 % }
-<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'People', Table => 0 &>
 
-</table>
+  <div class="form-row">
+    <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'People', Table => 0 &>
+  </div>
+</div>
 % $m->callback( %ARGS, CallbackName => 'AfterPeople' );

@@ -49,11 +49,13 @@
 <& /Elements/Tabs &>
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
-<& /Elements/ShowHistory,
-    Object => $asset,
-    ShowDisplayModes => 0,
-    DisplayPath => 'History.html',
+  <div class="asset-metadata col-md-12">
+    <& /Elements/ShowHistory,
+      Object => $asset,
+      ShowDisplayModes => 0,
+      DisplayPath => 'History.html',
     &>
+  </div>
 </span>
 
 <%args>
