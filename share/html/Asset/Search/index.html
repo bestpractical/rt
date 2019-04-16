@@ -62,7 +62,7 @@ $m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 </%init>
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-
+<div class="col-md-12">
 % if ( $ARGS{'SearchAssets'} or $ARGS{q} ){
 <& /Elements/CollectionList,
     %search,
@@ -73,25 +73,43 @@ $m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 <em><&|/l&>No assets matching search criteria found.</&></em>
 %   }
 % }
+</div>
 <span class="catalog <% CSSClass( $catalog_obj->Name ) %>">
-<form action="<% RT->Config->Get('WebPath') %>/Asset/Search/index.html" id="AssetSearch">
-<&| /Widgets/TitleBox, title => loc("Search Assets") &>
-<& /Asset/Elements/AssetSearchBasics, %ARGS, CatalogObj => $catalog_obj &>
-<& /Asset/Elements/AssetSearchPeople, %ARGS, CatalogObj => $catalog_obj &>
-<& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+  <form action="<% RT->Config->Get('WebPath') %>/Asset/Search/index.html" id="AssetSearch">
+    <div class="col-md-12">
+      <&| /Widgets/TitleBox, title => loc("Search Assets") &>
+        <div class="form-row">
+          <& /Asset/Elements/AssetSearchBasics, %ARGS, CatalogObj => $catalog_obj &>
+        </div></div>
+
+        <div class="form-row">
+          <& /Asset/Elements/AssetSearchPeople, %ARGS, CatalogObj => $catalog_obj &>
+        </div>
+
+        <div class="form-row">
+          <div class="col-md-12">
+            <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+          </div>
+        </div>
 
 % my $has_assets_cfs = 0;
 % foreach my $group ( 'Dates', 'Links', RT::CustomField->CustomGroupings( "RT::Asset" ), '' ) {
-    <& /Asset/Elements/AssetSearchCFs, %ARGS, Grouping => $group,
-       CatalogObj => $catalog_obj, has_assets_cfs => \$has_assets_cfs &>
+        <div class="form-row">
+          <& /Asset/Elements/AssetSearchCFs, %ARGS, Grouping => $group,
+            CatalogObj => $catalog_obj, has_assets_cfs => \$has_assets_cfs
+          &>
+        </div>
 % }
 
 % if ( $has_assets_cfs ) {
-<& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+        <div class="form-row">
+          <div class="col-md-12">
+            <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+          </div>
+        </div>
 % }
-
-</&>
-
+      </&>
+    </div>
 <script>
 jQuery(function() {
     var all_inputs = jQuery("#AssetSearch input, #AssetSearch select");
@@ -110,5 +128,5 @@ jQuery(function() {
     });
 });
 </script>
-</form>
+  </form>
 </span>

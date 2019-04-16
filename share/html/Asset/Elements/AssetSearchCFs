@@ -45,28 +45,36 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $Grouping ? loc($Grouping) : loc('Custom Fields'), hide_empty => 1, class=>'asset-search-grouping asset-search-cfs'  &>
+<div class="col-md-12">
+  <&| /Widgets/TitleBox, title => $Grouping ? loc($Grouping) : loc('Custom Fields'), hide_empty => 1, class=>'asset-search-grouping asset-search-cfs'  &>
 % my $CFs = RT::CustomFields->new( $session{CurrentUser} );
 % $CFs->LimitToCatalog( $CatalogObj->Id );
 % $CFs->LimitToObjectId(0); # LimitToGlobal but no LookupType restriction
 % $CFs->LimitToGrouping( "RT::Asset" => $Grouping );
 % if ( $CFs->Count > 0 ){
-<table>
 %   while (my $cf = $CFs->Next) {
 %     $$has_assets_cfs = 1 if $has_assets_cfs;
 %     my $name = "CF.{" . $cf->Name . "}";
 %     my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 %     my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
-<tr>
-  <td class="label"><label for="<% $name %>"><% $cf->Name %></label></td>
-  <td class="value"><& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &></td>
-  <td class="label not"><label for="!<% $name %>"><&|/l&>not</&></label></td>
-  <td class="value"><& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &></td>
-</tr>
+    <div class="form-row">
+      <div class="label col-md-2">
+        <% $cf->Name %>
+      </div>
+      <div class="value col-md-4">
+        <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
+      </div>
+      <div class="label col-md-2">
+        <&|/l&>not</&>
+      </div>
+      <div class="value col-md-4">
+        <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
+      </div>
 %   }
-</table>
+    </div>
 % }
-</&>
+  </&>
+</div>
 <%args>
 $Grouping
 $CatalogObj => undef
