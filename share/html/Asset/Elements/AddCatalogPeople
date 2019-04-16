@@ -48,20 +48,36 @@
 <%args>
 $Object
 </%args>
-<div class="add-user">
-<h3><&|/l&>Add a person</&></h3>
-<& SelectRoleType, Object => $Object, Name => "AddUserRoleMember-Role" &>
-<input type="text" name="AddUserRoleMember"
-       data-autocomplete="Users"
-       data-autocomplete-return="Name"
-       placeholder="<% loc("Find a user...") %>">
+<div class="add-user form-row">
+  <div class="col-md-4 label">
+    <h5><&|/l&>Add a person</&></h5>
+  </div>
+  <div class="col-md-4 value">
+    <& SelectRoleType, Object => $Object, Name => "AddUserRoleMember-Role" &>
+  </div>
+  <div class="col-md-4 value">
+    <input type="text" name="AddUserRoleMember"
+      data-autocomplete="Users"
+      data-autocomplete-return="Name"
+      placeholder="<% loc("Find a user...") %>"
+      class="form-control"
+    >
+  </div>
 </div>
 
-<div class="add-group">
-<h3><&|/l&>Add a group</&></h3>
-<& SelectRoleType, Object => $Object, Name => "AddGroupRoleMember-Role" &>
-<input type="text" name="AddGroupRoleMember"
-       data-autocomplete="Groups"
-       data-autocomplete-return="Name"
-       placeholder="<% loc("Find a group...") %>">
+<div class="add-group form-row">
+  <div class="col-md-4 label">
+    <h5><&|/l&>Add a group</&></h5>
+  </div>
+  <div class="col-md-4 value">
+    <& SelectRoleType, Object => $Object, Name => "AddGroupRoleMember-Role" &>
+  </div>
+  <div class="col-md-4 value">
+    <input type="text" name="AddGroupRoleMember"
+      data-autocomplete="Groups"
+      data-autocomplete-return="Name"
+      placeholder="<% loc("Find a group...") %>"
+      class="form-control"
+    >
+  </div>
 </div>

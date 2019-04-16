@@ -51,15 +51,23 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
-<form method="post" enctype="multipart/form-data" id="ModifyAssetDates" action="ModifyDates.html">
-  <input type="hidden" name="id" value="<% $asset->id %>">
+  <div class="col-md-12">
+    <form method="post" enctype="multipart/form-data" id="ModifyAssetDates" action="ModifyDates.html">
+    <input type="hidden" name="id" value="<% $asset->id %>">
 
-  <&| /Widgets/TitleBox, title => loc("Dates"), class => "asset-dates", title_class => "inverse" &>
-    <& Elements/EditDates, %ARGS, AssetObj => $asset &>
-  </&>
-
-  <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
-</form>
+    <div class="col-md-12">
+      <&| /Widgets/TitleBox, title => loc("Dates"), class => "asset-dates", title_class => "inverse" &>
+        <div class="col-md-12">
+          <& Elements/EditDates, %ARGS, AssetObj => $asset &>
+          </&>
+        </div>
+      <div class="form-row">
+        <div class="col-md-12">
+          <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+        </div>
+      </div>
+    </div>
+  </form>
 </span>
 
 <%init>

@@ -51,15 +51,24 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
-<form method="post" enctype="multipart/form-data" id="ModifyAssetLinks" action="ModifyLinks.html">
-  <input type="hidden" name="id" value="<% $asset->id %>">
+  <div class="asset-metadata col-md-12">
+    <form method="post" enctype="multipart/form-data" id="ModifyAssetLinks" action="ModifyLinks.html">
+      <input type="hidden" name="id" value="<% $asset->id %>">
 
-  <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
-    <& /Elements/EditLinks, %ARGS, Object => $asset, Merge => 0 &>
-  </&>
-
-  <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
-</form>
+      <div class="row">
+        <div class="col-md-12">
+          <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
+            <& /Elements/EditLinks, %ARGS, Object => $asset, Merge => 0 &>
+          </&>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-12">
+          <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+        </div>
+      </div>
+    </form>
+  </div>
 </span>
 
 <%init>

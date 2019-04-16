@@ -45,16 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="boxcontainer col-md-12">
 % for my $role ( $AssetObj->Roles ) {
-  <div class="asset-people-<% CSSClass($role) %>">
-    <div class="label col-md-3"><% loc($role) %>:</div>
-    <div class="value col-md-9">
-      <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1 &>
-    </div>
+<div class="asset-people-<% CSSClass($role) %> form-row">
+  <div class="label col-md-3"><% loc($role) %>:</div>
+  <div class="value col-md-9">
+    <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1 &>
   </div>
-% }
 </div>
+% }
 
 <%args>
 $AssetObj

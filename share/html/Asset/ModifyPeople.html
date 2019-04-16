@@ -53,23 +53,36 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
-<form method="post" enctype="multipart/form-data" id="ModifyAssetPeople" action="ModifyPeople.html">
-  <input type="hidden" name="id" value="<% $asset->id %>">
+  <form method="post" enctype="multipart/form-data" id="ModifyAssetPeople" action="ModifyPeople.html">
+    <input type="hidden" name="id" value="<% $asset->id %>">
+    <div class="col-md-12">
 
-  <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
-    <table width="100%" class="edit">
-      <tr>
-        <td width="30%"><& /Asset/Elements/EditCatalogPeople, %ARGS, Object => $asset &></td>
-        <td width="30%"><& /Asset/Elements/AddCatalogPeople, Object => $asset &></td>
-        <td>
-          <& /Elements/EditCustomFields, Object => $asset, Grouping => 'People' &>
-        </td>
-      </tr>
-    </table>
-  </&>
+      <div class="form-row">
+        <div class="col-md-12">
+          <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
+            <div class="form-row">
+              <div class="col-md-4">
+                <& /Asset/Elements/EditCatalogPeople, %ARGS, Object => $asset &>
+              </div>
 
-  <& /Elements/Submit, Label => loc('Save'), Name => "Update" &>
-</form>
+              <div class="col-md-4">
+                <& /Asset/Elements/AddCatalogPeople, Object => $asset &>
+              </div>
+
+            <div class="col-md-4">
+              <& /Elements/EditCustomFields, Object => $asset, Grouping => 'People' &>
+            </div>
+          </div>
+        </&>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-md-12">
+        <& /Elements/Submit, Label => loc('Save'), Name => "Update" &>
+      </div>
+    </div>
+  </form>
 </span>
 
 <%init>

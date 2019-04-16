@@ -45,36 +45,57 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
 % if ($AssetObj->id) {
-  <tr class="asset-catalog">
-    <td class="label"><label for="Catalog"><&|/l&>Catalog</&>:</label></td>
-    <td><& /Asset/Elements/SelectCatalog, Default => $current{Catalog} &></td>
-  </tr>
+  <div class="form-row asset-catalog">
+    <div class="label col-md-3">
+      <&|/l&>Catalog</&>:
+    </div>
+    <div class="value col-md-9">
+      <& /Asset/Elements/SelectCatalog, Default => $current{Catalog} &>
+    </div>
+  </div>
 % }
-  <tr class="asset-name">
-    <td class="label"><label for="Name"><&|/l&>Name</&>:</label></td>
-    <td><input type="text" name="Name" value="<% $current{Name} %>" size="40"></td>
-  </tr>
-  <tr class="asset-description">
-    <td class="label"><label for="Description"><&|/l&>Description</&>:</label></td>
-    <td><input type="text" name="Description" value="<% $current{Description} %>" size="40"></td>
-  </tr>
-  <tr class="asset-status">
-    <td class="label"><label for="Status"><&|/l&>Status</&>:</label></td>
-    <td><& /Asset/Elements/SelectStatus, Name => 'Status', AssetObj => $AssetObj, CatalogObj => $CatalogObj &></td>
-  </tr>
+  <div class="form-row asset-name">
+    <div class="label col-md-3">
+      <&|/l&>Name</&>:
+    </div>
+    <div class="value col-md-9">
+      <input class="form-control" type="text" name="Name" value="<% $current{Name} %>" size="40">
+    </div>
+  </div>
+
+  <div class="form-row asset-description">
+    <div class="label col-md-3">
+      <&|/l&>Description</&>:
+    </div>
+    <div class="value col-md-9">
+      <input class="form-control" type="text" name="Description" value="<% $current{Description} %>" size="40">
+    </div>
+  </div>
+
+  <div class="form-row asset-status">
+    <div class="label col-md-3">
+      <&|/l&>Status</&>:
+    </div>
+    <div class="value col-md-9">
+      <& /Asset/Elements/SelectStatus, Name => 'Status', AssetObj => $AssetObj, CatalogObj => $CatalogObj &>
+    </div>
+  </div>
+
 % if ( $AssetObj->id ) {
-  <& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'Basics', InTable => 1 &>
+  <div class="form-row">
+    <& /Elements/EditCustomFields, Object => $AssetObj, Grouping => 'Basics', InTable => 0 &>
+  </div>
 % } elsif ( my @cf_names = grep { defined } @{RT->Config->Get('AssetBasicCustomFieldsOnCreate') || []} ) {
 %   my $cfs = $CatalogObj->AssetCustomFields;
 %   for my $name ( @cf_names ) {
 %       $cfs->Limit( FIELD => 'Name', VALUE => $name, CASESENSITIVE => 0 );
 %   }
-  <& /Elements/EditCustomFields, Object => $AssetObj, CustomFields => $cfs, InTable => 1, KeepValue => 1 &>
+  <div class="form-row">
+    <& /Elements/EditCustomFields, Object => $AssetObj, CustomFields => $cfs, InTable => 1, KeepValue => 1 &>
+  </div>
 % }
 % $m->callback(%ARGS, CallbackName => "AfterFields");
-</table>
 <%args>
 $AssetObj
 $CatalogObj => undef

@@ -52,15 +52,23 @@
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
 <form method="post" enctype="multipart/form-data" id="ModifyAssetCFs" action="ModifyCFs.html">
-  <input type="hidden" name="id" value="<% $asset->id %>">
-  <input type="hidden" name="Grouping" value="<% $Grouping %>">
+  <div class="col-md-12">
+    <input type="hidden" name="id" value="<% $asset->id %>">
+    <input type="hidden" name="Grouping" value="<% $Grouping %>">
 
-  <&| /Widgets/TitleBox, title => $Grouping ? loc($Grouping) : loc("Custom Fields"), class => "asset-info-cfs ".($Grouping ? CSSClass("asset-info-cfs-\L$Grouping") : ""), title_class => "inverse" &>
-    <& /Elements/EditCustomFields, Object => $asset, Grouping => $Grouping &>
-  </&>
-
-  <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
-</form>
+    <div class="form-row">
+      <div class="col-md-12">
+        <&| /Widgets/TitleBox, title => $Grouping ? loc($Grouping) : loc("Custom Fields"), class => "asset-info-cfs ".($Grouping ? CSSClass("asset-info-cfs-\L$Grouping") : ""), title_class => "inverse" &>
+          <& /Elements/EditCustomFields, Object => $asset, Grouping => $Grouping &>
+        </&>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-12">
+        <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+      </div>
+    </div>
+  </form>
 </span>
 
 <%args>

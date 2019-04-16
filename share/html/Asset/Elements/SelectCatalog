@@ -54,7 +54,7 @@
     ObjectType     => "Catalog",
     CacheNeedsUpdate => RT::Catalog->CacheNeedsUpdate,
     Default        => $Default,
-    &>
+&>
 <%args>
 $ShowAll => 0
 $Default => undef
