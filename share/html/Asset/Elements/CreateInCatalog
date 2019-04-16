@@ -45,9 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get("WebPath") %>/Asset/Create.html" id="AssetCreateInCatalog">
-  <&|/l_unsafe,
-    $m->scomp("/Asset/Elements/SelectCatalog"),
-    &>Create a new asset in the catalog [_1].</&>
-  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled asset creation form.") &>
-</form>
+<div class="modal-body">
+  <form action="<% RT->Config->Get("WebPath") %>/Asset/Create.html" id="AssetCreateInCatalog">
+    <div class="form-row">
+      <&|/l_unsafe,
+        $m->scomp("/Asset/Elements/SelectCatalog"),
+        &>Create a new asset in the catalog: [_1]</&>
+    </div>
+    <div class="form-row">
+      <div class="col-md-12">
+        <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled asset creation form.") &>
+      </div>
+    </div>
+  </form>
+</div>

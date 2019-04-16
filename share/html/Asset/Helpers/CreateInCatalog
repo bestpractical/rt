@@ -45,5 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Asset/Elements/CreateInCatalog &>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <& /Asset/Elements/CreateInCatalog &>
+  </div>
+</div>
 % $m->abort;
