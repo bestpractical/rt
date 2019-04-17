@@ -49,7 +49,7 @@
     type="text"
     id="<% $Name %>"
     name="<% $Name %>"
-    class="form-control"
+    class="<% $AutocompleteMultiple ? '' : 'form-control' %>"
     value="<% $Default || '' %>"
 
 % if (defined $Size) {

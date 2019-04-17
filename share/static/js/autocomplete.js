@@ -9,6 +9,35 @@ window.RT.Autocomplete.Classes = {
     Articles: 'articles'
 };
 
+Selectize.define('rt_drag_drop', function(options) {
+    this.require('drag_drop');
+    var self = this;
+    self.setup = (function() {
+        var original = self.setup;
+        return function() {
+            original.apply(this, arguments);
+            self.$control.sortable('option', 'connectWith', '.selectize-input');
+            self.$control.on('sortreceive', function(e, ui) {
+                var input = jQuery(e.target).parent().prev('input');
+                var self = input.selectize()[0].selectize;
+                var value = ui.item.attr('data-value');
+                self.createItem(value, false);
+                self.getItem(value).children('span').text(ui.item.children('span').text());
+                self.getItem(value).insertBefore(ui.item);
+                ui.item.remove();
+                self.setCaret(self.items.length);
+            });
+            self.$control.on('sortremove', function(e, ui) {
+                var input = jQuery(e.target).parent().prev('input');
+                var self = input.selectize()[0].selectize;
+                var value = ui.item.attr('data-value');
+                self.removeItem(value, true);
+                self.trigger('item_remove', value, ui.item);
+            });
+        };
+    })();
+});
+
 window.RT.Autocomplete.bind = function(from) {
 
     jQuery("input[data-autocomplete]", from).each(function(){
@@ -18,6 +47,62 @@ window.RT.Autocomplete.bind = function(from) {
 
         if (!what || !window.RT.Autocomplete.Classes[what])
             return;
+
+        if (what === 'Users' && input.is('[data-autocomplete-multiple]')) {
+            input.selectize({
+                plugins: ['remove_button', 'rt_drag_drop'],
+                valueField: 'value',
+                labelField: 'label',
+                searchField: ['label', 'value'],
+                create: true,
+                closeAfterSelect: true,
+                maxItems: null,
+                allowEmptyOption: false,
+                openOnFocus: false,
+                selectOnTab: true,
+                placeholder: input.attr('placeholder'),
+                render: {
+                    option_create: function(data, escape) {
+                        return '<div class="create"><strong>' + escape(data.input) + '</strong></div>';
+                    },
+                    option: function(data, escape) {
+                        return '<div class="option">' + escape(data.label) + '</div>';
+                    },
+                    item: function(data, escape) {
+                        return '<div class="item">' + '<span>' + escape(data.label) + '</span></div>';
+                    }
+                },
+                onItemRemove: function(value) {
+                    // We do not want dropdown to show on removing items, but there is no such option.
+                    // Here we temporarily lock the selectize to achieve it.
+                    var self = input[0].selectize;
+                    self.lock();
+                    setTimeout( function() {
+                        self.unlock();
+                    },100);
+                },
+                load: function(input, callback) {
+                    if (!input.length) return callback();
+                    jQuery.ajax({
+                        url: RT.Config.WebPath + '/Helpers/Autocomplete/Users',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            delim: ',',
+                            term: input,
+                            return: wants
+                        },
+                        error: function() {
+                            callback();
+                        },
+                        success: function(res) {
+                            callback(res);
+                        }
+                    });
+                }
+            });
+            return;
+        }
 
         // Don't re-bind the autocompleter
         if (input.data("ui-autocomplete"))

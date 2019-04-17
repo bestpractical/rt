@@ -195,6 +195,16 @@ function checkboxToInput(target,checkbox,val){
         tar.val(tar.val().replace(val,''));
     }
     jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
+
+    var selectize = tar[0].selectize;
+    if ( selectize ) {
+        if( box.prop('checked') ) {
+            selectize.createItem(val, false);
+        }
+        else {
+            selectize.removeItem(val, true);
+        }
+    }
     tar.change();
 }
 
