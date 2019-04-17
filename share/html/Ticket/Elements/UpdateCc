@@ -49,7 +49,6 @@
 
 <tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1 &>
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
-        <br />
 
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
@@ -79,7 +78,7 @@
 </div>
 %}
 </td></tr>
-<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &><br />
+<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &>
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
         <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
