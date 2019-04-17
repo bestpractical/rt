@@ -91,6 +91,10 @@
 	width: 100%;
 	height: 100%;
 }
+.ui-sortable-handle {
+	-ms-touch-action: none;
+	touch-action: none;
+}
 .ui-accordion .ui-accordion-header {
 	display: block;
 	cursor: pointer;
