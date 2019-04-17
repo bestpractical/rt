@@ -631,6 +631,14 @@ search via EditSavedSearches on the group or globally. This may change the group
 that appear in the Privacy menu, but shouldn't change functionality since users
 without the correct rights were unable to create searches.
 
+=item * AttachmentListCount Default
+
+The C<AttachmentListCount> configuration option now defaults to 5.
+To restore the previous configuration and show all attachments,
+add the following to your C<RT_SiteConfig.pm>.
+
+    Set($AttachmentListCount, undef);
+
 =back
 
 =cut
