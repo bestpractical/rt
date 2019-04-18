@@ -51,17 +51,10 @@ return if $checks_failure; # we're already skipping Create
 return unless RT->Config->Get('ArticleOnTicketCreate');
 
 
-my $article = RT::Article->new($session{'CurrentUser'});
-foreach my $arg ( keys %$ARGSRef) {
-
-    if ( $ARGSRef->{Articles_Content} ||              # search for an article
-         $ARGSRef->{'Articles-Include-Topic'} ||      # using Queue Topics
-         ( $article->LoadByInclude( Field => $arg, Value => $ARGSRef->{$arg} ) &&
-           $article->id ) ) {                     # including an article
-
-        $$skip_create = 1;
-        last;
-    }
+if ( $ARGSRef->{IncludeArticleId} ) {
+    my $article = RT::Article->new($session{'CurrentUser'});
+    $article->Load($ARGSRef->{IncludeArticleId});
+    $$skip_create = 1 if $article->id;
 }
 return;
 
