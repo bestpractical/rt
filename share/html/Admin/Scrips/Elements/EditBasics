@@ -45,26 +45,41 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<tr><td class="label"><&|/l&>Description</&>:</td><td class="value">\
-<input type="text" name="Description" \
-    size="60" \
-    value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
-</td></tr>
-
-<tr><td class="label"><&|/l&>Condition</&>:</td><td class="value">\
-<& /Admin/Elements/SelectScripCondition,
-    Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id,
-&></td></tr>
-
-<tr><td class="label"><&|/l&>Action</&>:</td><td class="value">\
-<& /Admin/Elements/SelectScripAction,
-    Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id,
-&></td></tr>
-
-<tr><td class="label"><&|/l&>Template</&>:</td><td class="value">\
-<& SelectTemplate,
-    Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue,
-&></td></tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
+  </div>
+</div>
+ 
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Condition</&>:
+  </div>
+  <div class="col-md-9 value">
+    <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
+  </div>
+</div>
+ 
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Action</&>:
+  </div>
+  <div class="col-md-9 value">
+    <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
+  </div>
+</div>
+ 
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Template</&>:
+  </div>
+  <div class="col-md-9 value">
+    <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
+  </div>
+</div>
 
 <%ARGS>
 $Scrip

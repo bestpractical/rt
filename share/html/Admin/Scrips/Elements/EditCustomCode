@@ -47,21 +47,26 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('User Defined conditions and results') &>
 
-<table>
-<tr><td colspan="2" class="comment">
-<i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
-</td></tr>
+<div class="form-row">
+  <div class="col-md-9 value">
+    <i><&|/l&>(Use these fields when you choose 'User Defined' for a condition or action)</&></i>
+  </div>
+</div>
 
 % while ( my ($method, $desc) = splice @list, 0, 2 ) {
-<tr><td class="labeltop"><% $desc %>:</td><td class="value">
+<div class="form-row">
+  <div class="col-md-3 label labeltop">
+    <% $desc %>:
+  </div>
+  <div class="col-md-9 value">
 % my $code = $ARGS{ $method } || $Scrip->$method() || '';
 % my $lines = @{[ $code =~ /\n/gs ]} + 3;
 % $lines = $min_lines if $lines < $min_lines;
-<textarea cols="80" rows="<% $lines %>" name="<% $method %>"><% $code %></textarea>
-</td></tr>
+    <textarea cols="80" class="form-control" rows="<% $lines %>" name="<% $method %>"><% $code %></textarea>
+  </div>
+</div>
 % }
 
-</table>
 </&>
 <%ARGS>
 $Scrip

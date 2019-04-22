@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$Name%>" class="form-control selectpicker">
 % foreach my $value (@stages) {
 <option value="<%$value%>"
 <% ($value eq $Default) && qq[ selected="selected"] |n %>
