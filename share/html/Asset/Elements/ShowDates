@@ -45,28 +45,38 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-    <td class="label"><&|/l&>Created</&>:</td>
-    <td>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Created</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control">
       <&|/l_unsafe,
-          $m->interp->apply_escapes($AssetObj->CreatedAsString, 'h'),
-          $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj)
-        &>[_1] by [_2]</&>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Last Updated</&>:</td>
-    <td>
+        $m->interp->apply_escapes($AssetObj->CreatedAsString, 'h'),
+        $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj)
+      &>[_1] by [_2]</&>
+    </span>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Last Updated</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control">
       <&|/l_unsafe,
-          $m->interp->apply_escapes($AssetObj->LastUpdatedAsString, 'h'),
-          $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj)
-        &>[_1] by [_2]</&>
-    </td>
-  </tr>
-  <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Dates', Table => 0 &>
+        $m->interp->apply_escapes($AssetObj->LastUpdatedAsString, 'h'),
+        $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj)
+      &>[_1] by [_2]</&>
+    </span>
+  </div>
+</div>
+
+<div class="form-row">
+  <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Dates' &>
+</div>
 % $m->callback(%ARGS, CallbackName => "AfterFields");
-</table>
 <%args>
 $AssetObj
 </%args>

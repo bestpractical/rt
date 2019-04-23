@@ -55,15 +55,25 @@
   <input type="hidden" name="id" value="<% $asset->id %>">
   <input type="hidden" name="DisplayAfter" value="<% $DisplayAfter ? 1 : 0 %>">
 
-  <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
-    <& Elements/EditBasics, %ARGS, AssetObj => $asset &>
-  </&>
+  <div class="asset-metadata form-row">
+    <div class="col-md-6">
+      <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
+          <& Elements/EditBasics, %ARGS, AssetObj => $asset &>
+      </&>
+    </div>
 
-  <&| /Widgets/TitleBox, title => loc("Custom Fields"), class => "asset-info-cfs", title_class => "inverse" &>
-    <& /Elements/EditCustomFields, Object => $asset, Grouping => '' &>
-  </&>
+    <div class="col-md-6">
+      <&| /Widgets/TitleBox, title => loc("Custom Fields"), class => "asset-info-cfs", title_class => "inverse" &>
+          <& /Elements/EditCustomFields, Object => $asset, Grouping => '' &>
+      </&>
+    </div>
+  </div>
 
-  <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+    </div>
+  </div>
 </form>
 </span>
 
