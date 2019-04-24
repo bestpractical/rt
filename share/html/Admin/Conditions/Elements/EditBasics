@@ -45,40 +45,50 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<tr>
-  <td class="label"><&|/l&>Name</&>:</td>
-  <td class="value">
-    <input name="Name" size="60" value="<% $ARGS{"Name"} || $Condition->Name || '' %>" />
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Name</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Name" size="60" value="<% $ARGS{"Name"} || $Condition->Name || '' %>" />
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Description</&>:</td>
-  <td class="value">
-    <input name="Description" size="60" value="<% $ARGS{"Description"} || $Condition->Description || '' %>" />
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Condition->Description || '' %>" />
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Condition Module</&>:</td>
-  <td class="value">
-    <input name="ExecModule" size="60" value="<% $ARGS{"ExecModule"} || $Condition->ExecModule || ''%>" />
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Condition Module</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="ExecModule" size="60" value="<% $ARGS{"ExecModule"} || $Condition->ExecModule || ''%>" />
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Parameters to Pass</&>:</td>
-  <td class="value">
-    <input name="Argument" size="60" value="<% $ARGS{"Argument"} || $Condition->Argument || '' %>"/>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Parameters to Pass</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Argument" size="60" value="<% $ARGS{"Argument"} || $Condition->Argument || '' %>"/>
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Applicable Transaction Types</&>:</td>
-  <td class="value">
-    <input name="ApplicableTransTypes" size="60" value="<% $ARGS{"ApplicableTransTypes"} || $Condition->ApplicableTransTypes || '' %>" />
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Applicable Transaction Types</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="ApplicableTransTypes" size="60" value="<% $ARGS{"ApplicableTransTypes"} || $Condition->ApplicableTransTypes || '' %>" />
+  </div>
+</div>
 
 <%ARGS>
 $Condition
