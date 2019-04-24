@@ -1,0 +1,26 @@
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( \@suggestions ) |n %>
+% $m->abort;
+<%args>
+$return => ''
+$term => undef
+$max => undef
+$exclude => ''
+</%args>
+<%init>
+my @suggestions;
+my @excludes;
+
+(my $prev, my $type, $term) = $term =~ /^((?:(asset:)?\d+\s+)*)(.*)/;
+@excludes = split ' ', $prev if $prev;
+push @excludes, split ' ', $exclude if $exclude;
+
+if ($term =~ /^asset:./) {
+    my $exclude_assets = join(',', map(/(\d+)/, grep(/^asset:\d+$/, @excludes)));
+    @suggestions = $m->comp('Assets', term => substr($term, 6), max => $max, exclude => $exclude_assets, return_suggestions => 1);
+    @suggestions = map { {id => $_->{id}, label => $_->{label}, value => 'asset:' . $_->{value}} } @suggestions;
+} else {
+    my $exclude_tickets = join(' ', grep(/^\d+$/, @excludes));
+    @suggestions = $m->comp('Tickets', return => $return, term => $term, max => $max, exclude => $exclude_tickets, return_suggestions => 1);
+}
+</%init>

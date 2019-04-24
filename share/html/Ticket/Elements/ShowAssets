@@ -206,7 +206,7 @@ if ($ShowRelatedTickets) {
   <div class="add-asset">
     <label>
       <&|/l&>Add an asset to this ticket</&>
-    <input size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
+    <input size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" data-autocomplete="Assets" data-autocomplete-ticketid="<% $Ticket->id %>" data-autocomplete-exclude="<% join(',', @linked_assets) |n %>" type="text" value="">
     </label>
     <input type="submit" value="+">
   </div>
