@@ -45,33 +45,41 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<tr>
-  <td class="label"><&|/l&>Name</&>:</td>
-  <td class="value">
-    <input name="Name" size="60" value="<% $ARGS{"Name"} || $Action->Name || '' %>" />
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Name</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Name" size="60" value="<% $ARGS{"Name"} || $Action->Name || '' %>" />
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Description</&>:</td>
-  <td class="value">
-    <input name="Description" size="60" value="<% $ARGS{"Description"} || $Action->Description || '' %>" />
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Action->Description || '' %>" />
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Action Module</&>:</td>
-  <td class="value">
-    <input name="ExecModule" size="60" value="<% $ARGS{"ExecModule"} || $Action->ExecModule || ''%>" />
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Action Module</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="ExecModule" size="60" value="<% $ARGS{"ExecModule"} || $Action->ExecModule || ''%>" />
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Parameters to Pass</&>:</td>
-  <td class="value">
-    <input name="Argument" size="60" value="<% $ARGS{"Argument"} || $Action->Argument || '' %>"/>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Parameters to Pass</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Argument" size="60" value="<% $ARGS{"Argument"} || $Action->Argument || '' %>"/>
+  </div>
+</div>
 
 <%ARGS>
 $Action
