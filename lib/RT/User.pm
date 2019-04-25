@@ -867,11 +867,7 @@ sub CanonicalizeUserInfoFromExternalAuth {
             # Jump to the next attr in $args if this one isn't in the attr_match_list
             $RT::Logger->debug( "Attempting to use this canonicalization key:",$rt_attr);
             unless( ($args->{$rt_attr} // '') =~ /\S/ ) {
-                $RT::Logger->debug("This attribute (",
-                                    $rt_attr,
-                                    ") is null or incorrectly defined in the attr_map for this service (",
-                                    $service,
-                                    ")");
+                $RT::Logger->debug("No value provided for RT user attribute $rt_attr");
                 next;
             }
 
@@ -920,6 +916,9 @@ sub CanonicalizeUserInfoFromExternalAuth {
             $params{'EmailAddress'} = $UserObj->CanonicalizeEmailAddress($params{'EmailAddress'});
         }
         %$args = (%$args, %params);
+    }
+    else {
+        $RT::Logger->debug("No record found in configured external sources");
     }
 
     $RT::Logger->info(  (caller(0))[3],
