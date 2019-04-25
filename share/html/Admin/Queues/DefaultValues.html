@@ -53,85 +53,104 @@
 <input type="hidden" name="id" value="<% $queue->id %>" />
 
 <div class="ticket-info-basics">
-    <&| /Widgets/TitleBox, title => loc('Basics') &>
-    <table>
-    <tr><td class="label"><&|/l&>Priority</&>:</td>
-    <td><& /Elements/SelectPriority,
-        Name => "InitialPriority",
-        Default => $queue->DefaultValue('InitialPriority'),
-    &></td></tr>
-    <tr><td class="label"><&|/l&>Final Priority</&>:</td>
-    <td><& /Elements/SelectPriority,
-        Name => "FinalPriority",
-        Default => $queue->DefaultValue('FinalPriority'),
-    &><br /><span><em><&|/l&>requires running rt-crontool</&></em></span></td></tr>
-    <& /Elements/EditCustomFields,
-        Object => RT::Ticket->new($session{CurrentUser}),
-        CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
-        Grouping => 'Basics',
-        InTable => 1,
-    &>
-    </table>
-    </&>
+  <&| /Widgets/TitleBox, title => loc('Basics') &>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Priority</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectPriority, Name => "InitialPriority", Default => $queue->DefaultValue('InitialPriority') &>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Final Priority</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectPriority, Name => "FinalPriority", Default => $queue->DefaultValue('FinalPriority') &>
+      <span><em><&|/l&>requires running rt-crontool</&></em></span>
+    </div>
+  </div>
+
+  <& /Elements/EditCustomFields,
+      Object => RT::Ticket->new($session{CurrentUser}),
+      CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
+      Grouping => 'Basics',
+  &>
+  </&>
 </div>
 
 <div class="ticket-info-dates">
-    <&|/Widgets/TitleBox, title => loc("Dates") &>
-    <table>
-    <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &></td></tr>
-    <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &></td></tr>
-    <& /Elements/EditCustomFields,
-        Object => RT::Ticket->new($session{CurrentUser}),
-        CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
-        Grouping => 'Dates',
-        InTable => 1,
-    &>
-    </table>
-    </&>
+  <&|/Widgets/TitleBox, title => loc("Dates") &>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Starts</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Due</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &>
+    </div>
+  </div>
+
+  <& /Elements/EditCustomFields,
+      Object => RT::Ticket->new($session{CurrentUser}),
+      CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
+      Grouping => 'Dates',
+  &>
+  </&>
 </div>
 
 % if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'People') ) {
 <div class="ticket-info-people">
-    <&|/Widgets/TitleBox, title => loc("People") &>
-    <table>
-    <& /Elements/EditCustomFields,
-        Object => RT::Ticket->new($session{CurrentUser}),
-        CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
-        Grouping => 'People',
-        InTable => 1,
-    &>
-    </table>
-    </&>
+  <&|/Widgets/TitleBox, title => loc("People") &>
+  <& /Elements/EditCustomFields,
+      Object => RT::Ticket->new($session{CurrentUser}),
+      CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
+      Grouping => 'People',
+  &>
+  </&>
 </div>
 % }
 
 % if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'Links') ) {
 <div class="ticket-info-links">
-    <&|/Widgets/TitleBox, title => loc("Links") &>
-    <table>
-    <& /Elements/EditCustomFields,
-        Object => RT::Ticket->new($session{CurrentUser}),
-        CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
-        Grouping => 'Links',
-        InTable => 1,
-    &>
-    </table>
-    </&>
+  <&|/Widgets/TitleBox, title => loc("Links") &>
+  <& /Elements/EditCustomFields,
+      Object => RT::Ticket->new($session{CurrentUser}),
+      CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
+      Grouping => 'Links',
+  &>
+  </&>
 </div>
 % }
 
 <& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}) &>
 
 <div class="ticket-info-cfs">
-    <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields") &>
-    <table>
-    <& /Elements/EditCustomFields, CustomFields => $queue->TicketTransactionCustomFields->LimitToDefaultValuesSupportedTypes, Object => RT::Transaction->new($session{CurrentUser}), QueueObj => $queue, InTable => 1 &>
-    </table>
-    </&>
+  <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields") &>
+  <& /Elements/EditCustomFields, CustomFields => $queue->TicketTransactionCustomFields->LimitToDefaultValuesSupportedTypes, Object => RT::Transaction->new($session{CurrentUser}), QueueObj => $queue, &>
+  </&>
 </div>
 
-<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
-<& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
+  </div>
+</div>
 </form>
 
 <%INIT>
