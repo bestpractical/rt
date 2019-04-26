@@ -263,6 +263,49 @@ jQuery( function() {
 
    jQuery("#ticket-update-metadata :input, #UpdateCc, #UpdateBcc").change( updateScrips );
 
+   var syncOneTimeCheckboxes = function() {
+        var emails = jQuery(this).val().split(/,\s*/);
+        var prefix = jQuery(this).attr('id');
+        var type = prefix.replace('Update', '');
+        var checked = 0;
+        var unchecked = 0;
+        jQuery('input:checkbox[name^=' + prefix + ']').each( function() {
+            var name = jQuery(this).attr('name');
+            name = name.replace(prefix + '-', '');
+            var filter_function = function(n,i) {
+                return n.match(new RegExp('^\\s*' + name + '\\s*$', 'i')) || n.match(new RegExp('<\\s*' + name + '\\s*>', 'i'));
+            };
+            if ( jQuery.grep(emails, filter_function).length == 0 ) {
+                unchecked++;
+                if ( jQuery(this).prop('checked') ) {
+                    jQuery(this).prop('checked', false);
+                }
+            }
+            else {
+                checked++;
+                if ( !jQuery(this).prop('checked') ) {
+                    jQuery(this).prop('checked', true);
+                    if ( jQuery('#UpdateIgnoreAddressCheckboxes').val() == 0 ) {
+                        jQuery('#UpdateIgnoreAddressCheckboxes').val(1);
+                    }
+                }
+            }
+        });
+
+        if ( unchecked > 0 ) {
+            if ( jQuery('#AllSuggested' + type).is(':checked') ) {
+                jQuery('#AllSuggested' + type).prop('checked', false);
+            }
+        }
+        else if ( checked > 0 && unchecked == 0 ) {
+            if ( !jQuery('#AllSuggested' + type).is(':checked') ) {
+                jQuery('#AllSuggested' + type).prop('checked', true);
+            }
+        }
+   };
+
+   jQuery("#UpdateCc, #UpdateBcc").change(syncOneTimeCheckboxes);
+
 });
 </script>
 % }
