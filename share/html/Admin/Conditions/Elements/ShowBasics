@@ -45,40 +45,50 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<tr>
-  <td class="label"><&|/l&>Name</&>:</td>
-  <td class="value">
-    <% $ARGS{"Name"} || $Condition->Name || '' %>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Name</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $ARGS{"Name"} || $Condition->Name || '' %></span>
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Description</&>:</td>
-  <td class="value">
-    <% $ARGS{"Description"} || $Condition->Description || '' %>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $ARGS{"Description"} || $Condition->Description || '' %></span>
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Condition Module</&>:</td>
-  <td class="value">
-    <% $ARGS{"ExecModule"} || $Condition->ExecModule || ''%>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Condition Module</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $ARGS{"ExecModule"} || $Condition->ExecModule || ''%></span>
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Parameters to Pass</&>:</td>
-  <td class="value">
-    <% $ARGS{"Argument"} || $Condition->Argument || '' %>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Parameters to Pass</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $ARGS{"Argument"} || $Condition->Argument || '' %></span>
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Applicable Transaction Types</&>:</td>
-  <td class="value">
-    <% $ARGS{"ApplicableTransTypes"} || $Condition->ApplicableTransTypes || '' %>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Applicable Transaction Types</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $ARGS{"ApplicableTransTypes"} || $Condition->ApplicableTransTypes || '' %></span>
+  </div>
+</div>
 
 <%ARGS>
 $Condition
