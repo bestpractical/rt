@@ -141,6 +141,7 @@ sub JSFiles {
         quoteselection.js
         fontawesome.min.js
         rights-inspector.js
+        Chart.min.js
         }, RT->Config->Get('JSFiles');
 }
 
