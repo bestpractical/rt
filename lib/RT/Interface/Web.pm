@@ -138,6 +138,7 @@ sub JSFiles {
       /static/RichText/ckeditor.js
       dropzone.min.js
       Chart.min.js
+      chartjs-plugin-colorschemes.min.js
       }, RT->Config->Get('JSFiles');
 }
 
