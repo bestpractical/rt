@@ -131,7 +131,7 @@ my $group_by_lifecycle = keys %statuses_by_lifecycle > 1;
 </%INIT>
 <%ARGS>
 $Name => undef
-$Type => undef,
+$Type => "ticket",
 
 @Statuses => ()
 $Object => undef,
