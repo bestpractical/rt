@@ -142,6 +142,7 @@ sub JSFiles {
         fontawesome.min.js
         rights-inspector.js
         Chart.min.js
+        chartjs-plugin-colorschemes.min.js
         }, RT->Config->Get('JSFiles');
 }
 
