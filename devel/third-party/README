@@ -4,6 +4,11 @@ users over developer modification.
 
 The rest of this file documents the contents of the directory.
 
+* Chart-2.8.0
+Description: HTML5 Charts using the <canvas> tag
+Origin: https://github.com/chartjs/Chart.js
+License: MIT
+
 * chosen-1.4.2
 Description: <select> box enhancer
 Origin: https://github.com/harvesthq/chosen
