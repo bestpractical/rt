@@ -9,6 +9,11 @@ Description: HTML5 Charts using the <canvas> tag
 Origin: https://github.com/chartjs/Chart.js
 License: MIT
 
+* chartjs-plugin-colorschemes-0.3.0
+Description: predefined color schemes for Chart.js
+Origin: https://github.com/nagix/chartjs-plugin-colorschemes
+License: MIT
+
 * chosen-1.4.2
 Description: <select> box enhancer
 Origin: https://github.com/harvesthq/chosen
