@@ -58,21 +58,38 @@
 % }
 
 <&|/Widgets/TitleBox, title => loc('Basics') &>
-<table>
-    <tr>
-     <td class="label"><&|/l&>Name</&>:</td>
-     <td class="value"><input type="text" name="Name" value="<%$Dashboard->Name%>" /></td>
-    </tr>
-    <tr>
-    <td class="label"><&|/l&>Privacy</&>:</td>
-    <td><& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &></td>
-</tr>
-</table>
+
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Name</&>:
+    </div>
+    <div class="col-md-9 value">
+        <span class="current-value form-control"><input class="form-control" type="text" name="Name" value="<%$Dashboard->Name%>" /></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-md-3">
+      <&|/l&>Privacy</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
+    </div>
+  </div>
 </&>
-<& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
+    </div>
+  </div>
 
 % if ($Dashboard->Id && $can_delete) {
-<& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
+    </div>
+  </div>
 % }
 </form>
 <%INIT>

@@ -54,22 +54,21 @@
 
 <& Elements/HiddenSearches, searches => \@hidden_searches, Dashboard => $Dashboard &>
 
-<table width="100%" border="0">
 % for my $pane (@panes) {
-<tr><td valign="top" class="boxcontainer">
-<form action="Queries.html" name="Dashboard-<%$pane->{Name}%>" method="post" enctype="multipart/form-data">
-<input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
-<input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
+  <div class="form-row">
+    <form action="Queries.html" name="Dashboard-<%$pane->{Name}%>" method="post" enctype="multipart/form-data">
+      <input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
+      <input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
 
-<&| /Widgets/TitleBox, title => $pane->{DisplayName} &>
+      <&| /Widgets/TitleBox, title => $pane->{DisplayName} &>
 % my ( $pane_name ) = $pane->{Name} =~ /Searches-(.+)/;
-    <& /Widgets/SelectionBox:show, self => $pane, grep( {
-            $_->{pane} eq $pane_name} @deleted ) ? ( ShowUpdate => 1 ) : () &>
-</&>
-</form>
-</td></tr>
+        <& /Widgets/SelectionBox:show, self => $pane, grep( {
+          $_->{pane} eq $pane_name} @deleted ) ? ( ShowUpdate => 1 ) : ()
+        &>
+      </&>
+    </form>
+  </div>
 % }
-</table>
 
 <%INIT>
 

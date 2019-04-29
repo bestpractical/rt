@@ -52,99 +52,133 @@
 
 <form action="<%RT->Config->Get('WebPath')%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="SubscribeDashboard">
 <input type="hidden" class="hidden" name="id" value="<% $fields{'DashboardId'} %>" />
-<table width="100%" border="0">
-<tr>
 
-<td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Dashboard') &>
+  <&| /Widgets/TitleBox, title => loc('Dashboard') &>
+    <div class="form-row">
+      <div class="label col-md-3">
+          <&|/l&>Dashboard</&>:
+      </div>
+      <div class="value col-md-9">
+          <span class="current-value form-control"><% $Dashboard->Name %></span>
+      </div>
+    </div>
 
-<table>
-<tr><td class="label">
-<&|/l&>Dashboard</&>:
-</td><td class="value">
-<% $Dashboard->Name %>
-</td></tr>
-
-<tr><td class="label">
-<&|/l&>Queries</&>:
-</td><td class="value">
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Queries</&>:
+      </div>
+      <div class="value col-md-9">
 % my @portlets = grep { defined } $Dashboard->Portlets;
 % if (!@portlets) {
-(<&|/l&>none</&>)
+      (<&|/l&>none</&>)
 % } else {
-<ol class="dashboard-queries">
+        <ol class="dashboard-queries list-group">
 %    for my $portlet (@portlets) {
-        <li class="dashboard-query">
+          <li class="dashboard-query list-item">
             <% loc( RT::SavedSearch->EscapeDescription($portlet->{description}), $fields{'Rows'}) %>
-        </li>
+          </li>
 %    }
-</ol>
+        </ol>
 % }
-</td></tr>
+      </div>
+    </div>
+  </&>
 
-</table>
-</&>
-
-<&| /Widgets/TitleBox, title => loc('Subscription') &>
-
-<table class="dashboard-subscription">
-<tr class="frequency"><td class="label">
-<&|/l&>Frequency</&>:
-</td><td class="value">
-
-<input type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %>></input>
-<label for="Frequency-daily">
-<&|/l&>daily, on</&>
-</label>
-
+  <div class="dashboard-subscription">
+    <&| /Widgets/TitleBox, title => loc('Subscription') &>
+      <div class="form-row">
+        <div class="label col-md-auto">
+          <&|/l&>Frequency</&>:&nbsp;
+        </div>
+        <div class="form-row">
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %>></input>
+            <label class="custom-control-label" for="Frequency-daily">
+              <&|/l&>daily, on</&>
+            </label>
+          </div>
 % for my $day ( qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/ ) {
-    &nbsp; <label><input name="<% $day %>" value=1 type="checkbox" <% $fields{$day} ? 'checked="checked"' : '' %>> <% loc($day) %></label>
-    <input type="hidden"class="hidden" name="<% $day %>-Magic" value=1 />
+          <div class="custom-control custom-radio">
+            &nbsp;<input class="custom-control-input" id="<%$day%>" name="<% $day %>" value=1 type="checkbox" <% $fields{$day} ? 'checked="checked"' : '' %>>
+            <label class="custom-control-label" for="<%$day%>"><% loc($day) %></label>
+            <input type="hidden"class="hidden" name="<% $day %>-Magic" value=1 />
+          </div>
 % }
+        </div>
+      </div>
 
-<br />
+      <div class="form-row">
 
-<input type="radio" id="Frequency-weekly" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %>></input>
-<label for="Frequency-weekly">
-<&|/l&>weekly</&>, <&|/l&>on</&>
-<select name="Dow">
-    <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' |n %>><&|/l&>Monday</&></option>
-    <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' |n %>><&|/l&>Tuesday</&></option>
-    <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' |n %>><&|/l&>Wednesday</&></option>
-    <option value="Thursday" <% $fields{'Dow'} eq 'Thursday' ? 'selected="selected"' : '' |n %>><&|/l&>Thursday</&></option>
-    <option value="Friday" <% $fields{'Dow'} eq 'Friday' ? 'selected="selected"' : '' |n %>><&|/l&>Friday</&></option>
-    <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' |n %>><&|/l&>Saturday</&></option>
-    <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' |n %>><&|/l&>Sunday</&></option>
-</select>
-<&|/l&>every</&>
-<select name="Fow">
+        <div class="label col-md-auto">
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="Frequency-weekly" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %>></input>
+            <label class="custom-control-label" for="Frequency-weekly">
+              <&|/l&>weekly</&>, <&|/l&>on</&>
+            </label>
+          </div>
+        </div>
+        <div class="value col-md-auto">
+          <select class="label form-control selectpicker" name="Dow">
+            <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' |n %>><&|/l&>Monday</&></option>
+            <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' |n %>><&|/l&>Tuesday</&></option>
+            <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' |n %>><&|/l&>Wednesday</&></option>
+            <option value="Thursday" <% $fields{'Dow'} eq 'Thursday' ? 'selected="selected"' : '' |n %>><&|/l&>Thursday</&></option>
+            <option value="Friday" <% $fields{'Dow'} eq 'Friday' ? 'selected="selected"' : '' |n %>><&|/l&>Friday</&></option>
+            <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' |n %>><&|/l&>Saturday</&></option>
+            <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' |n %>><&|/l&>Sunday</&></option>
+          </select>
+        </div>
+
+        <div class="label col-md-auto">
+          <&|/l&>every</&>
+        </div>
+        <div class="value col-md-auto">
+          <select class="form-control selectpicker" name="Fow" class="selectpicker">
 % for my $f ( qw/1 2 3 4/ ) {
-    <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' |n %>><% $f %></option>
+            <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' |n %>><% $f %></option>
 % }
-</select>
-<&|/l&>weeks</&>
-</label>
-<br />
+          </select>
+        </div>
+        <div class="label col-md-auto">
+          <&|/l&>weeks</&>
+        </div>
+      </div>
 
-<input type="radio" id="Frequency-monthly" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %>></input>
-<label for="Frequency-monthly">
-<&|/l&>monthly</&>, <&|/l&>on day</&>
-<select name="Dom">
+      <div class="form-row">
+        <div class="label col-md-auto">
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="Frequency-monthly" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %>></input>
+            <label class="custom-control-label" for="Frequency-monthly">
+              <&|/l&>monthly</&>, <&|/l&>on day</&>
+            </label>
+          </div>
+        </div>
+        <div class="col-md-auto value">
+          <select class="form-control selectpicker" name="Dom">
 %   for my $dom (1..31) {
-    <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' |n %>><% loc($dom) %></option>
+            <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' |n %>><% loc($dom) %></option>
 %   }
-</select>
-</label>
-<br />
+          </select>
+        </div>
+      </div>
 
-<input type="radio" id="Frequency-never" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %>></input>
-<label for="Frequency-never"><&|/l&>never</&></label>
+      <div class="form-row">
+        <div class="col-md-auro">
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="Frequency-never" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %>></input>
+            <label class="custom-control-label" for="Frequency-never">
+              <&|/l&>never</&>
+            </label>
+          </div>
+        </div>
+      </div>
 
-</td></tr>
-<tr><td class="label">
-<&|/l&>Hour</&>:
-</td><td class="value">
-<select name="Hour">
+      <div class="form-row">
+        <div class="label col-md-auto">
+          <&|/l&>Hour</&> (<%$timezone%>):
+        </div>
+        <div class="value col-md-auto">
+          <select class="selectpicker form-control" name="Hour">
 % my $formatter = RT::Date->new($session{CurrentUser})->LocaleObj;
 % my $dt = DateTime->now;
 % $dt->set_minute(0);
@@ -158,51 +192,58 @@
 %     my $selected = $value eq $fields{'Hour'}
 %                  ? 'selected="selected"'
 %                  : '';
-
-    <option value="<% $value %>" <%$selected|n %>><% $formatted %></option>
+            <option value="<% $value %>" <%$selected|n %>><% $formatted %></option>
 % }
-</select>
-(<%$timezone%>)
-</td></tr>
-<tr><td class="label">
-<&|/l&>Language</&>:
-</td><td class="value">
-<& /Elements/SelectLang,
-    Name => 'Language',
-    Default => $fields{'Language'},
-    ShowNullOption => 1,
- &>
-</td></tr>
-<tr><td class="label">
-<&|/l&>Rows</&>:
-</td><td class="value">
-<select name="Rows">
-%   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
-    <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' |n %>><% loc($rows || 'Unlimited') %></option>
-%   }
-</select>
-</td></tr>
+          </select>
+        </div>
+      </div>
 
-<tr><td align="right"><input type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" value="1" <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %> /></td>
-<td><label for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label><br />
-<input type="hidden"class="hidden" name="SuppressIfEmpty-Magic" value=1 />
-</td></tr>
+      <div class="form-row">
+        <div class="label col-md-auto">
+          <&|/l&>Language</&>:
+        </div>
+        <div class="value col-md-auto">
+          <& /Elements/SelectLang,
+              Name => 'Language',
+              Default => $fields{'Language'},
+              ShowNullOption => 1,
+          &>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="label col-md-auto">
+          <&|/l&>Rows</&>:
+        </div>
+        <div class="value col-md-auto">
+          <select name="Rows" class="form-control selectpicker">
+%   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
+            <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' |n %>><% loc($rows || 'Unlimited') %></option>
+%   }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="custom-control custom-checkbox">
+          <input class="custom-control-input" type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" value="1" <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %> />
+          <label class="custom-control-label" for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label>
+        </div>
+        <input type="hidden"class="hidden" name="SuppressIfEmpty-Magic" value=1 />
+      </div>
+
 % $m->callback( %ARGS, CallbackName => 'SubscriptionFormEnd', FieldsRef => \%fields,
 %     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard );
-</table>
-</&>
+    </&>
+  </div>
 
-<&| /Widgets/TitleBox, title => loc('Recipients') &>
-<& Elements/SubscriptionRecipients,
-    UserField => $UserField, UserString => $UserString, UserOp => $UserOp,
-    GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField,
-    Recipients => $fields{Recipients},
-    IsFirstSubscription => $SubscriptionObj ? 0 : 1 &>
-</&>
-
-</td>
-</tr>
-</table>
+  <&| /Widgets/TitleBox, title => loc('Recipients') &>
+    <& Elements/SubscriptionRecipients,
+      UserField => $UserField, UserString => $UserString, UserOp => $UserOp,
+      GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField,
+      Recipients => $fields{Recipients},
+      IsFirstSubscription => $SubscriptionObj ? 0 : 1
+    &>
+  </&>
 
 % if ($SubscriptionObj) {
     <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
