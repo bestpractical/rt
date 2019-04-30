@@ -53,25 +53,31 @@
 % }
 % if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' ) {
 <form method="post">
+  <div class="col-md-6">
 
-<table width="100%" border="0">
-<tr>
-<td valign="top" class="boxcontainer" width=50%>
-<&| /Widgets/TitleBox, title => loc('Locale'), id => "user-prefs-identity" &>
-<table cellspacing="0" cellpadding="0">
-  <tr>
-    <td class="label"><&|/l&>Language</&>:</td>
-    <td class="value"><& /Elements/SelectLang, Name => 'Lang', Default => $user->Lang &></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Timezone</&>:</td>
-    <td class="value"><& /Elements/SelectTimezone, Name => 'Timezone', Default => $user->Timezone &></td>
-  </tr>
-</table>
-</&>
-</td>
-<td valign="top">
-<&| /Widgets/TitleBox, title => loc('Change password')  &>
+    <&| /Widgets/TitleBox, title => loc('Locale'), id => "user-prefs-identity" &>
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>Language</&>:
+        </div>
+        <div class="col-md-9 value">
+          <& /Elements/SelectLang, Name => 'Lang', Default => $user->Lang &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-md-3">
+              <&|/l&>Timezone</&>:
+        </div>
+        <div class="col-md-9 value">
+          <& /Elements/SelectTimezone, Name => 'Timezone', Default => $user->Timezone &>
+        </div>
+      </div>
+    </&>
+  </div>
+
+  <div class="col-md-6">
+    <&| /Widgets/TitleBox, title => loc('Change password')  &>
 % if ( $user->__Value('Password') ne '*NO-PASSWORD*' ) {
 <& /Elements/EditPassword,
     User => $user,
@@ -79,10 +85,16 @@
 &>
 % }
 </&>
+  </div>
 
-</td></tr></table>
-<br />
-<& /Elements/Submit, Label => loc('Save Changes') &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+    </div>
+  </div>
+
+</div>
+
 </form>
 
 % }
