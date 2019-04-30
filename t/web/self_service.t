@@ -69,11 +69,11 @@ diag 'Test $SelfServiceUserPrefs config';
       $m->content_lacks( 'Nickname', "'Edit-Prefs' option does not contain full user info" );
       $m->content_contains( '<td class="value"><input type="password" name="CurrentPass"', "'Edit-Prefs' option contains default user info" );
     } elsif ( $config eq 'view-info' ) {
-      $m->content_lacks( '<td class="value"><input name="NickName" value="" /></td>', "'View-Info' option contains no input fields for full user info" );
-      $m->content_contains( '<td class="label">Nickname:</td>', "'View-Info' option contains full user info" );
+      $m->content_lacks( '<input name="NickName" value="" />', "'View-Info' option contains no input fields for full user info" );
+      $m->content_contains( "Nickname:", "'View-Info' option contains full user info" );
     } elsif ( $config eq 'edit-prefs-view-info' ) {
       $m->content_contains( '<td class="value"><input type="password" name="CurrentPass"', "'Edit-Prefs-View-Info' option contains default user info" );
-      $m->content_contains( '<td class="label">Nickname:</td>', "'Edit-Prefs-View-Info' option contains full user info" );
+      $m->content_contains( 'Nickname:', "'Edit-Prefs-View-Info' option contains full user info" );
       $m->content_lacks( '<td class="value"><input name="NickName" value="" /></td>', "'Edit-Prefs-View-Info' option contains no input fields for full user info" );
     } else {
       RT::Test->add_rights( { Principal => $user_a, Right => ['ModifySelf'] } );

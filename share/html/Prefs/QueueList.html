@@ -51,18 +51,21 @@
 <& /Elements/ListActions, actions => \@actions &>
 <h1><&|/l&>Select queues to be displayed on the "RT at a glance" page</&></h1>
 <form method="post" action="QueueList.html" name="Preferences">
-<ul>
+  <ul class="list-group list-group-borderless">
 % for my $queue (@queues) {
-<li><input type="checkbox" class="checkbox" id="Want-<%$queue->Name%>" name="Want-<%$queue->Name%>" value="1"
+    <li class="list-group-item">
+      <div class="custom-control custom-checkbox">
+        <input class="custom-control-input" type="checkbox" class="checkbox" id="Want-<%$queue->Name%>" name="Want-<%$queue->Name%>" value="1"
 % unless ($unwanted->{$queue->Name}) {
 checked="checked"
 % }
-/>
-<label for="Want-<%$queue->Name%>"><%$queue->Name%><% $queue->Description ? ': '.$queue->Description : '' %></label>
-</li>
+        />
+        <label class="custom-control-label" for="Want-<%$queue->Name%>"><%$queue->Name%><% $queue->Description ? ': '.$queue->Description : '' %></label>
+      </div>
+    </li>
 % }
-</ul>
-<& /Elements/Submit,
+  </ul>
+  <& /Elements/Submit,
     Caption             => loc("Save Changes"),
     Label               => loc('Save'),
     Name                => 'Save',
@@ -70,8 +73,7 @@ checked="checked"
     CheckAll            => 1,
     ClearAll            => 1,
     CheckboxNameRegex   => '/^Want-/',
-    &>
-
+  &>
 </form>
 
 <%INIT>
