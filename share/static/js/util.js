@@ -559,6 +559,7 @@ jQuery(function() {
         }, 'json');
         return false;
     });
+    Chart.platform.disableCSSInjection = true;
 });
 
 // focus jquery object in window, only moving the screen when necessary

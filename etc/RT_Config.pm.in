@@ -1339,6 +1339,24 @@ Set(@ChartColors, qw(
     33cc33 cc3333 cc9933 6633cc
 ));
 
+=item C<$EnableJSChart>
+
+Set this to 0 to disable Chart in JavaScript.
+
+=cut
+
+Set($EnableJSChart, 1);
+
+=item C<$JSChartColorScheme>
+
+The color scheme to use for Chart in Javascript. By default it's
+I<brewer.Paired12>.  The full list is:
+L<https://nagix.github.io/chartjs-plugin-colorschemes/colorchart.html>
+
+=cut
+
+Set($JSChartColorScheme, 'brewer.Paired12');
+
 =back
 
 

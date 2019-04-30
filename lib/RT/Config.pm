@@ -403,6 +403,24 @@ our %META;
             },
         },  
     },
+    EnableJSChart => {
+        Section         => 'General',                       #loc
+        Overridable     => 1,
+        SortOrder       => 10,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use JavaScript to render charts', #loc
+        },
+    },
+    JSChartColorScheme => {
+        Section         => 'General',                       #loc
+        Overridable     => 1,
+        SortOrder       => 11,
+        Widget          => '/Widgets/Form/String',
+        WidgetArguments => {
+            Description => 'JavaScript chart color scheme', #loc
+        },
+    },
 
     # User overridable options for RT at a glance
     HomePageRefreshInterval => {

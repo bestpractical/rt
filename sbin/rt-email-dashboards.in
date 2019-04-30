@@ -89,6 +89,9 @@ RT::LoadConfig();
 # adjust logging to the screen according to options
 RT->Config->Set( LogToSTDERR => $opts{log} ) if $opts{log};
 
+# Disable JS chart as email clients don't support it
+RT->Config->Set( EnableJSChart => 0 );
+
 # Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
 
