@@ -45,7 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &><table>
+<&| /Widgets/TitleBox, title => $title &>
+
 % while ( my $protocol = shift @protocols ) {
 % my %res = RT::Crypt->GetKeyInfo(
 %     Protocol => $protocol,
@@ -53,48 +54,107 @@
 %     Type     => $Type,
 % );
 % if ( $res{'exit_code'} ) {
-<tr><th colspan="2"><% loc("Couldn't get [_1] keys information", $protocol) %></th></tr>
+<div class="form-row">
+  <div class="col-md-12">
+    <% loc("Couldn't get [_1] keys information", $protocol) %>
+  </div>
+</div>
 % } elsif ( !keys %{ $res{'info'} } ) {
-<tr><th colspan="2"><% loc('No [_1] keys for this address', $protocol) %></th></tr>
+<div class="form-row">
+  <div class="col-md-12">
+    <% loc('No [_1] keys for this address', $protocol) %>
+  </div>
+</div>
 % } else {
-
-<tr><th colspan="2"><% loc("[_1] key '[_2]'", $protocol, $res{'info'}{'Formatted'} ) %></th></tr>
+<div class="form-row">
+  <div class="col-md-12">
+    <% loc("[_1] key '[_2]'", $protocol, $res{'info'}{'Formatted'} ) %>
+  </div>
+</div>
 
 % if ( $Type ne 'private' && $res{'info'}{'Trust'} ) {
-<tr><th class="label"><% loc('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <% loc('Trust') %>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% loc( $res{'info'}{'Trust'} ) %></span>
+  </div>
+</div>
 % }
 
-<tr><th class="label"><% loc('Fingerprint') %>:</th>
-<td><% $res{'info'}{'Fingerprint'} %></td></tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <% loc('Fingerprint') %>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $res{'info'}{'Fingerprint'} %></span>
+  </div>
+</div>
 
 % $_->CurrentUser( $session{CurrentUser} ) for grep {$_} (@{$res{'info'}}{qw|Created Expire|});
-<tr><th class="label"><% loc('Created') %>:</th>
-<td><% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never') %></td></tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <% loc('Created') %>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control">
+      <% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never') %>
+    </span>
+  </div>
+</div>
 
-<tr><th class="label"><% loc('Expire') %>:</th>
-<td><% $res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): loc('never') %></td></tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <% loc('Expire') %>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control">
+      <% $res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): loc('never') %>
+    </span>
+  </div>
+</div>
 
 % foreach my $uinfo( @{ $res{'info'}{'User'} } ) {
 % if ($uinfo->{'Created'} or $uinfo->{'Expire'}) {
 %   $_->CurrentUser( $session{CurrentUser} ) for grep {$_} ($uinfo->{'Created'}, $uinfo->{'Expire'});
-<tr><th class="label"><% loc('User (created - expire)') %>:</th>
-<td><% $uinfo->{'String'} %> \
-(<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): loc('never') %> - \
-<% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): loc('never') %>)</td></tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <% loc('User (created - expire)') %>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control">
+      <% $uinfo->{'String'} %> \
+     (<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): loc('never') %> - <% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): loc('never') %>)
+    </span>
+  </div>
+</div>
 % } else {
-<tr><th class="label"><% loc('User') %>:</th>
-<td><% $uinfo->{'String'} %></td></tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <% loc('User') %>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $uinfo->{'String'} %></span>
+  </div>
+</div>
+
 % }
 % }
 
 % }
 
 % if ( @protocols ) {
-<tr><th colspan="2">&nbsp;</th></tr>
+<div class="form-row">
+  <div class="col-md-12">
+    &nbsp;
+  </div>
+</div>
 % }
 
 % }
-</table></&>
+
+</&>
 
 <%ARGS>
 $EmailAddress
