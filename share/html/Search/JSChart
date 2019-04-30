@@ -58,6 +58,16 @@ $Height => undef
 <canvas id="search-chart" width="<% $Width %>" height="<% $Height %>"></canvas>
 <script type="text/javascript">
 var data_labels = <% JSON( \@data_labels ) |n %>;
+
+% if ( $#data == 1 )  {
+var backgroundColor = Chart.colorschemes[<% $scheme_parts[0] |n,j %>][<% $scheme_parts[1] |n,j %>];
+if ( backgroundColor && backgroundColor.length ) {
+    while ( backgroundColor.length < <% scalar @{$data[0]} %>) {
+        backgroundColor = backgroundColor.concat(backgroundColor);
+    }
+}
+% }
+
 var ctx = document.getElementById('search-chart').getContext('2d');
 var searchChart = new Chart(ctx, {
     type: <% $ChartStyle =~ /\bbar\b/ ? 'bar' : 'pie' |n,j %>,
@@ -66,6 +76,9 @@ var searchChart = new Chart(ctx, {
         datasets: [
 % for my $index ( 1 .. $#data ) {
           {
+%   if ( $#data == 1 )  {
+            backgroundColor: backgroundColor || [],
+%   }
             label: <% $labels[$index-1] |n,j %>,
             data: <% JSON($data[$index]) |n %>
           }
@@ -207,4 +220,5 @@ if ( $ChartStyle =~ /\bbar\b/ ) {
 }
 
 my $scheme = RT->Config->Get('JSChartColorScheme', $session{CurrentUser}) || 'brewer.Paired12';
+my @scheme_parts = split /\./, $scheme, 2;
 </%init>
