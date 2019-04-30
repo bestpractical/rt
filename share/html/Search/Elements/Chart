@@ -65,16 +65,23 @@ my %columns = $report->SetupGroupings(
 $report->SortEntries;
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
+
+my $key;
+if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
+    $key = Digest::MD5::md5_hex( rand(1024) );
+    $session{'charts_cache'}{$key} = { columns => \%columns, report => $report->Serialize };
+    $session{'i'}++;
+}
+
 </%init>
 <div class="chart-wrapper">
 % if ( ($ChartStyle || '') =~ /\b(pie|bar)\b/ ) {
 <span class="chart image <% $1 %>">
-% if (RT->Config->Get('DisableGD')) {
+% if ( RT->Config->Get('EnableJSChart', $session{CurrentUser}) ) {
+  <& /Search/JSChart, Cache => $key, %ARGS, GroupBy => \@GroupBy &>
+% } elsif (RT->Config->Get('DisableGD')) {
 <% loc('Graphical charts are not available.') %><br />
 % } else {
-% my $key = Digest::MD5::md5_hex( rand(1024) );
-% $session{'charts_cache'}{$key} = { columns => \%columns, report => $report->Serialize };
-% $session{'i'}++;
 <img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
 % }
 </span>
