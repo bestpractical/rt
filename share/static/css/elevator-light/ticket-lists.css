@@ -6,6 +6,11 @@ table.table th {
     border: none;
 }
 
+table.table th,
+table.table td {
+    padding: 0.5rem;
+}
+
 tr.oddline td {
     background: #eee;
 }
