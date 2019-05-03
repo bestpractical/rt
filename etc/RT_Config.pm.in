@@ -1911,9 +1911,7 @@ Set($ArticleOnTicketCreate, 0);
 
 =item C<$HideArticleSearchOnReplyCreate>
 
-Set this to 1 to hide the search and include boxes from the Article
-UI.  This assumes you have enabled Article Hotlist feature, otherwise
-you will have no access to Articles.
+Set this to 1 to hide "Include Article" box on the ticket update page.
 
 =cut
 

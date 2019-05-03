@@ -107,9 +107,12 @@ When replying to or commenting on tickets or creating tickets, there
 is a UI widget that lets you search for and include Articles in
 your reply.  (They're editable, of course).  
 
-Articles can be included by searching for them, knowing the Id of the
-article, using the Article Hotlist and using the Queue-specific
-dropdown.
+The Include Article dropdown contains articles from any classes that
+are applied to the queue the ticket is in. When the list of articles
+exceeds the configured L<RT_Config/DropdownMenuLimit>, it
+automatically turns into a search box which allows you to type an
+article name. The search box will help you by auto-completing to
+matching articles as you type.
 
 =head3 Disabling Escaped HTML
 
@@ -150,19 +153,8 @@ offered a choice of Topic 1 and Topic 2 along with the searching.
 After choosing Topic 1 or Topic 2, you will be given a list of
 relevant articles to choose.
 
-Alternately, you can now implement this by applying a single Class to
-your Queue and using the L</"Article Hotlist"> feature described below.
-
-=head2 Article Hotlist
-
-The Modify Class page has a checkbox labelled "All Articles in this
-class should be listed in a dropdown of the ticket reply page".
-If you select this for a Class, a dropdown will be available on the
-Ticket Create or Update page which allows users to quickly include
-Articles in this Class.
-
-The Class needs to be set up and Applied for the dropdown to appear
-(see L</"Classes">).
+You can also organize articles into separate classes and selectively
+apply classes to the queues they should be used for.
 
 =head2 SelfService Interface
 
