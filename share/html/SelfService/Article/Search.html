@@ -47,18 +47,22 @@
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('Search Articles') &>
 
-<table>
 <form action="<%RT->Config->Get('WebPath')%>/SelfService/Article/Search.html">
-<tr>
-<td><&|/l&>Search for Articles matching</&></td>
-<td><input type="text" size=20 name="Articles_Content" /></td>
-<td><input type="submit" value="Search"></td>
-</tr>
+  <div class="form-row">
+    <span class="label col-md-auto">
+      <&|/l&>Search for Articles matching</&>
+    </span>
+    <div class="value col-md-auto">
+      <input class="form-control" type="text" size=20 name="Articles_Content" />
+    </div>
+    <div class="col-md-auto">
+      <input class="form-control btn" type="submit" value="Search">
+    </div>
+  </div>
 </form>
 
-<tr>
-<td>&nbsp;</td>
-<td>
+  <div class="form-row">
+    <span class="label col-md-auto">
 % if ($Articles_Content) {
 %   if ($articles_basics->Count || $articles_content->Count) {
 <&|/l,$Articles_Content&>Articles matching [_1]</&>
@@ -66,26 +70,28 @@
 <&|/l,$Articles_Content&>No Articles match [_1]</&>
 %   }
 % }
-</td>
-</tr>
+    </span>
+  </div>
 
 % my %dedupe_articles;
 % while (my $article = $articles_content->Next) {
 %   $dedupe_articles{$article->Id}++;
-<tr>
-<td>&nbsp;</td>
-<td><a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%><a></td>
-</tr>
+  <div class="form-row">
+    <span class="value col-md-auto">
+      <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
+    </span>
+  </div>
 % }
 
 % while (my $article = $articles_basics->Next) {
 %   next if $dedupe_articles{$article->Id};
-<tr>
-<td>&nbsp;</td>
-<td><a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%><a></td>
-</tr>
+  <div class="form-row">
+    <span class="value col-md-auto">
+      <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
+    </span>
+  </div>
 % }
-</table>
+</div>
 <%init>
 use RT::Articles;
 

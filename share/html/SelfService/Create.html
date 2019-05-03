@@ -88,7 +88,7 @@
 <&|/l&>Subject</&>:
 </span>
 <span class="value">
-<input type="text" name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
+<input class="form-control" type="text" name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 </span>
 </div>
 <& /Elements/EditCustomFields,
@@ -103,7 +103,11 @@
 <&|/l&>Describe the issue below</&>:<br />
 <& /Elements/MessageBox, Default => $ARGS{Content} || ''  &>
 
-<& /Elements/Submit, Label => loc("Create ticket")&>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc("Create ticket")&>
+  </div>
+</div>
 
 </&>
 
