@@ -541,6 +541,8 @@ the Article's Class is applied to that Queue.
 
 sub LoadByInclude {
     my $self = shift;
+    RT->Deprecated( Remove  => '5.2' );
+
     my %args = @_;
     my $Field = $args{Field};
     my $Value = $args{Value};

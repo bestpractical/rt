@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,25 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-
-return if $checks_failure; # we're already skipping Create
-return unless RT->Config->Get('ArticleOnTicketCreate');
-
-
-if ( $ARGSRef->{IncludeArticleId} ) {
-    my $article = RT::Article->new($session{'CurrentUser'});
-    $article->Load($ARGSRef->{IncludeArticleId});
-    $$skip_create = 1 if $article->id;
-}
-return;
-
-</%INIT>
+<input data-autocomplete="Articles" <% $QueueObj && $QueueObj->id ? q{data-autocomplete-queue="} . $QueueObj->id . q{"} : '' |n %> data-autocomplete-return="id" name="<% $Name %>" value="<% $Default %>"
+<% $AutoSubmit ? 'data-autocomplete-autosubmit=1' : '' %>>
 
 <%ARGS>
-$ARGSRef => undef
-$skip_create => undef
-$checks_failure => undef
-$results => undef
+$QueueObj => undef
+$Default => undef
+$Name => 'IncludeArticleId'
+$AutoSubmit => 1
 </%ARGS>
-

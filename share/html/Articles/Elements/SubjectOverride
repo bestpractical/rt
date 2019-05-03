@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-foreach my $arg ( keys %$ARGSRef) {
+if ( my $id = $ARGSRef->{IncludeArticleId} ) {
 
     my $Queue = $QueueObj || RT::Queue->new($session{CurrentUser});
     if (!$Queue->Id && $Ticket && $Ticket->Id) {
@@ -54,22 +54,19 @@ foreach my $arg ( keys %$ARGSRef) {
     }
 
     my $article = RT::Article->new($session{'CurrentUser'});
-    $article->LoadByInclude(
-        Field => $arg,
-        Value => $ARGSRef->{$arg},
-        Queue => $Queue->Id,
-    );
-    next unless $article && $article->id;
+    $article->Load($id);
+    return unless $article->id;
 
     my $class = $article->ClassObj;
+    return unless $class->IsApplied(0) || $class->IsApplied($Queue->id);
 
-    next unless $class->SubjectOverride;
+    return unless $class->SubjectOverride;
 
     my $cfs = $class->ArticleCustomFields;
     $cfs->Limit( FIELD => 'id', VALUE => $class->SubjectOverride );
 
     my $subjectCF = $cfs->First;
-    next unless $subjectCF;
+    return unless $subjectCF;
 
     my $subject = $article->CustomFieldValuesAsString($subjectCF->Id);
 
@@ -81,7 +78,6 @@ foreach my $arg ( keys %$ARGSRef) {
         $ARGSRef->{Subject} = $subject;
     }
 }
-return;
 </%INIT>
 <%ARGS>
 $Ticket => undef

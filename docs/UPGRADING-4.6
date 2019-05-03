@@ -18,6 +18,22 @@ The variables which alter the set of HTML elements allowed in HTML
 scrubbing have moved; they have been renamed, and are now found under
 L<RT::Interface::Web::Scrubber>.
 
+=item *
+
+The articles interface on tickets has been simplified, now showing only
+a dropdown for selecting articles. This dropdown converts to an autocomplete
+box when the dropdown contains more than C<$DropdownMenuLimit> items.
+
+With this simplified interface, the "hotlist" feature is no longer needed as
+all articles in classes applied to a given queue are available in the
+dropdown/autocomplete field. To prevent articles in a class from appearing
+for a queue, you can unapply the class from that queue.
+
+The upgrade steps remove the hotlist configuration from your RT database
+by removing that column from the Articles table. Since the article class
+must be applied to a queue for the hotlist items to appear, all articles
+should continue to appear in the new interface.
+
 =back
 
 =cut

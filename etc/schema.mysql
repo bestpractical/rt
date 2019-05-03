@@ -448,7 +448,6 @@ CREATE TABLE Classes (
   Created datetime default NULL,
   LastUpdatedBy int(11) NOT NULL default '0',
   LastUpdated datetime default NULL,
-  HotList int(2) NOT NULL default '0',
   PRIMARY KEY  (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

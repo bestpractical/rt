@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,25 +45,50 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+% if ( $autocomplete ) {
+<& "SelectArticleAutocomplete", QueueObj => $QueueObj, Default => $Default, Name => $Name &>
+% } else {
+<select name="<% $Name %>" <% $AutoSubmit ? 'onchange="this.form.submit()"' : '' |n%>>
+<option value="">-</option>
+% while (my $article = $articles->Next) {
+<option <% ( $article->Name eq $Default) ? qq[ selected="selected"] : '' |n %>
+    value="<%$article->Id%>">
+<%$article->Name || loc('(no name)')%><% $IncludeSummary ? ': ' . $article->Summary || '' : '' %>
+</option>
+% }
+</select>
+% }
+
 <%INIT>
+my $articles = RT::Articles->new( $session{'CurrentUser'} );
+$articles->LimitAppliedClasses( Queue => $QueueObj );
 
-return if $checks_failure; # we're already skipping Create
-return unless RT->Config->Get('ArticleOnTicketCreate');
+my $dropdown_limit = RT->Config->Get( 'DropdownMenuLimit' ) || 50;
+$m->callback( CallbackName => 'ModifyDropdownLimit', DropdownLimit => \$dropdown_limit );
 
+my $autocomplete =  $articles->Count > $dropdown_limit ? 1 : 0;
 
-if ( $ARGSRef->{IncludeArticleId} ) {
-    my $article = RT::Article->new($session{'CurrentUser'});
-    $article->Load($ARGSRef->{IncludeArticleId});
-    $$skip_create = 1 if $article->id;
+if ( $Default and $Default =~ /^\d+$/ ){
+    # We got an id, look up the name
+    my $default_article = RT::Article->new($session{'CurrentUser'});
+    my ($ret, $msg) = $default_article->Load( $Default );
+
+    if ($ret) {
+         $Default = $default_article->Name;
+    }
+    else {
+        RT::Logger->error("Unable to load article $Default: $msg");
+    }
 }
-return;
 
+$Default //= '';
 </%INIT>
 
 <%ARGS>
-$ARGSRef => undef
-$skip_create => undef
-$checks_failure => undef
-$results => undef
+$QueueObj
+$Name           => 'IncludeArticleId'
+$Default        => ''
+$AutoSubmit     => 0
+$IncludeSummary => 1
 </%ARGS>
-

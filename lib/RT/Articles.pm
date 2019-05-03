@@ -479,24 +479,6 @@ sub LimitReferredToBy {
 
 # }}}
 
-=head2 LimitHostlistClasses
-
-Only fetch Articles from classes where Hotlist is true.
-
-=cut
-
-sub LimitHotlistClasses {
-    my $self = shift;
-
-    my $classes = $self->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'Class',
-        TABLE2 => 'Classes',
-        FIELD2 => 'id',
-    );
-    $self->Limit( ALIAS => $classes, FIELD => 'HotList', VALUE => 1 );
-}
-
 =head2 LimitAppliedClasses Queue => QueueObj
 
 Takes a Queue and limits articles returned to classes which are applied to that Queue

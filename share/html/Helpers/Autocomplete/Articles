@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,25 +45,50 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-
-return if $checks_failure; # we're already skipping Create
-return unless RT->Config->Get('ArticleOnTicketCreate');
-
-
-if ( $ARGSRef->{IncludeArticleId} ) {
-    my $article = RT::Article->new($session{'CurrentUser'});
-    $article->Load($ARGSRef->{IncludeArticleId});
-    $$skip_create = 1 if $article->id;
-}
-return;
-
-</%INIT>
-
+% $r->content_type('application/json; charset=utf-8');
+<% JSON( \@suggestions ) |n %>
+% $m->abort;
 <%ARGS>
-$ARGSRef => undef
-$skip_create => undef
-$checks_failure => undef
-$results => undef
+$term       => undef
+$max        => 10
+$op         => 'STARTSWITH'
+$right      => undef
+$return     => 'Name'
+$queue      => undef
 </%ARGS>
+<%INIT>
+# Only allow certain return fields
+$return = 'Name'
+    unless $return =~ /^(?:id|Name)$/;
 
+$m->abort unless defined $return
+             and defined $term
+             and length $term;
+
+# Sanity check the operator
+$op = 'STARTSWITH' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
+$m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+
+my $articles = RT::Articles->new( $session{CurrentUser} );
+if( $queue ) {
+    $articles->LimitAppliedClasses( Queue => $queue );
+}
+
+$articles->RowsPerPage( $max );
+$articles->Limit(
+    FIELD           => 'Name',
+    OPERATOR        => $op,
+    VALUE           => $term,
+    ENTRYAGGREGATOR => 'OR',
+    CASESENSITIVE   => 0,
+);
+
+my @suggestions;
+while (my $a = $articles->Next) {
+    next if $right and not $a->CurrentUserHasRight($right);
+    my $value = $a->$return;
+    push @suggestions, { label => $a->Name, value => $value };
+    $m->callback( CallbackName => "ModifySuggestion", suggestions => @suggestions, label => $a );
+}
+</%INIT>
