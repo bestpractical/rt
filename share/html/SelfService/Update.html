@@ -76,12 +76,12 @@
             <&|/l&>Subject</&>
         </span>
         <span class="value">
-            <input type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
+            <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
         </span>
 
     </div>
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-    <& /Elements/EditCustomFields, Object => $Ticket, InTable => 1 &>
+    <& /Elements/EditCustomFields, Object => $Ticket &>
 </div>
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to

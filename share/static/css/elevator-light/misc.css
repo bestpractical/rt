@@ -37,3 +37,10 @@ table.myday h2 {
 table.myday td {
     padding: 0.25em
 }
+
+#download-my-data div.form-row i {
+    text-align: left;
+    display: block;
+    font-size: 0.8em;
+    white-space: normal;
+}
