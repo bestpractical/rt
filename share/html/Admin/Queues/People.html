@@ -55,83 +55,98 @@
 <form method="post" action="People.html">
 <input type="hidden" class="hidden" name="id" value="<%$QueueObj->Id%>" />
 
-<table width="100%">
-<tr>
-<td valign="top" >
+  <div class="row">
+    <div class="boxcontainer current-watchers col-xl-6">
+      <h3><&|/l&>Current watchers</&></h3>
 
-<h3><&|/l&>Current watchers</&></h3>
-
-<i><&|/l&>(Check box to delete)</&></i><br /><br />
+      <i><&|/l&>(Check box to delete)</&></i><br /><br />
 
 % for my $Name ($QueueObj->ManageableRoleGroupTypes) {
-    <& /Admin/Elements/EditQueueWatcherGroup,
-        Label    => loc($QueueObj->LabelForRole($Name)),
-        QueueObj => $QueueObj,
-        Watchers => $QueueObj->RoleGroup($Name, CheckRight => 'SeeQueue')
-    &>
+      <& /Admin/Elements/EditQueueWatcherGroup,
+          Label    => loc($QueueObj->LabelForRole($Name)),
+          QueueObj => $QueueObj,
+          Watchers => $QueueObj->RoleGroup($Name, CheckRight => 'SeeQueue')
+      &>
 % }
 
 % $m->callback(CallbackName => 'CurrentWatchers', QueueObj => $QueueObj);
+    </div>
 
-</td>
-<td valign="top">
-<h3><&|/l&>New watchers</&></h3>
+    <div class="boxcontainer new-watchers col-xl-6">
+      <h3><&|/l&>New watchers</&></h3>
+      <&|/l&>Find people whose</&><br />
+      <div class="form-row">
+        <& /Elements/SelectUsers &>
+        <div class="col-auto">
+          <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+        </div>
+      </div>
+      <br />
 
-<&|/l&>Find people whose</&><br />
-<& /Elements/SelectUsers &>
-<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
-<br />
-<&|/l&>Find groups whose</&><br />
-<& /Elements/SelectGroups &>
-<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+      <&|/l&>Find groups whose</&><br />
+      <div class="form-row">
+        <& /Elements/SelectGroups &>
+        <div class="col-auto">
+          <input type="submit" class="button btn btn-primary form-control" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+        </div>
+      </div>
 
-<p>
-<&|/l&>Add new watchers</&>:<br />
-<p>
-<strong><&|/l&>Users</&></strong>
+      <br />
+      <&|/l&>Add new watchers</&>:<br />
+      <strong><&|/l&>Users</&></strong>
 % if ($user_msg) {
-<br />
-<em><%$user_msg%></em>
+      <br />
+      <em><%$user_msg%></em>
 % } elsif ($Users) {
-<ul>
 % while (my $u = $Users->Next ) {
-<li><& /Elements/SelectWatcherType,
-    Scope => 'queue',
-    Name  => "Queue-AddWatcher-Principal-". $u->PrincipalId,
-    Queue => $QueueObj,
-&>
-<& /Elements/ShowUser, User => $u &></li>
+      <div class="form-row">
+        <div class="col-md-3">
+          <& /Elements/SelectWatcherType,
+              Scope => 'queue',
+              Name  => "Queue-AddWatcher-Principal-". $u->PrincipalId,
+              Queue => $QueueObj,
+          &>
+        </div>
+        <div class="col-md-3">
+          <span class="form-control current-value">
+            <& /Elements/ShowUser, User => $u &>
+          </span>
+        </div>
+      </div>
 % }
-</ul>
 % }
 
-<p>
-<strong><&|/l&>Groups</&></strong>
-
+      <br />
+      <strong><&|/l&>Groups</&></strong>
 % if ($group_msg) {
-<br />
-<em><%$group_msg%></em>
+      <br />
+      <em><%$group_msg%></em>
 % } elsif ($Groups) {
-<ul>
 % while (my $g = $Groups->Next ) {
-<li><& /Elements/SelectWatcherType,
-    Scope => 'queue',
-    Name  => "Queue-AddWatcher-Principal-".$g->PrincipalId,
-    Queue => $QueueObj,
-&>
-<%$g->Name%> (<%$g->Description%>)
+      <div class="form-row">
+        <div class="col-md-3">
+          <& /Elements/SelectWatcherType,
+              Scope => 'queue',
+              Name  => "Queue-AddWatcher-Principal-".$g->PrincipalId,
+              Queue => $QueueObj,
+          &>
+        </div>
+        <div class="col-md-3">
+          <span class="form-control current-value">
+            <%$g->Name%> (<%$g->Description%>)
+          </span>
+        </div>
+      </div>
 % }
-</ul>
 % }
+    </div>
+  </div>
 
-</td>
-</tr>
-</table>
-
-
-
-
-<& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), Reset => 1 &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), Reset => 1 &>
+    </div>
+  </div>
 </form>
 
 <%INIT>
