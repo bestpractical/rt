@@ -485,6 +485,13 @@ sub _LimitCustomField {
     my $cfkey  = delete $args{KEY};
     if (blessed($cf) and $cf->id) {
         $cfkey ||= $cf->id;
+
+        # Make sure we can really see $cf
+        unless ( $cf->CurrentUserHasRight('SeeCustomField') ) {
+            my $obj = RT::CustomField->new( RT->SystemUser );
+            $obj->Load( $cf->id );
+            $cf = $obj;
+        }
     } elsif ($cf =~ /^\d+$/) {
         # Intentionally load as the system user, so we can build better
         # queries; this is necessary as we don't have a context object
@@ -499,7 +506,21 @@ sub _LimitCustomField {
             $cfkey ||= "$ltype-$cf";
         }
     } else {
-        $cfkey ||= "$ltype-$cf";
+        # Resolve CF by name for better queries, like the above block.
+        my $cfs = RT::CustomFields->new( RT->SystemUser );
+        $cfs->LimitToLookupType($ltype);
+        $cfs->Limit(
+            FIELD         => 'Name',
+            VALUE         => $cf,
+            CASESENSITIVE => 0,
+        );
+        if ( $cfs->Count == 1 ) {
+            $cf = $cfs->Next;
+            $cfkey ||= $cf->id;
+        }
+        else {
+            $cfkey ||= "$ltype-$cf";
+        }
     }
 
     $args{SUBCLAUSE} ||= "cf-$cfkey";
