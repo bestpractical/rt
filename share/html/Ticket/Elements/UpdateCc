@@ -47,65 +47,104 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
-<div class="field"><span class="label"><&|/l&>One-time Cc</&>:</span><span class="value"><& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1 &>
-<input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
-        <br />
+<div class="form-row">
+  <div class="col-md-3 label">
+    <span class="label"><&|/l&>One-time Cc</&>:</span>
+  </div>
+  <div class="col-md-9 value">
+    <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1 &>
+    <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
+  </div>
+</div>
 
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 value">
+    <div class="form-row">
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
-        <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
-            <i class="label">(<&|/l&>show suggestions</&>)</i>
-        </a>
-        <div class="OneTimeCcs hidden">
+      <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
+        <i class="label">(<&|/l&>show suggestions</&>)</i>
+      </a>
+      <div class="OneTimeCcs hidden">
 %   }
-<i class="label">(<&|/l&>check to add</&>)</i>
-<input type="checkbox" class="checkbox" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
-<label for="AllSuggestedCc"><% loc('All recipients') %></label>
+
+      <i class="col-md-auto">(<&|/l&>check to add</&>)</i>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
+        <label class="custom-control-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
+      </div>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
-<span class="ticket-update-suggested-cc">
-<input
-    id="UpdateCc-<%$addr%>"
-    name="UpdateCc-<%$addr%>"
-    class="onetime onetimecc"
-    type="checkbox"
+      <div class="col-md-auto">
+        <span class="ticket-update-suggested-cc">
+          <div class="custom-control custom-checkbox">
+            <input
+              id="UpdateCc-<%$addr%>"
+              name="UpdateCc-<%$addr%>"
+              class="onetime onetimecc custom-control-input"
+              type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
-    onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
-    <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
-      <label for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
-</span>
+              onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
+              <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
+            <label class="custom-control-label" for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
+          </div>
+        </span>
+      </div>
 %}
 %if (@one_time_Ccs && $hide_cc_suggestions) {
-</div>
+      </div>
 %}
-</span></div>
-<div class="field"><span class="label"><&|/l&>One-time Bcc</&>:</span><span class="value"><& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &><br />
+    </div>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <span class="label"><&|/l&>One-time Bcc</&>:</span>
+  </div>
+  <div class="col-md-9 value">
+    <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 value">
+    <div class="form-row">
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
-        <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
-            <i class="label">(<&|/l&>show suggestions</&>)</i>
-        </a>
-        <div class="OneTimeCcs hidden">
+      <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
+        <i class="label">(<&|/l&>show suggestions</&>)</i>
+      </a>
+      <div class="OneTimeCcs hidden">
 %   }
-<i class="label">(<&|/l&>check to add</&>)</i>
-<input type="checkbox" class="checkbox" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
-<label for="AllSuggestedBcc"><% loc('All recipients') %></label>
+
+      <i class="col-md-auto">(<&|/l&>check to add</&>)</i>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="checkbox custom-control-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
+        <label class="custom-control-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
+      </div>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
-<span class="ticket-update-suggested-cc">
-<input
-    id="UpdateBcc-<%$addr%>"
-    name="UpdateBcc-<%$addr%>"
-    class="onetime onetimebcc"
-    type="checkbox"
+      <div class="col-md-auto">
+        <span class="ticket-update-suggested-cc">
+          <div class="custom-control custom-checkbox">
+            <input
+              id="UpdateBcc-<%$addr%>"
+              name="UpdateBcc-<%$addr%>"
+              class="onetime onetimebcc custom-control-input"
+              type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
-    onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
-    <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
-      <label for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
-</span>
+              onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
+              <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
+            <label class="custom-control-label" for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
+          </div>
+        </span>
+      </div>
 %}
 %if (@one_time_Ccs && $hide_cc_suggestions) {
-</div>
+      </div>
 <script type="text/javascript">
 jQuery(function() {
     jQuery('a.ToggleSuggestions').click(function(e) {
@@ -119,7 +158,8 @@ jQuery(function() {
 });
 </script>
 %}
-</span></div>
+  </div>
+</div>
 <%args>
 $TicketObj
 </%args>

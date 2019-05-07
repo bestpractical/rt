@@ -80,15 +80,6 @@ iframe.richtext-editor {
     float: right;
 }
 
-#recipients label {
-    padding-left: 2em;
-}
-
-#recipients input.checkbox {
-    position: absolute;
-    margin-left: 0.5em;
-}
-
 .refreshing {
     opacity: 0.3;
 }

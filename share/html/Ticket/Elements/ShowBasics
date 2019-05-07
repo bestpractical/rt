@@ -85,14 +85,10 @@
 <div class="time worked by-user field">
   <span class="label"><&|/l&>Users</&>:</span>
   <span>
-    <table>
 %   for my $user ( keys %$time_worked ) {
-      <tr>
-        <td class="value"><% $user %>:</td>
-        <td class="value"><& /Ticket/Elements/ShowTime, minutes => $time_worked->{$user} &></td>
-      </tr>
+    <div class="value"><% $user %>:</div>
+    <div class="value"><& /Ticket/Elements/ShowTime, minutes => $time_worked->{$user} &></div>
 %   }
-    </table>
   </span>
 </div>
 % }
