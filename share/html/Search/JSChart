@@ -151,6 +151,29 @@ var searchChart = new Chart(ctx, {
 % }
     }
 });
+
+var group_by = <% JSON( \@GroupBy ) |n %>;
+var group_by_values = <% JSON( \@group_by_values ) |n %>;
+
+jQuery('#search-chart').click(function(e) {
+    var slice = searchChart.getElementAtEvent(e);
+    if ( !slice[0] ) return;
+
+    var query = <% $Query =~ /^\s*\(.*\)$/ ? $Query : "( $Query )" |n,j %>;
+    for ( var i=0; i < group_by.length; i++ ) {
+        var value = group_by_values[slice[0]._index][i];
+        if ( value == null ) {
+            query += ' AND ' + group_by[i] + ' IS NULL';
+        }
+        else {
+            value = value.replace("'", "\\'");
+            query += ' AND ' + group_by[i] + ' = ' + "'" + value + "'";
+        }
+    }
+    window.open(RT.Config.WebPath + '/Search/Results.html?Query=' + encodeURIComponent(query)
+        + '&' + <% $m->comp('/Elements/QueryString', map { $_ => $DECODED_ARGS->{$_} } grep { $_ ne 'Query' } keys %$DECODED_ARGS) |n,j%>);
+});
+
 </script>
 
 <%init>
@@ -161,6 +184,10 @@ $Height = $Width if $ChartStyle =~ /\bpie\b/;
 
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+
+# Default GroupBy we use in RT::Report::Tickets, we also need it here to
+# generate sub queries.
+@GroupBy = 'Status' unless @GroupBy;
 
 my %columns;
 if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
@@ -179,8 +206,10 @@ if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
 
 my @data = ([],[]);
 my @data_labels;
+my @group_by_values;
 while ( my $entry = $report->Next ) {
     push @{ $data[0] }, [ map $entry->LabelValue( $_ ), @{ $columns{'Groups'} } ];
+    push @group_by_values, [ map $entry->RawValue( $_ ), @{ $columns{'Groups'} } ];
 
     my @values;
     my @label_values;
