@@ -79,7 +79,10 @@ var searchChart = new Chart(ctx, {
 %   if ( $#data == 1 )  {
             backgroundColor: backgroundColor || [],
 %   }
+
+%   if ( $ChartStyle =~ /\bbar\b/ ) {
             label: <% $labels[$index-1] |n,j %>,
+%   }
             data: <% JSON($data[$index]) |n %>
           }
 %   if ( $index != $#data ) {
