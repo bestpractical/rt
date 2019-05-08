@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select class="form-control selectpicker" name="<%$Name%>">
 % if ($ShowNullOption) {
 <option value="">- (<% I18N::LangTags::List::name($session{CurrentUser}->LanguageHandle->language_tag) %>)</option>
 % }
