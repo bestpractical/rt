@@ -47,28 +47,34 @@
 %# END BPS TAGGED BLOCK }}}
 <&|Elements/Wrapper, Title => loc('Step [_1] of [_2]', 1, 7 ) .': '. loc('Choose Database Engine') &>
 
-<div class="intro">
-<p>
-<&|/l&>RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported.</&>
-</p>
-<p>
-<&|/l&>You should choose the database you or your local database administrator is most comfortable with.</&>
-</p>
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <p>
+      <&|/l&>RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported.</&>
+    </p>
+    <p>
+      <&|/l&>You should choose the database you or your local database administrator is most comfortable with.</&>
+    </p>
     <p><b>
-<&|/l&>SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server.</&>
-</b></p>
-<p>
-<&|/l_unsafe, '<a href="http://search.cpan.org" target="_blank">CPAN</a>' &>If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using [_1] to download and install DBD::MySQL, DBD::Oracle or DBD::Pg.</&>
-</p>
+      <&|/l&>SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server.</&>
+    </b></p>
+    <p>
+      <&|/l_unsafe, '<a href="http://search.cpan.org" target="_blank">CPAN</a>' &>If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using [_1] to download and install DBD::MySQL, DBD::Oracle or DBD::Pg.</&>
+    </p>
+  </div>
 </div>
 
-<form method="post">
-<& /Widgets/BulkEdit, Types => \@Types, Meta => $RT::Installer->{Meta},
-    CurrentValue => RT::Installer->CurrentValues(@Types) &>
+<div class="row" >
+  <div class="col-md-10 offset-1" >
+    <form method="post">
+      <& /Widgets/BulkEdit, Types => \@Types, Meta => $RT::Installer->{Meta},
+      CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
-<input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next') .': '. loc( 'Check Database Credentials') &>
-</form>
+      <input type="hidden" name="Run" value="1" class="btn btn-primary">
+      <& /Elements/Submit, Label => loc('Next') .': '. loc( 'Check Database Credentials') &>
+    </form>
+  </div>
+</div>
 </&>
 <%init>
 
