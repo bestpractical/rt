@@ -66,15 +66,23 @@
 % unless (RT->Config->Get('WebRemoteUserAuth') and !RT->Config->Get('WebFallbackToRTLogin')) {
 <form id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
 
-<div class="input-row">
-    <span class="label"><&|/l&>Username</&>:</span>
-    <span class="input"><input type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" /></span>
-</div>
+  <div class="form-row">
+    <span class="label col-md-3">
+      <&|/l&>Username</&>:
+    </span>
+    <span class="value col-md-9">
+      <input class="form-control" type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" />
+    </span>
+  </div>
 
-<div class="input-row">
-    <span class="label"><&|/l&>Password</&>:</span>
-    <span class="input"><input type="password" name="pass" /></span>
-</div>
+  <div class="form-row">
+    <span class="label col-md-3">
+      <&|/l&>Password</&>:
+    </span>
+    <span class="value col-md-9">
+      <input class="form-control" type="password" name="pass" />
+    </span>
+  </div>
 
 <input type="hidden" name="next" value="<% $next %>" />
 
@@ -87,9 +95,11 @@ jQuery(function(){
 });
 </script>
 
-<div class="button-row">
-    <span class="input"><input type="submit" class="button" value="<&|/l&>Login</&>" /></span>
-</div>
+  <div class="form-row">
+    <div class="col-md-12 text-right">
+      <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Login</&>" />
+    </div>
+  </div>
 
 %# Give callbacks a chance to add more control elements
 % $m->callback( %ARGS );
