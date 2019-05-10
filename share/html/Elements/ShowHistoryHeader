@@ -51,6 +51,7 @@ $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
+$ReverseTransactionOrder => 0
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -94,7 +95,16 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
                            loc("Show full headers") .
                            qq{</a>};
         }
+
+        my $switched_order = 1 - $ReverseTransactionOrder;
+        $titleright .= '&mdash;' if $titleright;
+        $titleright .= qq{<a href="?ReverseTransactionOrder=$switched_order;ForceShowHistory=1;ShowHeaders=$ShowHeaders;id=} .
+                           $Object->id.qq{#$histid">} .
+                           loc("Reverse transaction order") .
+                           qq{</a>};
+
     }
+
 
 </%perl>
 % $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright );

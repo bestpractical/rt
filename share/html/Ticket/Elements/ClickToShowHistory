@@ -56,7 +56,6 @@ $Ticket
 <%INIT>
 my %params = %ARGS;
 delete $params{Ticket};
-
 my $query   = $m->comp('/Elements/QueryString', %params, id => $Ticket->id );
 my $url     = RT->Config->Get('WebPath')."/Helpers/TicketHistory?$query";
 my $display = RT->Config->Get('WebPath')."/Ticket/Display.html?ForceShowHistory=1;$query";

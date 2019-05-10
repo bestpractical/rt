@@ -58,7 +58,8 @@
 </div>
 <%ARGS>
 $Object
-$Transactions      => $Object->SortedTransactions
+$ReverseTransactionOrder => 0
+$Transactions      => $Object->SortedTransactions( $ReverseTransactionOrder )
 $Attachments       => $Object->Attachments( WithHeaders => 1 )
 $AttachmentContent => $Object->TextAttachments
 
