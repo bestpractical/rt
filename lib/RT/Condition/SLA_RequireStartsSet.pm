@@ -65,7 +65,6 @@ Applies if Starts date is not set for the ticket.
 
 sub IsApplicable {
     my $self = shift;
-    return 0 if $self->TicketObj->StartsObj->Unix > 0;
     return 0 if $self->TicketObj->QueueObj->SLADisabled;
     return 0 unless $self->TicketObj->SLA;
     return 1;
