@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 122;
+use RT::Test tests => undef;
 
 
 {
@@ -83,6 +83,28 @@ my $u10 = RT::User->new(RT->SystemUser);
 ($id, $msg) = $u10->Create(Name => 'CreateTest10'.$$, EmailAddress => $$.'create-test10}@[.com');
 ok (!$id, $msg);
 RT->Config->Set('ValidateUserEmailAddresses' => undef);
+
+# Set User CFs on create
+my $cf = RT::CustomField->new(RT->SystemUser);
+ok($cf, "Have a CustomField object");
+
+# Use the old Queue field to set up a ticket CF
+($id, $msg) =  $cf->Create(
+    Name        => 'Testing CF',
+    Description => 'A Testing custom field',
+    Type        => 'Freeform',
+    MaxValues   => 1,
+    LookupType  => RT::User->CustomFieldLookupType,
+);
+ok($id, 'User custom field correctly created');
+ok( $cf->AddToObject( RT::User->new( RT->SystemUser ) ), 'applied Testing CF globally' );
+
+my $u11 = RT::User->new(RT->SystemUser);
+($id, $msg) = $u11->Create( Name => 'CreateTest11'.$$,
+                            EmailAddress => $$.'create-test10@.com',
+                            'UserCF.Testing CF' => 'Testing' );
+ok ($id, $msg);
+is ( $u11->FirstCustomFieldValue('Testing CF'), 'Testing', 'Got Testing for Testing CF');
 
 }
 
@@ -362,3 +384,4 @@ ok($rqv, "Revoked the right successfully - $rqm");
     is $marks[0], $b_ticket->id;
 }
 
+done_testing();
