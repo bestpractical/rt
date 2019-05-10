@@ -605,7 +605,7 @@ sub UpdateUserInfo {
         for @results;
 
     AddCustomFieldValue( %args );
-    UpdateObjectCustomFieldValues( %args, Object => $UserObj );
+    $UserObj->UpdateObjectCustomFieldValues( %args );
 
     # Confirm update success
     $updated = 1;
@@ -748,37 +748,6 @@ sub AddCustomFieldValue {
         }
     }
 
-    return;
-}
-
-sub UpdateObjectCustomFieldValues {
-    my %args   = @_;
-    my $object = $args{Object};
-    foreach my $rtfield ( sort keys %args ) {
-        next unless $rtfield =~ /^UserCF\.(.+)$/i;
-        my $cf_name = $1;
-        my $value   = $args{$rtfield};
-        $value = '' unless defined $value;
-
-        my $current = $object->FirstCustomFieldValue($cf_name);
-        $current = '' unless defined $current;
-
-        if ( not length $current and not length $value ) {
-            $RT::Logger->debug("\tCF.$cf_name\tskipping, no value in RT and external source");
-            next;
-        }
-        elsif ( $current eq $value ) {
-            $RT::Logger->debug("\tCF.$cf_name\tunchanged => $value");
-            next;
-        }
-
-        $current = 'unset' unless length $current;
-        $RT::Logger->debug("\tCF.$cf_name\t$current => $value");
-
-        my ( $ok, $msg ) = $object->AddCustomFieldValue( Field => $cf_name, Value => $value );
-        $RT::Logger->error( $object->Name . ": Couldn't add value '$value' for '$cf_name': $msg" )
-          unless $ok;
-    }
     return;
 }
 
