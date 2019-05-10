@@ -48,13 +48,15 @@
 
 =head1 NAME
 
-  RT::User - RT User object
+RT::User - RT User object
 
 =head1 SYNOPSIS
 
   use RT::User;
 
 =head1 DESCRIPTION
+
+Object to operate on a single RT user record.
 
 =head1 METHODS
 
