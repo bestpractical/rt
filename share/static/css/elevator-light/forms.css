@@ -144,7 +144,7 @@ span.current-value.form-control {
 }
 
 .list-group-compact .list-group-item,
-.list-group-boardless .list-group-item {
+.list-group-borderless .list-group-item {
     border: none;
 }
 
