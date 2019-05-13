@@ -159,3 +159,7 @@ span.current-value.form-control {
 .bootstrap-select button:focus {
     background: #f8f9fa;
 }
+
+.input-group input.btn {
+    margin-left: 0.5em;
+}
