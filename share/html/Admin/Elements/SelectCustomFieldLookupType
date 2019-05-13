@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select class="form-control selectpicker" name="<%$Name%>">
 %for my $option ($cf->LookupTypes) {
 <option value="<%$option%>"<%defined ($Default) && ($option eq $Default) && qq[ selected="selected"] |n%>><% $cf->FriendlyLookupType($option) %></option>
 %}

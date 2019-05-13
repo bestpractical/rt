@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select class="form-control selectpicker" name="<%$Name%>">
 <option value="" <% not $Default and qq[ selected="selected"] |n %>>--</option>
 % while (my $CustomFieldObj = $CustomFields->Next) {
 % next if $OnlySelectionType and not $CustomFieldObj->IsSelectionType;

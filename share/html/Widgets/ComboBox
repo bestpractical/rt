@@ -52,7 +52,7 @@ my $z_index = 9999;
 
 % if ( grep { /\bbootstrap-combobox\b/ } RT::Interface::Web->JSFiles ) {
 <div class="combobox-wrapper" data-name="<% $Name %>" data-value="<% $Default // '' %>">
-  <select class="combobox" size="<% $Rows %>">
+  <select class="form-control combobox" size="<% $Rows %>">
     <option value=""></option>
 % for my $value (@Values) {
     <option value="<% $value %>" <% ($Default // '') eq $value ? 'selected="selected"' : '' %>><% $value%></option>

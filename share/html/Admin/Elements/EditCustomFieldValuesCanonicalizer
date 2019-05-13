@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div id="canonicalize-class-block">
-<select name="CanonicalizeClass">
+<select class='form-control selectpicker' name="CanonicalizeClass">
 <option value="">-</option>
 % foreach my $canonicalizer (@canonicalizers) {
 <option value="<% $canonicalizer %>" <% $canonicalizer eq ($CustomField->CanonicalizeClass||'') && 'selected="selected"' %>><% $canonicalizer->Description %></option>
