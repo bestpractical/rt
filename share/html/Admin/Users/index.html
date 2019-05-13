@@ -57,8 +57,17 @@
 % }
 <input type="hidden" name="UserField" value="Name" />
 <input type="hidden" name="UserOp" value="LIKE" />
-<&|/l&>Go to user</&>
-<input type="text" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+
+<div class="row">
+  <div class="col-xl-6">
+    <div class="form-row">
+      <div class="col-md-3 label text-left">
+        <&|/l&>Go to user</&>
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+      </div>
+    </div>
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a user is chosen
@@ -74,29 +83,57 @@ jQuery(function(){
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
-<table>
-    <tr><td><&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields &></td></tr>
-    <tr><td><&|/l&>And all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
-                SelectFieldName => 'UserField2',
-                SelectOpName    => 'UserOp2',
-                InputStringName => 'UserString2',
-                UserField       => $UserField2,
-                UserOp          => $UserOp2,
-                UserString      => $UserString2,
-            &></td></tr>
-    <tr><td><&|/l&>And all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
-                SelectFieldName => 'UserField3',
-                SelectOpName    => 'UserOp3',
-                InputStringName => 'UserString3',
-                UserField       => $UserField3,
-                UserOp          => $UserOp3,
-                UserString      => $UserString3,
-            &></td></tr>
-</table>
-<input type="checkbox" class="checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
-<label for="FindDisabledUsers"><&|/l&>Include disabled users in search.</&></label>
-<br />
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" name="Go" /></div>
+    <div class="form-row">
+      <div class="col-md-3 label text-left">
+        <&|/l&>Find all users whose</&>
+      </div>
+      <& /Elements/SelectUsers, %ARGS, Fields => \@fields &>
+    </div>
+
+    <div class="form-row">
+      <div class="col-md-3 label text-left">
+        <&|/l&>And all users whose</&>
+      </div>
+      <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
+          SelectFieldName => 'UserField2',
+          SelectOpName    => 'UserOp2',
+          InputStringName => 'UserString2',
+          UserField       => $UserField2,
+          UserOp          => $UserOp2,
+          UserString      => $UserString2,
+      &>
+    </div>
+
+    <div class="form-row">
+      <div class="col-md-3 label text-left">
+        <&|/l&>And all users whose</&>
+      </div>
+      <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
+          SelectFieldName => 'UserField3',
+          SelectOpName    => 'UserOp3',
+          InputStringName => 'UserString3',
+          UserField       => $UserField3,
+          UserOp          => $UserOp3,
+          UserString      => $UserString3,
+      &>
+    </div>
+  </div>
+</div>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
+        <label class="custom-control-label" for="FindDisabledUsers"><&|/l&>Include disabled users in search.</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-12 text-right">
+      <input type="submit" class="button btn btn-primary" value="<&|/l&>Go!</&>" name="Go" />
+    </div>
+  </div>
 </form>
 
 % unless ( $users->Count ) {
