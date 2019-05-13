@@ -82,9 +82,11 @@
     Topic Name:
   </div>
   <div class="value col-md-9">
-    <input class="form-control" type="text" name="Topic-<%$topic->Id%>-Name" size="20" value="<%$topic->Name%>" />
+    <div class="form-inline">
+      <input class="form-control" type="text" name="Topic-<%$topic->Id%>-Name" size="20" value="<%$topic->Name%>" />
+      <input type="submit" name="Update" value="Update">
+    </div>
   </div>
-  <input type="submit" name="Update" value="Update">
 </div>
 
 <div class="form-row">
@@ -92,9 +94,11 @@
     Description:
   </div>
   <div class="value col-md-9">
-    <input class="form-control" type="text" name="Topic-<%$topic->Id%>-Description" size="20" value="<%$topic->Description%>" />
+    <div class="form-inline">
+      <input class="form-control" type="text" name="Topic-<%$topic->Id%>-Description" size="20" value="<%$topic->Description%>" />
+      <input type="submit" name="Delete-Topic-<%$topic->Id%>" value="Delete" />
+    </div>
   </div>
-  <input type="submit" name="Delete-Topic-<%$topic->Id%>" value="Delete" />
 </div>
 <%args>
 $topic

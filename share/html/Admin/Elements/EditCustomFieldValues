@@ -50,42 +50,67 @@
 %    return;
 % }
 
-<table>
-
-<tr>
-<th><input type="checkbox" name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-/)" /></th>
-<th><&|/l&>Sort</&></th>
-<th><&|/l&>Name</&></th>
-<th><&|/l&>Description</&></th>
+<div class="form-row">
+  <div class="label col-md-auto">
+    <div class="custom-control custom-checkbox">
+      <input class="custom-control-input" type="checkbox" id='DeleteAll' name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-/)" />
+      <label class="custom-control-label" for="DeleteAll"></label>
+    </div>
+  </div>
+  <div class="label col-md-2 text-left">
+    <&|/l&>Sort</&>
+  </div>
+  <div class="label col-md-2 text-left">
+    <&|/l&>Name</&>
+  </div>
+  <div class="label col-md-2 text-left">
+    <&|/l&>Description</&>
+  </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-<th class="categoryheader"><&|/l&>Category</&></th>
+    <div class="label categoryheader col-md-2 text-left">
+      <&|/l&>Category</&>
+    </div>
 % }
-<th></th>
-</tr>
+</div>
 
 % while ( my $value = $values->Next ) {
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-". $value->Id;
-<tr>
-<td><input type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->SortOrder %>" /></td>
-<td><input type="text" size="25" name="<% $paramtag %>-Name" value="<% $value->Name %>" /></td>
-<td><input type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description || '' %>" /></td>
+<div class="form-row">
+  <div class='col-md-auto'>
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="Delete-<% $paramtag %>" name="Delete-<% $paramtag %>" />
+        <label class="custom-control-label" for="Delete-<% $paramtag %>"></label>
+    </div>
+  </div>
+  <div class="col-md-2 value">
+    <input class="form-control" type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->SortOrder %>" />
+  </div>
+  <div class="col-md-2 value">
+    <input class="form-control" type="text" size="25" name="<% $paramtag %>-Name" value="<% $value->Name %>" />
+  </div>
+  <div class="col-md-2 value">
+    <input class="form-control" type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description || '' %>" />
+  </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-<td>
+  <div class="col-md-2 value">
 % my $selected = $value->Category;
 % $selected = '' unless defined $selected;
-<select class="editcategory" name="<% $paramtag %>-Category" size="1">
+    <select class="editcategory form-control selectpicker" name="<% $paramtag %>-Category" size="1">
 <option value=""<% $selected eq '' ? q[ selected="selected"] : "" |n%>><&|/l&>(no value)</&></option>
 % while (my $Value = $Categories->Next) {
-<option value="<% $Value->Name %>"<% $selected eq $Value->Name ? q[ selected="selected"] : "" |n%>><% $Value->Name %></option>
+    <option value="<% $Value->Name %>"<% $selected eq $Value->Name ? q[ selected="selected"] : "" |n%>><% $Value->Name %></option>
 %   }
-</td>
+    </select>
+  </div>
 % }
-<td><input type="button" class="delete_custom_field_value" data-cfv-id="<% $value->id %>" value="<&|/l&>Delete</&>" onclick="delete_custom_field_value(<% $value->id %>)" /></td>
+  <div class="col-md-2">
+    <input type="button" class="delete_custom_field_value button" data-cfv-id="<% $value->id %>" value="<&|/l&>Delete</&>" onclick="delete_custom_field_value(<% $value->id %>)" />
+  </div>
 % $m->callback(CallbackName => 'AfterCustomFieldValueInput', CustomFieldObj => $CustomField, CustomFieldValueObj => $value, ARGSRef => \%ARGS );
-</tr>
+</div>
 % }
 
-</table>
+</div>
 
 <script type="text/javascript">
 function delete_custom_field_value(value_id) {

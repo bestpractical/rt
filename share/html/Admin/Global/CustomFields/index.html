@@ -49,9 +49,9 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-<ul>
+<ul class="list-group">
 % foreach my $key (sort keys %$tabs) {
-<li><span><a href="<% $tabs->{$key}{path} %>"><% $tabs->{$key}{title} %></a></span><br />
+<li class="list-group-item"><span><a href="<% $tabs->{$key}{path} %>"><% $tabs->{$key}{title} %></a></span><br />
 <% $tabs->{$key}{text} %>
 </li>
 % }

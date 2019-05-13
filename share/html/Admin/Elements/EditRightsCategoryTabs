@@ -105,7 +105,7 @@ $available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
     <div class="category-tabs">
       <ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-        <li><a href="#<% "$id-$category" %>"><span class="current-value form-control rights-editor-label" id="<% "category-tab-$id-$category" %>"><% $category_desc{$category} || loc($category) %></span></a></li>
+        <li><a href="#<% "$id-$category" %>"><span class="current-value rights-editor-label" id="<% "category-tab-$id-$category" %>"><% $category_desc{$category} || loc($category) %></span></a></li>
 % }
       </ul>
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
@@ -126,8 +126,8 @@ $available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
           />
           <label class="custom-control-label" for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
             <% $available_rights{$right} %>
+            <span class="text-right rightname"><% $right %></span>
           </label>
-          <span class="rightname"><% $right %></span>
         </div>
       </li>
 %     }
