@@ -195,7 +195,7 @@ for my $category (@$Principals) {
     <li class="category"><&|/l, loc($AddPrincipal) &>Add [_1]</&></li>
     <li class="addprincipal">
       <a href="#acl-AddPrincipal">
-        <input type="text" value=""
+        <input type="text" value="" class="form-control"
             data-autocomplete="<% lc $AddPrincipal eq 'user' ? 'Users' : 'Groups' %>"
 % if ( lc $AddPrincipal eq 'user' ) {
             data-autocomplete-return="Name"

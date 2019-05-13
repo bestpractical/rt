@@ -116,6 +116,7 @@ li.category ~ li.category {
 
 .rights-editor ul.rights-list li label {
     cursor: pointer;
+    width: 100%;
 }
 
 .rights-editor .rightname {
