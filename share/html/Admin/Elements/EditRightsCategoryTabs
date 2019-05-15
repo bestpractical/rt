@@ -113,21 +113,22 @@ $available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
     <ul class="rights-list">
 %     for my $right (sort { $available_rights{$a} cmp $available_rights{$b} } @{$categories{$category}}) {
       <li>
-        <input
+        <div class="custom-control custom-checkbox">
+          <input
             type="checkbox"
-            class="checkbox"
+            class="custom-control-input"
             name="SetRights-<% $acldesc %>"
             id="SetRights-<% $acldesc %>-<% $right %>"
             value="<% $right %>"
             data-category-tab="<% "category-tab-$id-$category" %>"
             data-principal-tab="<% "principal-tab-$id" %>"
             <% $current_rights{$right} ? 'checked' : '' %>
-        />
-        <label for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
-          <% $available_rights{$right} %>
-          <span class="separator">&mdash;</span>
-          <span class="rightname"><% $right %></span>
-        </label>
+          />
+          <label class="custom-control-label" for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+            <% $available_rights{$right} %>
+            <span class="text-right rightname"><% $right %></span>
+          </label>
+        </div>
       </li>
 %     }
     </ul>

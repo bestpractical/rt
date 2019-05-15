@@ -183,7 +183,3 @@ span#display-options .titlebox#columns table.edit-columns span.value {
 #pick-criteria .value {
     max-width: 500px;
 }
-
-.edit-saved-searches .input-group input.btn {
-    margin-left: 0.5em;
-}
