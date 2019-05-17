@@ -1213,6 +1213,15 @@ speed RT up a bit, at the expense of a tiny bit of data accuracy.
 
 Set($WebFlushDbCacheEveryRequest, 1);
 
+=item C<$DisableRecentlyViewedTickets>
+
+By default, current user's recently viewed tickets are listed in menu.
+Setting it to 1 to disable this feature, which could speed RT up a bit.
+
+=cut
+
+Set($DisableRecentlyViewedTickets, 0);
+
 =item C<%ChartFont>
 
 The L<GD> module (which RT uses for graphs) ships with a built-in font

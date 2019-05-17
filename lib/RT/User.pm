@@ -2247,6 +2247,8 @@ sub AddRecentlyViewedTicket {
     my $self   = shift;
     my $ticket = shift;
 
+    return ( 0, $self->loc('RecentlyViewedTickets is disabled') ) if RT->Config->Get('DisableRecentlyViewedTickets');
+
     my $maxCount = 10; #The max number of tickets to keep
 
     #Nothing to do without a ticket

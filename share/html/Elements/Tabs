@@ -603,20 +603,22 @@ my $build_main_nav = sub {
     $tickets->child( simple => title => loc('Simple Search'), path => "/Search/Simple.html" );
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
 
-    my $recents = $tickets->child( recent => title => loc('Recently Viewed'));
-    for ($session{CurrentUser}->RecentlyViewedTickets) {
-        my ($ticketId, $timestamp) = @$_;
-        my $ticket = RT::Ticket->new($session{CurrentUser});
-        $ticket->Load($ticketId);
-        if ($ticket->Id) {
-            my $title = $ticket->Subject || loc("(No subject)");
-            if (length $title > 50) {
-                $title = substr($title, 0, 47);
-                $title =~ s/\s+$//;
-                $title .= "...";
+    if ( !RT->Config->Get('DisableRecentlyViewedTickets') ) {
+        my $recents = $tickets->child( recent => title => loc('Recently Viewed'));
+        for ($session{CurrentUser}->RecentlyViewedTickets) {
+            my ($ticketId, $timestamp) = @$_;
+            my $ticket = RT::Ticket->new($session{CurrentUser});
+            $ticket->Load($ticketId);
+            if ($ticket->Id) {
+                my $title = $ticket->Subject || loc("(No subject)");
+                if (length $title > 50) {
+                    $title = substr($title, 0, 47);
+                    $title =~ s/\s+$//;
+                    $title .= "...";
+                }
+                $title = "#$ticketId: " . $title;
+                $recents->child( "$ticketId" => title => $title, path => "/Ticket/Display.html?id=" . $ticket->Id );
             }
-            $title = "#$ticketId: " . $title;
-            $recents->child( "$ticketId" => title => $title, path => "/Ticket/Display.html?id=" . $ticket->Id );
         }
     }
 
