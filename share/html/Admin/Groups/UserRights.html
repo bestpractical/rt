@@ -48,12 +48,13 @@
 <& /Admin/Elements/Header, Title => loc('Modify user rights for group [_1]', $GroupObj->Name) &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
-
+<div class="card">
   <form method="post" action="UserRights.html" name="ModifyUserRights" id="ModifyUserRights">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
     <& /Admin/Elements/EditRights, Context => $GroupObj, Principals => \@principals &>
     <& /Elements/Submit, Label => loc('Save Changes') &>
   </form>
+</div>
 
 <%INIT>
 # Update the acls.
