@@ -56,12 +56,12 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <& /Elements/Tabs &>
 
 <&|/Widgets/TitleBox, title => loc("RT Configuration") &>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table">
-<th class="collection-as-table"><&|/l&>Option</&></th>
-<th class="collection-as-table"><&|/l&>Value</&></th>
-<th class="collection-as-table"><&|/l&>Source</&></th>
-</tr>
+  <div class="form-row">
+    <div class="col-md-4 label text-left"><&|/l&>Option</&></div>
+    <div class="col-md-4 label text-left"><&|/l&>Value</&></div>
+    <div class="col-md-4 label text-left"><&|/l&>Source</&></div>
+  </div>
+
 <%PERL>
 my $index_conf;
 foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
@@ -84,35 +84,34 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
     }
     $index_conf++;
 </%PERL>
-<tr class="<% $index_conf%2 ? 'oddline' : 'evenline'%>">
-<td class="collection-as-table"><% $key %></td>
-<td class="collection-as-table">
+  <div class="form-row <% $index_conf%2 ? 'oddline' : 'evenline'%>">
+    <div class="col-md-4 collection-as-table value"><% $key %></div>
+    <div class="col-md-4 collection-as-table value">
 % if ( $key =~ /Password/i and $key !~ /MinimumPasswordLength|AllowLoginPasswordAutoComplete/ ) {
 <em><% loc('Password not printed' ) %></em>\
 % } else {
 <% stringify($val) |n %>\
 % }
-</td>
-<td class="collection-as-table" style="white-space: nowrap">
+    </div>
+    <div class="col-md-4 collection-as-table value">
 % if ( $meta->{'Source'}{'SiteConfig'} ) {
-<span style="font-weight: bold"><% $description %></span>
+<% $description %>
 % } else {
 <% $description %>
 % }
-</td>
-</tr>
+    </div>
+  </div>
 % }
-</table>
 </&>
-<table width="100%">
-    <tr>
-        <td valign="top" width="60%" class="boxcontainer">
-<&|/Widgets/TitleBox, title=> loc("RT core variables") &>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table">
-<th class="collection-as-table"><&|/l&>Variable</&></th>
-<th class="collection-as-table"><&|/l&>Value</&></th>
-</tr>
+
+<div class="form-row">
+
+  <div class="col-md-8">
+    <&|/Widgets/TitleBox, title=> loc("RT core variables") &>
+      <div class="form-row">
+        <div class="col-md-6 collection-as-table label text-left"><&|/l&>Variable</&></div>
+        <div class="col-md-6 collection-as-table label text-left"><&|/l&>Value</&></div>
+      </div>
 <%PERL>
 { no strict qw/refs/;
 my %config_opt = map { $_ => 1 } RT->Config->Options( Overridable => undef );
@@ -121,27 +120,26 @@ foreach my $key ( sort keys %{*RT::} ) {
     next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
     $index_var++;
 </%PERL>
-<tr class="collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
-<td class="collection-as-table">RT::<% $key %></td>
-<td class="collection-as-table">
+      <div class="form-row collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
+        <div class="col-md-6 collection-as-table value">RT::<% $key %></div>
+        <div class="col-md-6 collection-as-table value">
 % if ( $key =~ /Password(?!Length)/i ) { 
 <em><% loc('Password not printed' ) %></em>\
 % } else {
 <% ${'RT::'.$key} %>
 % }
-</td>
-</tr>
+        </div>
+      </div>
 % }
 % }
-</table>
-</&>
+    </&>
 
-<&|/Widgets/TitleBox, title => loc("RT Size") &>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table">
-<th class="collection-as-table"><&|/l&>Object</&></th>
-<th class="collection-as-table"><&|/l&>Size</&></th>
-</tr>
+    <&|/Widgets/TitleBox, title => loc("RT Size") &>
+      <div class="form-row">
+        <div class="collection-as-table col-md-6 label text-left"><&|/l&>Object</&></div>
+        <div class="collection-as-table col-md-6 label text-left"><&|/l&>Size</&></div>
+      </div>
+
 <%PERL>
 my ($index_size, $user_count, $privileged_count);
 for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers UnprivilegedUsers/) {
@@ -162,109 +160,116 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
     }
     $index_size++;
 </%PERL>
-<tr class="<% $index_size%2 ? 'oddline' : 'evenline'%>">
-<td class="collection-as-table"><% $type %></td>
-<td class="collection-as-table"><% $count %></td>
-</tr>
+      <div class="<% $index_size%2 ? 'oddline' : 'evenline'%> form-row">
+        <div class="collection-as-table col-md-6 value"><% $type %></div>
+        <div class="collection-as-table col-md-6 value"><% $count %></div>
+      </div>
 % }
-</table>
-</&>
-</td>
-<td valign="top" class="boxcontainer">
+    </&>
 
-<&|/Widgets/TitleBox, title => loc("Mason template search order") &>
-<ol>
+  </div>
+
+  <div class="col-md-4">
+
+    <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
+      <ol class="list-group-compact list-group">
 % foreach my $path ( RT::Interface::Web->ComponentRoots ) {
-<li><% $path %></li>
+        <li class="list-group-item"><% $path %></li>
 % }
-</ol>
-</&>
+      </ol>
+    </&>
 
-<&|/Widgets/TitleBox, title => loc("Static file search order") &>
-<ol>
+    <&|/Widgets/TitleBox, title => loc("Static file search order") &>
+      <ol class="list-group-compact list-group">
 % foreach my $path ( (map {$_->{root}} RT->Config->Get('StaticRoots')),
 %                    RT::Interface::Web->StaticRoots ) {
-<li><% $path %></li>
+        <li class="list-group-item"><% $path %></li>
 % }
-</ol>
-</&>
+      </ol>
+    </&>
 
-<&|/Widgets/TitleBox, title => loc("Perl library search order") &>
-<ol>
+    <&|/Widgets/TitleBox, title => loc("Perl library search order") &>
+      <ol class="list-group-compact list-group">
 % foreach my $inc (@INC) {
-<li><% $inc %></li>
+        <li class="list-group-item"><% $inc %></li>
 % }
-</ol>
-</&>
+      </ol>
+    </&>
 
-<&|/Widgets/TitleBox, title=> loc("Loaded config files") &>
-<ol>
+    <&|/Widgets/TitleBox, title=> loc("Loaded config files") &>
+      <ol class="list-group-compact list-group">
 % foreach my $config (RT->Config->LoadedConfigs) {
 %   if ($config->{site}) {
-<li><strong><% $config->{filename} %></strong></li>
+        <li class="list-group-item"><strong><% $config->{filename} %></strong></li>
 %   } else {
-<li><% $config->{filename} %></li>
+        <li class="list-group-item"><% $config->{filename} %></li>
 %   }
 % }
-</ol>
-</&>
+      </ol>
+    </&>
 
-<&|/Widgets/TitleBox, title=> loc("Logging summary") &>
-  <& /Admin/Elements/LoggingSummary &>
-</&>
+    <&|/Widgets/TitleBox, title=> loc("Logging summary") &>
+      <& /Admin/Elements/LoggingSummary &>
+    </&>
 
-</td>
-</table>
+  </div>
+
+</div>
 
 <&|/Widgets/TitleBox, title => loc("Global Attributes") &>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table">
-<th class="collection-as-table"><&|/l&>Name</&></th>
-<th class="collection-as-table"><&|/l&>Value</&></th>
-</tr>
+  <div class="collection form-row">
+    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Name</&></div>
+    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Value</&></div>
+  </div>
 % my $attrs = $RT::System->Attributes;
 % my $index_size = 0;
 % while ( my $attr = $attrs->Next ) {
 % next if $attr->Name eq 'UpgradeHistory';
-<tr class="<% $index_size%2 ? 'oddline' : 'evenline'%>">
+<div class="<% $index_size%2 ? 'oddline' : 'evenline'%> form-row">
 % if ($attr->Name eq 'UserLogo') {
 %   my $content = $attr->Content;
 %   $content->{data} = defined $content->{data} ? 'DATA' : 'undef'
 %       if exists $content->{data};
-<td><% $attr->Name %></td><td><% stringify($content) |n %></td>
+<div class="col-md-6 label">
+  <% $attr->Name %>
+</div>
+<div class="col-md-6 value">
+  <% stringify($content) |n %>
+</div>
 % } else {
-<td><% $attr->Name %></td><td><% stringify($attr->Content) |n %></td>
+<div class="col-md-6 label">
+  <% $attr->Name %>
+</div>
+<div class="col-md-6 value">
+  <% stringify($attr->Content) |n %>
+</div>
 % }
-</tr>
+</div>
 % $index_size++;
 % }
-</table>
 </&>
 
-
 <&|/Widgets/TitleBox, title => loc("Loaded RT Extensions")&>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table">
-<th class="collection-as-table"><&|/l&>Extension</&></th>
-<th class="collection-as-table"><&|/l&>Version</&></th>
+  <div class="collection form-row">
+    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Extension</&></div>
+    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Version</&></div>
+  </div>
 % my $row = 0;
 % foreach my $pluginName (grep $_, RT->Config->Get('Plugins')) {
 % my $plugin = RT::Plugin->new( name => $pluginName );
-<tr class="<% $row++ %2 ? 'oddline' : 'evenline'%>">
-<td class="collection-as-table"><%$plugin->Name%></td>
-<td class="collection-as-table"><%$plugin->Version%></td>
-</tr>
+<div class="<% $row++ %2 ? 'oddline' : 'evenline'%> form-row">
+<div class="collection-as-table col-md-6 value"><%$plugin->Name%></div>
+<div class="collection-as-table col-md-6 value"><%$plugin->Version%></div>
+</div>
 % }
-</table>
 </&>
 
 <&|/Widgets/TitleBox, title => loc("Loaded perl modules")&>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table">
-<th class="collection-as-table"><&|/l&>Module</&></th>
-<th class="collection-as-table"><&|/l&>Version</&></th>
-<th class="collection-as-table"><&|/l&>Source</&></th>
-
+  <div class="collection form-row">
+    <div class="collection-as-table col-md-4 label text-left"><&|/l&>Module</&></div>
+    <div class="collection-as-table col-md-4 label text-left"><&|/l&>Version</&></div>
+    <div class="collection-as-table col-md-4 label text-left"><&|/l&>Source</&></div>
+  </div>
 
 <%perl>
 my $i = 0;
@@ -280,17 +285,12 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
     $distfile =~ s|::|/|g;
 }
 </%perl>
-<tr class="<% $i++ %2 ? 'oddline' : 'evenline'%>">
-<td class="collection-as-table"><% $item %></td>
-    <td class="collection-as-table">
-        <%$ver%>
-    </td>
-    <td class="collection-as-table">
-        <% $INC{$distfile} || '' %>
-    </td>
-</tr>
+<div class="<% $i++ %2 ? 'oddline' : 'evenline'%> form-row">
+<div class="collection-as-table col-md-4 value"><% $item %></div>
+    <div class="collection-as-table col-md-4 value"><%$ver%></div>
+    <div class="collection-as-table col-md-4 value"><% $INC{$distfile} || '' %></div>
+</div>
 % }
-</table>
 </&>
 
 <&|/Widgets/TitleBox, title => loc("RT upgrade history")&>
@@ -305,31 +305,29 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 </&>
 
 <&|/Widgets/TitleBox, title=> loc("Environment variables") &>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table">
-<th class="collection-as-table"><&|/l&>Variable</&></th>
-<th class="collection-as-table"><&|/l&>Value</&></th>
-</tr>
+  <div class="collection form-row">
+    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Variable</&></div>
+    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Value</&></div>
+  </div>
 % my $row = 0;
 % for my $key (sort keys %ENV) {
-<tr class="collection-as-table <% $row++ %2 ? 'oddline' : 'evenline'%>">
-<td class="collection-as-table"><% $key %></td>
-<td class="collection-as-table"><% $ENV{$key} %></td>
-</tr>
+<div class="collection-as-table <% $row++ %2 ? 'oddline' : 'evenline'%> form-row">
+<div class="collection-as-table col-md-6 value"><% $key %></div>
+<div class="collection-as-table col-md-6 value"><% $ENV{$key} %></div>
+</div>
 % }
-</table>
 </&>
 
 <&|/Widgets/TitleBox, title => loc("Operating System") &>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table evenline">
-<td class="collection-as-table">Deployment type</td>
-<td class="collection-as-table"><%
-  $INC{'mod_perl.pm'} ? "mod_perl" :
-  $INC{'FCGI.pm'}     ? "fastcgi"  :
-                        "standalone" %>
-</td>
-</tr>
+  <div class="collection evenline form-row">
+    <div class="collection-as-table col-md-6 label text-left">Deployment type</div>
+
+    <div class="collection-as-table col-md-6"><%
+      $INC{'mod_perl.pm'} ? "mod_perl" :
+      $INC{'FCGI.pm'}     ? "fastcgi"  :
+                            "standalone" %>
+    </div>
+  </div>
 <%perl>
 my @os = (
     "Distribution"   => 'lsb_release --all',
@@ -356,12 +354,11 @@ while (my ($name, $cmd) = splice @os, 0, 2) {
 my $row = 1;
 </%perl>
 % while (my ($name, $output) = splice @os_info, 0, 2) {
-<tr class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %>">
-<td class="collection-as-table"><% $name %></td>
-<td class="collection-as-table" style="white-space: pre-wrap; font-family: monospace"><% $output %></td>
-</tr>
+<div class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %> form-row">
+<div class="collection-as-table col-md-6 value"><% $name %></div>
+<div class="collection-as-table col-md-6 value" style="white-space: pre-wrap; font-family: monospace"><% $output %></div>
+</div>
 % }
-</table>
 </&>
 
 <%INIT>
