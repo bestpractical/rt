@@ -52,7 +52,7 @@
 <form method="post" action="">
 <input type="hidden" id="<% $id %>" />
 
-<h2><&|/l&>Groups the principal is member of (check box to delete)</&></h2>
+<&| /Widgets/TitleBox, title => loc( 'Groups the principal is member of (check box to delete)'), width => "100%", color=> "#333399", class=> 'user-group-member' &>
 
 <& /Elements/CollectionList,
     OrderBy => 'Name',
@@ -65,8 +65,9 @@
     AllowSorting => 1,
     PassArguments => [qw(Format Rows Page Order OrderBy id)],
 &>
+</&>
 
-<h2><&|/l&>Groups the principal is not member of (check box to add)</&></h2>
+<&| /Widgets/TitleBox, title => loc( 'Groups the principal is not member of (check box to add)'), width => "100%", color=> "#333399", class=> 'user-group-member' &>
 
 <& /Elements/CollectionList,
     OrderBy => 'Name',
@@ -79,6 +80,7 @@
     AllowSorting => 1,
     PassArguments => [qw(Format Rows Page Order OrderBy id)],
 &>
+</&>
 
 <& /Elements/Submit, Label => loc('Update'), Name => 'Update' &>
 

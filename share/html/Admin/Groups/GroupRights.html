@@ -49,11 +49,13 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
+<div class="card">
   <form method="post" action="GroupRights.html" id="ModifyGroupRights" name="ModifyGroupRights">
     <input type="hidden" class="hidden" name="id" value="<% $GroupObj->id %>" />
     <& /Admin/Elements/EditRights, Context => $GroupObj, Principals => \@principals &>
     <& /Elements/Submit, Label => loc('Save Changes') &>
   </form>
+</div>
 <%INIT>
 # Update the acls.
 my @results = ProcessACLs(\%ARGS);

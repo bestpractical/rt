@@ -60,38 +60,38 @@
 <input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
 % }
 
-<table>
-  <tr>
-    <td valign="top" class="boxcontainer">
+  <div class="boxcontainer">
       <&| /Widgets/TitleBox, title => loc('Basics'), class => 'group-info-basics' &>
-        <table>
-          <tr>
-            <td align="right"><&|/l&>Name</&>:</td>
-            <td><input type="text" name="Name" value="<%$Group->Name||$Name||''%>" /></td>
-          </tr>
-          <tr>
-            <td align="right"><&|/l&>Description</&>:</td>
-            <td colspan="3"><input type="text" name="Description" value="<%$Group->Description||$Description||''%>" size="60" /></td>
-          </tr>
-          <& /Elements/EditCustomFields, Object => $Group, Grouping => 'Basics', InTable => 1 &>
-          <tr>
-            <td colspan="2">
-              <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-              <input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
-              <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
-            </td>
-          </tr>
-        </table>
-      </&>
-    </td>
-  </tr>
-  <tr>
-    <td>
+    <div class="form-row">
+      <div class="col-md-3 label">
+        <&|/l&>Name</&>:
+      </div>
+      <div class="col-md-9 value">
+        <input type="text" name="Name" class="form-control" value="<%$Group->Name||$Name||''%>" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-3 label">
+        <&|/l&>Description</&>:
+      </div>
+      <div class="col-md-9 value">
+        <input type="text" name="Description" class="form-control" value="<%$Group->Description||$Description||''%>" size="60" />
+      </div>
+    </div>
+    <& /Elements/EditCustomFields, Object => $Group, Grouping => 'Basics', InTable => 1 &>
+    <div class="form-row">
+      <div class="custom-control custom-checkbox">
+        <input type="hidden" class="hidden" name="SetEnabled" value="1" />
+        <input type="checkbox" id="Enabled" name="Enabled" class="custom-control-input" value="1" <%$EnabledChecked%> />
+        <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this group)</&></label><br />
+      </div>
+    </div>
+    </&>
+    <div class="form-row">
       <& /Elements/EditCustomFieldCustomGroupings , Object => $Group, &>
-    </td>
-  </tr>
+    </div>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
-</table>
+  </div>
 
 % if ( $Create ) {
 <& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
