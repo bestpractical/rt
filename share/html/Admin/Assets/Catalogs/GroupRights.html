@@ -52,7 +52,11 @@
 <form method="post" action="GroupRights.html" id="ModifyGroupRights" name="ModifyGroupRights">
   <input type="hidden" class="hidden" name="id" value="<% $Catalog->id %>" />
   <& /Admin/Elements/EditRights, Context => $Catalog, Principals => \@principals &>
-  <& /Elements/Submit, Label => loc('Save Changes') &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+    </div>
+  </div>
 </form>
 <%init>
 my $Catalog    = LoadCatalog($id);
