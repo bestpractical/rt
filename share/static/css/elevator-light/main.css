@@ -1,4 +1,5 @@
 @import "../base-responsive/main.css";
+@import "../fonts/inter/inter.css";
 
 @import "bootstrap.css";
 @import "bootstrap-select.css";
