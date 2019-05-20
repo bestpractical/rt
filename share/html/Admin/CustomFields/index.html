@@ -52,21 +52,37 @@
 <h1><% $Type ? loc("Custom Fields for [_1]", $Type) : loc('All Custom Fields') %></h1>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
-<&|/l&>Only show custom fields for:</&>
-<select name="Type">
-<option value="" <% !$Type && 'selected="selected"'%> ><% loc('(any)') %></option>
+
+  <div class="form-row">
+    <div class="col-md-auto label">
+      <&|/l&>Only show custom fields for:</&>
+    </div>
+    <div class="col-md-auto value">
+      <select name="Type" class="form-control selectpicker">
+        <option value="" <% !$Type && 'selected="selected"'%> ><% loc('(any)') %></option>
 % for my $type ( $tmp->LookupTypes ) {
-<option value="<% $type %>" <% $type eq $Type && 'selected="selected"'%> ><% $tmp->FriendlyLookupType( $type ) %></option>
+        <option value="<% $type %>" <% $type eq $Type && 'selected="selected"'%> ><% $tmp->FriendlyLookupType( $type ) %></option>
 % }
-</select>
-<br />
-<input type="checkbox" class="checkbox" id="ShowDisabled" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n %> />
-<label for="ShowDisabled"><&|/l&>Include disabled custom fields in listing.</&></label>
-<br />
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="ShowDisabled" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n %> />
+        <label class="custom-control-label" for="ShowDisabled"><&|/l&>Include disabled custom fields in listing.</&></label>
+      </div>
+    </div>
+  </div>
 
 % $m->callback(CallbackName => 'BeforeSubmit');
 
-<div align="right"><input type="submit" value="<% loc('Go!') %>" /></div>
+  <div class="form-row">
+    <div class="col-md-12 text-right">
+      <input type="submit" class="form-control btn btn-primary" value="<% loc('Go!') %>" />
+    </div>
+  </div>
 </form>
 
 <& /Elements/CollectionList,
