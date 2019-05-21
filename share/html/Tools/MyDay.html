@@ -52,24 +52,58 @@
 
 <h2><&|/l, $session{'CurrentUser'}->Name &>Active tickets for [_1]</&></h2>
 <form method="post" action="MyDay.html">
-<table width="100%" cellpadding="0" cellspacing="0" class="myday">
+<div class="myday">
 % while ( my $Ticket = $Tickets->Next()) {
 % $i++;
-% my $class =  $i % 2  ? 'class="evenline"' : 'class="oddline"';
-<tr <%$class|n%>><td colspan="2"><h2><a
-href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
-<%$Ticket->Subject%></a></h2></td></tr>
-<tr <%$class|n%>><td><span class="label"><&|/l&>Worked</&>:</span><input type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" /> <&|/l&>minutes</&>
-</td>
-<td rowspan="2"><span class="label"><&|/l&>Comments</&>:<br /></span><textarea name="UpdateContent-<%$Ticket->Id%>" rows="5"
-cols="60"></textarea></td></tr>
-<tr <%$class|n%>>
-<td><span class="label"><&|/l&>Status</&>:</span> <& /Ticket/Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, TicketObj => $Ticket &></td>
-                  </tr>
+% my $class =  $i % 2  ? 'class="evenline form-row"' : 'class="oddline form-row"';
+  <div <%$class|n%>>
+    <h2><a
+      href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>"><%$Ticket->Id%>:
+      <%$Ticket->Subject%></a>
+    </h2>
+  </div>
 
+  <div <%$class|n%>>
+
+    <div class="col-md-6">
+      <div class="form-row">
+        <span class="col-md-3 label">
+          <&|/l&>Worked</&>:
+        </span>
+        <span class="col-md-9 form-inline value">
+          <input class="form-control" type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" />
+          <&|/l&>minutes</&>
+        </span>
+      </div>
+
+      <div class="form-row">
+        <span class="label col-md-3">
+          <&|/l&>Status</&>:
+        </span>
+        <div class="col-md-9 value">
+          <& /Ticket/Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, TicketObj => $Ticket &>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <span class="label col-md-3">
+        <&|/l&>Comments</&>:
+      </span>
+      <div class="col-md-9 value">
+        <textarea class="form-control" name="UpdateContent-<%$Ticket->Id%>" rows="5"
+          cols="60">
+        </textarea>
+      </div>
+    </div>
+  </div>
 % }
-</table>
-<& /Elements/Submit, Label => loc('Record all updates') ,  Reset => 1, ResetLabel => loc('Clear')&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Record all updates') ,  Reset => 1, ResetLabel => loc('Clear')&>
+    </div>
+  </div>
+</div>
 </form>
 </html>
 <%INIT>
