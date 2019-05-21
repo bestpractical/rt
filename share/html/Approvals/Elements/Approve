@@ -68,32 +68,40 @@
     <div class="action">
       <div>
 % if ( $inactive && $status eq 'resolved' ) {
-        <input type="radio" class="radio" id="Approval-<%$ticket->Id%>-Action-approve" name="Approval-<%$ticket->Id%>-Action" value="approve" checked="checked" />
-        <label for="Approval-<%$ticket->Id%>-Action-approve"><% loc('[_1] (Unchanged)', loc('Approve')) %></label>
+        <div class="custom-control custom-radio">
+          <input type="radio" class="radio custom-control-input" id="Approval-<%$ticket->Id%>-Action-approve" name="Approval-<%$ticket->Id%>-Action" value="approve" checked="checked" />
+          <label class="custom-control-label" for="Approval-<%$ticket->Id%>-Action-approve"><% loc('[_1] (Unchanged)', loc('Approve')) %></label>
+        </div>
 % } else {
-        <input type="radio" class="radio" id="Approval-<%$ticket->Id%>-Action-approve" name="Approval-<%$ticket->Id%>-Action" value="approve" />
-        <label for="Approval-<%$ticket->Id%>-Action-approve"><&|/l&>Approve</&></label>
+        <div class="custom-control custom-radio">
+          <input type="radio" class="radio custom-control-input" id="Approval-<%$ticket->Id%>-Action-approve" name="Approval-<%$ticket->Id%>-Action" value="approve" />
+          <label class="custom-control-label" for="Approval-<%$ticket->Id%>-Action-approve"><&|/l&>Approve</&></label>
+        </div>
 % }
       </div>
       <div>
 % if ( $inactive && $status ne 'resolved' ) {
-        <input type="radio" class="radio" id="Approval-<%$ticket->Id%>-Action-deny" name="Approval-<%$ticket->Id%>-Action" value="deny" checked="checked" />
-        <label for="Approval-<%$ticket->Id%>-Action-deny"><% loc('[_1] (Unchanged)', loc('Deny')) %></label>
+        <div class="custom-control custom-radio">
+          <input type="radio" class="radio custom-control-input" id="Approval-<%$ticket->Id%>-Action-deny" name="Approval-<%$ticket->Id%>-Action" value="deny" checked="checked" />
+          <label class="custom-control-label" for="Approval-<%$ticket->Id%>-Action-deny"><% loc('[_1] (Unchanged)', loc('Deny')) %></label>
+        </div>
 % } else {
-        <input type="radio" class="radio" id="Approval-<%$ticket->Id%>-Action-deny" name="Approval-<%$ticket->Id%>-Action" value="deny" />
-        <label for="Approval-<%$ticket->Id%>-Action-deny"><&|/l&>Deny</&></label>
+        <div class="custom-control custom-radio">
+          <input type="radio" class="radio custom-control-input" id="Approval-<%$ticket->Id%>-Action-deny" name="Approval-<%$ticket->Id%>-Action" value="deny" />
+          <label class="custom-control-label" for="Approval-<%$ticket->Id%>-Action-deny"><&|/l&>Deny</&></label>
+        </div>
 % }
       </div>
 % unless ( $inactive ) {
-      <div>
-        <input type="radio" class="radio" id="Approval-<%$ticket->Id%>-Action-none" name="Approval-<%$ticket->Id%>-Action" value="none" checked="checked" />
-        <label for="Approval-<%$ticket->Id%>-Action-none"><&|/l&>No action</&></label>
+      <div class="custom-control custom-radio">
+        <input type="radio" class="radio custom-control-input" id="Approval-<%$ticket->Id%>-Action-none" name="Approval-<%$ticket->Id%>-Action" value="none" checked="checked" />
+        <label class="custom-control-label" for="Approval-<%$ticket->Id%>-Action-none"><&|/l&>No action</&></label>
       </div>
 % }
     </div>
     <div class="notes">
       <label for="Approval-<%$ticket->Id%>-Notes"><&|/l&>Notes</&></label>
-      <textarea name="Approval-<%$ticket->Id%>-Notes" id="Approval-<%$ticket->Id%>-Notes" rows="2" cols="70"></textarea>
+      <textarea class="form-control" name="Approval-<%$ticket->Id%>-Notes" id="Approval-<%$ticket->Id%>-Notes" rows="2" cols="70"></textarea>
     </div>
     <div class="clear"></div>
   </div>
