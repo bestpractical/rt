@@ -72,7 +72,7 @@ Arguments C<queue>, C<status> and C<updated_before> have been dropped
 as you can easy make the same search with the C<query> option.
 See examples above.
 
-=head2 with_linked - boolen
+=head2 with_linked - boolean
 
 Deletes all tickets that are linked to tickets that match L<query>.
 
@@ -85,6 +85,13 @@ See also L<with_linked>.
 =cut
 
 sub SupportArgs { return $_[0]->SUPER::SupportArgs, qw(query with_linked apply_query_to_linked) }
+
+# used to genrate checkboxes instead of text fields in the web interface
+sub ArgIsBoolean {
+    my( $self, $arg ) = @_;
+    my %boolean_atts = map { $_ => 1 } qw( with_linked apply_query_to_linked );
+    return $boolean_atts{$arg};
+}
 
 sub TestArgs
 {

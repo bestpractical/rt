@@ -48,14 +48,16 @@
 <%ARGS>
 $Object => undef
 </%ARGS>
-<input type="checkbox" name="WipeoutObject" value="<% $Object->UID %>" />
-<span>
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="WipeoutObject" class="custom-control-input" id="cb-<% $Object->UID %>" value="<% $Object->UID %>" />
 % if( $m->comp_exists( $path ) ) {
-% $m->comp( $path, Object => $Object );
+  <label class="custom-control-label" for="cb-<% $Object->UID %>">
+%   $m->comp( $path, Object => $Object );
 % } else {
-<% $Object->UID %>
+    <% $Object->UID %>
 % }
-</span><br />
+  </label>
+</div>
 <%ONCE>
 require File::Spec;
 </%ONCE>

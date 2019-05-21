@@ -49,19 +49,55 @@
 $Plugin => ''
 </%ARGS>
 <div id="shredder-plugin-<% $Plugin %>-arguments" class="shredder-form">
-<span><% loc('Fill arguments') %>:</span><br />
-<table>
+<&| /Widgets/TitleBox, title => loc("Search") &>
 % for my $a ( $plugin_obj->SupportArgs ) {
-<tr>
-    <td class="label"><label for="<% "$Plugin:$a" %>"><% loc($a) %>:</label></td>
-    <td><input type="text" name="<% "$Plugin:$a" %>" id="<% "$Plugin:$a" %>" value="<% $ARGS{ "$Plugin:$a" } || '' %>" /></td>
-</tr>
+  <div class="form-row">
+%  if( $plugin_obj->ArgIsBoolean( $a ) ) {
+    <div class="col-md-9 offset-md-2">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" id="<% "$Plugin:$a" %>" name="<% "$Plugin:$a" %>" class="custom-control-input" value="<% $ARGS{ "$Plugin:$a" } || '' %>" />
+        <label class="custom-control-label" for="<% "$Plugin:$a" %>"><% loc($a) %></label>
+        <span class="hints"><% $arguments_help{$a}->{help} |n%></span>
+      </div>
+    </div>
+%  } else {
+    <div class="col-md-2 label"><% loc($a) %></div>
+    <div class="col-md-10 value">
+      <input type="text" name="<% "$Plugin:$a" %>" id="<% "$Plugin:$a" %>" class="form-control" value="<% $ARGS{ "$Plugin:$a" } || '' %>" />
+%     if( $arguments_help{$a} ) {
+          <span class="hints"><% $arguments_help{$a}->{type} . ' - ' . $arguments_help{$a}->{help} |n%></span>
+%     }
+    </div>
+%  }
+  </div>
 % }
-</table>
+  <div id="shredder-submit-button" class="<% $Plugin? '': 'hidden' %>">
+  <& /Elements/Submit, Name => 'Search', Label => loc('Search') &>
+  </div>
+  </&>
 </div>
 <%INIT>
 use RT::Shredder::Plugin;
+use RT::Shredder::POD;
+
+my $base_obj = RT::Shredder::Plugin->new;
+
+my %plugins = $base_obj->List;
+
+my $base_file = $plugins{ 'Base' };
+$base_file =~ s/\.pm$/\/Search.pm/; # docs for the Base "plugin" is in the base file, not Search.pm
+my $base_arguments_help = RT::Shredder::POD::arguments_help( $base_file);
+
 my $plugin_obj = RT::Shredder::Plugin->new;
+
 my ($status, $msg) = $plugin_obj->LoadByName( $Plugin );
 die $msg unless $status;
+
+my $plugin_file = $plugins{ $Plugin };
+unless( $plugin_file ) {
+    $RT::Logger->error( "Couldn't find plugin '$Plugin'" );
+    return;
+}
+my $plugin_arguments_help = RT::Shredder::POD::arguments_help( $plugin_file);
+my %arguments_help = ( %$base_arguments_help, %$plugin_arguments_help );
 </%INIT>

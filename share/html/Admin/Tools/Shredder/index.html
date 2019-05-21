@@ -59,9 +59,6 @@ $Wipeout => ''
 <& /Elements/ListActions, actions => $messages{'Success'} &>
 <& Elements/DumpFileLink, File => $dump_file &>
 <& Elements/SelectPlugin, Plugin => $Plugin, %ARGS &>
-<div id="shredder-submit-button" class="<% $Plugin? '': 'hidden' %>">
-<& /Elements/Submit, Name => 'Search', Label => loc('Search') &>
-</div>
 </div>
 <br />
 % if( $Search || $Wipeout ) {

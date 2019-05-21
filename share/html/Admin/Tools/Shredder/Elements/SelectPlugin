@@ -51,7 +51,7 @@ $Plugin => ''
 <& PluginHelp, %ARGS, Plugin => 'Base' &>
 <div class="shredder-form">
 <span>Select plugin: </span>
-<select name="Plugin" onchange="showShredderPluginTab(this.value);">
+<select name="Plugin" class="form-control selectpicker" onchange="showShredderPluginTab(this.value);">
 <option value=""><% loc('(no value)') %></option>
 % foreach my $p( keys %plugins ) {
 <option value="<% $p %>" <% ($p eq $Plugin)? 'selected="selected"': '' %>><% loc($p) %></option>
@@ -61,8 +61,8 @@ $Plugin => ''
 <div id="shredder-plugin-tabs">
 % foreach my $p( keys %plugins ) {
 <div id="shredder-plugin-<% $p %>-tab" class="<% ($p ne $Plugin)? 'hidden': '' %>">
-<& PluginHelp, %ARGS, Plugin => $p &>
-<& PluginArguments, %ARGS, Plugin => $p &>
+  <& PluginHelp, %ARGS, Plugin => $p &>
+  <& PluginArguments, %ARGS, Plugin => $p &>
 </div>
 % }
 </div>
