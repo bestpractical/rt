@@ -74,7 +74,8 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Record::Role::Rights";
+with "RT::Record::Role::Rights",
+     "RT::Record::Role::Links";
 
 sub Table {'Groups'}
 

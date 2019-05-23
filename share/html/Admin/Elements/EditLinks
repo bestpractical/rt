@@ -45,29 +45,41 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-%# Released under the terms of version 2 of the GNU Public License
-<%args>
-$Object
-$PostUser => undef
-$Separator => ", "
-$Link => 1
-</%args>
-<%init>
-if ($Object->isa("RT::Group")) {
-    # Link the users (non-recursively)
-    my @ret = map {$m->scomp("ShowPrincipal", Object => $_->[1], PostUser => $PostUser, Link => $Link)}
-        sort {$a->[0] cmp $b->[0]}
-        map {+[($_->EmailAddress||''), $_]}
-        @{ $Object->UserMembersObj( Recursively => 0 )->ItemsArrayRef };
+<table width="100%">
+  <tr>
+    <td valign="top" width="50%">
+      <h3><&|/l&>Current Links</&></h3>
 
-    # Link to the group summary page
-    my $href = RT->Config->Get("WebPath") . "/Group/Summary.html?id=";
-    push @ret, sort map { "<a href=\"" . $href . $_->id . "\">" . loc("Group:") . " " . $_->Name . "</a>" }
-        @{ $Object->GroupMembersObj( Recursively => 0)->ItemsArrayRef };
+<table>
+  <tr>
+    <td class="labeltop"><& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &></td>
+    <td class="value">
+% while (my $link = $Object->RefersTo->Next) {
+      <& /Elements/EditLink, Link => $link, Mode => 'Target' &>
+%}
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop group-link edit-referredtoby"><& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &></td>
+    <td class="value group-link edit-referredtoby">
+% while (my $link = $Object->ReferredToBy->Next) {
+      <& /Elements/EditLink, Link => $link, Mode => 'Base' &>
+% }
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><i><&|/l&>(Check box to remove link)</&></i></td>
+  </tr>
+</table>
 
-    $m->out( join($Separator, @ret) );
-} else {
-    $m->comp("/Elements/ShowUser", User => $Object, Link => $Link);
-    $m->out( $PostUser->($Object) ) if $PostUser;
-}
-</%init>
+</td>
+<td valign="top">
+<h3><&|/l&>New Links</&></h3>
+<& AddLinks, %ARGS &>
+</td>
+</tr>
+</table>
+<%ARGS>
+$Object => undef
+</%ARGS>
