@@ -77,103 +77,111 @@ my $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $sessio
 </div>
 
 <script type="text/javascript">
-jQuery(function(){
-    var isLoading = false, // prevent multiple simultaneous load events
-        disableLoading = false, // prevent repeated fruitless attempts
-        loadDistanceFromBottom = 1500, // to load before bottom of page is reached
-        lastTransactionId = null,
-        hash = window.location.hash,
-        hashTransactionId = null,
-        loadAll = false;
+var isLoading = false, // prevent multiple simultaneous load events
+    disableLoading = false, // prevent repeated fruitless attempts
+    loadDistanceFromBottom = 1500, // to load before bottom of page is reached
+    lastTransactionId = null,
+    hash = window.location.hash,
+    hashTransactionId = null,
+    loadAll = false;
 
-    var oldestTransactionsFirst = <% $oldestTransactionsFirst || 0 %>;
+var oldestTransactionsFirst = <% $oldestTransactionsFirst || 0 %>;
 
-    var removeLoadingMessage = function() {
-        jQuery('.loading-message').remove();
-    };
+var removeLoadingMessage = function() {
+    jQuery('.loading-message').remove();
+};
 
-    var removeLoadLink = function() {
-        jQuery('.error-load-history').remove();
-    };
+var removeLoadLink = function() {
+    jQuery('.error-load-history').remove();
+};
 
-    var showLoadingMessage = function() {
-        removeLoadingMessage();
-        var loadingMessage = jQuery('<span class="loading-message">' +
-            loc_key('loading') + '</span>');
-        jQuery(".history-container").append(loadingMessage);
-    };
+var showLoadingMessage = function() {
+    removeLoadingMessage();
+    var loadingMessage = jQuery('<span class="loading-message">' +
+        loc_key('loading') + '</span>');
+    jQuery(".history-container").append(loadingMessage);
+};
 
-    var loadingError = function(reason) {
-        removeLoadingMessage();
-        disableLoading = true;
-        removeLoadLink();
-        var loadLink = jQuery('<div class="error-load-history">' +
-            loc_key('history_scroll_error') + ' ' + reason +
-            '<br/><a href="#">' + loc_key('try_again') + '</a></div>');
-        jQuery(".history-container").append(loadLink);
-    };
+var loadingError = function(reason) {
+    removeLoadingMessage();
+    disableLoading = true;
+    removeLoadLink();
+    var loadLink = jQuery('<div class="error-load-history">' +
+        loc_key('history_scroll_error') + ' ' + reason +
+        '<br/><a href="#">' + loc_key('try_again') + '</a></div>');
+    jQuery(".history-container").append(loadLink);
+};
 
-    var loadHistoryPage = function() {
-        if (isLoading || disableLoading) return;
+function loadHistoryPage (path) {
+    if (isLoading || disableLoading) return;
 
-        isLoading = true;
-        showLoadingMessage();
+    if ( path ) {
+        hash = path;
+    }
 
-        var queryString = '&oldestTransactionsFirst=' + oldestTransactionsFirst;
-        if (lastTransactionId) queryString += '&lastTransactionId=' + lastTransactionId;
-        if (loadAll) queryString += '&loadAll=1';
+    isLoading = true;
+    showLoadingMessage();
 
-        // don't load all over and over again
-        loadAll = false;
+    var queryString = '&oldestTransactionsFirst=' + oldestTransactionsFirst;
+    if (lastTransactionId) queryString += '&lastTransactionId=' + lastTransactionId;
+    if (loadAll) queryString += '&loadAll=1';
 
-        // check for link to specific transaction and make sure we load enough to focus it
-        if (hash && !lastTransactionId) {
-            var matches = hash.match(/^#txn-(\d+)$/);
-            if (matches) {
-                hashTransactionId = matches[1];
-                queryString += '&focusTransactionId=' + hashTransactionId;
-            }
+    // don't load all over and over again
+    loadAll = false;
+
+    // check for link to specific transaction and make sure we load enough to focus it
+    if (hash && !lastTransactionId) {
+        var matches = hash.match(/^#txn-(\d+)$/);
+        if (matches) {
+            hashTransactionId = matches[1];
+            queryString += '&focusTransactionId=' + hashTransactionId;
         }
+    }
 
-        jQuery.ajax({
-            url: "<% $url |n %>" + queryString,
-            success: function(html) {
-                var transactions = jQuery(html).filter('div.transaction');
-                if(html && transactions.length) {
-                    lastTransactionId = transactions.last().data('transactionId');
-                    jQuery(".history-container").append(html);
-                    if ( transactions.filter(':not(.hidden.end-of-history-list)').length == 0 ) {
-                        // if none is visible, automatically load more
-                        isLoading = false;
-                        loadHistoryPage();
-                        return;
-                    }
-
-                    if (hashTransactionId) { // focus transaction if we are following a link to it
-                        hashTransactionId = null;
-                        location.href = hash;
-                    }
-                } else {
-                    disableLoading = true;
-
-                    // hide 'Load All' link container if we're done loading
-                    var loadAllHistoryContainer = jQuery('#LoadAllHistoryContainer');
-                    loadAllHistoryContainer.hide();
+    jQuery.ajax({
+        url: "<% $url |n %>" + queryString,
+        success: function(html) {
+            var transactions = jQuery(html).filter('div.transaction');
+            if(html && transactions.length) {
+                lastTransactionId = transactions.last().data('transactionId');
+                jQuery(".history-container").append(html);
+                if ( transactions.filter(':not(.hidden.end-of-history-list)').length == 0 ) {
+                    // if none is visible, automatically load more
+                    isLoading = false;
+                    loadHistoryPage();
+                    return;
                 }
 
-                isLoading = false;
-                removeLoadingMessage();
+                if (hashTransactionId) { // focus transaction if we are following a link to it
+                    hashTransactionId = null;
+                    location.href = hash;
+                }
+            } else {
+                disableLoading = true;
 
-                // make sure we load all if we clicked the "Load All" button while we were already loading
-                if (loadAll) loadHistoryPage();
-            },
-            error: function(xhr, reason) {
-                isLoading = false;
-                loadingError(reason);
+                // hide 'Load All' link container if we're done loading
+                var loadAllHistoryContainer = jQuery('#LoadAllHistoryContainer');
+                loadAllHistoryContainer.hide();
             }
-        });
-    };
 
+            isLoading = false;
+            removeLoadingMessage();
+
+            // make sure we load all if we clicked the "Load All" button while we were already loading
+            if (loadAll) loadHistoryPage();
+
+            if ( path ) {
+                window.location.href = path;
+            }
+        },
+        error: function(xhr, reason) {
+            isLoading = false;
+            loadingError(reason);
+        }
+    });
+};
+
+jQuery(function(){
     var loadAllHistory = function() {
         // hide link container
         var loadAllHistoryContainer = jQuery('#LoadAllHistoryContainer');

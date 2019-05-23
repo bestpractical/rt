@@ -52,7 +52,7 @@
 <&|/l&>There are unread messages on this ticket.</&>
 </span>
 <span class="new-messages-buttons">
-<a class="button small-button" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."#txn-" . $txn->id |n %>"><&|/l&>Jump to Unread</&></a>
+<a class="button small-button" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."#txn-" . $txn->id |n %>" onclick="loadHistoryPage('<%"#txn-" . $txn->id%>')"><&|/l&>Jump to Unread</&></a>
 <a class="button small-button" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id. "&MarkAsSeen=1" |n %>"><&|/l&>Mark as Seen</&></a>
 <a class="button small-button" href="<% RT->Config->Get('WebPath') ."/$DisplayPath/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id |n %>"><&|/l&>Jump & Mark as Seen</&></a>
 </span>
