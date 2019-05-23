@@ -1,0 +1,116 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title  &>
+
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+% $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, GroupObj => $Group);
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<% RT->Config->Get('WebPath') %>/Admin/Groups/ModifyLinks.html" name="ModifyLinks" method="post">
+<input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+
+% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+
+<&| /Widgets/TitleBox, title => loc('Manage Links for Group [_1]', $Group->Label) &>
+
+<& /Admin/Elements/EditLinks, Object => $Group &>
+</&>
+
+<& /Elements/Submit, Name => 'SubmitGroupLinks', Label => loc('Save Changes') &>
+</form>
+
+% $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, GroupObj => $Group);
+
+<%INIT>
+my $Group = RT::Group->new($session{'CurrentUser'});
+$Group->Load($id) || Abort(loc('Could not load group'));
+my @results;
+
+$m->callback(CallbackName => 'Init', GroupObj => $Group, ARGSRef => \%ARGS, Results => \@results);
+
+my $title = loc("Modify Links for group [_1]", $Group->Label);
+
+if ( $ARGS{'SubmitGroupLinks'} ){
+
+    foreach my $link_type ( "RefersTo-$id", "$id-RefersTo" ){
+        next unless $ARGS{$link_type};
+
+        # List is comma delimited, which allows for group names with spaces
+        my @values = split ', ', $ARGS{$link_type};
+        foreach my $input ( @values ) {
+            if ( $input =~ /^\d+$/ ){
+                # Default scheme for link ids assumes a ticket. Since we're on the group
+                # links page, allow ids as input and prepend 'group:' here to
+                # create group links
+                $input = 'group:' . $input;
+                next;
+            }
+            else {
+                # Could be a group name. Try to look it up.
+                my $group = RT::Group->new($session{'CurrentUser'});
+                my ($ret, $msg) = $group->LoadUserDefinedGroup($input);
+                RT::Logger->info("Unable to load group from name $input: $msg") unless $ret;
+                $input = 'group:' . $group->Id if $ret and $group->Id;
+            }
+        }
+        $ARGS{$link_type} = join ' ', @values;
+    }
+
+    (@results) = ProcessRecordLinks(RecordObj => $Group, ARGSRef => \%ARGS);
+
+    MaybeRedirectForResults(
+        Actions     => \@results,
+        Arguments   => { id => $id },
+    );
+}
+</%INIT>
+<%ARGS>
+$id => undef
+</%ARGS>

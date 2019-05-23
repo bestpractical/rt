@@ -45,29 +45,42 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-%# Released under the terms of version 2 of the GNU Public License
-<%args>
-$Object
-$PostUser => undef
-$Separator => ", "
-$Link => 1
-</%args>
-<%init>
-if ($Object->isa("RT::Group")) {
-    # Link the users (non-recursively)
-    my @ret = map {$m->scomp("ShowPrincipal", Object => $_->[1], PostUser => $PostUser, Link => $Link)}
-        sort {$a->[0] cmp $b->[0]}
-        map {+[($_->EmailAddress||''), $_]}
-        @{ $Object->UserMembersObj( Recursively => 0 )->ItemsArrayRef };
+% if (ref($Object) eq 'RT::Group') {
+<i><&|/l&>Enter names or IDs of other groups to link. Start typing a group name to see matching groups. Separate multiple entries with a comma.</&>
+% $m->callback( CallbackName => 'ExtraLinkInstructions' );
+</i><br />
+% } else {
+<i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
+% }
+<table>
+  <tr>
+    <td class="label"><& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &></td>
+    <td class="entry"><input name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></td>
+  </tr>
+  <tr>
+    <td class="label"><& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &></td>
+    <td class="entry"> <input name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></td>
+  </tr>
+  <& /Elements/EditCustomFields,
+        Object          => $Object,
+        Grouping        => 'Links',
+        InTable         => 1,
+        ($CustomFields
+            ? (CustomFields => $CustomFields)
+            : ()),
+        &>
+% $m->callback( CallbackName => 'NewLink' );
+</table>
+<%INIT>
+my $id = ($Object and $Object->id)
+    ? $Object->id
+    : "new";
 
-    # Link to the group summary page
-    my $href = RT->Config->Get("WebPath") . "/Group/Summary.html?id=";
-    push @ret, sort map { "<a href=\"" . $href . $_->id . "\">" . loc("Group:") . " " . $_->Name . "</a>" }
-        @{ $Object->GroupMembersObj( Recursively => 0)->ItemsArrayRef };
-
-    $m->out( join($Separator, @ret) );
-} else {
-    $m->comp("/Elements/ShowUser", User => $Object, Link => $Link);
-    $m->out( $PostUser->($Object) ) if $PostUser;
-}
-</%init>
+my $exclude = qq| data-autocomplete="Groups" data-autocomplete-multiple="1" |;
+$exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
+</%INIT>
+<%ARGS>
+$Object => undef
+$CustomFields => undef
+$ARGSRef => $DECODED_ARGS
+</%ARGS>

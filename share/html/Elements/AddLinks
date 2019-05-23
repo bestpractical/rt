@@ -62,6 +62,8 @@ $exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
 <br /><&|/l&>You may enter links to Articles as "a:###", where ### represents the number of the Article.</&>
 <br /><&|/l&>Enter links to assets as "asset:###", where ### represents the asset ID.</&>
+<br /><&|/l&>Enter links to groups as "group:###", where ### represents the group ID.</&>
+<br /><&|/l&>Enter links to users as "user:###", where ### represents the user ID.</&>
 % $m->callback( CallbackName => 'ExtraLinkInstructions' );
 </i><br />
 % } elsif (ref($Object) eq 'RT::Queue') {
