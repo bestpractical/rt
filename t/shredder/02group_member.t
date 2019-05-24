@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 35;
+use RT::Test::Shredder tests => undef;
 my $test = "RT::Test::Shredder";
 
 ### nested membership check
@@ -146,3 +146,23 @@ my $test = "RT::Test::Shredder";
         is( $ticket->Owner, RT->Nobody->id, "owner switched back to nobody" );
         is( $ticket->OwnerGroup->MembersObj->First->MemberId, RT->Nobody->id, "and owner role group member is nobody");
 }
+
+diag "Shred a ticket with groups in AdminCc role group";
+{
+        $test->restore_savepoint('clean');
+
+        my $user = RT::Test->load_or_create_user( Name => 'alice' );
+        my $group = RT::Test->load_or_create_group( 'managers' );
+        my ( $status, $msg ) = $group->AddMember( $user->id );
+        ok( $status, "added user to group" ) or diag "error: $msg";
+
+        my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'group requestor', AdminCc => $group->id );
+        $ticket->ApplyTransactionBatch;
+
+        my $shredder = $test->shredder_new();
+        $shredder->PutObjects( Objects => $ticket );
+        $shredder->WipeoutAll();
+        $test->db_is_valid;
+}
+
+done_testing;
