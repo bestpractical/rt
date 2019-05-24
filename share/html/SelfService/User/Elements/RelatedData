@@ -50,19 +50,22 @@
     title => loc("Download My Data"),
 &>
 
-<div>
-<div id="download-my-data" class="inline-row">
-    <div class="inline-cell">
-        <a href="/SelfService/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="button"><% $UserDataButton %></a>
-        <i class="label"><&|/l&>Base user data</&></i>
-    </div>
-    <div class="inline-cell">
-        <a href="/SelfService/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="button"><% $UserTicketsButton %></a>
+  <div id="download-my-data" class="download-user-data-buttons">
+    <div class="form-row">
+      <div class="inline-cell col-md-auto">
+          <a class="button btn btn-primary" href="/SelfService/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="form-control btn btn-primary btn-sm"><% $UserDataButton %></a>
+          <i class="label"><&|/l&>Base user data</&></i>
+      </div>
+
+      <div class="inline-cell col-md-auto">
+        <a class="button btn btn-primary" href="/SelfService/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="form-control btn btn-primary btn-sm"><% $UserTicketsButton %></a>
         <i class="label"><&|/l&>Tickets with you as a requestor</&></i>
-    </div>
-    <div class="inline-cell">
-        <a href="/SelfService/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>" class="button"><% $UserTxnButton %></a>
+      </div>
+
+      <div class="inline-cell col-md-auto">
+        <a class="button btn btn-primary" href="/SelfService/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>" class="form-control btn btn-primary btn-sm"><% $UserTxnButton %></a>
         <i class="label"><&|/l&>Replies you sent</&></i>
+      </div>
     </div>
 </div>
 </&>
