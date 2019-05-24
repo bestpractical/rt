@@ -83,6 +83,46 @@ sub shredder_cli
     return;
 }
 
+# Extract the help foer each argument from the plugin POD
+# they must be on a =head2 line in the ARGUMENTS section of the POD
+# the return value is a hashref:
+#   keys are the argument names,
+#   values are hash_refs: { name => <ucfirst argument name>,
+#                           type => <from the head line>,
+#                           help => <first paragraph from the POD>
+#                         }
+sub arguments_help {
+    my ($file) = @_;
+
+    my $text;
+    open( my $io_handle, ">:scalar", \$text )
+        or die "Can't open scalar for write: $!";
+    my $parser = RT::Shredder::POD::HTML->new;
+    $parser->select('ARGUMENTS');
+    $parser->parse_from_file( $file, $io_handle );
+
+    my $arguments_help = {};
+
+    while( $text=~ m{<h4[^>]*>    # argument description starts with an h4 title
+                       \s*(\S*)   #   argument name ($1)
+                         \s*-\s*
+                       ([^<]*)    #   argument type ($2)
+                     </h4>\s*
+                       (?:<p[^>]*>\s*
+                       (.*?)      #   help: the first paragraph of the POD     ($3)
+                     (?=</p>)
+                       )?
+                    }gsx
+          ) {
+        my( $arg, $arg_name, $type, $help)= ( lc( $1), $1, $2, $3 || '');
+        $arguments_help->{$arg}= { name => $arg_name, type => $type, help => $help };
+    }
+
+    return $arguments_help;
+}
+
+1;
+
 package RT::Shredder::POD::HTML;
 use base qw(Pod::Select);
 
@@ -91,15 +131,19 @@ sub command
     my( $self, $command, $paragraph, $line_num ) = @_;
 
     my $tag;
-    if ($command =~ /^head(\d+)$/) { $tag = "h$1" }
+    # =head1 => h3, =head2 => h4
+    if ($command =~ /^head(\d+)$/) {
+        my $h_level = $1 + 2;
+        $tag = "h$h_level";
+    }
     my $out_fh = $self->output_handle();
     my $expansion = $self->interpolate($paragraph, $line_num);
     $expansion =~ s/^\s+|\s+$//;
     $expansion = lc( $expansion );
     $expansion = ucfirst( $expansion );
 
-    print $out_fh "<$tag class=\"rt-general-header1\">" if $tag eq 'h1';
-    print $out_fh "<$tag class=\"rt-general-header2\">" if $tag eq 'h2';
+    print $out_fh "<$tag class=\"rt-general-header1\">" if $tag eq 'h3';
+    print $out_fh "<$tag class=\"rt-general-header2\">" if $tag eq 'h4';
     print $out_fh $expansion;
     print $out_fh "</$tag>" if $tag;
     print $out_fh "\n";
@@ -134,6 +178,7 @@ sub interior_sequence {
     ## Expand an interior sequence; sample actions might be:
     return "<b>$seq_argument</b>" if $seq_command eq 'B';
     return "<i>$seq_argument</i>" if $seq_command eq 'I';
+    return "<tt>$seq_argument</tt>" if $seq_command eq 'C';
     return "<span class=\"pod-sequence-$seq_command\">$seq_argument</span>";
 }
 1;
