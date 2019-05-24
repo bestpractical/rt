@@ -1589,7 +1589,19 @@ sub __DependsOn {
     push( @$list, $objs );
 
 # Cached group members records
-    push( @$list, $self->DeepMembersObj );
+
+    if ( ( $self->Domain // '' ) eq 'RT::Ticket-Role' ) {
+
+        # For ticket role groups, do not delete subgroups' member
+        # relationships, as they are irrelevant here.
+
+        my $members_obj = RT::CachedGroupMembers->new( $self->CurrentUser );
+        $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+        push( @$list, $members_obj );
+    }
+    else {
+        push( @$list, $self->DeepMembersObj );
+    }
 
 # Cached group member records group belongs to
     $objs = RT::GroupMembers->new( $self->CurrentUser );
