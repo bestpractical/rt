@@ -109,6 +109,23 @@ sub LimitToPrivacy {
     }
 }
 
+
+=head2 SortSavedSearches
+
+Sort the list of saved searches. The default is to sort alphabetically.
+
+=cut
+
+sub SortSavedSearches {
+    my $self = shift;
+
+    # Work directly with the internal data structure since saved searches
+    # aren't fully backed by a DB table and can't support typical OrderBy, etc.
+    my @sorted = sort { lcfirst($a->Name) cmp lcfirst($b->Name) } @{$self->{'objects'}};
+    @{$self->{'objects'}} = @sorted;
+    return;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
