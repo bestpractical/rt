@@ -49,6 +49,7 @@
 % foreach my $Object (@Objects) {
 %   my $SavedSearches = RT::SavedSearches->new($session{CurrentUser});
 %   $SavedSearches->LimitToPrivacy(join('-',ref($Object),$Object->Id),'Ticket');
+%   $SavedSearches->SortSavedSearches();
 %   my $title;
 %   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
 %       $title = loc("My saved searches");
