@@ -1310,7 +1310,7 @@ user's customized homepage ("RT at a glance").
 Set(
     $HomepageComponents,
     [
-        qw(QuickCreate QueueList MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset) # loc_qw
+        qw(QuickCreate QueueList MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup) # loc_qw
     ]
 );
 
@@ -1768,6 +1768,97 @@ Set($HideUnsetFieldsOnDisplay, 0);
 
 =back
 
+=head2 Group Summary Configuration
+
+Below are configuration options for the Group Summary page.
+
+=over
+
+=item C<$GroupSearchResultFormat>
+
+This controls the display of lists of groups returned from the Group
+Summary Search. The display of groups in the Admin interface is
+controlled by C<%AdminSearchResultFormat>.
+
+=cut
+
+Set($GroupSearchResultFormat,
+         q{ '<a href="__WebPath__/Group/Summary.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Group/Summary.html?id=__id__">__Name__</a>/TITLE:Name'}
+);
+
+=item C<@GroupSummaryPortlets>
+
+A list of portlets to be displayed on the Group Summary page.
+By default, we show all of the available portlets.
+Extensions may provide their own portlets for this page.
+
+=cut
+
+Set(@GroupSummaryPortlets, (qw/ExtraInfo CreateTicket ActiveTickets InactiveTickets GroupAssets /));
+
+=item C<$GroupSummaryExtraInfo>
+
+This controls what information is displayed on the Group Summary
+portal. By default the group Name and Description are displayed.
+
+=cut
+
+Set($GroupSummaryExtraInfo, "id, Name, Description");
+
+=item C<$GroupSummaryTicketListFormat>
+
+Control the appearance of the Active and Inactive ticket lists in the
+Group Summary.
+
+=cut
+
+Set($GroupSummaryTicketListFormat, q{
+       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+       '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+       Status,
+       QueueName,
+       Owner,
+       Priority,
+       '__NEWLINE__',
+       '',
+       '<small>__Requestors__</small>',
+       '<small>__CreatedRelative__</small>',
+       '<small>__ToldRelative__</small>',
+       '<small>__LastUpdatedRelative__</small>',
+       '<small>__TimeLeft__</small>'
+});
+
+=item C<$GroupSearchFields>
+
+Specifies which fields of L<RT::Group> to match against and how to match
+each field when performing a quick search on groups.  Valid match
+methods are LIKE, STARTSWITH, ENDSWITH, =, and !=.  Valid search fields
+are id, Name, Description, or custom fields, which are specified as
+"CF.1234" or "CF.Name"
+
+=cut
+
+Set($GroupSearchFields, {
+    id          => '=',
+    Name        => 'LIKE',
+    Description => 'LIKE',
+});
+
+=item C<$AllowGroupAutocompleteForUnprivileged>
+
+Defines whether unprivileged users (users of SelfService) are allowed
+to autocomplete groups when searching. Setting this option to 1 means
+unprivileged users will be able to search all your user created
+group names. Users will also need the SeeGroup privilege to use 
+this feature.
+
+=cut
+
+Set($AllowGroupAutocompleteForUnprivileged, 0);
+
+=back
+
 =head2 Self Service Interface
 
 The Self Service Interface is a view automatically presented to Unprivileged
@@ -1892,7 +1983,6 @@ Users also need the ModifySelf right to have access to this page.
 =cut
 
 Set( $SelfServiceDownloadUserData, 0 );
-
 
 =back
 

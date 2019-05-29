@@ -216,6 +216,26 @@ if ($ARGS{'id'} eq 'new') {
 
 $title = loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject || '');
 
+if ( $ARGS{'id'} and $ARGS{'id'} eq 'new' ) {
+    if ( $ARGS{'AddGroupCc'} ){
+        my $group = RT::Group->new($session{'CurrentUser'});
+        my ($ret, $msg) = $group->LoadUserDefinedGroup($ARGS{'AddGroupCc'});
+
+        unless ( $ret ){
+            RT::Logger->warn("Unable to load group " . $ARGS{'AddGroupCc'} . ", $msg. Not adding as Cc.");
+            return;
+        }
+
+        ( $ret, $msg ) = $TicketObj->AddWatcher(
+            Type        => 'Cc',
+            PrincipalId => $group->Id
+        );
+
+        RT::Logger->warn("Unable to add group " . $group->Name . ": " . $group->Id . " as a Cc: $msg")
+            unless $ret;
+    }
+}
+
 $m->callback(
     CallbackName => 'BeforeDisplay',
     TicketObj => \$TicketObj,

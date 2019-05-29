@@ -56,7 +56,11 @@
   <input type="submit" name="SubmitTicket" value="Create" style="display:none">
   <input type="hidden" class="hidden" name="id" value="new" />
   <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-  
+
+% if ( $ARGS{'AddGroupCc'} ){
+<input type="hidden" class="hidden" name="AddGroupCc" value="<% $ARGS{'AddGroupCc'} %>" />
+% }
+
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 % if ($gnupg_widget) {
@@ -525,4 +529,5 @@ $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
 $CloneTicket => undef
+$AddGroupCc => undef
 </%ARGS>
