@@ -149,6 +149,13 @@ jQuery(function(){
                         return;
                     }
 
+                    if( jQuery(document).height() <= jQuery(window).height() + loadDistanceFromBottom ) {
+                        // if there are still space left, automatically load more
+                        isLoading = false;
+                        loadHistoryPage();
+                        return;
+                    }
+
                     if (hashTransactionId) { // focus transaction if we are following a link to it
                         hashTransactionId = null;
                         location.href = hash;
