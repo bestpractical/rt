@@ -2029,6 +2029,14 @@ Users also need the ModifySelf right to have access to this page.
 
 Set( $SelfServiceDownloadUserData, 0 );
 
+=item C<$SelfServiceShowGroupTickets>
+
+Set this option to true to show a section with group tickets
+on self service pages.
+
+=cut
+
+Set($SelfServiceShowGroupTickets, 1);
 
 =back
 
