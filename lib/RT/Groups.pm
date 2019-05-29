@@ -433,6 +433,110 @@ sub _DoSearch {
 
 }
 
+=head2 SimpleSearch
+
+Does a 'simple' search of Groups against a specified Term.
+
+This Term is compared to a number of fields using various types of SQL
+comparison operators.
+
+Ensures that the returned collection of Groups will have a value for Return.
+
+This method is passed the following.  You must specify a Term and a Return.
+
+    Fields     - Hashref of data - defaults to C<$GroupSearchFields> emulate that if you want to override
+    Term       - String that is in the fields specified by Fields
+    Return     - What field on the User you want to be sure isn't empty
+    Exclude    - Array reference of ids to exclude
+    Max        - Size to limit this collection to
+
+=cut
+
+sub SimpleSearch {
+    my $self = shift;
+    my %args = (
+        Fields      => RT->Config->Get('GroupSearchFields'),
+        Term        => undef,
+        Exclude     => [],
+        Return      => 'Name',
+        Max         => 10,
+        @_
+    );
+
+    return $self unless defined $args{Return}
+                        and defined $args{Term}
+                        and length $args{Term};
+
+    $self->RowsPerPage( $args{Max} );
+
+    $self->LimitToUserDefinedGroups();
+
+    while (my ($name, $op) = each %{$args{Fields}}) {
+        $op = 'STARTSWITH'
+            unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
+        if ($name =~ /^CF\.(?:\{(.*)}|(.*))$/) {
+            my $cfname = $1 || $2;
+            my $cf = RT::CustomField->new(RT->SystemUser);
+            my ($ok, $msg) = $cf->LoadByName( Name => $cfname, LookupType => 'RT::Group');
+            if ( $ok ) {
+                $self->LimitCustomField(
+                    CUSTOMFIELD     => $cf->Id,
+                    OPERATOR        => $op,
+                    VALUE           => $args{Term},
+                    ENTRYAGGREGATOR => 'OR',
+                    SUBCLAUSE       => 'autocomplete',
+                    CASESENSITIVE   => 0,
+                );
+            } else {
+                RT->Logger->warning("Asked to search custom field $name but unable to load a Group CF with the name $cfname: $msg");
+            }
+        } elsif ($name eq 'id' and $op =~ /(?:LIKE|(?:START|END)SWITH)$/i) {
+            $self->Limit(
+                FUNCTION        => "CAST( main.$name AS TEXT )",
+                OPERATOR        => $op,
+                VALUE           => $args{Term},
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => 'autocomplete',
+                CASESENSITIVE   => 0,
+            ) if $args{Term} =~ /^\d+$/;
+        } else {
+            $self->Limit(
+                FIELD           => $name,
+                OPERATOR        => $op,
+                VALUE           => $args{Term},
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => 'autocomplete',
+                CASESENSITIVE   => 0,
+            ) unless $args{Term} =~ /\D/ and $name eq 'id';
+        }
+    }
+
+    # Exclude groups we don't want
+    $self->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => $args{Exclude} )
+        if @{$args{Exclude}};
+
+    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+        $self->Limit(
+            FIELD    => $args{Return},
+            OPERATOR => 'IS NOT',
+            VALUE    => 'NULL',
+        );
+    }
+    else {
+        $self->Limit( FIELD => $args{Return}, OPERATOR => '!=', VALUE => '', CASESENSITIVE => 0, );
+        $self->Limit(
+            FIELD           => $args{Return},
+            OPERATOR        => 'IS NOT',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'AND',
+            CASESENSITIVE   => 0,
+        );
+    }
+
+    return $self;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

@@ -167,6 +167,12 @@ sub BuildMainNav {
 
     $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
 
+    $search->child( groups      =>
+                    title       => loc('Groups'),
+                    path        => "/Group/Search.html",
+                    description => 'Group search'
+    );
+
     $search->child( assets => title => loc("Assets"), path => "/Asset/Search/" )
         if $current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
@@ -1067,7 +1073,7 @@ sub _BuildAdminMenu {
 
     }
 
-    if ( $request_path =~ m{^/Admin/Groups} ) {
+    if ( $request_path =~ m{^(/Admin/Groups|/Group/(Summary|History)\.html)} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
             my $obj = RT::Group->new( $current_user );
