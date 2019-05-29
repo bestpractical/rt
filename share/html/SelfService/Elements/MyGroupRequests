@@ -59,9 +59,47 @@
 </&>
 
 <%INIT>
+
+unless ( RT->Config->Get('SelfServiceShowGroupTickets')
+         and $session{'CurrentUser'}->HasRight(Right => 'SeeSelfServiceGroupTicket', Object => $RT::System) ){
+    return;
+}
+
 $title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
+
+# Load a system user to see all groups without a rights check on whether
+# the current user has ShowGroup.
+my $user = RT::User->new(RT->SystemUser);
+my ($ret, $msg) = $user->Load($session{'CurrentUser'}->Id);
+unless ( $ret ){
+    RT::Logger->error("Unable to load user record for user: " . $session{'CurrentUser'}->Name . " :$msg");
+    return;
+}
+my $groups_obj = $user->OwnGroups;
+
+my $Query = '';
+
+if ( $groups_obj->Count ){
+    my $group = $groups_obj->Next;
+
+    # Confirm we got a group. Count can report available groups, but
+    # if the current user doesn't have SeeGroup, it won't be loaded.
+    if ( $group ){
+        $Query = "(( WatcherGroup = " . $group->Id . " )";
+    }
+
+    # Handle multiple groups
+    while ( $group = $groups_obj->Next ){
+        $Query .= " OR ( WatcherGroup = " . $group->Id . " )";
+    }
+
+    $Query .= ")" if $Query;
+}
+
+# Exclude tickets where current user is requestor or cc since they will
+# appear in the My open tickets list
+$Query .= " AND" if $Query;
+$Query .= " $SortByRole.id != " . $session{'CurrentUser'}->Id;
 
 if ($status) {
     $status =~ s/(['\\])/\\$1/g;
@@ -72,7 +110,7 @@ my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
 </%INIT>
 <%ARGS>
 $title => undef
-$friendly_status => loc('open')
+$friendly_status => loc("group's")
 $status => undef
 $BaseURL => undef
 $Page => 1
