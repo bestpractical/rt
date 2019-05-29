@@ -53,39 +53,48 @@
 % }
 % if ( $pref eq 'edit-prefs' || $pref eq 'edit-prefs-view-info' ) {
 <form method="post">
-
-<&| /Widgets/TitleBox, title => loc('Locale'), id => "user-prefs-identity" &>
   <div class="form-row">
-    <div class="col-md-3 label">
-      <&|/l&>Language</&>:
-    </div>
-    <div class="col-md-9 value">
-      <& /Elements/SelectLang, Name => 'Lang', Default => $user->Lang &>
-    </div>
-  </div>
 
-  <div class="form-row">
-    <div class="col-md-3 label">
-      <&|/l&>Timezone</&>:
+    <div class="col-md-6">
+      <&| /Widgets/TitleBox, title => loc('Locale'), id => "user-prefs-identity" &>
+        <div class="form-row">
+          <div class="label col-md-3">
+            <&|/l&>Language</&>:
+          </div>
+          <div class="col-md-9 value">
+            <& /Elements/SelectLang, Name => 'Lang', Default => $user->Lang &>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="label col-md-3">
+                <&|/l&>Timezone</&>:
+          </div>
+          <div class="col-md-9 value">
+            <& /Elements/SelectTimezone, Name => 'Timezone', Default => $user->Timezone &>
+          </div>
+        </div>
+      </&>
     </div>
-    <div class="col-md-9 value">
-      <& /Elements/SelectTimezone, Name => 'Timezone', Default => $user->Timezone &>
-    </div>
-  </div>
-</&>
-<&| /Widgets/TitleBox, title => loc('Change password')  &>
+
+    <div class="col-md-6">
+      <&| /Widgets/TitleBox, title => loc('Change password')  &>
 % if ( $user->__Value('Password') ne '*NO-PASSWORD*' ) {
-<& /Elements/EditPassword,
-    User => $user,
-    Name => $password,
-&>
+        <& /Elements/EditPassword,
+            User => $user,
+            Name => $password,
+        &>
 % }
 </&>
-
-<div class="form-row">
-  <div class="col-md-12">
-    <& /Elements/Submit, Label => loc('Save Changes') &>
+    </div>
   </div>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+    </div>
+  </div>
+
 </div>
 
 </form>
