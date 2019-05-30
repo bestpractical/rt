@@ -58,8 +58,14 @@
   <h2>Logo</h2>
   <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
   <form method="POST" enctype="multipart/form-data">
-    <label for="logo-upload"><&|/l&>Upload a new logo</&>:</label>
-    <input type="file" name="logo-upload" id="logo-upload" /><br />
+    <div class="form-row">
+      <div class="col-md-auto">
+        <div class="custom-file">
+          <input type="file" name="logo-upload" class="custom-file-input" id="logo-upload" />
+          <label class="custom-file-label" for="logo-upload"><&|/l&>Upload a new logo</&></label>
+        </div>
+      </div>
+    </div>
     <div class="gd-support">
 % if ($valid_image_types) {
     <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
@@ -67,19 +73,19 @@
     <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
 % }
     </div>
-    <input name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
-    <input type="submit" value="<&|/l&>Upload</&>" />
+    <input class="button btn btn-primary" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
+    <input class="button btn btn-primary" type="submit" value="<&|/l&>Upload</&>" />
   </form>
 </div>
 
 <div id="customize-theme">
   <h2><&|/l&>Customize the RT theme</&></h2>
-  <ol>
-    <li>
+  <ol class="list-group-compact list-group">
+    <li class="list-group-item">
       <label for="section"><&|/l&>Select a section</&>:</label>
-      <select id="section"></select>
+      <select class="selectpicker" id="section"></select>
     </li>
-    <li>
+    <li class="list-group-item">
       <div class="description">
         <&|/l&>Select a color for the section</&>:
         <div id="logo-picker-hint" style="display: none;">
@@ -87,10 +93,10 @@
         </div>
       </div>
 % if ($colors) {
-<div class="primary-colors">
+<div class="button btn btn-primary primary-colors">
 %   for (@$colors) {
 %     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
-<button type="button" class="color-template"
+<button type="button" class="button btn btn-primary color-template"
         style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
   <&|/l&>Text</&>
 </button>
@@ -108,11 +114,11 @@
   <h2><&|/l&>Custom CSS (Advanced)</&></h2>
 
   <form method="POST">
-    <textarea rows=20 id="user_css" name="user_css" wrap="off"><% $user_css %></textarea><br />
-    <input id="try" type="button" class="button" value="<&|/l&>Try</&>" />
-    <input id="reset" type="reset" value="<&|/l&>Reset</&>" type="submit" />
-    <input name="reset_css" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
-    <input value="<&|/l&>Save</&>" type="submit" />
+    <textarea classs="form-control" rows=20 id="user_css" name="user_css" wrap="off"><% $user_css %></textarea><br />
+    <input id="try" type="submit" class="button btn btn-primary" value="<&|/l&>Try</&>" />
+    <input id="reset" type="reset" class="button btn btn-primary" value="<&|/l&>Reset</&>" type="submit" />
+    <input name="reset_css" class="button btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
+    <input class="button btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
   </form>
 </div>
 

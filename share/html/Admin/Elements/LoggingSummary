@@ -84,9 +84,9 @@ if (my $level = RT->Config->Get("StatementLog")) {
 </%init>
 <p>
 <&|/l&>RT's logging configuration is summarized below:</&>
-<ul>
+<ul class="list-group-compact list-group">
 % for my $msg (@summary) {
-  <li><% ref($msg) ? $$msg : $m->interp->apply_escapes($msg, 'h') |n %></li>
+  <li class="list-group-item"><% ref($msg) ? $$msg : $m->interp->apply_escapes($msg, 'h') |n %></li>
 % }
 </ul>
 </p>
