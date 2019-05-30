@@ -47,41 +47,76 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Graph Properties') &>
 
-<% loc('Direction') %> <select name="Direction">
-<option value="TB" <% ($Direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% loc('top to bottom') %></option>
-<option value="LR" <% ($Direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% loc('left to right') %></option>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <% loc('Direction') %>
+    </div>
+    <div class="col-md-9 value">
+      <select class="form-control selectpicker" name="Direction">
+        <option value="TB" <% ($Direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% loc('top to bottom') %></option>
+        <option value="LR" <% ($Direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% loc('left to right') %></option>
 %# XXX: not supported by GraphViz perl module
 %#<option value="BT" <% ($Direction||'TB') eq 'BT'? 'selected="selected"': '' |n %>><% loc('bottom to top') %></option>
 %#<option value="RL" <% ($Direction||'TB') eq 'RL'? 'selected="selected"': '' |n %>><% loc('right to left') %></option>
-</select><br />
-
-<% loc('Main type of links') %> <select name="LeadingLink">
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <% loc('Main type of links') %>
+    </div>
+    <div class="col-md-9 value">
+      <select class="form-control selectpicker" name="LeadingLink">
 % foreach ( @link_types ) {
-<option value="<% $_ %>" <% ($LeadingLink||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
+       <option value="<% $_ %>" <% ($LeadingLink||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
 % }
-</select>
+      </select>
+    </div>
+  </div>
 
-<% loc('maximum depth') %> <select name="MaxDepth">
-<option value="0"><% loc('Unlimit') %></option>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <% loc('maximum depth') %>
+    </div>
+    <div class="col-md-9 value">
+      <select class="form-control selectpicker" name="MaxDepth">
+        <option value="0"><% loc('Unlimit') %></option>
 % foreach ( 1..6 ) {
-<option value="<% $_ %>" <% ($MaxDepth||0) == $_? 'selected="selected"': '' %>><% $_ %></option>
+        <option value="<% $_ %>" <% ($MaxDepth||0) == $_? 'selected="selected"': '' %>><% $_ %></option>
 % }
-</select><br />
+      </select>
+    </div>
+  </div>
 
-<% loc('Show as well') %>:
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <% loc('Show as well') %>:
+    </div>
+    <div class="col-md-9 value">
+      <div class="form-row">
 % foreach my $type ( @link_types ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $type eq $_, @ShowLinks;
-<input type="checkbox" id="ShowLinks" name="ShowLinks" value="<% $type %>" <% $checked |n %> />
-<label for="ShowLinks"><% loc($type) %></label>
+        <div class="col-md-auto">
+          <div class="custom-control custom-checkbox">
+            <input class="custom-control-input" type="checkbox" id="ShowLinks-<%$type%>" name="ShowLinks" value="<% $type %>" <% $checked |n %> />
+            <label class="custom-control-label" for="ShowLinks-<%$type%>"><% loc($type) %></label>
+          </div>
+        </div>
 % }
-<br />
+      </div>
+    </div>
+  </div>
 
 % my @properties = RT::Graph::Tickets->TicketProperties( $session{'CurrentUser'} );
 
-<% loc('Fill boxes with color using') %>:
-<select name="FillUsing">
-<option value=""><% loc('nothing') %></option>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <% loc('Fill boxes with color using') %>:
+    </div>
+    <div class="col-md-9 value">
+      <select name="FillUsing" class="form-control selectpicker">
+        <option value=""><% loc('nothing') %></option>
 <%PERL>
 my @tmp = @properties;
 while ( my ($group, $list) = (splice @tmp, 0, 2) ) {
@@ -92,16 +127,23 @@ while ( my ($group, $list) = (splice @tmp, 0, 2) ) {
         my $selected = '';
         $selected = 'selected="selected"' if $prop eq ($FillUsing||'');
 </%PERL>
-<option value="<% $prop %>" <% $selected |n %>><% loc($prop) %></option>
+        <option value="<% $prop %>" <% $selected |n %>><% loc($prop) %></option>
 % } }
-</select><br />
+      </select>
+    </div>
+  </div>
 
 % if ( RT::Link->can('Description' ) ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if $ShowLinkDescriptions;
-<label for="ShowLinkDescriptions"><% loc('Show link descriptions') %>:</label>
-<input type="checkbox" id="ShowLinkDescriptions" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
-<br />
+  <div class="form-row">
+    <div class="col-md-3 value">
+      <div class="custom-control custom-checkbox">
+        <input class="custom-control-label" type="checkbox" id="ShowLinkDescriptions" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
+        <label class="custom-control-input" for="ShowLinkDescriptions"><% loc('Show link descriptions') %>:</label>
+      </div>
+    </div>
+  </div>
 % }
 
 <%PERL>
@@ -119,7 +161,11 @@ for my $i ( 1..($MaxDepth||6) ) {
 }
 </%PERL>
 
-<& /Elements/Submit, Label => loc('Update Graph'), Name => 'Update' &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Update Graph'), Name => 'Update' &>
+    </div>
+  </div>
 
 </&>
 
@@ -151,19 +197,32 @@ my $id = "graph-properties-box-$Level";
 my $class = '';
 $class = 'class="hidden"' if $Level != 1 && !@Default;
 </%INIT>
-<% loc('Show Tickets Properties on [_1] level', $Level) %>
-(<small><a href="#" onclick="hideshow(<% $id |n,j%>); return false;"><% loc('open/close') %></a></small>):
-<table id="<% $id %>" <% $class |n %>>
+<div class="col-md-3 label">
+  <% loc('Show Tickets Properties on [_1] level', $Level) %>
+  (<small><a href="#" onclick="hideshow(<% $id |n,j%>); return false;"><% loc('open/close') %></a></small>):
+</div>
+
+<div id="<% $id %>" <% $class |n %>>
 % while ( my ($group, $list) = (splice @Available, 0, 2) ) {
-<tr><td><% loc($group) %>:</td><td>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <% loc($group) %>:
+    </div>
+    <div class="col-md-9 value">
+      <div class="form-row">
 % foreach my $prop ( @$list ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $_ eq $prop, @Default;
-<input type="checkbox" class="checkbox" id="Level-<% $Level %>-Properties" name="Level-<% $Level %>-Properties" value="<% $prop %>" <% $checked |n %> />
-<label for="Level-<% $Level %>-Properties"><% loc($prop) %></label>
+        <div class="col-md-auto">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="Level-<% $Level . '-'. $prop %>-Properties" name="Level-<% $Level %>-Properties" value="<% $prop %>" <% $checked |n %> />
+            <label class="custom-control-label" for="Level-<% $Level . '-'. $prop %>-Properties"><% loc($prop) %></label>
+          </div>
+        </div>
 % }
-</td></tr>
+      </div>
+    </div>
+  </div>
 % }
-</table>
-<br />
+</div>
 </%METHOD>

@@ -72,7 +72,7 @@
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
 % }
 <div class="field"><span class="label"><&|/l&>Update Type</&>:</span>
-<span class="value"><select name="UpdateType" id="UpdateType">
+<span class="value"><select class="form-control selectpicker" name="UpdateType" id="UpdateType">
 % if ($CanComment) {
 <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -140,25 +140,34 @@
 %}
 
   <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
-  <div class="fields">
+
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
 % if ( $gnupg_widget ) {
-<div class="field"><span class="label empty">&nbsp;</span><span class="value">
+<div class="col-md-3 label">
+  <span class="label empty">&nbsp;</span>
+</div>
+<div class="col-md-9 value">
 <& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 &>
-</span></div>
+</div>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
-<div class="field"><span class="label"><&|/l&>Subject</&>:</span><span class="value"><input type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
+<div class="col-md-3 label">
+  <span class="label"><&|/l&>Subject</&>:</span>
+</div>
+<div class="col-md-9 value">
+  <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-</span></div>
+</div>
 
-<div class="field"><span class="labeltop"><&|/l&>Message</&>:</span>
-<span class="value messagebox-container action-<% $type %>">
+<div class="col-md-3 label">
+  <span class="labeltop"><&|/l&>Message</&>:</span>
+</div>
+<div class="col-md-9 value messagebox-container action-<% $type %>">
 <& /Articles/Elements/BeforeMessageBox, %ARGS &>
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
@@ -173,15 +182,21 @@
 <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterMessageBox' );
-</span></div>
+</div>
 
-    <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj &>
-  </div>
+<div class="col-md-3 label"></div>
+<div class="col-md-9 value">
+  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj &>
+</div>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );
 
-  <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+  </div>
+</div>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeScrips', Ticket => $TicketObj );
 
@@ -193,7 +208,6 @@
     <input type="hidden" name="TxnRecipients" value="<% $ARGS{TxnRecipients} || '' %>" />
   </&>
 % }
-</div>
 
 % $m->callback( %ARGS, CallbackName => 'AfterScrips', Ticket => $TicketObj );
 

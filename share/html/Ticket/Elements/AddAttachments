@@ -163,8 +163,12 @@ jQuery( function() {
 });
 </script>
         <div class="hidden old-attach">
-            <input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-            <input type="hidden" class="hidden" name="UpdateAttach" value="1" />
+          <div class="custom-file">
+            <input type="file" id="Attach" name="Attach" class="custom-file-input" />
+            <label class="custom-file-label" for="Attach">
+              <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
+            </label>
+          </div>
         </div>
     </span>
 </div>
