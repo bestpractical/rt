@@ -6,6 +6,8 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';
 
+my $cfid;
+
 diag "Create a queue CF";
 {
     $m->follow_link( id => 'admin-custom-fields-create');
@@ -19,6 +21,9 @@ diag "Create a queue CF";
         },
     );
     $m->content_contains('Object created', 'CF QueueCFTest created' );
+
+    # set the custom field id for the rest of the tests to use
+    $cfid = $m->form_name('ModifyCustomField')->value('id');
 }
 
 diag "Apply the new CF globally";
@@ -32,7 +37,7 @@ diag "Apply the new CF globally";
     $m->content_contains('QueueCFTest', 'CF QueueCFTest displayed on page' );
 
     $m->form_name('EditCustomFields');
-    $m->tick( AddCustomField => 2 );
+    $m->tick( AddCustomField => $cfid );
     $m->click('UpdateCFs');
 
     $m->content_contains("Globally added custom field QueueCFTest", 'CF QueueCFTest enabled globally' );
@@ -50,7 +55,7 @@ diag "Edit the CF value for default queue";
         # The following doesn't want to works :(
         #with_fields => { 'Object-RT::Queue-1-CustomField-2-Value' },
         fields => {
-            'Object-RT::Queue-1-CustomField-2-Value' => 'QueueCFTest content',
+            "Object-RT::Queue-1-CustomField-$cfid-Value" => 'QueueCFTest content',
         },
     );
     $m->content_contains('QueueCFTest QueueCFTest content added', 'Content filed in CF QueueCFTest for default queue' );
