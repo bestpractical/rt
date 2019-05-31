@@ -52,21 +52,43 @@
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
 %                                       Object=> $RT::System )) {
 <h2><&|/l&>Save this search</&></h2>
-<&|/l&>Name:</&> <input type="text" name="NewSearchName" value="<%$Name||''%>">
-<&|/l&>Privacy:</&> <& SelectSearchPrivacy, Name => 'SearchPrivacy', Default => $Privacy &><br />
+
+<div class="form-row">
+  <div class="col-md-auto label">
+    <&|/l&>Name:</&>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type="text" name="NewSearchName" value="<%$Name||''%>">
+  </div>
+  <div class="col-md-auto label">
+    <&|/l&>Privacy:</&>
+  </div>
+  <div class="col-md-auto value">
+    <& SelectSearchPrivacy, Name => 'SearchPrivacy', Default => $Privacy &>
+  </div>
+
+  <div class="col-md-auto">
 %     if ($CurrentSearch && $CurrentSearch ne 'new') {
-<input value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
-<input value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
-<input value="<%loc('Delete')%>" name="Delete" type="submit" />&nbsp;
+<input class="form-control btn btn-primary" value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
+<input class="form-control btn btn-primary" value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
+<input class="form-control btn btn-primary" value="<%loc('Delete')%>" name="Delete" type="submit" />&nbsp;
 %     } else {
-<input value="<%loc('Save')%>" name="Save" type="submit" />
+<input class="form-control btn btn-primary" value="<%loc('Save')%>" name="Save" type="submit" />
 %     }
+  </div>
+</div>
 <hr />
 % } # if HasRight 'CreateSavedSearch'
 
 <h2><&|/l&>Load a saved search</&></h2>
-<& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
-<input value="<%loc('Load')%>" name="Load" type="submit">
+<div class="form-row">
+  <div class="col-md-auto value">
+    <& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
+  </div>
+  <div class="col-md-auto">
+    <input class="form-control btn btn-primary" value="<%loc('Load')%>" name="Load" type="submit">
+  </div>
+</div>
 <& /Widgets/TitleBoxEnd &>
 
 <%INIT>

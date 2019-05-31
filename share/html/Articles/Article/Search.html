@@ -49,32 +49,36 @@
 <& /Elements/Tabs &>
 
 % unless ( keys %ARGS ) {
-<table width="100%" border="0">
-<tr>
-<td valign="top" width="50%">
+<div class="form-row">
+  <div class="col-md-6">
 % if (not $classes_configured) {
 <& /Articles/Elements/NeedsSetup &>
 % } elsif (not @classes) {
 <i><&|/l&>You don't have permission to view Articles in any Class</&></i>
 % } else {
-<ul>
+<ul class="list-group list-group-compact">
 % for my $class (@classes) {
-<li><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>in class [_1]</&></a></li>
+<li class="list-group-item"><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>in class [_1]</&></a></li>
 % }
 </ul>
 % }
-</td>
-<td valign="top" width="50%">
+  </div>
+  <div class="col-md-6">
 <form action="Search.html" method="get">
 <& /Widgets/TitleBoxStart, title => loc('Saved searches') &>
 <&|/l&>Load saved search:</&><br />
-<& Elements/SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
-<input value="<%loc('Load')%>" name="Load" type="submit" />
+<div class="form-row">
+  <div class="col-md-auto value">
+    <& Elements/SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
+  </div>
+  <div class="col-md-auto">
+    <input class="btn btn-primary form-control" value="<%loc('Load')%>" name="Load" type="submit" />
+  </div>
+</div>
 <& /Widgets/TitleBoxEnd &>
 </form>
-</td>
-</tr>
-</table>
+  </div>
+</div>
 %  return;
 % }
 
