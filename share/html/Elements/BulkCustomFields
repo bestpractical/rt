@@ -45,18 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table class="bulk-edit-custom-fields">
+<div class="bulk-edit-custom-fields">
 
-<tr>
-<th><&|/l&>Name</&></th>
-<th><&|/l&>Add values</&></th>
-<th><&|/l&>Delete values</&></th>
-</tr>
+  <div class="form-row">
+    <div class="col-md-4 label text-left">
+      <&|/l&>Name</&>
+    </div>
+    <div class="col-md-4 label text-left">
+      <&|/l&>Add values</&>
+    </div>
+    <div class="col-md-4 label text-left">
+      <&|/l&>Delete values</&>
+    </div>
+  </div>
 % my $i = 0;
 % while (my $cf = $CustomFields->Next) {
-<tr class="<% ++$i%2 ? 'oddline': 'evenline' %>">
-<td class="label"><% $cf->Name %><br />
-<em>(<% $cf->EntryHint // '' %>)</em></td>
+  <div class="form-row <% ++$i%2 ? 'oddline': 'evenline' %>">
+    <div class="col-md-4 label text-left">
+      <div class="form-row">
+        <% $cf->Name %>
+      </div>
+      <div class="form-row">
+        <em>(<% $cf->EntryHint // '' %>)</em>
+      </div>
+    </div>
 % my $rows = 5;
 % my $cf_id = $cf->id;
 % my @add = (NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows,
@@ -66,41 +78,64 @@
 %   MaxValues => 0, Rows => $rows, Multiple => 1, Cols => 25,
 %   Default => $ARGS{"Bulk-Delete-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Delete-CustomField-$cf_id-Value"}, );
 % if ($cf->Type eq 'Select') {
-<td><& /Elements/EditCustomFieldSelect, @add &></td>
-<td><& /Elements/EditCustomFieldSelect, @del &><br />
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldSelect, @add &>
+    </div>
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldSelect, @del &>
 % } elsif ($cf->Type eq 'Combobox') {
-<td><& /Elements/EditCustomFieldCombobox, @add &></td>
-<td><& /Elements/EditCustomFieldCombobox, @del &><br />
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldCombobox, @add &>
+    </div>
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldCombobox, @del &>
 % } elsif ($cf->Type eq 'Freeform') {
-<td><& /Elements/EditCustomFieldFreeform, @add &></td>
-<td><& /Elements/EditCustomFieldFreeform, @del &><br />
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldFreeform, @add &>
+    </div>
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldFreeform, @del &>
 % } elsif ($cf->Type eq 'Text') {
-<td><& /Elements/EditCustomFieldText, @add &></td>
-<td>
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldText, @add &>
 % } elsif ($cf->Type eq 'Wikitext') {
-<td><& /Elements/EditCustomFieldWikitext, @add &></td>
-<td>
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldWikitext, @add &>
 % } elsif ($cf->Type eq 'Date') {
-<td><& /Elements/EditCustomFieldDate, @add &></td>
-<td><& /Elements/EditCustomFieldDate, @del &><br />
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldDate, @add &>
+    </div>
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldDate, @del &>
 % } elsif ($cf->Type eq 'DateTime') {
 % # Pass datemanip format to prevent another tz date conversion
-<td><& /Elements/EditCustomFieldDateTime, @add, Default => undef, Format => 'datemanip' &></td>
-<td><& /Elements/EditCustomFieldDateTime, @del, Default => undef, Format => 'datemanip' &><br />
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldDateTime, @add, Default => undef, Format => 'datemanip' &>
+    </div>
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldDateTime, @del, Default => undef, Format => 'datemanip' &>
 % } elsif ($cf->Type eq 'Autocomplete') {
-<td><& /Elements/EditCustomFieldAutocomplete, @add &></td>
-<td><& /Elements/EditCustomFieldAutocomplete, @del &><br />
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldAutocomplete, @add &>
+    </div>
+    <div class="col-md-4 value">
+      <& /Elements/EditCustomFieldAutocomplete, @del &>
 % } else {
-    <td colspan="2"><em><&|/l&>(Unsupported custom field type)</&></em></td>
+    <div class="col-md-4 value">
+      <em><&|/l&>(Unsupported custom field type)</&></em>
+    </div>
+  </div>
 %   $RT::Logger->info("Unknown CustomField type: " . $cf->Type);
 %   next
 % }
-  <label><input type="checkbox" name="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" value="1">
-    <em><&|/l&>(Check to delete all values)</&></em></label>
-</td>
-</tr>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" name="Bulk-Delete-CustomField-<% $cf_id %>-AllValues" value="1">
+        <label class="custom-control-label" for="Bulk-Delete-CustomField-<% $cf_id %>-AllValues"><em><&|/l&>(Check to delete all values)</&></em></label>
+      </div>
+    </div>
+  </div>
 % }
-</table>
+</div>
 <%ARGS>
 $CustomFields
 </%ARGS>

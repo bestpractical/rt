@@ -62,7 +62,7 @@ my $interp = $m->interp;
 my $eh  = sub { $interp->apply_escapes( @_, 'h' ) };
 my $eu  = sub { $interp->apply_escapes( @_, 'u' ) };
 
-$m->out('<table class="collection-as-table chart">'. "\n");
+$m->out('<table class="table table-bordered collection-as-table chart">'. "\n");
 foreach my $section (qw(thead tbody tfoot)) {
     next unless $Table{ $section } && @{ $Table{ $section } };
 
