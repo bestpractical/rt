@@ -45,50 +45,72 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-<tr>
-<td class="label"><&|/l&>Name</&>:</td>
-<td><input type="text" name="Name" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Name) || $ARGS{'Name'} || ''|h%>" size="50" /></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Summary</&>:</td>
-<td><input type="text" name="Summary" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Summary) || $ARGS{'Summary'} ||'' |h%>" size="50" /></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Class</&>:</td>
-<td>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Name</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input class="form-control" type="text" name="Name" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Name) || $ARGS{'Name'} || ''|h%>" size="50" />
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Summary</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input class="form-control" type="text" name="Summary" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Summary) || $ARGS{'Summary'} ||'' |h%>" size="50" />
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Class</&>:
+  </div>
+  <div class="col-md-9 value">
 % if ($EditClass) {
 <& /Articles/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
 % } else {
-<%$ClassObj->Name%>
+<span class="current-value form-control"><%$ClassObj->Name%></span>
 <input type="hidden" name="Class" value="<%$ClassObj->Id%>" />
 % }
-</td>
-</tr>
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-3 label">
 % if ($ARGS{'id'} ne 'new') {
-<tr>
-<td class="label"><&|/l&>Creator</&>:</td>
-<td><& /Elements/ShowUser, User => $ArticleObj->CreatorObj &></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Created</&>:</td>
-<td><span class="value"><%$ArticleObj->CreatedObj->AsString%></span></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Updated</&>:</td>
-<td><span class="value"><%$ArticleObj->LastUpdatedObj->AsString%></span></td>
-</tr>
+    <&|/l&>Creator</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><& /Elements/ShowUser, User => $ArticleObj->CreatorObj &></span>
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Created</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><%$ArticleObj->CreatedObj->AsString%></span>
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Updated</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><%$ArticleObj->LastUpdatedObj->AsString%></span>
+  </div>
+</div>
 % }
 % if ($ARGS{'id'} eq 'new' || $ArticleObj->CurrentUserHasRight('DisableArticle')) {
-<tr>
-<td class="label"></td>
-<td>
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 value">
     <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-    <input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <% ( $ArticleObj->id && $ArticleObj->Disabled || $ARGS{'Disabled'} ) ? '' : 'checked="checked"' |n %> />
-    <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this article)</&></label>
-</td>
-</tr>
-</table>
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="Enabled" name="Enabled" class="custom-control-input" value="1" <% ( $ArticleObj->id && $ArticleObj->Disabled || $ARGS{'Disabled'} ) ? '' : 'checked="checked"' |n %> />
+      <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this article)</&></label>
+    </div>
+  </div>
+</div>
 % }
 <%INIT>
 </%INIT>
