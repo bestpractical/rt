@@ -49,7 +49,7 @@
 $Name => 'ChartType'
 $Default => 'bar'
 </%args>
-<select id="<%$Name%>" name="<%$Name%>">
+<select id="<%$Name%>" name="<%$Name%>" class='form-control selectpicker'>
 % foreach my $option ('bar', 'pie', 'table') {
 % # 'bar' # loc
 % # 'pie' # loc
