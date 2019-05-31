@@ -45,15 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-<tr>
-<td class="label"><&|/l&>Refers to</&>:</td>
-<td class="value">
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Refers to</&>:
+  </div>
+  <div class="col-md-9 value">
 % my $refersto = $article->RefersTo;
-
+<ul class="list-group list-group-compact">
 % while (my $link = $refersto->Next) {
 % my $member = $link->TargetURI;
-<li>
+<li class="list-group-item">
+<span class="current-value form-control">
 % if ($link->TargetURI->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
 % if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -65,17 +67,22 @@
 % } else {
 <a href="<%$member->AsHREF%>"><%$link->Target%></a>
 % }
+</span>
 </li>
 % }
-</td>
-</tr>
+</ul>
+  </div>
 
-<td class="label"><&|/l&>Referred to by</&>:</td>
-<td class="value">
+  <div class="col-md-3 label">
+    <&|/l&>Referred to by</&>:
+  </div>
+  <div class="col-md-9 value">
+<ul class="list-group list-group-compact">
 % my $referredtoby = $article->ReferredToBy;
 % while (my $link = $referredtoby->Next) {
 % my $member = $link->BaseURI;
-<li>
+<li class="list-group-item">
+<span class="current-value form-control">
 % if ($member->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
 % if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -87,11 +94,12 @@
 % } else {
 <a href="<%$member->AsHREF%>"><%$link->Base%></a>
 % }
+</span>
 </li>
 % }
-</td>
-</tr>
-</table>
+</ul>
+</div>
+</div>
 <%args>
 $article => undef
 </%args>

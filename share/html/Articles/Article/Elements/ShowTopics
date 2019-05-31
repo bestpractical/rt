@@ -45,19 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-<tr>
-<td class="label"><&|/l&>Topics</&>:</td>
-<td class="value">
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Topics</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control">
 % my $topics = RT::ObjectTopics->new($session{'CurrentUser'});
 % $topics->LimitToObject($article);
 % while (my $t = $topics->Next) {
-<& /Articles/Elements/ShowTopic, topic => $t->TopicObj &><br />
+<& /Articles/Elements/ShowTopic, topic => $t->TopicObj &>
 % }
-</td>
-</tr>
-</table>
-
+    </span>
+  </div>
+</div>
 <%args>
 $article => undef
 </%args>
