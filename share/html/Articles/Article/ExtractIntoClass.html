@@ -50,11 +50,11 @@
 
 
 <h2><&|/l&>Create a new article in</&>:</h2>
-<ul>
+<ul class="list-group list-group-compact">
 % my $Classes = RT::Classes->new($session{'CurrentUser'});
 % $Classes->LimitToEnabled();
 % while (my $Class = $Classes->Next) {
-<li><a href="ExtractIntoTopic.html?Ticket=<%$Ticket%>&Class=<%$Class->Id%>" onclick="document.getElementById('topics-'+<% $Class->Id |n,j%>).style.display = (document.getElementById('topics-'+<% $Class->Id |n,j%>).style.display == 'block') ? 'none' : 'block'; return false;"><%$Class->Name%></a>: 
+<li class="list-group-item"><a href="ExtractIntoTopic.html?Ticket=<%$Ticket%>&Class=<%$Class->Id%>" onclick="document.getElementById('topics-'+<% $Class->Id |n,j%>).style.display = (document.getElementById('topics-'+<% $Class->Id |n,j%>).style.display == 'block') ? 'none' : 'block'; return false;"><%$Class->Name%></a>: 
 <%$Class->Description || ''%>
 <div id="topics-<%$Class->Id%>" style="display: none">
 <form action="ExtractFromTicket.html">
@@ -64,8 +64,12 @@
 <& Elements/EditTopics, Classes => [$Class],
                         OnlyThisClass => 1,
                         id => 'new',
-                        &><br />
-<input type="submit" value="<%loc('Create')%>" />
+                        &>
+<div class="form-row">
+  <div class="col-md-12">
+    <input class="form-control btn btn-primary" type="submit" value="<%loc('Create')%>" />
+  </div>
+</div>
 </form>
 <br /></div>
 </li>
