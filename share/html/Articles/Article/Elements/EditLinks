@@ -45,26 +45,39 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-<tr>
-<td class="label"></td>
-<td class="value"><i><&|/l&>Enter articles, tickets, or other URLs related to this article.</&>
-<& LinkEntryInstructions &></i>
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 value">
+    <i><&|/l&>Enter articles, tickets, or other URLs related to this article.</&></i>
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 label text-left">
+    <& LinkEntryInstructions &>
+  </div>
+</div>
 % unless ($id eq 'new') {
-<i><&|/l&>(Check boxes to delete)</&></i><br />
+<i><&|/l&>(Check boxes to delete)</&></i>
 % }
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Refers to</&>:</td>
-<td><input type="text" name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}||''%>" /><br />
-<ul>
+<div class="form-row">
+  <div class="col-md-12">
+    <div class="form-row">
+      <div class="col-md-3 label">
+        <&|/l&>Refers to</&>:
+      </div>
+      <div class="col-md-auto value">
+        <input class="form-control" type="text" name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}||''%>" />
+      </div>
+      <ul class="list-group list-group-compact">
 % if ($id ne 'new') {
 %   my $refersto = $ArticleObj->RefersTo;
 %   while (my $link = $refersto->Next) {
 %     my $member = $link->TargetURI;
-<li>
-<input type="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" />
+<li class="list-group-item">
+<div class="custom-control custom-checkbox">
+    <input type="checkbox" id="DeleteLink--<%$link->Type%>-<%$link->Target%>" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" class="custom-control-input">
+    <label class="custom-control-label" for="DeleteLink--<%$link->Type%>-<%$link->Target%>">
 %     if ($link->TargetURI->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%></a>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -76,22 +89,33 @@
 %     } else {
 <a href="<%$member->AsHREF%>"><%$link->Target%></a>
 %     }
+    </label>
+  </div>
 %   }
 % }
-</ul>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Referred to by</&>:</td>
-<td><input type="text" name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}||''%>" />
-<br />
-<ul>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-12">
+    <div class="form-row">
+      <div class="col-md-3 label">
+        <&|/l&>Referred to by</&>:
+      </div>
+      <div class="col-md-auto value">
+        <input class="form-control" type="text" name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}||''%>" />
+      </div>
+      <ul class="list-group list-group-compact">
 % if ($id ne 'new') {
 %   my $referredtoby = $ArticleObj->ReferredToBy;
 %   while (my $link = $referredtoby->Next) {
 %     my $member = $link->BaseURI;
-<li>
-<input type="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" />
+<li class="list-group-item">
+<div class="custom-control custom-checkbox">
+    <input type="checkbox" id="DeleteLink-<%$link->Base%>-<%$link->Type%>-" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" class="custom-control-input" />
+    <label class="custom-control-label" for="DeleteLink-<%$link->Base%>-<%$link->Type%>-">
 %     if ($link->BaseURI->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
 %       if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -103,12 +127,15 @@
 %     } else {
 <a href="<%$member->AsHREF%>"><%$link->Base%></a>
 %     }
+    </label>
+  </div>
 %   }
 % }
-</ul>
-</td>
-</tr>
-</table>
+      </ul>
+    </div>
+  </div>
+
+</div>
 <%ARGS>
 $ArticleObj => undef
 $id => undef
