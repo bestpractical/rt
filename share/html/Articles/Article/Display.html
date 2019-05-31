@@ -49,28 +49,50 @@
 <& /Elements/Tabs &>
 
 <&| /Widgets/TitleBox, title => loc('The Basics'), class => 'article-basics', &>
-<table>
-    <tr>
-        <td class="label"><&|/l&>Summary</&>:</td>
-        <td class="value"><%$article->Summary%></td>
-    </tr>
-    <tr>
-        <td class="label"><&|/l&>Class</&>:</td>
-        <td class="value"><%$article->ClassObj->Name%></td>
-    </tr>
-    <tr>
-        <td class="label"><&|/l&>Creator</&>:</td>
-        <td class="value"><& /Elements/ShowUser, User => $article->CreatorObj &></td>
-    </tr>
-    <tr>
-        <td class="label"><&|/l&>Created</&>:</td>
-        <td class="value"><%$article->CreatedObj->AsString%></td>
-    </tr>
-    <tr>
-        <td class="label"><&|/l&>Updated</&>:</td>
-        <td class="value"><%$article->LastUpdatedObj->AsString%></td>
-    </tr>
-</table>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Summary</&>:
+    </div>
+    <div class="col-md-9 value">
+      <span class="current-value form-control"><%$article->Summary%></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Class</&>:
+    </div>
+    <div class="col-md-9 value">
+      <span class="current-value form-control"><%$article->ClassObj->Name%></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Creator</&>:
+    </div>
+    <div class="col-md-9 value">
+      <span class="current-value form-control"><& /Elements/ShowUser, User => $article->CreatorObj &></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Created</&>:
+    </div>
+    <div class="col-md-9 value">
+      <span class="current-value form-control"><%$article->CreatedObj->AsString%></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Updated</&>:
+    </div>
+    <div class="col-md-9 value">
+      <span class="current-value form-control"><%$article->LastUpdatedObj->AsString%></span>
+    </div>
+  </div>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterBasics' );
