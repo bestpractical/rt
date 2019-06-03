@@ -47,18 +47,25 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc('Articles') &>
 <& /Elements/Tabs &>
-<& /Articles/Elements/MaybeNeedsSetup &>
-<table width="100%">
-<tr>
-<td valign="top" width="70%">
-<& /Articles/Elements/NewestArticles &>
-<br />
-<& /Articles/Elements/UpdatedArticles &>
-</td>
-<td valign="top">
-<& /Articles/Elements/QuickSearch &>
-<br />
-<& /Articles/Elements/CreateArticle &>
-</td>
-</tr>
-</table>
+
+<div class="form-row">
+  <div class="col-md-9">
+    <div class="col-md-12">
+      <& /Articles/Elements/MaybeNeedsSetup &>
+    </div>
+    <div class="col-md-12">
+      <& /Articles/Elements/UpdatedArticles &>
+    </div>
+    <div class="col-md-12">
+      <& /Articles/Elements/NewestArticles &>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="col-md-12">
+      <& /Articles/Elements/QuickSearch &>
+    </div>
+    <div class="col-md-12">
+      <& /Articles/Elements/CreateArticle &>
+    </div>
+  </div>
+</div>

@@ -54,33 +54,40 @@
 <input type="hidden" name="Topics" value="<% $_ %>" />
 % }
 <input type="hidden" name="new-RefersTo" value="t:<% $ticket->id%>" />
-<table width="100%" valign="top" border=0 cellspacing=0>
 <p><&|/l&>Use the dropdown menus to select which ticket updates you want to extract into a new article.</&>
 <&|/l&>You can insert ticket content into any freeform, text or wiki field.</&>
 </p>
-<tr>
-<th><&|/l&>Field</&></th>
-<th><&|/l&>Ticket update</&></th>
-</tr>
+<div class="form-row">
+  <div class="col-md-2 label text-left">
+    <&|/l&>Field</&>
+  </div>
+  <div class="col-md-auto label text-left">
+    <&|/l&>Ticket update</&>
+  </div>
+</div>
 % my $i;
 % while ( my $trans = $transactions->Next ) { 
 % next unless $trans->HasContent && $trans->Content;
-<tr class="<% ($i++)%2 ? 'oddline' : 'evenline'%>" >                                
-<td valign="top">
-<select name="Transaction-<%$trans->Id%>">
-<option value="">-</option>
+<div class="<% ($i++)%2 ? 'oddline' : 'evenline'%> form-row" >
+  <div class="col-md-2 value">
+    <select class="form-control selectpicker" name="Transaction-<%$trans->Id%>">
+      <option value="">-</option>
 % while (my $cf = $CustomFields->Next) {
-<option value="<%$cf->Id%>"><%$cf->Name%></option>
+      <option value="<%$cf->Id%>"><%$cf->Name%></option>
 % }
-</select>
-</td>
-<td><b><%$trans->CreatedObj->AsString%>: <%$trans->Description%></b><br />
-<pre><%$trans->Content%></pre>
-</td>
-</tr>
+    </select>
+  </div>
+  <div class="col-md-auto value">
+    <b><%$trans->CreatedObj->AsString%>: <%$trans->Description%></b>
+    <pre><%$trans->Content%></pre>
+  </div>
+</div>
 % } 
-</table>
-<& /Elements/Submit, Label => loc('Create'), color => "#993333" &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc('Create'), color => "#993333" &>
+  </div>
+</div>
 </form>
 <%INIT>
 

@@ -50,98 +50,188 @@
 % } else {
 <& /Widgets/TitleBoxStart, title => loc('Advanced search') &>
 % }
-<table>
-<tr>
-<td class="label" colspan="2"><h2><&|/l&>Basics</&></h2></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Class</&></td><td class="value">is <& /Articles/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &> 
-<&|/l&>and not</&>
-<& /Articles/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Name</&></td>
-<td class="value"><&|/l&>matches</&> <input type="text" name="Name~" value="<%$ARGS{'Name~'}%>" /> <&|/l&>and not</&> <input type="text" name="Name!~" value="<%$ARGS{'Name!~'}%>" /></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Summary</&></td>
-<td class="value"><&|/l&>matches</&> <input type="text" name="Summary~" value="<%$ARGS{'Summary~'}%>" /> <&|/l&>and not</&> <input type="text" name="Summary!~" value="<%$ARGS{'Summary!~'}%>" /></td>
-</tr>
-<tr>
-<td class="label" colspan="2"><h2><&|/l&>Content</&></h2></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Any field</&></td><td class="value"> <&|/l&>matches</&> <input type="text" name="Article~" value="<%$ARGS{'Article~'}%>" /> <&|/l&>and not</&> <input type="text" name="Article!~" value="<%$ARGS{'Article!~'}%>" /></td>
-</tr>
+<div class="form-row">
+<h2><&|/l&>Basics</&></h2>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><&|/l&>Class</&></b> is
+  </div>
+  <div class="col-md-auto value">
+    <& /Articles/Elements/SelectClass, Name => 'Class', Multiple =>1, Size => 5 , ShowNullOption => undef,  Default => $ARGS{'Class'} &>
+  </div>
+  <div class="col-md-auto label">
+    <&|/l&>and not</&>
+  </div>
+  <div class="col-md-auto value">
+    <& /Articles/Elements/SelectClass, Name => 'Class!', Multiple =>1, Size => 5 , ShowNullOption => undef, Default => $ARGS{'Class!'} &>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><&|/l&>Name</&></b> <&|/l&>matches</&>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type="text" name="Name~" value="<%$ARGS{'Name~'}%>" />
+  </div>
+  <div class="col-md-auto label">
+    <&|/l&>and not</&>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type="text" name="Name!~" value="<%$ARGS{'Name!~'}%>" />
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><&|/l&>Summary</&></b> <&|/l&>matches</&>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type="text" name="Summary~" value="<%$ARGS{'Summary~'}%>" />
+  </div>
+  <div class="col-md-auto label">
+    <&|/l&>and not</&>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type="text" name="Summary!~" value="<%$ARGS{'Summary!~'}%>" />
+  </div>
+</div>
+
+<div class="form-row label">
+  <h2><&|/l&>Content</&></h2>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><&|/l&>Any field</&></b> <&|/l&>matches</&>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type="text" name="Article~" value="<%$ARGS{'Article~'}%>" />
+  </div>
+  <div class="col-md-auto label">
+    <&|/l&>and not</&>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type="text" name="Article!~" value="<%$ARGS{'Article!~'}%>" />
+  </div>
+</div>
+
 % while (my $field = $customfields->Next ) {
-<tr>
-<td class="label"><% $field->Name %></td>
-<td class="value"><&|/l&>matches</&> 
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><% $field->Name %></b> <&|/l&>matches</&>
+  </div>
+  <div class="col-md-auto value">
 % my $matches = $field->Name."~";
 % my $nomatches = $field->Name."!~";
 <& /Articles/Article/Elements/SearchByCustomField, 
     Field => $field, 
     Name => $matches,
     Values => $ARGS{$matches} &>
-    <&|/l&>and not</&>
+      </div>
+      <div class="col-md-auto label">
+        <&|/l&>and not</&>
+      </div>
+      <div class="col-md-auto value">
 <& /Articles/Article/Elements/SearchByCustomField, 
     Field => $field, 
     Name => $nomatches,
     Values => $ARGS{$nomatches}
     &>
-</td>
-</tr>
+  </div>
+</div>
 % }
-<tr>
-<td class="label" colspan="2"><h2><&|/l&>Dates</&></h2></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Created</&></td>
-<td class="value"><&|/l&>after</&>
-<& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
-<&|/l&>and before</&>
-<& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
-</td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Last updated</&></td>
-<td class="value"><&|/l&>after</&>
-<& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
-($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
-<&|/l&>and before</&>
-<& /Elements/SelectDate, Name=>"LastUpdated<", Default => 
-($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
-</td>
-</tr>
-<tr>
-<td class="label" colspan="2"><h2><&|/l&>Links</&></h2></td>
-</tr>
-<tr>
-<td class="label"></td>
-<td><& LinkEntryInstructions &></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Refer to</&></td>
-<td class="value"><input type=text size=50 name="RefersTo" value="<%$RefersTo%>" /></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Referred to by</&></td>
-<td class="value"><input type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>" /></td>
-</tr>
-<tr>
-<td class="label" colspan="2"><h2><&|/l&>Topics</&></h2></td>
-</tr>
-<tr>
-<td class="label"></td>
-<td>
+
+<div class="form-row label">
+  <h2><&|/l&>Dates</&></h2>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><&|/l&>Created</&></b> <&|/l&>after</&>
+  </div>
+  <div class="col-md-auto value">
+    <& /Elements/SelectDate, Name=>"Created>", Default => ($dates->{'Created>'} ? $dates->{'Created>'}->ISO : '') &>
+  </div>
+  <div class="col-md-auto label">
+    <&|/l&>and before</&>
+  </div>
+  <div class="col-md-auto value">
+    <& /Elements/SelectDate, Name=>"Created<", Default => ($dates->{'Created<'} ? $dates->{'Created<'}->ISO:'')&>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><&|/l&>Last updated</&></b> <&|/l&>after</&>
+  </div>
+  <div class="col-md-auto value">
+    <& /Elements/SelectDate, Name=>"LastUpdated>", Default =>
+    ($dates->{'LastUpdated>'} ? $dates->{'LastUpdated>'}->AsString:'')&>
+  </div>
+  <div class="col-md-auto label">
+    <&|/l&>and before</&>
+  </div>
+  <div class="col-md-auto value">
+    <& /Elements/SelectDate, Name=>"LastUpdated<", Default =>
+    ($dates->{'LastUpdated<'} ? $dates->{'LastUpdated<'}->AsString:'')&>
+  </div>
+</div>
+
+<div class="form-row label">
+  <h2><&|/l&>Links</&></h2>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 label text-left">
+    <& LinkEntryInstructions &>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><&|/l&>Refer to</&></b>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type=text size=50 name="RefersTo" value="<%$RefersTo%>" />
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <b><&|/l&>Referred to by</&></b>
+  </div>
+  <div class="col-md-auto value">
+    <input class="form-control" type=text size=50 name="ReferredToBy" value="<%$ReferredToBy%>" />
+  </div>
+</div>
+
+<div class="form-row label">
+  <h2><&|/l&>Topics</&></h2>
+</div>
+
+
 <& /Articles/Article/Elements/EditTopics, %ARGS, Classes => \@Classes, OnlyThisClass => 1 &>
-<br />
-<input type="checkbox" id="ExpandTopics" name="ExpandTopics" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
-<label for="ExpandTopics"><&|/l&>Include subtopics</&></label>
-</td>
-</tr>
-</table>
-<& /Elements/Submit, Label => loc('Search') &>
+
+
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 value">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="ExpandTopics" name="ExpandTopics" class="custom-control-input" <% $ARGS{'ExpandTopics'} ? 'checked="checked"' : "" %> />
+      <label class="custom-control-label" for="ExpandTopics"><&|/l&>Include subtopics</&></label>
+    </div>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc('Search') &>
+  </div>
+</div>
+
 <& /Widgets/TitleBoxEnd &>
 <%init>
 my @Classes =

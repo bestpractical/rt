@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select class="form-control selectpicker" name="<%$Name%>">
 <option value="RT::User-<% $user->Id %>" <% $Default eq 'RT::User-'.$user->Id ? 'selected' : '' %>>My searches</option>
 % while (my $group = $groups->Next) {
 <option value="RT::Group-<% $group->Id %>" <% $Default eq 'RT::Group-'.$group->Id ? 'selected' : '' %>><% $group->Label %>'s searches</option>
