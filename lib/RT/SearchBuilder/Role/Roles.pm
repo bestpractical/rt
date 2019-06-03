@@ -190,10 +190,9 @@ sub _WatcherJoin {
     # XXX: work around, we must hide groups that
     # are members of the role group we search in,
     # otherwise them result in wrong NULLs in Users
-    # table and break ordering. Now, we know that
-    # RT doesn't allow to add groups as members of the
-    # ticket roles, so we just hide entries in CGM table
-    # with MemberId == GroupId from results
+    # table and break ordering.
+
+    # Exclude role groups themselves
     $self->Limit(
         LEFTJOIN   => $group_members,
         FIELD      => 'GroupId',
@@ -201,6 +200,26 @@ sub _WatcherJoin {
         VALUE      => "$group_members.MemberId",
         QUOTEVALUE => 0,
     );
+
+    # Exclude groups added in role groups.  It technially also covers
+    # the above limit, but with that limit, SQL could be faster as it
+    # reduces rows to process before the following join.
+
+    my $groups_2 = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => $group_members,
+        FIELD1 => 'MemberId',
+        TABLE2 => 'Groups',
+        FIELD2 => 'id',
+    );
+    $self->Limit(
+        ALIAS           => $groups_2,
+        FIELD           => 'id',
+        OPERATOR        => 'IS',
+        VALUE           => 'NULL',
+        SUBCLAUSE       => "exclude_groups",
+    );
+
     my $users = $self->Join(
         TYPE            => 'LEFT',
         ALIAS1          => $group_members,
