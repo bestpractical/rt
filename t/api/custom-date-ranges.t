@@ -54,3 +54,37 @@ is($t->CustomDateRange(test => {
     },
 }), '496800/1450202400/1449705600/1', 'format');
 
+diag 'test business time' if $ENV{'TEST_VERBOSE'};
+{
+    RT->Config->Set(
+        ServiceAgreements => (
+            Default => '2h',
+            Levels  => { '2h' => { Response => 2 * 60, Timezone => 'UTC' }, },
+        )
+    );
+    RT->Config->Set(
+        ServiceBusinessHours => (
+            'Default' => {
+                1 => { Name => 'Monday',    Start => '9:00', End => '18:00' },
+                2 => { Name => 'Tuesday',   Start => '9:00', End => '18:00' },
+                3 => { Name => 'Wednesday', Start => '9:00', End => '18:00' },
+                4 => { Name => 'Thursday',  Start => '9:00', End => '18:00' },
+                5 => { Name => 'Friday',    Start => '9:00', End => '18:00' },
+            },
+        )
+    );
+
+    ok( $t->QueueObj->SetSLADisabled(0), 'Enabled SLA' );
+    ok( $t->SetSLA('2h'), 'Set sla to 2h' );
+
+    # from 2015-12-10 00:00:00 to 2015-12-15 18:00:00, there are 4 work days
+    is( $t->CustomDateRange(
+            test => {
+                value         => 'Resolved - Created',
+                business_time => 1,
+            }
+        ),
+        '36 hours',
+        'Business time of Resolved - Created'
+      );
+}
