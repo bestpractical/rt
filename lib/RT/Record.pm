@@ -2472,10 +2472,11 @@ sub _DateForCustomDateRangeField {
     return $date;
 }
 
-# Parses "field - field" and returns a four-element list containing the end
+# Parses "field - field" and returns a five-element list containing the end
 # date field name, the operator (right now always "-" for subtraction), the
-# start date field name, and either a custom duration formatter coderef or
-# undef. Returns the empty list if there's an error.
+# start date field name, either a custom duration formatter coderef or undef,
+# and a boolean to indicate if it should calculate duration as business time
+# or not. Returns the empty list if there's an error.
 
 sub _ParseCustomDateRangeSpec {
     my $self = shift;
@@ -2484,10 +2485,12 @@ sub _ParseCustomDateRangeSpec {
 
     my $calculation;
     my $format;
+    my $business_time;
 
     if (ref($spec)) {
         $calculation = $spec->{value};
         $format = $spec->{format};
+        $business_time = $spec->{business_time};
     }
     else {
         $calculation = $spec;
@@ -2529,7 +2532,7 @@ sub _ParseCustomDateRangeSpec {
 
     my ($end, $op, $start) = @matches;
 
-    return ($end, $op, $start, $format);
+    return ($end, $op, $start, $format, $business_time);
 }
 
 =head2 CustomDateRange name, spec
@@ -2545,7 +2548,7 @@ sub CustomDateRange {
     my $name = shift;
     my $spec = shift;
 
-    my ($end, $op, $start, $format) = $self->_ParseCustomDateRangeSpec($name, $spec);
+    my ($end, $op, $start, $format, $business_time) = $self->_ParseCustomDateRangeSpec($name, $spec);
 
     # parse failed; render no value
     return unless $start && $end;
@@ -2559,7 +2562,37 @@ sub CustomDateRange {
 
     my $duration;
     if ($op eq '-') {
-        $duration = $end_dt->Diff($start_dt);
+        if ( $business_time && !$self->QueueObj->SLADisabled && $self->SLA ) {
+            my $config    = RT->Config->Get('ServiceAgreements');
+            my $agreement = $config->{Levels}{ $self->SLA };
+            my $timezone
+                = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone}
+                || $agreement->{Timezone}
+                || RT->Config->Get('Timezone');
+
+            {
+                local $ENV{'TZ'} = $ENV{'TZ'};
+                if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
+                    $ENV{'TZ'} = $timezone;
+                    require POSIX;
+                    POSIX::tzset();
+                }
+
+                my $bhours = RT::SLA->BusinessHours( $agreement->{BusinessHours} || 'Default' );
+                $duration = $bhours->between(
+                    $start_dt->Unix <= $end_dt->Unix
+                    ? ( $start_dt->Unix, $end_dt->Unix )
+                    : ( $end_dt->Unix, $start_dt->Unix )
+                );
+                $duration *= -1 if $start_dt->Unix > $end_dt->Unix;
+            }
+
+            if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
+                POSIX::tzset();
+            }
+        }
+
+        $duration //= $end_dt->Diff($start_dt);
     }
     else {
         RT->Logger->error("Unexpected operator in CustomDateRanges '$name' spec '$spec'. Got '$op', expected '-'.");

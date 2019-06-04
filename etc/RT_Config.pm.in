@@ -1026,7 +1026,10 @@ Set C<%CustomDateRanges> to a nested structure similar to the following:
         'RT::Ticket' => {
             'Resolution Time' => 'Resolved - Created',
 
-            'Downtime' => 'CF.Recovered - CF.{First Alert}',
+            'Downtime' => {
+                value => 'CF.Recovered - CF.{First Alert}',
+                business_time => 1,
+            },
 
             'Time To Beta' => {
                 value => 'CF.Beta - now',
