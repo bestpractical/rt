@@ -87,7 +87,8 @@ my $build_admin_menu = sub {
     $queues->child( select => title => loc('Select'), path => "/Admin/Queues/" );
     $queues->child( create => title => loc('Create'), path => "/Admin/Queues/Modify.html?Create=1" );
 
-    if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminCustomField' ) ) {
+    if ( $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminCustomField' )
+         || $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminCustomFieldValues' ) ) {
         my $cfs = $admin->child( 'custom-fields' =>
             title       => loc('Custom Fields'),
             description => loc('Manage custom fields and custom field values'),
