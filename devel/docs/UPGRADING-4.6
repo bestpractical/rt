@@ -12,6 +12,14 @@ The default callback in C<Articles/Elements/IncludeArticle> provides a ticket
 object. However, the template itself does not need this ticket object, so it
 is no longer guaranteed to be loaded when it is passed.
 
+=item *
+
+New group options were added to the ticket listings pages in SelfService. With
+the additions, the C<AfterMyRequests> callback is no longer at the bottom of the
+page. If you previously used this callback to add to the bottom of the SelfService
+page, a new callback C<AfterMyGroupRequests> is now available below the new group
+ticket listing.
+
 =back
 
 =cut
