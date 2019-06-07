@@ -83,8 +83,8 @@ Alternatively, use the Applies To link from each Custom Field.
 
 =head2 Creating Articles
 
-You can create an Article from scratch by going to Tools -> Articles ->
-New Article and then picking which Class to create the Article under.
+You can create an Article from scratch by going to Articles -> Create
+Article and then picking which Class to create the Article under.
 You must have a Class to assign the new Article to.
 The Summary, Description and Custom Fields will all be searchable when
 including an Article and you can control what Custom Fields end up in
