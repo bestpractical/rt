@@ -27,7 +27,7 @@ searching.
 
 Catalogs are managed by RT administrators, or anyone with the L</AdminCatalog>
 right.  You can find the list of catalogs, create new catalogs, and manage
-existing ones under the Tools → Configuration → Assets → Catalogs menu.
+existing ones under the Admin → Assets → Catalogs menu.
 
 Currently you need to log out and log back in to see changes to catalogs in any
 of the catalog selection dropdowns.  This doesn't affect the catalog name
@@ -200,9 +200,9 @@ the "Weight" and "Color" CFs.
 Within a box, CFs come after any built-in asset fields such as Name,
 Description, Created, Last Updated, etc.  The CFs themselves are ordered
 according to the sorting seen (and adjustable) on the global Asset Custom
-Fields page (Tools → Configuration → Global → Custom Fields → Assets) and the
-individual catalog Custom Fields pages (Tools → Configuration → Assets →
-Catalogs → (Pick one) → Custom Fields).
+Fields page (Admin → Global → Custom Fields → Assets) and the individual
+catalog Custom Fields pages (Admin → Assets → Catalogs → (Pick one) → Custom
+Fields).
 
 Global asset CFs may be intermixed with per-catalog CFs with ordering.
 

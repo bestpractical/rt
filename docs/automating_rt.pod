@@ -168,9 +168,8 @@ RT has a built-in ticket priority system with priority values from
 0 to 99. Depending on how you configure your queues, you can set 1 as the
 top priority with lower numbers meaning more important, or 99 can be the
 top priority with higher numbers meaning more important. You can set this
-in your queue configuration at Tools -> Configuration -> Queues. On the queue
-configuration page, set "Priority starts at" and "Over time, priority moves
-toward".
+in your queue configuration at Admin -> Queues. On the queue configuration
+page, set "Priority starts at" and "Over time, priority moves toward".
 
 Whichever scheme you choose, RT's L<RT::Action::EscalatePriority> can
 escalate the priority over time so tickets that are closer to their due
