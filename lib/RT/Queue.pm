@@ -1122,8 +1122,8 @@ sub __DependsOn {
     push( @$list, $objs );
 
 # Scrips
-    $objs = RT::Scrips->new( $self->CurrentUser );
-    $objs->LimitToQueue( $self->id );
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToObjectId( $self->id );
     push( @$list, $objs );
 
 # Templates
