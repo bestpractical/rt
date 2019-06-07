@@ -58,10 +58,15 @@
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit,
-    Label => loc('Next') .': '. loc('Customize Email Configuration'),
-    Back => 1, BackLabel => loc('Back') .': '. loc('Check Database Credentials'),
-&>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit,
+          Label => loc('Next') .': '. loc('Customize Email Configuration'),
+          Back => 1, BackLabel => loc('Back') .': '. loc('Check Database Credentials'),
+      &>
+    </div>
+  </div>
 </form>
 </&>
 

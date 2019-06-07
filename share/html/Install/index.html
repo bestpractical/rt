@@ -56,12 +56,19 @@
 <h1><% loc('Language') %></h1>
 
 <div class="select-lang">
-<&|/l&>Select another language</&>:
-<& /Elements/SelectLang,
-    Name => 'Lang',
-    Default => $lang_handle? $lang_handle->language_tag : undef,
-&>
-<input type="submit" class="button" name="ChangeLang" value="<% loc('Change') %>" />
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Select another language</&>:
+    </div>
+
+    <div class="col-md-9 input-group">
+      <& /Elements/SelectLang,
+        Name => 'Lang',
+        Default => $lang_handle? $lang_handle->language_tag : undef,
+      &>
+      <input type="submit"  class="btn btn-primary"  name="ChangeLang"  value="<% loc('Change') %>" >
+    </div>
+  </div>
 </div>
 
 <h1><% loc('What is RT?') %></h1>
@@ -84,7 +91,11 @@
 </p>
 </div>
 
-<& /Elements/Submit, Label => loc( "Let's go!"), Name => 'Run' &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc( "Let's go!"), Name => 'Run' &>
+    </div>
+  </div>
 </form>
 
 </&>

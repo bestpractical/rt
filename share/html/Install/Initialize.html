@@ -57,10 +57,15 @@
 
 <form method="post">
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit,
-    Label => loc('Initialize Database'),
-    Back => 1, BackLabel => loc('Back') .': '. loc('Customize Email Addresses'),
-&>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit,
+          Label => loc('Initialize Database'),
+          Back => 1, BackLabel => loc('Back') .': '. loc('Customize Email Addresses'),
+      &>
+    </div>
+  </div>
 </form>
 </&>
 <%init>
