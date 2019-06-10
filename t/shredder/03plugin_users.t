@@ -140,4 +140,23 @@ cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to sav
 }
 cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 
+diag "Shred a user whose name contains a hyphen";
+{
+    my $user = RT::Test->load_or_create_user( Name => 'bilbo-bargins' );
+    my $plugin = RT::Shredder::Plugin::Users->new;
+    my ( $status, $msg ) = $plugin->TestArgs( status => 'any', name => 'bilbo-bargins' );
+    ok( $status, "plugin arguments are ok" ) or diag "error: $msg";
+
+    my $shredder = $test->shredder_new();
+
+    ( $status, my $users ) = $plugin->Run;
+    is( $users->Count, 1, 'found one user' );
+    is( $users->First->Name, 'bilbo-bargins', 'found the user' );
+    ok( $status, "executed plugin successfully" );
+
+    $shredder->PutObjects( Objects => ['RT::User-bilbo-bargins'] );
+    $shredder->WipeoutAll;
+}
+cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+
 done_testing();
