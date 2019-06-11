@@ -101,7 +101,7 @@ sub load_group_admin_pages{
     my $group_id = shift;
     my $status = shift;
 
-    foreach my $page (qw(GroupRights Members Modify History Memberships UserRights)){
+    foreach my $page (qw(GroupRights Members Modify History Memberships ModifyLinks UserRights)){
         $m->get("/Admin/Groups/$page.html?id=$group_id");
         is( $m->status, $status, "Got $status for $page page");
     }
