@@ -107,6 +107,10 @@ sub CustomFieldLookupType {
 sub Query {
     my $self = shift;
 
+    if ( my $ids = $self->{values}{ids} ) {
+        return join ' OR ', map "id=$_", @$ids;
+    }
+
     my @parts;
     foreach my $column ( $self->Report->ColumnsList ) {
         my $info = $self->Report->ColumnInfo( $column );
@@ -142,6 +146,55 @@ sub Query {
 
 sub Report {
     return $_[0]->{'report'};
+}
+
+sub DurationValue {
+    my $self  = shift;
+    my $value = $self->__Value(@_);
+
+    return 0 unless $value;
+
+    my $number;
+    my $unit;
+    if ( $value =~ /([\d,]+)(?:s| second)/ ) {
+        $number = $1;
+        $unit = 1;
+    }
+    elsif ( $value =~ /([\d,]+)(?:m| minute)/ ) {
+        $number = $1;
+        $unit = $RT::Date::MINUTE;
+    }
+    elsif ( $value =~ /([\d,]+)(?:h| hour)/ ) {
+        $number = $1;
+        $unit = $RT::Date::HOUR;
+    }
+    elsif ( $value =~ /([\d,]+)(?:d| day)/ ) {
+        $number = $1;
+        $unit = $RT::Date::DAY;
+    }
+    elsif ( $value =~ /([\d,]+)(?:W| week)/ ) {
+        $number = $1;
+        $unit = $RT::Date::WEEK;
+    }
+    elsif ( $value =~ /([\d,]+)(?:M| month)/ ) {
+        $number = $1;
+        $unit = $RT::Date::MONTH;
+    }
+    elsif ( $value =~ /([\d,]+)(?:Y| year)/ ) {
+        $number = $1;
+        $unit = $RT::Date::YEAR;
+    }
+    else {
+        return -.1; # Mark "(no value)" as -1 so it comes before 0
+    }
+
+    $number =~ s!,!!g;
+    my $seconds = $number * $unit;
+
+    if ( $value =~ /([<|>])/ ) {
+        $seconds += $1 eq '<' ? -1 : 1;
+    }
+    return $seconds;
 }
 
 RT::Base->_ImportOverlays();
