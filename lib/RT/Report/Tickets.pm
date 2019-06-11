@@ -144,6 +144,22 @@ our %GROUPINGS_META = (
             Year Annually
             WeekOfYear
         )],  # loc_qw
+        StrftimeFormat => {
+            Time       => '%T',
+            Hourly     => '%Y-%m-%d %H',
+            Hour       => '%H',
+            Date       => '%F',
+            Daily      => '%F',
+            DayOfWeek  => '%w',
+            Day        => '%F',
+            DayOfMonth => '%d',
+            DayOfYear  => '%j',
+            Month      => '%m',
+            Monthly    => '%Y-%m',
+            Year       => '%Y',
+            Annually   => '%Y',
+            WeekOfYear => '%W',
+        },
         Function => 'GenerateDateFunction',
         Display => sub {
             my $self = shift;
@@ -210,6 +226,12 @@ our %GROUPINGS_META = (
     },
     Enum => {
         Localize => 1,
+    },
+    Duration => {
+        Localize => 1,
+        Short    => 0,
+        Show     => 1,
+        Sort     => 'duration',
     },
 );
 
@@ -295,6 +317,7 @@ foreach my $pair (qw(
         "MIN($pair)" => ["Minimum $pair", 'DateTimeInterval', 'MIN', $from, $to ],
         "MAX($pair)" => ["Maximum $pair", 'DateTimeInterval', 'MAX', $from, $to ],
     );
+    push @GROUPINGS, $pair => 'Duration';
 }
 
 our %STATISTICS;
@@ -595,6 +618,14 @@ sub SetupGroupings {
 
     $self->{'column_info'} = \%column_info;
 
+    if ( $args{Query} && grep { $_->{INFO} eq 'Duration' } map { $column_info{$_} } @{ $res{Groups} } ) {
+        # Need to do the groupby/calculation at Perl level
+        $self->{_query} = $args{'Query'};
+    }
+    else {
+        delete $self->{_query};
+    }
+
     return %res;
 }
 
@@ -607,6 +638,246 @@ columns if it makes sense
 
 sub _DoSearch {
     my $self = shift;
+
+    # When groupby/calculation can't be done at SQL level, do it at Perl level
+    if ( $self->{_query} ) {
+        my $tickets = RT::Tickets->new( $self->CurrentUser );
+        $tickets->FromSQL( $self->{_query} );
+        my @groups = grep { $_->{TYPE} eq 'grouping' } map { $self->ColumnInfo($_) } $self->ColumnsList;
+        my %info;
+        while ( my $ticket = $tickets->Next ) {
+            my @keys;
+            my $max = 1;
+            for my $group ( @groups ) {
+                my $value;
+
+                if ( $ticket->_Accessible($group->{KEY}, 'read' )) {
+                    if ( $group->{SUBKEY} ) {
+                        my $method = "$group->{KEY}Obj";
+                        if ( my $obj = $ticket->$method ) {
+                            if ( $group->{INFO} eq 'Date' ) {
+                                if ( $obj->Unix > 0 ) {
+                                    $value = $obj->Strftime( $GROUPINGS_META{Date}{StrftimeFormat}{ $group->{SUBKEY} },
+                                        Timezone => 'user' );
+                                }
+                                else {
+                                    $value = $self->loc('(no value)')
+                                }
+                            }
+                            else {
+                                $value = $obj->_Value($group->{SUBKEY});
+                            }
+                            $value //= $self->loc('(no value)');
+                        }
+                    }
+                    $value //= $ticket->_Value( $group->{KEY} ) // $self->loc('(no value)');
+                }
+                elsif ( $group->{INFO} eq 'Watcher' ) {
+                    my @values;
+                    if ( $ticket->can($group->{KEY}) ) {
+                        my $method = $group->{KEY};
+                        push @values, @{$ticket->$method->UserMembersObj->ItemsArrayRef};
+                    }
+                    elsif ( $group->{KEY} eq 'Watcher' ) {
+                        push @values, @{$ticket->$_->UserMembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
+                    }
+                    else {
+                        RT->Logger->error("Unsupported group by $group->{KEY}");
+                        next;
+                    }
+
+                    @values = map { $_->_Value( $group->{SUBKEY} || 'Name' ) } @values;
+                    @values = $self->loc('(no value)') unless @values;
+                    $value = \@values;
+                }
+                elsif ( $group->{INFO} eq 'CustomField' ) {
+                    my ($id) = $group->{SUBKEY} =~ /{(\d+)}/;
+                    my $values = $ticket->CustomFieldValues($id);
+                    if ( $values->Count ) {
+                        $value = [ map { $_->Content } @{ $values->ItemsArrayRef } ];
+                    }
+                    else {
+                        $value = $self->loc('(no value)');
+                    }
+                }
+                elsif ( $group->{INFO} eq 'Duration' ) {
+                    my ($start, $end) = split /-/, $group->{FIELD};
+                    my $start_method = $start . 'Obj';
+                    my $end_method   = $end . 'Obj';
+
+                    if ( $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0 ) {
+                        $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                            $ticket->$end_method->Unix - $ticket->$start_method->Unix,
+                            Show  => $group->{META}{Show} // 3,
+                            Short => $group->{META}{Short} // 1,
+                        );
+                    }
+                    else {
+                        $value = $self->loc('(no value)');
+                    }
+                }
+                else {
+                    RT->Logger->error("Unsupported group by $group->{KEY}");
+                    next;
+                }
+                push @keys, $value;
+            }
+
+            # @keys could contain arrayrefs, so we need to expand it.
+            # e.g. "open", [ "root", "foo" ], "General" )
+            # will be expanded to:
+            #   "open", "root", "General"
+            #   "open", "foo", "General"
+
+            my @all_keys;
+            for my $key (@keys) {
+                if ( ref $key eq 'ARRAY' ) {
+                    if (@all_keys) {
+                        my @new_all_keys;
+                        for my $keys ( @all_keys ) {
+                            push @new_all_keys, [ @$keys, $_ ] for @$key;
+                        }
+                        @all_keys = @new_all_keys;
+                    }
+                    else {
+                        push @all_keys, [$_] for @$key;
+                    }
+                }
+                else {
+                    if (@all_keys) {
+                        @all_keys = map { [ @$_, $key ] } @all_keys;
+                    }
+                    else {
+                        push @all_keys, [$key];
+                    }
+                }
+            }
+
+            my @fields = grep { $_->{TYPE} eq 'statistic' }
+                map { $self->ColumnInfo($_) } $self->ColumnsList;
+
+            while ( my $field = shift @fields ) {
+                for my $keys (@all_keys) {
+                    my $key = join ';;;', @$keys;
+                    if ( $field->{NAME} =~ /^id/ && $field->{FUNCTION} eq 'COUNT' ) {
+                        $info{$key}{ $field->{NAME} }++;
+                    }
+                    elsif ( $field->{NAME} =~ /^postfunction/ ) {
+                        if ( $field->{MAP} ) {
+                            my ($meta_type) = $field->{INFO}[1] =~ /^(\w+)All$/;
+                            for my $item ( values %{ $field->{MAP} } ) {
+                                push @fields,
+                                    {
+                                    NAME  => $item->{NAME},
+                                    FIELD => $item->{FIELD},
+                                    INFO  => [
+                                        '', $meta_type,
+                                        $item->{FUNCTION} =~ /^(\w+)/ ? $1 : '',
+                                        @{ $field->{INFO} }[ 2 .. $#{ $field->{INFO} } ],
+                                    ],
+                                    };
+                            }
+                        }
+                    }
+                    elsif ( $field->{INFO}[1] eq 'Time' ) {
+                        if ( $field->{NAME} =~ /^(TimeWorked|TimeEstimated|TimeLeft)$/ ) {
+                            my $method = $1;
+
+                            if ( $field->{INFO}[2] eq 'SUM' ) {
+                                $info{$key}{ lc $field->{NAME} } += $ticket->$method * 60;
+                            }
+                            elsif ( $field->{INFO}[2] eq 'AVG' ) {
+                                $info{$key}{ lc $field->{NAME} }{total} += $ticket->$method * 60;
+                                $info{$key}{ lc $field->{NAME} }{count}++;
+                                $info{$key}{ lc $field->{NAME} }{calculate} = sub {
+                                    my $item = shift;
+                                    return sprintf '%.0f', $item->{total} / $item->{count};
+                                };
+                            }
+                            elsif ( $field->{INFO}[2] eq 'MAX' ) {
+                                $info{$key}{ lc $field->{NAME} } = $ticket->$method * 60
+                                    unless $info{$key}{ lc $field->{NAME} }
+                                    && $info{$key}{ lc $field->{NAME} } > $ticket->$method * 60;
+                            }
+                            elsif ( $field->{INFO}[2] eq 'MIN' ) {
+                                $info{$key}{ lc $field->{NAME} } = $ticket->$method * 60
+                                    unless $info{$key}{ lc $field->{NAME} }
+                                    && $info{$key}{ lc $field->{NAME} } < $ticket->$method * 60;
+                            }
+                            else {
+                                RT->Logger->error("Unsupported type $field->{INFO}[2]");
+                            }
+                        }
+                        else {
+                            RT->Logger->error("Unsupported field $field->{NAME}");
+                        }
+                    }
+                    elsif ( $field->{INFO}[1] eq 'DateTimeInterval' ) {
+                        my ( undef, undef, $type, $start, $end ) = @{ $field->{INFO} };
+
+                        my $start_method = $start . 'Obj';
+                        my $end_method   = $end . 'Obj';
+                        next unless $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0;
+                        my $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
+                        if ( $type eq 'SUM' ) {
+                            $info{$key}{ lc $field->{NAME} } += $value;
+                        }
+                        elsif ( $type eq 'AVG' ) {
+                            $info{$key}{ lc $field->{NAME} }{total} += $value;
+                            $info{$key}{ lc $field->{NAME} }{count}++;
+                            $info{$key}{ lc $field->{NAME} }{calculate} = sub {
+                                my $item = shift;
+                                return sprintf '%.0f', $item->{total} / $item->{count};
+                            };
+                        }
+                        elsif ( $type eq 'MAX' ) {
+                            $info{$key}{ lc $field->{NAME} } = $value
+                                unless $info{$key}{ lc $field->{NAME} }
+                                && $info{$key}{ lc $field->{NAME} } > $value;
+                        }
+                        elsif ( $type eq 'MIN' ) {
+                            $info{$key}{ lc $field->{NAME} } = $value
+                                unless $info{$key}{ lc $field->{NAME} }
+                                && $info{$key}{ lc $field->{NAME} } < $value;
+                        }
+                        else {
+                            RT->Logger->error("Unsupported type $type");
+                        }
+                    }
+                    else {
+                        RT->Logger->error("Unsupported field $field->{INFO}[1]");
+                    }
+                }
+            }
+        }
+
+        # Make generated results real SB results
+        for my $key ( keys %info ) {
+            my @keys = split /;;;/, $key;
+            my $row;
+            for my $group ( @groups ) {
+                $row->{lc $group->{NAME}} = shift @keys;
+            }
+            for my $field ( keys %{ $info{$key} } ) {
+                my $value = $info{$key}{$field};
+                if ( ref $value eq 'HASH' && $value->{calculate} ) {
+                    $row->{$field} = $value->{calculate}->($value);
+                }
+                else {
+                    $row->{$field} = $info{$key}{$field};
+                }
+            }
+            my $item = $self->NewItem();
+            $item->LoadFromHash($row);
+            $self->AddRecord($item);
+        }
+        $self->{must_redo_search} = 0;
+        $self->{is_limited} = 1;
+        $self->PostProcessRecords;
+
+        return;
+    }
+
     $self->SUPER::_DoSearch( @_ );
     if ( $self->{'must_redo_search'} ) {
         $RT::Logger->crit(
@@ -727,6 +998,10 @@ sub SortEntries {
         elsif ( $order eq 'numeric raw' ) {
             push @SORT_OPS, sub { $_[0][$idx] <=> $_[1][$idx] };
             $method = 'RawValue';
+        }
+        elsif ( $order eq 'duration' ) {
+            push @SORT_OPS, sub { $_[0][$idx] <=> $_[1][$idx] };
+            $method = 'DurationValue';
         } else {
             $RT::Logger->error("Unknown sorting function '$order'");
             next;

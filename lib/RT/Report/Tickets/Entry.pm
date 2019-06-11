@@ -144,6 +144,35 @@ sub Report {
     return $_[0]->{'report'};
 }
 
+sub DurationValue {
+    my $self  = shift;
+    my $value = $self->__Value(@_);
+
+    return 0 unless $value;
+
+    if ( $value =~ /(\d+)(?:s| second)/ ) {
+        return $1;
+    }
+    elsif ( $value =~ /(\d+)(?:m| minute)/ ) {
+        return $1 * $RT::Date::MINUTE;
+    }
+    elsif ( $value =~ /(\d+)(?:h| hour)/ ) {
+        return $1 * $RT::Date::HOUR;
+    }
+    elsif ( $value =~ /(\d+)(?:d| day)/ ) {
+        return $1 * $RT::Date::DAY;
+    }
+    elsif ( $value =~ /(\d+)(?:W| week)/ ) {
+        return $1 * $RT::Date::WEEK;
+    }
+    elsif ( $value =~ /(\d+)(?:M| month)/ ) {
+        return $1 * $RT::Date::MONTH;
+    }
+    elsif ( $value =~ /(\d+)(?:Y| year)/ ) {
+        return $1 * $RT::Date::YEAR;
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;
