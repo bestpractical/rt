@@ -475,6 +475,7 @@ sub _LimitCustomField {
                  OPERATOR     => '=',
                  KEY          => undef,
                  PREPARSE     => 1,
+                 QUOTEVALUE   => 1,
                  @_ );
 
     my $op     = delete $args{OPERATOR};
@@ -552,7 +553,13 @@ sub _LimitCustomField {
     ########## Content pre-parsing if we know things about the CF
     if ( blessed($cf) and delete $args{PREPARSE} ) {
         my $type = $cf->Type;
-        if ( $type eq 'IPAddress' ) {
+
+        if ( !$args{QUOTEVALUE} ) {
+            if ( $type eq 'Date' ) {
+                $value = "SUBSTR($value, 1,  10)";
+            }
+        }
+        elsif ( $type eq 'IPAddress' ) {
             my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
             if ($parsed) {
                 $value = $parsed;
