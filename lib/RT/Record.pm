@@ -2647,6 +2647,32 @@ sub CustomDateRanges {
     return %ranges;
 }
 
+=head2 CustomDateRangeFields
+
+Return all of the fields custom date range could use for current class.
+
+=cut
+
+sub CustomDateRangeFields {
+    my $self = shift;
+    my $type = ref $self || $self;
+
+    my @fields = 'now';
+
+    for my $column ( keys %{ $_TABLE_ATTR->{ ref $self || $self } } ) {
+        my $entry = $_TABLE_ATTR->{ ref $self || $self }{$column};
+        next unless $entry->{read} && ( $entry->{type} // '' ) eq 'datetime';
+        push @fields, $column;
+    }
+
+    my $cfs = RT::CustomFields->new( ref $self ? $self->CurrentUser : RT->SystemUser );
+    $cfs->Limit( FIELD => 'Type', VALUE => [ 'Date', 'DateTime' ], OPERATOR => 'IN' );
+    while ( my $cf = $cfs->Next ) {
+        push @fields, 'CF.{' . $cf->Name . '}';
+    }
+    return sort { lc $a cmp lc $b } @fields;
+}
+
 sub UID {
     my $self = shift;
     return undef unless defined $self->Id;
