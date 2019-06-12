@@ -132,6 +132,11 @@ while ( my $Role = $CustomRoles->Next ) {
     push @fields, "CustomRole.{" . $Role->Name . "}";
 }
 
+if (RT->Config->Get('CustomDateRanges')) {
+    my %ranges = %{ RT->Config->Get('CustomDateRanges')->{'RT::Ticket'} || {} };
+    push @fields, sort keys %ranges;
+}
+
 $m->callback( Fields => \@fields, ARGSRef => \%ARGS );
 
 my ( @seen);
