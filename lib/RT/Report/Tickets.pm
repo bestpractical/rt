@@ -53,7 +53,7 @@ use RT::Report::Tickets::Entry;
 
 use strict;
 use warnings;
-
+use 5.010;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->RegisterCustomFieldJoin(@$_) for
@@ -418,6 +418,25 @@ our %STATISTICS_META = (
         },
         Display => 'DurationAsString',
     },
+    CustomDateRange => {
+        Display => 'DurationAsString',
+        Function => sub {}, # Placeholder to use the same DateTimeInterval handling
+    },
+    CustomDateRangeAll => {
+        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Total') },
+        Function => sub {
+            my $self = shift;
+
+            # To use the same DateTimeIntervalAll handling, not real SQL
+            return (
+                Minimum => { FUNCTION => "MIN" },
+                Average => { FUNCTION => "AVG" },
+                Maximum => { FUNCTION => "MAX" },
+                Total   => { FUNCTION => "SUM" },
+            );
+        },
+        Display => 'DurationAsString',
+    },
 );
 
 sub Groupings {
@@ -640,7 +659,9 @@ sub SetupGroupings {
     $self->{'column_info'} = \%column_info;
 
     if ($args{Query}
-        && ( grep( { $_->{INFO} eq 'Duration' } map { $column_info{$_} } @{ $res{Groups} } )
+        && ( grep( { $_->{INFO} =~ /Duration|CustomDateRange/ } map { $column_info{$_} } @{ $res{Groups} } )
+            || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && $_->{INFO}[1] =~ /CustomDateRange/ }
+                values %column_info )
             || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && ref $_->{INFO}[-1] && $_->{INFO}[-1]{business_time} }
                 values %column_info ) )
        )
@@ -770,6 +791,29 @@ sub _DoSearch {
                             }
                         }
                     }
+                    else {
+                        my %ranges = RT::Ticket->CustomDateRanges;
+                        if ( my $spec = $ranges{$group->{FIELD}} ) {
+                            if ( $group->{SUBKEY} eq 'Default' ) {
+                                $value = $ticket->CustomDateRange( $group->{FIELD}, $spec );
+                            }
+                            else {
+                                my $seconds = $ticket->CustomDateRange( $group->{FIELD},
+                                    { ref $spec ? %$spec : ( value => $spec ), format => sub { $_[0] } } );
+
+                                if ( defined $seconds ) {
+                                    $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                        $seconds,
+                                        Show    => $group->{META}{Show} // 3,
+                                        Short   => $group->{META}{Short} // 1,
+                                        MaxUnit => lc $group->{SUBKEY},
+                                        MinUnit => lc $group->{SUBKEY},
+                                        Unit    => lc $group->{SUBKEY},
+                                    );
+                                }
+                            }
+                        }
+                    }
 
                     $value //= $self->loc('(no value)');
                 }
@@ -872,6 +916,24 @@ sub _DoSearch {
                             $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
                         }
 
+                        $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
+                    }
+                    elsif ( $field->{INFO}[1] eq 'CustomDateRange' ) {
+                        my ( undef, undef, $type, $range_name ) = @{ $field->{INFO} };
+                        my $name = lc $field->{NAME};
+                        $info{$key}{$name} ||= 0;
+
+                        my $value;
+                        my %ranges = RT::Ticket->CustomDateRanges;
+                        if ( my $spec = $ranges{$range_name} ) {
+                            $value = $ticket->CustomDateRange(
+                                $range_name,
+                                {
+                                    ref $spec eq 'HASH' ? %$spec : ( value => $spec ),
+                                    format => sub { $_[0] },
+                                }
+                            );
+                        }
                         $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
                     }
                     else {
@@ -1450,6 +1512,36 @@ sub _CalculateTime {
         RT->Logger->error("Unsupported type $type");
     }
     return $current;
+}
+
+sub new {
+    my $self = shift;
+    state $setup_custom_date_ranges = 1;
+    if ($setup_custom_date_ranges) {
+
+        my %ranges = RT::Ticket->CustomDateRanges;
+        for my $name ( sort keys %ranges ) {
+            my %extra_info;
+            my $spec = $ranges{$name};
+            if ( ref $spec && $spec->{business_time} )
+            {
+                $extra_info{business_time} = 1;
+            }
+
+            push @GROUPINGS, $name => $extra_info{business_time} ? 'DurationInBusinessHours' : 'Duration';
+            push @STATISTICS,
+                (
+                "ALL($name)" => [ "Summary of $name", 'CustomDateRangeAll', $name, \%extra_info ],
+                "SUM($name)" => [ "Total $name",   'CustomDateRange', 'SUM', $name, \%extra_info ],
+                "AVG($name)" => [ "Average $name", 'CustomDateRange', 'AVG', $name, \%extra_info ],
+                "MIN($name)" => [ "Minimum $name", 'CustomDateRange', 'MIN', $name, \%extra_info ],
+                "MAX($name)" => [ "Maximum $name", 'CustomDateRange', 'MAX', $name, \%extra_info ],
+                );
+        }
+        $setup_custom_date_ranges = 0;
+    }
+
+    return $self->SUPER::new(@_);
 }
 
 RT::Base->_ImportOverlays();
