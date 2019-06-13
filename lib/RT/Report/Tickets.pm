@@ -254,36 +254,36 @@ our %GROUPINGS_META = (
 # loc("Average time left")
 # loc("Minimum time left")
 # loc("Maximum time left")
-# loc("Summary of Created-Started")
-# loc("Total Created-Started")
-# loc("Average Created-Started")
-# loc("Minimum Created-Started")
-# loc("Maximum Created-Started")
-# loc("Summary of Created-Resolved")
-# loc("Total Created-Resolved")
-# loc("Average Created-Resolved")
-# loc("Minimum Created-Resolved")
-# loc("Maximum Created-Resolved")
-# loc("Summary of Created-LastUpdated")
-# loc("Total Created-LastUpdated")
-# loc("Average Created-LastUpdated")
-# loc("Minimum Created-LastUpdated")
-# loc("Maximum Created-LastUpdated")
-# loc("Summary of Starts-Started")
-# loc("Total Starts-Started")
-# loc("Average Starts-Started")
-# loc("Minimum Starts-Started")
-# loc("Maximum Starts-Started")
-# loc("Summary of Due-Resolved")
-# loc("Total Due-Resolved")
-# loc("Average Due-Resolved")
-# loc("Minimum Due-Resolved")
-# loc("Maximum Due-Resolved")
-# loc("Summary of Started-Resolved")
-# loc("Total Started-Resolved")
-# loc("Average Started-Resolved")
-# loc("Minimum Started-Resolved")
-# loc("Maximum Started-Resolved")
+# loc("Summary of Created to Started")
+# loc("Total Created to Started")
+# loc("Average Created to Started")
+# loc("Minimum Created to Started")
+# loc("Maximum Created to Started")
+# loc("Summary of Created to Resolved")
+# loc("Total Created to Resolved")
+# loc("Average Created to Resolved")
+# loc("Minimum Created to Resolved")
+# loc("Maximum Created to Resolved")
+# loc("Summary of Created to LastUpdated")
+# loc("Total Created to LastUpdated")
+# loc("Average Created to LastUpdated")
+# loc("Minimum Created to LastUpdated")
+# loc("Maximum Created to LastUpdated")
+# loc("Summary of Starts to Started")
+# loc("Total Starts to Started")
+# loc("Average Starts to Started")
+# loc("Minimum Starts to Started")
+# loc("Maximum Starts to Started")
+# loc("Summary of Due to Resolved")
+# loc("Total Due to Resolved")
+# loc("Average Due to Resolved")
+# loc("Minimum Due to Resolved")
+# loc("Maximum Due to Resolved")
+# loc("Summary of Started to Resolved")
+# loc("Total Started to Resolved")
+# loc("Average Started to Resolved")
+# loc("Minimum Started to Resolved")
+# loc("Maximum Started to Resolved")
 
 our @STATISTICS = (
     COUNT => ['Ticket count', 'Count', 'id'],
@@ -301,15 +301,15 @@ foreach my $field (qw(TimeWorked TimeEstimated TimeLeft)) {
 }
 
 
-foreach my $pair (qw(
-    Created-Started
-    Created-Resolved
-    Created-LastUpdated
-    Starts-Started
-    Due-Resolved
-    Started-Resolved
-)) {
-    my ($from, $to) = split /-/, $pair;
+foreach my $pair (
+    'Created to Started',
+    'Created to Resolved',
+    'Created to LastUpdated',
+    'Starts to Started',
+    'Due to Resolved',
+    'Started to Resolved',
+) {
+    my ($from, $to) = split / to /, $pair;
     push @STATISTICS, (
         "ALL($pair)" => ["Summary of $pair", 'DateTimeIntervalAll', $from, $to ],
         "SUM($pair)" => ["Total $pair", 'DateTimeInterval', 'SUM', $from, $to ],
@@ -701,7 +701,7 @@ sub _DoSearch {
                     }
                 }
                 elsif ( $group->{INFO} eq 'Duration' ) {
-                    my ($start, $end) = split /-/, $group->{FIELD};
+                    my ($start, $end) = split / to /, $group->{FIELD}, 2;
                     my $start_method = $start . 'Obj';
                     my $end_method   = $end . 'Obj';
 
@@ -782,31 +782,11 @@ sub _DoSearch {
                     elsif ( $field->{INFO}[1] eq 'Time' ) {
                         if ( $field->{NAME} =~ /^(TimeWorked|TimeEstimated|TimeLeft)$/ ) {
                             my $method = $1;
+                            my $type   = $field->{INFO}[2];
+                            my $name   = lc $field->{NAME};
 
-                            if ( $field->{INFO}[2] eq 'SUM' ) {
-                                $info{$key}{ lc $field->{NAME} } += $ticket->$method * 60;
-                            }
-                            elsif ( $field->{INFO}[2] eq 'AVG' ) {
-                                $info{$key}{ lc $field->{NAME} }{total} += $ticket->$method * 60;
-                                $info{$key}{ lc $field->{NAME} }{count}++;
-                                $info{$key}{ lc $field->{NAME} }{calculate} = sub {
-                                    my $item = shift;
-                                    return sprintf '%.0f', $item->{total} / $item->{count};
-                                };
-                            }
-                            elsif ( $field->{INFO}[2] eq 'MAX' ) {
-                                $info{$key}{ lc $field->{NAME} } = $ticket->$method * 60
-                                    unless $info{$key}{ lc $field->{NAME} }
-                                    && $info{$key}{ lc $field->{NAME} } > $ticket->$method * 60;
-                            }
-                            elsif ( $field->{INFO}[2] eq 'MIN' ) {
-                                $info{$key}{ lc $field->{NAME} } = $ticket->$method * 60
-                                    unless $info{$key}{ lc $field->{NAME} }
-                                    && $info{$key}{ lc $field->{NAME} } < $ticket->$method * 60;
-                            }
-                            else {
-                                RT->Logger->error("Unsupported type $field->{INFO}[2]");
-                            }
+                            $info{$key}{$name}
+                                = $self->_CalculateTime( $type, $ticket->$method * 60, $info{$key}{$name} ) || 0;
                         }
                         else {
                             RT->Logger->error("Unsupported field $field->{NAME}");
@@ -814,35 +794,16 @@ sub _DoSearch {
                     }
                     elsif ( $field->{INFO}[1] eq 'DateTimeInterval' ) {
                         my ( undef, undef, $type, $start, $end ) = @{ $field->{INFO} };
+                        my $name = lc $field->{NAME};
+                        $info{$key}{$name} ||= 0;
 
                         my $start_method = $start . 'Obj';
                         my $end_method   = $end . 'Obj';
                         next unless $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0;
+
                         my $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
-                        if ( $type eq 'SUM' ) {
-                            $info{$key}{ lc $field->{NAME} } += $value;
-                        }
-                        elsif ( $type eq 'AVG' ) {
-                            $info{$key}{ lc $field->{NAME} }{total} += $value;
-                            $info{$key}{ lc $field->{NAME} }{count}++;
-                            $info{$key}{ lc $field->{NAME} }{calculate} = sub {
-                                my $item = shift;
-                                return sprintf '%.0f', $item->{total} / $item->{count};
-                            };
-                        }
-                        elsif ( $type eq 'MAX' ) {
-                            $info{$key}{ lc $field->{NAME} } = $value
-                                unless $info{$key}{ lc $field->{NAME} }
-                                && $info{$key}{ lc $field->{NAME} } > $value;
-                        }
-                        elsif ( $type eq 'MIN' ) {
-                            $info{$key}{ lc $field->{NAME} } = $value
-                                unless $info{$key}{ lc $field->{NAME} }
-                                && $info{$key}{ lc $field->{NAME} } < $value;
-                        }
-                        else {
-                            RT->Logger->error("Unsupported type $type");
-                        }
+                        next unless $value;
+                        $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
                     }
                     else {
                         RT->Logger->error("Unsupported field $field->{INFO}[1]");
@@ -1383,6 +1344,36 @@ sub FormatTable {
     }
 
     return thead => \@head, tbody => \@body, tfoot => \@footer;
+}
+
+sub _CalculateTime {
+    my $self = shift;
+    my ( $type, $value, $current ) = @_;
+
+    return $current unless defined $value;
+
+    if ( $type eq 'SUM' ) {
+        $current += $value;
+    }
+    elsif ( $type eq 'AVG' ) {
+        $current ||= {};
+        $current->{total} += $value;
+        $current->{count}++;
+        $current->{calculate} ||= sub {
+            my $item = shift;
+            return sprintf '%.0f', $item->{total} / $item->{count};
+        };
+    }
+    elsif ( $type eq 'MAX' ) {
+        $current = $value unless $current && $current > $value;
+    }
+    elsif ( $type eq 'MIN' ) {
+        $current = $value unless $current && $current < $value;
+    }
+    else {
+        RT->Logger->error("Unsupported type $type");
+    }
+    return $current;
 }
 
 RT::Base->_ImportOverlays();
