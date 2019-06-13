@@ -554,6 +554,10 @@ sub _LimitCustomField {
         my $type = $cf->Type;
 
         if ( !$args{QUOTEVALUE} ) {
+            if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                $value = "CAST($value AS VARCHAR)";
+            }
+
             if ( $type eq 'Date' ) {
                 $value = "SUBSTR($value, 1,  10)";
             }
