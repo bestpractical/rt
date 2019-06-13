@@ -233,6 +233,12 @@ our %GROUPINGS_META = (
         Show     => 1,
         Sort     => 'duration',
     },
+    DurationInBusinessHours => {
+        Localize => 1,
+        Short    => 0,
+        Show     => 1,
+        Sort     => 'duration',
+    },
 );
 
 # loc'able strings below generated with (s/loq/loc/):
@@ -318,6 +324,19 @@ foreach my $pair (
         "MAX($pair)" => ["Maximum $pair", 'DateTimeInterval', 'MAX', $from, $to ],
     );
     push @GROUPINGS, $pair => 'Duration';
+
+    my %extra_info = ( business_time => 1 );
+    if ( keys %{RT->Config->Get('ServiceBusinessHours')} ) {
+        my $business_pair = "$pair(Business Hours)";
+        push @STATISTICS, (
+            "ALL($business_pair)" => ["Summary of $business_pair", 'DateTimeIntervalAll', $from, $to, \%extra_info ],
+            "SUM($business_pair)" => ["Total $business_pair", 'DateTimeInterval', 'SUM', $from, $to, \%extra_info ],
+            "AVG($business_pair)" => ["Average $business_pair", 'DateTimeInterval', 'AVG', $from, $to, \%extra_info ],
+            "MIN($business_pair)" => ["Minimum $business_pair", 'DateTimeInterval', 'MIN', $from, $to, \%extra_info ],
+            "MAX($business_pair)" => ["Maximum $business_pair", 'DateTimeInterval', 'MAX', $from, $to, \%extra_info ],
+        );
+        push @GROUPINGS, $business_pair => 'DurationInBusinessHours';
+    }
 }
 
 our %STATISTICS;
@@ -618,7 +637,12 @@ sub SetupGroupings {
 
     $self->{'column_info'} = \%column_info;
 
-    if ( $args{Query} && grep { $_->{INFO} eq 'Duration' } map { $column_info{$_} } @{ $res{Groups} } ) {
+    if ($args{Query}
+        && ( grep( { $_->{INFO} eq 'Duration' } map { $column_info{$_} } @{ $res{Groups} } )
+            || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && ref $_->{INFO}[-1] && $_->{INFO}[-1]{business_time} }
+                values %column_info ) )
+       )
+    {
         # Need to do the groupby/calculation at Perl level
         $self->{_query} = $args{'Query'};
     }
@@ -700,21 +724,40 @@ sub _DoSearch {
                         $value = $self->loc('(no value)');
                     }
                 }
-                elsif ( $group->{INFO} eq 'Duration' ) {
-                    my ($start, $end) = split / to /, $group->{FIELD}, 2;
-                    my $start_method = $start . 'Obj';
-                    my $end_method   = $end . 'Obj';
+                elsif ( $group->{INFO} =~ /^Duration(InBusinessHours)?/ ) {
+                    my $business_time = $1;
 
-                    if ( $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0 ) {
-                        $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
-                            $ticket->$end_method->Unix - $ticket->$start_method->Unix,
-                            Show  => $group->{META}{Show} // 3,
-                            Short => $group->{META}{Short} // 1,
-                        );
+                    if ( $group->{FIELD} =~ /^(\w+) to (\w+)(\(Business Hours\))?$/ ) {
+                        my $start        = $1;
+                        my $end          = $2;
+                        my $start_method = $start . 'Obj';
+                        my $end_method   = $end . 'Obj';
+                        if ( $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0 ) {
+                            my $seconds;
+
+                            if ($business_time) {
+                                $seconds = $ticket->CustomDateRange(
+                                    '',
+                                    {   value         => "$end - $start",
+                                        business_time => 1,
+                                        format        => sub { $_[0] },
+                                    }
+                                );
+                            }
+                            else {
+                                $seconds = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
+                            }
+
+                            $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                $seconds,
+                                Show    => $group->{META}{Show},
+                                Short   => $group->{META}{Short},
+                                MaxUnit => $business_time ? 'hour' : 'year',
+                            );
+                        }
                     }
-                    else {
-                        $value = $self->loc('(no value)');
-                    }
+
+                    $value //= $self->loc('(no value)');
                 }
                 else {
                     RT->Logger->error("Unsupported group by $group->{KEY}");
@@ -793,7 +836,7 @@ sub _DoSearch {
                         }
                     }
                     elsif ( $field->{INFO}[1] eq 'DateTimeInterval' ) {
-                        my ( undef, undef, $type, $start, $end ) = @{ $field->{INFO} };
+                        my ( undef, undef, $type, $start, $end, $extra_info ) = @{ $field->{INFO} };
                         my $name = lc $field->{NAME};
                         $info{$key}{$name} ||= 0;
 
@@ -801,8 +844,20 @@ sub _DoSearch {
                         my $end_method   = $end . 'Obj';
                         next unless $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0;
 
-                        my $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
-                        next unless $value;
+                        my $value;
+                        if ($extra_info->{business_time}) {
+                            $value = $ticket->CustomDateRange(
+                                '',
+                                {   value         => "$end - $start",
+                                    business_time => 1,
+                                    format        => sub { return $_[0] },
+                                }
+                            );
+                        }
+                        else {
+                            $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
+                        }
+
                         $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
                     }
                     else {
@@ -1120,17 +1175,19 @@ sub DurationAsString {
     my $self = shift;
     my %args = @_;
     my $v = $args{'VALUE'};
+    my $max_unit = $args{INFO} && ref $args{INFO}[-1] && $args{INFO}[-1]{business_time} ? 'hour' : 'year';
+
     unless ( ref $v ) {
         return $self->loc("(no value)") unless defined $v && length $v;
         return RT::Date->new( $self->CurrentUser )->DurationAsString(
-            $v, Show => 3, Short => 1
+            $v, Show => 3, Short => 1, MaxUnit => $max_unit,
         );
     }
 
     my $date = RT::Date->new( $self->CurrentUser );
     my %res = %$v;
     foreach my $e ( values %res ) {
-        $e = $date->DurationAsString( $e, Short => 1, Show => 3 )
+        $e = $date->DurationAsString( $e, Short => 1, Show => 3, MaxUnit => $max_unit )
             if defined $e && length $e;
         $e = $self->loc("(no value)") unless defined $e && length $e;
     }
