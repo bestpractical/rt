@@ -318,6 +318,16 @@ foreach my $pair (
         "MAX($pair)" => ["Maximum $pair", 'DateTimeInterval', 'MAX', $from, $to ],
     );
     push @GROUPINGS, $pair => 'Duration';
+
+    my $business_pair = "$pair(Business Hours)";
+    push @STATISTICS, (
+        "ALL($business_pair)" => ["Summary of $business_pair", 'DateTimeIntervalAll', $from, $to, 'business_time' ],
+        "SUM($business_pair)" => ["Total $business_pair", 'DateTimeInterval', 'SUM', $from, $to, 'business_time' ],
+        "AVG($business_pair)" => ["Average $business_pair", 'DateTimeInterval', 'AVG', $from, $to, 'business_time' ],
+        "MIN($business_pair)" => ["Minimum $business_pair", 'DateTimeInterval', 'MIN', $from, $to, 'business_time' ],
+        "MAX($business_pair)" => ["Maximum $business_pair", 'DateTimeInterval', 'MAX', $from, $to, 'business_time' ],
+    );
+    push @GROUPINGS, $business_pair => 'Duration';
 }
 
 our %STATISTICS;
@@ -618,7 +628,12 @@ sub SetupGroupings {
 
     $self->{'column_info'} = \%column_info;
 
-    if ( $args{Query} && grep { $_->{INFO} eq 'Duration' } map { $column_info{$_} } @{ $res{Groups} } ) {
+    if ($args{Query}
+        && ( grep( { $_->{INFO} eq 'Duration' } map { $column_info{$_} } @{ $res{Groups} } )
+            || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && $_->{INFO}[-1] eq 'business_time' }
+                values %column_info ) )
+       )
+    {
         # Need to do the groupby/calculation at Perl level
         $self->{_query} = $args{'Query'};
     }
@@ -793,7 +808,7 @@ sub _DoSearch {
                         }
                     }
                     elsif ( $field->{INFO}[1] eq 'DateTimeInterval' ) {
-                        my ( undef, undef, $type, $start, $end ) = @{ $field->{INFO} };
+                        my ( undef, undef, $type, $start, $end, $business_time ) = @{ $field->{INFO} };
                         my $name = lc $field->{NAME};
                         $info{$key}{$name} ||= 0;
 
@@ -801,8 +816,20 @@ sub _DoSearch {
                         my $end_method   = $end . 'Obj';
                         next unless $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0;
 
-                        my $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
-                        next unless $value;
+                        my $value;
+                        if ($business_time) {
+                            $value = $ticket->CustomDateRange(
+                                '',
+                                {   value         => "$end - $start",
+                                    business_time => 1,
+                                    format        => sub { return $_[0] },
+                                }
+                            );
+                        }
+                        else {
+                            $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
+                        }
+
                         $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
                     }
                     else {
