@@ -2561,6 +2561,7 @@ sub CustomDateRange {
                && $end_dt && $end_dt->IsSet;
 
     my $duration;
+    my $max_unit;
     if ($op eq '-') {
         if ( $business_time && !$self->QueueObj->SLADisabled && $self->SLA ) {
             my $config    = RT->Config->Get('ServiceAgreements');
@@ -2571,6 +2572,7 @@ sub CustomDateRange {
                 || RT->Config->Get('Timezone');
 
             {
+                $max_unit = 'hour';
                 local $ENV{'TZ'} = $ENV{'TZ'};
                 if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
                     $ENV{'TZ'} = $timezone;
@@ -2599,6 +2601,8 @@ sub CustomDateRange {
         return;
     }
 
+    $max_unit ||= 'year';
+
     # _ParseCustomDateRangeSpec guarantees $format is a coderef
     if ($format) {
         return $format->($duration, $end_dt, $start_dt, $self);
@@ -2609,10 +2613,10 @@ sub CustomDateRange {
         # reads better
         if ($duration < 0) {
             $duration *= -1;
-            return $self->loc('[_1] prior', $end_dt->DurationAsString($duration));
+            return $self->loc( '[_1] prior', $end_dt->DurationAsString( $duration, MaxUnit => $max_unit ) );
         }
         else {
-            return $end_dt->DurationAsString($duration);
+            return $end_dt->DurationAsString( $duration, MaxUnit => $max_unit );
         }
     }
 }

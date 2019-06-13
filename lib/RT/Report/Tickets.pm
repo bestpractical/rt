@@ -1196,17 +1196,19 @@ sub DurationAsString {
     my $self = shift;
     my %args = @_;
     my $v = $args{'VALUE'};
+    my $max_unit = $args{INFO} && $args{INFO}[-1] eq 'business_time' ? 'hour' : 'year';
+
     unless ( ref $v ) {
         return $self->loc("(no value)") unless defined $v && length $v;
         return RT::Date->new( $self->CurrentUser )->DurationAsString(
-            $v, Show => 3, Short => 1
+            $v, Show => 3, Short => 1, MaxUnit => $max_unit,
         );
     }
 
     my $date = RT::Date->new( $self->CurrentUser );
     my %res = %$v;
     foreach my $e ( values %res ) {
-        $e = $date->DurationAsString( $e, Short => 1, Show => 3 )
+        $e = $date->DurationAsString( $e, Short => 1, Show => 3, MaxUnit => $max_unit )
             if defined $e && length $e;
         $e = $self->loc("(no value)") unless defined $e && length $e;
     }

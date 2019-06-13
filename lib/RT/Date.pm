@@ -411,6 +411,10 @@ most vague variant.
 Turn on short notation with one character units, for example
 "3M 2d 1m 10s".
 
+=item * MaxUnit
+
+The max unit to use. Default is 'year'.
+
 =back
 
 =cut
@@ -418,7 +422,7 @@ Turn on short notation with one character units, for example
 sub DurationAsString {
     my $self     = shift;
     my $duration = int shift;
-    my %args = ( Show => 1, Short => 0, @_ );
+    my %args = ( Show => 1, Short => 0, MaxUnit => 'year', @_ );
 
     unless ( $duration ) {
         return $args{Short}? $self->loc("0s") : $self->loc("0 seconds");
@@ -435,37 +439,37 @@ sub DurationAsString {
     while ( $duration > 0 && ++$i <= $args{'Show'} ) {
 
         my ($locstr, $unit);
-        if ( $duration < $MINUTE ) {
+        if ( $duration < $MINUTE || $args{MaxUnit} =~ /second/i ) {
             $locstr = $args{Short}
                     ? '[_1]s'                      # loc
                     : '[quant,_1,second,seconds]'; # loc
             $unit = 1;
         }
-        elsif ( $duration < ( $coef * $HOUR ) ) {
+        elsif ( $duration < ( $coef * $HOUR ) || $args{MaxUnit} =~ /minute/i ) {
             $locstr = $args{Short}
                     ? '[_1]m'                      # loc
                     : '[quant,_1,minute,minutes]'; # loc
             $unit = $MINUTE;
         }
-        elsif ( $duration < ( $coef * $DAY ) ) {
+        elsif ( $duration < ( $coef * $DAY ) || $args{MaxUnit} =~ /hour/i ) {
             $locstr = $args{Short}
                     ? '[_1]h'                      # loc
                     : '[quant,_1,hour,hours]';     # loc
             $unit = $HOUR;
         }
-        elsif ( $duration < ( $coef * $WEEK ) ) {
+        elsif ( $duration < ( $coef * $WEEK ) || $args{MaxUnit} =~ /day/i ) {
             $locstr = $args{Short}
                     ? '[_1]d'                      # loc
                     : '[quant,_1,day,days]';       # loc
             $unit = $DAY;
         }
-        elsif ( $duration < ( $coef * $MONTH ) ) {
+        elsif ( $duration < ( $coef * $MONTH ) || $args{MaxUnit} =~ /week/i ) {
             $locstr = $args{Short}
                     ? '[_1]W'                      # loc
                     : '[quant,_1,week,weeks]';     # loc
             $unit = $WEEK;
         }
-        elsif ( $duration < $YEAR ) {
+        elsif ( $duration < $YEAR || $args{MaxUnit} =~ /month/i ) {
             $locstr = $args{Short}
                     ? '[_1]M'                      # loc
                     : '[quant,_1,month,months]';   # loc
