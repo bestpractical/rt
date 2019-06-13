@@ -53,7 +53,7 @@ use RT::Report::Tickets::Entry;
 
 use strict;
 use warnings;
-
+use 5.010;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->RegisterCustomFieldJoin(@$_) for
@@ -233,6 +233,12 @@ our %GROUPINGS_META = (
         Show     => 1,
         Sort     => 'duration',
     },
+    CustomDateRange => {
+        Localize => 1,
+        Short    => 0,
+        Show     => 1,
+        Sort     => 'duration',
+    },
 );
 
 # loc'able strings below generated with (s/loq/loc/):
@@ -406,6 +412,25 @@ our %STATISTICS_META = (
             );
         },
         Display => 'DurationAsString',
+    },
+    CustomDateRangeAll => {
+        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Total') },
+        Function => sub {
+            my $self = shift;
+
+            # To use the same DateTimeIntervalAll handling, not real SQL
+            return (
+                Minimum => { FUNCTION => "MIN" },
+                Average => { FUNCTION => "AVG" },
+                Maximum => { FUNCTION => "MAX" },
+                Total   => { FUNCTION => "SUM" },
+            );
+        },
+        Display => 'DurationAsString',
+    },
+    CustomDateRange => {
+        Display => 'DurationAsString',
+        Function => sub {}, # Placeholder to use the same DateTimeInterval handling
     },
 );
 
@@ -629,7 +654,9 @@ sub SetupGroupings {
     $self->{'column_info'} = \%column_info;
 
     if ($args{Query}
-        && ( grep( { $_->{INFO} eq 'Duration' } map { $column_info{$_} } @{ $res{Groups} } )
+        && ( grep( { $_->{INFO} =~ /Duration|CustomDateRange/ } map { $column_info{$_} } @{ $res{Groups} } )
+            || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && $_->{INFO}[1] =~ /CustomDateRange/ }
+                values %column_info )
             || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && $_->{INFO}[-1] eq 'business_time' }
                 values %column_info ) )
        )
@@ -731,6 +758,14 @@ sub _DoSearch {
                         $value = $self->loc('(no value)');
                     }
                 }
+                elsif ( $group->{INFO} eq 'CustomDateRange' ) {
+                    if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+                        if ( my $spec = $config->{'RT::Ticket'}{$group->{FIELD}} ) {
+                            $value = $ticket->CustomDateRange($group->{FIELD}, $spec );
+                        }
+                    }
+                    $value //= $self->loc('(no value)');
+                }
                 else {
                     RT->Logger->error("Unsupported group by $group->{KEY}");
                     next;
@@ -830,6 +865,25 @@ sub _DoSearch {
                             $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
                         }
 
+                        $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
+                    }
+                    elsif ( $field->{INFO}[1] eq 'CustomDateRange' ) {
+                        my ( undef, undef, $type, $range_name ) = @{ $field->{INFO} };
+                        my $name = lc $field->{NAME};
+                        $info{$key}{$name} ||= 0;
+
+                        my $value;
+                        if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+                            if ( my $spec = $config->{'RT::Ticket'}{$range_name} ) {
+                                $value = $ticket->CustomDateRange(
+                                    $range_name,
+                                    {
+                                        ref $spec eq 'HASH' ? %$spec : ( value => $spec ),
+                                        format => sub { $_[0] },
+                                    }
+                                );
+                            }
+                        }
                         $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
                     }
                     else {
@@ -1401,6 +1455,38 @@ sub _CalculateTime {
         RT->Logger->error("Unsupported type $type");
     }
     return $current;
+}
+
+sub new {
+    my $self = shift;
+    state $setup_custom_date_ranges = 1;
+    if ($setup_custom_date_ranges) {
+        if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+            if ( $config->{'RT::Ticket'} ) {
+                for my $name ( sort keys %{ $config->{'RT::Ticket'} } ) {
+                    my @extra_info;
+                    if ( ref $config->{'RT::Ticket'}{$name}
+                        && $config->{'RT::Ticket'}{$name}{business_time} )
+                    {
+                        push @extra_info, 'business_time';
+                    }
+
+                    push @GROUPINGS, $name => 'CustomDateRange';
+                    push @STATISTICS,
+                        (
+                        "ALL($name)" => [ "Summary of $name", 'CustomDateRangeAll', $name, @extra_info ],
+                        "SUM($name)" => [ "Total $name",   'CustomDateRange', 'SUM', $name, @extra_info ],
+                        "AVG($name)" => [ "Average $name", 'CustomDateRange', 'AVG', $name, @extra_info ],
+                        "MIN($name)" => [ "Minimum $name", 'CustomDateRange', 'MIN', $name, @extra_info ],
+                        "MAX($name)" => [ "Maximum $name", 'CustomDateRange', 'MAX', $name, @extra_info ],
+                        );
+                }
+            }
+        }
+        $setup_custom_date_ranges = 0;
+    }
+
+    return $self->SUPER::new(@_);
 }
 
 RT::Base->_ImportOverlays();
