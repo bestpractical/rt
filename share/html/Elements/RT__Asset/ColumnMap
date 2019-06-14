@@ -113,16 +113,14 @@ my $COLUMN_MAP = {
     },
 };
 
-if (my $config = RT->Config->Get('CustomDateRanges')) {
-    my %ranges = %{ $config->{'RT::Asset'} || {} };
-    for my $name (keys %ranges) {
-        $COLUMN_MAP->{$name} = {
-            title => $name,
-            value => sub {
-                $_[0]->CustomDateRange($name, $ranges{$name});
-            },
-        };
-    }
+my %ranges = RT::Asset->CustomDateRanges;
+for my $name (keys %ranges) {
+    $COLUMN_MAP->{$name} = {
+        title => $name,
+        value => sub {
+            $_[0]->CustomDateRange($name, $ranges{$name});
+        },
+    };
 }
 </%ONCE>
 <%init>

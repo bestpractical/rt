@@ -2617,6 +2617,32 @@ sub CustomDateRange {
     }
 }
 
+=head2 CustomDateRanges
+
+Return all of the custom date ranges of current class.
+
+=cut
+
+sub CustomDateRanges {
+    my $self = shift;
+    my $type = ref $self || $self;
+
+    my %ranges;
+
+    if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+        %ranges = %{ $config->{$type} } if $config->{$type};
+    }
+
+    if ( my $attribute = RT->System->FirstAttribute('CustomDateRanges') ) {
+        if ( my $content = $attribute->Content ) {
+            for my $name ( keys %{ $content->{$type} || {} } ) {
+                $ranges{$name} ||= $content->{$type}{$name};
+            }
+        }
+    }
+    return %ranges;
+}
+
 sub UID {
     my $self = shift;
     return undef unless defined $self->Id;
