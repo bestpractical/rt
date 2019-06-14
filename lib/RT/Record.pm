@@ -2520,7 +2520,16 @@ sub _ParseCustomDateRangeSpec {
         return;
     }
 
-    my %date_range_spec= ( from => $matches[1], to => $matches[0], ref $spec ? %$spec : () );
+    if ( ref $spec ) {
+        for my $type ( qw/from to/ ) {
+            if ( $spec->{"${type}_fallback"} && $spec->{"${type}_fallback"} !~ /^$field_parser$/ ) {
+                RT->Logger->error( "Invalid ${type}_fallback field: " . $spec->{"${type}_fallback"} );
+                return;
+            }
+        }
+    }
+
+    my %date_range_spec = ( from => $matches[1], to => $matches[0], ref $spec ? %$spec : () );
     return %date_range_spec;
 }
 
@@ -2544,6 +2553,18 @@ sub CustomDateRange {
 
     my $end_dt = $self->_DateForCustomDateRangeField($date_range_spec{to}, $name);
     my $start_dt = $self->_DateForCustomDateRangeField($date_range_spec{from}, $name);
+
+    unless ( $start_dt && $start_dt->IsSet ) {
+        if ( ref $spec && $parsed{from_fallback} ) {
+            $start_dt = $self->_DateForCustomDateRangeField( $parsed{from_fallback}, $name );
+        }
+    }
+
+    unless ( $end_dt && $end_dt->IsSet ) {
+        if ( ref $spec && $parsed{to_fallback} ) {
+            $end_dt = $self->_DateForCustomDateRangeField( $parsed{to_fallback}, $name );
+        }
+    }
 
     # RT::Date instantiation failed; render no value
     return unless $start_dt && $start_dt->IsSet
