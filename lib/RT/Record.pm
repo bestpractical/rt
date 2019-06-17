@@ -2555,14 +2555,14 @@ sub CustomDateRange {
     my $start_dt = $self->_DateForCustomDateRangeField($date_range_spec{from}, $name);
 
     unless ( $start_dt && $start_dt->IsSet ) {
-        if ( ref $spec && $parsed{from_fallback} ) {
-            $start_dt = $self->_DateForCustomDateRangeField( $parsed{from_fallback}, $name );
+        if ( ref $spec && $date_range_spec{from_fallback} ) {
+            $start_dt = $self->_DateForCustomDateRangeField( $date_range_spec{from_fallback}, $name );
         }
     }
 
     unless ( $end_dt && $end_dt->IsSet ) {
-        if ( ref $spec && $parsed{to_fallback} ) {
-            $end_dt = $self->_DateForCustomDateRangeField( $parsed{to_fallback}, $name );
+        if ( ref $spec && $date_range_spec{to_fallback} ) {
+            $end_dt = $self->_DateForCustomDateRangeField( $date_range_spec{to_fallback}, $name );
         }
     }
 
@@ -2571,13 +2571,24 @@ sub CustomDateRange {
                && $end_dt && $end_dt->IsSet;
 
     my $duration;
-    if ( $date_range_spec{business_time} && !$self->QueueObj->SLADisabled && $self->SLA ) {
-        my $config    = RT->Config->Get('ServiceAgreements');
-        my $agreement = $config->{Levels}{ $self->SLA };
-        my $timezone
-          = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone}
-          || $agreement->{Timezone}
-          || RT->Config->Get('Timezone');
+    if ( $date_range_spec{business_time} ) {
+        my $schedule;
+        my $timezone;
+
+        # Prefer the schedule/timezone specified in %ServiceAgreements for current object
+        if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
+            if ( my $config = RT->Config->Get('ServiceAgreements') ) {
+                $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+
+                # Each SLA could have its own schedule and timezone
+                if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
+                    $schedule = $agreement->{BusinessHours};
+                    $timezone ||= $agreement->{Timezone};
+                }
+            }
+        }
+        $timezone ||= RT->Config->Get('Timezone');
+        $schedule ||= 'Default';
 
         {
             local $ENV{'TZ'} = $ENV{'TZ'};
@@ -2587,7 +2598,7 @@ sub CustomDateRange {
                 POSIX::tzset();
             }
 
-            my $bhours = RT::SLA->BusinessHours( $agreement->{BusinessHours} || 'Default' );
+            my $bhours = RT::SLA->BusinessHours($schedule);
             $duration = $bhours->between(
                 $start_dt->Unix <= $end_dt->Unix
                 ? ( $start_dt->Unix, $end_dt->Unix )
