@@ -1055,15 +1055,13 @@ value describes the range and must be either a string or a hashref.
 
 Values that are plain strings simply describe the calculation to be made.
 
-Values that are hashrefs must include the key C<value> which must a string
-that describes the calculation to be made. This hashref may also include the
-key C<format>, which is a code reference that allows customization of how
-the duration is displayed to users. This code reference receives four
-parameters: the duration (a number of seconds), the end time (an L<RT::Date>
-object), the start time (another L<RT::Date>), and the record itself (which
-corresponds to the first-level key; in the example config above, it would be
-the L<RT::Ticket> object). The code reference should return the string to
-be displayed to the user.
+Values that are hashrefs that could include:
+
+=over 4
+
+=item value
+
+A string that describes the calculation to be made.
 
 The calculation is expected to be of the format C<"field - field"> where each
 field may be:
@@ -1086,10 +1084,47 @@ You may use either C<CF.Name> or C<CF.{Longer Name}> syntax.
 Custom date range calculations are defined using typical math operators with
 a space before and after. Subtraction (-) is currently supported.
 
-If either field is unset, nothing will be displayed for that record (and the
-C<format> code reference will not be called). If you need additional control
-over how results are calculated, see
-L<docs/customizing/search_result_columns.pod>.
+If either field and its corresponding fallback field(see blow) are both unset,
+then nothing will be displayed for that record (and the C<format> code
+reference will not be called).  If you need additional control over how
+results are calculated, see L<docs/customizing/search_result_columns.pod>.
+
+=item from and to
+
+When value is not set, C<from/to> will be used to calculate instead.
+Technically, C<Resolved - Created"> is equal to:
+
+    { from => 'Created', to => 'Resolved' }
+
+=item from_fallback and to_fallback
+
+Fallback fields when the main fields are unset, e.g.
+
+    {   from        => 'CF.{First Alert}',
+        to          => 'CF.Recovered',
+        to_fallback => 'now',
+    }
+
+When C<CF.Recovered> is unset, "now" will be used in the calculation.
+
+=item business_time
+
+A boolean value to indicate if it's a business time or not.
+
+When the schedule can't be deducted from corresponding object, the
+C<Default> one defined in C<%ServiceBusinessHours> will be used instead.
+
+=item format
+
+A code reference that allows customization of how the duration is displayed
+to users.  This code reference receives four parameters: the duration (a
+number of seconds), the end time (an L<RT::Date> object), the start time
+(another L<RT::Date>), and the record itself (which corresponds to the
+first-level key; in the example config above, it would be the L<RT::Ticket>
+object). The code reference should return the string to be displayed to the
+user.
+
+=back
 
 =item C<$CanonicalizeRedirectURLs>
 
