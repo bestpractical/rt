@@ -1072,8 +1072,8 @@ field may be:
 
 =item * a core field
 
-For example, L<RT::Ticket> supports: created, starts, started, last updated,
-told or last contact, due, resolved.
+For example, L<RT::Ticket> supports: Created, Starts, Started, LastUpdated,
+Told or LastContact, Due and Resolved.
 
 =item * a custom field
 
