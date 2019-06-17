@@ -94,6 +94,8 @@
 </td>
 </tr>
 
+% $m->callback(CallbackName => 'AfterMessageBox', ARGSRef => \%ARGS, TicketObj => $TicketObj);
+
 </table>
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments, Count => RT->Config->Get('AttachmentListCount') &>
