@@ -68,10 +68,10 @@ window.RT.Autocomplete.bind = function(from) {
                         return '<div class="create"><strong>' + escape(data.input) + '</strong></div>';
                     },
                     option: function(data, escape) {
-                        return '<div class="option">' + escape(data.label) + '</div>';
+                        return '<div class="option">' + (data.selectize_option || escape(data.label)) + '</div>';
                     },
                     item: function(data, escape) {
-                        return '<div class="item">' + '<span>' + escape(data.label) + '</span></div>';
+                        return '<div class="item"><span>' + (data.selectize_item || escape(data.label)) + '</span></div>';
                     }
                 },
                 onItemRemove: function(value) {
