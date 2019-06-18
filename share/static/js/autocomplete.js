@@ -49,8 +49,10 @@ window.RT.Autocomplete.bind = function(from) {
             return;
 
         if (what === 'Users' && input.is('[data-autocomplete-multiple]')) {
+            var options = input.attr('data-options');
             input.selectize({
                 plugins: ['remove_button', 'rt_drag_drop'],
+                options: options ? JSON.parse(options) : null,
                 valueField: 'value',
                 labelField: 'label',
                 searchField: ['label', 'value'],

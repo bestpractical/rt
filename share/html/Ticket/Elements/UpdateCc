@@ -52,7 +52,7 @@
     <&|/l&>One-time Cc</&>:
   </div>
   <div class="col-md-9 value">
-    <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1 &>
+    <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
     <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
   </div>
 </div>
@@ -104,7 +104,7 @@
     <&|/l&>One-time Bcc</&>:
   </div>
   <div class="col-md-9 value">
-    <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &>
+    <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
   </div>
 </div>
 

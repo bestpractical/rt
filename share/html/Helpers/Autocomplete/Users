@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % $r->content_type('application/json; charset=utf-8');
 <% JSON( \@suggestions ) |n %>
-% $m->abort;
+% $m->abort if $abort;
 <%ARGS>
 $return => ''
 $term => undef
@@ -58,6 +58,7 @@ $exclude => ''
 $op => undef
 $include_nobody => 0
 $include_system => 0
+$abort => 1
 </%ARGS>
 <%INIT>
 # Only allow certain return fields
