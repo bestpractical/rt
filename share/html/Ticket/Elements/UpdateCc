@@ -84,6 +84,7 @@
               name="UpdateCc-<%$addr%>"
               class="onetime onetimecc custom-control-input"
               type="checkbox"
+              autocomplete="off"
 % my $clean_addr = $txn_addresses{$addr}->format;
               onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
               <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
@@ -135,6 +136,7 @@
               name="UpdateBcc-<%$addr%>"
               class="onetime onetimebcc custom-control-input"
               type="checkbox"
+              autocomplete="off"
 % my $clean_addr = $txn_addresses{$addr}->format;
               onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
               <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
