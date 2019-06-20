@@ -232,36 +232,36 @@ our %GROUPINGS_META = (
 # loc("Average time left")
 # loc("Minimum time left")
 # loc("Maximum time left")
-# loc("Summary of Created-Started")
-# loc("Total Created-Started")
-# loc("Average Created-Started")
-# loc("Minimum Created-Started")
-# loc("Maximum Created-Started")
-# loc("Summary of Created-Resolved")
-# loc("Total Created-Resolved")
-# loc("Average Created-Resolved")
-# loc("Minimum Created-Resolved")
-# loc("Maximum Created-Resolved")
-# loc("Summary of Created-LastUpdated")
-# loc("Total Created-LastUpdated")
-# loc("Average Created-LastUpdated")
-# loc("Minimum Created-LastUpdated")
-# loc("Maximum Created-LastUpdated")
-# loc("Summary of Starts-Started")
-# loc("Total Starts-Started")
-# loc("Average Starts-Started")
-# loc("Minimum Starts-Started")
-# loc("Maximum Starts-Started")
-# loc("Summary of Due-Resolved")
-# loc("Total Due-Resolved")
-# loc("Average Due-Resolved")
-# loc("Minimum Due-Resolved")
-# loc("Maximum Due-Resolved")
-# loc("Summary of Started-Resolved")
-# loc("Total Started-Resolved")
-# loc("Average Started-Resolved")
-# loc("Minimum Started-Resolved")
-# loc("Maximum Started-Resolved")
+# loc("Summary of Created to Started")
+# loc("Total Created to Started")
+# loc("Average Created to Started")
+# loc("Minimum Created to Started")
+# loc("Maximum Created to Started")
+# loc("Summary of Created to Resolved")
+# loc("Total Created to Resolved")
+# loc("Average Created to Resolved")
+# loc("Minimum Created to Resolved")
+# loc("Maximum Created to Resolved")
+# loc("Summary of Created to LastUpdated")
+# loc("Total Created to LastUpdated")
+# loc("Average Created to LastUpdated")
+# loc("Minimum Created to LastUpdated")
+# loc("Maximum Created to LastUpdated")
+# loc("Summary of Starts to Started")
+# loc("Total Starts to Started")
+# loc("Average Starts to Started")
+# loc("Minimum Starts to Started")
+# loc("Maximum Starts to Started")
+# loc("Summary of Due to Resolved")
+# loc("Total Due to Resolved")
+# loc("Average Due to Resolved")
+# loc("Minimum Due to Resolved")
+# loc("Maximum Due to Resolved")
+# loc("Summary of Started to Resolved")
+# loc("Total Started to Resolved")
+# loc("Average Started to Resolved")
+# loc("Minimum Started to Resolved")
+# loc("Maximum Started to Resolved")
 
 our @STATISTICS = (
     COUNT => ['Ticket count', 'Count', 'id'],
@@ -279,15 +279,15 @@ foreach my $field (qw(TimeWorked TimeEstimated TimeLeft)) {
 }
 
 
-foreach my $pair (qw(
-    Created-Started
-    Created-Resolved
-    Created-LastUpdated
-    Starts-Started
-    Due-Resolved
-    Started-Resolved
-)) {
-    my ($from, $to) = split /-/, $pair;
+foreach my $pair (
+    'Created to Started',
+    'Created to Resolved',
+    'Created to LastUpdated',
+    'Starts to Started',
+    'Due to Resolved',
+    'Started to Resolved',
+) {
+    my ($from, $to) = split / to /, $pair;
     push @STATISTICS, (
         "ALL($pair)" => ["Summary of $pair", 'DateTimeIntervalAll', $from, $to ],
         "SUM($pair)" => ["Total $pair", 'DateTimeInterval', 'SUM', $from, $to ],
