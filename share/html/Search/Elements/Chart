@@ -77,7 +77,7 @@ if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
 <div class="chart-wrapper">
 <div class="form-row">
 <div class="col-md-auto">
-% if ( ($ChartStyle || '') =~ /\b(pie|bar)\b/ ) {
+% if ( ($ChartStyle || '') =~ /\b(pie|bar|line)\b/ ) {
 <div class="chart image <% $1 %>">
 % if ( RT->Config->Get('EnableJSChart', $session{CurrentUser}) ) {
   <& /Search/JSChart, Cache => $key, %ARGS, GroupBy => \@GroupBy &>
