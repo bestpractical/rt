@@ -228,12 +228,14 @@ our %GROUPINGS_META = (
         Localize => 1,
     },
     Duration => {
+        SubFields => [ qw/Default Hour Day Week Month Year/ ],
         Localize => 1,
         Short    => 0,
         Show     => 1,
         Sort     => 'duration',
     },
     DurationInBusinessHours => {
+        SubFields => [ qw/Default Hour/ ],
         Localize => 1,
         Short    => 0,
         Show     => 1,
@@ -748,12 +750,24 @@ sub _DoSearch {
                                 $seconds = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
                             }
 
-                            $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
-                                $seconds,
-                                Show    => $group->{META}{Show},
-                                Short   => $group->{META}{Short},
-                                MaxUnit => $business_time ? 'hour' : 'year',
-                            );
+                            if ( $group->{SUBKEY} eq 'Default' ) {
+                                $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                    $seconds,
+                                    Show    => $group->{META}{Show},
+                                    Short   => $group->{META}{Short},
+                                    MaxUnit => $business_time ? 'hour' : 'year',
+                                );
+                            }
+                            else {
+                                $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                    $seconds,
+                                    Show    => $group->{META}{Show} // 3,
+                                    Short   => $group->{META}{Short} // 1,
+                                    MaxUnit => lc $group->{SUBKEY},
+                                    MinUnit => lc $group->{SUBKEY},
+                                    Unit    => lc $group->{SUBKEY},
+                                );
+                            }
                         }
                     }
 
