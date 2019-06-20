@@ -70,7 +70,7 @@ if ( backgroundColor && backgroundColor.length ) {
 
 var ctx = document.getElementById('search-chart').getContext('2d');
 var searchChart = new Chart(ctx, {
-    type: <% $ChartStyle =~ /\bbar\b/ ? 'bar' : 'pie' |n,j %>,
+    type: <% $ChartStyle =~ /\b(bar|line|pie)\b/ ? $1 : 'bar' |n,j %>,
     data: {
         labels: <% JSON( [ map { join ' - ', @$_ } @{$data[0]} ] ) |n %>,
         datasets: [
@@ -80,7 +80,7 @@ var searchChart = new Chart(ctx, {
             backgroundColor: backgroundColor || [],
 %   }
 
-%   if ( $ChartStyle =~ /\bbar\b/ ) {
+%   if ( $ChartStyle =~ /\bbar|line\b/ ) {
             label: <% $labels[$index-1] |n,j %>,
 %   }
             data: <% JSON($data[$index]) |n %>
@@ -97,7 +97,7 @@ var searchChart = new Chart(ctx, {
                 scheme: <% $scheme |n,j %>
             }
         },
-% if ( $ChartStyle =~ /\bbar\b/ ) {
+% if ( $ChartStyle =~ /\bbar|line\b/ ) {
         legend: {
             display: <% @data == 2 ? 'false' : 'true' %>
         },
@@ -231,7 +231,7 @@ while ( my $entry = $report->Next ) {
 $ChartStyle =~ s/\bpie\b/bar/ if @data > 2;
 
 my @labels;
-if ( $ChartStyle =~ /\bbar\b/ ) {
+if ( $ChartStyle =~ /\b(?:bar|line)\b/ ) {
     for my $column ( @{$columns{'Functions'}} ) {
         my $info = $report->ColumnInfo( $column );
         my @subs;

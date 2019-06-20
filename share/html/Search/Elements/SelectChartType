@@ -50,10 +50,18 @@ $Name => 'ChartType'
 $Default => 'bar'
 </%args>
 <select id="<%$Name%>" name="<%$Name%>">
-% foreach my $option ('bar', 'pie', 'table') {
-% # 'bar' # loc
-% # 'pie' # loc
-% # 'table' # loc
+% foreach my $option ( @types ) {
 <option value="<%$option%>"<% $option eq $Default ? qq[ selected="selected"] : '' |n %>><%loc($option)%></option>
 % }
 </select>
+
+<%init>
+my @types;
+if ( RT->Config->Get('EnableJSChart', $session{CurrentUser}) ) {
+    @types = qw(bar line pie table); # loc_qw
+}
+else {
+    @types = qw(bar pie table); # loc_qw
+}
+
+</%init>

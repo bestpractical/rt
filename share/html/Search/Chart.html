@@ -179,7 +179,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 
 <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
 <input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
-<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar|table)\b/ ? $1 : undef &></label>
+<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar(?:-stacked)?|line(?:-stacked)?|table)\b/ ? $1 : undef &></label>
 <span class="width">
 <label><% loc("Width") %>: <input type="text" name="Width" value="<% $query{'Width'} || q{} %>"> <% loc("px") %></label>
 </span>
@@ -207,7 +207,7 @@ var updateChartStyle = function() {
 };
 jQuery(".chart-picture [name=ChartType]").change(function(){
     var t = jQuery(this);
-    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val() == 'bar' );
+    t.closest("form").find("[name=Height]").closest(".height").toggle( t.val().match(/\b(?:bar|line)\b/) ? true : false );
     t.closest("form").find("[name=Width]").closest(".width").toggle( t.val() !== 'table' );
     t.closest("form .chart-picture").find("div.include-table").toggle( t.val() !== 'table' );
     updateChartStyle();
