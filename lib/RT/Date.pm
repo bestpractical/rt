@@ -411,6 +411,20 @@ most vague variant.
 Turn on short notation with one character units, for example
 "3M 2d 1m 10s".
 
+=item * MinUnit
+
+The min unit to use. Default is 'second'.
+
+=item * MaxUnit
+
+The max unit to use. Default is 'year'.
+
+=item * Unit
+
+The unit to use. This implies showing "< ..." or "> ..." when the value
+exceeds boundary. E.g. when it's set to "hour", 24*3600*2 seconds will show
+as "> 24 hours" instead of "2 days" or "48 hours".
+
 =back
 
 =cut
@@ -418,9 +432,9 @@ Turn on short notation with one character units, for example
 sub DurationAsString {
     my $self     = shift;
     my $duration = int shift;
-    my %args = ( Show => 1, Short => 0, @_ );
+    my %args = ( Show => 1, Short => 0, MinUnit => 'second', MaxUnit => 'year', @_ );
 
-    unless ( $duration ) {
+    unless ( $duration || $args{Unit} ) {
         return $args{Short}? $self->loc("0s") : $self->loc("0 seconds");
     }
 
@@ -432,40 +446,177 @@ sub DurationAsString {
 
     my $coef = 2;
     my $i = 0;
+
+    my %skip;
+    my @units = qw/second minute hour day week month year/;
+    for my $unit (@units) {
+        last if $args{MinUnit} =~ /$unit/i;
+        $skip{$unit} = 1;
+    }
+
+    if ( $args{Unit} ) {
+        my ( $locstr, $unit );
+        if ( $args{Unit} eq 'minute' ) {
+            if ( $duration < $MINUTE ) {
+                if ( $args{Short} ) {
+                    $locstr = '< [_1]m';    # loc
+                }
+                else {
+                    $locstr = '< [_1] minute';    # loc
+                }
+                $unit = 1;
+            }
+            elsif ( $duration > $coef * $HOUR ) {
+                if ( $args{Short} ) {
+                    $locstr = '> [_1]m';          # loc
+                }
+                else {
+                    $locstr = '> [_1] minutes';    # loc
+                }
+                $unit = $coef * 60;
+            }
+        }
+        elsif ( $args{Unit} eq 'hour' ) {
+            if ( $duration < $HOUR ) {
+                if ( $args{Short} ) {
+                    $locstr = '< [_1]h';           # loc
+                }
+                else {
+                    $locstr = '< [_1] hour';       # loc
+                }
+                $unit = 1;
+            }
+            elsif ( $duration > $coef * $DAY ) {
+                if ( $args{Short} ) {
+                    $locstr = '> [_1]h';           # loc
+                }
+                else {
+                    $locstr = '> [_1] hours';      # loc
+                }
+                $unit = $coef * 24;
+            }
+        }
+        elsif ( $args{Unit} eq 'day' ) {
+            if ( $duration < $DAY ) {
+                if ( $args{Short} ) {
+                    $locstr = '< [_1]d';           # loc
+                }
+                else {
+                    $locstr = '< [_1] day';        # loc
+                }
+                $unit = 1;
+            }
+            elsif ( $duration > $coef * $WEEK ) {
+                if ( $args{Short} ) {
+                    $locstr = '> [_1]d';           # loc
+                }
+                else {
+                    $locstr = '> [_1] days';       # loc
+                }
+                $unit = $coef * 7;
+            }
+        }
+        elsif ( $args{Unit} eq 'week' ) {
+            if ( $duration < $WEEK ) {
+                if ( $args{Short} ) {
+                    $locstr = '< [_1]W';           # loc
+                }
+                else {
+                    $locstr = '< [_1] week';       # loc
+                }
+                $unit = 1;
+            }
+            elsif ( $duration > $coef * 4 * $WEEK ) {
+                if ( $args{Short} ) {
+                    $locstr = '> [_1]W';           # loc
+                }
+                else {
+                    $locstr = '> [_1] weeks';      # loc
+                }
+                $unit = $coef * 4;
+            }
+        }
+        elsif ( $args{Unit} eq 'month' ) {
+            if ( $duration < $MONTH ) {
+                if ( $args{Short} ) {
+                    $locstr = '< [_1]M';           # loc
+                }
+                else {
+                    $locstr = '< [_1] month';      # loc
+                }
+                $unit = 1;
+            }
+            elsif ( $duration > $coef * 12 * $MONTH ) {
+                if ( $args{Short} ) {
+                    $locstr = '> [_1]M';           # loc
+                }
+                else {
+                    $locstr = '> [_1] months';     # loc
+                }
+                $unit = $coef * 12;
+            }
+        }
+        elsif ( $args{Unit} eq 'year' ) {
+            if ( $duration < $YEAR ) {
+                if ( $args{Short} ) {
+                    $locstr = '< [_1]Y';           # loc
+                }
+                else {
+                    $locstr = '< [_1] years';      # loc
+                }
+                $unit = 1;
+            }
+            elsif ( $duration > $coef * 100 * $YEAR ) {
+                if ( $args{Short} ) {
+                    $locstr = '> [_1]Y';           # loc
+                }
+                else {
+                    $locstr = '> [_1] years';      # loc
+                }
+                $unit = $coef * 100;
+            }
+        }
+
+        if ($locstr) {
+            push @res, $self->loc($locstr, $unit);
+            $duration = 0;
+        }
+    }
+
     while ( $duration > 0 && ++$i <= $args{'Show'} ) {
 
         my ($locstr, $unit);
-        if ( $duration < $MINUTE ) {
+        if ( !$skip{second} && ( $duration < $MINUTE || $args{MaxUnit} =~ /second/i ) ) {
             $locstr = $args{Short}
                     ? '[_1]s'                      # loc
                     : '[quant,_1,second,seconds]'; # loc
             $unit = 1;
         }
-        elsif ( $duration < ( $coef * $HOUR ) ) {
+        elsif ( !$skip{minute} && ( $duration < ( $coef * $HOUR ) || $args{MaxUnit} =~ /minute/i ) ) {
             $locstr = $args{Short}
                     ? '[_1]m'                      # loc
                     : '[quant,_1,minute,minutes]'; # loc
             $unit = $MINUTE;
         }
-        elsif ( $duration < ( $coef * $DAY ) ) {
+        elsif ( !$skip{hour} && ( $duration < ( $coef * $DAY ) || $args{MaxUnit} =~ /hour/i) ) {
             $locstr = $args{Short}
                     ? '[_1]h'                      # loc
                     : '[quant,_1,hour,hours]';     # loc
             $unit = $HOUR;
         }
-        elsif ( $duration < ( $coef * $WEEK ) ) {
+        elsif ( !$skip{day} && ( $duration < ( $coef * $WEEK ) || $args{MaxUnit} =~ /day/i ) ) {
             $locstr = $args{Short}
                     ? '[_1]d'                      # loc
                     : '[quant,_1,day,days]';       # loc
             $unit = $DAY;
         }
-        elsif ( $duration < ( $coef * $MONTH ) ) {
+        elsif ( !$skip{week} && ( $duration < ( $coef * $MONTH ) || $args{MaxUnit} =~ /week/i) ) {
             $locstr = $args{Short}
                     ? '[_1]W'                      # loc
                     : '[quant,_1,week,weeks]';     # loc
             $unit = $WEEK;
         }
-        elsif ( $duration < $YEAR ) {
+        elsif ( !$skip{month} && ( $duration < $YEAR || $args{MaxUnit} =~ /month/i ) ) {
             $locstr = $args{Short}
                     ? '[_1]M'                      # loc
                     : '[quant,_1,month,months]';   # loc
