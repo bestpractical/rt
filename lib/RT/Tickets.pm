@@ -671,6 +671,7 @@ sub _DateLimit {
     }
     else {
         $sb->Limit(
+            FUNCTION => $sb->NotSetDateToNullFunction,
             FIELD    => $meta->[1],
             OPERATOR => $op,
             VALUE    => $date ? $date->ISO : $value,
