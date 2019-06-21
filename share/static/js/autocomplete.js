@@ -55,7 +55,7 @@ window.RT.Autocomplete.bind = function(from) {
                 options: options ? JSON.parse(options) : null,
                 valueField: 'value',
                 labelField: 'label',
-                searchField: ['label', 'value'],
+                searchField: ['label', 'value', 'text'],
                 create: true,
                 closeAfterSelect: true,
                 maxItems: null,
