@@ -632,6 +632,9 @@ sub _DateLimit {
     }
 
     my $date;
+    # this is to make queries like "Due > 0" still work
+    $rest{QUOTEVALUE} = 1 if $value eq '0';
+
     if ( $rest{QUOTEVALUE} ) {
         $date = RT::Date->new( $sb->CurrentUser );
         $date->Set( Format => 'unknown', Value => $value );
