@@ -94,6 +94,8 @@ push @exclude, RT->Nobody->id unless $include_nobody;
 $m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
 $max //= 10;
 
+$m->callback( CallbackName => 'ModifyTerm', term => \$term );
+
 my $users = RT::Users->new($CurrentUser);
 $users->SimpleSearch( Privileged => $privileged,
                       Return     => $return,
