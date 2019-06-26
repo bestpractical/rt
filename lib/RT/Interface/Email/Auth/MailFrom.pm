@@ -84,7 +84,13 @@ sub GetCurrentUser {
 
     unless ( $Address ) {
         $RT::Logger->error("Couldn't parse or find sender's address");
-        FAILURE("Couldn't parse or find sender's address");
+
+        MailError(
+            To          => RT->Config->Get('OwnerEmail'),
+            Subject     => "Couldn't parse or find sender's address",
+            Explanation => "Couldn't parse or find sender's address in email headers",
+            FAILURE     => 1,
+        );
     }
 
     my $CurrentUser = RT::CurrentUser->new;
