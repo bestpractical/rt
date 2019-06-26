@@ -20,7 +20,8 @@ here's some content
     my ($status, $id);
     warnings_like { ( $status, $id ) = RT::Test->send_via_mailgate($mail) }
         [(qr/Unable to parse an email address from/) x 2,
-         qr/Couldn't parse or find sender's address/
+         qr/Couldn't parse or find sender's address/,
+         qr/Couldn't parse or find sender's address: Couldn't parse or find sender's address in email headers/
         ],
         'Got parse error for non-ASCII in From';
     TODO: {
@@ -44,7 +45,8 @@ here's some content
     my ($status, $id);
     warnings_like { ( $status, $id ) = RT::Test->send_via_mailgate($mail) }
         [(qr/Unable to parse an email address from/) x 2,
-         qr/Couldn't parse or find sender's address/
+         qr/Couldn't parse or find sender's address/,
+         qr/Couldn't parse or find sender's address: Couldn't parse or find sender's address in email headers/
         ],
         'Got parse error for iso-8859-1 in From';
     TODO: {
@@ -66,7 +68,8 @@ here's some content
 
     my ($status, $id);
     warnings_like { ( $status, $id ) = RT::Test->send_via_mailgate($mail) }
-        [qr/Couldn't parse or find sender's address/],
+        [qr/Couldn't parse or find sender's address/,
+         qr/Couldn't parse or find sender's address: Couldn't parse or find sender's address in email headers/],
         'Got parse error with no sender fields';
     is( $status >> 8, 1, "The mail gateway failed" );
     ok( !$id, "No ticket created" );
