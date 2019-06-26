@@ -723,6 +723,7 @@ sub _LimitCustomField {
             OPERATOR   => $op,
             VALUE      => $value,
             CASESENSITIVE => 0,
+            QUOTEVALUE => $args{QUOTEVALUE},
         ) );
         $self->Limit(
             %args,
@@ -827,6 +828,7 @@ sub _LimitCustomField {
             ENTRYAGGREGATOR => 'AND',
             SUBCLAUSE       => $args{SUBCLAUSE},
             CASESENSITIVE => 0,
+            QUOTEVALUE      => $args{QUOTEVALUE},
         ) );
         $self->_CloseParen( $args{SUBCLAUSE} ); # LargeContent check
     }
