@@ -127,8 +127,6 @@ for this column.
 
 =back
 
-=cut
-
 Each of these can be a value like a simple string or an anonymous
 subroutine with code that runs to calculate the value.
 

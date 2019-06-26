@@ -2472,11 +2472,8 @@ sub _DateForCustomDateRangeField {
     return $date;
 }
 
-# Parses "field - field" and returns a five-element list containing the end
-# date field name, the operator (right now always "-" for subtraction), the
-# start date field name, either a custom duration formatter coderef or undef,
-# and a boolean to indicate if it should calculate duration as business time
-# or not. Returns the empty list if there's an error.
+# Parses custom date range spec and returns a hash containing parsed info.
+# Returns the empty list if there's an error.
 
 sub _ParseCustomDateRangeSpec {
     my $self = shift;
@@ -2485,12 +2482,10 @@ sub _ParseCustomDateRangeSpec {
 
     my $calculation;
     my $format;
-    my $business_time;
 
     if (ref($spec)) {
-        $calculation = $spec->{value};
+        $calculation = $spec->{value} || join( ' - ', $spec->{to}, $spec->{from} );
         $format = $spec->{format};
-        $business_time = $spec->{business_time};
     }
     else {
         $calculation = $spec;
@@ -2512,9 +2507,9 @@ sub _ParseCustomDateRangeSpec {
     # regex parses "field - field" (intentionally very strict)
     my $calculation_parser = qr{
         ^
-        ($field_parser)   # end field name
-        \s+ (-) \s+       # space, operator, more space
-        ($field_parser)   # start field name
+        ($field_parser)   # to field name
+        \s+ - \s+       # space, operator, more space
+        ($field_parser)   # from field name
         $
     }x;
 
@@ -2525,14 +2520,17 @@ sub _ParseCustomDateRangeSpec {
         return;
     }
 
-    if (@matches != 3) {
-        RT->Logger->error("Unexpected number of submatches for '$calculation' in CustomDateRanges '$name'. Got " . scalar(@matches) . ", expected 3.");
-        return;
+    if ( ref $spec ) {
+        for my $type ( qw/from to/ ) {
+            if ( $spec->{"${type}_fallback"} && $spec->{"${type}_fallback"} !~ /^$field_parser$/ ) {
+                RT->Logger->error( "Invalid ${type}_fallback field: " . $spec->{"${type}_fallback"} );
+                return;
+            }
+        }
     }
 
-    my ($end, $op, $start) = @matches;
-
-    return ($end, $op, $start, $format, $business_time);
+    my %date_range_spec = ( from => $matches[1], to => $matches[0], ref $spec ? %$spec : () );
+    return %date_range_spec;
 }
 
 =head2 CustomDateRange name, spec
@@ -2548,60 +2546,77 @@ sub CustomDateRange {
     my $name = shift;
     my $spec = shift;
 
-    my ($end, $op, $start, $format, $business_time) = $self->_ParseCustomDateRangeSpec($name, $spec);
+    my %date_range_spec = $self->_ParseCustomDateRangeSpec($name, $spec);
 
     # parse failed; render no value
-    return unless $start && $end;
+    return unless $date_range_spec{from} && $date_range_spec{to};
 
-    my $end_dt = $self->_DateForCustomDateRangeField($end, $name);
-    my $start_dt = $self->_DateForCustomDateRangeField($start, $name);
+    my $end_dt = $self->_DateForCustomDateRangeField($date_range_spec{to}, $name);
+    my $start_dt = $self->_DateForCustomDateRangeField($date_range_spec{from}, $name);
+
+    unless ( $start_dt && $start_dt->IsSet ) {
+        if ( ref $spec && $date_range_spec{from_fallback} ) {
+            $start_dt = $self->_DateForCustomDateRangeField( $date_range_spec{from_fallback}, $name );
+        }
+    }
+
+    unless ( $end_dt && $end_dt->IsSet ) {
+        if ( ref $spec && $date_range_spec{to_fallback} ) {
+            $end_dt = $self->_DateForCustomDateRangeField( $date_range_spec{to_fallback}, $name );
+        }
+    }
 
     # RT::Date instantiation failed; render no value
     return unless $start_dt && $start_dt->IsSet
                && $end_dt && $end_dt->IsSet;
 
     my $duration;
-    if ($op eq '-') {
-        if ( $business_time && !$self->QueueObj->SLADisabled && $self->SLA ) {
-            my $config    = RT->Config->Get('ServiceAgreements');
-            my $agreement = $config->{Levels}{ $self->SLA };
-            my $timezone
-                = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone}
-                || $agreement->{Timezone}
-                || RT->Config->Get('Timezone');
+    if ( $date_range_spec{business_time} ) {
+        my $schedule;
+        my $timezone;
 
-            {
-                local $ENV{'TZ'} = $ENV{'TZ'};
-                if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
-                    $ENV{'TZ'} = $timezone;
-                    require POSIX;
-                    POSIX::tzset();
+        # Prefer the schedule/timezone specified in %ServiceAgreements for current object
+        if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
+            if ( my $config = RT->Config->Get('ServiceAgreements') ) {
+                $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+
+                # Each SLA could have its own schedule and timezone
+                if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
+                    $schedule = $agreement->{BusinessHours};
+                    $timezone ||= $agreement->{Timezone};
                 }
-
-                my $bhours = RT::SLA->BusinessHours( $agreement->{BusinessHours} || 'Default' );
-                $duration = $bhours->between(
-                    $start_dt->Unix <= $end_dt->Unix
-                    ? ( $start_dt->Unix, $end_dt->Unix )
-                    : ( $end_dt->Unix, $start_dt->Unix )
-                );
-                $duration *= -1 if $start_dt->Unix > $end_dt->Unix;
-            }
-
-            if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
-                POSIX::tzset();
             }
         }
+        $timezone ||= RT->Config->Get('Timezone');
+        $schedule ||= 'Default';
 
-        $duration //= $end_dt->Diff($start_dt);
+        {
+            local $ENV{'TZ'} = $ENV{'TZ'};
+            if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
+                $ENV{'TZ'} = $timezone;
+                require POSIX;
+                POSIX::tzset();
+            }
+
+            my $bhours = RT::SLA->BusinessHours($schedule);
+            $duration = $bhours->between(
+                $start_dt->Unix <= $end_dt->Unix
+                ? ( $start_dt->Unix, $end_dt->Unix )
+                : ( $end_dt->Unix, $start_dt->Unix )
+            );
+            $duration *= -1 if $start_dt->Unix > $end_dt->Unix;
+        }
+
+        if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
+            POSIX::tzset();
+        }
     }
-    else {
-        RT->Logger->error("Unexpected operator in CustomDateRanges '$name' spec '$spec'. Got '$op', expected '-'.");
-        return;
-    }
+
+    $duration //= $end_dt->Diff($start_dt);
 
     # _ParseCustomDateRangeSpec guarantees $format is a coderef
-    if ($format) {
-        return $format->($duration, $end_dt, $start_dt, $self);
+    if ($date_range_spec{format}) {
+        return $date_range_spec{format}->($duration, $end_dt, $start_dt, $self);
     }
     else {
         # "x days ago" is strongly suggestive of comparing with the current
@@ -2615,6 +2630,58 @@ sub CustomDateRange {
             return $end_dt->DurationAsString($duration);
         }
     }
+}
+
+=head2 CustomDateRanges
+
+Return all of the custom date ranges of current class.
+
+=cut
+
+sub CustomDateRanges {
+    my $self = shift;
+    my $type = ref $self || $self;
+
+    my %ranges;
+
+    if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+        %ranges = %{ $config->{$type} } if $config->{$type};
+    }
+
+    if ( my $attribute = RT->System->FirstAttribute('CustomDateRanges') ) {
+        if ( my $content = $attribute->Content ) {
+            for my $name ( keys %{ $content->{$type} || {} } ) {
+                $ranges{$name} ||= $content->{$type}{$name};
+            }
+        }
+    }
+    return %ranges;
+}
+
+=head2 CustomDateRangeFields
+
+Return all of the fields custom date range could use for current class.
+
+=cut
+
+sub CustomDateRangeFields {
+    my $self = shift;
+    my $type = ref $self || $self;
+
+    my @fields = 'now';
+
+    for my $column ( keys %{ $_TABLE_ATTR->{ ref $self || $self } } ) {
+        my $entry = $_TABLE_ATTR->{ ref $self || $self }{$column};
+        next unless $entry->{read} && ( $entry->{type} // '' ) eq 'datetime';
+        push @fields, $column;
+    }
+
+    my $cfs = RT::CustomFields->new( ref $self ? $self->CurrentUser : RT->SystemUser );
+    $cfs->Limit( FIELD => 'Type', VALUE => [ 'Date', 'DateTime' ], OPERATOR => 'IN' );
+    while ( my $cf = $cfs->Next ) {
+        push @fields, 'CF.{' . $cf->Name . '}';
+    }
+    return sort { lc $a cmp lc $b } @fields;
 }
 
 sub UID {
