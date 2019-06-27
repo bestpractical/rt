@@ -62,7 +62,7 @@
 
 <& /Elements/CollectionList, 
     Query => $Query,
-    TotalFound => $ticketcount,
+    TotalFound => $count,
     AllowSorting => 1,
     OrderBy => $OrderBy,
     Order => $Order,
@@ -70,11 +70,12 @@
     Page => $Page,
     Format => $Format,
     DisplayFormat => $DisplayFormat, # in case we set it in callbacks
-    Class => 'RT::Tickets',
+    Class => $Class,
     BaseURL => $BaseURL,
     SavedSearchId => $ARGS{'SavedSearchId'},
     SavedChartSearchId => $ARGS{'SavedChartSearchId'},
-    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId)],
+    ObjectType => $ObjectType,
+    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType)],
 &>
 % }
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
@@ -85,7 +86,7 @@
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
-<& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{'tickets_refresh_interval'}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
+<& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
 <div class="form-row">
   <div class="col-md-12">
     <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Change</&>" />
@@ -108,9 +109,16 @@ my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {}
 
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
-$Format      ||= $prefs->{'Format'} || RT->Config->Get('DefaultSearchResultFormat');
-$Order       ||= $prefs->{'Order'} || RT->Config->Get('DefaultSearchResultOrder');
-$OrderBy     ||= $prefs->{'OrderBy'} || RT->Config->Get('DefaultSearchResultOrderBy');
+if ( $Class eq 'RT::Transactions' ) {
+    $Format  ||= RT->Config->Get('TransactionDefaultSearchResultFormat')->{$ObjectType};
+    $Order   ||= RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType};
+    $OrderBy ||= RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType};
+}
+else {
+    $Format  ||= $prefs->{'Format'}  || RT->Config->Get('DefaultSearchResultFormat');
+    $Order   ||= $prefs->{'Order'}   || RT->Config->Get('DefaultSearchResultOrder');
+    $OrderBy ||= $prefs->{'OrderBy'} || RT->Config->Get('DefaultSearchResultOrderBy');
+}
 
 # Some forms pass in "RowsPerPage" rather than "Rows"
 # We call it RowsPerPage everywhere else.
@@ -126,39 +134,78 @@ if ( !defined($Rows) ) {
 }
 $Page = 1 unless $Page && $Page > 0;
 
+my $hash_name;
+if ( $Class eq 'RT::Tickets' ) {
+    $hash_name = 'CurrentSearchHash';
+}
+else {
+    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType;
+}
+
+my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType;
+
 $session{'i'}++;
-$session{'tickets'} = RT::Tickets->new($session{'CurrentUser'}) ;
-my ($ok, $msg) = $Query ? $session{'tickets'}->FromSQL($Query) : (1, "Vacuously OK");
+$session{$session_name} = $Class->new($session{'CurrentUser'}) ;
+
+my ( $ok, $msg );
+if ( $Query ) {
+    if ( $Class eq 'RT::Transactions' ) {
+        my @limits = ( "ObjectType = '$ObjectType'", "($Query)" );
+        if ( $ObjectType eq 'RT::Ticket' ) {
+            unshift @limits, "TicketType = 'ticket'";
+        }
+        ( $ok, $msg ) = $session{$session_name}->FromSQL( join ' AND ', @limits );
+    }
+    else {
+        ( $ok, $msg ) = $session{$session_name}->FromSQL($Query);
+    }
+}
+
 # Provide an empty search if parsing failed
-$session{'tickets'}->FromSQL("id < 0") unless ($ok);
+$session{$session_name}->FromSQL("id < 0") unless ($ok);
 
 if ($OrderBy =~ /\|/) {
     # Multiple Sorts
     my @OrderBy = split /\|/,$OrderBy;
     my @Order = split /\|/,$Order;
-    $session{'tickets'}->OrderByCols(
+    $session{$session_name}->OrderByCols(
         map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
         .. $#OrderBy ) );; 
 } else {
-    $session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
+    $session{$session_name}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 }
-$session{'tickets'}->RowsPerPage( $Rows ) if $Rows;
-$session{'tickets'}->GotoPage( $Page - 1 );
+$session{$session_name}->RowsPerPage( $Rows ) if $Rows;
+$session{$session_name}->GotoPage( $Page - 1 );
 
-$session{'CurrentSearchHash'} = {
+$session{$hash_name} = {
     Format      => $Format,
     Query       => $Query,
-    Page       => $Page,
+    Page        => $Page,
     Order       => $Order,
     OrderBy     => $OrderBy,
-    RowsPerPage => $Rows
+    RowsPerPage => $Rows,
+    ObjectType  => $ObjectType,
 };
 
 
-my ($title, $ticketcount) = (loc("Find tickets"), 0);
-if ( $session{'tickets'}->Query()) {
-    $ticketcount = $session{tickets}->CountAll();
-    $title = loc('Found [quant,_1,ticket,tickets]', $ticketcount);
+my $count = $session{$session_name}->Query() ? $session{$session_name}->CountAll() : 0;
+
+my $title;
+if ( $Class eq 'RT::Transactions' ) {
+    if ( $session{$session_name}->Query() ) {
+        $title = loc( 'Found [quant,_1,transaction,transactions]', $count );
+    }
+    else {
+        $title = loc("Find transactions");
+    }
+}
+else {
+    if ( $session{$session_name}->Query() ) {
+        $title = loc( 'Found [quant,_1,ticket,tickets]', $count );
+    }
+    else {
+        $title = loc("Find tickets");
+    }
 }
 
 my $QueryString = "?".$m->comp('/Elements/QueryString',
@@ -170,16 +217,15 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 
-if ($ARGS{'TicketsRefreshInterval'}) {
-    $session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
+my $interval_name = $Class eq 'RT::Tickets' ? 'tickets_refresh_interval' : "${Class}_${ObjectType}_refresh_interval";
+if ($ARGS{'SearchResultsRefreshInterval'}) {
+    $session{$interval_name} = $ARGS{'SearchResultsRefreshInterval'};
 }
-
-my $refresh = $session{'tickets_refresh_interval'}
-    || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} );
+my $refresh = $session{$interval_name} || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} );
 
 # Check $m->request_args, not $DECODED_ARGS, to avoid creating a new CSRF token on each refresh
 if (RT->Config->Get('RestrictReferrer') and $refresh and not $m->request_args->{CSRF_Token}) {
-    my $token = RT::Interface::Web::StoreRequestToken( $session{'CurrentSearchHash'} );
+    my $token = RT::Interface::Web::StoreRequestToken( $session{$hash_name} );
     $m->notes->{RefreshURL} = RT->Config->Get('WebURL')
         . "Search/Results.html?CSRF_Token="
             . $token;
@@ -198,22 +244,24 @@ my $genpage = sub {
     );
 };
 
-if ( RT->Config->Get('SearchResultsAutoRedirect') && $ticketcount == 1 &&
-    $session{tickets}->First ) {
-# $ticketcount is not always precise unless $UseSQLForACLChecks is set to true,
-# check $session{tickets}->First here is to make sure the ticket is there.
+if ( RT->Config->Get('SearchResultsAutoRedirect') && $count == 1 &&
+    $session{$session_name}->First ) {
+# $count is not always precise unless $UseSQLForACLChecks is set to true,
+# check $session{$session_name}->First here is to make sure the ticket is there.
     RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
-            ."Ticket/Display.html?id=". $session{tickets}->First->id );
+            . ( $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket' )
+            . "/Display.html?id="
+            . $session{$session_name}->First->id );
 }
 
 my $BaseURL = RT->Config->Get('WebPath')."/Search/Results.html?";
 $link_rel{first} = $BaseURL . $genpage->(1)         if $Page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($Page - 1) if $Page > 1;
-$link_rel{next}  = $BaseURL . $genpage->($Page + 1) if ($Page * $Rows) < $ticketcount;
-$link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$Rows)) if $Rows and ($Page * $Rows) < $ticketcount;
+$link_rel{next}  = $BaseURL . $genpage->($Page + 1) if ($Page * $Rows) < $count;
+$link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($count/$Rows)) if $Rows and ($Page * $Rows) < $count;
 </%INIT>
 <%CLEANUP>
-$session{'tickets'}->PrepForSerialization();
+$session{$session_name}->PrepForSerialization();
 </%CLEANUP>
 <%ARGS>
 $Query => undef
@@ -225,4 +273,6 @@ $OrderBy => undef
 $Order => undef
 $SavedSearchId => undef
 $SavedChartSearchId => undef
+$Class => 'RT::Tickets'
+$ObjectType => 'RT::Ticket'
 </%ARGS>

@@ -110,7 +110,7 @@ sub GetReferencedQueues {
             return unless $node->isLeaf;
 
             my $clause = $node->getNodeValue();
-            return unless $clause->{Key} eq 'Queue';
+            return unless $clause->{Key} =~ /^(?:Ticket)?Queue$/;
             return unless $clause->{Op} eq '=';
 
             $queues->{ $clause->{Value} } = 1;
@@ -251,13 +251,14 @@ sub ParseSQL {
     my %args = (
         Query => '',
         CurrentUser => '', #XXX: Hack
+        Class => 'RT::Tickets',
         @_
     );
     my $string = $args{'Query'};
 
     my @results;
 
-    my %field = %{ RT::Tickets->new( $args{'CurrentUser'} )->FIELDS };
+    my %field = %{ $args{Class}->new( $args{'CurrentUser'} )->FIELDS };
     my %lcfield = map { ( lc($_) => $_ ) } keys %field;
 
     my $node =  $self;

@@ -46,8 +46,15 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-if (!$Collection && $Class eq 'RT::Tickets') {
-    $Collection = RT::Tickets->new( $session{'CurrentUser'} );
+if (!$Collection) {
+    $Collection = $Class->new( $session{'CurrentUser'} );
+    if ( $Class eq 'RT::Transactions' ) {
+        my @limits = ( "ObjectType = '$ObjectType'", $Query ? "($Query)" : () );
+        if ( $ObjectType eq 'RT::Ticket' ) {
+            unshift @limits, "TicketType = 'ticket'";
+        }
+        $Query = join ' AND ', @limits;
+    }
     $Collection->FromSQL($Query);
 }
 
@@ -201,7 +208,7 @@ $Rows          => undef
 $Page          => 1
 $Title         => loc('Ticket Search')
 $BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
-@PassArguments => qw( Query Format Rows Page Order OrderBy)
+@PassArguments => qw( Query Format Rows Page Order OrderBy Class ObjectType )
 
 $AllowSorting   => 0  # Make headers in table links that will resort results
 $PreferOrderBy  => 0  # Prefer the passed-in @OrderBy to the collection default
@@ -210,4 +217,5 @@ $ShowHeader     => 1
 $ShowEmpty      => 0
 $Query => 0
 $HasResults     => undef
+$ObjectType     => 'RT::Ticket'
 </%ARGS>

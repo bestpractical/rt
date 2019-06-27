@@ -45,13 +45,34 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="form-control selectpicker">
-% for my $option ( @Options ) {
-<option value="<% $Prefix . $option %>"><% loc($option) %></option>
-% }
-</select>
 <%ARGS>
-$Name => 'DateType'
-$Prefix => ''
-@Options => qw(Created Started Resolved Told LastUpdated Starts Due Updated) # loc_qw
+%queues => ()
 </%ARGS>
+<%init>
+my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+foreach my $id (keys %queues) {
+    # Gotta load up the $queue object, since queues get stored by name now.
+    my $queue = RT::Queue->new($session{'CurrentUser'});
+    $queue->Load($id);
+    next unless $queue->Id;
+    $CustomFields->Limit(
+        ALIAS           => $CustomFields->_OCFAlias,
+        ENTRYAGGREGATOR => 'OR',
+        FIELD           => 'ObjectId',
+        VALUE           => $queue->id,
+    ) if defined $queue;
+    $CustomFields->LimitToLookupType('RT::Queue-RT::Ticket-RT::Transaction');
+
+    $CustomFields->SetContextObject( $queue ) if keys %queues == 1;
+}
+$CustomFields->Limit(
+    ALIAS           => $CustomFields->_OCFAlias,
+    ENTRYAGGREGATOR => 'OR',
+    FIELD           => 'ObjectId',
+    VALUE           => 0
+);
+$CustomFields->LimitToLookupType('RT::Queue-RT::Ticket-RT::Transaction');
+
+$CustomFields->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+</%init>
+<& PickCFs, %ARGS, TransactionSQLField => 'CF', CustomFields => $CustomFields &>

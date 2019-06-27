@@ -50,191 +50,355 @@
 % }
 <%INIT>
 
-my @lines = (
-    {
-        Name => 'id',
-        Field => loc('id'),
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectEqualityOperator',
-        },
-        Value => { Type => 'text', Size => 5 }
-    },
-    {
-        Name => 'Attachment',
-        Field => {
-            Type => 'component',
-            Path => '/Elements/SelectAttachmentField',
-        },
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => {
-                True => loc("matches"), 
-                False => loc("doesn't match"), 
-                TrueVal => 'LIKE',
-                FalseVal => 'NOT LIKE',
-            },
-        },
-        Value => { Type => 'text', Size => 20 },
-    },
-    {
-        Name => 'Queue',
-        Field => loc('Queue'),
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectMatch',
-            Arguments => { Default => '=' },
-        },
-        Value => {
-            Type => 'component',
-            Path => '/Elements/SelectQueue',
-            Arguments => { NamedValues => 1, },
-        },
-    },
-    {
-        Name => 'Status',
-        Field => loc('Status'),
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
-        },
-        Value => {
-            Type => 'component',
-            Path => '/Ticket/Elements/SelectStatus',
-            Arguments => { SkipDeleted => 1, Queues => \%queues, ShowActiveInactive => 1 },
-        },
-    },
-    {
-        Name => 'SLA',
-        Field => loc('SLA'),
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectMatch',
-            Arguments => { Default => '=' },
-        },
-        Value => {
-            Type => 'component',
-            Path => '/Elements/SelectSLA',
-            Arguments => { NamedValues => 1 },
-        },
-    },
-    {
-        Name => 'Actor',
-        Field => {
-            Type    => 'select',
-            Options => [
-                Owner => loc('Owner'),
-                Creator => loc('Creator'),
-                LastUpdatedBy => loc('Last updated by'),
-                UpdatedBy => loc('Updated by'),
-            ],
-        },
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
-        },
-        Value => {
-            Type => 'component',
-            Path => '/Elements/SelectOwner',
-            Arguments => { ValueAttribute => 'Name', Queues => \%queues },
-        },
-    },
-    {
-        Name => 'Watcher',
-        Field => {
-            Type => 'component',
-            Path => 'SelectPersonType',
-            Arguments => { Default => 'Requestor' },
-        },
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectMatch',
-        },
-        Value => { Type => 'text', Size => 20 }
-    },
-    {
-        Name => 'WatcherGroup',
-        Field => {
-            Type => 'component',
-            Path => 'SelectPersonType',
-            Arguments => { Default => 'Owner', Suffix => 'Group' },
-        },
-        Op => {
-            Type => 'select',
-            Options => [ '=' => loc('is') ],
-        },
-        Value => { Type => 'text', Size => 20, "data-autocomplete" => "Groups" }
-    },
-    {
-        Name => 'Date',
-        Field => {
-            Type => 'component',
-            Path => '/Elements/SelectDateType',
-        },
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectDateRelation',
-        },
-        Value => {
-            Type => 'component',
-            Path => '/Elements/SelectDate',
-            Arguments => { ShowTime => 0, Default => '' },
-        },
-    },
-    {
-        Name => 'Time',
-        Field => {
-            Type    => 'select',
-            Options => [
-                TimeWorked => loc('Time Worked'),
-                TimeEstimated => loc('Time Estimated'),
-                TimeLeft => loc('Time Left'),
-            ],
-        },
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectEqualityOperator',
-        },
-        Value => [
-            {
+my @lines;
+
+if ( $Class eq 'RT::Transactions' ) {
+    my $cfs = RT::CustomFields->new( $session{'CurrentUser'} );
+    $cfs->LimitToLookupType( $ObjectType->CustomFieldLookupType );
+    if ( %queues && $ObjectType eq 'RT::Ticket' ) {
+        my @ids = 0;
+        for my $name ( keys %queues ) {
+            my $queue = RT::Queue->new( $session{CurrentUser} );
+            $queue->Load($name);
+            push @ids, $queue->id if $queue->id;
+        }
+        $cfs->LimitToAdded( @ids );
+    }
+
+    @lines = (
+        {
+            Name => 'id',
+            Field => loc('id'),
+            Op => {
                 Type => 'component',
-                Path => '/Elements/EditTimeValue',
+                Path => '/Elements/SelectEqualityOperator',
             },
-        ],
-    },
-    {
-        Name => 'Priority',
-        Field => {
-            Type    => 'select',
-            Options => [
-                Priority => loc('Priority'),
-                InitialPriority => loc('Initial Priority'),
-                FinalPriority => loc('Final Priority'),
+            Value => { Type => 'text', Size => 5 }
+        },
+        {
+            Name => 'Attachment',
+            Field => {
+                Type => 'component',
+                Path => '/Elements/SelectAttachmentField',
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => {
+                    True => loc("matches"),
+                    False => loc("doesn't match"),
+                    TrueVal => 'LIKE',
+                    FalseVal => 'NOT LIKE',
+                },
+            },
+            Value => { Type => 'text', Size => 20 },
+        },
+        {
+            Name => 'Creator',
+            Field => loc('Creator'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/EmailInput',
+                Arguments => { AutocompleteReturn => 'Name' },
+            },
+        },
+        {
+            Name => 'Created',
+            Field => loc('Created'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectDateRelation',
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectDate',
+                Arguments => { ShowTime => 0, Default => '' },
+            },
+        },
+        {
+            Name => 'TimeTaken',
+            Field => loc('Time Taken'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectEqualityOperator',
+            },
+            Value => [
+                {
+                    Type => 'component',
+                    Path => '/Elements/EditTimeValue',
+                },
             ],
         },
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectEqualityOperator',
+        {
+            Name => 'Type',
+            Field => loc('Type'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type    => 'select',
+                Options => [
+                    # The key could be ObjectType-Type-Field or Type-Field or Type.
+                    # We just want Type
+                    '' => '-',
+                    map {  $_ => loc($_) } List::MoreUtils::uniq map { s/RT::.*?-//; s/-.*//; $_ } sort keys %RT::Transaction::_BriefDescriptions,
+                ],
+            },
         },
-        Value => {
-            Type => 'component',
-            Path => '/Elements/SelectPriority',
+        {
+            Name => 'Field',
+            Field => loc('Field'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+            },
+            Value => { Type => 'text', Size => 5 }
         },
-    },
-    {
-        Name => 'Links',
-        Field => { Type => 'component', Path => 'SelectLinks' },
-        Op => {
-            Type => 'component',
-            Path => '/Elements/SelectBoolean',
-            Arguments => { TrueVal=> '=', FalseVal => '!=' },
+        {
+            Name => 'OldValue',
+            Field => loc('Old Value'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+            },
+            Value => { Type => 'text', Size => 5 }
         },
-        Value => { Type => 'text', Size => 5 }
-    },
-);
+        {
+            Name => 'NewValue',
+            Field => loc('New Value'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+            },
+            Value => { Type => 'text', Size => 5 }
+        },
+        {
+            Name => 'CFName',
+            Field => loc('CF Name'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type    => 'select',
+                Options => [ '' => '-', map {  $_->Name => $_->Name } @{$cfs->ItemsArrayRef} ],
+            },
+        },
+        {
+            Name => 'OldCFValue',
+            Field => loc('Old CF Value'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+            },
+            Value => { Type => 'text', Size => 5 }
+        },
+        {
+            Name => 'NewCFValue',
+            Field => loc('New CF Value'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+            },
+            Value => { Type => 'text', Size => 5 }
+        },
+    );
+}
+else {
+    @lines = (
+        {
+            Name => 'id',
+            Field => loc('id'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectEqualityOperator',
+            },
+            Value => { Type => 'text', Size => 5 }
+        },
+        {
+            Name => 'Attachment',
+            Field => {
+                Type => 'component',
+                Path => '/Elements/SelectAttachmentField',
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => {
+                    True => loc("matches"),
+                    False => loc("doesn't match"),
+                    TrueVal => 'LIKE',
+                    FalseVal => 'NOT LIKE',
+                },
+            },
+            Value => { Type => 'text', Size => 20 },
+        },
+        {
+            Name => 'Queue',
+            Field => loc('Queue'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+                Arguments => { Default => '=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectQueue',
+                Arguments => { NamedValues => 1, },
+            },
+        },
+        {
+            Name => 'Status',
+            Field => loc('Status'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Ticket/Elements/SelectStatus',
+                Arguments => { SkipDeleted => 1, Queues => \%queues, ShowActiveInactive => 1 },
+            },
+        },
+        {
+            Name => 'SLA',
+            Field => loc('SLA'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+                Arguments => { Default => '=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectSLA',
+                Arguments => { NamedValues => 1 },
+            },
+        },
+        {
+            Name => 'Actor',
+            Field => {
+                Type    => 'select',
+                Options => [
+                    Owner => loc('Owner'),
+                    Creator => loc('Creator'),
+                    LastUpdatedBy => loc('Last updated by'),
+                    UpdatedBy => loc('Updated by'),
+                ],
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectOwner',
+                Arguments => { ValueAttribute => 'Name', Queues => \%queues },
+            },
+        },
+        {
+            Name => 'Watcher',
+            Field => {
+                Type => 'component',
+                Path => 'SelectPersonType',
+                Arguments => { Default => 'Requestor' },
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+            },
+            Value => { Type => 'text', Size => 20 }
+        },
+        {
+            Name => 'WatcherGroup',
+            Field => {
+                Type => 'component',
+                Path => 'SelectPersonType',
+                Arguments => { Default => 'Owner', Suffix => 'Group' },
+            },
+            Op => {
+                Type => 'select',
+                Options => [ '=' => loc('is') ],
+            },
+            Value => { Type => 'text', Size => 20, "data-autocomplete" => "Groups" }
+        },
+        {
+            Name => 'Date',
+            Field => {
+                Type => 'component',
+                Path => '/Elements/SelectDateType',
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectDateRelation',
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectDate',
+                Arguments => { ShowTime => 0, Default => '' },
+            },
+        },
+        {
+            Name => 'Time',
+            Field => {
+                Type    => 'select',
+                Options => [
+                    TimeWorked => loc('Time Worked'),
+                    TimeEstimated => loc('Time Estimated'),
+                    TimeLeft => loc('Time Left'),
+                ],
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectEqualityOperator',
+            },
+            Value => [
+                {
+                    Type => 'component',
+                    Path => '/Elements/EditTimeValue',
+                },
+            ],
+        },
+        {
+            Name => 'Priority',
+            Field => {
+                Type    => 'select',
+                Options => [
+                    Priority => loc('Priority'),
+                    InitialPriority => loc('Initial Priority'),
+                    FinalPriority => loc('Final Priority'),
+                ],
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectEqualityOperator',
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectPriority',
+            },
+        },
+        {
+            Name => 'Links',
+            Field => { Type => 'component', Path => 'SelectLinks' },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => { Type => 'text', Size => 5 }
+        },
+    );
+}
 
 $m->callback( Conditions => \@lines );
 
@@ -244,10 +408,15 @@ $m->callback( Conditions => \@lines );
     jQuery(function() {
 
     // move the actual value to a hidden value, and shadow the others
+% if ( $Class eq 'RT::Tickets' ) {
     var hidden = jQuery('<input>').attr('type','hidden').attr('name','ValueOfQueue');
 
     // change the selector's name, but preserve the values, we'll set value via js
     var selector = jQuery("[name='ValueOfQueue']");
+% } else {
+    var hidden = jQuery('<input>').attr('type','hidden').attr('name','ValueOfTicketQueue');
+    var selector = jQuery("[name='ValueOfTicketQueue']");
+% }
 
     // rename the selector so we don't get an extra term in the query
     selector[0].name = "";
@@ -264,7 +433,11 @@ $m->callback( Conditions => \@lines );
     });
 
     // hook the op field so that we can swap between the two input types
+% if ( $Class eq 'RT::Tickets' ) {
     var op = jQuery("[name='QueueOp']");
+% } else {
+    var op = jQuery("[name='TicketQueueOp']");
+% }
     op.bind('change',function() {
         if (op[0].value == "=" || op[0].value == "!=" ) {
             text.hide();
@@ -284,4 +457,6 @@ $m->callback( Conditions => \@lines );
 </script>
 <%ARGS>
 %queues => ()
+$Class => 'RT::Tickets'
+$ObjectType => 'RT::Ticket'
 </%ARGS>
