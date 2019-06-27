@@ -73,12 +73,14 @@
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $ARGS{'SavedChartSearchId'} %>" />
 <input type="hidden" class="hidden" name="Query" value="<% $query{'Query'} %>" />
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
+<input type="hidden" class="hidden" name="ObjectType" value="<% $query{'ObjectType'} %>" />
+<input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
 
 
 
 
 <div id="pick-criteria">
-    <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues &>
+    <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues, %ARGS &>
 </div>
 <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
 <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
@@ -112,15 +114,31 @@ use RT::Interface::Web::QueryBuilder::Tree;
 
 $ARGS{SavedChartSearchId} ||= 'new';
 
-my $title = loc("Query Builder");
+my $title;
+if ( $Class eq 'RT::Transactions' ) {
+    $title = loc('Transaction Query Builder');
+}
+else {
+    $title = loc("Query Builder")
+}
 
 my %query;
-for( qw(Query Format OrderBy Order RowsPerPage) ) {
-    $query{$_} = $ARGS{$_};
+for( qw(Query Format OrderBy Order RowsPerPage Class ObjectType) ) {
+    $query{$_} = $ARGS{$_} if defined $ARGS{$_};
 }
 
 my %saved_search;
-my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search);
+my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search );
+
+my $hash_name;
+if ( $Class eq 'RT::Tickets' ) {
+    $hash_name = 'CurrentSearchHash';
+}
+else {
+    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType;
+}
+
+my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType;
 
 if ( $NewQuery ) {
 
@@ -130,23 +148,28 @@ if ( $NewQuery ) {
     %saved_search = ( Id => 'new' );
 
     # ..then wipe the session out..
-    delete $session{'CurrentSearchHash'};
+    delete $session{$hash_name};
 
     # ..and the search results.
-    $session{'tickets'}->CleanSlate if defined $session{'tickets'};
+    $session{$session_name}->CleanSlate if defined $session{$session_name};
 }
 
 { # Attempt to load what we can from the session and preferences, set defaults
 
-    my $current = $session{'CurrentSearchHash'};
+    my $current = $session{$hash_name};
     my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
-    my $default = { Query => '',
-                    Format => '',
-                    OrderBy => RT->Config->Get('DefaultSearchResultOrderBy'),
-                    Order => RT->Config->Get('DefaultSearchResultOrder'),
-                    RowsPerPage => 50 };
+    my $default = {
+        Query   => '',
+        Format  => '',
+        OrderBy => $Class eq 'RT::Tickets' ? RT->Config->Get('DefaultSearchResultOrderBy')
+        : RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType},
+        Order => $Class eq 'RT::Tickets' ? RT->Config->Get('DefaultSearchResultOrder')
+        : RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType},
+        ObjectType  => $ObjectType,
+        RowsPerPage => 50
+    };
 
-    for( qw(Query Format OrderBy Order RowsPerPage) ) {
+    for( qw(Query Format OrderBy Order RowsPerPage ObjectType) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $prefs->{$_} unless defined $query{$_};
         $query{$_} = $default->{$_} unless defined $query{$_};
@@ -167,7 +190,7 @@ my $ParseQuery = sub {
     my ($string, $results) = @_;
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
+    @$results = $tree->ParseSQL( Query => $string, CurrentUser => $session{'CurrentUser'}, Class => $Class );
 
     return $tree;
 };
@@ -282,7 +305,7 @@ if ($ARGS{SavedSearchSave}) {
 
 # Push the updates into the session so we don't lose 'em
 
-$session{'CurrentSearchHash'} = {
+$session{$hash_name} = {
     %query,
     SearchId    => $saved_search{'Id'},
     Object      => $saved_search{'Object'},
@@ -308,7 +331,11 @@ if ( $ARGS{'DoSearch'} ) {
 
 my %TabArgs = ();
 if ($NewQuery) {
-    $TabArgs{QueryString} = 'NewQuery=1';
+    $TabArgs{QueryString} = $m->comp(
+        '/Elements/QueryString',
+        NewQuery => 1,
+        $Class ne 'RT::Tickets' ? ( Class => $Class, ObjectType => $ObjectType ) : ()
+    );
 }
 elsif ( $query{'Query'} ) {
     $TabArgs{QueryArgs} = \%query;
@@ -319,4 +346,6 @@ elsif ( $query{'Query'} ) {
 <%ARGS>
 $NewQuery => 0
 @clauses => ()
+$Class => 'RT::Tickets'
+$ObjectType => 'RT::Ticket'
 </%ARGS>

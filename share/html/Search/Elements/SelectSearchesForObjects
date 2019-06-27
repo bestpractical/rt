@@ -48,7 +48,9 @@
 <%args>
 @Objects => undef
 $Name => undef
-$SearchType => 'Ticket',
+$Class => 'RT::Tickets'
+$ObjectType => 'RT::Ticket'
+$SearchType => $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket'
 </%args>
 <select id="<%$Name%>" name="<%$Name%>">
 <option value="">-</option>
@@ -62,6 +64,7 @@ $SearchType => 'Ticket',
 %     # Skip it if it is not of search type we want.
 %     next if ($search->SubValue('SearchType')
 %              && $search->SubValue('SearchType') ne $SearchType);
+%     next if ($search->SubValue('SearchType') // '') eq 'RT::Transactions' && ($search->SubValue('ObjectType') // '') ne $ObjectType;
 <option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->Id%>"><%$search->Description||loc('Unnamed search')%></option>
 % }
 </optgroup>

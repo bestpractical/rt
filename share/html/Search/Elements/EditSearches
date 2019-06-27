@@ -102,7 +102,7 @@ my $is_dirty = sub {
     my %arg = (
         Query       => {},
         SavedSearch => {},
-        SearchFields => [qw(Query Format OrderBy Order RowsPerPage)],
+        SearchFields => [qw(Query Format OrderBy Order RowsPerPage ObjectType)],
         @_
     );
 
@@ -128,7 +128,8 @@ my $Dirty = $is_dirty->(
 <%ARGS>
 $Id            => 'new'
 $Object        => undef
-$Type          => 'Ticket'
+$Class         => 'RT::Tickets'
+$Type          => $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket'
 $Description   => ''
 $CurrentSearch => {}
 @SearchFields   => ()
@@ -140,7 +141,9 @@ $Title         => loc('Saved searches')
 <%ARGS>
 $Query       => {}
 $SavedSearch => {}
-@SearchFields => qw(Query Format OrderBy Order RowsPerPage)
+@SearchFields => qw(Query Format OrderBy Order RowsPerPage ObjectType)
+$Class        => 'RT::Tickets'
+$Type         => $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket'
 </%ARGS>
 <%INIT>
 
@@ -148,6 +151,7 @@ $SavedSearch->{'Id'}          = ( $ARGS{Type} && $ARGS{Type} eq 'Chart' ?
 $ARGS{'SavedChartSearchId'} : $ARGS{'SavedSearchId'} ) || 'new';
 $SavedSearch->{'Description'} = $ARGS{'SavedSearchDescription'} || '';
 $SavedSearch->{'Privacy'}     = $ARGS{'SavedSearchOwner'}       || undef;
+$SavedSearch->{'Type'}        = $Type;
 
 my @results;
 
@@ -224,7 +228,7 @@ return @results;
 <%ARGS>
 $Query        => {}
 $SavedSearch  => {}
-@SearchFields => qw(Query Format OrderBy Order RowsPerPage)
+@SearchFields => qw(Query Format OrderBy Order RowsPerPage ObjectType)
 </%ARGS>
 <%INIT>
 
