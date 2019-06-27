@@ -109,6 +109,14 @@ my $COLUMN_MAP = {
         title       => 'Content', # loc
         value       => sub { return $_[0]->Content },
     },
+    PlainContent => {
+        title       => 'Content', # loc
+        value       => sub { return $_[0]->Content( Type => 'text/plain' ) },
+    },
+    HTMLContent => {
+        title       => 'Content', # loc
+        value       => sub { return \$_[0]->Content( Type => 'text/html' ) },
+    },
 };
 
 

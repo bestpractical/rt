@@ -45,13 +45,5 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
-% for my $option ( @Options ) {
-<option value="<% $Prefix . $option %>"><% loc($option) %></option>
-% }
-</select>
-<%ARGS>
-$Name => 'DateType'
-$Prefix => ''
-@Options => qw(Created Started Resolved Told LastUpdated Starts Due Updated) # loc_qw
-</%ARGS>
+
+<& /Transaction/Display.html, %ARGS &>

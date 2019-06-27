@@ -170,6 +170,10 @@ sub BuildMainNav {
     $search->child( assets => title => loc("Assets"), path => "/Asset/Search/" )
         if $current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
+    my $txns = $search->child( transactions => title => loc('Transactions'), path => '/Search/Build.html?Class=RT::Transactions&ObjectType=RT::Ticket' );
+    my $txns_tickets = $txns->child( tickets => title => loc('Tickets'), path => "/Search/Build.html?Class=RT::Transactions&ObjectType=RT::Ticket" );
+    $txns_tickets->child( new => title => loc('New Search'), path => "/Search/Build.html?Class=RT::Transactions&ObjectType=RT::Ticket&NewQuery=1" );
+
     my $reports = $top->child( reports =>
         title       => loc('Reports'),
         description => loc('Reports summarizing ticket resolution and status'),
@@ -443,15 +447,27 @@ sub BuildMainNav {
     my $has_query = '';
     if (
         (
-               $request_path =~ m{^/(?:Ticket|Search)/}
+               $request_path =~ m{^/(?:Ticket|Transaction|Search)/}
             && $request_path !~ m{^/Search/Simple\.html}
         )
         || (   $request_path =~ m{^/Search/Simple\.html}
             && $HTML::Mason::Commands::DECODED_ARGS->{'q'} )
       )
     {
-        my $search = $top->child('search')->child('tickets');
-        my $current_search = $HTML::Mason::Commands::session{"CurrentSearchHash"} || {};
+        my $class = $HTML::Mason::Commands::DECODED_ARGS->{Class}
+            || ( $request_path =~ m{^/Transaction/} ? 'RT::Transactions' : 'RT::Tickets' );
+
+        my ( $search, $hash_name );
+        if ( $class eq 'RT::Tickets' ) {
+            $search = $top->child('search')->child('tickets');
+            $hash_name = 'CurrentSearchHash';
+        }
+        else {
+            $search = $txns_tickets;
+            $hash_name = join '-', 'CurrentSearchHash', $class, $HTML::Mason::Commands::DECODED_ARGS->{ObjectType} || 'RT::Ticket';
+        }
+
+        my $current_search = $HTML::Mason::Commands::session{$hash_name} || {};
         my $search_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchLoad'} || $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
         my $chart_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
 
@@ -465,7 +481,7 @@ sub BuildMainNav {
                 map {
                     my $p = $_;
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
-                } qw(Query Format OrderBy Order Page)
+                } qw(Query Format OrderBy Order Page Class ObjectType)
             ),
             RowsPerPage => (
                 defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
@@ -473,6 +489,8 @@ sub BuildMainNav {
                 : $current_search->{'RowsPerPage'}
             ),
         );
+        $fallback_query_args{Class} ||= $class;
+        $fallback_query_args{ObjectType} ||= 'RT::Ticket';
 
         if ($query_string) {
             $args = '?' . $query_string;
@@ -502,10 +520,13 @@ sub BuildMainNav {
         }
 
         my $current_search_menu;
-        if ( $request_path =~ m{^/Ticket} ) {
+        if (   $class eq 'RT::Tickets' && $request_path =~ m{^/Ticket}
+            || $class eq 'RT::Transactions' && $request_path =~ m{^/Transaction} )
+        {
             $current_search_menu = $search->child( current_search => title => loc('Current Search') );
             $current_search_menu->path("/Search/Results.html$args") if $has_query;
-        } else {
+        }
+        else {
             $current_search_menu = $page;
         }
 
@@ -514,54 +535,60 @@ sub BuildMainNav {
         $current_search_menu->child( advanced =>
             title => loc('Advanced'),    path => "/Search/Edit.html$args" );
         $current_search_menu->child( custom_date_ranges =>
-            title => loc('Custom Date Ranges'), path => "/Search/CustomDateRanges.html" );
+            title => loc('Custom Date Ranges'), path => "/Search/CustomDateRanges.html" ) if $class eq 'RT::Tickets';
         if ($has_query) {
             $current_search_menu->child( results => title => loc('Show Results'), path => "/Search/Results.html$args" );
         }
 
         if ( $has_query ) {
-            $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
-            $current_search_menu->child( chart => title => loc('Chart'),       path => "/Search/Chart.html$args" );
+            if ( $class eq 'RT::Tickets' ) {
+                $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
+                $current_search_menu->child( chart => title => loc('Chart'),       path => "/Search/Chart.html$args" );
+            }
 
             my $more = $current_search_menu->child( more => title => loc('Feeds') );
 
             $more->child( spreadsheet => title => loc('Spreadsheet'), path => "/Search/Results.tsv$args" );
 
-            my %rss_data = map {
-                $_ => $query_args->{$_} || $fallback_query_args{$_} || '' }
-                    qw(Query Order OrderBy);
-            my $RSSQueryString = "?"
-                . QueryString( Query   => $rss_data{Query},
-                                   Order   => $rss_data{Order},
-                                   OrderBy => $rss_data{OrderBy}
-                                 );
-            my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
-                $current_user->UserObj->Name,
-                $current_user
-                ->UserObj->GenerateAuthString(   $rss_data{Query}
-                                               . $rss_data{Order}
-                                               . $rss_data{OrderBy} );
+            if ( $class eq 'RT::Tickets' ) {
+                my %rss_data
+                    = map { $_ => $query_args->{$_} || $fallback_query_args{$_} || '' } qw(Query Order OrderBy);
+                my $RSSQueryString = "?"
+                    . QueryString(
+                    Query   => $rss_data{Query},
+                    Order   => $rss_data{Order},
+                    OrderBy => $rss_data{OrderBy}
+                    );
+                my $RSSPath = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                    $current_user->UserObj->Name,
+                    $current_user->UserObj->GenerateAuthString(
+                    $rss_data{Query} . $rss_data{Order} . $rss_data{OrderBy} );
 
-            $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString");
-            my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes($_, 'u'),
-                $current_user->UserObj->Name,
-                $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
-                $rss_data{Query};
-            $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/'.$ical_path);
+                $more->child( rss => title => loc('RSS'), path => "/NoAuth/rss/$RSSPath/$RSSQueryString" );
+                my $ical_path = join '/', map $HTML::Mason::Commands::m->interp->apply_escapes( $_, 'u' ),
+                    $current_user->UserObj->Name,
+                    $current_user->UserObj->GenerateAuthString( $rss_data{Query} ),
+                    $rss_data{Query};
+                $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
 
-            if ($request_path =~ m{^/Search/Results.html}
-                &&                        #XXX TODO better abstraction
-                $current_user->HasRight( Right => 'SuperUser', Object => RT->System )) {
-                my $shred_args = QueryString(
-                    Search          => 1,
-                    Plugin          => 'Tickets',
-                    'Tickets:query' => $rss_data{'Query'},
-                    'Tickets:limit' => $query_args->{'Rows'},
-                );
+                if ($request_path =~ m{^/Search/Results.html}
+                    &&    #XXX TODO better abstraction
+                    $current_user->HasRight( Right => 'SuperUser', Object => RT->System )
+                   )
+                {
+                    my $shred_args = QueryString(
+                        Search          => 1,
+                        Plugin          => 'Tickets',
+                        'Tickets:query' => $rss_data{'Query'},
+                        'Tickets:limit' => $query_args->{'Rows'},
+                    );
 
-                $more->child( shredder => title => loc('Shredder'), path => '/Admin/Tools/Shredder/?' . $shred_args);
+                    $more->child(
+                        shredder => title => loc('Shredder'),
+                        path     => '/Admin/Tools/Shredder/?' . $shred_args
+                    );
+                }
             }
-
         }
     }
 

@@ -70,7 +70,6 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
 
 {
     my %tmp = (
-        DisplayPath     => 'Display.html',
         AttachmentPath  => 'Attachment',
         UpdatePath      => 'Update.html',
         ForwardPath     => 'Forward.html',

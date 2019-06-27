@@ -51,12 +51,22 @@
 
 
 % $m->callback( %ARGS, CallbackName => "BeforeBasics" );
-<& PickBasics, queues => \%queues &>
-<& PickCustomRoles, queues => \%queues &>
-<& PickTicketCFs, queues => \%queues &>
-<& PickObjectCFs, Class => 'Transaction', queues => \%queues &>
-<& PickObjectCFs, Class => 'Queue', queues => \%queues &>
-% $m->callback( %ARGS, CallbackName => "AfterCFs" );
+
+% if ( $Class eq 'RT::Transactions' ) {
+    <& PickBasics, queues => \%queues, %ARGS &>
+    <& PickTransactionCFs, queues => \%queues, %ARGS &>
+%   $m->callback( %ARGS, CallbackName => "AfterCFs" );
+%   if ( $ObjectType eq 'RT::Ticket' ) {
+    <& PickTickets, queues => \%queues, %ARGS &>
+%   }
+% } else {
+    <& PickBasics, queues => \%queues &>
+    <& PickCustomRoles, queues => \%queues &>
+    <& PickTicketCFs, queues => \%queues &>
+    <& PickObjectCFs, Class => 'Transaction', queues => \%queues &>
+    <& PickObjectCFs, Class => 'Queue', queues => \%queues &>
+%   $m->callback( %ARGS, CallbackName => "AfterCFs" );
+% }
 
 <tr class="separator"><td colspan="3"><hr /></td></tr>
 <tr>
@@ -73,4 +83,6 @@
 $addquery => 0
 $query => undef
 %queues => ()
+$Class => 'RT::Tickets'
+$ObjectType => 'RT::Ticket'
 </%ARGS>

@@ -53,6 +53,9 @@
 <form method="post" action="Build.html" id="BuildQueryAdvanced" name="BuildQueryAdvanced">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $SavedChartSearchId %>" />
+<input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
+<input type="hidden" class="hidden" name="ObjectType" value="<% $ObjectType %>" />
+
 <&|/Widgets/TitleBox, title => loc('Query'), &>
 <textarea name="Query" rows="8" cols="72"><% $Query %></textarea>
 </&>
@@ -63,7 +66,14 @@
 </form>
 
 <%INIT>
-my $title = loc("Edit Query");
+my $title;
+if ( $Class eq 'RT::Transactions' ) {
+    $title = loc('Edit Transaction Query');
+}
+else {
+    $title = loc("Edit Query")
+}
+
 $Format = $m->comp('/Elements/ScrubHTML', Content => $Format);
 my $QueryString = $m->comp('/Elements/QueryString',
                            Query   => $Query,
@@ -84,6 +94,8 @@ $Format        => ''
 $Rows          => '50'
 $OrderBy       => 'id'
 $Order         => 'ASC'
+$Class         => 'RT::Tickets'
+$ObjectType    => 'RT::Ticket'
 
 @actions       => ()
 </%ARGS>

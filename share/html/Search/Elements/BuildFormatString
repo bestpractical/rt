@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Format => RT->Config->Get('DefaultSearchResultFormat')
+$Format => undef
 
 %queues => ()
 
@@ -62,6 +62,9 @@ $ColDown => undef
 
 $SelectDisplayColumns => undef
 $CurrentDisplayColumns => undef
+
+$Class => 'RT::Tickets'
+$ObjectType => 'RT::Ticket'
 </%ARGS>
 <%init>
 # This can't be in a <once> block, because otherwise we return the
@@ -69,77 +72,114 @@ $CurrentDisplayColumns => undef
 # it -- and it grows per request.
 
 # All the things we can display in the format string by default
-my @fields = qw(
-    id QueueName Subject
-    Status ExtendedStatus UpdateStatus
-    Type
+my @fields;
+if ( $Class eq 'RT::Transactions' ) {
+    $Format ||= RT->Config->Get('TransactionDefaultSearchResultFormat')->{$ObjectType};
 
-    OwnerName Requestors Cc AdminCc CreatedBy LastUpdatedBy
+    @fields = qw( id ObjectId ObjectType ObjectName Type Field TimeTaken
+        OldValue NewValue ReferenceType OldReference NewReference
+        Created CreatedRelative CreatedBy Description Content PlainContent HTMLContent
+        NEWLINE NBSP );    # loc_qw
 
-    Priority InitialPriority FinalPriority
+    my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'} );
+    foreach my $id ( keys %queues ) {
 
-    TimeWorked TimeLeft TimeEstimated
+        # Gotta load up the $queue object, since queues get stored by name now.
+        my $queue = RT::Queue->new( $session{'CurrentUser'} );
+        $queue->Load($id);
+        next unless $queue->Id;
+        $CustomFields->LimitToQueue( $queue->Id );
+        $CustomFields->SetContextObject($queue) if keys %queues == 1;
+    }
+    $CustomFields->Limit(
+        ALIAS           => $CustomFields->_OCFAlias,
+        ENTRYAGGREGATOR => 'OR',
+        FIELD           => 'ObjectId',
+        VALUE           => 0,
+    );
+    $CustomFields->LimitToLookupType('RT::Queue-RT::Ticket-RT::Transaction');
 
-    Starts      StartsRelative
-    Started     StartedRelative
-    Created     CreatedRelative
-    LastUpdated LastUpdatedRelative
-    Told        ToldRelative
-    Due         DueRelative
-    Resolved    ResolvedRelative
-
-    SLA
-
-    RefersTo    ReferredToBy
-    DependsOn   DependedOnBy
-    MemberOf    Members
-    Parents     Children
-
-    Bookmark    Timer
-
-    NEWLINE
-    NBSP
-); # loc_qw
-
-# Total time worked is an optional ColumnMap enabled for rolling up child
-# TimeWorked
-push @fields, 'TotalTimeWorked' if (RT->Config->Get('DisplayTotalTimeWorked'));
-
-my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
-foreach my $id (keys %queues) {
-    # Gotta load up the $queue object, since queues get stored by name now.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-    $queue->Load($id);
-    next unless $queue->Id;
-    $CustomFields->LimitToQueue($queue->Id);
-    $CustomFields->SetContextObject( $queue ) if keys %queues == 1;
+    while ( my $CustomField = $CustomFields->Next ) {
+        push @fields, "CustomField.{" . $CustomField->Name . "}";
+    }
 }
-$CustomFields->LimitToGlobal;
+else {
+    $Format ||= RT->Config->Get('DefaultSearchResultFormat');
 
-while ( my $CustomField = $CustomFields->Next ) {
-    push @fields, "CustomField.{" . $CustomField->Name . "}";
-}
+    @fields = qw(
+        id QueueName Subject
+        Status ExtendedStatus UpdateStatus
+        Type
 
-my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
-foreach my $id (keys %queues) {
-    # Gotta load up the $queue object, since queues get stored by name now.
-    my $queue = RT::Queue->new($session{'CurrentUser'});
-    $queue->Load($id);
-    next unless $queue->Id;
-    $CustomRoles->LimitToObjectId($queue->Id);
-}
-while ( my $Role = $CustomRoles->Next ) {
-    push @fields, "CustomRole.{" . $Role->Name . "}";
-}
+        OwnerName Requestors Cc AdminCc CreatedBy LastUpdatedBy
 
-my %ranges = RT::Ticket->CustomDateRanges;
-push @fields, sort keys %ranges;
+        Priority InitialPriority FinalPriority
+
+        TimeWorked TimeLeft TimeEstimated
+
+        Starts      StartsRelative
+        Started     StartedRelative
+        Created     CreatedRelative
+        LastUpdated LastUpdatedRelative
+        Told        ToldRelative
+        Due         DueRelative
+        Resolved    ResolvedRelative
+
+        SLA
+
+        RefersTo    ReferredToBy
+        DependsOn   DependedOnBy
+        MemberOf    Members
+        Parents     Children
+
+        Bookmark    Timer
+
+        NEWLINE
+        NBSP
+        );    # loc_qw
+
+    # Total time worked is an optional ColumnMap enabled for rolling up child
+    # TimeWorked
+    push @fields, 'TotalTimeWorked' if ( RT->Config->Get('DisplayTotalTimeWorked') );
+
+    my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'} );
+    foreach my $id ( keys %queues ) {
+
+        # Gotta load up the $queue object, since queues get stored by name now.
+        my $queue = RT::Queue->new( $session{'CurrentUser'} );
+        $queue->Load($id);
+        next unless $queue->Id;
+        $CustomFields->LimitToQueue( $queue->Id );
+        $CustomFields->SetContextObject($queue) if keys %queues == 1;
+    }
+    $CustomFields->LimitToGlobal;
+
+    while ( my $CustomField = $CustomFields->Next ) {
+        push @fields, "CustomField.{" . $CustomField->Name . "}";
+    }
+
+    my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'} );
+    foreach my $id ( keys %queues ) {
+
+        # Gotta load up the $queue object, since queues get stored by name now.
+        my $queue = RT::Queue->new( $session{'CurrentUser'} );
+        $queue->Load($id);
+        next unless $queue->Id;
+        $CustomRoles->LimitToObjectId( $queue->Id );
+    }
+    while ( my $Role = $CustomRoles->Next ) {
+        push @fields, "CustomRole.{" . $Role->Name . "}";
+    }
+
+    my %ranges = RT::Ticket->CustomDateRanges;
+    push @fields, sort keys %ranges;
+
+}
 
 $m->callback( Fields => \@fields, ARGSRef => \%ARGS );
 
 my ( @seen);
 
-$Format ||= RT->Config->Get('DefaultSearchResultFormat');
 my @format = $m->comp('/Elements/CollectionAsTable/ParseFormat', Format => $Format);
 foreach my $field (@format) {
     # "title" is for columns like NEWLINE, which doesn't have "attribute"
