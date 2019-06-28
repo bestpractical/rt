@@ -7516,19 +7516,19 @@ msgstr "Aktualisieren"
 
 #: lib/RT/Config.pm:424
 msgid "Refresh home page every %quant(%1,minute,minutes)."
-msgstr "Aktualisiere Homepage jede %Anzahl(%1,Minute,Minuten)."
+msgstr "Aktualisiere Homepage jede %quant(%1,Minute,Minuten)."
 
 #: lib/RT/Config.pm:430
 msgid "Refresh home page every %quant(%1,second,seconds)."
-msgstr "Aktualisiere Homepage jede %Anzahl(%1,Minute,Minuten)."
+msgstr "Aktualisiere Homepage jede %quant(%1,Minute,Minuten)."
 
 #: lib/RT/Config.pm:388
 msgid "Refresh search results every %quant(%1,minute,minutes)."
-msgstr "Aktualisiere Suchergebnisse jede %Anzahl(%1,Minute,Minuten)."
+msgstr "Aktualisiere Suchergebnisse jede %quant(%1,Minute,Minuten)."
 
 #: lib/RT/Config.pm:394
 msgid "Refresh search results every %quant(%1,second,seconds)."
-msgstr "Aktualisiere Suchergebnisse jede %Anzahl(%1,Sekunde,Sekunden)."
+msgstr "Aktualisiere Suchergebnisse jede %quant(%1,Sekunde,Sekunden)."
 
 #. ($value/60)
 #: share/html/Elements/Refresh:60
@@ -7538,7 +7538,7 @@ msgstr "Seite alle %1 Minuten aktualisieren."
 #. ($value)
 #: share/html/Elements/Refresh:62
 msgid "Refresh this page every %quant(%1,second,seconds)."
-msgstr "Aktualisiere diese Seite jede %Anzahl(%1,Sekunde,Sekunden)."
+msgstr "Aktualisiere diese Seite jede %quant(%1,Sekunde,Sekunden)."
 
 #: etc/RT_Config.pm:1313 etc/initialdata:921
 msgid "RefreshHomepage"
