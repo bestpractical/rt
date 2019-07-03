@@ -34,3 +34,7 @@
   background-image: linear-gradient(to bottom, #284691, #284691);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff284691', endColorstr='#ff284691', GradientType=0);
 }
+
+.selectize-dropdown-content {
+  max-height: none;
+}
