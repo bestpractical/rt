@@ -54,6 +54,10 @@ my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($Queue) if $Queue;
 
 my $query = $Queue ? "Status = 'resolved' AND Queue = '$Queue'" : "";
+
+$m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
+              TitleRef => \$title, QueryRef => \$query, QueueObj => $QueueObj );
+
 </%INIT>
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>

@@ -75,6 +75,10 @@ if ($CreatedBefore) {
 }
 
 my $query = join ' AND ', @clauses;
+
+$m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
+              TitleRef => \$title, QueryRef => \$query, QueueObj => $QueueObj );
+
 </%INIT>
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
