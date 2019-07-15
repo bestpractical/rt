@@ -24,3 +24,12 @@ table.collection td:first-child, table.collection th:first-child {
 .results-count::before {
     content: '\a0\a0\a0\a0';
 }
+
+.collection-as-table div.clamp {
+    overflow-y: hidden;
+}
+
+.collection-as-table a.unclamp {
+    font-size: smaller;
+    font-weight: normal;
+}
