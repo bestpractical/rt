@@ -275,6 +275,22 @@ jQuery(function() {
             };
         };
     });
+
+    jQuery('td.collection-as-table').each( function() {
+        if ( jQuery(this).children() ) {
+            var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
+            if ( jQuery(this).children().height() > max_height ) {
+                jQuery(this).children().wrapAll('<div class="clamp">');
+                jQuery(this).children('div.clamp').height('' + max_height + 'px');
+                jQuery(this).append('<a href="#" class="unclamp button">' + loc_key('unclamp') + '</a>');
+            }
+        }
+    });
+    jQuery('a.unclamp').click(function() {
+        jQuery(this).siblings('div.clamp').css('height', 'auto');
+        jQuery(this).hide();
+        return false;
+    });
 });
 
 function textToHTML(value) {
