@@ -143,6 +143,7 @@
 <div id="ticket-create-message">
   <&| /Widgets/TitleBox, title => $title, class => 'messagedetails' &>
 <div class="fields">
+% $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
 
 <div class="field">
 <span class="label"><&|/l&>Requestors</&>:</span>
