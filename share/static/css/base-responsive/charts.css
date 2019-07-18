@@ -26,3 +26,7 @@
 .chart-wrapper .collection-as-table tr th.oddline {
     background: #ddd;
 }
+
+.cascade-by-optgroup {
+    margin-right: 5px;
+}
