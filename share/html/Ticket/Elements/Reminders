@@ -160,7 +160,7 @@ $Ticket
 $Index
 </%args>
 
-  <div class="col-md-6 <% $Index%2 ? 'oddline' : 'evenline' %>" id="reminder-<% $Reminder->id %>">
+  <div class="col-md-12 <% $Index%2 ? 'oddline' : 'evenline' %>" id="reminder-<% $Reminder->id %>">
 % unless ( $Reminder->CurrentUserHasRight('ModifyTicket') ) {
       <input class="custom-control-input" name="Complete-Reminder-<% $Reminder->id %>" type="hidden"
         value=<% $Reminder->Status eq $Reminder->LifecycleObj->ReminderStatusOnResolve ? 1 : 0 %>
@@ -247,4 +247,5 @@ $Index
       <& /Elements/ShowUser, User => $Reminder->OwnerObj &>
     </div>
   </div>
+</div>
 </%method>
