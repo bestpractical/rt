@@ -1398,7 +1398,7 @@ sub _DurationAsString {
     my $self = shift;
     my $value = shift;
     return "" unless $value;
-    if ($value < 60) {
+    if (abs $value < 60) {
         return $self->loc("[quant,_1,minute,minutes]", $value);
     } else {
         my $h = sprintf("%.2f", $value / 60 );
