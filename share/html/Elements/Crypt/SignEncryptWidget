@@ -45,28 +45,26 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table><tr>
-% my $columnsplit = "</td><td>";
+<div class="form-row">
+  <div class="col-md-auto">
 % if ( RT->Config->Get('Crypt')->{'Outgoing'} eq 'GnuPG' ) {
-<td><% loc( 'Sign[_1][_2] using [_3]',
-    $columnsplit,
-    $m->scomp('/Widgets/Form/Boolean:InputOnly',
-        Name => 'Sign', CurrentValue => $self->{'Sign'}
-    ),
-    $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ),
-) |n %></td>
+    <& '/Widgets/Form/Boolean:InputOnly',
+        Name => 'Sign', CurrentValue => $self->{'Sign'},
+        DefaultLabel => loc( 'Sign using [_1]', $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ) ),
+    &>
 % } else {
-<td><% loc( 'Sign[_1][_2]',
-    $columnsplit,
-    $m->scomp('/Widgets/Form/Boolean:InputOnly',
-        Name => 'Sign', CurrentValue => $self->{'Sign'}
-    ),
-) |n %></td>
+    <& '/Widgets/Form/Boolean:InputOnly',
+        Name => 'Sign', CurrentValue => $self->{'Sign'},
+        DefaultLabel => loc( 'Sign' ),
+    &>
+  </div>
 % }
 
-<td><% loc('Encrypt')%></td>
-<td><& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'} &></td>
-</tr></table>
+  <div class="col-md-auto">
+    <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'}, DefaultLabel => loc( 'Encrypt' ) &>
+  </div>
+</div>
+
 <%ARGS>
 $self => undef,
 </%ARGS>
