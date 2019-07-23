@@ -153,10 +153,6 @@ span.current-value.form-control {
     padding: 0.25em;
 }
 
-.messagedetails .fields {
-    max-width: 1200px;
-}
-
 .bootstrap-select button:focus {
     background: #f8f9fa;
 }

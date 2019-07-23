@@ -53,7 +53,7 @@
 % $m->callback(CallbackName => 'InFormElement');
 >
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
-<div class="wide">
+<div>
   <div class="form-row input-row">
     <div class="label col-md-3"><&|/l&>Subject</&>:</div>
     <div class="value col-md-9"><input type="text" size="50" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" /></div>

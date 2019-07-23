@@ -136,13 +136,6 @@ input.reminder-subject {
     width: 30em;
 }
 
-.messagedetails .fields {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 100%;
-}
-
 .ticket-info-attachments .revision {
     font-size: 85%;
 }
