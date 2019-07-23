@@ -83,7 +83,12 @@
     <div class="value col-md-9"><textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></div>
   </div>
 </div>
-<& /Elements/Submit, Label => loc('Create') &>
+
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc('Create') &>
+  </div>
+</div>
 </form>
 </&>
 </div>
