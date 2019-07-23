@@ -137,19 +137,33 @@ my $reminder_collection = $count_reminders->Collection;
 <%args>
 $Ticket
 </%args>
-<div class="fields">
-  <&|/l&>New reminder:</&>
-  <div class="field">
-    <span class="label"><&|/l&>Subject</&>:</span>
-    <span class="entry" colspan="3"><input type="text" class="form-control reminder-subject" name="NewReminder-Subject" id="NewReminder-Subject" /></span>
-  </div>
-  <div class="field">
-    <span class="label"><&|/l&>Owner</&>:</span>
-    <span class="entry"><& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, Default=>$session{'CurrentUser'}->id, DefaultValue => 0 &></span>
-  </div>
-  <div class="field">
-    <span class="label"><&|/l&>Due</&>:</span>
-    <span class="entry"><& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &></span>
+<div class="form-row">
+  <div class="col-md-12">
+    <&|/l&>New reminder:</&>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Subject</&>:
+      </div>
+      <div class="value col-md-9">
+        <input type="text" class="form-control reminder-subject" name="NewReminder-Subject" id="NewReminder-Subject" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Owner</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, Default=>$session{'CurrentUser'}->id, DefaultValue => 0 &>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Due</&>:
+      </div>
+      <div class="value col-md-9">
+        <& /Elements/SelectDate, Name => "NewReminder-Due", Default => "" &>
+      </div>
+    </div>
   </div>
 </div>
 </%method>

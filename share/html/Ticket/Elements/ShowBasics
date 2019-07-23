@@ -45,72 +45,76 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="fields">
-  <div class="id field">
-    <span class="label"><&|/l&>Id</&>:</span>
-    <span class="value"><%$Ticket->Id %></span>
+<div>
+  <div class="id form-row">
+    <div class="label col-md-3"><&|/l&>Id</&>:</div>
+    <div class="value col-md-9"><span class="current-value form-control"><%$Ticket->Id %></span></div>
   </div>
-  <div class="status field">
-    <span class="label"><&|/l&>Status</&>:</span>
-    <span class="value"><% loc($Ticket->Status) %></span>
+  <div class="status form-row">
+    <div class="label col-md-3"><&|/l&>Status</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><% loc($Ticket->Status) %></span></div>
   </div>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
-  <div class="sla field">
-    <span class="label"><&|/l&>SLA</&>:</span>
-    <span class="value"><% loc($Ticket->SLA) %></span>
+  <div class="sla form-row">
+    <div class="label col-md-3"><&|/l&>SLA</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><% loc($Ticket->SLA) %></span></div>
   </div>
 % }
 % my $totalTimeWorked = 0;
 % if (RT->Config->Get('DisplayTotalTimeWorked') && ($totalTimeWorked = $Ticket->TotalTimeWorked)) {
-  <div class="total time worked sum field">
-    <span class="label"><&|/l&>Total Time Worked</&>:</span>
-    <span class="value"><& ShowTime, minutes => $totalTimeWorked &></span>
+  <div class="total time worked sum form-row">
+    <div class="label col-md-3"><&|/l&>Total Time Worked</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowTime, minutes => $totalTimeWorked &></span></div>
   </div>
 % }
 % if ($show_time_worked) {
 % if ($Ticket->TimeEstimated) {
-  <div class="time estimated field">
-    <span class="label"><&|/l&>Estimated</&>:</span>
-    <span class="value"><& ShowTime, minutes => $Ticket->TimeEstimated &></span>
+  <div class="time estimated form-row">
+    <div class="label col-md-3"><&|/l&>Estimated</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowTime, minutes => $Ticket->TimeEstimated &></span></div>
   </div>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeEstimated', TicketObj => $Ticket );
 % if ($Ticket->TimeWorked) {
-  <div class="time worked sum field">
-    <span class="label"><&|/l&>Worked</&>:</span>
-    <span class="value"><& ShowTime, minutes => $Ticket->TimeWorked &></span>
+  <div class="time worked sum form-row">
+    <div class="label col-md-3"><&|/l&>Worked</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowTime, minutes => $Ticket->TimeWorked &></span></div>
   </div>
 % }
 % if ( keys %$time_worked ) {
-<div class="time worked by-user field">
-  <span class="label"><&|/l&>Users</&>:</span>
-  <span>
+<div class="time worked by-user form-row">
+  <div class="label col-md-3"><&|/l&>Users</&>:</div>
+  <div class="value col-md-9">
+    <span class="form-control current-value">
 %   for my $user ( keys %$time_worked ) {
-    <div class="value"><% $user %>:</div>
-    <div class="value"><& /Ticket/Elements/ShowTime, minutes => $time_worked->{$user} &></div>
+      <div>
+        <span class="value"><% $user %>:</span>
+        <span class="value"><& /Ticket/Elements/ShowTime, minutes => $time_worked->{$user} &></span>
+      </div>
 %   }
-  </span>
+    </span>
+  </div>
 </div>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeWorked', TicketObj => $Ticket );
 % if ($Ticket->TimeLeft) {
-  <div class="time left field">
-    <span class="label"><&|/l&>Left</&>:</span>
-    <span class="value"><& ShowTime, minutes => $Ticket->TimeLeft &></span>
+  <div class="time left form-row">
+    <div class="label col-md-3"><&|/l&>Left</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowTime, minutes => $Ticket->TimeLeft &></span></div>
   </div>
 % }
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterTimeLeft', TicketObj => $Ticket );
-  <div class="priority field">
-    <span class="label"><&|/l&>Priority</&>:</span>
-    <span class="value"><& ShowPriority, Ticket => $Ticket &></span>
+  <div class="priority form-row">
+    <div class="label col-md-3"><&|/l&>Priority</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowPriority, Ticket => $Ticket &></span></div>
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterPriority', TicketObj => $Ticket );
 %# This will check SeeQueue at the ticket role level, queue level, and global level
 % if ($Ticket->CurrentUserHasRight('SeeQueue')) {
-  <div class="queue field">
-    <span class="label"><&|/l&>Queue</&>:</span>
-    <span class="value"><& ShowQueue, Ticket => $Ticket, QueueObj => $Ticket->QueueObj &></span>
+  <div class="queue form-row">
+    <div class="label col-md-3"><&|/l&>Queue</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowQueue, Ticket => $Ticket, QueueObj => $Ticket->QueueObj &></span></div>
   </div>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterQueue', TicketObj => $Ticket );

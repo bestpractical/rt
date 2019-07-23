@@ -45,18 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="wide fields">
+<div class="wide">
 % for my $type (@display) {
-  <div class="field <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
-    <span class="labeltop">
+  <div class="form-row <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
+    <div class="label col-md-3">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
-        <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
+        <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</div>
 %     }
     </span>
-    <span class="value">
+    <div class="value col-md-9"><span class="form-control current-value">
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
-    </span>
+    </span></div>
   </div>
 % }
 

@@ -179,11 +179,11 @@ if ($ShowRelatedTickets) {
             . $m->comp("/Elements/QueryString", %search);
 </%perl>
     <div class="related-tickets">
-      <span class="label">
+      <div class="label col-md-3">
         <a href="<% $url %>">
           <&|/l, $ShowRelatedTickets &>[_1] most recently updated related tickets</&>
         </a>
-      </span>
+      </div>
       <& /Elements/CollectionList,
           %search,
           Class             => "RT::Tickets",

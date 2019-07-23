@@ -92,7 +92,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 <div class="form-row justify-content-center">
 <div class="col-md-auto">
 % if ( ($ChartStyle || '') =~ /\bsql\b/ ) {
-<div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
+<div class="query"><div class="label col-md-3"><% loc('Query') %>:</div><div class="value col-md-9"><% $Query %></div></div>
 % }
 </div>
 </div>

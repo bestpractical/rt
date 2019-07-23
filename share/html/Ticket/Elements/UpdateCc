@@ -49,7 +49,7 @@
 
 <div class="form-row">
   <div class="col-md-3 label">
-    <span class="label"><&|/l&>One-time Cc</&>:</span>
+    <&|/l&>One-time Cc</&>:
   </div>
   <div class="col-md-9 value">
     <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1 &>
@@ -101,7 +101,7 @@
 
 <div class="form-row">
   <div class="col-md-3 label">
-    <span class="label"><&|/l&>One-time Bcc</&>:</span>
+    <&|/l&>One-time Bcc</&>:
   </div>
   <div class="col-md-9 value">
     <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &>
@@ -158,6 +158,7 @@ jQuery(function() {
 });
 </script>
 %}
+    </div>
   </div>
 </div>
 <%args>

@@ -69,7 +69,7 @@
 <div id="ticket-create-metadata">
     <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
     <input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Id %>" />
-    <div class="fields">
+    <div>
     <& /Ticket/Elements/EditBasics,
         InTable => 1,
         QueueObj => $QueueObj,
@@ -142,23 +142,23 @@
 
 <div id="ticket-create-message">
   <&| /Widgets/TitleBox, title => $title, class => 'messagedetails' &>
-<div class="fields">
+<div>
 % $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
 
-<div class="field">
-<span class="label"><&|/l&>Requestors</&>:</span>
-<span class="value">
+<div class="form-row">
+<div class="label col-md-3"><&|/l&>Requestors</&>:</div>
+<div class="value col-md-9">
 <& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
 % $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
-</span>
+</div>
 </div>
 
-<div class="field">
-<span class="label"><&|/l&>Cc</&>:</span>
-<span class="value"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1 &></span>
+<div class="form-row">
+<div class="label col-md-3"><&|/l&>Cc</&>:</div>
+<div class="value col-md-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1 &></div>
 </div>
 
-<div class="field">
+<div class="form-row">
   <span class="label empty">&nbsp;</span>
   <span class="comment">
     <i><font size="-2">
@@ -167,12 +167,12 @@
   </span>
 </div>
 
-<div class="field">
-<span class="label"><&|/l&>Admin Cc</&>:</span>
-<span class="value"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1 &></span>
+<div class="form-row">
+<div class="label col-md-3"><&|/l&>Admin Cc</&>:</div>
+<div class="value col-md-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1 &></div>
 </div>
 
-<div class="field">
+<div class="form-row">
   <span class="label empty">&nbsp;</span>
   <span class="comment">
     <i><font size="-2">
@@ -185,13 +185,13 @@
 % $roles->LimitToMultipleValue;
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
-<div class="field">
-<span class="label"><% $role->Name %>:</span>
-<span class="value"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></span>
+<div class="form-row">
+<div class="label col-md-3"><% $role->Name %>:</div>
+<div class="value col-md-9"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></div>
 </div>
 
 % if ($role->EntryHint) {
-<div class="field">
+<div class="form-row">
   <span class="label empty">&nbsp;</span>
   <span class="comment" colspan="5">
     <i><font size="-2">
@@ -211,26 +211,26 @@
     ForCreation => 1,
 &>
 
-<div class="field">
-<span class="label">
+<div class="form-row">
+<div class="label col-md-3">
 <&|/l&>Subject</&>:
-</span>
-<span class="value">
+</div>
+<div class="value col-md-9">
 <input class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-</span>
+</div>
 </div>
 
 % if ( $gnupg_widget ) {
-<div class="field">
+<div class="form-row">
 <span class="label empty">&nbsp;</span>
-<span class="value"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &></span>
+<div class="value col-md-9"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &></div>
 </div>
 % }
 
-<div class="field">
-<span class="label"><&|/l&>Message</&>:</span>
-<span class="value">
+<div class="form-row">
+<div class="label col-md-3"><&|/l&>Message</&>:</div>
+<div class="value col-md-9">
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
 <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
@@ -241,7 +241,7 @@
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 %}
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
-</span>
+</div>
 </div>
 
         <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
@@ -259,37 +259,37 @@
           <&| /Widgets/TitleBox, title => loc('The Basics'), 
                 title_class=> 'inverse',  
                 color => "#993333" &>
-<div class="fields">
+<div>
 
-<div class="field">
-  <span class="label"><&|/l&>Priority</&>:</span>
-  <span class="value"><& /Elements/SelectPriority,
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Priority</&>:</div>
+  <div class="value col-md-9"><& /Elements/SelectPriority,
       Name => "InitialPriority",
     Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
-  &></span>
+  &></div>
 </div>
 
-<div class="field">
-  <span class="label"><&|/l&>Final Priority</&>:</span>
-  <span class="value"><& /Elements/SelectPriority,
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Final Priority</&>:</div>
+  <div class="value col-md-9"><& /Elements/SelectPriority,
     Name => "FinalPriority",
     Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->DefaultValue('FinalPriority'),
-  &></span>
+  &></div>
 </div>
 
-<div class="field">
-  <span class="label"><&|/l&>Time Estimated</&>:</span>
-  <span class="value"><& /Elements/EditTimeValue, Name => 'TimeEstimated', Default => $ARGS{TimeEstimated} || '' &></span>
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Time Estimated</&>:</div>
+  <div class="value col-md-9"><& /Elements/EditTimeValue, Name => 'TimeEstimated', Default => $ARGS{TimeEstimated} || '' &></div>
 </div>
 
-<div class="field">
-  <span class="label"><&|/l&>Time Worked</&>:</span>
-  <span class="value"><& /Elements/EditTimeValue, Name => 'TimeWorked', Default => $ARGS{TimeWorked} || '' &></span>
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Time Worked</&>:</div>
+  <div class="value col-md-9"><& /Elements/EditTimeValue, Name => 'TimeWorked', Default => $ARGS{TimeWorked} || '' &></div>
 </div>
 
-<div class="field">
-  <span class="label"><&|/l&>Time Left</&>:</span>
-  <span class="value"><& /Elements/EditTimeValue, Name => 'TimeLeft', Default => $ARGS{TimeLeft} || '' &></span>
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Time Left</&>:</div>
+  <div class="value col-md-9"><& /Elements/EditTimeValue, Name => 'TimeLeft', Default => $ARGS{TimeLeft} || '' &></div>
 </div>
 </div>
 </&>
@@ -299,13 +299,13 @@
   title_class=> 'inverse',  
   color => "#663366" &>
 
-<div class="fields">
-<div class="field">
-  <span class="label"><&|/l&>Starts</&>:</span>
-  <span class="value"><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &></span>
+<div>
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Starts</&>:</div>
+  <div class="value col-md-9"><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &></div>
 </div>
-<div class="field">
-  <span class="label"><&|/l&>Due</&>:</span>
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Due</&>:</div>
   <span><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></span>
 </div>
 <& /Elements/EditCustomFields,

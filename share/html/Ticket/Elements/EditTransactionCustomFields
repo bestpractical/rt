@@ -47,17 +47,17 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, InTable => $InTable );
 % if ( !$InTable ) {
-<div class="edit-transaction-custom-fields fields">
+<div class="edit-transaction-custom-fields">
 % }
 % if ($CustomFields->Count) {
 % while (my $CF = $CustomFields->Next()) {
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
-<div class="field">
-<span class="label cflabel">
+<div class="form-row">
+<div class="label cflabel col-md-3">
   <span class="name"><% $CF->Name %>:</span><br />
   <span class="type"><% $CF->EntryHint // '' %></span>
-</span>
-<span class="value entry">
+</div>
+<div class="value col-md-9">
 <& /Elements/EditCustomField,
     %ARGS,
     CustomField => $CF,
@@ -67,7 +67,7 @@
         <br />
         <span class="cfinvalidfield"><% $msg %></span>
 %  }
-</span>
+</div>
 </div>
 % }
 % }

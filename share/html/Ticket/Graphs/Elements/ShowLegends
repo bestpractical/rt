@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Legends'), hideable => $hideable &>
   <div class="form-row">
-    <span class="label"><% loc('Status') %>:</span>
+    <div class="label col-md-3"><% loc('Status') %>:</div>
 % foreach my $status ( sort keys %RT::Graph::Tickets::ticket_status_style ) {
 % my $style = $RT::Graph::Tickets::ticket_status_style{ $status };
     <span class="value" style="color: <% $style->{'fontcolor'} %>; padding: 0.6em; border: 1px solid black;"><% loc($status) %></span>
@@ -56,7 +56,7 @@
 
 % if ( $FillUsing ) {
     <div class="form-row">
-      <span class="label"><% loc($FillUsing) %>:</span>
+      <div class="label col-md-3"><% loc($FillUsing) %>:</div>
 % foreach my $value ( sort keys %RT::Graph::Tickets::fill_cache ) {
 % my $color = $RT::Graph::Tickets::fill_cache{ $value };
       <span class="value" style="background-color: <% $color %>; padding: 0.6em; border: 1px solid black;"><% loc($value) %></span>

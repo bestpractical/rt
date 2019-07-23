@@ -59,25 +59,25 @@
 
 <&|/Widgets/TitleBox, title => $title, class => 'ticket-info-basics' &>
 
-<div class="fields">
-    <div class="field">
-        <span class="label">
+<div>
+    <div class="form-row">
+        <div class="label col-md-3">
             <&|/l&>Status</&>
-        </span>
-        <span class="value">
+        </div>
+        <div class="value col-md-9">
             <& /Ticket/Elements/SelectStatus,
                Name => "Status",
                TicketObj => $Ticket,
                Default => $DefaultStatus &>
-        </span>
+        </div>
     </div>
-    <div class="field">
-        <span class="label">
+    <div class="form-row">
+        <div class="label col-md-3">
             <&|/l&>Subject</&>
-        </span>
-        <span class="value">
+        </div>
+        <div class="value col-md-9">
             <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
-        </span>
+        </div>
 
     </div>
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>

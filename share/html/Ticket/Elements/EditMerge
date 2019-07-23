@@ -49,10 +49,10 @@
 <&|/l&>Warning: merging is a non-reversible action! Enter a single ticket number to be merged into.</&>
 </i>
 
-<div class="fields">
-  <div class="field">
-    <span class="label"><&|/l&>Merge into</&>:</span>
-    <span class="value entry"><input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></span>
+<div>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Merge into</&>:</div>
+    <div class="value col-md-9"><input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></div>
   </div>
 </div>
 
