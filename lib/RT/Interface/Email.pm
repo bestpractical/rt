@@ -631,11 +631,11 @@ sub ParseTicketId {
     # We use @captures and pull out the last capture value to guard against
     # someone using (...) instead of (?:...) in $EmailSubjectTagRegex.
     my $id;
-    if ( my @captures = $Subject =~ /\[$test_name\s+\#(\d+)\s*\]/i ) {
+    if ( my @captures = $Subject =~ m{\[(?:http://)?$test_name\s+\#(\d+)\s*\]}i ) {
         $id = $captures[-1];
     } else {
         foreach my $tag ( RT->System->SubjectTag ) {
-            next unless my @captures = $Subject =~ /\[\Q$tag\E\s+\#(\d+)\s*\]/i;
+            next unless my @captures = $Subject =~ m{\[(?:http://)?\Q$tag\E\s+\#(\d+)\s*\]}i;
             $id = $captures[-1];
             last;
         }
