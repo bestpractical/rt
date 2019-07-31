@@ -119,6 +119,8 @@
 $Queue => undef
 </%args>
 <%init>
+$m->callback( CallbackName => 'Initial', Queue => $Queue, ARGSRef => \%ARGS );
+
 my @results;
 my $queue_obj = RT::Queue->new($session{'CurrentUser'});
 $queue_obj->Load($Queue);
