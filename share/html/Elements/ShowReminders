@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $reminders->Count ) {
-<table border="0" cellpadding="1" cellspacing="0" width="100%" class="collection-as-table">
+<table border="0" cellpadding="1" cellspacing="0" width="100%" class="collection-as-table table">
 <tr>
 <th class="collection-as-table"><&|/l&>Reminder</&></th>
 <th class="collection-as-table"><&|/l&>Due</&></th>
