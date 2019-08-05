@@ -94,7 +94,9 @@
       &>
     </div>
     <div class="col-md-3">
-      <%$g->Name%> (<%$g->Description%>)
+      <span class="form-control current-value">
+        <%$g->Name%> (<%$g->Description%>)
+      </span>
     </div>
   </div>
 % }
@@ -117,7 +119,9 @@
     </div>
     <div class="col-md-3">
       <input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
-      <%$email->format%>
+      <span class="form-control current-value">
+        <%$email->format%>
+      </span>
     </div>
   </div>
 % }

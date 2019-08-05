@@ -136,10 +136,6 @@ span.current-value.form-control {
     margin-top: 1px; /* because input box border is 1px */
 }
 
-.current-watchers div.label {
-    padding-top: 0.25em;
-}
-
 .list-group-item label {
     margin-bottom: 0;
 }

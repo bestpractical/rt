@@ -45,15 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ( $Wrap ) {
+<span class="current-value form-control">
+% }
+
 % if ( $query ) {
 <a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $query |u,n %>"><% $label %></a>
 % } else {
 <% $label %>
 % }
+
+% if ( $Wrap ) {
+</span>
+% }
 <%ARGS>
 $Ticket => undef
 $QueueObj
 $Escape => 1
+$Wrap => undef
 </%ARGS>
 <%INIT>
 my $label = $QueueObj->Name;
