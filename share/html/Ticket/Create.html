@@ -159,12 +159,12 @@
 </div>
 
 <div class="form-row">
-  <span class="label empty">&nbsp;</span>
-  <span class="comment">
+  <div class="label col-md-3 empty">&nbsp;</div>
+  <div class="value col-md-9 comment">
     <i><font size="-2">
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&>
     </font></i>
-  </span>
+  </div>
 </div>
 
 <div class="form-row">
@@ -173,12 +173,12 @@
 </div>
 
 <div class="form-row">
-  <span class="label empty">&nbsp;</span>
-  <span class="comment">
+  <div class="label col-md-3 empty">&nbsp;</div>
+  <div class="value col-md-9 comment">
     <i><font size="-2">
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&>
     </font></i>
-  </span>
+  </div>
 </div>
 
 % my $roles = $QueueObj->CustomRoles;
@@ -192,12 +192,12 @@
 
 % if ($role->EntryHint) {
 <div class="form-row">
-  <span class="label empty">&nbsp;</span>
-  <span class="comment" colspan="5">
+  <div class="label col-md-3 empty">&nbsp;</div>
+  <div class="value col-md-9 comment" colspan="5">
     <i><font size="-2">
       <% $role->EntryHint %>
     </font></i>
-  </span>
+  </div>
 </div>
 % }
 % }
@@ -223,8 +223,8 @@
 
 % if ( $gnupg_widget ) {
 <div class="form-row">
-<span class="label empty">&nbsp;</span>
-<div class="value col-md-9"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &></div>
+  <div class="label col-md-3 empty"></div>
+  <div class="value col-md-9"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &></div>
 </div>
 % }
 
@@ -306,7 +306,7 @@
 </div>
 <div class="form-row">
   <div class="label col-md-3"><&|/l&>Due</&>:</div>
-  <span><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></span>
+  <div class="value col-md-9"><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></div>
 </div>
 <& /Elements/EditCustomFields,
     %ARGS,

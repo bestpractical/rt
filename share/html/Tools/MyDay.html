@@ -67,19 +67,19 @@
 
     <div class="col-md-6">
       <div class="form-row">
-        <span class="col-md-3 label">
+        <div class="col-md-3 label">
           <&|/l&>Worked</&>:
-        </span>
-        <span class="col-md-9 form-inline value">
+        </div>
+        <div class="col-md-9 form-inline value">
           <input class="form-control" type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" />
           <&|/l&>minutes</&>
-        </span>
+        </div>
       </div>
 
       <div class="form-row">
-        <span class="label col-md-3">
+        <div class="label col-md-3">
           <&|/l&>Status</&>:
-        </span>
+        </div>
         <div class="col-md-9 value">
           <& /Ticket/Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, TicketObj => $Ticket &>
         </div>
@@ -87,9 +87,9 @@
     </div>
 
     <div class="col-md-6">
-      <span class="label col-md-3">
+      <div class="label col-md-3">
         <&|/l&>Comments</&>:
-      </span>
+      </div>
       <div class="col-md-9 value">
         <textarea class="form-control" name="UpdateContent-<%$Ticket->Id%>" rows="5" cols="60"></textarea>
       </div>

@@ -54,18 +54,18 @@ action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
 >
     <input type="hidden" class="hidden" name="QuickCreate" value="1" />
     <div class="form-row">
-      <span class="label col-md-3">
+      <div class="label col-md-3">
         <&|/l&>Subject</&>:
-      </span>
+      </div>
       <div class="value col-md-9">
         <input class="form-control" type="text" size="50" name="Subject" value="<% $args->{Subject} || loc('Please update my user information') %>" />
       </div>
     </div>
 
       <div class="form-row">
-        <span class="label col-md-3">
+        <div class="label col-md-3">
           <&|/l&>Description</&>:
-        </span>
+        </div>
         <div class="value col-md-9">
           <textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></td>
         </div>

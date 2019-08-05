@@ -67,21 +67,21 @@
 <form id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
 
   <div class="form-row">
-    <span class="label col-md-3">
+    <div class="label col-md-3">
       <&|/l&>Username</&>:
-    </span>
-    <span class="value col-md-9">
+    </div>
+    <div class="value col-md-9">
       <input class="form-control" type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" />
-    </span>
+    </div>
   </div>
 
   <div class="form-row">
-    <span class="label col-md-3">
+    <div class="label col-md-3">
       <&|/l&>Password</&>:
-    </span>
-    <span class="value col-md-9">
+    </div>
+    <div class="value col-md-9">
       <input class="form-control" type="password" name="pass" />
-    </span>
+    </div>
   </div>
 
 <input type="hidden" name="next" value="<% $next %>" />
