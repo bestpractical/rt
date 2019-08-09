@@ -46,27 +46,43 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Widgets/TitleBoxStart, title => loc("[_1] newest articles", $rows), bodyclass=> '' &>
-<table border="0" cellspacing="0" cellpadding="1" width="100%">
-<tr>
-<th align="right"><&|/l&>#</&></th>
-<th align="left"><&|/l&>Name</&></th>
-<th align="left" width="20%"><&|/l&>Created by</&></th>
-<th align="left">&nbsp;</th>
-</tr>
+
+<div class="form-row">
+  <div class="col-md-auto label text-right">
+    <&|/l&>#</&>
+  </div>
+  <div class="col-md-4 label text-left">
+    <&|/l&>Name</&>
+  </div>
+  <div class="col-md-4 label text-left">
+    <&|/l&>Created by</&>
+  </div>
+  <div class="col-md-3 label text-left">
+    &nbsp;
+  </div>
+</div>
 % while (my $Article = $MyArticles->Next) {
 % $i++;
-<tr class="<% $i%2 ? 'oddline' : 'evenline'%>">                                
-<td align="right"><%$Article->Id%></td>
-<td><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></td>
-<td><%$Article->CreatorObj->Name%></td>
-<td align="right">[<a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</td>
-</tr>
-<tr class="<% $i%2 ? 'oddline' : 'evenline'%>">
-<td>&nbsp;</td>
-<td colspan="3"><small><%$Article->Summary || loc('(no Summary)')%></small></td>
-</tr>
+<div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row">
+  <div class="col-md-auto value text-right">
+    <span class="current-value form-control"><%$Article->Id%></span>
+  </div>
+  <div class="col-md-4 value text-left">
+    <span class="current-value form-control"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></span>
+  </div>
+  <div class="col-md-4 value text-left">
+    <span class="current-value form-control"><%$Article->CreatorObj->Name%></span>
+  </div>
+  <div class="col-md-3 value text-left">
+    <span class="current-value form-control">[<a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</span>
+  </div>
+</div>
+<div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row">
+  <div class="col-md-11 col-md-offset-1">
+    <span class="current-value form-control"><small><%$Article->Summary || loc('(no Summary)')%></small></span>
+  </div>
+</div>
 % }
-</table>
 <& /Widgets/TitleBoxEnd &>
 <%INIT>
 my $rows = 10;

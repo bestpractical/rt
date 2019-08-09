@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 %# TODO: Better default handling
 
-<select name="<% $Name %>">
+<select name="<% $Name %>" class="form-control selectpicker">
 % foreach my $value ( @values ) {
 <option value="<% $value %>" <% $value == $Default? 'selected="selected"': '' |n%>>
 <% shift @labels %>

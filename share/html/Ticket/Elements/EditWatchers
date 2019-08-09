@@ -45,15 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<ul>
+<ul class="list-group list-group-compact">
 %# Print out a placeholder if there are none.
 % if ( !$Watchers->id || $Members->Count == 0 ) {
-<li><i><&|/l&>none</&></i></li>
+<li class="list-group-item"><i><&|/l&>none</&></i></li>
 % } else {
 % while ( my $watcher = $Members->Next ) {
 % my $member = $watcher->MemberObj->Object;
-<li>
-<input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $Watchers->Name %>-Principal-<% $watcher->MemberId %>" value="1" unchecked />
+<li class="list-group-item">
+  <div class="custom-control custom-checkbox">
+%   my $name = 'Ticket-DeleteWatcher-Type-' . $Watchers->Name . '-Principal-' . $watcher->MemberId;
+    <input type="checkbox" class="checkbox custom-control-input" id="<% $name %>" name="<% $name %>" value="1" unchecked />
+    <label class="custom-control-label" for="<% $name %>">
 % if ( $member->isa( 'RT::User' ) ) { 
 <& /Elements/ShowUser, User => $member &> <& /Elements/ShowUserEmailFrequency, User => $member, Ticket => $TicketObj &>
 % } else {
@@ -65,7 +68,8 @@
 % } else {
 <% $member->Name %>
 % } }
-
+    </label>
+  </div>
 </li>
 % }
 % }

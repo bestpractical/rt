@@ -45,18 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table class="edit-columns">
+<div class="edit-columns">
 
-<tr>
-<th><&|/l&>Add Columns</&>:</th>
-<th><&|/l&>Format</&>:</th>
-<th></th>
-<th><&|/l&>Show Columns</&>:</th>
-</tr>
+  <div class="form-row text-center">
+    <div class="col-md-3"><&|/l&>Add Columns</&>:</div>
+    <div class="col-md-3"><&|/l&>Format</&>:</div>
+    <div class="col-md-1"></div>
+    <div class="col-md-4"><&|/l&>Show Columns</&>:</div>
+  </div>
 
 <script type="text/javascript">
 jQuery( function() {
-    jQuery('select[name=SelectDisplayColumns].chosen').chosen({ width: '12em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
+    if ( !jQuery.prototype.selectpicker ) {
+        jQuery('select[name=SelectDisplayColumns].chosen').chosen({ width: '12em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
+    }
     jQuery('[name=AddCol], [name=RemoveCol], [name=ColUp], [name=ColDown]').click( function() {
         var name = jQuery(this).attr('name');
         var form = jQuery(this).closest('form');
@@ -66,7 +68,12 @@ jQuery( function() {
                 if ( data.status == 'success' ) {
                     form.find('input[name=Format]').val(data.Format);
                     form.find('select[name=CurrentDisplayColumns]').html(data.CurrentDisplayColumns);
-                    form.find('select[name=SelectDisplayColumns]').val('').trigger("chosen:updated");
+                    if ( jQuery.prototype.selectpicker ) {
+                        form.find('select[name=SelectDisplayColumns]').val('').change();
+                    }
+                    else {
+                        form.find('select[name=SelectDisplayColumns]').val('').trigger("chosen:updated");
+                    }
                     form.find('[name=Link],[name=Title],[name=Size],[name=Face]').val('');
                 }
                 else {
@@ -81,76 +88,91 @@ jQuery( function() {
     });
 });
 </script>
-<tr>
 
-<td valign="top"><select name="SelectDisplayColumns" multiple="multiple" class="chosen">
+  <div class="form-row">
+
+    <div class="col-md-3">
+      <div class="form-row">
+        <select name="SelectDisplayColumns" multiple="multiple" class="form-control selectpicker">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
-<option value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
-<% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
+        <option value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
+        <% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
 % }
-</select></td>
-<td>
-<div class="row">
-<span class="label"><&|/l&>Link</&>:</span>
-<span class="value">
-<select name="Link">
-<option value="None">-</option>
-<option value="Display"><&|/l&>Display</&></option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="form-row">
+        <div class="col-md-3 label"><&|/l&>Link</&>:</div>
+%# leave 1 col to save some space to the right "->"
+        <div class="col-md-8 value">
+          <select name="Link" class="form-control selectpicker">
+              <option value="None">-</option>
+              <option value="Display"><&|/l&>Display</&></option>
 % if ($IncludeTicketLinks) {
-<option value="Take"><&|/l&>Take</&></option>
-<option value="Respond"><&|/l&>Respond</&></option>
-<option value="Comment"><&|/l&>Comment</&></option>
-<option value="Resolve"><&|/l&>Resolve</&></option>
+              <option value="Take"><&|/l&>Take</&></option>
+              <option value="Respond"><&|/l&>Respond</&></option>
+              <option value="Comment"><&|/l&>Comment</&></option>
+              <option value="Resolve"><&|/l&>Resolve</&></option>
 % }
-</select>
-</span>
-</div>
-<div class="row">
-<span class="label"><&|/l&>Title</&>:</span>
-<span class="value"><input name="Title" size="10" /></span>
-</div>
-<div class="row">
-<span class="label"><&|/l&>Size</&>:</span>
-<span class="value"><select name="Size">
-<option value="">-</option>
-<option value="Small"><&|/l&>Small</&></option>
-<option value="Large"><&|/l&>Large</&></option>
-</select>
-</span>
-</div>
-<div class="row">
-<span class="label"><&|/l&>Style</&>:</span>
-<span class="value"><select name="Face">
-<option value="">-</option>
-<option value="Bold"><&|/l&>Bold</&></option>
-<option value="Italic"><&|/l&>Italic</&></option>
-</select>
-</span>
-</div>
-</td>
+          </select>
+        </div>
+      </div>
 
-<td><input type="submit" class="button" name="AddCol" value=" &rarr; " /></td>
+      <div class="form-row">
+        <div class="col-md-3 label"><&|/l&>Title</&>:</div>
+        <div class="col-md-8 value"><input type="text" name="Title" size="10" class="form-control" /></div>
+      </div>
 
-<td valign="top">
-<select size="8" name="CurrentDisplayColumns">
+      <div class="form-row">
+        <div class="col-md-3 label"><&|/l&>Size</&>:</div>
+        <div class="col-md-8 value">
+          <select name="Size" class="form-control selectpicker">
+            <option value="">-</option>
+            <option value="Small"><&|/l&>Small</&></option>
+            <option value="Large"><&|/l&>Large</&></option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col-md-3 label"><&|/l&>Style</&>:</div>
+        <div class="col-md-8 value">
+          <select name="Face" class="form-controll selectpicker">
+            <option value="">-</option>
+            <option value="Bold"><&|/l&>Bold</&></option>
+            <option value="Italic"><&|/l&>Italic</&></option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-1"><input type="submit" class="button btn btn-primary" name="AddCol" value=" &rarr; " /></div>
+
+    <div class="col-md-4">
+      <div class="form-row">
+        <select size="8" class="tall form-control" name="CurrentDisplayColumns">
 % my $i=0;
 % my $current = $ARGS{CurrentDisplayColumns} || ''; $current =~ s/^\d+>//;
 % foreach my $field ( @$CurrentFormat ) {
-<option value="<% $i++ %>><% $field->{Column} %>" <% $field->{Column} eq $current ? 'selected="selected"' : '' |n%>>\
+          <option value="<% $i++ %>><% $field->{Column} %>" <% $field->{Column} eq $current ? 'selected="selected"' : '' |n%>>\
 <% $field->{Column} =~ /^(?:CustomField|CF)\./ ? $field->{Column} : loc( $field->{Column} ) %></option>
 % }
-</select>
-<br />
-<center>
-<input type="submit" class="button" name="ColUp" value=" &uarr; " />
-<input type="submit" class="button" name="ColDown" value=" &darr; " />
-<input type="submit" class="button" name="RemoveCol" value="<%loc('Delete')%>" />
-</center>
-</td>
+        </select>
+      </div>
 
-</tr>
-</table>
+      <div class="form-row">
+        <div class="col-md-12 text-center">
+          <input type="submit" class="button btn btn-primary" name="ColUp" value=" &uarr; " />
+          <input type="submit" class="button btn btn-primary" name="ColDown" value=" &darr; " />
+          <input type="submit" class="button btn btn-primary" name="RemoveCol" value="<%loc('Delete')%>" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <%init>
 my $selected = $ARGS{AddCol} ? [] : $ARGS{SelectDisplayColumns};

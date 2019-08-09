@@ -4,6 +4,21 @@ users over developer modification.
 
 The rest of this file documents the contents of the directory.
 
+* bootstrap-4.2.1
+Description: front-end framework
+Origin: https://github.com/twbs/bootstrap
+License: MIT
+
+* bootstrap-combobox-1.2.0
+Description: combobox for bootstrap
+Origin: https://github.com/danielfarrell/bootstrap-combobox
+License: Apache
+
+* bootstrap-select-1.13.7
+Description: modern select with intuitive multiselection, searching, and much more
+Origin: https://github.com/snapappointments/bootstrap-select
+License: MIT
+
 * chosen-1.4.2
 Description: <select> box enhancer
 Origin: https://github.com/harvesthq/chosen
@@ -49,3 +64,7 @@ Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
 License: Apache
 
+* popper-1.14.6.js
+Description: computes and, optionally, applies the styles to the poppers(bootstrap requires it)
+Origin: https://github.com/FezVrasta/popper.js
+License: MIT

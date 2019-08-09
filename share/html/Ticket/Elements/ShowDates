@@ -45,63 +45,63 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr class="date created">
-    <td class="label"><&|/l&>Created</&>:</td>\
-    <td class="value"><% $Ticket->CreatedObj->AsString %></td>
-  </tr>
+<div class="fields">
+  <div class="date field created">
+    <span class="label"><&|/l&>Created</&>:</span>\
+    <span class="value"><% $Ticket->CreatedObj->AsString %></span>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'AfterCreated', TicketObj => $Ticket );
-  <tr class="date starts<% $Ticket->StartsObj->Unix ? q{} : q{ unset-field}%>">
-    <td class="label"><&|/l&>Starts</&>:</td>\
-    <td class="value"><% $Ticket->StartsObj->AsString %></td>
-  </tr>
+  <div class="date field starts<% $Ticket->StartsObj->Unix ? q{} : q{ unset-field}%>">
+    <span class="label"><&|/l&>Starts</&>:</span>\
+    <span class="value"><% $Ticket->StartsObj->AsString %></span>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'AfterStarts', TicketObj => $Ticket );
-  <tr class="date started<% $Ticket->StartedObj->Unix ? q{} : q{ unset-field}%>">
-    <td class="label"><&|/l&>Started</&>:</td>\
-    <td class="value"><% $Ticket->StartedObj->AsString %></td>
-  </tr>
+  <div class="date field started<% $Ticket->StartedObj->Unix ? q{} : q{ unset-field}%>">
+    <span class="label"><&|/l&>Started</&>:</span>\
+    <span class="value"><% $Ticket->StartedObj->AsString %></span>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'AfterStarted', TicketObj => $Ticket );
-  <tr class="date told<% $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ? q{} : q{ unset-field}%>">
-    <td class="label">
+  <div class="date field told<% $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ? q{} : q{ unset-field}%>">
+    <span class="label">
 % if ( $Ticket->CurrentUserHasRight('ModifyTicket' ) ) {
 <a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:
 % } else {
 <&|/l&>Last Contact</&>:
 % }
-</td><td class="value"><% $Ticket->ToldObj->AsString %></td>
-  </tr>
+</span><span class="value"><% $Ticket->ToldObj->AsString %></span>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'AfterTold', TicketObj => $Ticket );
 
-  <tr class="date due<% $Ticket->DueObj->Unix ? q{} : q{ unset-field}%>">
-    <td class="label"><&|/l&>Due</&>:</td>\
+  <div class="date field due<% $Ticket->DueObj->Unix ? q{} : q{ unset-field}%>">
+    <span class="label"><&|/l&>Due</&>:</span>\
 % my $due = $Ticket->DueObj;
 % if ( $due && $due->IsSet && $due->Diff < 0 && $Ticket->QueueObj->IsActiveStatus($Ticket->Status) ) {
-    <td class="value"><span class="overdue"><% $due->AsString  %></span></td>
+    <span class="value"><span class="overdue"><% $due->AsString  %></span></span>
 % } else {
-    <td class="value"><% $due->AsString  %></td>
+    <span class="value"><% $due->AsString  %></span>
 % }
-  </tr>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'AfterDue', TicketObj => $Ticket );
 
-  <tr class="date resolved<% $Ticket->ResolvedObj->Unix ? q{} : q{ unset-field}%>">
-    <td class="label"><&|/l&>Closed</&>:</td>\
-    <td class="value"><% $Ticket->ResolvedObj->AsString  %></td>
-  </tr>
+  <div class="date field resolved<% $Ticket->ResolvedObj->Unix ? q{} : q{ unset-field}%>">
+    <span class="label"><&|/l&>Closed</&>:</span>\
+    <span class="value"><% $Ticket->ResolvedObj->AsString  %></span>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'AfterResolved', TicketObj => $Ticket );
 
-  <tr class="date updated">
-    <td class="label"><&|/l&>Updated</&>:</td>\
+  <div class="date field updated">
+    <span class="label"><&|/l&>Updated</&>:</span>\
 % my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj)) : loc("Never");
 % if ($UpdatedLink) {
-    <td class="value"><a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a></td>
+    <span class="value"><a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a></span>
 % } else {
-    <td class="value"><% $UpdatedString | n %></td>
+    <span class="value"><% $UpdatedString | n %></span>
 % }
-  </tr>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'AfterUpdated', TicketObj => $Ticket );
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'Dates', Table => 0 &>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
-</table>
+</div>
 <%ARGS>
 $Ticket => undef
 $UpdatedLink => 1

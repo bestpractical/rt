@@ -45,23 +45,28 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
 % while (my $CustomField = $CustomFields->Next()) {
-<tr>
-    <td class="cflabel">
-        <span class="name"><%$CustomField->Name%>:</span><br />
+<div class="form-row">
+  <div class="cflabel label col-md-3">
+    <span class="name"><%$CustomField->Name%>:</span>
+    <div class="form-row">
+      <div class="label col-md-3"></div>
+      <div class="cflabel label col-md-9">
         <span class="type"><%$CustomField->EntryHint // ''%></span>
-    </td>
-    <td class="entry"><& /Elements/EditCustomField, 
-        Object => $ArticleObj, 
-        CustomField => $CustomField, 
-        Default => $CFContent->{$CustomField->Id},
-        Rows => 15,
-        Cols => 70
-        &></td>
-</tr>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9 value entry">
+    <& /Elements/EditCustomField, 
+      Object => $ArticleObj, 
+      CustomField => $CustomField, 
+      Default => $CFContent->{$CustomField->Id},
+      Rows => 15,
+      Cols => 70
+    &>
+  </div>
+</div>
 % }
-</table>
 <%INIT>
 my $CustomFields;
 

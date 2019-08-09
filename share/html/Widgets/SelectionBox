@@ -169,7 +169,7 @@ $self => undef
 <& SelectionBox:current, self => $self &>
 <&|/l&>Available</&>:
 <br />
-<select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple" class="selection-box">
+<select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple" class="tall selection-box">
 % for (@{$self->{Available}}) {
 <option value="<% $_->[0] %>"><% $_->[1] %></option>
 % }
@@ -179,7 +179,7 @@ $self => undef
 <input aria-label="Add" name="add" type="submit" class="button" value=" &rarr; " />
 % }
 
-<select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple" class="selection-box">
+<select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple" class="tall selection-box">
 % for (@{$self->{Current}}) {
 <option value="<% $_ %>"
 % if (exists $selected{$_}) {

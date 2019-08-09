@@ -53,7 +53,11 @@
 <form method="post" action="MyRT.html">
 <input type="hidden" name="id" value="<% $id %>" />
 <input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button" value="<%loc('Reset to default')%>">
+<div class="form-row">
+  <div class="col-md-12">
+    <input type="submit" class="button form-control btn btn-primary" value="<%loc('Reset to default')%>">
+  </div>
+</div>
 </form>
 
 <br />

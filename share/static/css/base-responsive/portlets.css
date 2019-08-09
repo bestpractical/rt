@@ -1,0 +1,14 @@
+table.dashboard {
+    width: 100%;
+    border: 0;
+}
+
+.quick-create form {
+   max-width: 500px;
+}
+
+.quick-create input[type="text"],
+.quick-create input[type="email"],
+.quick-create textarea {
+    width: 100%;
+}

@@ -1,0 +1,11 @@
+#assets-accordion h3 {
+    position: relative;
+}
+
+#assets-accordion h3 a.unlink-asset {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: inherit;
+    padding: 0;
+}

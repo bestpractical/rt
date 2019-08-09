@@ -76,7 +76,7 @@
 %         }
 %         # List the topics.
 %         for my $t ( @showtopics ) {
-<ul><li><& /Articles/Elements/ShowTopicLink, Topic => $t, Class => $currclass_id &>
+<ul class="list-group list-group-compact"><li class="list-group-item"><& /Articles/Elements/ShowTopicLink, Topic => $t, Class => $currclass_id &>
 %             $ProduceTree->( $id ) if $t->Id == $id;
 %         }
 %         for ( @showtopics ) {
@@ -84,11 +84,11 @@
 %         }
 %     }
 % } else {
-<ul>
+<ul class="list-group list-group-compact">
 %     while (my $c = $Classes->Next) {
-<li><h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $c->Id %>"><% $c->Name %></a></h2></li>
+<li class="list-group-item"><h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $c->Id %>"><% $c->Name %></a></h2></li>
 %     }
-<li><h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=0"><&|/l&>Global Topics</&></a></h2></li>
+<li class="list-group-item"><h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=0"><&|/l&>Global Topics</&></a></h2></li>
 </ul>
 % }
 
@@ -100,9 +100,9 @@
 %   } elsif ($class) {
 <h2><&|/l&>Articles with no topics</&></h2>
 %   }
-<ul>
+<ul class="list-group list-group-compact">
 %   for my $a (@articles) {
-<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
+<li class="list-group-item"><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
 %   }
 </ul>
 % }

@@ -56,7 +56,7 @@ if ( $Object && $Object->Id ) {
     $default_privacy = ref($Object).'-'.$Object->Id;
 }
 </%init>
-<select id="<%$Name%>" name="<%$Name%>">
+<select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
 % foreach my $object (@Objects) {
 % my $privacy = ref($object).'-'.$object->id;
 <option value="<%$privacy%>" <% ( $privacy eq $default_privacy ) ? "selected='selected'" : '' |n %>><& SearchPrivacy, Object => $object &></option>

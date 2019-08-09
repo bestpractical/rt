@@ -45,17 +45,23 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $SelectFieldName %>">
+<div class="col-md-3">
+  <select name="<% $SelectFieldName %>" class="selectpicker form-control">
 % foreach my $col (@fields) {
-<option <% ($UserField eq $col->[0]) ? 'selected="selected"' : '' |n %> value="<% $col->[0] %>"><% loc($col->[1]) %></option>
+    <option <% ($UserField eq $col->[0]) ? 'selected="selected"' : '' |n %> value="<% $col->[0] %>"><% loc($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->Next) {
 %   my $val = "CustomField-" . $CF->Id;
-<option <% ($UserField eq $val) ? 'selected="selected"' : '' |n %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->Name %></option>
+    <option <% ($UserField eq $val) ? 'selected="selected"' : '' |n %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->Name %></option>
 % }
-</select>
-<& /Elements/SelectMatch, Name => $SelectOpName, Default => $UserOp &>
-<input size="8" name="<% $InputStringName %>" value="<% $UserString %>" />
+  </select>
+</div>
+<div class="col-md-3">
+  <& /Elements/SelectMatch, Name => $SelectOpName, Default => $UserOp &>
+</div>
+<div class="col-md-3">
+  <input type="text" size="8" name="<% $InputStringName %>" value="<% $UserString %>" class="form-control" />
+</div>
 <%INIT>
 my $CFs = RT::CustomFields->new($session{'CurrentUser'});
 $CFs->LimitToChildType('RT::User');

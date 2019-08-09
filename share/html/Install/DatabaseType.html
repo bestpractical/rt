@@ -67,7 +67,12 @@
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next') .': '. loc( 'Check Database Credentials') &>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Next') .': '. loc( 'Check Database Credentials') &>
+    </div>
+  </div>
 </form>
 </&>
 <%init>

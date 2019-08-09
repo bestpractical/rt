@@ -45,8 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<label><input type="radio" class="radio" name="<%$Name%>" checked="checked" value="AND" /><&|/l&>AND</&></label>
-<label><input type="radio" class="radio" name="<%$Name%>" value="OR" /><&|/l&>OR</&></label>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="<% $Name %>" checked="checked" id="<% $Name %>-and" value="AND">
+  <label class="form-check-label" for="<% $Name %>-and"><&|/l&>AND</&></label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="radio" name="<% $Name %>" id="<% $Name %>-or" value="AND">
+  <label class="form-check-label" for="<% $Name %>-or"><&|/l&>OR</&></label>
+</div>
 
 <%ARGS>
 $Name => "Operator"

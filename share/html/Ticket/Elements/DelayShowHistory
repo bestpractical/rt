@@ -60,7 +60,7 @@ jQuery(function(){
                 window.location.hash = "";  // trick the browser into a "change"
                 window.location.hash = hash;
             }
-        });
+        }).css('display', ''); // Remove display style so card's collapse mechanism could work
     });
 });
 </script>

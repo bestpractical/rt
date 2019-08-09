@@ -80,7 +80,7 @@ $AlternativeLabel => loc('other...'),
 
 $Multiple         => 0,
 </%ARGS>
-<select name="<% $Name %>" <% $Multiple ? 'multiple="multiple"' : '' |n%>>
+<select name="<% $Name %>" class="selectpicker form-control" <% $Multiple ? 'multiple="multiple"' : '' |n%>>
 
 % if ( $Default ) {
 % my $selected = '';

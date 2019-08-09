@@ -98,43 +98,47 @@ my $squelched_config = !( RT->Config->Get('SquelchedRecipients', $session{'Curre
 my %submitted;
 $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 </%init>
-<table>
 %   if ( scalar(map { keys %{$headers{$_}} } qw(To Cc Bcc)) ) {
-<tr>
-<td>&nbsp;</td>
-<td>
-<input type="checkbox" class="checkbox" id="TxnSendMailToAll-Simplified" name="TxnSendMailToAll" value="1">
-<label for="TxnSendMailToAll-Simplified"><b><% loc('All recipients') %></b></label>
-</td>
-</tr>
+
+<div class="custom-control custom-checkbox">
+  <input class="custom-control-input" type="checkbox" id="TxnSendMailToAll-Simplified" name="TxnSendMailToAll" value="1">
+  <label class="custom-control-label" for="TxnSendMailToAll-Simplified"><b><% loc('All recipients') %></b></label>
+</div>
 % }
 % for my $type (qw(To Cc Bcc)) {
 %     next unless keys %{$headers{$type}} or keys %{$no_squelch{$type}};
-<tr>
-<td valign="top"><% $type %>:</td>
-<td valign="top">
+<ul class="list-group list-group-compact">
+  <li class="list-group-item">
+    <div class="form-row">
+      <div class="col-md-auto">
+        <% $type %>:
+      </div>
+      <div class="col-md-auto">
 %     for my $addr (sort {$a->address cmp $b->address} values %{$headers{$type}}) {
 %         my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %         $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %         $recips{$addr->address}++;
-<input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
-<label for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" class="custom-control-input" />
+          <label class="custom-control-label" for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
+        </div>
 %         $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
-<br />
 %     }
 %     for my $addr (sort {$a->address cmp $b->address} values %{$no_squelch{$type}}) {
+<div class="col-md-auto">
 <label><& /Elements/ShowUser, Address => $addr &></label>
 %         if ( $type eq 'Cc' ) {
 (<&|/l&>explicit one-time Cc</&>)
 %         } else {
 (<&|/l&>explicit one-time Bcc</&>)
 %         }
-<br />
+</div>
 %     }
-</td></tr>
+      </div>
+    </li>
+  </ul>
 % }
 % $m->callback( CallbackName => 'AfterRecipients', TicketObj => $TicketObj );
-</table>
 <p>
 <&|/l, RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$TicketObj->Id,
 &>Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href="[_1]">People page</a>.</&>

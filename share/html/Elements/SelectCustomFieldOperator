@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>">
+<select name="<% $Name %>" class="form-contorl selectpicker">
 % while (my $option = shift @Options) {
 % my $value = shift @Values;
 <option value="<% $value %>"

@@ -46,20 +46,25 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => "asset-search-people", title => loc('People') &>
-<table>
 % for my $role (RT::Asset->Roles) {
-<tr class="asset-role-<% CSSClass($role) %>">
-  <td class="label"><label for="Role.<% $role %>"><% loc($role) %></td>
-  <td class="value">
-      <input type="text" id="Role.<% $role %>" name="Role.<% $role %>"
-             data-autocomplete="Users" value="<% $ARGS{"Role.$role"} || '' %>" />
-  </td>
-  <td class="label not"><label for="!Role.<% $role %>"><&|/l&>not</&></td>
-  <td class="value">
-      <input type="text" id="!Role.<% $role %>" name="!Role.<% $role %>"
-             data-autocomplete="Users" value="<% $ARGS{"!Role.$role"} || '' %>" />
-  </td>
-</tr>
+  <div class="asset-role-<% CSSClass($role) %> form-row">
+    <div class="label col-md-2">
+      <% loc($role) %>
+    </div>
+    <div class="value col-md-4">
+      <input class="form-control" type="text" id="Role.<% $role %>" name="Role.<% $role %>"
+        data-autocomplete="Users" value="<% $ARGS{"Role.$role"} || '' %>"
+      />
+    </div>
+    <div class="label col-md-2">
+      <&|/l&>not</&>
+    </div>
+    <div class="value col-md-4">
+      <input class="form-control" type="text" id="!Role.<% $role %>" name="!Role.<% $role %>"
+        data-autocomplete="Users" value="<% $ARGS{"!Role.$role"} || '' %>"
+      />
+    </div>
+  </div>
 % }
 % my $CFs = RT::CustomFields->new( $session{CurrentUser} );
 % $CFs->LimitToCatalog( $CatalogObj->Id );
@@ -69,14 +74,21 @@
 % my $name = "CF.{" . $cf->Name . "}";
 % my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 % my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
-<tr>
-  <td class="label"><label for="<% $name %>"><% $cf->Name %></label></td>
-  <td class="value"><& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &></td>
-  <td class="label not"><label for="!<% $name %>"><&|/l&>not</&></label></td>
-  <td class="value"><& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &></td>
-</tr>
+  <div class="form-row">
+    <div class="label col-md-2">
+      <% $cf->Name %>
+    </div>
+    <div class="value col-md-4">
+      <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
+    </div>
+    <div class="label col-md-2">
+      <&|/l&>not</&>
+    </div>
+    <div class="value col-md-4">
+      <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
+    </div>
+  </div>
 % }
-</table>
 </&>
 <%args>
 $CatalogObj => undef

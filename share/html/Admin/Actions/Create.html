@@ -52,15 +52,14 @@
 <form method="post" action="Create.html" id="CreateAction" name="CreateAction">
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
-<table>
 <& Elements/EditBasics, %ARGS, Action => $action, &>
-</table>
 </&>
 
-<& /Elements/Submit,
-    Label => loc('Create'),
-    Name => 'Create',
-&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Create'), Name => 'Create' &>
+    </div>
+  </div>
 
 </form>
 <%ARGS>

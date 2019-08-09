@@ -78,7 +78,12 @@ $m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 <&| /Widgets/TitleBox, title => loc("Search Assets") &>
 <& /Asset/Elements/AssetSearchBasics, %ARGS, CatalogObj => $catalog_obj &>
 <& /Asset/Elements/AssetSearchPeople, %ARGS, CatalogObj => $catalog_obj &>
-<& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+    </div>
+  </div>
 
 % my $has_assets_cfs = 0;
 % foreach my $group ( 'Dates', 'Links', RT::CustomField->CustomGroupings( "RT::Asset" ), '' ) {
@@ -87,7 +92,11 @@ $m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 % }
 
 % if ( $has_assets_cfs ) {
-<& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
+    </div>
+  </div>
 % }
 
 </&>

@@ -4,6 +4,10 @@ jQuery(function() {
             .append(html).appendTo("body")
             .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
             .modal();
+
+            // We need to refresh the select picker plugin on AJAX calls
+            // since the plugin only runs on page load.
+            jQuery('.selectpicker').selectpicker('refresh');
     };
 
     var assets = jQuery("#assets-accordion");

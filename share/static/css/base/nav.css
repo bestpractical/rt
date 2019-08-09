@@ -58,3 +58,8 @@
 #page-navigation {
     z-index: 95;
 }
+
+.create-wide   { display: block; }
+.create-medium { display: none; }
+.create-narrow { display: none; }
+

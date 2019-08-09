@@ -54,23 +54,14 @@
 
 <&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Label) &>
 
-<table width="100%">
-<tr>
-<td>
-<h3><&|/l&>Current members</&></h3>
-</td>
-<td>
-<h3><&|/l&>Add members</&></h3>
-</td>
-</tr>
-
-<tr>
-<td valign="top">
+<div class="form-row">
+  <div class="col-md-6">
+    <h3><&|/l&>Current members</&></h3>
 
 % if ($Group->MembersObj->Count == 0 ) {
-<em><&|/l&>(No members)</&></em>
+      <em><&|/l&>(No members)</&></em>
 % } else {
-<&|/l&>Users</&>
+      <h4><&|/l&>Users</&></h4>
 % my $Users = $Group->UserMembersObj( Recursively => 0 );
 <%perl>
 my @users = map {$_->[1]}
@@ -78,33 +69,46 @@ my @users = map {$_->[1]}
             map { [$_->Format, $_] }
             @{ $Users->ItemsArrayRef };
 </%perl>
-<ul>
+      <ul class="list-group list-group-compact">
 % for my $user (@users) {
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
-<li><input type="checkbox" class="checkbox" name="DeleteMember-<% $user->PrincipalObj->Id %>" value="1" />
-<& /Elements/ShowUser, User => $user &></li>
+% my $id= 'DeleteMember-' . $user->PrincipalObj->Id;
+        <li class="list-group-item">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="checkbox custom-control-input" id="<% $id %>" name="<% $id %>" value="1" />
+            <label class="custom-control-label" for="<% $id %>"><& /Elements/ShowUser, User => $user &></label>
+          </div>
+        </li>
 % }
-</ul>
-<&|/l&>Groups</&>
-<ul>
+      </ul>
+      <h4><&|/l&>Groups</&></h4>
+      <ul class="list-group list-group-compact">
 % my $GroupMembers = $Group->MembersObj;
 % $GroupMembers->LimitToGroups();
 % while ( my $member = $GroupMembers->Next ) {
 % $GroupsSeen{ $member->MemberId } = 1 if $SkipSeenGroups;
-<li><input type="checkbox" class="checkbox" name="DeleteMember-<% $member->MemberId %>" value="1" />
-<a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $member->MemberObj->Object->id %>"><% $member->MemberObj->Object->Name %></a>
+% my $id= 'DeleteMember-' .  $member->MemberId;
+      <li class="list-group-item">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" class="checkbox custom-control-input" id="<% $id%>" name="DeleteMember-<% $id%>" value="1" />
+          <label class="custom-control-label" for="<% $id %>">
+            <a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $member->MemberObj->Object->id %>"><% $member->MemberObj->Object->Name %></a>
+          </label>
+        </div>
+      </li>
 % }
-</ul>
+      </ul>
+      <em><&|/l&>(Check box to delete)</&></em>
 % }
-</td>
-<td valign="top">
-<& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group,
-    SkipUsers => \%UsersSeen, SkipGroups => \%GroupsSeen &>
-</td>
-</tr>
-</table>
+
+  </div>
+  <div class="col-md-6">
+    <h3><&|/l&>Add members</&></h3>
+    <& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group,
+        SkipUsers => \%UsersSeen, SkipGroups => \%GroupsSeen &>
+  </div>
+</div>
 </&>
-<em><&|/l&>(Check box to delete)</&></em>
 <& /Elements/Submit, Label => loc('Modify Members'), Reset => 1 &>
 </form>
 

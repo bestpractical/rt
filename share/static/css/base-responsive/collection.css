@@ -1,0 +1,26 @@
+table.collection td:first-child, table.collection th:first-child {
+    padding-left: 1em;
+}
+
+.collection-as-table ul.cf-values {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.collection-as-table .user a {
+    font-weight: inherit;
+}
+
+.collection-as-table .user a:visited {
+    color: inherit;
+}
+
+.results-count {
+    font-size: smaller;
+}
+/* four nbsps. can't use margin- or padding-left since it makes a gap in
+   the <a> tag's underline on hover, and can't use regular spaces since they
+   collapse into one because it's HTML, and can't use &nbsp; because it's CSS */
+.results-count::before {
+    content: '\a0\a0\a0\a0';
+}

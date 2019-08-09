@@ -45,34 +45,48 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-    <td class="label"><label for="Name"><&|/l&>Name</&></label></td>
-    <td><input name="Name" value="<% $current{Name} %>" size="40"></td>
-  </tr>
-  <tr>
-    <td class="label"><label for="Description"><&|/l&>Description</&></label></td>
-    <td><input name="Description" value="<% $current{Description} %>" size="40"></td>
-  </tr>
-  <tr class="lifecycle">
-    <td class="label"><label for="Lifecycle"><&|/l&>Lifecycle</&></label></td>
-    <td>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Name</&>
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Name" value="<% $current{Name} %>" size="40">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Description</&>
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Description" value="<% $current{Description} %>" size="40">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Lifecycle</&>
+    </div>
+    <div class="col-md-9 value">
       <& /Widgets/Form/Select:InputOnly,
           Name         => 'Lifecycle',
           Values       => [ sort { loc($a) cmp loc($b) } RT::Lifecycle->List( $CatalogObj->LifecycleType ) ],
           CurrentValue => $current{Lifecycle},
           Default      => 0,
       &>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><label for="Disabled"><&|/l&>Disabled?</&></label></td>
-    <td>
-      <input name="Disabled" type="checkbox" value="1" <% $current{Disabled} ? "checked" : "" %>>
-      <input name="SetDisabled" type="hidden" value="1">
-    </td>
-  </tr>
-</table>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label"></div>
+    <input name="SetDisabled" type="hidden" value="1">
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input name="Disabled" type="checkbox" class="checkbox custom-control-input" id="Disabled" value="1" <% $current{Disabled} ? "checked" : "" %>>
+        <label class="custom-control-label" for="Disabled"><&|/l&>Disabled?</&></label>
+      </div>
+    </div>
+  </div>
 <%args>
 $CatalogObj
 </%args>

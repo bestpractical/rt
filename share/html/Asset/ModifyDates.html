@@ -52,13 +52,16 @@
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
 <form method="post" enctype="multipart/form-data" id="ModifyAssetDates" action="ModifyDates.html">
-  <input type="hidden" name="id" value="<% $asset->id %>">
+<input type="hidden" name="id" value="<% $asset->id %>">
 
   <&| /Widgets/TitleBox, title => loc("Dates"), class => "asset-dates", title_class => "inverse" &>
     <& Elements/EditDates, %ARGS, AssetObj => $asset &>
   </&>
-
-  <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+    </div>
+  </div>
 </form>
 </span>
 

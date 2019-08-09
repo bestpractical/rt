@@ -55,24 +55,57 @@
 % }
 
 <&| /Widgets/TitleBox, title => loc("Search for approvals") &>
-<input type="checkbox" class="checkbox" value="1" id="ShowPending" name="ShowPending"
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input class="custom-control-input" type="checkbox" value="1" id="ShowPending" name="ShowPending"
         <%((!$ARGS{'ShowRejected'} && !$ARGS{'ShowResolved'}) ||
          $ARGS{'ShowPending'})
         && qq[checked="checked"] |n%> />
-<label for="ShowPending"><&|/l&>Show pending requests</&></label><br />
+        <label class="custom-control-label" for="ShowPending"><&|/l&>Show pending requests</&></label>
+      </div>
+    </div>
+  </div>
 
-<input type="checkbox" class="checkbox" value="1" id="ShowResolved" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> />
-<label for="ShowResolved"><&|/l&>Show approved requests</&></label><br />
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" value="1" id="ShowResolved" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> />
+        <label class="custom-control-label" for="ShowResolved"><&|/l&>Show approved requests</&></label><br />
+      </div>
+    </div>
+  </div>
 
-<input type="checkbox" class="checkbox" value="1" id="ShowRejected" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> />
-<label for="ShowRejected"><&|/l&>Show denied requests</&></label><br />
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" value="1" id="ShowRejected" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> />
+        <label class="custom-control-label" for="ShowRejected"><&|/l&>Show denied requests</&></label><br />
+      </div>
+    </div>
+  </div>
 
-<input type="checkbox" class="checkbox" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
-<label for="ShowDependent"><&|/l&>Show requests awaiting other approvals</&></label><br />
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" value="1" id="ShowDependent" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> />
+        <label class="custom-control-label" for="ShowDependent"><&|/l&>Show requests awaiting other approvals</&></label><br />
+      </div>
+    </div>
+  </div>
 
-<&|/l_unsafe, qq{<input size='15' class="datepicker" value='}.($created_before->IsSet && $created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' autocomplete='off' />"&>Only show approvals for requests created before [_1]</&><br />
+  <div class="form-row form-inline">
+    <div class="col-md-auto">
+      <&|/l_unsafe, qq{<input type='text' size='15' class="form-control datepicker" value='}.($created_before->IsSet &&$created_before->ISO(Timezone => 'user'))."' name='CreatedBefore' id='CreatedBefore' autocomplete='off' />"&>Only show approvals for requests created before [_1]</&>
+    </div>
+  </div>
 
-<&|/l_unsafe, qq{<input size='15' class="datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' autocomplete='off' />"&>Only show approvals for requests created after [_1]</&>
+  <div class="form-row form-inline">
+    <div class="col-md-auto">
+      <&|/l_unsafe, qq{<input type='text' size='15' class="form-control datepicker" value='}.( $created_after->IsSet && $created_after->ISO(Timezone => 'user'))."' name='CreatedAfter' id='CreatedAfter' autocomplete='off' />"&>Only show approvals for requests created after [_1]</&>
+    </div>
+  </div>
 </&>
 
 <%init>

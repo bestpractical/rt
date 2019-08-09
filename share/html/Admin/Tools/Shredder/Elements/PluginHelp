@@ -49,7 +49,9 @@
 $Plugin => ''
 </%ARGS>
 <div id="shredder-plugin-<% $Plugin %>-help" class="shredder-help">
-<% $text |n%>
+  <&| /Widgets/TitleBox, title => "$Plugin Help" &>
+    <% $text |n%>
+  </&>
 </div>
 <%ONCE>
 use RT::Shredder::Plugin;

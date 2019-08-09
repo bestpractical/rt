@@ -61,9 +61,9 @@
 >
 %   if ( $checktype eq 'radio' ) {
 % if ( $show_empty_option ) {
-  <div class="none">
-  <input class="none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
-  <label for="<% $name %>-none"><&|/l&>(no value)</&></label><br />
+  <div class="none custom-control custom-radio">
+    <input class="none custom-control-input" id="<% $name %>-none" type="<% $checktype %>" name="<% $name %>" id="<% $name %>-none" value="" <% keys %default ? '' : ' checked="checked"' |n%> />
+    <label class="custom-control-label" for="<% $name %>-none"><&|/l&>(no value)</&></label>
   </div>
 % }
 %   }
@@ -71,9 +71,9 @@
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
-<div data-name="<% $value->Category || '' %>">
-  <input type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
-  <label for="<% $labelid %>"><% $content %></label><br />
+<div data-name="<% $value->Category || '' %>" class="custom-control custom-radio">
+  <input class="custom-control-input"  type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
+  <label class="custom-control-label" for="<% $labelid %>"><% $content %></label><br />
 </div>
 %   }
 </div>
@@ -89,12 +89,24 @@
 %       $m->out($out);
       </select>
 % }
+% my $size = ($Rows && ( $Multiple || !@category || $RenderType eq 'Select box')) ? $Rows : 1;
+
 <select
-  name="<%$name%>" id="<%$name%>" class="CF-Edit CF-<%$CustomField->id%>-Edit<% $use_chosen ? ' chosen' : '' %>"
+  name="<%$name%>" id="<%$name%>"
+
+% if ( grep /\bbootstrap-select\b/, RT::Interface::Web->JSFiles ) {
+    class="CF-Edit CF-<%$CustomField->id%>-Edit <% $RenderType eq 'Dropdown' ? 'selectpicker' : 'form-control' %>"
+%   if ( $use_chosen ) {
+    data-live-search="true"
+%   }
+% } else {
+    class="CF-Edit CF-<%$CustomField->id%>-Edit<% $use_chosen ? ' chosen' : '' %><% $size > 1 ? ' tall' : '' %>"
+% }
+
 % if ($CustomField->BasedOnObj->id) {
   data-cascade-based-on-name="<% $BasedOnName || $NamePrefix . $CustomField->BasedOnObj->id . '-Value' |n %>"
 % }
-% if ( $Rows && ( $Multiple || !@category || $RenderType eq 'Select box') ) {
+% if ( $size > 1 ) {
   size="<% $Rows %>"
 % }
 <% $Multiple && qq[multiple="multiple"] |n %> >

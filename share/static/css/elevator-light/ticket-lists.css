@@ -1,0 +1,34 @@
+table.table tbody {
+    border: none;
+}
+
+table.table th {
+    border: none;
+}
+
+table.table th,
+table.table td {
+    padding: 0.5rem;
+}
+
+tr.oddline td {
+    background: #eee;
+}
+
+table.queue-summary th.collection-as-table:first-child {
+    text-align: left
+}
+
+table.queue-summary a,
+table.collection-as-table a {
+    font-weight: bold
+}
+
+table.collection-as-table th.collection-as-table a,
+table.queue-summary th.collection-as-table a {
+    color: #3858a3
+}
+
+table.queue-summary th.collection-as-table {
+    text-align: right
+}

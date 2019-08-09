@@ -50,45 +50,88 @@
 <h1><% $caption %></h1>
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html">
-<input type="hidden" name="GroupField" value="Name" />
-<input type="hidden" name="GroupOp" value="LIKE" />
-<&|/l&>Go to group</&>
-<input type="text" name="GroupString" value="" data-autocomplete="Groups" id="autocomplete-GroupString" />
-<script type="text/javascript">
-jQuery(function(){
-    // Jump directly to the page if a group is chosen
-    jQuery("#autocomplete-GroupString").on("autocompleteselect", function( event, ui ) {
-        document.location = RT.Config.WebPath + "/Admin/Groups/Modify.html?id=" + ui.item.id;
+  <input type="hidden" name="GroupField" value="Name" />
+  <input type="hidden" name="GroupOp" value="LIKE" />
+  <div class="row">
+    <div class="col-xl-6">
+
+      <div class="form-row">
+        <div class="col-md-3 label text-left">
+          <&|/l&>Go to group</&>
+        </div>
+        <div class="col-md-3 value">
+          <input type="text" class="form-control" name="GroupString" value="" data-autocomplete="Groups" id="autocomplete-GroupString" />
+          <script type="text/javascript">
+    jQuery(function(){
+        // Jump directly to the page if a group is chosen
+        jQuery("#autocomplete-GroupString").on("autocompleteselect", function( event, ui ) {
+            document.location = RT.Config.WebPath + "/Admin/Groups/Modify.html?id=" + ui.item.id;
+        });
     });
-});
-</script>
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
 </form>
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Groups/index.html" name="GroupsAdmin">
-<&|/l&>Find groups whose</&> <& /Elements/SelectGroups,
-        GroupField      => $GroupField,
-        GroupOp         => $GroupOp,
-        GroupString     => $GroupString,
-&><br />
-<&|/l&>And groups whose</&> <& /Elements/SelectGroups,
-        SelectFieldName => 'GroupField2',
-        SelectOpName    => 'GroupOp2',
-        InputStringName => 'GroupString2',
-        GroupField      => $GroupField2,
-        GroupOp         => $GroupOp2,
-        GroupString     => $GroupString2,
-&><br />
-<&|/l&>And groups whose</&> <& /Elements/SelectGroups,
-        SelectFieldName => 'GroupField3',
-        SelectOpName    => 'GroupOp3',
-        InputStringName => 'GroupString3',
-        GroupField      => $GroupField3,
-        GroupOp         => $GroupOp3,
-        GroupString     => $GroupString3,
-&><br />
-<input type="checkbox" class="checkbox" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
-<label for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
-<div align="right"><input type="submit" class="button" name="Go" value="<&|/l&>Go!</&>" /></div>
+
+  <div class="row">
+    <div class="col-xl-6">
+
+      <div class="form-row">
+        <div class="col-md-3 label text-left">
+          <&|/l&>Find groups whose</&>
+        </div>
+        <& /Elements/SelectGroups,
+               GroupField      => $GroupField,
+               GroupOp         => $GroupOp,
+               GroupString     => $GroupString,
+        &>
+      </div>
+      <div class="form-row">
+        <div class="col-md-3 label text-left">
+          <&|/l&>And groups whose</&>
+        </div>
+          <& /Elements/SelectGroups,
+               SelectFieldName => 'GroupField2',
+               SelectOpName    => 'GroupOp2',
+               InputStringName => 'GroupString2',
+               GroupField      => $GroupField2,
+               GroupOp         => $GroupOp2,
+               GroupString     => $GroupString2,
+          &>
+      </div>
+      <div class="form-row">
+        <div class="col-md-3 label text-left">
+          <&|/l&>And groups whose</&>
+        </div>
+        <& /Elements/SelectGroups,
+          SelectFieldName => 'GroupField3',
+          SelectOpName    => 'GroupOp3',
+          InputStringName => 'GroupString3',
+          GroupField      => $GroupField3,
+          GroupOp         => $GroupOp3,
+          GroupString     => $GroupString3,
+        &>
+      </div>
+      <div class="form-row">
+        <div class="col-md-12">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="checkbox custom-control-input" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
+            <label class="custom-control-label" for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col-md-12 text-right">
+          <input type="submit" class="form-control btn btn-primary button" name="Go" value="<&|/l&>Go!</&>" />
+        </div>
+      </div>
+    </div>
+  </div>
 </form>
 
 % unless ( $Groups->Count ) {

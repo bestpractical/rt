@@ -45,26 +45,44 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr class="asset-catalog">
-    <td class="label"><&|/l&>Catalog</&>:</td>
-    <td><& ShowCatalog, Asset => $AssetObj &></td>
-  </tr>
-  <tr class="asset-name">
-    <td class="label"><&|/l&>Name</&>:</td>
-    <td><% $AssetObj->Name || '' %></td>
-  </tr>
-  <tr class="asset-description">
-    <td class="label"><&|/l&>Description</&>:</td>
-    <td><% $AssetObj->Description || '' %></td>
-  </tr>
-  <tr class="asset-status">
-    <td class="label"><&|/l&>Status</&>:</td>
-    <td class="value"><% loc($AssetObj->Status) %></td>
-  </tr>
-  <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics', Table => 0 &>
+<div class="form-row">
+  <div class="col-md-3 asset-catalog label">
+    <&|/l&>Catalog</&>:
+  </div>
+  <div class="col-md-9 value">
+    <& ShowCatalog, Asset => $AssetObj &>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 asset-name label">
+    <&|/l&>Name</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $AssetObj->Name || '' %></span>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 asset-description label">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $AssetObj->Description || '' %></span>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 asset-status label">
+    <&|/l&>Status</&>:
+  </div>
+  <div class="col-md-9 value">
+    <span class="current-value form-control"><% $AssetObj->Status || '' %></span>
+  </div>
+</div>
+
+<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics' &>
 % $m->callback(%ARGS, CallbackName => "AfterFields");
-</table>
 <%args>
 $AssetObj
 </%args>

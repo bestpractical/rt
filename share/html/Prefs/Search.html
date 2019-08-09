@@ -62,17 +62,23 @@
 <input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
 <input type="hidden" name="Format" value="<%$ARGS{Format}%>" class="hidden" />
 
-<& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
-   AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
-<& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>
+  <div class="form-row">
+    <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
+      AvailableColumns => $AvailableColumns, CurrentFormat => $CurrentFormat &>
+  </div>
 
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Caption => loc("Save Changes"), Label => loc('Save'), Name => 'Save'&>
+    </div>
+  </div>
 </form>
 
 <&|/Widgets/TitleBox, title => loc("Reset") &>
 <form method="post" name="ResetSearchOptions" action="Search.html">
 <input type="hidden" name="Reset" value="1" />
 <input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
-<input type="submit" class="button" name="ResetSearchOptions" value="<% loc('Reset to default') %>">
+<input type="submit" class="button form-control btn btn-primary"" name="ResetSearchOptions" value="<% loc('Reset to default') %>">
 </form>
 </&>
 

@@ -49,6 +49,7 @@
     type="text"
     id="<% $Name %>"
     name="<% $Name %>"
+    class="form-control"
     value="<% $Default || '' %>"
 
 % if (defined $Size) {

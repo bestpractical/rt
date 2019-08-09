@@ -1,0 +1,19 @@
+table.ticket-summary {
+    table-layout: fixed;
+}
+
+.ticket-transaction div.metadata {
+    height: 1px;
+}
+
+div.downloadattachment {
+    position: relative;
+}
+
+div.messagebody {
+    height: 3em;
+}
+
+span.message-stanza-folder {
+    display: inline !important;
+}

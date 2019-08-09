@@ -54,9 +54,7 @@
 
 <& Elements/HiddenSearches, searches => \@hidden_searches, Dashboard => $Dashboard &>
 
-<table width="100%" border="0">
 % for my $pane (@panes) {
-<tr><td valign="top" class="boxcontainer">
 <form action="Queries.html" name="Dashboard-<%$pane->{Name}%>" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
 <input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
@@ -67,9 +65,7 @@
             $_->{pane} eq $pane_name} @deleted ) ? ( ShowUpdate => 1 ) : () &>
 </&>
 </form>
-</td></tr>
 % }
-</table>
 
 <%INIT>
 

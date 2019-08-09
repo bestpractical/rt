@@ -45,33 +45,49 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-<tr>
-<td class="label"><&|/l&>Name</&>:</td>
-<td class="value"><input name="Name" value="<%$Name||''%>" size="80" /></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Description</&>:</td>
-<td class="value"><input name="Description" value="<%$Description||''%>" size="80" /></td>
-</tr>
-<tr>
-<td class="label"><&|/l&>Type</&>:</td>
-<td class="value">
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Name</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Name" value="<%$Name||''%>" size="80" />
+  </div>
+</div>
 
-<input type="radio" name="Type" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
-<label for="Type-Perl"><&|/l&>Perl</&></label><br />
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input type="text" class="form-control" name="Description" value="<%$Description||''%>" size="80" />
+  </div>
+</div>
 
-<input type="radio" name="Type" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
-<label for="Type-Simple"><&|/l&>Simple</&></label><br />
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Type</&>:
+  </div>
+  <div class="col-md-9 value">
+    <div class="custom-control custom-radio">
+      <input type="radio" name="Type" class="custom-control-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
+      <label class="custom-control-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
+    </div>
+    <div class="custom-control custom-radio">
+      <input type="radio" name="Type" class="custom-control-input" id="Type-Simple" value="Simple" <% $Type eq "Simple" ? 'checked="checked"' : "" |n %>>
+      <label class="custom-control-label" for="Type-Simple"><&|/l&>Simple</&></label><br />
+    </div>
+  </div>
+</div>
 
-</td>
-</tr>
-<tr>
-<td class="label" valign="top"><&|/l&>Content</&>:</td>
-<td class="value"><textarea name="Content" rows="25" cols="80" wrap="soft">
-<%$Content||''%></textarea></td>
-</tr>
-</table>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Content</&>:
+  </div>
+  <div class="col-md-9 value">
+    <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft">
+<%$Content||''%></textarea>
+  </div>
+</div>
 
 <%INIT>
 

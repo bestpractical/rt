@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$Name%>" class="form-control selectpicker">
 <option value="Subject"><&|/l&>Subject</&></option>
 % if ( RT->Config->Get('FullTextSearch')->{'Enable'} ) {
 <option value="Content"><&|/l&>Content</&></option>

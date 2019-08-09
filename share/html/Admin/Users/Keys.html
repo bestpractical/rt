@@ -61,23 +61,31 @@
 
 % if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
 <&|/Widgets/TitleBox, title => loc('GnuPG private key') &>
-<& /Widgets/Form/Select,
+  <& /Widgets/Form/Select,
     Name         => 'PrivateKey',
     Description  => loc('Private Key'),
     Values       => \@potential_keys,
     CurrentValue => $UserObj->PrivateKey,
     DefaultLabel => loc('No private key'),
-&>
+  &>
 </&>
 % }
 
 % if (RT::Crypt->UseForOutgoing eq 'SMIME') {
 <&|/Widgets/TitleBox, title => loc('SMIME Certificate') &>
-<textarea name="SMIMECertificate"><% $UserObj->SMIMECertificate || '' %></textarea>
+<div class="form-row">
+  <div class="col-md-12">
+    <textarea rows="25" class="form-control" name="SMIMECertificate"><% $UserObj->SMIMECertificate || '' %></textarea>
+  </div>
+</div>
 </&>
 % }
 
-<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+  </div>
+</div>
 </form>
 
 <%ARGS>

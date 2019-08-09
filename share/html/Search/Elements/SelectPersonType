@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select id="<%$Name%>" name="<%$Name%>">
+<select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
 % if ($AllowNull) {
 <option value="">-</option>
 % }

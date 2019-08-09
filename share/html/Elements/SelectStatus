@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" <% $Multiple ? qq{multiple="multiple" size="$Size"} : '' |n %>>
+<select name="<%$Name%>" <% $Multiple ? qq{class="selectpicker form-control tall" multiple="multiple" size="$Size"} : 'class="selectpicker form-control"' |n %>>
 % if ( $DefaultValue ) {
 <option value=""<% !$Default && qq[ selected="selected"] |n %>><% $DefaultLabel %></option>
 % }

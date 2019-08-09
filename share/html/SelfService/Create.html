@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& Elements/Header, Title => loc("Create a ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj, Escape => 0)) &>
+<& Elements/Header, Title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form action="Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
@@ -55,64 +55,61 @@
 <input type="hidden" class="hidden" name="<% $key %>" value="<% $ARGS{$key} %>" />
 % }
 
-<table width="100%">
-<tr>
-<td class="label">
+<&|/Widgets/TitleBox, title => $title, class => 'ticket-info-basics' &>
+<div class="fields">
+<div class="field">
+<span class="label">
 <&|/l&>Queue</&>:
-</td>
-<td class="value">
+</span>
+<span class="value">
     <input type="hidden" class="hidden" name="Queue" value="<%$queue_obj->id || ''%>" />
     <strong><%$queue_obj->Name || ''%></strong> <% $queue_obj->Description ? '('.$queue_obj->Description.')' : '' %>
-</td>
-</tr>
+</span>
+</div>
 <% $m->callback( CallbackName => 'AfterQueue', %ARGS, QueueObj => $queue_obj ) %>
-<tr>
-<td class="label">
+<div class="field">
+<span class="label">
 <&|/l&>Requestors</&>:
-</td>
-<td class="value">
+</span>
+<span class="value">
 <& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
-</td>
-</tr>
-<tr>
-<td class="label">
+</span>
+</div>
+<div class="field">
+<span class="label">
 <&|/l&>Cc</&>:
-</td>
-<td class="value">
+</span>
+<span class="value">
 <& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => 1 &>
-</td>
-</tr>
-<tr>
-<td class="label">
+</span>
+</div>
+<div class="field">
+<span class="label">
 <&|/l&>Subject</&>:
-</td>
-<td class="value">
-<input name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
-</td>
-</tr>
-<tr>
-    <td colspan="2">
-        <& /Elements/EditCustomFields,
-            %ARGS,
-            Object          => RT::Ticket->new($session{CurrentUser}),
-            CustomFields    => $queue_obj->TicketCustomFields,
-            AsTable         => 0,
-            ForCreation     => 1,
-            &>
-    </td>
-</tr>
+</span>
+<span class="value">
+<input class="form-control" type="text" name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
+</span>
+</div>
+<& /Elements/EditCustomFields,
+    %ARGS,
+    Object          => RT::Ticket->new($session{CurrentUser}),
+    CustomFields    => $queue_obj->TicketCustomFields,
+    InTable         => 1,
+    ForCreation     => 1,
+    &>
 <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $queue_obj &>
-</table>
-<table width="100%">
-<tr>
-<td colspan="2">
+</div>
 <&|/l&>Describe the issue below</&>:<br />
 <& /Elements/MessageBox, Default => $ARGS{Content} || ''  &>
-</td>
-</tr>
-</table>
-<& /Elements/Submit, Label => loc("Create ticket")&>
 
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc("Create ticket")&>
+  </div>
+</div>
+
+</&>
 
 </form>
 <%args>
@@ -122,6 +119,8 @@ $Queue => undef
 my @results;
 my $queue_obj = RT::Queue->new($session{'CurrentUser'});
 $queue_obj->Load($Queue);
+
+my $title = loc("Create a ticket in [_1]", $m->scomp("/Ticket/Elements/ShowQueue", QueueObj => $queue_obj, Escape => 0));
 
 ProcessAttachments(ARGSRef => \%ARGS);
 

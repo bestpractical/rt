@@ -56,25 +56,42 @@
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-<select name="SearchField">
+<div class="form-row">
+  <div class="col-md-auto">
+    <select class="form-control selectpicker" name="SearchField">
 % foreach my $col (qw(Name Description EntryHint)) {
-<option <% $SearchField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
+      <option <% $SearchField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
 % }
-</select>
-<& /Elements/SelectMatch, Name => 'SearchOp', Default => $SearchOp &>
-<input size="8" name="SearchString" value="<% $SearchString %>" />
-<br />
+    </select>
+  </div>
+  <div class="col-md-auto">
+    <& /Elements/SelectMatch, Name => 'SearchOp', Default => $SearchOp &>
+  </div>
+  <div class="col-md-auto">
+    <input class="form-control" type="text" size="8" name="SearchString" value="<% $SearchString %>" />
+  </div>
+</div>
 
-<input type="checkbox" class="checkbox" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled? 'checked="checked"': '' |n%> />
-<label for="FindDisabled"><&|/l&>Include disabled custom roles in listing.</&></label>
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div>
+<div class="form-row">
+  <div class="custom-control custom-checkbox form-row">
+    <input type="checkbox" class="custom-control-input" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled? 'checked="checked"': '' |n%> />
+    <label class="custom-control-label" for="FindDisabled"><&|/l&>Include disabled custom roles in listing.</&></label>
+  </div>
+</div>
+
+
+<div class="form-row">
+  <div class="col-md-12 text-right">
+    <input type="submit" class="button btn btn-sm" value="<&|/l&>Go!</&>" />
+  </div>
+</div>
 </form>
 
-<p><&|/l&>Select a custom role</&>:</p>
+  <p><&|/l&>Select a custom role</&>:</p>
 % unless ( $roles->Count ) {
-<em><&|/l&>No custom roles matching search criteria found.</&></em>
+  <em><&|/l&>No custom roles matching search criteria found.</&></em>
 % } else {
-<& /Elements/CollectionList,
+  <& /Elements/CollectionList,
     OrderBy => 'Name',
     Order => 'ASC',
     Rows  => $Rows,
@@ -86,9 +103,9 @@
         Format Rows Page Order OrderBy
         FindDisabled SearchString SearchOp SearchField
     )],
-&>
+  &>
 % }
-
+</div>
 <%INIT>
 my $title = loc("Select a Custom Role");
 

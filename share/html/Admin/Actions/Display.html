@@ -49,13 +49,16 @@
 <& /Elements/Tabs &>
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
-<table>
 <& Elements/ShowBasics, %ARGS, Action => $action, &>
-</table>
 </&>
+
 <form>
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
-<& /Elements/Submit, Label => loc('Copy Action'), Name => 'Copy' &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Copy Action'), Name => 'Copy' &>
+    </div>
+  </div>
 </form>
 
 <%ARGS>

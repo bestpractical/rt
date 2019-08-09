@@ -52,15 +52,16 @@
 <form method="post" action="Create.html" id="CreateCondition" name="CreateCondition">
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
-<table>
+
 <& Elements/EditBasics, %ARGS, Condition => $condition, &>
-</table>
+
 </&>
 
-<& /Elements/Submit,
-    Label => loc('Create'),
-    Name => 'Create',
-&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Create'), Name => 'Create' &>
+    </div>
+  </div>
 
 </form>
 <%ARGS>

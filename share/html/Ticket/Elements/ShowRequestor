@@ -59,7 +59,7 @@
 
 <&| /Widgets/TitleBox,
     title_raw => loc("More about the requestors"),
-    class => 'ticket-info-requestor'
+    class => 'ticket-info-requestor fullwidth'
 &>
 
 <div id="requestor-accordion" class="user-accordion">

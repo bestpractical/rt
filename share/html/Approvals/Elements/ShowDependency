@@ -49,9 +49,7 @@
 % if ($approving->Count) {
 <h3><&|/l&>Tickets which depend on this approval:</&></h3>
 
-<table width="100%">
-<tr>
-<td width="25" bgcolor="#999999">&nbsp;</td><td>
+<div style="border-left: 25px solid #999; padding-left: 1px">
 <%PERL>
 my %show;
 while (my $link = $approving->Next()) {
@@ -98,10 +96,7 @@ foreach my $id (sort keys %show) {
 $m->print($refer);
 
 </%PERL>
-</td>
-</tr>
-</table>
-
+</div>
 % }
 <%ARGS>
 $Ticket
