@@ -1211,7 +1211,15 @@ sub _CustomFieldDecipher {
     $lookuptype ||= $self->_SingularClass->CustomFieldLookupType;
 
     my ($object, $field, $column) = ($string =~ /^(?:(.+?)\.)?\{(.+)\}(?:\.(Content|LargeContent))?$/);
-    $field ||= ($string =~ /^\{(.*?)\}$/)[0] || $string;
+    if ( !$field ) {
+        if ($string =~ /^(?:(\w+?)|\{(.*?)\})(?:\.(Content|LargeContent))?$/) {
+            $field = $1 || $2;
+            $column = $3;
+        }
+        else {
+            $field = $string;
+        }
+    }
 
     my ($cf, $applied_to);
 
