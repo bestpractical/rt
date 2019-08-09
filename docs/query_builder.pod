@@ -194,12 +194,15 @@ the relative date value from a ticket instead of the literal string "Resolved".
 
 =item Search tickets where custom fields Foo and Bar have the same value
 
-    CF.Foo IS NOT NULL AND CF.Bar = ObjectCustomFieldValues_1.Content
+    CF.Foo = CF.Bar
 
-This advanced query requires some knowledge of RT's search internals,
-but following this example should allow most users to construct a
-similar query by changing the custom field names. It works because
-C<CF.Foo> appears first as a custom field in the query and RT then
-sets I<ObjectCustomFieldValues_1.Content> as its Content.
+This is equal to:
+
+    CF.{Foo} = CF.{Bar}
+    CF.Foo = CF.Bar.Content
+
+To compare LargeContent instead:
+
+    CF.IP = CF.IPRange.LargeContent
 
 =back

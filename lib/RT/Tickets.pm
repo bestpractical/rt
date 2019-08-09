@@ -3186,8 +3186,16 @@ sub _parser {
             if ( !$quote_value && $value !~ /^(?:[+-]?[0-9]+|NULL)$/i ) {
                 my ( $class, $field );
 
+                # e.g. CF.Foo or CF.{Beta Date}
+                if ( $value =~ /^CF\.(?:\{(.*)}|(.*?))(?:\.(Content|LargeContent))?$/i ) {
+                    my $cf = $1 || $2;
+                    $field = $3 || 'Content';
+                    my ( $ocfvalias ) = $self->_CustomFieldJoin( $cf, $cf );
+                    $value = "$ocfvalias.$field";
+                    $class = 'RT::ObjectCustomFieldValues';
+                }
                 # e.g. ObjectCustomFieldValues_1.Content
-                if ( $value =~ /^(\w+?)(?:_\d+)?\.(\w+)$/ ) {
+                elsif ( $value =~ /^(\w+?)(?:_\d+)?\.(\w+)$/ ) {
                     my $table = $1;
                     $field = $2;
                     $class = $table =~ /main/i ? 'RT::Tickets' : "RT::$table";

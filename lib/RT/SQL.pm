@@ -64,8 +64,16 @@ my @tokens = qw[VALUE AGGREGATOR OPERATOR OPEN_PAREN CLOSE_PAREN KEYWORD];
 use Regexp::Common qw /delimited/;
 my $re_aggreg      = qr[(?i:AND|OR)];
 my $re_delim       = qr[$RE{delimited}{-delim=>qq{\'\"}}];
-my $re_value       = qr[[\w\.]+|[+-]?\d+|(?i:NULL)|$re_delim];
-my $re_keyword     = qr[[{}\w\.]+|$re_delim];
+
+# We need to support bare(not quoted) strings like CF.{Beta Date} to use the
+# content of related custom field as the value to compare, e.g.
+#
+#       Due < CF.{Beta Date}
+#
+# Support it in keyword part is mainly for consistency.
+
+my $re_value       = qr[(?i:CF)\.\{.+?\}(?:\.(?i:Content|LargeContent))?|[\w\.]+|[+-]?\d+|(?i:NULL)|$re_delim];
+my $re_keyword     = qr[(?i:CF)\.\{.+?\}(?:\.(?i:Content|LargeContent))?|[{}\w\.]+|$re_delim];
 my $re_op          = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)|(?i:NOT STARTSWITH)|(?i:STARTSWITH)|(?i:NOT ENDSWITH)|(?i:ENDSWITH)]; # long to short
 my $re_open_paren  = qr[\(];
 my $re_close_paren = qr[\)];
