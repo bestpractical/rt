@@ -175,7 +175,100 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
     ok( $ret, 'Ran query with Due as searched value' );
     my $count = $tickets->Count();
     ok $count == 1, "Found one ticket";
-    undef $count;
+
+    my $cf_foo = RT::Test->load_or_create_custom_field( Name => 'foo', Type => 'FreeformSingle', Queue => 0 );
+    my $cf_bar = RT::Test->load_or_create_custom_field( Name => 'bar', Type => 'FreeformSingle', Queue => 0 );
+    ok( $ticket->AddCustomFieldValue( Field => $cf_foo, Value => 'this rocks!' ) );
+
+    ( $ret, $msg ) = $tickets->FromSQL('CF.foo = CF.bar');
+    ok( $ret, 'Ran query with CF.foo = CF.bar' );
+    $count = $tickets->Count();
+    is( $count, 0, 'Found 0 tickets' );
+
+    ok( $ticket->AddCustomFieldValue( Field => $cf_bar, Value => 'this does not rock' ) );
+
+    ( $ret, $msg ) = $tickets->FromSQL('CF.foo = CF.bar');
+    ok( $ret, 'Ran query with CF.foo = CF.bar' );
+    $count = $tickets->Count();
+    is( $count, 0, 'Found 0 tickets' );
+
+    ok( $ticket->AddCustomFieldValue( Field => $cf_bar, Value => 'this rocks!' ) );
+
+    ( $ret, $msg ) = $tickets->FromSQL('CF.foo = CF.bar');
+    ok( $ret, 'Ran query with CF.foo = CF.bar' );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
+
+    ( $ret, $msg ) = $tickets->FromSQL('CF.foo = Owner');
+    ok( $ret, 'Ran query with CF.foo = Owner' );
+    $count = $tickets->Count();
+    is( $count, 0, 'Found 0 tickets' );
+
+    ok( $ticket->AddCustomFieldValue( Field => $cf_foo, Value => RT->Nobody->id ) );
+    ( $ret, $msg ) = $tickets->FromSQL('CF.foo = Owner');
+    ok( $ret, 'Ran query with CF.foo = Owner' );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
+
+    my $cf_beta = RT::Test->load_or_create_custom_field( Name => 'Beta Date', Type => 'DateTime', Queue => 0 );
+    ( $ret, $msg ) = $tickets->FromSQL('Due = CF.{Beta Date}');
+    ok( $ret, 'Ran query with Due = CF.{Beta Date}' );
+    $count = $tickets->Count();
+    is( $count, 0, 'Found 0 tickets' );
+
+    ok( $ticket->AddCustomFieldValue( Field => $cf_beta, Value => $date->ISO( Timezone => 'user' ) ) );
+    ( $ret, $msg ) = $tickets->FromSQL('Due = CF.{Beta Date}');
+    ok( $ret, 'Ran query with Due = CF.{Beta Date}' );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
+
+    ok( $ticket->AddCustomFieldValue( Field => $cf_beta, Value => $date->ISO( Timezone => 'user' ) ) );
+    ( $ret, $msg ) = $tickets->FromSQL('Due = CF.{Beta Date}.Content');
+    ok( $ret, 'Ran query with Due = CF.{Beta Date}.Content' );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
+
+    ok( $ticket->AddCustomFieldValue( Field => $cf_beta, Value => $date->ISO( Timezone => 'user' ) ) );
+    ( $ret, $msg ) = $tickets->FromSQL('CF.{Beta Date} = Due');
+    ok( $ret, 'Ran query with CF.{Beta Date} = Due' );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
+
+    my $cf_ip1  = RT::Test->load_or_create_custom_field( Name => 'IPRange 1', Type => 'IPAddressRangeSingle', Queue => 0 );
+    my $cf_ip2  = RT::Test->load_or_create_custom_field( Name => 'IPRange 2', Type => 'IPAddressRangeSingle', Queue => 0 );
+
+    ( $ret, $msg ) = $tickets->FromSQL('CF.{IPRange 1} = CF.{IPRange 2}');
+    ok( $ret, 'Ran query with CF.{IPRange 1} = CF.{IPRange 2}' );
+    $count = $tickets->Count();
+    is( $count, 0, 'Found 0 tickets' );
+
+    ok( $ticket->AddCustomFieldValue( Field => $cf_ip1, Value => '192.168.1.1-192.168.1.5' ));
+    ok( $ticket->AddCustomFieldValue( Field => $cf_ip2, Value => '192.168.1.1-192.168.1.6' ));
+
+    ( $ret, $msg ) = $tickets->FromSQL('CF.{IPRange 1}.Content = CF.{IPRange 2}.Content');
+    ok( $ret, 'Ran query with CF.{IPRange 1}.Content = CF.{IPRange 2}.Content' );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
+
+    ( $ret, $msg ) = $tickets->FromSQL('CF.{IPRange 1} = CF.{IPRange 2}');
+    ok( $ret, 'Ran query with CF.{IPRange 1} = CF.{IPRange 2}' );
+    $count = $tickets->Count();
+    TODO: {
+        local $TODO
+            = "It'll be great if we can automatially compare both Content and LargeContent for queries like CF.{IPRange 1} = CF.{IPRange 2}";
+        is( $count, 0, 'Found 0 tickets' );
+    }
+
+    ok( $ticket->AddCustomFieldValue( Field => $cf_ip2, Value => '192.168.1.1-192.168.1.5' ) );
+    ( $ret, $msg )
+        = $tickets->FromSQL(
+        'CF.{IPRange 1}.Content = CF.{IPRange 2}.Content AND CF.{IPRange 1}.LargeContent = CF.{IPRange 2}.LargeContent'
+        );
+    ok( $ret,
+        'Ran query with CF.{IPRange 1}.Content = CF.{IPRange 2}.Content AND CF.{IPRange 1}.LargeContent = CF.{IPRange 2}.LargeContent'
+      );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
 }
 
 done_testing;
