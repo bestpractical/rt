@@ -3222,6 +3222,46 @@ sub _parser {
                 }
 
                 die $self->loc( "Wrong query, no such column '[_1]' in '[_2]'", $value, $string ) unless $valid;
+
+                if ( $class eq 'RT::ObjectCustomFieldValues' ) {
+                    if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                        my $cast_to;
+                        if ($subkey) {
+
+                            # like Requestor.id
+                            if ( $subkey eq 'id' ) {
+                                $cast_to = 'INTEGER';
+                            }
+                        }
+                        elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
+                            if ( $meta->{is_numeric} ) {
+                                $cast_to = 'INTEGER';
+                            }
+                            elsif ( $meta->{type} eq 'datetime' ) {
+                                $cast_to = 'TIMESTAMP';
+                            }
+                        }
+
+                        $value = "CAST($value AS $cast_to)" if $cast_to;
+                    }
+                    elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+                        if ($subkey) {
+
+                            # like Requestor.id
+                            if ( $subkey eq 'id' ) {
+                                $value = "TO_NUMBER($value)";
+                            }
+                        }
+                        elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
+                            if ( $meta->{is_numeric} ) {
+                                $value = "TO_NUMBER($value)";
+                            }
+                            elsif ( $meta->{type} eq 'datetime' ) {
+                                $value = "TO_DATE($value,'YYYY-MM-DD HH24:MI:SS')";
+                            }
+                        }
+                    }
+                }
             }
 
             # A reference to @res may be pushed onto $sub_tree{$key} from
