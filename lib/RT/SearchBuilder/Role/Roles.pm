@@ -237,7 +237,7 @@ sub RoleLimit {
 
     # if it's equality op and search by Email or Name then we can preload user
     # we do it to help some DBs better estimate number of rows and get better plans
-    if ( $args{OPERATOR} =~ /^!?=$/
+    if ( $args{QUOTEVALUE} && $args{OPERATOR} =~ /^!?=$/
              && (!$args{FIELD} || $args{FIELD} eq 'Name' || $args{FIELD} eq 'EmailAddress') ) {
         my $o = RT::User->new( $self->CurrentUser );
         my $method =
@@ -257,7 +257,7 @@ sub RoleLimit {
         return;
     }
 
-    $args{FIELD} ||= 'EmailAddress';
+    $args{FIELD} ||= $args{QUOTEVALUE} ? 'EmailAddress' : 'id';
 
     my ($groups, $group_members, $users);
     if ( $args{'BUNDLE'} and @{$args{'BUNDLE'}}) {
