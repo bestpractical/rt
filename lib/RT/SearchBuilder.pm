@@ -555,8 +555,37 @@ sub _LimitCustomField {
         my $type = $cf->Type;
 
         if ( !$args{QUOTEVALUE} ) {
-            if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
-                $value = "CAST($value AS VARCHAR)";
+            my ( $class, $field );
+
+            # e.g. Users_3.Name
+            if ( $value =~ /^(\w+?)(?:_\d+)?\.(\w+)$/ ) {
+                my $table = $1;
+                $field = $2;
+                $class = $table =~ /main/i ? 'RT::Tickets' : "RT::$table";
+            }
+            else {
+                $class = ref $self;
+                $field = $value;
+            }
+
+            if ( $class->can('RecordClass')
+                and ( my $record_class = $class->RecordClass ) )
+            {
+                if ( my $meta = $record_class->_ClassAccessible->{$field} ) {
+                    if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                        if ( $meta->{is_numeric} || $meta->{type} eq 'datetime' ) {
+                            $value = "CAST($value AS VARCHAR)";
+                        }
+                    }
+                    elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+                        if ( $meta->{is_numeric} ) {
+                            $value = "TO_CHAR($value)";
+                        }
+                        elsif ( $type eq 'datetime' ) {
+                            $value = "TO_CHAR($value, 'YYYY-MM-DD HH24:MI:SS')";
+                        }
+                    }
+                }
             }
 
             if ( $type eq 'Date' ) {
