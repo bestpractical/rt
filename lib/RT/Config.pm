@@ -1025,26 +1025,65 @@ our %META;
             }
 
             for my $class (keys %$groups) {
-                my @h;
+                my %h;
                 if (ref($groups->{$class}) eq 'HASH') {
-                    push @h, $_, $groups->{$class}->{$_}
-                        for sort {lc($a) cmp lc($b)} keys %{ $groups->{$class} };
+                    for my $key ( keys %{ $groups->{$class} } ) {
+                        my $value = $groups->{$class}{$key};
+                        if ( ref $value eq 'ARRAY' ) {
+                            if ( ref $value->[1] eq 'ARRAY' ) {
+                                # 'RT::Ticket' => {
+                                #     General => [
+                                #         'Network' => [ 'IP Address', 'Router', ],
+                                #     ],
+                                # }
+                                $h{$key} = $value;
+                            }
+                            else {
+                                # 'RT::Ticket' => {
+                                #     'Network' => [ 'IP Address', 'Router', ],
+                                # }
+                                $h{Default} = [
+                                    map { $_, $groups->{$class}->{$_} }
+                                    sort { lc($a) cmp lc($b) } keys %{ $groups->{$class} }
+                                ];
+                                last;
+                            }
+                        }
+                        elsif ( ref $value eq 'HASH' ) {
+                            # 'RT::Ticket' => {
+                            #     General => {
+                            #         'Network' => [ 'IP Address', 'Router', ],
+                            #     },
+                            # }
+                            $h{$key} = [ map { $_, $groups->{$class}{$key}{$_} }
+                                    sort { lc($a) cmp lc($b) } keys %{ $groups->{$class}{$key} } ];
+                        }
+                        else {
+                            RT->Logger->error(
+                                "Config option \%CustomFieldGroupings{$class}{$key} is not a HASH or ARRAY; ignoring");
+                        }
+                    }
                 } elsif (ref($groups->{$class}) eq 'ARRAY') {
-                    @h = @{ $groups->{$class} };
+                    $h{Default} = $groups->{$class};
                 } else {
                     RT->Logger->error("Config option \%CustomFieldGroupings{$class} is not a HASH or ARRAY; ignoring");
                     delete $groups->{$class};
                     next;
                 }
 
-                $groups->{$class} = [];
-                while (@h) {
-                    my $group = shift @h;
-                    my $ref   = shift @h;
-                    if (ref($ref) eq 'ARRAY') {
-                        push @{$groups->{$class}}, $group => $ref;
-                    } else {
-                        RT->Logger->error("Config option \%CustomFieldGroupings{$class}{$group} is not an ARRAY; ignoring");
+                $groups->{$class} = {};
+                for my $category ( keys %h ) {
+                    my @h = @{ $h{$category} };
+                    while (@h) {
+                        my $group = shift @h;
+                        my $ref   = shift @h;
+                        if ( ref($ref) eq 'ARRAY' ) {
+                            push @{ $groups->{$class}{$category} }, $group => $ref;
+                        }
+                        else {
+                            RT->Logger->error(
+                                "Config option \%CustomFieldGroupings{$class}{$category}{$group} is not an ARRAY; ignoring");
+                        }
                     }
                 }
             }
@@ -1819,8 +1858,8 @@ sub UpdateOption {
 
 sub ObjectHasCustomFieldGrouping {
     my $self        = shift;
-    my %args        = ( Object => undef, Grouping => undef, @_ );
-    my $object_type = RT::CustomField->_GroupingClass($args{Object});
+    my %args        = ( Object => undef, CategoryObj => undef, Grouping => undef, @_ );
+    my $object_type = RT::CustomField->_GroupingClass($args{Object}, $args{CategoryObj} ? $args{CategoryObj}->Name : () );
     my $groupings   = RT->Config->Get( 'CustomFieldGroupings' );
     return 0 unless $groupings;
     return 1 if $groupings->{$object_type} && grep { $_ eq $args{Grouping} } @{ $groupings->{$object_type} };

@@ -115,15 +115,26 @@ L<RT::Record> object.
 
 sub LimitToGrouping {
     my $self = shift;
-    my $obj = shift;
-    my $grouping = shift;
+    my ( $obj, $category, $grouping );
+    if ( @_ >= 3 ) {
+        ( $obj, $category, $grouping ) = @_;
+    }
+    else {
+        ( $obj, $grouping ) = @_;
+    }
 
-    my $grouping_class = $self->NewItem->_GroupingClass($obj);
+    ( my $grouping_class, $category ) = $self->NewItem->_GroupingClass($obj, $category);
 
     my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
-       $config = $config->{$grouping_class} || [];
-    my %h = @{$config};
+       $config = $config->{$grouping_class} || {};
+    my %h;
+    for my $category ( $category, 'Default' ) {
+        if ( $category && $config->{$category} ) {
+            %h = @{ $config->{$category} };
+            last;
+        }
+    }
 
     if ( $grouping ) {
         my $list = $h{$grouping};

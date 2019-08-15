@@ -57,7 +57,8 @@
         $catalog->AssetCustomFields->LimitToDefaultValuesSupportedTypes
     },
     TitleBoxARGS => { title_class => "inverse" },
-    Object => RT::Asset->new($session{CurrentUser})
+    Object => RT::Asset->new($session{CurrentUser}),
+    CategoryObj => $catalog,
 &>
 
 <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>

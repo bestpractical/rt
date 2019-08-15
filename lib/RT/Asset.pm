@@ -673,6 +673,11 @@ sub FindDependencies {
     $deps->Add( out => $self->CatalogObj );
 }
 
+sub CategoryObj {
+    my $self = shift;
+    return $self->CatalogObj;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

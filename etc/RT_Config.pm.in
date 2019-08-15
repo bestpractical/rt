@@ -996,6 +996,21 @@ ordering is preserved during display, otherwise groupings are displayed
 alphabetically.  The second level keys are the grouping names and the
 values are array refs containing a list of CF names.
 
+For C<RT::Ticket> and C<RT::Asset>, the structure could be a bit more
+complicated as we support queue/catalog level of groupings. Take
+C<RT::Ticket> for example, the configuration could be like:
+
+    'RT::Ticket' => {
+        'Default' => [
+            'Grouping Name'    => [ 'CF Name' ],
+        ],
+        'General' => [
+            'Grouping Name'    => [ 'CF Name', 'Another CF' ],
+            'Another Grouping' => ['Some CF'],
+            'Dates'            => ['Shipped date'],
+        ],
+    },
+
 There are several special built-in groupings which RT displays in
 specific places (usually the collapsible box of the same title).  The
 ordering of these standard groupings cannot be modified.  You may also
