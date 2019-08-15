@@ -961,7 +961,7 @@ Set(@CustomFieldValuesCanonicalizers, qw(
 
 =item C<%CustomFieldGroupings>
 
-This option affects the display of ticket, user, and asset custom fields
+This option affects the display of ticket, user, group, and asset custom fields
 in the web interface. It does not address the sorting of custom fields within
 the groupings; that ordering is controlled by the Ticket Custom Fields tab in
 Queue configuration in the Admin UI. Asset custom field ordering is
@@ -992,9 +992,25 @@ Set C<%CustomFieldGroupings> to a nested structure similar to the following:
 
 The first level keys are record types for which CFs may be used, and the
 values are either hashrefs or arrayrefs -- if arrayrefs, then the
-ordering is preserved during display, otherwise groupings are displayed
-alphabetically.  The second level keys are the grouping names and the
-values are array refs containing a list of CF names.
+order of grouping entries is preserved during display, otherwise groupings
+are displayed alphabetically. The second level keys are the grouping names
+and the values are array refs containing a list of CF names.
+
+For C<RT::Ticket> and C<RT::Asset>, you can specify global, and queue
+or catalog level gropuings. For example, if you wanted to diplay some
+groupings only on tickets in the General queue, you can create an entry
+for 'General'. Global configurations then go in 'Default' as shown below.
+
+    'RT::Ticket' => {
+        'Default' => [
+            'Grouping Name'    => [ 'CF Name' ],
+        ],
+        'General' => [
+            'Grouping Name'    => [ 'CF Name', 'Another CF' ],
+            'Another Grouping' => ['Some CF'],
+            'Dates'            => ['Shipped date'],
+        ],
+    },
 
 There are several special built-in groupings which RT displays in
 specific places (usually the collapsible box of the same title).  The

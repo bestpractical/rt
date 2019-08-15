@@ -1461,7 +1461,7 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
-=head2 Groupings
+=head2 Groupings Object|Class Name, Queue Name|Catalog Name
 
 Returns a (sorted and lowercased) list of the groupings in which this custom
 field appears.
@@ -1472,13 +1472,17 @@ apply to the record class this CF applies to (L</RecordClassFromLookupType>).
 If passed a loaded object or a class name, the returned list is limited to
 groupings which apply to the class of the object or the specified class.
 
-If called on an unloaded object, all potential groupings are returned.
+You can optionally pass queue/catalog name to get queue/catalog level of
+groupings for the record class, and it'll automatically fallback to default
+groupings for the record class.
+
+If called on an unloaded object, all potential default groupings are returned.
 
 =cut
 
 sub Groupings {
     my $self = shift;
-    my $record_class = $self->_GroupingClass(shift);
+    my ( $record_class, $category ) = $self->_GroupingClass(@_);
 
     my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
@@ -1486,8 +1490,14 @@ sub Groupings {
     my @groups;
     if ( $record_class ) {
         push @groups, sort {lc($a) cmp lc($b)} keys %{ $BUILTIN_GROUPINGS{$record_class} || {} };
-        if ( $config->{$record_class} ) {
-            my @order = @{ $config->{$record_class} || [] };
+        if ( my $record_config = $config->{$record_class} ) {
+            my @order;
+            for my $category ( $category, 'Default' ) {
+                if ( $category && $record_config->{$category} ) {
+                    @order = @{ $record_config->{$category} };
+                    last;
+                }
+            }
             while (@order) {
                 push @groups, shift(@order);
                 shift(@order);
@@ -1513,19 +1523,24 @@ returned list.
 
 sub CustomGroupings {
     my $self = shift;
-    my $record_class = $self->_GroupingClass(shift);
-    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class );
+    my ( $record_class, $category ) = $self->_GroupingClass(@_);
+    return grep !$BUILTIN_GROUPINGS{$record_class}{$_}, $self->Groupings( $record_class, $category );
 }
 
 sub _GroupingClass {
     my $self    = shift;
     my $record  = shift;
+    my $category = shift;
 
     my $record_class = ref($record) || $record || '';
     $record_class = $self->RecordClassFromLookupType
         if !$record_class and blessed($self) and $self->id;
 
-    return $record_class;
+    if ( !$category && blessed $record && $record->id && $record->can('CategoryObj') ) {
+        my ($container_object) = $record->CategoryObj;
+        $category = $container_object->Name if $container_object;
+    }
+    return ( $record_class, $category );
 }
 
 =head2 RegisterBuiltInGroupings

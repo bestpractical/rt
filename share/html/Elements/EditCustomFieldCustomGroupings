@@ -60,7 +60,8 @@
 <%ARGS>
 $Object
 $CustomFieldGenerator => undef,
-@Groupings => (RT::CustomField->CustomGroupings( $Object ), '')
+$CategoryObj => undef
+@Groupings => (RT::CustomField->CustomGroupings( $Object, $Object->id && $Object->can('CategoryObj') ? $Object->CategoryObj->Name : ( $CategoryObj ? $CategoryObj->Name : () ) ), '')
 </%ARGS>
 <%INIT>
 my $css_class = lc(ref($Object)||$Object);

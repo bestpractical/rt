@@ -106,7 +106,7 @@
 $CustomFields ||= $Object->CustomFields;
 $CustomFields->{include_set_initial} = 1 if $ForCreation;
 
-$CustomFields->LimitToGrouping( $Object => $Grouping ) if defined $Grouping;
+$CustomFields->LimitToGrouping( $Object, $Object->id && $Object->can('CategoryObj') ? $Object->CategoryObj->Name : $CategoryObj ? $CategoryObj->Name : undef, $Grouping ) if defined $Grouping;
 
 $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields,
                   Object => $Object, ShowHintsRef => \$ShowHints, InTableRef => \$InTable );
@@ -133,6 +133,7 @@ if ( $AsTable ) {
 </%INIT>
 <%ARGS>
 $Object
+$CategoryObj => undef
 $CustomFields => undef
 $Grouping     => undef
 $AsTable => 1

@@ -104,6 +104,14 @@ accepts a grouping name as the second.  If the grouping name is false
 (usually via the empty string), limits to custom fields which appear in no
 grouping.
 
+When there are 3 arguments supplied, they are supposed to be:
+
+    1. Object or Class name
+    2. Queue/Catalog name
+    3. Grouping name
+
+See also L<RT::CustomField/Groupings>
+
 I<Caveat:> While the record object or class name is used to find the
 available groupings, no automatic limit is placed on the lookup type of
 the custom fields.  It's highly suggested you limit the collection by
@@ -115,15 +123,26 @@ L<RT::Record> object.
 
 sub LimitToGrouping {
     my $self = shift;
-    my $obj = shift;
-    my $grouping = shift;
+    my ( $obj, $category, $grouping );
+    if ( @_ >= 3 ) {
+        ( $obj, $category, $grouping ) = @_;
+    }
+    else {
+        ( $obj, $grouping ) = @_;
+    }
 
-    my $grouping_class = $self->NewItem->_GroupingClass($obj);
+    ( my $grouping_class, $category ) = $self->NewItem->_GroupingClass($obj, $category);
 
     my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
-       $config = $config->{$grouping_class} || [];
-    my %h = @{$config};
+       $config = $config->{$grouping_class} || {};
+    my %h;
+    for my $category ( $category, 'Default' ) {
+        if ( $category && $config->{$category} ) {
+            %h = @{ $config->{$category} };
+            last;
+        }
+    }
 
     if ( $grouping ) {
         my $list = $h{$grouping};
