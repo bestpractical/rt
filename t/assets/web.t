@@ -8,6 +8,7 @@ RT->Config->Set("CustomFieldGroupings",
         Dates => [qw(Purchased)],
     },
 );
+RT->Config->PostLoadCheck;
 
 my $catalog = create_catalog( Name => "Office" );
 ok $catalog->id, "Created Catalog";

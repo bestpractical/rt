@@ -16,7 +16,7 @@ RT->Config->PostLoadCheck;
 
 my %CF;
 
-my @config = @{ RT->Config->Get('CustomFieldGroupings')->{'RT::User'} };
+my @config = @{ RT->Config->Get('CustomFieldGroupings')->{'RT::User'}{Default} };
 while (my $group = shift @config) {
     my $cfs = shift @config;
     my $name = $cfs->[0];
