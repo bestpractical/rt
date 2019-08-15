@@ -12,10 +12,13 @@ RT->Config->Set( 'CustomFieldGroupings',
         More             => ['TestMore'],
     },
 );
+RT->Config->PostLoadCheck;
 
 my %CF;
 
-while (my ($group,$cfs) = each %{ RT->Config->Get('CustomFieldGroupings')->{'RT::User'} } ) {
+my @config = @{ RT->Config->Get('CustomFieldGroupings')->{'RT::User'} };
+while (my $group = shift @config) {
+    my $cfs = shift @config;
     my $name = $cfs->[0];
     my $cf = RT::CustomField->new( RT->SystemUser );
     my ($id, $msg) = $cf->Create(
