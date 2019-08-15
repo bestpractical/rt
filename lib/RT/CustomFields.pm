@@ -123,7 +123,7 @@ sub LimitToGrouping {
     my $config = RT->Config->Get('CustomFieldGroupings');
        $config = {} unless ref($config) eq 'HASH';
        $config = $config->{$grouping_class} || [];
-    my %h = ref $config eq "ARRAY" ? @{$config} : %{$config};
+    my %h = @{$config};
 
     if ( $grouping ) {
         my $list = $h{$grouping};
