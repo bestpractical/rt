@@ -65,7 +65,7 @@ div#logo {
     position: absolute;
     right: 2px;
     top: 0;
-    height: 2.3em;
+    height: 2.8em;
 }
 
 div#logo a img {
@@ -113,7 +113,7 @@ div#quickbar {
 
 div#header {
     position: absolute;
-    top: 2.3em;
+    top: 2.8em;
     left: 0;
     right: 0;
     height: 3.2em;
