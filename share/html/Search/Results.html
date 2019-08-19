@@ -86,7 +86,11 @@
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
 <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{'tickets_refresh_interval'}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
-<input type="submit" class="button" value="<&|/l&>Change</&>" />
+<div class="form-row">
+  <div class="col-md-12">
+    <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Change</&>" />
+  </div>
+</div>
 </form>
 </div>
 
