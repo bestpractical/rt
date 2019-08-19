@@ -57,6 +57,7 @@ select { font-size: 1.0em }
 
 .button,
 .button:visited,
+.button:focus,
 input[type=reset],
 input[type=submit],
 input[class=button],
