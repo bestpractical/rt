@@ -52,94 +52,102 @@ $show_ticket_reply    => 0
 $show_ticket_comment  => 0
 </%args>
 
-<div class="keyboard-shortcuts">
-    <h2><&|/l&>Keyboard Shortcuts</&></h2>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-body">
 
-    <div class="titlebox">
-        <div class="titlebox-title">
-            <span class="left"><&|/l&>Global</&></span>
-            <span class="right-empty"></span>
-        </div>
-        <div class="titlebox-content">
-            <hr class="clear">
-            <table>
-                <tr>
-                    <td class="key-column"><span class="keyboard-shortcuts-key">/</span></td>
-                    <td><&|/l&>Quick search</&></td>
-                </tr>
-                <tr>
-                    <td><span class="keyboard-shortcuts-key">gh</span></td>
-                    <td><&|/l&>Return home</&></td>
-                </tr>
-                <tr>
-                    <td><span class="keyboard-shortcuts-key">gb</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">gf</span></td>
-                    <td><&|/l&>Go back / forward</&></td>
-                </tr>
-            </table>
-        </div>
-    </div>
+      <div class="keyboard-shortcuts">
+          <h2><&|/l&>Keyboard Shortcuts</&></h2>
+
+          <div class="titlebox">
+              <div class="titlebox-title">
+                  <span class="left"><&|/l&>Global</&></span>
+                  <span class="right-empty"></span>
+              </div>
+              <div class="titlebox-content">
+                  <hr class="clear">
+                  <table>
+                      <tr>
+                          <td class="key-column"><span class="keyboard-shortcuts-key">/</span></td>
+                          <td><&|/l&>Quick search</&></td>
+                      </tr>
+                      <tr>
+                          <td><span class="keyboard-shortcuts-key">gh</span></td>
+                          <td><&|/l&>Return home</&></td>
+                      </tr>
+                      <tr>
+                          <td><span class="keyboard-shortcuts-key">gb</span> <span class="keyboard-shortcuts-separator">/</span> <span class="keyboard-shortcuts-key">gf</span></td>
+                          <td><&|/l&>Go back / forward</&></td>
+                      </tr>
+                  </table>
+              </div>
+          </div>
 
 % if($show_search) {
 
-    <div class="titlebox">
-        <div class="titlebox-title">
-            <span class="left"><&|/l&>Search</&></span>
-            <span class="right-empty"></span>
-        </div>
-        <div class="titlebox-content">
-            <hr class="clear">
-            <table>
-                <tr>
-                    <td class="key-column"><span class="keyboard-shortcuts-key">k</span><span class="keyboard-shortcuts-separator"> / </span><span class="keyboard-shortcuts-key">j</span></td>
-                    <td><&|/l&>Move up / down the list of results</&></td>
-                </tr>
-                <tr>
-                    <td><span class="keyboard-shortcuts-key">o</span> <span class="keyboard-shortcuts-separator">or</span> <span class="keyboard-shortcuts-key">&lt;<&|/l&>Enter</&>&gt;</span></td>
-                    <td><&|/l&>View highlighted ticket</&></td>
-                </tr>
-                <tr>
-                    <td class="key-column"><span class="keyboard-shortcuts-key">r</span></td>
-                    <td><&|/l&>Reply to ticket</&></td>
-                </tr>
-                <tr>
-                    <td><span class="keyboard-shortcuts-key">c</span></td>
-                    <td><&|/l&>Comment on ticket</&></td>
-                </tr>
+          <div class="titlebox">
+              <div class="titlebox-title">
+                  <span class="left"><&|/l&>Search</&></span>
+                  <span class="right-empty"></span>
+              </div>
+              <div class="titlebox-content">
+                  <hr class="clear">
+                  <table>
+                      <tr>
+                          <td class="key-column"><span class="keyboard-shortcuts-key">k</span><span class="keyboard-shortcuts-separator"> / </span><span class="keyboard-shortcuts-key">j</span></td>
+                          <td><&|/l&>Move up / down the list of results</&></td>
+                      </tr>
+                      <tr>
+                          <td><span class="keyboard-shortcuts-key">o</span> <span class="keyboard-shortcuts-separator">or</span> <span class="keyboard-shortcuts-key">&lt;<&|/l&>Enter</&>&gt;</span></td>
+                          <td><&|/l&>View highlighted ticket</&></td>
+                      </tr>
+                      <tr>
+                          <td class="key-column"><span class="keyboard-shortcuts-key">r</span></td>
+                          <td><&|/l&>Reply to ticket</&></td>
+                      </tr>
+                      <tr>
+                          <td><span class="keyboard-shortcuts-key">c</span></td>
+                          <td><&|/l&>Comment on ticket</&></td>
+                      </tr>
 % if($show_bulk_update) {
-                <tr>
-                    <td><span class="keyboard-shortcuts-key">x</span></td>
-                    <td><&|/l&>Toggle highlighted ticket's checkbox</&></td>
-                </tr>
+                      <tr>
+                          <td><span class="keyboard-shortcuts-key">x</span></td>
+                          <td><&|/l&>Toggle highlighted ticket's checkbox</&></td>
+                      </tr>
 % }
-            </table>
-        </div>
-    </div>
+                  </table>
+              </div>
+          </div>
 
 % }
 
 % if ($show_ticket_reply || $show_ticket_comment) {
-    <div class="titlebox">
-        <div class="titlebox-title">
-            <span class="left"><&|/l&>Ticket</&></span>
-            <span class="right-empty"></span>
-        </div>
-        <div class="titlebox-content">
-            <hr class="clear">
-            <table>
+          <div class="titlebox">
+              <div class="titlebox-title">
+                  <span class="left"><&|/l&>Ticket</&></span>
+                  <span class="right-empty"></span>
+              </div>
+              <div class="titlebox-content">
+                  <hr class="clear">
+                  <table>
 %   if ( $show_ticket_reply ) {
-                <tr>
-                    <td class="key-column"><span class="keyboard-shortcuts-key">r</span></td>
-                    <td><&|/l&>Reply to current ticket</&></td>
-                </tr>
+                      <tr>
+                          <td class="key-column"><span class="keyboard-shortcuts-key">r</span></td>
+                          <td><&|/l&>Reply to current ticket</&></td>
+                      </tr>
 %   }
 %   if ( $show_ticket_comment ) {
-                <tr>
-                    <td class="key-column"><span class="keyboard-shortcuts-key">c</span></td>
-                    <td><&|/l&>Comment on current ticket</&></td>
-                </tr>
+                      <tr>
+                          <td class="key-column"><span class="keyboard-shortcuts-key">c</span></td>
+                          <td><&|/l&>Comment on current ticket</&></td>
+                      </tr>
 %   }
-            </table>
-        </div>
-    </div>
+                  </table>
+              </div>
+          </div>
 % }
+      </div>
+
+    </div>
+  </div>
 </div>
