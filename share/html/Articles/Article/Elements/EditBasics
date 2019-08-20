@@ -74,9 +74,9 @@
 % }
   </div>
 </div>
+% if ($ARGS{'id'} ne 'new') {
 <div class="form-row">
   <div class="col-md-3 label">
-% if ($ARGS{'id'} ne 'new') {
     <&|/l&>Creator</&>:
   </div>
   <div class="col-md-9 value">
