@@ -51,9 +51,9 @@
     <div class="label col-md-3">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
-        <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</div>
+        <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
 %     }
-    </span>
+    </div>
     <div class="value col-md-9"><span class="form-control current-value">
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
     </span></div>
