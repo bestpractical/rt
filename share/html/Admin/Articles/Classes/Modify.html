@@ -165,19 +165,13 @@
 <h3><&|/l&>Change email subject:</&></h3>
 <p><&|/l&>If a Custom Field is selected, the Subject of your outgoing email will be overridden by this article.</&></p>
 
-  <div class="form-row">
-    <div class="col-md-3 label">
-    </div>
-    <div class="col-md-9 value">
-      <& /Widgets/Form/Select,
-          Name         => 'SubjectOverride',
-          DefaultLabel => loc('No Subject Override'),
-          Values       => $subject_cfs,
-          ValuesLabel  => $subject_cf_labels,
-          CurrentValue => $ClassObj->SubjectOverride,
-      &>
-    </div>
-  </div>
+  <& /Widgets/Form/Select,
+      Name         => 'SubjectOverride',
+      DefaultLabel => loc('No Subject Override'),
+      Values       => $subject_cfs,
+      ValuesLabel  => $subject_cf_labels,
+      CurrentValue => $ClassObj->SubjectOverride,
+  &>
 % }
 
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
