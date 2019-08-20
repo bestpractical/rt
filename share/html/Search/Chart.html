@@ -191,20 +191,24 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           <label><% loc("Width") %>:</label>
         </div>
         <div class="col-md-auto value">
-          <input class="form-control" type="text" name="Width" value="<% $query{'Width'} || q{} %>">
-        </div>
-        <div class="col-md-auto label">
-          <% loc("px") %>
+          <div class="input-group mb-3">
+            <input class="form-control" type="text" name="Width" value="<% $query{'Width'} || q{} %>">
+            <div class="input-group-append">
+              <span class="input-group-text"><&|/l&>px</&></span>
+            </div>
+          </div>
         </div>
         <div class="col-md-auto label">
           &#x00d7;
           <label><% loc("Height") %>:</label>
         </div>
         <div class="col-md-auto value">
-          <input class="form-control" type="text" name="Height" value="<% $query{'Height'} || q{} %>">
-        </div>
-        <div class="col-md-auto label">
-          <% loc("px") %>
+          <div class="input-group mb-3">
+            <input class="form-control" type="text" name="Height" value="<% $query{'Height'} || q{} %>">
+            <div class="input-group-append">
+              <span class="input-group-text"><&|/l&>px</&></span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="include-table custom-control custom-checkbox">
