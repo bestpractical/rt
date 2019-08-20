@@ -62,19 +62,17 @@ my $CatalogObj = $AssetObj->CatalogObj;
 %      my $user = $users->Next;
     <div class="col-md-9 value">
       <& /Elements/ShowUser, User => $user, Link => 1 &>
-%     if ( $user->id == RT->Nobody->id ) {
-%         next;
+%     if ( $user->id != RT->Nobody->id ) {
+          <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Title => 0 &>
 %     }
-      <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Title => 0 &>
     </div>
-  </div>
 % } else {
     <div class="user-accordion col-md-9">
       <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role) &>
       <& ShowRoleMembers, Group => $CatalogObj->RoleGroup($role), Skip => $AssetObj->RoleGroup($role), Note => loc("(via this asset's catalog)") &>
     </div>
-  </div>
 % }
+  </div>
 % }
 
 <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'People', Table => 0 &>
