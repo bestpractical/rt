@@ -70,9 +70,13 @@
         <div class="col-md-3 label">
           <&|/l&>Worked</&>:
         </div>
-        <div class="col-md-9 form-inline value">
-          <input class="form-control" type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" />
-          <&|/l&>minutes</&>
+        <div class="col-md-auto value">
+          <div class="input-group mb-3">
+            <input class="form-control" type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" />
+            <div class="input-group-append">
+              <span class="input-group-text"><&|/l&>minutes</&></span>
+            </div>
+          </div>
         </div>
       </div>
 
