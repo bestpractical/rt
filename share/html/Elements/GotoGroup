@@ -45,8 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form name="GroupSearch" method="post" action="<% RT->Config->Get('WebPath') %>/Group/Search.html">
-<input type="text" name="GroupString" value="<% $Default %>" data-autocomplete="Groups" data-autocomplete-return="Name" id="autocomplete-GroupString" />
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a group is chosen
@@ -55,7 +53,15 @@ jQuery(function(){
     });
 });
 </script>
-<input type="submit" name="GroupSearch" value="<&|/l&>Search</&>" class="button" />
+<form name="GroupSearch" method="post" action="<% RT->Config->Get('WebPath') %>/Group/Search.html">
+  <div class="form-row">
+    <div class="col-md-auto">
+      <input type="text" class="form-control" name="GroupString" value="<% $Default %>" data-autocomplete="Groups" data-autocomplete-return="Name" id="autocomplete-GroupString" />
+    </div>
+    <div class="col-md-auto">
+      <input type="submit" name="GroupSearch" value="<&|/l&>Search</&>" class="form-control btn btn-primary button" />
+    </div>
+  </div>
 </form>
 <%ARGS>
 $Default => ''

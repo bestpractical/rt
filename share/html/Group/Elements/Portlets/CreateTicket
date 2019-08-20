@@ -47,10 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation'), class => "group create-ticket" &>
 <form name="CreateTicket" action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
-<&|/l&>Create a ticket with this group as Cc in Queue</&>
 <input type="hidden" name="AddGroupCc" value="<%$Group->Id%>">
-<& /Elements/SelectNewTicketQueue &>
-<input type="submit" value="<&|/l&>Create</&>">
+  <div class="form-row">
+    <div class="col-md-auto">
+      <&|/l&>Create a ticket with this group as Cc in Queue</&>
+      <& /Elements/SelectNewTicketQueue &>
+    </div>
+    <div class="col-md-auto">
+      <input type="submit" class="form-control btn btn-primary button" value="<&|/l&>Create</&>">
+    </div>
+  </div>
 </form>
 </&>
 <%ARGS>
