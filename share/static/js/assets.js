@@ -1,13 +1,14 @@
 jQuery(function() {
     var showModal = function(html) {
-        jQuery("<div class='modal'></div>")
-            .append(html).appendTo("body")
-            .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
-            .modal();
+        var modal = jQuery("<div class='modal'></div>");
+        modal.append(html).appendTo("body");
+        modal.bind('modal:close', function(ev) { modal.remove(); })
+        modal.on('hide.bs.modal', function(ev) { modal.remove(); })
+        modal.modal('show');
 
-            // We need to refresh the select picker plugin on AJAX calls
-            // since the plugin only runs on page load.
-            jQuery('.selectpicker').selectpicker('refresh');
+        // We need to refresh the select picker plugin on AJAX calls
+        // since the plugin only runs on page load.
+        jQuery('.selectpicker').selectpicker('refresh');
     };
 
     var assets = jQuery("#assets-accordion");

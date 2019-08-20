@@ -54,11 +54,15 @@ $show_ticket_comment  => 0
 
 <div class="modal-dialog modal-dialog-centered" role="document">
   <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><&|/l&>Keyboard Shortcuts</&></h5>
+      <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
     <div class="modal-body">
 
       <div class="keyboard-shortcuts">
-          <h2><&|/l&>Keyboard Shortcuts</&></h2>
-
           <div class="titlebox">
               <div class="titlebox-title">
                   <span class="left"><&|/l&>Global</&></span>
