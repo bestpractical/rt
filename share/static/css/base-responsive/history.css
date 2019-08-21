@@ -2,6 +2,7 @@
     border-top: 2px solid #ccc;
     padding-bottom: 0.5em;
     position: relative; /* gives us a container for position: absolute */
+    clear: both;
 }
 
 .transaction.odd {
