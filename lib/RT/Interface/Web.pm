@@ -137,6 +137,7 @@ sub JSFiles {
       assets.js
       /static/RichText/ckeditor.js
       dropzone.min.js
+      quoteselection.js
       }, RT->Config->Get('JSFiles');
 }
 
