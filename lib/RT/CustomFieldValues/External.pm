@@ -191,7 +191,8 @@ sub _DoSearch {
     my $i = 0;
 
     my $check = $self->__BuildAggregatorsCheck;
-    foreach( @{ $self->ExternalValues } ) {
+
+    foreach( $self->_SortValues( @{ $self->ExternalValues } ) ) {
         my $value = $self->NewItem;
         $value->LoadFromHash( { %defaults, %$_ } );
         next if $check && !$check->( $self, $value );
@@ -200,6 +201,16 @@ sub _DoSearch {
     }
     $self->{'must_redo_search'} = 0;
     return $self->_RecordCount;
+}
+
+sub _SortValues {
+    my $self  = shift;
+    my @items = @_;
+
+    no warnings 'uninitialized';
+
+    return sort { $a->{sortorder} <=> $b->{sortorder} || lc($a->{name}) cmp lc($b->{name}) }
+               @items;
 }
 
 sub _DoCount {
