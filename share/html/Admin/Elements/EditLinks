@@ -45,41 +45,65 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table width="100%">
-  <tr>
-    <td valign="top" width="50%">
-      <h3><&|/l&>Current Links</&></h3>
+<div class="row">
 
-<table>
-  <tr>
-    <td class="labeltop"><& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &></td>
-    <td class="value">
+  <div class="col-md-6">
+    <div class="form-row">
+      <div class="col-md-12">
+        <h3><&|/l&>Current Links</&></h3>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-3 label">
+        <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &>
+      </div>
+      <div class="col-md-9 value">
+        <div class="form-row">
+          <div class="col-md-auto">
 % while (my $link = $Object->RefersTo->Next) {
-      <& /Elements/EditLink, Link => $link, Mode => 'Target' &>
+            <& /Elements/EditLink, Link => $link, Mode => 'Target' &>
 %}
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop group-link edit-referredtoby"><& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &></td>
-    <td class="value group-link edit-referredtoby">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-3 label">
+        <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &>
+      </div>
+      <div class="col-md-9 value">
+        <div class="form-row">
+          <div class="col-md-auto">
 % while (my $link = $Object->ReferredToBy->Next) {
-      <& /Elements/EditLink, Link => $link, Mode => 'Base' &>
+            <& /Elements/EditLink, Link => $link, Mode => 'Base' &>
 % }
-    </td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><i><&|/l&>(Check box to remove link)</&></i></td>
-  </tr>
-</table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-3 label"></div>
+      <div class="col-md-9 value">
+        <i><&|/l&>(Check box to remove link)</&></i>
+      </div>
+    </div>
+  </div>
 
-</td>
-<td valign="top">
-<h3><&|/l&>New Links</&></h3>
-<& AddLinks, %ARGS &>
-</td>
-</tr>
-</table>
+  <div class="col-md-6">
+    <div class="form-row">
+      <div class="col-md-12">
+        <h3><&|/l&>New Links</&></h3>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-12">
+        <& AddLinks, %ARGS &>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 <%ARGS>
 $Object => undef
 </%ARGS>

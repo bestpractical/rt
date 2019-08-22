@@ -52,15 +52,24 @@
 % } else {
 <i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
 % }
-<table>
-  <tr>
-    <td class="label"><& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &></td>
-    <td class="entry"><input name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/></td>
-  </tr>
-  <tr>
-    <td class="label"><& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &></td>
-    <td class="entry"> <input name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/></td>
-  </tr>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &>
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &>
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/>
+    </div>
+  </div>
   <& /Elements/EditCustomFields,
         Object          => $Object,
         Grouping        => 'Links',
@@ -70,7 +79,7 @@
             : ()),
         &>
 % $m->callback( CallbackName => 'NewLink' );
-</table>
+
 <%INIT>
 my $id = ($Object and $Object->id)
     ? $Object->id
