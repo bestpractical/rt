@@ -451,6 +451,7 @@ sub CanonicalizeUserInfo {
         # If there's only one match, we're good; more than one and
         # we don't know which is the right one so we skip it.
         if ($ldap_msg->count == 1) {
+            RT->Logger->debug("Found one matching record");
             my $entry = $ldap_msg->first_entry();
             foreach my $key (keys(%{$config->{'attr_map'}})) {
                 # XXX TODO: This legacy code wants to be removed since modern
@@ -496,6 +497,8 @@ sub CanonicalizeUserInfo {
             $found = 1;
         } else {
             # Drop out to the next external information service
+            RT->Logger->debug("Found " . $ldap_msg->count . " records. Need a single matching record"
+                . " to populate user data, so continuing with other configured auth services.");
             $ldap_msg = $ldap->unbind();
             if ($ldap_msg->code != LDAP_SUCCESS) {
                 $RT::Logger->critical(  (caller(0))[3],
