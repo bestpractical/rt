@@ -109,6 +109,8 @@ $args{$_} = $default{$_} foreach grep {!exists $args{$_}} keys %default;
 $args{'with-EXTERNALAUTH-TESTS'}
     = $args{'with-EXTERNALAUTH'} && $args{'with-DEVELOPER'};
 
+my %IGNORE_DEPS = map { chomp; $_ => 1 } split(',', ($ENV{'RT_IGNORE_DEPENDENCIES'} || ''));
+
 $deps{'CORE'} = [ text_to_hash( << '.') ];
 Apache::Session 1.53
 Business::Hours
@@ -430,6 +432,7 @@ sub test_deps {
     while (@deps) {
         my $module  = shift @deps;
         my $version = shift @deps;
+        next if $IGNORE_DEPS{$module};
         my ( $test, $error ) = test_dep( $module, $version, $AVOID{$module} );
         my $msg = $module . ( $version && !$error ? " >= $version" : '' );
         print_found( $msg, $test, $error );
