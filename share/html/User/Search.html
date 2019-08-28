@@ -50,7 +50,11 @@
     
 <& /Elements/GotoUser, Default => $UserString||'' &>
 
-<p> <&|/l&>This will search for users by looking in the following fields:</&> <% $search_fields %></p>
+<div class="form-row text-center">
+  <div class="col-md-12">
+    <&|/l&>This will search for users by looking in the following fields:</&> <% $search_fields %>
+  </div>
+</div>
 
 % if ($UserString) {
 

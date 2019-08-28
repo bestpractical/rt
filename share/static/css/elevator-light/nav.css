@@ -13,18 +13,6 @@
     background-color: #fff
 }
 
-.sf-sub-indicator {
-    background-image: url(../../../static/css/images/arrows-grey.png)
-}
-
-.sf-menu li li .sf-sub-indicator {
-    margin-top: -3px
-}
-
-#page-menu.sf-menu li .sf-sub-indicator {
-    top: 0.7em
-}
-
 #page-menu.sf-menu li:hover ul,
 #page-menu.sf-menu li.sfHover ul {
     top: 2.5em
@@ -65,7 +53,7 @@
 
 #page-navigation {
     position: absolute;
-    top: 6em;
+    top: 6.5em;
     right: 0;
     left: 0;
     padding-right: 3em;
@@ -116,7 +104,7 @@
 #topactions {
     position: absolute;
     background: transparent;
-    top: 3.25em;
+    top: 3.2em;
     right: 0em;
     padding-right: 0.7em;
     width: auto;
@@ -267,4 +255,46 @@
     #topactions .bootstrap-select .dropdown-toggle .filter-option {
         margin-top: 5px;
     }
+}
+
+.sf-sub-indicator {
+    display: none;
+}
+
+.sf-menu a.sf-with-ul {
+    padding-right: 1rem;
+}
+
+.sf-menu a.sf-with-ul:after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border: 0;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+ul.toplevel.sf-menu > li > a.sf-with-ul:after {
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-down' viewBox='0 0 12 8' height='100%' width='100%' fill='none' stroke='%2331363E' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 5 -5' /></svg>") no-repeat center center;
+    margin-left: 6px;
+    position: relative;
+}
+
+ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-right' viewBox='0 0 7 12' height='100%' width='100%' fill='none' stroke='%2331363E' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 -5 5' /></svg>") no-repeat center center;
+    position: absolute;
+    margin-top: 2px;
+    right: 5px;
+}
+
+#app-nav {
+    padding: 0.5rem;
+}
+
+#topactions form {
+    margin-top: 0.5em;
+}
+
+#topactions form input.btn {
+    border-color: #4868b3;
 }

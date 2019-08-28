@@ -49,17 +49,17 @@
 %               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields);
 % if (@CustomFields) {
 % if ( !$InTable ) {
-<div class="fields edit-custom-fields">
+<div class="edit-custom-fields">
 % }
 % for my $CustomField ( @CustomFields ) {
 % my $Type = $CustomField->Type || 'Unknown';
 
-  <div class="field edit-custom-field cftype-<% $Type %>">
-    <span class="cflabel">
+  <div class="form-row edit-custom-field cftype-<% $Type %>">
+    <div class="cflabel label col-md-3">
       <span class="name"><% $CustomField->Name %>:</span><br />
       <span class="type"><% $CustomField->EntryHint // '' %></span>
-    </span>
-    <span class="entry value">
+    </div>
+    <div class="value col-md-9">
 % my $default = $m->notes('Field-' . $CustomField->Id);
 % $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField,
@@ -77,7 +77,7 @@
           <&|/l, $CustomField->FriendlyPattern &>Input must match [_1]</&>
         </span>
 %  }
-    </span>
+    </div>
 % $m->callback( CallbackName => 'AfterCustomFieldValue', CustomField => $CustomField, Object => $Object, Grouping => $Grouping );
   </div>
 % }

@@ -45,14 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="fields">
-  <div class="field owner">
-    <span class="label"><&|/l&>Owner</&>:</span>
+<div>
+  <div class="form-row owner">
+    <div class="label col-md-3"><&|/l&>Owner</&>:</div>
 % my $owner = $Ticket->OwnerObj;
-    <span class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
+    <div class="value col-md-9"><span class="form-control current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
     <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
 % $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-    </span>
+    </span></div>
   </div>
 
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
@@ -67,32 +67,32 @@
 %# so fall back to nobody
 
 %     my $user = $users->First || RT->Nobody;
-  <div class="field">
-    <span class="label"><% $role->Name %>:</span>
-    <span class="value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span>
+  <div class="form-row">
+    <div class="label col-md-3"><% $role->Name %>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
   </div>
 % }
 
-  <div class="field requestors">
-    <span class="labeltop"><&|/l&>Requestors</&>:</span>
-    <span class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span>
+  <div class="form-row requestors">
+    <div class="label col-md-3"><&|/l&>Requestors</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span></div>
   </div>
-  <div class="field cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
-    <span class="labeltop"><&|/l&>Cc</&>:</span>
-    <span class="value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span>
+  <div class="form-row cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
+    <div class="label col-md-3"><&|/l&>Cc</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span></div>
   </div>
-  <div class="field admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
-    <span class="labeltop"><&|/l&>AdminCc</&>:</span>
-    <span class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span>
+  <div class="form-row admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
+    <div class="label col-md-3"><&|/l&>AdminCc</&>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span></div>
   </div>
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
 % $multi_roles->LimitToMultipleValue;
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
-  <div class="field">
-    <span class="labeltop"><% $role->Name %>:</span>
-    <span class="value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span>
+  <div class="form-row">
+    <div class="label col-md-3"><% $role->Name %>:</div>
+    <div class="value col-md-9"><span class="form-control current-value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span></div>
   </div>
 % }
 

@@ -49,10 +49,10 @@
   <div class="boxcontainer col-md-6">
       <h3><&|/l&>Current Links</&></h3>
 
-<div class="wide fields">
-  <div class="field">
-    <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></span>
-    <span class="value">
+<div>
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></div>
+    <div class="value col-md-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->DependsOn->Next) {
         <div class="list-group-item">
@@ -60,11 +60,11 @@
         </div>
 % }
       </div>
-    </span>
+    </div>
   </div>
-  <div class="field">
-    <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></span>
-    <span class="value">
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></div>
+    <div class="value col-md-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->DependedOnBy->Next) {
         <div class="list-group-item">
@@ -72,11 +72,11 @@
         </div>
 % }
       </div>
-    </span>
+    </div>
   </div>
-  <div class="field">
-    <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></span>
-    <span class="value">
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></div>
+    <div class="value col-md-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->MemberOf->Next) {
         <div class="list-group-item">
@@ -84,11 +84,11 @@
         </div>
 % }
       </div>
-    </span>
+    </div>
   </div>
-  <div class="field">
-    <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></span>
-    <span class="value">
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></div>
+    <div class="value col-md-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->Members->Next) {
         <div class="list-group-item">
@@ -96,11 +96,11 @@
         </div>
 % }
       </div>
-    </span>
+    </div>
   </div>
-  <div class="field">
-    <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></span>
-    <span class="value">
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></div>
+    <div class="value col-md-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->RefersTo->Next) {
         <div class="list-group-item">
@@ -108,11 +108,11 @@
         </div>
 %}
       </div>
-    </span>
+    </div>
   </div>
-  <div class="field">
-    <span class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></span>
-    <span class="value">
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></div>
+    <div class="value col-md-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->ReferredToBy->Next) {
         <div class="list-group-item">
@@ -120,11 +120,11 @@
         </div>
 % }
       </div>
-    </span>
+    </div>
   </div>
-  <div class="field">
+  <div class="form-row">
     <span class="empty"></span>
-    <span class="value"><i><&|/l&>(Check box to delete)</&></i></span>
+    <div class="value col-md-9"><i><&|/l&>(Check box to delete)</&></i></div>
   </div>
 </div>
 

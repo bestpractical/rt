@@ -59,53 +59,53 @@
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
-<div class="wide fields">
-  <div class="field">
-    <span class="label"><&|/l&>From</&>:</span>
-    <span class="value"><% $from %></span>
+<div>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>From</&>:</div>
+    <div class="value col-md-9"><% $from %></div>
   </div>
 
-  <div class="field">
-    <span class="label"><&|/l&>Subject</&>:</span>
-    <span class="value"><input class="form-control"   type="text" name="Subject" value="<% $ARGS{'Subject'} || $subject %>" /></span>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Subject</&>:</div>
+    <div class="value col-md-9"><input class="form-control"   type="text" name="Subject" value="<% $ARGS{'Subject'} || $subject %>" /></div>
   </div>
 
-  <div class="field">
-    <span class="label"><&|/l&>To</&>:</span>
-    <span class="value"><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></span>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>To</&>:</div>
+    <div class="value col-md-9"><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></div>
   </div>
 
-  <div class="field">
-    <span class="label"><&|/l&>Cc</&>:</span>
-    <span class="value"><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></span>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Cc</&>:</div>
+    <div class="value col-md-9"><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></div>
   </div>
 
-  <div class="field">
-    <span class="label"><&|/l&>Bcc</&>:</span>
-    <span class="value"><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></span>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Bcc</&>:</div>
+    <div class="value col-md-9"><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></div>
   </div>
 
 % if ( $gnupg_widget ) {
-  <div class="field">
-    <span class="label empty">&nbsp;</span>
-    <span class="value">
+  <div class="form-row">
+    <span class="label col-md-3 empty">&nbsp;</span>
+    <div class="value col-md-9">
 <& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 &>
-    </span>
+    </div>
   </div>
 % }
 
-  <div class="field">
-    <span class="label"><&|/l&>Message</&>:</span>
-    <span class="value">
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Message</&>:</div>
+    <div class="value col-md-9">
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1 &>
 % } else {
 <& /Elements/MessageBox, SuppressAttachmentWarning => 1 &>
 %}
-    </span>
+    </div>
   </div>
 </div>
 

@@ -66,7 +66,8 @@ $report->SortEntries;
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
 </%init>
-<div class="chart-wrapper form-row">
+<div class="chart-wrapper">
+<div class="form-row">
 <div class="col-md-auto">
 % if ( ($ChartStyle || '') =~ /\b(pie|bar)\b/ ) {
 <span class="chart image <% $1 %>">
@@ -89,10 +90,8 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy
 % $m->callback( CallbackName => 'AfterChartTable', ARGSRef => \%ARGS );
 </div>
 </div>
-<div class="form-row justify-content-center">
-<div class="col-md-auto">
+
 % if ( ($ChartStyle || '') =~ /\bsql\b/ ) {
 <div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
 % }
-</div>
 </div>

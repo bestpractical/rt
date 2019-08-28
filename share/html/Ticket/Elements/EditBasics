@@ -170,13 +170,13 @@ for my $field (@fields) {
 </%INIT>
 
 % unless ($InTable) {
-<div class="fields">
+<div>
 % }
 % for my $field (@fields) {
- <div class="field <% lc $field->{'name'} %>">\
-<span class="label"><% loc($field->{'name'}) %>:</span>\
-<span class="value"><% $field->{'html'} |n %></span>\
-</div>
+  <div class="form-row">
+    <div class="label col-md-3"><% loc($field->{'name'}) %>:</div>
+    <div class="value col-md-9"><% $field->{'html'} |n %></div>
+  </div>
 % }
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
 % unless ($InTable) {

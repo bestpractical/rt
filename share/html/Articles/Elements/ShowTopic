@@ -48,11 +48,18 @@
 % for (@path) {
 %# this isn't always a class, it can be the system object
 % my $class_id = ($_->ObjectType eq 'RT::Class' ? $_->ObjectId : 0 );
-<% $_->ParentObj->Id ? " > " : "" %><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $class_id %>&id=<% $_->Id %>"><% $_->Name || loc("(no name)") %></a>
+% if ( $InBreadcrumb ) {
+<li class="breadcrumb-item">
+  <a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $class_id %>&id=<% $_->Id %>"><% $_->Name || loc("(no name)") %></a>
+</li>
+% } else {
+  <% $_->ParentObj->Id ? " > " : "" %><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $class_id %>&id=<% $_->Id %>"><% $_->Name || loc("(no name)") %></a>
+% }
 % }
 
 <%args>
 $topic
+$InBreadcrumb => 0
 </%args>
 
 <%init>

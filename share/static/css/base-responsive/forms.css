@@ -110,78 +110,10 @@ div.results .titlebox-content {
     margin-bottom: 0;
 }
 
-.fields {
-    display: table;
-}
-.fields .field {
-    display: table-row;
-}
-.fields .label,
-.fields .labeltop,
-.fields .cflabel,
-.fields .value {
-    display: table-cell;
-    vertical-align: middle;
-    padding-top: 0.5em;
-}
-
-.fields > .field:last-child > .label,
-.fields > .field:last-child > .labeltop,
-.fields > .field:last-child > .cflabel,
-.fields > .field:last-child > .value {
-    padding-bottom: 0.5em;
-}
-
-
-.fields .value > .label {
-    padding-left: 3em;
-}
-.fields .value > .label,
-.fields .value > .value {
-    display: inline;
-}
-
-@media (max-width: 1200px) {
-    .wide.fields {
-        display: block;
-    }
-    .wide.fields .field {
-        display: block;
-        margin-bottom: 1em;
-    }
-    .wide.fields .label,
-    .wide.fields .labeltop,
-    .wide.fields .cflabel,
-    .wide.fields .value {
-        display: inline;
-    }
-
-    .wide.fields .value > ul {
-        margin-top: 0;
-    }
-    .wide.fields .value > ul,
-    .wide.fields .value > .checkboxes {
-        margin-left: 1.5em;
-    }
-}
-
-@media (max-width: 700px) {
-    .fields .value .current-value {
-        display: block;
-    }
-
-    /* hack to force quickcreate to break queue/owner row across two lines */
-    .wide.fields .value > .label:before {
-        content: '\a\a';
-        white-space: pre;
-    }
-}
-
 .label, .labeltop {
  text-align: right;
  padding-right: .5em;
  padding-top: .5em;
- white-space: nowrap;
 }
 
 .cflabel {
@@ -218,25 +150,9 @@ div.widget {
     clear: both;
 }
 
-div.widget .label {
- text-align: right;
- display: block;
- width: 15em;
- float: left;
- clear: both;
- font-size: 0.9em;
- padding-right: 0.5em;
- white-space: normal;
-}
-
-div.widget .value {
- display: block;
-}
-
 div.widget .hints {
 
   display: block;
-  padding-left: 14em;
   font-style: italic;
 }
 

@@ -111,19 +111,6 @@ div.results .titlebox-content {
     margin-bottom: 0;
 }
 
-.fields {
-    display: table;
-}
-.fields .field {
-    display: table-row;
-}
-.fields .label,
-.fields .labeltop,
-.fields .cflabel,
-.fields .value {
-    display: table-cell;
-}
-
 .label, .labeltop {
  text-align: right;
  font-size: 0.8em;

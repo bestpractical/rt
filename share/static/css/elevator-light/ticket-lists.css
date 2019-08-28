@@ -32,3 +32,10 @@ table.queue-summary th.collection-as-table a {
 table.queue-summary th.collection-as-table {
     text-align: right
 }
+
+.chart-wrapper .query {
+    clear: both;
+    text-align: center;
+    font-size: 1.2em;
+    padding: 1em;
+}

@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="fields">
-  <div class="field">
-    <span class="label"><&|/l&>Starts</&>:</span>
-    <span class="value entry">
+<div>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Starts</&>:</div>
+    <div class="value col-md-9">
         <div class="form-row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -60,14 +60,14 @@
         &>
           </div>
           <div class="col-auto">
-            <span class="current-value form-control">(<% $TicketObj->StartsObj->AsString %>)</span>
+            <span class="current-value form-control">(<% $TicketObj->StartsObj->AsString %>)</div>
           </div>
         </div>
     </span>
   </div>
-  <div class="field">
-    <span class="label"><&|/l&>Started</&>:</span>
-    <span class="value entry">
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Started</&>:</div>
+    <div class="value col-md-9">
         <div class="form-row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -79,17 +79,17 @@
         &>
           </div>
           <div class="col-auto">
-            <span class="current-value form-control">(<%$TicketObj->StartedObj->AsString %>)</span>
+            <span class="current-value form-control">(<%$TicketObj->StartedObj->AsString %>)</div>
           </div>
         </div>
     </span>
   </div>
 
-  <div class="field">
-    <span class="label">
+  <div class="form-row">
+    <div class="label col-md-3">
       <&|/l&>Last Contact</&>:
-    </span>
-    <span class="value entry">
+    </div>
+    <div class="value col-md-9">
         <div class="form-row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -101,14 +101,14 @@
         &>
           </div>
           <div class="col-auto">
-        <span class="current-value form-control">(<% $TicketObj->ToldObj->AsString %>)</span>
+        <span class="current-value form-control">(<% $TicketObj->ToldObj->AsString %>)</div>
           </div>
         </div>
     </span>
   </div>
-  <div class="field">
-    <span class="label"><&|/l&>Due</&>:</span>
-    <span class="value entry">
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Due</&>:</div>
+    <div class="value col-md-9">
         <div class="form-row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -120,7 +120,7 @@
         &>
           </div>
           <div class="col-auto">
-        <span class="current-value form-control">(<% $TicketObj->DueObj->AsString %>)</span>
+        <span class="current-value form-control">(<% $TicketObj->DueObj->AsString %>)</div>
           </div>
         </div>
     </span>

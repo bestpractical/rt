@@ -74,8 +74,8 @@
 <h3><&|/l&>People</&></h3>
 
 <div class="form-row">
-  <span class="col-md-3 label"><&|/l&>Owner</&>:</span>
-  <span class="col-md-6 value"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></span>
+  <div class="col-md-3 label"><&|/l&>Owner</&>:</div>
+  <div class="col-md-6 value"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></div>
 </div>
 
 % my @role_fields;

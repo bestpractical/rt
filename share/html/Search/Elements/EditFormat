@@ -93,13 +93,15 @@ jQuery( function() {
 
     <div class="col-md-3">
       <div class="form-row">
-        <select name="SelectDisplayColumns" multiple="multiple" class="form-control selectpicker">
+        <div class="col-md-12">
+          <select name="SelectDisplayColumns" multiple="multiple" class="form-control selectpicker">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
-        <option value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
-        <% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
+          <option value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
+            <% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
 % }
-        </select>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -149,18 +151,26 @@ jQuery( function() {
       </div>
     </div>
 
-    <div class="col-md-1"><input type="submit" class="button btn btn-primary" name="AddCol" value=" &rarr; " /></div>
+    <div class="col-md-1">
+      <div class="form-row">
+        <div class="col-md-12">
+          <input type="submit" class="button btn btn-primary" name="AddCol" value=" &rarr; " />
+        </div>
+      </div>
+    </div>
 
     <div class="col-md-4">
       <div class="form-row">
-        <select size="8" class="tall form-control" name="CurrentDisplayColumns">
+        <div class="col-md-12">
+          <select size="8" class="tall form-control" name="CurrentDisplayColumns">
 % my $i=0;
 % my $current = $ARGS{CurrentDisplayColumns} || ''; $current =~ s/^\d+>//;
 % foreach my $field ( @$CurrentFormat ) {
-          <option value="<% $i++ %>><% $field->{Column} %>" <% $field->{Column} eq $current ? 'selected="selected"' : '' |n%>>\
+            <option value="<% $i++ %>><% $field->{Column} %>" <% $field->{Column} eq $current ? 'selected="selected"' : '' |n%>>\
 <% $field->{Column} =~ /^(?:CustomField|CF)\./ ? $field->{Column} : loc( $field->{Column} ) %></option>
 % }
-        </select>
+          </select>
+        </div>
       </div>
 
       <div class="form-row">

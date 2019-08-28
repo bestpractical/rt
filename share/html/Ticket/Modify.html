@@ -56,7 +56,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
-<div class="fields">
+<div>
 <& Elements/EditBasics, TicketObj => $TicketObj, defaults => \%ARGS, InTable => 1 &>
 <& /Elements/EditCustomFields, %ARGS, Object => $TicketObj, Grouping => 'Basics', InTable => 1 &>
 </div>

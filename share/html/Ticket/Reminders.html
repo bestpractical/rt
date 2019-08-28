@@ -53,14 +53,18 @@
 <& /Elements/ListActions, actions => \@actions &>
     
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" name="UpdateReminders" id="UpdateReminders" method="post">
-<&|/Widgets/TitleBox, title => loc("Reminders"),
-                       class=>'ticket-info-reminders'
-                       &>
-
-<& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1, Edit => 1, ShowSave => 0 &>
-</&>
-<& /Elements/Submit,
-    Label => loc('Save Changes') &>
+  <&|/Widgets/TitleBox, title => loc("Reminders"), class=>'ticket-info-reminders' &>
+    <div class="row">
+      <div class="col-md-6">
+        <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1, Edit => 1, ShowSave => 0 &>
+      </div>
+    </div>
+  </&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+    </div>
+  </div>
 </form>
 
 

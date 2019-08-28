@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>" class="cascade-by-optgroup">
+<select name="<% $Name %>" class="cascade-by-optgroup selectpicker">
 % if ( $ShowEmpty ) {
 <option value="">&nbsp;</option>
 % }

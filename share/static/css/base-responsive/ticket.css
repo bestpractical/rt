@@ -118,18 +118,6 @@ tr.edit-custom-field.cftype-Wikitext textarea
     width: 100%;
 }
 
-input.reminder-subject {
-    max-width: 80%;
-    width: 24em;
-}
-
-.messagedetails .fields {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    width: 100%;
-}
-
 .ticket-info-attachments .revision {
     font-size: 85%;
 }
