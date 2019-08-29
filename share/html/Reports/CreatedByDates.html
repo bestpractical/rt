@@ -82,19 +82,45 @@ my $query = join ' AND ', @clauses;
 <form method="post" action="CreatedByDates.html">
 
 % if ($query) {
-<& /Search/Elements/Chart, Query => $query, GroupBy => 'Status' &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Search/Elements/Chart, Query => $query, GroupBy => 'Status' &>
+    </div>
+  </div>
 % }
 
 <hr />
 
-<br /><&|/l&>Queue</&>:
-<& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Queue</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+    </div>
+  </div>
 
-<br /><&|/l&>Tickets created after</&>:
-<& /Elements/SelectDate, Name => 'CreatedAfter', Default => $CreatedAfter &>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Tickets created after</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectDate, Name => 'CreatedAfter', Default => $CreatedAfter &>
+    </div>
+  </div>
 
-<br /><&|/l&>Tickets created before</&>:
-<& /Elements/SelectDate, Name => 'CreatedBefore', Default => $CreatedBefore &>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Tickets created before</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectDate, Name => 'CreatedBefore', Default => $CreatedBefore &>
+    </div>
+  </div>
 
-<& /Elements/Submit &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit &>
+    </div>
+  </div>
 </form>

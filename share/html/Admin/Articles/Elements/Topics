@@ -51,16 +51,22 @@
 <input type="hidden" name="id" value="<%$RootObj->Id%>" />
 
 % if (!$Modify) {
-<table>
-<tr>
-<td><&|/l&>Topic Name</&></td>
-<td><input type="text" name="Name" size="30" /></td>
-</tr>
-<tr>
-<td><&|/l&>Description</&></td>
-<td><input type="text" name="Description" size="50" /></td>
-</tr>
-</table>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Topic Name</&>
+  </div>
+  <div class="value col-md-9">
+    <input class="form-control" type="text" name="Name" size="30" />
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Description</&>
+  </div>
+  <div class="value col-md-9">
+    <input class="form-control" type="text" name="Description" size="50" />
+  </div>
+</div>
 % } else {
 <a href="Topics.html">New topic</a>
 % }
@@ -71,18 +77,25 @@
 
 <%def .edit>
 &nbsp;
-<table style="margin-top: -0.75em">
-<tr>
-    <td>Topic Name:</td>
-    <td><input type="text" name="Topic-<%$topic->Id%>-Name" size="20" value="<%$topic->Name%>" /></td>
-    <td><input type="submit" name="Update" value="Update"><br /></td>
-</tr>
-<tr>
-    <td>Description:</td>
-    <td> <input type="text" name="Topic-<%$topic->Id%>-Description" size="20" value="<%$topic->Description%>" /></td>
-    <td><input type="submit" name="Delete-Topic-<%$topic->Id%>" value="Delete" /></td>
-</tr>
-</table>
+<div class="form-row">
+  <div class="label col-md-3">
+    Topic Name:
+  </div>
+  <div class="value col-md-9 input-group">
+      <input class="form-control" type="text" name="Topic-<%$topic->Id%>-Name" size="20" value="<%$topic->Name%>" />
+      <input type="submit" class="btn btn-primary" name="Update" value="Update">
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="label col-md-3">
+    Description:
+  </div>
+  <div class="value col-md-9 input-group">
+      <input class="form-control" type="text" name="Topic-<%$topic->Id%>-Description" size="20" value="<%$topic->Description%>" />
+      <input type="submit" class="btn btn-primary" name="Delete-Topic-<%$topic->Id%>" value="Delete" />
+  </div>
+</div>
 <%args>
 $topic
 </%args>

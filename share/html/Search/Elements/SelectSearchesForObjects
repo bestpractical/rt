@@ -50,7 +50,7 @@
 $Name => undef
 $SearchType => 'Ticket',
 </%args>
-<select id="<%$Name%>" name="<%$Name%>">
+<select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
 <option value="">-</option>
 % foreach my $object (@Objects) {
 % my @searches = $object->Attributes->Named('SavedSearch');

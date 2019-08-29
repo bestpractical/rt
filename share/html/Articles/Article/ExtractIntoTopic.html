@@ -56,8 +56,12 @@
 <& Elements/EditTopics, Classes => [$ClassObj],
                         OnlyThisClass => 1,
                         id => 'new',
-                        &><br />
-<input type="submit" value="<%loc('Create')%>" />
+                        &>
+<div class="form-row">
+  <div class="col-md-12">
+    <input class="form-control btn btn-primary" type="submit" value="<%loc('Create')%>" />
+  </div>
+</div>
 </form>
 <%args>
 $Ticket => undef

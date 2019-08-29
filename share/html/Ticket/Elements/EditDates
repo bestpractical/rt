@@ -45,10 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-    <td class="label"><&|/l&>Starts</&>:</td>
-    <td class="entry">
+<div>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Starts</&>:</div>
+    <div class="value col-md-9">
+        <div class="form-row">
+          <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Starts',
             current     => 0,
@@ -56,12 +58,18 @@
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
-        (<% $TicketObj->StartsObj->AsString %>)
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Started</&>:</td>
-    <td class="entry">
+          </div>
+          <div class="col-auto">
+            <span class="current-value form-control">(<% $TicketObj->StartsObj->AsString %>)</div>
+          </div>
+        </div>
+    </span>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Started</&>:</div>
+    <div class="value col-md-9">
+        <div class="form-row">
+          <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Started',
             current     => 0,
@@ -69,15 +77,21 @@
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
-        (<%$TicketObj->StartedObj->AsString %>)
-    </td>
-  </tr>
+          </div>
+          <div class="col-auto">
+            <span class="current-value form-control">(<%$TicketObj->StartedObj->AsString %>)</div>
+          </div>
+        </div>
+    </span>
+  </div>
 
-  <tr>
-    <td class="label">
+  <div class="form-row">
+    <div class="label col-md-3">
       <&|/l&>Last Contact</&>:
-    </td>
-    <td class="entry">
+    </div>
+    <div class="value col-md-9">
+        <div class="form-row">
+          <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Told',
             current     => 0,
@@ -85,12 +99,18 @@
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
-        (<% $TicketObj->ToldObj->AsString %>)
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Due</&>:</td>
-    <td class="entry">
+          </div>
+          <div class="col-auto">
+        <span class="current-value form-control">(<% $TicketObj->ToldObj->AsString %>)</div>
+          </div>
+        </div>
+    </span>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3"><&|/l&>Due</&>:</div>
+    <div class="value col-md-9">
+        <div class="form-row">
+          <div class="col-auto">
         <& /Elements/SelectDate,
             menu_prefix => 'Due',
             current     => 0,
@@ -98,12 +118,16 @@
             Object      => $TicketObj,
             ARGSRef     => \%ARGS,
         &>
-        (<% $TicketObj->DueObj->AsString %>)
-    </td>
-  </tr>
+          </div>
+          <div class="col-auto">
+        <span class="current-value form-control">(<% $TicketObj->DueObj->AsString %>)</div>
+          </div>
+        </div>
+    </span>
+  </div>
   <& /Elements/EditCustomFields, Object => $TicketObj, Grouping => 'Dates', InTable => 1 &>
 % $m->callback( %ARGS, CallbackName => 'EndOfList', Ticket => $TicketObj );
-</table>
+</div>
 <%ARGS>
 $TicketObj => undef
 </%ARGS>

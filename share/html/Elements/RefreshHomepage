@@ -47,8 +47,16 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc('Refresh')&>
 <form method="get" action="<% RT->Config->Get('WebPath') . $m->request_path %>">
+<div class="form-row">
+  <div class="col-md-12">
 <& /Elements/Refresh, Name => 'HomeRefreshInterval', 
     Default => $session{'home_refresh_interval'}||RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'}) &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-md-12">
 <& /Elements/Submit,  Label => loc('Go!') &>
+  </div>
+</div>
 </&>
 </form>

@@ -57,75 +57,123 @@
 <input type="hidden" name="id" value="<%$ClassObj->Id%>" />
 % }
 
-<table>
-<tr>
-<td align="right"><&|/l&>Class Name</&>: </td>
-<td><input name="Name" value="<% $ClassObj->Name || $Name || ''%>" /></td>
-</tr>
-<tr>
-<td align="right"><&|/l&>Description</&>:</td>
-<td><input name="Description" value="<% $ClassObj->Description || $Description || '' %>" size=60 /></td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td>
-    <input type="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%>>
-    <label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
-</td>
-</tr>
-</table>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Class Name</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Name" value="<% $ClassObj->Name || $Name || ''%>" />
+    </div>
+  </div>
 
-<h3><&|/l&>When inserting articles in this class into emails:</&></h3>
-<ul>
-<li>
-    <input type="checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
-    <label for="Include-Name"><&|/l&>Include article name</&></label>
-</li>
-<li>
-    <input type="checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
-    <label for="Include-Summary"><&|/l&>Include article summary</&></label>
-</li>
-<li>
-     <input type="checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
-     <label for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
-</li>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Description</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Description" value="<% $ClassObj->Description || $Description || '' %>" size=60 />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+    </div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%>>
+        <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <h3><&|/l&>When inserting articles in this class into emails:</&></h3>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+    </div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
+        <label class="custom-control-label" for="Include-Name"><&|/l&>Include article name</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+    </div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
+        <label class="custom-control-label" for="Include-Summary"><&|/l&>Include article summary</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+    </div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
+        <label class="custom-control-label" for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
+      </div>
+    </div>
+  </div>
+
 % if ( $cfs ) {
 % while (my $cf = $cfs->Next) {
-<li><&|/l, $cf->Name &>Include custom field '[_1]'</&>
-  <ul>
-    <li>
-        <input type="checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />
-        <label for="Include-CF-Title-<% $cf->Id %>"><&|/l&>Title</&></label>
-    </li>
-    <li>
-        <input type="checkbox" id="Include-CF-Value-<% $cf->Id %>" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %> />
-        <label for="Include-CF-Value-<% $cf->Id %>"><&|/l&>Value</&></label>
-    </li>
-  </ul>
-</li>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l, $cf->Name &>Include custom field '[_1]'</&>
+    </div>
+    <div class="col-md-9 value">
+      <div class="form-row">
+        <div class="col-md-auto">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />
+            <label class="custom-control-label" for="Include-CF-Title-<% $cf->Id %>"><&|/l&>Title</&></label>
+          </div>
+        </div>
+        <div class="col-md-auto">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input checkbox" id="Include-CF-Value-<% $cf->Id %>" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %> />
+            <label class="custom-control-label" for="Include-CF-Value-<% $cf->Id %>"><&|/l&>Value</&></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 % } }
-</ul>
 
 % if ( @$subject_cfs ) {
 <h3><&|/l&>Change email subject:</&></h3>
 <p><&|/l&>If a Custom Field is selected, the Subject of your outgoing email will be overridden by this article.</&></p>
 
-<& /Widgets/Form/Select,
-    Name         => 'SubjectOverride',
-    DefaultLabel => loc('No Subject Override'),
-    Values       => $subject_cfs,
-    ValuesLabel  => $subject_cf_labels,
-    CurrentValue => $ClassObj->SubjectOverride,
-&>
+  <& /Widgets/Form/Select,
+      Name         => 'SubjectOverride',
+      DefaultLabel => loc('No Subject Override'),
+      Values       => $subject_cfs,
+      ValuesLabel  => $subject_cf_labels,
+      CurrentValue => $ClassObj->SubjectOverride,
+  &>
 % }
 
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
 
+  <div class="form-row">
+    <div class="col-md-12">
 % if ( $Create ) {
-<& /Elements/Submit, Label => loc('Create') &>
+      <& /Elements/Submit, Label => loc('Create') &>
 % } else {
-<& /Elements/Submit, Label => loc('Save Changes') &>
+      <& /Elements/Submit, Label => loc('Save Changes') &>
 % }
+    </div>
+  </div>
 </form>
 
 <%INIT>

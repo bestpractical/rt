@@ -167,47 +167,81 @@ $self => undef
 <form method="post" action="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>">
 <input type="hidden" class="hidden" name="<% $self->{Name} %>-Submit" value="1" />
 <& SelectionBox:current, self => $self &>
-<&|/l&>Available</&>:
-<br />
-<select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple" class="selection-box">
+
+<div class="form-row">
+  <div class="col-md-5">
+    <&|/l&>Available</&>:
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-5">
+    <div class="form-row">
+      <div class="col-md-12">
+        <select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple" class="tall selection-box form-control">
 % for (@{$self->{Available}}) {
-<option value="<% $_->[0] %>"><% $_->[1] %></option>
+          <option value="<% $_->[0] %>"><% $_->[1] %></option>
 % }
-</select>
+        </select>
+      </div>
+    </div>
+  </div>
 
 % unless ($self->{ReadOnly}) {
-<input aria-label="Add" name="add" type="submit" class="button" value=" &rarr; " />
+  <div class="col-md-auto">
+    <div class="form-row">
+      <div class="col-md-12">
+        <input aria-label="Add" name="add" type="submit" class="button btn btn-primary form-control" value=" &rarr; " />
+      </div>
+    </div>
+  </div>
 % }
 
-<select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple" class="selection-box">
+  <div class="col-md-5">
+    <div class="form-row">
+      <div class="col-md-12">
+        <select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple" class="tall selection-box form-control">
 % for (@{$self->{Current}}) {
-<option value="<% $_ %>"
+          <option value="<% $_ %>"
 % if (exists $selected{$_}) {
-selected="selected"
+            selected="selected"
 % }
-><% $self->{_item_map}{$_} ||'' %></option>
+          ><% $self->{_item_map}{$_} ||'' %></option>
 % }
-</select>
+        </select>
+      </div>
+    </div>
+
 % unless ($self->{'ReadOnly'}) {
+    <div class="form-row">
+      <div class="col-md-12 text-center">
 % unless ($ARGS{'NoArrows'}) {
- <input aria-label="Move up" name="moveup" type="submit" class="button" value=" &uarr; " />
- <input aria-label="Move down" name="movedown" type="submit" class="button" value=" &darr; " />
+        <input aria-label="Move up" name="moveup" type="submit" class="button btn btn-primary form-control" value=" &uarr; " />
+        <input aria-label="Move down" name="movedown" type="submit" class="button btn btn-primary form-control" value=" &darr; " />
 % }
- <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
+        <input name="remove" type="submit" class="button btn btn-primary form-control" value="<&|/l&>Delete</&>" />
 % if ($ARGS{'Clear'}) {
- <input name="clear" type="submit" class="button" value="<&|/l&>Clear</&>" />
+        <input name="clear" type="submit" class="button btn btn-primary form-control" value="<&|/l&>Clear</&>" />
 % }
 % if ( $ARGS{'ShowUpdate'} ) {
- <input name="update" type="submit" class="button" value="<&|/l&>Update</&>" />
+        <input name="update" type="submit" class="button btn btn-primary form-control" value="<&|/l&>Update</&>" />
 % }
+      </div>
+    </div>
 % }
+  </div>
+</div>
 
 % my $caption = "";
 % unless ($self->{'AutoSave'}) {
 % if ($self->{Modified}) {
 % $caption = loc('Selections modified. Please save your changes');
 % }
+<div class="form-row">
+  <div class="col-md-12">
 <& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), Name => $name.'-Save' &>
+  </div>
+</div>
 % }
 </form>
 

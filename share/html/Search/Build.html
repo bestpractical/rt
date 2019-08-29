@@ -76,33 +76,36 @@
 
 
 
+<div class="row">
+  <div class="col-xl-7">
+    <div id="pick-criteria">
+      <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues &>
+    </div>
+    <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
+    <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
+  </div>
 
-<div id="pick-criteria">
-    <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues &>
+  <div id="editquery" class="col-xl-5">
+    <& Elements/EditQuery,
+      %ARGS,
+      actions => \@actions,
+      optionlist => $optionlist,
+      Description => $saved_search{'Description'},
+      &>
+    <div id="editsearches">
+      <& Elements/EditSearches, %saved_search, CurrentSearch => \%query &>
+    </div>
+  </div>
 </div>
-<& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
-<& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
 
-
-<div id="editquery">
-<& Elements/EditQuery,
-    %ARGS,
-    actions => \@actions,
-    optionlist => $optionlist,
-    Description => $saved_search{'Description'},
-    &>
-</div>
-<div id="editsearches">
-    <& Elements/EditSearches, %saved_search, CurrentSearch => \%query &>
-</div>
-
-<span id="display-options">
+<div id="display-options" class="row">
 <& Elements/DisplayOptions,
     %ARGS, %query,
     AvailableColumns => $AvailableColumns,
     CurrentFormat    => $CurrentFormat,
 &>
-</span>
+</div>
+
 <& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
 </form>
 

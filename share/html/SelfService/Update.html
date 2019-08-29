@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, 
-    Title =>loc('Update ticket #[_1]', $Ticket->id) 
+    Title => $title
 &>
 
 % $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
@@ -56,30 +56,33 @@
 <input type="hidden" class="hidden" name="UpdateType" value="response" />
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->Id%>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
-<table width="100%">
-    <tr>
-        <td class="label">
+
+<&|/Widgets/TitleBox, title => $title, class => 'ticket-info-basics' &>
+
+<div>
+    <div class="form-row">
+        <div class="label col-md-3">
             <&|/l&>Status</&>
-        </td>
-        <td class="value">
+        </div>
+        <div class="value col-md-9">
             <& /Ticket/Elements/SelectStatus,
                Name => "Status",
                TicketObj => $Ticket,
                Default => $DefaultStatus &>
-        </td>
-    </tr>
-    <tr>
-        <td class="label">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="label col-md-3">
             <&|/l&>Subject</&>
-        </td>
-        <td class="value">
-            <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
-        </td>
+        </div>
+        <div class="value col-md-9">
+            <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
+        </div>
 
-    </tr>
+    </div>
     <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-    <tr><td colspan="2"><& /Elements/EditCustomFields, Object => $Ticket, AsTable => 0 &></td></tr>
-</table>
+    <& /Elements/EditCustomFields, Object => $Ticket &>
+</div>
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
@@ -94,6 +97,8 @@
 
 
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+
+  </&>
   </form>
 
 

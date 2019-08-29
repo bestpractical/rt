@@ -46,9 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Widgets/TitleBoxStart, title => loc('Quick search') &>
-<ul>
+<ul class="list-group list-group-compact">
 % while (my $class = $classes->Next) {
-<li><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?Class=<%$class->id%>&Parent=0&HideOptions=1"><%$class->Name%></a></li>
+<li class="list-group-item"><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?Class=<%$class->id%>&Parent=0&HideOptions=1"><%$class->Name%></a></li>
 % }
 </ul>
 <& /Widgets/TitleBoxEnd &>

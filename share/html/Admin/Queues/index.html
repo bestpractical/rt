@@ -56,18 +56,40 @@
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-<select name="QueueField">
+  <div class="form-row">
+    <div class="col-md-auto">
+      <select name="QueueField" class="form-control selectpicker">
 % foreach my $col (qw(Name Description CorrespondAddress CommentAddress Lifecycle SubjectTag)) {
-<option <% $QueueField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
+        <option <% $QueueField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
 % }
-</select>
-<& /Elements/SelectMatch, Name => 'QueueOp', Default => $QueueOp &>
-<input size="8" name="QueueString" value="<% $QueueString %>" />
+      </select>
+    </div>
+    <div class="col-md-auto">
+      <& /Elements/SelectMatch, Name => 'QueueOp', Default => $QueueOp &>
+    </div>
+    <div class="col-md-auto">
+      <input type="text" class="form-control" size="8" name="QueueString" value="<% $QueueString %>" />
+    </div>
+  </div>
+
 <br />
 
-<input type="checkbox" class="checkbox" id="FindDisabledQueues" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
-<label for="FindDisabledQueues"><&|/l&>Include disabled queues in listing.</&></label>
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div>
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledQueues" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
+        <label class="custom-control-label" for="FindDisabledQueues"><&|/l&>Include disabled queues in listing.</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <div align="right">
+        <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Go!</&>" />
+      </div>
+    </div>
+  </div>
 </form>
 
 <p><&|/l&>Select a queue</&>:</p>

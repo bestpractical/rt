@@ -1,0 +1,77 @@
+.dropzone .dz-preview .dz-remove-mark {
+  z-index: 500;
+  position: absolute;
+  display: block;
+  top: 0%;
+  left: 100%;
+  margin-left: -14px;
+  margin-top: -14px;
+  color: red;
+}
+
+.dropzone .dz-preview .dz-remove-mark svg {
+    display: block;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.dropzone .dz-preview .dz-remove-mark svg path {
+    cursor: pointer;
+}
+
+.dropzone {
+    background: #eee;
+    border: none !important;
+}
+
+.dropzone .dz-preview.dz-file-preview .dz-image {
+    background: #aaa;
+}
+
+.dropzone .dz-preview .dz-details .dz-filename {
+    white-space: pre-wrap;
+    height: 60px;
+}
+
+.dropzone .dz-preview .dz-progress {
+    margin-top: 0;
+    top: 90px;
+}
+
+.dropzone .dz-preview .dz-progress .dz-upload {
+    background: #444;
+}
+
+.dropzone.scaled {
+    min-height: 150px;
+}
+
+.dropzone {
+    min-height: 60px;
+    padding: 2px;
+}
+
+.dropzone.scaled .dz-message {
+    margin-top: 65px;
+}
+
+.dropzone {
+   transition: min-height 0.3s;
+}
+
+.dropzone .dz-message {
+    transition: margin-top 0.3s;
+}
+
+.dropzone div {
+  pointer-events: none;
+}
+
+.dropzone .pointer-events {
+  pointer-events: auto;
+}
+
+.dropzone .dz-preview.dz-image-preview {
+   background-color: #eee;
+}

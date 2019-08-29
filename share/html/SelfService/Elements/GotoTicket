@@ -46,5 +46,5 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/SelfService/Display.html" method="get" id="GotoTicket" name="GotoTicket">
-<input name="id" class="field" placeholder="<&|/l&>Go to Ticket</&>..." type="search"/>
+<input name="id" class="field form-control" placeholder="<&|/l&>Go to Ticket</&>..." type="search"/>
 </form>

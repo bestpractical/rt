@@ -60,5 +60,17 @@ elsif ( $Asset ){
 }
 
 </%init>
-<& /Asset/Elements/CreateLinkedTicket, AssetObj => \@asset_objs, Requestors => $Requestors &>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><&|/l&>Create Linked Ticket</&></h5>
+      <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
+    <div class="modal-body">
+      <& /Asset/Elements/CreateLinkedTicket, AssetObj => \@asset_objs, Requestors => $Requestors &>
+    </div>
+  </div>
+</div>
 % $m->abort;

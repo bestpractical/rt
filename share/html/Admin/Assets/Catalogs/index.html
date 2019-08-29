@@ -72,18 +72,36 @@
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-<select name="Field">
+  <div class="form-row">
+    <div class="col-md-auto">
+      <select class="form-control selectpicker" name="Field">
 % foreach my $col (qw(id Name Description Lifecycle)) {
-<option <% $Field eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
+        <option <% $Field eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
 % }
-</select>
-<& /Elements/SelectMatch, Name => 'Op', Default => $Op &>
-<input size="20" name="String" value="<% $String %>" />
-<br />
+      </select>
+    </div>
+    <div class="col-md-auto">
+      <& /Elements/SelectMatch, Name => 'Op', Default => $Op &>
+    </div>
+    <div class="col-md-auto">
+      <input type="text" class="form-control" size="20" name="String" value="<% $String %>" />
+    </div>
+  </div>
 
-<input type="checkbox" class="checkbox" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled ? 'checked="checked"': '' |n%> />
-<label for="FindDisabled"><&|/l&>Include disabled catalogs in listing.</&></label>
-<div align="right"><input type="submit" class="button" value="<&|/l&>Search</&>" /></div> 
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindDisabled" name="FindDisabled" value="1" <% $FindDisabled ? 'checked="checked"': '' |n%> />
+        <label class="custom-control-label" for="FindDisabled"><&|/l&>Include disabled catalogs in listing.</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-12 text-right">
+      <input type="submit" class="form-control btn btn-primary button" value="<&|/l&>Search</&>" />
+    </div>
+  </div>
 </form>
 
 <%INIT>

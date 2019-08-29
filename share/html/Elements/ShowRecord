@@ -80,7 +80,7 @@ for my $column (@columns) {
     }
 </%perl>
 <div class="record-field <% $Class ? CSSClass("$Class-field") : "" %> <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr],'no_escape')) %>">
-<span class="label"><% loc($title) |n %></span>
+<div class="label col-md-3"><% loc($title) |n %></div>
 <%perl>
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
@@ -93,7 +93,7 @@ for my $column (@columns) {
     }
     @out = grep { defined $_ and length $_ } @out;
 </%perl>
-<span class="value"><% join('',@out) |n %></span>
+<div class="value col-md-9"><span class="form-control current-value"><% join('',@out) |n %></span></div>
 % $m->callback(CallbackName => 'AfterValue', Object => $Object, attribute => $attr, column => $column );
 </div>
 % }

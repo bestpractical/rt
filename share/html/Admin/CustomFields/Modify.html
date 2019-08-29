@@ -55,50 +55,84 @@
 <form method="post" action="Modify.html" name="ModifyCustomField" id="ModifyCustomField">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
-<table>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Name</&>
+  </div>
+  <div class="col-md-9 value">
+    <input class="form-control" type="text" name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" />
+  </div>
+</div>
 
-<tr><td class="label"><&|/l&>Name</&></td>
-<td><input name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" /></td></tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Description</&>
+  </div>
+  <div class="col-md-9 value">
+    <input class="form-control" type="text" name="Description" value="<% $CustomFieldObj->Description || $Description || '' %>" size="80" />
+  </div>
+</div>
 
-<tr><td class="label"><&|/l&>Description</&></td>
-<td><input name="Description" value="<% $CustomFieldObj->Description || $Description || '' %>" size="80" /></td></tr>
-
-<tr><td class="label"><&|/l&>Type</&></td>
-<td><& /Admin/Elements/SelectCustomFieldType, 
-        Name => "TypeComposite", 
-        Default => $CustomFieldObj->TypeComposite, &>
-</td></tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Type</&>
+  </div>
+  <div class="col-md-9 value">
+    <& /Admin/Elements/SelectCustomFieldType,
+      Name => "TypeComposite",
+      Default => $CustomFieldObj->TypeComposite,
+    &>
+  </div>
+</div>
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->HasRenderTypes ) {
-<tr>
-  <td class="label"><&|/l&>Render Type</&></td>
-  <td>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Render Type</&>
+  </div>
+  <div class="col-md-9 value">
     <& /Admin/Elements/SelectCustomFieldRenderType,
         Name            => "RenderType",
         TypeComposite   => $CustomFieldObj->TypeComposite,
         Default         => $CustomFieldObj->RenderType, 
         BasedOn         => $CustomFieldObj->BasedOnObj->id, &>
-  </td>
-</tr>
+  </div>
+</div>
 % }
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') and ( scalar(@{RT->Config->Get('CustomFieldValuesSources')}) > 0 ) ) {
-<tr><td class="label"><&|/l&>Field values source:</&></td><td>
-<& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
-</td></tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Field values source:</&>
+  </div>
+  <div class="col-md-9 value">
+    <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
+  </div>
+</div>
 % }
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->IsCanonicalizeType and RT->Config->Get('CustomFieldValuesCanonicalizers') and ( scalar(@{RT->Config->Get('CustomFieldValuesCanonicalizers')}) > 0 ) ) {
-<tr><td class="label"><&|/l&>Canonicalizer:</&></td><td>
-<& /Admin/Elements/EditCustomFieldValuesCanonicalizer, CustomField => $CustomFieldObj &>
-</td></tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Canonicalizer:</&>
+  </div>
+  <div class="col-md-9 value">
+    <& /Admin/Elements/EditCustomFieldValuesCanonicalizer, CustomField => $CustomFieldObj &>
+  </div>
+</div>
 % }
 
-<tr><td class="label"><&|/l&>Applies to</&></td>
-<td><& /Admin/Elements/SelectCustomFieldLookupType, 
-        Name => "LookupType", 
-        Default => $CustomFieldObj->LookupType || $LookupType, &>
-</td></tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Applies to</&>
+  </div>
+  <div class="col-md-9 value">
+    <& /Admin/Elements/SelectCustomFieldLookupType,
+      Name => "LookupType",
+      Default => $CustomFieldObj->LookupType || $LookupType,
+    &>
+  </div>
+</div>
 
 <script type="text/javascript">
 jQuery( function() {
@@ -118,80 +152,144 @@ jQuery( function() {
 });
 </script>
 
-<tr><td class="label"><&|/l&>Entry Hint</&></td>
-<td><input name="EntryHint" value="<% $CustomFieldObj->EntryHint // $EntryHint // '' %>" size="80" /></td></tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Entry Hint</&>
+  </div>
+  <div class="col-md-9 value">
+    <input class="form-control" type="text" name="EntryHint" value="<% $CustomFieldObj->EntryHint // $EntryHint // '' %>" size="80" />
+  </div>
+</div>
 
-
-<tr class="edit_validation"><td class="label"><&|/l&>Validation</&></td>
-<td><& /Widgets/ComboBox,
-    Name    => 'Pattern',
-    Default => $CustomFieldObj->Pattern || $Pattern,
-    Size    => 20,
-    Values  => \@CFvalidations,
-&></td></tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Validation</&>
+  </div>
+  <div class="col-md-9 value">
+    <& /Widgets/ComboBox,
+      Name    => 'Pattern',
+      Default => $CustomFieldObj->Pattern || $Pattern,
+      Size    => 20,
+      Values  => \@CFvalidations,
+    &>
+  </div>
+</div>
 
 % if ( $CustomFieldObj->SupportDefaultValues ) {
-<tr class="edit_default_values"><td class="label"><&|/l, $CustomFieldObj->MaxValues &>Default [numerate,_1,value,values]</&></td>
-<td>
-<& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
-</td>
-</tr>
-% }
-
-<tr><td class="label"><&|/l&>Link values to</&></td><td>
-<input size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
-<div class="hints">
-<&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
-<&|/l&>Fill in this field with a URL.</&>
-<&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
-</div></td></tr>
-
-<tr><td class="label"><&|/l&>Include page</&></td><td>
-<input size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
-<div class="hints">
-<&|/l&>RT can include content from another web service when showing this custom field.</&>
-<&|/l&>Fill in this field with a URL.</&>
-<&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
-<i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
-</div></td></tr>
-
-% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
-<tr class="categoriesbasedon"><td class="label"><&|/l&>Categories are based on</&></td><td>
-<& /Admin/Elements/SelectCustomField,
-    Name => "BasedOn",
-    LookupType => $CustomFieldObj->LookupType,
-    Default => $CustomFieldObj->BasedOnObj || $BasedOn,
-    Not => $CustomFieldObj->id,
-&>
-</td></tr>
-% }
-
-<tr><td class="label">&nbsp;</td><td>
-<input type="hidden" class="hidden" name="SetUniqueValues" value="1" />
-<input type="checkbox" class="checkbox" id="UniqueValues" name="UniqueValues" value="1" <% $UniqueValuesChecked |n %> />
-<label for="UniqueValues"><&|/l&>New values must be unique</&></label>
-</td></tr>
-
-% $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
-
-<tr><td class="label">&nbsp;</td><td>
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
-<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom field)</&></label>
-</td></tr>
-
-% $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
-
-</table>
-
-% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
-<h2><&|/l&>Values</&></h2>
-<div class="edit_custom_field_values">
-<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
+<div class="form-row">
+  <div class="label col-md-3 edit_default_values">
+    <&|/l, $CustomFieldObj->MaxValues &>Default [numerate,_1,value,values]</&>
+  </div>
+  <div class="col-md-9 value">
+    <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
+  </div>
 </div>
 % }
 
-<& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Link values to</&>
+  </div>
+  <div class="col-md-9 value">
+    <input class="form-control" type="text" size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3"></div>
+  <div class="col-md-9">
+    <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
+    <&|/l&>Fill in this field with a URL.</&>
+    <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Include page</&>
+  </div>
+  <div class="col-md-9 value">
+    <input class="form-control" type="text" size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3"></div>
+  <div class="col-md-9">
+    <&|/l&>RT can include content from another web service when showing this custom field.</&>
+    <&|/l&>Fill in this field with a URL.</&>
+    <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
+    <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
+  </div>
+</div>
+
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
+<div class="form-row categoriesbasedon">
+  <div class="col-md-3 label">
+    <&|/l&>Categories are based on</&>
+  </div>
+  <div class="col-md-9 value">
+    <& /Admin/Elements/SelectCustomField,
+      Name => "BasedOn",
+      LookupType => $CustomFieldObj->LookupType,
+      Default => $CustomFieldObj->BasedOnObj || $BasedOn,
+      Not => $CustomFieldObj->id,
+    &>
+  </div>
+</div>
+% }
+
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 value">
+    <input type="hidden" class="hidden" name="SetUniqueValues" value="1" />
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="UniqueValues" name="UniqueValues" value="1" <% $UniqueValuesChecked |n %> />
+      <label class="custom-control-label" for="UniqueValues">
+        <&|/l&>New values must be unique</&>
+      </label>
+    </div>
+  </div>
+</div>
+
+% $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
+
+<div class="form-row">
+  <div class="col-md-3 label"></div>
+  <div class="col-md-9 value">
+    <input type="hidden" class="hidden" name="SetEnabled" value="1" />
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
+      <label class="custom-control-label" for="Enabled">
+        <&|/l&>Enabled (Unchecking this box disables this custom field)</&>
+      </label>
+    </div>
+  </div>
+</div>
+
+% $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
+
+
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
+<div class="form-row">
+  <div class="col-md-3 label">
+    <h2><&|/l&>Values</&></h2>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3"></div>
+  <div class="edit_custom_field_values col-md-9">
+    <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
+  </div>
+</div>
+% }
+
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
+  </div>
+</div>
 
 </form>
 

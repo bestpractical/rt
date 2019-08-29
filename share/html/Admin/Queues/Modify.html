@@ -54,117 +54,197 @@
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Queues/Modify.html" name="ModifyQueue" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
-<table>
-<tr><td align="right"><&|/l&>Queue Name</&>:</td><td colspan="3">
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Queue Name</&>:
+    </div>
+    <div class="col-md-9 value">
 % if ($InternalQueue) {
-<% $QueueObj->Name %>
+      <% $QueueObj->Name %>
 % } else {
-<input name="Name" value="<% $Create ? "" : $QueueObj->Name || $Name %>" />
+      <input type="text" class="form-control" name="Name" value="<% $Create ? "" : $QueueObj->Name || $Name %>" />
 % }
-</td></tr>
+    </div>
+  </div>
 
-<tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% $Create ? "" : $QueueObj->Description || $Description || '' %>" size="60" /></td>
-</tr>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Description</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Description" value="<% $Create ? "" : $QueueObj->Description || $Description || '' %>" size="60" />
+    </div>
+  </div>
 
-<tr><td align="right"><&|/l&>Lifecycle</&>:</td><td colspan="3">
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Lifecycle</&>:
+    </div>
+    <div class="col-md-9 value">
 % if ($InternalQueue) {
-<% $QueueObj->Lifecycle %>
+      <% $QueueObj->Lifecycle %>
 % } else {
-<& /Widgets/Form/Select:InputOnly,
-    Name         => 'Lifecycle',
-    Values       => [ sort { loc($a) cmp loc($b) } RT::Lifecycle->List ],
-    CurrentValue => $Create ? "default" : $QueueObj->Lifecycle || $ARGS{'Lifecycle'},
-    Default      => 0,
-&>
+      <& /Widgets/Form/Select:InputOnly,
+          Name         => 'Lifecycle',
+          Values       => [ sort { loc($a) cmp loc($b) } RT::Lifecycle->List ],
+          CurrentValue => $Create ? "default" : $QueueObj->Lifecycle || $ARGS{'Lifecycle'},
+          Default      => 0,
+      &>
 % }
-</td></tr>
+    </div>
+  </div>
 
-<tr><td align="right"><&|/l&>Subject Tag</&>:</td>
-<td colspan="3"><input name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $QueueObj->SubjectTag || '' ) %>" size="60" /></td>
-</tr>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Subject Tag</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $QueueObj->SubjectTag || '' ) %>" size="60" />
+    </div>
+  </div>
 
-<tr><td align="right"><&|/l&>Sort Order</&>:</td>
-<td colspan="3"><input name="SortOrder" value="<% $Create ? 0 : $QueueObj->SortOrder || $SortOrder || 0 %>" size="60" /></td>
-</tr>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Sort Order</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="SortOrder" value="<% $Create ? 0 : $QueueObj->SortOrder || $SortOrder || 0 %>" size="60" />
+    </div>
+  </div>
 
-<tr><td align="right"><&|/l&>Reply Address</&>:</td>
-<td><input name="CorrespondAddress" value="<% $Create ? "" : $QueueObj->CorrespondAddress || $CorrespondAddress || '' %>" />
-<br /><span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span></td>
-<td align="right"><&|/l&>Comment Address</&>:</td>
-<td><input name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || $CommentAddress || '' %>" />
-<br /><span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span></td>
-</tr>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Reply Address</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="email" class="form-control" name="CorrespondAddress" value="<% $Create ? "" : $QueueObj->CorrespondAddress || $CorrespondAddress || '' %>" />
+      <span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span>
+    </div>
 
-<tr><td align="right"><input type="checkbox" class="checkbox" id="SLAEnabled" name="SLAEnabled" value="1" 
+    <div class="col-md-3 label">
+      <&|/l&>Comment Address</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="email" class="form-control" name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || $CommentAddress || '' %>" />
+      <span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label"></div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="SLAEnabled" name="SLAEnabled" value="1" 
 % if ( $QueueObj->id && !$QueueObj->SLADisabled ) {
-checked="checked"
+        checked="checked"
 % }
- /></td>
-<td colspan="3"><label for="SLAEnabled"><&|/l&>SLA Enabled (Unchecking this box disables SLA for this queue)</&></label><br />
-<input type="hidden" class="hidden" name="SetSLAEnabled" value="1" />
-</td></tr>
+        />
+        <label class="custom-control-label" for="SLAEnabled"><&|/l&>SLA Enabled (Unchecking this box disables SLA for this queue)</&></label>
+        <input type="hidden" class="hidden" name="SetSLAEnabled" value="1" />
+      </div>
+    </div>
+  </div>
 
 % my $CFs = $QueueObj->CustomFields;
 % while (my $CF = $CFs->Next) {
-<tr valign="top"><td align="right">
-<% $CF->Name %>:
-</td><td>
-<& /Elements/EditCustomField, CustomField => $CF,
-                              Object => $QueueObj, &>
-</td></tr>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <% $CF->Name %>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/EditCustomField, CustomField => $CF,
+                                    Object => $QueueObj, &>
+    </div>
+  </div>
 % }
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} ) {
-<tr><td align="right"><input type="checkbox" class="checkbox" id="Sign" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' |n%> /></td>
-<td><label for="Sign"><&|/l&>Sign by default</&></label></td>
-<td align="right"><input type="checkbox" class="checkbox" id="Encrypt" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> /></td>
-<td><label for="Encrypt"><&|/l&>Encrypt by default</&></label></td>
-</tr>
-<tr><td align="right"><input type="checkbox" class="checkbox" id="SignAuto" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> /></td>
-<td colspan="3"><label for="SignAuto"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></label></td></tr>
+  <div class="form-row">
+    <div class="col-md-3 label"></div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Sign" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' |n%> />
+        <label class="custom-control-label" for="Sign"><&|/l&>Sign by default</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label"></div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Encrypt" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> />
+        <label class="custom-control-label" for="Encrypt"><&|/l&>Encrypt by default</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label"></div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="SignAuto" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> />
+        <label class="custom-control-label" for="SignAuto"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></label>
+      </div>
+    </div>
+  </div>
 % }
 
 % unless ($InternalQueue) {
-<tr><td align="right"><input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> /></td>
-<td colspan="3"><label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this queue)</&></label><br />
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+  <div class="form-row">
+    <div class="col-md-3 label"></div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
+        <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this queue)</&></label>
+        <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 % $m->callback( %ARGS, QueueObj => $QueueObj, results => \@results );
-</td></tr>
+      </div>
+    </div>
+  </div>
 % }
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} ) {
-<tr><td colspan="4">
-<input type="hidden" class="hidden" name="SetCrypt" value="1" />
+  <div class="form-row">
+    <div class="col-md-12"> <% # colspan=4 %>
+      <input type="hidden" class="hidden" name="SetCrypt" value="1" />
 % if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
-<& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
+      <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
 % } else {
-<&|/Widgets/TitleBox, title => loc( 'Private keys') &>
-<i><&|/l&>You have enabled encryption support but have not set a correspondence address for this queue.</&>
-<&|/l&>You must set a correspondence address for this queue in order to configure a private key.</&></i>
-</&>
+      <&|/Widgets/TitleBox, title => loc( 'Private keys') &>
+      <i><&|/l&>You have enabled encryption support but have not set a correspondence address for this queue.</&>
+      <&|/l&>You must set a correspondence address for this queue in order to configure a private key.</&></i>
+      </&>
 % }
-</td></tr>
-<tr><td colspan="4">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-12"> <% # colspan=4 %>
 % if ( my $email = $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') ) {
-<& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
+      <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
 % } else {
-<&|/Widgets/TitleBox, title => loc( 'Private keys') &>
-<i><&|/l&>You have enabled encryption support but have not set a comment address for this queue.</&>
-<&|/l&>You must set a comment address for this queue in order to configure a private key.</&></i>
-</&>
-%}
-</td></tr>
+      <&|/Widgets/TitleBox, title => loc( 'Private keys') &>
+      <i><&|/l&>You have enabled encryption support but have not set a correspondence address for this queue.</&>
+      <&|/l&>You must set a correspondence address for this queue in order to configure a private key.</&></i>
+      </&>
+% }
+    </div>
+  </div>
 % }
 
-</table>
+  <div class="form-row">
+    <div class="col-md-12">
 % if ( $Create ) {
-<& /Elements/Submit, Label => loc('Create') &>
+      <& /Elements/Submit, Label => loc('Create') &>
 % } else {
-<& /Elements/Submit, Label => loc('Save Changes') &>
+      <& /Elements/Submit, Label => loc('Save Changes') &>
 % }
-</form>
+    </div>
+  </div>
 
+</form>
 
 
 <%INIT>

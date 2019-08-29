@@ -35,6 +35,14 @@ function toggle_upgrade_history(widget, selector) {
     jQuery(widget).toggleClass("rolled-up");
 }
 
+var showModal = function(html) {
+    var modal = jQuery("<div class='modal'></div>");
+    modal.append(html).appendTo("body");
+    modal.bind('modal:close', function(ev) { modal.remove(); })
+    modal.on('hide.bs.modal', function(ev) { modal.remove(); })
+    modal.modal('show');
+};
+
 /* Classes */
 function jQueryWrap( id ) {
     return typeof id == 'object' ? jQuery(id) : jQuery('#'+id);
@@ -558,6 +566,38 @@ jQuery(function() {
             }
         }, 'json');
         return false;
+    });
+
+    jQuery(".ticket-create-modal").click(function(ev){
+        ev.preventDefault();
+        jQuery.get(
+            RT.Config.WebHomePath + "/Helpers/CreateInQueue",
+            showModal
+        );
+    });
+
+    jQuery(".card .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-target'));
+        e.on('hide.bs.collapse', function () {
+            createCookie(e.attr('id'),0,365);
+            e.closest('div.titlebox').find('div.card-header span.right').addClass('invisible');
+        });
+        e.on('show.bs.collapse', function () {
+            createCookie(e.attr('id'),1,365);
+            e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
+        });
+    });
+
+    if ( jQuery('.combobox').combobox ) {
+        jQuery('.combobox').combobox({ clearIfNoMatch: false });
+        jQuery('.combobox-wrapper').each( function() {
+            jQuery(this).find('input[type=text]').prop('name', jQuery(this).data('name')).prop('value', jQuery(this).data('value'));
+        });
+    }
+
+    /* Show selected file name in UI */
+    jQuery('.custom-file input').change(function (e) {
+        jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
     });
 });
 

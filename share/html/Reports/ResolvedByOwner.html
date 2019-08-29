@@ -61,13 +61,27 @@ my $query = $Queue ? "Status = 'resolved' AND Queue = '$Queue'" : "";
 <form method="post" action="ResolvedByOwner.html">
 
 % if ($query) {
-<& /Search/Elements/Chart, Query => $query, GroupBy => 'Owner.Name' &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Search/Elements/Chart, Query => $query, GroupBy => 'Owner.Name' &>
+    </div>
+  </div>
 % }
 
 <hr />
 
-<br /><&|/l&>Queue</&>:
-<& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Queue</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
+    </div>
+  </div>
 
-<& /Elements/Submit &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit &>
+    </div>
+  </div>
 </form>

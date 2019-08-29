@@ -78,15 +78,24 @@ foreach my $asset (@asset_objs){
 <form action="<% RT->Config->Get("WebPath") %><% $session{CurrentUser}->Privileged ? "/Ticket" : "/SelfService" %>/Create.html" id="AssetCreateLinkedTicket">
   <input name="new-RefersTo" value="<% $refers_to %>" type="hidden">
   <input name="Subject" value="<% $asset_objs[0]->Name %>" type="hidden">
+
 % if ( @asset_objs == 1 ){
-  <&|/l_unsafe,
-    $m->scomp("/Elements/SelectNewTicketQueue"),
-    @description &>Create a new ticket in the [_1] queue about asset #[_2]: [_3].</&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <&|/l_unsafe,
+        $m->scomp("/Elements/SelectNewTicketQueue"),
+        @description &>Create a new ticket in the [_1] queue about asset #[_2]: [_3].</&>
+    </div>
+  </div>
 % }
 % else {
-<&|/l_unsafe,
-    $m->scomp("/Elements/SelectNewTicketQueue"),
-    &>Create a new ticket in the [_1] queue about multiple assets.</&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <&|/l_unsafe,
+        $m->scomp("/Elements/SelectNewTicketQueue"),
+        &>Create a new ticket in the [_1] queue about multiple assets.</&>
+    </div>
+  </div>
 % }
 % if ($Requestors) {
     <input type="hidden" name="Requestors" value="<% $Requestors%>" />
@@ -95,13 +104,20 @@ foreach my $asset (@asset_objs){
 %     for my $role ($asset_objs[0]->Roles) {
 %         my $addr = join ', ', keys %{$role_addresses{$role}};
 %         next unless defined $addr and length $addr;
-  <br>
-  <label>
-    <input type="radio" name="Requestors" value="<% $addr %>" <% $first ? 'checked="checked"' : '' |n%>/>
-    <&|/l, loc($role), $addr &>Use asset [_1] as ticket Requestor: [_2]</&>
-  </label>
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-radio">
+        <input class="custom-control-input" id="radio-<%$role%>" type="radio" name="Requestors" value="<% $addr %>" <% $first ? 'checked="checked"' : '' |n%>/>
+        <label class="custom-control-label" for="radio-<%$role%>"><&|/l, loc($role), $addr &>Use asset [_1] as ticket Requestor: [_2]</&></label>
+      </div>
+    </div>
+  </div>
 %         $first = 0;
 %     }
 % }
-  <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled ticket creation form.") &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially filled ticket creation form.") &>
+    </div>
+  </div>
 </form>

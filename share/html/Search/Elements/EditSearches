@@ -47,37 +47,46 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="edit-saved-searches">
 <&| /Widgets/TitleBox, title => loc($Title)&>
-
 %# Hide all the save functionality if the user shouldn't see it.
 % if ( $can_modify ) {
-<span class="label"><&|/l&>Privacy</&>:</span>
-<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
-<br />
-<span class="label"><&|/l&>Description</&>:</span>
-<input size="25" name="SavedSearchDescription" value="<% $Description || '' %>" />
 
+<div class="form-row">
+  <div class="col-md-3 label"><&|/l&>Privacy</&>:</div>
+  <div class="col-md-9">
+<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
+  </div>
+</div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>Description</&>:</div>
+    <div class="col-md-9 input-group">
+      <input type="text" size="25" name="SavedSearchDescription" value="<% $Description || '' %>" class="form-control" />
 % if ($Id ne 'new') {
-<nobr>
 % if ( $Dirty ) {
-<input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
+<input type="submit" class="button btn btn-primary" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
-<input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+<input type="submit" class="button btn btn-primary" name="SavedSearchDelete" value="<%loc('Delete')%>" />
 % if ( $AllowCopy ) {
-<input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
+<input type="submit" class="button btn btn-primary" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
-</nobr>
 % }
+
 % if ( $Object && $Object->Id && $Object->CurrentUserHasRight('update') ) {
-<input type="submit" class="button" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
+<input type="submit" class="button btn btn-primary" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
 % } elsif ( !$Object ) {
-<input type="submit" class="button" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
+<input type="submit" class="button btn btn-primary" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
 % }
-<br />
-<hr />
-<span class="label"><&|/l&>Load saved search</&>:</span>
+    </div>
+  </div>
+
+  <hr />
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>Load saved search</&>:</div>
+    <div class="col-md-9 input-group">
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
-<input type="submit" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" class="button" />
+<input type="submit" class="button btn btn-primary" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
+    </div>
+  </div>
 
 </&>
 </div>

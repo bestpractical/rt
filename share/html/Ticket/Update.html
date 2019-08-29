@@ -51,6 +51,7 @@
 % $m->callback(CallbackName => 'BeforeActionList', ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
+<div>
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS, Ticket => $TicketObj, CanRespond => $CanRespond, CanComment => $CanComment, ResponseDefault => $ResponseDefault, CommentDefault => $CommentDefault );
@@ -62,17 +63,17 @@
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <div id="ticket-update-metadata">
-  <&|/Widgets/TitleBox, title => loc('Ticket and Transaction') &>
-<table width="100%" border="0">
+  <&|/Widgets/TitleBox, title => loc('Ticket and Transaction'), class => 'ticket-info-basics' &>
+<div>
 % $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 % my $skip;
 % $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );
 % if (!$skip) {
-<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" /><br />
+<input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
 % }
-<tr><td class="label"><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType" id="UpdateType">
+<div class="form-row"><div class="label col-md-3"><&|/l&>Update Type</&>:</div>
+<div class="value col-md-9"><select class="form-control selectpicker" name="UpdateType" id="UpdateType">
 % if ($CanComment) {
 <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -82,7 +83,7 @@
 </select> 
 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
-</td></tr>
+</div></div>
 
 <& /Ticket/Elements/EditBasics,
     TicketObj => $TicketObj,
@@ -119,9 +120,9 @@
 
 % $m->callback( %ARGS, CallbackName => 'AfterWorked', Ticket => $TicketObj );
 
-<& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $TicketObj, InTable => 1 &>
+<& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $TicketObj &>
 
-  </table>
+  </div>
   </&>
 
 % $m->callback( %ARGS, CallbackName => 'RightColumnBottom', Ticket => $TicketObj );
@@ -140,64 +141,80 @@
 %}
 
   <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
-  <table width="100%" border="0">
+
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
 % if ( $gnupg_widget ) {
-<tr><td>&nbsp;</td><td>
-<& /Elements/Crypt/SignEncryptWidget,
-    self => $gnupg_widget,
-    TicketObj => $TicketObj,
-&>
-</td></tr>
+<div class="form-row">
+  <div class="col-md-3 label empty"></div>
+  <div class="col-md-9 value">
+    <& /Elements/Crypt/SignEncryptWidget,
+        self => $gnupg_widget,
+        TicketObj => $TicketObj,
+    &>
+  </div>
+</div>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
-<tr><td class="label"><&|/l&>Subject</&>:</td><td> <input type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Subject</&>:
+  </div>
+  <div class="col-md-9 value">
+    <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-</td></tr>
+  </div>
+</div>
 
-<tr><td class="label" valign="top"><&|/l&>Message</&>:</td>
-<td class="messagebox-container action-<% $type %>">
-<& /Articles/Elements/BeforeMessageBox, %ARGS &>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <&|/l&>Message</&>:
+  </div>
+  <div class="col-md-9 value messagebox-container action-<% $type %>">
+    <& /Articles/Elements/BeforeMessageBox, %ARGS &>
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
 % delete $ARGS{'QuoteTransaction'};
-<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
+    <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
 % my $IncludeSignature = 1;
 % $IncludeSignature = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
-<& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
+    <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterMessageBox' );
-</td></tr>
+  </div>
+</div>
 
-    <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj &>
-  </table>
+  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $TicketObj &>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );
 
-  <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+  </div>
+</div>
 
 % $m->callback( %ARGS, CallbackName => 'BeforeScrips', Ticket => $TicketObj );
 
 % if ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
-  <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips', rolledup => RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}) &>
+  <&|/Widgets/TitleBox, title => loc('Scrips and Recipients'), id => 'previewscrips', rolledup => RT->Config->Get('SimplifiedRecipients', $session{'CurrentUser'}), class => 'ticket-info-people' &>
 %   for my $address (grep {defined} ref $ARGS{TxnSendMailTo} ? @{$ARGS{TxnSendMailTo}} : $ARGS{TxnSendMailTo}) {
       <input type="hidden" name="TxnSendMailTo" value="<% $address %>" />
 %   }
     <input type="hidden" name="TxnRecipients" value="<% $ARGS{TxnRecipients} || '' %>" />
   </&>
 % }
-</div>
 
 % $m->callback( %ARGS, CallbackName => 'AfterScrips', Ticket => $TicketObj );
 
 </form>
+</div>
 <hr class="clear" />
 
 % $m->callback( %ARGS, CallbackName => 'AfterForm', Ticket => $TicketObj );
@@ -219,7 +236,7 @@ jQuery( function() {
 
        var payload = jQuery('form[name=TicketUpdate]').serializeArray();
 
-       jQuery('#recipients div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
+       jQuery('#recipients div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/ShowSimplifiedRecipients',
            payload,
            function() {
                jQuery('#recipients div.titlebox-content').removeClass('refreshing');
@@ -233,7 +250,7 @@ jQuery( function() {
            }
        );
 
-       jQuery('#previewscrips div.titlebox-content').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
+       jQuery('#previewscrips div.titlebox-content div.card-body').load( '<% RT->Config->Get('WebPath')%>/Helpers/PreviewScrips',
            payload,
            function() {
                jQuery('#previewscrips div.titlebox-content').removeClass('refreshing');

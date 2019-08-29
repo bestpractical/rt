@@ -1,0 +1,19 @@
+.rt-general-header1 {
+  color: #3858a3;
+  font-size: 1.3em;
+}
+
+.rt-general-header2 {
+  font-style: italic;
+  font-size: 1.1em;
+  padding-left: 3em;
+}
+
+.rt-general-paragraph {
+  padding-left: 6em;
+  padding-right: 6em;
+}
+
+.shredder-form {
+  padding-left: 4em;
+}

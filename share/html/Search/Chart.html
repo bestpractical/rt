@@ -133,67 +133,94 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="chart-meta">
 <div class="chart-type">
 
+<div class="form-row">
+  <div class="col-md-6">
+
 <form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
 <input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
-<&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
-<fieldset><legend><% loc('Group tickets by') %></legend>
-<& Elements/SelectGroupBy,
-    Name => 'GroupBy',
-    Query => $query{Query},
-    Default => $query{'GroupBy'}[0],
-    &>
-</fieldset>
-<fieldset><legend><% loc('and then') %></legend>
-<& Elements/SelectGroupBy,
-    Name => 'GroupBy',
-    Query => $query{Query},
-    Default => $query{'GroupBy'}[1] // q{},
-    ShowEmpty => 1,
-    &>
-</fieldset>
-<fieldset><legend><% loc('and then') %></legend>
-<& Elements/SelectGroupBy,
-    Name => 'GroupBy',
-    Query => $query{Query},
-    Default => $query{'GroupBy'}[2] // q{},
-    ShowEmpty => 1,
-    &>
-</fieldset>
-</&>
+    <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
+      <fieldset><legend><% loc('Group tickets by') %></legend>
+        <& Elements/SelectGroupBy,
+          Name => 'GroupBy',
+          Query => $query{Query},
+          Default => $query{'GroupBy'}[0],
+        &>
+        </fieldset>
+        <fieldset><legend><% loc('and then') %></legend>
+        <& Elements/SelectGroupBy,
+          Name => 'GroupBy',
+          Query => $query{Query},
+          Default => $query{'GroupBy'}[1] // q{},
+          ShowEmpty => 1,
+        &>
+      </fieldset>
+      <fieldset><legend><% loc('and then') %></legend>
+        <& Elements/SelectGroupBy,
+          Name => 'GroupBy',
+          Query => $query{Query},
+          Default => $query{'GroupBy'}[2] // q{},
+          ShowEmpty => 1,
+        &>
+      </fieldset>
+    </&>
 
-<&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
+    <&| /Widgets/TitleBox, title => loc("Calculate"), class => "chart-calculate" &>
+      <fieldset><legend><% loc('Calculate values of') %></legend>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0] &>
+      </fieldset>
+      <fieldset><legend><% loc('and then') %></legend>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1 &>
+      </fieldset>
+      <fieldset><legend><% loc('and then') %></legend>
+        <& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1 &>
+      </fieldset>
+    </&>
 
-<fieldset><legend><% loc('Calculate values of') %></legend>
-<& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[0] &>
-</fieldset>
-<fieldset><legend><% loc('and then') %></legend>
-<& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[1] // q{}, ShowEmpty => 1 &>
-</fieldset>
-<fieldset><legend><% loc('and then') %></legend>
-<& Elements/SelectChartFunction, Default => $query{'ChartFunction'}[2] // q{}, ShowEmpty => 1 &>
-</fieldset>
+    <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
+      <input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
+      <div class="form-row">
+        <div class="col-md-auto label">
+          <label><% loc('Style') %>:</label>
+        </div>
+        <div class="col-md-auto value">
+          <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar|table)\b/ ? $1 : undef &>
+        </div>
+        <div class="col-md-auto label">
+          <label><% loc("Width") %>:</label>
+        </div>
+        <div class="col-md-auto value">
+          <div class="input-group mb-3">
+            <input class="form-control" type="text" name="Width" value="<% $query{'Width'} || q{} %>">
+            <div class="input-group-append">
+              <span class="input-group-text"><&|/l&>px</&></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-auto label">
+          &#x00d7;
+          <label><% loc("Height") %>:</label>
+        </div>
+        <div class="col-md-auto value">
+          <div class="input-group mb-3">
+            <input class="form-control" type="text" name="Height" value="<% $query{'Height'} || q{} %>">
+            <div class="input-group-append">
+              <span class="input-group-text"><&|/l&>px</&></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="include-table custom-control custom-checkbox">
+        <input type="checkbox" id="ChartStyleIncludeTable" name="ChartStyleIncludeTable" class="custom-control-input" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>>
+        <label class="custom-control-label" for="ChartStyleIncludeTable"><&|/l&>Include data table</&></label>
+      </div>
+      <div class="include-sql custom-control custom-checkbox">
+        <input type="checkbox" id="ChartStyleIncludeSQL" name="ChartStyleIncludeSQL" class="custom-control-input" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>>
+        <label class="custom-control-label" for="ChartStyleIncludeSQL"><&|/l&>Include TicketSQL query</&></label>
+      </div>
+    </&>
 
-</&>
-
-<&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
-<input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
-<label><% loc('Style') %>: <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar|table)\b/ ? $1 : undef &></label>
-<span class="width">
-<label><% loc("Width") %>: <input type="text" name="Width" value="<% $query{'Width'} || q{} %>"> <% loc("px") %></label>
-</span>
-<span class="height">
-  &#x00d7;
-  <label><% loc("Height") %>: <input type="text" name="Height" value="<% $query{'Height'} || q{} %>"> <% loc("px") %></label>
-</span>
-<div class="include-table">
-    <input type="checkbox" name="ChartStyleIncludeTable" <% $query{ChartStyle} =~ /\btable\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include data table') %>
-</div>
-<div class="include-sql">
-    <input type="checkbox" name="ChartStyleIncludeSQL" <% $query{ChartStyle} =~ /\bsql\b/ ? 'checked="checked"' : '' |n %>> <% loc('Include TicketSQL query') %>
-</div>
-</&>
 <script type="text/javascript">
 var updateChartStyle = function() {
     var val = jQuery(".chart-picture [name=ChartType]").val();
@@ -217,11 +244,20 @@ jQuery(".chart-picture [name=ChartStyleIncludeTable]").change( updateChartStyle 
 jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 </script>
 
-<& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
-</form>
+    <div class="form-row">
+      <div class="col-md-12">
+        <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
+      </div>
+    </div>
+    </form>
+  </div>
 
+  <div class="col-md-6">
+    <div class="saved-search">
+      <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
+    </div>
+  </div>
 </div>
-<div class="saved-search">
-    <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
+
 </div>
 </div>

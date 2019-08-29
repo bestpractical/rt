@@ -47,9 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Add Criteria')&>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-
-
 % $m->callback( %ARGS, CallbackName => "BeforeBasics" );
 <& PickBasics, queues => \%queues &>
 <& PickCustomRoles, queues => \%queues &>
@@ -58,14 +55,10 @@
 <& PickObjectCFs, Class => 'Queue', queues => \%queues &>
 % $m->callback( %ARGS, CallbackName => "AfterCFs" );
 
-<tr class="separator"><td colspan="3"><hr /></td></tr>
-<tr>
-<td class="label"><&|/l&>Aggregator</&></td>
-<td class="operator" colspan="2"><& SelectAndOr, Name => "AndOr" &></td>
-
-</tr>
-
-</table>
+<div class="form-row">
+  <div class="col-md-3 label"><&|/l&>Aggregator</&></div>
+  <div class="col-md-9 operator"><& SelectAndOr, Name => "AndOr" &></div>
+</div>
 
 </&>
 

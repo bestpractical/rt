@@ -1,0 +1,126 @@
+.titlebox {
+    margin-top: 1em;
+    margin-bottom: 2em;
+}
+
+.titlebox .titlebox-title {
+    position: relative;
+    background-color: transparent;
+}
+
+.titlebox .titlebox-title a {
+    text-decoration: none;
+    color: black;
+}
+
+.titlebox .titlebox-title a:hover {
+    text-decoration: underline
+}
+
+.titlebox .titlebox-title .left {
+    font-weight: bold;
+    background: transparent;
+    padding: 0.5em 1.25em 0.25em 1.25em;
+    line-height: 1.4em;
+    font-size: 1.1em;
+    border: none;
+}
+
+.titlebox .titlebox-title .left,
+.titlebox .titlebox-title .left a {
+    color: #3858a3
+}
+
+.titlebox .titlebox-title .right-empty {
+    display: none
+}
+
+.titlebox .titlebox-title .right {
+    position: absolute;
+    right: 2px;
+    top: 0;
+    font-size: 0.9em;
+    padding-right: 0em;
+    padding-left: 0.4em;
+    padding-bottom: 0.2em;
+    padding-top: 0.5em;
+    -moz-border-radius-bottomleft: 0.25em;
+    -webkit-border-bottom-left-radius: 0.25em;
+    -moz-border-radius-topright: 0.25em;
+    -webkit-border-top-right-radius: 0.25em;
+    border-radius: 0 0.25em 0 0.25em;
+}
+
+.titlebox .titlebox-title .right a,
+.titlebox .titlebox-title .right a:visited {
+    color: #999;
+    font-weight: bold;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.titlebox:hover .titlebox-title .right a,
+.titlebox:active .titlebox-title .right a {
+    color: #000
+}
+
+div.results .titlebox .titlebox-content {
+    border: none;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+.results .titlebox-content ul {
+    list-style-type: none;
+    margin-top: 1em;
+}
+
+.results .titlebox-title {
+    display: none
+}
+
+.results .card-body {
+    padding: 0;
+}
+
+.titlebox .titlebox-content,
+.titlebox .card-header {
+    border: none;
+}
+
+.titlebox .card-header {
+    font-size: larger;
+}
+
+.titlebox .card-body {
+    padding-top: 0;
+}
+
+.titlebox .card-header span.toggle:hover {
+    cursor: pointer;
+}
+
+.titlebox .card-header span.toggle:before {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    margin-right: 15px;
+    border: solid #B0B3BC;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(-135deg);
+    -ms-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+    transition: transform .25s;
+    position: absolute;
+    top: 1.2em;
+}
+
+.titlebox .card-header span.toggle.collapsed:before {
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}

@@ -45,9 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<div class="col-xl-5">
 <&| /Widgets/TitleBox, title => loc("Sorting"), id => 'sorting' &>
 <& EditSort, %ARGS &>
 </&>
+</div>
+
+<div class="col-xl-7">
 <&| /Widgets/TitleBox, title => loc("Display Columns"), id => 'columns' &>
 <& EditFormat, %ARGS &>
 </&>
+</div>

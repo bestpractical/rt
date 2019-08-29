@@ -49,6 +49,17 @@
 # the $z_index here is to fix wrong z-index bug in ie7
 my $z_index = 9999;
 </%once>
+
+% if ( grep { /\bbootstrap-combobox\b/ } RT::Interface::Web->JSFiles ) {
+<div class="combobox-wrapper" data-name="<% $Name %>" data-value="<% $Default // '' %>">
+  <select class="form-control combobox" size="<% $Rows %>">
+    <option value=""></option>
+% for my $value (@Values) {
+    <option value="<% $value %>" <% ($Default // '') eq $value ? 'selected="selected"' : '' %>><% $value%></option>
+% }
+  </select>
+</div>
+% } else {
 %# reset $z_index. assuming at most 1000 comboboxx in one page
 % $z_index = 9999 if $z_index < 9000;
 <nobr>
@@ -56,7 +67,7 @@ my $z_index = 9999;
 
 <div id="<% $Name %>_Container" class="combobox <%$Class%>" style="z-index: <%$z_index--%>">
 <input name="<% $Name %>" id="<% $Name %>" class="combo-text" value="<% $Default || '' %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
-<br style="display: none" /><span id="<% $Name %>_Button" class="combo-button">&#9660;</span><select name="List-<% $Name %>" id="<% $Name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form[<% $Name |n,j%>]); " size="<% $Rows %>">
+<br style="display: none" /><span id="<% $Name %>_Button" class="combo-button">&#9660;</span><select name="List-<% $Name %>" id="<% $Name %>_List" class="combo-list tall" onchange="ComboBox_SimpleAttach(this, this.form[<% $Name |n,j%>]); " size="<% $Rows %>">
 <option style="display: none" value="">-</option>
 % foreach my $value (@Values) {
         <option value="<%$value%>"><% $value%></option>
@@ -67,6 +78,8 @@ my $z_index = 9999;
 ComboBox_InitWith(<% $Name |n,j %>);
 //--></script>
 </nobr>
+
+% }
 <%ARGS>
 $Name
 $Size    => undef

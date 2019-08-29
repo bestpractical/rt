@@ -53,29 +53,42 @@
 % $m->callback(CallbackName => 'InFormElement');
 >
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
-<table>
-<tr class="input-row"><td class="label"><&|/l&>Subject</&>:</td>
-    <td colspan="3" class="value"><input type="text" size="50" name="Subject" value="<% $args->{Subject} || '' %>" /></td>
-    </tr><tr class="input-row">
-<td class="label"><&|/l&>Queue</&>:</td><td class="value"><& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
-</td>
-<td class="label"><&|/l&>Owner</&>:</td><td class="value">
-<select type="select" name="Owner">  
+<div>
+  <div class="form-row input-row">
+    <div class="label col-md-3"><&|/l&>Subject</&>:</div>
+    <div class="value col-md-9"><input type="text" size="50" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" /></div>
+  </div>
+  <div class="form-row input-row">
+    <div class="label col-md-3"><&|/l&>Queue</&>:</div>
+    <div class="value col-md-9">
+      <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
+    </div>
+  </div>
+  <div class="form-row input-row">
+      <div class="label col-md-3"><&|/l&>Owner</&>:</div>
+      <div class="value col-md-9">
+        <select type="select" name="Owner" class="selectpicker form-control">
 % my $default_owner = $args->{Owner} || $session{'CurrentUser'}->id;
-<option value="<%$session{'CurrentUser'}->id%>" <% $default_owner == $session{'CurrentUser'}->id ? 'selected="selected"' : '' |n %>><&|/l&>Me</&></option>
-<option value="<%RT->Nobody->id%>" <% $default_owner == RT->Nobody->id ? 'selected="selected"' : '' |n %>><%loc('Nobody')%></option>
-</select>
-</td>
-</tr>
-<tr class="input-row">
-    <td class="label"><&|/l&>Requestors</&>:</td>
-    <td colspan="3" class="value"><& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &></td>
-</tr>
-<tr class="input-row">
-<td class="labeltop"><&|/l&>Content</&>:</td>
-<td colspan="3" class="value"><textarea name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></td></tr>
-</table>
-<& /Elements/Submit, Label => loc('Create') &>
+          <option value="<%$session{'CurrentUser'}->id%>" <% $default_owner == $session{'CurrentUser'}->id ? 'selected="selected"' : '' |n %>><&|/l&>Me</&></option>
+          <option value="<%RT->Nobody->id%>" <% $default_owner == RT->Nobody->id ? 'selected="selected"' : '' |n %>><%loc('Nobody')%></option>
+        </select>
+      </div>
+  </div>
+  <div class="form-row input-row">
+    <div class="label col-md-3"><&|/l&>Requestors</&>:</div>
+    <div class="value col-md-9"><& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &></div>
+  </div>
+  <div class="form-row input-row">
+    <div class="label col-md-3"><&|/l&>Content</&>:</div>
+    <div class="value col-md-9"><textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></div>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc('Create') &>
+  </div>
+</div>
 </form>
 </&>
 </div>

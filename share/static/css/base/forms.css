@@ -111,7 +111,6 @@ div.results .titlebox-content {
     margin-bottom: 0;
 }
 
-
 .label, .labeltop {
  text-align: right;
  font-size: 0.8em;
@@ -279,4 +278,8 @@ ul.selectable a {
     text-align: right;
     font-weight: bold;
     text-decoration: underline;
+}
+
+#SimpleSearchForm input[name=q] {
+    width: 30em;
 }

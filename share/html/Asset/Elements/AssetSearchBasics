@@ -46,25 +46,59 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Basics'), class=>'asset-search-grouping asset-search-basics' &>
-<table>
-<tr class="asset-catalog"><td class="label"><label for="Catalog"><&|/l&>Catalog</&></label></td>
-    <td class="value" colspan="3">
-<& /Asset/Elements/SelectCatalog, Name => 'Catalog', CheckRight => "ShowCatalog",
-       Default => $ARGS{'Catalog'}, OnChange => "jQuery('#AssetSearch').submit()" &>
-</td></tr>
-<tr class="asset-status"><td class="label"><label for="Status"><&|/l&>Status</&></label></td>
-    <td class="value" colspan="3">
-<& /Asset/Elements/SelectStatus, Name => 'Status', Catalogs => { $CatalogObj->id => 1 }, DefaultValue => 1,
-       Default => ($ARGS{'Status'} || '') &>
-</td></tr>
-<tr class="asset-name"><td class="label"><label for="Name"><&|/l&>Name</&></label></td>
-    <td class="value"><input type="text" id="Name" name="Name" value="<% $ARGS{Name} || ''%>" /></td>
-    <td class="label not"><label for="!Name"><&|/l&>not</&></td>
-    <td class="value"><input type="text" id="!Name" name="!Name" value="<% $ARGS{"!Name"} || ''%>" /></td></tr>
-<tr class="asset-description"><td class="label"><label for="Description"><&|/l&>Description</&></label></td>
-    <td class="value"><input type="text" id="Description" name="Description" value="<% $ARGS{Description} || ''%>" /></td>
-    <td class="label not"><label for="!Description"><&|/l&>not</&></td>
-    <td class="value"><input type="text" id="!Description" name="!Description" value="<% $ARGS{"!Description"} || ''%>" /></td></tr>
+  <div class="form-row">
+    <div class="col-md-6">
+      <div class="form-row">
+        <div class="label col-md-3"><&|/l&>Catalog</&></div>
+        <div class="value col-md-9">
+          <& /Asset/Elements/SelectCatalog, Name => 'Catalog', CheckRight => "ShowCatalog",
+            Default => $ARGS{'Catalog'}, OnChange => "jQuery('#AssetSearch').submit()"
+          &>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-row">
+        <div class="label col-md-3"><&|/l&>Status</&></div>
+        <div class="value col-md-9">
+          <& /Asset/Elements/SelectStatus, Name => 'Status', Catalogs => { $CatalogObj->id => 1 }, DefaultValue => 1,
+            Default => ($ARGS{'Status'} || '')
+          &>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-6">
+      <div class="form-row">
+        <div class="label col-md-2"><&|/l&>Name</&></div>
+        <div class="value col-md-4">
+          <input class="form-control" type="text" id="Name" name="Name" value="<% $ARGS{Name} || ''%>" />
+        </div>
+        <div class="label col-md-2"><&|/l&>not</&></div>
+        <div class="value col-md-4">
+          <input class="form-control" type="text" id="!Name" name="!Name" value="<% $ARGS{"!Name"} || ''%>" />
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="form-row">
+        <div class="label col-md-2"><&|/l&>Description</&></div>
+        <div class="value col-md-4">
+          <input class="form-control" type="text" id="Description" name="Description" value="<% $ARGS{Description} || ''%>" />
+        </div>
+        <div class="label col-md-2"><&|/l&>not</&></div>
+        <div class="value col-md-4">
+          <input class="form-control" type="text" id="!Description" name="!Description" value="<% $ARGS{"!Description"} || ''%>" />
+        </div>
+      </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-12">
 % my $CFs = RT::CustomFields->new( $session{CurrentUser} );
 % $CFs->LimitToCatalog( $CatalogObj->Id );
 % $CFs->LimitToObjectId(0); # LimitToGlobal but no LookupType restriction
@@ -73,14 +107,23 @@
 % my $name = "CF.{" . $cf->Name . "}";
 % my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 % my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
-<tr>
-  <td class="label"><label for="<% $name %>"><% $cf->Name %></label></td>
-  <td class="value"><& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &></td>
-  <td class="label not"><label for="!<% $name %>"><&|/l&>not</&></label></td>
-  <td class="value"><& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &></td>
-</tr>
+      <div class="form-row">
+        <div class="label col-md-2">
+          <% $cf->Name %>
+        </div>
+        <div class="value col-md-4">
+          <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
+        </div>
+        <div class="label col-md-2">
+          <&|/l&>not</&>
+        </div>
+        <div class="value col-md-4">
+          <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
+        </div>
+      </div>
 % }
-</table>
+    </div>
+  </div>
 </&>
 <%args>
 $CatalogObj => undef

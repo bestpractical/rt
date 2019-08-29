@@ -48,12 +48,14 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget">
-% if ( $Description ) {
-<span class="label"><% $Description %></span>
-% }
-<span class="value"><& SELF:InputOnly, %ARGS &></span>
-<span class="hints"><% $Hints %></span>
+<div id="form-box-<% lc $Name %>" class="widget form-row">
+  <div class="col-md-3 label">
+    <% $Description // '' %>
+  </div>
+  <div class="col-md-9 value">
+    <& SELF:InputOnly, %ARGS &>
+    <span class="hints"><% $Hints %></span>
+  </div>
 </div>
 <%ARGS>
 $Name
@@ -80,7 +82,7 @@ $AlternativeLabel => loc('other...'),
 
 $Multiple         => 0,
 </%ARGS>
-<select name="<% $Name %>" <% $Multiple ? 'multiple="multiple"' : '' |n%>>
+<select name="<% $Name %>" class="selectpicker form-control" <% $Multiple ? 'multiple="multiple"' : '' |n%>>
 
 % if ( $Default ) {
 % my $selected = '';

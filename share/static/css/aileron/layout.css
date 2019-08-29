@@ -118,10 +118,10 @@ div#header h1 {
 
 /* in multi-column layouts, make sure we have an internal gutter */
 
-tr .boxcontainer {
+.boxcontainer {
       padding-right: 1em;
 }
 
-tr .boxcontainer:last-child {
+.boxcontainer:last-child {
       padding-right: 0;
 }

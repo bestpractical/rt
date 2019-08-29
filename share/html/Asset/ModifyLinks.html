@@ -57,8 +57,11 @@
   <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
     <& /Elements/EditLinks, %ARGS, Object => $asset, Merge => 0 &>
   </&>
-
-  <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+    </div>
+  </div>
 </form>
 </span>
 

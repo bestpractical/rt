@@ -46,6 +46,6 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/SelfService/Article/Search.html" id="ArticleSearch">
-<input name="Articles_Content" class="field" placeholder="<&|/l&>Search Articles</&>..." type="search" />
+<input name="Articles_Content" class="field form-control" placeholder="<&|/l&>Search Articles</&>..." type="search" />
 </form>
 

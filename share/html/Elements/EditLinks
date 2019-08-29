@@ -45,73 +45,95 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table width="100%">
-  <tr>
-    <td valign="top" width="50%">
+<div class="row ticket-summary">
+  <div class="boxcontainer col-md-6">
       <h3><&|/l&>Current Links</&></h3>
 
-<table>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></td>
-    <td class="value">
+<div>
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></div>
+    <div class="value col-md-9">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->DependsOn->Next) {
-      <& EditLink, Link => $link, Mode => 'Target' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Target' &>
+        </div>
 % }
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></td>
-    <td class="value">
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></div>
+    <div class="value col-md-9">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->DependedOnBy->Next) {
-      <& EditLink, Link => $link, Mode => 'Base' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Base' &>
+        </div>
 % }
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></td>
-    <td class="value">
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></div>
+    <div class="value col-md-9">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->MemberOf->Next) {
-      <& EditLink, Link => $link, Mode => 'Target' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Target' &>
+        </div>
 % }
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></td>
-    <td class="value">
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></div>
+    <div class="value col-md-9">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->Members->Next) {
-      <& EditLink, Link => $link, Mode => 'Base' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Base' &>
+        </div>
 % }
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></td>
-    <td class="value">
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></div>
+    <div class="value col-md-9">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->RefersTo->Next) {
-      <& EditLink, Link => $link, Mode => 'Target' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Target' &>
+        </div>
 %}
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></td>
-    <td class="value">
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></div>
+    <div class="value col-md-9">
+      <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->ReferredToBy->Next) {
-      <& EditLink, Link => $link, Mode => 'Base' &>
+        <div class="list-group-item">
+          <& EditLink, Link => $link, Mode => 'Base' &>
+        </div>
 % }
-    </td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><i><&|/l&>(Check box to delete)</&></i></td>
-  </tr>
-</table>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <span class="empty"></span>
+    <div class="value col-md-9"><i><&|/l&>(Check box to delete)</&></i></div>
+  </div>
+</div>
 
-</td>
-<td valign="top">
+  </div>
+  <div class="boxcontainer col-md-6">
 <h3><&|/l&>New Links</&></h3>
 <& AddLinks, %ARGS &>
-</td>
-</tr>
-</table>
+</div>
+</div>
 <%ARGS>
 $Object => undef
 </%ARGS>

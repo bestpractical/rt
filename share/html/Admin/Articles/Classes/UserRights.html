@@ -53,7 +53,11 @@
 <input type="hidden" name="id" value="<% $ClassObj->id %>" />
   <& /Admin/Elements/EditRights, Context => $ClassObj, Principals => \@principals &>
 
-  <& /Elements/Submit, Label => loc('Save Changes') &> 
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+    </div>
+  </div>
 <%INIT>
 my @results =  ProcessACLs(\%ARGS);
 

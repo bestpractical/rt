@@ -46,8 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $attachments ) {
-<tr class="attachment"><td class="label"><&|/l&>Attached file</&>:</td>
-<td>
+<div class="form-row attachment"><div class="label col-md-3"><&|/l&>Attached file</&>:</div>
+<div class="value col-md-9">
 % foreach my $attach_name ( sort keys %$attachments ) {
     <div>
         <label for="DeleteAttach-<%$attach_name%>"><% $attach_name %></label>
@@ -55,12 +55,12 @@
         (<a href="#" class="delete-attach" data-name="<%$attach_name%>" /><&|/l&>Delete</&></a>)
     </div>
 % } # end of foreach
-</td>
-</tr>
+</div>
+</div>
 % } # end of if
 
-<tr><td class="label"><&|/l&>Attach</&>:</td>
-    <td>
+<div class="form-row"><div class="label col-md-3"><&|/l&>Attach</&>:</div>
+    <div class="value col-md-9">
         <div class="dropzone" id="attach-dropzone">
         </div>
 <script type="text/javascript">
@@ -163,15 +163,19 @@ jQuery( function() {
 });
 </script>
         <div class="hidden old-attach">
-            <input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-            <input type="hidden" class="hidden" name="UpdateAttach" value="1" />
+          <div class="custom-file">
+            <input type="file" id="Attach" name="Attach" class="custom-file-input" />
+            <label class="custom-file-label" for="Attach">
+              <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
+            </label>
+          </div>
         </div>
-    </td>
-</tr>
+    </div>
+</div>
 % if ($HasExisting) {
-<tr>
-  <td class="label" valign="top"><&|/l&>Include attachments</&>:</td>
-  <td id="reuse-attachments">
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Include attachments</&>:</div>
+  <div class="value col-md-9" id="reuse-attachments">
     <& /Ticket/Elements/ShowAttachments,
       Ticket       => $TicketObj,
       Selectable   => 1,
@@ -179,8 +183,8 @@ jQuery( function() {
       Checked      => \@AttachExisting,
       Count        => RT->Config->Get('AttachmentListCount'),
     &>
-  </td>
-</tr>
+  </div>
+</div>
 % }
 % $m->callback( %ARGS, CallbackName => 'End' );
 <%ARGS>

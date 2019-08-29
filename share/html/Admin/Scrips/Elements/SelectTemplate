@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>">
+<select name="<% $Name %>" class="form-control selectpicker">
 <option value=""><% $current || '-' %></option>
 % foreach my $name ( @list ) {
 <option value="<% $name %>" \

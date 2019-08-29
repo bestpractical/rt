@@ -53,15 +53,22 @@
   <input type="hidden" name="id" value="<% $catalog->id %>">
 
   <&| /Widgets/TitleBox, title => loc("Roles"), class => "catalog-roles" &>
-    <table width="60%" class="edit">
-      <tr>
-        <td><& /Asset/Elements/EditCatalogPeople, %ARGS, Object => $catalog &></td>
-        <td><& /Asset/Elements/AddCatalogPeople, Object => $catalog &></td>
-      </tr>
-    </table>
+    <div class="form-row">
+      <div class="col-md-6">
+        <& /Asset/Elements/EditCatalogPeople, %ARGS, Object => $catalog &>
+      </div>
+
+      <div class="col-md-6">
+        <& /Asset/Elements/AddCatalogPeople, Object => $catalog &>
+      </div>
+    </div>
   </&>
 
-  <& /Elements/Submit, Label => loc('Save'), Name => "Update" &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save'), Name => "Update" &>
+    </div>
+  </div>
 </form>
 <%args>
 $id     => undef

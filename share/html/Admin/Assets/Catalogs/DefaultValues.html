@@ -60,8 +60,16 @@
     Object => RT::Asset->new($session{CurrentUser})
 &>
 
-<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
-<& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
+    </div>
+  </div>
 </form>
 
 <%INIT>

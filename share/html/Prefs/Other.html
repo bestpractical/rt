@@ -72,8 +72,11 @@
 <&|/l&>Preferred key</&>: <& /Elements/Crypt/SelectKeyForEncryption, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &>
 </&>
 % }
-
-<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+  </div>
+</div>
 </form>
 <%INIT>
 my @results;

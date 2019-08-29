@@ -58,8 +58,10 @@
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
-<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1 &>
-<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics' &>
+<div>
+<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1, InTable => 1 &>
+<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
+</div>
 </&>
 
 % $m->callback(CallbackName => 'AfterBasics', Ticket => $Ticket);
@@ -91,12 +93,12 @@
 
 <br />
 
-<&| /Widgets/TitleBox, title => loc('Update ticket') &>
-<table>
-  <tr>
-    <td class="label"><&|/l&>Update Type</&>:</td>
-    <td class="entry">
-      <select name="UpdateType" id="UpdateType">
+<&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
+<div>
+  <div class="form-row input-row">
+    <div class="label col-md-3"><&|/l&>Update Type</&>:</div>
+    <div class="value col-md-9">
+      <select name="UpdateType" id="UpdateType" class="form-control selectpicker">
 % if ($CanComment) {
         <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -105,30 +107,31 @@
 % }
       </select> 
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateType' );
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Subject</&>:</td>
-    <td class="entry"><input name="UpdateSubject" size="60" value="<%$Ticket->Subject%>" />
+    </div>
+  </div>
+  <div class="form-row input-row">
+    <div class="label col-md-3"><&|/l&>Subject</&>:</div>
+    <div class="value col-md-9"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
-    </td>
-  </tr>
+    </div>
+  </div>
 
-  <tr><td colspan="2"><& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket &></td></tr>
+  <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket &>
 
 <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
 
-  <tr>
-    <td class="labeltop"><&|/l&>Content</&>:</td>
-    <td class="entry messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
+  <div class="form-row input-row">
+    <div class="label col-md-3"><&|/l&>Message</&>:</div>
+    <div class="value col-md-9 messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent})) {
     <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0 &>
 % } else {
     <& /Elements/MessageBox, Name=>"UpdateContent", QuoteTransaction=>$ARGS{QuoteTransaction} &>
 % }
-  </td></tr>
-</table>
+    </div>
+  </div>
+</div>
 </&>
   
 

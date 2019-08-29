@@ -54,45 +54,72 @@
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomRoles/Modify.html" name="ModifyCustomRole" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $Create ? 'new': $RoleObj->Id %>" />
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
-<table>
-<tr><td align="right"><&|/l&>Role Name</&>:</td><td colspan="3">
-<input name="Name" value="<% $Create ? "" : $RoleObj->Name || $Name %>" />
-</td></tr>
 
-<tr><td align="right"><&|/l&>Description</&>:</td>
-<td colspan="3"><input name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" /></td>
-</tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Role Name</&>:
+  </div>
+  <div class="value col-md-9">
+    <input class="form-control" type="text" name="Name" value="<% $Create ? "" : $RoleObj->Name || $Name %>" />
+  </div>
+</div>
 
-<tr><td align="right"><&|/l&>Entry Hint</&>:</td>
-<td colspan="3"><input name="EntryHint" value="<% $Create ? "" : $RoleObj->EntryHint || $EntryHint || '' %>" size="60" /></td>
-</tr>
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="value col-md-9">
+    <input class="form-control" type="text" name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" />
+  </div>
+</div>
 
-<tr><td align="right"><input type="checkbox" class="checkbox" id="Multiple" name="Multiple" value="1"
+<div class="form-row">
+  <div class="label col-md-3">
+    <&|/l&>Entry Hint</&>:
+  </div>
+  <div class="value col-md-9">
+    <input class="form-control" type="text" name="EntryHint" value="<% $Create ? "" : $RoleObj->EntryHint || $EntryHint || '' %>" size="60" />
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="label col-md-3"></div>
+  <div class="value col-md-9">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="Multiple" name="Multiple" value="1"
 % if ( $Create || $RoleObj->UnlimitedValues ) {
 checked="checked"
 % }
 % if ( !$Create ) {
 disabled="disabled"
 % }
- /></td>
-<td colspan="3"><label for="Multiple">
+      />
+      <label class="custom-control-label" for="Multiple">
 % if ( $Create ) {
 <&|/l&>Multiple users (Unchecking this box limits this role to a single user. This cannot be modified after creation)</&>
 % } else {
 <&|/l&>Multiple users (This cannot be modified after creation)</&>
 % }
-</label><br />
+      </label>
+    </div>
+  </div>
+</div>
+
+
 
 <input type="hidden" class="hidden" name="SetMultiple" value="1" />
-</td></tr>
 
-<tr><td align="right"><input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> /></td>
-<td colspan="3"><label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom role)</&></label><br />
-<input type="hidden" class="hidden" name="SetEnabled" value="1" />
+<div class="form-row">
+  <div class="label col-md-3"></div>
+  <div class="value col-md-9">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
+      <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom role)</&></label>
+    </div>
+    <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 % $m->callback( %ARGS, RoleObj => $RoleObj, results => \@results );
-</td></tr>
-
-</table>
+  </div>
+</div>
 
 % if ( $Create ) {
 <& /Elements/Submit, Label => loc('Create') &>

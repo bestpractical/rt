@@ -45,32 +45,32 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
+<div>
 % for my $type (@display) {
-  <tr class="<%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
-    <td class="labeltop">
+  <div class="form-row <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
+    <div class="label col-md-3">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
         <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
 %     }
-    </td>
-    <td class="value">
+    </div>
+    <div class="value col-md-9"><span class="form-control current-value">
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
-    </td>
-  </tr>
+    </span></div>
+  </div>
 % }
 
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
 
-</table>
+</div>
 
 % if ($Object->isa('RT::Ticket')) {
   <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
     <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
-    <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket">
-    <select name="LinkType">
+    <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="btn btn-primary">
+    <select name="LinkType" class="selectpicker">
       <option value="DependsOn-new"><% loc('Depends on') %></option>
       <option value="new-DependsOn"><% loc('Depended on by') %></option>
       <option value="MemberOf-new"><% loc('Parents') %></option>

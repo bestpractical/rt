@@ -108,7 +108,7 @@ Email address mask.
 
 Using this option users that are members of a particular group can
 be selected for deletion. Identifier is name of user defined group
-or id of a group, as well C<Privileged> or <unprivileged> can used
+or id of a group, as well C<Privileged> or C<unprivileged> can used
 to select people from system groups.
 
 =head2 not_member_of - group identifier
@@ -153,8 +153,17 @@ want to use C<replace_relations> option.
 
 sub SupportArgs
 {
-    return $_[0]->SUPER::SupportArgs,
-           qw(status name email member_of not_member_of replace_relations no_tickets no_ticket_transactions);
+    return ( $_[0]->SUPER::SupportArgs,
+             qw( status name email member_of not_member_of replace_relations no_tickets no_ticket_transactions )
+           );
+}
+
+
+# used to genrate checkboxes instead of text fields in the web interface
+sub ArgIsBoolean {
+    my( $self, $arg ) = @_;
+    my %boolean_atts = map { $_ => 1 } qw( no_tickets no_ticket_transactions );
+    return $boolean_atts{$arg};
 }
 
 sub TestArgs

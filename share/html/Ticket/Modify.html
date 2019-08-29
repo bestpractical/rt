@@ -56,10 +56,10 @@
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
-<table>
+<div>
 <& Elements/EditBasics, TicketObj => $TicketObj, defaults => \%ARGS, InTable => 1 &>
 <& /Elements/EditCustomFields, %ARGS, Object => $TicketObj, Grouping => 'Basics', InTable => 1 &>
-</table>
+</div>
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
 

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<input name="<% $Name %>" value="<% $Default %>" size="5" />
+<input name="<% $Name %>" type="text" value="<% $Default %>" size="5" class="form-control" />
 <%ARGS>
 $Name => 'Priority'
 $Default => ''

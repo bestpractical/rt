@@ -53,17 +53,30 @@ action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
 % $m->callback(CallbackName => 'InFormElement');
 >
     <input type="hidden" class="hidden" name="QuickCreate" value="1" />
-    <table>
-        <tr class="input-row">
-            <td class="label"><&|/l&>Subject</&>:</td>
-            <td colspan="3" class="value"><input type="text" size="50" name="Subject" value="<% $args->{Subject} || loc('Please update my user information') %>" /></td>
-        </tr>
-        <tr class="input-row">
-            <td class="labeltop"><&|/l&>Description</&>:</td>
-            <td colspan="3" class="value"><textarea name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></td>
-        </tr>
-    </table>
-<& /Elements/Submit, Label => loc('Submit') &>
+    <div class="form-row">
+      <div class="label col-md-3">
+        <&|/l&>Subject</&>:
+      </div>
+      <div class="value col-md-9">
+        <input class="form-control" type="text" size="50" name="Subject" value="<% $args->{Subject} || loc('Please update my user information') %>" />
+      </div>
+    </div>
+
+      <div class="form-row">
+        <div class="label col-md-3">
+          <&|/l&>Description</&>:
+        </div>
+        <div class="value col-md-9">
+          <textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></td>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="col-md-12">
+          <& /Elements/Submit, Label => loc('Submit') &>
+        </div>
+      </div>
+
 </form>
 </&>
 </div>

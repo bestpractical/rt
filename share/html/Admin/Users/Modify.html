@@ -56,67 +56,107 @@
 % } else {
 <input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>" />
 % }
-<table width="100%" border="0">
-<tr>
+<div class="row">
+  <div class="boxcontainer col-xl-6">
 
-<td valign="top" class="boxcontainer">
 <&| /Widgets/TitleBox, title => loc('Identity'), class => 'user-info-identity' &>
 
-<table>
-<tr><td align="right">
-<&|/l&>Username</&>:
-</td><td>
-<input name="Name" value="<%$UserObj->Name//$ARGS{Name}//''%>" /> <strong><&|/l&>(required)</&></strong>
-</td></tr>
-<tr><td align="right">
-<&|/l&>Email</&>:
-</td><td>
-<input name="EmailAddress" value="<%$UserObj->EmailAddress//$ARGS{EmailAddress}//''%>" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Real Name</&>:
-</td><td>
-<input name="RealName" value="<%$UserObj->RealName//$ARGS{RealName}//''%>" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Nickname</&>:
-</td><td>
-<input name="NickName" value="<%$UserObj->NickName//$ARGS{NickName}//''%>" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Unix login</&>:
-</td><td>
-<input name="Gecos" value="<%$UserObj->Gecos//$ARGS{Gecos}//''%>" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Language</&>:
-</td><td>
-<& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang//$ARGS{Lang} &>
-</td></tr>
-<tr><td align="right"><&|/l&>Timezone</&>:
-</td><td>
-<& /Elements/SelectTimezone, Name => 'Timezone', Default => $UserObj->Timezone &>
-</td></tr>
-<tr><td align="right">
-<&|/l&>Extra info</&>:
-</td><td>
-<textarea name="FreeformContactInfo" cols="20" rows="5"><%$UserObj->FreeformContactInfo//$ARGS{FreeformContactInfo}//''%></textarea>
-</td></tr>
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Identity', InTable => 1 &>
-</table>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Username</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Name" value="<%$UserObj->Name//$ARGS{Name}//''%>" /> <strong><&|/l&>(required)</&></strong>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Email</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="email" class="form-control" name="EmailAddress" value="<%$UserObj->EmailAddress//$ARGS{EmailAddress}//''%>" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+       <&|/l&>Real Name</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="RealName" value="<%$UserObj->RealName//$ARGS{RealName}//''%>" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Nickname</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="NickName" value="<%$UserObj->NickName//$ARGS{NickName}//''%>" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Unix login</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Gecos" value="<%$UserObj->Gecos//$ARGS{Gecos}//''%>" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Language</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang//$ARGS{Lang} &>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Timezone</&>:
+    </div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectTimezone, Name => 'Timezone', Default => $UserObj->Timezone &>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Extra info</&>:
+    </div>
+    <div class="col-md-9 value">
+      <textarea class="form-control" name="FreeformContactInfo" cols="20" rows="5"><%$UserObj->FreeformContactInfo//$ARGS{FreeformContactInfo}//''%></textarea>
+    </div>
+  </div>
+
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Identity' &>
 </&>
 
-<br />
 <&| /Widgets/TitleBox, title => loc('Access control'), class => 'user-info-access-control' &>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <% ($UserObj->Id && $UserObj->Disabled) ? '' : 'checked="checked"' |n%> />
-<label for="Enabled"><&|/l&>Let this user access RT</&></label><br />
-
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <% ($UserObj->Id && $UserObj->Disabled) ? '' : 'checked="checked"' |n%> />
+        <label class="custom-control-label" for="Enabled"><&|/l&>Let this user access RT</&></label>
+      </div>
+    </div>
+  </div>
 
 % my $PrivilegedChecked = ((!$Create && $UserObj->Privileged()) or (!$UserObj->Id and $ARGS{Privileged})) ? 'checked="checked"' : '';
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
-<input type="checkbox" class="checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
-<label for="Privileged"><&|/l&>Let this user be granted rights</&> (<&|/l&>Privileged</&>)</label><br />
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Privileged" name="Privileged" value="1" <%$PrivilegedChecked|n%> />
+        <label class="custom-control-label" for="Privileged"><&|/l&>Let this user be granted rights</&> (<&|/l&>Privileged</&>)</label>
+      </div>
+    </div>
+  </div>
 
 <& /Elements/EditPassword,
     User => $UserObj,
@@ -126,87 +166,119 @@
 <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Access control' &>
 
 </&>
-<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
-<textarea class="comments" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
-</&>
 % $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
-</td>
 
-<td valign="top" class="boxcontainer">
+  </div>  <!-- boxcontainer -->
+  <div class="boxcontainer col-xl-6">
+
 <&| /Widgets/TitleBox, title => loc('Location'), class => 'user-info-location' &>
-<table>
-<tr><td align="right">
-<&|/l&>Organization</&>:
-</td><td>
-<input name="Organization" value="<%$UserObj->Organization//$ARGS{Organization}//''%>" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Address1</&>:
-</td><td>
-<input name="Address1" value="<%$UserObj->Address1//$ARGS{Address1}//''%>" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Address2</&>:
-</td><td>
-<input name="Address2" value="<%$UserObj->Address2//$ARGS{Address2}//''%>" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>City</&>:
-</td><td>
-<input name="City" value="<%$UserObj->City//$ARGS{City}//''%>" size="14" />
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Organization</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Organization" value="<%$UserObj->Organization//$ARGS{Organization}//''%>" />
+    </div>
+  </div>
 
-</td></tr>
-<tr><td align="right">
-<&|/l&>State</&>:
-</td><td>
-<input name="State" value="<%$UserObj->State//$ARGS{State}//''%>" size="3" />
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Address1</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Address1" value="<%$UserObj->Address1//$ARGS{Address1}//''%>" />
+    </div>
+  </div>
 
-</td></tr>
-<tr><td align="right">
-<&|/l&>Zip</&>:
-</td><td>
-<input name="Zip" value="<%$UserObj->Zip//$ARGS{Zip}//''%>" size="9" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Country</&>:
-</td><td>
-<input name="Country" value="<%$UserObj->Country//$ARGS{Country}//''%>" />
-</td></tr>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Address2</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Address2" value="<%$UserObj->Address2//$ARGS{Address2}//''%>" />
+    </div>
+  </div>
 
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location', InTable => 1 &>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>City</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="City" value="<%$UserObj->City//$ARGS{City}//''%>" size="14" />
+    </div>
+  </div>
 
-</table>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>State</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="State" value="<%$UserObj->State//$ARGS{State}//''%>" size="3" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Zip</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Zip" value="<%$UserObj->Zip//$ARGS{Zip}//''%>" size="9" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Country</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="Country" value="<%$UserObj->Country//$ARGS{Country}//''%>" />
+    </div>
+  </div>
+
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location' &>
+
 </&>
-<br />
+
 <&| /Widgets/TitleBox, title => loc('Phone numbers'), class => 'user-info-phones' &>
-<table>
-<tr><td align="right">
-<&|/l&>Residence</&>:
-</td><td>
-<input name="HomePhone" value="<%$UserObj->HomePhone//$ARGS{HomePhone}//''%>" size="13" /><br />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Work</&>:
-</td><td>
-<input name="WorkPhone" value="<%$UserObj->WorkPhone//$ARGS{WorkPhone}//''%>" size="13" /><br />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Mobile</&>:
-</td><td>
-<input name="MobilePhone" value="<%$UserObj->MobilePhone//$ARGS{MobilePhone}//''%>" size="13" /><br />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Pager</&>:
-</td><td>
-<input name="PagerPhone" value="<%$UserObj->PagerPhone//$ARGS{PagerPhone}//''%>" size="13" /><br />
-</td>
-</tr>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Residence</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="tel" class="form-control" name="HomePhone" value="<%$UserObj->HomePhone//$ARGS{HomePhone}//''%>" size="13" />
+    </div>
+  </div>
 
-<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones', InTable => 1 &>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Work</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="tel" class="form-control" name="WorkPhone" value="<%$UserObj->WorkPhone//$ARGS{WorkPhone}//''%>" size="13" />
+    </div>
+  </div>
 
-</table>
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Mobile</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="tel" class="form-control" name="MobilePhone" value="<%$UserObj->MobilePhone//$ARGS{MobilePhone}//''%>" size="13" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <&|/l&>Pager</&>:
+    </div>
+    <div class="col-md-9 value">
+      <input type="tel" class="form-control" name="PagerPhone" value="<%$UserObj->PagerPhone//$ARGS{PagerPhone}//''%>" size="13" />
+    </div>
+  </div>
+
+<& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones' &>
+
 </&>
-<br />
 
 <& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
 
@@ -215,24 +287,36 @@
 % }
 
 % $m->callback( %ARGS, CallbackName => 'RightColumnBottom', UserObj => $UserObj );
-</td></tr>
-<tr>
-<td colspan="2">
-%if (!$Create && $UserObj->Privileged) {
-<br />
+
+  </div> <!-- boxcontainer -->
+</div>   <!-- row -->
+
+<&| /Widgets/TitleBox, title => loc('Comments about this user'), class => 'user-info-comments' &>
+<textarea class="comments form-control" name="Comments" cols="80" rows="5" wrap="virtual"><%$UserObj->Comments//$ARGS{Comments}//''%></textarea>
+</&>
+
+%if (!$Create && $UserObj->Privileged) { 
 <&| /Widgets/TitleBox, title => loc('Signature'), class => 'user-info-signature' &>
-<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature//$ARGS{Signature}//''%></textarea>
+<div class="form-row">
+  <div class="col-md-12">
+    <textarea class="signature form-control" rows="5" name="Signature" wrap="hard"><%$UserObj->Signature//$ARGS{Signature}//''%></textarea>
+  </div>
+</div>
 </&>
 % }
 
-</td>
-</tr>
-</table>
-
 % if ( $Create ) {
-<& /Elements/Submit, Label => loc('Create') &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Create') &>
+    </div>
+  </div>
 % } else {
-<& /Elements/Submit, Label => loc('Save Changes') &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+    </div>
+  </div>
 % }
 </form>
 

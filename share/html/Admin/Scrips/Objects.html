@@ -55,10 +55,14 @@
 
 % if ( $global ) {
 <h2><&|/l&>Applies to all objects</&></h2>
-<label>
-<input type="checkbox" name="RemoveScrip-<% $id %>" value="0" />
-<&|/l&>check this box to remove this scrip from all objects and be able to choose specific objects.</&>
-</label>
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" name="RemoveScrip-<% $id %>" id="RemoveScrip-<% $id %>-0" value="0" />
+        <label class="custom-control-label" for="RemoveScrip-<% $id %>-0"><&|/l&>check this box to remove this scrip from all objects and be able to choose specific objects.</&></label>
+      </div>
+    </div>
+  </div>
 
 <& /Admin/Elements/SelectStageForAdded,
     Default => $Stage || $global->Stage,
@@ -67,10 +71,14 @@
 % } else {
 <h2><&|/l&>Apply globally</&></h2>
 
-<label>
-<input type="checkbox" name="AddScrip-<% $id %>" value="0" />
-<&|/l&>check this box to apply this scrip to all objects.</&>
-</label>
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" name="AddScrip-<% $id %>" id="AddScrip-<% $id %>-0" value="0" />
+        <label class="custom-control-label" for="AddScrip-<% $id %>-0"><&|/l&>check this box to apply this scrip to all objects.</&></label>
+      </div>
+    </div>
+  </div>
 
 <h2><&|/l&>Selected objects</&></h2>
 <& /Elements/CollectionList,
@@ -108,12 +116,18 @@
 <& /Admin/Elements/SelectStageForAdded, Default => $Stage &>
 <div style="text-align:right">
 <% loc('You can change template if needed') %>:
-<& Elements/SelectTemplate, Scrip => $scrip, Default => $Template &>
+<div class="d-inline-block">
+  <& Elements/SelectTemplate, Scrip => $scrip, Default => $Template &>
+</div>
 </div>
 
 % }
 
-<& /Elements/Submit, Name => 'Update' &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'Update' &>
+    </div>
+  </div>
 </form>
 
 <%ARGS>

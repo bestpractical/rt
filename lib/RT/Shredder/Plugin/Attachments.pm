@@ -78,6 +78,13 @@ kilobytes or megabytes.
 
 sub SupportArgs { return $_[0]->SUPER::SupportArgs, qw(files_only file longer) }
 
+# used to generate checkboxes instead of text fields in the web interface
+sub ArgIsBoolean {
+    my( $self, $arg ) = @_;
+    my %boolean_atts = map { $_ => 1 } qw( files_only );
+    return $boolean_atts{$arg};
+}
+
 sub TestArgs
 {
     my $self = shift;

@@ -46,7 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form name="UserSearch" method="post" action="<% RT->Config->Get('WebPath') %>/User/Search.html">
-<input type="text" name="UserString" value="<% $Default %>" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+  <div class="form-row justify-content-center">
+    <div class="col-md-4">
+      <input type="text" class="form-control" name="UserString" value="<% $Default %>" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+    </div>
+    <div class="col-md-auto">
+      <input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button btn btn-primary form-control" />
+    </div>
+  </div>
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a user is chosen
@@ -55,7 +62,6 @@ jQuery(function(){
     });
 });
 </script>
-<input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button" />
 </form>
 <%ARGS>
 $Default => ''

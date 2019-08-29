@@ -59,7 +59,7 @@
 
 <&| /Widgets/TitleBox,
     title_raw => loc("More about the requestors"),
-    class => 'ticket-info-requestor'
+    class => 'ticket-info-requestor fullwidth'
 &>
 
 <div id="requestor-accordion" class="user-accordion">
@@ -75,8 +75,8 @@
 
 % if ( $ShowComments ) {
 <div class="comments-about-user">
-  <span class="label"><&|/l&>Comments about this user</&>:</span>
-  <span class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span>
+  <div class="label col-md-3"><&|/l&>Comments about this user</&>:</div>
+  <div class="value col-md-9"><span class="form-control current-value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span></div>
 </div>
 % }
 
@@ -106,7 +106,7 @@
     <& $TicketTemplate, Requestor => $requestor &>
 % } else {
   <div id="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>" class="hidden">
-    <span class="label"><&|/l&>Loading...</&></span>
+    <div class="label col-md-3"><&|/l&>Loading...</&></div>
 % }
   </div>
 % }
@@ -116,15 +116,15 @@
 % my $grouplimit = RT->Config->Get('MoreAboutRequestorGroupsLimit');
 % if ( $ShowGroups and defined $grouplimit ) {
 <div class="more-about-user-groups">
-  <span class="label">
+  <div class="label col-md-3">
     <&|/l&>Groups this user belongs to</&>
     
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
   [<a href=<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %> ><&|/l&>Edit</&></a>]
 % }
-  </span>
-  <span class="value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></span>
+  </div>
+  <div class="value col-md-9"><span class="form-control current-value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></span></div>
 </div>
 % }
 

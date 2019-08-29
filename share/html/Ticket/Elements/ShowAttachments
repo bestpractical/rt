@@ -57,18 +57,21 @@
 
 % foreach my $key (sort { lc($a) cmp lc($b) } keys %documents) {
 
-<%$key%><br />
-<ul <% $Selectable ? 'class="selectable"' : '' |n %> >
+<span class="filename"><%$key%></span>
+<ul class="list-group list-group-compact" <% $Selectable ? 'class="selectable"' : '' |n %> >
 % foreach my $rev (@{$documents{$key}}) {
 % if ($rev->ContentLength) {
-<li>
+<li class="list-group-item">
 
+  <div class="custom-control custom-checkbox">
 % if ($Selectable) {
-    <label>
-    <input type="checkbox" class="checkbox" name="AttachExisting" value="<% $rev->Id %>" \
-             <% $is_checked{$rev->Id} ? 'checked' : '' %> />
+      <input type="checkbox" class="custom-control-input" id="AttachExisting-<% $rev->Id %>" name="AttachExisting" value="<% $rev->Id %>" \
+        <% $is_checked{$rev->Id} ? 'checked' : '' %>
+      />
 % }
 
+<label <% $Selectable ? 'class="custom-control-label"' : '' |n%> for="AttachExisting-<% $rev->Id %>">
+<span class="revision">
 % if (my $url = RT->System->ExternalStorageURLFor($rev)) {
 <a href="<%$url%>">
 % } else {
@@ -77,11 +80,9 @@
 % my $desc = loc("[_1] ([_2]) by [_3]", $rev->CreatedAsString, $rev->FriendlyContentLength, $m->scomp('/Elements/ShowUser', User => $rev->CreatorObj));
 <% $desc |n%>
 </a>
-
-% if ($Selectable) {
+</span>
     </label>
-% }
-
+  </div>
 </li>
 % }
 % }
@@ -113,7 +114,7 @@
     }
 </script>
 
-<a href="#" class="button" onclick="showAllAttachments(jQuery(this)); return false;" ><% loc('Show all') %></a>
+<a href="#" class="button btn btn-primary" onclick="showAllAttachments(jQuery(this)); return false;" ><% loc('Show all') %></a>
 
 </span>
 % }

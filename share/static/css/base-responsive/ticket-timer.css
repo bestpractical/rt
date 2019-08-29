@@ -1,0 +1,65 @@
+.ticket-timer {
+    padding: 1em;
+}
+
+.ticket-timer img {
+    height: 1.5em;
+    border-style: none;
+}
+
+.timer-link a img {
+    border-style: none;
+}
+
+.ticket-timer .ticket-link img {
+    height: 1em;
+}
+
+.ticket-timer .ticket-link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ticket-timer .readout {
+    font-size: 2em;
+    text-align: center;
+    width: 100%;
+}
+
+.ticket-timer .control-line {
+    text-align: center;
+}
+
+.ticket-timer .control-line a {
+    margin: 0 1em;
+}
+
+.ticket-timer .extra {
+    color: #aaa;
+}
+
+.ticket-timer > div {
+    margin-bottom: 0.4em;
+}
+
+.ticket-timer.error .readout {
+    color: red;
+}
+
+.ticket-timer.error .extra {
+    display: none;
+}
+
+.ticket-timer .on-error {
+    display: none;
+}
+
+.ticket-timer.error .on-error {
+    display: block;
+    color: red;
+}
+
+.ticket-timer .readout.response {
+    font-size: 1.25em;
+}

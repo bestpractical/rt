@@ -45,92 +45,104 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table width="100%">
-<tr>
-<td valign="top">
+<div class="row">
+  <div class="boxcontainer new-watchers col-xl-6">
 
 <h3><&|/l&>New watchers</&></h3>
 <&|/l&>Find people whose</&><br />
+<div class="form-row">
 <& /Elements/SelectUsers &>
-<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+  <div class="col-auto">
+<input type="submit" class="button btn btn-primary form-control" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+  </div>
+</div>
 <br />
 <&|/l&>Find groups whose</&><br />
+<div class="form-row">
 <& /Elements/SelectGroups &>
-<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+  <div class="col-auto">
+<input type="submit" class="button btn btn-primary form-control" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+  </div>
+</div>
 
 <& AddWatchers, Ticket => $Ticket, UserString => $UserString,
         UserOp => $UserOp, UserField => $UserField,
         GroupString => $GroupString, GroupOp => $GroupOp,
         GroupField => $GroupField, PrivilegedOnly => $PrivilegedOnly &> 
-</td><td valign="top">
+  </div>
+  <div class="boxcontainer current-watchers col-xl-6">
 <h3><&|/l&>People</&></h3>
-<table>
 
-<tr>
-  <td class="label"><&|/l&>Owner</&>:</td>
-  <td class="value"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label"><&|/l&>Owner</&>:</div>
+  <div class="col-md-6 value"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></div>
+</div>
 
 % my @role_fields;
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
 % $single_roles->LimitToSingleValue;
 % $m->callback( CustomRoles => $single_roles, SingleRoles => 1, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $single_roles->Next) {
-<tr>
-  <td class="label"><% $role->Name %>:</td>
-  <td class="value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label"><% $role->Name %>:</div>
+  <div class="col-md-6 value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></div>
+</div>
 
 % }
-
-</table>
 
 <h3><&|/l&>Current watchers</&></h3>
 <i><&|/l&>(Check box to delete)</&></i><br />
 
-<table>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="delete-requestors-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
+      <label class="custom-control-label" for="delete-requestors-checkbox"><&|/l&>Requestors</&>:</label>
+    </div>
+  </div>
+  <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></div>
+</div>
 
-<tr>
-  <td class="label">
-    <input type="checkbox" class="checkbox" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
-    <&|/l&>Requestors</&>:</td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="delete-cc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
+      <label class="custom-control-label" for="delete-cc-checkbox"><&|/l&>Cc</&>:</label>
+    </div>
+  </div>
+  <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></div>
+</div>
 
-<tr>
-  <td class="label">
-    <input type="checkbox" class="checkbox" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
-    <&|/l&>Cc</&>:</td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></td>
-</tr>
-
-<tr>
-  <td class="label">
-    <input type="checkbox" class="checkbox" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
-    <&|/l&>Admin Cc</&>:</td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="delete-admincc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
+      <label class="custom-control-label" for="delete-admincc-checkbox"><&|/l&>Admin Cc</&>:</label>
+    </div>
+  </div>
+  <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></div>
+</div>
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
 % $multi_roles->LimitToMultipleValue;
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
 % my $group = $Ticket->RoleGroup($role->GroupType);
-<tr>
-  <td class="label">
-    <input type="checkbox" class="checkbox" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-RT::CustomRole-<% $role->Id %>-/)">
-    <% $role->Name %>:</td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="delete-<% $role->id %>-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-RT::CustomRole-<% $role->Id %>-/)">
+      <label class="custom-control-label" for="delete-<% $role->id %>-checkbox"><% $role->Name %>:</label>
+    </div>
+  </div>
+  <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></div>
+</div>
 % }
 
 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
 
-</table>
-
-</td>
-</tr>
-</table>
+</div>
+</div>
 
 <%ARGS>
 $UserField => undef

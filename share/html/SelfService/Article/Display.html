@@ -46,8 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('Display Article [_1]', $id) &>
-<span class="label"><%$article->Name || loc("(no name)")%></span><br />
-<em><span class="value"><%$article->Summary%></span></em>
+<div class="label col-md-3"><%$article->Name || loc("(no name)")%></div><br />
+<em><div class="value col-md-9"><%$article->Summary%></div></em>
 <& /Elements/ShowCustomFields, Object => $article &>
 
 <%init>

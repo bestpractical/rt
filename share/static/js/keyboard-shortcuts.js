@@ -56,10 +56,11 @@ jQuery(function() {
     };
 
     var showModal = function(html) {
-        jQuery("<div class='modal'></div>")
-            .append(html).appendTo("body")
-            .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
-            .modal();
+       var modal = jQuery("<div class='modal'></div>");
+       modal.append(html).appendTo("body");
+       modal.bind('modal:close', function() { modal.remove(); })
+       modal.on('hide.bs.modal', function() { modal.remove(); })
+       modal.modal('show');
     };
 
     Mousetrap.bind('g b', goBack);

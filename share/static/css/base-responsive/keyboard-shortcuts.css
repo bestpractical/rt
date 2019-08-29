@@ -1,0 +1,29 @@
+.keyboard-shortcuts td {
+    text-align: left;
+}
+
+.keyboard-shortcuts td.key-column {
+    width: 8em;
+}
+
+.keyboard-shortcuts h2 {
+    text-align: center;
+}
+
+.keyboard-shortcuts.footer{
+    font-size: 0.9em;
+}
+
+.keyboard-shortcuts .keyboard-shortcuts-key {
+    color: #3858a3;
+    font-family: 'Courier New';
+}
+
+.keyboard-shortcuts .keyboard-shortcuts-separator {
+    font-size: 75%;
+}
+
+.ticket-list .selected-row tr {
+    border-left-color: #3858a3;
+    border-left-width: 3px;
+}

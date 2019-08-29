@@ -93,8 +93,10 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %          my $action = $s->ActionObj->Action;
 %          scalar(map { $action->$_ } qw(To Cc Bcc))
 %        } @scrips ) {
-<input type="checkbox" class="checkbox" id="TxnSendMailToAll" name="TxnSendMailToAll" <% $ARGS{TxnSendMailToAll} ? 'checked="checked"' : ''  %> value="1">
-<label for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" id="TxnSendMailToAll" name="TxnSendMailToAll" <% $ARGS{TxnSendMailToAll} ? 'checked="checked"' : ''  %> value="1" class="custom-control-input">
+  <label class="custom-control-label" for="TxnSendMailToAll"><b><% loc('All recipients') %></b></label><br />
+</div>
 %   }
 %     for my $scrip (@scrips) {
           <b><% $scrip->Description || loc('Scrip #[_1]',$scrip->id) %></b><br />
@@ -104,22 +106,26 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %             my $action = $scrip->ActionObj->Action;
 %             my @addresses =  $action->$type();
 %             next unless @addresses;
-              <ul>
+              <ul class="list-group list-group-compact">
 %             for my $addr (@addresses) {
-                  <li>
+                  <li class="list-group-item">
 %                 my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %                 $recips{$addr->address}++;
-                  <b><%loc($type)%></b>:
+                    <div class="form-row">
+                      <div class="col-md-auto">
+                        <b><%loc($type)%></b>:
+                      </div>
+                      <div class="col-md-auto">
 %                 my $show_checkbox = 1;
 %                 if ( grep {$_ eq $addr->address} @{$action->{NoSquelch}{$type}} ) {
 %                     $show_checkbox = 0;
 %                 }
-
+                        <div class="custom-control custom-checkbox">
 %                 if ( $show_checkbox ) {
-                      <input type="checkbox" class="checkbox" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
+                          <input type="checkbox" class="custom-control-input" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
 %                 }
-                  <label for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
+                          <label <% $show_checkbox ? 'class="custom-control-label"' : '' |n%> for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
 %                 $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
 %                 unless ( $show_checkbox ) {
 %                     if ( $type eq 'Cc' ) {
@@ -129,12 +135,15 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
                           (<&|/l&>explicit one-time Bcc</&>)
 %                     }
 %                 }
+                        </div>
+                      </div>
+                    </div>
                   </li>
 %             }
               </ul>
 %         }
 %         if (RT->Config->Get('PreviewScripMessages')) {
-              <textarea cols="80" rows="5"><% Encode::decode( "UTF-8", $scrip->ActionObj->Action->TemplateObj->MIMEObj->as_string )%></textarea>
+              <textarea class="form-control" cols="80" rows="5"><% Encode::decode( "UTF-8", $scrip->ActionObj->Action->TemplateObj->MIMEObj->as_string )%></textarea>
 %         }
           <br />
 %     }

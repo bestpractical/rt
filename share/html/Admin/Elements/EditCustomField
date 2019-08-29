@@ -52,29 +52,38 @@
 <input type="hidden" class="hidden" name="CustomField" value="<%$id %>" />
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 
-<table width="100%" border="0">
-<tr><td align="right">
-<&|/l&>Name</&>:
-</td><td>
-<input name="Name" value="<%$CustomFieldObj->Name%>" size="20" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Description</&>:
-</td><td>
-<input name="Description" value="<%$CustomFieldObj->Description%>" size="80" />
-</td></tr>
-<tr><td align="right">
-<&|/l&>Type</&>:
-</td><td>
-<& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
-</td></tr>
-<tr><td>
-</td><td>
+<div class="form-row">
+  <div class="col-md-3 label>
+    <&|/l&>Name</&>:
+  <div>
+  <div class="value col-md-9">
+    <input class="form-control" type="text" name="Name" value="<%$CustomFieldObj->Name%>" size="20" />
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label>
+    <&|/l&>Description</&>:
+  </div>
+  <div class="value col-md-9">
+    <input class="form-control" type="text" name="Description" value="<%$CustomFieldObj->Description%>" size="80" />
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label>
+    <&|/l&>Type</&>:
+  </div>
+  <div class="value col-md-9">
+    <& /Admin/Elements/SelectCustomFieldType, Name => "Type", Default => $CustomFieldObj->Type &>
+  </div>
+</div>
+
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
-<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom field)</&></label>
-</td></tr>
-</table>
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%> />
+  <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom field)</&></label>
+</div>
 
 <p>
 % if ($CustomFieldObj->Id and $CustomFieldObj->Type =~ /Select/) {

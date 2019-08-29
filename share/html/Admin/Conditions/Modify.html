@@ -53,13 +53,21 @@
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
-<table>
-<& Elements/EditBasics, %ARGS, Condition => $condition, &>
-</table>
-</&>
-<& /Elements/Submit, Label => loc('Copy Condition'), Name => 'Copy' &>
 
-<& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+<& Elements/EditBasics, %ARGS, Condition => $condition, &>
+
+</&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Copy Condition'), Name => 'Copy' &>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+    </div>
+  </div>
 
 </form>
 <%ARGS>

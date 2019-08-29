@@ -48,18 +48,25 @@
 <& /Elements/Header, Title => loc('Browse by topic') &>
 <& /Elements/Tabs &>
 
-<a href="Topics.html"><&|/l&>All topics</&></a>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="Topics.html"><&|/l&>All topics</&></a>
+    </li>
 % if (defined $class) {
-&gt; <a href="Topics.html?class=<%$currclass_id%>"><% $currclass_name %></a>
+    <li class="breadcrumb-item">
+      <a href="Topics.html?class=<%$currclass_id%>"><% $currclass_name %></a>
+    </li>
 % }
 
 % if ($id != 0) {
-&gt; <& /Articles/Elements/ShowTopic, topic => $currtopic &>
+<& /Articles/Elements/ShowTopic, topic => $currtopic, InBreadcrumb => 1 &>
 % }
-<br />
-<h1><&|/l&>Browse by topic</&></h1>
+  </ol>
+</nav>
+
 % if (defined $class) {
-<h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $currclass_id %>"><% $currclass_name %></a></h2>
+<h5><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $currclass_id %>"><% $currclass_name %></a></h5>
 %     my $rtopic = RT::Topic->new( $session{'CurrentUser'} );
 %     $rtopic->Load($id);
 %     unless ( $rtopic->Id()
@@ -76,7 +83,7 @@
 %         }
 %         # List the topics.
 %         for my $t ( @showtopics ) {
-<ul><li><& /Articles/Elements/ShowTopicLink, Topic => $t, Class => $currclass_id &>
+<ul class="list-group list-group-compact"><li class="list-group-item"><& /Articles/Elements/ShowTopicLink, Topic => $t, Class => $currclass_id &>
 %             $ProduceTree->( $id ) if $t->Id == $id;
 %         }
 %         for ( @showtopics ) {
@@ -84,11 +91,11 @@
 %         }
 %     }
 % } else {
-<ul>
+<ul class="list-group list-group-compact">
 %     while (my $c = $Classes->Next) {
-<li><h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $c->Id %>"><% $c->Name %></a></h2></li>
+<li class="list-group-item"><h5><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=<% $c->Id %>"><% $c->Name %></a></h5></li>
 %     }
-<li><h2><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=0"><&|/l&>Global Topics</&></a></h2></li>
+<li class="list-group-item"><h5><a href="<% RT->Config->Get('WebPath') %>/Articles/Topics.html?class=0"><&|/l&>Global Topics</&></a></h5></li>
 </ul>
 % }
 
@@ -96,13 +103,13 @@
 
 % if (@articles) {
 %   if ($id) {
-<h2><&|/l, $currtopic->Name&>Articles in [_1]</&></h2>
+<h5><&|/l, $currtopic->Name&>Articles in [_1]</&></h5>
 %   } elsif ($class) {
 <h2><&|/l&>Articles with no topics</&></h2>
 %   }
-<ul>
+<ul class="list-group list-group-compact">
 %   for my $a (@articles) {
-<li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
+<li class="list-group-item"><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
 %   }
 </ul>
 % }
