@@ -389,7 +389,8 @@ sub CanonicalizeUserInfo {
     my @attrs;
     for my $field ( values %{ $config->{'attr_map'} } ) {
         if ( ref $field eq 'CODE' ) {
-            push @attrs, $field->();
+            # extra attributes used in CODE should be put into 'additional_attrs'
+            next;
         }
         elsif ( ref $field eq 'ARRAY' ) {
             push @attrs, @$field;
@@ -398,6 +399,8 @@ sub CanonicalizeUserInfo {
             push @attrs, $field;
         }
     }
+    push @attrs, @{ $config->{additional_attrs} || [] };
+
     my $fields = join(',', uniq grep defined && length, @attrs);
     my $query = "SELECT $fields FROM $table WHERE $where_key=?";
     my @bind_params = ($where_value);

@@ -74,13 +74,13 @@ RT->Config->Set(
                 'UserCF.Employee Type' => 'employeeType',
                 'UserCF.Employee ID'   => sub {
                     my %args = @_;
-                    return ( 'employeeType', 'employeeID' ) unless $args{external_entry};
                     return (
                         $args{external_entry}->get_value('employeeType') // '',
                         $args{external_entry}->get_value('employeeID') // '',
                     );
                 },
-            }
+            },
+            additional_attrs => [ 'employeeID' ],
         },
     }
 );

@@ -375,7 +375,8 @@ sub CanonicalizeUserInfo {
     my @attrs;
     for my $field ( values %{ $config->{'attr_map'} } ) {
         if ( ref $field eq 'CODE' ) {
-            push @attrs, $field->();
+            # extra attributes used in CODE should be put into 'additional_attrs'
+            next;
         }
         elsif ( ref $field eq 'ARRAY' ) {
             push @attrs, @$field;
@@ -384,6 +385,7 @@ sub CanonicalizeUserInfo {
             push @attrs, $field;
         }
     }
+    push @attrs, @{ $config->{additional_attrs} || [] };
 
     # This is a bit confusing and probably broken. Something to revisit..
     my $filter_addition = ($key && $value) ? "(". $key . "=". escape_filter_value($value) .")" : "";

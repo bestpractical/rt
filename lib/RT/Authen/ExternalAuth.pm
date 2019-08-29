@@ -233,8 +233,6 @@ mapping. E.g.
     YYY => sub {
         my %args = @_;
 
-        return 'XXX' unless $args{external_entry};
-
         my @values = grep defined && length, $args{external_entry}->get_value('XXX');
         return @values;
     },
@@ -258,11 +256,6 @@ The currently processed key and value from the mapping.
 
 =back
 
-The subroutine is called in 2 modes: when called with external_entry
-specified, it should return value or list of values, otherwise, it should
-return the external field list it depends on, so RT could retrieve them at the
-beginning.
-
 =back
 
 The keys in the mapping (i.e. the RT fields, the left hand side) may be a user
@@ -279,6 +272,15 @@ CF.  It does B<not> set a CF value on any RT object (User, Ticket, Queue,
 etc).  You might use this to populate a ticket Location CF with all the
 locations of your users so that tickets can be associated with the locations
 in use.
+
+=item additional_attrs
+
+Additional attributes to query in the external source.  For example:
+
+    'additional_attrs' => [ 'foo', 'bar' ]
+
+Subroutine references in C<attr_mapping> might require more attributes,
+which could be added here.
 
 =back
 
