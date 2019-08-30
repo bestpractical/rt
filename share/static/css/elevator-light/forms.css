@@ -315,6 +315,10 @@ button {
   margin-top: 0.5em;
 }
 
+.form-row > .value .form-row {
+  margin-top: 0;
+}
+
 .col-auto .datepicker {
   width: 17em;
 }
