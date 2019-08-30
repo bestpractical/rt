@@ -45,7 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="dependency-status">
+<div class="dependency-status form-row">
+  <div class="col-md-12">
 % if ($approvals) {
     <span class="summary">
 %   if ($approvals == 1) {
@@ -59,6 +60,7 @@
   <span class="summary"><&|/l, $depends &>Pending [quant,_1,ticket,tickets].</&></span>
   <&|/l, $depends &>This ticket cannot be resolved until its [numerate,_1,dependency is,dependencies are] resolved.</&>
 % }
+  </div>
 </div>
 <%args>
 $Ticket
