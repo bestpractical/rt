@@ -132,3 +132,73 @@ div.inline-row i {
     font-size: 0.8em;
     white-space: normal;
 }
+
+#rights-inspector .loading {
+    display: none;
+}
+
+#rights-inspector.error .results {
+    color: red;
+    font-weight: bold;
+}
+
+#rights-inspector.awaiting-first-result .results {
+    opacity: 0.5;
+}
+
+#rights-inspector.awaiting-first-result .loading, .continuing-load .loading {
+    display: inline;
+}
+
+#rights-inspector .results .result:nth-child(even) .cell {
+    background-color: rgb(236, 246, 252);
+}
+
+#rights-inspector .results .result .match {
+    background-color: rgb(255, 253, 56);
+    font-weight: bold;
+}
+
+#rights-inspector .results .result .name {
+    display: block;
+}
+
+#rights-inspector .results .result .record.disabled .name {
+    text-decoration: line-through;
+}
+
+#rights-inspector .results .result .detail {
+    font-size: 80%;
+    color: #AAA;
+    display: inline-block;
+}
+
+#rights-inspector .results .result .primary {
+    font-size: 80%;
+    font-style: italic;
+    display: inline-block;
+    padding-left: 3px;
+}
+
+#rights-inspector .results .result .primary .name {
+    display: inline-block;
+}
+
+#rights-inspector .results .result .primary .detail {
+    display: none;
+}
+
+#rights-inspector .results .result .right {
+    padding-top: .4em;
+}
+
+#rights-inspector .results .result .revoke {
+    padding-top: .3em;
+}
+
+#rt-help-text kbd {
+    color: #111;
+    border: 1px dashed #AAA;
+    background-color: #F6F6F6;
+    padding: 2px 3px;
+}
