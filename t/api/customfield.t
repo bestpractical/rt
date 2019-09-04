@@ -382,5 +382,35 @@ $cf = RT::CustomField->new( RT->SystemUser );
 $cf->LoadByName(Name => 'TestingCF', Queue => 1, IncludeDisabled => 0 );
 ok( ! $cf->id, "Doesn't find it if IncludeDisabled => 0" );
 
+$cf->LoadByName( Name => 'TestingCF', Queue => 0, IncludeGlobal => 1 );
+is( $cf->MaxValues, 0, 'Max value is 0' );
+my $ticket = RT::Test->create_ticket( Queue => 1, Subject => 'test cf values' );
+ok( $ticket->AddCustomFieldValue( Field => $cf, Value => 'first value' ) );
+ok( $ticket->AddCustomFieldValue( Field => $cf, Value => 'second value' ) );
+
+my $cf_values = $cf->ValuesForObject($ticket);
+is( $cf_values->Count, 2, 'Found 2 values' );
+is( $ticket->CustomFieldValuesAsString( $cf, Separator => ', ' ), 'first value, second value', 'Current cf contents' );
+
+($ok, $msg) = $cf->SetMaxValues(1);
+is( $cf->MaxValues, 1, 'Max value is 1' );
+ok( $ticket->AddCustomFieldValue( Field => $cf, Value => 'third value' ) );
+
+$cf_values = $cf->ValuesForObject($ticket);
+is( $cf_values->Count, 1, 'Found 1 value' );
+is( $ticket->CustomFieldValuesAsString( $cf, Separator => ', ' ), 'third value', 'Current cf contents' );
+
+($ok, $msg) = $cf->SetMaxValues(2);
+is( $cf->MaxValues, 2, 'Max value is 2' );
+ok( $ticket->AddCustomFieldValue( Field => $cf, Value => 'forth value' ) );
+
+$cf_values = $cf->ValuesForObject($ticket);
+is( $cf_values->Count, 2, 'Found 2 values' );
+is( $ticket->CustomFieldValuesAsString( $cf, Separator => ', ' ), 'third value, forth value', 'Current cf contents' );
+
+ok( $ticket->AddCustomFieldValue( Field => $cf, Value => 'fifth value' ) );
+$cf_values = $cf->ValuesForObject($ticket);
+is( $cf_values->Count, 2, 'Found 2 values' );
+is( $ticket->CustomFieldValuesAsString( $cf, Separator => ', ' ), 'forth value, fifth value', 'Current cf contents' );
 
 done_testing;
