@@ -1773,7 +1773,7 @@ sub AddValueForObject {
 
             while ($extra_values) {
                 my $extra_item = $current_values->Next;
-                unless ( $extra_item->id ) {
+                unless ( $extra_item && $extra_item->id ) {
                     $RT::Logger->crit( "We were just asked to delete "
                         ."a custom field value that doesn't exist!" );
                     $RT::Handle->Rollback();
