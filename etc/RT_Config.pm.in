@@ -1212,6 +1212,7 @@ Set(%ThemeJSFiles,
           /static/RichText/ckeditor.js
           dropzone.min.js
           quoteselection.js
+          rights-inspector.js
           }
     ],
     'elevator-light' => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js}],
