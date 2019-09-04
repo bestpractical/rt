@@ -1,0 +1,18 @@
+<%ARGS>
+$id => undef
+</%ARGS>
+<%INIT>
+my $ACE = RT::ACE->new($session{CurrentUser});
+$ACE->Load($id);
+
+my $Principal = $ACE->PrincipalObj;
+my $Object    = $ACE->Object;
+my $Right     = $ACE->RightName;
+
+my ($ok, $msg) = $Principal->RevokeRight(Object => $Object, Right => $Right);
+
+$r->content_type('application/json; charset=utf-8');
+$m->out(JSON({ok => $ok, msg => $msg}));
+$m->abort;
+</%INIT>
+

@@ -21,3 +21,91 @@
     font-size: 0.8em;
     white-space: normal;
 }
+
+
+#rights-inspector .search input, 
+#rights-inspector .results .result .cell {
+    display: inline-block;
+    width: 15em;
+}
+
+#rights-inspector .results .result .cell {
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#rights-inspector .results .result .cell.revoke {
+    display: inline-block;
+    width: auto;
+}
+
+#rights-inspector .search .loading,
+#rights-inspector > .loading {
+    display: none;
+}
+
+#rights-inspector .search .loading img,
+#rights-inspector > .loading img,
+#rights-inspector .results .revoke img {
+    height: 1.5em;
+    width: 1.5em;
+}
+
+#rights-inspector.awaiting-first-result .search .loading {
+    display: inline;
+}
+
+#rights-inspector.continuing-load > .loading {
+    display: inline;
+}
+
+#rights-inspector.error .results {
+    color: red;
+    font-weight: bold;
+}
+
+#rights-inspector.awaiting-first-result .results {
+    opacity: 0.5;
+}
+
+#rights-inspector .results .result .cell {
+    padding: 2px;
+    vertical-align: top;
+}
+
+#rights-inspector .results .result:nth-child(even) {
+    background-color: rgb(236, 246, 252);
+}
+
+#rights-inspector .results .result .match {
+    background-color: rgb(255, 253, 56);
+    font-weight: bold;
+}
+
+#rights-inspector .results .result .detail {
+    font-size: 80%;
+    color: #AAA;
+    display: block;
+}
+
+#rights-inspector .results .result .record.disabled .name {
+    text-decoration: line-through;
+}
+
+#rights-inspector .results .result .primary {
+    font-size: 80%;
+    font-style: italic;
+    display: block;
+}
+
+#rights-inspector .results .result .primary .detail {
+    display: none;
+}
+
+#comp-Admin-RightsInspector kbd {
+    color: #111;
+    border: 1px dashed #AAA;
+    background-color: #F6F6F6;
+    padding: 1px;
+}
+

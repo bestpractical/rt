@@ -1,0 +1,9 @@
+<%INIT>
+use RT::RightsInspector;
+
+my $results = RT::RightsInspector->Search(%ARGS);
+$r->content_type('application/json; charset=utf-8');
+RT::Interface::Web::CacheControlExpiresHeaders( Time => 'no-cache' );
+$m->out(JSON($results));
+$m->abort;
+</%INIT>

@@ -972,6 +972,11 @@ sub _BuildAdminMenu {
            path        => '/Admin/Tools/Queries.html',
        );
     }
+    $admin_tools->child( rights_inspector =>
+        title => loc('Rights Inspector'),
+        description => loc('Search your configured permissions'),
+        path  => '/Admin/Tools/RightsInspector.html',
+    );
     $admin_tools->child( shredder =>
         title       => loc('Shredder'),
         description => loc('Permanently wipeout data from RT'),

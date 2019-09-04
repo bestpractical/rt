@@ -1,0 +1,69 @@
+<& /Admin/Elements/Header, Title => loc("Rights Inspector") &>
+<& /Elements/Tabs &>
+
+<div class="help">
+<&| /Widgets/TitleBox, title => loc('Usage Help') &>
+<p>The Rights Inspector lets you search your configured permissions based
+on several different criteria. Each permission consists of a "Principal"
+(which user, group, or role has the permission), an "Object" (what
+record they have permissions on), and a "Right" (the name of the
+permission). Rights Inspector lets you filter your permissions for any
+combination of those three.</p>
+
+<p>The "Right" field lets you specify partial and/or multiple rights
+(e.g. searching <kbd>Ticket</kbd> will match both "ShowTicket" and
+"ModifyTicket", while <kbd>ShowAsset ShowCatalog</kbd> will show results
+for both rights). Since "SuperUser" provides every other right, it will
+also be included in results when applicable.</p>
+
+<p>The "Principal" and "Object" search fields by default work based on
+filtering. For example typing Principal <kbd>arch</kbd> will show
+permissions granted to the user "Archibald", the Group "Monarchs", the
+custom role "Researcher", and so on. You can also filter using other RT
+concepts by providing search terms like <kbd>user</kbd>,
+<kbd>article</kbd>, and so on.</p>
+
+<p>Alternatively, these two search fields support a special mode where
+you may specify a unique record directly using syntax like
+<kbd>group:Sales</kbd>. This will show recursive memberships (such as
+rights granted to any groups that the Sales group is a member of). It
+will also show rights granted by being a member of an individual
+ticket's or asset's role groups. Similarly, searching for a specific
+ticket with syntax like <kbd>t:10</kbd> will show you the permissions
+for that single ticket and its queue.</p>
+
+<p>Any word prefixed with a <kbd>!</kbd> will be filtered out from the
+search results, for example searching for right
+<kbd>ShowTicket !SuperUser</kbd>.</p>
+
+<p>For example, to help answer the question "why can Joe see asset #39?"
+you may specify principal <kbd>user:Joe</kbd>, object <kbd>asset
+#39</kbd>, right <kbd>ShowAsset</kbd>. This will produce multiple
+results if Joe has access due to multiple different reasons.</p>
+</&>
+</div>
+
+<&|/Widgets/TitleBox, title => loc("Rights Inspector") &>
+<form action="<%RT->Config->Get('WebPath')%>/Helpers/RightsInspector/Search" id="rights-inspector">
+  <div class="search row">
+    <input class="col-md-3" value="<% $ARGS{Principal} %>" type="text" name="principal" placeholder="Principal">
+    <input class="col-md-3" value="<% $ARGS{Object} %>" type="text" name="object" placeholder="Object">
+    <input class="col-md-3" value="<% $ARGS{Right} %>" type="text" name="right" placeholder="Right">
+    <span class="loading"><img src="<%RT->Config->Get('WebPath')%>/static/images/loading.gif" alt="<%loc('Loading')%>" title="<%loc('Loading')%>" /></span>
+  </div>
+
+  <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/rights-inspector.js"></script>
+
+  <div class="results">
+  </div>
+  <span class="loading"><img src="<%RT->Config->Get('WebPath')%>/static/images/loading.gif" alt="<%loc('Loading')%>" title="<%loc('Loading')%>" /></span>
+</form>
+</&>
+
+
+
+<%INIT>
+unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')) {
+    Abort(loc('This feature is only available to system administrators.'));
+}
+</%INIT>
