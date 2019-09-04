@@ -1759,24 +1759,29 @@ sub AddValueForObject {
 
     if ( $self->MaxValues ) {
         my $current_values = $self->ValuesForObject($obj);
-        my $extra_values = ( $current_values->Count + 1 ) - $self->MaxValues;
 
         # (The +1 is for the new value we're adding)
+        my $extra_values = ( $current_values->Count + 1 ) - $self->MaxValues;
 
-        # If we have a set of current values and we've gone over the maximum
-        # allowed number of values, we'll need to delete some to make room.
-        # which former values are blown away is not guaranteed
 
-        while ($extra_values) {
-            my $extra_item = $current_values->Next;
-            unless ( $extra_item->id ) {
-                $RT::Logger->crit( "We were just asked to delete "
-                    ."a custom field value that doesn't exist!" );
-                $RT::Handle->Rollback();
-                return (undef);
+        # Could have a negative value if MaxValues is greater than count
+        if ( $extra_values > 0 ) {
+
+            # If we have a set of current values and we've gone over the maximum
+            # allowed number of values, we'll need to delete some to make room.
+            # which former values are blown away is not guaranteed
+
+            while ($extra_values) {
+                my $extra_item = $current_values->Next;
+                unless ( $extra_item->id ) {
+                    $RT::Logger->crit( "We were just asked to delete "
+                        ."a custom field value that doesn't exist!" );
+                    $RT::Handle->Rollback();
+                    return (undef);
+                }
+                $extra_item->Delete;
+                $extra_values--;
             }
-            $extra_item->Delete;
-            $extra_values--;
         }
     }
 
