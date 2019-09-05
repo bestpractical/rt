@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<label accesskey="9" class="select-queue">
-  <& /Elements/SelectQueue, Name => 'Queue', Default => $queue, %ARGS, ShowNullOption => 0, ShowAllQueues => 0 &>
-</label>
+
+<& /Elements/SelectQueue, Name => 'Queue', Default => $queue, %ARGS, ShowNullOption => 0, ShowAllQueues => 0, AccessKey => 9 &>
+
 <%INIT>
 my $queue = delete $ARGS{Default};
 if ( !$queue ) {

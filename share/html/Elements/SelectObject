@@ -64,7 +64,7 @@
 </ul>
 % }
 % else {
-<select name="<%$Name%>" <% ($Multiple) ? qq{class="tall" multiple="multiple" size="$Size"} : '' |n%> <% ($OnChange) ?  'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%> selectpicker form-control">
+<select name="<%$Name%>" <% ($Multiple) ? qq{class="tall" multiple="multiple" size="$Size"} : '' |n%> <% ($OnChange) ?  'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%> selectpicker form-control" <% ($AccessKey) ? qq{accesskey="$AccessKey"} : '' |n%>>
 %     if ($ShowNullOption) {
   <option value=""><% $DefaultLabel %></option>
 %     }
@@ -98,6 +98,7 @@ $Size => 6
 $Class => ""
 $CacheNeedsUpdate => undef
 $Hyperlink => undef
+$AccessKey => undef
 </%args>
 <%init>
 $ObjectType = "RT::$ObjectType" unless $ObjectType =~ /::/;
