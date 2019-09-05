@@ -620,12 +620,14 @@ sub _HasModifyWatcherRight {
     return 1 if $self->CurrentUserHasRight('ModifyTicket');
     # If the watcher isn't the current user then the current user has no right
     return 0 unless $self->CurrentUser->PrincipalId == $principal->id;
-    # If it's an AdminCc and they don't have 'WatchAsAdminCc', bail
-    return 0 if $type eq 'AdminCc' and not $self->CurrentUserHasRight('WatchAsAdminCc');
-    # If it's a Requestor or Cc and they don't have 'Watch', bail
-    return 0 if ($type eq "Cc" or $type eq 'Requestor')
-        and not $self->CurrentUserHasRight('Watch');
-    return 1;
+    # If it's an AdminCc and they have 'WatchAsAdminCc', they can modify
+    return 1 if $type eq 'AdminCc' and $self->CurrentUserHasRight('WatchAsAdminCc');
+    # If it's a Requestor or Cc and they have 'Watch', they can modify
+    return 1 if ($type eq "Cc" or $type eq 'Requestor')
+        and $self->CurrentUserHasRight('Watch');
+
+    # Unknown type, so default to denied.
+    return 0;
 }
 
 
