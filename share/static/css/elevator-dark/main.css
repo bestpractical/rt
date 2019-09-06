@@ -153,3 +153,11 @@
 .darkmode .btn-outline:hover svg {
     fill: #171A1F;
 }
+
+.darkmode #rights-inspector .results .result:nth-child(even) * {
+    background-color: #111 !important;
+}
+
+.darkmode #rights-inspector .results .result .match {
+    background-color: #114 !important;
+}
