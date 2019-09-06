@@ -301,12 +301,13 @@ sub no_leftover_warnings_ok {
 sub ticket_status {
     my $self = shift;
     my $id = shift;
-    
+
     $self->display_ticket( $id);
-    my ($got) = ($self->content =~ m{Status:\s*</td>\s*<td[^>]*?class="value"[^>]*?>\s*([\w ]+?)\s*</td>}ism);
+    my ($got) = ($self->content =~ m{Status:\s*</div>\s*<div[^>]*?class="\w+[^>]*?>\s*<span[^>]*?\s*class="\w+[^>]*?>\s*([\w\s]+?)\s*</span>}ism);
     unless ( $got ) {
         Test::More::diag("Error: couldn't find status value on the page, may be regexp problem");
     }
+
     return $got;
 }
 
