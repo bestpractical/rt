@@ -112,4 +112,9 @@ my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
 my $can_modify_owner = $Ticket->CurrentUserCanSetOwner();
 my $can_modify_people = $Ticket->CurrentUserHasRight('Watch')
                      || $Ticket->CurrentUserHasRight('WatchAsAdminCc');
+
+$m->callback( CallbackName => 'ModifyRights', %ARGS, TicketObj => $Ticket, ARGSRef => \%ARGS,
+    CanModify => \$can_modify, CanModifyCF => \$can_modify_cf,
+    CanModifyOwner => \$can_modify_owner, CanModifyPeople => \$can_modify_people );
+
 </%INIT>
