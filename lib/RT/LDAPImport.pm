@@ -512,7 +512,7 @@ sub _run_search {
     return @results;
 }
 
-=head2 import_users import => 1|0
+=head2 import_users import => 1|0, update_privilege => 1|0
 
 Takes the results of the search from run_search
 and maps attributes from LDAP into C<RT::User> attributes
@@ -521,6 +521,9 @@ Creates RT users if they don't already exist.
 
 With no arguments, only prints debugging information.
 Pass C<--import> to actually change data.
+
+Will not update privilege for existing users, when C<update_privilege> is not set.
+Pass C<--update-privilege> to update privilege flag.
 
 C<$LDAPMapping>> should be set in your C<RT_SiteConfig.pm>
 file and look like this.
@@ -574,7 +577,7 @@ sub _import_users {
     my $done = 0; my $count = scalar @$users;
     while (my $entry = shift @$users) {
         my $user = $self->_build_user_object( ldap_entry => $entry );
-        $self->_import_user( user => $user, ldap_entry => $entry, import => $args{import} );
+        $self->_import_user( user => $user, ldap_entry => $entry, import => $args{import}, update_privilege => $args{update_privilege} );
         $done++;
         $RT::Logger->debug("Imported $done/$count users");
     }
@@ -653,6 +656,8 @@ sub _show_user_info {
     my %args = @_;
     my $user = $args{user};
     my $rt_user = $args{rt_user};
+    my $is_privileged = $rt_user->Privileged();
+    $is_privileged = 0 unless defined $is_privileged;
 
     $RT::Logger->debug( "\tRT Field\tRT Value -> LDAP Value" );
     foreach my $key (sort keys %$user) {
@@ -665,6 +670,11 @@ sub _show_user_info {
         }
         $old_value ||= 'unset';
         $RT::Logger->debug( "\t$key\t$old_value => $user->{$key}" );
+    }
+    if ($is_privileged != $RT::LDAPCreatePrivileged) {
+        $RT::Logger->debug("\tPrivileged: $is_privileged != LDAPCreatePrivileged: $RT::LDAPCreatePrivileged");
+    } else {
+        $RT::Logger->debug("\tPrivileged: $is_privileged == LDAPCreatePrivileged: $RT::LDAPCreatePrivileged");
     }
     #$RT::Logger->debug(Dumper($user));
 }
@@ -870,6 +880,14 @@ sub create_rt_user {
             $RT::Logger->debug("$message, updating their data");
             if ($args{import}) {
                 my @results = $user_obj->Update( ARGSRef => $user, AttributesRef => [keys %$user] );
+                my $is_privileged = $user_obj->Privileged();
+                $is_privileged = 0 unless defined $is_privileged;
+                if ($is_privileged != $RT::LDAPCreatePrivileged) {
+                    if ($args{update_privilege}) {
+                        $RT::Logger->debug("updating privilege to $RT::LDAPCreatePrivileged");
+                        $user_obj->SetPrivileged($RT::LDAPCreatePrivileged ? 1 : 0);
+                    }
+                }
                 $RT::Logger->debug(join("\n",@results)||'no change');
             } else {
                 $RT::Logger->debug("Found existing user $user->{Name} to update");
