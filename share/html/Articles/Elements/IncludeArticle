@@ -48,6 +48,7 @@
 <%INIT>
 # Nothing to do if we don't get an article id
 $IncludeArticleId //= $DECODED_ARGS->{'IncludeArticleId'};
+($IncludeArticleId) = grep defined && length, @$IncludeArticleId if ref $IncludeArticleId eq 'ARRAY';
 return unless $IncludeArticleId;
 
 my $article = RT::Article->new($session{'CurrentUser'});
