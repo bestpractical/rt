@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>" id="<% $Name %>" class="chosen custom-date-range-field">
+<select name="<% $Name %>" id="<% $Name %>" class="custom-date-range-field selectpicker form-control">
 <option value="" >-</option>
 % for my $field ( $ObjectType->new( $session{CurrentUser} )->CustomDateRangeFields ) {
 <option <% $field eq ($Default//'') ? 'selected="selected"' : '' |n %> value="<% $field %>" ><% $field %></option>

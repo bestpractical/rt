@@ -50,104 +50,179 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<&|/Widgets/TitleBox, title => loc('Custom Date Ranges In Config Files') &>
+<h3><&|/l&>Custom Date Ranges In Config Files</&></h3>
+
 % if ( $config && keys %{$config->{'RT::Ticket'}} ) {
-  <table class="collection-as-table">
-    <tr class="collection-as-table">
-      <th class="collection-as-table"><&|/l&>Name</&></th>
-      <th class="collection-as-table"><&|/l&>From</&></th>
-      <th class="collection-as-table"><&|/l&>From Value if Unset</&></th>
-      <th class="collection-as-table"><&|/l&>To</&></th>
-      <th class="collection-as-table"><&|/l&>To Value if Unset</&></th>
-      <th class="collection-as-table"><&|/l&>Business<br>Hours?</&></th>
-    </tr>
-% my $i = 0;
 % for my $name ( sort keys %{$config->{'RT::Ticket'}} ) {
-% $i++;
-    <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
-      <td class="collection-as-table"><% $name %></td>
-%     my $spec = $config->{'RT::Ticket'}{$name};
-%     my %date_range_spec = RT::Ticket->_ParseCustomDateRangeSpec($name, $spec);
-      <td class="collection-as-table"><% $date_range_spec{from} %></td>
-      <td class="collection-as-table"><% $date_range_spec{from_fallback} || '' %></td>
-      <td class="collection-as-table"><% $date_range_spec{to} %></td>
-      <td class="collection-as-table"><% $date_range_spec{to_fallback} || '' %></td>
-      <td class="collection-as-table"><% $date_range_spec{business_time} ? loc('Yes') : loc('No') %></td>
-    </tr>
+<&|/Widgets/TitleBox, title => $name &>
+%   my $spec = $config->{'RT::Ticket'}{$name};
+%   my %date_range_spec = RT::Ticket->_ParseCustomDateRangeSpec($name, $spec);
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>Name</&>:</div>
+    <div class="col-md-9 value">
+      <span class="form-control current-value">
+        <% $name %>
+      </span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>From</&>:</div>
+    <div class="col-md-9 value">
+      <span class="form-control current-value">
+        <% $date_range_spec{from} %>
+      </span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>From Value if Unset</&>:</div>
+    <div class="col-md-9 value">
+      <span class="form-control current-value">
+        <% $date_range_spec{from_fallback} || '' %>
+      </span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>To</&>:</div>
+    <div class="col-md-9 value">
+      <span class="form-control current-value">
+        <% $date_range_spec{to} %>
+      </span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>To Value if Unset</&>:</div>
+    <div class="col-md-9 value">
+      <span class="form-control current-value">
+        <% $date_range_spec{to_fallback} || '' %>
+      </span>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>Business Hours?</&></div>
+    <div class="col-md-9 value">
+      <span class="form-control current-value">
+        <% $date_range_spec{business_time} ? loc('Yes') : loc('No') %>
+      </span>
+    </div>
+  </div>
+</&>
 % }
-  </table>
 % }
 % else {
   <p><&|/l&>No custom date ranges in config files</&></p>
 % }
-</&>
+
+<h3><&|/l&>Custom Date Ranges</&></h3>
 
 <form name="CustomDateRanges" method="POST" method="?">
-  <&|/Widgets/TitleBox, title => loc('Custom Date Ranges') &>
-    <table class="collection-as-table">
-      <tr class="collection-as-table">
-        <th class="collection-as-table"><&|/l&>Name</&></th>
-        <th class="collection-as-table"><&|/l&>From</&></th>
-        <th class="collection-as-table"><&|/l&>From Value if Unset</&></th>
-        <th class="collection-as-table"><&|/l&>To</&></th>
-        <th class="collection-as-table"><&|/l&>To Value if Unset</&></th>
-        <th class="collection-as-table"><&|/l&>Business<br>Hours?</&></th>
-        <th class="collection-as-table">
-          <input type="checkbox" name="DeleteAll" value="1" onclick="setCheckbox(this, /^\d+-Delete$/)" />
-          <&|/l&>Delete</&>
-        </th>
-      </tr>
-% my $i = 0;
 % if ( $content ) {
 % my $id = 0;
 %   for my $name ( sort keys %{$content->{'RT::Ticket'}} ) {
-% $i++;
-      <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
-        <td class="collection-as-table"><input type="text" name="<% $id %>-name" value="<% $name %>" /></td>
-%       my %date_range_spec = RT::Ticket->_ParseCustomDateRangeSpec($name, $content->{'RT::Ticket'}{$name});
-        <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-from", Default => $date_range_spec{from} &></td>
-        <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-from_fallback", Default => $date_range_spec{from_fallback} &></td>
-        <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-to", Default => $date_range_spec{to} &></td>
-        <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-to_fallback", Default => $date_range_spec{to_fallback} &></td>
-        <td class="collection-as-table">
-          <select name="<% $id %>-business_time">
-            <option value="1" <% $date_range_spec{business_time} ? 'selected="selected"' : '' |n%>><&|/l&>Yes</&></option>
-            <option value="0" <% $date_range_spec{business_time} ? '': 'selected="selected"' |n%>><&|/l&>No</&></option>
-          </select>
-        </td>
-        <td class="collection-as-table"><input type="checkbox" name="<% $id %>-Delete" value="1" /></td>
-      </tr>
-%     $id++;
+%     my %date_range_spec = RT::Ticket->_ParseCustomDateRangeSpec($name, $content->{'RT::Ticket'}{$name});
+<&|/Widgets/TitleBox, title => $name &>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>Name</&>:</div>
+    <div class="col-md-9 value">
+      <input type="text" name="<% $id %>-name" value="<% $name %>" class="form-control" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>From</&>:</div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectCustomDateRangeField, Name => "$id-from", Default => $date_range_spec{from} &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>From Value if Unset</&>:</div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectCustomDateRangeField, Name => "$id-from_fallback", Default => $date_range_spec{from_fallback} &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>To</&>:</div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectCustomDateRangeField, Name => "$id-to", Default => $date_range_spec{to} &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>To Value if Unset</&>:</div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectCustomDateRangeField, Name => "$id-to_fallback", Default => $date_range_spec{to_fallback} &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>Business Hours?</&></div>
+    <div class="col-md-9 value">
+        <select name="<% $id %>-business_time" class="form-control selectpicker">
+          <option value="1" <% $date_range_spec{business_time} ? 'selected="selected"' : '' |n%>><&|/l&>Yes</&></option>
+          <option value="0" <% $date_range_spec{business_time} ? '': 'selected="selected"' |n%>><&|/l&>No</&></option>
+        </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"></div>
+    <div class="col-md-9 value">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" name="<% $id %>-Delete" value="1" id="<% $id %>-Delete" />
+        <label class="custom-control-label" for="<% $id %>-Delete"><&|/l&>Delete</&></label>
+      </div>
+  </div>
+% $id++;
+</&>
 %   }
 % }
 
-% for ( 1 .. 3 ) {
-% $i++;
-      <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
-        <td class="collection-as-table"><input type="text" name="name" value="" /></td>
-        <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'from' &></td>
-        <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'from_fallback' &></td>
-        <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'to' &></td>
-        <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'to_fallback' &></td>
-        <td class="collection-as-table">
-          <select name="business_time">
-            <option value="1"><&|/l&>Yes</&></option>
-            <option value="0" selected="selected"><&|/l&>No</&></option>
-          </select>
-        </td>
-        <td class="collection-as-table"></td>
-      </tr>
-% }
-    </table>
-    <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
-  </&>
-</form>
+<h3><&|/l&>Create</&></h3>
 
-<script type="text/javascript">
-jQuery(function() {
-    jQuery('select.chosen.custom-date-range-field').chosen({ width: '12em', no_results_text: ' ', search_contains: true });
-});
-</script>
+% for ( 1 .. 3 ) {
+<&|/Widgets/TitleBox &>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>Name</&>:</div>
+    <div class="col-md-9 value">
+      <input type="text" name="name" value="" class="form-control" />
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>From</&>:</div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectCustomDateRangeField, Name => "from" &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>From Value if Unset</&>:</div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectCustomDateRangeField, Name => "from_fallback" &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>To</&>:</div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectCustomDateRangeField, Name => "to" &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>To Value if Unset</&>:</div>
+    <div class="col-md-9 value">
+      <& /Elements/SelectCustomDateRangeField, Name => "to_fallback" &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-3 label"><&|/l&>Business Hours?</&></div>
+    <div class="col-md-9 value">
+        <select name="business_time" class="form-control selectpicker">
+          <option value="1"><&|/l&>Yes</&></option>
+          <option value="0" selected="selected"><&|/l&>No</&></option>
+        </select>
+    </div>
+  </div>
+</&>
+% }
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
+    </div>
+  </div>
+</form>
 
 <%INIT>
 
