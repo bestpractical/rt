@@ -1185,8 +1185,6 @@ Set(%ThemeJSFiles,
           jquery-ui.min.js
           jquery-ui-timepicker-addon.js
           jquery-ui-patch-datepicker.js
-          jquery.modal.min.js
-          jquery.modal-defaults.js
           jquery.cookie.js
           titlebox-state.js
           i18n.js
