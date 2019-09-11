@@ -39,6 +39,12 @@ Description: color picker icon
 Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
 License: CC BY 3.0
 
+* fontawesome-5.10.2.js
+Description: the web's most popular icon set and toolkit
+Origin: https://fontawesome.com/
+Icons License: CC BY 4.0 License
+Code License: MIT License
+
 * jquery-1.11.3.js
 Description: DOM manipulation
 Origin: http://code.jquery.com/jquery-1.11.3.js

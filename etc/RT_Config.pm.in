@@ -1214,8 +1214,8 @@ Set(%ThemeJSFiles,
           quoteselection.js
           }
     ],
-    'elevator-light' => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js}],
-    'elevator-dark'  => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js}],
+    'elevator-light' => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js fontawesome-5.10.2.min.js}],
+    'elevator-dark'  => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js fontawesome-5.10.2.min.js}],
 );
 
 =item C<$UsernameFormat>
