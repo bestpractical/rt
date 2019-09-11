@@ -893,10 +893,6 @@ RT ships with several themes by default:
 
   elevator-light  The default light theme for RT 4.6
   elevator-dark   The dark theme for RT 4.6
-  rudder          The default theme for RT 4.2
-  aileron         The default layout for RT 4.0
-  web2            The default layout for RT 3.8
-  ballard         Theme which doesn't rely on JavaScript for menuing
 
 This value actually specifies a directory in F<share/static/css/>
 from which RT will try to load the file main.css (which should @import

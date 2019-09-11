@@ -49,7 +49,7 @@
 =head1 SYNOPSIS
 
   use RT::Squish::CSS;
-  my $squish = RT::Squish::CSS->new( Style => 'aileron');
+  my $squish = RT::Squish::CSS->new( Style => 'elevator-light');
 
 =head1 DESCRIPTION
 
