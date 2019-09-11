@@ -4,7 +4,7 @@ use RT;
 use RT::Test tests => undef;
 
 RT->Config->Set( DevelMode            => 0 );
-RT->Config->Set( WebDefaultStylesheet => 'aileron' );
+RT->Config->Set( WebDefaultStylesheet => 'elevator-light' );
 RT->Config->Set( LocalStaticPath => RT::Test::get_abs_relocatable_dir('static') );
 
 my ( $url, $m ) = RT::Test->started_ok;
@@ -12,7 +12,7 @@ $m->login;
 
 diag "test squished files with devel mode disabled";
 
-$m->follow_link_ok( { url_regex => qr!aileron/squished-([a-f0-9]{32})\.css! },
+$m->follow_link_ok( { url_regex => qr!elevator-light/squished-([a-f0-9]{32})\.css! },
     'follow squished css' );
 $m->content_like( qr/body\{font.*table\{font/, 'squished css' );
 $m->content_lacks( 'a#fullsite', 'no mobile.css by default' );
@@ -33,7 +33,7 @@ RT->AddStyleSheets( 'mobile.css' );
 ( $url, $m ) = RT::Test->started_ok;
 
 $m->login;
-$m->follow_link_ok( { url_regex => qr!aileron/squished-([a-f0-9]{32})\.css! },
+$m->follow_link_ok( { url_regex => qr!elevator-light/squished-([a-f0-9]{32})\.css! },
     'follow squished css' );
 $m->content_like( qr/body\{font.*table\{font/, 'squished css' );
 $m->content_contains( 'a#fullsite', 'has mobile.css' );
