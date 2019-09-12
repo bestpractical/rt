@@ -1170,48 +1170,6 @@ If you're a plugin author, refer to RT->AddStyleSheets.
 
 Set(@CSSFiles, qw//);
 
-=for comment
-=item C<%ThemeJSFiles>
-
-Define JavaScript files each theme should include.  I<base> is special as
-every theme will include files specified there.
-
-=cut
-
-Set(%ThemeJSFiles,
-    base => [
-        qw{jquery-1.12.4p1.min.js
-          jquery_noconflict.js
-          jquery-ui.min.js
-          jquery-ui-timepicker-addon.js
-          jquery-ui-patch-datepicker.js
-          jquery.cookie.js
-          titlebox-state.js
-          i18n.js
-          util.js
-          autocomplete.js
-          jquery.event.hover-1.0.js
-          superfish.js
-          supersubs.js
-          jquery.supposition.js
-          chosen.jquery.min.js
-          history-folding.js
-          cascaded.js
-          forms.js
-          event-registration.js
-          late.js
-          mousetrap.min.js
-          keyboard-shortcuts.js
-          assets.js
-          /static/RichText/ckeditor.js
-          dropzone.min.js
-          quoteselection.js
-          }
-    ],
-    'elevator-light' => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js}],
-    'elevator-dark'  => [qw{popper.min.js bootstrap.min.js bootstrap-select.min.js bootstrap-combobox.js}],
-);
-
 =item C<$UsernameFormat>
 
 This determines how user info is displayed. 'concise' will show the
