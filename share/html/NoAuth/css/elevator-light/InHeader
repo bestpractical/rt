@@ -45,8 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<!--[if lt IE 8]>
-<link rel="stylesheet" href="<%RT->Config->Get('WebPath')%>/static/css/elevator-light/msie.css" type="text/css" media="all" />
-<![endif]-->
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
