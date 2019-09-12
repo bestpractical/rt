@@ -171,46 +171,6 @@ div.widget .hints {
     }
 }
 
-.combobox {
-    position: relative;
-    width: 11.5em;
-}
-
-.combobox .combo-button {
-    right: 0;
-    padding: 0;
-    margin-top: 0;
-    cursor: default;
-    color: ButtonFace;
-    background: ButtonFace;
-    border: 2px outset ButtonHighlight;
-}
-
-/* this style replaces the default down-triangle with one that looks more like
- *  native widget sets. It does not work in IE as it's an :after pseudo element
- *  with a "content" value. but that's ok because IE can't display unicode 25be
- *  anyway */
-
-.combobox .combo-button:after {
-    color: ButtonText;
-    margin: 0;
-    padding: 0;
-    margin-top: -0.5em;
-    margin-left: -0.8em;
-    content: "\25be";
-}
-
-.combobox .combo-text {
-    border: 1px inset ButtonHighlight;
-    margin: 0;
-    padding: 0;
-}
-
-.combobox .combo-list {
-    border: 1px outset;
-    z-index: 150;
-}
-
 .value .TimeUnits{
     margin-left: .5em;
     width: 7em;
