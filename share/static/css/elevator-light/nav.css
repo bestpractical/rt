@@ -1,6 +1,24 @@
+.sf-menu li.active > .menu-item {
+    font-weight: bold;
+}
+
 .sf-menu {
     width: 100%;
     margin-bottom: 0;
+}
+
+.sf-menu ul {
+    background-image: none;
+    padding: 0;
+}
+
+.sf-menu.sf-shadow ul {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -moz-box-shadow: 2px 2px 8px -2px #999;
+    -webkit-box-shadow: 2px 2px 8px -2px #999;
+    box-shadow: 2px 2px 8px -2px #999;
 }
 
 .sf-menu li:hover {
@@ -13,9 +31,25 @@
     background-color: #fff
 }
 
-#page-menu.sf-menu li:hover ul,
-#page-menu.sf-menu li.sfHover ul {
-    top: 2.5em
+.sf-sub-indicator {
+    display: none;
+}
+
+.sf-menu a.sf-with-ul {
+    padding-right: 1rem;
+}
+
+.sf-menu a.sf-with-ul:after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border: 0;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+#app-nav.sf-menu > li:first-child > a {
+    border-left: none
 }
 
 #main-navigation {
@@ -40,10 +74,6 @@
 
 #main-navigation li li a {
     border-top: 1px solid white
-}
-
-#app-nav.sf-menu > li:first-child > a {
-    border-left: none
 }
 
 #main-navigation #app-nav > li,
@@ -83,121 +113,9 @@
     color: #000;
 }
 
-/* to stop a "flash" of an unstyled menu on an older browser,  hide the menu until superfish has initialized it */
-
-#app-nav.toplevel {
-    display: none
-}
-
-#app-nav.toplevel.sf-menu {
-    display: block
-}
-
-#page-menu.toplevel {
-    display: none
-}
-
-#page-menu.toplevel.sf-menu {
-    display: block
-}
-
-#topactions {
-    position: absolute;
-    background: transparent;
-    top: 3.2em;
-    right: 0em;
-    padding-right: 0.7em;
-    width: auto;
-    min-width: 42em;
-    font-size: 0.9em;
-    z-index: 99;
-}
-
-#topactions form * {
-
-}
-
-#topactions input,
-#topactions button {
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    vertical-align: middle;
-
-    width: 8em;
-    -webkit-transition: width 0.25s ease-in-out;
-    -moz-transition: width 0.25s ease-in-out;
-    -ms-transition: width 0.25s ease-in-out;
-    transition: width 0.25s ease-in-out;
-}
-
-#topactions .asset-search input[type="search"],
-#topactions .article-search input[type="search"]
- {
-    width: 16em;
-}
-
-@media (max-width: 900px) {
-    #topactions .create-wide   { display: none; }
-    #topactions .create-medium { display: block; }
-    #topactions .create-narrow { display: none; }
-
-    #topactions input[type="search"] {
-        width: 2em;
-    }
-    #topactions form {
-        margin-left: 0;
-    }
-
-    div#header h1 {
-        right: 10em;
-    }
-}
-
-@media (max-width: 600px) {
-    #topactions .create-wide   { display: none; }
-    #topactions .create-medium { display: none; }
-    #topactions .create-narrow { display: block; }
-
-    #topactions input[type="submit"], #topactions input.button {
-        min-width: 2em;
-    }
-
-    div#header h1 {
-        right: 5em;
-    }
-}
-
-#topactions input[type="search"]:focus {
-    width: 16em;
-    -webkit-transition: width 0.25s ease-in-out;
-    -moz-transition: width 0.25s ease-in-out;
-    -ms-transition: width 0.25s ease-in-out;
-    transition: width 0.25s ease-in-out;
-}
-
-#topactions #simple-search .field {
-    margin-left: 1em;
-    color: #787;
-}
-
-#topactions #simple-search .field:focus {
-    color: #000
-}
-
-.sf-menu ul {
-    background-image: none;
-    padding: 0;
-}
-
-.sf-menu.sf-shadow ul {
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-    -moz-box-shadow: 2px 2px 8px -2px #999;
-    -webkit-box-shadow: 2px 2px 8px -2px #999;
-    box-shadow: 2px 2px 8px -2px #999;
+#page-menu.sf-menu li:hover ul,
+#page-menu.sf-menu li.sfHover ul {
+    top: 2.5em
 }
 
 /* Pin page menu to top left corner once you scroll past it */
@@ -240,38 +158,178 @@
     -webkit-border-radius: 0 0 0 5px;
 }
 
-#topactions input.field {
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
+#topactions input[type="submit"], #topactions input.button {
+    width: auto;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+#topactions form {
+    display: block;
+    float: right;
+    margin-left: 1em;
+    text-align: right;
+    margin-top: 0.5em;
+}
+
+#topactions form input.btn {
+    border-color: #4868b3;
 }
 
 #topactions .bootstrap-select.form-control {
     height: auto;
 }
 
-/* Fix Queue name position in Queue select for Firefox */
+#li-page-bookmark .toggle-bookmark a,
+#li-page-timer .timer-link a {
+    padding: 0.5em 1em;
+    border-style: none;
+}
+
+#li-page-bookmark a img,
+#li-page-timer a img {
+    height: 1.25em;
+    width: 1.25em;
+}
+
+#topactions {
+    position: absolute;
+    background: transparent;
+    top: 3.2em;
+    right: 0em;
+    padding-right: 0.7em;
+    width: auto;
+    min-width: 42em;
+    font-size: 0.9em;
+    z-index: 99;
+}
+
+#topactions input[type="search"] {
+    border: none;
+
+    /* turn off webkit input[type=search] styling */
+    -webkit-appearance: textfield;
+}
+
+#topactions input[type="search"]:focus {
+    width: 16em;
+    -webkit-transition: width 0.25s ease-in-out;
+    -moz-transition: width 0.25s ease-in-out;
+    -ms-transition: width 0.25s ease-in-out;
+    transition: width 0.25s ease-in-out;
+}
+
+#topactions input[type="search"]::-webkit-search-cancel-button {
+    /* hide webkit x button for searches */
+    -webkit-appearance: none;
+}
+
+#topactions input,
+#topactions select,
+#topactions button {
+    height: 2em;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#topactions input,
+#topactions button {
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    vertical-align: middle;
+
+    width: 8em;
+    -webkit-transition: width 0.25s ease-in-out;
+    -moz-transition: width 0.25s ease-in-out;
+    -ms-transition: width 0.25s ease-in-out;
+    transition: width 0.25s ease-in-out;
+}
+
+#topactions .asset-search input[type="search"],
+#topactions .article-search input[type="search"]
+ {
+    width: 16em;
+}
+
 @-moz-document url-prefix() {
+    #topactions select.select-queue {
+        padding-top: 0.25em;
+        padding-bottom: 0.25em;
+        height: auto;
+    }
+
+    /* Fix Queue name position in Queue select for Firefox */
     #topactions .bootstrap-select .dropdown-toggle .filter-option {
         margin-top: 5px;
     }
 }
 
-.sf-sub-indicator {
+#page-navigation {
+    z-index: 95;
+}
+
+.create-wide   { display: block; }
+.create-medium { display: none; }
+.create-narrow { display: none; }
+
+#app-nav {
+    padding: 0.5rem;
+}
+
+/* to stop a "flash" of an unstyled menu on an older browser,  hide the menu until superfish has initialized it */
+
+#app-nav.toplevel {
+    display: none
+}
+
+#app-nav.toplevel.sf-menu {
+    display: block
+}
+
+#page-menu.toplevel {
+    display: none
+}
+
+#page-menu.toplevel.sf-menu {
+    display: block
+}
+
+/* be overly specific to defeat specificity */
+#app-nav.sf-menu > li#li-overflow,
+#page-menu.sf-menu > li#li-page-overflow {
     display: none;
 }
-
-.sf-menu a.sf-with-ul {
-    padding-right: 1rem;
+#app-nav.sf-menu > li#li-overflow.has-overflow,
+#page-menu.sf-menu > li#li-page-overflow.has-overflow {
+    display: inline-block;
 }
 
-.sf-menu a.sf-with-ul:after {
-    content: '';
-    width: 10px;
-    height: 10px;
-    border: 0;
-    vertical-align: middle;
+/* these two rules prevent the menus from wrapping, so that our overflow
+   calculations can work */
+#app-nav.sf-menu > li,
+#page-menu.sf-menu > li {
+    float: none;
     display: inline-block;
+}
+#app-nav.sf-menu,
+#page-menu.sf-menu {
+    white-space: nowrap;
+}
+
+/* restore wrapping for submenus */
+#app-nav.sf-menu ul {
+    white-space: normal;
+}
+
+#li-overflow > a,
+#li-page-overflow > a {
+    cursor: default;
+}
+#li-overflow > a:hover,
+#li-page-overflow > a:hover {
+    text-decoration: none;
 }
 
 ul.toplevel.sf-menu > li > a.sf-with-ul:after {
@@ -287,14 +345,33 @@ ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
     right: 5px;
 }
 
-#app-nav {
-    padding: 0.5rem;
+@media (max-width: 900px) {
+    #topactions .create-wide   { display: none; }
+    #topactions .create-medium { display: block; }
+    #topactions .create-narrow { display: none; }
+
+    #topactions input[type="search"] {
+        width: 2em;
+    }
+    #topactions form {
+        margin-left: 0;
+    }
+
+    div#header h1 {
+        right: 10em;
+    }
 }
 
-#topactions form {
-    margin-top: 0.5em;
-}
+@media (max-width: 600px) {
+    #topactions .create-wide   { display: none; }
+    #topactions .create-medium { display: none; }
+    #topactions .create-narrow { display: block; }
 
-#topactions form input.btn {
-    border-color: #4868b3;
+    #topactions input[type="submit"], #topactions input.button {
+        min-width: 2em;
+    }
+
+    div#header h1 {
+        right: 5em;
+    }
 }
