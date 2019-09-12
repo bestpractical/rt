@@ -14,7 +14,7 @@ diag "test squished files with devel mode disabled";
 
 $m->follow_link_ok( { url_regex => qr!elevator-light/squished-([a-f0-9]{32})\.css! },
     'follow squished css' );
-$m->content_like( qr/body\{font.*table\{font/, 'squished css' );
+$m->content_like( qr/.{10000}/, 'squished css' );
 $m->content_lacks( 'a#fullsite', 'no mobile.css by default' );
 
 $m->back;
@@ -35,7 +35,7 @@ RT->AddStyleSheets( 'mobile.css' );
 $m->login;
 $m->follow_link_ok( { url_regex => qr!elevator-light/squished-([a-f0-9]{32})\.css! },
     'follow squished css' );
-$m->content_like( qr/body\{font.*table\{font/, 'squished css' );
+$m->content_like( qr/.{10000}/, 'squished css' );
 $m->content_contains( 'a#fullsite', 'has mobile.css' );
 
 $m->back;
