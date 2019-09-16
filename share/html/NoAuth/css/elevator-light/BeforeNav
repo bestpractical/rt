@@ -136,13 +136,14 @@ jQuery(function() {
     rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
     rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
 
-    jQuery('#logo img').load(function () {
-        rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
-    });
-
     jQuery(window).resize(function () {
         rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
         rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
     });
 });
+
+jQuery('#logo img').on('load', function () {
+    rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
+});
+
 </script>
