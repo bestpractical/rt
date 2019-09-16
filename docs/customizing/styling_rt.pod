@@ -97,6 +97,44 @@ CSS added this way is included across all themes.
 If you are writing an extension, see L<RT/AddStyleSheets> for how to
 simply and programmatically add values to C<@CSSFiles>.
 
+=head2 Customizing Bootstrap
+
+Bootstrap supports easy theming with built-in Sass variables. Here is how to
+create your own version of bootstrap.css
+
+=over
+
+=item Install Node.js and necessary packages
+
+    brew install node
+    npm install -g node-sass postcss postcss-cli
+
+    cd devel/third-party/bootstrap-4.2.1
+    npm install autoprefixer
+
+=item Create bootstrap_customized.scss
+
+For example:
+
+    // Your variable overrides
+    $body-bg: #000;
+    $body-color: #111;
+
+    // Bootstrap and its default variables
+    @import "scss/bootstrap";
+
+=item Generate new bootstrap.css
+
+    node-sass --output-style expanded --precision 6 bootstrap_customized.scss bootstrap.css
+    postcss --config postcss.config.js --replace bootstrap.css
+
+=item Use new bootstrap.css
+
+It's not suggested to override bootstrap.css in official RT themes as it
+will get overridden during RT upgrade. Instead, you can put the new created
+bootstrap.css to your new own theme. See below.
+
+=back
 
 =head1 Designing Your Own Theme
 
