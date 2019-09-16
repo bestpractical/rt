@@ -214,35 +214,37 @@ jQuery(function($) {
       change_color($(this).css('background-color'), $(this).css('color'));
   });
 
-    // Setup the canvas color picker
-    $(window).load(function() {
-        var logo      = $("#logo-theme-editor img");
-        var canvas    = $("#logo-color-picker");
-        var el_canvas = canvas.get(0);
+});
 
-        if (!el_canvas.getContext) return;
+// Setup the canvas color picker
+jQuery(window).on('load',function() {
+    var $ = jQuery;
+    var logo      = $("#logo-theme-editor img");
+    var canvas    = $("#logo-color-picker");
+    var el_canvas = canvas.get(0);
 
-        var context      = el_canvas.getContext("2d");
-        el_canvas.width  = logo.width();
-        el_canvas.height = logo.height();
-        context.drawImage(logo.get(0), 0, 0);
+    if (!el_canvas.getContext) return;
 
-        logo.hide().after(canvas);
-        canvas.show().click(function(ev) {
-            ev.preventDefault();
-            var R = 0,
-                G = 1,
-                B = 2,
-                A = 3;
-            var pixel = this.getContext("2d").getImageData(ev.offsetX, ev.offsetY, 1, 1).data;
-            // Farbtastic expects values in the range of 0..1
-            var rgba  = $.makeArray(pixel).map(function(v,i) { return v / 255 });
-            var wheel = $.farbtastic("#color-picker");
-            wheel.setHSL( wheel.RGBToHSL( rgba.slice(R,A) ) );
-            // XXX TODO factor in the alpha channel too
-        });
-        $('#logo-picker-hint').show();
+    var context      = el_canvas.getContext("2d");
+    el_canvas.width  = logo.width();
+    el_canvas.height = logo.height();
+    context.drawImage(logo.get(0), 0, 0);
+
+    logo.hide().after(canvas);
+    canvas.show().click(function(ev) {
+        ev.preventDefault();
+        var R = 0,
+            G = 1,
+            B = 2,
+            A = 3;
+        var pixel = this.getContext("2d").getImageData(ev.offsetX, ev.offsetY, 1, 1).data;
+        // Farbtastic expects values in the range of 0..1
+        var rgba  = $.makeArray(pixel).map(function(v,i) { return v / 255 });
+        var wheel = $.farbtastic("#color-picker");
+        wheel.setHSL( wheel.RGBToHSL( rgba.slice(R,A) ) );
+        // XXX TODO factor in the alpha channel too
     });
+    $('#logo-picker-hint').show();
 });
 </script>
 <%INIT>
