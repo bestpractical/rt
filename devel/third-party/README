@@ -39,9 +39,9 @@ Description: color picker icon
 Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
 License: CC BY 3.0
 
-* jquery-1.11.3.js
+* jquery-3.4.1.js
 Description: DOM manipulation
-Origin: http://code.jquery.com/jquery-1.11.3.js
+Origin: http://code.jquery.com/jquery-3.4.1.js
 License: MIT
 
 * jquery-tablesorter-2.0.5b.js 
