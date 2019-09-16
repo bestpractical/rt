@@ -153,23 +153,6 @@
         margin-bottom: 0
     }
 
-    /* for web2 and ballard*/
-
-    div.titlebox {
-        border: 0 !important
-    }
-
-    div.history .titlebox-title {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    /* for web2 */
-
-    #page-action-menu {
-        display: none
-    }
-
     /* form elements */
 
     input,
