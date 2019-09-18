@@ -81,11 +81,6 @@ input[class=button]:hover {
     background: #3D5B9D
 }
 
-/* for disabled buttons we don't want to change the background on hover */
-.button.ui-state-disabled {
-    background: #007Bff;
-}
-
 .button:active,
 input.button:active,
 button:active,

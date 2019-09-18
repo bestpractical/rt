@@ -194,21 +194,25 @@ function link_or_text (text, url) {
 }
 
 function render_inspector_result (item) {
-    var disabled_state = item.disable_revoke ? ' disabled="disabled"' : '';
-    var disabled_class = item.disable_revoke ? ' ui-state-disabled'   : '';
-    var revoke_action  = RT.Config.WebPath + '/Helpers/RightsInspector/Revoke?id=' + item.ace.id;
-
     return '<div class="result form-row">'
         +  '  <div class="principal cell col-md-3">' + render_inspector_record( item.principal) + '</div>'
         +  '  <div class="object cell col-md-3">' + render_inspector_record( item.object) + '</div>'
         +  '  <div class="right cell col-md-3">' + item.right_highlighted + '</div>'
         +  '  <div class="revoke cell col-md-1">'
-        +  '      <button type="button" class="revoke-button button btn btn-primary' + disabled_class + '"'
-        +             ' data-action="' + revoke_action + '" '
-        +             disabled_state + '>Revoke</button>'
+        +       revoke_button(item)
         + '  </div>'
         + '</div>'
     ;
+}
+
+function revoke_button (item) {
+    if( item.disable_revoke ) {
+        return '';
+    }
+    else {
+        var revoke_action  = RT.Config.WebPath + '/Helpers/RightsInspector/Revoke?id=' + item.ace.id;
+        return '    <button type="button" class="revoke-button button btn btn-primary" data-action="' + revoke_action + '">Revoke</button>';
+    }
 }
 
 function cond_text (cond, text = '') {

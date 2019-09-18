@@ -640,6 +640,7 @@ sub DisableRevoke {
 
     if ($Principal->Object->Domain eq 'ACLEquivalence') {
         my $User = $Principal->Object->InstanceObj;
+        # identify super user priviledges required for the system to work
         if ($User->Id == RT->SystemUser->Id && $Object->isa('RT::System') && $Right eq 'SuperUser') {
             return 1;
         }
