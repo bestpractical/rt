@@ -53,7 +53,7 @@
 <p><&|/l&>Select a queue for your new ticket.</&></p>
 % }
 
-% my $button_start = '<input type="submit" class="button btn btn-lg btn-primary form-control" value="';
+% my $button_start = '<input type="submit" class="button btn btn-primary form-control" value="';
 % my $button_start_modal = '<input type="submit" class="button btn btn-primary form-control ticket-create-modal" value="';
 % my $button_end = '" />';
 % my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue'), Hyperlink => $Hyperlink );
