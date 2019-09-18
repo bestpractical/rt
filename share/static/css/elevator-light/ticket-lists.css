@@ -6,15 +6,6 @@ table.table th {
     border: none;
 }
 
-table.table th,
-table.table td {
-    padding: 0.5rem;
-}
-
-tr.oddline td {
-    background: #eee;
-}
-
 table.queue-summary th.collection-as-table:first-child {
     text-align: left
 }
@@ -38,4 +29,15 @@ table.queue-summary th.collection-as-table {
     text-align: center;
     font-size: 1.2em;
     padding: 1em;
+}
+
+.table th {
+  font-weight: 300;
+  vertical-align: middle;
+}
+
+.table td {
+  color: #5C6273;
+  padding: 7px;
+  vertical-align: middle;
 }

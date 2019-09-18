@@ -1,0 +1,23 @@
+$font-family-sans-serif: 'Inter', sans-serif;
+$font-family-monospace: 'Inter', monospace;
+
+$h1-font-size: 36px;
+$h2-font-size: 24px;
+$h3-font-size: 13px;
+
+$input-border-color: #c0c7d1;
+$input-border-width: 1px;
+$input-border-radius: 3px;
+$input-padding-x: 6px;
+$input-padding-y: 6px;
+$input-focus-border-color: #5c6273;
+$input-focus-color: #5c6273;
+
+$input-btn-focus-box-shadow: none;
+$input-btn-font-size: 0.9231rem;
+
+$table-cell-padding: 0.5rem;
+
+$card-border-color: #dde4eb;
+
+@import "scss/bootstrap";

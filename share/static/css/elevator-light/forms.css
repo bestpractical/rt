@@ -302,14 +302,6 @@ ul.selectable a {
 }
 
 .button,
-input[type=reset],
-input[type=submit],
-input[class=button],
-button,
-input,
-select { font-size: 1.0em }
-
-.button,
 .button:visited,
 .button:focus,
 input[type=reset],
@@ -392,6 +384,19 @@ span.current-value.form-control {
   margin-left: 0.5em;
 }
 
+.input-group-text {
+  line-height: 1;
+}
+
 .form-row .label {
   padding-top: calc(0.375rem + 1px);
+}
+
+.btn {
+  font-weight: 500;
+}
+
+ul li .dropdown-item.active span,
+ul li .dropdown-item:active span {
+  color: #fff;
 }

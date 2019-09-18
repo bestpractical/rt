@@ -1,3 +1,7 @@
+ul.sf-menu li {
+  font-weight: 400;
+}
+
 .sf-menu li.active > .menu-item {
     font-weight: bold;
 }
