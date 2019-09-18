@@ -25,20 +25,10 @@ function loadTitleBoxStates() {
                 var e2  = e.parentNode;
     
                 if (c[1] != 0) {
-                    if ( jQuery(e).collapse ) {
-                        jQuery(e).collapse('show');
-                    }
-                    else {
-                        set_rollup_state(e,e2,'shown');
-                    }
+                    jQuery(e).collapse('show');
                 }
                 else {
-                    if ( jQuery(e).collapse ) {
-                        jQuery(e).collapse('hide');
-                    }
-                    else {
-                        set_rollup_state(e,e2,'hidden');
-                    }
+                    jQuery(e).collapse('hide');
                 }
             }
         }
