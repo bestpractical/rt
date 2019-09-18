@@ -27,8 +27,6 @@
 @import "articles.css";
 @import "assets.css";
 @import "portlets.css";
-@import "columns.css";
-@import "tools.css";
 @import "login.css";
 @import "history-folding.css";
 @import "history.css";
@@ -42,5 +40,4 @@
 @import "dashboards.css";
 @import "ticket-lists.css";
 @import "ticket-search.css";
-@import "ticket-forms.css";
 @import "print.css";

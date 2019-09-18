@@ -33,19 +33,6 @@ hr.clear {
 .cflabel .name { font-weight: bold; }
 .cflabel .type { font-style: italic; }
 
-fieldset.cfedit {
-    border: none;
-    padding: 0;
-    margin: 0;
-}
-
-table.bulk-edit-custom-fields {
-    border-spacing: 0;
-}
-table.bulk-edit-custom-fields tr td {
-    padding-bottom: 0.5em;
-}
-
 .query-stacktrace-toggle {
     float: right;
 }
@@ -105,13 +92,6 @@ div.cke {
     color: white !important;
 }
 
-/* dashboard subscription */
-
-td.current-recipients {
-    vertical-align: top;
-    padding-left: 50px;
-}
-
 /* */
 
 .comment {
@@ -127,31 +107,6 @@ td.current-recipients {
     margin-left: 1em;
     margin-top: 1em;
     overflow: auto;
-}
-
-span.cflabel,
-td.cflabel,
-span.label,
-span.labeltop,
-td.label,
-td.labeltop {
-    font-weight: bold;
-    color: #666;
-    font-size: 1em;
-}
-
-span.cflabel .type,
-td.cflabel .type {
-    font-weight: normal;
-    font-size: 0.8em;
-}
-
-table.myday h2 {
-    display: inline
-}
-
-table.myday td {
-    padding: 0.25em
 }
 
 #download-my-data div.form-row i {

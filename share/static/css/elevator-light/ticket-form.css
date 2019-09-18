@@ -20,10 +20,6 @@
     padding-bottom: 2em;
 }
 
-.ticket-info-squelch ul, #previewscrips ul {
-    list-style: none;
-}
-
 .ticket-update-suggested-cc {
     white-space: nowrap;
 }
