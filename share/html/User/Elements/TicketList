@@ -48,7 +48,7 @@
 % if ( $TitleBox ) {
     <& /Widgets/TitleBoxStart, title => $Title, title_raw => $title_raw, title_href => $url, class => $Class &>
 % } else {
-    <div class="label col-md-3"><a href="<% $url %>"><% $Title %>:</a></div>
+    <div class="label"><a href="<% $url %>"><% $Title %>:</a></div>
 % }
 
 <& /Elements/CollectionList,
