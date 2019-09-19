@@ -474,10 +474,12 @@ function AddAttachmentWarning() {
 
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
-        jQuery(input).nextAll(".warning").hide();
+        jQuery(input).nextAll(".invalid-feedback").addClass('hidden');
+        jQuery(input).removeClass('is-invalid');
         jQuery("#acl-AddPrincipal input[type=checkbox]").removeAttr("disabled");
     } else {
-        jQuery(input).nextAll(".warning").css("display", "block");
+        jQuery(input).nextAll(".invalid-feedback").removeClass('hidden');
+        jQuery(input).addClass('is-invalid');
         jQuery("#acl-AddPrincipal input[type=checkbox]").attr("disabled", "disabled");
     }
 
@@ -496,7 +498,7 @@ function update_addprincipal_title(title) {
 function addprincipal_onselect(ev, ui) {
 
     // if principal link exists, we shall go there instead
-    var principal_link = jQuery(ev.target).closest('form').find('ul.ui-tabs-nav a[href="#acl-' + ui.item.id + '"]:first');
+    var principal_link = jQuery(ev.target).closest('form').find('a[href="#acl-' + ui.item.id + '"]:first');
     if (principal_link.size()) {
         jQuery(this).val('').blur();
         update_addprincipal_title( '' ); // reset title to blank for #acl-AddPrincipal

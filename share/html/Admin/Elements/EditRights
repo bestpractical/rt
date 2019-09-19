@@ -71,7 +71,7 @@ if ($anchor =~ /AddPrincipal/) {
         my $record = _ParseACLNewPrincipal($DECODED_ARGS, $type)
             or next;
         if ($record->PrincipalId) {
-            $anchor = "#acl-" . $record->PrincipalId;
+            $anchor = '#' . $record->PrincipalId;
             last;
         }
     }
@@ -91,27 +91,38 @@ if ($anchor =~ /AddPrincipal/) {
       }
       sync_anchor(<% $anchor |n,j %>);
 
-      jQuery(".rights-editor").tabs({
-          beforeActivate: function(ev, ui) {
-              sync_anchor(ui.newPanel.selector);
-              if ( ui.newTab.find('input[type=text]').size() > 0 ) {
-                  ui.newTab.find('input[type=text]:first').focus();
-              }
+      jQuery('.rights-editor .principal-tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+          var anchor = jQuery(this).attr('href').replace('#acl-', '#');
+          sync_anchor(anchor);
+          jQuery('.rights-editor .category-tabs a[data-toggle="tab"]:visible:first').tab('show');
+          if ( anchor == '#AddPrincipal' ) {
+              jQuery('.rights-editor li.add-principal input').focus();
           }
       });
 
-      jQuery(".rights-editor .category-tabs").tabs({
-          active: jQuery.cookie('rights-category-tab') || 0,
-          activate: function(ev, ui) {
-              jQuery.cookie('rights-category-tab', ui.newTab.index());
-              jQuery(".rights-editor .category-tabs").not(this).each(function() {
-                  var item     = jQuery(this);
-                  var selected = item.tabs("option", "active") || 0;
-                  if (selected != ui.newTab.index())
-                      item.tabs("option", "active", ui.newTab.index());
-              });
-          }
+      jQuery('li.add-principal input').focus(function() {
+          jQuery('.rights-editor .principal-tabs a[data-toggle="tab"][href="#acl-AddPrincipal"]').tab('show');
       });
+
+      var anchor = jQuery(".rights-editor input[name=Anchor]").val();
+      if ( anchor && jQuery('.rights-editor .principal-tabs a[data-toggle="tab"][href="' + anchor.replace('#', '#acl-') + '"]' ).length ) {
+          jQuery('.rights-editor .principal-tabs a[data-toggle="tab"][href="' + anchor.replace('#', '#acl-') + '"]' ).tab('show');
+      }
+      else {
+          jQuery('.rights-editor .principal-tabs a[data-toggle="tab"]:first').tab('show');
+      }
+
+      jQuery('.rights-editor .category-tabs a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+          jQuery.cookie('rights-category-tab', jQuery(this).attr('href'));
+      });
+
+      var category_tab = jQuery.cookie('rights-category-tab');
+      if ( category_tab && jQuery(category_tab).length ) {
+          jQuery('.rights-editor .category-tabs a[data-toggle="tab"][href="' + category_tab + '"]' ).tab('show');
+      }
+      else {
+          jQuery('.rights-editor .category-tabs a[data-toggle="tab"]:visible:first').tab('show');
+      };
 
       // "rights" checkbox state cache...
       var check_counts = {};
@@ -172,56 +183,66 @@ if ($anchor =~ /AddPrincipal/) {
   });
 </script>
 
-<div class="rights-editor clearfix">
+<div class="rights-editor">
   <input type="hidden" value="" name="Anchor" />
-
-  <ul>
+  <div class="form-row">
+    <div class="col-md-3">
+      <div class="principal-tabs">
+        <ul class="nav nav-tabs flex-column nav-pills" role="tablist" aria-orientation="vertical">
 <%perl>
 for my $category (@$Principals) {
     my ($name, $collection, $col, $loc) = @$category;
 </%perl>
-<li class="category"><% loc($name) %></li>
+          <li class="category"><% loc($name) %></li>
 <%perl>
     while ( my $obj = $collection->Next ) {
         my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
         my $id = "acl-" . $obj->PrincipalId;
 </%perl>
-<li><a href="#<% $id %>"><span class="rights-editor-label" id="<% "principal-tab-$id" %>"><% $loc ? loc($display) : $display %></span></a></li>
+          <li class="nav-item">
+            <a href="#<% $id %>" class="nav-link" id="<% "principal-tab-$id" %>" data-toggle="tab" role="tab" aria-controls="<% $id %>" aria-selected="false">
+              <% $loc ? loc($display) : $display %>
+            </a>
+          </li>
 <%perl>
     }
 }
 </%perl>
 % if ( $AddPrincipal ) {
-    <li class="category"><&|/l, loc($AddPrincipal) &>Add [_1]</&></li>
-    <li class="addprincipal">
-      <a href="#acl-AddPrincipal">
-        <input type="text" value="" class="form-control"
-            data-autocomplete="<% lc $AddPrincipal eq 'user' ? 'Users' : 'Groups' %>"
+
+<script type="text/javascript">
+jQuery(function() {
+    jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).keyup(function(){
+        toggle_addprincipal_validity(this, true);
+    }).keydown(function(event){
+        event.stopPropagation() // Disable tabs keyboard nav
+    });
+
+    jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).on("autocompleteselect", addprincipal_onselect);
+    jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).on("autocompletechange", addprincipal_onchange);
+});
+</script>
+
+          <li class="add-principal nav-item">
+            <a href="#acl-AddPrincipal" class="nav-link" id="principal-tab-acl-AddPrincipal" data-toggle="tab" role="tab" aria-controls="acl-AddPrincipal">
+              <input placeholder="<&|/l, loc($AddPrincipal) &>Add [_1]</&>" type="text" value="" class="form-control" data-autocomplete="<% lc $AddPrincipal eq 'user' ? 'Users' : 'Groups' %>"
 % if ( lc $AddPrincipal eq 'user' ) {
-            data-autocomplete-return="Name"
-            data-autocomplete-privileged="1"
+                data-autocomplete-return="Name"
+                data-autocomplete-privileged="1"
 % }
-               name="AddPrincipalForRights-<% lc $AddPrincipal %>"
-               id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
-        <script type="text/javascript">
-        jQuery(function() {
-            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).keyup(function(){
-                toggle_addprincipal_validity(this, true);
-            }).keydown(function(event){
-                event.stopPropagation() // Disable tabs keyboard nav
-            });
+                name="AddPrincipalForRights-<% lc $AddPrincipal %>"
+                id="AddPrincipalForRights-<% lc $AddPrincipal %>" />
 
-            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).on("autocompleteselect", addprincipal_onselect);
-            jQuery("#AddPrincipalForRights-"+<% lc $AddPrincipal |n,j%>).on("autocompletechange", addprincipal_onchange);
-        });
-        </script>
 % my $type = lc $AddPrincipal eq 'user' ? loc('username') : loc($AddPrincipal);
-        <span class="warning"><&|/l, $type &>Invalid [_1]</&></span>
-      </a>
-    </li>
+              <div class="invalid-feedback hidden"><&|/l, $type &>Invalid [_1]</&></div>
+            </a>
+          </li>
 % }
-  </ul>
-
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-9">
+      <div class="tab-content">
 <%perl>
 # Now generate our rights panels for each principal
 for my $category (@$Principals) {
@@ -231,9 +252,9 @@ for my $category (@$Principals) {
         my $id = "acl-" . $obj->PrincipalId;
 </%perl>
 
-  <div id="<% $id %>">
-    <h3>
-      <% $loc ? loc($display) : $display %>
+        <div id="<% $id %>" class="tab-pane fade" role="tabpanel" aria-labelledby="<% $id %>-tab">
+          <h3>
+            <% $loc ? loc($display) : $display %>
 <%perl>
 if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
     my $subgroups = $obj->GroupMembersObj( Recursively => 1 );
@@ -243,24 +264,26 @@ if ($obj->isa('RT::Group') and $obj->Domain eq 'UserDefined') {
     if ( $subgroups->Count ) {
         my $inc = join ", ", map $_->Name, @{$subgroups->ItemsArrayRef};
 </%perl>
-      <span class="subgroups"><&|/l, $inc &>includes [_1]</&></span>\
+            <span class="subgroups"><&|/l, $inc &>includes [_1]</&></span>\
 <%perl>
     }
 }
 </%perl>
-    </h3>
-    <& EditRightsCategoryTabs, Context => $Context, Principal => $obj, id => $id &>
-  </div>
+          </h3>
+          <& EditRightsCategoryTabs, Context => $Context, Principal => $obj, id => $id &>
+        </div>
 <%perl>
     }
 }
 
 if ( $AddPrincipal ) {
 </%perl>
-  <div id="acl-AddPrincipal">
-    <h3><&|/l, loc($AddPrincipal) &>Add rights for this [_1]</&></h3>
-    <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
-  </div>
+        <div id="acl-AddPrincipal" class="tab-pane fade" role="tabpanel" aria-labelledby="acl-AddPrincipal-tab">
+          <h3><&|/l, loc($AddPrincipal) &>Add rights for this [_1]</&></h3>
+          <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
+        </div>
 % }
-
+      </div>
+    </div>
+  </div>
 </div>

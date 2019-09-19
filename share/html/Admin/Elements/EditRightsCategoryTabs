@@ -102,37 +102,44 @@ $acldesc ||= join '-', ($Principal ? $Principal->PrincipalId : 'addprincipal'),
 
 $available_rights{$_} = loc( $available_rights{$_} ) for keys %available_rights;
 </%init>
-    <div class="category-tabs">
-      <ul>
+
+<div class="category-tabs">
+  <ul class="nav nav-tabs" role="tablist">
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-        <li><a href="#<% "$id-$category" %>"><span class="rights-editor-label" id="<% "category-tab-$id-$category" %>"><% $category_desc{$category} || loc($category) %></span></a></li>
+    <li class="nav-item">
+      <a class="nav-link" href="#<% "$id-$category" %>" id="<% "category-tab-$id-$category" %>" data-toggle="tab" role="tab" aria-controls="<% "$id-$category" %>" aria-selected="false">
+        <% $category_desc{$category} || loc($category) %>
+      </a>
+    </li>
 % }
-      </ul>
+  </ul>
+  <div class="tab-content">
 % for my $category (sort { $catsort{$a} <=> $catsort{$b} } keys %categories) {
-    <div id="<% "$id-$category" %>">
-    <ul class="rights-list">
+    <div id="<% "$id-$category" %>" class="tab-pane fade" role="tabpanel" aria-labelledby="<% "category-tab-$id-$category" %>">
+      <ul class="rights-list list-group list-group-compact">
 %     for my $right (sort { $available_rights{$a} cmp $available_rights{$b} } @{$categories{$category}}) {
-      <li>
-        <div class="custom-control custom-checkbox">
-          <input
-            type="checkbox"
-            class="custom-control-input"
-            name="SetRights-<% $acldesc %>"
-            id="SetRights-<% $acldesc %>-<% $right %>"
-            value="<% $right %>"
-            data-category-tab="<% "category-tab-$id-$category" %>"
-            data-principal-tab="<% "principal-tab-$id" %>"
-            <% $current_rights{$right} ? 'checked' : '' %>
-          />
-          <label class="custom-control-label" for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
-            <% $available_rights{$right} %>
-            <span class="text-right rightname"><% $right %></span>
-          </label>
-        </div>
-      </li>
+        <li class="list-group-item">
+          <div class="custom-control custom-checkbox">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              name="SetRights-<% $acldesc %>"
+              id="SetRights-<% $acldesc %>-<% $right %>"
+              value="<% $right %>"
+              data-category-tab="<% "category-tab-$id-$category" %>"
+              data-principal-tab="<% "principal-tab-$id" %>"
+              <% $current_rights{$right} ? 'checked' : '' %>
+            />
+            <label class="custom-control-label" for="SetRights-<% $acldesc %>-<% $right %>" title="<% $right %>">
+              <% $available_rights{$right} %>
+              <span class="rightname"><% $right %></span>
+            </label>
+          </div>
+        </li>
 %     }
-    </ul>
+      </ul>
     </div>
 % }
-    </div>
-    <input type="hidden" name="CheckACL" value="<% $acldesc %>" />
+  </div>
+</div>
+<input type="hidden" name="CheckACL" value="<% $acldesc %>" />
