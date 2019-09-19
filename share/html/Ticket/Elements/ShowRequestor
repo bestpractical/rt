@@ -48,11 +48,15 @@
 % if ($ShowTickets) {
 <script type="text/javascript">
     jQuery(function() {
-        jQuery(".more-about-requestor-tickets").tabs({
-            cache: true,
-            collapsible: true,
-            active: <% $selected %>
-        });
+      jQuery('.more-about-requestor-tickets a[data-link][data-toggle="tab"]').on('shown.bs.tab', function(e) {
+          var tab = jQuery(this);
+          if ( tab.hasClass('loaded') ) return;
+
+          var link = jQuery(this).attr('data-link');
+          jQuery(jQuery(this).attr('href')).load(link, function() {
+              tab.addClass('loaded');
+          });
+      });
     });
 </script>
 % }
@@ -75,48 +79,52 @@
 
 % if ( $ShowComments ) {
 <div class="comments-about-user">
-  <div class="label col-md-3"><&|/l&>Comments about this user</&>:</div>
-  <div class="value col-md-9"><span class="current-value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span></div>
+  <div class="label"><&|/l&>Comments about this user</&>:</div>
+  <div class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></div>
 </div>
 % }
 
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AfterComments' );
 
 % if ( $ShowTickets ) {
-<div class="more-about-requestor-tickets ui-tabs" id="more-about-requestor-tickets-<%$requestor->Id%>">
-  <ul>
+<div class="more-about-requestor-tickets" id="more-about-requestor-tickets-<%$requestor->Id%>">
+  <ul class="nav nav-tabs" role="tablist">
 % my $index = 1;
 % for my $status ( @$status_order ) {
-    <li>
+    <li class="nav-item">
 % if ( $status eq $DefaultTicketsTab ) {
-      <a href="#requestor-<%$requestor->Id%>-ticket-tab-default">\
+      <a class="nav-link active" href="#requestor-<%$requestor->Id%>-ticket-default" id="requestor-<% $requestor->Id %>-ticket-default-tab" data-toggle="tab" role="tab" aria-controls="#requestor-<%$requestor->Id%>-ticket-default">\
 % } else {
 %     my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
 %     $m->comp('/Elements/QueryString', Requestor => $requestor->Id , Status => $status);
-      <a href="<% $url | n %>" title="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>">\
+      <a class="nav-link" data-link="<% $url | n %>" href="#requestor-<%$requestor->Id%>-ticket-<% $index %>" id="requestor-<% $requestor->Id %>-ticket-<% $index %>-tab" data-toggle="tab" role="tab" aria-controls="#requestor-<%$requestor->Id%>-ticket-<% $index %>">\
+% $index++;
 % }
-<% $status_link_text->{$status} %></a>
+        <% $status_link_text->{$status} %></a>
     </li>
 % }
   </ul>
 % $index = 1;
+  <div class="tab-content">
 % for my $status (@$status_order) {
 % if ( $status eq $DefaultTicketsTab ) {
-  <div id="requestor-<%$requestor->Id%>-ticket-tab-default">
-    <& $TicketTemplate, Requestor => $requestor &>
+    <div id="requestor-<%$requestor->Id%>-ticket-default" class="tab-pane fade show active" role="tabpanel" aria-labelledby="requestor-<% $requestor->Id %>-ticket-default-tab">
+      <& $TicketTemplate, Requestor => $requestor &>
 % } else {
-  <div id="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>" class="hidden">
-    <div class="label col-md-3"><&|/l&>Loading...</&></div>
+    <div id="requestor-<%$requestor->Id%>-ticket-<% $index %>" class="tab-pane fade" aria-labelledby="requestor-<% $requestor->Id %>-ticket-<% $index %>-tab">
+%   $index++;
+      <div class="label"><&|/l&>Loading...</&></div>
+% }
+    </div>
 % }
   </div>
-% }
 </div>
 % }
 
 % my $grouplimit = RT->Config->Get('MoreAboutRequestorGroupsLimit');
 % if ( $ShowGroups and defined $grouplimit ) {
 <div class="more-about-user-groups">
-  <div class="label col-md-3">
+  <div class="label">
     <&|/l&>Groups this user belongs to</&>
     
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
