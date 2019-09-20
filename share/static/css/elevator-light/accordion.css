@@ -40,3 +40,7 @@
 .accordion-content {
   padding: 0 10px 10px;
 }
+
+.accordion-item-bare {
+  padding: 5px;
+}

@@ -48,38 +48,44 @@
 % my $users = $Group->UserMembersObj( Recursively => 0 );
 % while ( my $user = $users->Next ) {
 %     next if $Skip and $Skip->HasMember( $user->PrincipalId );
+%     next if $user->id == RT->Nobody->id;
+
+<div class="accordion-item">
+  <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#<% $Role %>-user-<% $user->id %>" aria-expanded="false" aria-controls="<% $Role %>-user-<% $user->id %>" id="<% $Role %>-user-<% $user->id %>-title" >
+
 % if (not $Title) {
 % } elsif ($Single) {
-<h3><& /Elements/ShowUser, User => $user, Link => 1 &></h3>
-%      next if $user->id == RT->Nobody->id;
+    <& /Elements/ShowUser, User => $user, Link => 1 &>
 % } else {
-<h3><a href="#"><& /Elements/ShowUser, User => $user, Link => 0 &>
-%     if ($Note) {
- <span class="note"><% $Note %></span>
-%     }
-</a>
+    <a href="#"><& /Elements/ShowUser, User => $user, Link => 0 &>
+%   if ($Note) {
+      <span class="note"><% $Note %></span>
+%   }
+    </a>
 % if ( $session{'CurrentUser'}->Privileged ){
-<a class="user-summary" href="<%RT->Config->Get('WebPath')%>/User/Summary.html?id=<% $user->Id %>"><&|/l&>User Summary</&></a>
+    <a class="user-summary" href="<%RT->Config->Get('WebPath')%>/User/Summary.html?id=<% $user->Id %>"><&|/l&>User Summary</&></a>
 % }
-</h3>
+  </span>
 % }
-  <div class="details">
-<& /User/Elements/UserInfo,
+  <div id="<% $Role %>-user-<% $user->id %>" class="accordion-content collapse" aria-labelledby="<% $Role %>-user-<% $user->id %>-title">
+    <& /User/Elements/UserInfo,
        User => $user,
        FormatConfig => 'UserAssetExtraInfo',
        ClassPrefix => 'asset-user' &>
 % $m->callback(CallbackName => 'AfterRecord', User => $user, Group => $Group );
   </div>
+</div>
 % }
 % my $groups = $Group->GroupMembersObj( Recursively => 0 );
 % $groups->LimitToUserDefinedGroups;
 % while (my $g = $groups->Next) {
 %     next if $Skip and $Skip->HasMember( $g->PrincipalId );
-<h3><a href="#"><&|/l, $g->Name &>Group: [_1]</&></a>
+<div class="accordion-item accordion-item-bare">
+<a href="#"><&|/l, $g->Name &>Group: [_1]</&></a>
 %     if ($Note) {
  <span class="note"><% $Note %></span>
 %     }
-</h3>
+</div>
 % }
 <%ARGS>
 $Group => undef
@@ -87,4 +93,5 @@ $Note  => ''
 $Skip  => undef
 $Single => 0
 $Title => 1
+$Role => ''
 </%ARGS>
