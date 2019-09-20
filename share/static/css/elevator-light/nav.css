@@ -52,6 +52,12 @@ ul.sf-menu li {
     display: inline-block;
 }
 
+.sf-menu a:visited,
+.sf-menu a {
+    border: none;
+    color: #000;
+}
+
 #app-nav.sf-menu > li:first-child > a {
     border-left: none
 }
@@ -68,8 +74,6 @@ ul.sf-menu li {
 #main-navigation .sf-menu a:hover {
     padding-top: 0.5em;
     padding-bottom: 0.5em;
-    border-color: #fff;
-    color: #000;
 }
 
 #main-navigation a {
@@ -109,12 +113,6 @@ ul.sf-menu li {
 #page-navigation .sf-menu li li,
 #page-navigation .sf-menu li li li {
     background-color: #fff
-}
-
-#page-navigation .sf-menu a:visited,
-#page-navigation .sf-menu a {
-    border: none;
-    color: #000;
 }
 
 #page-menu.sf-menu li:hover ul,
