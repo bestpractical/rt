@@ -544,17 +544,6 @@ function escapeCssSelector(str) {
 
 
 jQuery(function() {
-    jQuery(".user-accordion").each(function(){
-        jQuery(this).accordion({
-            active: (jQuery(this).find("h3").length == 1 ? 0 : false),
-            collapsible: true,
-            heightStyle: "content",
-            header: "h3"
-        }).find("h3 a.user-summary").click(function(ev){
-            ev.stopPropagation();
-            return true;
-        });
-    });
     ReplaceAllTextareas();
     jQuery('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
     AddAttachmentWarning();
@@ -578,7 +567,7 @@ jQuery(function() {
         );
     });
 
-    jQuery(".card .toggle").each(function() {
+    jQuery(".card .card-header .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-target'));
         e.on('hide.bs.collapse', function () {
             createCookie(e.attr('id'),0,365);
@@ -587,6 +576,15 @@ jQuery(function() {
         e.on('show.bs.collapse', function () {
             createCookie(e.attr('id'),1,365);
             e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
+        });
+    });
+    jQuery(".card .card-body .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-target'));
+        e.on('hide.bs.collapse', function (event) {
+            event.stopPropagation();
+        });
+        e.on('show.bs.collapse', function (event) {
+            event.stopPropagation();
         });
     });
 
