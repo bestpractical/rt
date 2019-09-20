@@ -104,16 +104,20 @@ $m->callback(
 
 % $m->callback( CallbackName => "Start", Queue => $QueueObj, Assets => $assets );
 
-<div id="assets-accordion" class="rt-accordion">
+<div id="assets-accordion" class="rt-accordion accordion">
 % while (my $asset = $assets->Next) {
-  <h3><a href="<% RT->Config->Get('WebPath') %>/Asset/Display.html?id=<% $asset->id %>"><&|/l, $asset->id, $asset->Name &>#[_1]: [_2]</&></a></h3>
-  <div class="details">
-    <& /Elements/ShowRecord,
-        Object      => $asset,
-        Format      => $Format,
-        TrustFormat => 1,
-        &>
+  <div class="accordion-item">
+    <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#asset-<% $asset->id %>" aria-expanded="false" aria-controls="asset-<% $asset->id %>" id="asset-<% $asset->id %>-title" >
+      <a href="<% RT->Config->Get('WebPath') %>/Asset/Display.html?id=<% $asset->id %>"><&|/l, $asset->id, $asset->Name &>#[_1]: [_2]</&></a>
+    </span>
+    <div id="asset-<% $asset->id %>" class="accordion-content collapse" aria-labelledby="asset-<% $asset->id %>-title">
+      <& /Elements/ShowRecord,
+          Object      => $asset,
+          Format      => $Format,
+          TrustFormat => 1,
+          &>
 % $m->callback( CallbackName => "PerAsset", Queue => $QueueObj, Asset => $asset );
+    </div>
   </div>
 % }
 </div>
