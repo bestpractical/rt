@@ -79,7 +79,7 @@ for my $column (@columns) {
         $title = $fetch_columnmap->($attr,'title',[$attr]);
     }
 </%perl>
-<div class="record-field <% $Class ? CSSClass("$Class-field") : "" %> <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr],'no_escape')) %>">
+<div class="record-field form-row <% $Class ? CSSClass("$Class-field") : "" %> <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr],'no_escape')) %>">
 <div class="label col-md-3"><% loc($title) |n %></div>
 <%perl>
     my @out;
