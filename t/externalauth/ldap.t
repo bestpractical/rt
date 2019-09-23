@@ -171,7 +171,7 @@ diag "test admin user create";
     $user->Load( $id );
     is( $user->EmailAddress, "$username\@invalid.tld", 'email is not changed' );
     is( $user->Name, $username, 'got canonicalized Name' );
-
+    is( $user->FirstCustomFieldValue('Employee Type'), 'sale', 'Employee Type set to sale from LDAP' );
 }
 
 diag "test user update via login";
