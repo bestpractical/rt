@@ -51,6 +51,17 @@ ok( $employee_id_cf->Create(
 );
 ok( $employee_id_cf->AddToObject( RT::User->new( RT->SystemUser ) ), 'applied Employee ID globally' );
 
+my $delegate_cf = RT::CustomField->new( RT->SystemUser );
+ok( $delegate_cf->Create(
+        Name       => 'Delegate',
+        LookupType => RT::User->CustomFieldLookupType,
+        Type       => 'Freeform',
+        MaxValues  => 1,
+    ),
+    'created cf Delegate'
+);
+ok( $delegate_cf->AddToObject( RT::User->new( RT->SystemUser ) ), 'applied Delegate globally' );
+
 RT->Config->Set( ExternalAuthPriority        => ['My_LDAP'] );
 RT->Config->Set( ExternalInfoPriority        => ['My_LDAP'] );
 RT->Config->Set( AutoCreateNonExternalUsers  => 0 );
@@ -139,6 +150,8 @@ diag "test admin user create";
     $m->logout;
     ok( $m->login );
     $m->get_ok( $baseurl . '/Admin/Users/Modify.html?Create=1', 'user create page' );
+    $m->text_contains( 'Employee Type:Select one value Set from external source' );
+    $m->text_contains( 'Employee ID:Enter one value Set from external source' );
 
     my $username = 'testuser2';
     $m->submit_form(
@@ -161,9 +174,17 @@ diag "test admin user create";
     my $dn = "uid=$username,$base";
     $ldap->add( $dn, attr => [ %$entry ] );
 
+    my $delegate_input = RT::Interface::Web::GetCustomFieldInputName(
+        Object => RT::User->new( RT->SystemUser ),
+        CustomField => $delegate_cf,
+    );
     $m->submit_form(
         form_name => 'UserCreate',
-        fields    => { Name => '', EmailAddress => "$username\@invalid.tld" },
+        fields    => {
+            Name            => '',
+            EmailAddress    => "$username\@invalid.tld",
+            $delegate_input => 'root',
+        },
     );
     $m->text_contains( 'User created' );
     my ( $id ) = ( $m->uri =~ /id=(\d+)/ );
@@ -172,6 +193,7 @@ diag "test admin user create";
     is( $user->EmailAddress, "$username\@invalid.tld", 'email is not changed' );
     is( $user->Name, $username, 'got canonicalized Name' );
     is( $user->FirstCustomFieldValue('Employee Type'), 'sale', 'Employee Type set to sale from LDAP' );
+    is( $user->FirstCustomFieldValue('Delegate'), 'root', 'Delegate set to root from Web' );
 }
 
 diag "test user update via login";
