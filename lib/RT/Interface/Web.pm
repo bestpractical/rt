@@ -3467,6 +3467,44 @@ sub _NormalizeObjectCustomFieldValue {
     return @values;
 }
 
+=head2 _FilterUserCFValuesOnCreate
+
+On create, user objects can have CFs set from LDAP or other sources.
+Clear submitted user custom field form values on create if the custom field
+already has a value set on create.
+
+=cut
+
+sub _FilterUserCFValuesOnCreate {
+    my %args    = @_;
+    my $ARGSRef = $args{'ARGSRef'};
+    my $UserObj = $args{'UserObj'};
+
+    my %custom_fields_to_mod = _ParseObjectCustomFieldArgs($ARGSRef);
+
+    foreach my $cf ( keys %{ $custom_fields_to_mod{'RT::User'}{0} } ) {
+        my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+        $CustomFieldObj->SetContextObject($UserObj);
+        $CustomFieldObj->LoadById($cf);
+        unless ( $CustomFieldObj->id ) {
+            $RT::Logger->warning("Couldn't load custom field #$cf");
+            next;
+        }
+
+        if ( $UserObj->FirstCustomFieldValue($CustomFieldObj->Id) ) {
+
+            my ($ret, $grouping) = _ValidateConsistentCustomFieldValues($cf,
+                    $custom_fields_to_mod{'RT::User'}{0}{$cf});
+            my $user_cf_name = GetCustomFieldInputName( CustomField => $CustomFieldObj, Grouping => $grouping );
+
+            delete $ARGSRef->{$user_cf_name} if exists $ARGSRef->{$user_cf_name};
+            delete $ARGSRef->{$user_cf_name . "-Magic"} if exists $ARGSRef->{$user_cf_name . "-Magic"};
+        }
+    }
+
+    return;
+}
+
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
