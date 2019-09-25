@@ -341,8 +341,13 @@ span.current-value.form-control {
   line-height: 1;
 }
 
-form .label {
+form .label,
+form .value > .list-group {
   padding-top: 5px;
+}
+
+form .value > .list-group > .list-group-item:first-child {
+  padding-top: 0;
 }
 
 .btn {
