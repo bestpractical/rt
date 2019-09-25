@@ -54,7 +54,7 @@
         <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
 %     }
     </div>
-    <div class="value col-md-9"><span class="form-control current-value">
+    <div class="value col-md-9"><span class="current-value">
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
     </span></div>
   </div>

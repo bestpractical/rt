@@ -56,7 +56,7 @@
           <&|/l&>Email</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->EmailAddress%></span>
+          <span class="current-value"><%$UserObj->EmailAddress%></span>
         </div>
       </div>
 
@@ -65,7 +65,7 @@
           <&|/l&>Real Name</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->RealName%></span>
+          <span class="current-value"><%$UserObj->RealName%></span>
         </div>
       </div>
 
@@ -74,7 +74,7 @@
           <&|/l&>Nickname</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->NickName || ''%></span>
+          <span class="current-value"><%$UserObj->NickName || ''%></span>
         </div>
       </div>
 
@@ -83,7 +83,7 @@
           <&|/l&>Language</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control">
+          <span class="current-value">
 % if ( $UserObj->Lang ) {
             <&|/l, $lang &>[_1]</&>
 % } else {
@@ -98,7 +98,7 @@
           <&|/l&>Timezone</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control">
+          <span class="current-value">
 % if ( $UserObj->Timezone ) {
             <%$UserObj->Timezone%>
 % } else {
@@ -120,7 +120,7 @@
           <&|/l&>Residence</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->HomePhone || ''%></span>
+          <span class="current-value"><%$UserObj->HomePhone || ''%></span>
         </div>
       </div>
 
@@ -129,7 +129,7 @@
           <&|/l&>Work</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->WorkPhone || ''%></span>
+          <span class="current-value"><%$UserObj->WorkPhone || ''%></span>
         </div>
       </div>
 
@@ -138,7 +138,7 @@
           <&|/l&>Mobile</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->MobilePhone || ''%></span>
+          <span class="current-value"><%$UserObj->MobilePhone || ''%></span>
         </div>
       </div>
 
@@ -147,7 +147,7 @@
           <&|/l&>Pager</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->PagerPhone || ''%></span>
+          <span class="current-value"><%$UserObj->PagerPhone || ''%></span>
         </div>
       </div>
 
@@ -168,7 +168,7 @@
           <&|/l&>Organization</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->Organization || ''%></span>
+          <span class="current-value"><%$UserObj->Organization || ''%></span>
         </div>
       </div>
 
@@ -177,7 +177,7 @@
           <&|/l&>Address1</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->Address1 || ''%></span>
+          <span class="current-value"><%$UserObj->Address1 || ''%></span>
         </div>
       </div>
 
@@ -186,7 +186,7 @@
           <&|/l&>Address2</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->Address2 || ''%></span>
+          <span class="current-value"><%$UserObj->Address2 || ''%></span>
         </div>
       </div>
 
@@ -195,7 +195,7 @@
           <&|/l&>City</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->City || ''%></span>
+          <span class="current-value"><%$UserObj->City || ''%></span>
         </div>
       </div>
 
@@ -204,7 +204,7 @@
           <&|/l&>State</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->State || ''%></span>
+          <span class="current-value"><%$UserObj->State || ''%></span>
         </div>
       </div>
 
@@ -213,7 +213,7 @@
           <&|/l&>Zip</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->Zip || ''%></span>
+          <span class="current-value"><%$UserObj->Zip || ''%></span>
         </div>
       </div>
 
@@ -222,7 +222,7 @@
           <&|/l&>Country</&>:
         </div>
         <div class="col-md-9 value">
-          <span class="current-value form-control"><%$UserObj->Country || ''%></span>
+          <span class="current-value"><%$UserObj->Country || ''%></span>
         </div>
       </div>
 

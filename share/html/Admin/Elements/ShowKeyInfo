@@ -78,7 +78,7 @@
     <% loc('Trust') %>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% loc( $res{'info'}{'Trust'} ) %></span>
+    <span class="current-value"><% loc( $res{'info'}{'Trust'} ) %></span>
   </div>
 </div>
 % }
@@ -88,7 +88,7 @@
     <% loc('Fingerprint') %>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $res{'info'}{'Fingerprint'} %></span>
+    <span class="current-value"><% $res{'info'}{'Fingerprint'} %></span>
   </div>
 </div>
 
@@ -98,7 +98,7 @@
     <% loc('Created') %>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control">
+    <span class="current-value">
       <% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never') %>
     </span>
   </div>
@@ -109,7 +109,7 @@
     <% loc('Expire') %>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control">
+    <span class="current-value">
       <% $res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): loc('never') %>
     </span>
   </div>
@@ -123,7 +123,7 @@
     <% loc('User (created - expire)') %>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control">
+    <span class="current-value">
       <% $uinfo->{'String'} %> \
      (<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): loc('never') %> - <% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): loc('never') %>)
     </span>
@@ -135,7 +135,7 @@
     <% loc('User') %>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $uinfo->{'String'} %></span>
+    <span class="current-value"><% $uinfo->{'String'} %></span>
   </div>
 </div>
 

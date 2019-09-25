@@ -50,7 +50,7 @@
     <&|/l&>Name</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"Name"} || $Action->Name || '' %></span>
+    <span class="current-value"><% $ARGS{"Name"} || $Action->Name || '' %></span>
   </div>
 </div>
 
@@ -59,7 +59,7 @@
     <&|/l&>Description</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"Description"} || $Action->Description || '' %></span>
+    <span class="current-value"><% $ARGS{"Description"} || $Action->Description || '' %></span>
   </div>
 </div>
 
@@ -68,7 +68,7 @@
     <&|/l&>Action Module</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"ExecModule"} || $Action->ExecModule || ''%></span>
+    <span class="current-value"><% $ARGS{"ExecModule"} || $Action->ExecModule || ''%></span>
   </div>
 </div>
 
@@ -77,7 +77,7 @@
     <&|/l&>Parameters to Pass</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"Argument"} || $Action->Argument || '' %></span>
+    <span class="current-value"><% $ARGS{"Argument"} || $Action->Argument || '' %></span>
   </div>
 </div>
 

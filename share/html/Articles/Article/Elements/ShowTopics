@@ -50,7 +50,7 @@
     <&|/l&>Topics</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control">
+    <span class="current-value">
 % my $topics = RT::ObjectTopics->new($session{'CurrentUser'});
 % $topics->LimitToObject($article);
 % while (my $t = $topics->Next) {

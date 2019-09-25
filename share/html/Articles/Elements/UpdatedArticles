@@ -66,22 +66,22 @@
 % $i++;
 <div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row">
   <div class="col-md-auto value text-right">
-    <span class="current-value form-control"><%$Article->Id%></span>
+    <span class="current-value"><%$Article->Id%></span>
   </div>
   <div class="col-md-4 value text-left">
-    <span class="current-value form-control"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></span>
+    <span class="current-value"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></span>
   </div>
   <div class="col-md-4 value text-left">
-    <span class="current-value form-control"><%$Article->CreatorObj->Name%></span>
+    <span class="current-value"><%$Article->CreatorObj->Name%></span>
   </div>
   <div class="col-md-3 value text-left">
-    <span class="current-value form-control">[<a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</span>
+    <span class="current-value">[<a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</span>
   </div>
 </div>
 
 <div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row">
   <div class="col-md-11 col-md-offset-1">
-    <span class="current-value form-control"><small><%$Article->Summary || loc('(no Summary)')%></small></span>
+    <span class="current-value"><small><%$Article->Summary || loc('(no Summary)')%></small></span>
   </div>
 </div>
 % }

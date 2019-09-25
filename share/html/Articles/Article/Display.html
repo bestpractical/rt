@@ -54,7 +54,7 @@
       <&|/l&>Summary</&>:
     </div>
     <div class="col-md-9 value">
-      <span class="current-value form-control"><%$article->Summary%></span>
+      <span class="current-value"><%$article->Summary%></span>
     </div>
   </div>
 
@@ -63,7 +63,7 @@
       <&|/l&>Class</&>:
     </div>
     <div class="col-md-9 value">
-      <span class="current-value form-control"><%$article->ClassObj->Name%></span>
+      <span class="current-value"><%$article->ClassObj->Name%></span>
     </div>
   </div>
 
@@ -72,7 +72,7 @@
       <&|/l&>Creator</&>:
     </div>
     <div class="col-md-9 value">
-      <span class="current-value form-control"><& /Elements/ShowUser, User => $article->CreatorObj &></span>
+      <span class="current-value"><& /Elements/ShowUser, User => $article->CreatorObj &></span>
     </div>
   </div>
 
@@ -81,7 +81,7 @@
       <&|/l&>Created</&>:
     </div>
     <div class="col-md-9 value">
-      <span class="current-value form-control"><%$article->CreatedObj->AsString%></span>
+      <span class="current-value"><%$article->CreatedObj->AsString%></span>
     </div>
   </div>
 
@@ -90,7 +90,7 @@
       <&|/l&>Updated</&>:
     </div>
     <div class="col-md-9 value">
-      <span class="current-value form-control"><%$article->LastUpdatedObj->AsString%></span>
+      <span class="current-value"><%$article->LastUpdatedObj->AsString%></span>
     </div>
   </div>
 </&>

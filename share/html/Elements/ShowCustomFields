@@ -68,7 +68,7 @@
   <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
     <div class="label col-md-3"><% $CustomField->Name %>:</div>
     <div class="value col-md-9 <% $count ? '' : ' no-value' %>">
-      <span class="form-control current-value">
+      <span class="current-value">
 % unless ( $count ) {
 <&|/l&>(no value)</&>
 % } elsif ( $count == 1 ) {

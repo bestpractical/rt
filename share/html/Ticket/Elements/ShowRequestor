@@ -76,7 +76,7 @@
 % if ( $ShowComments ) {
 <div class="comments-about-user">
   <div class="label col-md-3"><&|/l&>Comments about this user</&>:</div>
-  <div class="value col-md-9"><span class="form-control current-value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span></div>
+  <div class="value col-md-9"><span class="current-value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span></div>
 </div>
 % }
 
@@ -124,7 +124,7 @@
   [<a href=<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %> ><&|/l&>Edit</&></a>]
 % }
   </div>
-  <div class="value col-md-9"><span class="form-control current-value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></span></div>
+  <div class="value col-md-9"><span class="current-value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></span></div>
 </div>
 % }
 
