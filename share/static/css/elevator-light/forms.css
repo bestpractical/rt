@@ -342,8 +342,8 @@ span.current-value.form-control {
   line-height: 1;
 }
 
-.form-row .label {
-  padding-top: calc(0.375rem + 1px);
+form .label {
+  padding-top: 5px;
 }
 
 .btn {
