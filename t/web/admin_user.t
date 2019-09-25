@@ -132,6 +132,23 @@ $m->content_contains( $users[2]->Name );
 $m->content_lacks( $users[0]->Name );
 $m->content_lacks( $users[3]->Name );
 
+diag 'Test NULL value searches';
+$m->form_name( 'UsersAdmin' );
+$m->select( UserField2 => 'CustomField: '.$cf_2->Name, UserOp2 => 'is' );
+$m->field( UserString2 => 'NULL' );
+$m->field( UserString3 => '' );
+$m->click( 'Go' );
+$m->text_lacks( $_->Name ) for @users[1..2];
+$m->text_contains( $_->Name ) for @users[0,3];
+
+ok( $users[0]->SetRealName('user1') );
+$m->form_name( 'UsersAdmin' );
+$m->select( UserField2 => 'Real Name', UserOp2 => 'is' );
+$m->field( UserString2 => 'NULL' );
+$m->click( 'Go' );
+$m->text_lacks( $_->Name ) for $users[0];
+$m->text_contains( $_->Name ) for @users[1..3];
+
 # TODO more /Admin/Users tests
 
 done_testing;

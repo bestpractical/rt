@@ -132,6 +132,25 @@ ok( $m->login(), 'logged in' );
     $m->content_contains( $groups[2]->Name );
     $m->content_lacks( $groups[0]->Name );
     $m->content_lacks( $groups[3]->Name );
+
+    diag 'Test NULL value searches';
+    ok( $m->form_name( 'GroupsAdmin' ), 'found the filter admin groups form');
+    $m->select( GroupField => 'Name', GroupOp => 'LIKE' );
+    $m->field( GroupString => 'Group' );
+    $m->select( GroupField2 => 'CustomField: '.$cf_2->Name, GroupOp2 => 'is' );
+    $m->field( GroupString2 => 'NULL' );
+    $m->field( GroupString3 => '' );
+    $m->click( 'Go' );
+    $m->text_lacks( $_->Name ) for @groups[1..2];
+    $m->text_contains( $_->Name ) for @groups[0,3];
+
+    ok( $groups[0]->SetDescription('group1') );
+    $m->form_name( 'GroupsAdmin' );
+    $m->select( GroupField2 => 'Description', GroupOp2 => 'is' );
+    $m->field( GroupString2 => 'NULL' );
+    $m->click( 'Go' );
+    $m->text_lacks( $_->Name ) for $groups[0];
+    $m->text_contains( $_->Name ) for @groups[1..3];
 }
 
 
