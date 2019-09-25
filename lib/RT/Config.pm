@@ -238,7 +238,7 @@ our %META;
                         next unless -d $css_path;
                         if ( opendir my $dh, $css_path ) {
                             push @stylesheets, grep {
-                                $_ !~ /^base\b/ && -e File::Spec->catfile( $css_path, $_, 'main.css' )
+                                -e File::Spec->catfile( $css_path, $_, 'main.css' )
                             } readdir $dh;
                         }
                         else {
@@ -261,10 +261,10 @@ our %META;
 
             $RT::Logger->warning(
                 "The default stylesheet ($value) does not exist in this instance of RT. "
-              . "Defaulting to rudder."
+              . "Defaulting to elevator-light."
             );
 
-            $self->Set('WebDefaultStylesheet', 'rudder');
+            $self->Set('WebDefaultStylesheet', 'elevator-light');
         },
     },
     TimeInICal => {

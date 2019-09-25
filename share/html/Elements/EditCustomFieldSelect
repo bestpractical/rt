@@ -94,14 +94,10 @@
 <select
   name="<%$name%>" id="<%$name%>"
 
-% if ( grep /\bbootstrap-select\b/, RT::Interface::Web->JSFiles ) {
     class="CF-Edit CF-<%$CustomField->id%>-Edit <% $RenderType eq 'Dropdown' ? 'selectpicker' : 'form-control' %>"
 %   if ( $use_chosen ) {
     data-live-search="true"
 %   }
-% } else {
-    class="CF-Edit CF-<%$CustomField->id%>-Edit<% $use_chosen ? ' chosen' : '' %><% $size > 1 ? ' tall' : '' %>"
-% }
 
 % if ($CustomField->BasedOnObj->id) {
   data-cascade-based-on-name="<% $BasedOnName || $NamePrefix . $CustomField->BasedOnObj->id . '-Value' |n %>"

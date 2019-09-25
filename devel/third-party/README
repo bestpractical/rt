@@ -44,11 +44,6 @@ Description: DOM manipulation
 Origin: http://code.jquery.com/jquery-1.11.3.js
 License: MIT
 
-* jquery-modal-0.5.2.js
-Description: modal popup dialogs
-Origin: https://github.com/kylefox/jquery-modal
-License: MIT
-
 * jquery-tablesorter-2.0.5b.js 
 Description: sort tables without page refresh
 Origin: https://github.com/christianbach/tablesorter

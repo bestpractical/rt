@@ -29,7 +29,7 @@ my @exclude = (
 
 # find endpoints to loop over
 my @endpoints = (
-    "/NoAuth/css/aileron/squished-".("0"x32).".css",
+    "/NoAuth/css/elevator-light/squished-".("0"x32).".css",
     '/static/images/bpslogo.png',
 );
 find({

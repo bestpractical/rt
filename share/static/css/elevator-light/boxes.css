@@ -1,6 +1,7 @@
 .titlebox {
     margin-top: 1em;
     margin-bottom: 2em;
+    padding: 5px;
 }
 
 .titlebox .titlebox-title {
@@ -18,7 +19,7 @@
 }
 
 .titlebox .titlebox-title .left {
-    font-weight: bold;
+    font-weight: 500;
     background: transparent;
     padding: 0.5em 1.25em 0.25em 1.25em;
     line-height: 1.4em;
@@ -54,7 +55,7 @@
 .titlebox .titlebox-title .right a,
 .titlebox .titlebox-title .right a:visited {
     color: #999;
-    font-weight: bold;
+    font-weight: 500;
     margin-left: 0.5em;
     margin-right: 0.5em;
 }
@@ -106,9 +107,8 @@ div.results .titlebox .titlebox-content {
 .titlebox .card-header span.toggle:before {
     content: '';
     display: block;
-    width: 10px;
-    height: 10px;
-    margin-right: 15px;
+    width: 8px;
+    height: 8px;
     border: solid #B0B3BC;
     border-width: 0 2px 2px 0;
     -webkit-transform: rotate(-135deg);

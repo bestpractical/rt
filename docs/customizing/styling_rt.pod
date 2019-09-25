@@ -16,21 +16,13 @@ RT comes with the following themes:
 
 =over
 
-=item rudder
+=item elevator-light
 
-The default layout for RT 4.2 and 4.4
+The default light theme for RT 4.6
 
-=item aileron
+=item elevator-dark
 
-The default layout for RT 4.0
-
-=item web2
-
-An approximation of the 3.8 style
-
-=item ballard
-
-Theme which doesn't rely on JavaScript for menuing
+The dark theme for RT 4.6
 
 =back
 
@@ -105,6 +97,44 @@ CSS added this way is included across all themes.
 If you are writing an extension, see L<RT/AddStyleSheets> for how to
 simply and programmatically add values to C<@CSSFiles>.
 
+=head2 Customizing Bootstrap
+
+Bootstrap supports easy theming with built-in Sass variables. Here is how to
+create your own version of bootstrap.css
+
+=over
+
+=item Install Node.js and necessary packages
+
+    brew install node
+    npm install -g node-sass postcss postcss-cli
+
+    cd devel/third-party/bootstrap-4.2.1
+    npm install autoprefixer
+
+=item Create bootstrap_customized.scss
+
+For example:
+
+    // Your variable overrides
+    $body-bg: #000;
+    $body-color: #111;
+
+    // Bootstrap and its default variables
+    @import "scss/bootstrap";
+
+=item Generate new bootstrap.css
+
+    node-sass --output-style expanded --precision 6 bootstrap_customized.scss bootstrap.css
+    postcss --config postcss.config.js --replace bootstrap.css
+
+=item Use new bootstrap.css
+
+It's not suggested to override bootstrap.css in official RT themes as it
+will get overridden during RT upgrade. Instead, you can put the new created
+bootstrap.css to your new own theme. See below.
+
+=back
 
 =head1 Designing Your Own Theme
 
@@ -119,14 +149,14 @@ C</opt/rt4> directory (or wherever your RT is installed) to get
 started:
 
     $ mkdir -p local/static/css/localstyle
-    $ cp -R share/static/css/rudder/* local/static/css/localstyle/
+    $ cp -R share/static/css/elevator-light/* local/static/css/localstyle/
 
     $ mkdir -p local/html/NoAuth/css/localstyle
-    $ cp -R share/html/NoAuth/css/rudder/* local/html/NoAuth/css/localstyle/
+    $ cp -R share/html/NoAuth/css/elevator-light/* local/html/NoAuth/css/localstyle/
 
 You can call your "localstyle" directory whatever you want and you don't
-have to copy the rudder theme to start from, but it's a good place to
-start off for RT4.
+have to copy the elevator-light theme to start from, but it's a good place
+to start off for RT4.
 
 Now set C<$WebDefaultStylesheet> in RT_SiteConfig.pm to the new directory
 name you selected, for example:
@@ -138,17 +168,7 @@ your current default theme), but if you go to your Preferences page you'll
 see that the system default theme is now your new "localtheme."
 
 If you look at the CSS being loaded, you'll also see that the main css
-file is now being loaded from your local directory. But you'll also see
-that files are still being loaded from the main RT css directories as
-well. Why?
-
-The place to start understanding the loading order of RT's CSS is the
-C<main.css> file. You'll see it first loads C<..base/main.css> which
-are the base styles for RT along with styles for other tools RT uses
-like jQuery. After loading all of the base styles, C<main.css> then
-imports a theme-specific version with overrides and new style elements
-for the selected theme. So as long as you follow the CSS precedence rules
-and use the correct specificity, you get the last chance to modify things.
+file is now being loaded from your local directory.
 
 You can start modifying things by editing the CSS files in your new
 localstyle directory. When you upgrade RT, you'll want to look specifically

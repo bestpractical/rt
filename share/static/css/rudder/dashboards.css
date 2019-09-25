@@ -1,7 +1,0 @@
-table.dashboard {
-    margin-top: 6em
-}
-
-#body>table.dashboard {
-    margin-top: inherit
-}

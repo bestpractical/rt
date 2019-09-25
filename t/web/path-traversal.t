@@ -23,7 +23,7 @@ $agent->get("$baseurl/NoAuth/../../../etc/RT_Config.pm");
 is($agent->status, HTTP::Status::HTTP_BAD_REQUEST);
 $agent->warning_like(qr/Invalid request.*aborting/) unless $ENV{RT_TEST_WEB_HANDLER} =~ /^apache/;
 
-$agent->get("$baseurl/static/css/web2/images/../../../../../../etc/RT_Config.pm");
+$agent->get("$baseurl/static/css/elevator-light/images/../../../../../../etc/RT_Config.pm");
 # Apache hardcodes a 400 but the static handler returns a 403 for traversal too high
 is($agent->status, $ENV{RT_TEST_WEB_HANDLER} =~ /^apache/ ? HTTP::Status::HTTP_BAD_REQUEST : HTTP::Status::HTTP_FORBIDDEN);
 

@@ -1,3 +1,99 @@
+.hide, .hidden { display: none !important; }
+
+.clear { clear: both; }
+
+* html .clearfix {
+    height: 1%; /* IE5-6 */
+}
+.clearfix {
+    display: inline-block; /* IE7xhtml*/
+}
+html[xmlns] .clearfix { /* O */
+    display: block;
+}
+.clearfix:after { /* FF, O, etc. */
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+hr.clear {
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-size: 1px;
+}
+
+/* Custom fields */
+
+.cflabel .name { font-weight: bold; }
+.cflabel .type { font-style: italic; }
+
+.query-stacktrace-toggle {
+    float: right;
+}
+
+/* jQuery UI overrides */
+.ui-widget {
+    font-family: arial,helvetica,sans-serif !important;
+}
+
+textarea.messagebox, #cke_Content, #cke_UpdateContent {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+div.cke {
+    border: 1px solid #b6b6b6;
+}
+
+.cke_top {
+    border-bottom: none !important;
+}
+
+.cke_bottom {
+    border-top: none !important;
+}
+
+.selection-box {
+    min-width: 300px;
+}
+
+.datepicker {
+    width: 17em;
+}
+
+.toggle-bookmark a img,
+.timer-link a img {
+    height: 1em;
+    width: 1em;
+    border-style: none;
+}
+
+.dashboard-subscription tr.frequency .value input {
+    margin-bottom: 0.75em;
+}
+
+/* infinite history error message */
+
+.error-load-history {
+    background-color: #b32;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+.error-load-history a {
+    text-decoration: underline !important;
+    color: white !important;
+}
+
+/* */
+
 .comment {
     padding-left: 0.5em;
     color: #999;
@@ -11,31 +107,6 @@
     margin-left: 1em;
     margin-top: 1em;
     overflow: auto;
-}
-
-span.cflabel,
-td.cflabel,
-span.label,
-span.labeltop,
-td.label,
-td.labeltop {
-    font-weight: bold;
-    color: #666;
-    font-size: 1em;
-}
-
-span.cflabel .type,
-td.cflabel .type {
-    font-weight: normal;
-    font-size: 0.8em;
-}
-
-table.myday h2 {
-    display: inline
-}
-
-table.myday td {
-    padding: 0.25em
 }
 
 #download-my-data div.form-row i {

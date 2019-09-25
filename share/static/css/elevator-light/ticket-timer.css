@@ -2,7 +2,25 @@
     padding: 0;
 }
 
+.ticket-timer img {
+    height: 1.5em;
+    border-style: none;
+}
+
+.timer-link a img {
+    border-style: none;
+}
+
+/* we use background: #547CCC; to help make the ticket timer look more like RT
+   but unfortunately that makes the stopwatch icon (being black) look bad */
+.ticket-timer .ticket-link img {
+    display: none;
+}
+
 .ticket-timer .ticket-link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     background: #547CCC;
     padding: 0.33em 1em;
     margin-bottom: 0;
@@ -18,19 +36,51 @@
     font-weight: bold;
 }
 
-/* we use background: #547CCC; to help make the ticket timer look more like RT
-   but unfortunately that makes the stopwatch icon (being black) look bad */
-.ticket-timer .ticket-link img {
+.ticket-timer .readout {
+    font-size: 2em;
+    text-align: center;
+    width: 100%;
+}
+
+.ticket-timer .control-line {
+    text-align: center;
+}
+
+.ticket-timer .control-line a {
+    margin: 0 1em;
+}
+
+.ticket-timer .extra {
+    color: #aaa;
+}
+
+.ticket-timer > div {
+    margin-bottom: 0.4em;
+}
+
+.ticket-timer.error .readout {
+    color: red;
+}
+
+.ticket-timer.error .extra {
     display: none;
+}
+
+.ticket-timer .on-error {
+    display: none;
+}
+
+.ticket-timer.error .on-error {
+    display: block;
+    color: red;
+}
+
+.ticket-timer .readout.response {
+    font-size: 1.25em;
 }
 
 .ticket-timer .gutter {
     border-bottom: 1px solid #ccc;
     background-color: #eee;
     padding: 0.5em;
-}
-
-.ticket-timer .extra,
-.ticket-timer .on-error {
-    padding: 0 1em;
 }
