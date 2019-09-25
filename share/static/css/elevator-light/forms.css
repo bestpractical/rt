@@ -105,25 +105,13 @@ div.error .titlebox-title .widget a {
   background-position: center -7px;
 }
 
-.label, .labeltop {
- text-align: right;
- padding-right: .5em;
- padding-top: .5em;
-}
-
-.cflabel {
- text-align: right;
- padding-right: .5em;
- width: 12em;
+.label {
+  text-align: right;
 }
 
 .value > ul {
     margin-top: 0;
     margin-bottom: 0;
-}
-
-td.cflabel {
-    width: auto;
 }
 
 div.ticket-info-basics div.titlebox-content .labeltop{
