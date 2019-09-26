@@ -341,6 +341,7 @@ span.current-value.form-control {
   line-height: 1;
 }
 
+.label.input,
 form .label,
 form .value > .list-group {
   padding-top: 5px;
