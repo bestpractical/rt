@@ -144,18 +144,25 @@ sub Load {
         @_,
     );
 
-    if (defined $args{Name} and exists $LIFECYCLES_CACHE{ $args{Name} }) {
-        $self->{'name'} = $args{Name};
-        $self->{'data'} = $LIFECYCLES_CACHE{ $args{Name} };
-        $self->{'type'} = $args{Type};
+    my $load_class = sub {
+        if (defined $args{Name} and exists $LIFECYCLES_CACHE{ $args{Name} }) {
+            $self->{'name'} = $args{Name};
+            $self->{'data'} = $LIFECYCLES_CACHE{ $args{Name} };
+            $self->{'type'} = $args{Type};
 
-        my $found_type = $self->{'data'}{'type'};
-        warn "Found type of $found_type ne $args{Type}" if $found_type ne $args{Type};
-    } elsif (not $args{Name} and exists $LIFECYCLES_TYPES{ $args{Type} }) {
-        $self->{'data'} = $LIFECYCLES_TYPES{ $args{Type} };
-        $self->{'type'} = $args{Type};
-    } else {
-        return undef;
+            my $found_type = $self->{'data'}{'type'};
+            warn "Found type of $found_type ne $args{Type}" if $found_type ne $args{Type};
+        } elsif (not $args{Name} and exists $LIFECYCLES_TYPES{ $args{Type} }) {
+            $self->{'data'} = $LIFECYCLES_TYPES{ $args{Type} };
+            $self->{'type'} = $args{Type};
+        } else {
+            return undef;
+        }
+    };
+    # If we could not load the class, try re-filling the cache in case we missed something
+    unless ( &$load_class ) {
+        $self->FillCache();
+        &$load_class();
     }
 
     my $class = "RT::Lifecycle::".ucfirst($args{Type});
