@@ -1,19 +1,19 @@
-.lifecycle-ui.editing svg {
-    display: inline-block;
-    float: left;
-    width: 809px;
-    height: 500px;
+.lifecycle-ui {
+    margin-left: 10%;
+}
 
-    background-size: 25px 25px;
+.lifecycle-ui.editing svg {
+    float: left;
+    width: 60%;
+    height: 500px;
 }
 
 .lifecycle-ui.editing .overlay-buttons {
-    left: 700px;
+    left: 50%;
 }
 
 .lifecycle-ui .inspector {
     display: inline-block;
-    width: 250px;
     min-height: 500px;
     border: 1px solid black;
 }
