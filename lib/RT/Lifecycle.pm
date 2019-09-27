@@ -145,6 +145,7 @@ sub Load {
         Name => '',
         @_,
     );
+    $args{'Type'} = $args{'Type'} // 'ticket';
 
     my $needs_update = RT->System->LifecycleCacheNeedsUpdate;
     if ($needs_update > $lifecycle_cache_time) {
