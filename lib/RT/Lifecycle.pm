@@ -143,6 +143,7 @@ sub Load {
         Name => '',
         @_,
     );
+    $args{'Type'} = $args{'Type'} // 'ticket';
 
     my $load_class = sub {
         if (defined $args{Name} and exists $LIFECYCLES_CACHE{ $args{Name} }) {
@@ -151,18 +152,19 @@ sub Load {
             $self->{'type'} = $args{Type};
 
             my $found_type = $self->{'data'}{'type'};
-            warn "Found type of $found_type ne $args{Type}" if $found_type ne $args{Type};
+            warn "Found type of $found_type ne ".$args{'Type'} if $found_type ne $args{Type};
         } elsif (not $args{Name} and exists $LIFECYCLES_TYPES{ $args{Type} }) {
             $self->{'data'} = $LIFECYCLES_TYPES{ $args{Type} };
             $self->{'type'} = $args{Type};
         } else {
             return undef;
         }
+        return 1;
     };
-    # If we could not load the class, try re-filling the cache in case we missed something
-    unless ( &$load_class ) {
+    # If we could not load the class, try re-filling the cache in case it is stale
+    unless ( &$load_class() ) {
         $self->FillCache();
-        &$load_class();
+        return unless &$load_class();
     }
 
     my $class = "RT::Lifecycle::".ucfirst($args{Type});
