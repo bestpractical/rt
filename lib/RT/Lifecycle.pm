@@ -57,6 +57,8 @@ our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
 our %LIFECYCLES_TYPES;
 
+my $lifecycle_cache_time = 0;
+
 # cache structure:
 #    {
 #        lifecycle_x => {
@@ -109,7 +111,7 @@ sub new {
     my $proto = shift;
     my $self = bless {}, ref($proto) || $proto;
 
-    $self->FillCache unless keys %LIFECYCLES_CACHE;
+    RT->System->LifecycleCacheNeedsUpdate(1);
 
     return $self;
 }
@@ -144,13 +146,19 @@ sub Load {
         @_,
     );
 
+    my $needs_update = RT->System->LifecycleCacheNeedsUpdate;
+    if ($needs_update > $lifecycle_cache_time) {
+        $self->FillCache();
+        $lifecycle_cache_time = $needs_update;
+    }
+
     if (defined $args{Name} and exists $LIFECYCLES_CACHE{ $args{Name} }) {
         $self->{'name'} = $args{Name};
         $self->{'data'} = $LIFECYCLES_CACHE{ $args{Name} };
         $self->{'type'} = $args{Type};
 
         my $found_type = $self->{'data'}{'type'};
-        warn "Found type of $found_type ne $args{Type}" if $found_type ne $args{Type};
+        warn "Found type of $found_type ne ".$args{'Type'} if $found_type ne $args{Type};
     } elsif (not $args{Name} and exists $LIFECYCLES_TYPES{ $args{Type} }) {
         $self->{'data'} = $LIFECYCLES_TYPES{ $args{Type} };
         $self->{'type'} = $args{Type};
@@ -197,8 +205,6 @@ Returns: A sorted list of all available lifecycles.
 sub ListAll {
     my $self = shift;
     my $for = shift || 'ticket';
-
-    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     return sort grep {$LIFECYCLES_CACHE{$_}{type} eq $for}
         grep $_ ne '__maps__', keys %LIFECYCLES_CACHE;
@@ -468,8 +474,6 @@ sub RightsDescription {
     my $self = shift;
     my $type = shift;
 
-    $self->FillCache unless keys %LIFECYCLES_CACHE;
-
     my %tmp;
     foreach my $lifecycle ( values %LIFECYCLES_CACHE ) {
         next unless exists $lifecycle->{'rights'};
@@ -518,8 +522,6 @@ sub Actions {
     my $self = shift;
     my $from = shift || return ();
     $from = lc $from;
-
-    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     my @res = grep lc $_->{'from'} eq $from || ( $_->{'from'} eq '*' && lc $_->{'to'} ne $from ),
         @{ $self->{'data'}{'actions'} };
@@ -595,7 +597,6 @@ that require translation.
 
 sub ForLocalization {
     my $self = shift;
-    $self->FillCache unless keys %LIFECYCLES_CACHE;
 
     my @res = ();
 
@@ -789,6 +790,8 @@ sub FillCache {
             and $class->can("RegisterRights");
     }
 
+    $lifecycle_cache_time = time;
+
     return;
 }
 
@@ -839,7 +842,7 @@ sub _SaveLifecycles {
         return ($ok, $msg) if !$ok;
     }
 
-    RT::Lifecycle->FillCache;
+    RT->System->LifecycleCacheNeedsUpdate(1);
 
     return 1;
 }
