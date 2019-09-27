@@ -1156,6 +1156,13 @@ sub _BuildAdminMenu {
                 RT::Interface::Web::EscapeURI(\$Name_uri);
                 RT::Interface::Web::EscapeURI(\$Type_uri);
 
+                my $lifecycles = $page->child( lifecycles =>
+                    title => loc('Lifecycles'),
+                    path  => '/Admin/Lifecycles/',
+                );
+                $lifecycles->child( select => title => loc('Select'), path => '/Admin/Lifecycles/');
+                $lifecycles->child( create => title => loc('Create'), path => '/Admin/Lifecycles/Create.html');
+
                 $page->child( basics => title => loc('Modify'),  path => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . "&Name=" . $Name_uri );
                 $page->child( mappings => title => loc('Mappings'),  path => "/Admin/Lifecycles/Mappings.html?Type=" . $Type_uri . "&Name=" . $Name_uri );
             }
