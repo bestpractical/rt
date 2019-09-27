@@ -83,6 +83,10 @@
     </&>
 % }
 
+% unless ( scalar @lifecycles ) {
+    <p><&|/l&>Mapping only available when more than one lifecycle exists</&></p>
+% }
+
 <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
 
 </form>
