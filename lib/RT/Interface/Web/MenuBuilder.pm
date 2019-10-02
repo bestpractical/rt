@@ -829,6 +829,22 @@ sub _BuildAdminMenu {
     $scrips->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
     $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
 
+    my $conditions = $admin_global->child( conditions =>
+        title => loc('Conditions'),
+        description => loc('Edit system conditions'),
+        path        => '/Admin/Global/Conditions.html',
+    );
+    $conditions->child( select => title => loc('Select'), path => "/Admin/Global/Conditions.html" );
+    $conditions->child( create => title => loc('Create'), path => "/Admin/Conditions/Create.html" );
+
+    my $actions   = $admin_global->child( actions =>
+        title => loc('Actions'),
+        description => loc('Edit system actions'),
+        path        => '/Admin/Global/Actions.html',
+    );
+    $actions->child( select => title => loc('Select'), path => "/Admin/Global/Actions.html" );
+    $actions->child( create => title => loc('Create'), path => "/Admin/Actions/Create.html" );
+
     my $templates = $admin_global->child( templates =>
         title       => loc('Templates'),
         description => loc('Edit system templates'),
@@ -1169,6 +1185,16 @@ sub _BuildAdminMenu {
     if ( $request_path =~ m{^/Admin/Global/Scrips\.html} ) {
         $page->child( select => title => loc('Select'), path => "/Admin/Global/Scrips.html" );
         $page->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html?Global=1" );
+    }
+
+    if ( $request_path =~ m{^/Admin(?:/Global)?/Conditions} ) {
+        $page->child( select => title => loc('Select'), path => "/Admin/Global/Conditions.html" );
+        $page->child( create => title => loc('Create'), path => "/Admin/Conditions/Create.html" );
+    }
+
+    if ( $request_path =~ m{^/Admin(?:/Global)?/Actions} ) {
+        $page->child( select => title => loc('Select'), path => "/Admin/Global/Actions.html" );
+        $page->child( create => title => loc('Create'), path => "/Admin/Actions/Create.html" );
     }
 
     if ( $request_path =~ m{^/Admin/Global/Templates?\.html} ) {
