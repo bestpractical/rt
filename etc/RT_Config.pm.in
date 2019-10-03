@@ -2036,7 +2036,7 @@ on self service pages.
 
 =cut
 
-Set($SelfServiceShowGroupTickets, 1);
+Set($SelfServiceShowGroupTickets, 0);
 
 =back
 
