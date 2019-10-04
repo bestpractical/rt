@@ -130,6 +130,15 @@ push @users_queries, { field => $UserField3, op => $UserOp3, string => $UserStri
 
 if ( scalar @users_queries ) {
     foreach my $user ( @users_queries ) {
+        if ( $user->{'string'} eq 'NULL' ) {
+            if ( $user->{'op'} =~ /!=|\bNOT\b/i ) {
+                $user->{'op'} = 'IS NOT';
+            }
+            else {
+                $user->{'op'} = 'IS';
+            }
+        }
+
         if ( $user->{'field'} =~ /^CustomField-(\d+)/ ) {
             $users->LimitCustomField(
                 CUSTOMFIELD => $1,
