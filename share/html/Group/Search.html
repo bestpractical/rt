@@ -45,39 +45,56 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
-</&>
+<& /Elements/Header, Title => loc('Group Search'), Focus => '#autocomplete-GroupString' &>
+<& /Elements/Tabs &>
+
+<& /Elements/GotoGroup, Default => $GroupString||'' &>
+
+<p> <&|/l&>This will search for groups by looking in the following fields:</&> <% $search_fields %></p>
+
+% if ($GroupString) {
+
+% unless ( $groups->Count ) {
+<p><&|/l&>No groups matching search criteria found.</&></p>
+% } else {
+<p><&|/l&>Select a group</&>:</p>
+
+<& /Elements/CollectionList,
+    OrderBy => 'Name',
+    Order => 'ASC',
+    Rows  => 100,
+    %ARGS,
+    Format => $Format,
+    Collection => $groups,
+    AllowSorting => 1,
+    PassArguments => [qw(Format Rows Page Order OrderBy GroupString)],
+&>
+
+% }
+% }
 
 <%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
+my $groups;
+my $Format;
+if ( $GroupString ) {
+    $groups = RT::Groups->new($session{'CurrentUser'});
+    $groups->LimitToUserDefinedGroups();
 
-if ($status) {
-    $status =~ s/(['\\])/\\$1/g;
-    $Query .= " AND Status = '$status'";
+    $groups->SimpleSearch( Return    => 'Name',
+                           Term      => $GroupString,
+                           Max       => 100 );
+    my $first = $groups->First;
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Group/Summary.html?id=".$first->Id)
+        if $groups->Count == 1;
+    $groups->GotoFirstItem;
+    $Format = RT->Config->Get('GroupSearchResultFormat');
 }
 
-my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+my $search_fields = join ", ",
+  sort map {s/^CF\.(?:\{(.*)}|(.*))/$1 || $2/e; loc($_)}
+  keys %{RT->Config->Get('GroupSearchFields')};
+
 </%INIT>
 <%ARGS>
-$title => undef
-$friendly_status => loc('open')
-$status => undef
-$BaseURL => undef
-$Page => 1
-@Order => ('ASC')
-@OrderBy => ('Created')
-$Rows => 50
-$SortByRole => 'Requestor' # Role to use when determining "My" tickets
+$GroupString => undef
 </%ARGS>

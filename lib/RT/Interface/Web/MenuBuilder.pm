@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -166,6 +166,12 @@ sub BuildMainNav {
         if $current_user->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
     $search->child( users => title => loc('Users'),   path => "/User/Search.html" );
+
+    $search->child( groups      =>
+                    title       => loc('Groups'),
+                    path        => "/Group/Search.html",
+                    description => 'Group search'
+    );
 
     $search->child( assets => title => loc("Assets"), path => "/Asset/Search/" )
         if $current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
@@ -1085,7 +1091,7 @@ sub _BuildAdminMenu {
 
     }
 
-    if ( $request_path =~ m{^/Admin/Groups} ) {
+    if ( $request_path =~ m{^(/Admin/Groups|/Group/(Summary|History)\.html)} ) {
         if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
             my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
             my $obj = RT::Group->new( $current_user );
@@ -1095,9 +1101,19 @@ sub _BuildAdminMenu {
                 $page->child( basics         => title => loc('Basics'),       path => "/Admin/Groups/Modify.html?id=" . $obj->id );
                 $page->child( members        => title => loc('Members'),      path => "/Admin/Groups/Members.html?id=" . $obj->id );
                 $page->child( memberships    => title => loc('Memberships'),  path => "/Admin/Groups/Memberships.html?id=" . $obj->id );
+                $page->child( 'links'     =>
+                              title       => loc("Links"),
+                              path        => "/Admin/Groups/ModifyLinks.html?id=" . $obj->id,
+                              description => loc("Group links"),
+                );
                 $page->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
                 $page->child( 'user-rights'  => title => loc('User Rights'),  path => "/Admin/Groups/UserRights.html?id=" . $obj->id );
                 $page->child( history        => title => loc('History'),      path => "/Admin/Groups/History.html?id=" . $obj->id );
+                $page->child( 'summary'   =>
+                              title       => loc("Group Summary"),
+                              path        => "/Group/Summary.html?id=" . $obj->id,
+                              description => loc("Group summary page"),
+                );
             }
         }
     }

@@ -60,8 +60,9 @@ if ($Object->isa("RT::Group")) {
         map {+[($_->EmailAddress||''), $_]}
         @{ $Object->UserMembersObj( Recursively => 0 )->ItemsArrayRef };
 
-    # But don't link the groups
-    push @ret, sort map {$m->interp->apply_escapes( loc("Group: [_1]", $_->Name), 'h' )}
+    # Link to the group summary page
+    my $href = RT->Config->Get("WebPath") . "/Group/Summary.html?id=";
+    push @ret, sort map { "<a href=\"" . $href . $_->id . "\">" . loc("Group:") . " " . $_->Name . "</a>" }
         @{ $Object->GroupMembersObj( Recursively => 0)->ItemsArrayRef };
 
     $m->out( join($Separator, @ret) );

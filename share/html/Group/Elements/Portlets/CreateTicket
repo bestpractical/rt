@@ -45,39 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
+<&| /Widgets/TitleBox, title => loc('Quick ticket creation'), class => "group create-ticket" &>
+<form name="CreateTicket" action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
+<input type="hidden" name="AddGroupCc" value="<%$Group->Id%>">
+  <div class="form-row">
+    <div class="col-md-auto">
+      <&|/l&>Create a ticket with this group as Cc in Queue</&>
+      <& /Elements/SelectNewTicketQueue &>
+    </div>
+    <div class="col-md-auto">
+      <input type="submit" class="form-control btn btn-primary button" value="<&|/l&>Create</&>">
+    </div>
+  </div>
+</form>
 </&>
-
-<%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
-
-if ($status) {
-    $status =~ s/(['\\])/\\$1/g;
-    $Query .= " AND Status = '$status'";
-}
-
-my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
-</%INIT>
 <%ARGS>
-$title => undef
-$friendly_status => loc('open')
-$status => undef
-$BaseURL => undef
-$Page => 1
-@Order => ('ASC')
-@OrderBy => ('Created')
-$Rows => 50
-$SortByRole => 'Requestor' # Role to use when determining "My" tickets
+$Group
 </%ARGS>

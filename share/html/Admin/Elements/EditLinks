@@ -45,39 +45,65 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
-</&>
+<div class="row">
 
-<%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
+  <div class="col-md-6">
+    <div class="form-row">
+      <div class="col-md-12">
+        <h3><&|/l&>Current Links</&></h3>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-3 label">
+        <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &>
+      </div>
+      <div class="col-md-9 value">
+        <div class="form-row">
+          <div class="col-md-auto">
+% while (my $link = $Object->RefersTo->Next) {
+            <& /Elements/EditLink, Link => $link, Mode => 'Target' &>
+%}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-3 label">
+        <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &>
+      </div>
+      <div class="col-md-9 value">
+        <div class="form-row">
+          <div class="col-md-auto">
+% while (my $link = $Object->ReferredToBy->Next) {
+            <& /Elements/EditLink, Link => $link, Mode => 'Base' &>
+% }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-3 label"></div>
+      <div class="col-md-9 value">
+        <i><&|/l&>(Check box to remove link)</&></i>
+      </div>
+    </div>
+  </div>
 
-if ($status) {
-    $status =~ s/(['\\])/\\$1/g;
-    $Query .= " AND Status = '$status'";
-}
+  <div class="col-md-6">
+    <div class="form-row">
+      <div class="col-md-12">
+        <h3><&|/l&>New Links</&></h3>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-md-12">
+        <& AddLinks, %ARGS &>
+      </div>
+    </div>
+  </div>
 
-my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
-</%INIT>
+</div>
+
 <%ARGS>
-$title => undef
-$friendly_status => loc('open')
-$status => undef
-$BaseURL => undef
-$Page => 1
-@Order => ('ASC')
-@OrderBy => ('Created')
-$Rows => 50
-$SortByRole => 'Requestor' # Role to use when determining "My" tickets
+$Object => undef
 </%ARGS>

@@ -74,11 +74,10 @@ use warnings;
 use base 'RT::Record';
 
 use Role::Basic 'with';
-with "RT::Record::Role::Rights";
+with "RT::Record::Role::Rights",
+     "RT::Record::Role::Links";
 
 sub Table {'Groups'}
-
-
 
 use RT::Users;
 use RT::GroupMembers;
@@ -96,6 +95,7 @@ __PACKAGE__->AddRight( Staff => SeeGroupDashboard    => 'View group dashboards')
 __PACKAGE__->AddRight( Admin => CreateGroupDashboard => 'Create group dashboards'); # loc
 __PACKAGE__->AddRight( Admin => ModifyGroupDashboard => 'Modify group dashboards'); # loc
 __PACKAGE__->AddRight( Admin => DeleteGroupDashboard => 'Delete group dashboards'); # loc
+__PACKAGE__->AddRight( Staff => ModifyGroupLinks     => 'Modify group links' ); # loc
 
 =head1 METHODS
 
@@ -1710,6 +1710,22 @@ sub _CustomRoleObj {
         }
     }
     return;
+}
+
+sub ModifyLinkRight {'ModifyGroupLinks'}
+
+=head2 URI
+
+Returns this group's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+
+    require RT::URI::group;
+    my $uri = RT::URI::group->new($self->CurrentUser);
+    return $uri->URIForObject($self);
 }
 
 RT::Base->_ImportOverlays();

@@ -59,6 +59,16 @@
 
 % $m->callback(CallbackName => 'AfterMyRequests', ARGSRef => \%ARGS, Page => $Page);
 
+<& /SelfService/Elements/MyGroupRequests,
+    %ARGS,
+    status  => '__Active__',
+    title   => loc('My group\'s tickets'),
+    BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
+    Page    => $Page,
+&>
+
+% $m->callback(CallbackName => 'AfterMyGroupRequests', ARGSRef => \%ARGS, Page => $Page);
+
 <%ARGS>
 $Page => 1
 </%ARGS>

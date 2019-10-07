@@ -45,39 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
-</&>
-
+<& /Elements/ShowRecord,
+    Object      => $Group,
+    Format      => $format,
+    TrustFormat => 1, # Only modifiable by the RT server admin, so no need to scrub.
+    Class       => "$ClassPrefix-extra",
+    &>
 <%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
-
-if ($status) {
-    $status =~ s/(['\\])/\\$1/g;
-    $Query .= " AND Status = '$status'";
-}
-
-my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+return unless blessed($Group) and $Group->id;
+return unless $FormatConfig;
+my $format = RT->Config->Get($FormatConfig);
+return unless $format;
 </%INIT>
 <%ARGS>
-$title => undef
-$friendly_status => loc('open')
-$status => undef
-$BaseURL => undef
-$Page => 1
-@Order => ('ASC')
-@OrderBy => ('Created')
-$Rows => 50
-$SortByRole => 'Requestor' # Role to use when determining "My" tickets
+$Group        => undef
+$FormatConfig => undef
+$ClassPrefix  => undef
 </%ARGS>

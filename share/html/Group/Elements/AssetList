@@ -45,39 +45,36 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
-</&>
-
 <%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
-
-if ($status) {
-    $status =~ s/(['\\])/\\$1/g;
-    $Query .= " AND Status = '$status'";
+my $assets = RT::Assets->new($session{CurrentUser});
+$m->callback( CallbackName => 'ModifyAssetSearch', %ARGS, Assets => $assets, Roles => \@Roles );
+for my $role (@Roles) {
+    $assets->RoleLimit(
+        TYPE        => $role,
+        VALUE       => $Group->PrincipalId,
+        SUBCLAUSE   => "Role$role",
+    );
 }
-
-my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+my $Format = q[
+    '<b><a href="__WebHomePath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+    '<b><a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
+    Description,
+];
+$m->callback( CallbackName => 'ModifyFormat', %ARGS, Format => \$Format );
 </%INIT>
+<&| /Widgets/TitleBox, title => $Title, class => "group asset-list" &>
+    <& /Elements/CollectionList,
+        Collection      => $assets,
+        OrderBy         => 'id',
+        Order           => 'ASC',
+        Format          => $Format,
+        AllowSorting    => 0,
+        HasResults      => $HasResults,
+        &>
+</&>
 <%ARGS>
-$title => undef
-$friendly_status => loc('open')
-$status => undef
-$BaseURL => undef
-$Page => 1
-@Order => ('ASC')
-@OrderBy => ('Created')
-$Rows => 50
-$SortByRole => 'Requestor' # Role to use when determining "My" tickets
+$Group
+$Title
+@Roles
+$HasResults => undef
 </%ARGS>

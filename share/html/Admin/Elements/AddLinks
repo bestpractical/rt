@@ -45,39 +45,51 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
-</&>
+% if (ref($Object) eq 'RT::Group') {
+<i><&|/l&>Enter names or IDs of other groups to link. Start typing a group name to see matching groups. Separate multiple entries with a comma.</&>
+% $m->callback( CallbackName => 'ExtraLinkInstructions' );
+</i><br />
+% } else {
+<i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
+% }
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &>
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-3 label">
+      <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &>
+    </div>
+    <div class="col-md-9 value">
+      <input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/>
+    </div>
+  </div>
+  <& /Elements/EditCustomFields,
+        Object          => $Object,
+        Grouping        => 'Links',
+        InTable         => 1,
+        ($CustomFields
+            ? (CustomFields => $CustomFields)
+            : ()),
+        &>
+% $m->callback( CallbackName => 'NewLink' );
 
 <%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
+my $id = ($Object and $Object->id)
+    ? $Object->id
+    : "new";
 
-if ($status) {
-    $status =~ s/(['\\])/\\$1/g;
-    $Query .= " AND Status = '$status'";
-}
-
-my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+my $exclude = qq| data-autocomplete="Groups" data-autocomplete-multiple="1" |;
+$exclude .= qq| data-autocomplete-exclude="$id"| if $Object->id;
 </%INIT>
 <%ARGS>
-$title => undef
-$friendly_status => loc('open')
-$status => undef
-$BaseURL => undef
-$Page => 1
-@Order => ('ASC')
-@OrderBy => ('Created')
-$Rows => 50
-$SortByRole => 'Requestor' # Role to use when determining "My" tickets
+$Object => undef
+$CustomFields => undef
+$ARGSRef => $DECODED_ARGS
 </%ARGS>

@@ -45,39 +45,70 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
-</&>
+% if ( $TitleBox ) {
+    <& /Widgets/TitleBoxStart, title => $Title, title_href => $url, class => $Class &>
+% } else {
+    <span class="label"><a href="<% $url %>"><% $Title %>:</a></span>
+% }
 
+<& /Elements/CollectionList,
+    %QueryProperties,
+    Class          => 'RT::Tickets',
+    Page           => 1,
+    AllowSorting   => 0,
+    ShowNavigation => 0,
+&>
+
+% if ( $TitleBox ) {
+    <& /Widgets/TitleBoxEnd &>
+% }
 <%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
 
-if ($status) {
-    $status =~ s/(['\\])/\\$1/g;
-    $Query .= " AND Status = '$status'";
+my $sql = '';
+
+$sql = join(' OR ', map { "$_.id = ".$Group->Id } @WatcherTypes );
+$sql = "( $sql )";
+
+$m->callback( CallbackName => 'ModifyWatcherSQL',
+        %ARGS,
+        sql => \$sql,
+);
+
+if (@$conditions) {
+    $sql .= " AND (".join( " OR ", map $_->{cond}, @$conditions).")";
 }
 
-my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+my %QueryProperties = (
+    Query      => $sql,
+    OrderBy    => 'Priority|id',
+    Order      => 'DESC|DESC',
+    Rows       => $Rows || 10,
+    ShowHeader => $ShowHeader,
+    Format     => $Format,
+);
+
+$m->callback( CallbackName => 'ModifyQueryProperties',
+    %ARGS,
+    QueryProperties => \%QueryProperties,
+);
+
+my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
+   $url .= $m->comp('/Elements/QueryString',
+                    Query       => $QueryProperties{'Query'},
+                    OrderBy     => $QueryProperties{'OrderBy'},
+                    Order       => $QueryProperties{'Order'},
+           );
+
 </%INIT>
 <%ARGS>
-$title => undef
-$friendly_status => loc('open')
-$status => undef
-$BaseURL => undef
-$Page => 1
-@Order => ('ASC')
-@OrderBy => ('Created')
-$Rows => 50
-$SortByRole => 'Requestor' # Role to use when determining "My" tickets
+$Title => ''
+$Class => ''
+@WatcherTypes => (qw(Watcher))
+$Group => undef
+$conditions
+$Rows => 10
+$Description => ''
+$TitleBox => 0
+$Format => ''
+$ShowHeader => 0
 </%ARGS>

@@ -45,39 +45,59 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
-</&>
+<& /Elements/Header, Title => loc('Group: [_1]', $Group->Name) &>
+<& /Elements/Tabs &>
+
+<& /Elements/GotoGroup &>
+<& /Elements/ListActions, actions => \@results &>
+
+<%perl>
+$m->callback( CallbackName => 'BeforePortlets', ARGSRef => \%ARGS, Group => $Group, Portlets => $portlets );
+for my $portlet (@$portlets) {
+   $show_portlet->($portlet);
+}
+$m->callback( CallbackName => 'AfterPortlets', ARGSRef => \%ARGS, Group => $Group, Portlets => $portlets );
+</%perl>
 
 <%INIT>
-$title ||= loc("My [_1] tickets", $friendly_status);
-my $id = $session{'CurrentUser'}->id;
-my $Query = "( $SortByRole.id = $id )";
-
-if ($status) {
-    $status =~ s/(['\\])/\\$1/g;
-    $Query .= " AND Status = '$status'";
+my $Group = RT::Group->new( $session{'CurrentUser'} );
+my ($status, $msg) = $Group->Load($id);
+unless ($status) {
+    RT->Logger->error("Unable to load group $id: $msg");
+    Abort("Unable to load Group $id");
 }
 
-my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+unless ( $Group->CurrentUserHasRight('SeeGroup') ){
+    Abort("No permission to view group");
+}
+
+my @results;
+if ( $Group->Disabled ){
+    if ( $session{'CurrentUser'}->HasRight(
+        Object => RT->System, Right => 'AdminGroup' ) ){
+        push @results, loc('Group [_1] is currently disabled. Edit the group and check "Enabled" to enable.', $Group->Name);
+    }
+    else{
+        push @results, loc('Group [_1] is currently disabled.', $Group->Name);
+    }
+}
+
+my $portlets = RT->Config->Get('GroupSummaryPortlets');
+
+my $show_portlet = sub {
+    my $portlet = shift;
+    my $full_path = "/Group/Elements/Portlets/$portlet";
+    unless ( RT::Interface::Web->ComponentPathIsSafe($full_path) ) {
+        RT->Logger->error("unsafe portlet $portlet specified in GroupSummaryPortlets");
+        return;
+    }
+    unless ( $m->comp_exists($full_path) ) {
+        RT->Logger->error("Unable to find $portlet in /Group/Elements/Portlets - specified in GroupSummaryPortlets");
+        return;
+    }
+    $m->comp( $full_path, Group => $Group );
+};
 </%INIT>
 <%ARGS>
-$title => undef
-$friendly_status => loc('open')
-$status => undef
-$BaseURL => undef
-$Page => 1
-@Order => ('ASC')
-@OrderBy => ('Created')
-$Rows => 50
-$SortByRole => 'Requestor' # Role to use when determining "My" tickets
+$id => undef
 </%ARGS>
