@@ -115,3 +115,9 @@ div.cke {
     font-size: 0.8em;
     white-space: normal;
 }
+
+.modal {
+  background: rgb(0, 0, 0, .70); 
+  z-index: 10000; 
+}
+
