@@ -141,6 +141,7 @@ sub JSFiles {
         dropzone.min.js
         quoteselection.js
         fontawesome.js
+        rights-inspector.js
         }, RT->Config->Get('JSFiles');
 }
 
@@ -1434,6 +1435,9 @@ our %WHITELISTED_COMPONENT_ARGS = (
     '/Articles/Article/ExtractIntoClass.html' => ['Ticket'],
     # Only affects display
     '/Ticket/Display.html' => ['HideUnsetFields'],
+
+    '/Admin/Tools/RightsInspector.html' => ['Principal', 'Object', 'Right'],
+    '/Helpers/RightsInspector/Search' => ['principal', 'object', 'right', 'continueAfter'],
 );
 
 # Components which are blacklisted from automatic, argument-based whitelisting.

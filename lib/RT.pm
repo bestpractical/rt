@@ -762,6 +762,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::ParentTimeWorked' => '4.4',
     'RT::Extension::FutureMailgate' => '4.4',
     'RT::Extension::AdminConditionsAndActions' => '4.4.2',
+    'RT::Extension::RightsInspector' => '4.6',
 );
 
 sub InitPlugins {

@@ -161,5 +161,12 @@
 }
 .darkmode div.modal-dialog-centered {
   background: rgba(0, 0, 0, 0) !important; 
+}
 
+.darkmode #rights-inspector .results .result:nth-child(even) * {
+    background-color: #111 !important;
+}
+
+.darkmode #rights-inspector .results .result .match {
+    background-color: #114 !important;
 }
