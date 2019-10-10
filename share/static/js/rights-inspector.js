@@ -1,5 +1,7 @@
 jQuery( function() {
     var form = jQuery('form#rights-inspector');
+    if ( !form.length ) return;
+
     var display = form.find('.results');
     var spinner = form.find('.spinner');
 
