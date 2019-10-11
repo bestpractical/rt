@@ -1,4 +1,4 @@
-jQuery( function() {
+jQuery(function() {
     var form = jQuery('form#rights-inspector');
     if ( !form.length ) return;
 
@@ -166,28 +166,28 @@ jQuery( function() {
 // rendering functions
 
 function render_inspector_record (record) {
-    return '<span class="record ' + cond_text( record.disabled, 'disabled') + '">'
+    return '<span class="record ' + cond_text(record.disabled, 'disabled') + '">'
         +  '  <span class="name">'
-        +       link_or_text( record.label_highlighted, record.url)
+        +       link_or_text(record.label_highlighted, record.url)
         +  '  </span>'
         +  '  <span class="detail">'
-        +       link_or_text( record.detail_highlighted, record.detail_url)
-        +       link_or_text( record.detail_extra, record.detail_extra_url)
-        +       cond_text( record.disabled, '(' + RT.I18N.Catalog.lower_disabled + ')')
+        +       link_or_text(record.detail_highlighted, record.detail_url)
+        +       link_or_text(record.detail_extra, record.detail_extra_url)
+        +       cond_text(record.disabled, '(' + RT.I18N.Catalog.lower_disabled + ')')
         +  '  </span>'
-        +     render_inspector_primary_record( record.primary_record)
+        +     render_inspector_primary_record(record.primary_record)
         +  '</span>'
     ;
 
 }
 
 function render_inspector_primary_record (primary_record) {
-    return primary_record ? '<span class="primary">' + RT.I18N.Catalog.contains + render_inspector_record( primary_record) + '</span>'
+    return primary_record ? '<span class="primary">' + RT.I18N.Catalog.contains + render_inspector_record(primary_record) + '</span>'
                           : '';
 }
 
 function link_or_text (text, url) {
-    if( typeof text == 'undefined') {
+    if(typeof text == 'undefined') {
         return '';
     }
     else if( url && url.length > 0 ) {
@@ -200,8 +200,8 @@ function link_or_text (text, url) {
 
 function render_inspector_result (item) {
     return '<div class="result form-row">'
-        +  '  <div class="principal cell col-md-3 my-auto">' + render_inspector_record( item.principal) + '</div>'
-        +  '  <div class="object cell col-md-3 my-auto">' + render_inspector_record( item.object) + '</div>'
+        +  '  <div class="principal cell col-md-3 my-auto">' + render_inspector_record(item.principal) + '</div>'
+        +  '  <div class="object cell col-md-3 my-auto">' + render_inspector_record(item.object) + '</div>'
         +  '  <div class="right cell col-md-3 my-auto">' + item.right_highlighted + '</div>'
         +  '  <div class="revoke cell col-md-1 my-auto">'
         +       revoke_button(item)
