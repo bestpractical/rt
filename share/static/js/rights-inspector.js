@@ -40,7 +40,11 @@ jQuery( function() {
             url: form.attr('action'),
             data: search,
             timeout: 30000, /* 30 seconds */
+            beforeSend: function() {
+                jQuery('.spinner').show();
+            },
             success: function (response) {
+                jQuery('.spinner').hide();
                 if (response.error) {
                     displayError(response.error);
                     return;
@@ -76,10 +80,10 @@ jQuery( function() {
                         form.removeClass('awaiting-first-result');
                         display.text('No results');
                     }
-                jQuery('.spinner').hide();
                 }
             },
             error: function (xhr, reason) {
+                jQuery('.spinner').hide();
                 if (reason == 'abort') {
                     return;
                 }
@@ -92,7 +96,6 @@ jQuery( function() {
     var beginSearch = function (delay) {
         form.removeClass('continuing-load').addClass('awaiting-first-result');
         form.find('button').addClass('ui-state-disabled').prop('disabled', true);
-        jQuery('.spinner').show();
 
         var serialized = form.serializeArray();
         var search = {};
