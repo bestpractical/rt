@@ -24,7 +24,7 @@ jQuery( function() {
     var displayError = function (message) {
         form.removeClass('awaiting-first-result').removeClass('continuing-load').addClass('error');
         display.empty();
-        display.text('Error: ' + message);
+        display.text(RT.I18N.Catalog.error + ': ' + message);
     }
 
     var requestPage;
@@ -78,7 +78,7 @@ jQuery( function() {
                     if (form.hasClass('awaiting-first-result')) {
                         display.empty();
                         form.removeClass('awaiting-first-result');
-                        display.text('No results');
+                        display.text(RT.I18N.Catalog.no_results);
                     }
                 }
             },
@@ -172,7 +172,7 @@ function render_inspector_record (record) {
         +  '  <span class="detail">'
         +       link_or_text( record.detail_highlighted, record.detail_url)
         +       link_or_text( record.detail_extra, record.detail_extra_url)
-        +       cond_text( record.disabled, '(disabled)')
+        +       cond_text( record.disabled, '(' + RT.I18N.Catalog.lower_disabled + ')')
         +  '  </span>'
         +     render_inspector_primary_record( record.primary_record)
         +  '</span>'
@@ -181,7 +181,7 @@ function render_inspector_record (record) {
 }
 
 function render_inspector_primary_record (primary_record) {
-    return primary_record ? '<span class="primary">Contains ' + render_inspector_record( primary_record) + '</span>'
+    return primary_record ? '<span class="primary">' + RT.I18N.Catalog.contains + render_inspector_record( primary_record) + '</span>'
                           : '';
 }
 
