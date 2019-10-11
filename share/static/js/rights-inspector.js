@@ -166,7 +166,7 @@ jQuery( function() {
 
 function render_inspector_record (record) {
     return '<span class="record ' + cond_text( record.disabled, 'disabled') + '">'
-        +  '  <span class="name ' + cond_text( record.highlight, record.match) + '">'
+        +  '  <span class="name">'
         +       link_or_text( record.label_highlighted, record.url)
         +  '  </span>'
         +  '  <span class="detail">'
