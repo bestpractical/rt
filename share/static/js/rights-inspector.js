@@ -141,6 +141,7 @@ jQuery( function() {
                     alert(response.msg);
                 }
                 else {
+                    button.closest('.revoke').siblings('.unused').remove();
                     button.closest('.revoke').removeClass('col-md-1').addClass('col-md-3').text(response.msg);
                 }
                 delete revoking[action];
@@ -199,12 +200,13 @@ function link_or_text (text, url) {
 
 function render_inspector_result (item) {
     return '<div class="result form-row">'
-        +  '  <div class="principal cell col-md-3">' + render_inspector_record( item.principal) + '</div>'
-        +  '  <div class="object cell col-md-3">' + render_inspector_record( item.object) + '</div>'
-        +  '  <div class="right cell col-md-3">' + item.right_highlighted + '</div>'
-        +  '  <div class="revoke cell col-md-1">'
+        +  '  <div class="principal cell col-md-3 my-auto">' + render_inspector_record( item.principal) + '</div>'
+        +  '  <div class="object cell col-md-3 my-auto">' + render_inspector_record( item.object) + '</div>'
+        +  '  <div class="right cell col-md-3 my-auto">' + item.right_highlighted + '</div>'
+        +  '  <div class="revoke cell col-md-1 my-auto">'
         +       revoke_button(item)
         + '  </div>'
+        +  '  <div class="unused cell col-md-2" />'
         + '</div>'
     ;
 }

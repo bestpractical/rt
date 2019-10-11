@@ -163,8 +163,13 @@
   background: rgba(0, 0, 0, 0) !important; 
 }
 
+.darkmode #rights-inspector .results .result:nth-child(even),
 .darkmode #rights-inspector .results .result:nth-child(even) * {
     background-color: #111 !important;
+}
+
+.darkmode #rights-inspector .results .result:nth-child(even) .unused {
+  background: #171A1F !important;
 }
 
 .darkmode #rights-inspector .results .result .match {
