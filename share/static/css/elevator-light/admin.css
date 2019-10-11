@@ -133,10 +133,6 @@ div.inline-row i {
     white-space: normal;
 }
 
-#rights-inspector .loading {
-    display: none;
-}
-
 #rights-inspector.error .results {
     color: red;
     font-weight: bold;
@@ -144,10 +140,6 @@ div.inline-row i {
 
 #rights-inspector.awaiting-first-result .results {
     opacity: 0.5;
-}
-
-#rights-inspector.awaiting-first-result .loading, .continuing-load .loading {
-    display: inline;
 }
 
 #rights-inspector .results .result:nth-child(even) .cell {
