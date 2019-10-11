@@ -219,7 +219,7 @@ function revoke_button (item) {
     }
 }
 
-function cond_text (cond, text = '') {
+function cond_text (cond, text) {
     return cond ? text : '';
 }
 
