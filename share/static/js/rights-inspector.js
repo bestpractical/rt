@@ -3,7 +3,6 @@ jQuery( function() {
     if ( !form.length ) return;
 
     var display = form.find('.results');
-    var spinner = form.find('.spinner');
 
     var revoking = {};
     var existingRequest;
@@ -19,7 +18,7 @@ jQuery( function() {
         }
 
         button.addClass('ui-state-disabled').prop('disabled', true);
-        button.after(spinner.clone());
+        button.append(' <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
     };
 
     var displayError = function (message) {
