@@ -48,7 +48,7 @@
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="col-md-2 label">
     <&|/l&>One-time Cc</&>:
   </div>
   <div class="col-md-9 value">
@@ -58,7 +58,7 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label"></div>
+  <div class="col-md-2 label"></div>
   <div class="col-md-9 value">
     <div class="form-row">
 %if (scalar @one_time_Ccs) {
@@ -100,7 +100,7 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="col-md-2 label">
     <&|/l&>One-time Bcc</&>:
   </div>
   <div class="col-md-9 value">
@@ -109,7 +109,7 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label"></div>
+  <div class="col-md-2 label"></div>
   <div class="col-md-9 value">
     <div class="form-row">
 %if (scalar @one_time_Ccs) {

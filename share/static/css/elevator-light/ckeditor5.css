@@ -1,3 +1,12 @@
 .ck-editor__editable_inline {
     min-height: 300px;
 }
+
+/* Change background color for reply and comment */
+div.messagebox-container.action-response div.ck-editor__editable_inline {
+    background-color: #fcc !important;
+}
+
+div.messagebox-container.action-private div.ck-editor__editable_inline {
+    background-color: #ffffdd !important;
+}

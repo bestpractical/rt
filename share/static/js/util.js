@@ -293,6 +293,9 @@ function textToHTML(value) {
                 .replace(/\n/g,   "\n<br />");
 };
 
+// Save the CKEditor instance for use after initializing
+var RichTextEditor;
+
 function ReplaceAllTextareas() {
 
 //    if (RT.Config.MessageBoxUseSystemContextMenu) {
@@ -317,6 +320,9 @@ function ReplaceAllTextareas() {
 
         ClassicEditor
             .create( document.querySelector( '.richtext' ) )
+            .then(editor => {
+                RichTextEditor = editor; // Save the editor so we can get it later
+            })
             .catch( error => {
                 console.error( error );
             } );

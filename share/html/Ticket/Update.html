@@ -146,7 +146,7 @@
 
 % if ( $gnupg_widget ) {
 <div class="form-row">
-  <div class="col-md-3 label empty"></div>
+  <div class="col-md-2 label empty"></div>
   <div class="col-md-9 value">
     <& /Elements/Crypt/SignEncryptWidget,
         self => $gnupg_widget,
@@ -158,7 +158,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="form-group col-md-2 label">
     <&|/l&>Subject</&>:
   </div>
   <div class="col-md-9 value">
@@ -167,11 +167,8 @@
   </div>
 </div>
 
-<div class="form-row">
-  <div class="col-md-3 label">
-    <&|/l&>Message</&>:
-  </div>
-  <div class="col-md-9 value messagebox-container action-<% $type %>">
+<div class="form-group">
+  <div class="messagebox-container action-<% $type %>">
     <& /Articles/Elements/BeforeMessageBox, %ARGS &>
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
@@ -223,8 +220,9 @@
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
-       if (CKEDITOR.instances && CKEDITOR.instances['UpdateContent']) {
-           CKEDITOR.instances['UpdateContent'].updateElement();
+       if ( RichTextEditor ) {
+           // Should confirm we still need this call with CKEditor 5
+           RichTextEditor.updateSourceElement();
        }
        var syncCheckboxes = function(ev) {
            var target = ev.target;
@@ -266,8 +264,8 @@ jQuery( function() {
    };
    updateScrips();
 
-   if (CKEDITOR.instances && CKEDITOR.instances['UpdateContent']) {
-       CKEDITOR.instances['UpdateContent'].on('blur', updateScrips );
+   if ( RichTextEditor ) {
+       RichTextEditor.on('blur', updateScrips );
    }
    else {
        jQuery('#UpdateContent').on('blur', updateScrips );
