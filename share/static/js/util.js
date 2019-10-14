@@ -293,18 +293,11 @@ function textToHTML(value) {
                 .replace(/\n/g,   "\n<br />");
 };
 
-CKEDITOR_BASEPATH=RT.Config.WebPath + "/static/RichText/";
 function ReplaceAllTextareas() {
-    var sAgent = navigator.userAgent.toLowerCase();
-    if (!CKEDITOR.env.isCompatible ||
-        sAgent.indexOf('iphone') != -1 ||
-        sAgent.indexOf('ipad') != -1 ||
-        sAgent.indexOf('android') != -1 )
-        return false;
 
-    if (RT.Config.MessageBoxUseSystemContextMenu) {
-        CKEDITOR.config.removePlugins = 'liststyle,tabletools,scayt,menubutton,contextmenu';
-    }
+//    if (RT.Config.MessageBoxUseSystemContextMenu) {
+//        CKEDITOR.config.removePlugins = 'liststyle,tabletools,scayt,menubutton,contextmenu';
+//    }
 
     // replace all content and signature message boxes
     var allTextAreas = document.getElementsByTagName("textarea");
@@ -320,12 +313,20 @@ function ReplaceAllTextareas() {
             // Set the type
             type.val("text/html");
 
-            CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+//            CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
 
-            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
+        ClassicEditor
+            .create( document.querySelector( '.richtext' ) )
+            .catch( error => {
+                console.error( error );
+            } );
+
+//            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
         }
     }
 };
+
+/*
 
 function AddAttachmentWarning() {
     var plainMessageBox  = jQuery('.messagebox');
@@ -472,6 +473,8 @@ function AddAttachmentWarning() {
     }
 }
 
+*/
+
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
         jQuery(input).nextAll(".warning").hide();
@@ -555,7 +558,7 @@ jQuery(function() {
     });
     ReplaceAllTextareas();
     jQuery('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
-    AddAttachmentWarning();
+//    AddAttachmentWarning();
     jQuery('a.delete-attach').click( function() {
         var parent = jQuery(this).closest('div');
         var name = jQuery(this).attr('data-name');

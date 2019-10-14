@@ -134,7 +134,7 @@ $IncludeSignature          => RT->Config->Get('MessageBoxIncludeSignature');
 $IncludeArticle            => 1;
 $Type                      => RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
 $SuppressAttachmentWarning => 0
-$Placeholder               => ''
+$Placeholder               => loc('Type your message here')
 $IncludeDefaultArticle     => 0  # Preload a default article based on queue settings
 $QueueObj                  => undef
 </%ARGS>
