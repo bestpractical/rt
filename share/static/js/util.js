@@ -321,8 +321,6 @@ function ReplaceAllTextareas() {
             .catch( error => {
                 console.error( error );
             } );
-
-//            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
         }
     }
 };
