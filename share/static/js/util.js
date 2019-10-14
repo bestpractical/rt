@@ -297,11 +297,6 @@ function textToHTML(value) {
 var RichTextEditor;
 
 function ReplaceAllTextareas() {
-
-//    if (RT.Config.MessageBoxUseSystemContextMenu) {
-//        CKEDITOR.config.removePlugins = 'liststyle,tabletools,scayt,menubutton,contextmenu';
-//    }
-
     // replace all content and signature message boxes
     var allTextAreas = document.getElementsByTagName("textarea");
 
