@@ -166,10 +166,9 @@
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
   </div>
 </div>
-
+<& /Articles/Elements/BeforeMessageBox, %ARGS &>
 <div class="form-group">
   <div class="messagebox-container action-<% $type %>">
-    <& /Articles/Elements/BeforeMessageBox, %ARGS &>
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to

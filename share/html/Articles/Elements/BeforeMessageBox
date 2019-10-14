@@ -52,16 +52,16 @@
 <div class="articles-select-article">
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
   <div class="form-row">
-    <div class="col-auto label"><&|/l&>Include Article:</&></div>
-    <div class="col-auto value"><& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &></div>
+    <div class="form-group col-md-2 label"><&|/l&>Include Article:</&></div>
+    <div class="col-md-9 value"><& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &></div>
   </div>
 % }
 % if ( @$topics ) {
   <div class="form-row">
-    <div class="col-auto label">
+    <div class="form-group col-md-2 label">
       <&|/l, $QueueObj->Name &>Choose from Topics for [_1]</&>:
     </div>
-    <div class="col-auto value">
+    <div class="col-md-9 value">
       <select name="<% $name_prefix %>Articles-Include-Topic" onchange="this.form.submit()" class="form-control selectpicker">
         <option value="" selected>-</option>
 % for ( @$topics ) { 
