@@ -184,6 +184,10 @@ div.inline-row i {
     display: none;
 }
 
+#rights-inspector .results .result .revoke {
+    text-align: right;
+}
+
 #rt-help-text kbd {
     color: #111;
     border: 1px dashed #AAA;
