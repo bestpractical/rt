@@ -110,7 +110,8 @@ our %ALLOWED_ATTRIBUTES = (
             (?:(?:background-)?color: \s*
                     (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
                        \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
-                       [\w\-]+                                  # green, light-blue, etc.
+                       [\w\-]+                              |   # green, light-blue, etc.
+                       hsl\(\s* \d+, \s* \d+\%, \s* \d+ \s*\%\) # hsl(120,75%,60%)
                        )                            |
                text-align: \s* \w+                  |
                font-size: \s* [\w.\-]+              |
@@ -141,6 +142,7 @@ our %ALLOWED_ATTRIBUTES = (
     border      => 1,
     width       => 1,
     height      => 1,
+    class       => qr/text/,  # generic classes like 'text-huge'
 
     # timeworked per user attributes
     'data-ticket-id'    => 1,
