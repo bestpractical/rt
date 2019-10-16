@@ -1,7 +1,8 @@
-jQuery( function() {
+jQuery(function() {
     var form = jQuery('form#rights-inspector');
+    if ( !form.length ) return;
+
     var display = form.find('.results');
-    var spinner = form.find('.spinner');
 
     var revoking = {};
     var existingRequest;
@@ -17,13 +18,13 @@ jQuery( function() {
         }
 
         button.addClass('ui-state-disabled').prop('disabled', true);
-        button.after(spinner.clone());
+        button.append(' <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
     };
 
     var displayError = function (message) {
         form.removeClass('awaiting-first-result').removeClass('continuing-load').addClass('error');
         display.empty();
-        display.text('Error: ' + message);
+        display.text(RT.I18N.Catalog.error + ': ' + message);
     }
 
     var requestPage;
@@ -39,7 +40,11 @@ jQuery( function() {
             url: form.attr('action'),
             data: search,
             timeout: 30000, /* 30 seconds */
+            beforeSend: function() {
+                jQuery('.spinner').show();
+            },
             success: function (response) {
+                jQuery('.spinner').hide();
                 if (response.error) {
                     displayError(response.error);
                     return;
@@ -73,12 +78,12 @@ jQuery( function() {
                     if (form.hasClass('awaiting-first-result')) {
                         display.empty();
                         form.removeClass('awaiting-first-result');
-                        display.text('No results');
+                        display.text(RT.I18N.Catalog.no_results);
                     }
-                jQuery('.spinner').hide();
                 }
             },
             error: function (xhr, reason) {
+                jQuery('.spinner').hide();
                 if (reason == 'abort') {
                     return;
                 }
@@ -91,7 +96,6 @@ jQuery( function() {
     var beginSearch = function (delay) {
         form.removeClass('continuing-load').addClass('awaiting-first-result');
         form.find('button').addClass('ui-state-disabled').prop('disabled', true);
-        jQuery('.spinner').show();
 
         var serialized = form.serializeArray();
         var search = {};
@@ -137,6 +141,7 @@ jQuery( function() {
                     alert(response.msg);
                 }
                 else {
+                    button.closest('.revoke').siblings('.unused').remove();
                     button.closest('.revoke').removeClass('col-md-1').addClass('col-md-3').text(response.msg);
                 }
                 delete revoking[action];
@@ -161,28 +166,28 @@ jQuery( function() {
 // rendering functions
 
 function render_inspector_record (record) {
-    return '<span class="record ' + cond_text( record.disabled, 'disabled') + '">'
-        +  '  <span class="name ' + cond_text( record.highlight, record.match) + '">'
-        +       link_or_text( record.label_highlighted, record.url)
+    return '<span class="record ' + cond_text(record.disabled, 'disabled') + '">'
+        +  '  <span class="name">'
+        +       link_or_text(record.label_highlighted, record.url)
         +  '  </span>'
         +  '  <span class="detail">'
-        +       link_or_text( record.detail_highlighted, record.detail_url)
-        +       link_or_text( record.detail_extra, record.detail_extra_url)
-        +       cond_text( record.disabled, '(disabled)')
+        +       link_or_text(record.detail_highlighted, record.detail_url)
+        +       link_or_text(record.detail_extra, record.detail_extra_url)
+        +       cond_text(record.disabled, '(' + RT.I18N.Catalog.lower_disabled + ')')
         +  '  </span>'
-        +     render_inspector_primary_record( record.primary_record)
+        +     render_inspector_primary_record(record.primary_record)
         +  '</span>'
     ;
 
 }
 
 function render_inspector_primary_record (primary_record) {
-    return primary_record ? '<span class="primary">Contains ' + render_inspector_record( primary_record) + '</span>'
+    return primary_record ? '<span class="primary">' + RT.I18N.Catalog.contains + render_inspector_record(primary_record) + '</span>'
                           : '';
 }
 
 function link_or_text (text, url) {
-    if( typeof text == 'undefined') {
+    if(typeof text == 'undefined') {
         return '';
     }
     else if( url && url.length > 0 ) {
@@ -195,12 +200,13 @@ function link_or_text (text, url) {
 
 function render_inspector_result (item) {
     return '<div class="result form-row">'
-        +  '  <div class="principal cell col-md-3">' + render_inspector_record( item.principal) + '</div>'
-        +  '  <div class="object cell col-md-3">' + render_inspector_record( item.object) + '</div>'
-        +  '  <div class="right cell col-md-3">' + item.right_highlighted + '</div>'
-        +  '  <div class="revoke cell col-md-1">'
+        +  '  <div class="principal cell col-md-3 my-auto">' + render_inspector_record(item.principal) + '</div>'
+        +  '  <div class="object cell col-md-3 my-auto">' + render_inspector_record(item.object) + '</div>'
+        +  '  <div class="right cell col-md-3 my-auto">' + item.right_highlighted + '</div>'
+        +  '  <div class="revoke cell col-md-1 my-auto">'
         +       revoke_button(item)
         + '  </div>'
+        +  '  <div class="unused cell col-md-2" />'
         + '</div>'
     ;
 }
@@ -215,7 +221,7 @@ function revoke_button (item) {
     }
 }
 
-function cond_text (cond, text = '') {
+function cond_text (cond, text) {
     return cond ? text : '';
 }
 

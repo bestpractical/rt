@@ -133,10 +133,6 @@ div.inline-row i {
     white-space: normal;
 }
 
-#rights-inspector .loading {
-    display: none;
-}
-
 #rights-inspector.error .results {
     color: red;
     font-weight: bold;
@@ -146,12 +142,12 @@ div.inline-row i {
     opacity: 0.5;
 }
 
-#rights-inspector.awaiting-first-result .loading, .continuing-load .loading {
-    display: inline;
+#rights-inspector .results .result:nth-child(even) {
+    background-color: rgb(236, 246, 252);
 }
 
-#rights-inspector .results .result:nth-child(even) .cell {
-    background-color: rgb(236, 246, 252);
+#rights-inspector .results .result:nth-child(even) .unused {
+    background-color: white;
 }
 
 #rights-inspector .results .result .match {
@@ -188,12 +184,8 @@ div.inline-row i {
     display: none;
 }
 
-#rights-inspector .results .result .right {
-    padding-top: .4em;
-}
-
 #rights-inspector .results .result .revoke {
-    padding-top: .3em;
+    text-align: right;
 }
 
 #rt-help-text kbd {
