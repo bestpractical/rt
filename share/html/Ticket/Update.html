@@ -219,10 +219,6 @@
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
-       if ( RichTextEditor ) {
-           // Should confirm we still need this call with CKEditor 5
-           RichTextEditor.updateSourceElement();
-       }
        var syncCheckboxes = function(ev) {
            var target = ev.target;
            jQuery("input[name=TxnSendMailTo]").filter( function() { return this.value == target.value; } ).prop("checked",jQuery(target).prop('checked'));
@@ -262,13 +258,6 @@ jQuery( function() {
        );
    };
    updateScrips();
-
-   if ( RichTextEditor ) {
-       RichTextEditor.on('blur', updateScrips );
-   }
-   else {
-       jQuery('#UpdateContent').on('blur', updateScrips );
-   }
 
    jQuery("#ticket-update-metadata :input, #UpdateCc, #UpdateBcc").change( updateScrips );
 
