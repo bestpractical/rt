@@ -311,12 +311,10 @@ function ReplaceAllTextareas() {
             // Set the type
             type.val("text/html");
 
-//            CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
-
         ClassicEditor
             .create( document.querySelector( '.richtext' ) )
             .then(editor => {
-                RichTextEditor = editor; // Save the editor so we can get it later
+                jQuery(editor.ui.view.editable.element).css('height', RT.Config.MessageBoxRichTextHeight);
             })
             .catch( error => {
                 console.error( error );
