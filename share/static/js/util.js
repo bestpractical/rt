@@ -293,8 +293,6 @@ function textToHTML(value) {
                 .replace(/\n/g,   "\n<br />");
 };
 
-// Save the CKEditor instance for use after initializing
-var RichTextEditor;
 
 function ReplaceAllTextareas() {
     // replace all content and signature message boxes
@@ -315,6 +313,7 @@ function ReplaceAllTextareas() {
             .create( document.querySelector( '.richtext' ) )
             .then(editor => {
                 jQuery(editor.ui.view.editable.element).css('height', RT.Config.MessageBoxRichTextHeight);
+                AddAttachmentWarning(editor);
             })
             .catch( error => {
                 console.error( error );
@@ -323,23 +322,18 @@ function ReplaceAllTextareas() {
     }
 };
 
-/*
 
-function AddAttachmentWarning() {
+function AddAttachmentWarning(richTextEditor) {
     var plainMessageBox  = jQuery('.messagebox');
+    if (plainMessageBox.hasClass('suppress-attachment-warning')) return;
+
     var warningMessage   = jQuery('.messagebox-attachment-warning');
     var ignoreMessage    = warningMessage.find('.ignore');
     var dropzoneElement  = jQuery('#attach-dropzone');
     var fallbackElement  = jQuery('.old-attach');
     var reuseElements    = jQuery('#reuse-attachments');
 
-    // there won't be a ckeditor when using the plain <textarea>
-    var richTextEditor;
     var messageBoxId = plainMessageBox.attr('id');
-    if (CKEDITOR.instances && CKEDITOR.instances[messageBoxId]) {
-        richTextEditor = CKEDITOR.instances[messageBoxId];
-    }
-
     var regex = new RegExp(loc_key("attachment_warning_regex"), "i");
 
     // if the quoted text or signature contains the magic word
@@ -397,34 +391,8 @@ function AddAttachmentWarning() {
 
     var listenForAttachmentEvents = function () {
         if (richTextEditor) {
-            richTextEditor.on('instanceReady', function () {
-                // this set of events is imperfect. what I really want is:
-                //     this.on('change', ...)
-                // but ckeditor doesn't seem to provide that out of the box
-
-                this.on('blur', function () {
-                    toggleAttachmentWarning();
-                });
-
-                // we want to capture ~every keystroke type event; we only do the
-                // full checking periodically to avoid overloading the browser
-                this.document.on("keyup", function () {
-                    delayedAttachmentWarning();
-                });
-                this.document.on("keydown", function () {
-                    delayedAttachmentWarning();
-                });
-                this.document.on("keypress", function () {
-                    delayedAttachmentWarning();
-                });
-
-                // hook into the undo/redo buttons in the ckeditor UI
-                this.getCommand('undo').on('afterUndo', function () {
-                    toggleAttachmentWarning();
-                });
-                this.getCommand('redo').on('afterRedo', function () {
-                    toggleAttachmentWarning();
-                });
+            richTextEditor.model.document.on( 'change:data', () => {
+                delayedAttachmentWarning();
             });
         }
         else {
@@ -470,7 +438,6 @@ function AddAttachmentWarning() {
     }
 }
 
-*/
 
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
@@ -555,7 +522,7 @@ jQuery(function() {
     });
     ReplaceAllTextareas();
     jQuery('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
-//    AddAttachmentWarning();
+    AddAttachmentWarning();
     jQuery('a.delete-attach').click( function() {
         var parent = jQuery(this).closest('div');
         var name = jQuery(this).attr('data-name');
