@@ -23,6 +23,24 @@
   margin-top: 0.5em;
 }
 
+.rights-editor .category {
+  font-size: medium;
+}
+
 .principal-tabs .nav-tabs .nav-item {
   margin-bottom: 0.25em;
+}
+
+.rights-list {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.tab-content {
+  padding: 10px;
+}
+
+.principal-tabs {
+  padding: 10px;
+
 }
