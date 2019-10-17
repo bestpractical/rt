@@ -131,10 +131,9 @@
       <div class="more-about-user-groups">
         <div class="label">
           <&|/l&>Groups this user belongs to</&>
-    
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
-          [<a href=<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %> ><&|/l&>Edit</&></a>]
+          [<a href="<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %>" ><&|/l&>Edit</&></a>]
 % }
         </div>
         <div class="value col-md-9"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></div>
