@@ -512,6 +512,40 @@ function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
 }
 
+function createCookie(name,value,days) {
+    var path = RT.Config.WebPath ? RT.Config.WebPath : "/";
+
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+    }
+    else
+        expires = "";
+
+    document.cookie = name+"="+value+expires+"; path="+path;
+}
+
+function loadCollapseStates() {
+    var cookies = document.cookie.split(/;\s*/);
+    var len     = cookies.length;
+
+    for (var i = 0; i < len; i++) {
+        var c = cookies[i].split('=');
+
+        if (c[0].match(/^(TitleBox--|accordion-)/)) {
+            var e   = document.getElementById(c[0]);
+            if (e) {
+                if (c[1] != 0) {
+                    jQuery(e).collapse('show');
+                }
+                else {
+                    jQuery(e).collapse('hide');
+                }
+            }
+        }
+    }
+}
 
 jQuery(function() {
     ReplaceAllTextareas();
@@ -548,6 +582,17 @@ jQuery(function() {
             e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
         });
     });
+
+    jQuery(".card .accordion-item .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-target'));
+        e.on('hide.bs.collapse', function () {
+            createCookie(e.attr('id'),0,365);
+        });
+        e.on('show.bs.collapse', function () {
+            createCookie(e.attr('id'),1,365);
+        });
+    });
+
     jQuery(".card .card-body .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-target'));
         e.on('hide.bs.collapse', function (event) {
@@ -569,6 +614,13 @@ jQuery(function() {
     jQuery('.custom-file input').change(function (e) {
         jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
     });
+
+    jQuery('#assets-accordion span.collapsed').find('ul.toplevel:not(.sf-menu)').addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ dropShadows: false, speed: 'fast', delay: 0 }).supposition().find('a').click(function(ev){
+      ev.stopPropagation();
+      return true;
+    });
+
+    loadCollapseStates();
 });
 
 // focus jquery object in window, only moving the screen when necessary

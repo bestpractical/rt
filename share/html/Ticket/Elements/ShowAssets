@@ -118,18 +118,9 @@ $m->callback(
   <div id="assets-accordion" class="rt-accordion accordion">
 % my $display_path = $session{'CurrentUser'}->Privileged ? 'Asset' : 'SelfService/Asset';
 
-<script type="text/javascript">
-jQuery( function() {
-    jQuery('#assets-accordion span.collapsed').find('ul.toplevel:not(.sf-menu)').addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ dropShadows: false, speed: 'fast', delay: 0 }).supposition().find('a').click(function(ev){
-      ev.stopPropagation();
-      return true;
-    });
-});
-</script>
-
 % while (my $asset = $assets->Next) {
     <div class="accordion-item">
-      <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#asset-<% $asset->id %>" aria-expanded="false" aria-controls="asset-<% $asset->id %>" id="asset-<% $asset->id %>-title" >
+      <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#accordion-asset-<% $asset->id %>" aria-expanded="false" aria-controls="accordion-asset-<% $asset->id %>" id="accordion-asset-<% $asset->id %>-title" >
         <a href="<% RT->Config->Get('WebPath') %>/<% $display_path %>/Display.html?id=<% $asset->id %>"><&|/l, $asset->id, $asset->Name &>#[_1]: [_2]</&></a>
 
 
@@ -171,7 +162,7 @@ if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
 % }
 
       </span>
-      <div id="asset-<% $asset->id %>" class="accordion-content collapse" aria-labelledby="asset-<% $asset->id %>-title">
+      <div id="accordion-asset-<% $asset->id %>" class="accordion-content collapse" aria-labelledby="accordion-asset-<% $asset->id %>-title">
         <& /Elements/ShowRecord,
             Object      => $asset,
             Format      => $Format,

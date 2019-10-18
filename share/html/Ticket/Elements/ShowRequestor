@@ -66,17 +66,17 @@
     class => 'ticket-info-requestor fullwidth'
 &>
 
-<div id="requestor-accordion" class="user-accordion accordion">
+<div id="accordion-requestor-accordion" class="user-accordion accordion">
 
 % while ( my $requestor = $people->Next ) {
   <div class="accordion-item">
-    <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#requestor-<% $requestor->id %>" aria-expanded="false" aria-controls="requestor-<% $requestor->id %>" id="requestor-<% $requestor->id %>-title" >
+    <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#accordion-requestor-<% $requestor->id %>" aria-expanded="false" aria-controls="accordion-requestor-<% $requestor->id %>" id="accordion-requestor-<% $requestor->id %>-title" >
       <a class="user-summary" href="<%RT->Config->Get('WebPath')%>/User/Summary.html?id=<%$requestor->Id%>">
         <& /Elements/ShowUser, User => $requestor, Link => 0 &>
       </a>
     </span>
 
-    <div id="requestor-<% $requestor->id %>" class="accordion-content collapse" aria-labelledby="requestor-<% $requestor->id %>-title">
+    <div id="accordion-requestor-<% $requestor->id %>" class="accordion-content collapse" aria-labelledby="accordion-requestor-<% $requestor->id %>-title">
 
 %# Additional information about this user.  Empty by default.
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
@@ -98,11 +98,11 @@
 % for my $status ( @$status_order ) {
           <li class="nav-item">
 % if ( $status eq $DefaultTicketsTab ) {
-            <a class="nav-link active" href="#requestor-<%$requestor->Id%>-ticket-default" id="requestor-<% $requestor->Id %>-ticket-default-tab" data-toggle="tab" role="tab" aria-controls="#requestor-<%$requestor->Id%>-ticket-default">\
+            <a class="nav-link active" href="#accordion-requestor-<%$requestor->Id%>-ticket-default" id="accordion-requestor-<% $requestor->Id %>-ticket-default-tab" data-toggle="tab" role="tab" aria-controls="#accordion-requestor-<%$requestor->Id%>-ticket-default">\
 % } else {
 %     my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
 %     $m->comp('/Elements/QueryString', Requestor => $requestor->Id , Status => $status);
-            <a class="nav-link" data-link="<% $url | n %>" href="#requestor-<%$requestor->Id%>-ticket-<% $index %>" id="requestor-<% $requestor->Id %>-ticket-<% $index %>-tab" data-toggle="tab" role="tab" aria-controls="#requestor-<%$requestor->Id%>-ticket-<% $index %>">\
+            <a class="nav-link" data-link="<% $url | n %>" href="#accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>" id="accordion-requestor-<% $requestor->Id %>-ticket-<% $index %>-tab" data-toggle="tab" role="tab" aria-controls="#accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>">\
 % $index++;
 % }
               <% $status_link_text->{$status} %></a>
@@ -113,10 +113,10 @@
         <div class="tab-content">
 % for my $status (@$status_order) {
 % if ( $status eq $DefaultTicketsTab ) {
-          <div id="requestor-<%$requestor->Id%>-ticket-default" class="tab-pane fade show active" role="tabpanel" aria-labelledby="requestor-<% $requestor->Id %>-ticket-default-tab">
+          <div id="accordion-requestor-<%$requestor->Id%>-ticket-default" class="tab-pane fade show active" role="tabpanel" aria-labelledby="accordion-requestor-<% $requestor->Id %>-ticket-default-tab">
             <& $TicketTemplate, Requestor => $requestor &>
 % } else {
-          <div id="requestor-<%$requestor->Id%>-ticket-<% $index %>" class="tab-pane fade" aria-labelledby="requestor-<% $requestor->Id %>-ticket-<% $index %>-tab">
+          <div id="accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>" class="tab-pane fade" aria-labelledby="accordion-requestor-<% $requestor->Id %>-ticket-<% $index %>-tab">
 % $index++;
             <div class="label"><&|/l&>Loading...</&></div>
 % }
