@@ -47,13 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="lifecycle-ui<% $Editing ? ' editing' : '' %><% $Interactive ? ' interactive' : '' %><% $Zoomable ? ' zoomable' : '' %> center-<% $Center || 'origin' %>" id="lifecycle-<% $id %>">
     <div class="lifecycle-view">
-      <div class="overlay-buttons">
-          <button class="zoom zoom-in">+</button>
-          <button class="zoom zoom-reset">0</button>
-          <button class="zoom zoom-out">-</button>
-      </div>
       <svg>
-          <& GraphExtras, %ARGS &>
           <g class="transform">
             <g class="decorations"></g>
             <g class="transitions"></g>
@@ -81,7 +75,6 @@
                 var editor = new RT.Editor( container, name, config, ticketStatus );
 
                 editor.initializeEditor(container, name, config, ticketStatus);
-                editor.initializeViewer(container, name, config, ticketStatus);
             });
         });
     </script>

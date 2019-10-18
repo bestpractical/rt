@@ -19,7 +19,26 @@ jQuery(function () {
 
         initializeEditor(node, name, config, focusStatus) {
             var self = this;
-            self.initializeViewer(node, name, config, focusStatus);
+
+            self.container = jQuery(node);
+            self.svg = d3.select(node).select('svg');
+            self.transformContainer = self.svg.select('g.transform');
+            self.transitionContainer = self.svg.select('g.transitions');
+            self.statusContainer = self.svg.select('g.statuses');
+            self.decorationContainer = self.svg.select('g.decorations');
+            self._xScale = self.createScale(self.width, self.padding);
+            self._yScale = self.createScale(self.height, self.padding);
+            self._xScaleZero = self.createScale(self.width, 0);
+            self._yScaleZero = self.createScale(self.height, 0);
+            // zoom in a bit, but not too much
+            var scale = self.svg.node().getBoundingClientRect().width / self.width;
+            scale = scale ** .6;
+            self._zoomIdentityScale = scale;
+            self._zoomIdentity = self._currentZoom = d3.zoomIdentity.scale(self._zoomIdentityScale);
+            RT.Lifecycle.name = name;
+            self.lifecycle = RT.Lifecycle;
+            self.lifecycle.initializeFromConfig(config);
+
             self.container.closest('form[name=ModifyLifecycle]').submit(function (e) {
                 var config = self.lifecycle.exportAsConfiguration();
                 var form = jQuery(this);
@@ -44,6 +63,7 @@ jQuery(function () {
                     self.defocus();
                 }
             })
+            self.renderDisplay();
         }
 
         clickedStatus(d) {
@@ -54,6 +74,8 @@ jQuery(function () {
 
             let current_val = d.name;
             d.name = '';
+            // Defocus so that a 'd' key doesn't delete our node
+            self.defocus();
             self.renderDisplay();
 
             var frm = g.append("foreignObject");
@@ -119,8 +141,8 @@ jQuery(function () {
         }
         viewportCenterPoint() {
             var rect = this.svg.node().getBoundingClientRect();
-            var x = (rect.width / 2 - this._currentZoom.x) / this._currentZoom.k;
-            var y = (rect.height / 2 - this._currentZoom.y) / this._currentZoom.k;
+            var x = 0;
+            var y = 0;
             return [this.xScaleInvert(x), this.yScaleInvert(y)];
         }
         addNewStatus() {
@@ -201,20 +223,6 @@ jQuery(function () {
                     .style("opacity", 1)
                     .on("end", function () { d3.select(this).style("opacity", undefined); });
             }
-            newRects.merge(rects)
-                .classed("focus", function (d) { return self.isFocused(d); })
-                .each(function (d) {
-                    var rect = d3.select(this);
-                    var label = self.decorationContainer.select("text[data-key='" + d._key + "']");
-                    var bbox = label.node().getBoundingClientRect();
-                    var width = bbox.width / self._currentZoom.k;
-                    var height = bbox.height / self._currentZoom.k;
-                    var padding = 5 / self._currentZoom.k;
-                    rect.attr("x", self.xScale(d.x) - padding)
-                        .attr("y", self.yScale(d.y) - padding)
-                        .attr("width", width + padding * 2)
-                        .attr("height", height + padding * 2);
-                });
         }
 
         didBeginDrag(d, node) { }
@@ -274,61 +282,13 @@ jQuery(function () {
         yScaleInvert(y) { return Math.floor(this._yScale.invert(y)); }
         xScaleZeroInvert(x) { return Math.floor(this._xScaleZero.invert(x)); }
         yScaleZeroInvert(y) { return Math.floor(this._yScaleZero.invert(y)); }
-        addZoomBehavior() {
-            var self = this;
-            self._zoom = d3.zoom()
-                .scaleExtent([.3, 2])
-                .on("zoom", function () {
-                    if (self.zoomControl) {
-                        self.didZoom();
-                    }
-                });
-            self.svg.call(self._zoom);
-        }
-        didZoom() {
-            this._currentZoom = d3.event.transform;
-            this.transformContainer.attr("transform", d3.event.transform);
-        }
-        zoomScale(scaleBy, animated) {
-            if (animated) {
-                this.svg.transition()
-                    .duration(350 * this.animationFactor)
-                    .call(this._zoom.scaleBy, scaleBy);
-            }
-            else {
-                this.svg.call(this._zoom.scaleBy, scaleBy);
-            }
-        }
-        _setZoom(zoom, animated) {
-            if (animated) {
-                this.svg.transition()
-                    .duration(750 * this.animationFactor)
-                    .call(this._zoom.transform, zoom);
-            }
-            else {
-                this.svg.call(this._zoom.transform, zoom);
-            }
-        }
-        resetZoom(animated) {
-            this._setZoom(this._zoomIdentity, animated);
-        }
-        zoomToFit(animated) {
-            var bounds = this.transformContainer.node().getBBox();
-            var parent = this.transformContainer.node().parentElement;
-            var fullWidth = parent.clientWidth || parent.parentNode.clientWidth, fullHeight = parent.clientHeight || parent.parentNode.clientHeight;
-            var width = bounds.width, height = bounds.height;
-            var midX = bounds.x + width / 2, midY = bounds.y + height / 2;
-            var scale = .9 / Math.max(width / fullWidth, height / fullHeight);
-            var tx = fullWidth / 2 - scale * midX;
-            var ty = fullHeight / 2 - scale * midY;
-            this._setZoom(d3.zoomIdentity.translate(tx, ty).scale(scale), animated);
-        }
-        didEnterStatusNodes(statuses) { }
+
+        // Should we get rid of these
         didEnterTransitions(paths) { }
-        didEnterTextDecorations(labels) { }
         didEnterPolygonDecorations(polygons) { }
         didEnterCircleDecorations(circles) { }
         didEnterLineDecorations(lines) { }
+
         renderStatusNodes(initial) {
             var self = this;
             var statuses = self.statusContainer.selectAll("g")
@@ -354,6 +314,7 @@ jQuery(function () {
                 .attr("r", initial ? self.statusCircleRadius : self.statusCircleRadius * .8)
                 .on("click", function (d) {
                     d3.event.stopPropagation();
+
                     self.clickedStatus(d);
                 })
             if (!initial) {
@@ -375,9 +336,6 @@ jQuery(function () {
                 .attr("fill", function (d) { return d3.hsl(d.color).l > 0.35 ? '#000' : '#fff'; })
                 .text(function (d) { return d.name; }).each(function () { self.truncateLabel(this); });
         }
-        clickedStatus(d) { }
-        clickedTransition(d) { }
-        clickedDecoration(d) { }
         truncateLabel(element) {
             var node = d3.select(element), textLength = node.node().getComputedTextLength(), text = node.text();
             while (textLength > this.statusCircleRadius * 1.8 && text.length > 0) {
@@ -613,24 +571,26 @@ jQuery(function () {
             this.renderStatusNodes(initial);
             this.renderDecorations(initial);
         }
-        centerOnItem(item, animated) {
-            var rect = this.svg.node().getBoundingClientRect();
-            var scale = this._zoomIdentityScale;
-            var x = rect.width / 2 - this.xScale(item.x) * scale;
-            var y = rect.height / 2 - this.yScale(item.y) * scale;
-            this._zoomIdentity = d3.zoomIdentity.translate(x, y).scale(this._zoomIdentityScale);
-            this.resetZoom(animated);
-        }
         defocus() {
-            this._focusItem = null;
+            if ( this._focusItem ) {
+                // TODO Make this abstracted
+                let g          = d3.select(d3.select('#key-'+this._focusItem._key)._groups[0][0]);
+                let circle     = d3.select(g)._groups[0][0].select('circle');
+
+                circle.classed("node-selected", false);
+            }
             this.svg.classed("has-focus", false)
                 .attr('data-focus-type', undefined);
+            this._focusItem = null;
         }
         focusItem(d) {
             this.defocus();
             this._focusItem = d;
-            this.svg.classed("has-focus", true)
-                .attr('data-focus-type', d._type);
+
+            let g          = d3.select(d3.select('#key-'+d._key)._groups[0][0]);
+            let circle     = d3.select(g)._groups[0][0].select('circle');
+
+            circle.classed("node-selected", true);
         }
         focusOnStatus(statusName, center, animated) {
             if (!statusName) {
@@ -682,60 +642,6 @@ jQuery(function () {
             }
             return false;
         }
-
-        initializeViewer(node, name, config, focusStatus) {
-            var self = this;
-            self.container = jQuery(node);
-            self.svg = d3.select(node).select('svg');
-            self.transformContainer = self.svg.select('g.transform');
-            self.transitionContainer = self.svg.select('g.transitions');
-            self.statusContainer = self.svg.select('g.statuses');
-            self.decorationContainer = self.svg.select('g.decorations');
-            self._xScale = self.createScale(self.width, self.padding);
-            self._yScale = self.createScale(self.height, self.padding);
-            self._xScaleZero = self.createScale(self.width, 0);
-            self._yScaleZero = self.createScale(self.height, 0);
-            // zoom in a bit, but not too much
-            var scale = self.svg.node().getBoundingClientRect().width / self.width;
-            scale = scale ** .6;
-            self._zoomIdentityScale = scale;
-            self._zoomIdentity = self._currentZoom = d3.zoomIdentity.scale(self._zoomIdentityScale);
-            RT.Lifecycle.name = name;
-            self.lifecycle = RT.Lifecycle;
-            self.lifecycle.initializeFromConfig(config);
-            // need to start with zoom control on to set the initial zoom
-            this.zoomControl = true;
-            self.addZoomBehavior();
-            if (self.container.hasClass('center-status')) {
-                self.focusOnStatus(focusStatus, true, false);
-                self.renderDisplay(true);
-            }
-            else {
-                self.focusOnStatus(focusStatus, false, false);
-                self.renderDisplay(true);
-                if (self.container.hasClass('center-fit')) {
-                    self.zoomToFit(false);
-                }
-                else if (self.container.hasClass('center-origin')) {
-                    self.resetZoom(false);
-                }
-            }
-            self._zoomIdentity = self._currentZoom;
-            self.zoomControl = self.container.hasClass('zoomable');
-            self.container.on('click', 'button.zoom-in', function (e) {
-                e.preventDefault();
-                self.zoomScale(1.25, true);
-            });
-            self.container.on('click', 'button.zoom-out', function (e) {
-                e.preventDefault();
-                self.zoomScale(.75, true);
-            });
-            self.container.on('click', 'button.zoom-reset', function (e) {
-                e.preventDefault();
-                self.resetZoom(true);
-            });
-        };
     }
-
 
 });

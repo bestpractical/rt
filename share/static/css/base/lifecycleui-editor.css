@@ -143,3 +143,16 @@
 .lifecycle-ui .inspector tr.section td {
     padding-top: 1em;
 }
+
+
+
+
+
+/* NEW */
+g text {
+    cursor: text;
+}
+
+g circle.node-selected {
+    fill: #98b9eb !important;
+}
