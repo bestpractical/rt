@@ -1303,7 +1303,9 @@ sub LogRecordedSQLStatements {
         }
         $RT::Logger->log(
             level   => $log_sql_statements,
-            message => "SQL("
+             message => $HTML::Mason::Commands::session{'CurrentUser'}->Name
+                . " - "
+                . "SQL("
                 . sprintf( "%.6f", $duration )
                 . "s): $sql;"
                 . ( @bind ? "  [ bound values: @{[map{ defined $_ ? qq|'$_'| : 'undef'} @bind]} ]" : "" )
