@@ -16,6 +16,15 @@ jQuery(function () {
             this._undoState = { undoStack: [], redoStack: [] };
             this._keyMap = {};
             this._statusMeta = {};
+
+            // Viewer
+            this.width = 809;
+            this.height = 500;
+            this.statusCircleRadius = 35;
+            this.statusCircleRadiusFudge = 4; // required to give room for the arrowhead
+            this.gridSize = 10;
+            this.padding = this.statusCircleRadius * 2;
+            this.animationFactor = 1; // bump this to 10 debug JS animations
         }
         initializeFromConfig(config) {
             var self = this;
@@ -686,8 +695,13 @@ jQuery(function () {
             }
             return jQuery.unique(rights.sort());
         }
-    }
-;
+    };
+
+
+
+
+
+    
 
     Lifecycle.prototype._initialPointsForPolygon = {
         Line: [
@@ -706,7 +720,6 @@ jQuery(function () {
             {x: -600, y:  600}
         ]
     };
-
     RT.Lifecycle = new Lifecycle();
 });
 

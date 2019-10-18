@@ -1,15 +1,13 @@
 .lifecycle-ui {
-    margin-left: 10%;
 }
 
 .lifecycle-ui.editing svg {
-    float: left;
-    width: 60%;
+    width: 100%;
     height: 500px;
 }
 
 .lifecycle-ui.editing .overlay-buttons {
-    left: 50%;
+    left: 85%;
 }
 
 .lifecycle-ui .inspector {

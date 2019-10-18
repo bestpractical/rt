@@ -90,14 +90,21 @@ jQuery(function () {
                 .attr("r", self.statusCircleRadius * .8);
             var newStatuses = statuses.enter().append("g")
                 .attr("data-key", function (d) { return d._key; })
-                .on("click", function (d) {
-                    d3.event.stopPropagation();
-                    self.clickedStatus(d, this);
-                })
+                .attr("id", function (d) { return 'key-'+d._key; })
                 .call(function (statuses) { self.didEnterStatusNodes(statuses); });
             newStatuses.append("circle")
-                .attr("r", initial ? self.statusCircleRadius : self.statusCircleRadius * .8);
-            newStatuses.append("text");
+                .attr("r", initial ? self.statusCircleRadius : self.statusCircleRadius * .8)
+                .on("click", function (d) {
+                    d3.event.stopPropagation();
+
+                    self.focusItem(d)
+                })
+            newStatuses.append("text")
+                .attr("r", initial ? self.statusCircleRadius : self.statusCircleRadius * .8)
+                .on("click", function (d) {
+                    d3.event.stopPropagation();
+                    self.clickedStatus(d);
+                })
             if (!initial) {
                 newStatuses.transition().duration(200 * self.animationFactor)
                     .select("circle")
@@ -471,6 +478,10 @@ jQuery(function () {
             self.container.on('click', 'button.zoom-out', function (e) {
                 e.preventDefault();
                 self.zoomScale(.75, true);
+            });
+            self.container.on('click', 'button.zoom-reset', function (e) {
+                e.preventDefault();
+                self.resetZoom(true);
             });
         }
     };

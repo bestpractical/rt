@@ -112,6 +112,7 @@
 
 .lifecycle-ui .lifecycle-view {
     position: relative;
+    display: inline-block;
 }
 
 .lifecycle-ui .overlay-buttons button {

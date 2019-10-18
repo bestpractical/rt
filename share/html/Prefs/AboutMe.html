@@ -50,7 +50,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Prefs/AboutMe.html" method="post">
+<form action="<%RT->Config->Get('WebPath')%>/Prefs/AboutMe.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>" />
 
 <table width="100%" border="0">

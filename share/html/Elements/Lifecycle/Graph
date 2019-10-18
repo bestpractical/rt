@@ -78,17 +78,10 @@
                 var ticketStatus = undefined;
 % }
 
-% if ($Editing) {
                 var editor = new RT.Editor( container, name, config, ticketStatus );
+
                 editor.initializeEditor(container, name, config, ticketStatus);
-% } else {
-% if ($Interactive) {
-                var viewer = new RT.LifecycleViewerInteractive();
-% } else {
-                var viewer = new RT.LifecycleViewer();
-% }
-                viewer.initializeViewer(container, name, config, ticketStatus);
-% }
+                editor.initializeViewer(container, name, config, ticketStatus);
             });
         });
     </script>
