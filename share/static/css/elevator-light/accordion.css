@@ -61,3 +61,8 @@
   flex-grow: 1;
   margin-right: 10px;
 }
+
+.value > .accordion .accordion-item-bare:first-child,
+.value > .accordion .accordion-item:first-child .accordion-title {
+  padding-top: 0;
+}
