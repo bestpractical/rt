@@ -442,7 +442,8 @@ jQuery(function () {
             scale = scale ** .6;
             self._zoomIdentityScale = scale;
             self._zoomIdentity = self._currentZoom = d3.zoomIdentity.scale(self._zoomIdentityScale);
-            self.lifecycle = new RT.Lifecycle(name);
+            RT.Lifecycle.name = name;
+            self.lifecycle = RT.Lifecycle;
             self.lifecycle.initializeFromConfig(config);
             // need to start with zoom control on to set the initial zoom
             this.zoomControl = true;
@@ -471,41 +472,8 @@ jQuery(function () {
                 e.preventDefault();
                 self.zoomScale(.75, true);
             });
-            self.container.on('click', 'button.zoom-reset', function (e) {
-                e.preventDefault();
-                self.resetZoom(true);
-            });
         }
-    }
-;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    };
 
     RT.LifecycleViewer = Viewer;
 });

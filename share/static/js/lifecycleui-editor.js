@@ -16,7 +16,14 @@ jQuery(function () {
                 var field = jQuery('<input type="hidden" name="Config">');
                 field.val(JSON.stringify(config));
                 form.append(field);
+
                 return true;
+            });
+            self.container.on('contextmenu', function (e) {
+                e.preventDefault();
+
+                self.addNewStatus()
+                self.renderDisplay();
             });
         }
 
@@ -47,8 +54,13 @@ jQuery(function () {
             .attr("style", "width: 294px; background: transparent; border: none;")
             // make the form go away when you jump out (form looses focus) or hit ENTER:
             .on("blur", function() {
-                d.name = inp.node().value;
-                RT.Lifecycle.updateStatusName( current_val, d.name );
+                if ( inp.node().value && inp.node().value != current_val ) {
+                    d.name = inp.node().value;
+                    RT.Lifecycle.updateStatusName( current_val, d.name );
+                }
+                else {
+                    d.name = current_val;
+                }
 
                 // Note to self: frm.remove() will remove the entire <g> group! Remember the D3 selection logic!
                 d3.select("foreignObject").remove();
@@ -68,15 +80,17 @@ jQuery(function () {
                         e.stopPropagation();
                     e.preventDefault();
 
-                    d.name = inp.node().value;
+                    if ( inp.node().value && inp.node().value != current_val ) {
+                        d.name = inp.node().value;
+                        RT.Lifecycle.updateStatusName( current_val, d.name );
+                    }
+                    else {
+                        d.name = current_val;
+                    }
 
-                    // odd. Should work in Safari, but the debugger crashes on this instead.
-                    // Anyway, it SHOULD be here and it doesn't hurt otherwise.
                     d3.select("foreignObject").remove();
                     self.renderDisplay();
                 }
-                d.name = inp.node().value;
-                RT.Lifecycle.updateStatusName( current_val, d.name );
             });
         }
         clickedTransition(d) {
@@ -93,8 +107,7 @@ jQuery(function () {
         }
         addNewStatus() {
             var p = this.viewportCenterPoint();
-            var status = this.lifecycle.createStatus(p[0], p[1]);
-            this.focusItem(status);
+            this.lifecycle.createStatus(p[0], p[1]);
         }
 
 

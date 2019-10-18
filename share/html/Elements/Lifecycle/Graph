@@ -62,9 +62,6 @@
       </svg>
     </div>
 
-% if ($Editing) {
-    <& Inspector, %ARGS &>
-% }
 % if ($Interactive) {
     <& Interactive, %ARGS &>
 % }
@@ -82,7 +79,7 @@
 % }
 
 % if ($Editing) {
-                var editor = new RT.LifecycleEditor();
+                var editor = new RT.Editor( container, name, config, ticketStatus );
                 editor.initializeEditor(container, name, config, ticketStatus);
 % } else {
 % if ($Interactive) {
