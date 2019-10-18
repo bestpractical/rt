@@ -219,11 +219,13 @@ if ($ShowRelatedTickets) {
 
 % if ($Ticket->CurrentUserHasRight("ModifyTicket")) {
   <div class="add-asset">
-    <label>
-      <&|/l&>Add an asset to this ticket</&>
-    <input class="form-control" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
-    </label>
-    <input type="submit" value="+">
+    <label><&|/l&>Add an asset to this ticket:</&></label>
+    <div class="form-row">
+      <div class="form-group mx-sm-3 mb-2">
+        <input class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
+      </div>
+      <button type="submit" name="AddAsset" value="Add" class="button btn btn-primary form-control mb-2">Add</button>
+    </div>
   </div>
 % }
 
