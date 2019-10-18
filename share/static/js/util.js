@@ -56,36 +56,6 @@ function delClass(id, value) {
     jQueryWrap(id).removeClass(value);
 }
 
-/* Rollups */
-
-function rollup(id) {
-    var e = jQueryWrap(id);
-    var e2  = e.parent();
-    
-    if (e.hasClass('hidden')) {
-        set_rollup_state(e,e2,'shown');
-        createCookie(id,1,365);
-    }
-    else {
-        set_rollup_state(e,e2,'hidden');
-        createCookie(id,0,365);
-    }
-    return false;
-}
-
-function set_rollup_state(e,e2,state) {
-    if (e && e2) {
-        if (state == 'shown') {
-            show(e);
-            delClass( e2, 'rolled-up' );
-        }
-        else if (state == 'hidden') {
-            hide(e);
-            addClass( e2, 'rolled-up' );
-        }
-    }
-}
-
 /* other utils */
 
 function getClosestInputElements(input) {
