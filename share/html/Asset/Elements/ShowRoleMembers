@@ -53,16 +53,13 @@
 <div class="accordion-item">
   <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#<% $Role %>-user-<% $user->id %>" aria-expanded="false" aria-controls="<% $Role %>-user-<% $user->id %>" id="<% $Role %>-user-<% $user->id %>-title" >
 
-% if (not $Title) {
-% } elsif ($Single) {
-    <& /Elements/ShowUser, User => $user, Link => 1 &>
-% } else {
+% if ($Title) {
     <& /Elements/ShowUser, User => $user, Link => 1 &>
 %   if ($Note) {
       <span class="note"><% $Note %></span>
 %   }
-  </span>
 % }
+  </span>
   <div id="<% $Role %>-user-<% $user->id %>" class="accordion-content collapse" aria-labelledby="<% $Role %>-user-<% $user->id %>-title">
     <& /User/Elements/UserInfo,
        User => $user,
