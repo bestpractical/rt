@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation'), class => "user create-ticket" &>
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
-<&|/l&>Create a ticket with this user as the Requestor in Queue</&>
+<&|/l&>Create a ticket with this user as the Requestor in Queue:&nbsp;</&>
 <input type="hidden" name="Requestors" value="<%$User->EmailAddress%>">
 <& /Elements/SelectNewTicketQueue &>
-<input type="submit" value="<&|/l&>Create</&>">
+<input type="submit" name="CreateTicket" value="<&|/l&>Create</&>" class="button btn btn-primary form-control">
 </form>
 </&>
 <%ARGS>
