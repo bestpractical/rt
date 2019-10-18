@@ -238,10 +238,6 @@ ul.selectable a {
   user-select: none;
 }
 
-.modal {
-    width: auto;
-}
-
 /* query builder */
 
 #formatbuttons {
