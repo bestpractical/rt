@@ -50,7 +50,7 @@
     title => loc("Queue list"),
     class => "fullwidth",
     bodyclass => "",
-    titleright => loc("Edit"),
+    titleright_raw => q[<span class="fas fa-cog" alt="] . loc('Edit') . q["></span>],
     titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueList.html',
 &>
 <& $comp,

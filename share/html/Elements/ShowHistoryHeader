@@ -62,15 +62,13 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my $title = $ShowTitle
                     ? loc('History')
                     : '&nbsp;';
-
-    my $titleright = '';
+    my @elements;
     if ( $ScrollShowHistory ) {
-        $titleright .= qq{<span id="LoadAllHistoryContainer">} .
-                       qq{<a href="#" id="LoadAllHistory">} .
-                       loc('Load all history') .
-                       qq{</a>} .
-                       ($ShowDisplayModes ? '&mdash;' : '') .
-                       qq{</span>};
+        push( @elements, qq{<span id="LoadAllHistoryContainer">} .
+                         qq{<a href="#" id="LoadAllHistory">} .
+                         loc('Load all history') .
+                         qq{</a>} .
+                         qq{</span>} );
     }
 
     if ( $ShowDisplayModes ) {
@@ -78,23 +76,33 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
             my $open_html = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
             my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'j' );
-            $titleright .=    '<a href="#" data-direction="open" '
-                            . qq{onclick="return toggle_all_folds(this, $open_all, $close_all);"}
-                            . ">$open_html</a> &mdash; ";
+            push( @elements, qq{<a href="#" data-direction="open" } .
+                             qq{onclick="return toggle_all_folds(this, $open_all, $close_all);"} .
+                             qq{>$open_html</a>} );
         }
 
         if ($ShowHeaders) {
-            $titleright .= qq{<a href="?ForceShowHistory=1;id=} .
-                           $Object->id.qq{#$histid">} .
-                           loc("Show brief headers") .
-                           qq{</a>};
+            push( @elements, qq{<a href="?ForceShowHistory=1;id=} .
+                             $Object->id.qq{#$histid">} .
+                             loc("Show brief headers") .
+                             qq{</a>} );
         } else {
-            $titleright .= qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
-                           $Object->id.qq{#$histid">} .
-                           loc("Show full headers") .
-                           qq{</a>};
+            push( @elements, qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
+                             $Object->id.qq{#$histid">} .
+                             loc("Show full headers") .
+                             qq{</a>} );
         }
     }
+
+    # build the new link
+    my $titleright = q{<div class="btn-group dropdown"><a id="history-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-cog"></span></a><ul class="dropdown-menu dropdown-menu-right">};
+
+    # foreach of the elements, build a new <li>$element</li> and append to the output.
+    foreach my $element ( @elements ) {
+        $titleright .= qq{<li class="dropdown-item">$element</li>};
+    }
+
+    $titleright .= q{</ul></div>};
 
 </%perl>
 % $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright );

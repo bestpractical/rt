@@ -669,7 +669,7 @@ sub BuildMainNav {
     }
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
-        $page->child( edit => title => loc('Edit'), path => '/Prefs/MyRT.html' );
+        $page->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . q[/Prefs/MyRT.html"><span class="fas fa-cog" alt="] . loc('Edit') . q["></span></a>] );
     }
 
     # due to historical reasons of always having been in /Elements/Tabs

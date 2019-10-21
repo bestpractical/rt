@@ -121,3 +121,9 @@ div.cke {
   z-index: 10000; 
 }
 
+/* manipulate the svg image for selected bookmarks */
+svg.bookmark-selected path {
+    stroke: black;
+    stroke-width: 50;
+    fill: #46B346;
+}

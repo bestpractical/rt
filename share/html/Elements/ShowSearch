@@ -49,7 +49,7 @@
     title => loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'}),
     title_raw => $title_raw,
     title_href => $query_link_url.$QueryString,
-    titleright => $customize ? loc('Edit') : '',
+    titleright_raw => q[<span class="fas fa-cog" alt="] . loc('Edit') . q["></span>],
     titleright_href => $customize,
     hideable => $hideable,
     class => 'fullwidth' &>

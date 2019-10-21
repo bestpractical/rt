@@ -48,7 +48,7 @@
 <&|/Widgets/TitleBox,
     title => loc('Dashboards'),
     title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
-    titleright => loc("Edit"),
+    titleright_raw => q[<span class="fas fa-cog" alt="] . loc('Edit') . q["></span>],
     titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
 &>
 
