@@ -293,6 +293,57 @@ jQuery(function() {
         jQuery(this).hide();
         return false;
     });
+
+    jQuery('div.two-col').each(function() {
+        var container = jQuery(this);
+        var divs = container.children('div.form-row');
+
+        var left_divs = [];
+        var right_divs = [];
+        var full_count = 0;
+
+        for( var i = 0; i < divs.length; i++ ) {
+            var div = divs.eq(i);
+            if ( div.hasClass('two-col-full') ) {
+                left_divs.push(div);
+                full_count++;
+            }
+            else if ( div.hasClass('two-col-left') ) {
+                left_divs.push(div);
+            }
+            else if ( div.hasClass('two-col-right') ) {
+                right_divs.push(div);
+            }
+            else if ( left_divs.length - full_count > right_divs.length ) {
+                right_divs.push(div);
+            }
+            else {
+                left_divs.push(div);
+            }
+        }
+
+        while ( left_divs.length ) {
+            var row = jQuery('<div class="form-row"></div>').appendTo(container);
+            var left_div = left_divs.shift();
+            left_div.detach().appendTo(row);
+
+            if ( left_div.hasClass('two-col-full') ) {
+                left_div.wrap('<div class="col-xl-12"></div>');
+            }
+            else {
+                left_div.wrap('<div class="col-xl-6"></div>');
+                var right_div = right_divs.shift();
+                if ( right_div ) {
+                    right_div.detach().appendTo(row).wrap('<div class="col-xl-6"></div>');
+                }
+            }
+        }
+
+        while ( right_divs.length ) {
+            var row = jQuery('<div class="form-row"></div>').appendTo(container);
+            right_divs.shift().detach().appendTo(row).wrap('<div class="col-xl-6 offset-xl-6"></div>');
+        }
+    });
 });
 
 function textToHTML(value) {
