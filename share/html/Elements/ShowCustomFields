@@ -48,7 +48,7 @@
 % $m->callback( CallbackName => 'BeforeCustomFields', Object => $Object,
 %               Grouping => $Grouping, ARGSRef => \%ARGS, CustomFields => $CustomFields, Table => $Table );
 % if ($Table) {
-<div>
+<div class="two-col">
 % }
 % while ( my $CustomField = $CustomFields->Next ) {
 % my $Values = $Object->CustomFieldValues( $CustomField->Id );
@@ -63,6 +63,7 @@
 %   'custom-field-'.$CustomFieldName,
 % );
 % push @classes, 'unset-field' if not $count;
+% push @classes, 'two-col-full' if $CustomField->Type =~ /^(?:Text|Wikitext)$/;
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes, Grouping => $Grouping );
   <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">

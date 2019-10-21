@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div>
+<div class="two-col">
   <div class="id form-row">
     <div class="label col-md-3"><&|/l&>Id</&>:</div>
     <div class="value col-md-9"><span class="current-value form-control"><%$Ticket->Id %></span></div>

@@ -128,3 +128,15 @@ ul.select-queue li + li {
 ul.select-queue li a:visited {
     color: #000;
 }
+
+@media (min-width: 1200px) {
+    .two-col-full > .label.col-md-3 {
+        max-width: 12.5%;
+        flex: 0 0 12.5%;
+    }
+
+    .two-col-full > .col-md-9 {
+        max-width: 87.5%;
+        flex: 0 0 87.5%;
+    }
+}

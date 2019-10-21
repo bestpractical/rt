@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div>
+<div class="two-col">
   <div class="form-row owner">
     <div class="label col-md-3"><&|/l&>Owner</&>:</div>
 % my $owner = $Ticket->OwnerObj;

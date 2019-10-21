@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div>
+<div class="two-col">
   <div class="date form-row created">
     <div class="label col-md-3"><&|/l&>Created</&>:</div>\
     <div class="value col-md-9"><span class="form-control current-value"><% $Ticket->CreatedObj->AsString %></span></div>
