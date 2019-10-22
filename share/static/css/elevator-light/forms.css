@@ -347,8 +347,16 @@ form .value > .list-group {
   padding-top: 5px;
 }
 
-form .value > .list-group > .list-group-item:first-child {
+.value .list-group > .list-group-item:first-child {
   padding-top: 0;
+}
+
+.value .list-group .list-group-item {
+  padding-left: 0;
+}
+
+.value .list-group {
+  line-height: inherit;
 }
 
 .btn {
