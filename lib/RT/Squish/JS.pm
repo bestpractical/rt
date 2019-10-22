@@ -81,14 +81,19 @@ sub Squish {
         my $res = RT::Interface::Web::Handler->GetStatic($uri);
 
         if ($res->is_success) {
-            $content .= $res->decoded_content . "\n";
+            if ( $file =~ /\.min\.js$/ ) {
+                $content .= $res->decoded_content . "\n";
+            }
+            else {
+                $content .= $self->Filter($res->decoded_content) . "\n";
+            }
         } else {
             RT->Logger->error("Unable to fetch $uri for JS Squishing: " . $res->status_line);
             next;
         }
     }
 
-    return $self->Filter($content);
+    return $content;
 }
 
 sub Filter {
