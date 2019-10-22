@@ -24,18 +24,12 @@
     white-space: nowrap;
 }
 
-iframe.richtext-editor {
-    background-color: white !important;
-}
-
-.messagebox-container.action-response textarea,
-.messagebox-container.action-response iframe
+.messagebox-container.action-response textarea
 {
     background-color: #fcc !important;
 }
 
-.messagebox-container.action-private textarea,
-.messagebox-container.action-private iframe
+.messagebox-container.action-private textarea
 {
     background-color: #ffffdd !important;
 }

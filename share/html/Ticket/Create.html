@@ -151,7 +151,7 @@
 % $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
 
 <div class="form-row">
-<div class="label col-md-3"><&|/l&>Requestors</&>:</div>
+<div class="label col-md-2"><&|/l&>Requestors</&>:</div>
 <div class="value col-md-9">
 <& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
 % $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
@@ -159,12 +159,12 @@
 </div>
 
 <div class="form-row">
-<div class="label col-md-3"><&|/l&>Cc</&>:</div>
+<div class="label col-md-2"><&|/l&>Cc</&>:</div>
 <div class="value col-md-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1 &></div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3 empty">&nbsp;</div>
+  <div class="label col-md-2 empty">&nbsp;</div>
   <div class="value col-md-9 comment">
     <i><font size="-2">
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&>
@@ -173,12 +173,12 @@
 </div>
 
 <div class="form-row">
-<div class="label col-md-3"><&|/l&>Admin Cc</&>:</div>
+<div class="label col-md-2"><&|/l&>Admin Cc</&>:</div>
 <div class="value col-md-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1 &></div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3 empty">&nbsp;</div>
+  <div class="label col-md-2 empty">&nbsp;</div>
   <div class="value col-md-9 comment">
     <i><font size="-2">
       <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&>
@@ -191,14 +191,14 @@
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
 <div class="form-row">
-<div class="label col-md-3"><% $role->Name %>:</div>
-<div class="value col-md-9"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></div>
+<div class="form-group label col-md-2"><% $role->Name %>:</div>
+<div class="form-group value col-md-9"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></div>
 </div>
 
 % if ($role->EntryHint) {
 <div class="form-row">
-  <div class="label col-md-3 empty">&nbsp;</div>
-  <div class="value col-md-9 comment" colspan="5">
+  <div class="form-group label col-md-2 empty">&nbsp;</div>
+  <div class="form-group value col-md-9 comment" colspan="5">
     <i><font size="-2">
       <% $role->EntryHint %>
     </font></i>
@@ -217,10 +217,10 @@
 &>
 
 <div class="form-row">
-<div class="label col-md-3">
+<div class="form-group label col-md-2">
 <&|/l&>Subject</&>:
 </div>
-<div class="value col-md-9">
+<div class="form-group value col-md-9">
 <input class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </div>
@@ -228,17 +228,14 @@
 
 % if ( $gnupg_widget ) {
 <div class="form-row">
-  <div class="label col-md-3 empty"></div>
+  <div class="label col-md-2 empty"></div>
   <div class="value col-md-9"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &></div>
 </div>
 % }
-
-<div class="form-row">
-<div class="label col-md-3"><&|/l&>Message</&>:</div>
-<div class="value col-md-9">
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
 <& /Articles/Elements/BeforeMessageBox, %ARGS, QueueObj => $QueueObj &>
 % }
+<div class="form-group">
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, QueueObj => $QueueObj, Default => $ARGS{Content}, IncludeSignature => 0, IncludeDefaultArticle => 0 &>
@@ -248,7 +245,6 @@
 <& /Elements/MessageBox, QueueObj => $QueueObj, IncludeDefaultArticle => 1 &>
 %}
 % $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
-</div>
 </div>
 
         <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>

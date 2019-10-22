@@ -49,51 +49,54 @@
 <input type="hidden" name="<%$ARGS{'id'}%>-RefersTo" value="<% join(' ',grep {$_} sort keys %uri) %>" />
 % }
 
-<table class="articles-select-article">
+<div class="articles-select-article">
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
-<tr>
-<td><&|/l&>Include Article:</&></td>
-<td><& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &></td>
-</tr>
+  <div class="form-row">
+    <div class="form-group col-md-2 label"><&|/l&>Include Article:</&></div>
+    <div class="col-md-9 value"><& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &></div>
+  </div>
 % }
 % if ( @$topics ) {
-<tr>
-<td>
-<&|/l, $QueueObj->Name &>Choose from Topics for [_1]</&>
-</td>
-<td>
-<select name="<% $name_prefix %>Articles-Include-Topic" onchange="this.form.submit()">
-<option value="" selected>-</option>
+  <div class="form-row">
+    <div class="form-group col-md-2 label">
+      <&|/l, $QueueObj->Name &>Choose from Topics for [_1]</&>:
+    </div>
+    <div class="col-md-9 value">
+      <select name="<% $name_prefix %>Articles-Include-Topic" onchange="this.form.submit()" class="form-control selectpicker">
+        <option value="" selected>-</option>
 % for ( @$topics ) { 
-<option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
-</option>
+        <option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
+        </option>
 % }
-</select>
-</td>
-<td><input type="submit" name="Go" value="Go" /></td>
-</tr>
+      </select>
+    </div>
+    <div class="col-auto value">
+      <input type="submit" name="Go" value="Go" class="btn btn-primary form-control" />
+    </div>
+  </div>
 
 % if ( $ARGS{$name_prefix .'Articles-Include-Topic'} ) {
-<tr>
-<td>
-<&|/l, $included_topic->Name &>Select an Article from [_1]</&>
-</td>
-<td>
-<select name="IncludeArticleId" onchange="this.form.submit()">
-<option value="" selected>-</option>
+  <div class="form-row">
+    <div class="col-auto label">
+      <&|/l, $included_topic->Name &>Select an Article from [_1]</&>:
+    </div>
+    <div>
+      <select name="IncludeArticleId" onchange="this.form.submit()" class="form-control selectpicker">
+      <option value="" selected>-</option>
 % while ( my $art = $topic_articles->Next ) {
-<option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
+      <option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
 % }
-</select>
-</td>
-<td><input type="submit" value="Go" name="Go" /></td>
-</tr>
-
+      </select>
+    </div>
+    <div class="col-auto value">
+      <input type="submit" name="Go" value="Go" class="btn btn-primary form-control" />
+    </div>
+  </div>
 % }
 % }
 
 
-</table>
+</div>
 
 <%init>
 my $QueueObj = $ARGS{QueueObj};

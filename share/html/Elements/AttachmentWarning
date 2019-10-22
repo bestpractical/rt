@@ -51,7 +51,7 @@
         <% $Signature %>
     </div>
 
-    <p><&|/l&>It looks like you may have forgotten to add an attachment.</&></p>
+    <div><&|/l&>It looks like you may have forgotten to add an attachment.</&></div>
 </div>
 <%ARGS>
 $QuotedMessage => ''

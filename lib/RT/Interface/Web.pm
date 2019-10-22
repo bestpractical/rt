@@ -137,7 +137,7 @@ sub JSFiles {
         mousetrap.min.js
         keyboard-shortcuts.js
         assets.js
-        /static/RichText/ckeditor.js
+        /static/RichText5/ckeditor.js
         dropzone.min.js
         quoteselection.js
         fontawesome.js

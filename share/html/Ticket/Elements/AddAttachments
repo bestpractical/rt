@@ -59,8 +59,7 @@
 </div>
 % } # end of if
 
-<div class="form-row"><div class="label col-md-3"><&|/l&>Attach</&>:</div>
-    <div class="value col-md-9">
+<div class="form-group">
         <div class="dropzone" id="attach-dropzone">
         </div>
 <script type="text/javascript">
@@ -170,7 +169,6 @@ jQuery( function() {
             </label>
           </div>
         </div>
-    </div>
 </div>
 % if ($HasExisting) {
 <div class="form-row">

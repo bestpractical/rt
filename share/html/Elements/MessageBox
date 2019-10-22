@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<textarea autocomplete="off" class="form-control messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">
+<textarea autocomplete="off" class="form-control messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $SuppressAttachmentWarning ? 'suppress-attachment-warning' : '' %> <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">
 % $m->comp('/Articles/Elements/IncludeArticle', %ARGS, IncludeArticleId => $article_id, QueueObj => $QueueObj) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature, DefaultRef => \$Default, MessageRef => \$message );
 % if (RT->Config->Get("SignatureAboveQuote", $session{'CurrentUser'})) {
@@ -134,7 +134,7 @@ $IncludeSignature          => RT->Config->Get('MessageBoxIncludeSignature');
 $IncludeArticle            => 1;
 $Type                      => RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
 $SuppressAttachmentWarning => 0
-$Placeholder               => ''
+$Placeholder               => loc('Type your message here')
 $IncludeDefaultArticle     => 0  # Preload a default article based on queue settings
 $QueueObj                  => undef
 </%ARGS>

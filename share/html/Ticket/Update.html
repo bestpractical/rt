@@ -146,7 +146,7 @@
 
 % if ( $gnupg_widget ) {
 <div class="form-row">
-  <div class="col-md-3 label empty"></div>
+  <div class="col-md-2 label empty"></div>
   <div class="col-md-9 value">
     <& /Elements/Crypt/SignEncryptWidget,
         self => $gnupg_widget,
@@ -158,7 +158,7 @@
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="form-group col-md-2 label">
     <&|/l&>Subject</&>:
   </div>
   <div class="col-md-9 value">
@@ -166,13 +166,9 @@
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
   </div>
 </div>
-
-<div class="form-row">
-  <div class="col-md-3 label">
-    <&|/l&>Message</&>:
-  </div>
-  <div class="col-md-9 value messagebox-container action-<% $type %>">
-    <& /Articles/Elements/BeforeMessageBox, %ARGS &>
+<& /Articles/Elements/BeforeMessageBox, %ARGS &>
+<div class="form-group">
+  <div class="messagebox-container action-<% $type %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
@@ -223,9 +219,6 @@
 <script type="text/javascript">
 jQuery( function() {
    var updateScrips = function() {
-       if (CKEDITOR.instances && CKEDITOR.instances['UpdateContent']) {
-           CKEDITOR.instances['UpdateContent'].updateElement();
-       }
        var syncCheckboxes = function(ev) {
            var target = ev.target;
            jQuery("input[name=TxnSendMailTo]").filter( function() { return this.value == target.value; } ).prop("checked",jQuery(target).prop('checked'));
@@ -265,13 +258,6 @@ jQuery( function() {
        );
    };
    updateScrips();
-
-   if (CKEDITOR.instances && CKEDITOR.instances['UpdateContent']) {
-       CKEDITOR.instances['UpdateContent'].on('blur', updateScrips );
-   }
-   else {
-       jQuery('#UpdateContent').on('blur', updateScrips );
-   }
 
    jQuery("#ticket-update-metadata :input, #UpdateCc, #UpdateBcc").change( updateScrips );
 
