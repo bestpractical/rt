@@ -22,6 +22,7 @@ jQuery(function () {
 
             self.container = jQuery(node);
             self.svg = d3.select(node).select('svg');
+            self.svg.on('click', function(){ self.defocus() } );
             self.transformContainer = self.svg.select('g.transform');
             self.transitionContainer = self.svg.select('g.transitions');
             self.statusContainer = self.svg.select('g.statuses');
