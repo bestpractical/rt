@@ -7,10 +7,6 @@
     border-style: none;
 }
 
-.timer-link a img {
-    border-style: none;
-}
-
 /* we use background: #547CCC; to help make the ticket timer look more like RT
    but unfortunately that makes the stopwatch icon (being black) look bad */
 .ticket-timer .ticket-link img {

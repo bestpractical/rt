@@ -51,8 +51,6 @@ $id
 <%INIT>
 my $url = RT->Config->Get('WebPath') . "/Helpers/TicketTimer?id=" . $id;
 </%INIT>
-<span class="timer-link">
-    <a href="<% $url %>" onclick="window.open(<% $url |n,j %>, '_blank', 'height=200,width=200'); return false;" >
-        <span class="far fa-clock" alt="<% loc('Open Timer') %>" title="<% loc('Open Timer') %>"></span>
-    </a>
-</span>
+<a href="<% $url %>" onclick="window.open(<% $url |n,j %>, '_blank', 'height=200,width=200'); return false;" >
+  <span class="far fa-clock" alt="<% loc('Open Timer') %>" title="<% loc('Open Timer') %>"></span>
+</a>

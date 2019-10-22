@@ -184,12 +184,6 @@ ul.sf-menu li {
     height: auto;
 }
 
-#li-page-bookmark .toggle-bookmark a,
-#li-page-timer .timer-link a {
-    padding: 0.5em 1em;
-    border-style: none;
-}
-
 #li-page-bookmark a img,
 #li-page-timer a img {
     height: 1.25em;

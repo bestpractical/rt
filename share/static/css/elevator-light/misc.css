@@ -67,13 +67,6 @@ div.cke {
     width: 17em;
 }
 
-.toggle-bookmark a img,
-.timer-link a img {
-    height: 1em;
-    width: 1em;
-    border-style: none;
-}
-
 .dashboard-subscription tr.frequency .value input {
     margin-bottom: 0.75em;
 }
