@@ -137,10 +137,10 @@ sub JSFiles {
         mousetrap.min.js
         keyboard-shortcuts.js
         assets.js
-        /static/RichText5/ckeditor.js
+        /static/RichText5/ckeditor.min.js
         dropzone.min.js
         quoteselection.js
-        fontawesome.js
+        fontawesome.min.js
         rights-inspector.js
         }, RT->Config->Get('JSFiles');
 }
