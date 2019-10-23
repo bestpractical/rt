@@ -32,7 +32,6 @@
     stroke-width: 2px;
     fill: none;
     opacity: .15;
-    marker-end: url(#transition_arrowhead);
 }
 
 .lifecycle-ui .dotted {

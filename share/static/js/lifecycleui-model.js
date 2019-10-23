@@ -95,14 +95,26 @@ jQuery(function () {
                             else {
                                 transition = {};
                             }
-                            transition._key = _ELEMENT_KEY_SEQ++;
-                            transition._type = 'transition';
-                            transition.from = fromStatus;
-                            transition.to = toStatus;
-                            transition.style = transition.style || 'solid';
-                            transition.actions = [];
-                            self.transitions.push(transition);
-                            self._keyMap[transition._key] = transition;
+                            var exists = self.transitions.map(function(t){
+                                if ( t.from == toStatus && t.to == fromStatus ) {
+                                    return t;
+                                }
+                                return;
+                            });
+                            if ( exists != '' ) {
+                                exists.leftSide  = 1;
+                            }
+                            else {
+                                transition._key      = _ELEMENT_KEY_SEQ++;
+                                transition._type     = 'transition';
+                                transition.from      = fromStatus;
+                                transition.to        = toStatus;
+                                transition.style     = transition.style || 'solid';
+                                transition.actions   = [];
+                                transition.rightSide = 1;
+                                self.transitions.push(transition);
+                                self._keyMap[transition._key] = transition;
+                            }
                         });
                     }
                 });

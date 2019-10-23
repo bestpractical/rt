@@ -1,5 +1,4 @@
 jQuery(function () {
-
     RT.Editor = class LifecycleEditor {
         constructor(container, name, config, ticketStatus) {
             self.container    = container;
@@ -11,7 +10,7 @@ jQuery(function () {
             this.width = 809;
             this.height = 500;
             this.statusCircleRadius = 35;
-            this.statusCircleRadiusFudge = 4; // required to give room for the arrowhead
+            this.statusCircleRadiusFudge = 9; // required to give room for the arrowhead
             this.gridSize = 10;
             this.padding = this.statusCircleRadius * 2;
             this.animationFactor = 1; // bump this to 10 debug JS animations
@@ -23,6 +22,37 @@ jQuery(function () {
             self.container = jQuery(node);
             self.svg = d3.select(node).select('svg');
             self.svg.on('click', function(){ self.defocus() } );
+
+
+            // define arrow markers for graph links
+            self.svg.append('svg:defs').append('svg:marker')
+                .attr('id', 'end-arrow')
+                .attr('viewBox', '0 -5 10 10')
+                .attr("refX", 0)
+                .attr("refY", 0)
+                .attr('markerWidth', 5)
+                .attr('markerHeight', 5)
+                .attr('orient', 'auto')
+                .append('svg:path')
+                .attr('d', 'M0,-5L10,0L0,5')
+                .attr('fill', '#000');
+
+            self.svg.append('svg:defs').append('svg:marker')
+                .attr('id', 'start-arrow')
+                .attr('viewBox', '0 -5 10 10')
+                .attr("refX", 5)
+                .attr("refY", 0)
+                .attr('markerWidth', 5)
+                .attr('markerHeight', 5)
+                .attr('orient', 'auto')
+                .append('svg:path')
+                .attr('d', 'M10,-5L0,0L10,5')
+                .attr('fill', '#000');
+
+
+
+
+
             self.transformContainer = self.svg.select('g.transform');
             self.transitionContainer = self.svg.select('g.transitions');
             self.statusContainer = self.svg.select('g.statuses');
@@ -37,8 +67,25 @@ jQuery(function () {
             self._zoomIdentityScale = scale;
             self._zoomIdentity = self._currentZoom = d3.zoomIdentity.scale(self._zoomIdentityScale);
             RT.Lifecycle.name = name;
+
+
+
+
+
+
+
+
+            // Initialize our Lifecycle from the MPL model
             self.lifecycle = RT.Lifecycle;
             self.lifecycle.initializeFromConfig(config);
+
+            // set up initial nodes and links (edges) of graph, based on MPL model
+            var lastNodeId = -1,
+            // --> nodes setup
+            nodes = self.lifecycle.statusObjects(),
+            // --> links setup
+            links = self.lifecycle.transitions;
+
 
             self.container.closest('form[name=ModifyLifecycle]').submit(function (e) {
                 var config = self.lifecycle.exportAsConfiguration();
@@ -134,6 +181,32 @@ jQuery(function () {
                 }
             });
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         clickedTransition(d) {
             this.focusItem(d);
         }
@@ -265,9 +338,6 @@ jQuery(function () {
             lines.call(this._createDrag());
         }
 
-
-
-
         // View
         createScale(size, padding) {
             return d3.scaleLinear()
@@ -283,12 +353,6 @@ jQuery(function () {
         yScaleInvert(y) { return Math.floor(this._yScale.invert(y)); }
         xScaleZeroInvert(x) { return Math.floor(this._xScaleZero.invert(x)); }
         yScaleZeroInvert(y) { return Math.floor(this._yScaleZero.invert(y)); }
-
-        // Should we get rid of these
-        didEnterTransitions(paths) { }
-        didEnterPolygonDecorations(polygons) { }
-        didEnterCircleDecorations(circles) { }
-        didEnterLineDecorations(lines) { }
 
         renderStatusNodes(initial) {
             var self = this;
@@ -354,7 +418,7 @@ jQuery(function () {
             if (cdx == 0 && cdy == 0) {
                 return null;
             }
-            var theta = Math.atan2(cdy, cdx), r = this.statusCircleRadius, ax0 = cx0 + r * Math.cos(theta), ay0 = cy0 + r * Math.sin(theta), ax1 = cx1 - (r + this.statusCircleRadiusFudge) * Math.cos(theta), ay1 = cy1 - (r + this.statusCircleRadiusFudge) * Math.sin(theta), dr = Math.abs((ax1 - ax0) * 4) + Math.abs((ay1 - ay0) * 4);
+            var theta = Math.atan2(cdy, cdx), r = this.statusCircleRadius, ax0 = cx0 + (r + this.statusCircleRadiusFudge) * Math.cos(theta), ay0 = cy0 + (r + this.statusCircleRadiusFudge) * Math.sin(theta), ax1 = cx1 - (r + this.statusCircleRadiusFudge) * Math.cos(theta), ay1 = cy1 - (r + this.statusCircleRadiusFudge) * Math.sin(theta), dr = Math.abs((ax1 - ax0) * 4) + Math.abs((ay1 - ay0) * 4);
             return "M" + ax0 + "," + ay0 + " A" + dr + "," + dr + " 0 0,1 " + ax1 + "," + ay1;
         }
         renderTransitions(initial) {
@@ -368,39 +432,22 @@ jQuery(function () {
                     path.attr("stroke-dasharray", length + " " + length)
                         .attr("stroke-dashoffset", 0)
                         .style("marker-end", "none")
+                        .style("marker-start", "none")
                         .transition().duration(200 * self.animationFactor).ease(d3.easeLinear)
                         .attr("stroke-dashoffset", length)
                         .remove();
                 });
             var newPaths = paths.enter().append("path")
                 .attr("data-key", function (d) { return d._key; })
-                .on("click", function (d) {
-                    d3.event.stopPropagation();
-                    self.clickedTransition(d);
-                })
-                .call(function (paths) { self.didEnterTransitions(paths); });
+                .style('marker-start', function(d) { return d.rightSide ? 'url(#start-arrow)' : ''; })
+                .style('marker-end', function(d) { return 1 ? 'url(#end-arrow)' : ''; })
             newPaths.merge(paths)
                 .attr("d", function (d) { return self.transitionArc(d); })
-                .classed("dashed", function (d) { return d.style == 'dashed'; })
-                .classed("dotted", function (d) { return d.style == 'dotted'; })
-                .classed("focus", function (d) { return self.isFocused(d); })
-                .classed("focus-from", function (d) { return self.isFocusedTransition(d, true); })
-                .classed("focus-to", function (d) { return self.isFocusedTransition(d, false); });
             if (!initial) {
                 newPaths.each(function (d) {
-                    var length = this.getTotalLength();
                     var path = d3.select(this);
-                    path.attr("stroke-dasharray", length + " " + length)
-                        .attr("stroke-dashoffset", length)
-                        .style("marker-end", "none")
-                        .transition().duration(200 * self.animationFactor).ease(d3.easeLinear)
-                        .attr("stroke-dashoffset", 0)
-                        .on("end", function () {
-                            d3.select(this)
-                                .attr("stroke-dasharray", undefined)
-                                .attr("stroke-offset", undefined)
-                                .style("marker-end", undefined);
-                        });
+                        path.style('marker-start', function(d) { return d.rightSide ? 'url(#start-arrow)' : ''; })
+                        .style('marker-end', function(d) { return 1 ? 'url(#end-arrow)' : ''; })
                 });
             }
         }
@@ -449,40 +496,6 @@ jQuery(function () {
                 .attr("x", function (d) { return self.xScale(d.x); })
                 .attr("y", function (d) { return self.yScale(d.y); });
         }
-        renderPolygonDecorations(initial) {
-            var self = this;
-            var polygons = self.decorationContainer.selectAll("polygon")
-                .data(self.lifecycle.decorations.polygon, function (d) { return d._key; });
-            polygons.exit()
-                .classed("removing", true)
-                .transition().duration(200 * self.animationFactor)
-                .remove();
-            var newPolygons = polygons.enter().append("polygon")
-                .attr("data-key", function (d) { return d._key; })
-                .on("click", function (d) {
-                    d3.event.stopPropagation();
-                    self.clickedDecoration(d);
-                })
-                .call(function (polygons) { self.didEnterPolygonDecorations(polygons); });
-            if (!initial) {
-                newPolygons.style("opacity", 0.15)
-                    .transition().duration(200 * self.animationFactor)
-                    .style("opacity", 1)
-                    .on("end", function () { d3.select(this).style("opacity", undefined); });
-            }
-            newPolygons.merge(polygons)
-                .attr("stroke", function (d) { return d.renderStroke ? d.stroke : 'none'; })
-                .classed("dashed", function (d) { return d.strokeStyle == 'dashed'; })
-                .classed("dotted", function (d) { return d.strokeStyle == 'dotted'; })
-                .attr("fill", function (d) { return d.renderFill ? d.fill : 'none'; })
-                .attr("transform", function (d) { return "translate(" + self.xScale(d.x) + ", " + self.yScale(d.y) + ")"; })
-                .attr("points", function (d) {
-                    return jQuery.map(d.points, function (p) {
-                        return [self.xScaleZero(p.x), self.yScaleZero(p.y)].join(",");
-                    }).join(" ");
-                })
-                .classed("focus", function (d) { return self.isFocused(d); });
-        }
         renderCircleDecorations(initial) {
             var self = this;
             var circles = self.decorationContainer.selectAll("circle.decoration")
@@ -498,7 +511,6 @@ jQuery(function () {
                     d3.event.stopPropagation();
                     self.clickedDecoration(d);
                 })
-                .call(function (circles) { self.didEnterCircleDecorations(circles); });
             if (!initial) {
                 newCircles.style("opacity", 0.15)
                     .transition().duration(200 * self.animationFactor)
@@ -558,11 +570,10 @@ jQuery(function () {
                 .attr("x2", function (d) { return self.xScaleZero(d.points[1].x); })
                 .attr("y2", function (d) { return self.yScaleZero(d.points[1].y); })
                 .classed("focus", function (d) { return self.isFocused(d); })
-                .attr("marker-start", function (d) { return d.startMarker == 'none' ? undefined : "url(#line_marker_" + d.startMarker + ")"; })
-                .attr("marker-end", function (d) { return d.endMarker == 'none' ? undefined : "url(#line_marker_" + d.endMarker + ")"; });
+                .style('marker-start', function(d) { return d.rightSide ? 'url(#start-arrow)' : ''; })
+                .style('marker-end', function(d) { return 1 ? 'url(#end-arrow)' : ''; })
         }
         renderDecorations(initial) {
-            this.renderPolygonDecorations(initial);
             this.renderCircleDecorations(initial);
             this.renderLineDecorations(initial);
             this.renderTextDecorations(initial);
