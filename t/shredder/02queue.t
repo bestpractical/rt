@@ -22,25 +22,32 @@ diag 'simple queue' if $ENV{TEST_VERBOSE};
 
 diag 'queue with scrip' if $ENV{TEST_VERBOSE};
 {
-    $test->create_savepoint('clean');
-    my $queue = RT::Queue->new( RT->SystemUser );
-    my ($id, $msg) = $queue->Create( Name => 'my queue' );
-    ok($id, 'created queue') or diag "error: $msg";
-
     my $scrip = RT::Scrip->new( RT->SystemUser );
-    ($id, $msg) = $scrip->Create(
+    my ($id, $msg) = $scrip->Create(
         Description    => 'my scrip',
-        Queue          => $queue->id,
         ScripCondition => 'On Create',
         ScripAction    => 'Open Tickets',
         Template       => 'Blank',
     );
     ok($id, 'created scrip') or diag "error: $msg";
 
+    # Commit 7d5502ffe makes Scrips not be deleted when a queue is shredded.
+    # we need to create the savepoint before applying the scrip so we can test
+    # to make sure it's remaining after shredding the queue.
+    $test->create_savepoint('clean');
+
+    my $queue = RT::Queue->new( RT->SystemUser );
+    ($id, $msg) = $queue->Create( Name => 'my queue' );
+    ok($id, 'created queue') or diag "error: $msg";
+
+    # apply the scrip to the queue.
+    $scrip->AddToObject( ObjectId => $queue->id );
+
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $queue );
     $shredder->WipeoutAll;
     $test->db_is_valid;
+
     cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
