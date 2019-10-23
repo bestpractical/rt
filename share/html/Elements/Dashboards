@@ -45,10 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% my $alt = loc('Edit');
+
 <&|/Widgets/TitleBox,
     title => loc('Dashboards'),
     title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
-    titleright_raw => q[<span class="fas fa-cog" alt="] . loc('Edit') . q["></span>],
+    titleright_raw => qq[<span class="fas fa-cog" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
     titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
 &>
 

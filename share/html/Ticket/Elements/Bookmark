@@ -65,9 +65,11 @@ $Toggle => 0
 % my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
 <a href="<% $url %>" onclick="jQuery.get(<% $url |n,j %>, function(data){ jQuery('.toggle-bookmark-'+<% $id |n,j%>).replaceWith(data) }); return false;" >
 % if ( $is_bookmarked ) {
-<span class="fas fa-bookmark bookmark-selected" data-fa-transform="shrink-2 up-0.25" alt="<% loc('Remove Bookmark') %>"></span>
+% my $alt = loc('Remove Bookmark');
+<span class="fas fa-bookmark bookmark-selected" data-fa-transform="shrink-2 up-0.25" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
 % } else {
-<span class="far fa-bookmark" style="color:black" alt="<% loc('Add Bookmark') %>"></span>
+% my $alt = loc('Add Bookmark');
+<span class="far fa-bookmark" style="color:black" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
 % }
 </a>
 </span>

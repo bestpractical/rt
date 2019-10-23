@@ -45,11 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% my $alt = loc('Edit');
+
 <&|/Widgets/TitleBox,
     title => loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'}),
     title_raw => $title_raw,
     title_href => $query_link_url.$QueryString,
-    titleright_raw => q[<span class="fas fa-cog" alt="] . loc('Edit') . q["></span>],
+    titleright_raw => qq[<span class="fas fa-cog" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
     titleright_href => $customize,
     hideable => $hideable,
     class => 'fullwidth' &>

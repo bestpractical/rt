@@ -66,10 +66,11 @@ my $initial_label = $HideUnsetFields ? $show_label : $hide_label;
 my $url = "?HideUnsetFields=" . ($HideUnsetFields ? 0 : 1) . ";id=$ARGS{id}";
 my $url_html = $m->interp->apply_escapes($url, 'h');
 
+my $alt = loc('Edit');
 my $titleright = qq{
 <div class="btn-group dropdown">
   <a id="metadata-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <span class="fas fa-cog" alt="} . loc('Edit') . qq{"></span>
+    <span class="fas fa-cog" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>
   </a>
   <ul class="dropdown-menu dropdown-menu-right">
     <li class="dropdown-item">
