@@ -50,9 +50,6 @@ jQuery(function () {
                 .attr('fill', '#000');
 
 
-
-
-
             self.transformContainer = self.svg.select('g.transform');
             self.transitionContainer = self.svg.select('g.transitions');
             self.statusContainer = self.svg.select('g.statuses');
@@ -64,28 +61,11 @@ jQuery(function () {
             // zoom in a bit, but not too much
             var scale = self.svg.node().getBoundingClientRect().width / self.width;
             scale = scale ** .6;
-            self._zoomIdentityScale = scale;
-            self._zoomIdentity = self._currentZoom = d3.zoomIdentity.scale(self._zoomIdentityScale);
             RT.Lifecycle.name = name;
-
-
-
-
-
-
-
 
             // Initialize our Lifecycle from the MPL model
             self.lifecycle = RT.Lifecycle;
             self.lifecycle.initializeFromConfig(config);
-
-            // set up initial nodes and links (edges) of graph, based on MPL model
-            var lastNodeId = -1,
-            // --> nodes setup
-            nodes = self.lifecycle.statusObjects(),
-            // --> links setup
-            links = self.lifecycle.transitions;
-
 
             self.container.closest('form[name=ModifyLifecycle]').submit(function (e) {
                 var config = self.lifecycle.exportAsConfiguration();
@@ -96,10 +76,10 @@ jQuery(function () {
 
                 return true;
             });
-            self.container.on('contextmenu', function (e) {
-                e.preventDefault();
+            self.svg.on('contextmenu', function () {
+                d3.event.preventDefault();
 
-                self.addNewStatus()
+                self.addNewStatus();
                 self.renderDisplay();
             });
             d3.select("body").on("keydown", function () {
@@ -190,38 +170,16 @@ jQuery(function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         clickedTransition(d) {
             this.focusItem(d);
         }
         clickedDecoration(d) {
             this.focusItem(d);
         }
-        viewportCenterPoint() {
-            var rect = this.svg.node().getBoundingClientRect();
-            var x = 0;
-            var y = 0;
-            return [this.xScaleInvert(x), this.yScaleInvert(y)];
-        }
         addNewStatus() {
-            var p = this.viewportCenterPoint();
-            this.lifecycle.createStatus(p[0], p[1]);
+            var x = this.xScaleInvert(d3.event.x);
+            var y = this.yScaleInvert(d3.event.y);
+            this.lifecycle.createStatus(x, y);
         }
 
         _refreshLifecycleUI(refreshContent) {
