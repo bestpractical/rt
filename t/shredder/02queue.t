@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::Deep;
-use RT::Test::Shredder tests => 21;
+use RT::Test::Shredder tests => undef;
 my $test = "RT::Test::Shredder";
 
 diag 'simple queue' if $ENV{TEST_VERBOSE};
@@ -22,20 +22,28 @@ diag 'simple queue' if $ENV{TEST_VERBOSE};
 
 diag 'queue with scrip' if $ENV{TEST_VERBOSE};
 {
-    $test->create_savepoint('clean');
-    my $queue = RT::Queue->new( RT->SystemUser );
-    my ($id, $msg) = $queue->Create( Name => 'my queue' );
-    ok($id, 'created queue') or diag "error: $msg";
-
     my $scrip = RT::Scrip->new( RT->SystemUser );
-    ($id, $msg) = $scrip->Create(
+    my ($id, $msg) = $scrip->Create(
         Description    => 'my scrip',
-        Queue          => $queue->id,
         ScripCondition => 'On Create',
         ScripAction    => 'Open Tickets',
         Template       => 'Blank',
     );
     ok($id, 'created scrip') or diag "error: $msg";
+    ok( $scrip->RemoveFromObject(0), 'unapplied scrip from global' );
+
+    # Commit 7d5502ffe makes Scrips not be deleted when a queue is shredded.
+    # we need to create the savepoint before applying the scrip so we can test
+    # to make sure it's remaining after shredding the queue.
+    $test->create_savepoint('clean');
+
+    my $queue = RT::Queue->new( RT->SystemUser );
+    ($id, $msg) = $queue->Create( Name => 'my queue' );
+    ok($id, 'created queue') or diag "error: $msg";
+
+    # apply the scrip to the queue.
+    ($id, $msg) = $scrip->AddToObject( ObjectId => $queue->id );
+    ok($id, 'applied scrip to queue') or diag "error: $msg";
 
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $queue );
@@ -119,3 +127,45 @@ diag 'queue with a watcher' if $ENV{TEST_VERBOSE};
 #    $shredder->WipeoutAll;
 #    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
+
+diag 'queue with custom fields' if $ENV{TEST_VERBOSE};
+{
+    my $ticket_custom_field = RT::CustomField->new( RT->SystemUser );
+    my ($id, $msg) = $ticket_custom_field->Create(
+        Name => 'ticket custom field',
+        Type => 'Freeform',
+        LookupType => RT::Ticket->CustomFieldLookupType,
+        MaxValues => '1',
+    );
+    ok($id, 'created ticket custom field') or diag "error: $msg";
+
+    my $transaction_custom_field = RT::CustomField->new( RT->SystemUser );
+    ($id, $msg) = $transaction_custom_field->Create(
+        Name => 'transaction custom field',
+        Type => 'Freeform',
+        LookupType => RT::Transaction->CustomFieldLookupType,
+        MaxValues => '1',
+    );
+    ok($id, 'created transaction custom field') or diag "error: $msg";
+
+    $test->create_savepoint('clean');
+    my $queue = RT::Queue->new( RT->SystemUser );
+    ($id, $msg) = $queue->Create( Name => 'my queue' );
+    ok($id, 'created queue') or diag "error: $msg";
+
+    # apply the custom fields to the queue.
+    ($id, $msg) = $ticket_custom_field->AddToObject( $queue );
+    ok($id, 'applied ticket cf to queue') or diag "error: $msg";
+
+    ($id, $msg) = $transaction_custom_field->AddToObject( $queue );
+    ok($id, 'applied txn cf to queue') or diag "error: $msg";
+
+    my $shredder = $test->shredder_new();
+    $shredder->PutObjects( Objects => $queue );
+    $shredder->WipeoutAll;
+    $test->db_is_valid;
+
+    cmp_deeply( $test->dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+}
+
+done_testing;

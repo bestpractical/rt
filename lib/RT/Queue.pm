@@ -1124,18 +1124,17 @@ sub __DependsOn {
     push( @$list, $objs );
 
 # Scrips
-    $objs = RT::Scrips->new( $self->CurrentUser );
-    $objs->LimitToQueue( $self->id );
+    $objs = RT::ObjectScrips->new( $self->CurrentUser );
+    $objs->LimitToObjectId( $self->id );
     push( @$list, $objs );
 
 # Templates
     $objs = $self->Templates;
     push( @$list, $objs );
 
-# Custom Fields
-    $objs = RT::CustomFields->new( $self->CurrentUser );
-    $objs->SetContextObject( $self );
-    $objs->LimitToQueue( $self->id );
+# Object Custom Fields
+    $objs = RT::ObjectCustomFields->new( $self->CurrentUser );
+    $objs->LimitToObjectId( $self->id );
     push( @$list, $objs );
 
 # Object Custom Roles
