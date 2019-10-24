@@ -55,7 +55,7 @@ use 5.010;
 use File::Spec ();
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
-use Storable;
+use Clone ();
 
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
@@ -2043,7 +2043,6 @@ sub GetObfuscated {
 
     return $self->Get(@_) unless $obfuscate;
 
-    require Clone;
     my $res = Clone::clone( $self->Get( @_ ) );
     $res = $obfuscate->( $self, $res, $user );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
@@ -2398,7 +2397,7 @@ sub LoadConfigFromDatabase {
         if (!exists $original_setting_from_files{$name}) {
             $original_setting_from_files{$name} = [
                 scalar($self->Get($name)),
-                Storable::dclone(scalar($self->Meta($name))),
+                Clone::clone(scalar($self->Meta($name))),
             ];
         }
 
