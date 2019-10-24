@@ -1135,6 +1135,7 @@ sub __DependsOn {
 # Object Custom Fields
     $objs = RT::ObjectCustomFields->new( $self->CurrentUser );
     $objs->LimitToObjectId( $self->id );
+    $objs->LimitToLookupType( $_ ) for qw/RT::Queue RT::Queue-RT::Ticket RT::Queue-RT::Ticket-RT::Transaction/;
     push( @$list, $objs );
 
 # Object Custom Roles
