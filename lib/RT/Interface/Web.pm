@@ -1938,6 +1938,7 @@ sub RenderMenu {
             if ( $tmp = $child->class ) {
                 $res .= ' '. $interp->apply_escapes($tmp, 'h');
             }
+            $res .= ' btn' if ( defined $id && $id eq 'page-menu' );
             $res .= '"';
 
             my $path = $child->path;

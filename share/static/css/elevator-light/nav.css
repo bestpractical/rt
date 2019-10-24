@@ -92,12 +92,18 @@ ul.sf-menu li {
 #page-navigation {
     position: absolute;
     top: 6.5em;
-    right: 0;
-    left: 0;
-    padding-right: 3em;
-    font-size: 0.9em;
-    border-bottom: 1px solid #ccc;
-    background-color: #eee;
+    right: 4em;
+}
+
+.page-nav-shadow {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(23, 69, 102, 0.26);
+}
+
+.page-nav-shadow .btn {
+    border-top: none;
+    border-bottom: none;
 }
 
 #page-navigation #page-menu {
@@ -318,6 +324,22 @@ ul.sf-menu li {
 #app-nav.sf-menu,
 #page-menu.sf-menu {
     white-space: nowrap;
+    margin-bottom: 0;
+}
+
+#page-menu.sf-menu a {
+    padding-top: .3em;
+    padding-bottom: .3em;
+}
+
+#page-menu.sf-menu li {
+    float: left;
+    display: inline-block;
+    border-color: #E0E6EC;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-left-style: solid;
+    border-left-width: 1px;
 }
 
 /* restore wrapping for submenus */

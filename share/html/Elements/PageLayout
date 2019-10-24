@@ -51,7 +51,7 @@
 
 % if ( $show_menu ) {
 <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
-<div id="page-navigation"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
+<div id="page-navigation" class="btn-group page-nav-shadow"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
 % }
 <div id="topactions"><& /Elements/WidgetBar, menu => PageWidgets() &></div>
 
