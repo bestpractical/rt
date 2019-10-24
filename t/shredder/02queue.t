@@ -148,10 +148,52 @@ diag 'queue with custom fields' if $ENV{TEST_VERBOSE};
     );
     ok($id, 'created transaction custom field') or diag "error: $msg";
 
+    my $queue_custom_field = RT::CustomField->new( RT->SystemUser );
+    ( $id, $msg ) = $queue_custom_field->Create(
+        Name       => 'queue custom field',
+        Type       => 'Freeform',
+        LookupType => RT::Queue->CustomFieldLookupType,
+        MaxValues  => '1',
+    );
+    ok( $id, 'created queue custom field' ) or diag "error: $msg";
+
+    my $article_custom_field = RT::CustomField->new( RT->SystemUser );
+    ( $id, $msg ) = $article_custom_field->Create(
+        Name       => 'article custom field',
+        Type       => 'Freeform',
+        LookupType => RT::Article->CustomFieldLookupType,
+        MaxValues  => '1',
+    );
+    ok( $id, 'created article custom field' ) or diag "error: $msg";
+
+    my $asset_custom_field = RT::CustomField->new( RT->SystemUser );
+    ( $id, $msg ) = $asset_custom_field->Create(
+        Name       => 'asset custom field',
+        Type       => 'Freeform',
+        LookupType => RT::Catalog->CustomFieldLookupType,
+        MaxValues  => '1',
+    );
+    ok( $id, 'created asset custom field' ) or diag "error: $msg";
+
+    # By default there are 2 queues and 1 class/catalog created.  So we need
+    # to create 1 extra class/catalog to catch up the queue id.
+    my $class = RT::Class->new( RT->SystemUser );
+    ok( $class->Create( Name => "class $_" ), "created class $_" ) for 2 .. 3;
+    is( $class->id, 3, 'Loaded class with the same to-be-created queue id=3' );
+    ( $id, $msg ) = $article_custom_field->AddToObject($class);
+    ok( $id, 'applied article cf to class' ) or diag "error: $msg";
+
+    my $catalog = RT::Catalog->new( RT->SystemUser );
+    ok( $catalog->Create( Name => "catalog $_" ), "created catalog $_" ) for 2 .. 3;
+    is( $catalog->id, 3, 'Loaded catalog with the same to-be-created queue id=3' );
+    ( $id, $msg ) = $asset_custom_field->AddToObject($catalog);
+    ok( $id, 'applied asset cf to catalog' ) or diag "error: $msg";
+
     $test->create_savepoint('clean');
     my $queue = RT::Queue->new( RT->SystemUser );
     ($id, $msg) = $queue->Create( Name => 'my queue' );
     ok($id, 'created queue') or diag "error: $msg";
+    is($id, 3, 'created queue id=3');
 
     # apply the custom fields to the queue.
     ($id, $msg) = $ticket_custom_field->AddToObject( $queue );
@@ -159,6 +201,9 @@ diag 'queue with custom fields' if $ENV{TEST_VERBOSE};
 
     ($id, $msg) = $transaction_custom_field->AddToObject( $queue );
     ok($id, 'applied txn cf to queue') or diag "error: $msg";
+
+    ( $id, $msg ) = $queue_custom_field->AddToObject($queue);
+    ok( $id, 'applied queue cf to queue' ) or diag "error: $msg";
 
     my $shredder = $test->shredder_new();
     $shredder->PutObjects( Objects => $queue );
