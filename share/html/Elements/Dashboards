@@ -50,7 +50,7 @@
 <&|/Widgets/TitleBox,
     title => loc('Dashboards'),
     title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
-    titleright_raw => qq[<span class="fas fa-cog" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
+    titleright_raw => qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
     titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
 &>
 

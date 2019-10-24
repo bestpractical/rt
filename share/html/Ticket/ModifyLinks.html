@@ -56,7 +56,7 @@
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
 % my $alt = loc('Graph ticket links');
 % my (@extra);
-% push @extra, titleright_raw => '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' .  $alt . '"></span></a>' unless RT->Config->Get('DisableGraphViz');
+% push @extra, titleright_raw => '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' .  $alt . '"></span></a>' unless RT->Config->Get('DisableGraphViz');
 <&| /Widgets/TitleBox, title => loc('Edit Links'), class=>'ticket-info-links', @extra &>
 <& /Elements/EditLinks, Object => $Ticket &>
 </&>

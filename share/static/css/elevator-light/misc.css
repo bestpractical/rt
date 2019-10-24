@@ -120,3 +120,12 @@ svg.bookmark-selected path {
     stroke-width: 50;
     fill: #46B346;
 }
+
+/* borders for cog icons */
+svg.icon-bordered {
+    width: 1em !important;
+    height: 1em !important;
+    border: solid 0.05em #eee;
+    border-radius: 0.1em;
+    padding: 0.2em 0.25em 0.15em;
+}
