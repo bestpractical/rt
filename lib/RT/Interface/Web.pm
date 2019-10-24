@@ -120,7 +120,6 @@ sub JSFiles {
         bootstrap.min.js
         bootstrap-select.min.js
         bootstrap-combobox.js
-        titlebox-state.js
         i18n.js
         util.js
         autocomplete.js

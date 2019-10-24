@@ -55,7 +55,6 @@ $onload => undef
 % }
 
 <script type="text/javascript"><!--
-jQuery( loadTitleBoxStates );
 % if ( $focus ) {
     jQuery(function () { jQuery(<% $focus |n,j%>).focus() });
 % }

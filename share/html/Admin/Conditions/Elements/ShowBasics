@@ -50,7 +50,7 @@
     <&|/l&>Name</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"Name"} || $Condition->Name || '' %></span>
+    <span class="current-value"><% $ARGS{"Name"} || $Condition->Name || '' %></span>
   </div>
 </div>
 
@@ -59,7 +59,7 @@
     <&|/l&>Description</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"Description"} || $Condition->Description || '' %></span>
+    <span class="current-value"><% $ARGS{"Description"} || $Condition->Description || '' %></span>
   </div>
 </div>
 
@@ -68,7 +68,7 @@
     <&|/l&>Condition Module</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"ExecModule"} || $Condition->ExecModule || ''%></span>
+    <span class="current-value"><% $ARGS{"ExecModule"} || $Condition->ExecModule || ''%></span>
   </div>
 </div>
 
@@ -77,7 +77,7 @@
     <&|/l&>Parameters to Pass</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"Argument"} || $Condition->Argument || '' %></span>
+    <span class="current-value"><% $ARGS{"Argument"} || $Condition->Argument || '' %></span>
   </div>
 </div>
 
@@ -86,7 +86,7 @@
     <&|/l&>Applicable Transaction Types</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control"><% $ARGS{"ApplicableTransTypes"} || $Condition->ApplicableTransTypes || '' %></span>
+    <span class="current-value"><% $ARGS{"ApplicableTransTypes"} || $Condition->ApplicableTransTypes || '' %></span>
   </div>
 </div>
 

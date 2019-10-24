@@ -48,11 +48,15 @@
 % if ($ShowTickets) {
 <script type="text/javascript">
     jQuery(function() {
-        jQuery(".more-about-requestor-tickets").tabs({
-            cache: true,
-            collapsible: true,
-            active: <% $selected %>
-        });
+      jQuery('.more-about-requestor-tickets a[data-link][data-toggle="tab"]').on('shown.bs.tab', function(e) {
+          var tab = jQuery(this);
+          if ( tab.hasClass('loaded') ) return;
+
+          var link = jQuery(this).attr('data-link');
+          jQuery(jQuery(this).attr('href')).load(link, function() {
+              tab.addClass('loaded');
+          });
+      });
     });
 </script>
 % }
@@ -62,73 +66,82 @@
     class => 'ticket-info-requestor fullwidth'
 &>
 
-<div id="requestor-accordion" class="user-accordion">
+<div id="accordion-requestor-accordion" class="user-accordion accordion">
 
 % while ( my $requestor = $people->Next ) {
-<h3><a href="#"><& /Elements/ShowUser, User => $requestor, Link => 0 &></a>
-    <a class="user-summary" href="<%RT->Config->Get('WebPath')%>/User/Summary.html?id=<%$requestor->Id%>">User Summary</a></h3>
-  <div class="details">
+  <div class="accordion-item">
+    <span class="accordion-title collapsed toggle" data-toggle="collapse" data-target="#accordion-requestor-<% $requestor->id %>" aria-expanded="false" aria-controls="accordion-requestor-<% $requestor->id %>" id="accordion-requestor-<% $requestor->id %>-title" >
+      <a class="user-summary" href="<%RT->Config->Get('WebPath')%>/User/Summary.html?id=<%$requestor->Id%>">
+        <& /Elements/ShowUser, User => $requestor, Link => 0 &>
+      </a>
+    </span>
+
+    <div id="accordion-requestor-<% $requestor->id %>" class="accordion-content collapse" aria-labelledby="accordion-requestor-<% $requestor->id %>-title">
 
 %# Additional information about this user.  Empty by default.
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
-<& ShowRequestorExtraInfo, Requestor => $requestor &>
+      <& ShowRequestorExtraInfo, Requestor => $requestor &>
 
 % if ( $ShowComments ) {
-<div class="comments-about-user">
-  <div class="label col-md-3"><&|/l&>Comments about this user</&>:</div>
-  <div class="value col-md-9"><span class="form-control current-value"><% ($requestor->Comments || loc("No comment entered about this user")) %></span></div>
-</div>
+      <div class="comments-about-user">
+        <div class="label"><&|/l&>Comments about this user</&>:</div>
+        <div class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></div>
+      </div>
 % }
 
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AfterComments' );
 
 % if ( $ShowTickets ) {
-<div class="more-about-requestor-tickets ui-tabs" id="more-about-requestor-tickets-<%$requestor->Id%>">
-  <ul>
+      <div class="more-about-requestor-tickets" id="more-about-requestor-tickets-<%$requestor->Id%>">
+        <ul class="nav nav-tabs" role="tablist">
 % my $index = 1;
 % for my $status ( @$status_order ) {
-    <li>
+          <li class="nav-item">
 % if ( $status eq $DefaultTicketsTab ) {
-      <a href="#requestor-<%$requestor->Id%>-ticket-tab-default">\
+            <a class="nav-link active" href="#accordion-requestor-<%$requestor->Id%>-ticket-default" id="accordion-requestor-<% $requestor->Id %>-ticket-default-tab" data-toggle="tab" role="tab" aria-controls="#accordion-requestor-<%$requestor->Id%>-ticket-default">\
 % } else {
 %     my $url = RT->Config->Get('WebPath').'/Helpers/Toggle/ShowRequestor?'.
 %     $m->comp('/Elements/QueryString', Requestor => $requestor->Id , Status => $status);
-      <a href="<% $url | n %>" title="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>">\
+            <a class="nav-link" data-link="<% $url | n %>" href="#accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>" id="accordion-requestor-<% $requestor->Id %>-ticket-<% $index %>-tab" data-toggle="tab" role="tab" aria-controls="#accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>">\
+% $index++;
 % }
-<% $status_link_text->{$status} %></a>
-    </li>
+              <% $status_link_text->{$status} %></a>
+          </li>
 % }
-  </ul>
+        </ul>
 % $index = 1;
+        <div class="tab-content">
 % for my $status (@$status_order) {
 % if ( $status eq $DefaultTicketsTab ) {
-  <div id="requestor-<%$requestor->Id%>-ticket-tab-default">
-    <& $TicketTemplate, Requestor => $requestor &>
+          <div id="accordion-requestor-<%$requestor->Id%>-ticket-default" class="tab-pane fade show active" role="tabpanel" aria-labelledby="accordion-requestor-<% $requestor->Id %>-ticket-default-tab">
+            <& $TicketTemplate, Requestor => $requestor &>
 % } else {
-  <div id="requestor-<%$requestor->Id%>-ticket-tab-<% $index++ %>" class="hidden">
-    <div class="label col-md-3"><&|/l&>Loading...</&></div>
+          <div id="accordion-requestor-<%$requestor->Id%>-ticket-<% $index %>" class="tab-pane fade" aria-labelledby="accordion-requestor-<% $requestor->Id %>-ticket-<% $index %>-tab">
+% $index++;
+            <div class="label"><&|/l&>Loading...</&></div>
 % }
-  </div>
+          </div>
 % }
-</div>
+        </div>
+      </div>
 % }
 
 % my $grouplimit = RT->Config->Get('MoreAboutRequestorGroupsLimit');
 % if ( $ShowGroups and defined $grouplimit ) {
-<div class="more-about-user-groups">
-  <div class="label col-md-3">
-    <&|/l&>Groups this user belongs to</&>
-    
+      <div class="more-about-user-groups">
+        <div class="label">
+          <&|/l&>Groups this user belongs to</&>
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
-  [<a href=<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %> ><&|/l&>Edit</&></a>]
+          [<a href="<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %>" ><&|/l&>Edit</&></a>]
 % }
-  </div>
-  <div class="value col-md-9"><span class="form-control current-value"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></span></div>
-</div>
+        </div>
+        <div class="value col-md-9"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></div>
+      </div>
 % }
 
 %# end of individual requestor details <div>
+    </div>
   </div>
 % }
 %# end of requestors loop

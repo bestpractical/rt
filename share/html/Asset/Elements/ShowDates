@@ -50,7 +50,7 @@
     <&|/l&>Created</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control">
+    <span class="current-value">
       <&|/l_unsafe,
         $m->interp->apply_escapes($AssetObj->CreatedAsString, 'h'),
         $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj)
@@ -64,7 +64,7 @@
     <&|/l&>Last Updated</&>:
   </div>
   <div class="col-md-9 value">
-    <span class="current-value form-control">
+    <span class="current-value">
       <&|/l_unsafe,
         $m->interp->apply_escapes($AssetObj->LastUpdatedAsString, 'h'),
         $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj)

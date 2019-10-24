@@ -55,7 +55,7 @@
 % while (my $link = $refersto->Next) {
 % my $member = $link->TargetURI;
 <li class="list-group-item">
-<span class="current-value form-control">
+<span class="current-value">
 % if ($link->TargetURI->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
 % if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {
@@ -82,7 +82,7 @@
 % while (my $link = $referredtoby->Next) {
 % my $member = $link->BaseURI;
 <li class="list-group-item">
-<span class="current-value form-control">
+<span class="current-value">
 % if ($member->IsLocal) {
 <a href="<%$member->AsHREF%>"><% loc($member->Object->RecordType) %> <%$member->Object->Id%>: 
 % if (UNIVERSAL::isa($member->Object, "RT::Article") or UNIVERSAL::can($member->Object, 'Name')) {

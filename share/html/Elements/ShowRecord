@@ -79,7 +79,7 @@ for my $column (@columns) {
         $title = $fetch_columnmap->($attr,'title',[$attr]);
     }
 </%perl>
-<div class="record-field <% $Class ? CSSClass("$Class-field") : "" %> <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr],'no_escape')) %>">
+<div class="record-field form-row <% $Class ? CSSClass("$Class-field") : "" %> <% CSSClass($fetch_columnmap->($attr,'attribute',[$attr],'no_escape')) %>">
 <div class="label col-md-3"><% loc($title) |n %></div>
 <%perl>
     my @out;
@@ -93,7 +93,7 @@ for my $column (@columns) {
     }
     @out = grep { defined $_ and length $_ } @out;
 </%perl>
-<div class="value col-md-9"><span class="form-control current-value"><% join('',@out) |n %></span></div>
+<div class="value col-md-9"><span class="current-value"><% join('',@out) |n %></span></div>
 % $m->callback(CallbackName => 'AfterValue', Object => $Object, attribute => $attr, column => $column );
 </div>
 % }

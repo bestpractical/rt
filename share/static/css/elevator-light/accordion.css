@@ -1,53 +1,73 @@
-.user-accordion {
-    margin: 0;
+.accordion-item {
+  border-bottom: 1px solid #E0E6EC;
 }
 
-.user-accordion .ui-accordion-content {
-    padding: 0 0 0 20px;
-    margin: 0 0 0.5em 0;
-    border: none;
-    background: none;
-    color: black;
+.accordion-item:last-child {
+  border-bottom: none;
 }
 
-.user-accordion .ui-accordion-header .ui-icon {
-    background-image: url(../../../static/images/jquery_ui/ui-icons_2e83ff_256x240.png);
-    left: 0;
+.accordion-title {
+  background: #FFF;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px;
+  font-weight: 500;
+  width: 100%;
 }
 
-.user-accordion .ui-accordion-header {
-    padding: 0;
-    background: none;
+.accordion-title:after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  border: solid #B0B3BC;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(-135deg);
+  -ms-transform: rotate(-135deg);
+  transform: rotate(-135deg);
+  transition: transform .25s;
 }
 
-.user-accordion .ui-accordion-header, .user-accordion .ui-accordion-header a {
-    color: black;
-    border: none;
-    margin: 0;
+.accordion-title.collapsed:after {
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
-.user-accordion .ui-accordion-header a {
-    padding: 0 0 0.25em 20px;
+.accordion-content {
+  padding: 0 10px 10px;
 }
 
-.user-accordion .ui-accordion-header a:hover,
-.user-accordion .ui-accordion-header.ui-state-active a {
-    text-decoration: underline;
+.accordion-item-bare {
+  padding: 5px;
 }
 
-
-
-.user-accordion a.user-summary {
-    float: right;
-    text-decoration: none;
-}
-.user-accordion a.user-summary:hover { text-decoration: underline }
-
-.user-accordion .ui-accordion-content {
-    clear: both;
+.accordion-title > ul.sf-menu {
+  width: intrinsic;           /* Safari/WebKit uses a non-standard name */
+  width: -moz-max-content;    /* Firefox/Gecko */
+  width: -webkit-max-content; /* Chrome */
+  flex-grow: 0;
 }
 
-.user-accordion a.modify-user {
-    font-size: 80%;
-    color: black !important;
+.accordion-title > ul.sf-menu > li:hover,
+.accordion-title > ul.sf-menu > li > a:hover {
+  background: none;
+}
+
+.accordion-title > div.unlink-asset {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.value > .accordion .accordion-item-bare:first-child,
+.value > .accordion .accordion-item:first-child .accordion-title {
+  padding-top: 0;
+}
+
+.value > .accordion .accordion-item-bare,
+.value > .accordion .accordion-item .accordion-title {
+  padding-left: 0;
 }

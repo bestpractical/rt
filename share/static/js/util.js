@@ -56,36 +56,6 @@ function delClass(id, value) {
     jQueryWrap(id).removeClass(value);
 }
 
-/* Rollups */
-
-function rollup(id) {
-    var e = jQueryWrap(id);
-    var e2  = e.parent();
-    
-    if (e.hasClass('hidden')) {
-        set_rollup_state(e,e2,'shown');
-        createCookie(id,1,365);
-    }
-    else {
-        set_rollup_state(e,e2,'hidden');
-        createCookie(id,0,365);
-    }
-    return false;
-}
-
-function set_rollup_state(e,e2,state) {
-    if (e && e2) {
-        if (state == 'shown') {
-            show(e);
-            delClass( e2, 'rolled-up' );
-        }
-        else if (state == 'hidden') {
-            hide(e);
-            addClass( e2, 'rolled-up' );
-        }
-    }
-}
-
 /* other utils */
 
 function getClosestInputElements(input) {
@@ -441,10 +411,12 @@ function AddAttachmentWarning(richTextEditor) {
 
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
-        jQuery(input).nextAll(".warning").hide();
+        jQuery(input).nextAll(".invalid-feedback").addClass('hidden');
+        jQuery(input).removeClass('is-invalid');
         jQuery("#acl-AddPrincipal input[type=checkbox]").removeAttr("disabled");
     } else {
-        jQuery(input).nextAll(".warning").css("display", "block");
+        jQuery(input).nextAll(".invalid-feedback").removeClass('hidden');
+        jQuery(input).addClass('is-invalid');
         jQuery("#acl-AddPrincipal input[type=checkbox]").attr("disabled", "disabled");
     }
 
@@ -463,7 +435,7 @@ function update_addprincipal_title(title) {
 function addprincipal_onselect(ev, ui) {
 
     // if principal link exists, we shall go there instead
-    var principal_link = jQuery(ev.target).closest('form').find('ul.ui-tabs-nav a[href="#acl-' + ui.item.id + '"]:first');
+    var principal_link = jQuery(ev.target).closest('form').find('a[href="#acl-' + ui.item.id + '"]:first');
     if (principal_link.size()) {
         jQuery(this).val('').blur();
         update_addprincipal_title( '' ); // reset title to blank for #acl-AddPrincipal
@@ -507,19 +479,42 @@ function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
 }
 
+function createCookie(name,value,days) {
+    var path = RT.Config.WebPath ? RT.Config.WebPath : "/";
+
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+    }
+    else
+        expires = "";
+
+    document.cookie = name+"="+value+expires+"; path="+path;
+}
+
+function loadCollapseStates() {
+    var cookies = document.cookie.split(/;\s*/);
+    var len     = cookies.length;
+
+    for (var i = 0; i < len; i++) {
+        var c = cookies[i].split('=');
+
+        if (c[0].match(/^(TitleBox--|accordion-)/)) {
+            var e   = document.getElementById(c[0]);
+            if (e) {
+                if (c[1] != 0) {
+                    jQuery(e).collapse('show');
+                }
+                else {
+                    jQuery(e).collapse('hide');
+                }
+            }
+        }
+    }
+}
 
 jQuery(function() {
-    jQuery(".user-accordion").each(function(){
-        jQuery(this).accordion({
-            active: (jQuery(this).find("h3").length == 1 ? 0 : false),
-            collapsible: true,
-            heightStyle: "content",
-            header: "h3"
-        }).find("h3 a.user-summary").click(function(ev){
-            ev.stopPropagation();
-            return true;
-        });
-    });
     ReplaceAllTextareas();
     jQuery('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
     AddAttachmentWarning();
@@ -543,7 +538,7 @@ jQuery(function() {
         );
     });
 
-    jQuery(".card .toggle").each(function() {
+    jQuery(".card .card-header .toggle").each(function() {
         var e = jQuery(jQuery(this).attr('data-target'));
         e.on('hide.bs.collapse', function () {
             createCookie(e.attr('id'),0,365);
@@ -552,6 +547,26 @@ jQuery(function() {
         e.on('show.bs.collapse', function () {
             createCookie(e.attr('id'),1,365);
             e.closest('div.titlebox').find('div.card-header span.right').removeClass('invisible');
+        });
+    });
+
+    jQuery(".card .accordion-item .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-target'));
+        e.on('hide.bs.collapse', function () {
+            createCookie(e.attr('id'),0,365);
+        });
+        e.on('show.bs.collapse', function () {
+            createCookie(e.attr('id'),1,365);
+        });
+    });
+
+    jQuery(".card .card-body .toggle").each(function() {
+        var e = jQuery(jQuery(this).attr('data-target'));
+        e.on('hide.bs.collapse', function (event) {
+            event.stopPropagation();
+        });
+        e.on('show.bs.collapse', function (event) {
+            event.stopPropagation();
         });
     });
 
@@ -566,6 +581,13 @@ jQuery(function() {
     jQuery('.custom-file input').change(function (e) {
         jQuery(this).next('.custom-file-label').html(e.target.files[0].name);
     });
+
+    jQuery('#assets-accordion span.collapsed').find('ul.toplevel:not(.sf-menu)').addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ dropShadows: false, speed: 'fast', delay: 0 }).supposition().find('a').click(function(ev){
+      ev.stopPropagation();
+      return true;
+    });
+
+    loadCollapseStates();
 });
 
 // focus jquery object in window, only moving the screen when necessary

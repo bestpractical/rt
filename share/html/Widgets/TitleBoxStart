@@ -48,11 +48,7 @@
 <div class="titlebox card<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>">
   <div class="titlebox-title card-header<% $title_class ? " $title_class" : ''%>">
 % if ($hideable) {
-% if ( RT->Config->Get('WebDefaultStylesheet', $session{CurrentUser}) =~ /^elevator-/ ) {
     <span class="toggle <% $rolledup ? " collapsed" : ""%>" data-toggle="collapse" data-target="#<%$tid|n%>" title="<% loc('Toggle visibility') %>"></span>
-% } else {
-    <span class="widget"><a href="#" onclick="return rollup(<%$tid|n,j%>);" title="<% loc('Toggle visibility') %>"></a></span>
-% }
 % }
     <span class="left"><%
             $title_href ? qq[<a href="$title_href">] : '' | n
