@@ -152,6 +152,7 @@ my @lines = (
         Op => {
             Type => 'component',
             Path => '/Elements/SelectMatch',
+            Arguments => { IncludeShallow => 1 },
         },
         Value => { Type => 'text', Size => 20 }
     },

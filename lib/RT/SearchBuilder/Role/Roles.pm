@@ -222,6 +222,7 @@ sub RoleLimit {
         VALUE => undef,
         @_
     );
+    my $is_shallow = ( $args{OPERATOR} =~ s/^shallow\s*//i );
 
     my $class = $args{CLASS} || $self->_RoleGroupClass;
 
@@ -314,7 +315,10 @@ sub RoleLimit {
             $uid = $users[0]->id if @users;
 
             my @ids;
-            {
+            if ( $is_shallow ) {
+                @ids = $uid;
+            }
+            else {
                 my $groups = RT::Groups->new( RT->SystemUser );
                 $groups->LimitToUserDefinedGroups;
                 $groups->WithMember( PrincipalId => $uid, Recursively => 1 );
@@ -374,7 +378,10 @@ sub RoleLimit {
         );
         if ($args{FIELD} eq "id") {
             my @ids;
-            {
+            if ( $is_shallow ) {
+                @ids = $args{VALUE};
+            }
+            else {
                 my $groups = RT::Groups->new( RT->SystemUser );
                 $groups->LimitToUserDefinedGroups;
                 $groups->WithMember( PrincipalId => $args{VALUE}, Recursively => 1 );
@@ -392,28 +399,39 @@ sub RoleLimit {
             );
         } else {
 
-            my $cgm_2 = $self->NewAlias('CachedGroupMembers');
-            my $group_members_2 = $self->Join(
-                ALIAS1 => $group_members,
-                FIELD1 => 'MemberId',
-                ALIAS2 => $cgm_2,
-                FIELD2 => 'GroupId',
-            );
-            $self->Limit(
-                LEFTJOIN => $group_members_2,
-                ALIAS => $cgm_2,
-                FIELD => 'Disabled',
-                VALUE => 0,
-                ENTRYAGGREGATOR => 'AND',
-            );
+            if ( $is_shallow ) {
+                $users ||= $self->Join(
+                    TYPE            => 'LEFT',
+                    ALIAS1          => $group_members,
+                    FIELD1          => 'MemberId',
+                    TABLE2          => 'Users',
+                    FIELD2          => 'id',
+                );
+            }
+            else {
+                my $cgm_2 = $self->NewAlias('CachedGroupMembers');
+                my $group_members_2 = $self->Join(
+                    ALIAS1 => $group_members,
+                    FIELD1 => 'MemberId',
+                    ALIAS2 => $cgm_2,
+                    FIELD2 => 'GroupId',
+                );
+                $self->Limit(
+                    LEFTJOIN => $group_members_2,
+                    ALIAS => $cgm_2,
+                    FIELD => 'Disabled',
+                    VALUE => 0,
+                    ENTRYAGGREGATOR => 'AND',
+                );
 
-            $users ||= $self->Join(
-                TYPE            => 'LEFT',
-                ALIAS1          => $group_members_2,
-                FIELD1          => 'MemberId',
-                TABLE2          => 'Users',
-                FIELD2          => 'id',
-            );
+                $users ||= $self->Join(
+                    TYPE            => 'LEFT',
+                    ALIAS1          => $group_members_2,
+                    FIELD1          => 'MemberId',
+                    TABLE2          => 'Users',
+                    FIELD2          => 'id',
+                );
+            }
             $self->Limit(
                 %args,
                 ALIAS           => $users,

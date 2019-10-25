@@ -75,6 +75,7 @@ while ( my $Role = $CustomRoles->Next ) {
         Op => {
             Type => 'component',
             Path => '/Elements/SelectMatch',
+            Arguments => { IncludeShallow => $Role->SingleValue ? 0 : 1 },
         },
         Value => { Type => 'text', Size => 20 },
     );
