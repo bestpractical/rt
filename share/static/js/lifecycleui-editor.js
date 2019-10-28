@@ -76,7 +76,7 @@ jQuery(function () {
 
                 return true;
             });
-            self.svg.on('contextmenu', function () {
+            self.svg.on('dblclick', function () {
                 d3.event.preventDefault();
 
                 self.addNewStatus();
