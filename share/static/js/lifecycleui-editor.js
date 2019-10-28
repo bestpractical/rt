@@ -162,17 +162,10 @@ jQuery(function () {
             });
         }
 
-
-
-
-
-
-
-
-
         clickedTransition(d) {
             this.focusItem(d);
         }
+
         addNewStatus() {
             var x = this.xScaleInvert(d3.event.x);
             var y = this.yScaleInvert(d3.event.y);
@@ -230,33 +223,10 @@ jQuery(function () {
             });
         }
 
-        renderTextDecorationBackgrounds(initial) {
-            var self = this;
-            var rects = self.decorationContainer.selectAll("rect.text-background")
-                .data(self.lifecycle.decorations.text, function (d) { return d._key; });
-            rects.exit()
-                .classed("removing", true)
-                .transition().duration(200 * self.animationFactor)
-                .remove();
-            var newRects = rects.enter().insert("rect", ":first-child")
-                .attr("data-key", function (d) { return d._key; })
-                .classed("text-background", true)
-                .on("click", function (d) {
-                    d3.event.stopPropagation();
-                })
-                .call(function (rects) { self.didEnterTextDecorations(rects); });
-            if (!initial) {
-                newRects.style("opacity", 0.15)
-                    .transition().duration(200 * self.animationFactor)
-                    .style("opacity", 1)
-                    .on("end", function () { d3.select(this).style("opacity", undefined); });
-            }
-        }
-
-        didBeginDrag(d, node) { }
         didEndDrag(d, node) {
             d._dragging = false;
         }
+
         didDragItem(d, node) {
             if (this.inspectorNode && this.inspectorNode._key != d._key) {
                 return;
@@ -274,20 +244,23 @@ jQuery(function () {
             this.lifecycle.moveItem(d, x, y);
             this.renderDisplay();
         }
+
         _createDrag() {
             var self = this;
             return d3.drag()
                 .subject(function (d) { return { x: self.xScale(d.x), y: self.yScale(d.y) }; })
-                .on("start", function (d) { self.didBeginDrag(d, this); })
                 .on("drag", function (d) { self.didDragItem(d, this); })
                 .on("end", function (d) { self.didEndDrag(d, this); })
         }
+
         didEnterStatusNodes(statuses) {
             statuses.call(this._createDrag());
         }
+
         didEnterTextDecorations(labels) {
             labels.call(this._createDrag());
         }
+
         didEnterLineDecorations(lines) {
             lines.call(this._createDrag());
         }
@@ -355,6 +328,7 @@ jQuery(function () {
                 .attr("fill", function (d) { return d3.hsl(d.color).l > 0.35 ? '#000' : '#fff'; })
                 .text(function (d) { return d.name; }).each(function () { self.truncateLabel(this); });
         }
+
         truncateLabel(element) {
             var node = d3.select(element), textLength = node.node().getComputedTextLength(), text = node.text();
             while (textLength > this.statusCircleRadius * 1.8 && text.length > 0) {
@@ -363,6 +337,7 @@ jQuery(function () {
                 textLength = node.node().getComputedTextLength();
             }
         }
+
         transitionArc(d) {
             // c* variables are circle centers
             // a* variables are for the arc path which is from circle edge to circle edge
@@ -375,6 +350,7 @@ jQuery(function () {
             var theta = Math.atan2(cdy, cdx), r = this.statusCircleRadius, ax0 = cx0 + (r + this.statusCircleRadiusFudge) * Math.cos(theta), ay0 = cy0 + (r + this.statusCircleRadiusFudge) * Math.sin(theta), ax1 = cx1 - (r + this.statusCircleRadiusFudge) * Math.cos(theta), ay1 = cy1 - (r + this.statusCircleRadiusFudge) * Math.sin(theta), dr = Math.abs((ax1 - ax0) * 4) + Math.abs((ay1 - ay0) * 4);
             return "M" + ax0 + "," + ay0 + " A" + dr + "," + dr + " 0 0,1 " + ax1 + "," + ay1;
         }
+
         renderTransitions(initial) {
             var self = this;
             var paths = self.transitionContainer.selectAll("path")
@@ -405,6 +381,7 @@ jQuery(function () {
                 });
             }
         }
+
         _wrapTextDecoration(node, text) {
             if (node.attr('data-text') == text) {
                 return;
@@ -418,6 +395,7 @@ jQuery(function () {
                 node.append("tspan").attr("dy", (i + 1) * lineHeight + "em").text(lines[i]);
             }
         }
+
         renderTextDecorations(initial) {
             var self = this;
             var labels = self.decorationContainer.selectAll("text")
@@ -449,6 +427,7 @@ jQuery(function () {
                 .attr("x", function (d) { return self.xScale(d.x); })
                 .attr("y", function (d) { return self.yScale(d.y); });
         }
+
         renderCircleDecorations(initial) {
             var self = this;
             var circles = self.decorationContainer.selectAll("circle.decoration")
@@ -479,6 +458,7 @@ jQuery(function () {
                 .attr("r", function (d) { return d.r; })
                 .classed("focus", function (d) { return self.isFocused(d); });
         }
+
         renderLineDecorations(initial) {
             var self = this;
             var lines = self.decorationContainer.selectAll("line")
@@ -524,16 +504,19 @@ jQuery(function () {
                 .style('marker-start', function(d) { return d.leftSide ? 'url(#start-arrow)' : ''; })
                 .style('marker-end', function(d) { return d.rightSide ? 'url(#end-arrow)' : ''; })
         }
+
         renderDecorations(initial) {
             this.renderCircleDecorations(initial);
             this.renderLineDecorations(initial);
             this.renderTextDecorations(initial);
         }
+
         renderDisplay(initial) {
             this.renderTransitions(initial);
             this.renderStatusNodes(initial);
             this.renderDecorations(initial);
         }
+
         defocus() {
             if ( this._focusItem ) {
                 // TODO Make this abstracted
@@ -546,6 +529,7 @@ jQuery(function () {
                 .attr('data-focus-type', undefined);
             this._focusItem = null;
         }
+
         focusItem(d) {
             this.defocus();
             this._focusItem = d;
@@ -555,22 +539,14 @@ jQuery(function () {
 
             circle.classed("node-selected", true);
         }
-        focusOnStatus(statusName, center, animated) {
-            if (!statusName) {
-                return;
-            }
-            var meta = this.lifecycle.statusObjectForName(statusName);
-            this.focusItem(meta);
-            if (center) {
-                this.centerOnItem(meta, animated);
-            }
-        }
+
         isFocused(d) {
             if (!this._focusItem) {
                 return false;
             }
             return this._focusItem._key == d._key;
         }
+
         isFocusedTransition(d, isFrom) {
             if (!this._focusItem) {
                 return false;
