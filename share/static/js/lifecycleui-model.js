@@ -95,13 +95,15 @@ jQuery(function () {
                             else {
                                 transition = {};
                             }
-                            var exists = self.transitions.map(function(t){
-                                if ( t.from == toStatus && t.to == fromStatus ) {
-                                    return t;
+                            var exists = jQuery.grep( self.transitions, function(t){
+                                if ( ( t.from == toStatus && t.to == fromStatus ) ||
+                                    ( t.from == fromStatus && t.to == toStatus ) ) {
+                                    return (t);
                                 }
                                 return;
-                            });
-                            if ( exists != '' ) {
+                            })[0];
+
+                            if ( exists ) {
                                 exists.leftSide  = 1;
                             }
                             else {

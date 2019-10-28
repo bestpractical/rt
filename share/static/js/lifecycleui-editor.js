@@ -397,15 +397,15 @@ jQuery(function () {
                 });
             var newPaths = paths.enter().append("path")
                 .attr("data-key", function (d) { return d._key; })
-                .style('marker-start', function(d) { return d.rightSide ? 'url(#start-arrow)' : ''; })
-                .style('marker-end', function(d) { return 1 ? 'url(#end-arrow)' : ''; })
+                .style('marker-start', function(d) { return d.leftSide ? 'url(#start-arrow)' : ''; })
+                .style('marker-end', function(d) { return d.rightSide ? 'url(#end-arrow)' : ''; })
             newPaths.merge(paths)
                 .attr("d", function (d) { return self.transitionArc(d); })
             if (!initial) {
                 newPaths.each(function (d) {
                     var path = d3.select(this);
-                        path.style('marker-start', function(d) { return d.rightSide ? 'url(#start-arrow)' : ''; })
-                        .style('marker-end', function(d) { return 1 ? 'url(#end-arrow)' : ''; })
+                        path.style('marker-start', function(d) { return d.leftSide ? 'url(#start-arrow)' : ''; })
+                        .style('marker-end', function(d) { return d.rightSide ? 'url(#end-arrow)' : ''; })
                 });
             }
         }
@@ -528,8 +528,8 @@ jQuery(function () {
                 .attr("x2", function (d) { return self.xScaleZero(d.points[1].x); })
                 .attr("y2", function (d) { return self.yScaleZero(d.points[1].y); })
                 .classed("focus", function (d) { return self.isFocused(d); })
-                .style('marker-start', function(d) { return d.rightSide ? 'url(#start-arrow)' : ''; })
-                .style('marker-end', function(d) { return 1 ? 'url(#end-arrow)' : ''; })
+                .style('marker-start', function(d) { return d.leftSide ? 'url(#start-arrow)' : ''; })
+                .style('marker-end', function(d) { return d.rightSide ? 'url(#end-arrow)' : ''; })
         }
         renderDecorations(initial) {
             this.renderCircleDecorations(initial);
