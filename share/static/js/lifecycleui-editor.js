@@ -173,9 +173,6 @@ jQuery(function () {
         clickedTransition(d) {
             this.focusItem(d);
         }
-        clickedDecoration(d) {
-            this.focusItem(d);
-        }
         addNewStatus() {
             var x = this.xScaleInvert(d3.event.x);
             var y = this.yScaleInvert(d3.event.y);
@@ -246,7 +243,6 @@ jQuery(function () {
                 .classed("text-background", true)
                 .on("click", function (d) {
                     d3.event.stopPropagation();
-                    self.clickedDecoration(d);
                 })
                 .call(function (rects) { self.didEnterTextDecorations(rects); });
             if (!initial) {
@@ -434,7 +430,6 @@ jQuery(function () {
                 .attr("data-key", function (d) { return d._key; })
                 .on("click", function (d) {
                     d3.event.stopPropagation();
-                    self.clickedDecoration(d);
                 })
                 .call(function (labels) { self.didEnterTextDecorations(labels); });
             if (!initial) {
@@ -467,7 +462,6 @@ jQuery(function () {
                 .attr("data-key", function (d) { return d._key; })
                 .on("click", function (d) {
                     d3.event.stopPropagation();
-                    self.clickedDecoration(d);
                 })
             if (!initial) {
                 newCircles.style("opacity", 0.15)
@@ -497,7 +491,6 @@ jQuery(function () {
                 .attr("data-key", function (d) { return d._key; })
                 .on("click", function (d) {
                     d3.event.stopPropagation();
-                    self.clickedDecoration(d);
                 })
                 .call(function (lines) { self.didEnterLineDecorations(lines); });
             if (!initial) {
