@@ -108,8 +108,8 @@ jQuery(function () {
 
             var frm = g.append("foreignObject");
             var inp = frm
-                .attr("x", Number(circle.attr('cx')) - Number(circle.attr('r')) / 2)
-                .attr("y", Number(circle.attr('cy')) - Number(circle.attr('r')) / 4)
+                .attr("x", Number(circle.attr('cx')) - Number(circle.attr('r')) / 1.5)
+                .attr("y", Number(circle.attr('cy')) - Number(circle.attr('r')) / 2.5)
                 .attr("width", 200)
                 .attr("height", 20)
                 .append("xhtml:form")
