@@ -45,52 +45,39 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
-<& /Elements/ListActions, actions => \@results &>
+<div class="lifecycle-ui" id="lifecycle-<% $id %>">
+    <div class="lifecycle-view">
+      <svg>
+            <g class="transitions"></g>
+            <g class="statuses"></g>
+          </g>
+      </svg>
+    </div>
 
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/farbtastic.js"></script>
+    <script type="text/javascript">
+        jQuery(function () {
+            jQuery(".lifecycle-ui#lifecycle-<% $id %>").each(function () {
+                var container = this;
+                var config = <% JSON($config) |n %>;
+                var name = <% $Lifecycle | j%>;
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Modify.html" name="ModifyLifecycle" method="post" enctype="multipart/form-data">
-<input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
-<input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
+                var editor = new RT.NewEditor( container, name, config );
+            });
+        });
+    </script>
+</div>
 
-% if ( $ARGS{ck} ) {
-    <& /Elements/Lifecycle/Graph_ck, Lifecycle => $LifecycleObj->Name, Editing => 1 &>
-% }
-% else {
-    <& /Elements/Lifecycle/Graph, Lifecycle => $LifecycleObj->Name, Editing => 1 &>
-% }
-<& /Elements/Submit, Label => loc('Save Changes') &>
-
-</form>
 <%INIT>
-my ($title, @results);
-my $LifecycleObj = RT::Lifecycle->new();
-$LifecycleObj->Load(Name => $Name, Type => $Type);
+$Lifecycle ||= $Ticket->Lifecycle
+    if $Ticket;
 
-Abort("Invalid lifecycle") unless $LifecycleObj->Name
-                               && $LifecycleObj->{data}{type} eq $Type;
+my $config = RT->Config->Get('Lifecycles')->{$Lifecycle};
+Abort("Invalid Lifecycle") if !$Lifecycle || !$config;
 
-$title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
-
-if ($Config) {
-    my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
-        CurrentUser  => $session{CurrentUser},
-        LifecycleObj => $LifecycleObj,
-        NewConfig    => JSON::from_json($Config),
-    );
-    push @results, $msg;
-}
-
-# This code does automatic redirection if any updates happen.
-MaybeRedirectForResults(
-    Actions   => \@results,
-    Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
-);
+my $id = $Lifecycle . '-' . int(rand(2**31));
 </%INIT>
+
 <%ARGS>
-$Name => undef
-$Type => undef
-$Config => undef
+$Lifecycle => undef
+$Ticket    => undef
 </%ARGS>

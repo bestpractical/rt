@@ -1,10 +1,9 @@
 jQuery(function () {
     RT.Editor = class LifecycleEditor {
-        constructor(container, name, config, ticketStatus) {
+        constructor(container, name, config) {
             self.container    = container;
             self.name         = name;
             self.config       = config;
-            self.ticketStatus = ticketStatus;
             this.pointHandleRadius = 5;
 
             this.width = 809;
@@ -61,10 +60,9 @@ jQuery(function () {
             // zoom in a bit, but not too much
             var scale = self.svg.node().getBoundingClientRect().width / self.width;
             scale = scale ** .6;
-            RT.Lifecycle.name = name;
 
             // Initialize our Lifecycle from the MPL model
-            self.lifecycle = RT.Lifecycle;
+            self.lifecycle = new RT.Lifecycle( name )
             self.lifecycle.initializeFromConfig(config);
 
             self.container.closest('form[name=ModifyLifecycle]').submit(function (e) {
@@ -85,14 +83,54 @@ jQuery(function () {
             d3.select("body").on("keydown", function () {
                 if ( self._focusItem ) {
                     if ( d3.event.keyCode == 68 || d3.event.keyCode == 46 ) {
-                        RT.Lifecycle.deleteStatus(self._focusItem._key);
-                        self.renderDisplay();
+                        self.lifecycle.deleteStatus(self._focusItem._key);
                     }
                     self.defocus();
+                    self.renderDisplay();
                 }
             })
 
+            var graph = {
+                "nodes" : self.lifecycle.statusObjects(),
+                "links" : self.lifecycle.transitions
+            };
+
+            self.nodes         = graph.nodes;
+            self.nodeByStatus  = d3.map(self.nodes, function(d) { return d.name; });
+            self.links         = graph.links;
+
+            self.links.forEach(function(link) {
+                var s = link.source = self.nodeByStatus.get(link.from),
+                    t = link.target = self.nodeByStatus.get(link.to);
+
+                self.links.push({source: s, target: t, _key: link._key, lifeSide: link.leftSide, rightSide: link.rightSide});
+            });
+            self.simulation = {};
+
+            // self.simulation = d3.forceSimulation()
+            //     .force("link", d3.forceLink().distance(10).strength(0.5))
+            //     .force("charge", d3.forceManyBody())
+            //     .force("center", d3.forceCenter(self.width / 2, self.height / 2))
+
+            // self.simulation
+            //     .nodes(self.nodes)
+            //     .on("tick", self.tick);
+
+            // self.simulation.force("link")
+            //     .links(self.links);
+
             self.renderDisplay();
+        }
+
+        tick(e) {
+            this.node.attr('cx', function(d){ return d.x; })
+                .attr('cy', function(d){ return d.y; })
+                .call(this.drag);
+
+            this.link.attr('x1', function(d) { return d.source.x; })
+                .attr('y1', function(d) { return d.source.y; })
+                .attr('x2', function(d) { return d.target.y; })
+                .attr('x2', function(d) { return d.target.y; })
         }
 
         clickedStatus(d) {
@@ -188,14 +226,7 @@ jQuery(function () {
                 .attr('leftSide', 1);
             }
             else {
-                path.exit().remove();//classed("removing", true)
-                    // .attr("stroke-dasharray", length + " " + length)
-                    // .attr("stroke-dashoffset", 0)
-                    // .style("marker-end", "none")
-                    // .style("marker-start", "none")
-                    // .transition().duration(200 * self.animationFactor).ease(d3.easeLinear)
-                    // .attr("stroke-dashoffset", length)
-                    // .remove();
+                path.exit().remove();
             }
             this.renderDisplay()
         }
@@ -257,6 +288,22 @@ jQuery(function () {
             });
         }
 
+        // START FORCE DRAG
+        dragstarted(d) {
+            if (!d3.event.active) this.simulation.alphaTarget(0.3).restart();
+            d.fx = d.x, d.fy = d.y;
+        }
+
+        dragged(d) {
+            d.fx = d3.event.x, d.fy = d3.event.y;
+        }
+
+        dragended(d) {
+            if (!d3.event.active) self.simulation.alphaTarget(0);
+            d.fx = null, d.fy = null;
+        } 
+        // END FORCE DRAG
+
         didEndDrag(d, node) {
             d._dragging = false;
         }
@@ -317,18 +364,24 @@ jQuery(function () {
 
         renderStatusNodes(initial) {
             var self = this;
-            var statuses = self.statusContainer.selectAll("g")
-                .data(self.lifecycle.statusObjects(), function (d) { return d._key; });
-            var exitStatuses = statuses.exit()
+
+            self.simulation.node = self.statusContainer.selectAll("g")
+                .data(self.nodes.filter(function(d) { return d._key; }));
+
+            var exitStatuses = self.simulation.node.exit()
                 .classed("removing", true)
                 .transition().duration(200 * self.animationFactor)
                 .remove();
             exitStatuses.select('circle')
                 .attr("r", self.statusCircleRadius * .8);
-            var newStatuses = statuses.enter().append("g")
+            var newStatuses = self.simulation.node.enter().append("g")
                 .attr("data-key", function (d) { return d._key; })
                 .attr("id", function (d) { return 'key-'+d._key; })
                 .call(function (statuses) { self.didEnterStatusNodes(statuses); });
+                // .call(d3.drag()
+                //     .on("start", self.dragstarted)
+                //     .on("drag", self.dragged)
+                //     .on("end", self.dragended));
             newStatuses.append("circle")
                 .attr("r", initial ? self.statusCircleRadius : self.statusCircleRadius * .8)
                 .on("click", function (d) {
@@ -355,10 +408,11 @@ jQuery(function () {
                     .select("circle")
                     .attr("r", self.statusCircleRadius);
             }
-            var allStatuses = newStatuses.merge(statuses)
+            var allStatuses = newStatuses.merge(self.simulation.node)
                 .classed("focus", function (d) { return self.isFocused(d); })
                 .classed("focus-from", function (d) { return self.isFocusedTransition(d, true); })
-                .classed("focus-to", function (d) { return self.isFocusedTransition(d, false); });
+                .classed("focus-to", function (d) { return self.isFocusedTransition(d, false); })
+
             allStatuses.select("circle")
                 .attr("cx", function (d) { return self.xScale(d.x); })
                 .attr("cy", function (d) { return self.yScale(d.y); })
@@ -382,7 +436,15 @@ jQuery(function () {
         transitionArc(d) {
             // c* variables are circle centers
             // a* variables are for the arc path which is from circle edge to circle edge
-            var from = this.lifecycle.statusObjectForName(d.from), to = this.lifecycle.statusObjectForName(d.to), cx0 = this.xScale(from.x), cx1 = this.xScale(to.x), cy0 = this.yScale(from.y), cy1 = this.yScale(to.y), cdx = cx1 - cx0, cdy = cy1 - cy0;
+            var from = d.source,
+                to = d.target,
+                cx0 = this.xScale(from.x),
+                cx1 = this.xScale(to.x),
+                cy0 = this.yScale(from.y),
+                cy1 = this.yScale(to.y),
+                cdx = cx1 - cx0,
+                cdy = cy1 - cy0;
+
             // the circles on top of each other would calculate atan2(0,0) which is
             // undefined and a little nonsensical
             if (cdx == 0 && cdy == 0) {
@@ -394,9 +456,10 @@ jQuery(function () {
 
         renderTransitions(initial) {
             var self = this;
-            var paths = self.transitionContainer.selectAll("path")
-                .data(self.lifecycle.transitions, function (d) { return d._key; });
-            paths.exit().classed("removing", true)
+            self.simulation.link = self.transitionContainer.selectAll("path")
+                .data(self.links);
+
+            self.simulation.link.exit().classed("removing", true)
                 .each(function (d) {
                     var length = this.getTotalLength();
                     var path = d3.select(this);
@@ -408,7 +471,7 @@ jQuery(function () {
                         .attr("stroke-dashoffset", length)
                         .remove();
                 });
-            var newPaths = paths.enter().append("path")
+            var newPaths = self.simulation.link.enter().append("path")
                 .attr("data-key", function (d) { return d._key; })
                 .style('marker-start', function(d) { return d.leftSide ? 'url(#start-arrow)' : ''; })
                 .style('marker-end', function(d) { return d.rightSide ? 'url(#end-arrow)' : ''; })
@@ -416,7 +479,7 @@ jQuery(function () {
                     d3.event.stopPropagation();
                     self.clickedTransition(this, d);
                 })
-            newPaths.merge(paths)
+            newPaths.merge(self.simulation.link)
                 .attr("d", function (d) { return self.transitionArc(d); })
             if (!initial) {
                 newPaths.each(function (d) {

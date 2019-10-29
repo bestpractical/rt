@@ -71,7 +71,6 @@
 % } else {
                 var ticketStatus = undefined;
 % }
-
                 var editor = new RT.Editor( container, name, config, ticketStatus );
 
                 editor.initializeEditor(container, name, config, ticketStatus);

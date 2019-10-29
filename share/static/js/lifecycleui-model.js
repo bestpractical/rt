@@ -1,7 +1,7 @@
 jQuery(function () {
     var _ELEMENT_KEY_SEQ = 0;
 
-    class Lifecycle {
+    RT.Lifecycle = class Lifecycle {
         constructor(name) {
             this.name = name;
             this.type = 'ticket';
@@ -508,78 +508,6 @@ jQuery(function () {
 
             return item;
         }
-        createTextDecoration(x, y) {
-
-            var item = {
-                _key: _ELEMENT_KEY_SEQ++,
-                _type: 'text',
-                text: 'New label',
-                x: x,
-                y: y
-            };
-            this.decorations.text.push(item);
-            this._keyMap[item._key] = item;
-
-            return item;
-        }
-        createPolygonDecoration(x, y, type) {
-
-            var item = {
-                _key: _ELEMENT_KEY_SEQ++,
-                _type: 'polygon',
-                label: type,
-                stroke: '#000000',
-                renderStroke: true,
-                strokeStyle: 'solid',
-                fill: '#ffffff',
-                renderFill: true,
-                x: x,
-                y: y,
-                points: JSON.parse(JSON.stringify(this._initialPointsForPolygon[type]))
-            };
-            this.decorations.polygon.push(item);
-            this._keyMap[item._key] = item;
-
-            return item;
-        }
-        createCircleDecoration(x, y, r) {
-
-            var item = {
-                _key: _ELEMENT_KEY_SEQ++,
-                _type: 'circle',
-                label: 'Circle',
-                stroke: '#000000',
-                renderStroke: true,
-                strokeStyle: 'solid',
-                fill: '#ffffff',
-                renderFill: true,
-                x: x,
-                y: y,
-                r: r
-            };
-            this.decorations.circle.push(item);
-            this._keyMap[item._key] = item;
-
-            return item;
-        }
-        createLineDecoration(x, y) {
-
-            var item = {
-                _key: _ELEMENT_KEY_SEQ++,
-                _type: 'line',
-                label: 'Line',
-                style: 'solid',
-                startMarker: 'none',
-                endMarker: 'arrowhead',
-                x: x,
-                y: y,
-                points: JSON.parse(JSON.stringify(this._initialPointsForPolygon.Line))
-            };
-            this.decorations.line.push(item);
-            this._keyMap[item._key] = item;
-
-            return item;
-        }
         update(field, value) {
 
             if (field == 'on_create' || field == 'approved' || field == 'denied' || field == 'reminder_on_open' || field == 'reminder_on_resolve') {
@@ -669,24 +597,5 @@ jQuery(function () {
             return transition;
         }
     };
-
-    Lifecycle.prototype._initialPointsForPolygon = {
-        Line: [
-            {x: -700, y: 0},
-            {x:  700, y: 0},
-        ],
-        Triangle: [
-            {x:  700, y: 2000},
-            {x:   0, y:  0},
-            {x: -600, y: 2000}
-        ],
-        Rectangle: [
-            {x: -600, y: -600},
-            {x:  600, y: -600},
-            {x:  600, y:  600},
-            {x: -600, y:  600}
-        ]
-    };
-    RT.Lifecycle = new Lifecycle();
 });
 
