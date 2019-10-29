@@ -91,6 +91,7 @@ jQuery(function () {
                     self.defocus();
                 }
             })
+
             self.renderDisplay();
         }
 
@@ -162,8 +163,41 @@ jQuery(function () {
             });
         }
 
-        clickedTransition(d) {
-            this.focusItem(d);
+        clickedTransition(self, d) {
+            var transition = this.lifecycle.transitionClicked(d._key);
+            var path = d3.select(self);
+
+            if ( transition.leftSide && transition.rightSide ) {
+                path.style("marker-start", 'url(#start-arrow)')
+                    .style("marker-end", 'url(#end-arrow)')
+                    .enter()
+                    .append("path")
+                    .attr('rightSide', 1)
+                    .attr('leftSide', 1);
+            }
+            else if ( transition.rightSide ) {
+                path.style("marker-start", 'url(#start-arrow)')
+                .enter()
+                .append("path")
+                .attr('rightSide', 1);
+            }
+            else if ( transition.leftSide ) {
+                path.style("marker-end", 'url(#end-arrow)')
+                .enter()
+                .append("path")
+                .attr('leftSide', 1);
+            }
+            else {
+                path.exit().remove();//classed("removing", true)
+                    // .attr("stroke-dasharray", length + " " + length)
+                    // .attr("stroke-dashoffset", 0)
+                    // .style("marker-end", "none")
+                    // .style("marker-start", "none")
+                    // .transition().duration(200 * self.animationFactor).ease(d3.easeLinear)
+                    // .attr("stroke-dashoffset", length)
+                    // .remove();
+            }
+            this.renderDisplay()
         }
 
         addNewStatus() {
@@ -302,6 +336,13 @@ jQuery(function () {
 
                     self.focusItem(d)
                 })
+                .on('contextmenu', function () {
+                    d3.event.preventDefault();
+
+                    // We want to add drag and drop for new transitions here?
+
+                    self.renderDisplay();
+                });
             newStatuses.append("text")
                 .attr("r", initial ? self.statusCircleRadius : self.statusCircleRadius * .8)
                 .on("click", function (d) {
@@ -371,6 +412,10 @@ jQuery(function () {
                 .attr("data-key", function (d) { return d._key; })
                 .style('marker-start', function(d) { return d.leftSide ? 'url(#start-arrow)' : ''; })
                 .style('marker-end', function(d) { return d.rightSide ? 'url(#end-arrow)' : ''; })
+                .on("click", function (d) {
+                    d3.event.stopPropagation();
+                    self.clickedTransition(this, d);
+                })
             newPaths.merge(paths)
                 .attr("d", function (d) { return self.transitionArc(d); })
             if (!initial) {

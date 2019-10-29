@@ -444,7 +444,6 @@ jQuery(function () {
             }
         }
         deleteActionForTransition(transition, key) {
-            this._saveUndoEntry(false);
             transition.actions = jQuery.grep(transition.actions, function (action) {
                 if (action._key == key) {
                     return false;
@@ -452,7 +451,6 @@ jQuery(function () {
                 return true;
             });
             delete this._keyMap[key];
-            this._undoStateChanged();
         }
         updateItem(item, field, newValue, skipUndo) {
             if (!skipUndo) {
@@ -709,13 +707,32 @@ jQuery(function () {
             }
             return jQuery.unique(rights.sort());
         }
+
+        transitionClicked(key) {
+            var transition = this._keyMap[key];
+
+            if ( transition ) {
+                if ( transition.leftSide && transition.rightSide ) {
+                    delete this._keyMap[key];
+                    transition.rightSide = 0;
+                    transition.leftSide  = 0;
+
+                    const index = this.transitions.map((el) => el._key).indexOf(transition._key);
+                    this.transitions.splice(index, 1)
+                }
+                else if ( transition.rightSide ) {
+                    this._keyMap[key].leftSide = 1;
+                }
+                else if ( transition.leftSide ) {
+                    this._keyMap[key].rightSide = 1;
+                }
+                else {
+                    this._keyMap[key].leftSide = 1;
+                }
+            }
+            return transition;
+        }
     };
-
-
-
-
-
-    
 
     Lifecycle.prototype._initialPointsForPolygon = {
         Line: [

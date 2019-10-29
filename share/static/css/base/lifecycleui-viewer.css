@@ -29,9 +29,8 @@
 
 .lifecycle-ui .transitions path {
     stroke: black;
-    stroke-width: 2px;
+    stroke-width: 3px;
     fill: none;
-    opacity: .15;
 }
 
 .lifecycle-ui .dotted {
