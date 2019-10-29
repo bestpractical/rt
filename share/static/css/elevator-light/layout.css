@@ -32,14 +32,13 @@ div#body {
 
 div#footer {
     position: absolute;
-    right: 0;
     text-align: right;
     font-size: 0.9em;
-    margin-top: 2em;
     background: #fff;
-    margin-bottom: 0;
     padding-left: 3em;
     padding-right: 1em;
+    bottom: 0;
+    width: 100%;
 }
 
 div#footer #time {
@@ -160,4 +159,12 @@ ul ul {
 
 ol ol {
   list-style-type: upper-alpha;
+}
+
+.main-container {
+  min-height: 100vh;
+  overflow: hidden;
+  display: block;
+  position: relative;
+  padding-bottom: 5em;
 }

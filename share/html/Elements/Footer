@@ -66,6 +66,7 @@
 <%$d->Dump() %>
 </pre>
 % }
+    </div>
   </body>
 </html>
 <%ARGS>
