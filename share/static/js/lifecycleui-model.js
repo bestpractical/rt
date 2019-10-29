@@ -13,7 +13,6 @@ jQuery(function () {
             this.ticket_zoom = 'dynamic';
             this.ticket_center = 'status';
             this.defaultColor = '#547CCC';
-            this._undoState = { undoStack: [], redoStack: [] };
             this._keyMap = {};
             this._statusMeta = {};
 
@@ -325,7 +324,6 @@ jQuery(function () {
         }
         deleteStatus(key) {
             var self = this;
-            self._saveUndoEntry(false);
             var statusName = self.statusNameForKey(key);
             if (!statusName) {
                 console.error("no status for key '" + key + "'; did you accidentally pass status name?");
@@ -349,10 +347,9 @@ jQuery(function () {
                 }
                 return true;
             });
-            self._undoStateChanged();
         }
         addTransition(fromStatus, toStatus) {
-            this._saveUndoEntry(false);
+
             var transition = {
                 _key: _ELEMENT_KEY_SEQ++,
                 _type: 'transition',
@@ -364,7 +361,7 @@ jQuery(function () {
             this.transitions.push(transition);
             this._keyMap[transition._key] = transition;
             transition.right = this.defaultRightForTransition(transition);
-            this._undoStateChanged();
+
             return transition;
         }
         hasTransition(fromStatus, toStatus) {
@@ -403,7 +400,7 @@ jQuery(function () {
             return transitions;
         }
         deleteTransition(key) {
-            this._saveUndoEntry(false);
+
             this.transitions = jQuery.grep(this.transitions, function (transition) {
                 if (transition._key == key) {
                     return false;
@@ -411,10 +408,10 @@ jQuery(function () {
                 return true;
             });
             delete this._keyMap[key];
-            this._undoStateChanged();
+
         }
         deleteDecoration(type, key) {
-            this._saveUndoEntry(false);
+
             this.decorations[type] = jQuery.grep(this.decorations[type], function (decoration) {
                 if (decoration._key == key) {
                     return false;
@@ -422,7 +419,7 @@ jQuery(function () {
                 return true;
             });
             delete this._keyMap[key];
-            this._undoStateChanged();
+
         }
         itemForKey(key) {
             return this._keyMap[key];
@@ -452,35 +449,27 @@ jQuery(function () {
             });
             delete this._keyMap[key];
         }
-        updateItem(item, field, newValue, skipUndo) {
-            if (!skipUndo) {
-                this._saveUndoEntry(false);
-            }
+        updateItem(item, field, newValue) {
             var oldValue = item[field];
             item[field] = newValue;
             if (item._type == 'status' && field == 'name') {
                 this.updateStatusName(oldValue, newValue);
             }
-            if (!skipUndo) {
-                this._undoStateChanged();
-            }
         }
         createActionForTransition(transition) {
-            this._saveUndoEntry(false);
+
             var action = {
                 _type: 'action',
                 _key: _ELEMENT_KEY_SEQ++,
             };
             transition.actions.push(action);
             this._keyMap[action._key] = action;
-            this._undoStateChanged();
+
             return action;
         }
         beginDragging() {
-            this._saveUndoEntry(true);
         }
         beginChangingColor() {
-            this._saveUndoEntry(true);
         }
         moveItem(item, x, y) {
             item.x = x;
@@ -495,7 +484,7 @@ jQuery(function () {
             point.y = y;
         }
         createStatus(x, y) {
-            this._saveUndoEntry(false);
+
             var name;
             var i = 0;
             while (1) {
@@ -516,11 +505,11 @@ jQuery(function () {
             item.color = this.defaultColor;
             this._statusMeta[name] = item;
             this._keyMap[item._key] = item;
-            this._undoStateChanged();
+
             return item;
         }
         createTextDecoration(x, y) {
-            this._saveUndoEntry(false);
+
             var item = {
                 _key: _ELEMENT_KEY_SEQ++,
                 _type: 'text',
@@ -530,11 +519,11 @@ jQuery(function () {
             };
             this.decorations.text.push(item);
             this._keyMap[item._key] = item;
-            this._undoStateChanged();
+
             return item;
         }
         createPolygonDecoration(x, y, type) {
-            this._saveUndoEntry(false);
+
             var item = {
                 _key: _ELEMENT_KEY_SEQ++,
                 _type: 'polygon',
@@ -550,11 +539,11 @@ jQuery(function () {
             };
             this.decorations.polygon.push(item);
             this._keyMap[item._key] = item;
-            this._undoStateChanged();
+
             return item;
         }
         createCircleDecoration(x, y, r) {
-            this._saveUndoEntry(false);
+
             var item = {
                 _key: _ELEMENT_KEY_SEQ++,
                 _type: 'circle',
@@ -570,11 +559,11 @@ jQuery(function () {
             };
             this.decorations.circle.push(item);
             this._keyMap[item._key] = item;
-            this._undoStateChanged();
+
             return item;
         }
         createLineDecoration(x, y) {
-            this._saveUndoEntry(false);
+
             var item = {
                 _key: _ELEMENT_KEY_SEQ++,
                 _type: 'line',
@@ -588,11 +577,11 @@ jQuery(function () {
             };
             this.decorations.line.push(item);
             this._keyMap[item._key] = item;
-            this._undoStateChanged();
+
             return item;
         }
         update(field, value) {
-            this._saveUndoEntry(false);
+
             if (field == 'on_create' || field == 'approved' || field == 'denied' || field == 'reminder_on_open' || field == 'reminder_on_resolve') {
                 this.defaults[field] = value;
             }
@@ -602,36 +591,7 @@ jQuery(function () {
             else {
                 console.error("Unhandled field in Lifecycle.update: " + field);
             }
-            this._undoStateChanged();
-        }
-        _currentUndoFrame() {
-            var undoState = this._undoState;
-            var keyMap = this._keyMap;
-            delete this._undoState;
-            delete this._keyMap;
-            var entry = JSON.stringify(this);
-            this._undoState = undoState;
-            this._keyMap = keyMap;
-            var frame = [entry];
-            if (this.undoFrameCallback) {
-                this.undoFrameCallback(frame);
-            }
-            return frame;
-        }
-        _undoStateChanged() {
-            this._canUndo = this._undoState.undoStack.length > 0;
-            this._canRedo = this._undoState.redoStack.length > 0;
-            if (this.undoStateChangedCallback) {
-                this.undoStateChangedCallback();
-            }
-        }
-        _saveUndoEntry(notify) {
-            var frame = this._currentUndoFrame();
-            this._undoState.undoStack.push(frame);
-            this._undoState.redoStack = [];
-            if (notify) {
-                this._undoStateChanged();
-            }
+
         }
         _rebuildKeyMap() {
             var keyMap = {};
@@ -657,32 +617,8 @@ jQuery(function () {
             }
             this._rebuildKeyMap();
         }
-        undo() {
-            var undoStack = this._undoState.undoStack;
-            if (undoStack.length == 0) {
-                return null;
-            }
-            this._undoState.redoStack.push(this._currentUndoFrame());
-            var frame = undoStack.pop();
-            var entry = JSON.parse(frame[0]);
-            this._restoreState(entry);
-            this._undoStateChanged();
-            return frame;
-        }
-        redo() {
-            var redoStack = this._undoState.redoStack;
-            if (redoStack.length == 0) {
-                return null;
-            }
-            this._undoState.undoStack.push(this._currentUndoFrame());
-            var frame = redoStack.pop();
-            var entry = JSON.parse(frame[0]);
-            this._restoreState(entry);
-            this._undoStateChanged();
-            return frame;
-        }
         cloneItem(source, x, y) {
-            this._saveUndoEntry(false);
+
             var clone = JSON.parse(JSON.stringify(source));
             clone._key = _ELEMENT_KEY_SEQ++;
             clone.x = x;
@@ -694,7 +630,7 @@ jQuery(function () {
                 console.error("Unhandled type for clone: " + clone._type);
             }
             this._keyMap[clone._key] = clone;
-            this._undoStateChanged();
+
             return clone;
         }
         selectedRights() {
