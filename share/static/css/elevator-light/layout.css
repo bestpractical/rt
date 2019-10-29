@@ -55,7 +55,7 @@ div#footer #time {
 
 div#footer #bpscredits {
     text-align: center;
-    background: url(../../../static/images/bpslogo.png) no-repeat top center;
+    background: url(../../../static/images/bpslogo.png) no-repeat top center !important;
     padding-top: 4em;
 }
 
