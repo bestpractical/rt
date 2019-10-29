@@ -35,10 +35,17 @@ div#footer {
     text-align: right;
     font-size: 0.9em;
     background: #fff;
-    padding-left: 3em;
-    padding-right: 1em;
+    padding-left: 15px;
+    padding-right: 15px;
     bottom: 0;
     width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+div#footer > div {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 div#footer #time {
@@ -46,9 +53,13 @@ div#footer #time {
 }
 
 div#footer #bpscredits {
-    text-align: right;
-    background: url(../../../static/images/bpslogo.png) no-repeat top right;
+    text-align: center;
+    background: url(../../../static/images/bpslogo.png) no-repeat top center;
     padding-top: 4em;
+}
+
+div#footer #legal {
+    padding-top: 1.5em;
 }
 
 /* logo stuff */
