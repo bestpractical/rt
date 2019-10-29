@@ -41,6 +41,7 @@ div#footer {
     width: 100%;
     margin-left: 0;
     margin-right: 0;
+    background: #2C3539;
 }
 
 div#footer > div {
@@ -60,6 +61,10 @@ div#footer #bpscredits {
 
 div#footer #legal {
     padding-top: 1.5em;
+}
+
+div#footer a {
+    color: white;
 }
 
 /* logo stuff */
