@@ -83,7 +83,7 @@ sub BuildMainNav {
         $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
     } else {
         $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch') );
-        $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket') );
+        $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket', ButtonOnly => 1) );
     }
 
     my $home = $top->child( home => title => loc('Homepage'), path => '/' );
@@ -250,6 +250,7 @@ sub BuildMainNav {
         sort_order   => 99,
     );
 
+    $about_me->child( rt_name => title => loc("RT for [_1]", RT->Config->Get('rtname')), path => '/' );
 
     if ( $current_user->UserObj
          && $current_user->HasRight( Right => 'ModifySelf', Object => RT->System )) {

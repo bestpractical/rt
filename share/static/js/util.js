@@ -41,6 +41,10 @@ var showModal = function(html) {
     modal.bind('modal:close', function(ev) { modal.remove(); })
     modal.on('hide.bs.modal', function(ev) { modal.remove(); })
     modal.modal('show');
+
+    // We need to refresh the select picker plugin on AJAX calls
+    // since the plugin only runs on page load.
+    jQuery('.selectpicker').selectpicker('refresh');
 };
 
 /* Classes */

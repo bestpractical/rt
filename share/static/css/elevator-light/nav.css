@@ -173,8 +173,8 @@ ul.sf-menu li {
 }
 
 #topactions form {
-    display: block;
-    float: right;
+    display: inline;
+    float: left;
     margin-left: 1em;
     text-align: right;
     margin-top: 0.5em;
@@ -203,18 +203,15 @@ ul.sf-menu li {
 #topactions {
     position: absolute;
     background: transparent;
-    top: 3.2em;
-    right: 0em;
-    padding-right: 0.7em;
+    top: 0;
+    right: 18em;
     width: auto;
-    min-width: 42em;
+    min-width: 20em;
     font-size: 0.9em;
     z-index: 99;
 }
 
 #topactions input[type="search"] {
-    border: none;
-
     /* turn off webkit input[type=search] styling */
     -webkit-appearance: textfield;
 }
@@ -248,7 +245,7 @@ ul.sf-menu li {
     padding-right: 0.5em;
     vertical-align: middle;
 
-    width: 8em;
+    width: 10em;
     -webkit-transition: width 0.25s ease-in-out;
     -moz-transition: width 0.25s ease-in-out;
     -ms-transition: width 0.25s ease-in-out;
