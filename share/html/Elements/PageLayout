@@ -58,7 +58,8 @@
 % if ($m->comp_exists($aftermenu_plugin) ) {
 <& $aftermenu_plugin &>
 % }
-
+% # Close div for rt-header-container started in Header
+</div>
 <div id="body">
 % $m->callback( %ARGS, CallbackName => 'BeforeBody' );
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
