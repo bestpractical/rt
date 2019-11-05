@@ -1,1 +1,5 @@
 @import "jquery-ui.custom.modified.css";
+
+.ui-menu .ui-menu-item {
+  padding: 3px 1em 3px .4em;
+}
