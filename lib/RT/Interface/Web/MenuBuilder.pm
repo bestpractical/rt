@@ -82,6 +82,10 @@ sub BuildMainNav {
     if ($request_path =~ m{^/Asset/}) {
         $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
         $widgets->child( create_asset => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/CreateAsset') );
+    }
+    elsif ($request_path =~ m{^/Articles/}) {
+        $widgets->child( article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
+        $widgets->child( create_article => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/CreateArticleButton') );
     } else {
         $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch') );
         $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket', ButtonOnly => 1) );
@@ -583,12 +587,7 @@ sub BuildMainNav {
     }
 
     if ( $request_path =~ m{^/Articles/} ) {
-        $widgets->child( article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
-        $widgets->delete('create_ticket');
-        $widgets->delete('simple_search');
-
         $page->child( search => title => loc("Search"),       path => "/Articles/Article/Search.html" );
-        $page->child( create => title => loc("New Article" ), path => "/Articles/Article/PreCreate.html" );
         if ( $request_path =~ m{^/Articles/Article/} and ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
             my $obj = RT::Article->new( $current_user );
