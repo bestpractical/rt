@@ -21,17 +21,14 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background: #547CCC;
     padding: 0.33em 1em;
     margin-bottom: 0;
 
     /* for text-overflow: ellipsis */
-    color: white;
     font-weight: bold;
 }
 
 .ticket-timer .ticket-link a {
-    color: #fff;
     font-size: 1.1em;
     font-weight: bold;
 }
