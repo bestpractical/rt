@@ -81,6 +81,7 @@ sub BuildMainNav {
 
     if ($request_path =~ m{^/Asset/}) {
         $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+        $widgets->child( create_asset => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/CreateAsset') );
     } else {
         $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch') );
         $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket', ButtonOnly => 1) );

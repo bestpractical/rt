@@ -46,7 +46,7 @@ jQuery(function() {
             showModal
         );
     });
-    jQuery("#assets-create").click(function(ev){
+    jQuery("#assets-create, .asset-create-modal").click(function(ev){
         ev.preventDefault();
         jQuery.get(
             RT.Config.WebHomePath + "/Asset/Helpers/CreateInCatalog",
