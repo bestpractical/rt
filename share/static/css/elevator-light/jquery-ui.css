@@ -1,5 +1,19 @@
 @import "jquery-ui.custom.modified.css";
 
 .ui-menu .ui-menu-item {
-  padding: 3px 1em 3px .4em;
+  padding: 3px 0 3px 0;
+}
+
+.ui-menu .ui-menu-item .ui-menu-item-wrapper {
+  display: block;
+}
+
+.ui-menu .ui-menu-item .ui-state-active {
+  border: none;
+  margin: 0;
+}
+
+.ui-menu .ui-menu-item:hover,
+.ui-menu .ui-menu-item:hover .ui-state-active {
+  background: #CFDEFF;
 }
