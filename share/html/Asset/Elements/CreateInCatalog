@@ -48,7 +48,7 @@
 <form action="<% RT->Config->Get("WebPath") %>/Asset/Create.html" id="AssetCreateInCatalog">
   <div class="form-row">
     <div class="col-md-12 text-center">
-      <&|/l&>Create a new asset in the catalog</&>:
+      <&|/l&>Select a catalog for your new asset.</&>
       <div class="d-inline-block">
         <& /Asset/Elements/SelectCatalog &>
       </div>
@@ -56,7 +56,7 @@
   </div>
   <div class="form-row">
     <div class="col-md-12">
-      <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially prefilled asset creation form.") &>
+      <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to the Create Asset page.") &>
     </div>
   </div>
 </form>
