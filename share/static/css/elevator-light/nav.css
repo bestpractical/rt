@@ -253,12 +253,6 @@ ul.sf-menu li {
     transition: width 0.25s ease-in-out;
 }
 
-#topactions .asset-search input[type="search"],
-#topactions .article-search input[type="search"]
- {
-    width: 16em;
-}
-
 @-moz-document url-prefix() {
     #topactions select.select-queue {
         padding-top: 0.25em;

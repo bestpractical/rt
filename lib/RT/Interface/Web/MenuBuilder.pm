@@ -87,7 +87,7 @@ sub BuildMainNav {
         $widgets->child( article_search => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/GotoArticle') );
         $widgets->child( create_article => raw_html => $HTML::Mason::Commands::m->scomp('/Articles/Elements/CreateArticleButton') );
     } else {
-        $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch') );
+        $widgets->child( simple_search => raw_html => $HTML::Mason::Commands::m->scomp('SimpleSearch', Placeholder => loc('Search Tickets')) );
         $widgets->child( create_ticket => raw_html => $HTML::Mason::Commands::m->scomp('CreateTicket', ButtonOnly => 1) );
     }
 
