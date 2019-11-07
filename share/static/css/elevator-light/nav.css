@@ -331,7 +331,6 @@ ul.sf-menu li {
 
 #page-menu.sf-menu li {
     float: left;
-    display: inline-block;
     border-color: #E0E6EC;
     border-right-style: solid;
     border-right-width: 1px;
