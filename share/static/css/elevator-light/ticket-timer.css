@@ -21,17 +21,17 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background: #547CCC;
     padding: 0.33em 1em;
     margin-bottom: 0;
 
     /* for text-overflow: ellipsis */
-    color: white;
     font-weight: bold;
+    border-bottom-color: #547CCC;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
 }
 
 .ticket-timer .ticket-link a {
-    color: #fff;
     font-size: 1.1em;
     font-weight: bold;
 }
@@ -44,6 +44,7 @@
 
 .ticket-timer .control-line {
     text-align: center;
+    padding-bottom: 5px;
 }
 
 .ticket-timer .control-line a {

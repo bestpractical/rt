@@ -26,7 +26,7 @@ diag "Testing language change";
         },
         'change language to french'
     );
-    $m->content_like(qr/RT\s+pour\s+example\.com/i);
+    $m->content_like(qr/Pour commencer/);
     $m->submit_form_ok(
         {
             with_fields => {
@@ -36,7 +36,7 @@ diag "Testing language change";
         },
         'change language to english'
     );
-    $m->content_like(qr/RT\s+for\s+example\.com/i);
+    $m->content_like(qr/Getting started/);
 }
 
 diag "Walking through install screens setting defaults";

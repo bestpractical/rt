@@ -34,11 +34,7 @@ ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 
 diag "current user has no right to own, nobody selected as owner on create";
 {
-    $agent_a->get_ok('/', 'open home page');
-    $agent_a->form_name('CreateTicketInQueue');
-    $agent_a->select( 'Queue', $queue->id );
-    $agent_a->submit;
-
+    $agent_a->get_ok('/Ticket/Create.html?Queue=' . $queue->id, 'open ticket create page');
     $agent_a->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
     is $form->value('Owner'), RT->Nobody->id, 'correct owner selected';
@@ -58,11 +54,7 @@ diag "current user has no right to own, nobody selected as owner on create";
 
 diag "user can chose owner of a new ticket";
 {
-    $agent_a->get_ok('/', 'open home page');
-    $agent_a->form_name('CreateTicketInQueue');
-    $agent_a->select( 'Queue', $queue->id );
-    $agent_a->submit;
-
+    $agent_a->get_ok('/Ticket/Create.html?Queue=' . $queue->id, 'open ticket create page');
     $agent_a->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $agent_a->form_name('TicketCreate');
     is $form->value('Owner'), RT->Nobody->id, 'correct owner selected';

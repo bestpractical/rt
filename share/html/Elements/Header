@@ -98,6 +98,10 @@
 
 </head>
   <body class="<% join( ' ',@{$ARGS{'BodyClass'}}, RT->Config->Get('WebDefaultStylesheet', $session{CurrentUser}) =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
+% # The close div for this is in PageLayout right before the rt body div
+% if ( $ShowBar || $ShowTitle ) {
+<div id='rt-header-container'>
+% }
 
 % if ($ShowBar) {
 <& /Elements/Logo, %ARGS &>

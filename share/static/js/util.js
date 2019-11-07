@@ -41,6 +41,10 @@ var showModal = function(html) {
     modal.bind('modal:close', function(ev) { modal.remove(); })
     modal.on('hide.bs.modal', function(ev) { modal.remove(); })
     modal.modal('show');
+
+    // We need to refresh the select picker plugin on AJAX calls
+    // since the plugin only runs on page load.
+    jQuery('.selectpicker').selectpicker('refresh');
 };
 
 /* Classes */
@@ -534,6 +538,14 @@ jQuery(function() {
         ev.preventDefault();
         jQuery.get(
             RT.Config.WebHomePath + "/Helpers/CreateInQueue",
+            showModal
+        );
+    });
+
+    jQuery("#articles-create, .article-create-modal").click(function(ev){
+        ev.preventDefault();
+        jQuery.get(
+            RT.Config.WebHomePath + "/Articles/Helpers/CreateInClass",
             showModal
         );
     });

@@ -55,11 +55,17 @@
 
 % my $button_start = '<input type="submit" class="button btn btn-primary form-control" value="';
 % my $button_start_modal = '<input type="submit" class="button btn btn-primary form-control ticket-create-modal" value="';
+% my $button_only_start_modal = '<input type="submit" class="btn btn-primary ticket-create-modal" value="';
 % my $button_end = '" />';
 % my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue'), Hyperlink => $Hyperlink );
 
 % if ($Hyperlink) {
 <% $queue_selector |n %>
+% }
+% elsif ($ButtonOnly) {
+<div class="create-ticket-button">
+<&|/l_unsafe, $button_only_start_modal, $button_end &>[_1]Create new ticket[_2]</&>
+</div>
 % }
 % else {
 <div class="create-wide">
@@ -80,4 +86,5 @@
 $SendTo => '/Ticket/Create.html',
 $IncludeExplanation => 0
 $Hyperlink => undef
+$ButtonOnly => undef
 </%ARGS>

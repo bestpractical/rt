@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/Articles/Article/Search.html" class="article-search">
   <input type="hidden" name="HideOptions" value="1" />
-  <input name="q" accesskey="0" class="field" placeholder="<&|/l&>Search Articles</&>..." type="search" results=5 autosave="search-articles" />
+  <input name="q" accesskey="0" class="field form-control" placeholder="<&|/l&>Search Articles</&>..." type="search" results="5" autosave="search-articles" />
 % if ($class or $topic) {
 <input type="hidden" name="ExpandTopics" value="1" />
 <select name="Topics">

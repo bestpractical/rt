@@ -31,11 +31,7 @@ ok $m->login, 'logged in';
 
 diag "user from group shows up in create form";
 {
-    $m->get_ok('/', 'open home page');
-    $m->form_name('CreateTicketInQueue');
-    $m->select( 'Queue', $queue->id );
-    $m->submit;
-
+    $m->get_ok('/Ticket/Create.html?Queue=' . $queue->id, 'open ticket create page');
     $m->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $m->form_name('TicketCreate');
     my $input = $form->find_input('Owner');
@@ -48,11 +44,7 @@ diag "user from disabled group DOESN'T shows up in create form";
     ($ok, $msg) = $group->SetDisabled(1);
     ok($ok, $msg);
 
-    $m->get_ok('/', 'open home page');
-    $m->form_name('CreateTicketInQueue');
-    $m->select( 'Queue', $queue->id );
-    $m->submit;
-
+    $m->get_ok('/Ticket/Create.html?Queue=' . $queue->id, 'open ticket create page');
     $m->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $m->form_name('TicketCreate');
     my $input = $form->find_input('Owner');
@@ -84,11 +76,7 @@ diag "Disable the middle group";
     ($ok, $msg) = $group->SetDisabled(1);
     ok($ok, "Disabled group: $msg");
 
-    $m->get_ok('/', 'open home page');
-    $m->form_name('CreateTicketInQueue');
-    $m->select( 'Queue', $queue->id );
-    $m->submit;
-
+    $m->get_ok('/Ticket/Create.html?Queue=' . $queue->id, 'open ticket create page');
     $m->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $m->form_name('TicketCreate');
     my $input = $form->find_input('Owner');
@@ -103,11 +91,7 @@ diag "Disable the top group";
     ($ok, $msg) = $super->SetDisabled(1);
     ok($ok, "Disabled supergroup: $msg");
 
-    $m->get_ok('/', 'open home page');
-    $m->form_name('CreateTicketInQueue');
-    $m->select( 'Queue', $queue->id );
-    $m->submit;
-
+    $m->get_ok('/Ticket/Create.html?Queue=' . $queue->id, 'open ticket create page');
     $m->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $m->form_name('TicketCreate');
     my $input = $form->find_input('Owner');

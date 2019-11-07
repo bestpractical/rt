@@ -51,14 +51,15 @@
 
 % if ( $show_menu ) {
 <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
-<div id="page-navigation"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
+<div id="page-navigation" class="btn-group page-nav-shadow"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
 % }
 <div id="topactions"><& /Elements/WidgetBar, menu => PageWidgets() &></div>
 
 % if ($m->comp_exists($aftermenu_plugin) ) {
 <& $aftermenu_plugin &>
 % }
-
+% # Close div for rt-header-container started in Header
+</div>
 <div id="body">
 % $m->callback( %ARGS, CallbackName => 'BeforeBody' );
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;

@@ -70,6 +70,7 @@ ul.sf-menu li {
     text-color: #000;
 }
 
+#page-menu.sf-menu a,
 #main-navigation .sf-menu a,
 #main-navigation .sf-menu a:hover {
     padding-top: 0.5em;
@@ -91,13 +92,19 @@ ul.sf-menu li {
 
 #page-navigation {
     position: absolute;
-    top: 6.5em;
-    right: 0;
-    left: 0;
-    padding-right: 3em;
-    font-size: 0.9em;
-    border-bottom: 1px solid #ccc;
-    background-color: #eee;
+    top: 3.6em;
+    right: 2em;
+}
+
+.page-nav-shadow {
+    border: none;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(23, 69, 102, 0.26);
+}
+
+.page-nav-shadow .btn {
+    border-top: none;
+    border-bottom: none;
 }
 
 #page-navigation #page-menu {
@@ -167,8 +174,8 @@ ul.sf-menu li {
 }
 
 #topactions form {
-    display: block;
-    float: right;
+    display: inline;
+    float: left;
     margin-left: 1em;
     text-align: right;
     margin-top: 0.5em;
@@ -197,18 +204,15 @@ ul.sf-menu li {
 #topactions {
     position: absolute;
     background: transparent;
-    top: 3.2em;
-    right: 0em;
-    padding-right: 0.7em;
+    top: 0;
+    right: 18em;
     width: auto;
-    min-width: 42em;
+    min-width: 20em;
     font-size: 0.9em;
     z-index: 99;
 }
 
 #topactions input[type="search"] {
-    border: none;
-
     /* turn off webkit input[type=search] styling */
     -webkit-appearance: textfield;
 }
@@ -242,17 +246,11 @@ ul.sf-menu li {
     padding-right: 0.5em;
     vertical-align: middle;
 
-    width: 8em;
+    width: 10em;
     -webkit-transition: width 0.25s ease-in-out;
     -moz-transition: width 0.25s ease-in-out;
     -ms-transition: width 0.25s ease-in-out;
     transition: width 0.25s ease-in-out;
-}
-
-#topactions .asset-search input[type="search"],
-#topactions .article-search input[type="search"]
- {
-    width: 16em;
 }
 
 @-moz-document url-prefix() {
@@ -318,6 +316,22 @@ ul.sf-menu li {
 #app-nav.sf-menu,
 #page-menu.sf-menu {
     white-space: nowrap;
+    margin-bottom: 0;
+}
+
+#page-menu.sf-menu > li > span > a,
+#page-menu.sf-menu > li > a {
+    padding-top: .3em;
+    padding-bottom: .3em;
+}
+
+#page-menu.sf-menu li {
+    float: left;
+    border-color: #E0E6EC;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-left-style: solid;
+    border-left-width: 1px;
 }
 
 /* restore wrapping for submenus */

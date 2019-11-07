@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'Header' );
 <& /Elements/Header, Title => loc('Login'), Focus => '#user', RichText => 0 &>
+% # Close div for rt-header-container started in Header
+</div>
 
 <div id="body" class="login-body">
 

@@ -45,8 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/CreateTicket,
-    IncludeExplanation => 1,
-    Hyperlink          => RT->Config->Get('WebPath') . '/Ticket/Create.html?Queue=',
-&>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><&|/l&>Select Queue</&></h5>
+      <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
+    <div class="modal-body">
+      <& /Elements/CreateInQueue &>
+    </div>
+  </div>
+</div>
 % $m->abort;

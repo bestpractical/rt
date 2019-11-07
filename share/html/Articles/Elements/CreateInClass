@@ -45,46 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div id="<% $id %>">
-% if ($user_logo) {
-<a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
-    src="<% RT->Config->Get('WebPath') %>/NoAuth/Helpers/CustomLogo/<% $user_logo->Content->{'hash'} %>"
-    alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>" /></a>
-% } else {
-<a href="<%$ARGS{'LogoLinkURL'}||RT->Config->Get('LogoLinkURL')%>"><img
-    src="<%$ARGS{'LogoURL'}||RT->Config->Get('LogoURL')%>"
-    alt="<%loc($ARGS{'LogoAltText'}||RT->Config->Get('LogoAltText'))%>" /></a>
-% }
-% if ( $ShowName ) {
-    <span class="rtname"><% $Name || loc("RT for [_1]", RT->Config->Get('rtname')) %></span>
-% }
-</div>
-<%INIT>
-if ( exists $ARGS{'show_name'} ) {
-    $RT::Logger->warning('show_name argument was renamed, use ShowName');
-    $ShowName = delete $ARGS{'show_name'};
-}
-
-my $user_logo = blessed $RT::System ? $RT::System->FirstAttribute('UserLogo') : undef;
-
-# If we have the attribute, but no content, we don't really have a user logo
-if ($user_logo) {
-    my $content = $user_logo->Content;
-    undef $user_logo
-        unless ref $content eq 'HASH'
-           and defined $content->{'data'};
-}
-
-if ($OnlyCustom
-    and not $user_logo
-    and ($ARGS{LogoURL}||RT->Config->Get('LogoURL')) =~ /request-tracker-logo\.png$/)
-{
-    return;
-}
-</%INIT>
-<%ARGS>
-$ShowName => 0
-$OnlyCustom => 0
-$Name => undef
-$id => 'logo'
-</%ARGS>
+<form action="<% RT->Config->Get("WebPath") %>/Articles/Article/Edit.html" id="ArticleCreateInClass">
+  <div class="form-row">
+    <div class="col-md-12 text-center">
+      <&|/l&>Select a class for your new article.</&>
+      <div class="d-inline-block">
+        <& /Articles/Elements/SelectClass, Name => 'Class', ShowNullOption => 0 &>
+      </div>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to the Create Article page.") &>
+    </div>
+  </div>
+</form>
