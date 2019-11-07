@@ -26,6 +26,9 @@
 
     /* for text-overflow: ellipsis */
     font-weight: bold;
+    border-bottom-color: #547CCC;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
 }
 
 .ticket-timer .ticket-link a {
@@ -41,6 +44,7 @@
 
 .ticket-timer .control-line {
     text-align: center;
+    padding-bottom: 5px;
 }
 
 .ticket-timer .control-line a {
