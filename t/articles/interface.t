@@ -191,10 +191,10 @@ $m->follow_link_ok( { text => 'Extract Article' }, '-> Extract Article' );
 $m->content_contains($class->Name);
 $m->follow_link_ok( { text => $class->Name }, 'Extract Article -> '. $class->Name );
 $m->content_like(qr/Select topics for this article/i, 'selecting topic');
-$m->form_number(2);
+$m->form_number(3);
 $m->set_visible([option => $topic1->Name]);
 $m->submit;
-$m->form_number(2);
+$m->form_number(3);
 $m->set_visible([option => $answerCF->Name]);
 $m->click();
 $m->title_like(qr/Create a new article/, "got edit page from extraction");
@@ -209,7 +209,7 @@ diag("Test creating a ticket in Class2 and make sure we don't see Class1 Topics"
 {
 $m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
     'UI -> Articles' );
-$m->follow_link_ok( {text => 'New Article' }, 'Articles -> New Article' );
+$m->follow_link_ok( {text => 'Create' }, 'Articles -> New Article' );
 $m->follow_link_ok( {text => 'in class '.$class2->Name }, 'New Article -> in class '.$class2->Name );
 $m->content_lacks( $topic1->Name, "Topic1 from Class1 isn't shown" );
 $m->content_lacks( $topic11->Name, "Topic11 from Class1 isn't shown" );

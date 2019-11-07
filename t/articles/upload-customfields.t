@@ -59,7 +59,7 @@ $m->content_contains("Globally added custom field img$$", 'TCF added to the queu
 
 $m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
     'UI -> Articles' );
-$m->follow_link( text => 'New Article');
+$m->follow_link( text => 'Create');
 
 $m->follow_link( url_regex => qr/Edit.html\?Class=1/ );
 $m->title_is(qq/Create a new article/);

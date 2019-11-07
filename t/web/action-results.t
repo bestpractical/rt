@@ -12,8 +12,7 @@ for my $quick (1, 0) {
     diag $quick ? "Quick ticket creation" : "Normal ticket creation";
 
     $m->get_ok("/");
-    $m->submit_form_ok({ form_name => 'CreateTicketInQueue' }, "Create new ticket form")
-        unless $quick;
+    $m->get_ok( '/Ticket/Create.html?Queue=1', "Create new ticket form" ) unless $quick;
     $m->submit_form_ok({
         with_fields => {
             Subject => "The Plants",

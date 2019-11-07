@@ -157,7 +157,7 @@ sub DoArticleSearch{
   $m->text_contains('First article');
 
   $m->submit_form_ok( {
-            form_number => 2,
+            form_number => 3,
             fields      => {
                 'Article~' => $search_text
             },
