@@ -53,11 +53,14 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 
 my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
 
-my @results;
+my $options = RT->Config->LoadSectionMap();
+my $active_context = {
+    tab        => CSSClass( $ARGS{tab}        || $options->[0]->{Name}) ,
+    section    => CSSClass( $ARGS{section}    || $options->[0]->{Content}->[0]->{Name}) ,
+    subsection => CSSClass( $ARGS{subsection} || $options->[0]->{Content}->[0]->{Content}->[0]->{Name}) ,
+};
 
-my $doc_version = $RT::VERSION;
-$doc_version =~ s/rc\d+//; # 4.4.2rc1 -> 4.4.2
-$doc_version =~ s/\.\d+-\d+-g\w+$//;  # 4.4.3-1-g123 -> 4.4
+my @results;
 
 use Data::Dumper;
 my $stringify = sub {
@@ -80,6 +83,7 @@ if (delete $ARGS{Update}) {
     eval {
         for my $key (keys %ARGS) {
             next if $key =~ /-Current$/;
+            next if $key eq 'tab' || $key eq 'section' || $key eq 'subsection';
 
             my $meta = RT->Config->Meta( $key );
             my $widget = $meta->{Widget} || '/Widgets/Form/Code';
@@ -137,7 +141,11 @@ if (delete $ARGS{Update}) {
             $setting->Load($key);
             if ($setting->Id) {
                 if ($setting->Disabled) {
-                    $setting->SetDisabled(0);
+                    my ($ok, $msg) = $setting->SetDisabled(0);
+                    if (!$ok) {
+                        push @results, $msg;
+                        $has_error++;
+                    }
                 }
 
                 my ($ok, $msg) = $setting->SetContent($val);
@@ -170,106 +178,38 @@ if (delete $ARGS{Update}) {
     RT->Config->EndDatabaseConfigChanges;
 }
 
+my $nav_type='tab'; # 'tab' or 'pill'
+
 </%INIT>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form id="EditConfig" method="post" action="EditConfig.html">
-<input type="hidden" name="Update" value=1></input>
-
-<&|/Widgets/TitleBox, title => loc("RT Configuration") &>
-<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
-<tr class="collection-as-table">
-<th class="collection-as-table"><&|/l&>Option</&></th>
-<th class="collection-as-table"><&|/l&>Value</&></th>
-</tr>
-<%PERL>
-my $index_conf;
-foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
-    my $meta = RT->Config->Meta( $key );
-
-    next if $meta->{Invisible} || $meta->{Deprecated};
-
-    my $raw_value = RT->Config->Get( $key );
-    my $val = $stringify->($raw_value);
-
-    $index_conf++;
-
-    my $doc_url = "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$key";
-
-    my $widget = $meta->{'Widget'} || '/Widgets/Form/Code';
-    my $is_code = $widget eq '/Widgets/Form/Code';
-    my $is_password = ($key =~ /Password/i and $key !~ /MinimumPasswordLength|AllowLoginPasswordAutoComplete/ );
-    my $is_immutable = $meta->{Immutable}
-                    || $meta->{Obfuscate}
-                    || ($is_code && $val =~ s/sub { "DUMMY" }/sub { ... }/g)
-                    || ($is_code && !$has_execute_code);
-
-    my $current_value = $is_code ? $val : $raw_value;
-    my $args   = $meta->{'WidgetArguments'} || {};
-
-    if ($widget eq '/Widgets/Form/Boolean') {
-        %$args = (
-            Default => 0,
-            RadioStyle => 1,
-            %$args,
-        );
-    }
-    elsif ($widget eq '/Widgets/Form/String' || $widget eq '/Widgets/Form/Integer') {
-        %$args = (
-            Size => 60,
-            %$args,
-        );
-    }
-
-</%PERL>
-<tr class="<% $key %> <% $index_conf%2 ? 'oddline' : 'evenline'%>">
-<td class="collection-as-table"><a href="<% $doc_url %>" target="_blank"><% $key %></a></td>
-<td class="collection-as-table">
-
-% if ( $meta->{EditLink} ) {
-% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
-<textarea disabled class="<% $is_code ? 'code' : '' %>" rows="6" cols="80"><% $current_value %></textarea><br>
-% } else {
-<input type="text" disabled width="80" value="<% $current_value %>"></input><br>
+<div class="titlebox-content">
+% my @tab_names = map { $_->{Name} } @$options;
+  <ul class="nav nav-<% $nav_type %>s" id="config-tabs">
+% my $current_context = {};
+% foreach my $tab_name (@tab_names) {
+%     my $tab_id = CSSClass( $tab_name );
+%     $current_context->{tab} = $tab_id;
+%     my( $active, $aria_selected) = $tab_id eq $active_context->{tab} ? ('active', 'true') : ('', 'false');
+%     my $nav_id = join '-', 'nav', $current_context->{tab};
+%     my $content_id = join '-', 'content', $current_context->{tab};
+    <li class="nav-item">
+      <a class="nav-link <% $active %>" id="<% $nav_id %>" data-toggle="<% $nav_type %>" href="#<% $content_id %>" role="<% $nav_type %>" aria-controls="<% $content_id %>" aria-selected="<% $aria_selected %>"><% $tab_name %></a>
+    </li>
 % }
-<&|/l_unsafe, "<a href=\"$meta->{EditLink}\">", loc($meta->{EditLinkLabel}), "</a>" &>Visit [_1][_2][_3] to manage this setting</&>
-% } elsif ( $key =~ /Plugins/) {
-<ul class="plugins">
-% for my $plugin (RT->Config->Get($key)) {
-<li><a href="https://metacpan.org/search?q=<% $plugin |u %>" target="_blank"><% $plugin %></a></li>
+  </ul>
+  <div class="tab-content" id="content-all" >
+% foreach my $tab ( @$options) {
+%     my $tab_id = CSSClass( $tab->{Name} );
+%     $current_context->{tab} = $tab_id;
+%     my $active = $tab_id eq $active_context->{tab} ? ' show active' : '';
+%     my $nav_id = join '-', 'nav', $current_context->{tab};
+%     my $content_id = join '-', 'content', $current_context->{tab};
+    <div class="tab-pane fade<% $active %>" role="tabpanel" id="<% $content_id %>" aria-labelledby="<% $nav_id %>">
+      <& /Admin/Tools/Config/Elements/Tab, tab => $tab, active_context => $active_context, current_context => $current_context &>
+    </div><!-- <% $content_id %> -->
 % }
-</ul>
-<br><em><% loc('Must modify in config file' ) %></em>
-% } elsif ( $is_password ) {
-<em><% loc('Must modify in config file' ) %></em>
-% } elsif ( $is_immutable ) {
-% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
-<textarea disabled class="<% $is_code ? 'code' : '' %>" rows="6" cols="80"><% $current_value %></textarea>
-% } else {
-<input type="text" disabled width="80" value="<% $current_value %>"></input>
-% }
-<br><em><% loc('Must modify in config file' ) %></em>
-% } else {
-  <& $widget,
-    Default      => 1,
-    DefaultValue => '',
-    DefaultLabel => '(no value)',
-
-    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $args ) },
-    Name         => $key,
-    CurrentValue => $current_value,
-    Description  => '',
-    Hints        => '',
-  &>
-<textarea class="hidden" name="<% $key %>-Current"><% $current_value %></textarea>
-% }
-</td>
-</tr>
-% }
-</table>
-</&>
-<& /Elements/Submit, Label => loc('Save Changes') &>
-</form>
-
+  </div><!-- content-all -->
+</div><!-- titlebox-content -->
