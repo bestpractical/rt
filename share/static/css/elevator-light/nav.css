@@ -70,6 +70,7 @@ ul.sf-menu li {
     text-color: #000;
 }
 
+#page-menu.sf-menu a,
 #main-navigation .sf-menu a,
 #main-navigation .sf-menu a:hover {
     padding-top: 0.5em;
@@ -324,7 +325,8 @@ ul.sf-menu li {
     margin-bottom: 0;
 }
 
-#page-menu.sf-menu a {
+#page-menu.sf-menu > li > span > a,
+#page-menu.sf-menu > li > a {
     padding-top: .3em;
     padding-bottom: .3em;
 }
