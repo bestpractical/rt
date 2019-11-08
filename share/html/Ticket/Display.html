@@ -66,7 +66,18 @@ my $initial_label = $HideUnsetFields ? $show_label : $hide_label;
 my $url = "?HideUnsetFields=" . ($HideUnsetFields ? 0 : 1) . ";id=$ARGS{id}";
 my $url_html = $m->interp->apply_escapes($url, 'h');
 
-my $titleright = qq{<a href="$url_html" data-show-label="$show_label" data-hide-label="$hide_label" onclick="return toggle_hide_unset(this)">$initial_label</a>};
+my $alt = loc('Edit');
+my $titleright = qq{
+<div class="btn-group dropdown">
+  <a id="metadata-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-right">
+    <li class="dropdown-item">
+      <a href="$url_html" data-show-label="$show_label" data-hide-label="$hide_label" onclick="return toggle_hide_unset(this)">$initial_label</a>
+    </li>
+  </ul>
+</div>};
 </%PERL>
 
 <div class="summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">

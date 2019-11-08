@@ -632,3 +632,23 @@ function toggle_hide_unset(e) {
 
     return false;
 }
+
+// enable bootstrap tooltips
+jQuery(function() {
+    jQuery("body").tooltip({
+        selector: '[data-toggle=tooltip]',
+        trigger: 'hover focus'
+    });
+});
+
+// toggle bookmark for Ticket/Elements/Bookmark.
+// before replacing the bookmark content, hide then dispose of the existing tooltip to
+// ensure the tooltips are cycled correctly.
+function toggle_bookmark(url, id) {
+    jQuery.get(url, function(data) {
+        var bs_tooltip = jQuery('div[id^="tooltip"]');
+        bs_tooltip.tooltip('hide');
+        bs_tooltip.tooltip('dispose');
+        jQuery('.toggle-bookmark-' + id).replaceWith(data);
+    });
+}

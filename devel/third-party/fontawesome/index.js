@@ -5,6 +5,7 @@ import {
     faCog as fasCog,
     faEdit as fasEdit,
     faBookmark as fasBookmark,
+    faProjectDiagram as fasProjectDiagram,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -29,6 +30,7 @@ library.add(
     fasCog,
     fasEdit,
     fasBookmark,
+    fasProjectDiagram,
     // Regular
     farEdit,
     farBookmark,
