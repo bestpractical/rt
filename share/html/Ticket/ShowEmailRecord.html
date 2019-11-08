@@ -72,6 +72,7 @@ my $show_content = sub {
 my $show;
 $show = sub {
     my $attach = shift;
+    $m->out('</div>');  # Close rt-header-container
     $m->out('<div id="body">');
     $m->out('<div class="plain-text-white-space">') if $plain_text_mono;
 
