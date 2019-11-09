@@ -63,7 +63,7 @@ cols="<% $Cols %>" \
 % if ( defined $Rows ) {
 rows="<% $Rows %>" \
 % }
-name="<%$name%>" class="CF-<%$CustomField->id%>-Edit"><% defined($Default) ? $Default : '' %></textarea>
+name="<%$name%>" class="CF-<%$CustomField->id%>-Edit form-control"><% defined($Default) ? $Default : '' %></textarea>
 % }
 <%INIT>
 # XXX - MultiValue textarea is for now outlawed.
