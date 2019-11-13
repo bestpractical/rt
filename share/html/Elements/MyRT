@@ -48,7 +48,7 @@
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeTable' );
 <div class="myrt row">
 
-<div class="boxcontainer col-md-8">
+<div class="<% 'boxcontainer col-md-' . ( $sidebar ? '8' : '12' ) %>">
 % $show_cb->($_) foreach @$body;
 </div>
 
