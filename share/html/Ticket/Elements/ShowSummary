@@ -48,20 +48,80 @@
 <div class="row ticket-summary">
   <div class="boxcontainer col-md-6">
 % $m->callback( %ARGS, CallbackName => 'LeftColumnTop' );
+
+<%PERL>
+my $modify_url = RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id;
+my $modify_inline
+    = '<a class="inline-edit-toggle edit" href="%s">'
+    . qq{<span class="fas fa-pencil-alt icon-bordered fa-2x" alt="$edit_label" data-toggle="tooltip" data-placement="top" data-original-title="$edit_label"></span>}
+    . '</a>'
+    . '<a class="inline-edit-toggle cancel hidden" href="#">'
+    . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-toggle="tooltip" data-placement="top" data-original-title="$cancel_label"></span>}
+    . '</a>';
+my $modify_basics = sprintf( $modify_inline, $m->interp->apply_escapes( $modify_url, 'h' ) );
+my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link') : 'hide';
+</%PERL>
+
     <&| /Widgets/TitleBox, title => loc('The Basics'),
-        (($can_modify || $can_modify_cf) ? (title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id) : ()),
-        class => 'ticket-info-basics',
-    &><& /Ticket/Elements/ShowBasics, Ticket => $Ticket &></&>
+        (($can_modify || $can_modify_cf) ? (title_href => $modify_url) : ()),
+        ($modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_basics) : ()),
+        class => (join " ", 'ticket-info-basics', ($modify_behavior eq 'always' ? 'editing' : ())),
+        data => { 'inline-edit-behavior' => $modify_behavior },
+    &>
+%       unless ($modify_behavior eq 'always') {
+            <div class="inline-edit-display">
+                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+            </div>
+%       }
+%       if ($modify_behavior ne 'hide') {
+            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+                <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
+                <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
+                <div class="form-row">
+                  <div class="col-md-12 text-right">
+                    <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+                  </div>
+                </div>
+            </form>
+%       }
+    </&>
 % $m->callback( %ARGS, CallbackName => 'AfterBasics' );
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
         title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
+        InlineEdit   => $InlineEdit,
         &>
 
+<%PERL>
+my $people_url = RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id;
+my $people_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $people_url, 'h' ) );
+my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_edit_behavior{_default} || 'link') : 'hide';
+</%PERL>
     <&| /Widgets/TitleBox, title => loc('People'),
         (($can_modify || $can_modify_owner || $can_modify_people) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
-        class => 'ticket-info-people',
-    &><& /Ticket/Elements/ShowPeople, Ticket => $Ticket &></&>
+        class => (join " ", 'ticket-info-people', ($people_behavior eq 'always' ? 'editing' : ())),
+        ($people_behavior =~ /^(link|click)$/ ? (titleright_raw => $people_inline) : ()),
+        data => { 'inline-edit-behavior' => $people_behavior },
+    &>
+%       unless ($people_behavior eq 'always') {
+            <div class="inline-edit-display">
+                <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
+            </div>
+%       }
+%       if ($people_behavior ne 'hide') {
+            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+                <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
+                <div class="form-row">
+                  <div class="col-md-12 text-right">
+                    <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+                  </div>
+                </div>
+            </form>
+%       }
+</&>
+
 % $m->callback( %ARGS, CallbackName => 'AfterPeople' );
     <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments, Count => RT->Config->Get('AttachmentListCount') &>
 % $m->callback( %ARGS, CallbackName => 'AfterAttachments' );
@@ -81,27 +141,86 @@
     </&>
 % }
 % $m->callback( %ARGS, CallbackName => 'AfterReminders' );
+
+<%PERL>
+my $dates_url = RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id;
+my $dates_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $dates_url, 'h' ) );
+my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit_behavior{_default} || 'link') : 'hide';
+</%PERL>
     <&| /Widgets/TitleBox, title => loc("Dates"),
-        ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id) : ()),
-        class => 'ticket-info-dates',
-    &><& /Ticket/Elements/ShowDates, Ticket => $Ticket &></&>
+        ($can_modify ? (title_href => $dates_url) : ()),
+        class => (join " ", 'ticket-info-dates', ($dates_behavior eq 'always' ? 'editing' : ())),
+        ($dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
+        data => { 'inline-edit-behavior' => $dates_behavior },
+    &>
+%       unless ($dates_behavior eq 'always') {
+            <div class="inline-edit-display">
+                <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
+            </div>
+%       }
+%       if ($dates_behavior ne 'hide') {
+            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+                <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
+                <div class="form-row">
+                  <div class="col-md-12 text-right">
+                    <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+                  </div>
+                </div>
+            </form>
+%       }
+    </&>
 % $m->callback( %ARGS, CallbackName => 'AfterDates' );
-% my $alt = loc('Graph ticket links');
-% my (@extra);
-% push @extra, titleright_raw => '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' . $alt . '"></span></a>' unless RT->Config->Get('DisableGraphViz');
 <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
+<%PERL>
+my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id;
+my $links_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $links_url, 'h' ) );
+my $links_behavior = $InlineEdit ? ($inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link') : 'hide';
+my $alt = loc('Graph ticket links');
+my $links_graph = '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' . $alt . '"></span></a>';
+
+my $links_titleright = join ' ',
+    ($links_behavior =~ /^(link|click)$/ ? ($links_inline) : ()),
+    (RT->Config->Get('DisableGraphViz') ? () : $links_graph);
+my @extra;
+push @extra, (titleright_raw => $links_titleright) if $links_titleright;
+</%PERL>
 % $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
     <&| /Widgets/TitleBox, title => loc('Links'),
+        ($can_modify ? (title_href => $links_url) : ()),
+        class => (join " ", 'ticket-info-links', ($links_behavior eq 'always' ? 'editing' : ())),
+        data => { 'inline-edit-behavior' => $links_behavior },
         ($can_modify ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id) : ()),
-        class => 'ticket-info-links',
         @extra,
-    &><& /Elements/ShowLinks, Object => $Ticket &></&>
+    &>
+%       unless ($links_behavior eq 'always') {
+            <div class="inline-edit-display">
+                <& /Elements/ShowLinks, Object => $Ticket &>
+            </div>
+%       }
+%       if ($links_behavior ne 'hide') {
+            <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+                <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
+                <& /Elements/EditLinks, Object => $Ticket, TwoColumn => 0 &>
+
+                <h3><&|/l&>Merge</&></h3>
+                <& /Ticket/Elements/EditMerge, Ticket => $Ticket, %ARGS &>
+
+                <div class="form-row">
+                  <div class="col-md-12 text-right">
+                    <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
+                  </div>
+                </div>
+            </form>
+%       }
+    </&>
 % $m->callback( %ARGS, CallbackName => 'RightColumn' );
   </div>
 </div>
 <%ARGS>
 $Ticket => undef
 $Attachments => undef
+$InlineEdit => 0
 </%ARGS>
 <%INIT>
 my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
@@ -109,4 +228,12 @@ my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
 my $can_modify_owner = $Ticket->CurrentUserCanSetOwner();
 my $can_modify_people = $Ticket->CurrentUserHasRight('Watch')
                      || $Ticket->CurrentUserHasRight('WatchAsAdminCc');
+
+my $edit_label = $m->interp->apply_escapes( loc("Edit"), 'h' );
+my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
+
+my %inline_edit_behavior;
+if (RT->Config->Get('InlineEditPanelBehavior')) {
+    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{'RT::Ticket'} || {} };
+}
 </%INIT>

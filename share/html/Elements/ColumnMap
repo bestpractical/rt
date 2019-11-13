@@ -140,36 +140,56 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             }
             return @values;
         },
+        edit      => sub {
+            my $self = $WCOLUMN_MAP->{CustomField};
+            my $cf = $self->{load}->(@_);
+            return unless $cf->Id;
+
+            # uploading files should be done on the modify page
+            return if $cf->Type =~ /^(?:Binary|Image)$/;
+
+            return \($m->scomp('/Elements/EditCustomField', CustomField => $cf, Object => $_[0]))
+        },
     },
     CustomRole => {
         attribute => sub { return shift @_ },
         title     => sub { return pop @_ },
         value     => sub {
-            my $object = shift;
+            my $self = $WCOLUMN_MAP->{CustomRole};
+            my $role   = $self->{load}->(@_);
+            return unless $role->Id;
+            return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role->GroupType) ) );
+        },
+        load      => sub {
             my $role_name = pop;
 
-            my $role_type = do {
-                # Cache the role object on a per-request basis, to avoid
-                # having to load it for every row
-                my $key = "RT::CustomRole-" . $role_name;
+            # Cache the role object on a per-request basis, to avoid
+            # having to load it for every row
+            my $key = "RT::CustomRole-" . $role_name;
 
-                my $role_type = $m->notes($key);
-                if (!$role_type) {
-                    my $role_obj = RT::CustomRole->new($object->CurrentUser);
-                    $role_obj->Load($role_name);
+            my $role_obj = $m->notes($key);
+            if (!$role_obj) {
+                $role_obj = RT::CustomRole->new($_[0]->CurrentUser);
+                $role_obj->Load($role_name);
 
-                    RT->Logger->notice("Unable to load custom role $role_name")
-                        unless $role_obj->Id;
+                RT->Logger->notice("Unable to load custom role $role_name")
+                    unless $role_obj->Id;
 
-                    $role_type = $role_obj->GroupType;
-                    $m->notes($key, $role_type);
-                }
+                $m->notes($key, $role_obj);
+            }
 
-                $role_type;
-            };
-
-            return if !$role_type;
-            return \($m->scomp("/Elements/ShowPrincipal", Object => $object->RoleGroup($role_type) ) );
+            return $role_obj;
+        },
+        edit => sub {
+            my $self = $WCOLUMN_MAP->{CustomRole};
+            my $role   = $self->{load}->(@_);
+            return unless $role->Id;
+            if ($role->SingleValue) {
+                return \($m->scomp("/Elements/SingleUserRoleInput", role => $role, Ticket => $_[0]));
+            }
+            else {
+                return undef;
+            }
         },
     },
 
@@ -258,6 +278,13 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
                 attribute => $attrs->{Column} || "$role.EmailAddress",
                 value => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role) ) ) },
             };
+
+            if ($role eq 'Owner') {
+                $ROLE_MAP->{$RecordClass}{$role}{edit} = sub {
+                    return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0));
+                };
+            }
+
             $ROLE_MAP->{$RecordClass}{$role . "s"} = $ROLE_MAP->{$RecordClass}{$role}
                 unless $attrs->{Single};
         }

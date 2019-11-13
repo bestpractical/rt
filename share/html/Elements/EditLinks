@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="row ticket-summary">
-  <div class="boxcontainer col-md-6">
+  <div class="boxcontainer col-md-<% $TwoColumn ? 6 : 12 %>">
       <h3><&|/l&>Current Links</&></h3>
 
 <div>
@@ -129,11 +129,12 @@
 </div>
 
   </div>
-  <div class="boxcontainer col-md-6">
+  <div class="boxcontainer col-md-<% $TwoColumn ? 6 : 12 %>">
 <h3><&|/l&>New Links</&></h3>
 <& AddLinks, %ARGS &>
 </div>
 </div>
 <%ARGS>
 $Object => undef
+$TwoColumn => 1
 </%ARGS>

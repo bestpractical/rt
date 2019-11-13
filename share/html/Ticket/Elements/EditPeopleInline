@@ -45,58 +45,68 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="titlebox card<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>"\
-% for my $key (keys %$data) {
- data-<% $key %>="<% $data->{$key} %>"\
+<i><&|/l&>Current watchers</&>:</i>
+<table width="100%">
+<tr>
+  <td class="label"><&|/l&>Owner</&>:</td>
+  <td class="value"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></td>
+</tr>
+
+% my @role_fields;
+% my $single_roles = $Ticket->QueueObj->CustomRoles;
+% $single_roles->LimitToSingleValue;
+% while (my $role = $single_roles->Next) {
+<tr>
+  <td class="label"><% $role->Name %>:</td>
+  <td class="value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></td>
+</tr>
+
 % }
->
-  <div class="titlebox-title card-header<% $title_class ? " $title_class" : ''%>">
-% if ($hideable) {
-    <span class="toggle <% $rolledup ? " collapsed" : ""%>" data-toggle="collapse" data-target="#<%$tid|n%>" title="<% loc('Toggle visibility') %>"></span>
+
+% if ($Ticket->Requestors->MembersObj->Count) {
+<tr>
+  <td class="label"><&|/l&>Requestors</&>:</td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></td>
+</tr>
 % }
-    <span class="left"><%
-            $title_href ? qq[<a href="$title_href">] : '' | n
-        %><% $title %><% $title_raw |n %><% $title_href ? "</a>" : '' |n%></span>
-    <span class="right<%($titleright_href || $titleright || $titleright_raw) ? '' : '-empty' %>">\
-        <% $titleright_href ? qq[<a href="$titleright_href">] : '' | n %>\
-        <% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
-    </span>
-  </div>
-  <div class="titlebox-content collapse<% $bodyclass %><% $rolledup ? " hidden" : " show"%>" id="<% $tid %>">
-    <div class="card-body">
+
+% if ($Ticket->Cc->MembersObj->Count) {
+<tr>
+  <td class="label"><&|/l&>Cc</&>:</td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></td>
+</tr>
+% }
+
+% if ($Ticket->AdminCc->MembersObj->Count) {
+<tr>
+  <td class="label"><&|/l&>AdminCc</&>:</td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></td>
+</tr>
+% }
+
+% my $multi_roles = $Ticket->QueueObj->CustomRoles;
+% $multi_roles->LimitToMultipleValue;
+% while (my $role = $multi_roles->Next) {
+% my $group = $Ticket->RoleGroup($role->GroupType);
+% if ($group->Id && $group->MembersObj->Count) {
+<tr>
+  <td class="label"><% $role->Name %>:</td>
+  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></td>
+</tr>
+% }
+% }
+
+<tr>
+  <td colspan="2">
+    <i><&|/l&>Add new watchers</&>:</i>
+    <& AddWatchers, Ticket => $Ticket, ShowLabel => 0 &>
+  </td>
+</tr>
+
+<& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
+</table>
+
 <%ARGS>
-$class => ''
-$bodyclass => ''
-$title_href => ''
-$title => ''
-$title_raw => ''
-$title_class => ''
-$titleright_href => ''
-$titleright => ''
-$titleright_raw => ''
-$id => ''
-$hideable => 1
-$rolledup => 0
-$data => {}
+$Ticket => undef
 </%ARGS>
 
-<%init>
-$hideable = 1 if $rolledup;
-#
-# This should be pretty bulletproof
-#
-my $page = $m->request_comp->path;
-
-my $title_b64 = MIME::Base64::encode_base64(Encode::encode( "UTF-8", $title), '');
-
-my $tid  = "TitleBox--$page--" .
-            join '--', ($class, $bodyclass, $title_b64, $id);
-
-# Replace anything that ISN'T alphanumeric, a hyphen, or an underscore
-$tid =~ s{[^A-Za-z0-9\-_]}{_}g;
-
-my $i = 0;
-$i++ while $m->notes("$tid-$i");
-$m->notes("$tid-$i" => 1);
-$tid = "$tid-$i";
-</%init>

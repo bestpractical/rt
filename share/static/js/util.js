@@ -208,7 +208,11 @@ function doOnLoad( js ) {
     jQuery(js);
 }
 
-jQuery(function() {
+function initDatePicker(elem) {
+    if ( !elem ) {
+        elem = jQuery('body');
+    }
+
     var opts = {
         dateFormat: 'yy-mm-dd',
         constrainInput: false,
@@ -217,16 +221,19 @@ jQuery(function() {
         changeYear: true,
         showOtherMonths: true,
         showOn: 'none',
-        selectOtherMonths: true
+        selectOtherMonths: true,
+        onClose: function() {
+            jQuery(this).trigger('datepicker:close');
+        }
     };
-    jQuery(".datepicker").focus(function() {
+    elem.find(".datepicker").focus(function() {
         var val = jQuery(this).val();
         if ( !val.match(/[a-z]/i) ) {
             jQuery(this).datepicker('show');
         }
     });
-    jQuery(".datepicker:not(.withtime)").datepicker(opts);
-    jQuery(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
+    elem.find(".datepicker:not(.withtime)").datepicker(opts);
+    elem.find(".datepicker.withtime").datetimepicker( jQuery.extend({}, opts, {
         stepHour: 1,
         // We fake this by snapping below for the minute slider
         //stepMinute: 5,
@@ -257,8 +264,11 @@ jQuery(function() {
             };
         };
     });
+}
 
-    jQuery('td.collection-as-table').each( function() {
+jQuery(function() {
+    initDatePicker();
+    jQuery('td.collection-as-table:not(.editable)').each( function() {
         if ( jQuery(this).children() ) {
             var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
             if ( jQuery(this).children().height() > max_height ) {
@@ -525,6 +535,36 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
+function refreshCollectionListRow(tbody, table, success, error) {
+    var params = {
+        DisplayFormat : table.data('display-format'),
+        ObjectClass   : table.data('class'),
+        MaxItems      : table.data('max-items'),
+        InlineEdit    : table.hasClass('inline-edit'),
+
+        i             : tbody.data('index'),
+        ObjectId      : tbody.data('record-id'),
+        Warning       : tbody.data('warning')
+    };
+
+    tbody.addClass('refreshing');
+
+    jQuery.ajax({
+        url    : RT.Config.WebHomePath + '/Helpers/CollectionListRow',
+        method : 'GET',
+        data   : params,
+        success: function (response) {
+            var index = tbody.data('index');
+            tbody.replaceWith(response);
+            // Get the new replaced tbody
+            tbody = table.find('tbody[data-index=' + index + ']');
+            initDatePicker(tbody);
+            tbody.find('.selectpicker').selectpicker();
+            if (success) { success(response) }
+        },
+        error: error
+    });
+}
 
 function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
@@ -647,6 +687,242 @@ jQuery(function() {
     });
 
     loadCollapseStates();
+});
+
+/* inline edit */
+jQuery(function () {
+    var inlineEditEnabled = true;
+    var disableInlineEdit = function () {
+        inlineEditEnabled = false;
+        jQuery('.editable').removeClass('editing').removeClass('loading');
+        jQuery('table.inline-edit').removeClass('inline-edit');
+    };
+
+    var escapeKeyHandler = null;
+
+    var beginInlineEdit = function (cell) {
+        if (!inlineEditEnabled) {
+            return;
+        }
+
+        var editor = cell.find('.editor');
+
+        if (jQuery('td.editable.editing').length) {
+            return;
+        }
+
+        /* form has absolute position, we need to calculate the offsets so
+         * it could show in the cell */
+
+        var top = cell.offset().top;
+        var left = cell.offset().left;
+
+        var relativeParent = cell.parents().filter(function() {
+            return jQuery(this).css('position') === 'relative';
+        });
+
+        if ( relativeParent.length ) {
+            top -= relativeParent.offset().top;
+            left -= relativeParent.offset().left;
+        }
+
+        editor.css('top', top);
+        editor.css('left', left);
+
+        editor.css('width', cell.width() > 100 ? cell.width() : 100 );
+        cell.addClass('editing');
+        editor.css('margin-top', (cell.closest('tr').height() - editor.height()) / 2);
+
+        editor.find(':input:visible:enabled:first').focus();
+        setTimeout( function(){
+            editor.find('.selectpicker').selectpicker('toggle');
+        }, 100);
+
+        jQuery('body').addClass('inline-editing');
+
+        escapeKeyHandler = function (e) {
+            if (e.keyCode == 27) {
+                e.preventDefault();
+                cancelInlineEdit(editor);
+            }
+        };
+        jQuery(document).keyup(escapeKeyHandler);
+    };
+
+    var cancelInlineEdit = function (editor) {
+        var cell = editor.closest('td');
+        cell.find('[data-toggle=tooltip]').tooltip('hide');
+
+        cell.removeClass('editing');
+        editor.get(0).reset();
+
+        jQuery('body').removeClass('inline-editing');
+
+        if (escapeKeyHandler) {
+            jQuery(document).off('keyup', escapeKeyHandler);
+        }
+    };
+
+    var submitInlineEdit = function (editor) {
+        var cell = editor.closest('td');
+        cell.find('[data-toggle=tooltip]').tooltip('hide');
+
+        if (!inlineEditEnabled) {
+            return;
+        }
+
+        // Make sure input's state has been updated
+        editor.find('input:focus').blur();
+
+        if (!editor.data('changed')) {
+            cancelInlineEdit(editor);
+            return;
+        }
+
+        var tbody = cell.closest('tbody');
+        var table = tbody.closest('table');
+
+        if (!cell.hasClass('editing')) {
+            return;
+        }
+
+        var params = editor.serialize();
+
+        editor.find(':input').attr('disabled', 'disabled');
+        cell.removeClass('editing').addClass('loading');
+        jQuery('body').removeClass('inline-editing');
+        tbody.addClass('refreshing');
+
+        var renderError = function (error) {
+            jQuery.jGrowl(error, { sticky: true, themeState: 'none' });
+            cell.addClass('error text-danger').html(loc_key('error'));
+            jQuery(document).off('keyup', escapeKeyHandler);
+            disableInlineEdit();
+        };
+        jQuery.ajax({
+            url     : editor.attr('action'),
+            method  : 'POST',
+            data    : params,
+            dataType: "json",
+            success : function (results) {
+                jQuery.each(results.actions, function (i, action) {
+                    jQuery.jGrowl(action, { themeState: 'none' });
+                });
+
+                refreshCollectionListRow(
+                    tbody,
+                    table,
+                    function () {
+                        jQuery(document).off('keyup', escapeKeyHandler);
+                    },
+                    function (xhr, error) {
+                        renderError(error);
+                    }
+                );
+            },
+            error   : function (xhr, error) {
+                renderError(error);
+            }
+        });
+    };
+
+    jQuery(document).on('click', 'table.inline-edit td.editable .edit-icon', function (e) {
+        var cell = jQuery(this).closest('td');
+        if ( jQuery('td.editable.editing form').length ) {
+            cancelInlineEdit(jQuery('td.editable.editing form'));
+        }
+        beginInlineEdit(cell);
+    });
+
+    jQuery(document).on('change', 'td.editable.editing form :input', function () {
+        jQuery(this).closest('form').data('changed', true);
+    });
+
+    jQuery(document).on('submit', 'td.editable.editing form', function (e) {
+        e.preventDefault();
+        submitInlineEdit(jQuery(this));
+    });
+
+    jQuery(document).on('click', 'td.editable .cancel', function (e) {
+        cancelInlineEdit(jQuery(this).closest('form'));
+    });
+
+    jQuery(document).on('click', 'td.editable .submit', function (e) {
+        submitInlineEdit(jQuery(this).closest('form'));
+    });
+
+    jQuery(document).on('change', 'td.editable.editing form select', function () {
+        submitInlineEdit(jQuery(this).closest('form'));
+    });
+
+    jQuery(document).on('datepicker:close', 'td.editable.editing form .datepicker', function () {
+        submitInlineEdit(jQuery(this).closest('form'));
+    });
+
+    /* inline edit on ticket display */
+    var toggle_inline_edit = function (link) {
+        link.siblings('.inline-edit-toggle').removeClass('hidden');
+        link.addClass('hidden');
+        link.closest('.titlebox').toggleClass('editing');
+    }
+
+    jQuery('.inline-edit-toggle').click(function (e) {
+        e.preventDefault();
+        toggle_inline_edit(jQuery(this));
+    });
+
+    jQuery('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
+        if (jQuery(e.target).is('a, input, select, textarea')) {
+            return;
+        }
+
+        e.preventDefault();
+        var container = jQuery(this).closest('.titlebox');
+        if (container.hasClass('editing')) {
+            return;
+        }
+        toggle_inline_edit(container.find('.inline-edit-toggle:visible'));
+    });
+
+    /* on submit, pull in all the other inline edit forms' fields into
+     * the currently-being-submitted form. that way we don't lose user
+     * input */
+    jQuery('form.inline-edit').submit(function (e) {
+        var currentForm = jQuery(this);
+
+        /* limit to currently-editing forms, since cancelling inline
+         * edit merely hides the form */
+        jQuery('.titlebox.editing form.inline-edit').each(function () {
+            var siblingForm = jQuery(this);
+
+            if (siblingForm.is(currentForm)) {
+                return;
+            }
+
+            siblingForm.find(':input').each(function () {
+                var field = jQuery(this);
+
+                if (field.attr('name') == "") {
+                    return;
+                }
+
+                /* skip duplicates, such as ticket id */
+                if (currentForm.find('[name="' + field.attr('name') + '"]').length > 0) {
+                    return;
+                }
+
+                var clone = field.clone().hide().appendTo(currentForm);
+
+                /* "For performance reasons, the dynamic state of certain
+                 * form elements (e.g., user data typed into textarea
+                 * and user selections made to a select) is not copied
+                 * to the cloned elements", so manually copy them */
+                if (clone.is('select, textarea')) {
+                    clone.val(field.val());
+                }
+            });
+        });
+    });
 });
 
 // focus jquery object in window, only moving the screen when necessary
