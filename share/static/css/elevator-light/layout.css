@@ -38,14 +38,22 @@ div#body {
 
 div#footer {
     position: absolute;
-    right: 0;
     text-align: right;
-    font-size: 0.9em;
-    margin-top: 2em;
+    font-size: 0.8em;
     background: #fff;
-    margin-bottom: 0;
-    padding-left: 3em;
-    padding-right: 1em;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    bottom: 0;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background: #2C3539;
+}
+
+div#footer > div {
+    padding-left: 0;
+    padding-right: 0;
 }
 
 div#footer #time {
@@ -53,9 +61,18 @@ div#footer #time {
 }
 
 div#footer #bpscredits {
-    text-align: right;
-    background: url(../../../static/images/bpslogo.png) no-repeat top right;
-    padding-top: 4em;
+    text-align: center;
+    background: url(../../../static/images/bpslogo_wt_sm.svg) no-repeat top center !important;
+    padding-top: 2.5em;
+}
+
+div#footer a {
+    color: white;
+}
+
+/* Override the default bootstrap p margin to reduce bottom spacing in footer */
+div#footer p {
+    margin-bottom: .5rem;
 }
 
 /* logo stuff */
@@ -167,4 +184,12 @@ ul ul {
 
 ol ol {
   list-style-type: upper-alpha;
+}
+
+.main-container {
+  min-height: 100vh;
+  overflow: hidden;
+  display: block;
+  position: relative;
+  padding-bottom: 5em;
 }
