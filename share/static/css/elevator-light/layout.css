@@ -37,6 +37,7 @@ div#footer {
     background: #fff;
     padding-left: 15px;
     padding-right: 15px;
+    padding-top: 5px;
     bottom: 0;
     width: 100%;
     margin-left: 0;
@@ -55,16 +56,17 @@ div#footer #time {
 
 div#footer #bpscredits {
     text-align: center;
-    background: url(../../../static/images/bpslogo_wt_sm.svg) no-repeat top 1em center !important;
-    padding-top: 4em;
-}
-
-div#footer #legal {
-    padding-top: 1.5em;
+    background: url(../../../static/images/bpslogo_wt_sm.svg) no-repeat top center !important;
+    padding-top: 2.5em;
 }
 
 div#footer a {
     color: white;
+}
+
+/* Override the default bootstrap p margin to reduce bottom spacing in footer */
+div#footer p {
+    margin-bottom: .5rem;
 }
 
 /* logo stuff */
