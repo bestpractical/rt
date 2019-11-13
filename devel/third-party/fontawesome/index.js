@@ -19,6 +19,7 @@ import {
     faPauseCircle as farPauseCircle,
     faArrowAltCircleUp as farArrowAltCircleUp,
     faTimesCircle as farTimesCircle,
+    faQuestionCircle as farQuestionCircle,
 } from '@fortawesome/free-regular-svg-icons'
 
 /*
@@ -44,6 +45,7 @@ library.add(
     farPauseCircle,
     farArrowAltCircleUp,
     farTimesCircle,
+    farQuestionCircle,
     // Brands
 //    fabLinux
 )
