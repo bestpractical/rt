@@ -14,7 +14,11 @@ import {
     faEdit as farEdit,
     faBookmark as farBookmark,
     faClock as farClock,
-    faCalendarAlt as farCalendarAlt
+    faCalendarAlt as farCalendarAlt,
+    faPlayCircle as farPlayCircle,
+    faPauseCircle as farPauseCircle,
+    faArrowAltCircleUp as farArrowAltCircleUp,
+    faTimesCircle as farTimesCircle,
 } from '@fortawesome/free-regular-svg-icons'
 
 /*
@@ -35,7 +39,11 @@ library.add(
     farEdit,
     farBookmark,
     farClock,
-    farCalendarAlt
+    farCalendarAlt,
+    farPlayCircle,
+    farPauseCircle,
+    farArrowAltCircleUp,
+    farTimesCircle,
     // Brands
 //    fabLinux
 )
