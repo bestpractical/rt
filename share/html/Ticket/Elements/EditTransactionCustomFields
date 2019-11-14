@@ -54,8 +54,8 @@
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
 <div class="form-row">
 <div class="label cflabel col-md-3">
-  <span class="name"><% $CF->Name %>:</span><br />
-  <span class="type"><% $CF->EntryHint // '' %></span>
+  <span class="name"><% $CF->Name %>:</span>
+  <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
 </div>
 <div class="value col-md-9">
 <& /Elements/EditCustomField,

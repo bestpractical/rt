@@ -56,8 +56,8 @@
 
   <div class="form-row edit-custom-field cftype-<% $Type %>">
     <div class="cflabel label col-md-3">
-      <span class="name"><% $CustomField->Name %>:</span><br />
-      <span class="type"><% $CustomField->EntryHint // '' %></span>
+      <span class="name"><% $CustomField->Name %>:</span>
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
     </div>
     <div class="value col-md-9">
 % my $default = $m->notes('Field-' . $CustomField->Id);
