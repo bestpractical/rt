@@ -24,9 +24,9 @@ Description: <select> box enhancer
 Origin: https://github.com/harvesthq/chosen
 License: MIT
 
-* ckeditor-5
+* ckeditor-4
 Description: WYSIWYG text editor
-Origin: https://github.com/ckeditor/ckeditor5
+Origin: https://github.com/ckeditor/ckeditor4
 License: GPL 2
 
 * dropzone-4.0.1
