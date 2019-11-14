@@ -129,3 +129,9 @@ svg.icon-bordered {
     border-radius: 0.1em;
     padding: 0.2em 0.25em 0.15em;
 }
+
+/* styling for helper text svg images */
+svg.icon-helper {
+    padding-left: 0.2em;
+    color: #666;
+}

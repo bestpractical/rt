@@ -159,31 +159,17 @@
 </div>
 
 <div class="form-row">
-<div class="label col-md-2"><&|/l&>Cc</&>:</div>
+<div class="label col-md-2"><&|/l&>Cc</&>:
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people will receive future updates.</&>"></span>
+</div>
 <div class="value col-md-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1 &></div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-2 empty">&nbsp;</div>
-  <div class="value col-md-9 comment">
-    <i><font size="-2">
-      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&>
-    </font></i>
-  </div>
+<div class="label col-md-2"><&|/l&>Admin Cc</&>:
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people will receive future updates.</&>"></span>
 </div>
-
-<div class="form-row">
-<div class="label col-md-2"><&|/l&>Admin Cc</&>:</div>
 <div class="value col-md-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1 &></div>
-</div>
-
-<div class="form-row">
-  <div class="label col-md-2 empty">&nbsp;</div>
-  <div class="value col-md-9 comment">
-    <i><font size="-2">
-      <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&>
-    </font></i>
-  </div>
 </div>
 
 % my $roles = $QueueObj->CustomRoles;
