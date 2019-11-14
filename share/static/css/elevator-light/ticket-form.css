@@ -24,12 +24,14 @@
     white-space: nowrap;
 }
 
-.messagebox-container.action-response textarea
+.messagebox-container.action-response textarea,
+.messagebox-container.action-response iframe
 {
     background-color: #fcc !important;
 }
 
-.messagebox-container.action-private textarea
+.messagebox-container.action-private textarea,
+.messagebox-container.action-private iframe
 {
     background-color: #ffffdd !important;
 }
