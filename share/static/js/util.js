@@ -267,7 +267,7 @@ function textToHTML(value) {
                 .replace(/\n/g,   "\n<br />");
 };
 
-
+CKEDITOR_BASEPATH=RT.Config.WebPath + "/static/RichText/";
 function ReplaceAllTextareas() {
     // replace all content and signature message boxes
     var allTextAreas = document.getElementsByTagName("textarea");
@@ -283,19 +283,13 @@ function ReplaceAllTextareas() {
             // Set the type
             type.val("text/html");
 
-        ClassicEditor
-            .create( document.querySelector( '.richtext' ) )
-            .then(editor => {
-                jQuery(editor.ui.view.editable.element).css('height', RT.Config.MessageBoxRichTextHeight);
-                AddAttachmentWarning(editor);
-            })
-            .catch( error => {
-                console.error( error );
-            } );
+            CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
+            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
         }
     }
 };
 
+/*
 
 function AddAttachmentWarning(richTextEditor) {
     var plainMessageBox  = jQuery('.messagebox');
@@ -412,6 +406,7 @@ function AddAttachmentWarning(richTextEditor) {
     }
 }
 
+*/
 
 function toggle_addprincipal_validity(input, good, title) {
     if (good) {
@@ -521,7 +516,7 @@ function loadCollapseStates() {
 jQuery(function() {
     ReplaceAllTextareas();
     jQuery('select.chosen.CF-Edit').chosen({ width: '20em', placeholder_text_multiple: ' ', no_results_text: ' ', search_contains: true });
-    AddAttachmentWarning();
+/*    AddAttachmentWarning();   */
     jQuery('a.delete-attach').click( function() {
         var parent = jQuery(this).closest('div');
         var name = jQuery(this).attr('data-name');
