@@ -177,20 +177,13 @@
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
 <div class="form-row">
-<div class="form-group label col-md-2"><% $role->Name %>:</div>
-<div class="form-group value col-md-9"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></div>
-</div>
-
+  <div class="form-group label col-md-2"><% $role->Name %>:
 % if ($role->EntryHint) {
-<div class="form-row">
-  <div class="form-group label col-md-2 empty">&nbsp;</div>
-  <div class="form-group value col-md-9 comment" colspan="5">
-    <i><font size="-2">
-      <% $role->EntryHint %>
-    </font></i>
-  </div>
-</div>
+    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 % }
+  </div>
+  <div class="form-group value col-md-9"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></div>
+</div>
 % }
 
 <& /Elements/EditCustomFields,
