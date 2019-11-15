@@ -7,6 +7,11 @@
     border-style: none;
 }
 
+.ticket-timer svg {
+    width: 1.5em !important;
+    height: 1.5em !important;
+}
+
 /* we use background: #547CCC; to help make the ticket timer look more like RT
    but unfortunately that makes the stopwatch icon (being black) look bad */
 .ticket-timer .ticket-link img {
