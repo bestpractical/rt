@@ -52,9 +52,6 @@ $id
 my $Ticket = RT::Ticket->new($session{'CurrentUser'});
 $Ticket->Load( $id );
 
-my $UnpauseImg = RT->Config->Get('WebPath') . '/static/images/unpause.png';
-my $PauseImg   = RT->Config->Get('WebPath') . '/static/images/pause.png';
-
 my $Now = RT::Date->new($session{'CurrentUser'});
 $Now->SetToNow;
 
@@ -87,11 +84,6 @@ jQuery( function() {
     var CommittedSeconds = 0;
 
     var Readout = jQuery('.readout');
-    var PlayPause = jQuery('.playpause');
-    var PlayPauseImg = PlayPause.find('img');
-
-    var PauseAlt = PlayPauseImg.attr('alt');
-    var UnpauseAlt = PlayPauseImg.data('toggle-alt');
 
     var ToHHMMSS = function (Total) {
         var Hours   = Math.floor(Total / 3600);
@@ -119,24 +111,22 @@ jQuery( function() {
             Interval = false;
             CommittedSeconds += CurrentSeconds();
             LastUnpause = false;
-            PlayPauseImg.attr('src', <% $UnpauseImg |n,j %>);
-            PlayPauseImg.attr('alt', UnpauseAlt);
-            PlayPauseImg.attr('title', UnpauseAlt);
+            jQuery('.playpause.play').removeClass('hidden');
+            jQuery('.playpause.pause').addClass('hidden');
         }
         else {
             // unpause
             Interval = setInterval(Tick, 1000);
             LastUnpause = new Date().getTime() / 1000;
-            PlayPauseImg.attr('src', <% $PauseImg |n,j %>);
-            PlayPauseImg.attr('alt', PauseAlt);
-            PlayPauseImg.attr('title', PauseAlt);
+            jQuery('.playpause.pause').removeClass('hidden');
+            jQuery('.playpause.play').addClass('hidden');
         }
         return false;
     });
 
     jQuery('.submit-time').click(function () {
         clearInterval(Interval);
-        jQuery('.control-line a').hide();
+        jQuery('.control-line a:not(.close-popup)').addClass('hidden');
         CommittedSeconds += CurrentSeconds();
 
         var Payload = {
@@ -165,7 +155,7 @@ jQuery( function() {
                 if (Response.ok) {
                     Readout.addClass('response');
                     Readout.text(Response.msg);
-                    jQuery('.control-line .close-popup').show().removeClass('hidden');
+                    jQuery('.control-line .close-popup').removeClass('hidden');
                 }
                 else {
                     RenderSubmitError(Response.msg);
@@ -201,9 +191,10 @@ jQuery( function() {
         <div class="readout"></div>
 
         <div class="control-line">
-            <a href="#" class="playpause"><img src="<% $PauseImg %>" alt="<% loc('Pause Timer') %>" data-toggle-alt="<% loc('Resume Timer') %>" title="<% loc('Pause Timer') %>" /></a>
-            <a href="#" class="submit-time"><img src="<% RT->Config->Get('WebPath') %>/static/images/submit.png" alt="<% loc('Submit Timer') %>" title="<% loc('Submit Timer') %>" /></a>
-            <a href="#" class="close-popup hidden"><img src="<% RT->Config->Get('WebPath') %>/static/images/close.png" alt="<% loc('Close Window') %>" title="<% loc('Close Window') %>" /></a>
+            <a href="#" class="playpause pause"><span class="far fa-pause-circle" alt="<% loc('Pause Timer') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Pause Timer') %>"></span></a>
+            <a href="#" class="playpause play hidden"><span class="far fa-play-circle" alt="<% loc('Resume Timer') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Resume Timer') %>"></span></a>
+            <a href="#" class="submit-time"><span class="far fa-arrow-alt-circle-up" alt="<% loc('Submit Timer') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Submit Timer') %>"></span></a>
+            <a href="#" class="close-popup hidden"><span class="far fa-times-circle" alt="<% loc('Close Window') %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% loc('Close Window') %>"></span></a>
         </div>
 
         <& /Elements/MessageBox,
