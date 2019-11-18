@@ -309,6 +309,10 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
   padding-bottom: 0.25em;
 }
 
+.form-row.boolean > .value .form-row {
+  margin-top: 5px;
+}
+
 .col-auto .datepicker {
   width: 17em;
 }

@@ -48,7 +48,7 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget form-row">
+<div id="form-box-<% lc $Name %>" class="widget form-row boolean">
   <div class="col-md-3 label">
 % if( $LabelLink ) {
     <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
