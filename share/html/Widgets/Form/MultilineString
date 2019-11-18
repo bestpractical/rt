@@ -50,7 +50,11 @@ see docs/extending/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>" class="widget form-row <% $Class %>">
   <div class="col-md-3 label">
+% if( $LabelLink ) {
+    <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
+% } else {
     <% $Description %>
+% }
   </div>
   <div class="col-md-9 value"><& SELF:InputOnly, %ARGS &>
 % if ( $Default ) {
@@ -71,6 +75,7 @@ $CurrentValue => '',
 $Default        => 0,
 $DefaultValue   => '',
 $DefaultLabel   => loc( 'Default: [_1]', $DefaultValue ),
+$LabelLink      => ''
 </%ARGS>
 
 <%METHOD InputOnly>
