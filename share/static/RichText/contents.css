@@ -14,7 +14,8 @@ body
 	color: #333;
 
 	/* Remove the background color to make it transparent. */
-	background-color: #fff;
+        /* RT change to allow for .messagebox-container .action-response and .action-private (reply and comment) colors */
+        /*background-color: #fff;*/
 
 	margin: 20px;
 }
