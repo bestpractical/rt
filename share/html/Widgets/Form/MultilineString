@@ -48,13 +48,16 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget <% $Class %>">
-<span class="description label"><% $Description %></span>
-<span class="value"><& SELF:InputOnly, %ARGS &></span>
+<div id="form-box-<% lc $Name %>" class="widget form-row <% $Class %>">
+  <div class="col-md-3 label">
+    <% $Description %>
+  </div>
+  <div class="col-md-9 value"><& SELF:InputOnly, %ARGS &>
 % if ( $Default ) {
-<span class="comment"><% $DefaultLabel %></span>
+    <span class="comment"><% $DefaultLabel %></span>
 % }
-<span class="hints"><% $Hints %></span>
+    <span class="hints"><% $Hints %></span>
+  </div>
 </div>
 <%ARGS>
 $Name
@@ -71,7 +74,7 @@ $DefaultLabel   => loc( 'Default: [_1]', $DefaultValue ),
 </%ARGS>
 
 <%METHOD InputOnly>
-<textarea name="<% $Name %>" cols="<% $Cols %>" rows="<% $Rows %>"><% $CurrentValue %></textarea>
+<textarea name="<% $Name %>" class="form-control" cols="<% $Cols %>" rows="<% $Rows %>"><% $CurrentValue %></textarea>
 <%ARGS>
 $Name
 $Cols => 80
