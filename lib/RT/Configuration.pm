@@ -83,7 +83,7 @@ using L<Storable>. Otherwise any string is passed through as-is.
 
 =item ContentType
 
-Currently handles C<storable> or C<application/json>.
+Currently handles C<perl> or C<application/json>.
 
 =back
 
@@ -124,7 +124,7 @@ sub Create {
         if ($error) {
             return (0, $error);
         }
-        $args{'ContentType'} = 'storable';
+        $args{'ContentType'} = 'perl';
     }
 
     my $old_value = RT->Config->Get($args{Name});
@@ -147,14 +147,20 @@ sub Create {
         $content = $self->loc('(no value)');
     }
 
-    if (!ref($content) && !ref($old_value)) {
-        RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name . " from " . $old_value . " to " . $content);
-        return ($id, $self->loc('[_1] changed from "[_2]" to "[_3]"', $self->Name, $old_value, $content));
+    if ( ref $old_value ) {
+        $old_value = $self->_SerializeContent($old_value);
     }
-    else {
-        RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name);
-        return ($id, $self->loc("[_1] changed", $self->Name));
-    }
+
+    RT->Logger->info(
+        sprintf(
+            '%s changed %s from "%s" to "%s"',
+            $self->CurrentUser->Name,
+            $self->Name,
+            $old_value // '',
+            $content // ''
+        )
+    );
+    return ( $id, $self->loc( '[_1] changed from "[_2]" to "[_3]"', $self->Name, $old_value // '', $content // '' ) );
 }
 
 =head2 CurrentUserCanSee
@@ -254,7 +260,7 @@ sub DecodedContent {
 
     my $type = $self->__Value('ContentType') || '';
 
-    if ($type eq 'storable') {
+    if ($type eq 'perl') {
         return $self->_DeserializeContent($content);
     }
     elsif ($type eq 'application/json') {
@@ -288,7 +294,7 @@ sub SetContent {
         if ($error) {
             return (0, $error);
         }
-        $content_type = 'storable';
+        $content_type = 'perl';
     }
 
     $RT::Handle->BeginTransaction;
@@ -395,14 +401,10 @@ sub _Value {
 sub _SerializeContent {
     my $self = shift;
     my $content = shift;
-    my $name = shift || $self->Name;
-    my $frozen = eval { encode_base64(Storable::nfreeze($content)) };
-
-    if (my $error = $@) {
-        $RT::Logger->error("Storable serialization of database setting $name failed: $error");
-        return (undef, $self->loc("Storable serialization of database setting [_1] failed: [_2]", $name, $error));
-    }
-
+    require Data::Dumper;
+    local $Data::Dumper::Terse = 1;
+    my $frozen = Data::Dumper::Dumper($content);
+    chomp $frozen;
     return $frozen;
 }
 
@@ -410,10 +412,10 @@ sub _DeserializeContent {
     my $self = shift;
     my $content = shift;
 
-    my $thawed = eval { Storable::thaw(decode_base64($content)) };
+    my $thawed = eval "$content";
     if (my $error = $@) {
-        $RT::Logger->error("Storable deserialization of database setting " . $self->Name . " failed: $error");
-        return (undef, $self->loc("Storable deserialization of database setting [_1] failed: [_2]", $self->Name, $error));
+        $RT::Logger->error("Perl deserialization of database setting " . $self->Name . " failed: $error");
+        return (undef, $self->loc("Perl deserialization of database setting [_1] failed: [_2]", $self->Name, $error));
     }
 
     return $thawed;
