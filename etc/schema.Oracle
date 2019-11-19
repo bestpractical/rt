@@ -539,10 +539,10 @@ CREATE TABLE ObjectCustomRoles (
 );
 CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);
 
-CREATE SEQUENCE DatabaseSettings_seq;
-CREATE TABLE DatabaseSettings (
-    id              NUMBER(11,0)    CONSTRAINT DatabaseSettings_key PRIMARY KEY,
-    Name            VARCHAR2(255) CONSTRAINT DatabaseSettings_Name_Unique unique  NOT NULL,
+CREATE SEQUENCE Configurations_seq;
+CREATE TABLE Configurations (
+    id              NUMBER(11,0)    CONSTRAINT Configurations_key PRIMARY KEY,
+    Name            VARCHAR2(255) CONSTRAINT Configurations_Name_Unique unique  NOT NULL,
     Content         CLOB,
     ContentType     VARCHAR2(80),
     Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -552,6 +552,6 @@ CREATE TABLE DatabaseSettings (
     LastUpdated     DATE
 );
 
-CREATE UNIQUE INDEX DatabaseSettings1 ON DatabaseSettings (LOWER(Name));
-CREATE INDEX DatabaseSettings2 ON DatabaseSettings (Disabled);
+CREATE UNIQUE INDEX Configurations1 ON Configurations (LOWER(Name));
+CREATE INDEX Configurations2 ON Configurations (Disabled);
 

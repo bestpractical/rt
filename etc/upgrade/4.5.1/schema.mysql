@@ -1,4 +1,4 @@
-CREATE TABLE DatabaseSettings (
+CREATE TABLE Configurations (
     id                int(11)         NOT NULL AUTO_INCREMENT,
     Name              varchar(255)    NOT NULL,
     Content           longblob        NULL,
@@ -11,5 +11,5 @@ CREATE TABLE DatabaseSettings (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE UNIQUE INDEX DatabaseSettings1 ON DatabaseSettings (Name);
-CREATE INDEX DatabaseSettings2 ON DatabaseSettings (Disabled);
+CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
+CREATE INDEX Configurations2 ON Configurations (Disabled);

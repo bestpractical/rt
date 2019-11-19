@@ -1,4 +1,4 @@
-CREATE TABLE DatabaseSettings (
+CREATE TABLE Configurations (
     id                INTEGER PRIMARY KEY,
     Name              varchar(255)    collate NOCASE NOT NULL,
     Content           longtext        collate NOCASE NULL,
@@ -10,6 +10,6 @@ CREATE TABLE DatabaseSettings (
     LastUpdated       timestamp                DEFAULT NULL
 );
 
-CREATE UNIQUE INDEX DatabaseSettings1 ON DatabaseSettings (Name);
-CREATE INDEX DatabaseSettings2 ON DatabaseSettings (Disabled);
+CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
+CREATE INDEX Configurations2 ON Configurations (Disabled);
 

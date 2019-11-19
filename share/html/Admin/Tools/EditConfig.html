@@ -137,7 +137,7 @@ if (delete $ARGS{Update}) {
                 }
             }
 
-            my $setting = RT::DatabaseSetting->new($session{CurrentUser});
+            my $setting = RT::Configuration->new($session{CurrentUser});
             $setting->Load($key);
             if ($setting->Id) {
                 if ($setting->Disabled) {

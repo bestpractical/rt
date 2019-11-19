@@ -3,8 +3,8 @@ sub acl {
 
     my @acls;
     my @tables = qw (
-        databasesettings_id_seq
-        DatabaseSettings
+        configurations_id_seq
+        Configurations
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');

@@ -504,8 +504,8 @@ sub InitClasses {
     require RT::Asset;
     require RT::Assets;
     require RT::CustomFieldValues::Canonicalizer;
-    require RT::DatabaseSetting;
-    require RT::DatabaseSettings;
+    require RT::Configuration;
+    require RT::Configurations;
 
     _BuildTableAttributes();
 

@@ -50,7 +50,7 @@ use strict;
 use warnings;
 use 5.10.1;
 
-package RT::DatabaseSetting;
+package RT::Configuration;
 use base 'RT::Record';
 
 use Storable ();
@@ -59,7 +59,7 @@ use JSON ();
 
 =head1 NAME
 
-RT::DatabaseSetting - Represents a config setting
+RT::Configuration - Represents a config setting
 
 =cut
 
@@ -209,7 +209,7 @@ sub ValidateName {
 
     return ( 0, $self->loc('empty name') ) unless defined $name && length $name;
 
-    my $TempSetting = RT::DatabaseSetting->new( RT->SystemUser );
+    my $TempSetting = RT::Configuration->new( RT->SystemUser );
     $TempSetting->Load($name);
 
     if ( $TempSetting->id && ( !$self->id || $TempSetting->id != $self->id ) ) {
@@ -320,7 +320,7 @@ sub SetContent {
 =head1 PRIVATE METHODS
 
 Documented for internal use only, do not call these from outside
-RT::DatabaseSetting itself.
+RT::Configuration itself.
 
 =head2 _Set
 
@@ -397,7 +397,7 @@ sub _DeJSONContent {
     return $thawed;
 }
 
-sub Table { "DatabaseSettings" }
+sub Table { "Configurations" }
 
 sub _CoreAccessible {
     {

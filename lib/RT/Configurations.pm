@@ -49,18 +49,18 @@
 use strict;
 use warnings;
 
-package RT::DatabaseSettings;
+package RT::Configurations;
 use base 'RT::SearchBuilder';
 
 =head1 NAME
 
-RT::DatabaseSettings - a collection of L<RT::DatabaseSettings> objects
+RT::Configurations - a collection of L<RT::Configurations> objects
 
 =cut
 
 sub NewItem {
     my $self = shift;
-    return RT::DatabaseSetting->new( $self->CurrentUser );
+    return RT::Configuration->new( $self->CurrentUser );
 }
 
 =head2 _Init
@@ -78,7 +78,7 @@ sub _Init {
     return $self->SUPER::_Init( @_ );
 }
 
-sub Table { "DatabaseSettings" }
+sub Table { "Configurations" }
 
 1;
 
