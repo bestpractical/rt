@@ -116,6 +116,9 @@ sub Create {
         return ( 0, $self->loc("You cannot update [_1] using database config; you must edit your site config", $args{'Name'}) );
     }
 
+    ( $id, $msg ) = $self->ValidateContent( Name => $args{'Name'}, Content => $args{'Content'} );
+    return ( 0, $msg ) unless $id;
+
     if (ref ($args{'Content'}) ) {
         ($args{'Content'}, my $error) = $self->_SerializeContent($args{'Content'}, $args{'Name'});
         if ($error) {
@@ -272,6 +275,9 @@ sub SetContent {
 
     return (0, $self->loc("Permission Denied")) unless $self->CurrentUserCanSee;
 
+    my ( $ok, $msg ) = $self->ValidateContent( Content => $value );
+    return ( 0, $msg ) unless $ok;
+
     my ($old_value, $error) = $self->Content;
     unless (defined($old_value) && length($old_value)) {
         $old_value = $self->loc('(no value)');
@@ -287,7 +293,7 @@ sub SetContent {
 
     $RT::Handle->BeginTransaction;
 
-    my ($ok, $msg) = $self->_Set( Field => 'Content', Value => $value );
+    ($ok, $msg) = $self->_Set( Field => 'Content', Value => $value );
     if (!$ok) {
         $RT::Handle->Rollback;
         return ($ok, $self->loc("Unable to update [_1]: [_2]", $self->Name, $msg));
@@ -315,6 +321,35 @@ sub SetContent {
         RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name);
         return ($ok, $self->loc("[_1] changed", $self->Name));
     }
+}
+
+=head2 ValidateContent
+
+Returns either (0, "failure reason") or 1 depending on whether the given
+content is valid.
+
+=cut
+
+sub ValidateContent {
+    my $self = shift;
+    my %args = @_ == 1 ? ( Content => @_ ) : @_;
+    $args{Name} ||= $self->Name;
+
+    # Validate methods are automatically called on Create by RT::Record.
+    # Sadly we have to skip that because it doesn't pass other field values,
+    # which we need here, as content type depends on the config name.
+    # We need to explicitly call Validate ourselves instead.
+    return 1 unless $args{Name};
+
+    my $meta = RT->Config->Meta( $args{Name} );
+    if ( my $type = $meta->{Type} ) {
+        if (   ( $type eq 'ARRAY' && ref $args{Content} ne 'ARRAY' )
+            || ( $type eq 'HASH' && ref $args{Content} ne 'HASH' ) )
+        {
+            return ( 0, $self->loc( 'Invalid value for [_1], should be of type [_2]', $args{Name}, $type ) );
+        }
+    }
+    return ( 1, $self->loc('Content valid') );
 }
 
 =head1 PRIVATE METHODS
