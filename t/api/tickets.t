@@ -216,6 +216,14 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
     $count = $tickets->Count();
     is( $count, 0, 'Found 0 tickets' );
 
+    ok( $ticket->AddCustomFieldValue( Field => $cf_foo, Value => '1900' ) );
+    for my $operator ( '=', 'LIKE' ) {
+        ( $ret, $msg ) = $tickets->FromSQL("CF.foo $operator 1900");
+        ok( $ret, "Ran query with CF.foo $operator 1900" );
+        $count = $tickets->Count();
+        is( $count, 1, 'Found 1 ticket' );
+    }
+
     ok( $ticket->AddCustomFieldValue( Field => $cf_beta, Value => $date->ISO( Timezone => 'user' ) ) );
     ( $ret, $msg ) = $tickets->FromSQL('Due = CF.{Beta Date}');
     ok( $ret, 'Ran query with Due = CF.{Beta Date}' );
