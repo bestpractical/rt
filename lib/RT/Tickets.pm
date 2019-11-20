@@ -3191,7 +3191,7 @@ sub _parser {
             my $sub = $dispatch{ $class }
                 or die "No dispatch method for class '$class'";
 
-            if ( !$quote_value && $value !~ /^(?:[+-]?[0-9]+|NULL)$/i ) {
+            if ( defined $quote_value && !$quote_value && $value !~ /^(?:[+-]?[0-9]+|NULL)$/i ) {
                 my ( $class, $field );
 
                 # e.g. CF.Foo or CF.{Beta Date}
@@ -3266,12 +3266,13 @@ sub _parser {
 
             # A reference to @res may be pushed onto $sub_tree{$key} from
             # above, and we fill it here.
-            $sub->( $self, $key, $op, $value,
-                    ENTRYAGGREGATOR => $ea,
-                    SUBKEY          => $subkey,
-                    BUNDLE          => $bundle,
-                    QUOTEVALUE      => $quote_value,
-                  );
+            $sub->(
+                $self, $key, $op, $value,
+                ENTRYAGGREGATOR => $ea,
+                SUBKEY          => $subkey,
+                BUNDLE          => $bundle,
+                defined $quote_value ? ( QUOTEVALUE => $quote_value ) : (),
+            );
         },
         sub {
             my $node = shift;

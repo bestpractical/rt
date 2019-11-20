@@ -177,8 +177,19 @@ sub Parse {
                 s!\\(.)!$1!g;
             }
 
-            my $value_is_quoted = $match =~ $re_delim ? 1 : 0;
-            $cb->{'Condition'}->( $key, $op, $value, $value_is_quoted );
+            my $quote_value;
+            if ( $match =~ /$re_delim/o ) {
+                $quote_value = 1;
+            }
+            elsif ( $match =~ /^[a-z]/i ) {
+                # Value is a column
+                $quote_value = 0;
+            }
+            else {
+                # Not setting value here to fallback to default behavior
+            }
+
+            $cb->{'Condition'}->( $key, $op, $value, $quote_value );
 
             ($key,$op,$value) = ("","","");
             $want = AGGREG;
