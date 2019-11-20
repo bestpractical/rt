@@ -299,8 +299,14 @@ button {
   margin-top: 0.5em;
 }
 
-.form-row > .value .form-row {
+.form-row > .value .form-row,
+.list-group-item > .form-row {
   margin-top: 0;
+}
+
+div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
 }
 
 .col-auto .datepicker {
