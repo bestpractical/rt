@@ -129,8 +129,13 @@ sub Connect {
 
     if ( $db_type eq 'mysql' ) {
         my $version = $self->DatabaseVersion;
-        ($version) = $version =~ /^(\d+\.\d+)/;
-        $self->dbh->do("SET NAMES 'utf8'") if $version >= 4.1;
+
+        if( cmp_version( $version, '5.5.3') > 0 ) {
+            $self->dbh->do("SET NAMES 'utf8mb4'");
+        }
+        elsif( cmp_version( $version, '4.1') >= 0 ) {
+            $self->dbh->do("SET NAMES 'utf8'");
+        }
     }
     elsif ( $db_type eq 'Pg' ) {
         my $version = $self->DatabaseVersion;
@@ -140,6 +145,7 @@ sub Connect {
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
+
 
 =head2 BuildDSN
 
@@ -271,9 +277,9 @@ sub CheckCompatibility {
         return (0, "couldn't get version of the mysql server")
             unless $version;
 
-        ($version) = $version =~ /^(\d+\.\d+)/;
-        return (0, "RT is unsupported on MySQL versions before 4.1.  Your version is $version.")
-            if $version < 4.1;
+        my $min_version = '5.6';
+        return (0, "RT is unsupported on MySQL versions before $min_version.  Your version is $version.")
+            if cmp_version( $version, $min_version) < 0;
 
         # MySQL must have InnoDB support
         local $dbh->{FetchHashKeyName} = 'NAME_lc';
@@ -320,7 +326,6 @@ sub CheckCompatibility {
                 }
             }
         }
-    }
     return (1)
 }
 
