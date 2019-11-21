@@ -128,9 +128,8 @@ sub Connect {
     );
 
     if ( $db_type eq 'mysql' ) {
-        my $version = $self->DatabaseVersion;
-        ($version) = $version =~ /^(\d+\.\d+)/;
-        $self->dbh->do("SET NAMES 'utf8'") if $version >= 4.1;
+        # set the character set
+        $self->dbh->do("SET NAMES 'utf8mb4'");
     }
     elsif ( $db_type eq 'Pg' ) {
         my $version = $self->DatabaseVersion;
@@ -271,9 +270,17 @@ sub CheckCompatibility {
         return (0, "couldn't get version of the mysql server")
             unless $version;
 
-        ($version) = $version =~ /^(\d+\.\d+)/;
-        return (0, "RT is unsupported on MySQL versions before 4.1.  Your version is $version.")
-            if $version < 4.1;
+        # MySQL and MariaDB are both 'mysql' type.
+        # the minimum version supported is MySQL 5.7.7 / MariaDB 10.2.5
+        # the version string for MariaDB includes "MariaDB" in Debian/RedHat
+        my $is_mariadb        = $version =~ m{mariadb}i ? 1 : 0;
+        my $mysql_min_version = '5.7.7';    # so index sizes allow for VARCHAR(255) fields
+        my $mariadb_min_version = '10.2.5'; # uses innodb by default
+
+        return ( 0, "RT 5.0.0 is unsupported on MySQL versions before $mysql_min_version.  Your version is $version.")
+            if !$is_mariadb && cmp_version( $version, $mysql_min_version ) < 0;
+        return ( 0, "RT 5.0.0 is unsupported on MariaDB versions before $mariadb_min_version.  Your version is $version.")
+            if $is_mariadb && cmp_version( $version, $mariadb_min_version ) < 0;
 
         # MySQL must have InnoDB support
         local $dbh->{FetchHashKeyName} = 'NAME_lc';
@@ -306,18 +313,6 @@ sub CheckCompatibility {
             if ($max_packet <= (5 * 1024 * 1024)) {
                 $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
                 warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
-            }
-
-            my $full_version = $show_var->("version");
-            if ($full_version =~ /^5\.(\d+)\.(\d+)$/ and (($1 == 6 and $2 >= 20) or $1 > 6)) {
-                my $redo_log_size = $show_var->("innodb_log_file_size");
-                $redo_log_size *= $show_var->("innodb_log_files_in_group")
-                    if $full_version =~ /^5\.(\d+)\.(\d+)$/ and (($1 == 6 and $2 >= 22) or $1 > 6);
-
-                if ($redo_log_size / 10 < 5 * 1024 * 1024) {
-                    $redo_log_size = sprintf("%.1fM",$redo_log_size/1024/1024);
-                    warn "innodb_log_file_size is set to $redo_log_size; attachments can only be 10% of this value on MySQL 5.6.  Consider adjusting MySQL's innodb_log_file_size setting.\n";
-                }
             }
         }
     }
