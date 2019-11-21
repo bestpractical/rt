@@ -55,7 +55,7 @@
 % for my $queue (@queues) {
     <li class="list-group-item">
       <div class="custom-control custom-checkbox">
-        <input class="custom-control-input" type="checkbox" class="checkbox" id="Want-<%$queue->Name%>" name="Want-<%$queue->Name%>" value="1"
+        <input class="custom-control-input checkbox" type="checkbox" id="Want-<%$queue->Name%>" name="Want-<%$queue->Name%>" value="1"
 % unless ($unwanted->{$queue->Name}) {
 checked="checked"
 % }

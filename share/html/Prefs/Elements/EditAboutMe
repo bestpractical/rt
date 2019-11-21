@@ -251,7 +251,7 @@
 <div class="form-row">
   <div class="col-md-6">
     <&| /Widgets/TitleBox, title => loc('Signature'), id => "user-prefs-signature" &>
-      <textarea class="form-control" cols="80" rows="5" name="Signature" class="signature" wrap="hard">
+      <textarea class="form-control signature" cols="80" rows="5" name="Signature" wrap="hard">
       <%$UserObj->Signature || ''%></textarea>
     </&>
   </div>
