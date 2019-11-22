@@ -11,6 +11,7 @@
 .ui-menu .ui-menu-item .ui-state-active {
   border: none;
   margin: 0;
+  text-decoration: none;
 }
 
 .ui-menu .ui-menu-item:hover,
