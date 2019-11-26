@@ -1,0 +1,36 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    sub {
+        my $searches = RT::Attributes->new( RT->SystemUser );
+        $searches->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+        $searches->OrderBy( FIELD => 'id' );
+
+        while ( my $search = $searches->Next ) {
+            my $content = $search->Content;
+            next unless ref $content eq 'HASH';
+
+            if ( $content->{OrderBy} ) {
+                my @order_by = split /\|/, $content->{OrderBy};
+                my @new_order_by;
+                my $changed;
+                for my $order_by (@order_by) {
+                    if ( $order_by eq 'Owner' ) {
+                        push @new_order_by, 'Owner.Name';
+                        $changed = 1;
+                    }
+                    else {
+                        push @new_order_by, $order_by;
+                    }
+                }
+                if ($changed) {
+                    $content->{OrderBy} = join '|', @new_order_by;
+                    my ( $ok, $msg ) = $search->SetContent($content);
+                    RT->Logger->error("Unable to upgrade saved chart #@{[$search->id]}: $msg")
+                        unless $ok;
+                }
+            }
+        }
+    }
+);
