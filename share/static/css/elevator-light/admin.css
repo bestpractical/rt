@@ -195,6 +195,10 @@ div.inline-row i {
     padding: 2px 3px;
 }
 
+#rt-help-text a {
+    text-decoration: underline;
+}
+
 .configuration {
     padding-top: .1em;
 }

@@ -55,7 +55,8 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <div class="configuration">
-<&|/Widgets/TitleBox, title => loc("RT Configuration"), class => 'fullwidth' &>
+<& /Admin/Elements/ConfigHelp &>
+<&|/Widgets/TitleBox, title => loc("Current Configuration"), class => 'fullwidth' &>
   <div class="form-row">
     <div class="col-md-4 label text-left"><&|/l&>Option</&></div>
     <div class="col-md-4 label text-left"><&|/l&>Value</&></div>
