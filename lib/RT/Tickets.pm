@@ -1065,7 +1065,9 @@ Try and turn a custom role descriptor (e.g. C<CustomRole.{Engineer}>) into
 sub _CustomRoleDecipher {
     my ($self, $string) = @_;
 
-    my ($field, $column) = ($string =~ /^\{(.+)\}(?:\.(\w+))?$/);
+    # $column could be core fields like "EmailAddress" or CFs like
+    # "CustomField.{Department}", the CF format is used in OrderByCols.
+    my ($field, $column) = ($string =~ /^\{(.+?)\}(?:\.(.+))?$/);
 
     my $role;
 
@@ -1434,7 +1436,54 @@ sub OrderByCols {
                 $self->{_sql_u_watchers_alias_for_sort}{ $cache_key }
                     = $users = ( $self->_WatcherJoin( Name => $type, Class => "RT::" . $class ) )[2];
             }
-            push @res, { %$row, ALIAS => $users, FIELD => $column };
+
+            if ( $column =~ /^CustomField\.\{(.+)\}$/ ) {
+                my $cf_name = $1;
+                my $cf      = RT::CustomField->new( $self->CurrentUser );
+                $cf->LoadByCols( LookupType => RT::User->CustomFieldLookupType, Name => $cf_name );
+                if ( $cf->id ) {
+                    my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
+                    $self->Join(
+                        TYPE   => 'LEFT',
+                        ALIAS1 => $users,
+                        FIELD1 => 'id',
+                        ALIAS2 => $ocfvs,
+                        FIELD2 => 'ObjectId',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'CustomField',
+                        VALUE           => $cf->id,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    # The following is copied from RT::SearchBuilder::_OrderByCF
+                    my $CFvs = $self->Join(
+                        TYPE   => 'LEFT',
+                        ALIAS1 => $ocfvs,
+                        FIELD1 => 'CustomField',
+                        TABLE2 => 'CustomFieldValues',
+                        FIELD2 => 'CustomField',
+                    );
+                    $self->Limit(
+                        LEFTJOIN        => $CFvs,
+                        FIELD           => 'Name',
+                        QUOTEVALUE      => 0,
+                        VALUE           => "$ocfvs.Content",
+                        ENTRYAGGREGATOR => 'AND'
+                    );
+                    push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' },
+                        { %$row, ALIAS => $ocfvs, FIELD => 'Content' };
+                }
+                else {
+                    RT->Logger->warning("Couldn't load user custom field $cf_name");
+                    next;
+                }
+            }
+            else {
+                push @res, { %$row, ALIAS => $users, FIELD => $column };
+            }
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
            my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cf ? $cf->id : "$object.$field";
