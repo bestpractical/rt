@@ -1,5 +1,5 @@
 
-use RT::Test nodata => 1, tests => 52;
+use RT::Test nodata => 1, tests => undef;
 
 use strict;
 use warnings;
@@ -33,6 +33,7 @@ foreach my $u (qw(Z A)) {
     my $user = RT::User->new( RT->SystemUser );
     my ($uid) = $user->Create(
         Name => $name,
+        EmailAddress => $name . '@localhost',
         Privileged => 1,
     );
     ok $uid, "created user #$uid";
@@ -40,6 +41,8 @@ foreach my $u (qw(Z A)) {
     my ($status, $msg) = $user->PrincipalObj->GrantRight( Right => 'OwnTicket', Object => $queue );
     ok $status, "granted right";
     ($status, $msg) = $user->PrincipalObj->GrantRight( Right => 'CreateTicket', Object => $queue );
+    ok $status, "granted right";
+    ($status, $msg) = $user->PrincipalObj->GrantRight( Right => 'SuperUser', Object => RT->System );
     ok $status, "granted right";
 
     push @users, $user;
@@ -117,7 +120,7 @@ run_tests();
 run_tests();
 
 @data = (
-    { Subject => 'RT' },
+    { Subject => 'Nobody' },
     { Subject => 'Z', LastUpdatedBy => $uids[0] },
     { Subject => 'A', LastUpdatedBy => $uids[1] },
 );
@@ -127,4 +130,50 @@ run_tests();
 );
 run_tests();
 
+my $cf = RT::Test->load_or_create_custom_field(
+    Name  => 'Department',
+    Type  => 'FreeformSingle',
+    LookupType => RT::User->CustomFieldLookupType,
+);
+my ( $ret, $msg ) = $cf->AddToObject( RT::User->new( RT->SystemUser ) );
+ok( $ret, "Added CF globally: $msg" );
+
+( $ret, $msg ) = $users[0]->AddCustomFieldValue( Field => $cf, Value => 'Bar' );
+ok( $ret, "Added CF value 'Foo' to users[0]: $msg" );
+
+( $ret, $msg ) = $users[1]->AddCustomFieldValue( Field => $cf, Value => 'Foo' );
+ok( $ret, "Added CF value 'Bar' to users[1]: $msg" );
+
+@data = (
+    { Subject => '-' },
+    { Subject => 'Z', Owner => $uids[1] },
+    { Subject => 'A', Owner => $uids[0] },
+);
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data );
+@test = (
+    { Order => "Owner.CustomField.{Department}" },
+);
+run_tests();
+
+my $cr = RT::CustomRole->new( RT->SystemUser );
+( $ret, $msg ) = $cr->Create(
+    Name      => 'Engineer',
+    MaxValues => 0,
+);
+ok( $ret, "Created custom role: $msg" );
+
+( $ret, $msg ) = $cr->AddToObject( ObjectId => $queue->id );
+ok( $ret, "Added CR to queue: $msg" );
+
+@data = (
+    { Subject => '-' },
+    { Subject => 'Z', $cr->GroupType => $uids[1] },
+    { Subject => 'A', $cr->GroupType => $uids[0] },
+);
+@tickets = RT::Test->create_tickets( { Queue => $queue->id }, @data );
+@test = ( { Order => "CustomRole.{Engineer}.CustomField.{Department}" }, );
+run_tests();
+
 @tickets = ();
+
+done_testing;
