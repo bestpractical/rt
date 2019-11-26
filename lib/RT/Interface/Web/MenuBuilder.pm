@@ -92,6 +92,9 @@ sub BuildMainNav {
     }
 
     my $home = $top->child( home => title => loc('Homepage'), path => '/' );
+    $home->child( create_ticket => title => loc("Create Ticket"),
+                  path => "/Ticket/Create.html" );
+
     unless ($HTML::Mason::Commands::session{'dashboards_in_menu'}) {
         my $dashboards_in_menu = $current_user->UserObj->Preferences(
             'DashboardsInMenu',
