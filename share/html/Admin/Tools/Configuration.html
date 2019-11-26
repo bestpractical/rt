@@ -54,8 +54,8 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 </%init>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-
-<&|/Widgets/TitleBox, title => loc("RT Configuration") &>
+<div class="configuration">
+<&|/Widgets/TitleBox, title => loc("RT Configuration"), class => 'fullwidth' &>
   <div class="form-row">
     <div class="col-md-4 label text-left"><&|/l&>Option</&></div>
     <div class="col-md-4 label text-left"><&|/l&>Value</&></div>
@@ -363,7 +363,7 @@ my $row = 1;
 </div>
 % }
 </&>
-
+</div>
 <%INIT>
 use Data::Dumper;
 local $Data::Dumper::Terse = 1;

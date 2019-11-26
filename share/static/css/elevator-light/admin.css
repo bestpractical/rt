@@ -194,3 +194,7 @@ div.inline-row i {
     background-color: #F6F6F6;
     padding: 2px 3px;
 }
+
+.configuration {
+    padding-top: .1em;
+}

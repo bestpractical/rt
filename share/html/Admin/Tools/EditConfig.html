@@ -184,7 +184,7 @@ my $nav_type='tab'; # 'tab' or 'pill'
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
-
+<div class="configuration">
 <div class="titlebox-content">
 % my @tab_names = map { $_->{Name} } @$options;
   <ul class="nav nav-<% $nav_type %>s" id="config-tabs">
@@ -213,3 +213,4 @@ my $nav_type='tab'; # 'tab' or 'pill'
 % }
   </div><!-- content-all -->
 </div><!-- titlebox-content -->
+</div><!-- configuration -->
