@@ -326,13 +326,25 @@ diag "make sure skipped order by field doesn't break search";
     ), "link to the ticket" );
 }
 
-diag "make sure the list of columns available in the 'Order by' dropdowns are complete";
+diag "make sure the list of columns available in the 'Order by'/'Add Columns' dropdowns are complete";
 {
     $agent->get_ok($url . 'Search/Build.html');
 
     my @orderby = qw(
+        AdminCc.City
+        AdminCc.Country
         AdminCc.EmailAddress
+        AdminCc.Name
+        AdminCc.Organization
+        AdminCc.RealName
+        AdminCc.id
+        Cc.City
+        Cc.Country
         Cc.EmailAddress
+        Cc.Name
+        Cc.Organization
+        Cc.RealName
+        Cc.id
         Created
         Creator
         Custom.Ownership
@@ -341,10 +353,22 @@ diag "make sure the list of columns available in the 'Order by' dropdowns are co
         InitialPriority
         LastUpdated
         LastUpdatedBy
-        Owner
+        Owner.City
+        Owner.Country
+        Owner.EmailAddress
+        Owner.Name
+        Owner.Organization
+        Owner.RealName
+        Owner.id
         Priority
         Queue
+        Requestor.City
+        Requestor.Country
         Requestor.EmailAddress
+        Requestor.Name
+        Requestor.Organization
+        Requestor.RealName
+        Requestor.id
         Resolved
         SLA
         Started
@@ -370,17 +394,115 @@ diag "make sure the list of columns available in the 'Order by' dropdowns are co
             is ($scraped_orderby, '[none] '.$orderby);
     }
 
+    my @formats = qw(
+        id
+        QueueName
+        Subject
+        Status
+        ExtendedStatus
+        UpdateStatus
+        Type
+        OwnerName
+        Requestors
+        Cc
+        AdminCc
+        CreatedBy
+        LastUpdatedBy
+        Priority
+        InitialPriority
+        FinalPriority
+        TimeWorked
+        TimeLeft
+        TimeEstimated
+        Starts
+        StartsRelative
+        Started
+        StartedRelative
+        Created
+        CreatedRelative
+        LastUpdated
+        LastUpdatedRelative
+        Told
+        ToldRelative
+        Due
+        DueRelative
+        Resolved
+        ResolvedRelative
+        SLA
+        RefersTo
+        ReferredToBy
+        DependsOn
+        DependedOnBy
+        MemberOf
+        Members
+        Parents
+        Children
+        Bookmark
+        Timer
+        NEWLINE
+        NBSP
+        AdminCc.id
+        AdminCc.Name
+        AdminCc.EmailAddress
+        AdminCc.Organization
+        AdminCc.RealName
+        AdminCc.City
+        AdminCc.Country
+        Cc.id
+        Cc.Name
+        Cc.EmailAddress
+        Cc.Organization
+        Cc.RealName
+        Cc.City
+        Cc.Country
+        Owner.id
+        Owner.Name
+        Owner.EmailAddress
+        Owner.Organization
+        Owner.RealName
+        Owner.City
+        Owner.Country
+        Requestor.id
+        Requestor.Name
+        Requestor.EmailAddress
+        Requestor.Organization
+        Requestor.RealName
+        Requestor.City
+        Requestor.Country
+        );
+    my $formats = join(' ', @formats);
+    my $scraped_formats = $agent->scrape_text_by_attr('name', 'SelectDisplayColumns');
+    is( $scraped_formats, $formats, 'Default format' );
+
     my $cf = RT::Test->load_or_create_custom_field(
         Name  => 'Location',
         Queue => 'General',
         Type  => 'FreeformSingle', );
     isa_ok( $cf, 'RT::CustomField' );
 
+    my $user_cf = RT::Test->load_or_create_custom_field(
+        Name       => 'Employee ID',
+        LookupType => RT::User->CustomFieldLookupType,
+        Type       => 'FreeformSingle',
+    );
+
+    my $cr = RT::CustomRole->new( RT->SystemUser );
+    my ( $ret, $msg ) = $cr->Create(
+        Name      => 'Engineer',
+        MaxValues => 0,
+    );
+    ok( $ret, "Created custom role: $msg" );
+
+    ( $ret, $msg ) = $cr->AddToObject( ObjectId => 'General' );
+    ok( $ret, "Added CR to queue: $msg" );
+
     ok($agent->form_name('BuildQuery'), "found the form");
     $agent->field("ValueOfQueue", "General");
     $agent->submit;
 
     push @orderby, 'CustomField.{Location}';
+    push @orderby, 'Engineer', map { "Engineer.$_" } qw/City Country EmailAddress Name Organization RealName id/;
+    push @orderby, map {"$_.CustomField.{Employee ID}"} qw/AdminCc Cc Requestor Owner Engineer/;
 
     $orderby = join(' ', sort @orderby);
 
@@ -392,6 +514,23 @@ diag "make sure the list of columns available in the 'Order by' dropdowns are co
     foreach my $scraped_orderby ( @scraped_orderbys ) {
         is ($scraped_orderby, '[none] '.$orderby);
     }
+
+    # Formats are not sorted, we need to insert new items accordingly
+    my @new_formats;
+    for my $format ( @formats ) {
+        push @new_formats, $format;
+        if ( $format eq 'NBSP' ) {
+            push @new_formats, 'CustomField.{Location}';
+        }
+        elsif ( $format =~ /(\w+)\.Country/ ) {
+            push @new_formats, "$1.CustomField.{Employee ID}";
+        }
+    }
+    push @new_formats, 'CustomRole.{Engineer}',
+        map {"CustomRole.{Engineer}.$_"} qw/id Name EmailAddress Organization RealName City Country/, 'CustomField.{Employee ID}';
+    $formats = join(' ', @new_formats);
+    $scraped_formats = $agent->scrape_text_by_attr('name', 'SelectDisplayColumns');
+    is( $scraped_formats, $formats, 'Format with custom fields and custom roles' );
 
     $cf->SetDisabled(1);
 }
