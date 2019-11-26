@@ -20,6 +20,38 @@ package RT;
 
 RT::Config
 
+=head1 DESCRIPTION
+
+RT has dozens of configuration options to customize how RT behaves for
+different situations. The available options and valid values are
+described below.
+
+=head2 Server Configuration Files
+
+This file, C<etc/RT_Config.pm>, defines the available configuration options
+and sets the defaults for RT. You should B<never> edit this file directly.
+If you do, your changes will be lost when you upgrade and RT installs the
+newest version of this file on your system.
+
+The correct place to set site-specific options is in C<etc/RT_SiteConfig.pm>.
+If you have many customizations to manage, you can break your configuration
+into multiple files and put them in a directory C<etc/RT_SiteConfig.d/>. More
+information about this option is available in the L<RT::Config>
+documentation.
+
+=head2 Web Configuration
+
+RT also allows you to set configuration via the RT web interface at
+Admin > Tools > System Configuration. Any configuration options set there take
+precedence over values set in C<etc/RT_SiteConfig.pm>. If you provide a
+custom setting in both places, RT will issue a warning in the log as a
+reminder to consider removing the setting from C<etc/RT_SiteConfig.pm>
+to avoid confusion.
+
+Some settings that are core to RT cannot be changed via the web interface.
+This prevents changes that could make your RT inoperable, leaving you
+unable to restore the system via the web UI.
+
 =head1 Base configuration
 
 =over 4
