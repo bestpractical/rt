@@ -1,0 +1,46 @@
+In MySQL, RT uses the utf8mb4 character set, in order to support all
+unicode characters, including the ones that are encoded on 4 bytes in
+utf8 (some Kanji characters and a good number of emojis).
+
+The DB tables and the RT client are both set to this character set.
+
+Unless the DB is shared with other applications that do not use this
+character set, it should be configured to use it by default. This
+should be done in the server, client and mysqldump sections of the 
+mysql config files.
+
+This is done by adding the following lines to the MySQL configuration:
+
+[mysqld]
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+[client]
+default-character-set = utf8mb4
+
+[mysqldump]
+default-character-set = utf8mb4
+
+The configuration should be in /etc/my.cnf (RedHat) or /etc/mysql/
+(Debian, split between various files).
+
+You can check the values your server is using by running this command:
+  mysqladmin variables | grep -i character_set
+
+Setting the default is particularly important for mysqldump, to avoid
+backups to be silently corrupted.
+
+
+If the MySQL DB is shared with other applications and the default 
+character set cannot be set to utf8mb4, the command to backup the
+database must set it explicitely:
+
+    ( mysqldump --default-character-set=utf8mb4 rt4 --tables sessions --no-data --single-transaction; \
+      mysqldump --default-character-set=utf8mb4 rt4 --ignore-table rt4.sessions --single-transaction ) \
+        | gzip > rt-`date +%Y%m%d`.sql.gz
+
+Restoring a backup is done the usual way, since the character set for
+all tables is set to utf8mb4, there is no further need to tell MySQL 
+about it:
+
+    gunzip -c rt-20191125.sql.gz | mysql -uroot -p rt4
