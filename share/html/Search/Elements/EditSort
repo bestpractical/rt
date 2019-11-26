@@ -108,9 +108,19 @@ for my $field (keys %FieldDescriptions) {
     $fields{$field} = $field;
 }
 
-$fields{'Owner'} = 'Owner';
-$fields{ $_ . '.EmailAddress' } = $_ . '.EmailAddress'
-    for qw(Requestor Cc AdminCc);
+my @user_fields = qw/id Name EmailAddress Organization RealName City Country/;
+my $user_cfs    = RT::CustomFields->new( $session{CurrentUser} );
+$user_cfs->Limit( FIELD => 'LookupType', VALUE => RT::User->CustomFieldLookupType );
+while ( my $user_cf = $user_cfs->Next ) {
+    push @user_fields, join '.', 'CustomField', '{' . $user_cf->Name . '}';
+}
+
+for my $watcher (qw/Owner Requestor Cc AdminCc/) {
+    for my $user_field (@user_fields) {
+        my $field = join '.', $watcher, $user_field;
+        $fields{$field} = $field;
+    }
+}
 
 # Add all available CustomFields to the list of sortable columns.
 my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
@@ -121,7 +131,10 @@ my @roles = grep /^CustomRole/, @{$ARGS{AvailableColumns}};
 for my $role (@roles) {
     my ($label) = $role =~ /^CustomRole.\{(.*)\}$/;
     my $value = $role;
-    $fields{$label . '.EmailAddress' } = $value . '.EmailAddress';
+
+    for my $user_field (@user_fields) {
+        $fields{ join '.', $label, $user_field } = join '.', $value, $user_field;
+    }
 }
 
 # Add PAW sort
