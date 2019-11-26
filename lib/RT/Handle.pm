@@ -326,6 +326,25 @@ sub CheckCompatibility {
                 }
             }
         }
+
+        # check that the DB encoding is utf8mb4
+        # we check one specific column (Tickets.Subject):
+        #  - checking the DB default may be misleading (what's relevant is wheter RT tables have teh proper charset)
+        #  - checking all columns would be expensive
+        my $allowed_charset = 'utf8mb4';
+        my $column_info = $dbh->selectrow_hashref( "show full columns from Tickets where Field = 'Subject'" );
+        if( $column_info) {
+            # $column_info is only defined if the table exists, skip the check it it doesn't (during make initdb)
+            # we get the charset from the collation on the field
+            my $collation = $column_info->{collation};
+            my $collation_info =  $dbh->selectrow_hashref( "SHOW COLLATION WHERE Collation = ?", {}, $collation);
+            my $charset =  $collation_info->{charset} || '';
+            if( $charset ne $allowed_charset) {
+                warn "table encoding set to $charset, it should be $allowed_charset\n";
+            }
+        }
+    }
+
     return (1)
 }
 
