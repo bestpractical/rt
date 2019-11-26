@@ -39,9 +39,14 @@ RT. :)
 
 =head3 MySQL and MariaDB
 
-    ( mysqldump rt5 --tables sessions --no-data --single-transaction; \
-      mysqldump rt5 --ignore-table rt5.sessions --single-transaction ) \
+    ( mysqldump --default-character-set=utf8mb4 rt5 --tables sessions --no-data --single-transaction; \
+      mysqldump --default-character-set=utf8mb4 rt5 --ignore-table rt5.sessions --single-transaction ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
+
+If the default character set for the entire database is not set to
+utf8mb4, it is especially important to set the character set in the
+mysqldump command to avoid corrupted backups. As always, it's important
+to test your backups to confirm they restore successfully.
 
 The dump will be much faster if you can connect to the MySQL or
 MariaDB server over localhost.  This will use a local socket instead

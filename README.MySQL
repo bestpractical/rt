@@ -1,0 +1,67 @@
+Starting with RT 5.0.0, the minimum supported MySQL version is 5.7.7
+because this is the first version to provide full support for 4 byte
+utf8 characters in tables and indexes. Read on for details on this
+change.
+
+Note that MySQL 8 is not yet supported because of changes to the group
+keyword.
+
+RT 5.0.0 now defaults MySQL tables to utf8mb4, which is available in
+versions before 5.7.7. However, before MySQL version 5.7.7, utf8mb4
+tables could not have indexes with type VARCHAR(255): the default size
+for index entries was 767 bytes, which is enough for 255 chars stored
+as at most 3 chars (the utf8 format), but not as 4 bytes (utf8mb4).
+5.7.7 sets the default index size to 3072 for InnoDB tables, resolving
+that issue.
+
+https://dev.mysql.com/doc/relnotes/mysql/5.7/en/news-5-7-7.html#mysqld-5-7-7-feature
+
+In MySQL, RT uses the utf8mb4 character set to support all
+unicode characters, including the ones that are encoded with 4 bytes in
+utf8 (some Kanji characters and a good number of emojis). The DB tables
+and the RT are both set to this character set.
+
+If your MySQL database is used only for RT, you can consider
+setting the default character set to utf8mb4. This will
+ensure that backups and other database access outside of RT have the
+correct character set.
+
+This is done by adding the following lines to the MySQL configuration:
+
+[mysqld]
+character-set-server = utf8mb4
+
+[client]
+default-character-set = utf8mb4
+
+[mysqldump]
+default-character-set = utf8mb4
+
+You can check the values your server is using by running this command:
+
+    mysqladmin variables | grep -i character_set
+
+Setting the default is particularly important for mysqldump, to avoid
+backups to be silently corrupted.
+
+If the MySQL DB is shared with other applications and the default
+character set cannot be set to utf8mb4, the command to backup the
+database can be set explicitly:
+
+    ( mysqldump --default-character-set=utf8mb4 rt5 --tables sessions --no-data --single-transaction; \
+      mysqldump --default-character-set=utf8mb4 rt5 --ignore-table rt5.sessions --single-transaction ) \
+        | gzip > rt-`date +%Y%m%d`.sql.gz
+
+Restoring a backup is done the usual way, since the character set for
+all tables is set to utf8mb4, there is no further need to tell MySQL
+about it:
+
+    gunzip -c rt-20191125.sql.gz | mysql -uroot -p rt5
+
+These character set updates now allow RT on MySQL to accept and store 4-byte
+characters like emojis. However, searches can still be inconsistent. You may be
+able to get different or better results by experimenting with different collation
+settings. For more information:
+
+https://stackoverflow.com/a/41148052
+https://dev.mysql.com/doc/refman/5.7/en/charset-unicode-sets.html
