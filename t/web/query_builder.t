@@ -331,8 +331,20 @@ diag "make sure the list of columns available in the 'Order by' dropdowns are co
     $agent->get_ok($url . 'Search/Build.html');
 
     my @orderby = qw(
+        AdminCc.City
+        AdminCc.Country
         AdminCc.EmailAddress
+        AdminCc.Name
+        AdminCc.Organization
+        AdminCc.RealName
+        AdminCc.id
+        Cc.City
+        Cc.Country
         Cc.EmailAddress
+        Cc.Name
+        Cc.Organization
+        Cc.RealName
+        Cc.id
         Created
         Creator
         Custom.Ownership
@@ -341,10 +353,22 @@ diag "make sure the list of columns available in the 'Order by' dropdowns are co
         InitialPriority
         LastUpdated
         LastUpdatedBy
-        Owner
+        Owner.City
+        Owner.Country
+        Owner.EmailAddress
+        Owner.Name
+        Owner.Organization
+        Owner.RealName
+        Owner.id
         Priority
         Queue
+        Requestor.City
+        Requestor.Country
         Requestor.EmailAddress
+        Requestor.Name
+        Requestor.Organization
+        Requestor.RealName
+        Requestor.id
         Resolved
         SLA
         Started
