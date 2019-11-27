@@ -1929,50 +1929,11 @@ sub PostLoadCheck {
 =head2 SectionMap
 
 A data structure used to breakup the option list into tabs/sections/subsections/options
-This is done by parsing RT_Config.pm and extracting the section names and level
+This is done by parsing RT_Config.pm.
 
 =cut
 
-# initial data, manually created to give the tab structure and the order of the sections
-# the result of the parsing of RT_Config.pm will be added to this
-# sections will have content: a list of subsections with a Name and a Content
-our $SectionMap= [
-    { Name    => 'System', # loc
-      Content => [
-          { Name => 'Base configuration' }, # loc
-          { Name => 'Database connection' }, # loc
-          { Name => 'Logging' }, # loc
-          { Name => 'Incoming mail gateway' }, # loc
-          { Name => 'Outgoing mail' }, # loc
-          { Name => 'Application logic' }, # loc
-          { Name => 'Extra security' }, # loc
-          { Name => 'Internationalization' }, # loc
-          { Name => 'Date and time handling' }, # loc
-          { Name => 'Initialdata Formats' }, # loc
-          { Name => 'Development options' }, # loc
-      ],
-    },
-    { Name => 'Web UI', # loc
-      Content => [
-          { Name => 'Web interface' }, # loc
-      ],
-    },
-    { Name => 'Features', # loc
-      Content => [
-          { Name => 'Assets' }, # loc
-          { Name => 'Cryptography' }, # loc
-          { Name => 'External storage' }, # loc
-          { Name => 'SLA' }, # loc
-          { Name => 'Administrative interface' }, # loc
-      ],
-    },
-    { Name => 'User Auth', # loc
-      Content => [
-          { Name => 'Authorization and user configuration' }, # loc
-      ],
-    },
-];
-
+our $SectionMap = [];
 our $SectionMapLoaded = 0;    # so we only load it once
 
 sub LoadSectionMap {
@@ -1980,16 +1941,6 @@ sub LoadSectionMap {
 
     if ($SectionMapLoaded) {
         return $SectionMap;
-    }
-
-    # create a hash <section> => <tab> / Content so we know in which tab to look for a section
-    my %SectionIndex;
-    foreach my $Tab (@$SectionMap) {
-        my $TabName = $Tab->{Name};
-        foreach my $section ( @{ $Tab->{Content} } ) {
-            $section->{Content} = [];
-            $SectionIndex{ $section->{Name} } = { Tab => $TabName, Content => $section->{Content} };
-        }
     }
 
     my $ConfigFile = "$RT::EtcPath/RT_Config.pm";
@@ -2000,55 +1951,58 @@ sub LoadSectionMap {
     $PodParser->output_string( \$html );
     $PodParser->parse_file($ConfigFile);
 
-    my $CurrentTabName;
-    my $CurrentSectionName;
-    my $CurrentSubSectionName;
-    my $CurrentSectionContent;
-
-    while ( $html =~ m{<(h[12]|dt)\b[^>]*>(.*?)</\1>}sg ) {
+    my $has_subsection;
+    while ( $html =~ m{<(h[123]|dt)\b[^>]*>(.*?)</\1>}sg ) {
         my ( $tag, $content ) = ( $1, $2 );
         if ( $tag eq 'h1' ) {
-            my ( $id, $title ) = $content =~ m{<a class='u'\s*name="([^"]*)"\s*>([^<]*)</a>};
-            next if $title eq 'NAME';
-            $CurrentSectionName = $title;
-            if ( $SectionIndex{$CurrentSectionName}->{Tab} ) {
-                $CurrentTabName = $SectionIndex{$CurrentSectionName}->{Tab};
-
-                # create a sub section with no name, for section level options
-                push @{ $SectionIndex{$CurrentSectionName}->{Content} }, { Name => '', Content => [] };
-                $CurrentSectionContent = $SectionIndex{$CurrentSectionName}->{Content};
-                $CurrentSubSectionName = '';
+            my ($title) = $content =~ m{<a class='u'\s*name="[^"]*"\s*>([^<]*)</a>};
+            next if $title =~ /^(?:NAME|DESCRIPTION)$/;
+            push @$SectionMap, { Name => $title, Content => [] };
+        }
+        elsif (@$SectionMap) {
+            if ( $tag eq 'h2' ) {
+                my ($title) = $content =~ m{<a class='u'\s*name="[^"]*"\s*>([^<]*)</a>};
+                push @{ $SectionMap->[-1]{Content} }, { Name => $title, Content => [] };
+                $has_subsection = 0;
+            }
+            elsif ( $tag eq 'h3' ) {
+                my ($title) = $content =~ m{<a class='u'\s*name="[^"]*"\s*>([^<]*)</a>};
+                push @{ $SectionMap->[-1]{Content}[-1]{Content} }, { Name => $title, Content => [] };
+                $has_subsection ||= 1;
             }
             else {
-                RT->Logger->debug("section $CurrentSectionName not found in SectionMap");
-            }
-        }
-        elsif ( $tag eq 'h2' ) {
-            my ( $id, $title ) = $content =~ m{<a class='u'\s*name="([^"]*)"\s*>([^<]*)</a>};
-            $CurrentSubSectionName = $title;
-            push @$CurrentSectionContent, { Name => $CurrentSubSectionName, Content => [] };
-        }
-        else {
-            # tag is 'dt'
-            my @options;
+                # tag is 'dt'
+                if ( !$has_subsection ) {
 
-            # a single item (dt) can document several options, in separate <code> elements
-            my ($name) = $content =~ m{name=".([^"]*)"};
-            $name =~ s{,_.}{-}g;
-            while ( $content =~ m{<code>(.)([^<]*)</code>}sg ) {
-                my ( $sigil, $option ) = ( $1, $2 );
-                next unless $sigil =~ m{[\@\%\$]};    # no sigil => this is a value for a select option
-                if ( $META{$option} ) {
-                    my $LastSubSectionContent = $CurrentSectionContent->[-1]->{Content};
-                    push @$LastSubSectionContent, { Name => $option, Help => $name };
+                    # Create an empty subsection to keep the same data structure
+                    push @{ $SectionMap->[-1]{Content}[-1]{Content} }, { Name => '', Content => [] };
+                    $has_subsection = 1;
                 }
-                else {
-                    my $TabName = $SectionIndex{$CurrentSectionName}->{Name};
-                    RT->Logger->debug("missing META info for option [$option]");
+
+                # a single item (dt) can document several options, in separate <code> elements
+                my ($name) = $content =~ m{name=".([^"]*)"};
+                $name =~ s{,_.}{-}g;    # e.g. DatabaseHost,_$DatabaseRTHost
+                while ( $content =~ m{<code>(.)([^<]*)</code>}sg ) {
+                    my ( $sigil, $option ) = ( $1, $2 );
+                    next unless $sigil =~ m{[\@\%\$]};    # no sigil => this is a value for a select option
+                    if ( !$META{$option} ) {
+                        RT->Logger->debug("No META info for option [$option], falling back to Code widget");
+                    }
+                    push @{ $SectionMap->[-1]{Content}[-1]{Content}[-1]{Content} }, { Name => $option, Help => $name };
                 }
             }
         }
     }
+
+    # Remove empty tabs/sections
+    for my $tab (@$SectionMap) {
+        for my $section ( @{ $tab->{Content} } ) {
+            @{ $section->{Content} } = grep { @{ $_->{Content} } } @{ $section->{Content} };
+        }
+        @{ $tab->{Content} } = grep { @{ $_->{Content} } } @{ $tab->{Content} };
+    }
+    @$SectionMap = grep { @{ $_->{Content} } } @$SectionMap;
+
     $SectionMapLoaded = 1;
     return $SectionMap;
 }
