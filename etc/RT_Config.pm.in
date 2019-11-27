@@ -3047,6 +3047,14 @@ Your LDAP server hostname.
 
 The LDAP user to log in with.
 
+=item C<$LDAPOptions>
+
+LDAP options that are supported by the L<Net::LDAP> new method.
+
+Example:
+
+    Set($LDAPOptions, [ port => 636 ]);
+
 =item C<$LDAPPassword>
 
 Password for LDAPUser.
