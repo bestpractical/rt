@@ -175,3 +175,20 @@
 .darkmode #rights-inspector .results .result .match {
     background-color: #114 !important;
 }
+
+/* row colouring */
+.oddline {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.darkmode tr.oddline {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.darkmode .oddline .collection-as-table {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.darkmode tr.oddline td a {
+    background: rgba(255, 255, 255, 0) !important;
+}
