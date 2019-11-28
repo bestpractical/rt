@@ -66,6 +66,13 @@ div#footer #bpscredits {
     padding-top: 2.5em;
 }
 
+div.refresh {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 10px;
+    align: left;
+}
+
 div#footer a {
     color: white;
 }
@@ -193,3 +200,4 @@ ol ol {
   position: relative;
   padding-bottom: 5em;
 }
+

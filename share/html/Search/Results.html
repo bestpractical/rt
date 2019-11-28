@@ -80,16 +80,18 @@
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
 
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
-<div align="right" class="refresh">
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
+<div class="refresh">
+  <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
+  <div class="form-row align-items-center">
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
+<div class="col-auto">
 <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{'tickets_refresh_interval'}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
-<div class="form-row">
-  <div class="col-md-12">
-    <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Change</&>" />
-  </div>
+</div>
+<div class="col-auto">
+<input type="submit" class="btn btn-primary" value="<&|/l&>Change</&>" />
+</div>
 </div>
 </form>
 </div>
@@ -97,7 +99,7 @@
 %# Keyboard shortcuts info
 <div class="clear"></div>
 <div class="keyboard-shortcuts footer">
-    <p><&|/l_unsafe, '<span class="keyboard-shortcuts-key">?</span>' &>Press [_1] to view keyboard shortcuts.</&></p>
+    <&|/l_unsafe, '<span class="keyboard-shortcuts-key">?</span>' &>Press [_1] to view keyboard shortcuts.</&>
 </div>
 
 <%INIT>
