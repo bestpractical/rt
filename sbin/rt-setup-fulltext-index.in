@@ -179,7 +179,7 @@ if ( $DB{'type'} eq 'mysql' ) {
     my $engine = $RT::Handle->dbh->{mysql_serverversion} < 50600 ? "MyISAM" : "InnoDB";
     my $schema = "CREATE TABLE $table ( "
         ."id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,"
-        ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET utf8";
+        ."Content LONGTEXT ) ENGINE=$engine CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci";
     insert_schema( $schema );
 
     insert_data( Table => $table, Engine => $engine );
