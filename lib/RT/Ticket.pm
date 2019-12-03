@@ -1761,6 +1761,8 @@ ticket changes via the UI
 sub Atomic {
     my $self = shift;
     my ($subref) = @_;
+    $self->{Atomic}++;
+
     my $has_id = defined $self->id;
     $RT::Handle->BeginTransaction;
     my $depth = $RT::Handle->TransactionDepth;
@@ -1787,8 +1789,9 @@ sub Atomic {
     }
 
     if ($RT::Handle->TransactionDepth == $depth) {
-        $self->ApplyTransactionBatch;
+        $self->ApplyTransactionBatch if $self->{Atomic} == 1;
         $RT::Handle->Commit;
+        $self->{Atomic}--;
     }
 
     return $context ? @ret : $ret[0];
