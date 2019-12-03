@@ -64,9 +64,15 @@ var rebalanceOverflowMenu = function (menuId, overflowId, withLogo) {
     var overflowMenu = jQuery(overflowId);
 
     var availableWidth = jQuery(window).width();
+
+    // account for the logo size
     if (withLogo) {
         availableWidth -= jQuery('#logo').width();
     }
+
+    // account for the top actions menu size
+    availableWidth -= jQuery('#topactions').width();
+
     availableWidth -= rebalanceOverflowBuffer;
 
     // if the menu is too wide for the viewport, move overflow items into
