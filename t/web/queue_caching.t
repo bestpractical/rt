@@ -255,7 +255,11 @@ sub check_queues {
     $url ||= $baseurl;
 
     $browser->get_ok( $url, "Navigated to $url" );
-    ok( my $form = $browser->form_with_fields( 'Subject' ), "Found form" );
+
+    # Get rid of inline-edit forms
+    my ($form) = grep { $_->action !~ m{/Helpers/TicketUpdate} } $browser->all_forms_with_fields('Subject');
+    ok( $form, "Found form" );
+
     my ( @queue_ids, @queue_names );
     if ( !$queue_id_list || @$queue_id_list > 0 ) {
         ok(my $queuelist = $form->find_input('Queue','option'), "Found queue select");
