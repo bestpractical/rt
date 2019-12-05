@@ -103,6 +103,17 @@ sub FinalizeDatabaseType {
     }
 }
 
+sub Disconnect {
+    my $self = shift;
+    if (exists $self->{db_subtype} && ( $self->{db_subtype} eq 'mariadb')) {
+        my ($version) = $self->{database_version} =~ /^(\d+\.\d+)/;
+        if ( $version >= 10.3 ) {
+            $self->{_reconnection_required}++;
+        }
+    }
+    $self->SUPER::Disconnect(@_);
+}
+
 =head2 Connect
 
 Connects to RT's database using credentials and options from the RT config.
@@ -126,9 +137,14 @@ sub Connect {
         DisconnectHandleOnDestroy => 1,
         %args,
     );
-
+    if (exists $self->{_reconnection_required}) {
+        $self->{_reconnection_required} = 0;
+    }
     if ( $db_type eq 'mysql' ) {
         my $version = $self->DatabaseVersion;
+        if ($self->{database_version} =~ m/maria/i) {
+            $self->{db_subtype} = 'mariadb';
+        }
         ($version) = $version =~ /^(\d+\.\d+)/;
         $self->dbh->do("SET NAMES 'utf8'") if $version >= 4.1;
     }
@@ -139,6 +155,17 @@ sub Connect {
     }
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
+}
+
+sub dbh {
+    my $self = shift;
+    if (@_) {
+        return $self->SUPER::dbh(@_);
+    }
+    elsif ($self->{_reconnection_required}) {
+        return undef;
+    }
+    return $self->SUPER::dbh();
 }
 
 =head2 BuildDSN
