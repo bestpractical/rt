@@ -58,5 +58,5 @@
 <& /Elements/Submit,  Label => loc('Go!') &>
   </div>
 </div>
-</&>
 </form>
+</&>
