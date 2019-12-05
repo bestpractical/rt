@@ -62,11 +62,21 @@ var rebalanceOverflowBuffer = 30;
 var rebalanceOverflowMenu = function (menuId, overflowId, withLogo) {
     var toplevelMenu = jQuery(menuId);
     var overflowMenu = jQuery(overflowId);
-
     var availableWidth = jQuery(window).width();
-    if (withLogo) {
-        availableWidth -= jQuery('#logo').width();
+
+    // adjustments specific to main-navigation
+    if (menuId === '#app-nav') {
+        if (withLogo) {
+            availableWidth -= jQuery('#logo').width();
+        }
+        availableWidth -= jQuery('#topactions').width();
     }
+
+    // adjustments specific to page-navigation
+    if (menuId === '#page-menu') {
+        availableWidth -= jQuery('#header h1').width() + rebalanceOverflowBuffer;
+    }
+
     availableWidth -= rebalanceOverflowBuffer;
 
     // if the menu is too wide for the viewport, move overflow items into
