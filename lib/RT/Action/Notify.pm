@@ -113,7 +113,7 @@ sub SetRecipients {
                            # then RT::CustomRole-# or a role name
                            (?:
                                RT::CustomRole-(\d+)    # $2 role id
-                             | ( \w+ )                 # $3 role name
+                             | ( (?: \w\s?)+ )         # $3 role name
                            )
 
                            # then, optionally, a type after a slash
