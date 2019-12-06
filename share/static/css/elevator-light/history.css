@@ -1,5 +1,5 @@
 .history .transaction {
-    border-top: 2px solid #ccc;
+    border-top: 1px solid #ccc;
     padding-bottom: 0.5em;
     position: relative; /* gives us a container for position: absolute */
     clear: both;
@@ -14,8 +14,8 @@ div.history-container {
  margin-top: 0.75em;
  border-left: 1px solid #ccc;
 
- border-right: 2px solid #999;
-  border-bottom: 2px solid #999;
+ border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
 
 }
 
