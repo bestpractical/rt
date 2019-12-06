@@ -75,30 +75,30 @@ if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
 
 </%init>
 <div class="chart-wrapper">
-<div class="form-row">
-<div class="col-md-auto">
+  <div class="form-row">
+    <div class="col-md-auto">
 % if ( ($ChartStyle || '') =~ /\b(pie|bar|line)\b/ ) {
-<div class="chart image <% $1 %>">
+      <div class="chart image <% $1 %>">
 % if ( RT->Config->Get('EnableJSChart', $session{CurrentUser}) ) {
-  <& /Search/JSChart, Cache => $key, %ARGS, GroupBy => \@GroupBy &>
+        <& /Search/JSChart, Cache => $key, %ARGS, GroupBy => \@GroupBy &>
 % } elsif (RT->Config->Get('DisableGD')) {
-<% loc('Graphical charts are not available.') %><br />
+        <% loc('Graphical charts are not available.') %><br />
 % } else {
-<img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
+        <img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
 % }
-</div>
+      </div>
 % }
-</div>
-<div class="col-md-auto">
+    </div>
+    <div class="col-md-auto">
 % if ( ($ChartStyle || '') =~ /\btable\b/ ) {
-<& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
+      <& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
 % }
 
 % $m->callback( CallbackName => 'AfterChartTable', ARGSRef => \%ARGS );
-</div>
-</div>
+    </div>
+  </div>
 
 % if ( ($ChartStyle || '') =~ /\bsql\b/ ) {
-<div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
+  <div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
 % }
 </div>
