@@ -70,6 +70,9 @@ jQuery(function() {
         if (selected === undefined) selected = "";
         jQuery('option[value="' + selected + '"]', groups).attr("selected", "selected");
 
+        jQuery(this).selectpicker();
+        groups.selectpicker();
+
         // Wire it all up
         groups.change(function(){
             var name     = this.name.replace(/-Groups$/, '');
