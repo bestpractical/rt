@@ -128,3 +128,7 @@ svg.icon-helper {
 .oddline {
     background-color: rgba(0, 0, 0, 0.05);
 }
+
+legend {
+  font-size: 1rem;
+}
