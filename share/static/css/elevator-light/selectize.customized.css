@@ -42,3 +42,7 @@
 .selectize-dropdown .create {
   padding-left: 4px;
 }
+
+.selectize-dropdown .active {
+  background-color: #cfdeff;
+}
