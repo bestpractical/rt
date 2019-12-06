@@ -38,3 +38,7 @@
 .selectize-dropdown-content {
   max-height: none;
 }
+
+.selectize-dropdown .create {
+  padding-left: 4px;
+}
