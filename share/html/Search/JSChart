@@ -53,9 +53,11 @@ $ChartStyle => 'bar+table+sql'
 @ChartFunction => 'COUNT'
 $Width  => undef
 $Height => undef
+$SavedSearchId => ''
 </%args>
 
-<canvas id="search-chart" width="<% $Width %>" height="<% $Height %>"></canvas>
+% my $id = join '-', 'search-chart', $SavedSearchId || ();
+<canvas id="<% $id %>" width="<% $Width %>" height="<% $Height %>"></canvas>
 <script type="text/javascript">
 var data_labels = <% JSON( \@data_labels ) |n %>;
 
@@ -68,7 +70,7 @@ if ( backgroundColor && backgroundColor.length ) {
 }
 % }
 
-var ctx = document.getElementById('search-chart').getContext('2d');
+var ctx = document.getElementById(<% $id |n,j %>).getContext('2d');
 var searchChart = new Chart(ctx, {
     type: <% $ChartStyle =~ /\b(bar|line|pie)\b/ ? $1 : 'bar' |n,j %>,
     data: {
