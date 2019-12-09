@@ -6,6 +6,10 @@ import {
     faEdit as fasEdit,
     faBookmark as fasBookmark,
     faProjectDiagram as fasProjectDiagram,
+    faEnvelopeOpenText as fasEnvelopeOpenText,
+    faReply as fasReply,
+    faComment as fasComment,
+    faForward as fasForward,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -36,6 +40,10 @@ library.add(
     fasEdit,
     fasBookmark,
     fasProjectDiagram,
+    fasEnvelopeOpenText,
+    fasReply,
+    fasComment,
+    fasForward,
     // Regular
     farEdit,
     farBookmark,
