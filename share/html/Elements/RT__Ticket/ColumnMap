@@ -332,6 +332,21 @@ $COLUMN_MAP = {
             return \($m->scomp("/Ticket/Elements/PopupTimerLink", id => $_[0]->id ) );
         },
     },
+    UnreadMessages => {
+       title     => 'Unread Messages', # loc
+       attribute => 'UnreadMessages',
+       value     => sub {
+            my $self = shift;
+
+            my( $count, $first_unread) = $self->SeenUpToCount;
+
+            return '0' if ! $count;
+
+            return \('<a class="unread_nb" title="jump to Unread &amp; Mark as Seen" href="'. RT->Config->Get('WebPath') .'/Ticket/Display.html?id='
+            . $self->id .'&MarkAsSeen=1&Anchor=txn-'. $first_unread->id .'">'),
+            $count, \'</a>';
+        }
+   }
 };
 
 my %ranges = RT::Ticket->CustomDateRanges;

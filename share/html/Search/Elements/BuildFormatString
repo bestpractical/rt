@@ -96,6 +96,7 @@ my @fields = qw(
     Parents     Children
 
     Bookmark    Timer
+    UnreadMessages
 
     NEWLINE
     NBSP
