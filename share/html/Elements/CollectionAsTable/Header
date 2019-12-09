@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Class        => 'RT__Ticket'
+$Class        => 'RT::Tickets'
 
 @Format       => undef
 $FormatString => undef
@@ -68,6 +68,15 @@ $BaseURL       => undef
 my $generic_query_args = $GenericQueryArgs || {map { $_ => $ARGS{$_} } @PassArguments};
 # backward compatibility workaround
 $generic_query_args->{'Format'} = $FormatString if grep $_ eq 'Format', @PassArguments;
+
+my $column_map_class;
+if ( $Class =~ /::/ ) {
+    $column_map_class = $Class->ColumnMapClassName;
+}
+else {
+    # For back compatibility
+    $column_map_class = $Class;
+}
 
 my $item = 0;
 foreach my $col ( @Format ) {
@@ -98,7 +107,7 @@ foreach my $col ( @Format ) {
 
     my $align = $col->{'align'} || do {
         my $tmp_columnmap = $m->comp( '/Elements/ColumnMap',
-            Class => $Class,
+            Class => $column_map_class,
             Name => $attr,
             Attr => 'align',
         );
@@ -112,7 +121,7 @@ foreach my $col ( @Format ) {
     # one we saw in the format
     unless ( defined $col->{'title'} ) {
         my $tmp = $m->comp( '/Elements/ColumnMap',
-            Class => $Class,
+            Class => $column_map_class,
             Name  => $attr,
             Attr  => 'title',
         );
@@ -129,7 +138,7 @@ foreach my $col ( @Format ) {
     if ( $AllowSorting and $col->{'attribute'}
         and my $attr = $m->comp(
             "/Elements/ColumnMap",
-            Class => $Class,
+            Class => $column_map_class,
             Name  => $col->{'attribute'},
             Attr  => 'attribute'
         )

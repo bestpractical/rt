@@ -118,10 +118,6 @@ foreach my $col (@Format) {
 }
 
 $Class ||= $Collection->ColumnMapClassName;
-if ($Class =~ /::/) { # older passed in value
-    $Class =~ s/s$//;
-    $Class =~ s/:/_/g;
-}
 
 $m->out('<table cellspacing="0" class="table ' .
             ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
