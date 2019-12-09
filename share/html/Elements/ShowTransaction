@@ -152,8 +152,9 @@ if ( $ShowBody && !$Attachments ) {
 my @actions = ();
 my $txn_type = $Transaction->Type;
 if ( $txn_type =~ /EmailRecord$/ ) {
+    my $alt = loc('Show email contents');
     push @actions, {
-        title  => loc('Show'),
+        title  => qq[<span class="fas fa-envelope-open-text" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
         target => '_blank',
         path   => $EmailRecordPath
             .'?id='. $Object->id
@@ -179,9 +180,10 @@ elsif ( %$Attachments && $ShowActions ) {
             || $Object->CurrentUserHasRight( $has_right{'ReplyTo'} )
         )
     ) {
+        my $alt = loc('Reply');
         push @actions, {
             class  => "reply-link",
-            title  => loc('Reply'),
+            title  => qq[<span class="fas fa-reply" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $UpdatePath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -194,9 +196,10 @@ elsif ( %$Attachments && $ShowActions ) {
             || $Object->CurrentUserHasRight( $has_right{'CommentOn'} )
         )
     ) {
+        my $alt = loc('Comment');
         push @actions, {
             class  => "comment-link",
-            title  => loc('Comment'),
+            title  => qq[<span class="fas fa-comment" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $UpdatePath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -207,9 +210,10 @@ elsif ( %$Attachments && $ShowActions ) {
     if ( $ForwardPath && $has_right{'Forward'}
         && $Object->CurrentUserHasRight( $has_right{'Forward'} )
     ) {
+        my $alt = loc('Forward');
         push @actions, {
             class  => "forward-link",
-            title  => loc('Forward'),
+            title  => qq[<span class="fas fa-forward" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $ForwardPath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -262,7 +266,7 @@ if ( @actions ) {
                 ? ' class="'. $i->apply_escapes( $a->{'class'}, 'h' ) .'"'
                 : ''
             )
-            .'>'. $i->apply_escapes( $a->{'title'}, 'h' ) .'</a>'
+            .'>'. $a->{'title'} .'</a>'
         ;
     }
     $actions = join '&nbsp;', map "[$_]", @actions;
