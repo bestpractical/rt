@@ -11,6 +11,7 @@ import {
     faComment as fasComment,
     faForward as fasForward,
     faLink as fasLink,
+    faPlus as fasPlus,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -25,6 +26,7 @@ import {
     faArrowAltCircleUp as farArrowAltCircleUp,
     faTimesCircle as farTimesCircle,
     faQuestionCircle as farQuestionCircle,
+    faFile as farFile,
 } from '@fortawesome/free-regular-svg-icons'
 
 /*
@@ -46,6 +48,7 @@ library.add(
     fasComment,
     fasForward,
     fasLink,
+    fasPlus,
     // Regular
     farEdit,
     farBookmark,
@@ -56,6 +59,7 @@ library.add(
     farArrowAltCircleUp,
     farTimesCircle,
     farQuestionCircle,
+    farFile,
     // Brands
 //    fabLinux
 )
