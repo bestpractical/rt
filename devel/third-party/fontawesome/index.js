@@ -10,6 +10,7 @@ import {
     faReply as fasReply,
     faComment as fasComment,
     faForward as fasForward,
+    faLink as fasLink,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -44,6 +45,7 @@ library.add(
     fasReply,
     fasComment,
     fasForward,
+    fasLink,
     // Regular
     farEdit,
     farBookmark,
