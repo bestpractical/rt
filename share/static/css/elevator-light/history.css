@@ -42,21 +42,15 @@ div.history-container {
 .history .transaction div.metadata  span.type {
  text-align: center;
  float: left;
- width: 1em;
- -moz-border-radius-bottomright: 0.25em;
- -webkit-border-bottom-right-radius: 0.25em;
-
- border-radius: 0 0 0.25em 0;
-  margin: 0;
+  width: 1.5em;
+  border-radius: 0.25em;
   font-size: 1.2em;
-  margin-right: 1em;
+  margin: 0.25em 0.45em;
   padding: 0.25em;
   border: none;
 }
 
 .history .transaction span.type a {
- color: #fff;
- padding-top: 0.75em;
  display: block;
 }
 
@@ -106,15 +100,12 @@ div.history-container {
 }
 
 .history .transaction .metadata span.type a {
-  color: transparent
+  font-size: 0.75em;
+  color: #E8E8E8;
 }
 
 .history .transaction .metadata span.type a#lasttrans {
   display: inline
-}
-
-.history .transaction:hover .metadata span.type a {
-  color: white
 }
 
 .history .transaction .metadata .date,
