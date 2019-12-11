@@ -1,6 +1,5 @@
 .history .transaction {
     border-top: 1px solid #ccc;
-    padding-bottom: 0.5em;
     position: relative; /* gives us a container for position: absolute */
     clear: both;
 }
@@ -21,21 +20,17 @@ div.history-container {
 
 .history .transaction div.metadata span.actions {
  float: right;
- padding: 0em;
  background: #ccc;
  text-align: right;
  border-left: 1px solid #999;
  border-bottom: 1px solid #999;
  color: #ccc;
- -moz-border-radius-bottomleft: 0.5em;
- -webkit-border-bottom-left-radius: 0.5em;
  white-space: nowrap;
-
- border-radius: 0 0 0 0.5em;
+ border-radius: 0.25em;
 }
 
-.history .transaction .metadata span.type {
-
+.history .transaction .metadata .actions a {
+    color: #666;
 }
 
 .history .transaction div.metadata  span.type {
@@ -44,8 +39,7 @@ div.history-container {
   width: 1.5em;
   border-radius: 0.25em;
   font-size: 1.2em;
-  margin: 0.25em 0.45em;
-  padding: 0.25em;
+  padding: 0.19em;
   border: none;
 }
 
@@ -74,7 +68,7 @@ div.history-container {
 
 .history .transaction div.content {
  padding-right: 1em;
- padding-bottom: 0.7em;
+ padding-bottom: 0.5em;
  margin-left: 1.5em;
 }
 
@@ -110,26 +104,23 @@ div.history-container {
 .history .transaction .metadata .date,
 .history .transaction .metadata .description,
 .history .transaction .metadata .time-taken {
-  margin-top: 0.5em;
   display: inline-block;
-  margin-right: 2em;
+  margin-top: 0.45em;
+  margin-right: 1.5em;
+  margin-bottom: 0;
 }
 
-.history .transaction .metadata {
-  margin-bottom: 0em;
-  margin-top: 0.25em;
+.transaction div.metadata > span {
+    margin: 0.27em;
 }
 
 .transaction div.metadata span.actions {
   background: #eee;
   color: #eee;
   display: inline-block;
-  margin-right: 0.5em;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
-  border-right: 1px solid #999;
-  -moz-border-radius-bottomright: 0.5em;
-  -webkit-border-bottom-right-radius: 0.5em;
+  padding: 0.18em 0.06em;
+  border: 1px solid #999;
+  border-radius: .25em;
 }
 
 @media (max-width: 700px) {
@@ -152,10 +143,6 @@ div.history-container {
 
 .transaction .messagebody img {
  max-width: 100%;
-}
-
-.transaction div.metadata span.actions a {
-  padding: 0.2em
 }
 
 .transaction div.downloadattachment {
