@@ -55,4 +55,23 @@ diag "Process email with an email file attached";
     is( $attachment->Filename, 'test-email.eml', 'Got a filename for the attached email file' );
 }
 
+diag "Process email with a multipart email file attached";
+{
+    my ($ticket) = mail_in_ticket('email-file-attachment-2.eml');
+    like( first_txn($ticket)->Content , qr/This is a test with a multipart email file attachment/, "Parsed the email body");
+    is( count_attachs($ticket), 3,
+        "Has three attachments, presumably multipart/mixed, text-plain, message");
+
+    my $attachments = $ticket->Transactions->First->Attachments;
+
+    my $attachment = $attachments->Next;
+    is( $attachment->Subject, 'This is another test', 'Subject is correct' );
+
+    $attachment = $attachments->Next;
+    is( $attachment->ContentType, 'text/plain', 'Got the first part of the main email' );
+
+    $attachment = $attachments->Next;
+    is( $attachment->Filename, 'test-email-2.eml', 'Got a filename for the attached email file' );
+}
+
 done_testing();
