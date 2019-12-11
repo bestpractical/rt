@@ -315,20 +315,17 @@ sub _DetectAttachedEmailFiles {
         # Fixup message
         # TODO: Investigate proposing an option upstream in MIME::Parser to avoid the initial parse
         if ( $entity->parts(0) ){
-            my $bodyhandle = $entity->parts(0)->bodyhandle;
-
             # Get the headers from the part and write them back to the body.
             # This will create a file attachment that looks like the file you get if
             # you "Save As" and email message in your email client.
             # If we don't save them here, the headers from the attached email will be lost.
 
-            my $headers = $entity->parts(0)->head->as_string;
-            my $body = $bodyhandle->as_string;
+            ( undef, my $filename ) = File::Temp::tempfile( UNLINK => 1 );
+            my $bodyhandle = MIME::Body::File->new($filename);
 
             my $IO = $bodyhandle->open("w")
                 || RT::Logger->error("Unable to open email body: $!");
-            $IO->print($headers . "\n");
-            $IO->print($body);
+            $IO->print( $entity->parts(0)->as_string );
             $IO->close
                 || RT::Logger->error("Unable to close email body: $!");
 
