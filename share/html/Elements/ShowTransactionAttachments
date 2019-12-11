@@ -68,10 +68,19 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 % } else {
 <a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | un %>">
 % }
-<&|/l&>Download</&> <% length $name ? $name : loc('(untitled)') %></a>\
+% my $download_alt = loc( length $name ? 'Download ' . $name : 'View source' );
+<span class="far fa-file fa-2x" alt="<% $download_alt %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% $download_alt %>"></span></a>
+
 % if ( $DownloadableHeaders && ! length $name && $message->ContentType =~ /text/  ) {
- / <a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>"><% loc('with headers') %></a>
+% my $download_with_headers_alt = loc('View source with headers');
+<a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>">
+  <span class="fa-stack" alt="<% $download_with_headers_alt %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% $download_with_headers_alt %>">
+    <i class="far fa-file fa-stack-2x"></i>
+    <i class="fas fa-plus fa-stack-1x"></i>
+  </span>
+</a>
 % }
+
 % $m->callback(CallbackName => 'AfterDownloadLinks', ARGSRef => \%ARGS, Object => $Object, Transaction => $Transaction, Attachment => $message);
 <br />
 <span class="downloadcontenttype"><% $message->ContentType %> <% $message->FriendlyContentLength %></span>
