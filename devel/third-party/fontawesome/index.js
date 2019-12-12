@@ -12,6 +12,7 @@ import {
     faForward as fasForward,
     faLink as fasLink,
     faPlus as fasPlus,
+    faKey as fasKey,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -49,6 +50,7 @@ library.add(
     fasForward,
     fasLink,
     fasPlus,
+    fasKey,
     // Regular
     farEdit,
     farBookmark,
