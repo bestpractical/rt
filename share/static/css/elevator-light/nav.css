@@ -6,6 +6,10 @@ ul.sf-menu li {
     font-weight: bold;
 }
 
+.sf-menu .menu-item {
+    text-decoration: none;
+}
+
 .sf-menu {
     width: 100%;
     margin-bottom: 0;

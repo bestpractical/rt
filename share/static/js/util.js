@@ -471,7 +471,7 @@ function addprincipal_onselect(ev, ui) {
 
     // if principal link exists, we shall go there instead
     var principal_link = jQuery(ev.target).closest('form').find('a[href="#acl-' + ui.item.id + '"]:first');
-    if (principal_link.size()) {
+    if (principal_link.length) {
         jQuery(this).val('').blur();
         update_addprincipal_title( '' ); // reset title to blank for #acl-AddPrincipal
         principal_link.click();
