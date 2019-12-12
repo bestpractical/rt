@@ -72,6 +72,9 @@ div.history-container {
  margin-left: 1.5em;
 }
 
+.transaction table + div.downloadattachment {
+  margin-top: 0.5rem;
+}
 
 .history .transaction .messagebody {
  font-size: 1em;
@@ -172,6 +175,7 @@ border: none;
 .transaction div.downloadattachment .downloadcontenttype{
   color: #ccc;
   display: block;
+  margin-top: 0.25rem;
 padding-right:0.25em;
 }
 
