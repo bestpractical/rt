@@ -99,8 +99,8 @@ selected="selected"
 </div>
 
 <%INIT>
-my $tickets = RT::Tickets->new($session{'CurrentUser'});
-my %FieldDescriptions = %{$tickets->FIELDS};
+my $collection = $Class->new($session{'CurrentUser'});
+my %FieldDescriptions = %{$collection->FIELDS};
 my %fields;
 
 for my $field (keys %FieldDescriptions) {
@@ -109,24 +109,27 @@ for my $field (keys %FieldDescriptions) {
     $fields{$field} = $field;
 }
 
-$fields{'Owner'} = 'Owner';
-$fields{ $_ . '.EmailAddress' } = $_ . '.EmailAddress'
-    for qw(Requestor Cc AdminCc);
+if ( $Class eq 'RT::Tickets' ) {
+    $fields{'Owner'} = 'Owner';
+    $fields{ $_ . '.EmailAddress' } = $_ . '.EmailAddress' for qw(Requestor Cc AdminCc);
+}
 
 # Add all available CustomFields to the list of sortable columns.
 my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
 $fields{$_} = $_ for @cfs;
 
 # Add all available CustomRoles to the list of sortable columns.
-my @roles = grep /^CustomRole/, @{$ARGS{AvailableColumns}};
-for my $role (@roles) {
-    my ($label) = $role =~ /^CustomRole.\{(.*)\}$/;
-    my $value = $role;
-    $fields{$label . '.EmailAddress' } = $value . '.EmailAddress';
-}
+if ( $Class eq 'RT::Tickets' ) {
+    my @roles = grep /^CustomRole/, @{$ARGS{AvailableColumns}};
+    for my $role (@roles) {
+        my ($label) = $role =~ /^CustomRole.\{(.*)\}$/;
+        my $value = $role;
+        $fields{$label . '.EmailAddress' } = $value . '.EmailAddress';
+    }
 
-# Add PAW sort
-$fields{'Custom.Ownership'} = 'Custom.Ownership';
+    # Add PAW sort
+    $fields{'Custom.Ownership'} = 'Custom.Ownership';
+}
 
 $m->callback(CallbackName => 'MassageSortFields', Fields => \%fields );
 
@@ -146,4 +149,5 @@ $OrderBy => ''
 $RowsPerPage => undef
 $Format => undef
 $GroupBy => 'id'
+$Class => 'RT::Tickets'
 </%ARGS>

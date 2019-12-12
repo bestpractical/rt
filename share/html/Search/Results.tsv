@@ -52,23 +52,38 @@ $OrderBy => 'id'
 $Order => 'ASC'
 $PreserveNewLines => 0
 $UserData => 0
+$Class => 'RT::Tickets'
+$ObjectType => 'RT::Ticket'
 </%ARGS>
 <%INIT>
-my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$Tickets->FromSQL( $Query );
+my $collection = $Class->new( $session{'CurrentUser'} );
+
+my @limits;
+
+if ( $Class eq 'RT::Transactions' ) {
+    @limits = ( "ObjectType = '$ObjectType'", "($Query)" );
+    if ( $ObjectType eq 'RT::Ticket' ) {
+        unshift @limits, "TicketType = 'ticket'";
+    }
+}
+else {
+    push @limits, $Query;
+}
+
+$collection->FromSQL( join ' AND ', @limits );
 if ( $OrderBy =~ /\|/ ) {
     # Multiple Sorts
     my @OrderBy = split /\|/, $OrderBy;
     my @Order   = split /\|/, $Order;
-    $Tickets->OrderByCols(
+    $collection->OrderByCols(
         map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
         ( 0 .. $#OrderBy )
     );
 }
 else {
-    $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+    $collection->OrderBy( FIELD => $OrderBy, ORDER => $Order );
 }
 
 my $filename = $UserData ? 'UserTicketData.tsv' : undef;
-$m->comp( "/Elements/TSVExport", Collection => $Tickets, Format => $Format, PreserveNewLines => $PreserveNewLines, Filename => $filename );
+$m->comp( "/Elements/TSVExport", Collection => $collection, Format => $Format, PreserveNewLines => $PreserveNewLines, Filename => $filename );
 </%INIT>

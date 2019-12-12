@@ -91,7 +91,7 @@ $handle_block = sub {
         my $res = '';
         $res .= qq{<select id="$name" name="$name" class="form-control selectpicker">};
         my @options = @{ $box->{'Options'} };
-        while( my $k = shift @options ) {
+        while( defined( my $k = shift @options ) ) {
             my $v = shift @options;
             $res .= qq{<option value="$k">$v</option>};
         }

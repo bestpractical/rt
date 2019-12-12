@@ -1,0 +1,194 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<tr class="separator">
+  <td colspan="3">
+    <hr><em><% loc("Ticket Fields") %></em>
+  </td>
+</tr>
+
+% foreach( @lines ) {
+<& /Search/Elements/ConditionRow, Condition => $_ &>
+% }
+<%INIT>
+
+my @lines = (
+    {
+        Name => 'TicketId',
+        Field => loc('id'),
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectEqualityOperator',
+        },
+        Value => { Type => 'text', Size => 5 }
+    },
+    {
+        Name => 'TicketSubject',
+        Field => loc('Subject'),
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectMatch',
+        },
+        Value => { Type => 'text' }
+    },
+    {
+        Name => 'TicketQueue',
+        Field => loc('Queue'),
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectMatch',
+            Arguments => { Default => '=' },
+        },
+        Value => {
+            Type => 'component',
+            Path => '/Elements/SelectQueue',
+            Arguments => { NamedValues => 1, },
+        },
+    },
+    {
+        Name => 'TicketStatus',
+        Field => loc('Status'),
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectBoolean',
+            Arguments => { TrueVal=> '=', FalseVal => '!=' },
+        },
+        Value => {
+            Type => 'component',
+            Path => '/Ticket/Elements/SelectStatus',
+            Arguments => { SkipDeleted => 1, Queues => \%queues, ShowActiveInactive => 1 },
+        },
+    },
+    {
+        Name => 'TicketActor',
+        Field => {
+            Type    => 'select',
+            Options => [
+                TicketOwner => loc('Owner'),
+                TicketCreator => loc('Creator'),
+                TicketLastUpdatedBy => loc('Last updated by'),
+                TicketUpdatedBy => loc('Updated by'),
+            ],
+        },
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectBoolean',
+            Arguments => { TrueVal=> '=', FalseVal => '!=' },
+        },
+        Value => {
+            Type => 'component',
+            Path => '/Elements/SelectOwner',
+            Arguments => { ValueAttribute => 'Name', Queues => \%queues },
+        },
+    },
+    {
+        Name => 'TicketDate',
+        Field => {
+            Type      => 'component',
+            Path      => '/Elements/SelectDateType',
+            Arguments => { Prefix => 'Ticket', Options => [qw/Created Started Resolved Told LastUpdated Starts Due/] },
+        },
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectDateRelation',
+        },
+        Value => {
+            Type => 'component',
+            Path => '/Elements/SelectDate',
+            Arguments => { ShowTime => 0, Default => '' },
+        },
+    },
+    {
+        Name => 'TicketTime',
+        Field => {
+            Type    => 'select',
+            Options => [
+                TicketTimeWorked => loc('Time Worked'),
+                TicketTimeEstimated => loc('Time Estimated'),
+                TicketTimeLeft => loc('Time Left'),
+            ],
+        },
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectEqualityOperator',
+        },
+        Value => [
+            {
+                Type => 'component',
+                Path => '/Elements/EditTimeValue',
+            },
+        ],
+    },
+    {
+        Name => 'TicketPriority',
+        Field => {
+            Type    => 'select',
+            Options => [
+                TicketPriority => loc('Priority'),
+                TicketInitialPriority => loc('Initial Priority'),
+                TicketFinalPriority => loc('Final Priority'),
+            ],
+        },
+        Op => {
+            Type => 'component',
+            Path => '/Elements/SelectEqualityOperator',
+        },
+        Value => {
+            Type => 'component',
+            Path => '/Elements/SelectPriority',
+        },
+    },
+);
+
+$m->callback( Conditions => \@lines );
+
+</%INIT>
+
+<%ARGS>
+%queues => ()
+</%ARGS>

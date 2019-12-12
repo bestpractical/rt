@@ -55,7 +55,7 @@
     titleright_href => $customize,
     hideable => $hideable,
     class => 'fullwidth' &>
-<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets', HasResults => $HasResults, PreferOrderBy => 1 &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
 </&>
 <%init>
 my $search;
@@ -64,6 +64,7 @@ my $SearchArg;
 my $customize;
 my $query_display_component = '/Elements/CollectionList';
 my $query_link_url = RT->Config->Get('WebPath').'/Search/Results.html';
+my $class = 'RT::Tickets';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
@@ -79,7 +80,11 @@ if ($SavedSearch) {
     }
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} ||= 'Ticket';
-    if ( $SearchArg->{SearchType} ne 'Ticket' ) {
+    if ( $SearchArg->{SearchType} eq 'Transaction' ) {
+        $class = 'RT::Transactions';
+        $query_link_url = RT->Config->Get('WebPath') .  "/Transaction/Search/Results.html";
+    }
+    elsif ( $SearchArg->{SearchType} ne 'Ticket' ) {
 
         # XXX: dispatch to different handler here
         $query_display_component
@@ -136,14 +141,30 @@ my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 my $title_raw;
 if ($ShowCount) {
-    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-    $tickets->FromSQL($ProcessedSearchArg->{Query});
-    my $count = $tickets->CountAll();
+    my $collection = $class->new( $session{'CurrentUser'} );
+    my $query;
+    if ( $class eq 'RT::Transactions' ) {
+        $query = join ' AND ', "ObjectType = '$ProcessedSearchArg->{ObjectType}'",
+            $ProcessedSearchArg->{Query} ? "($ProcessedSearchArg->{Query})" : ();
+    }
+    else {
+        $query = $ProcessedSearchArg->{Query};
+    }
 
-    $title_raw = '<span class="results-count">' . loc('(Found [quant,_1,ticket,tickets])', $count) . '</span>';
+    $collection->FromSQL($query);
+    my $count = $collection->CountAll();
+
+    my $title;
+    if ( $class eq 'RT::Transactions' ) {
+        $title = loc('(Found [quant,_1,transaction,transactions])', $count);
+    }
+    else {
+        $title = loc('(Found [quant,_1,ticket,tickets])', $count);
+    }
+    $title_raw = '<span class="results-count">' . $title . '</span>';
 
     # don't repeat the search in CollectionList
-    $ProcessedSearchArg->{Collection} = $tickets;
+    $ProcessedSearchArg->{Collection} = $collection;
     $ProcessedSearchArg->{TotalFound} = $count;
 }
 </%init>

@@ -45,13 +45,32 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" class="form-control selectpicker">
-% for my $option ( @Options ) {
-<option value="<% $Prefix . $option %>"><% loc($option) %></option>
-% }
-</select>
+<& /Elements/Header, Title => loc('Transaction #[_1]', $id) &>
+<& /Elements/Tabs &>
+
+<& /Elements/ShowHistoryHeader, Object => $txn, %ARGS &>
+
+<& /Elements/ShowTransaction, Transaction => $txn,
+    DisplayPath     => RT->Config->Get('WebPath') . '/Ticket/Display.html',
+    AttachmentPath  => RT->Config->Get('WebPath') . '/Ticket/Attachment',
+    UpdatePath      => RT->Config->Get('WebPath') . '/Ticket/Update.html',
+    ForwardPath     => RT->Config->Get('WebPath') . '/Ticket/Forward.html',
+    EmailRecordPath => RT->Config->Get('WebPath') . '/Ticket/ShowEmailRecord.html',
+    EncryptionPath  => RT->Config->Get('WebPath') . '/Ticket/Crypt.html',
+    %ARGS,
+&>
+</div>
+
+<& /Widgets/TitleBoxEnd &>
+</div>
+
 <%ARGS>
-$Name => 'DateType'
-$Prefix => ''
-@Options => qw(Created Started Resolved Told LastUpdated Starts Due Updated) # loc_qw
+$id => undef
 </%ARGS>
+
+<%INIT>
+Abort( loc('No transaction specified') ) unless $id;
+my $txn = LoadTransaction($id);
+Abort( loc('No permission to view transaction'), Code => HTTP::Status::HTTP_FORBIDDEN ) unless $txn->CurrentUserCanSee;
+
+</%INIT>

@@ -4557,6 +4557,34 @@ sub GetCustomFieldInputNamePrefix {
     RT::Interface::Web::GetCustomFieldInputNamePrefix(@_);
 }
 
+=head2  LoadTransaction id
+
+Takes a transaction id as its only variable. if it's handed an array, it takes
+the first value.
+
+Returns an RT::Transaction object as the current user.
+
+=cut
+
+sub LoadTransaction {
+    my $id = shift;
+
+    if ( ref($id) eq "ARRAY" ) {
+        $id = $id->[0];
+    }
+
+    unless ($id) {
+        Abort( loc('No transaction specified'), Code => HTTP::Status::HTTP_BAD_REQUEST );
+    }
+
+    my $Transaction = RT::Transaction->new( $session{'CurrentUser'} );
+    $Transaction->Load($id);
+    unless ( $Transaction->id ) {
+        Abort( loc( 'Could not load transaction #[_1]', $id ), Code => HTTP::Status::HTTP_NOT_FOUND );
+    }
+    return $Transaction;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

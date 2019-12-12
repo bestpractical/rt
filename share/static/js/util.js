@@ -257,6 +257,22 @@ jQuery(function() {
             };
         };
     });
+
+    jQuery('td.collection-as-table').each( function() {
+        if ( jQuery(this).children() ) {
+            var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
+            if ( jQuery(this).children().height() > max_height ) {
+                jQuery(this).children().wrapAll('<div class="clip">');
+                jQuery(this).children('div.clip').height('' + max_height + 'px');
+                jQuery(this).append('<a href="#" class="unclip button btn btn-primary">' + loc_key('unclip') + '</a>');
+            }
+        }
+    });
+    jQuery('a.unclip').click(function() {
+        jQuery(this).siblings('div.clip').css('height', 'auto');
+        jQuery(this).hide();
+        return false;
+    });
 });
 
 function textToHTML(value) {

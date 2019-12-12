@@ -53,10 +53,19 @@ $maxitems => undef
 $Depth => undef
 $Warning => undef
 $ColumnMap => {}
-$Class     => 'RT__Ticket'
+$Class     => 'RT::Tickets'
 $Classes => ''
 </%ARGS>
 <%init>
+
+my $column_map_class;
+if ( $Class =~ /::/ ) {
+    $column_map_class = $Class->ColumnMapClassName;
+}
+else {
+    $column_map_class = $Class;
+}
+
 $m->out( '<tbody class="list-item"' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' ) . '>' );
 
 $m->out(  '<tr class="' . $Classes . ' '
@@ -94,7 +103,7 @@ foreach my $column (@Format) {
 
             $ColumnMap->{$col}{$attr} = $m->comp(
                 "/Elements/ColumnMap",
-                Class => $Class,
+                Class => $column_map_class,
                 Name  => $col,
                 Attr  => $attr,
             );
@@ -120,7 +129,7 @@ foreach my $column (@Format) {
         unless ( exists $ColumnMap->{$col}{'value'} ) {
             $ColumnMap->{$col}{'value'} = $m->comp(
                 "/Elements/ColumnMap",
-                Class => $Class,
+                Class => $column_map_class,
                 Name  => $col,
                 Attr  => 'value'
             );

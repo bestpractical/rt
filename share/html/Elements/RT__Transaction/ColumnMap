@@ -50,6 +50,11 @@ $Name
 $Attr => undef
 </%ARGS>
 <%ONCE>
+my $get_ticket_value = sub {
+    my $sub = pop;
+    return sub { return $_[0]->ObjectType eq 'RT::Ticket' ? $sub->(@_) : '' };
+};
+
 my $COLUMN_MAP = {
     ObjectType => {
         title     => 'Object Type', # loc
@@ -108,6 +113,78 @@ my $COLUMN_MAP = {
     Content => {
         title       => 'Content', # loc
         value       => sub { return $_[0]->Content },
+    },
+    PlainContent => {
+        title       => 'Content', # loc
+        value       => sub { return $_[0]->Content( Type => 'text/plain' ) },
+    },
+    HTMLContent => {
+        title       => 'Content', # loc
+        value       => sub { return \$_[0]->Content( Type => 'text/html' ) },
+    },
+    TicketId => {
+        title     => 'Ticket ID', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->id } ),
+    },
+    TicketSubject => {
+        title     => 'Ticket Subject', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->Subject } ),
+    },
+    TicketQueue => {
+        title     => 'Ticket Queue', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->QueueObj->Name } ),
+    },
+    TicketOwner => {
+        title     => 'Ticket Owner', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->OwnerObj->Name } ),
+    },
+    TicketCreator => {
+        title     => 'Ticket Creator', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->CreatorObj->Name } ),
+    },
+    TicketLastUpdatedBy => {
+        title     => 'Ticket LastUpdatedBy', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->LastUpdatedByObj->Name } ),
+    },
+    TicketCreated => {
+        title     => 'Ticket Created', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->CreatedObj->AsString } ),
+    },
+    TicketStarted => {
+        title     => 'Ticket Started', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->StartedObj->AsString } ),
+    },
+    TicketResolved => {
+        title     => 'Ticket Resolved', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->ResolvedObj->AsString } ),
+    },
+    TicketTold => {
+        title     => 'Ticket Told', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->ToldObj->AsString } ),
+    },
+    TicketLastUpdated => {
+        title     => 'Ticket LastUpdated', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->LastUpdatedObj->AsString } ),
+    },
+    TicketStarts => {
+        title     => 'Ticket Starts', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->StartsObj->AsString } ),
+    },
+    TicketDue => {
+        title     => 'Ticket Due', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->DueObj->AsString } ),
+    },
+    TicketPriority => {
+        title     => 'Ticket Priority', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->Priority } ),
+    },
+    TicketInitialPriority => {
+        title     => 'Ticket InitialPriority', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->InitialPriority } ),
+    },
+    TicketFinalPriority => {
+        title     => 'Ticket FinalPriority', # loc
+        value     => $get_ticket_value->( @_, sub { $_[0]->Object->FinalPriority } ),
     },
 };
 

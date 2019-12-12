@@ -1,18 +1,17 @@
 =head1 Introduction
 
-The Query Builder is RT's search engine. It lets you find tickets matching
+The Ticket Query Builder is RT's search engine. It lets you find tickets matching
 some (potentially very complex) criteria. There are loads of criteria you can
 specify in order to perform a search. Strategies for narrowing your searches
 to find exactly what you're looking for (and no more) are discussed below.
 
+Newer RT versions also include a Transaction query builder, which allows
+you to search for specific changes or types of changes in tickets.
+
 The Query Builder is the heart of reporting in RT, which is covered in the
 L<Dashboard and Reports|docs/dashboards_reporting.pod> document.
 
-To follow along with the examples, go to
-L<issues.bestpractical.com|http://issues.bestpractical.com> and try the
-searches yourself.
-
-=head1 Example
+=head1 Basic Ticket Searches
 
 Let's look for tickets in the "RT" queue (RT's bugtracker for itself) that have
 been resolved in the last year. (These examples assume it's currently mid June,
@@ -28,9 +27,9 @@ src="images/search-criteria.png">
 =for :man [Search Criteria F<docs/images/search-criteria.png>]
 
 RT also has two meta-statuses, 'active' and 'inactive'. By selecting either of
-these from the status dropdown of the query builder, you will no longer need
-to explicitly list all of the active or inactive statuses or manually enter
-the queries: "Status = '__Active__'" or "Status = '__Inactive__'".
+these from the status dropdown of the query builder, your search will include
+tickets in all active or inactive statuses without adding each individual
+status name.
 
 The sets of active and inactive statuses for a queue are defined by the
 associated lifecycle. Active tickets are those listed for the 'active' and
@@ -39,8 +38,8 @@ For the default RT lifecycle, for example, the active statuses are new, open,
 and stalled, and the inactive statuses are resolved, rejected and deleted. See
 F<docs/customizing/lifecycles.pod> for more information.
 
-Now that I've selected some criteria, I can click either Add These Terms or
-Add These Terms and Search. I'll click the former:
+After you select some criteria, you can click either Add These Terms to start
+to build your query.
 
 =for html <img alt="Added Terms"
 src="images/added-terms.png">
@@ -49,15 +48,13 @@ src="images/added-terms.png">
 
 =for :man [Added Terms F<docs/images/added-terms.png>]
 
-The upper right hand side presents all the logic we've specified. This view is
+The upper right hand side presents all the logic you have specified. This view is
 a nice way proofread your search: Have you captured everything you want? Are
 there things you'd maybe prefer to leave out for now?
 
-It turns out I've changed my mind. I actually don't want to restrict the search
-to just the RT queue. I want to see all the tickets in issues.bestpractical.com
-(which also includes feature requests, RTIR, etc) that have been resolved
-within the past year. To adjust the search, click on 'AND Queue = RT' and press
-Delete:
+You can continue to modify and refine your search, adding or removing criteria.
+For example, to see all queues and not just the RT queue, you click that part
+of the query and click Delete.
 
 =for html <img alt="Delete Term"
 src="images/delete-term.png">
@@ -66,7 +63,7 @@ src="images/delete-term.png">
 
 =for :man [Delete Term F<docs/images/delete-term.png>]
 
-Your search should now look like this:
+The updated search has just the remaining criteria:
 
 =for html <img alt="Deleted Term"
 src="images/deleted-term.png">
@@ -75,10 +72,8 @@ src="images/deleted-term.png">
 
 =for :man [Deleted Term F<docs/images/deleted-term.png>]
 
-Now, finally, to make the search go, you can either press 'Add these terms and
-Search' (provided there's no new content in the Query Builder), or scroll all
-the way down and press 'Update format and Search'. This search should turn up
-a full page of tickets. Here's the top portion of the list:
+To run the search, click either 'Add these terms and Search', 'Update format
+and Search' at the very bottom, or Show Results in the submenu near the top.
 
 =for html <img alt="Search Results"
 src="images/search-results.png">
@@ -86,6 +81,8 @@ src="images/search-results.png">
 =for :text [Search Results F<docs/images/search-results.png>]
 
 =for :man [Search Results F<docs/images/search-results.png>]
+
+=head1 Customizing Search Result Fields
 
 This is the default view of your results. However, like nearly everything in RT,
 it's configurable. You can select additional columns to appear in your results,
@@ -143,18 +140,79 @@ The same pieces of information are now spread across the display next to one
 another, which can be harder to read. So when you tell RT to display a lot of
 columns, it's usually worth adding a well-placed NEWLINE.
 
-Let's say, for example, you have a custom field named 'TransportType' that takes
-the values, 'Car', 'Bus' or 'Train'. If you were to search for all tickets that
-do not have 'TransportType' set to 'Car', this would result in a list of tickets
-with 'TransportType' values of 'Bus', 'Train', and '(no value)'. In order to ensure
-that custom fields with no set value are not included in the your search results,
-add the following to your query:
+=head1 Custom Field Searches
 
-AND CF.{TransportType} IS NOT NULL
+Users often add custom fields to tickets to capture additional important information.
+All of these fields can be searched in the Query Builder as well. Global custom fields
+will show up by default when you start a search. To see custom fields that are applied
+to individual queues, first add the queue to your search and you'll then see the
+custom fields appear in the bottom of the Add Criteria section.
 
-And there are the basics of the query builder! To implement these basics to
-build reports, please see the Dashboard & Reports document. For definitions of
-piece of RT metadata, please see the Definitions of Ticket Metadata document.
+For example, you might have a custom field named "Transport Type" with values
+like "Car", "Bus" or "Train". You can easily build a search to show just tickets
+with a Transport Type of Train for some time period by selecting those options
+in the custom field entry.
+
+=head2 Custom Field Searches and Null Values
+
+There is a special case if you want to search for tickets with no value, called
+a "Null" value, for a custom field. If you search for all tickets that
+do not have Transport Type set to "Car", this results in a list of tickets
+with Transport Type values of 'Bus', 'Train', and '(no value)'.
+
+If what you intended was to show all tickets that have a value and that value
+is not "Car", you can clarify your query to get the correct results. To filter
+out the empty values, add the following to your search query:
+
+    AND CF.{'Transport Type'} IS NOT NULL
+
+=head1 Transaction Query Builder
+
+Similar to the Ticket Query Builder, the Transaction Query Builder provides an
+interface to search for individual transactions. Transactions are all of the
+changes made to a ticket through its life. Each of the entries displayed in the
+ticket history at the bottom of the ticket display page is a transaction.
+
+In some cases, RT users looking for a particular reply on a ticket will
+search in their email client rather than in RT because they will remenber
+getting the email with the information they need. On a busy ticket, it
+can be a challenge to find the reply from Jane some time this week. The
+Transaction Query Builder now makes that sort of search easy.
+
+=head2 Basic Transaction Searches
+
+In the example above, suppose you remember getting a reply from Jane in email
+on a ticket and you know it was in the last week. But it's been a busy week
+and Jane is on a bunch of active tickets, so you're not sure where to start.
+With the Transaction Query Builder, you can easily create a search to show all
+replies from Jane.
+
+First find Creator, select "is", and type Jane's username. The "Creator" of a
+transaction is always the person who made the change. For a reply, by email or
+in RT itself, the person who replied will be the Creator of the transaction.
+
+Next, for Created select "after" and type "1 week ago". RT will then automatically
+figure out the date 7 days ago and show you only results in the last 7 days.
+
+Finally for Type select "is" and select "Correspond". Correspond is the name RT
+users internally for all replies on a ticket.
+
+Run the search and you'll see all replies from Jane on any tickets over the
+last week. Note that you'll see all transactions you have rights to see, even
+if you aren't a watcher and possibly didn't get an email originally.
+
+=head2 Including Ticket Information
+
+When searching for transactions, you can also add criteria about the types of
+tickets the transactions should be on. In our example, we probably only want
+to see active tickets, so in the bottom Ticket Fields section you can select
+Status "is" and "Active". This will then filter out inactive statuses.
+
+=head1 Learn More
+
+To use the query builder to to build and save reports, see
+L<Dashboard and Reports|docs/dashboards_reporting.pod>. For definitions of
+RT metadata, see L<Ticket Metadata|docs/ticket_metadata.pod>.
 
 =cut
 

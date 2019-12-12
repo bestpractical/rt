@@ -2332,6 +2332,68 @@ Set($PreferDropzone, 1);
 
 =back
 
+=head2 Transaction search
+
+=over 4
+
+=item C<%TransactionDefaultSearchResultFormat>
+
+C<%TransactionDefaultSearchResultFormat> is the default format for RT
+transaction search results for various object types. Keys are object types
+like C<RT::Ticket>, values are the format string.
+
+=cut
+
+Set(%TransactionDefaultSearchResultFormat,
+    'RT::Ticket' => qq{
+        '<B><A HREF="__WebPath__/Transaction/Display.html?id=__id__">__id__</a></B>/TITLE:ID',
+        '<B><A HREF="__WebPath__/Ticket/Display.html?id=__ObjectId__">__ObjectId__</a></B>/TITLE:Ticket',
+        '__Description__',
+        '<small>__OldValue__</small>',
+        '<small>__NewValue__</small>',
+        '<small>__Content__</small>',
+        '<small>__CreatedRelative__</small>',
+   },
+);
+
+=item C<%TranactionDefaultSearchResultOrderBy>
+
+What Transactions column should we order by for RT Transaction search
+results for various object types.  Keys are object types like C<RT::Ticket>,
+values are the column names.
+
+Defaults to I<id>.
+
+=cut
+
+Set( %TransactionDefaultSearchResultOrderBy, 'RT::Ticket' => 'id' );
+
+=item C<%TransactionDefaultSearchResultOrder>
+
+When ordering RT Transaction search results by
+C<%TransactionDefaultSearchResultOrderBy>, should the sort be ascending
+(ASC) or descending (DESC).  Keys are object types like C<RT::Ticket>,
+values are either "ASC" or "DESC".
+
+Defaults to I<ASC>.
+
+=cut
+
+Set( %TransactionDefaultSearchResultOrder, 'RT::Ticket' => 'ASC' );
+
+=item C<%TransactionShowSearchResultCount>
+
+Display search result count on transaction lists.  Keys are object types
+like C<RT::Ticket>, values are either 1 or 0.
+
+Defaults to 1 (show them).
+
+=cut
+
+Set( %TransactionShowSearchResultCount, 'RT::Ticket' => 1 );
+
+=back
+
 =head2 Transaction display
 
 =over 4
