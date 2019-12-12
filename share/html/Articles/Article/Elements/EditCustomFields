@@ -49,12 +49,9 @@
 <div class="form-row">
   <div class="cflabel label col-md-3">
     <span class="name"><%$CustomField->Name%>:</span>
-    <div class="form-row">
-      <div class="label col-md-3"></div>
-      <div class="cflabel label col-md-9">
-        <span class="type"><%$CustomField->EntryHint // ''%></span>
-      </div>
-    </div>
+% if ( $CustomField->EntryHint ) {
+    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
+% }
   </div>
   <div class="col-md-9 value entry">
     <& /Elements/EditCustomField, 
