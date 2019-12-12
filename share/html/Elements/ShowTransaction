@@ -224,9 +224,10 @@ elsif ( %$Attachments && $ShowActions ) {
         && RT->Config->Get('Crypt')->{'Enable'}
         && RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'}
     ) {
+        my $alt = loc('Encrypt/Decrypt');
         push @actions, {
             class  => "encryption-link",
-            title  => loc('Encrypt/Decrypt'),
+            title  => qq[<span class="fas fa-key" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $EncryptionPath
                 .'?id='. $Transaction->id
                 .'&QuoteTransaction='. $Transaction->id
