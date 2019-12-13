@@ -124,7 +124,7 @@ my $row_end = qq{</div></div>};
 <li><a href="https://metacpan.org/search?q=<% $plugin |u %>" target="_blank"><% $plugin %></a></li>
 % }
 </ul>
-<br /><em><% loc('Must modify in config file' ) %></em>
+<div class="text-right"><em><% loc('Must modify in config file' ) %></em></div>
 <% $row_end |n%>
 % } elsif ( $is_immutable ) {
 % if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
@@ -132,7 +132,7 @@ my $row_end = qq{</div></div>};
 % } else {
 <% $row_start |n %><input type="text" disabled value="<% $current_value %>" class="form-control" />
 % }
-<br /><em><% loc('Must modify in config file' ) %></em>
+<div class="text-right"><em><% loc('Must modify in config file' ) %></em></div>
 <% $row_end |n %>
 % } else {
   <& $widget,
