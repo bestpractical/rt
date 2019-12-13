@@ -23,7 +23,7 @@ diag 'test without attachments' if $ENV{TEST_VERBOSE};
         fields      => { Subject => $subject, Content => $content },
     );
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
-    $m->follow_link_ok( { text => 'with headers' },
+    $m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/ },
         '-> /Ticket/Attachment/WithHeaders/...' );
     $m->content_contains( $subject, "has subject $subject" );
     $m->content_contains( $content, "has content $content" );
@@ -61,7 +61,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
     $m->content_contains( $filename, 'attached filename' );
     $m->content_lacks( Encode::encode("UTF-8",$filename), 'no double encoded attached filename' );
-    $m->follow_link_ok( { text => 'with headers' },
+    $m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/ },
         '-> /Ticket/Attachment/WithHeaders/...' );
 
     # subject is in the parent attachment, so there is no 标题
@@ -82,7 +82,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
 
     $m->back;
     $m->back;
-    $m->follow_link_ok( { text => "Download $filename" },
+    $m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\// },
         '-> /Ticket/Attachment/...' );
     $m->content_contains( $filename, "has file content $filename" );
 

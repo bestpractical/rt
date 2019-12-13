@@ -33,7 +33,7 @@ $m->field( 'Subject', 'Signing test' );
 $m->field( 'Content', 'Some other content' );
 $m->submit;
 $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
-$m->follow_link_ok( { text => 'with headers' } );
+$m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/ } );
 $m->content_contains('X-RT-Encrypt: 0');
 $m->content_contains('X-RT-Sign: 0');
 
@@ -47,7 +47,7 @@ $m->tick( 'Encrypt', 1 );
 $m->tick( 'Sign',    1 );
 $m->submit;
 $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
-$m->follow_link_ok( { text => 'with headers' } );
+$m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/ } );
 $m->content_contains('X-RT-Encrypt: 1');
 $m->content_contains('X-RT-Sign: 1');
 

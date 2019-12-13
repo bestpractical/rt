@@ -57,19 +57,19 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->content_contains("Download $plain_name", 'download plain file link' );
 
     # Check for Message-IDs
-    follow_parent_with_headers_link($m, text => 'with headers', n => 1);
+    follow_parent_with_headers_link($m, url_regex => qr/Attachment\/WithHeaders\//, n => 1);
     $m->content_like(qr/^Message-ID:/im, 'create content has one Message-ID');
     $m->content_unlike(qr/^Message-ID:.+?Message-ID:/ism, 'but not two Message-IDs');
     $m->back;
 
-    follow_with_headers_link($m, text => "Download $plain_name", n => 1);
+    follow_with_headers_link($m, url_regex => qr/Attachment\/\d+\/\d+\/$plain_name/, n => 1);
     $m->content_unlike(qr/^Message-ID:/im, 'attachment lacks a Message-ID');
     $m->back;
 
     my ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main content/, 'email contains main content' );
     # check the email link in page too
-    $m->follow_link_ok( { text => 'Show' }, 'show the email outgoing' );
+    $m->follow_link_ok( { url_regex => qr/ShowEmailRecord/ }, 'show the email outgoing' );
     $m->content_contains('this is main content', 'email contains main content');
     $m->back;
 
@@ -92,23 +92,23 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->content_contains("Download $html_name", 'download html file link' );
 
     # Check for Message-IDs
-    follow_parent_with_headers_link($m, text => 'with headers', n => 2);
+    follow_parent_with_headers_link($m, url_regex => qr/Attachment\/WithHeaders\//, n => 2);
     $m->content_like(qr/^Message-ID:/im, 'correspondence has one Message-ID');
     $m->content_unlike(qr/^Message-ID:.+?Message-ID:/ism, 'but not two Message-IDs');
     $m->back;
 
-    follow_with_headers_link($m, text => "Download $plain_name", n => 2);
+    follow_with_headers_link($m, url_regex => qr/Attachment\/\d+\/\d+\/$plain_name/, n => 2);
     $m->content_unlike(qr/^Message-ID:/im, 'text/plain attach lacks a Message-ID');
     $m->back;
 
-    follow_with_headers_link($m, text => "Download $html_name", n => 1);
+    follow_with_headers_link($m, url_regex => qr/Attachment\/\d+\/\d+\/$html_name/, n => 1);
     $m->content_unlike(qr/^Message-ID:/im, 'text/html attach lacks a Message-ID');
     $m->back;
 
     ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main reply content/, 'email contains main reply content' );
     # check the email link in page too
-    $m->follow_link_ok( { text => 'Show', n => 2 }, 'show the email outgoing' );
+    $m->follow_link_ok( { url_regex => qr/ShowEmailRecord/, n => 2 }, 'show the email outgoing' );
     $m->content_contains("this is main reply content", 'email contains main reply content');
     $m->back;
 }
