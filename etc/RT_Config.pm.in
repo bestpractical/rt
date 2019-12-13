@@ -3100,7 +3100,7 @@ Set(%TransactionDefaultSearchResultFormat,
    },
 );
 
-=item C<%TranactionDefaultSearchResultOrderBy>
+=item C<%TransactionDefaultSearchResultOrderBy>
 
 What Transactions column should we order by for RT Transaction search
 results for various object types.  Keys are object types like C<RT::Ticket>,
