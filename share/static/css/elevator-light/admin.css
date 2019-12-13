@@ -202,3 +202,10 @@ div.inline-row i {
 .configuration {
     padding-top: .1em;
 }
+
+.configuration .tab-content .tab-content {
+    padding-top: 0;
+}
+.configuration .card.titlebox {
+    margin-top: 0;
+}
