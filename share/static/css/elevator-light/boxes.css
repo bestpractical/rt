@@ -100,6 +100,32 @@ div.results .titlebox .titlebox-content {
     padding-top: 0;
 }
 
+/* card colored top borders */
+.titlebox.card.ticket-info-basics {
+    border-top: 3px solid #f44336;
+}
+.titlebox.card.ticket-info-reminders {
+    border-top: 3px solid #00BCD4;
+}
+.titlebox.card.ticket-info-people {
+    border-top: 3px solid #03A9F4;
+}
+.titlebox.card.ticket-info-dates {
+    border-top: 3px solid #9C27B0;
+}
+.titlebox.card.ticket-info-attachments {
+    border-top: 3px solid #FF5722;
+}
+.titlebox.card.ticket-info-links {
+    border-top: 3px solid #8BC34A;
+}
+.titlebox.card.ticket-info-merge {
+    border-top: 3px solid #FF9800;
+}
+.titlebox.card.ticket-info-cfs {
+    border-top: 3px solid #CDDC39;
+}
+
 .titlebox .card-header span.toggle:hover {
     cursor: pointer;
 }
