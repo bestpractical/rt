@@ -49,14 +49,14 @@
 see docs/extending/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>" class="widget form-row boolean">
-  <div class="col-md-3 label">
+  <div class="col-md-<% $LabelCols %> label">
 % if( $LabelLink ) {
     <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
 % } else {
     <% $Description %>
 % }
   </div>
-  <div class="col-md-9 value">
+  <div class="col-md-<% $ValueCols %> value">
     <& SELF:InputOnly, %ARGS &>
     <span class="hints"><% $Hints %></span>
   </div>
@@ -66,6 +66,8 @@ $Name         => undef,
 $Description  => undef,
 $Hints        => ''
 $LabelLink    => ''
+$LabelCols    => 3
+$ValueCols    => 9
 </%ARGS>
 
 <%METHOD InputOnly>
