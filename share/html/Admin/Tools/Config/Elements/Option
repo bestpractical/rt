@@ -103,8 +103,8 @@ elsif ($widget eq '/Widgets/Form/Select') {
     );
 }
 my $row_start = qq{<div class="widget form-row">
-  <div class="col-md-3 label"><a href="$doc_url" target="_blank">$name</a></div>
-  <div class="col-md-9 value">
+  <div class="col-md-4 label"><a href="$doc_url" target="_blank">$name</a></div>
+  <div class="col-md-8 value">
 };
 my $row_end = qq{</div></div>};
 
@@ -142,6 +142,8 @@ my $row_end = qq{</div></div>};
     CurrentValue => $current_value,
     Description  => $name,
     Hints        => $meta->{WidgetArguments}->{Hints} || '',
+    LabelCols    => 4,
+    ValueCols    => 8,
     %$args,
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
             $meta->{'WidgetArguments'} ) },
