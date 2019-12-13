@@ -59,7 +59,8 @@
 % } else {
       href="<% RT->Config->Get('WebPath') %>/Transaction/Display.html?id=<% $Transaction->id %>" \
 % }
-      ><span class="fas fa-link"></span></a>
+% my $alt = loc('Show transaction link');
+      ><span class="fas fa-link" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span></a>
     </span>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
     <span class="date"><% $date |n %></span>
