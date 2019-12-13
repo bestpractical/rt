@@ -1690,6 +1690,23 @@ our %META;
         WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
     },
 
+    DefaultCatalog => {
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Default catalog',    #loc
+            Callback    => sub {
+                my $ret = { Values => [], ValuesLabel => {} };
+                my $c = RT::Catalogs->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+                $c->UnLimit;
+                while ( my $catalog = $c->Next ) {
+                    next unless $catalog->CurrentUserHasRight("CreateAsset");
+                    push @{ $ret->{Values} }, $catalog->Id;
+                    $ret->{ValuesLabel}{ $catalog->Id } = $catalog->Name;
+                }
+                return $ret;
+            },
+        }
+    },
     DefaultSearchResultOrder => {
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(ASC DESC)] },
