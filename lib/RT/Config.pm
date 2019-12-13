@@ -1669,37 +1669,6 @@ our %META;
         Widget => '/Widgets/Form/String',
     },
 
-    AssetSearchFormat => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    AssetSummaryFormat => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    AssetSummaryRelatedTicketsFormat => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    DefaultSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    DefaultSelfServiceSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    MoreAboutRequestorExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    MoreAboutRequestorTicketListFormat => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    UserSearchResultFormat => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    UserSummaryExtraInfo => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-    UserSummaryTicketListFormat => {
-        Widget => '/Widgets/Form/MultilineString',
-    },
-
     LogToSyslog => {
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
