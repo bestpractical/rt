@@ -96,8 +96,9 @@ ul.sf-menu li {
 
 #page-navigation {
     position: absolute;
-    top: 3.6em;
+    top: 3.9em;
     right: 2em;
+    float: right;
 }
 
 .page-nav-shadow {

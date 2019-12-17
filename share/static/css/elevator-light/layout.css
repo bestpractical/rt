@@ -12,17 +12,20 @@ div#rt-header-container {
 
 div#body {
     padding: 0 2.5em;
-    margin-top: 4em;
+    margin-top: 3em;
     margin-right: 0;
     margin-bottom: 0em;
     background: #fff;
     z-index: 1;
+    float: left;
+    clear: both;
+    width: 100%;
+    border-top-color: #547CCC;
+    border-top-width: 2px;
+    border-top-style: solid;
 }
 
 @media (max-width: 800px) {
-    div#body {
-        padding: 3em 4.875%; /* 3em at 13px font size => 39px => 39/800 => .04875 */
-    }
     /* at narrow widths we'll have broken into a single column, so the default
        padding-right just causes the layout to degrade */
     .boxcontainer {
@@ -32,7 +35,7 @@ div#body {
 
 @media (max-width: 700px) {
     div#body {
-        padding: 3em 0;
+        padding: 0 0;
     }
 }
 
@@ -128,25 +131,28 @@ div#quickbar {
 }
 
 div#header {
-    position: absolute;
-    top: 3.5em;
+    position: relative;
+    top: 2.4em;
     left: 0;
     right: 0;
-    height: 3.2em;
-    border-bottom-color: #547CCC;
-    border-bottom-width: 2px;
-    border-bottom-style: solid;
+    float: left;
+    width: 100%;
 }
 
 div#header h1 {
-    position: absolute;
+    position: relative;
     left: 2em;
-    top: 0.5em;
-    height: 1.4em;
+    display: inline-block;
     font-size: 1.4em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: break-spaces;
+    overflow: visible;
+    max-width: 60%;
+}
+
+@media (max-width: 600px) { /* less than 600 */
+    div#header h1 {
+        max-width: 70%;
+    }
 }
 
 h1 {
