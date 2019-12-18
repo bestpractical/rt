@@ -1877,6 +1877,91 @@ Set this to 1 to hide unset fields.
 
 Set($HideUnsetFieldsOnDisplay, 0);
 
+=item C<%EnablePriorityAsString>
+
+Set this to C<0> to disable string priorities and only use
+numerical ones
+
+=cut
+
+Set($EnablePriorityAsString, 1);
+
+=item C<%PriorityAsString>
+
+RT can assign a priority value to tickets. Priority is stored as an
+integer in the database, but RT supports mapping strings to numerical
+values.
+
+RT supports different priority string mappings for individual queues
+with C<%PriorityAsString>.
+
+For example, the default mapping is:
+
+    Set(%PriorityAsString,
+      Default => { Low => 0, Medium => 50, High => 100 },
+    )
+
+Use queue names as keys in this hash.
+
+Values in the hash define the mapping:
+
+=over 4
+
+=item
+
+C<0> sets the queue to use numerical priorities:
+
+    NumQueue => 0
+
+=item
+
+a hash C<< { string => numerical_value,... } >> maps each string to
+the numerical value:
+
+    QueueWith3Levels => { Low => 0, Medium => 50, High => 100 }
+
+=item
+
+an array C<< [ string => numerical_value, ... ] >> maps each string to
+the numerical value, and additionaly tells RT to display strings in the
+order they were given in drop-down menus:
+
+      Ordered => [ Low => 0, High => 100, Medium => 50 ]
+
+In this case the drop-down menus used to choose the priority in RT will
+display Low/High/Medium, in this order
+
+=back
+
+Tickets in queues that aren't defined in this hash will use the mapping
+defined for C<Default>.
+
+A complete example of per-queue priority strings:
+
+    Set(%PriorityAsString,
+      # all queues not listed here will use this mapping
+      Default    => { Low => 0, Medium => 50, High => 100 },
+      # These queues use strings,
+      # drop-downs show labels ordered by ascending priority value
+      General    => { Low => 0, High => 1 },
+      ColorQueue => { Green => 0, Yellow => 50, Red => 100 },
+      # drop-downs will display in order Low/High/Medium
+      LHM        => [ Low => 0, High => 100, Medium => 50 ],
+      # use numerical priorities
+      NumQueue   => 0,
+    );
+
+Redefine C<%PriorityAsString> in C<RT_SiteConfig.pm> to set site
+priority strings.
+
+The default is 3 levels of priority: Low, Medium and High
+
+=cut
+
+    Set(%PriorityAsString,
+      Default => { Low => 0, Medium => 50, High => 100 },
+    );
+
 =back
 
 =head2 Group Summary Configuration

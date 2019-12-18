@@ -246,7 +246,8 @@
 <div class="form-row">
   <div class="label col-md-3"><&|/l&>Priority</&>:</div>
   <div class="value col-md-9"><& /Elements/SelectPriority,
-      Name => "InitialPriority",
+    Name => "InitialPriority",
+    QueueObj => $QueueObj,
     Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
   &></div>
 </div>
@@ -255,6 +256,7 @@
   <div class="label col-md-3"><&|/l&>Final Priority</&>:</div>
   <div class="value col-md-9"><& /Elements/SelectPriority,
     Name => "FinalPriority",
+    QueueObj => $QueueObj,
     Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->DefaultValue('FinalPriority'),
   &></div>
 </div>

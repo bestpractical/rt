@@ -127,6 +127,7 @@ unless ( @fields ) {
                     comp => '/Elements/SelectPriority',
                     args => {
                         Name => $field,
+                        QueueObj => $QueueObj,
                         Default => $defaults{$field} || $TicketObj->$field,
                     }
                 }

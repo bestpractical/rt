@@ -560,6 +560,14 @@ our %META;
         }
     },
 
+    EnablePriorityAsString => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    PriorityAsString => {
+        Widget => '/Widgets/Form/String',
+    },
+
+
     # User overridable locale options
     DateTimeFormat => {
         Section         => 'Locale',                       #loc
@@ -1858,6 +1866,114 @@ sub EnableExternalAuth {
     require RT::Authen::ExternalAuth;
     return;
 }
+
+=head2 Methods for specific options
+
+=head2 PriorityMap( <optional_queue_name> )
+
+Returns a hash ref C<< { <priority_as_string> => <priority_value>, ... } >>
+
+If no queue name is given uses the configuration for C<'Default'>.
+
+If the queue has no C<PriorityAsString> option, uses the one for  C<'Default'>.
+
+Returns C<undef> if C<EnablePriorityAsString> is set to 0, if the
+queue has C<PriorityAsString> switched off (by setting it to C<0>) or if no
+map is available.
+
+Logs an error if a PriorityAsString is found but it is neither a hash nor an
+array, nor 0.
+
+=cut
+
+sub PriorityMap
+  { my $self  = shift;
+    my $queue = shift || 'Default';
+
+    my $option = $self->PriorityAsStringForQueue( $queue );
+    return undef if ! $option;
+
+    my $map;
+    if ( ref $option eq 'HASH' ) {
+        # regular map
+        $map = $option
+    } elsif ( ref $option eq 'ARRAY' ) {
+        # order is irrelevent here, load the array as a hash
+        $map = { @$option };
+    } else {
+        # try to diagnose the problem by showing some details about the map
+        # note: this could also be done when the config is loaded
+
+        # where was the map defined
+        my $queues= $self->Get('PriorityAsString');
+        my $real_queue = defined $queues->{$queue}  ? "queue $queue"
+                       : defined $queues->{Default} ? 'Default queue'
+                       :                              'cannot happen';
+
+        # what's in the map definition
+        my $option_desc = ref $option         ? "map is a " . ref( $option )
+                        : length $option < 20 ? $option
+                        :                     substr( $option, 0, 17 ) . '...';
+
+        $RT::Logger->error( "Wrong priority map for $real_queue: $option_desc" );
+        return undef;
+    }
+    return $map;
+  }
+
+=head2 PriorityMapOrder( <optional_queue_name> )
+
+Returns an array of priority strings, in the proper order for display.
+
+The order is either given in the C<PriorityAsString> option by using an
+array for the queue, or is based on the numerical values of the options
+(lower values first).
+
+=cut
+
+sub PriorityMapOrder
+  { my $self  = shift;
+    my $queue = shift || 'Default';
+
+    my $option = $self->PriorityAsStringForQueue( $queue );
+    return undef if ! $option;
+
+    my @ordered;
+    if ( ref $option eq 'HASH' ) {
+        # hash: sort it on the value
+        @ordered = sort { $option->{$a} <=> $option->{$b} } keys %$option
+    } elsif ( ref $option eq 'ARRAY' ) {
+        # array: use the array order, extract every other element
+        foreach( my $i=0; $i<@$option; $i+=2) {
+            push @ordered, $option->[$i];
+        }
+    } else {
+        return undef;
+    }
+
+    return \@ordered;
+
+  }
+
+# internal method, PriorityAsStringForQueue( <queue name> )
+# returns a hashref { <label> => <value>, ... } or undef if no
+# priority mapping was found
+
+sub PriorityAsStringForQueue
+  { my $self  = shift;
+    my $queue = shift;
+
+    return undef if ! $self->Get( 'EnablePriorityAsString' );
+
+    my $queues = $self->Get( 'PriorityAsString' );
+    return undef if ! $queues;
+
+    my $map = defined $queues->{$queue} ? $queues->{$queue}
+            : defined $queues->{Default}? $queues->{Default}
+            :                             undef;
+
+    return $map;
+  }
 
 RT::Base->_ImportOverlays();
 

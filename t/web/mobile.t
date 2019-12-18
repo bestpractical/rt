@@ -2,6 +2,9 @@ use strict;
 use warnings;
 use RT::Test tests => 170;
 
+# we want to check the numerical priorities
+RT::Config->Set( EnablePriorityAsString => 0 );
+
 my ( $url, $m ) = RT::Test->started_ok;
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 

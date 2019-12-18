@@ -67,7 +67,10 @@ my $COLUMN_MAP = {
     },
     Priority => {
         title     => 'Priority', # loc
-        value     => sub { return join '-', $_[0]->DefaultValue('InitialPriority') || '', $_[0]->DefaultValue('FinalPriority') || '' },
+        value     => sub { return join '/',
+                               map { $_[0]->PriorityAsString( $_[0]->DefaultValue( $_ ) || 0 ) }
+                                   qw( InitialPriority FinalPriority );
+                     },
     },
     DefaultDueIn => {
         title     => 'DefaultDueIn', # loc

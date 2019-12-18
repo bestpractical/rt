@@ -45,11 +45,48 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ( %Map ) {
+<select class="select-priority form-control" name="<% $Name %>">
+%     unless ( defined $Default ) {
+<option value="">-</option>
+%     }
+<%PERL>
+foreach my $Label ( @Order ) {
+    my ( $Value, $Selected );
+    if ( $Label eq $DefaultLabel ) {
+        ( $Value, $Selected ) = ( $Default, 'selected="selected"' );
+    } else {
+        ( $Value, $Selected ) = ( $Map{ $Label }, '' );
+    }
+</%PERL>
+<option class="<% lc $Label %>" value="<% $Value %>" <% $Selected |n %>><% loc($Label) %></option>
+% }
+</select>
+% } else {
 <input name="<% $Name %>" type="text" value="<% $Default %>" size="5" class="form-control" />
+% }
 <%ARGS>
 $Name => 'Priority'
 $Default => ''
+$QueueObj => undef
+$PriorityStringMap => undef
 </%ARGS>
 <%INIT>
+
+my @Order;
+my $DefaultLabel = '';
+my %Map = ();
+
+
+if ( $QueueObj and $QueueObj->Id ) {
+    if ( my $Map = RT->Config->PriorityMap( $QueueObj->Name ) ) {
+        %Map   = %$Map;
+        @Order = @{RT->Config->PriorityMapOrder( $QueueObj->Name )};
+        if ( defined $Default && length $Default ) {
+        $DefaultLabel = $QueueObj->PriorityAsString( $Default );
+        }
+    }
+}
+
 $Default = '' unless defined $Default;
 </%INIT>

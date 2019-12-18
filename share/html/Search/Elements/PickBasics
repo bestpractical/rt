@@ -398,6 +398,18 @@ else {
             Value => { Type => 'text', Size => 5 }
         },
     );
+
+    if ( RT->Config->Get('EnablePriorityAsString') ) {
+        my ( $priority_dropdown ) = grep { $_->{Name} eq "Priority" } @lines;
+        my %priority_map = ( '-' => '' );
+        for my $queue (keys %queues) {
+            my $queue_priority_map= RT::Config->PriorityMap( $queue );
+            for my $priority ( keys %$queue_priority_map ) {
+                $priority_map{ keys %queues > 1 ? "$queue: $priority" : "$priority" } = $queue_priority_map->{$priority};
+            }
+        }
+        $priority_dropdown->{Value}{Arguments}{PriorityStringMap} = \%priority_map;
+    }
 }
 
 $m->callback( Conditions => \@lines );
