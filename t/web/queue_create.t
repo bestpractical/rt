@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 13;
+use RT::Test tests => 16;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
@@ -69,5 +69,15 @@ diag "Create a queue";
 
     $queue_id = $m->form_name('ModifyQueue')->value('id');
     ok $queue_id, "found id of the queue in the form, it's #$queue_id";
-}
 
+    # Test setting priority
+    $m->follow_link(id => 'page-default-values');
+    $m->content_contains('Final Priority');
+    $m->form_name('ModifyDefaultValues');
+    $m->click_button(value => 'Save Changes');
+    $m->content_contains('Default value of InitialPriority changed');
+    $m->form_name('ModifyDefaultValues');
+    $m->set_fields( FinalPriority => 50);
+    $m->click_button(value => 'Save Changes');
+    $m->content_contains('Default value of FinalPriority changed from Low to Medium');
+}
