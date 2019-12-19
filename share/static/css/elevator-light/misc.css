@@ -128,3 +128,13 @@ svg.icon-helper {
 .oddline {
     background-color: rgba(0, 0, 0, 0.05);
 }
+
+.cke_toolgroup a.cke_button {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.cke_toolbar .cke_combo_button,
+.cke_toolbar .cke_toolgroup {
+    margin-right: 5px;
+}
