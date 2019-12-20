@@ -56,17 +56,22 @@
 %     map { $current_context->{$_} }
 %     (qw( tab section subsection ) );
 <&|/Widgets/TitleBox, title => $complete_title &>
+% my $can_edit;
 % foreach my $option ( @{$subsection->{Content}} ) {
+%   $can_edit ||= 1 unless $RT::Config::META{$option->{Name}}{Immutable};
   <& /Admin/Tools/Config/Elements/Option, option => $option &>
 % }
 <input type="hidden" name="tab" value="<% $current_context->{tab} %>" />
 <input type="hidden" name="section" value="<% $current_context->{section} %>" />
 <input type="hidden" name="subsection" value="<% $current_context->{subsection} %>" />
+
+% if ( $can_edit ) {
 <div class="form-row">
   <span class="col-md-12">
     <& /Elements/Submit, Label => loc('Save Changes') &>
   </span>
 </div>
+% }
 </&>
 </form>
 % }
