@@ -820,6 +820,8 @@ our %META;
         },
     },
     Crypt        => {
+        Immutable => 1,
+        Invisible => 1,
         Type => 'HASH',
         PostLoadCheck => sub {
             my $self = shift;
@@ -866,6 +868,8 @@ our %META;
     },
     SMIME        => {
         Type => 'HASH',
+        Immutable => 1,
+        Invisible => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my $opt = $self->Get('SMIME');
@@ -900,6 +904,8 @@ our %META;
     },
     GnuPG        => {
         Type => 'HASH',
+        Immutable => 1,
+        Invisible => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my $gpg = $self->Get('GnuPG');
@@ -928,7 +934,11 @@ our %META;
             }
         }
     },
-    GnuPGOptions => { Type => 'HASH' },
+    GnuPGOptions => {
+        Type      => 'HASH',
+        Immutable => 1,
+        Invisible => 1,
+    },
     ReferrerWhitelist => { Type => 'ARRAY' },
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
     CustomFieldValuesCanonicalizers => { Type => 'ARRAY' },
@@ -1971,7 +1981,10 @@ sub LoadSectionMap {
                 while ( $content =~ m{<code>(.)([^<]*)</code>}sg ) {
                     my ( $sigil, $option ) = ( $1, $2 );
                     next unless $sigil =~ m{[\@\%\$]};    # no sigil => this is a value for a select option
-                    if ( !$META{$option} ) {
+                    if ( $META{$option} ) {
+                        next if $META{$option}{Invisible};
+                    }
+                    else {
                         RT->Logger->debug("No META info for option [$option], falling back to Code widget");
                     }
                     push @{ $SectionMap->[-1]{Content}[-1]{Content}[-1]{Content} }, { Name => $option, Help => $name };
