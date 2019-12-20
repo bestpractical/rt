@@ -1627,9 +1627,11 @@ our %META;
         Widget => '/Widgets/Form/String',
     },
     LogDir => {
+        Immutable => 1,
         Widget => '/Widgets/Form/String',
     },
     LogToFileNamed => {
+        Immutable => 1,
         Widget => '/Widgets/Form/String',
     },
     LogoAltText => {
@@ -1680,18 +1682,22 @@ our %META;
     },
 
     LogToSyslog => {
+        Immutable => 1,
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
     },
     LogToSTDERR => {
+        Immutable => 1,
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
     },
     LogToFile => {
+        Immutable => 1,
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
     },
     LogStackTraces => {
+        Immutable => 1,
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
     },
@@ -1720,6 +1726,9 @@ our %META;
     DefaultSearchResultOrder => {
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(ASC DESC)] },
+    },
+    LogToSyslogConf => {
+        Immutable     => 1,
     },
 );
 my %OPTIONS = ();
