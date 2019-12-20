@@ -1703,7 +1703,7 @@ our %META;
     },
     StatementLog => {
         Widget => '/Widgets/Form/Select',
-        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+        WidgetArguments => { Values => ['', qw(debug info notice warning error critical alert emergency)] },
     },
 
     DefaultCatalog => {

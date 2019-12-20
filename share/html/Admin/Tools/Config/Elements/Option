@@ -99,6 +99,7 @@ elsif ($widget eq '/Widgets/Form/String' || $widget eq '/Widgets/Form/Integer') 
 elsif ($widget eq '/Widgets/Form/Select') {
     %$args = (
         $args->{Default} ? ( DefaultLabel => loc('(no value)') ) : (),
+        ValuesLabel => { '' => '(no value)' },
         %$args,
     );
 }
