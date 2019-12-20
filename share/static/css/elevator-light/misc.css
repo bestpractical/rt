@@ -123,3 +123,8 @@ svg.icon-helper {
     padding-left: 0.2em;
     color: #666;
 }
+
+/* row colouring */
+.oddline {
+    background-color: rgba(0, 0, 0, 0.05);
+}
