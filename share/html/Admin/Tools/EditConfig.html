@@ -168,6 +168,8 @@ if (delete $ARGS{Update}) {
         $has_error++;
     }
 
+    @results = map { s/^Stack:.*//ms; $_ } @results;
+
     if ($has_error) {
         push @results, loc("No changes made.");
         $RT::Handle->Rollback;
