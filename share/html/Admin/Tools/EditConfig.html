@@ -99,7 +99,7 @@ if (delete $ARGS{Update}) {
                 next if !!$val eq !!$prev;
             }
 
-            if ( $meta->{Immutable} || $meta->{Obfuscate} || ($key =~ /Password/i and $key !~ /MinimumPasswordLength|AllowLoginPasswordAutoComplete/ )) {
+            if ( $meta->{Immutable} || $meta->{Obfuscate} || ($key =~ /Password/i and $key !~ /MinimumPasswordLength/ )) {
                 push @results, loc("Cannot change [_1]: Permission Denied", $key);
                 $has_error++;
                 next;
