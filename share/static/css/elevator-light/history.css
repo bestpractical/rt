@@ -193,18 +193,18 @@ padding-right:0.25em;
  margin: 0;
 }
 
+/* Keep these colors in sync with the ticket borders in boxes.css */
 
-
-.transaction.basics .type { background: #b32; }
-.transaction.cfs .type { background: #b32; }
-.transaction.people .type { background: #48c; }
-.transaction.links .type { background: #316531; }
-.transaction.dates .type { background: #633063; }
-.transaction.message .type { background: #069; }
-.transaction.reminders .type { background: #369; }
-.transaction.other .type { background: #abc; }
+.transaction.basics .type { background: #D32F2F; }
+.transaction.cfs .type { background: #D32F2F; }
+.transaction.people .type { background: #0288D1; }
+.transaction.links .type { background: #388E3C; }
+.transaction.dates .type { background: #7B1FA2; }
+.transaction.message .type { background: #1976D2; }
+.transaction.reminders .type { background: #0277BD; }
+.transaction.other .type { background: #B0BEC5; }
 .transaction.error .type { background: #900; }
-.transaction.attachment-truncate .type, .transaction.attachment-drop .type { background-color: #abc; }
+.transaction.attachment-truncate .type, .transaction.attachment-drop .type { background-color: #FF5722; }
 
 .transaction.error { background-color: #fcc; }
 .transaction.attachment-truncate, .transaction.attachment-drop { background-color: #ffc; }
