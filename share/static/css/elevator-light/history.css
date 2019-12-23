@@ -215,16 +215,16 @@ padding-right:0.25em;
 
 
 
-.transaction.basics .type { background: #b32; }
-.transaction.cfs .type { background: #b32; }
-.transaction.people .type { background: #48c; }
-.transaction.links .type { background: #316531; }
-.transaction.dates .type { background: #633063; }
-.transaction.message .type { background: #069; }
-.transaction.reminders .type { background: #369; }
+.transaction.basics .type { background: #f44336; }
+.transaction.cfs .type { background: #CDDC39; }
+.transaction.people .type { background: #03A9F4; }
+.transaction.links .type { background: #8BC34A; }
+.transaction.dates .type { background: #9C27B0; }
+.transaction.message .type { background: #3F51B5; }
+.transaction.reminders .type { background: #00BCD4; }
 .transaction.other .type { background: #abc; }
 .transaction.error .type { background: #900; }
-.transaction.attachment-truncate .type, .transaction.attachment-drop .type { background-color: #abc; }
+.transaction.attachment-truncate .type, .transaction.attachment-drop .type { background-color: #FF5722; }
 
 .transaction.error { background-color: #fcc; }
 .transaction.attachment-truncate, .transaction.attachment-drop { background-color: #ffc; }
