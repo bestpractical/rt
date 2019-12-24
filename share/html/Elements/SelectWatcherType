@@ -67,6 +67,17 @@ else {
     @types = $Queue->Roles(Single => 0);
 }
 
+my @NewTypes;
+for my $name (@types) {
+    if (my ($id) = $name =~ /^RT::CustomRole-(\d+)$/) {
+        my $role = RT::CustomRole->new($session{CurrentUser});
+        $role->Load($id);
+        next if $role->IsHiddenForURL;
+    }
+    push @NewTypes, $name;
+}
+@types = @NewTypes;
+
 $m->callback( Types => \@types, %ARGS, CallbackName => 'ModifyWatcherTypes' );
 </%INIT>
 <%ARGS>
