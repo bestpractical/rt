@@ -80,7 +80,7 @@ div#footer p {
 div#logo {
     position: absolute;
     right: 2px;
-    top: 0;
+    top: 0.25em;
     height: 2.8em;
 }
 
