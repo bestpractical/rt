@@ -704,6 +704,34 @@ sub SetDisabled {
     }
 }
 
+sub HiddenForURLs {
+    my $self = shift;
+    my $attr = $self->FirstAttribute('HiddenForURLs');
+    return {} if !$attr;
+    return $attr->Content;
+}
+
+sub SetHiddenForURLs {
+    my $self   = shift;
+    my $hidden = shift;
+
+    return $self->SetAttribute(
+        Name    => 'HiddenForURLs',
+        Content => $hidden,
+    );
+}
+
+sub IsHiddenForURL {
+    my $self = shift;
+    my $url  = shift;
+
+    my $current_url = $HTML::Mason::Commands::r->path_info;
+    $current_url =~ s!/{2,}!/!g;
+
+    $url //= $current_url;
+    return $self->HiddenForURLs->{$url};
+}
+
 sub _CoreAccessible {
     {
         id =>
