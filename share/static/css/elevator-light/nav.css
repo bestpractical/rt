@@ -79,6 +79,8 @@ ul.sf-menu li {
 #main-navigation .sf-menu a:hover {
     padding-top: 0.5em;
     padding-bottom: 0.5em;
+    border-radius: 0;
+    text-align: left;
 }
 
 #main-navigation a {
@@ -112,7 +114,6 @@ ul.sf-menu li {
 }
 
 #page-navigation #page-menu {
-    margin-top: 0.2em;
     float: right;
     width: auto;
 }
@@ -321,6 +322,7 @@ ul.sf-menu li {
 #page-menu.sf-menu > li > a {
     padding-top: .3em;
     padding-bottom: .3em;
+    border-radius: 0;
 }
 
 #page-menu.sf-menu li {
