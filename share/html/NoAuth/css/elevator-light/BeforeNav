@@ -68,6 +68,23 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
     if ( menuId === '#app-nav' ) {
         availableWidth -= jQuery('#topactions').width() + jQuery('#logo').width();;
     }
+    else if ( menuId === '#page-menu' ) {
+        availableWidth -= parseFloat(jQuery('#header h1').css('padding-left'));
+        availableWidth -= parseFloat(jQuery('#page-navigation').css('right'));
+        var fullWidth = availableWidth;
+
+        jQuery('#header h1').css('width', 'auto');
+        var subjectWidth = jQuery('#header h1').width();
+        availableWidth -= subjectWidth;
+
+        // in case subject is too long, set page-menu width to 40%
+        if (availableWidth < fullWidth * 0.4) {
+            availableWidth = fullWidth * 0.4;
+            subjectWidth = fullWidth * 0.6;
+            jQuery('#header h1').css('width', subjectWidth);
+        }
+    }
+
     availableWidth -= rebalanceOverflowBuffer;
 
     // if the menu is too wide for the viewport, move overflow items into

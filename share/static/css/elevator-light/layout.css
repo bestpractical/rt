@@ -133,6 +133,7 @@ div#header {
 div#header h1 {
     font-size: 1.4em;
     padding-left: 2em;
+    display: inline-block;
 }
 
 h1 {
