@@ -67,6 +67,10 @@ var rebalanceOverflowMenu = function (menuId, overflowId, withLogo) {
     if (withLogo) {
         availableWidth -= jQuery('#logo').width();
     }
+
+    if ( menuId === '#app-nav' ) {
+        availableWidth -= jQuery('#topactions').width();
+    }
     availableWidth -= rebalanceOverflowBuffer;
 
     // if the menu is too wide for the viewport, move overflow items into
@@ -123,6 +127,15 @@ var rebalanceOverflowMenu = function (menuId, overflowId, withLogo) {
         // if we just removed the last overflow item then hide "More"
         if (overflowMenu.find('li').length == 0) {
             overflowMenu.removeClass('has-overflow');
+        }
+    }
+
+    if ( menuId === '#app-nav' ) {
+        if ( jQuery(window).width() - jQuery('#topactions').width() - toplevelMenu.width() - jQuery('#logo').width() > 80 ) {
+            jQuery('#topactions input[type=search]:not(.expand)').addClass('expand');
+        }
+        else {
+            jQuery('#topactions input[type=search].expand').removeClass('expand');
         }
     }
 };

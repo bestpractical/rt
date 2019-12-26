@@ -63,8 +63,14 @@
 <% $queue_selector |n %>
 % }
 % elsif ($ButtonOnly) {
-<div class="create-ticket-button">
+<div class="create-wide">
 <&|/l_unsafe, $button_only_start_modal, $button_end &>[_1]Create new ticket[_2]</&>
+</div>
+<div class="create-medium">
+<&|/l_unsafe, $button_start_modal, $button_end &>[_1]Create[_2]</&>
+</div>
+<div class="create-narrow">
+<&|/l_unsafe, $button_start_modal, $button_end &>[_1]+[_2]</&>
 </div>
 % }
 % else {
