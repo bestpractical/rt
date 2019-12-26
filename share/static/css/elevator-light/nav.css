@@ -214,16 +214,20 @@ ul.sf-menu li {
     -webkit-appearance: textfield;
 }
 
+/* topactions search box sizes and easing definitions */
 #topactions input {
     width: 10em;
 }
 
-#topactions input[type="search"]:focus {
-    width: 16em;
+#topactions input[type="search"].expand {
     -webkit-transition: width 0.25s ease-in-out;
     -moz-transition: width 0.25s ease-in-out;
     -ms-transition: width 0.25s ease-in-out;
     transition: width 0.25s ease-in-out;
+}
+
+#topactions input[type="search"].expand:focus {
+    width: 16em;
 }
 
 @media (max-width: 900px) {
@@ -231,7 +235,7 @@ ul.sf-menu li {
         width: 4.7em;
     }
 
-    #topactions input[type="search"]:focus {
+    #topactions input[type="search"].expand:focus {
         width: 10em;
     }
 }
@@ -256,11 +260,6 @@ ul.sf-menu li {
     padding-left: 0.5em;
     padding-right: 0.5em;
     vertical-align: middle;
-
-    -webkit-transition: width 0.25s ease-in-out;
-    -moz-transition: width 0.25s ease-in-out;
-    -ms-transition: width 0.25s ease-in-out;
-    transition: width 0.25s ease-in-out;
 }
 
 @-moz-document url-prefix() {
