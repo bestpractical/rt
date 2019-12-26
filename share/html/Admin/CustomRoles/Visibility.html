@@ -53,16 +53,33 @@
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <h2><&|/l, $role->Name &>Visibility for [_1]</&></h2>
-<table cellspacing=10>
+
+<div class="col-md-6">
 % for (@pages) {
 %     my ($label, $url) = @$_;
-    <tr>
-        <td align="left"><% $label %></td>
-        <td><label><input type="radio" class="radio" name="hide-<% $url %>" value="0" <% !$hidden{$url} ? qq[checked="checked"] : qq[] |n %>> <&|/l&>show</&></label></td>
-        <td><label><input type="radio" class="radio" name="hide-<% $url %>" value="1" <%  $hidden{$url} ? qq[checked="checked"] : qq[] |n %>> <&|/l&>hide</&></label></td>
-    </tr>
+  <div class="form-row boolean">
+    <div class="col-md-3 label">
+      <% $label %>:
+    </div>
+    <div class="col-md-9 value">
+      <div class="form-row">
+        <div class="col-md-auto">
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="show-<% $url %>" name="hide-<% $url %>" value="0" <% !$hidden{$url} ? qq[checked="checked"] : qq[] |n %>>
+            <label class="custom-control-label" for="show-<% $url %>"><&|/l&>show</&></label>
+          </div>
+        </div>
+        <div class="col-md-auto">
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="hide-<% $url %>" name="hide-<% $url %>" value="1" <%  $hidden{$url} ? qq[checked="checked"] : qq[] |n %>>
+            <label class="custom-control-label" for="hide-<% $url %>"><&|/l&>hide</&></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 % }
-</table>
+</div>
 
 <& /Elements/Submit, Name => 'Update' &>
 
