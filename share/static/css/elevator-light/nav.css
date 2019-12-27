@@ -98,7 +98,7 @@ ul.sf-menu li {
 
 #page-navigation {
     position: absolute;
-    top: 3.6em;
+    top: 3.8em;
     right: 2em;
 }
 
@@ -194,10 +194,9 @@ ul.sf-menu li {
     height: auto;
 }
 
-#li-page-bookmark a img,
-#li-page-timer a img {
-    height: 1.25em;
-    width: 1.25em;
+#li-page-bookmark .toggle-bookmark a svg,
+#li-page-timer a svg {
+    height: 1.3em;
 }
 
 #topactions {
@@ -321,7 +320,7 @@ ul.sf-menu li {
 #page-menu.sf-menu > li > span > a,
 #page-menu.sf-menu > li > a {
     padding-top: .3em;
-    padding-bottom: .3em;
+    padding-bottom: .25em;
     border-radius: 0;
 }
 
