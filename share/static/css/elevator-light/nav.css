@@ -125,7 +125,7 @@ ul.sf-menu li {
 
 #page-menu.sf-menu li:hover ul,
 #page-menu.sf-menu li.sfHover ul {
-    top: 2.5em
+    top: 2em
 }
 
 /* Pin page menu to top left corner once you scroll past it */
