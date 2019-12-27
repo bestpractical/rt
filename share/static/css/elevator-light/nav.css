@@ -87,10 +87,6 @@ ul.sf-menu li {
     border-top: none
 }
 
-#main-navigation li li a {
-    border-top: 1px solid white
-}
-
 #main-navigation #app-nav > li,
 #main-navigation #app-nav > li > a {
     background-color: transparent
