@@ -128,6 +128,7 @@ on 'develop' => sub {
     requires 'Test::NoWarnings';
     requires 'Test::Pod';
     requires 'Test::Warn';
+    requires 'Test::HTML::Form', '>= 1.01';
     requires 'Test::WWW::Mechanize', '>= 1.30';
     requires 'Test::WWW::Mechanize::PSGI';
     requires 'WWW::Mechanize', '>= 1.52';

@@ -485,6 +485,10 @@ sub DESTROY {
     }
 }
 
+sub decoded_content {
+   return shift->content(@_);
+}
+
 END {
     return if RT::Test->builder->{Original_Pid} != $$;
     if (defined $RT::Test::Web::INSTANCES and $RT::Test::Web::INSTANCES == 0 ) {

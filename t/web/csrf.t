@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+use Test::HTML::Form;
 
 my $ticket = RT::Ticket->new(RT::CurrentUser->new('root'));
 my ($ok, $msg) = $ticket->Create(Queue => 1, Owner => 'nobody', Subject => 'bad music');
@@ -173,8 +174,8 @@ $m->title_is('Configuration for queue test');
 $m->get_ok("/Ticket/Create.html?Queue=$other_queue_id&CSRF_Token=$token");
 $m->content_lacks("Possible cross-site request forgery");
 $m->title_is('Create a new ticket in General');
-$m->text_unlike(qr/Queue:\s*Other queue/);
-$m->text_like(qr/Queue:\s*General/);
+form_select_field_matches($m, { field_name => 'SelectedQueue', selected => 1, form_name => 'TicketCreate'}, 'Queue selection dropdown populated and pre-selected');
+
 
 # Ensure that file uploads work across the interstitial
 $m->delete_header('Referer');
