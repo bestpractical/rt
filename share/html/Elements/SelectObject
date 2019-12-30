@@ -70,7 +70,11 @@
 %     }
 %     for my $object ($default_entry || (), @{$session{$cache_key}{objects}}) {
   <option value="<% ($NamedValues ? $object->{Name} : $object->{Id}) %>"\
-% if ($object->{Id} eq ($Default||'') || $object->{Name} eq ($Default||'')) {
+% if ($SelectedId) {
+%    if ($SelectedId eq $object->{Id} ) {
+ selected="selected"\
+%    }
+% } elsif ( $object->{Id} eq ($Default||'') || $object->{Name} eq ($Default||'')) {
  selected="selected"\
 % }
 ><%$object->{Name}%>\
@@ -91,6 +95,7 @@ $Verbose => undef
 $NamedValues => 0
 $DefaultLabel => "-"
 $Default => 0
+$SelectedId => undef
 $Lite => 0
 $OnChange => undef
 $Multiple => 0
@@ -101,6 +106,7 @@ $Hyperlink => undef
 $AccessKey => undef
 </%args>
 <%init>
+
 $ObjectType = "RT::$ObjectType" unless $ObjectType =~ /::/;
 $Class    ||= "select-" . CSSClass("\L$1") if $ObjectType =~ /RT::(.+)$/;
 

@@ -55,19 +55,25 @@
 
 % my $button_start = '<input type="submit" class="button btn btn-primary form-control" value="';
 % my $button_start_modal = '<input type="submit" class="button btn btn-primary form-control ticket-create-modal" value="';
-% my $button_only_start_modal = '<input type="submit" class="btn btn-primary ticket-create-modal" value="';
+% my $button_only_start_modal = '<input type="submit" class="btn btn-primary ticket-create-modal" value="'; # not used, but left in place if users want later
+% my $button_only_start = '<input type="submit" class="btn btn-primary" value="';
 % my $button_end = '" />';
-% my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue'), Hyperlink => $Hyperlink );
 
-% if ($Hyperlink) {
-<% $queue_selector |n %>
-% }
-% elsif ($ButtonOnly) {
+% if ($ButtonOnly) {
 <div class="create-ticket-button">
+% if ($ShowModal) {
 <&|/l_unsafe, $button_only_start_modal, $button_end &>[_1]Create new ticket[_2]</&>
+% } else {
+<&|/l_unsafe, $button_only_start, $button_end &>[_1]Create new ticket[_2]</&>
+% }
 </div>
 % }
 % else {
+%   my $queue_selector = $m->scomp('/Elements/SelectNewTicketQueue', AutoSubmit => 1, SendTo => $SendTo, Placeholder => loc('Queue'), Hyperlink => $Hyperlink );
+%   if ($Hyperlink) {
+<% $queue_selector |n %>
+%   }
+%   else {
 <div class="create-wide">
 <&|/l_unsafe, $button_start, $button_end, $queue_selector &>[_1]New ticket in[_2]&nbsp;[_3]</&>
 </div>
@@ -77,6 +83,7 @@
 <div class="create-narrow">
 <&|/l_unsafe, $button_start_modal, $button_end &>[_1]+[_2]</&>
 </div>
+%   }
 % }
 
 % $m->callback(CallbackName => 'BeforeFormEnd');
@@ -87,5 +94,6 @@ $SendTo => '/Ticket/Create.html',
 $IncludeExplanation => 0
 $Hyperlink => undef
 $ButtonOnly => undef
+$ShowModal => 0
 $FormName => 'CreateTicketInQueue'
 </%ARGS>

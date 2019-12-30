@@ -93,7 +93,7 @@ sub BuildMainNav {
 
     my $home = $top->child( home => title => loc('Homepage'), path => '/' );
     $home->child( createticket => title => loc("Create Ticket"),
-                  path => "/Ticket/CreateInQueue.html" );
+                  path => "/Ticket/Create.html" );
 
     unless ($HTML::Mason::Commands::session{'dashboards_in_menu'}) {
         my $dashboards_in_menu = $current_user->UserObj->Preferences(
@@ -1277,7 +1277,7 @@ sub BuildSelfServiceNav {
 
 
     if ( $queue_count > 1 ) {
-        $top->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
+        $top->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicket.html' );
     } elsif ( $queue_id ) {
         $top->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
     }

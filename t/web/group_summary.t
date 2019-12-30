@@ -29,7 +29,7 @@ diag( 'Group Summary access and ticket creation' );
 
     $m->submit_form_ok({ form_name => 'CreateTicket' },
                          "Submitted form to create ticket with group $group_id as Cc" );
-    like( $m->uri, qr{/Ticket/Create\.html\?AddGroupCc=$group_id&Queue=1$},
+    like( $m->uri, qr{/Ticket/Create\.html\?AddGroupCc=$group_id&queue-changed-reload=0&Queue=1$},
           "now on /Ticket/Create\.html with param AddGroupCc=$group_id" );
 
     my $subject = 'test AddGroupCc ticket';

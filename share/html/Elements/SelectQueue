@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<input type="hidden" name="queue-changed-reload" id="queue-changed-reload" value="0"/>
 %if (RT->Config->Get("AutocompleteQueues", $session{'CurrentUser'})) {
 <& SelectQueueAutocomplete, %ARGS, &>
 %} else {
@@ -54,13 +55,17 @@
     CheckRight       => $CheckQueueRight,
     ShowAll          => $ShowAllQueues,
     CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+    SelectedId       => $SelectedId
     &>
 %}
 <%args>
 $CheckQueueRight => 'CreateTicket'
 $ShowAllQueues   => 1
 $AutoSubmit      => 0
+$SelectedId      => undef
+$QueueObj        => undef
 </%args>
 <%init>
-$ARGS{OnChange} = "jQuery(this).closest('form').submit();" if $AutoSubmit;
+$ARGS{OnChange} = "jQuery('#queue-changed-reload').val(1);jQuery('#queue-changed-reload').val(jQuery(this).children('option:selected').val());";
+$ARGS{OnChange} .= "jQuery(this).closest('form').submit();" if $AutoSubmit;
 </%init>

@@ -565,7 +565,7 @@ jQuery(function() {
         return false;
     });
 
-    jQuery("#home-createticket,.ticket-create-modal").click(function(ev){
+    jQuery(".ticket-create-modal").click(function(ev){
         ev.preventDefault();
         jQuery.get(
             RT.Config.WebHomePath + "/Helpers/CreateInQueue",
