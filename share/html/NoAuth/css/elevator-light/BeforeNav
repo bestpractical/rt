@@ -141,14 +141,6 @@ var rebalanceOverflowMenu = function (menuId, overflowId, withLogo) {
 };
 
 jQuery(function() {
-    // without this width fix, because the overflow menu starts out as
-    // display: none, superfish calculates its width to be just 2em
-    jQuery('#li-overflow').children('ul').css('width', '12em');
-    jQuery('#li-page-overflow').children('ul').css('width', '12em');
-
-    rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
-    rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
-
     jQuery(window).resize(function () {
         rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
         rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
