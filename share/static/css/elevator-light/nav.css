@@ -13,11 +13,13 @@ ul.sf-menu li {
 .sf-menu {
     width: 100%;
     margin-bottom: 0;
+    line-height: 1;
 }
 
 .sf-menu ul {
     background-image: none;
     padding: 0;
+    min-width: auto;
 }
 
 .sf-menu.sf-shadow ul {
@@ -29,8 +31,10 @@ ul.sf-menu li {
     box-shadow: 2px 2px 8px -2px #999;
 }
 
-.sf-menu li:hover {
-    background-color: #CFDEFF
+.sf-menu li:hover,
+#main-navigation .sf-menu li:hover,
+#page-navigation .sf-menu li:hover {
+    background-color: #CFDEFF;
 }
 
 .sf-menu li,
@@ -45,6 +49,10 @@ ul.sf-menu li {
 
 .sf-menu a.sf-with-ul {
     padding-right: 1rem;
+}
+
+.sf-menu ul a.sf-with-ul {
+    padding-right: 2rem;
 }
 
 .sf-menu a.sf-with-ul:after {
@@ -85,7 +93,8 @@ ul.sf-menu li {
     border-top: none
 }
 
-#main-navigation li li a {
+#main-navigation li li a,
+#page-navigation li li a {
     border-top: 1px solid white
 }
 
@@ -124,11 +133,6 @@ ul.sf-menu li {
 #page-navigation .sf-menu li li,
 #page-navigation .sf-menu li li li {
     background-color: #fff
-}
-
-#page-menu.sf-menu li:hover ul,
-#page-menu.sf-menu li.sfHover ul {
-    top: 2.5em
 }
 
 /* Pin page menu to top left corner once you scroll past it */
@@ -334,7 +338,7 @@ ul.sf-menu li {
     padding-bottom: .3em;
 }
 
-#page-menu.sf-menu li {
+#page-menu.sf-menu > li {
     float: left;
     border-color: #E0E6EC;
     border-right-style: solid;
@@ -360,13 +364,14 @@ ul.sf-menu li {
 ul.toplevel.sf-menu > li > a.sf-with-ul:after {
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-down' viewBox='0 0 12 8' height='100%' width='100%' fill='none' stroke='%2331363E' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 5 -5' /></svg>") no-repeat center center;
     margin-left: 6px;
+    margin-top: 0;
+    right: 0;
     position: relative;
 }
 
 ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-right' viewBox='0 0 7 12' height='100%' width='100%' fill='none' stroke='%2331363E' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 -5 5' /></svg>") no-repeat center center;
     position: absolute;
-    margin-top: 2px;
     right: 5px;
 }
 
