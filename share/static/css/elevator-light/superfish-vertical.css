@@ -1,23 +1,37 @@
-/*** adding sf-vertical in addition to sf-menu creates a vertical menu ***/
-.sf-vertical, .sf-vertical li {
-	width:	10em;
+/* adding sf-vertical class in addition to sf-menu creates a vertical menu */
+/* eg. <ul class="sf-menu sf-vertical"> ... */
+.sf-vertical {
+  width: 12em;
+  /* If you want the width of the closed menu to expand to its
+  widest top-level menu item (like its "Supersubs" submenus do),
+  replace the width rule above with the following two rules. */
+
+  /*
+  min-width: 12em;
+  *width: 12em;
+  */
 }
-/* this lacks ul at the start of the selector, so the styles from the main CSS file override it where needed */
-.sf-vertical li:hover ul,
-.sf-vertical li.sfHover ul {
-	left:	10em; /* match ul width */
-	top:	0;
+.sf-vertical ul {
+	left:	100%;
+	top: 0;
+}
+.sf-vertical > li {
+  float: none;
+}
+.sf-vertical li {
+  width: 100%;
 }
 
 /*** alter arrow directions ***/
-.sf-vertical .sf-sub-indicator { background-position: -10px 0; } /* IE6 gets solid image only */
-.sf-vertical a > .sf-sub-indicator { background-position: 0 0; } /* use translucent arrow for modern browsers*/
-
-/* hover arrow direction for modern browsers*/
-.sf-vertical a:focus > .sf-sub-indicator,
-.sf-vertical a:hover > .sf-sub-indicator,
-.sf-vertical a:active > .sf-sub-indicator,
-.sf-vertical li:hover > a > .sf-sub-indicator,
-.sf-vertical li.sfHover > a > .sf-sub-indicator {
-	background-position: -10px 0; /* arrow hovers for modern browsers*/
+.sf-vertical.sf-arrows > li > .sf-with-ul:after {
+  margin-top: -5px;
+  margin-right: -3px;
+  border-color: transparent;
+  border-left-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
+  border-left-color: rgba(255,255,255,.5);
+}
+.sf-vertical.sf-arrows li > .sf-with-ul:focus:after,
+.sf-vertical.sf-arrows li:hover > .sf-with-ul:after,
+.sf-vertical.sf-arrows .sfHover > .sf-with-ul:after {
+  border-left-color: white;
 }
