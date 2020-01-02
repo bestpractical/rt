@@ -48,11 +48,15 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget form-row">
-  <div class="col-md-3 label">
-    <% $Description // '' %>
+<div id="form-box-<% lc $Name %>" class="widget form-row boolean">
+  <div class="col-md-<% $LabelCols %> label">
+% if( $LabelLink ) {
+    <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
+% } else {
+    <% $Description %>
+% }
   </div>
-  <div class="col-md-9 value">
+  <div class="col-md-<% $ValueCols %> value">
     <& SELF:InputOnly, %ARGS &>
     <span class="hints"><% $Hints %></span>
   </div>
@@ -61,6 +65,9 @@ see docs/extending/using_forms_widgets.pod
 $Name         => undef,
 $Description  => undef,
 $Hints        => ''
+$LabelLink    => ''
+$LabelCols    => 3
+$ValueCols    => 9
 </%ARGS>
 
 <%METHOD InputOnly>
@@ -70,10 +77,11 @@ $Name         => undef,
 $Default        => 0,
 $DefaultValue   => 0,
 $DefaultLabel   => loc( 'Use default ([_1])', $DefaultValue? loc('Yes'): loc('No') ),
+$RadioStyle     => 0
 
 $CurrentValue => undef,
 </%ARGS>
-% unless ( $Default ) {
+% if ( !$Default && !$RadioStyle ) {
 <input type="hidden" name="<% $Name %>" value="0" />\
 <div class="custom-control custom-checkbox">
   <input type="checkbox" id="<% $Name %>" name="<% $Name %>" class="custom-control-input" value="1" <% $CurrentValue? ' checked="checked"': '' |n %>>
@@ -87,20 +95,27 @@ $CurrentValue => undef,
       <label class="custom-control-label" for="<% $Name %>-yes"><&|/l&>Yes</&></label>
     </div>
   </div>
-
+% if ($Default) {
   <div class="col-md-auto">
     <div class="custom-control custom-radio">
       <input type="radio" id="<% $Name %>-no" name="<% $Name %>" class="custom-control-input" value="0" <% defined $CurrentValue && !$CurrentValue? ' checked="checked"': '' |n %>>
       <label class="custom-control-label" for="<% $Name %>-no"><&|/l&>No</&></label>
     </div>
   </div>
-
   <div class="col-md-auto">
     <div class="custom-control custom-radio">
       <input type="radio" id="<% $Name %>-empty" name="<% $Name %>" class="custom-control-input" value="__empty_value__" <% !defined $CurrentValue? ' checked="checked"': '' |n %>>
       <label class="custom-control-label" for="<% $Name %>-empty"><% $DefaultLabel %></label>
     </div>
   </div>
+% } else {
+  <div class="col-md-auto">
+    <div class="custom-control custom-radio">
+      <input type="radio" id="<% $Name %>-no" name="<% $Name %>" class="custom-control-input" value="0" <% !$CurrentValue? ' checked="checked"': '' |n %>>
+      <label class="custom-control-label" for="<% $Name %>-no"><&|/l&>No</&></label>
+    </div>
+  </div>
+% }
 </div>
 % }
 </%METHOD>

@@ -701,6 +701,11 @@ sub BuildMainNav {
         $page->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . qq[/Prefs/MyRT.html"><span class="fas fa-cog" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span></a>] );
     }
 
+    if ( $request_path =~ m{^/Admin/Tools/(Configuration|EditConfig)} ) {
+        $page->child( display => title => loc('View'), path => "/Admin/Tools/Configuration.html" );
+        $page->child( history => title => loc('Edit'), path => "/Admin/Tools/EditConfig.html" );
+    }
+
     # due to historical reasons of always having been in /Elements/Tabs
     $HTML::Mason::Commands::m->callback( CallbackName => 'Privileged', Path => $request_path, Search_Args => $args, Has_Query => $has_query, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
 }

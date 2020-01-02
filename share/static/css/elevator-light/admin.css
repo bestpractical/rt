@@ -194,3 +194,18 @@ div.inline-row i {
     background-color: #F6F6F6;
     padding: 2px 3px;
 }
+
+#rt-help-text a {
+    text-decoration: underline;
+}
+
+.configuration {
+    padding-top: .1em;
+}
+
+.configuration .tab-content .tab-content {
+    padding-top: 0;
+}
+.configuration .card.titlebox {
+    margin-top: 0;
+}

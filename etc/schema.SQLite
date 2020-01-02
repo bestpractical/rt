@@ -569,3 +569,19 @@ CREATE TABLE ObjectCustomRoles (
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);
+
+CREATE TABLE Configurations (
+    id                INTEGER PRIMARY KEY,
+    Name              varchar(255)    collate NOCASE NOT NULL,
+    Content           longtext        collate NOCASE NULL,
+    ContentType       varchar(80)     collate NOCASE NULL,
+    Disabled          int2            NOT NULL DEFAULT 0,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL
+);
+
+CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
+CREATE INDEX Configurations2 ON Configurations (Disabled);
+

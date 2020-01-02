@@ -199,6 +199,7 @@ sub Init {
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses(%args);
+    RT->Config->LoadConfigFromDatabase();
     InitLogging();
     ProcessPreInitMessages();
     InitPlugins();
@@ -503,6 +504,8 @@ sub InitClasses {
     require RT::Asset;
     require RT::Assets;
     require RT::CustomFieldValues::Canonicalizer;
+    require RT::Configuration;
+    require RT::Configurations;
 
     _BuildTableAttributes();
 
@@ -763,6 +766,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::FutureMailgate' => '4.4',
     'RT::Extension::AdminConditionsAndActions' => '4.4.2',
     'RT::Extension::RightsInspector' => '4.6',
+    'RT::Extension::ConfigInDatabase' => '4.6',
 );
 
 sub InitPlugins {

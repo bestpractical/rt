@@ -55,6 +55,7 @@ use 5.010;
 use File::Spec ();
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
+use Clone ();
 
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
@@ -165,6 +166,7 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Default queue',    #loc
+            Default     => 1, # allow user to unset it on EditConfig.html
             Callback    => sub {
                 my $ret = { Values => [], ValuesLabel => {}};
                 my $q = RT::Queues->new($HTML::Mason::Commands::session{'CurrentUser'});
@@ -637,6 +639,8 @@ our %META;
     # this tends to break extensions that stash links in ticket update pages
     Organization => {
         Type            => 'SCALAR',
+        Immutable       => 1,
+        Widget          => '/Widgets/Form/String',
         PostLoadCheck   => sub {
             my ($self,$value) = @_;
             $RT::Logger->error("your \$Organization setting ($value) appears to contain whitespace.  Please fix this.")
@@ -644,9 +648,47 @@ our %META;
         },
     },
 
+    rtname => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+
     # Internal config options
     DatabaseExtraDSN => {
-        Type => 'HASH',
+        Type      => 'HASH',
+        Immutable => 1,
+    },
+    DatabaseAdmin => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+    DatabaseHost => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+    DatabaseName => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+    DatabasePassword => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+    DatabasePort => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Integer',
+    },
+    DatabaseRTHost => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+    DatabaseType => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+    DatabaseUser => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
     },
 
     FullTextSearch => {
@@ -705,6 +747,7 @@ our %META;
     },
     DisableGraphViz => {
         Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Boolean',
         PostLoadCheck   => sub {
             my $self  = shift;
             my $value = shift;
@@ -716,6 +759,7 @@ our %META;
     },
     DisableGD => {
         Type            => 'SCALAR',
+        Widget          => '/Widgets/Form/Boolean',
         PostLoadCheck   => sub {
             my $self  = shift;
             my $value = shift;
@@ -727,6 +771,7 @@ our %META;
     },
     MailCommand => {
         Type    => 'SCALAR',
+        Widget  => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('MailCommand');
@@ -738,10 +783,31 @@ our %META;
     },
     HTMLFormatter => {
         Type => 'SCALAR',
+        Widget => '/Widgets/Form/String',
         PostLoadCheck => sub { RT::Interface::Email->_HTMLFormatter },
+    },
+    Plugins => {
+        Immutable => 1,
+    },
+    RecordBaseClass => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+    WebSessionClass => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/String',
+    },
+    DevelMode => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
+    },
+    DisallowExecuteCode => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
     },
     MailPlugins  => {
         Type => 'ARRAY',
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self = shift;
 
@@ -754,6 +820,8 @@ our %META;
         },
     },
     Crypt        => {
+        Immutable => 1,
+        Invisible => 1,
         Type => 'HASH',
         PostLoadCheck => sub {
             my $self = shift;
@@ -800,6 +868,8 @@ our %META;
     },
     SMIME        => {
         Type => 'HASH',
+        Immutable => 1,
+        Invisible => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my $opt = $self->Get('SMIME');
@@ -834,6 +904,8 @@ our %META;
     },
     GnuPG        => {
         Type => 'HASH',
+        Immutable => 1,
+        Invisible => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my $gpg = $self->Get('GnuPG');
@@ -862,11 +934,17 @@ our %META;
             }
         }
     },
-    GnuPGOptions => { Type => 'HASH' },
+    GnuPGOptions => {
+        Type      => 'HASH',
+        Immutable => 1,
+        Invisible => 1,
+    },
     ReferrerWhitelist => { Type => 'ARRAY' },
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
     CustomFieldValuesCanonicalizers => { Type => 'ARRAY' },
     WebPath => {
+        Immutable     => 1,
+        Widget        => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -893,6 +971,8 @@ our %META;
         },
     },
     WebDomain => {
+        Immutable     => 1,
+        Widget        => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -919,6 +999,8 @@ our %META;
         },
     },
     WebPort => {
+        Immutable     => 1,
+        Widget        => '/Widgets/Form/Integer',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -934,6 +1016,8 @@ our %META;
         },
     },
     WebBaseURL => {
+        Immutable     => 1,
+        Widget        => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -957,6 +1041,8 @@ our %META;
         },
     },
     WebURL => {
+        Immutable     => 1,
+        Widget => '/Widgets/Form/String',
         PostLoadCheck => sub {
             my $self  = shift;
             my $value = shift;
@@ -1102,7 +1188,13 @@ our %META;
         },
     },
 
+    ExternalAuth => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
+    },
+
     ExternalSettings => {
+        Immutable     => 1,
         Obfuscate => sub {
             # Ensure passwords are obfuscated on the System Configuration page
             my ($config, $sources, $user) = @_;
@@ -1166,6 +1258,7 @@ our %META;
     },
 
     ExternalAuthPriority => {
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
@@ -1194,6 +1287,7 @@ our %META;
     },
 
     ExternalInfoPriority => {
+        Immutable     => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my @values = @{ shift || [] };
@@ -1227,7 +1321,6 @@ our %META;
             $self->Set( 'ExternalInfoPriority', \@values );
         },
     },
-
     ServiceBusinessHours => {
         Type => 'HASH',
         PostLoadCheck   => sub {
@@ -1240,9 +1333,402 @@ our %META;
             }
         },
     },
-
     ServiceAgreements => {
         Type => 'HASH',
+    },
+    AllowUserAutocompleteForUnprivileged => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AlwaysDownloadAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AmbiguousDayInFuture => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AmbiguousDayInPast => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ApprovalRejectionNotes => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ArticleOnTicketCreate => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AutoCreateNonExternalUsers => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AutocompleteOwnersForSearch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    CanonicalizeRedirectURLs => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    CanonicalizeURLsInFeeds => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ChartsTimezonesInDB => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    CheckMoreMSMailHeaders => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    DateDayBeforeMonth => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    DontSearchFileAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    DropLongAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    EditCustomFieldsSingleColumn => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    EnableReminders => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ExternalStorageDirectLink => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ForceApprovalsView => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ForwardFromUser => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    Framebusting => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    HideArticleSearchOnReplyCreate => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    HideResolveActionsWithDependencies => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    HideTimeFieldsFromUnprivilegedUsers => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    LoopsToRTOwner => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    MessageBoxIncludeSignature => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    MessageBoxIncludeSignatureOnComment => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    OnlySearchActiveTicketsInSimpleSearch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ParseNewMessageForTicketCcs => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    PreferDateTimeFormatNatural => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    PreviewScripMessages => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    RecordOutgoingEmail => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    RestrictLoginReferrer => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    RestrictReferrer => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SearchResultsAutoRedirect => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowBccHeader => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowMoreAboutPrivilegedUsers => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowRTPortal => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowRemoteImages => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowTransactionImages => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    StoreLoops => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    StrictLinkACL => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SuppressInlineTextFiles => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    TruncateLongAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    TrustHTMLAttachments => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseFriendlyFromLine => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseFriendlyToLine => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseOriginatorHeader => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseSQLForACLChecks => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    UseTransactionBatch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ValidateUserEmailAddresses => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebFallbackToRTLogin => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebFlushDbCacheEveryRequest => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebHttpOnlyCookies => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebRemoteUserAuth => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebRemoteUserAutocreate => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebRemoteUserContinuous => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebRemoteUserGecos => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WebSecureCookies => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    WikiImplicitLinks => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    HideOneTimeSuggestions => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    LinkArticlesOnInclude => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SelfServiceCorrespondenceOnly => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SelfServiceDownloadUserData => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SelfServiceShowGroupTickets => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    ShowSearchResultCount => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AllowGroupAutocompleteForUnprivileged => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
+    AttachmentListCount => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    AutoLogoff => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    BcryptCost => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    DefaultSummaryRows => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    DropdownMenuLimit => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    ExternalStorageCutoffSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    LogoutRefresh => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxAttachmentSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MaxFulltextAttachmentSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MinimumPasswordLength => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    MoreAboutRequestorGroupsLimit => {
+        Widget => '/Widgets/Form/Integer',
+    },
+    TicketsItemMapSize => {
+        Widget => '/Widgets/Form/Integer',
+    },
+
+    CanonicalizeEmailAddressMatch => {
+        Widget => '/Widgets/Form/String',
+    },
+    CanonicalizeEmailAddressReplace => {
+        Widget => '/Widgets/Form/String',
+    },
+    CommentAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+    CorrespondAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+    DashboardAddress => {
+        Widget => '/Widgets/Form/String',
+    },
+    DashboardSubject => {
+        Widget => '/Widgets/Form/String',
+    },
+    DefaultErrorMailPrecedence => {
+        Widget => '/Widgets/Form/String',
+    },
+    DefaultMailPrecedence => {
+        Widget => '/Widgets/Form/String',
+    },
+    DefaultSearchResultOrderBy => {
+        Widget => '/Widgets/Form/String',
+    },
+    EmailSubjectTagRegex => {
+        Widget => '/Widgets/Form/String',
+    },
+    EmailOutputEncoding => {
+        Widget => '/Widgets/Form/String',
+    },
+    FriendlyFromLineFormat => {
+        Widget => '/Widgets/Form/String',
+    },
+    FriendlyToLineFormat => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPHost => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPUser => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPPassword => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPGroupBase => {
+        Widget => '/Widgets/Form/String',
+    },
+    LogDir => {
+        Immutable => 1,
+        Widget => '/Widgets/Form/String',
+    },
+    LogToFileNamed => {
+        Immutable => 1,
+        Widget => '/Widgets/Form/String',
+    },
+    LogoAltText => {
+        Widget => '/Widgets/Form/String',
+    },
+    LogoLinkURL => {
+        Widget => '/Widgets/Form/String',
+    },
+    LogoURL => {
+        Widget => '/Widgets/Form/String',
+    },
+    OwnerEmail => {
+        Widget => '/Widgets/Form/String',
+    },
+    RedistributeAutoGeneratedMessages => {
+        Widget => '/Widgets/Form/String',
+    },
+    SelfServiceRequestUpdateQueue => {
+        Widget => '/Widgets/Form/String',
+    },
+    SendmailArguments => {
+        Widget => '/Widgets/Form/String',
+    },
+    SendmailBounceArguments => {
+        Widget => '/Widgets/Form/String',
+    },
+    SendmailPath => {
+        Widget => '/Widgets/Form/String',
+    },
+    SetOutgoingMailFrom => {
+        Widget => '/Widgets/Form/String',
+    },
+    Timezone => {
+        Widget => '/Widgets/Form/String',
+    },
+    VERPPrefix => {
+        Widget => '/Widgets/Form/String',
+        WidgetArguments => { Hints  => 'rt-', },
+    },
+    VERPDomain => {
+        Widget => '/Widgets/Form/String',
+        WidgetArguments => {
+            Callback => sub {  return { Hints => RT->Config->Get( 'Organization') } },
+        },
+    },
+    WebImagesURL => {
+        Widget => '/Widgets/Form/String',
+    },
+
+    LogToSyslog => {
+        Immutable => 1,
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+    LogToSTDERR => {
+        Immutable => 1,
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+    LogToFile => {
+        Immutable => 1,
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+    LogStackTraces => {
+        Immutable => 1,
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(debug info notice warning error critical alert emergency)] },
+    },
+    StatementLog => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => ['', qw(debug info notice warning error critical alert emergency)] },
+    },
+
+    DefaultCatalog => {
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Default catalog',    #loc
+            Callback    => sub {
+                my $ret = { Values => [], ValuesLabel => {} };
+                my $c = RT::Catalogs->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+                $c->UnLimit;
+                while ( my $catalog = $c->Next ) {
+                    next unless $catalog->CurrentUserHasRight("CreateAsset");
+                    push @{ $ret->{Values} }, $catalog->Id;
+                    $ret->{ValuesLabel}{ $catalog->Id } = $catalog->Name;
+                }
+                return $ret;
+            },
+        }
+    },
+    DefaultSearchResultOrder => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(ASC DESC)] },
+    },
+    LogToSyslogConf => {
+        Immutable     => 1,
     },
 );
 my %OPTIONS = ();
@@ -1445,6 +1931,90 @@ sub PostLoadCheck {
     }
 }
 
+=head2 SectionMap
+
+A data structure used to breakup the option list into tabs/sections/subsections/options
+This is done by parsing RT_Config.pm.
+
+=cut
+
+our $SectionMap = [];
+our $SectionMapLoaded = 0;    # so we only load it once
+
+sub LoadSectionMap {
+    my $self = shift;
+
+    if ($SectionMapLoaded) {
+        return $SectionMap;
+    }
+
+    my $ConfigFile = "$RT::EtcPath/RT_Config.pm";
+    require Pod::Simple::HTML;
+    my $PodParser  = Pod::Simple::HTML->new();
+
+    my $html;
+    $PodParser->output_string( \$html );
+    $PodParser->parse_file($ConfigFile);
+
+    my $has_subsection;
+    while ( $html =~ m{<(h[123]|dt)\b[^>]*>(.*?)</\1>}sg ) {
+        my ( $tag, $content ) = ( $1, $2 );
+        if ( $tag eq 'h1' ) {
+            my ($title) = $content =~ m{<a class='u'\s*name="[^"]*"\s*>([^<]*)</a>};
+            next if $title =~ /^(?:NAME|DESCRIPTION)$/;
+            push @$SectionMap, { Name => $title, Content => [] };
+        }
+        elsif (@$SectionMap) {
+            if ( $tag eq 'h2' ) {
+                my ($title) = $content =~ m{<a class='u'\s*name="[^"]*"\s*>([^<]*)</a>};
+                push @{ $SectionMap->[-1]{Content} }, { Name => $title, Content => [] };
+                $has_subsection = 0;
+            }
+            elsif ( $tag eq 'h3' ) {
+                my ($title) = $content =~ m{<a class='u'\s*name="[^"]*"\s*>([^<]*)</a>};
+                push @{ $SectionMap->[-1]{Content}[-1]{Content} }, { Name => $title, Content => [] };
+                $has_subsection ||= 1;
+            }
+            else {
+                # tag is 'dt'
+                if ( !$has_subsection ) {
+
+                    # Create an empty subsection to keep the same data structure
+                    push @{ $SectionMap->[-1]{Content}[-1]{Content} }, { Name => '', Content => [] };
+                    $has_subsection = 1;
+                }
+
+                # a single item (dt) can document several options, in separate <code> elements
+                my ($name) = $content =~ m{name=".([^"]*)"};
+                $name =~ s{,_.}{-}g;    # e.g. DatabaseHost,_$DatabaseRTHost
+                while ( $content =~ m{<code>(.)([^<]*)</code>}sg ) {
+                    my ( $sigil, $option ) = ( $1, $2 );
+                    next unless $sigil =~ m{[\@\%\$]};    # no sigil => this is a value for a select option
+                    if ( $META{$option} ) {
+                        next if $META{$option}{Invisible};
+                    }
+                    else {
+                        RT->Logger->debug("No META info for option [$option], falling back to Code widget");
+                    }
+                    push @{ $SectionMap->[-1]{Content}[-1]{Content}[-1]{Content} }, { Name => $option, Help => $name };
+                }
+            }
+        }
+    }
+
+    # Remove empty tabs/sections
+    for my $tab (@$SectionMap) {
+        for my $section ( @{ $tab->{Content} } ) {
+            @{ $section->{Content} } = grep { @{ $_->{Content} } } @{ $section->{Content} };
+        }
+        @{ $tab->{Content} } = grep { @{ $_->{Content} } } @{ $tab->{Content} };
+    }
+    @$SectionMap = grep { @{ $_->{Content} } } @$SectionMap;
+
+    $SectionMapLoaded = 1;
+    return $SectionMap;
+}
+
 =head2 Configs
 
 Returns list of config files found in local etc, plugins' etc
@@ -1563,7 +2133,6 @@ sub GetObfuscated {
 
     return $self->Get(@_) unless $obfuscate;
 
-    require Clone;
     my $res = Clone::clone( $self->Get( @_ ) );
     $res = $obfuscate->( $self, $res, $user );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
@@ -1701,7 +2270,7 @@ sub SetFromConfig {
     }
 
     $META{$name}->{'Type'} = $type;
-    foreach (qw(Package File Line SiteConfig Extension)) {
+    foreach (qw(Package File Line SiteConfig Extension Database)) {
         $META{$name}->{'Source'}->{$_} = $args{$_};
     }
     $self->Set( $name, @{ $args{'Value'} } );
@@ -1857,6 +2426,127 @@ sub EnableExternalAuth {
     $self->Set('ExternalAuth', 1);
     require RT::Authen::ExternalAuth;
     return;
+}
+
+my $database_config_cache_time = 0;
+my %original_setting_from_files;
+my $in_config_change_txn = 0;
+
+sub BeginDatabaseConfigChanges {
+    $in_config_change_txn = $in_config_change_txn + 1;
+}
+
+sub EndDatabaseConfigChanges {
+    $in_config_change_txn = $in_config_change_txn - 1;
+    if (!$in_config_change_txn) {
+        shift->ApplyConfigChangeToAllServerProcesses();
+    }
+}
+
+sub ApplyConfigChangeToAllServerProcesses {
+    my $self = shift;
+
+    return if $in_config_change_txn;
+
+    # first apply locally
+    $self->LoadConfigFromDatabase();
+
+    # then notify other servers
+    RT->System->ConfigCacheNeedsUpdate($database_config_cache_time);
+}
+
+sub RefreshConfigFromDatabase {
+    my $self = shift;
+    if ($in_config_change_txn) {
+        RT->Logger->error("It appears that there were unbalanced calls to BeginDatabaseConfigChanges with EndDatabaseConfigChanges; this indicates a software fault");
+        $in_config_change_txn = 0;
+    }
+
+    if( RT->InstallMode ) { return; } # RT can't load the config in the DB if the DB is not there!
+    my $needs_update = RT->System->ConfigCacheNeedsUpdate;
+    if ($needs_update > $database_config_cache_time) {
+        $self->LoadConfigFromDatabase();
+        $database_config_cache_time = $needs_update;
+    }
+}
+
+sub LoadConfigFromDatabase {
+    my $self = shift;
+
+    $database_config_cache_time = time;
+
+    my $settings = RT::Configurations->new(RT->SystemUser);
+    $settings->UnLimit;
+
+    my %seen;
+
+    while (my $setting = $settings->Next) {
+        my $name = $setting->Name;
+        my ($value, $error) = $setting->DecodedContent;
+        next if $error;
+
+        if (!exists $original_setting_from_files{$name}) {
+            $original_setting_from_files{$name} = [
+                scalar($self->Get($name)),
+                Clone::clone(scalar($self->Meta($name))),
+            ];
+        }
+
+        $seen{$name}++;
+
+        # are we inadvertantly overriding RT_SiteConfig.pm?
+        my $meta = $META{$name};
+        if ($meta->{'Source'}) {
+            my %source = %{ $meta->{'Source'} };
+            if ($source{'SiteConfig'} && $source{'File'} ne 'database') {
+                warn("Change of config option '$name' at $source{File} line $source{Line} has been overridden by the config setting from the database. Please remove it from $source{File} or from the database to avoid confusion.");
+            }
+        }
+
+        my $type = $meta->{Type} || 'SCALAR';
+
+        # hashes combine, but we don't want that behavior because the previous
+        # config settings will shadow any change that the database config makes
+        if ($type eq 'HASH') {
+            $self->Set($name, ());
+        }
+
+        my $val = $type eq 'ARRAY' ? $value
+                : $type eq 'HASH'  ? [ %$value ]
+                                   : [ $value ];
+
+        $self->SetFromConfig(
+            Option     => \$name,
+            Value      => $val,
+            Package    => 'N/A',
+            File       => 'database',
+            Line       => 'N/A',
+            Database   => 1,
+            SiteConfig => 1,
+        );
+    }
+
+    # anything that wasn't loaded from the database but has been set in
+    # %original_setting_from_files must have been disabled from the database,
+    # so we want to restore the original setting
+    for my $name (keys %original_setting_from_files) {
+        next if $seen{$name};
+
+        my ($value, $meta) = @{ $original_setting_from_files{$name} };
+        my $type = $meta->{Type} || 'SCALAR';
+
+        if ($type eq 'ARRAY') {
+            $self->Set($name, @$value);
+        }
+        elsif ($type eq 'HASH') {
+            $self->Set($name, %$value);
+        }
+        else {
+            $self->Set($name, $value);
+        }
+
+        %{ $META{$name} } = %$meta;
+    }
 }
 
 RT::Base->_ImportOverlays();

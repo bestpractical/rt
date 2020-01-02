@@ -309,6 +309,10 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
   padding-bottom: 0.25em;
 }
 
+.form-row.boolean > .value .form-row {
+  margin-top: 5px;
+}
+
 .col-auto .datepicker {
   width: 17em;
 }
@@ -368,4 +372,24 @@ form .value > .list-group {
 ul li .dropdown-item.active span,
 ul li .dropdown-item:active span {
   color: #fff;
+}
+
+/* remove unnecessary left padding for radio options */
+#EditConfig div.widget .label {
+    width: auto;
+    float: none;
+}
+
+#EditConfig textarea:disabled,
+#EditConfig input:disabled {
+    background-color: #EEE;
+}
+
+.widget.code textarea,
+textarea.code {
+    font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
+}
+
+#EditConfig ul.plugins {
+    margin: 0;
 }

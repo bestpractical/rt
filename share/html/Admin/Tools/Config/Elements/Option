@@ -1,0 +1,157 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<%PERL>
+
+use Data::Dumper;
+my $stringify = sub {
+    my $value = shift;
+    return "" if !defined($value);
+
+    local $Data::Dumper::Terse = 1;
+    local $Data::Dumper::Indent = 2;
+    local $Data::Dumper::Sortkeys = 1;
+    my $output = Dumper $value;
+    chomp $output;
+    return $output;
+};
+
+my $doc_version = $RT::VERSION;
+$doc_version =~ s/\.\d+-\d+-g\w+$//;  # 4.4.3-1-g123 -> 4.4
+
+my $name = $option->{Name};
+my $meta = RT->Config->Meta( $name );
+return if $meta->{Invisible} || $meta->{Deprecated};
+return if $name =~ /Password/i && $name !~ /MinimumPasswordLength/;
+
+my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
+
+my $raw_value = RT->Config->Get( $name );
+my $val = $stringify->($raw_value);
+my $doc_url = "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$option->{Help}";
+my $widget = $meta->{'Widget'} || '/Widgets/Form/Code';
+my $is_code = $widget eq '/Widgets/Form/Code';
+
+my $is_immutable = $meta->{Immutable}
+                || $meta->{Obfuscate}
+                || ($is_code && $val =~ s/sub \{ "DUMMY" \}/sub { ... }/g)
+                || ($is_code && !$has_execute_code);
+
+my $current_value = $is_code ? $val : $raw_value;
+my $args   = $meta->{'WidgetArguments'} || {};
+if ($widget eq '/Widgets/Form/Boolean') {
+    %$args = (
+        RadioStyle => 1,
+        %$args,
+    );
+}
+elsif ($widget eq '/Widgets/Form/String' || $widget eq '/Widgets/Form/Integer') {
+    %$args = (
+        Size => 60,
+        %$args,
+    );
+}
+elsif ($widget eq '/Widgets/Form/Select') {
+    %$args = (
+        $args->{Default} ? ( DefaultLabel => loc('(no value)') ) : (),
+        ValuesLabel => { '' => '(no value)' },
+        %$args,
+    );
+}
+my $row_start = qq{<div class="widget form-row">
+  <div class="col-md-4 label"><a href="$doc_url" target="_blank">$name</a></div>
+  <div class="col-md-8 value">
+};
+my $row_end = qq{</div></div>};
+
+</%PERL>
+
+<!-- start option <% $name %> -->
+% if ( $meta->{EditLink} ) {
+% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
+<% $row_start |n %><textarea disabled class="<% $is_code ? 'code' : '' %> form-control" rows="6" cols="80"><% $current_value %></textarea><br />
+% } else {
+<% $row_start |n %><input type="text" disabled value="<% $current_value %>" class="form-control" /><br/>
+% }
+<&|/l_unsafe, "<a href=\"$meta->{EditLink}\">", loc($meta->{EditLinkLabel}), "</a>" &>Visit [_1][_2][_3] to manage this setting</&>
+% } elsif ( $name =~ /Plugins/) {
+<% $row_start |n %><ul class="plugins">
+% for my $plugin (RT->Config->Get($name)) {
+<li><a href="https://metacpan.org/search?q=<% $plugin |u %>" target="_blank"><% $plugin %></a></li>
+% }
+</ul>
+<div class="text-right"><em><% loc('Must modify in config file' ) %></em></div>
+<% $row_end |n%>
+% } elsif ( $is_immutable ) {
+% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
+<% $row_start |n %><textarea disabled class="<% $is_code ? 'code' : '' %> form-control" rows="6" cols="80"><% $current_value %></textarea>
+% } else {
+<% $row_start |n %><input type="text" disabled value="<% $current_value %>" class="form-control" />
+% }
+<div class="text-right"><em><% loc('Must modify in config file' ) %></em></div>
+<% $row_end |n %>
+% } else {
+  <& $widget,
+    Default      => 0,
+    Name         => $name,
+    LabelLink    => $doc_url,
+    CurrentValue => $current_value,
+    Description  => $name,
+    Hints        => $meta->{WidgetArguments}->{Hints} || '',
+    LabelCols    => 4,
+    ValueCols    => 8,
+    %$args,
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
+            $meta->{'WidgetArguments'} ) },
+  &>
+<textarea class="hidden" name="<% $name %>-Current"><% $current_value %></textarea>
+% }
+<!-- end option <% $name %> -->
+<%ARGS>
+$option
+</%ARGS>

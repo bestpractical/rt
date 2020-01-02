@@ -1,0 +1,219 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+my $title = loc('System Configuration');
+unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+ Abort(loc('This feature is only available to system administrators'));
+}
+
+my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
+
+my $options = RT->Config->LoadSectionMap();
+my $active_context = {
+    tab        => CSSClass( $ARGS{tab}        || $options->[0]->{Name}) ,
+    section    => CSSClass( $ARGS{section}    || $options->[0]->{Content}->[0]->{Name}) ,
+    subsection => CSSClass( $ARGS{subsection} || $options->[0]->{Content}->[0]->{Content}->[0]->{Name}) ,
+};
+
+my @results;
+
+use Data::Dumper;
+my $stringify = sub {
+    my $value = shift;
+    return "" if !defined($value);
+
+    local $Data::Dumper::Terse = 1;
+    local $Data::Dumper::Indent = 2;
+    local $Data::Dumper::Sortkeys = 1;
+    my $output = Dumper $value;
+    chomp $output;
+    return $output;
+};
+
+if (delete $ARGS{Update}) {
+    RT->Config->BeginDatabaseConfigChanges;
+    $RT::Handle->BeginTransaction;
+    my $has_error;
+
+    eval {
+        for my $key (keys %ARGS) {
+            next if $key =~ /-Current$/;
+            next if $key eq 'tab' || $key eq 'section' || $key eq 'subsection';
+
+            my $meta = RT->Config->Meta( $key );
+            my $widget = $meta->{Widget} || '/Widgets/Form/Code';
+            my $is_code = $widget eq '/Widgets/Form/Code';
+
+            my $val = $ARGS{$key};
+            $val = '' if $val eq '__empty_value__';
+            my $prev = $ARGS{$key . '-Current'};
+            next if $val eq $prev;
+
+            # for bools, check for truthiness since 0, '', and undef are equivalent
+            if ($widget eq '/Widgets/Form/Boolean') {
+                next if !!$val eq !!$prev;
+            }
+
+            if ( $meta->{Immutable} || $meta->{Obfuscate} || ($key =~ /Password/i and $key !~ /MinimumPasswordLength/ )) {
+                push @results, loc("Cannot change [_1]: Permission Denied", $key);
+                $has_error++;
+                next;
+            }
+
+            if ($is_code) {
+                if (!$has_execute_code) {
+                    push @results, loc("Cannot change [_1]: Permission Denied", $key);
+                    $has_error++;
+                    next;
+                }
+
+                my $code = $val;
+                my $coderef;
+                # similar to RT::Scrip::CompileCheck
+                do {
+                    no strict 'vars';
+                    $coderef = eval "sub { $code \n }";
+                };
+                if ($@) {
+                    my $error = $@;
+                    push @results, loc("Couldn't compile [_1] codeblock '[_2]': [_3]", $key, $code, $error);
+                    $has_error++;
+                    next;
+                }
+
+                if ($coderef) {
+                    $val = eval { $coderef->() };
+                    if ($@) {
+                        my $error = $@;
+                        push @results, loc("Couldn't execute [_1] codeblock '[_2]': [_3]", $key, $code, $error);
+                        $has_error++;
+                        next;
+                    }
+                }
+            }
+
+            my $setting = RT::Configuration->new($session{CurrentUser});
+            $setting->Load($key);
+            if ($setting->Id) {
+                if ($setting->Disabled) {
+                    my ($ok, $msg) = $setting->SetDisabled(0);
+                    if (!$ok) {
+                        push @results, $msg;
+                        $has_error++;
+                    }
+                }
+
+                my ($ok, $msg) = $setting->SetContent($val);
+                push @results, $msg;
+                $has_error++ if !$ok;
+            }
+            else {
+                my ($ok, $msg) = $setting->Create(
+                    Name    => $key,
+                    Content => $val,
+                );
+                push @results, $msg;
+                $has_error++ if !$ok;
+            }
+        }
+    };
+
+    if ($@) {
+        push @results, $@;
+        $has_error++;
+    }
+
+    @results = map { s/^Stack:.*//ms; $_ } @results;
+
+    if ($has_error) {
+        push @results, loc("No changes made.");
+        $RT::Handle->Rollback;
+    }
+    else {
+        $RT::Handle->Commit;
+    }
+    RT->Config->EndDatabaseConfigChanges;
+}
+
+my $nav_type='tab'; # 'tab' or 'pill'
+
+</%INIT>
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+<div class="configuration">
+<& /Admin/Elements/ConfigHelp &>
+<div class="titlebox-content">
+% my @tab_names = map { $_->{Name} } @$options;
+  <ul class="nav nav-<% $nav_type %>s" id="config-tabs">
+% my $current_context = {};
+% foreach my $tab_name (@tab_names) {
+%     my $tab_id = CSSClass( $tab_name );
+%     $current_context->{tab} = $tab_id;
+%     my( $active, $aria_selected) = $tab_id eq $active_context->{tab} ? ('active', 'true') : ('', 'false');
+%     my $nav_id = join '-', 'nav', $current_context->{tab};
+%     my $content_id = join '-', 'content', $current_context->{tab};
+    <li class="nav-item">
+      <a class="nav-link <% $active %>" id="<% $nav_id %>" data-toggle="<% $nav_type %>" href="#<% $content_id %>" role="<% $nav_type %>" aria-controls="<% $content_id %>" aria-selected="<% $aria_selected %>"><% $tab_name %></a>
+    </li>
+% }
+  </ul>
+  <div class="tab-content" id="content-all" >
+% foreach my $tab ( @$options) {
+%     my $tab_id = CSSClass( $tab->{Name} );
+%     $current_context->{tab} = $tab_id;
+%     my $active = $tab_id eq $active_context->{tab} ? ' show active' : '';
+%     my $nav_id = join '-', 'nav', $current_context->{tab};
+%     my $content_id = join '-', 'content', $current_context->{tab};
+    <div class="tab-pane fade<% $active %>" role="tabpanel" id="<% $content_id %>" aria-labelledby="<% $nav_id %>">
+      <& /Admin/Tools/Config/Elements/Tab, tab => $tab, active_context => $active_context, current_context => $current_context &>
+    </div><!-- <% $content_id %> -->
+% }
+  </div><!-- content-all -->
+</div><!-- titlebox-content -->
+</div><!-- configuration -->

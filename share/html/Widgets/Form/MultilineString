@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,7 +48,7 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget form-row">
+<div id="form-box-<% lc $Name %>" class="widget form-row <% $Class %>">
   <div class="col-md-<% $LabelCols %> label">
 % if( $LabelLink ) {
     <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
@@ -56,44 +56,38 @@ see docs/extending/using_forms_widgets.pod
     <% $Description %>
 % }
   </div>
-  <div class="col-md-<% $ValueCols %> value">
-    <& SELF:InputOnly, %ARGS &>
+  <div class="col-md-<% $ValueCols %> value"><& SELF:InputOnly, %ARGS &>
 % if ( $Default ) {
     <span class="comment"><% $DefaultLabel %></span>
 % }
     <span class="hints"><% $Hints %></span>
   </div>
 </div>
-<%INIT>
-$_ = '' foreach grep !defined, $CurrentValue, $DefaultValue;
-$DefaultLabel ||= loc( 'Default: [_1]', $DefaultValue );
-</%INIT>
 <%ARGS>
 $Name
 
+$Class        => ''
 $Description  => undef,
 $Hints        => ''
 
 $CurrentValue => '',
 
 $Default        => 0,
-$DefaultValue   => 0,
-$DefaultLabel   => undef
+$DefaultValue   => '',
+$DefaultLabel   => loc( 'Default: [_1]', $DefaultValue ),
 $LabelLink      => ''
 $LabelCols      => 3
 $ValueCols      => 9
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="text" name="<% $Name %>" size="<% $Size %>" value="<% $CurrentValue %>" class="form-control" />\
+<textarea name="<% $Name %>" class="form-control" cols="<% $Cols %>" rows="<% $Rows %>"><% $CurrentValue %></textarea>
 <%ARGS>
 $Name
+$Cols => 80
+$Rows => 6
 $CurrentValue => '',
-$Size => 20
 </%ARGS>
-<%INIT>
-$CurrentValue = '' unless defined $CurrentValue;
-</%INIT>
 </%METHOD>
 
 <%METHOD Process>
@@ -107,7 +101,9 @@ $DefaultValue => '',
 </%ARGS>
 <%INIT>
 my $value = $Arguments->{ $Name };
-if ( !defined $value || $value eq '' ) {
+$value = '' unless defined $value;
+
+if ( $value eq '' ) {
     return $DefaultValue unless $Default;
     return undef;
 }

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,69 +48,10 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget form-row">
-  <div class="col-md-<% $LabelCols %> label">
-% if( $LabelLink ) {
-    <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
-% } else {
-    <% $Description %>
-% }
-  </div>
-  <div class="col-md-<% $ValueCols %> value">
-    <& SELF:InputOnly, %ARGS &>
-% if ( $Default ) {
-    <span class="comment"><% $DefaultLabel %></span>
-% }
-    <span class="hints"><% $Hints %></span>
-  </div>
-</div>
-<%INIT>
-$_ = '' foreach grep !defined, $CurrentValue, $DefaultValue;
-$DefaultLabel ||= loc( 'Default: [_1]', $DefaultValue );
-</%INIT>
-<%ARGS>
-$Name
-
-$Description  => undef,
-$Hints        => ''
-
-$CurrentValue => '',
-
-$Default        => 0,
-$DefaultValue   => 0,
-$DefaultLabel   => undef
-$LabelLink      => ''
-$LabelCols      => 3
-$ValueCols      => 9
-</%ARGS>
-
+<& /Widgets/Form/MultilineString, Class => 'code', %ARGS &>
 <%METHOD InputOnly>
-<input type="text" name="<% $Name %>" size="<% $Size %>" value="<% $CurrentValue %>" class="form-control" />\
-<%ARGS>
-$Name
-$CurrentValue => '',
-$Size => 20
-</%ARGS>
-<%INIT>
-$CurrentValue = '' unless defined $CurrentValue;
-</%INIT>
+<& /Widgets/Form/MultilineString:InputOnly, %ARGS &>
 </%METHOD>
-
 <%METHOD Process>
-<%ARGS>
-$Name
-
-$Arguments    => {},
-
-$Default      => 0,
-$DefaultValue => '',
-</%ARGS>
-<%INIT>
-my $value = $Arguments->{ $Name };
-if ( !defined $value || $value eq '' ) {
-    return $DefaultValue unless $Default;
-    return undef;
-}
-return $value;
-</%INIT>
+<& /Widgets/Form/MultilineString:Process, %ARGS &>
 </%METHOD>

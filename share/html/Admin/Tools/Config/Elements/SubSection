@@ -45,72 +45,38 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%DOC>
-see docs/extending/using_forms_widgets.pod
-</%DOC>
-<div id="form-box-<% lc $Name %>" class="widget form-row">
-  <div class="col-md-<% $LabelCols %> label">
-% if( $LabelLink ) {
-    <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
-% } else {
-    <% $Description %>
+
+% if( @{$subsection->{Content}}) {
+% my $id = join '-', 'form', $current_context->{tab}, $current_context->{section}, $current_context->{subsection} || ();
+<form id="<% $id %>" name="EditConfig" method="post" action="EditConfig.html#<% $id %>">
+    <input type="hidden" name="Update" value="1" />
+% my $complete_title =
+%     join ' - ', map { s{_}{ }g; loc( $_ ) }
+%     grep { $_ }
+%     map { $current_context->{$_} }
+%     (qw( tab section subsection ) );
+<&|/Widgets/TitleBox, title => $complete_title &>
+% my $can_edit;
+% foreach my $option ( @{$subsection->{Content}} ) {
+%   $can_edit ||= 1 unless $RT::Config::META{$option->{Name}}{Immutable};
+  <& /Admin/Tools/Config/Elements/Option, option => $option &>
 % }
-  </div>
-  <div class="col-md-<% $ValueCols %> value">
-    <& SELF:InputOnly, %ARGS &>
-% if ( $Default ) {
-    <span class="comment"><% $DefaultLabel %></span>
-% }
-    <span class="hints"><% $Hints %></span>
-  </div>
+<input type="hidden" name="tab" value="<% $current_context->{tab} %>" />
+<input type="hidden" name="section" value="<% $current_context->{section} %>" />
+<input type="hidden" name="subsection" value="<% $current_context->{subsection} %>" />
+
+% if ( $can_edit ) {
+<div class="form-row">
+  <span class="col-md-12">
+    <& /Elements/Submit, Label => loc('Save Changes') &>
+  </span>
 </div>
-<%INIT>
-$_ = '' foreach grep !defined, $CurrentValue, $DefaultValue;
-$DefaultLabel ||= loc( 'Default: [_1]', $DefaultValue );
-</%INIT>
+% }
+</&>
+</form>
+% }
 <%ARGS>
-$Name
-
-$Description  => undef,
-$Hints        => ''
-
-$CurrentValue => '',
-
-$Default        => 0,
-$DefaultValue   => 0,
-$DefaultLabel   => undef
-$LabelLink      => ''
-$LabelCols      => 3
-$ValueCols      => 9
+$subsection
+$active_context
+$current_context
 </%ARGS>
-
-<%METHOD InputOnly>
-<input type="text" name="<% $Name %>" size="<% $Size %>" value="<% $CurrentValue %>" class="form-control" />\
-<%ARGS>
-$Name
-$CurrentValue => '',
-$Size => 20
-</%ARGS>
-<%INIT>
-$CurrentValue = '' unless defined $CurrentValue;
-</%INIT>
-</%METHOD>
-
-<%METHOD Process>
-<%ARGS>
-$Name
-
-$Arguments    => {},
-
-$Default      => 0,
-$DefaultValue => '',
-</%ARGS>
-<%INIT>
-my $value = $Arguments->{ $Name };
-if ( !defined $value || $value eq '' ) {
-    return $DefaultValue unless $Default;
-    return undef;
-}
-return $value;
-</%INIT>
-</%METHOD>
