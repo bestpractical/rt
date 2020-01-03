@@ -1482,7 +1482,8 @@ sub _parser {
 
     require RT::Interface::Web::QueryBuilder::Tree;
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
-    $tree->ParseAssetSQL(
+    $tree->ParseSQL(
+        Class => 'RT::Assets',
         Query => $string,
         CurrentUser => $self->CurrentUser,
     );
@@ -1531,7 +1532,8 @@ sub _parser {
                         $sql = join ' OR ', @inactive_sql;
                     }
                     $inactive_status_node = RT::Interface::Web::QueryBuilder::Tree->new;
-                    $inactive_status_node->ParseAssetSQL(
+                    $inactive_status_node->ParseSQL(
+                        Class       => 'RT::Assets',
                         Query       => $sql,
                         CurrentUser => $self->CurrentUser,
                     );
@@ -1571,7 +1573,8 @@ sub _parser {
                         $sql = join ' OR ', @active_sql;
                     }
                     $active_status_node = RT::Interface::Web::QueryBuilder::Tree->new;
-                    $active_status_node->ParseAssetSQL(
+                    $active_status_node->ParseSQL(
+                        Class       => 'RT::Assets',
                         Query       => $sql,
                         CurrentUser => $self->CurrentUser,
                     );

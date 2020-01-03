@@ -162,7 +162,7 @@ my $ParseQuery = sub {
     my ($string, $results) = @_;
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->ParseAssetSQL( Query => $string, CurrentUser => $session{'CurrentUser'} );
+    @$results = $tree->ParseSQL( Class => 'RT::Assets', Query => $string, CurrentUser => $session{'CurrentUser'} );
 
     return $tree;
 };
