@@ -99,7 +99,7 @@ div.history-container {
 
 .history .transaction .metadata span.type a {
   font-size: 0.75em;
-  color: #E8E8E8;
+  color: #D3D3D3;
 }
 
 .history .transaction .metadata span.type a#lasttrans {
