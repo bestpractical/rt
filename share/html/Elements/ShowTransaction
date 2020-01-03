@@ -271,7 +271,7 @@ if ( @actions ) {
             .'>'. $a->{'title'} .'</a>'
         ;
     }
-    $actions = join '&nbsp;', map "[$_]", @actions;
+    $actions = join '&nbsp;', @actions;
 }
 
 # make date unbreakable
