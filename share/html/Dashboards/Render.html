@@ -72,13 +72,17 @@
 
 % $m->callback(CallbackName => 'BeforePanes', Dashboard => $Dashboard, show_cb => $show_cb);
 
-  <div class="col-md-8">
-% $show_cb->('body');
+% my $body = $show_cb->('body');
+% my $sidebar = $show_cb->('sidebar');
+  <div class="col-md-<% $sidebar =~ /\S/ ? 8 : 12 %>">
+    <% $body |n %>
   </div>
 
-    <div class="col-md-4">
-% $show_cb->('sidebar');
-    </div>
+% if ( $sidebar =~ /\S/ ) {
+  <div class="col-md-4">
+    <% $sidebar |n %>
+  </div>
+% }
 
 % $m->callback(CallbackName => 'AfterPanes', Dashboard => $Dashboard, show_cb => $show_cb);
 
@@ -146,7 +150,7 @@ my $title = loc '[_1] Dashboard', $Dashboard->Name;
 
 my $show_cb = sub {
     my $pane = shift;
-    $m->comp('Elements/ShowPortlet/dashboard',
+    return $m->scomp('Elements/ShowPortlet/dashboard',
         Portlet    => $Dashboard,
         Rows       => $rows,
         Preview    => $Preview,
