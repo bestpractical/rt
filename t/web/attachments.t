@@ -466,13 +466,13 @@ diag "check content type and content";
     $m->content_contains('Download bpslogo.png', 'page has file name');
     $m->content_contains('Download mobile.css', 'page has file name');
 
-    $m->follow_link_ok({text => "Download bpslogo.png"});
+    $m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/bpslogo\.png/ } );
     is($m->response->header('Content-Type'), 'image/png', 'Content-Type of png lacks charset' );
     is($m->content_type, "image/png");
     is($m->content, RT::Test->file_content(LogoFile), "Binary content matches");
     $m->back;
 
-    $m->follow_link_ok( { text => 'Download mobile.css' } );
+    $m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/mobile\.css/ } );
     is( $m->response->header('Content-Type'),
         'text/css;charset=UTF-8',
         'Content-Type of text has charset',

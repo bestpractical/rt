@@ -19,5 +19,5 @@ $m->submit_form(
     fields => { Subject => 'test att 0', Content => 'test', Attach => $file },
 );
 $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
-$m->follow_link_ok( { text => 'Download 0' } );
+$m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/0/ } );
 $m->content_contains( 'foobar', 'file content' );

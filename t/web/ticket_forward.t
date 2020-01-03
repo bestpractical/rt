@@ -58,7 +58,7 @@ diag "Forward Ticket" if $ENV{TEST_VERBOSE};
 
 diag "Forward Transaction" if $ENV{TEST_VERBOSE};
 {
-    $m->follow_link_ok( { text => 'Forward', n => 2 }, 'follow 2nd Forward' );
+    $m->follow_link_ok( { class => 'forward-link', n => 1 }, 'follow 2nd Forward' );
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
@@ -130,7 +130,7 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
     $m->content_like( qr/image\/png/,       'uploaded image file content type' );
     RT::Test->clean_caught_mails;
 
-    $m->follow_link_ok( { text => 'Forward', n => 2 }, 'follow 2nd Forward' );
+    $m->follow_link_ok( { class => 'forward-link', n => 1 }, 'follow 2nd Forward' );
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
@@ -187,7 +187,7 @@ diag "Forward Transaction with attachments but no 'content' part" if $ENV{TEST_V
     RT::Test->clean_caught_mails;
 
     # Forward txn
-    $m->follow_link_ok( { text => 'Forward', n => 2 }, 'follow 2nd Forward' );
+    $m->follow_link_ok( { class => 'forward-link', n => 1 }, 'follow 2nd Forward' );
     $m->submit_form(
         form_name => 'ForwardMessage',
         fields    => {
@@ -263,7 +263,7 @@ diag "Forward Ticket Template with a Subject: line" if $ENV{TEST_VERBOSE};
 
 diag "Forward Transaction with non-ascii subject" if $ENV{TEST_VERBOSE};
 {
-    $m->follow_link_ok( { text => 'Forward', n => 2 }, 'follow 2nd Forward' );
+    $m->follow_link_ok( { class => 'forward-link', n => 1 }, 'follow 2nd Forward' );
     my $subject = Encode::decode("UTF-8", 'test non-ascii äöü');
     $m->submit_form(
         form_name => 'ForwardMessage',

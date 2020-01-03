@@ -197,7 +197,7 @@ $m->content_contains("Possible cross-site request forgery");
 $m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
 $m->follow_link(text_regex => qr{resume your request});
 $m->content_contains('Download bpslogo.png', 'page has file name');
-$m->follow_link_ok({text => "Download bpslogo.png"});
+$m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/bpslogo\.png/ } );
 is($m->content, $logo_contents, "Binary content matches");
 
 

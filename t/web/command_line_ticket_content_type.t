@@ -31,7 +31,7 @@ for my $content_type ( 'text/plain', 'text/html' ) {
     ok( $id, "got ticket $id" );
 
     $m->goto_ticket($id);
-    $m->follow_link_ok( { text => 'with headers', n => 1 } );
+    $m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/, n => 1 } );
     $m->content_contains( "Content-Type: $content_type", 'content-type' );
 
     expect_send(
@@ -41,7 +41,7 @@ for my $content_type ( 'text/plain', 'text/html' ) {
     expect_like( qr/Comments added/, "commented the ticket" );
 
     $m->goto_ticket($id);
-    $m->follow_link_ok( { text => 'with headers', n => 2 } );
+    $m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/, n => 2 } );
     $m->content_contains( "Content-Type: $content_type", 'content-type' );
 }
 

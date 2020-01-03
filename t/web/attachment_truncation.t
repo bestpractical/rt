@@ -45,7 +45,7 @@ is( $m->status, 200, "request successful" );
 $m->content_contains( "File '$name' truncated because its size (1010 bytes) exceeded configured maximum size setting (1000 bytes).", 'truncated message' );
 $m->content_contains( 'cf' . 'a' x 998, 'has the first 1000 cf chars' );
 $m->content_lacks( 'aaacfb', 'lacks cf chars after that' );
-$m->follow_link_ok( { text => "Download $name" } );
+$m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/$name/ } );
 $m->content_contains( 'a' x 1000, 'has the first 1000 chars' );
 $m->content_lacks( 'b', 'lacks chars after that' );
 
