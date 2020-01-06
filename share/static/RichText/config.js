@@ -24,7 +24,7 @@ CKEDITOR.editorConfig = function( config ) {
     		{ name: 'about', groups: [ 'about' ] }
     	];
 
-    	config.removeButtons = 'Underline,Subscript,Superscript,About,Link,Image,HorizontalRule,SpecialChar,Source,DocProps,Unlink,Anchor,Strike,Blockquote,Cut,Copy,Outdent,Indent';
+    	config.removeButtons = 'Underline,Subscript,Superscript,About,Link,Image,HorizontalRule,SpecialChar,Source,DocProps,Unlink,Anchor,Strike,Cut,Copy,Outdent,Indent';
 
 	// Remove some buttons provided by the standard plugins, which are
 	// not needed in the Standard(s) toolbar.
