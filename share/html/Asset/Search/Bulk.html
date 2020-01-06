@@ -81,64 +81,60 @@
       <div class="buttons col-md-12">
         <span class="caption"></span>
           <input type="submit" id="bulk-update-create-linked-ticket" name="CreateLinkedTicket"  value="Create Linked Ticket" class="button" alt="Create a ticket with checked assets linked" />
+      </div>
+    </div>
+  </div>
+
+
+  <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics asset-bulk-basics", title_class => "inverse" &>
+    <div class="form-row">
+      <div class="col-md-6">
+        <div class="form-row">
+          <div class="label col-md-3">
+            <&|/l&>Catalog</&>
+          </div>
+          <div class="col-md-9 value">
+            <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', Default => $catalog_obj->id, UpdateSession => 0, &>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-row">
+          <div class="col-md-3 label"><&|/l&>Name</&></div>
+          <div class="col-md-9 value">
+            <input class="form-control" type="text" name="UpdateName" value="<% $ARGS{'Name'}||'' %>" size="40">
+          </div>
         </div>
       </div>
     </div>
 
     <div class="form-row">
-      <div class="col-md-12">
-        <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics asset-bulk-basics", title_class => "inverse" &>
-          <div class="form-row">
-            <div class="col-md-6">
-              <div class="form-row">
-                <div class="label col-md-3">
-                  <&|/l&>Catalog</&>
-                </div>
-                <div class="col-md-9 value">
-                  <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', Default => $catalog_obj->id, UpdateSession => 0, &>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="form-row">
-                <div class="col-md-3 label"><&|/l&>Name</&></div>
-                <div class="col-md-9 value">
-                  <input class="form-control" type="text" name="UpdateName" value="<% $ARGS{'Name'}||'' %>" size="40">
-                </div>
-              </div>
-            </div>
+      <div class="col-md-6 asset-catalog">
+        <div class="form-row">
+          <div class="label col-md-3"><&|/l&>Description</&></div>
+          <div class="col-md-9 value">
+            <input class="form-control" type="text" name="UpdateDescription" value="<% $ARGS{'Description'}||'' %>" size="40">
           </div>
+        </div>
+      </div>
 
-          <div class="form-row">
-            <div class="col-md-6 asset-catalog">
-              <div class="form-row">
-                <div class="label col-md-3"><&|/l&>Description</&></div>
-                <div class="col-md-9 value">
-                  <input class="form-control" type="text" name="UpdateDescription" value="<% $ARGS{'Description'}||'' %>" size="40">
-                </div>
-              </div>
-            </div>
-
-            <div class="col-md-6 asset-status">
-              <div class="form-row">
-                <div class="label col-md-3"><&|/l&>Status</&></div>
-                <div class="col-md-9 value">
-                  <& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1, CatalogObj => $catalog_obj &>
-                </div>
-              </div>
-            </div>
+      <div class="col-md-6 asset-status">
+        <div class="form-row">
+          <div class="label col-md-3"><&|/l&>Status</&></div>
+          <div class="col-md-9 value">
+            <& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1, CatalogObj => $catalog_obj &>
           </div>
-%   my $cfs = $catalog_obj->AssetCustomFields;
-%   $cfs->LimitToGrouping( 'RT::Asset' => 'Basics');
-%   if ( $cfs->Count ) {
-        <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
-%   }
-      </&>
+        </div>
+      </div>
     </div>
-  </div>
+% my $cfs = $catalog_obj->AssetCustomFields;
+% $cfs->LimitToGrouping( 'RT::Asset' => 'Basics');
+% if ( $cfs->Count ) {
+    <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+% }
+  </&>
 
-<div class="core-fields">
   <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people asset-bulk-people", title_class => "inverse" &>
 % for my $rname ( $asset->Roles( ACLOnly => 0 ) ) {
 % my $role = $asset->Role( $rname );
@@ -185,13 +181,12 @@
     </div>
 % }
 % }
-%   my $cfs = $catalog_obj->AssetCustomFields;
-%   $cfs->LimitToGrouping( 'RT::Asset' => 'People');
-%   if ( $cfs->Count ) {
+% my $cfs = $catalog_obj->AssetCustomFields;
+% $cfs->LimitToGrouping( 'RT::Asset' => 'People');
+% if ( $cfs->Count ) {
     <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
-%   }
-      </&>
-  </div>
+% }
+  </&>
 
 %   my $cfs = $catalog_obj->AssetCustomFields;
 %   $cfs->LimitToGrouping( 'RT::Asset' => 'Dates');
