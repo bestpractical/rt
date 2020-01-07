@@ -70,8 +70,11 @@
 %     }
 %     for my $object ($default_entry || (), @{$session{$cache_key}{objects}}) {
   <option value="<% ($NamedValues ? $object->{Name} : $object->{Id}) %>"\
-% if ($object->{Id} eq ($Default||'') || $object->{Name} eq ($Default||'')) {
+% if ( $object->{Id} eq ($Default||'') || $object->{Name} eq ($Default||'')) {
  selected="selected"\
+% }
+% elsif ( defined($SelectedId) && $object->{Id} eq $SelectedId ) {
+  selected="selected"\
 % }
 ><%$object->{Name}%>\
 %             if ($Verbose and $object->{Description}) {
@@ -81,6 +84,7 @@
 %     }
 </select>
 % }
+
 <%args>
 $ObjectType
 $CheckRight => undef
@@ -99,8 +103,10 @@ $Class => ""
 $CacheNeedsUpdate => undef
 $Hyperlink => undef
 $AccessKey => undef
+$SelectedId => undef
 </%args>
 <%init>
+
 $ObjectType = "RT::$ObjectType" unless $ObjectType =~ /::/;
 $Class    ||= "select-" . CSSClass("\L$1") if $ObjectType =~ /RT::(.+)$/;
 

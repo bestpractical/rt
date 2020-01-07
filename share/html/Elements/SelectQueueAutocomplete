@@ -55,21 +55,36 @@ $ShowAllQueues   => 1
 $CheckQueueRight => 'CreateTicket'
 $AutoSubmit      => 0
 $Return          => 'Name'
+$SelectedId      => undef
 </%args>
 <%init>
-my $DefaultQueue = RT::Queue->new($session{'CurrentUser'});
-$DefaultQueue->Load( $Default );
+
+my $Value = '';
+if ($SelectedId) {
+    my $SelectedQueue = RT::Queue->new($session{'CurrentUser'});
+    $SelectedQueue->Load( $SelectedId );
+    $Value = $SelectedQueue->Name;
+} elsif ($Default) {
+    my $DefaultQueue = RT::Queue->new($session{'CurrentUser'});
+    $DefaultQueue->Load( $Default );
+    if ($DefaultQueue->id) {
+        $Value = $DefaultQueue->Name;
+    }
+}
 
 undef $CheckQueueRight if $ShowAllQueues;
 </%init>
 <input name="<% $Name %>"
        type="text"
        size="25"
-       value="<% $DefaultQueue->id ? $DefaultQueue->Name : "" %>"
+       value="<% $Value %>"
        class="<% $Class %>"
        data-autocomplete="Queues"
        placeholder="<% $Placeholder %>"
        data-autocomplete-checkright="<% $CheckQueueRight %>"
        data-autocomplete-return="<% $Return %>"
-       <% $AutoSubmit ? 'data-autocomplete-autosubmit=1' : '' %>
+% if ($AutoSubmit) {
+       data-autocomplete-autosubmit=1
+       onInput="jQuery('#QueueChanged').val(1);"
+% }
 />

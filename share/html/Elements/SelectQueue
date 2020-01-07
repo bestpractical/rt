@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<input type="hidden" name="QueueChanged" id="QueueChanged" value="0"/>
 %if (RT->Config->Get("AutocompleteQueues", $session{'CurrentUser'})) {
 <& SelectQueueAutocomplete, %ARGS, &>
 %} else {
@@ -60,7 +61,9 @@
 $CheckQueueRight => 'CreateTicket'
 $ShowAllQueues   => 1
 $AutoSubmit      => 0
+$SelectedId      => undef
 </%args>
 <%init>
-$ARGS{OnChange} = "jQuery(this).closest('form').submit();" if $AutoSubmit;
+$ARGS{OnChange} = q{jQuery('#QueueChanged').val(1);};
+$ARGS{OnChange} .= "jQuery(this).closest('form').submit();" if ($AutoSubmit);
 </%init>

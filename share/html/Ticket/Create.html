@@ -72,7 +72,6 @@
 
 <div id="ticket-create-metadata">
     <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
-    <input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Id %>" />
     <div>
     <& /Ticket/Elements/EditBasics,
         InTable => 1,
@@ -80,10 +79,12 @@
         defaults => \%ARGS,
         fields  => [
             {   name => 'Queue',
-                comp => '/Ticket/Elements/ShowQueue',
+                comp => '/Elements/SelectQueue',
                 args => {
-                    QueueObj => $QueueObj,
-                    Wrap => 1,
+                    Wrap        => 1,
+                    SelectedId  => $Queue,
+                    AutoSubmit  => 1,
+                    Name        => 'Queue'
                 },
             },
             {   name => 'Status',
@@ -238,8 +239,8 @@
 <div class="row">
 <div class="boxcontainer col-md-6">
     <div class="ticket-info-basics">
-          <&| /Widgets/TitleBox, title => loc('The Basics'), 
-                title_class=> 'inverse',  
+          <&| /Widgets/TitleBox, title => loc('The Basics'),
+                title_class=> 'inverse',
                 color => "#993333" &>
 <div>
 
@@ -278,7 +279,7 @@
 <br />
 <div class="ticket-info-dates">
 <&|/Widgets/TitleBox, title => loc("Dates"),
-  title_class=> 'inverse',  
+  title_class=> 'inverse',
   color => "#663366" &>
 
 <div>
@@ -325,7 +326,33 @@
 
 <%INIT>
 $m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
+
 my $Queue = $ARGS{Queue};
+
+# Use default queue from config site or user prefs if none provided
+unless ($Queue) {
+    $Queue = RT->Config->Get("DefaultQueue", $session{'CurrentUser'});
+    if (RT->Config->Get("RememberDefaultQueue", $session{'CurrentUser'})) {
+        if (my $session_default = $session{'DefaultQueue'}) {
+            $Queue = $session_default;
+        }
+    }
+}
+
+# pick first in list in normal order unless queue provided from form/url/defaults
+unless ($Queue) {
+    my $cache_key = SetObjectSessionCache(
+        ObjectType => 'Queue',
+        CheckRight => 1,
+        CacheNeedsUpdate => 0,
+     );
+
+     $Queue = $session{$cache_key}{objects}[0]->{Id};
+     if (not $Queue) {
+        Abort(loc("Queue [_1] could not be loaded.", ''), Code => HTTP::Status::HTTP_BAD_REQUEST);
+     }
+}
+
 $session{DefaultQueue} = $Queue;
 
 my $current_user = $session{'CurrentUser'};
@@ -466,14 +493,14 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 }
 
 my $skip_create = 0;
-$m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, 
+$m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
 
 $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
 
 if ((!exists $ARGS{'AddMoreAttach'}) and (!exists $ARGS{'Go'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ( !$checks_failure && !$skip_create ) {
+    if ( !$checks_failure && !$skip_create && !$ARGS{'QueueChanged'} ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();
