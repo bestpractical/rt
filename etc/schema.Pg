@@ -623,6 +623,7 @@ CREATE TABLE Attributes (
   Created TIMESTAMP NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated TIMESTAMP NULL  ,
+  Disabled integer NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 
 );

@@ -74,6 +74,11 @@ use RT::Attribute;
 
 sub Table { 'Attributes'}
 
+sub _Init {
+    my $self = shift;
+    $self->{'with_disabled_column'} = 1;
+    return $self->SUPER::_Init(@_);
+}
 
 sub _DoSearch {
     my $self = shift;

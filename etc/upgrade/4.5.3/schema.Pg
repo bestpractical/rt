@@ -1,0 +1,1 @@
+ALTER TABLE Attributes ADD COLUMN Disabled integer NOT NULL DEFAULT 0;

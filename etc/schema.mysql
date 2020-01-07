@@ -420,6 +420,7 @@ CREATE TABLE Attributes (
   Created DATETIME NULL  ,
   LastUpdatedBy integer NOT NULL DEFAULT 0  ,
   LastUpdated DATETIME NULL  ,
+  Disabled int2 NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8;
 

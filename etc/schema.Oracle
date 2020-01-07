@@ -397,7 +397,8 @@ CREATE TABLE Attributes (
         Creator                 NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created                 DATE,
         LastUpdatedBy           NUMBER(11,0) DEFAULT 0 NOT NULL,
-        LastUpdated             DATE
+        LastUpdated             DATE,
+        Disabled                NUMBER(11,0) DEFAULT 0 NOT NULL
 );
 
 CREATE INDEX Attributes1 on Attributes(Name);

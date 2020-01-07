@@ -446,7 +446,8 @@ CREATE TABLE Attributes (
   Creator integer NULL DEFAULT 0 ,
   Created DATETIME NULL  ,
   LastUpdatedBy integer NULL DEFAULT 0 ,
-  LastUpdated DATETIME NULL  
+  LastUpdated DATETIME NULL,
+  Disabled int2 NOT NULL DEFAULT 0
  
 ) ;
 CREATE INDEX Attributes1 on Attributes(Name);
