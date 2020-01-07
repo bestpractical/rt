@@ -81,7 +81,11 @@ window.RT.Autocomplete.bind = function(from) {
         if (input.attr("data-autocomplete-autosubmit")) {
             options.select = function( event, ui ) {
                 jQuery(event.target).val(ui.item.value);
-                jQuery(event.target).closest("form").submit();
+                var form = jQuery(event.target).closest("form");
+                if ( what === 'Queues' ) {
+                    form.find('input[name=QueueChanged]').val(1);
+                }
+                form.submit();
             };
         }
 
