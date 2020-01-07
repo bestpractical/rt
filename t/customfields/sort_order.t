@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 20;
+use RT::Test tests => 21;
 use RT::Ticket;
 use RT::CustomField;
 
@@ -64,10 +64,7 @@ diag "reorder CFs: C, A and B";
 
 diag "check ticket create, display and edit pages";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => $queue->Name },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
 
     my @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);

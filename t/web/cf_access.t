@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 32;
+use RT::Test tests => 36;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -91,6 +91,7 @@ diag "Create a CF";
     $m->text_contains('Illegal value for Name');
 }
 
+
 diag "apply the CF to General queue";
 my ( $cf, $cfid, $tid );
 {
@@ -123,13 +124,12 @@ RT::Test->set_rights(
 );
 ok $m->login( $tester->Name, 123456, logout => 1), 'logged in';
 
+my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+ok $queue && $queue->id, 'loaded or created queue';
 diag "check that we have no the CF on the create"
     ." ticket page when user has no SeeCustomField right";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
     $m->content_lacks('Upload multiple images', 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
@@ -156,10 +156,7 @@ RT::Test->set_rights(
 diag "check that we have no the CF on the create"
     ." ticket page when user has no ModifyCustomField right";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
     $m->content_lacks('Upload multiple images', 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
@@ -188,10 +185,8 @@ RT::Test->set_rights(
 
 diag "create a ticket with an image";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
     $m->content_contains('Upload multiple images', 'has a upload image field');
 
     $cf =~ /(\d+)$/ or die "Hey this is impossible dude";

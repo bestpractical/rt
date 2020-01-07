@@ -62,10 +62,7 @@ diag 'check valid inputs with various timezones in ticket create page';
 {
     my ( $ticket, $id );
 
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
     $m->content_contains('Select datetime', 'has cf field');
 
     $m->submit_form(
@@ -103,10 +100,7 @@ diag 'check valid inputs with various timezones in ticket create page';
             'cf datetime value respects user timezone' );
     }
 
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
     $m->submit_form(
         form_name => "TicketCreate",
         fields    => {
@@ -192,10 +186,7 @@ diag 'check search build page';
 
 diag 'check invalid inputs';
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
     my $form = $m->form_name("TicketCreate");
 
     $m->submit_form(
@@ -238,10 +229,7 @@ diag 'retain values when adding attachments';
     $txn_cf->AddToObject(RT::Queue->new(RT->SystemUser));
     my $txn_cfid = $txn_cf->id;
 
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
     $m->content_contains('test cf datetime', 'has cf' );
     $m->content_contains('test txn cf datetime', 'has txn cf' );
 

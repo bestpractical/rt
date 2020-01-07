@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 47;
+use RT::Test nodata => 1, tests => 48;
 use RT::Ticket;
 use RT::CustomField;
 
@@ -96,10 +96,7 @@ ok $m->login( tester => 'password' ), 'logged in';
 
 diag "check that we don't have the cf on create";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => $queue->Name },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
 
     my $form = $m->form_name("TicketCreate");
     my $cf_field = "Object-RT::Ticket--CustomField-". $cf->id ."-Value";

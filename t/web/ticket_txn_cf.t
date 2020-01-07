@@ -51,11 +51,7 @@ ok $queue && $queue->id, 'loaded or created queue';
 my ( $ticket, $id );
 diag 'submit value on ticket create page';
 {
-
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
     $m->content_contains($cf_name, 'has cf field' );
 
     $m->submit_form(

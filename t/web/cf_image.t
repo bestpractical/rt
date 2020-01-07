@@ -25,11 +25,9 @@ $m->tick( "AddCustomField-2", 0 );
 $m->click_ok( "UpdateObjs" );
 $m->content_contains("Globally added custom field Images");
 
-
-$m->submit_form_ok({
-    form_name => "CreateTicketInQueue",
-    fields    => { Queue => 'General' },
-});
+my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+ok $queue && $queue->id, 'loaded or created queue';
+$m->get_ok( '/Ticket/Create.html?Queue='.$queue->id, 'go to ticket create page with queue id' );
 $m->content_contains("Upload one image");
 $m->submit_form_ok({
     form_name => "TicketCreate",
