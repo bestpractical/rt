@@ -14,6 +14,7 @@ import {
     faPlus as fasPlus,
     faKey as fasKey,
     faPencilAlt as fasPencilAlt,
+    faTimes as fasTimes,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -54,6 +55,7 @@ library.add(
     fasPlus,
     fasKey,
     fasPencilAlt,
+    fasTimes,
     // Regular
     farEdit,
     farBookmark,
