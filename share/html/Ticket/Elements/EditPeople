@@ -88,8 +88,12 @@
 % $m->callback( CustomRoles => $single_roles, SingleRoles => 1, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $single_roles->Next) {
 <div class="form-row">
-  <div class="col-md-3 label"><% $role->Name %>:</div>
-  <div class="col-md-6 value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></div>
+  <div class="form-group col-md-3 label"><% $role->Name %>:
+% if ($role->EntryHint) {
+    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+% }
+  </div>
+  <div class="col-md-6 value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket, ShowEntryHint => 0 &></div>
 </div>
 
 % }
