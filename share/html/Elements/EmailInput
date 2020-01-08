@@ -79,6 +79,10 @@
     data-autocomplete-include-system
 % }
 
+% if ($AutocompleteExclude) {
+    data-autocomplete-exclude="<% $AutocompleteExclude %>"
+% }
+
 />
 % if ($EntryHint) {
 <br>
@@ -97,4 +101,5 @@ $AutocompleteNobody => 0
 $AutocompleteSystem => 0
 $EntryHint => ''
 $Placeholder => ''
+$AutocompleteExclude => undef
 </%ARGS>
