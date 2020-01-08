@@ -34,7 +34,7 @@ is ($attr2->SubValue('Format'), 'This is a format');
 $attr2->Delete;
 my $attr3 = RT::Attribute->new(RT->SystemUser);
 ($id) = $attr3->Load($id);
-is ($id, 0);
+is ($attr3->Disabled, 1);
 
 
 }
