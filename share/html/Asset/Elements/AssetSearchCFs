@@ -69,8 +69,8 @@
     <div class="value col-md-4">
       <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
     </div>
-%   }
   </div>
+%   }
 % }
 </&>
 <%args>
