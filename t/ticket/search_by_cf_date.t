@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => undef;
 use Test::MockTime 'set_fixed_time';
+use RT::Test nodata => 1, tests => undef;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 my $cf = RT::Test->load_or_create_custom_field( Name => 'test_cf', Queue => $queue->id, Type => 'Date' );
