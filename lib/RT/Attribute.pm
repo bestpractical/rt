@@ -377,7 +377,8 @@ sub Delete {
         return (0,$self->loc('Permission Denied'));
     }
 
-    return($self->SUPER::Delete(@_));
+    my ( $ret, $msg ) = $self->SetDisabled(1);
+    return wantarray ? ( $ret, $msg ) : $ret;
 }
 
 
