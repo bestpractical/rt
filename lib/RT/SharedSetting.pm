@@ -105,7 +105,7 @@ sub Load {
     if ($object) {
         $self->{'Attribute'} = RT::Attribute->new($self->CurrentUser);
         $self->{'Attribute'}->Load( $id );
-        if ($self->{'Attribute'}->Id) {
+        if ($self->{'Attribute'}->Id && !$self->{'Attribute'}->Disabled) {
             $self->{'Id'} = $self->{'Attribute'}->Id;
             $self->{'Privacy'} = $privacy;
             $self->PostLoad();
@@ -143,7 +143,7 @@ sub LoadById {
     my $attr = RT::Attribute->new($self->CurrentUser);
     my ($ok, $msg) = $attr->LoadById($id);
 
-    if (!$ok) {
+    if (!$ok || $attr->Disabled) {
         return wantarray ? (0, $self->loc("Failed to load [_1] [_2]: [_3]", $self->ObjectName, $id, $msg)) : 0;
     }
 
