@@ -130,7 +130,7 @@ on 'develop' => sub {
     requires 'Test::Warn';
     requires 'Test::WWW::Mechanize', '>= 1.30';
     requires 'Test::WWW::Mechanize::PSGI';
-    requires 'WWW::Mechanize', '>= 1.52';
+    requires 'WWW::Mechanize', '>= 1.80';
     requires 'XML::Simple';
 };
 
