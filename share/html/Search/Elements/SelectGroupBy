@@ -51,7 +51,7 @@ $Default => 'Status'
 $Query   => ''
 $ShowEmpty => 0
 </%args>
-<select name="<% $Name %>" class="cascade-by-optgroup selectpicker">
+<select name="<% $Name %>" class="cascade-by-optgroup">
 % if ( $ShowEmpty ) {
 <option value="">&nbsp;</option>
 % }

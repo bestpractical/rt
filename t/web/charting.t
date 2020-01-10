@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set($EnableJSChart, 0);';
 
 plan skip_all => 'GD required'
     unless GD->require;

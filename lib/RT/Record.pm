@@ -2619,15 +2619,17 @@ sub CustomDateRange {
         return $date_range_spec{format}->($duration, $end_dt, $start_dt, $self);
     }
     else {
+        my $max_unit = $date_range_spec{business_time} ? 'hour' : 'year';
+
         # "x days ago" is strongly suggestive of comparing with the current
         # time; but if we're comparing two arbitrary times, "x days prior"
         # reads better
         if ($duration < 0) {
             $duration *= -1;
-            return $self->loc('[_1] prior', $end_dt->DurationAsString($duration));
+            return $self->loc('[_1] prior', $end_dt->DurationAsString($duration, MaxUnit => $max_unit));
         }
         else {
-            return $end_dt->DurationAsString($duration);
+            return $end_dt->DurationAsString($duration, MaxUnit => $max_unit);
         }
     }
 }

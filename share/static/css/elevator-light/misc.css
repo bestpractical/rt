@@ -138,3 +138,7 @@ svg.icon-helper {
 .cke_toolbar .cke_toolgroup {
     margin-right: 5px;
 }
+
+legend {
+  font-size: 1rem;
+}

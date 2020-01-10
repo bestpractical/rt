@@ -53,7 +53,7 @@ use RT::Report::Tickets::Entry;
 
 use strict;
 use warnings;
-
+use 5.010;
 use Scalar::Util qw(weaken);
 
 __PACKAGE__->RegisterCustomFieldJoin(@$_) for
@@ -144,6 +144,22 @@ our %GROUPINGS_META = (
             Year Annually
             WeekOfYear
         )],  # loc_qw
+        StrftimeFormat => {
+            Time       => '%T',
+            Hourly     => '%Y-%m-%d %H',
+            Hour       => '%H',
+            Date       => '%F',
+            Daily      => '%F',
+            DayOfWeek  => '%w',
+            Day        => '%F',
+            DayOfMonth => '%d',
+            DayOfYear  => '%j',
+            Month      => '%m',
+            Monthly    => '%Y-%m',
+            Year       => '%Y',
+            Annually   => '%Y',
+            WeekOfYear => '%W',
+        },
         Function => 'GenerateDateFunction',
         Display => sub {
             my $self = shift;
@@ -211,6 +227,20 @@ our %GROUPINGS_META = (
     Enum => {
         Localize => 1,
     },
+    Duration => {
+        SubFields => [ qw/Default Hour Day Week Month Year/ ],
+        Localize => 1,
+        Short    => 0,
+        Show     => 1,
+        Sort     => 'duration',
+    },
+    DurationInBusinessHours => {
+        SubFields => [ qw/Default Hour/ ],
+        Localize => 1,
+        Short    => 0,
+        Show     => 1,
+        Sort     => 'duration',
+    },
 );
 
 # loc'able strings below generated with (s/loq/loc/):
@@ -232,36 +262,36 @@ our %GROUPINGS_META = (
 # loc("Average time left")
 # loc("Minimum time left")
 # loc("Maximum time left")
-# loc("Summary of Created-Started")
-# loc("Total Created-Started")
-# loc("Average Created-Started")
-# loc("Minimum Created-Started")
-# loc("Maximum Created-Started")
-# loc("Summary of Created-Resolved")
-# loc("Total Created-Resolved")
-# loc("Average Created-Resolved")
-# loc("Minimum Created-Resolved")
-# loc("Maximum Created-Resolved")
-# loc("Summary of Created-LastUpdated")
-# loc("Total Created-LastUpdated")
-# loc("Average Created-LastUpdated")
-# loc("Minimum Created-LastUpdated")
-# loc("Maximum Created-LastUpdated")
-# loc("Summary of Starts-Started")
-# loc("Total Starts-Started")
-# loc("Average Starts-Started")
-# loc("Minimum Starts-Started")
-# loc("Maximum Starts-Started")
-# loc("Summary of Due-Resolved")
-# loc("Total Due-Resolved")
-# loc("Average Due-Resolved")
-# loc("Minimum Due-Resolved")
-# loc("Maximum Due-Resolved")
-# loc("Summary of Started-Resolved")
-# loc("Total Started-Resolved")
-# loc("Average Started-Resolved")
-# loc("Minimum Started-Resolved")
-# loc("Maximum Started-Resolved")
+# loc("Summary of Created to Started")
+# loc("Total Created to Started")
+# loc("Average Created to Started")
+# loc("Minimum Created to Started")
+# loc("Maximum Created to Started")
+# loc("Summary of Created to Resolved")
+# loc("Total Created to Resolved")
+# loc("Average Created to Resolved")
+# loc("Minimum Created to Resolved")
+# loc("Maximum Created to Resolved")
+# loc("Summary of Created to LastUpdated")
+# loc("Total Created to LastUpdated")
+# loc("Average Created to LastUpdated")
+# loc("Minimum Created to LastUpdated")
+# loc("Maximum Created to LastUpdated")
+# loc("Summary of Starts to Started")
+# loc("Total Starts to Started")
+# loc("Average Starts to Started")
+# loc("Minimum Starts to Started")
+# loc("Maximum Starts to Started")
+# loc("Summary of Due to Resolved")
+# loc("Total Due to Resolved")
+# loc("Average Due to Resolved")
+# loc("Minimum Due to Resolved")
+# loc("Maximum Due to Resolved")
+# loc("Summary of Started to Resolved")
+# loc("Total Started to Resolved")
+# loc("Average Started to Resolved")
+# loc("Minimum Started to Resolved")
+# loc("Maximum Started to Resolved")
 
 our @STATISTICS = (
     COUNT => ['Ticket count', 'Count', 'id'],
@@ -279,15 +309,15 @@ foreach my $field (qw(TimeWorked TimeEstimated TimeLeft)) {
 }
 
 
-foreach my $pair (qw(
-    Created-Started
-    Created-Resolved
-    Created-LastUpdated
-    Starts-Started
-    Due-Resolved
-    Started-Resolved
-)) {
-    my ($from, $to) = split /-/, $pair;
+foreach my $pair (
+    'Created to Started',
+    'Created to Resolved',
+    'Created to LastUpdated',
+    'Starts to Started',
+    'Due to Resolved',
+    'Started to Resolved',
+) {
+    my ($from, $to) = split / to /, $pair;
     push @STATISTICS, (
         "ALL($pair)" => ["Summary of $pair", 'DateTimeIntervalAll', $from, $to ],
         "SUM($pair)" => ["Total $pair", 'DateTimeInterval', 'SUM', $from, $to ],
@@ -295,6 +325,20 @@ foreach my $pair (qw(
         "MIN($pair)" => ["Minimum $pair", 'DateTimeInterval', 'MIN', $from, $to ],
         "MAX($pair)" => ["Maximum $pair", 'DateTimeInterval', 'MAX', $from, $to ],
     );
+    push @GROUPINGS, $pair => 'Duration';
+
+    my %extra_info = ( business_time => 1 );
+    if ( keys %{RT->Config->Get('ServiceBusinessHours')} ) {
+        my $business_pair = "$pair(Business Hours)";
+        push @STATISTICS, (
+            "ALL($business_pair)" => ["Summary of $business_pair", 'DateTimeIntervalAll', $from, $to, \%extra_info ],
+            "SUM($business_pair)" => ["Total $business_pair", 'DateTimeInterval', 'SUM', $from, $to, \%extra_info ],
+            "AVG($business_pair)" => ["Average $business_pair", 'DateTimeInterval', 'AVG', $from, $to, \%extra_info ],
+            "MIN($business_pair)" => ["Minimum $business_pair", 'DateTimeInterval', 'MIN', $from, $to, \%extra_info ],
+            "MAX($business_pair)" => ["Maximum $business_pair", 'DateTimeInterval', 'MAX', $from, $to, \%extra_info ],
+        );
+        push @GROUPINGS, $business_pair => 'DurationInBusinessHours';
+    }
 }
 
 our %STATISTICS;
@@ -370,6 +414,25 @@ our %STATISTICS_META = (
                 Average => { FUNCTION => "AVG($interval)" },
                 Maximum => { FUNCTION => "MAX($interval)" },
                 Total   => { FUNCTION => "SUM($interval)" },
+            );
+        },
+        Display => 'DurationAsString',
+    },
+    CustomDateRange => {
+        Display => 'DurationAsString',
+        Function => sub {}, # Placeholder to use the same DateTimeInterval handling
+    },
+    CustomDateRangeAll => {
+        SubValues => sub { return ('Minimum', 'Average', 'Maximum', 'Total') },
+        Function => sub {
+            my $self = shift;
+
+            # To use the same DateTimeIntervalAll handling, not real SQL
+            return (
+                Minimum => { FUNCTION => "MIN" },
+                Average => { FUNCTION => "AVG" },
+                Maximum => { FUNCTION => "MAX" },
+                Total   => { FUNCTION => "SUM" },
             );
         },
         Display => 'DurationAsString',
@@ -595,6 +658,21 @@ sub SetupGroupings {
 
     $self->{'column_info'} = \%column_info;
 
+    if ($args{Query}
+        && ( grep( { $_->{INFO} =~ /Duration|CustomDateRange/ } map { $column_info{$_} } @{ $res{Groups} } )
+            || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && $_->{INFO}[1] =~ /CustomDateRange/ }
+                values %column_info )
+            || grep( { $_->{TYPE} eq 'statistic' && ref $_->{INFO} && ref $_->{INFO}[-1] && $_->{INFO}[-1]{business_time} }
+                values %column_info ) )
+       )
+    {
+        # Need to do the groupby/calculation at Perl level
+        $self->{_query} = $args{'Query'};
+    }
+    else {
+        delete $self->{_query};
+    }
+
     return %res;
 }
 
@@ -607,6 +685,296 @@ columns if it makes sense
 
 sub _DoSearch {
     my $self = shift;
+
+    # When groupby/calculation can't be done at SQL level, do it at Perl level
+    if ( $self->{_query} ) {
+        my $tickets = RT::Tickets->new( $self->CurrentUser );
+        $tickets->FromSQL( $self->{_query} );
+        my @groups = grep { $_->{TYPE} eq 'grouping' } map { $self->ColumnInfo($_) } $self->ColumnsList;
+        my %info;
+        while ( my $ticket = $tickets->Next ) {
+            my @keys;
+            my $max = 1;
+            for my $group ( @groups ) {
+                my $value;
+
+                if ( $ticket->_Accessible($group->{KEY}, 'read' )) {
+                    if ( $group->{SUBKEY} ) {
+                        my $method = "$group->{KEY}Obj";
+                        if ( my $obj = $ticket->$method ) {
+                            if ( $group->{INFO} eq 'Date' ) {
+                                if ( $obj->Unix > 0 ) {
+                                    $value = $obj->Strftime( $GROUPINGS_META{Date}{StrftimeFormat}{ $group->{SUBKEY} },
+                                        Timezone => 'user' );
+                                }
+                                else {
+                                    $value = $self->loc('(no value)')
+                                }
+                            }
+                            else {
+                                $value = $obj->_Value($group->{SUBKEY});
+                            }
+                            $value //= $self->loc('(no value)');
+                        }
+                    }
+                    $value //= $ticket->_Value( $group->{KEY} ) // $self->loc('(no value)');
+                }
+                elsif ( $group->{INFO} eq 'Watcher' ) {
+                    my @values;
+                    if ( $ticket->can($group->{KEY}) ) {
+                        my $method = $group->{KEY};
+                        push @values, @{$ticket->$method->UserMembersObj->ItemsArrayRef};
+                    }
+                    elsif ( $group->{KEY} eq 'Watcher' ) {
+                        push @values, @{$ticket->$_->UserMembersObj->ItemsArrayRef} for /Requestor Cc AdminCc/;
+                    }
+                    else {
+                        RT->Logger->error("Unsupported group by $group->{KEY}");
+                        next;
+                    }
+
+                    @values = map { $_->_Value( $group->{SUBKEY} || 'Name' ) } @values;
+                    @values = $self->loc('(no value)') unless @values;
+                    $value = \@values;
+                }
+                elsif ( $group->{INFO} eq 'CustomField' ) {
+                    my ($id) = $group->{SUBKEY} =~ /{(\d+)}/;
+                    my $values = $ticket->CustomFieldValues($id);
+                    if ( $values->Count ) {
+                        $value = [ map { $_->Content } @{ $values->ItemsArrayRef } ];
+                    }
+                    else {
+                        $value = $self->loc('(no value)');
+                    }
+                }
+                elsif ( $group->{INFO} =~ /^Duration(InBusinessHours)?/ ) {
+                    my $business_time = $1;
+
+                    if ( $group->{FIELD} =~ /^(\w+) to (\w+)(\(Business Hours\))?$/ ) {
+                        my $start        = $1;
+                        my $end          = $2;
+                        my $start_method = $start . 'Obj';
+                        my $end_method   = $end . 'Obj';
+                        if ( $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0 ) {
+                            my $seconds;
+
+                            if ($business_time) {
+                                $seconds = $ticket->CustomDateRange(
+                                    '',
+                                    {   value         => "$end - $start",
+                                        business_time => 1,
+                                        format        => sub { $_[0] },
+                                    }
+                                );
+                            }
+                            else {
+                                $seconds = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
+                            }
+
+                            if ( $group->{SUBKEY} eq 'Default' ) {
+                                $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                    $seconds,
+                                    Show    => $group->{META}{Show},
+                                    Short   => $group->{META}{Short},
+                                    MaxUnit => $business_time ? 'hour' : 'year',
+                                );
+                            }
+                            else {
+                                $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                    $seconds,
+                                    Show    => $group->{META}{Show} // 3,
+                                    Short   => $group->{META}{Short} // 1,
+                                    MaxUnit => lc $group->{SUBKEY},
+                                    MinUnit => lc $group->{SUBKEY},
+                                    Unit    => lc $group->{SUBKEY},
+                                );
+                            }
+                        }
+                    }
+                    else {
+                        my %ranges = RT::Ticket->CustomDateRanges;
+                        if ( my $spec = $ranges{$group->{FIELD}} ) {
+                            if ( $group->{SUBKEY} eq 'Default' ) {
+                                $value = $ticket->CustomDateRange( $group->{FIELD}, $spec );
+                            }
+                            else {
+                                my $seconds = $ticket->CustomDateRange( $group->{FIELD},
+                                    { ref $spec ? %$spec : ( value => $spec ), format => sub { $_[0] } } );
+
+                                if ( defined $seconds ) {
+                                    $value = RT::Date->new( $self->CurrentUser )->DurationAsString(
+                                        $seconds,
+                                        Show    => $group->{META}{Show} // 3,
+                                        Short   => $group->{META}{Short} // 1,
+                                        MaxUnit => lc $group->{SUBKEY},
+                                        MinUnit => lc $group->{SUBKEY},
+                                        Unit    => lc $group->{SUBKEY},
+                                    );
+                                }
+                            }
+                        }
+                    }
+
+                    $value //= $self->loc('(no value)');
+                }
+                else {
+                    RT->Logger->error("Unsupported group by $group->{KEY}");
+                    next;
+                }
+                push @keys, $value;
+            }
+
+            # @keys could contain arrayrefs, so we need to expand it.
+            # e.g. "open", [ "root", "foo" ], "General" )
+            # will be expanded to:
+            #   "open", "root", "General"
+            #   "open", "foo", "General"
+
+            my @all_keys;
+            for my $key (@keys) {
+                if ( ref $key eq 'ARRAY' ) {
+                    if (@all_keys) {
+                        my @new_all_keys;
+                        for my $keys ( @all_keys ) {
+                            push @new_all_keys, [ @$keys, $_ ] for @$key;
+                        }
+                        @all_keys = @new_all_keys;
+                    }
+                    else {
+                        push @all_keys, [$_] for @$key;
+                    }
+                }
+                else {
+                    if (@all_keys) {
+                        @all_keys = map { [ @$_, $key ] } @all_keys;
+                    }
+                    else {
+                        push @all_keys, [$key];
+                    }
+                }
+            }
+
+            my @fields = grep { $_->{TYPE} eq 'statistic' }
+                map { $self->ColumnInfo($_) } $self->ColumnsList;
+
+            while ( my $field = shift @fields ) {
+                for my $keys (@all_keys) {
+                    my $key = join ';;;', @$keys;
+                    if ( $field->{NAME} =~ /^id/ && $field->{FUNCTION} eq 'COUNT' ) {
+                        $info{$key}{ $field->{NAME} }++;
+                    }
+                    elsif ( $field->{NAME} =~ /^postfunction/ ) {
+                        if ( $field->{MAP} ) {
+                            my ($meta_type) = $field->{INFO}[1] =~ /^(\w+)All$/;
+                            for my $item ( values %{ $field->{MAP} } ) {
+                                push @fields,
+                                    {
+                                    NAME  => $item->{NAME},
+                                    FIELD => $item->{FIELD},
+                                    INFO  => [
+                                        '', $meta_type,
+                                        $item->{FUNCTION} =~ /^(\w+)/ ? $1 : '',
+                                        @{ $field->{INFO} }[ 2 .. $#{ $field->{INFO} } ],
+                                    ],
+                                    };
+                            }
+                        }
+                    }
+                    elsif ( $field->{INFO}[1] eq 'Time' ) {
+                        if ( $field->{NAME} =~ /^(TimeWorked|TimeEstimated|TimeLeft)$/ ) {
+                            my $method = $1;
+                            my $type   = $field->{INFO}[2];
+                            my $name   = lc $field->{NAME};
+
+                            $info{$key}{$name}
+                                = $self->_CalculateTime( $type, $ticket->$method * 60, $info{$key}{$name} ) || 0;
+                        }
+                        else {
+                            RT->Logger->error("Unsupported field $field->{NAME}");
+                        }
+                    }
+                    elsif ( $field->{INFO}[1] eq 'DateTimeInterval' ) {
+                        my ( undef, undef, $type, $start, $end, $extra_info ) = @{ $field->{INFO} };
+                        my $name = lc $field->{NAME};
+                        $info{$key}{$name} ||= 0;
+
+                        my $start_method = $start . 'Obj';
+                        my $end_method   = $end . 'Obj';
+                        next unless $ticket->$end_method->Unix > 0 && $ticket->$start_method->Unix > 0;
+
+                        my $value;
+                        if ($extra_info->{business_time}) {
+                            $value = $ticket->CustomDateRange(
+                                '',
+                                {   value         => "$end - $start",
+                                    business_time => 1,
+                                    format        => sub { return $_[0] },
+                                }
+                            );
+                        }
+                        else {
+                            $value = $ticket->$end_method->Unix - $ticket->$start_method->Unix;
+                        }
+
+                        $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
+                    }
+                    elsif ( $field->{INFO}[1] eq 'CustomDateRange' ) {
+                        my ( undef, undef, $type, $range_name ) = @{ $field->{INFO} };
+                        my $name = lc $field->{NAME};
+                        $info{$key}{$name} ||= 0;
+
+                        my $value;
+                        my %ranges = RT::Ticket->CustomDateRanges;
+                        if ( my $spec = $ranges{$range_name} ) {
+                            $value = $ticket->CustomDateRange(
+                                $range_name,
+                                {
+                                    ref $spec eq 'HASH' ? %$spec : ( value => $spec ),
+                                    format => sub { $_[0] },
+                                }
+                            );
+                        }
+                        $info{$key}{$name} = $self->_CalculateTime( $type, $value, $info{$key}{$name} );
+                    }
+                    else {
+                        RT->Logger->error("Unsupported field $field->{INFO}[1]");
+                    }
+                }
+            }
+
+            for my $keys (@all_keys) {
+                my $key = join ';;;', @$keys;
+                push @{ $info{$key}{ids} }, $ticket->id;
+            }
+        }
+
+        # Make generated results real SB results
+        for my $key ( keys %info ) {
+            my @keys = split /;;;/, $key;
+            my $row;
+            for my $group ( @groups ) {
+                $row->{lc $group->{NAME}} = shift @keys;
+            }
+            for my $field ( keys %{ $info{$key} } ) {
+                my $value = $info{$key}{$field};
+                if ( ref $value eq 'HASH' && $value->{calculate} ) {
+                    $row->{$field} = $value->{calculate}->($value);
+                }
+                else {
+                    $row->{$field} = $info{$key}{$field};
+                }
+            }
+            my $item = $self->NewItem();
+            $item->LoadFromHash($row);
+            $self->AddRecord($item);
+        }
+        $self->{must_redo_search} = 0;
+        $self->{is_limited} = 1;
+        $self->PostProcessRecords;
+
+        return;
+    }
+
     $self->SUPER::_DoSearch( @_ );
     if ( $self->{'must_redo_search'} ) {
         $RT::Logger->crit(
@@ -727,6 +1095,10 @@ sub SortEntries {
         elsif ( $order eq 'numeric raw' ) {
             push @SORT_OPS, sub { $_[0][$idx] <=> $_[1][$idx] };
             $method = 'RawValue';
+        }
+        elsif ( $order eq 'duration' ) {
+            push @SORT_OPS, sub { $_[0][$idx] <=> $_[1][$idx] };
+            $method = 'DurationValue';
         } else {
             $RT::Logger->error("Unknown sorting function '$order'");
             next;
@@ -879,17 +1251,19 @@ sub DurationAsString {
     my $self = shift;
     my %args = @_;
     my $v = $args{'VALUE'};
+    my $max_unit = $args{INFO} && ref $args{INFO}[-1] && $args{INFO}[-1]{business_time} ? 'hour' : 'year';
+
     unless ( ref $v ) {
         return $self->loc("(no value)") unless defined $v && length $v;
         return RT::Date->new( $self->CurrentUser )->DurationAsString(
-            $v, Show => 3, Short => 1
+            $v, Show => 3, Short => 1, MaxUnit => $max_unit,
         );
     }
 
     my $date = RT::Date->new( $self->CurrentUser );
     my %res = %$v;
     foreach my $e ( values %res ) {
-        $e = $date->DurationAsString( $e, Short => 1, Show => 3 )
+        $e = $date->DurationAsString( $e, Short => 1, Show => 3, MaxUnit => $max_unit )
             if defined $e && length $e;
         $e = $self->loc("(no value)") unless defined $e && length $e;
     }
@@ -1108,6 +1482,66 @@ sub FormatTable {
     }
 
     return thead => \@head, tbody => \@body, tfoot => \@footer;
+}
+
+sub _CalculateTime {
+    my $self = shift;
+    my ( $type, $value, $current ) = @_;
+
+    return $current unless defined $value;
+
+    if ( $type eq 'SUM' ) {
+        $current += $value;
+    }
+    elsif ( $type eq 'AVG' ) {
+        $current ||= {};
+        $current->{total} += $value;
+        $current->{count}++;
+        $current->{calculate} ||= sub {
+            my $item = shift;
+            return sprintf '%.0f', $item->{total} / $item->{count};
+        };
+    }
+    elsif ( $type eq 'MAX' ) {
+        $current = $value unless $current && $current > $value;
+    }
+    elsif ( $type eq 'MIN' ) {
+        $current = $value unless $current && $current < $value;
+    }
+    else {
+        RT->Logger->error("Unsupported type $type");
+    }
+    return $current;
+}
+
+sub new {
+    my $self = shift;
+    state $setup_custom_date_ranges = 1;
+    if ($setup_custom_date_ranges) {
+
+        my %ranges = RT::Ticket->CustomDateRanges;
+        for my $name ( sort keys %ranges ) {
+            my %extra_info;
+            my $spec = $ranges{$name};
+            if ( ref $spec && $spec->{business_time} )
+            {
+                $extra_info{business_time} = 1;
+            }
+
+            push @GROUPINGS, $name => $extra_info{business_time} ? 'DurationInBusinessHours' : 'Duration';
+            push @STATISTICS,
+                (
+                "ALL($name)" => [ "Summary of $name", 'CustomDateRangeAll', $name, \%extra_info ],
+                "SUM($name)" => [ "Total $name",   'CustomDateRange', 'SUM', $name, \%extra_info ],
+                "AVG($name)" => [ "Average $name", 'CustomDateRange', 'AVG', $name, \%extra_info ],
+                "MIN($name)" => [ "Minimum $name", 'CustomDateRange', 'MIN', $name, \%extra_info ],
+                "MAX($name)" => [ "Maximum $name", 'CustomDateRange', 'MAX', $name, \%extra_info ],
+                );
+        }
+        $setup_custom_date_ranges = 0;
+    }
+
+    return $self->SUPER::new(@_);
 }
 
 RT::Base->_ImportOverlays();

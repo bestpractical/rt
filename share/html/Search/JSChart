@@ -1,0 +1,251 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%args>
+$Cache => undef
+$Query => "id > 0"
+@GroupBy => ()
+$ChartStyle => 'bar+table+sql'
+@ChartFunction => 'COUNT'
+$Width  => undef
+$Height => undef
+$SavedSearchId => ''
+</%args>
+
+% my $id = join '-', 'search-chart', $SavedSearchId || ();
+<canvas id="<% $id %>" width="<% $Width %>" height="<% $Height %>"></canvas>
+<script type="text/javascript">
+var data_labels = <% JSON( \@data_labels ) |n %>;
+
+% if ( $#data == 1 )  {
+var backgroundColor = Chart.colorschemes[<% $scheme_parts[0] |n,j %>][<% $scheme_parts[1] |n,j %>];
+if ( backgroundColor && backgroundColor.length ) {
+    while ( backgroundColor.length < <% scalar @{$data[0]} %>) {
+        backgroundColor = backgroundColor.concat(backgroundColor);
+    }
+}
+% }
+
+var ctx = document.getElementById(<% $id |n,j %>).getContext('2d');
+var searchChart = new Chart(ctx, {
+    type: <% $ChartStyle =~ /\b(bar|line|pie)\b/ ? $1 : 'bar' |n,j %>,
+    data: {
+        labels: <% JSON( [ map { join ' - ', @$_ } @{$data[0]} ] ) |n %>,
+        datasets: [
+% for my $index ( 1 .. $#data ) {
+          {
+%   if ( $#data == 1 )  {
+            backgroundColor: backgroundColor || [],
+%   }
+
+%   if ( $ChartStyle =~ /\bbar|line\b/ ) {
+            label: <% $labels[$index-1] |n,j %>,
+%   }
+            data: <% JSON($data[$index]) |n %>
+          }
+%   if ( $index != $#data ) {
+        ,
+%   }
+% }
+      ]
+    },
+    options: {
+        plugins: {
+            colorschemes: {
+                scheme: <% $scheme |n,j %>
+            }
+        },
+% if ( $ChartStyle =~ /\bbar|line\b/ ) {
+        legend: {
+            display: <% @data == 2 ? 'false' : 'true' %>
+        },
+        tooltips: {
+            callbacks: {
+                label: function(tooltipItem, data) {
+                    var label = data.datasets[tooltipItem.datasetIndex].label || '';
+
+                    if (label) {
+                        label += ': ';
+                    }
+                    label += data_labels[tooltipItem.datasetIndex][tooltipItem.index];
+                    return label;
+                }
+            }
+        },
+        scales: {
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: <% join(' - ', map $report->Label( $_), @{ $columns{'Groups'} }) |n,j %>
+                },
+                gridLines: {
+                    display: false
+                }
+            }],
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: <% $report->Label( $columns{'Functions'}[0] ) |n,j %>
+                },
+                gridLines: {
+                    drawTicks: true,
+                    drawOnChartArea: false
+                },
+                ticks: {
+                    beginAtZero: true,
+                    callback: function(value, index, values) {
+%                       my $info = $report->ColumnInfo($columns{'Functions'}[0]);
+%                       if ( $info->{META} && ($info->{META}{Display}//'') eq 'DurationAsString' ) {
+                            return;
+%                       } else {
+                            if (Math.floor(value) === value) {
+                                return value;
+                            }
+%                       }
+                    }
+                }
+            }]
+        }
+% }
+    }
+});
+
+var group_by = <% JSON( \@GroupBy ) |n %>;
+var data_queries = <% JSON( \@data_queries ) |n %>;
+
+jQuery('#search-chart').click(function(e) {
+    var slice = searchChart.getElementAtEvent(e);
+    if ( !slice[0] ) return;
+
+    var query = <% $Query =~ /^\s*\(.*\)$/ ? $Query : "( $Query )" |n,j %>;
+    if ( data_queries[slice[0]._index] ) {
+        query += ' AND ( ' + data_queries[slice[0]._index] + ')';
+    }
+    window.open(RT.Config.WebPath + '/Search/Results.html?Query=' + encodeURIComponent(query)
+        + '&' + <% $m->comp('/Elements/QueryString', map { $_ => $DECODED_ARGS->{$_} } grep { $_ ne 'Query' } keys %$DECODED_ARGS) |n,j%>);
+});
+
+</script>
+
+<%init>
+s/\D//g for grep defined, $Width, $Height;
+$Width  ||= ($ChartStyle =~ /\bpie\b/ ? 400 : 600);
+$Height ||= ($ChartStyle =~ /\bpie\b/ ? $Width : 400);
+$Height = $Width if $ChartStyle =~ /\bpie\b/;
+
+use RT::Report::Tickets;
+my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+
+# Default GroupBy we use in RT::Report::Tickets, we also need it here to
+# generate sub queries.
+@GroupBy = 'Status' unless @GroupBy;
+
+my %columns;
+if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
+    %columns = %{ $data->{'columns'} };
+    $report->Deserialize( $data->{'report'} );
+    $session{'i'}++;
+} else {
+    %columns = $report->SetupGroupings(
+        Query => $Query,
+        GroupBy => \@GroupBy,
+        Function => \@ChartFunction,
+    );
+
+    $report->SortEntries;
+}
+
+my @data = ([],[]);
+my @data_labels;
+my @data_queries;
+while ( my $entry = $report->Next ) {
+    push @{ $data[0] }, [ map $entry->LabelValue( $_ ), @{ $columns{'Groups'} } ];
+    push @data_queries, $entry->Query;
+
+    my @values;
+    my @label_values;
+    foreach my $column ( @{ $columns{'Functions'} } ) {
+        my $v = $entry->RawValue( $column );
+        my $label_v = $entry->LabelValue( $column );
+        unless ( ref $v ) {
+            push @values, $v;
+            push @label_values, $label_v;
+            next;
+        }
+
+        my @subs = $report->FindImplementationCode(
+            $report->ColumnInfo( $column )->{'META'}{'SubValues'}
+        )->( $report );
+        push @values, map $v->{$_}, @subs;
+        push @label_values, map $label_v->{$_}, @subs;
+    }
+
+    my $i = 0;
+    my $j = 0;
+    push @{ $data[++$i] }, $_ foreach @values;
+    push @{ $data_labels[$j++] }, $_ foreach @label_values;
+}
+
+$ChartStyle =~ s/\bpie\b/bar/ if @data > 2;
+
+my @labels;
+if ( $ChartStyle =~ /\b(?:bar|line)\b/ ) {
+    for my $column ( @{$columns{'Functions'}} ) {
+        my $info = $report->ColumnInfo( $column );
+        my @subs;
+        if ( $info->{'META'}{'SubValues'} ) {
+            push @labels, map { join ': ', $report->Label($column), $_ } $report->FindImplementationCode( $info->{'META'}{'SubValues'} )->($report);
+        }
+        else {
+            push @labels, $report->Label($column);
+        }
+    }
+}
+
+my $scheme = RT->Config->Get('JSChartColorScheme', $session{CurrentUser}) || 'brewer.Paired12';
+my @scheme_parts = split /\./, $scheme, 2;
+</%init>

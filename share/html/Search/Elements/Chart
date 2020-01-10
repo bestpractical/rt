@@ -65,33 +65,44 @@ my %columns = $report->SetupGroupings(
 $report->SortEntries;
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS, GroupBy => \@GroupBy );
+
+my $key;
+if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
+    $key = Digest::MD5::md5_hex( rand(1024) );
+    $session{'charts_cache'}{$key} = { columns => \%columns, report => $report->Serialize };
+    $session{'i'}++;
+}
+
 </%init>
 <div class="chart-wrapper">
-<div class="form-row">
-<div class="col-md-auto">
-% if ( ($ChartStyle || '') =~ /\b(pie|bar)\b/ ) {
-<span class="chart image <% $1 %>">
-% if (RT->Config->Get('DisableGD')) {
-<% loc('Graphical charts are not available.') %><br />
+  <div class="form-row">
+    <div class="col-auto mx-auto">
+      <div class="form-row">
+        <div class="col-auto">
+% if ( ($ChartStyle || '') =~ /\b(pie|bar|line)\b/ ) {
+          <div class="chart image <% $1 %> w-auto">
+% if ( RT->Config->Get('EnableJSChart', $session{CurrentUser}) ) {
+            <& /Search/JSChart, Cache => $key, %ARGS, GroupBy => \@GroupBy &>
+% } elsif (RT->Config->Get('DisableGD')) {
+            <% loc('Graphical charts are not available.') %><br />
 % } else {
-% my $key = Digest::MD5::md5_hex( rand(1024) );
-% $session{'charts_cache'}{$key} = { columns => \%columns, report => $report->Serialize };
-% $session{'i'}++;
-<img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
+            <img src="<% RT->Config->Get('WebPath') %>/Search/Chart?Cache=<% $key |un %>&<% $query_string |n %>" />
 % }
-</span>
+          </div>
 % }
-</div>
-<div class="col-md-auto">
+        </div>
+        <div class="col-auto">
 % if ( ($ChartStyle || '') =~ /\btable\b/ ) {
-<& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
+          <& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
 % }
 
 % $m->callback( CallbackName => 'AfterChartTable', ARGSRef => \%ARGS );
-</div>
-</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 % if ( ($ChartStyle || '') =~ /\bsql\b/ ) {
-<div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
+  <div class="query"><span class="label"><% loc('Query') %>:</span><span class="value"><% $Query %></span></div>
 % }
 </div>

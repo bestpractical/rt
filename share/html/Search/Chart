@@ -63,7 +63,7 @@ my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
     || $font_config{'others'};
 
 s/\D//g for grep defined, $Width, $Height;
-$Width  ||= 600;
+$Width  ||= ($ChartStyle =~ /\bpie\b/ ? 400 : 600);
 $Height ||= ($ChartStyle =~ /\bpie\b/ ? $Width : 400);
 $Height = $Width if $ChartStyle =~ /\bpie\b/;
 
