@@ -45,58 +45,37 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="titlebox card<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>"\
-% for my $key (keys %$data) {
- data-<% $key %>="<% $data->{$key} %>"\
-% }
->
-  <div class="titlebox-title card-header<% $title_class ? " $title_class" : ''%>">
-% if ($hideable) {
-    <span class="toggle <% $rolledup ? " collapsed" : ""%>" data-toggle="collapse" data-target="#<%$tid|n%>" title="<% loc('Toggle visibility') %>"></span>
-% }
-    <span class="left"><%
-            $title_href ? qq[<a href="$title_href">] : '' | n
-        %><% $title %><% $title_raw |n %><% $title_href ? "</a>" : '' |n%></span>
-    <span class="right<%($titleright_href || $titleright || $titleright_raw) ? '' : '-empty' %>">\
-        <% $titleright_href ? qq[<a href="$titleright_href">] : '' | n %>\
-        <% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
-    </span>
-  </div>
-  <div class="titlebox-content collapse<% $bodyclass %><% $rolledup ? " hidden" : " show"%>" id="<% $tid %>">
-    <div class="card-body">
+% $r->content_type('application/json; charset=utf-8');
+<% JSON({
+    actions => \@Actions,
+}) |n %>
+% $m->abort;
 <%ARGS>
-$class => ''
-$bodyclass => ''
-$title_href => ''
-$title => ''
-$title_raw => ''
-$title_class => ''
-$titleright_href => ''
-$titleright => ''
-$titleright_raw => ''
-$id => ''
-$hideable => 1
-$rolledup => 0
-$data => {}
+$id
 </%ARGS>
+<%INIT>
+my @Actions;
 
-<%init>
-$hideable = 1 if $rolledup;
-#
-# This should be pretty bulletproof
-#
-my $page = $m->request_comp->path;
+my $TicketObj = LoadTicket($id);
 
-my $title_b64 = MIME::Base64::encode_base64(Encode::encode( "UTF-8", $title), '');
+# fill ACL cache
+$TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
-my $tid  = "TitleBox--$page--" .
-            join '--', ($class, $bodyclass, $title_b64, $id);
+$m->callback(CallbackName => 'ProcessArguments',
+             Ticket => $TicketObj,
+             ARGSRef => \%ARGS,
+             Actions => \@Actions);
 
-# Replace anything that ISN'T alphanumeric, a hyphen, or an underscore
-$tid =~ s{[^A-Za-z0-9\-_]}{_}g;
+push @Actions, ProcessUpdateMessage(
+    ARGSRef   => \%ARGS,
+    Actions   => \@Actions,
+    TicketObj => $TicketObj,
+);
 
-my $i = 0;
-$i++ while $m->notes("$tid-$i");
-$m->notes("$tid-$i" => 1);
-$tid = "$tid-$i";
-</%init>
+push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+push @Actions, ProcessTicketBasics(  ARGSRef => \%ARGS, TicketObj => $TicketObj );
+push @Actions, ProcessTicketLinks(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+push @Actions, ProcessTicketDates(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
+push @Actions, ProcessObjectCustomFieldUpdates(ARGSRef => \%ARGS, TicketObj => $TicketObj );
+push @Actions, ProcessTicketReminders( ARGSRef => \%ARGS, TicketObj => $TicketObj );
+</%INIT>

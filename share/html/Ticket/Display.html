@@ -82,7 +82,7 @@ my $titleright = qq{
 
 <div class="summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">
 <&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $titleright, class => 'fullwidth' &>
-<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
+<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments, InlineEdit => $InlineEdit &>
 </&>
 </div>
 <br />
@@ -127,6 +127,7 @@ $TicketObj => undef
 $ShowHeaders => 0
 $HideUnsetFields => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
 $ForceShowHistory => 0
+$InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
 </%ARGS>
 
 <%INIT>
@@ -167,6 +168,7 @@ if ($ARGS{'id'} eq 'new') {
 } else { 
     $TicketObj ||= LoadTicket($ARGS{'id'});
 
+    # fill ACL cache
     $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
     my $SkipProcessing;

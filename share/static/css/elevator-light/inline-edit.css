@@ -1,0 +1,103 @@
+td.editable > .value span {
+  display: inline-block;
+  margin-right: 1.25em;
+}
+
+td.editable > .value .edit-icon {
+  display: inline;
+  float: right;
+  margin-top: 0.25em;
+  margin-left: -1em;
+  visibility: hidden;
+  cursor: pointer;
+}
+
+td.editable:hover > .value .edit-icon {
+  visibility: visible;
+}
+
+td > .value .edit-icon {
+  display: none;
+}
+
+td.editable.error {
+  font-weight: bold;
+}
+
+td.editable > form.editor {
+  display: none;
+}
+
+td.editable.loading > .value,
+td.editable.loading > form.editor,
+td.editable.editing > form.editor {
+  display: flex;
+}
+
+td.editable.loading > form.editor,
+td.editable.editing > form.editor {
+  position: absolute;
+}
+
+
+td.editable.loading > .value .edit-icon,
+td.editable.loading > .value {
+  display: none;
+}
+
+/* Let .value take up the width it uses */
+td.editable.editing > .value .edit-icon,
+td.editable.editing > .value {
+  visibility: hidden;
+}
+
+tbody.list-item.refreshing {
+  opacity: 0.5;
+}
+
+td.editable > form.editor > .submit,
+td.editable > form.editor > .cancel {
+  margin-left: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+tr.oddline td.editable > form.editor > .submit,
+tr.oddline td.editable > form.editor > .cancel {
+  background-color: rgb(242,242,242); /* nearly equivalent to rgba(0,0,0,0.05) but no transparency */
+}
+
+tr.evenline td.editable > form.editor > .submit,
+tr.evenline td.editable > form.editor > .cancel {
+  background-color: white;
+}
+
+td.editable.loading > form.editor > .submit,
+td.editable.loading > form.editor > .cancel {
+  display: none;
+}
+
+td.editable.loading > form.editor > .loading {
+  display: flex;
+  margin-top: 3px;
+  margin-left: 3px;
+}
+
+td.editable > form.editor > .loading {
+  display: none;
+}
+
+td.editable > form.editor .form-row {
+  margin-top: 0;
+}
+
+.titlebox form.inline-edit,
+.titlebox.editing .inline-edit-display {
+  display: none;
+}
+
+.titlebox.editing form.inline-edit,
+.titlebox .inline-edit-display {
+  display: block;
+}

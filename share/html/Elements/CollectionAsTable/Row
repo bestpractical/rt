@@ -55,6 +55,7 @@ $Warning => undef
 $ColumnMap => {}
 $Class     => 'RT::Tickets'
 $Classes => ''
+$InlineEdit => 0
 </%ARGS>
 <%init>
 
@@ -66,9 +67,9 @@ else {
     $column_map_class = $Class;
 }
 
-$m->out( '<tbody class="list-item"' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' ) . '>' );
+$m->out( '<tbody class="list-item" data-index="'.$m->interp->apply_escapes($i, 'h').'" ' . ( $record->can('id') ? ' data-record-id="'.$record->id.'"' : '' )  . ( $Warning ? ' data-warning=1' : ''). '>' );
 
-$m->out(  '<tr class="' . $Classes . ' '
+$m->out(  '<tr class="' . $m->interp->apply_escapes($Classes, 'h') . ' '
         . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
         . "\n" );
 my $item;
@@ -90,7 +91,7 @@ foreach my $column (@Format) {
     my $class = $column->{class} ? $m->interp->apply_escapes($column->{class}, 'h') : 'collection-as-table';
 
     my %attrs;
-    foreach my $attr (qw(style align)) {
+    foreach my $attr (qw(style align edit)) {
         if ( defined $column->{ $attr } ) {
             $attrs{ $attr } = $column->{ $attr };
             next;
@@ -115,8 +116,19 @@ foreach my $column (@Format) {
         );
     }
 
+    delete $attrs{edit} if !$InlineEdit;
+
+    delete $attrs{edit} unless $record->isa('RT::Ticket');
+
+    delete $attrs{edit} if $record->isa('RT::Ticket')
+                        && !$record->CurrentUserHasRight('ModifyTicket');
+
     $attrs{colspan} = $column->{span};
     $item += ($attrs{'colspan'} || 1);
+
+    if ($attrs{edit}) {
+        $class .= ' editable';
+    }
 
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
@@ -150,6 +162,7 @@ foreach my $column (@Format) {
         Align        => \$attrs{align},
         Style        => \$attrs{style},
         Colspan      => \$attrs{colspan},
+        Edit         => \$attrs{edit},
         Out          => \@out,
     );
 
@@ -159,7 +172,25 @@ foreach my $column (@Format) {
         foreach grep $attrs{$_}, qw(align style colspan);
 
     $m->out('>');
+
+    if ( $attrs{edit} ) {
+        $m->out( '<form method="POST" action="' . RT->Config->Get('WebPath') . '/Helpers/TicketUpdate?id=' . $record->id . '" class="editor">' );
+        $m->out( $attrs{edit} );
+        $m->out( '<span class="cancel text-danger far fa-times-circle" data-toggle="tooltip" data-placement="top" data-original-title="' . loc('Cancel') . '"></span>' );
+        $m->out( '<span class="submit text-success far fa-check-circle" data-toggle="tooltip" data-placement="top" data-original-title="' . loc('Save') . '"></span>' );
+        $m->out('<div class="spinner-border spinner-border-sm loading" role="status"><span class="sr-only">Loading...</span></div>');
+        $m->out('</form>');
+        $m->out('<div class="value"><span>');
+    }
+
     $m->out(@out) if @out;
+
+    if ( $attrs{edit} ) {
+        $m->out(  '</span> <span class="fas fa-pencil-alt edit-icon" data-toggle="tooltip" data-placement="top" data-original-title="'
+                . loc('Edit')
+                . '"></span></div>' );
+    }
+
     $m->out( '</td>' . "\n" );
 }
 $m->out('</tr>');

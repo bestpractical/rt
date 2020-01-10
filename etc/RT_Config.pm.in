@@ -2381,6 +2381,69 @@ ticket display page automatically.
 
 Set($SearchResultsAutoRedirect, 0);
 
+=item C<$InlineEdit>
+
+Allows users to update tickets directly on search results and ticket display
+pages.
+
+=cut
+
+Set($InlineEdit, 1);
+
+=item C<%InlineEditPanelBehavior>
+
+This setting allows you to control which panels on display pages participate
+in inline edit, as well as fine-tuning their specific behavior.
+
+Much like L</%CustomFieldGroupings>, you first specify a record type you
+want to configure (though since currently only ticket display supports inline
+edit, keys besides C<RT::Ticket> are ignored). Then, for each panel, you
+specify its behavior. The valid behaviors are:
+
+=over 4
+
+=item * link (the default)
+
+The panel will have an "Edit" link in the top right, which when clicked
+immediately activates inline edit. The "Edit" link will change to
+"Cancel" to restore the readonly display.
+
+=item * click
+
+Much like C<link>, except you may click anywhere inside the panel to
+activate inline edit.
+
+=item * hide
+
+Turns off inline edit entirely for this panel.
+
+=item * always
+
+Turns off the readonly display for this panel, providing I<only> inline
+edit capabilities.
+
+=back
+
+You may also provide the special key C<_default> inside a record type to
+specify a default behavior for all panels.
+
+This sample configuration will provide a default inline edit behavior of
+click, but also specifies different behaviors for several other panels.
+Note that the non-standard panel names "Grouping Name" and "Another
+Grouping" are created by the L</%CustomFieldGroupings> setting.
+
+    Set(%InlineEditPanelBehavior,
+        'RT::Ticket' => {
+            '_default'          => 'click',
+
+            'Grouping Name'     => 'link',
+            'Another Grouping'  => 'click',
+            'Dates'             => 'always',
+            'Links'             => 'hide',
+            'People'            => 'link',
+        },
+    );
+
 =back
 
 =head2 Ticket display

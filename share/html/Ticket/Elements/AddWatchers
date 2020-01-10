@@ -45,10 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if ($ShowLabel) {
 <br />
 <br />
 
 <&|/l&>Add new watchers</&>:<br />
+% }
 
 % if ($Users and $Users->Count) {
   <div class="form-row">
@@ -167,6 +169,7 @@ for my $addr ( values %{$Ticket->TransactionAddresses} ) {
 </%INIT>
 
 <%ARGS>
+$ShowLabel => 1
 $UserField => 'Name'
 $UserOp => '='
 $UserString => undef
