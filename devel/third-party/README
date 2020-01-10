@@ -78,3 +78,8 @@ License: MIT
 Description: A set of SVG icons. Icon files are installed via npm, then webpack tree-shakes to generate js for only the icons we use.
 Origin: https://github.com/FortAwesome/Font-Awesome/tree/master/js-packages/%40fortawesome
 License: Icons: CC BY 4.0, Code: MIT License
+
+* superfish-1.7.10
+Description: an enhanced Suckerfish-style menu jQuery plugin
+Origin: https://github.com/joeldbirch/superfish
+License: MIT and GPL

@@ -47,13 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <script type="text/javascript">
 var initMenus = function() {
-    jQuery.fn.supersubs.defaults = {
-        maxWidth: 30,
-        extraWidth: 2
-    };
-
-    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ speed: 'fast' });
-    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').supersubs().superfish({ dropShadows: false, speed: 'fast' }).supposition();
+    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' });
+    jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' }).supposition();
 
     var originalOffset = jQuery("#page-menu").offset().top;
     var floatMenu      = function () {
@@ -71,7 +66,7 @@ var initMenus = function() {
 };
 
 // If everything is loaded, init NOW.  Otherwise, defer to DOM ready.
-if (jQuery.fn.supersubs && jQuery.fn.superfish && jQuery.fn.supposition)
+if (jQuery.fn.superfish && jQuery.fn.supposition)
     initMenus();
 else
     jQuery(initMenus);

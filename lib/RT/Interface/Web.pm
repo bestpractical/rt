@@ -124,8 +124,7 @@ sub JSFiles {
         util.js
         autocomplete.js
         jquery.event.hover-1.0.js
-        superfish.js
-        supersubs.js
+        superfish.min.js
         jquery.supposition.js
         chosen.jquery.min.js
         history-folding.js

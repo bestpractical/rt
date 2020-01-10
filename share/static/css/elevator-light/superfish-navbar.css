@@ -1,95 +1,82 @@
-
 /*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
 .sf-navbar {
-	background:		#BDD2FF;
-	height:			2em;
-	padding-bottom:	2em;
-	position:		relative;
+	background: #BDD2FF;
+	position: relative;
+	margin-bottom: 5em;
+}
+/* provide background colour for submenu strip */
+/* you should just set the menu's container bg colour rather than use pseudo-elements */
+.sf-navbar:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	z-index: -1;
+	background-color: #BDD2FF;
+	height: 200%;
+	width: 100%;
+}
+.sf-navbar ul {
+	box-shadow: none;
 }
 .sf-navbar li {
-	background:		#AABDE6;
-	position:		static;
+	background: #AABDE6;
+	position: static;
 }
-.sf-navbar a {
-	border-top:		none;
+.sf-navbar > li > a,
+.sf-navbar > li > ul > li > a {
+	border: none;
 }
-.sf-navbar li ul {
-	width:			44em; /*IE6 soils itself without this*/
-}
-.sf-navbar li li {
-	background:		#BDD2FF;
-	position:		relative;
-}
-.sf-navbar li li ul {
-	width:			13em;
-}
-.sf-navbar li li li {
-	width:			100%;
+.sf-navbar > li > ul {
+	min-width: 36em; /* set this to whatever suits your design */
 }
 .sf-navbar ul li {
-	width:			auto;
-	float:			left;
+	background: #BDD2FF;
+	position: relative;
 }
-.sf-navbar a, .sf-navbar a:visited {
-	border:			none;
+.sf-navbar ul ul {
+	left: 0;
+	top: 100%;
+}
+.sf-navbar ul ul li {
+	width: 100%;
+}
+.sf-navbar > li > ul > li {
+	float: left;
 }
 .sf-navbar li.current {
-	background:		#BDD2FF;
+	background: #BDD2FF;
 }
 .sf-navbar li:hover,
 .sf-navbar li.sfHover,
-.sf-navbar li li.current,
-.sf-navbar a:focus, .sf-navbar a:hover, .sf-navbar a:active {
-	background:		#BDD2FF;
+.sf-navbar ul li.current {
+	background: #BDD2FF;
 }
 .sf-navbar ul li:hover,
 .sf-navbar ul li.sfHover,
-ul.sf-navbar ul li:hover li,
-ul.sf-navbar ul li.sfHover li,
-.sf-navbar ul a:focus, .sf-navbar ul a:hover, .sf-navbar ul a:active {
-	background:		#D1DFFF;
+.sf-navbar ul ul li {
+	background: #D1DFFF;
 }
-ul.sf-navbar li li li:hover,
-ul.sf-navbar li li li.sfHover,
-.sf-navbar li li.current li.current,
-.sf-navbar ul li li a:focus, .sf-navbar ul li li a:hover, .sf-navbar ul li li a:active {
-	background:		#E6EEFF;
+.sf-navbar ul ul li:hover,
+.sf-navbar ul ul li.sfHover,
+.sf-navbar ul ul li.current {
+	background: #E6EEFF;
 }
-ul.sf-navbar .current ul,
-ul.sf-navbar ul li:hover ul,
-ul.sf-navbar ul li.sfHover ul {
-	left:			0;
-	top:			2em; /* match top ul list item height */
-}
-ul.sf-navbar .current ul ul {
-	top: 			-999em;
-}
-
-.sf-navbar li li.current > a {
-	font-weight:	bold;
+.sf-navbar ul li.current > a {
+	font-weight: bold;
 }
 
 /*** point all arrows down ***/
-/* point right for anchors in subs */
-.sf-navbar ul .sf-sub-indicator { background-position: -10px -100px; }
-.sf-navbar ul a > .sf-sub-indicator { background-position: 0 -100px; }
-/* apply hovers to modern browsers */
-.sf-navbar ul a:focus > .sf-sub-indicator,
-.sf-navbar ul a:hover > .sf-sub-indicator,
-.sf-navbar ul a:active > .sf-sub-indicator,
-.sf-navbar ul li:hover > a > .sf-sub-indicator,
-.sf-navbar ul li.sfHover > a > .sf-sub-indicator {
-	background-position: -10px -100px; /* arrow hovers for modern browsers*/
+.sf-arrows.sf-navbar ul .sf-with-ul:after {
+	margin-top: -3px;
+	margin-right: 0;
+	border-color: transparent;
+	border-top-color: #dFeEFF; /* edit this to suit design (no rgba in IE8) */
+	border-top-color: rgba(255,255,255,.5);
 }
 
-/*** remove shadow on first submenu ***/
-.sf-navbar > li > ul {
-	background: transparent;
-	padding: 0;
-	-moz-border-radius-bottomleft: 0;
-	-moz-border-radius-topright: 0;
-	-webkit-border-top-right-radius: 0;
-	-webkit-border-bottom-left-radius: 0;
-	border-top-right-radius: 0;
-	border-bottom-left-radius: 0;
+.sf-arrows.sf-navbar ul > li > .sf-with-ul:focus:after,
+.sf-arrows.sf-navbar ul > li:hover > .sf-with-ul:after,
+.sf-arrows.sf-navbar ul > .sfHover > .sf-with-ul:after {
+	border-color: transparent;
+	border-top-color: white;
 }
