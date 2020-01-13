@@ -454,6 +454,22 @@ sub BuildMainNav {
         }
     }
 
+    # display "View ticket" link in transactions
+    if ( $request_path =~ m{^/Transaction/Display.html} ) {
+        if ( ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
+            my $txn_id = $1;
+            my $txn = RT::Transaction->new( $current_user );
+            $txn->Load( $txn_id );
+            my $object = $txn->Object;
+            if ( $object->Id ) {
+                my $object_type = $object->RecordType;
+                if ( $object_type eq 'Ticket' ) {
+                    $page->child( view_ticket => title => loc("View ticket"), path => "/Ticket/Display.html?id=" . $object->Id );
+                }
+            }
+        }
+    }
+
     # Scope here so we can share in the Privileged callback
     my $args      = '';
     my $has_query = '';
