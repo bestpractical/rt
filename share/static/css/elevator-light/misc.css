@@ -129,6 +129,10 @@ svg.icon-helper {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
+tr.evenline+tr.evenline td, tr.oddline+tr.oddline td {
+    border: none;
+}
+
 .cke_toolgroup a.cke_button {
     padding-left: 3px;
     padding-right: 3px;
