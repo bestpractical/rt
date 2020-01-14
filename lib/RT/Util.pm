@@ -52,8 +52,10 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes/;
+our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes
+                 filter_sensitive_fields fieldname_is_blacklisted/;
 
+use Data::Rmap;
 use Encode qw/encode/;
 
 sub safe_run_child (&) {
@@ -249,6 +251,63 @@ sub EmailContentTypes {
     # are still recognized as email for the purposes of this function.
     return ( 'message/rfc822', 'message/partial', 'message/external-body' );
 }
+
+
+=head2 filter_sensitive_fields
+
+Takes a hashref or arrayref and filters it recursively replacing any blacklisted fields
+with ******
+
+Allows you to prevent leaking of passwords, credentials or keys in logs, etc
+
+default blacklist is password credential key secret
+
+additional fields can be added to black list by providing a comma seperated list in
+the LogFieldBlacklist configuration field.
+
+=cut
+
+sub filter_sensitive_fields {
+    my $data = shift();
+    rmap_all { _scrub_sensitive_fields($_) } $data;
+}
+
+my $blacklist = [qw(password credential key secret)];
+if (my $config_blacklisted_fields = RT->Config->Get('LogFieldBlacklist')) {
+    push (@$blacklist, split(/\s*,\s*/, $config_blacklisted_fields));
+}
+
+=head2 fieldname_is_blacklisted
+
+Check if a fieldname is blacklisted to avoid leaking sensitive information
+
+=cut
+
+sub fieldname_is_blacklisted {
+    my $fieldname = shift;
+    foreach my $blacklisted_fieldname (@$blacklist) {
+        return 1 if ($fieldname =~ m/$blacklisted_fieldname/);
+    }
+    return 0;
+}
+
+sub _scrub_sensitive_fields {
+    my $node = shift;
+    if (ref $_ eq 'HASH' ) {
+        warn "got hash ref : $node" ;
+        foreach my $fieldname (keys %$node) {
+            warn "handling $fieldname";
+            if (fieldname_is_blacklisted($fieldname)) {
+                $node->{$fieldname} = '*******';
+                warn "blacklisted $fieldname";
+            }
+        }
+    }
+    return $_;
+};
+
+
+
 
 RT::Base->_ImportOverlays();
 
