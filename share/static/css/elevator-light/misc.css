@@ -129,8 +129,23 @@ svg.icon-helper {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
+/* first line td in collection if two lines */
+tbody.list-item tr:first-of-type.oddline td, tbody.list-item tr:first-of-type.evenline td {
+    padding-top: 0.5rem;
+    padding-bottom: 0.16rem;
+}
+
+/* first line td in collection if one line
+   we re-set the padding bottom here to it's not too small (as was in 4.4) */
+tbody.list-item tr:only-of-type.oddline td, tbody.list-item tr:only-of-type.evenline td {
+    padding-bottom: 0.5rem;
+}
+
+/* second line td in collection */
 tr.evenline+tr.evenline td, tr.oddline+tr.oddline td {
     border: none;
+    padding-top: 0;
+    padding-bottom: 0.5rem;
 }
 
 .cke_toolgroup a.cke_button {
