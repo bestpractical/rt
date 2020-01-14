@@ -52,8 +52,10 @@ use warnings;
 
 
 use base 'Exporter';
-our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes/;
+our @EXPORT = qw/safe_run_child mime_recommended_filename EntityLooksLikeEmailMessage EmailContentTypes
+                 filter_sensitive_fields fieldname_is_blocklisted/;
 
+use Data::Rmap;
 use Encode qw/encode/;
 
 sub safe_run_child (&) {
@@ -249,6 +251,63 @@ sub EmailContentTypes {
     # are still recognized as email for the purposes of this function.
     return ( 'message/rfc822', 'message/partial', 'message/external-body' );
 }
+
+
+=head2 filter_sensitive_fields
+
+Takes a hashref or arrayref and filters it recursively replacing any blocklisted fields
+with ******
+
+Allows you to prevent leaking of passwords, credentials or keys in logs, etc
+
+default blocklist is password credential key secret
+
+additional fields can be added to block list by providing a comma seperated list in
+the LogFieldBlocklist configuration field.
+
+=cut
+
+sub filter_sensitive_fields {
+    my ($data, $replace_with) = @_;
+    $replace_with //= '********';
+    rmap_all { _scrub_sensitive_fields($_, $replace_with) } $data;
+}
+
+my $blocklist = [qw(passphrase password credential key secret)];
+if (my $config_blocklisted_fields = RT->Config->Get('LogFieldBlocklist')) {
+    push (@$blocklist, split(/\s*,\s*/, $config_blocklisted_fields));
+}
+my $safelist = [qw(MinimumPasswordLength)];
+
+=head2 fieldname_is_blocklisted
+
+Check if a fieldname is blocklisted to avoid leaking sensitive information
+
+=cut
+
+sub fieldname_is_blocklisted {
+    my $fieldname = shift;
+    return 0 if (grep { $fieldname eq $_ } @$safelist);
+    foreach my $blocklisted_fieldname (@$blocklist) {
+        return 1 if ($fieldname =~ m/$blocklisted_fieldname/i);
+    }
+    return 0;
+}
+
+sub _scrub_sensitive_fields {
+    my ($node, $replace_with) = @_;
+    if (ref $_ eq 'HASH' ) {
+        foreach my $fieldname (keys %$node) {
+            if (fieldname_is_blocklisted($fieldname)) {
+                $node->{$fieldname} = $replace_with;
+            }
+        }
+    }
+    return $_;
+};
+
+
+
 
 RT::Base->_ImportOverlays();
 
