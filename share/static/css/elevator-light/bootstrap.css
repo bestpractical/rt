@@ -358,15 +358,15 @@ h1, h2, h3, h4, h5, h6,
 }
 
 h1, .h1 {
-  font-size: 36px;
+  font-size: 2.5rem;
 }
 
 h2, .h2 {
-  font-size: 24px;
+  font-size: 2rem;
 }
 
 h3, .h3 {
-  font-size: 13px;
+  font-size: 1.75rem;
 }
 
 h4, .h4 {
