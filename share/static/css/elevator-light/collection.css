@@ -25,3 +25,28 @@
     font-size: smaller;
     font-weight: normal;
 }
+
+/* squeeze multiple-lined headers */
+tr.collection-as-table+tr.collection-as-table th {
+    padding-top: 0;
+}
+
+/* squeeze multiple-lined records */
+tr:first-of-type.oddline .collection-as-table,
+tr:first-of-type.evenline .collection-as-table {
+    padding-top: 0.5rem;
+    padding-bottom: 0.15rem;
+}
+
+tr.oddline+.oddline .collection-as-table,
+tr.evenline+.evenline .collection-as-table {
+    border: none;
+    padding-top: 0;
+    padding-bottom: 0.15rem;
+}
+
+/* add td here to have a bit higher precedence */
+tr:last-of-type.oddline td.collection-as-table,
+tr:last-of-type.evenline td.collection-as-table {
+    padding-bottom: 0.5rem;
+}
