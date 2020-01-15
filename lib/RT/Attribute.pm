@@ -145,6 +145,7 @@ sub Create {
                 Content => '',
                 ContentType => '',
                 Object => undef,
+                RecordTransaction => undef,
                 @_);
 
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
@@ -181,15 +182,43 @@ sub Create {
         $args{'ContentType'} = 'storable';
     }
 
-    $self->SUPER::Create(
-                         Name => $args{'Name'},
-                         Content => $args{'Content'},
-                         ContentType => $args{'ContentType'},
-                         Description => $args{'Description'},
-                         ObjectType => $args{'ObjectType'},
-                         ObjectId => $args{'ObjectId'},
-);
+    $args{'RecordTransaction'} //= 1 if $args{'Name'} =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
 
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+    my @return = $self->SUPER::Create(
+        Name        => $args{'Name'},
+        Content     => $args{'Content'},
+        ContentType => $args{'ContentType'},
+        Description => $args{'Description'},
+        ObjectType  => $args{'ObjectType'},
+        ObjectId    => $args{'ObjectId'},
+    );
+
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my ( $ret, $msg ) = $self->_NewTransaction( Type => 'Create' );
+            if ($ret) {
+                ( $ret, $msg ) = $self->AddAttribute(
+                    Name    => 'ContentHistory',
+                    Content => $args{'ContentType'} eq 'storable'
+                    ? $self->_DeserializeContent( $args{'Content'} )
+                    : $args{'Content'},
+                );
+            }
+
+            @return = ( $ret, $msg ) unless $ret;
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    return wantarray ? @return : $return[0];
 }
 
 
@@ -374,11 +403,42 @@ sub Object {
 
 sub Delete {
     my $self = shift;
-    unless ($self->CurrentUserHasRight('delete')) {
-        return (0,$self->loc('Permission Denied'));
+    my %args = (
+        RecordTransaction => undef,
+        @_,
+    );
+
+    unless ( $self->CurrentUserHasRight('delete') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
 
-    return($self->SUPER::Delete(@_));
+    # Get values even if current user doesn't have right to see
+    $args{'RecordTransaction'} //= 1 if $self->__Value('Name') =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
+
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+
+    my @return = $self->SUPER::Delete(@_);
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my $txn = RT::Transaction->new( $self->CurrentUser );
+            my ( $ret, $msg ) = $txn->Create(
+                ObjectId   => $self->Id,
+                ObjectType => ref($self),
+                Type       => 'Delete',
+            );
+            @return = ( $ret, $msg ) unless $ret;
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    return @return;
 }
 
 
@@ -396,12 +456,100 @@ sub _Value {
 
 sub _Set {
     my $self = shift;
-    unless ($self->CurrentUserHasRight('update')) {
+    my %args = (
+        Field             => undef,
+        Value             => undef,
+        RecordTransaction => undef,
+        TransactionType   => 'Set',
+        @_
+    );
 
-        return (0,$self->loc('Permission Denied'));
+    unless ( $self->CurrentUserHasRight('update') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
-    return($self->SUPER::_Set(@_));
 
+    # Get values even if current user doesn't have right to see
+    $args{'RecordTransaction'} //= 1 if $self->__Value('Name') =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
+    my $old_value = $self->__Value( $args{'Field'} ) if $args{'RecordTransaction'};
+
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+
+    # Set the new value
+    my @return = $self->SUPER::_Set(
+        Field => $args{'Field'},
+        Value => $args{'Value'},
+    );
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my ( $new_ref, $old_ref );
+
+            my %opt = (
+                Type  => $args{'TransactionType'},
+                Field => $args{'Field'},
+            );
+            if ( $args{'Field'} eq 'Content' ) {
+
+                $opt{ReferenceType} = 'RT::Attribute';
+
+                my $attrs = $self->Attributes;
+                $attrs->Limit( FIELD => 'Name', VALUE => 'ContentHistory' );
+                $attrs->OrderByCols( { FIELD => 'id', ORDER => 'DESC' } );
+                if ( my $old_content = $attrs->First ) {
+                    $opt{OldReference} = $old_content->id;
+                }
+                else {
+                    RT->Logger->debug("Couldn't find ContentHistory, creating one from old value");
+                    my ( $ret, $msg ) = $self->AddAttribute(
+                        Name    => 'ContentHistory',
+                        Content => $self->__Value('ContentType') eq 'storable'
+                        ? $self->_DeserializeContent($old_value)
+                        : $old_value,
+                    );
+                    if ($ret) {
+                        $opt{OldReference} = $ret;
+                    }
+                    else {
+                        @return = ( $ret, $msg );
+                    }
+                }
+
+                if ( $return[0] ) {
+                    my ( $ret, $msg ) = $self->AddAttribute(
+                        Name    => 'ContentHistory',
+                        Content => $self->__Value('ContentType') eq 'storable'
+                        ? $self->_DeserializeContent( $args{'Value'} )
+                        : $args{'Value'},
+                    );
+
+                    if ($ret) {
+                        $opt{NewReference} = $ret;
+                    }
+                    else {
+                        @return = ( $ret, $msg );
+                    }
+                }
+            }
+            else {
+                $opt{'OldValue'} = $old_value;
+                $opt{'NewValue'} = $args{'Value'};
+            }
+
+            if ( $return[0] ) {
+                my ( $ret, $msg ) = $self->_NewTransaction(%opt);
+                @return = ( $ret, $msg ) unless $ret;
+            }
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    return wantarray ? @return : $return[0];
 }
 
 
