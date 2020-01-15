@@ -61,7 +61,7 @@
 % if ( $Dirty ) {
 <input type="submit" class="button" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
-<input type="submit" class="button" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+<input type="submit" class="button <% $Object && $Object->Id && $Object->DependedOnBy->Count ? 'confirm' : '' %>" name="SavedSearchDelete" value="<%loc('Delete')%>" />
 % if ( $AllowCopy ) {
 <input type="submit" class="button" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
@@ -74,6 +74,13 @@
 %}
 % }
 <br />
+
+% if ( $Object && $Object->Id && $Object->DependedOnBy->Count ) {
+<span class="label"><&|/l&>Depended on by</&>:</span>
+<a href="#" class="view-saved-search-depended-on-by-list"><% loc('View') %></a>
+<br />
+% }
+
 <hr />
 <span class="label"><&|/l&>Load saved search</&>:</span>
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
@@ -81,6 +88,31 @@
 
 </&>
 </div>
+
+% if ( $Object && $Object->Id && $Object->DependedOnBy->Count ) {
+    <div class="delete-saved-search-confirm hidden">
+      <p>
+        <&|/l&>This search is used in these dashboards/homepages, really delete?</&>
+      </p>
+      <ul class="saved-search-depended-on-by-list">
+%     my $links = $Object->DependedOnBy;
+%     while ( my $link = $links->Next ) {
+        <li>
+%       if ( $link->BaseObj->Name eq 'Dashboard' ) {
+          <a href="<% $link->BaseURI->Resolver->HREF %>" target="_blank"><% $link->BaseURI->AsString %></a>
+%       } elsif ( $link->BaseObj->ObjectType eq 'RT::System' ) {
+          <% loc('Global') %>
+%       } elsif ( $link->BaseObj->ObjectType eq 'RT::User' ) {
+          <% loc('User') %>: <& /Elements/ShowUser, User => $link->BaseObj->Object, LinkTarget => '_blank' &>
+%       } else {
+          <% $link->BaseObj->ObjectType %>: #<% $link->BaseObj->ObjectId %>
+%       }
+        </li>
+%     }
+      </ul>
+      <& /Elements/Submit, Name => 'SavedSearchDelete', Label => loc('Delete') &>
+    </div>
+% }
 <%INIT>
 return unless $session{'CurrentUser'}->HasRight(
     Right  => 'LoadSavedSearch',

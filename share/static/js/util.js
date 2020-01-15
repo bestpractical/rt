@@ -275,6 +275,29 @@ jQuery(function() {
             };
         };
     });
+    jQuery('input[name=SavedSearchDelete].confirm').click(function() {
+        if ( jQuery(this).hasClass('confirmed') ) {
+            return;
+        }
+
+        jQuery("<div class='modal'></div>")
+            .append(jQuery(this).closest('form').find('.delete-saved-search-confirm').clone(true).removeClass('hidden')).appendTo("body")
+            .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
+            .modal();
+        return false;
+    });
+
+    jQuery('a.view-saved-search-depended-on-by-list').click(function() {
+        jQuery("<div class='modal'></div>")
+            .append(jQuery(this).closest('form').find('.saved-search-depended-on-by-list').clone(true)).appendTo("body")
+            .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
+            .modal();
+        return false;
+    });
+
+    jQuery('.delete-saved-search-confirm input[name=SavedSearchDelete]').click(function() {
+        jQuery('input[name=SavedSearchDelete].confirm').addClass('confirmed').click();
+    });
 });
 
 function textToHTML(value) {
