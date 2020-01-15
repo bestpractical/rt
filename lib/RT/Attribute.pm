@@ -267,7 +267,8 @@ sub Content {
 sub _SerializeContent {
     my $self = shift;
     my $content = shift;
-        return( encode_base64(nfreeze($content))); 
+    local $Storable::canonical = 1;
+    return( encode_base64(nfreeze($content)));
 }
 
 
