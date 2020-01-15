@@ -124,6 +124,10 @@ svg.icon-helper {
     color: #666;
 }
 
+tr.collection-as-table+tr.collection-as-table th, tr.collection-as-table+tr.collection-as-table th {
+    padding-top: 0;
+}
+
 /* row colouring */
 .oddline {
     background-color: rgba(0, 0, 0, 0.05);
