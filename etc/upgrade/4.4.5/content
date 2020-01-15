@@ -1,0 +1,19 @@
+use strict;
+use warnings;
+
+our @Final = (
+    sub {
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit(
+            FIELD    => 'Name',
+            VALUE    => [ 'Dashboard', 'HomepageSettings', 'Pref-HomepageSettings' ],
+            OPERATOR => 'IN',
+        );
+        while ( my $attr = $attrs->Next ) {
+            my ( $ret, $msg ) = $attr->_SyncLinks;
+            if ( !$ret ) {
+                die "Couldn't sync links for attribute #" . $attr->id . ": $msg";
+            }
+        }
+    }
+);
