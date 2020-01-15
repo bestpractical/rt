@@ -393,3 +393,8 @@ textarea.code {
 #EditConfig ul.plugins {
     margin: 0;
 }
+
+/* center text between 2 dropdowns */
+.text-between-dropdowns {
+    text-align: center;
+}
