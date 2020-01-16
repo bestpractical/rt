@@ -861,6 +861,17 @@ sub FindDependencies {
         $attr->LoadById($content->{DashboardId});
         $deps->Add( out => $attr );
     }
+
+    # Links
+    my $links = RT::Links->new( $self->CurrentUser );
+    $links->Limit(
+        SUBCLAUSE       => "either",
+        FIELD           => $_,
+        VALUE           => $self->URI,
+        ENTRYAGGREGATOR => 'OR',
+        )
+        for qw/Base Target/;
+    $deps->Add( in => $links );
 }
 
 sub PreInflate {
