@@ -83,10 +83,11 @@ $User => undef
 $Address => undef
 $style => undef
 $Link => 1
+$LinkTarget => ''
 </%ARGS>
 <span class="user" <% $User && $User->id ? 'data-user-id="'.$User->id.'"' : "" |n %>>\
 % if ($Link and $User and $User->id and not $system_user{$User->id} and $session{CurrentUser}->Privileged) {
-<a href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
+<a <% $LinkTarget ? "target=$LinkTarget" : '' |n %> href="<% RT->Config->Get("WebPath") %>/User/Summary.html?id=<% $User->id %>">\
 <% $display %>\
 </a>\
 % } else {
