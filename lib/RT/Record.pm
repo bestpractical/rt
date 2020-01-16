@@ -2429,6 +2429,7 @@ sub FindDependencies {
         or $self->isa("RT::Article")
         or $self->isa("RT::Asset")
         or $self->isa("RT::Catalog")
+        or $self->isa("RT::Attribute")
         or $self->isa("RT::Queue") )
     {
         $objs = RT::Transactions->new( $self->CurrentUser );
