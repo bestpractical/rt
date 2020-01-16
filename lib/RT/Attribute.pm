@@ -217,6 +217,7 @@ sub Create {
         }
     }
 
+    $self->_SyncLinks if $return[0];
     return wantarray ? @return : $return[0];
 }
 
@@ -314,7 +315,10 @@ sub SetContent {
         }
     }
     my ($ok, $msg) = $self->_Set( Field => 'Content', Value => $content );
-    return ($ok, $self->loc("Attribute updated")) if $ok;
+    if ($ok) {
+        $self->_SyncLinks;
+        return ( $ok, $self->loc("Attribute updated") );
+    }
     return ($ok, $msg);
 }
 
@@ -412,8 +416,16 @@ sub Delete {
     }
 
     # Get values even if current user doesn't have right to see
-    $args{'RecordTransaction'} //= 1 if $self->__Value('Name') =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
+    my $name = $self->__Value('Name');
+    my @links;
+    if ( $name =~ /^(Dashboard|(?:Pref-)?HomepageSettings)$/ ) {
+        push @links, @{ $self->DependsOn->ItemsArrayRef };
+    }
+    elsif ( $name eq 'SavedSearch' ) {
+        push @links, @{ $self->DependedOnBy->ItemsArrayRef };
+    }
 
+    $args{'RecordTransaction'} //= 1 if $name =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
     $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
 
     my @return = $self->SUPER::Delete(@_);
@@ -434,6 +446,15 @@ sub Delete {
         }
         else {
             $RT::Handle->Rollback;
+        }
+    }
+
+    if ( $return[0] ) {
+        for my $link (@links) {
+            my ( $ret, $msg ) = $link->Delete;
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+            }
         }
     }
 
@@ -1072,6 +1093,85 @@ sub URI {
     my $self = shift;
     my $uri  = RT::URI::attribute->new( $self->CurrentUser );
     return $uri->URIForObject($self);
+}
+
+
+=head2 _SyncLinks
+
+For dashboard and homepage attributes, keep links to saved searches they
+include up to date. It does nothing for other attributes.
+
+Returns 1 on success and 0 on failure.
+
+=cut
+
+sub _SyncLinks {
+    my $self = shift;
+    my $name = $self->__Value('Name');
+
+    my $success;
+
+    if ( $name =~ /^(Dashboard|(?:Pref-)?HomepageSettings)$/ ) {
+        my $type    = $1;
+        my $content = $self->_DeserializeContent( $self->__Value('Content') );
+
+        my %searches;
+        if ( $type eq 'Dashboard' ) {
+            %searches
+                = map { $_->{id} => 1 } grep { $_->{portlet_type} eq 'search' } @{ $content->{Panes}{body} },
+                @{ $content->{Panes}{sidebar} };
+        }
+        else {
+            for my $item ( @{ $content->{body} }, @{ $content->{sidebar} } ) {
+                if ( $item->{type} eq 'saved' ) {
+                    if ( $item->{name} =~ /SavedSearch-(\d+)/ ) {
+                        $searches{$1} ||= 1;
+                    }
+                }
+                elsif ( $item->{type} eq 'system' ) {
+                    if ( my $attr
+                        = RT::System->new( $self->CurrentUser )->FirstAttribute( 'Search - ' . $item->{name} ) )
+                    {
+                        $searches{ $attr->id } ||= 1;
+                    }
+                    else {
+                        my $attrs = RT::System->new( $self->CurrentUser )->Attributes;
+                        $attrs->Limit( FIELD => 'Name',        VALUE => 'SavedSearch' );
+                        $attrs->Limit( FIELD => 'Description', VALUE => $item->{name} );
+                        if ( my $attr = $attrs->First ) {
+                            $searches{ $attr->id } ||= 1;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        my $links = $self->DependsOn;
+        while ( my $link = $links->Next ) {
+            next if delete $searches{ $link->TargetObj->id };
+            my ( $ret, $msg ) = $link->Delete;
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+                $success //= 0;
+            }
+        }
+
+        for my $id ( keys %searches ) {
+            my $link = RT::Link->new( $self->CurrentUser );
+            my $attribute = RT::Attribute->new( $self->CurrentUser );
+            $attribute->Load($id);
+            if ( $attribute->id ) {
+                my ( $ret, $msg )
+                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+    }
+    return $success // 1;
 }
 
 RT::Base->_ImportOverlays();
