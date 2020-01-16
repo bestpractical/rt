@@ -57,6 +57,7 @@ sub Table {'Attributes'}
 
 use Storable qw/nfreeze thaw/;
 use MIME::Base64;
+use RT::URI::attribute;
 
 
 =head1 NAME
@@ -1059,6 +1060,18 @@ sub Serialize {
     }
 
     return %store;
+}
+
+=head2 URI
+
+Returns this attribute's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+    my $uri  = RT::URI::attribute->new( $self->CurrentUser );
+    return $uri->URIForObject($self);
 }
 
 RT::Base->_ImportOverlays();
