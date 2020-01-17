@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header,
     Title => $title,
-    onload => "function () { hide('Ticket-Create-details') }" &>
+&>
 <& /Elements/Tabs &>
     
 <& /Elements/ListActions, actions => \@results &>
@@ -233,7 +233,7 @@
   </div>
 </div>
 
-<div id="Ticket-Create-details">
+<div id="Ticket-Create-details" class="hidden">
 <a name="details"></a>
 <div class="row">
 <div class="boxcontainer col-md-6">
