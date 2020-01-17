@@ -1,3 +1,23 @@
 #articles-needs-setup a {
     text-decoration: underline;
 }
+
+#comp-Articles .form-row.article-headers,
+#comp-Articles .form-row.article-metadata,
+#comp-Articles .form-row.article-summary {
+    margin-top: 0;
+    padding: 0.5rem;
+}
+
+#comp-Articles .form-row.article-metadata {
+    padding-bottom: 0.15rem;
+}
+
+#comp-Articles .form-row.article-summary {
+    padding-top: 0;
+}
+
+#comp-Articles .form-row.article-headers,
+#comp-Articles .form-row.article-summary {
+    border-bottom: 1px solid #dee2e6;
+}
