@@ -1,3 +1,21 @@
 #articles-needs-setup a {
     text-decoration: underline;
 }
+
+#comp-Articles .card-body .form-row {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0.5rem;
+}
+
+#comp-Articles .card-body .form-row:not(.article-summary):not(.article-headers) {
+    padding-bottom: 0.15rem;
+}
+
+#comp-Articles .card-body .article-summary {
+    padding-top: 0;
+}
+
+#comp-Articles .card-body .form-row.article-headers, #comp-Articles .card-body .form-row.article-summary {
+    border-bottom: 1px solid #dee2e6;
+}
