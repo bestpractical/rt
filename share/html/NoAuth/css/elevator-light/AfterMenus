@@ -61,8 +61,8 @@ var initMenus = function() {
     jQuery('#li-overflow-will_be_deleted').remove();
     jQuery('#li-page-overflow-will_be_deleted').remove();
 
-    rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
-    rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
+    rebalanceOverflowMenu('#app-nav', '#li-overflow');
+    rebalanceOverflowMenu('#page-menu', '#li-page-overflow');
 };
 
 // If everything is loaded, init NOW.  Otherwise, defer to DOM ready.

@@ -383,10 +383,6 @@ ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
     #topactions form {
         margin-left: 0.5em;
     }
-
-    div#header h1 {
-        right: 10em;
-    }
 }
 
 @media (max-width: 600px) {
@@ -396,9 +392,5 @@ ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
 
     #topactions input[type="submit"], #topactions input.button {
         min-width: 2em;
-    }
-
-    div#header h1 {
-        right: 5em;
     }
 }

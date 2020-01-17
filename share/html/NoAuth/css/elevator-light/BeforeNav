@@ -57,20 +57,34 @@ my $page_overflow = PageMenu->child( overflow => title => loc('More'), sort_orde
 $page_overflow->child(will_be_deleted => raw_html => '');
 </%INIT>
 <script type="text/javascript">
-var rebalanceOverflowBuffer = 30;
+var rebalanceOverflowBuffer = 10;
 
-var rebalanceOverflowMenu = function (menuId, overflowId, withLogo) {
+var rebalanceOverflowMenu = function (menuId, overflowId) {
     var toplevelMenu = jQuery(menuId);
     var overflowMenu = jQuery(overflowId);
 
     var availableWidth = jQuery(window).width();
-    if (withLogo) {
-        availableWidth -= jQuery('#logo').width();
-    }
 
     if ( menuId === '#app-nav' ) {
-        availableWidth -= jQuery('#topactions').width();
+        availableWidth -= jQuery('#topactions').width() + jQuery('#logo').width();;
     }
+    else if ( menuId === '#page-menu' ) {
+        availableWidth -= parseFloat(jQuery('#header h1').css('padding-left'));
+        availableWidth -= parseFloat(jQuery('#page-navigation').css('right'));
+        var fullWidth = availableWidth;
+
+        jQuery('#header h1').css('width', 'auto');
+        var subjectWidth = jQuery('#header h1').width();
+        availableWidth -= subjectWidth;
+
+        // in case subject is too long, set page-menu width to 40%
+        if (availableWidth < fullWidth * 0.4) {
+            availableWidth = fullWidth * 0.4;
+            subjectWidth = fullWidth * 0.6;
+            jQuery('#header h1').css('width', subjectWidth);
+        }
+    }
+
     availableWidth -= rebalanceOverflowBuffer;
 
     // if the menu is too wide for the viewport, move overflow items into
@@ -142,13 +156,13 @@ var rebalanceOverflowMenu = function (menuId, overflowId, withLogo) {
 
 jQuery(function() {
     jQuery(window).resize(function () {
-        rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
-        rebalanceOverflowMenu('#page-menu', '#li-page-overflow', false);
+        rebalanceOverflowMenu('#app-nav', '#li-overflow');
+        rebalanceOverflowMenu('#page-menu', '#li-page-overflow');
     });
 });
 
 jQuery('#logo img').on('load', function () {
-    rebalanceOverflowMenu('#app-nav', '#li-overflow', true);
+    rebalanceOverflowMenu('#app-nav', '#li-overflow');
 });
 
 </script>
