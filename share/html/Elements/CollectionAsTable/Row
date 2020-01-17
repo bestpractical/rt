@@ -174,7 +174,7 @@ foreach my $column (@Format) {
     $m->out('>');
 
     if ( $attrs{edit} ) {
-        $m->out( '<form method="POST" action="' . RT->Config->Get('WebPath') . '/Helpers/TicketUpdate?id=' . $record->id . '" class="editor">' );
+        $m->out( '<form method="POST" action="' . RT->Config->Get('WebPath') . '/Helpers/TicketUpdate?id=' . $record->id . '" class="editor" autocomplete="off">' );
         $m->out( $attrs{edit} );
         $m->out( '<span class="cancel text-danger far fa-times-circle" data-toggle="tooltip" data-placement="top" data-original-title="' . loc('Cancel') . '"></span>' );
         $m->out( '<span class="submit text-success far fa-check-circle" data-toggle="tooltip" data-placement="top" data-original-title="' . loc('Save') . '"></span>' );
