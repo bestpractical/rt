@@ -182,7 +182,6 @@ jQuery( function() {
 <div class="ticket-timer">
     <div class="ticket-link">
         <a target="_blank" href="<%RT->Config->Get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->Id%>">
-            <img src="<% RT->Config->Get('WebPath') %>/static/images/stopwatch.png" alt="<% loc('Stopwatch') %>" />
             <%$Ticket->Id%>: <%$Ticket->Subject%>
         </a>
     </div>
