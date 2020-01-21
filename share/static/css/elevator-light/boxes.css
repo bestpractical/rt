@@ -52,12 +52,6 @@
     border-radius: 0 0.25em 0 0.25em;
 }
 
-.titlebox .titlebox-title .right a,
-.titlebox .titlebox-title .right a:visited {
-    color: #999;
-    font-weight: 500;
-}
-
 .titlebox:hover .titlebox-title .right a,
 .titlebox:active .titlebox-title .right a {
     color: #000
