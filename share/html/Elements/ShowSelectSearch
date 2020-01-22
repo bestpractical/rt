@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,47 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%args>
-$Object => undef
-$User => $session{'CurrentUser'}
-$Flat => 0
-</%args>
-<%init>
-# Returns a hash of dashboards associated on $Object
-# or, if $Flat, a simple list
+<%ARGS>
+$type
+$name
+$label
+$search_id => undef
+$search_type => undef
+$possibly_hidden => 0
+</%ARGS>
+<li data-type="<% $type %>" data-name="<% $name %>" data-search-type="<% $search_type || ''  %>" data-search-id="<% $search_id || '' %>" data-description="<% $label %>"><a href="#" class="remove"><img src="<% RT->Config->Get('WebPath') %>/static/images/close.png" alt="<% loc('Remove') %>" title="<% loc('Remove') %>" /></a> <% $prefix ? $prefix . ': ' : '' %>
+<% $label %>
+% if ($possibly_hidden) {
+<span class="warning"><&|/l&>Warning: may not be visible to all viewers</&></span>
+% }
+</li>
+<%INIT>
+my $prefix;
 
-use RT::Dashboard;
-my %dashboards;
-my @flat_dashboards;
-my $privacy = RT::Dashboard->_build_privacy($Object);
-
-while (my $attr = $Object->Attributes->Next) {
-    if ($attr->Name =~ /^Dashboard\b/) {
-        my $dashboard = RT::Dashboard->new($User);
-        my ($ok, $msg) = $dashboard->Load($privacy, $attr->id);
-
-        if (!$ok) {
-            $RT::Logger->debug("Unable to load dashboard $ok (privacy $privacy): $msg");
-            next;
-        }
-
-        if ($Flat) {
-            push @flat_dashboards, $dashboard;
-        }
-        else {
-            if ($Object->isa('RT::System')) {
-                push @{ $dashboards{system} }, $dashboard;
-            }
-            elsif ($Object->isa('RT::User')) {
-                push @{ $dashboards{personal} }, $dashboard;
-            }
-            elsif ($Object->isa('RT::Group')) {
-                push @{ $dashboards{group}{$Object->Name} }, $dashboard;
-            }
-        }
-    }
+if ($type eq 'saved' || $type eq 'search') {
+    $prefix = loc(ucfirst($search_type || 'ticket'));
 }
-
-return $Flat ? @flat_dashboards : \%dashboards;
-</%init>
-
+elsif ($type eq 'dashboard') {
+    $prefix = loc('Dashboard');
+}
+</%INIT>
