@@ -51,8 +51,8 @@
 
 <div>
   <div class="form-row">
-    <div class="label col-md-3"><&|/l&>Merge into</&>:</div>
-    <div class="value col-md-9"><input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></div>
+    <div class="<% $FirstColumnClasses %>"><&|/l&>Merge into</&>:</div>
+    <div class="<% $SecondColumnClasses %>"><input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></div>
   </div>
 </div>
 
@@ -76,4 +76,8 @@ $Ticket => undef
 $Tickets => undef
 $Name => ''
 $Default => ''
+# by default the widget displays full width 
+# alternate values for half-width (aligned with other links): 'label col-md-3', 'value col-md-9'
+$FirstColumnClasses => 'col-md-1'
+$SecondColumnClasses => 'value col-md-11'
 </%ARGS>
