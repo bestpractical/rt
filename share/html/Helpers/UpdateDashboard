@@ -1,0 +1,137 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$content
+</%ARGS>
+<%INIT>
+my $args = JSON::from_json($content);
+my $id = $args->{dashboard_id};
+my $user_id = $args->{user_id};
+my $is_global = $args->{is_global};
+
+my ($ok, $msg);
+if ($id eq 'MyRT') {
+        my $user = $session{CurrentUser};
+        if($user_id){
+            $user->Load($user_id);
+            ($ok, $msg) = $user->SetPreferences('HomepageSettings', $args->{panes});
+      }
+      elsif($is_global){
+        my $sys = RT::System->new($session{'CurrentUser'});
+        my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
+        ($ok, $msg) = $default_portlets->SetContent( $args->{panes} );
+      }
+      else{
+          ($ok, $msg) = $user->SetPreferences('HomepageSettings', $args->{panes});
+        }
+}
+else {
+    use RT::Dashboard;
+    my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+    ($ok, $msg) = $Dashboard->LoadById($id);
+
+    # report error at the bottom
+    goto DONE unless $ok && $Dashboard->Id;
+
+    my $content;
+    for my $pane_name (keys %{ $args->{panes} }) {
+        my @pane;
+
+        for my $item (@{ $args->{panes}{$pane_name} }) {
+            my %saved;
+            $saved{pane} = $pane_name;
+            $saved{portlet_type} = $item->{type};
+            $saved{description} = $item->{description};
+
+            if ($item->{type} eq 'component') {
+                $saved{component} = $item->{name};
+
+                # Absolute paths stay absolute, relative paths go into
+                # /Elements. This way, extensions that add portlets work.
+                my $path = $item->{name};
+                $path = "/Elements/$path" if substr($path, 0, 1) ne '/';
+
+                $saved{path} = $path;
+            }
+            elsif ($item->{type} eq 'system' || $item->{type} eq 'saved') {
+                $saved{portlet_type} = 'search';
+                my $type = $item->{searchType};
+                $type = 'Saved Search' if !$type || $type eq 'Ticket';
+                $saved{description} = loc($type) . ': ' . $saved{description};
+
+                if ($item->{type} eq 'system') {
+                    $saved{privacy} = 'RT::System-1';
+                    $saved{id} = $item->{searchId};
+                }
+                else {
+                    my ($obj_type, $obj_id, undef, $search_id) = split '-', $item->{name};
+                    $saved{privacy} = "$obj_type-$obj_id";
+                    $saved{id} = $search_id;
+                }
+            }
+            elsif ($item->{type} eq 'dashboard') {
+                my (undef, $dashboard_id, $obj_type, $obj_id) = split '-', $item->{name};
+                $saved{privacy} = "$obj_type-$obj_id";
+                $saved{id} = $dashboard_id;
+                $saved{description} = loc('Dashboard') . ': ' . $saved{description};
+            }
+
+            push @pane, \%saved;
+        }
+
+        $content->{$pane_name} = \@pane;
+    }
+
+    ($ok, $msg) = $Dashboard->Update(Panes => $content);
+}
+
+DONE:
+$r->content_type('application/json; charset=utf-8');
+$m->print(JSON({ ok => $ok, msg => $msg}));
+$m->abort;
+</%INIT>
