@@ -305,7 +305,7 @@ sub bootstrap_config {
     open( my $config, '>', $tmp{'config'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
-    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt4test_$port" : "rt4test";
+    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt5test_$port" : "rt5test";
     print $config qq{
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
@@ -502,7 +502,7 @@ sub bootstrap_db {
     my $db_type = RT->Config->Get('DatabaseType');
 
     if ($db_type eq "SQLite") {
-        RT->Config->WriteSet( DatabaseName => File::Spec->catfile( $self->temp_directory, "rt4test" ) );
+        RT->Config->WriteSet( DatabaseName => File::Spec->catfile( $self->temp_directory, "rt5test" ) );
     }
 
     __create_database();
@@ -1096,7 +1096,7 @@ sub add_rights {
 
 =head2 switch_templates_to TYPE
 
-This runs /opt/rt4/etc/upgrade/switch-templates-to in order to change the templates from
+This runs /opt/rt5/etc/upgrade/switch-templates-to in order to change the templates from
 HTML to text or vice versa.  TYPE is the type to switch to, either C<html> or
 C<text>.
 

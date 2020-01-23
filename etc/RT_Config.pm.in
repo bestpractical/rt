@@ -571,7 +571,7 @@ value.
 
 For testing purposes, or to simply disable sending mail out into the
 world, you can set C<$MailCommand> to 'mbox' which logs all mail, in
-mbox format, to files in F</opt/rt4/var/> based in the process start
+mbox format, to files in F</opt/rt5/var/> based in the process start
 time.  The 'testfile' option is similar, but the files that it creates
 (under /tmp) are temporary, and removed upon process completion; the
 format is also not mbox-compatable.
@@ -1637,8 +1637,8 @@ Set($HideOneTimeSuggestions, 0);
 This determines the default stylesheet the RT web interface will use.
 RT ships with several themes by default:
 
-  elevator-light  The default light theme for RT 4.6
-  elevator-dark   The dark theme for RT 4.6
+  elevator-light  The default light theme for RT 5
+  elevator-dark   The dark theme for RT 5
 
 This value actually specifies a directory in F<share/static/css/>
 from which RT will try to load the file main.css (which should @import
@@ -3776,7 +3776,7 @@ and accepts.
 
     Set(%ExternalStorage,
         Type => 'Disk',
-        Path => '/opt/rt4/var/attachments',
+        Path => '/opt/rt5/var/attachments',
     );
 
 =cut

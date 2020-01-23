@@ -56,7 +56,7 @@ use Pod::Usage;
 use File::Spec::Functions qw(rel2abs);
 
 my %opt = (
-    root => ($ENV{RTHOME} || "/opt/rt4"),
+    root => ($ENV{RTHOME} || "/opt/rt5"),
 
     fcgid   => 0,
     fastcgi => 0,
@@ -239,7 +239,7 @@ C<WebPort> configuration, and adjust its defaults accordingly.
 =item --root B<path>
 
 The path to the RT install to serve.  This defaults to the C<RTHOME>
-environment variable, or C</opt/rt4>.
+environment variable, or C</opt/rt5>.
 
 =item --fastcgi, --fcgid, --perl
 

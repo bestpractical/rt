@@ -61,7 +61,7 @@ fi
 AC_SUBST(WEB_HANDLER)
 
 dnl Defaults paths for installation
-AC_PREFIX_DEFAULT([/opt/rt4])
+AC_PREFIX_DEFAULT([/opt/rt5])
 RT_ENABLE_LAYOUT
 
 
@@ -175,9 +175,9 @@ AC_SUBST(DB_DBA)
 dnl DB_DATABASE
 AC_ARG_WITH(db-database,
 	    AC_HELP_STRING([--with-db-database=DBNAME],
-	    		   [name of the database to use (default: rt4)]),
+	    		   [name of the database to use (default: rt5)]),
             DB_DATABASE=$withval,
-            DB_DATABASE=rt4)
+            DB_DATABASE=rt5)
 AC_SUBST(DB_DATABASE)
 
 dnl DB_RT_USER

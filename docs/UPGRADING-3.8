@@ -7,13 +7,13 @@ authentication itself, it may still store these weak password hashes -- using
 ExternalAuth does not guarantee that you are not vulnerable!  To upgrade
 stored passwords to a stronger hash, run:
 
-    /opt/rt4/etc/upgrade/vulnerable-passwords
+    /opt/rt5/etc/upgrade/vulnerable-passwords
 
 We have also proved that it's possible to delete a notable set of records from
 Transactions table without losing functionality. To delete these records, run
 the following script:
 
-    /opt/rt4/etc/upgrade/shrink-transactions-table
+    /opt/rt5/etc/upgrade/shrink-transactions-table
 
 If you chose not to run the shrink_cgm_table.pl script when you upgraded to
 3.8, you should read more about it below and run it at this point.
@@ -129,7 +129,7 @@ CachedGroupMembers table without losing functionality; in fact, failing to do
 so may result in occasional problems where RT miscounts users, particularly in
 the chart functionality.  To delete these records run the following script:
 
-    /opt/rt4/etc/upgrade/shrink-cgm-table
+    /opt/rt5/etc/upgrade/shrink-cgm-table
 
 After you run this, you will have significantly reduced the number of records
 in your CachedGroupMembers table, and may need to tell your database to
@@ -165,7 +165,7 @@ RT::Action::LinearEscalate extension has been integrated into core, so you
 MUST uninstall it before upgrading.
 
 RT::Extension::iCal has been integrated into core, so you MUST uninstall it
-before upgrading. In addition, you must run /opt/rt4/etc/upgrade/3.8-ical-extension
+before upgrading. In addition, you must run /opt/rt5/etc/upgrade/3.8-ical-extension
 script to convert old data.
 
 

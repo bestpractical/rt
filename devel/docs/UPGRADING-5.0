@@ -1,6 +1,6 @@
 =head1 UPGRADING FROM RT 4.4.0 and greater
 
-This documentation notes internals changes between the 4.4 and 4.6
+This documentation notes internals changes between the 4.4 and 5
 series that are primarily of interest to developers writing extensions
 or local customizations.  It is not an exhaustive list.
 
