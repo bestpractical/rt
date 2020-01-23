@@ -208,28 +208,6 @@ sub HasEntry {
     }
 }
 
-sub _DoSearch {
-    my $self = shift;
-
-    if ( exists $self->{'find_expired_rows'} ) {
-        RT->Deprecated( Arguments => "find_expired_rows", Instead => 'find_disabled_rows', Remove => '4.6' );
-        $self->{'find_disabled_rows'} = $self->{'find_expired_rows'};
-    }
-
-    return $self->SUPER::_DoSearch(@_);
-}
-
-sub _DoCount {
-    my $self = shift;
-
-    if ( exists $self->{'find_expired_rows'} ) {
-        RT->Deprecated( Arguments => "find_expired_rows", Instead => 'find_disabled_rows', Remove => '4.6' );
-        $self->{'find_disabled_rows'} = $self->{'find_expired_rows'};
-    }
-
-    return $self->SUPER::_DoCount(@_);
-}
-
 RT::Base->_ImportOverlays();
 
 # Clear the OCVF cache on exit to release connected RT::Ticket objects.

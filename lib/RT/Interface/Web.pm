@@ -4449,11 +4449,6 @@ sub SetObjectSessionCache {
             CallbackPage => '/Elements/Quicksearch',
             ARGSRef => \%args, Collection => $collection, ObjectType => $ObjectType );
 
-        # This is included for continuity in the 4.2 series. It will be removed in 4.6.
-        $HTML::Mason::Commands::m->callback( CallbackName => 'SQLFilter',
-            CallbackPage => '/Elements/QueueSummaryByLifecycle', Queues => $collection )
-            if $ObjectType eq "RT::Queue";
-
         $session{$cache_key}{id} = {};
 
         while (my $object = $collection->Next) {
