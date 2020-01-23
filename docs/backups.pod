@@ -32,15 +32,15 @@ the C<sessions> schema, however.
 
 Database specific notes and example backup commands for each database are
 below.  Adjust the commands as necessary for connection details such as
-database name (C<rt4> is the placeholder below), user, password, host, etc.
+database name (C<rt5> is the placeholder below), user, password, host, etc.
 You should put the example commands into a shell script for backup and setup a
 cronjob.  Make sure output from cron goes to someone who reads mail!  (Or into
 RT. :)
 
 =head3 MySQL and MariaDB
 
-    ( mysqldump rt4 --tables sessions --no-data --single-transaction; \
-      mysqldump rt4 --ignore-table rt4.sessions --single-transaction ) \
+    ( mysqldump rt5 --tables sessions --no-data --single-transaction; \
+      mysqldump rt5 --ignore-table rt5.sessions --single-transaction ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
 
 The dump will be much faster if you can connect to the MySQL or
@@ -68,14 +68,14 @@ one no longer works or because you want to set up a dev machine to
 test on) you will need to create a fresh database and database user
 for RT to use.  RT can do that for you using:
 
-    /opt/rt4/sbin/rt-setup-database --action create,acl
+    /opt/rt5/sbin/rt-setup-database --action create,acl
 
-By default, this will create an rt4 database and an rt_user user.  If
+By default, this will create an rt5 database and an rt_user user.  If
 you've specified a custom password in RT_SiteConfig.pm, RT will use
 that.  Once the database and user exist, you can restore from your
 backup using:
 
-    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt4
+    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt5
 
 Changing -uroot -p as needed to access the database as a user with
 enough rights to handle creating tables.
@@ -86,19 +86,19 @@ If something terrible happened this morning and you want to roll back to
 your backups, or if you want to update a dev server using your backups,
 this is straightforward on MySQL and MariaDB.
 
-    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt4
+    gunzip -c rt-20141014.sql.gz | mysql -uroot -p rt5
 
 MySQL and MariaDB will drop any existing tables before recreating and
 repopulating them.  It will leave the database and the rt_user
 untouched.  This is not suitable for restoring on a fresh database
-install since there will be no rt4 database or rt_user user.
+install since there will be no rt5 database or rt_user user.
 
 =back
 
 =head3 PostgreSQL
 
-    ( pg_dump rt4 --table=sessions --schema-only; \
-      pg_dump rt4 --exclude-table=sessions ) \
+    ( pg_dump rt5 --table=sessions --schema-only; \
+      pg_dump rt5 --exclude-table=sessions ) \
         | gzip > rt-`date +%Y%m%d`.sql.gz
 
 =head4 Restoring from backups
@@ -112,7 +112,7 @@ one no longer works or because you want to set up a dev machine to
 test on) you will need to create a fresh database and database user
 for RT to use.  RT can do part of that for you using:
 
-    /opt/rt4/sbin/rt-setup-database --action create
+    /opt/rt5/sbin/rt-setup-database --action create
 
 You will need to create the rt_user separately.
 
@@ -126,7 +126,7 @@ Once the database and user exist, you can restore from your backup which
 will create tables, insert data and configure rights for your rt_user
 user.
 
-    gunzip -c rt-20141014.sql.gz | psql rt4
+    gunzip -c rt-20141014.sql.gz | psql rt5
 
 This may need to be run as the postgres user or some other admin level
 user who can create tables.
@@ -138,15 +138,15 @@ your backups, or if you want to update a dev server using your backups,
 you will need to drop your database and recreate a fresh one to restore
 into.  RT can drop and recreate the database for you using:
 
-    /opt/rt4/sbin/rt-setup-database --action drop
-    /opt/rt4/sbin/rt-setup-database --action create
+    /opt/rt5/sbin/rt-setup-database --action drop
+    /opt/rt5/sbin/rt-setup-database --action create
 
 Remember that this will completely destroy the existing data and create
 a fresh database.  Your rt_user user will remain untouched.  Once this
 is complete, you can restore from your backup which will create tables
 and insert data and configure rights for the rt_user.
 
-    gunzip -c rt-20141014.sql.gz | psql rt4
+    gunzip -c rt-20141014.sql.gz | psql rt5
 
 =item After Restoring
 
@@ -163,7 +163,7 @@ You will want to back up, at the very least, the following directories and files
 
 =over 4
 
-=item /opt/rt4
+=item /opt/rt5
 
 RT's source code, configuration, GPG data, and plugins.  Your install location
 may be different, of course.
@@ -216,7 +216,7 @@ regarding backups.
 
 Simply saving a tarball should be sufficient, with something like:
 
-    tar czvpf rt-backup-`date +%Y%m%d`.tar.gz /opt/rt4 /etc/aliases /etc/httpd ...
+    tar czvpf rt-backup-`date +%Y%m%d`.tar.gz /opt/rt5 /etc/aliases /etc/httpd ...
 
 Be sure to include all the directories and files you enumerated above!
 

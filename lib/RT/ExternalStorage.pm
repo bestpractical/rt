@@ -61,7 +61,7 @@ RT::ExternalStorage - Store attachments outside the database
 
     Set(%ExternalStorage,
         Type => 'Disk',
-        Path => '/opt/rt4/var/attachments',
+        Path => '/opt/rt5/var/attachments',
     );
 
 =head1 DESCRIPTION
@@ -84,7 +84,7 @@ takes care of moving attachments out of the database at a later time.
 
 =head1 SETUP
 
-=head2 Edit F</opt/rt4/etc/RT_SiteConfig.pm>
+=head2 Edit F</opt/rt5/etc/RT_SiteConfig.pm>
 
 You will need to configure the C<%ExternalStorage> option,
 depending on how and where you want your data stored.
@@ -121,7 +121,7 @@ cron.  For instance, the following F</etc/cron.d/rt> entry will run it
 daily, which may be good to concentrate network or disk usage to times
 when RT is less in use:
 
-    0 0 * * * root /opt/rt4/sbin/rt-externalize-attachments
+    0 0 * * * root /opt/rt5/sbin/rt-externalize-attachments
 
 =head1 CAVEATS
 

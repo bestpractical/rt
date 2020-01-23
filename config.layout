@@ -5,7 +5,7 @@
 ##  - layouts can be loaded with configure's --enable-layout=ID option
 ##  - when no --enable-layout option is given, the default layout is `RT'
 ##  - a trailing plus character (`+') on paths is replaced with a
-##    `/<target>' suffix where <target> is currently hardcoded to 'rt3'.
+##    `/<target>' suffix where <target> is currently hardcoded to 'rt5'.
 ##    (This may become a configurable parameter at some point.)
 ##
 ##  The following variables must _all_ be set:
@@ -15,9 +15,9 @@
 ##  (This can be seen in m4/rt_layout.m4.)
 ##
 
-#   Default RT3 path layout.
-<Layout RT3>
-  prefix:		/opt/rt4
+#   Default RT5 path layout.
+<Layout RT5>
+  prefix:		/opt/rt5
   exec_prefix:		${prefix}
   bindir:		${exec_prefix}/bin
   sbindir:		${exec_prefix}/sbin
@@ -161,7 +161,7 @@
 
 
 <Layout relative>
-  prefix:		/opt/rt4
+  prefix:		/opt/rt5
   exec_prefix:		${prefix}
   bindir:		bin
   sbindir:		sbin
@@ -188,7 +188,7 @@
   customplugindir:  ${customdir}/plugins
 </Layout>
 <Layout vessel>
-  prefix:		/opt/rt4
+  prefix:		/opt/rt5
   exec_prefix:		${prefix}
   bindir:		bin
   sbindir:		sbin

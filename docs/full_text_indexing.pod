@@ -21,12 +21,12 @@ Postgres 8.3 and above support full-text searching natively; to set up
 the required C<ts_vector> column, and create either a C<GiN> or C<GiST>
 index on it, run:
 
-    /opt/rt4/sbin/rt-setup-fulltext-index
+    /opt/rt5/sbin/rt-setup-fulltext-index
 
 If you have a non-standard database administrator username or password,
 you may need to pass the C<--dba> or C<--dba-password> options:
 
-    /opt/rt4/sbin/rt-setup-fulltext-index --dba postgres --dba-password secret
+    /opt/rt5/sbin/rt-setup-fulltext-index --dba postgres --dba-password secret
 
 This will then tokenize and index all existing attachments in your
 database; it may take quite a while if your database already has a large
@@ -41,7 +41,7 @@ webserver after making these changes.
 
 To keep the index up-to-date, you will need to run:
 
-    /opt/rt4/sbin/rt-fulltext-indexer
+    /opt/rt5/sbin/rt-fulltext-indexer
 
 ...at regular intervals.  By default, this will only tokenize up to 200
 tickets at a time; you can adjust this upwards by passing C<--limit
@@ -54,7 +54,7 @@ and end those processes normally (with exit code 0) using the C<--quiet>
 option; this is particularly useful when running the command via
 C<cron>:
 
-    /opt/rt4/sbin/rt-fulltext-indexer --quiet
+    /opt/rt5/sbin/rt-fulltext-indexer --quiet
 
 =head1 MYSQL and MariaDB
 
@@ -72,12 +72,12 @@ index this content without creating an additional table.  To create
 the required table (which is InnoDB on versions of MySQL and MariaDB
 which support it), run:
 
-    /opt/rt4/sbin/rt-setup-fulltext-index
+    /opt/rt5/sbin/rt-setup-fulltext-index
 
 If you have a non-standard database administrator username or password,
 you may need to pass the C<--dba> or C<--dba-password> options:
 
-    /opt/rt4/sbin/rt-setup-fulltext-index --dba root --dba-password secret
+    /opt/rt5/sbin/rt-setup-fulltext-index --dba root --dba-password secret
 
 This will then tokenize and index all existing attachments in your
 database; it may take quite a while if your database already has a large
@@ -92,7 +92,7 @@ webserver after making these changes.
 
 To keep the index up-to-date, you will need to run:
 
-    /opt/rt4/sbin/rt-fulltext-indexer
+    /opt/rt5/sbin/rt-fulltext-indexer
 
 ...at regular intervals.  By default, this will only tokenize up to 200
 tickets at a time; you can adjust this upwards by passing C<--limit
@@ -105,7 +105,7 @@ and end those processes normally (with exit code 0) using the C<--quiet>
 option; this is particularly useful when running the command via
 C<cron>:
 
-    /opt/rt4/sbin/rt-fulltext-indexer --quiet
+    /opt/rt5/sbin/rt-fulltext-indexer --quiet
 
 =head3 Caveats
 
@@ -151,12 +151,12 @@ L<http://sphinxsearch.com/docs/current.html#sphinxse-mysql51>.
 Once MySQL has been recompiled with SphinxSE, and Sphinx itself is
 installed, you may create the required SphinxSE communication table via:
 
-    /opt/rt4/sbin/rt-setup-fulltext-index
+    /opt/rt5/sbin/rt-setup-fulltext-index
 
 If you have a non-standard database administrator username or password,
 you may need to pass the C<--dba> or C<--dba-password> options:
 
-    /opt/rt4/sbin/rt-setup-fulltext-index --dba root --dba-password secret
+    /opt/rt5/sbin/rt-setup-fulltext-index --dba root --dba-password secret
 
 This will also provide you with the appropriate C<%FullTextSearch>
 configuration to add to your F<RT_SiteConfig.pm>; you will need to
@@ -219,12 +219,12 @@ C<RT_SiteConfig.pm> must be updated.
 Oracle supports full-text indexing natively using the Oracle Text
 package.  Once Oracle Text is installed and configured, run:
 
-    /opt/rt4/sbin/rt-setup-fulltext-index
+    /opt/rt5/sbin/rt-setup-fulltext-index
 
 If you have a non-standard database administrator username or password,
 you may need to pass the C<--dba> or C<--dba-password> options:
 
-    /opt/rt4/sbin/rt-setup-fulltext-index --dba sysdba --dba-password secret
+    /opt/rt5/sbin/rt-setup-fulltext-index --dba sysdba --dba-password secret
 
 This will create an Oracle CONTEXT index on the Content column in the
 Attachments table, as well as several preferences, functions and
@@ -237,7 +237,7 @@ F<RT_SiteConfig>.
 To update the index, you will need to run the following at regular
 intervals:
 
-    /opt/rt4/sbin/rt-fulltext-indexer
+    /opt/rt5/sbin/rt-fulltext-indexer
 
 This, in effect, simply runs:
 
@@ -248,7 +248,7 @@ This, in effect, simply runs:
 The amount of memory used for the sync can be controlled with the
 C<--memory> option:
 
-    /opt/rt4/sbin/rt-fulltext-indexer --memory 10M
+    /opt/rt5/sbin/rt-fulltext-indexer --memory 10M
 
 If there is already an instance of C<rt-fulltext-indexer> running, new
 ones will exit abnormally (with exit code 1) and the error message
@@ -257,7 +257,7 @@ and end those processes normally (with exit code 0) using the C<--quiet>
 option; this is particularly useful when running the command via
 C<cron>:
 
-    /opt/rt4/sbin/rt-fulltext-indexer --quiet
+    /opt/rt5/sbin/rt-fulltext-indexer --quiet
 
 Instead of being run via C<cron>, this may instead be run via a
 DBMS_JOB; read the B<Managing DML Operations for a CONTEXT Index>

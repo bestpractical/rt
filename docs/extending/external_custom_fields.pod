@@ -10,13 +10,13 @@ data from the external source.
 =head2 Introduction into writing source of values
 
 For each type of data source that you want, you'll need to put a file in
-F</opt/rt4/local/lib/RT/CustomFieldValues/> (or equivalent if you
-installed RT into someplace other than F</opt/rt4>). To get a sense of
+F</opt/rt5/local/lib/RT/CustomFieldValues/> (or equivalent if you
+installed RT into someplace other than F</opt/rt5>). To get a sense of
 the code that you'll need to write, take a look at the code in
-F</opt/rt4/lib/RT/CustomFieldValues/Groups.pm> for a simple example
+F</opt/rt5/lib/RT/CustomFieldValues/Groups.pm> for a simple example
 which just uses RT's API to pull in a list of RT's groups.
 
-Running C<perldoc /opt/rt4/lib/RT/CustomFieldValues/External.pm> will
+Running C<perldoc /opt/rt5/lib/RT/CustomFieldValues/External.pm> will
 show you the documentation for the API that needs to be fulfilled;
 copying and editing the C<Groups> example is probably a fine place to
 start.

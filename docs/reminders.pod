@@ -41,7 +41,7 @@ C<rt-crontool> utility to schedule a job to send these emails for you.
 
 To schedule the reminders, add a line like the following to your RT crontab:
 
-    0 6 * * * root /opt/rt4/bin/rt-crontool \
+    0 6 * * * root /opt/rt5/bin/rt-crontool \
                    --search RT::Search::FromSQL \
                    --search-arg 'Type = "reminder" and (Status = "open" or Status = "new")' \
                    --condition RT::Condition::BeforeDue \

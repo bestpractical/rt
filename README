@@ -59,10 +59,10 @@ GENERAL INSTALLATION
 
     Peruse the options, then rerun ./configure with the flags you want.
 
-    RT defaults to installing in /opt/rt4 with MySQL as its database. It
+    RT defaults to installing in /opt/rt5 with MySQL as its database. It
     tries to guess which of www-data, www, apache or nobody your
     webserver will run as, but you can override that behavior.  Note
-    that the default install directory in /opt/rt4 does not work under
+    that the default install directory in /opt/rt5 does not work under
     SELinux's default configuration.
 
     If you are upgrading from a previous version of RT, please review
@@ -115,7 +115,7 @@ GENERAL INSTALLATION
 
       To configure RT with the web installer, run:
 
-          /opt/rt4/sbin/rt-server
+          /opt/rt5/sbin/rt-server
 
       and follow the instructions.  Once completed, you should now have a
       working RT instance running with the standalone rt-server.  Press
@@ -180,7 +180,7 @@ GENERAL INSTALLATION
     logout for inactive sessions. For more information about how to do
     that, run:
 
-        perldoc /opt/rt4/sbin/rt-clean-sessions
+        perldoc /opt/rt5/sbin/rt-clean-sessions
 
  8) Set up users, groups, queues, scrips and access control.
 
@@ -199,10 +199,10 @@ GENERAL INSTALLATION
     If your task scheduler is cron, you can configure it by
     adding the following lines as /etc/cron.d/rt:
 
-        0 0 * * * root /opt/rt4/sbin/rt-email-digest -m daily
-        0 0 * * 0 root /opt/rt4/sbin/rt-email-digest -m weekly
-        0 * * * * root /opt/rt4/sbin/rt-email-dashboards
-        0 0 * * * root /opt/rt4/sbin/rt-externalize-attachments
+        0 0 * * * root /opt/rt5/sbin/rt-email-digest -m daily
+        0 0 * * 0 root /opt/rt5/sbin/rt-email-digest -m weekly
+        0 * * * * root /opt/rt5/sbin/rt-email-dashboards
+        0 0 * * * root /opt/rt5/sbin/rt-externalize-attachments
 
 10) Configure the RT email gateway.  To let email flow to your RT
     server, you need to add a few lines of configuration to your mail
@@ -212,14 +212,14 @@ GENERAL INSTALLATION
     Add the following lines to /etc/aliases (or your local equivalent)
     on your mail server:
 
-        rt:         "|/opt/rt4/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com/"
-        rt-comment: "|/opt/rt4/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
+        rt:         "|/opt/rt5/bin/rt-mailgate --queue general --action correspond --url http://rt.example.com/"
+        rt-comment: "|/opt/rt5/bin/rt-mailgate --queue general --action comment --url http://rt.example.com/"
 
     You'll need to add similar lines for each queue you want to be able to
     send email to. To find out more about how to configure RT's email
     gateway, type:
 
-           perldoc /opt/rt4/bin/rt-mailgate
+           perldoc /opt/rt5/bin/rt-mailgate
 
 11) Set up full text search
 

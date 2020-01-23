@@ -61,7 +61,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head1 SYNOPSIS
 
-  use lib "/opt/rt4/local/lib", "/opt/rt4/lib";
+  use lib "/opt/rt5/local/lib", "/opt/rt5/lib";
 
   use RT::Interface::CLI  qw(GetCurrentUser Init loc);
 

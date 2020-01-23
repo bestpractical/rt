@@ -135,7 +135,7 @@ RT::ExternalStorage::Disk - On-disk storage of attachments
 
     Set(%ExternalStorage,
         Type => 'Disk',
-        Path => '/opt/rt4/var/attachments',
+        Path => '/opt/rt5/var/attachments',
     );
 
 =head1 DESCRIPTION
