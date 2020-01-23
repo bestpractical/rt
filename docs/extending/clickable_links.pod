@@ -130,7 +130,7 @@ groups of your regexps are passed to action.
 
 =head2 Custom MakeClicky action example
 
-Create a new file F</opt/rt4/local/html/Callbacks/MyCallbacks/Elements/MakeClicky/Default>
+Create a new file F</opt/rt5/local/html/Callbacks/MyCallbacks/Elements/MakeClicky/Default>
 with the content:
 
   <%ARGS>

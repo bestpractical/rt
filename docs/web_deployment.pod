@@ -15,12 +15,12 @@ because that requires root-level privileges and may conflict with any existing
 listeners. So choose a high port (for example 8080) and start the standalone
 server with:
 
-    /opt/rt4/sbin/rt-server --port 8080
+    /opt/rt5/sbin/rt-server --port 8080
 
 You can also run C<rt-server> with any other PSGI server, for example,
 to use L<Starman>, a high performance preforking server:
 
-    /opt/rt4/sbin/rt-server --server Starman --port 8080
+    /opt/rt5/sbin/rt-server --server Starman --port 8080
 
 =head2 Apache
 
@@ -38,20 +38,20 @@ use Apache to provide authentication.
     # be necessary if your distribution doesn't already set it
     #FastCgiIpcDir /tmp
 
-    FastCgiServer /opt/rt4/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
+    FastCgiServer /opt/rt5/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
         # Ensure that your log rotation scripts know about these files
-        # ErrorLog /opt/rt4/var/log/apache2.error
-        # TransferLog /opt/rt4/var/log/apache2.access
+        # ErrorLog /opt/rt5/var/log/apache2.error
+        # TransferLog /opt/rt5/var/log/apache2.access
         # LogLevel debug
 
         AddDefaultCharset UTF-8
 
-        ScriptAlias / /opt/rt4/sbin/rt-server.fcgi/
+        ScriptAlias / /opt/rt5/sbin/rt-server.fcgi/
 
-        DocumentRoot "/opt/rt4/share/html"
+        DocumentRoot "/opt/rt5/share/html"
         <Location />
             <IfVersion >= 2.4> # For Apache 2.4
                 Require all granted
@@ -84,15 +84,15 @@ to return to the old default.
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
         # Ensure that your log rotation scripts know about these files
-        # ErrorLog /opt/rt4/var/log/apache2.error
-        # TransferLog /opt/rt4/var/log/apache2.access
+        # ErrorLog /opt/rt5/var/log/apache2.error
+        # TransferLog /opt/rt5/var/log/apache2.access
         # LogLevel debug
 
         AddDefaultCharset UTF-8
 
-        ScriptAlias / /opt/rt4/sbin/rt-server.fcgi/
+        ScriptAlias / /opt/rt5/sbin/rt-server.fcgi/
 
-        DocumentRoot "/opt/rt4/share/html"
+        DocumentRoot "/opt/rt5/share/html"
         <Location />
             <IfVersion >= 2.4> # For Apache 2.4
                 Require all granted
@@ -125,13 +125,13 @@ C<SetHandler modperl>, as the example below uses.
 
     <VirtualHost rt.example.com>
         ### Optional apache logs for RT
-        # ErrorLog /opt/rt4/var/log/apache2.error
-        # TransferLog /opt/rt4/var/log/apache2.access
+        # ErrorLog /opt/rt5/var/log/apache2.error
+        # TransferLog /opt/rt5/var/log/apache2.access
         # LogLevel debug
 
         AddDefaultCharset UTF-8
 
-        DocumentRoot "/opt/rt4/share/html"
+        DocumentRoot "/opt/rt5/share/html"
         <Location />
             <IfVersion >= 2.4> # For Apache 2.4
                 Require all granted
@@ -143,11 +143,11 @@ C<SetHandler modperl>, as the example below uses.
 
             SetHandler modperl
             PerlResponseHandler Plack::Handler::Apache2
-            PerlSetVar psgi_app /opt/rt4/sbin/rt-server
+            PerlSetVar psgi_app /opt/rt5/sbin/rt-server
         </Location>
         <Perl>
             use Plack::Handler::Apache2;
-            Plack::Handler::Apache2->preload("/opt/rt4/sbin/rt-server");
+            Plack::Handler::Apache2->preload("/opt/rt5/sbin/rt-server");
         </Perl>
     </VirtualHost>
 
@@ -165,7 +165,7 @@ C<nginx> requires that you start RT's fastcgi process externally, for
 example using C<spawn-fcgi>:
 
     spawn-fcgi -u www-data -g www-data -a 127.0.0.1 -p 9000 \
-        -- /opt/rt4/sbin/rt-server.fcgi
+        -- /opt/rt5/sbin/rt-server.fcgi
 
 With the nginx configuration:
 
@@ -207,8 +207,8 @@ With the nginx configuration:
         fastcgi.server = (
             "/" => (
                 "rt" => (
-                    "socket"      => "/opt/rt4/var/socket",
-                    "bin-path"    => "/opt/rt4/sbin/rt-server.fcgi",
+                    "socket"      => "/opt/rt5/var/socket",
+                    "bin-path"    => "/opt/rt5/sbin/rt-server.fcgi",
                     "check-local" => "disable",
                     "fix-root-scriptname" => "enable",
                 )
@@ -229,12 +229,12 @@ F<RT_SiteConfig.pm>:
 Then you need to update your Apache configuration to match.  Prefix any RT
 related C<ScriptAlias> and C<Location> directives with C</rt>.  You
 should also make sure C<DocumentRoot> is B<not> set to
-C</opt/rt4/share/html/>, otherwise RT's source will be served from C</>.
+C</opt/rt5/share/html/>, otherwise RT's source will be served from C</>.
 
 For example: if you're using the sample FastCGI config above, you might change
 the relevant directives to:
 
-    ScriptAlias /rt /opt/rt4/sbin/rt-server.fcgi/
+    ScriptAlias /rt /opt/rt5/sbin/rt-server.fcgi/
 
     # Set DocumentRoot as appropriate for the other content you want to serve
     DocumentRoot /var/www

@@ -33,7 +33,7 @@ In your C<RT_SiteConfig.pm> set C<$DisableGD> to 0:
 
 Run the RT dependency checker:
 
-    $ /opt/rt4/sbin/rt-test-dependencies --with-gd --verbose
+    $ /opt/rt5/sbin/rt-test-dependencies --with-gd --verbose
 
 =item 3
 
@@ -49,7 +49,7 @@ C<gd-devel>, C<gd2-dev>, or something similar.
 
 Install Perl GD modules:
 
-    $ /opt/rt4/sbin/rt-test-dependencies --with-gd --install --verbose
+    $ /opt/rt5/sbin/rt-test-dependencies --with-gd --install --verbose
 
 
 =back

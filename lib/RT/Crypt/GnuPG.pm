@@ -174,7 +174,7 @@ Common options include:
 =item --homedir
 
 The GnuPG home directory where the keyrings are stored; by default it is
-set to F</opt/rt4/var/data/gpg>.
+set to F</opt/rt5/var/data/gpg>.
 
 You can manage this data with the 'gpg' commandline utility using the
 GNUPGHOME environment variable or C<--homedir> option.  Other utilities may
