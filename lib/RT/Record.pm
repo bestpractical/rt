@@ -1770,6 +1770,7 @@ our %TRANSACTION_CLASSIFICATION = (
             Owner Creator LastUpdatedBy
         ) ),
     },
+    CustomField => 'cfs',
     SystemError => 'error',
     AttachmentTruncate => 'attachment-truncate',
     AttachmentDrop => 'attachment-drop',

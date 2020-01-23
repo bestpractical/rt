@@ -92,6 +92,35 @@ div.results .titlebox .titlebox-content {
     padding-top: 0;
 }
 
+/* Ticket display page colored top borders */
+/* Keep in sync with transaction colors in history.css */
+/* material.io reference: https://material.io/design/color/#tools-for-picking-colors */
+
+.titlebox.card.ticket-info-basics {
+    border-top: 3px solid #D32F2F;
+}
+.titlebox.card.ticket-info-reminders {
+    border-top: 3px solid #0277BD;
+}
+.titlebox.card.ticket-info-people {
+    border-top: 3px solid #0288D1;
+}
+.titlebox.card.ticket-info-dates {
+    border-top: 3px solid #7B1FA2;
+}
+.titlebox.card.ticket-info-attachments {
+    border-top: 3px solid #C2185B;
+}
+.titlebox.card.ticket-info-links {
+    border-top: 3px solid #388E3C;
+}
+.titlebox.card.ticket-info-merge {
+    border-top: 3px solid #5D4037;
+}
+.titlebox.card.ticket-info-cfs {
+    border-top: 3px solid #D32F2F;
+}
+
 .titlebox .card-header span.toggle:hover {
     cursor: pointer;
 }
