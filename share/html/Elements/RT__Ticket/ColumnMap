@@ -334,17 +334,19 @@ $COLUMN_MAP = {
     },
     UnreadMessages => {
        title     => 'Unread Messages', # loc
-       attribute => 'UnreadMessages',
        value     => sub {
             my $self = shift;
 
-            my( $count, $first_unread) = $self->SeenUpToCount;
+            my ($first_unread, $count) = $self->SeenUpTo;
 
             return '0' if ! $count;
 
-            return \('<a class="unread_nb" title="jump to Unread &amp; Mark as Seen" href="'. RT->Config->Get('WebPath') .'/Ticket/Display.html?id='
-            . $self->id .'&MarkAsSeen=1&Anchor=txn-'. $first_unread->id .'">'),
-            $count, \'</a>';
+            my $link = RT->Config->Get('WebPath');
+            $link .= ( $session{'CurrentUser'}->Privileged ) ? '/Ticket/Display.html?id=' : '/SelfService/Display.html?id=';
+            $link .= $self->id .'&MarkAsSeen=1&Anchor=txn-'. $first_unread->id;
+
+            return \('<a title="jump to Unread &amp; Mark as Seen" href="'. $link .'"><b>'),
+            $count, \'</b></a>';
         }
    }
 };
