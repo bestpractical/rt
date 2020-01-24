@@ -1526,41 +1526,6 @@ sub TotalTimeWorkedPerUser {
     return $time;
 }
 
-=head2 SeenUpToCount
-
-Returns the number of transactions marked as seen by this user for this ticket
-
-=cut
-
-sub SeenUpToCount {
-    my $self= shift;
-    my $uid = $self->CurrentUser->id;
-    my $attr = $self->FirstAttribute( "User-". $uid ."-SeenUpTo" );
-    if( $attr && $attr->Content gt $self->LastUpdated) {
-        return ( 0, undef);
-    }
-
-    my $txns = $self->Transactions;
-    $txns->Limit( FIELD => 'Type', VALUE => 'Comment' );
-    $txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
-    $txns->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $uid );
-    $txns->Limit(
-        FIELD => 'Created',
-        OPERATOR => '>',
-        VALUE => $attr->Content
-    ) if $attr;
-
-    my $count = $txns->Count;
-
-    if( $count) {
-        my $first_unread = $txns->First;
-        return ($count, $first_unread);
-    } else {
-        return (0, undef);
-    }
-}
-
-
 =head2 Comment
 
 Comment on this ticket.
@@ -2638,6 +2603,10 @@ sub _SetTold {
 
 =head2 SeenUpTo
 
+Returns the first comment/correspond transaction not seen by current user.
+
+In list context returns the first not-seen comment/correspond transaction
+and also the total number of such not-seen transactions.
 
 =cut
 
@@ -2645,7 +2614,9 @@ sub SeenUpTo {
     my $self = shift;
     my $uid = $self->CurrentUser->id;
     my $attr = $self->FirstAttribute( "User-". $uid ."-SeenUpTo" );
-    return if $attr && $attr->Content gt $self->LastUpdated;
+    if ( $attr && $attr->Content gt $self->LastUpdated ) {
+        return wantarray ? ( undef, 0 ) : undef;
+    }
 
     my $txns = $self->Transactions;
     $txns->Limit( FIELD => 'Type', VALUE => 'Comment' );
@@ -2656,8 +2627,9 @@ sub SeenUpTo {
         OPERATOR => '>',
         VALUE => $attr->Content
     ) if $attr;
-    $txns->RowsPerPage(1);
-    return $txns->First;
+
+    my $next_unread_txn = $txns->First;
+    return wantarray ? ( $next_unread_txn, $txns->Count ) : $next_unread_txn;
 }
 
 =head2 RanTransactionBatch
