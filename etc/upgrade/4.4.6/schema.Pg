@@ -1,0 +1,2 @@
+DROP INDEX Users4;
+CREATE INDEX Users4 ON Users (LOWER(EmailAddress));
