@@ -204,7 +204,8 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
                 <& /Elements/EditLinks, Object => $Ticket, TwoColumn => 0 &>
 
                 <h3><&|/l&>Merge</&></h3>
-                <& /Ticket/Elements/EditMerge, Ticket => $Ticket, %ARGS &>
+                <& /Ticket/Elements/EditMerge, Ticket => $Ticket, LabelStyle => 'col-md-3',
+                   ValueStyle => 'col-md-9', MergeTextClass => '', %ARGS &>
 
                 <div class="form-row">
                   <div class="col-md-12 text-right">

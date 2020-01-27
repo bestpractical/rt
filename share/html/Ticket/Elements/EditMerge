@@ -45,14 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<i>
+<div class='ticket-merge-text <% $MergeTextClass %>'>
 <&|/l&>Warning: merging is a non-reversible action! Enter a single ticket number to be merged into.</&>
-</i>
-
+</div>
 <div>
   <div class="form-row">
-    <div class="label col-md-3"><&|/l&>Merge into</&>:</div>
-    <div class="value col-md-9"><input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></div>
+    <div class="label <% $LabelStyle %>"><&|/l&>Merge into</&>:</div>
+    <div class="value <% $ValueStyle %>"><input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></div>
   </div>
 </div>
 
@@ -76,4 +75,7 @@ $Ticket => undef
 $Tickets => undef
 $Name => ''
 $Default => ''
+$MergeTextClass => 'ticket-merge-position'
+$LabelStyle => 'col-md-2'
+$ValueStyle => 'col-md-4'
 </%ARGS>
