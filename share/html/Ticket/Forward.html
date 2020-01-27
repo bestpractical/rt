@@ -53,7 +53,7 @@
 
 <form action="Forward.html" id="ForwardMessage" name="ForwardMessage" method="post">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="id" value="<% $id %>" /><br />
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
 
 <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>

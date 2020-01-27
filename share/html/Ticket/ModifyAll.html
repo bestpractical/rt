@@ -72,26 +72,17 @@
 <& Elements/EditDates, TicketObj => $Ticket &>
 </&>
 
-<br />
-
-
 <&| /Widgets/TitleBox, title => loc('People'), class=>'ticket-info-people' &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &>
 </&>
-
-<br />
 
 <&| /Widgets/TitleBox, title => loc('Links'), class=>'ticket-info-links' &>
 <& /Elements/EditLinks, Object => $Ticket &>
 </&>
 
-<br />
-
 <&| /Widgets/TitleBox, title => loc('Merge'), class=>'ticket-info-merge' &>
 <& Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
-
-<br />
 
 <&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
 <div>
