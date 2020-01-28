@@ -46,32 +46,25 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="selectionbox-js">
-  <div class="destinations">
-%   for my $pane (sort keys %pane_name) {
-      <div class="destination" data-pane="<% $pane %>">
-        <h2><% $pane_name{$pane} %></h2>
-        <div class="contents">
-          <ul>
-%           for my $item (@{ $selected{$pane} }) {
-              <& /Elements/ShowSelectSearch, %$item &>
-%           }
-          </ul>
-        </div>
-      </div>
-%   }
-  </div>
-  <div class="source">
-    <h2><&|/l&>Saved Searches</&></h2>
+  <div class="form-row">
 
+  <div class="col-md-6">
+  <div class="source">
     <div class="filters">
-      <input type="search" name="search" placeholder="<&|/l&>Search…</&>" autocomplete="off">
-      <select name="filter">
-          <option value=""><&|/l&>All Types</&></option>
+      <div class="form-row">
+        <div class="col-md-auto">
+          <input type="search" class="field form-control" name="search" placeholder="<&|/l&>Search…</&>" autocomplete="off">
+        </div>
+        <div class="col-md-auto">
+          <select class="form-control selectpicker" name="filter">
+              <option value=""><&|/l&>All Types</&></option>
 %         for (@filters) {
 %           my ($value, $label) = @$_;
-            <option value="<% $value %>"><% $label %></option>
+              <option value="<% $value %>"><% $label %></option>
 % }
-      </select>
+          </select>
+        </div>
+      </div>
     </div>
 
     <div class="contents">
@@ -90,9 +83,27 @@
 %     }
     </div>
   </div>
-</div>
+  </div>
 
-<div class="clear"></div>
+  <div class="col-md-6">
+  <div class="destinations">
+%   for my $pane (sort keys %pane_name) {
+      <div class="destination" data-pane="<% $pane %>">
+        <div class="contents">
+          <h3><% $pane_name{$pane} %></h3>
+          <ul>
+%           for my $item (@{ $selected{$pane} }) {
+              <& /Elements/ShowSelectSearch, %$item &>
+%           }
+          </ul>
+        </div>
+      </div>
+%   }
+  </div>
+  </div>
+
+  </div>
+</div>
 
 <%INIT>
 use utf8;

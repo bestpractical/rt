@@ -49,14 +49,14 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Helpers/UpdateDashboard" data-dashboard_id='MyRT' data-is_global=True>
+<form method="post" class="mx-auto max-width-lg" action="<% RT->Config->Get('WebPath') %>/Helpers/UpdateDashboard" data-dashboard_id='MyRT' data-is_global=True>
   <& /Widgets/SearchSelection,
     pane_name => \%pane_name,
     sections  => \@sections,
     selected  => \%selected,
     filters   => \@filters,
   &>
-  <input type="submit" class="button" name="UpdateSearches" value="<% loc('Save') %>" />
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
 </form>
 
 <%INIT>

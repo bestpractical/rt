@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@actions &>
 
-<form method="post" action="<% RT->Config->Get('WebPath')  %> /Helpers/UpdateDashboard" data-dashboard_id = "MyRT" data-user_id = '<% $id %>'>
+<form method="post" class="mx-auto max-width-lg" action="<% RT->Config->Get('WebPath')  %> /Helpers/UpdateDashboard" data-dashboard_id = "MyRT" data-user_id = '<% $id %>'>
   <& /Widgets/SearchSelection,
                     pane_name => \%pane_name,
                     sections  => \@sections,
@@ -57,12 +57,11 @@
                     filters   => \@filters,
     &>
 <input type="hidden" name="id" value="<% $id %>"/>
-<input type"submit" class="button" name="UpdateSearches" value= "<% loc('Save') %>"  >
-<div class="form-row">
-  <div class="col-md-12">
-    <input type="submit" class="button form-control btn btn-primary" value="<%loc('Reset to default')%>">
-  </div>
-</div>
+<& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+</form>
+<form method="post" action="MyRT.html?id=<% $id %>">
+  <input type="hidden" name="Reset" value="1" />
+  <& /Elements/Submit, Label => loc('Reset to default') &>
 </form>
 
 <%init>
@@ -72,10 +71,19 @@ $UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
 my $user = RT::User->new($session{'CurrentUser'});
 my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
 
+if ($ARGS{Reset}) {
+    for my $pref_name ('HomepageSettings', 'SummaryRows') {
+        next unless $UserObj->Preferences($pref_name);
+        my ($ok, $msg) = $UserObj->DeletePreferences($pref_name);
+        push @actions, $msg unless $ok;
+    }
+    push @actions, loc('Preferences saved for user [_1].', $UserObj->Name) unless @actions;
+}
+
 my $portlets = $UserObj->Preferences('HomepageSettings');
 unless ($portlets) {
-   my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-   $portlets = $defaults ? $defaults->Content : {};
+    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
+    $portlets = $defaults ? $defaults->Content : {};
 }
 
 my @sections;
