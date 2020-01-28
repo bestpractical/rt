@@ -53,10 +53,14 @@ $search_id => undef
 $search_type => undef
 $possibly_hidden => 0
 </%ARGS>
-<li data-type="<% $type %>" data-name="<% $name %>" data-search-type="<% $search_type || ''  %>" data-search-id="<% $search_id || '' %>" data-description="<% $label %>"><a href="#" class="remove"><img src="<% RT->Config->Get('WebPath') %>/static/images/close.png" alt="<% loc('Remove') %>" title="<% loc('Remove') %>" /></a> <% $prefix ? $prefix . ': ' : '' %>
+% my $alt = loc('Remove');
+<li data-type="<% $type %>" data-name="<% $name %>" data-search-type="<% $search_type || ''  %>" data-search-id="<% $search_id || '' %>" data-description="<% $label %>">
+  <a href="#" class="remove">
+    <span class="far fa-times-circle" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
+  </a> <% $prefix ? $prefix . ': ' : '' %>
 <% $label %>
 % if ($possibly_hidden) {
-<span class="warning"><&|/l&>Warning: may not be visible to all viewers</&></span>
+<span class="text-warning"><&|/l&>Warning: may not be visible to all viewers</&></span>
 % }
 </li>
 <%INIT>

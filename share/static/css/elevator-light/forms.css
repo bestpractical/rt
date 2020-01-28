@@ -396,19 +396,6 @@ textarea.code {
 
 /* javascript selection box */
 
-.selectionbox-js {
-    width: 750px;
-}
-
-.selectionbox-js .source,
-.selectionbox-js .destinations {
-    width: 350px;
-}
-
-.selectionbox-js .destinations {
-    float: right;
-}
-
 .selectionbox-js .source li .remove {
     display: none;
 }
@@ -423,22 +410,31 @@ textarea.code {
 }
 
 .selectionbox-js .source .contents {
-    height: 450px;
+    height: 526px;
 }
 
 /* include ul rule specifically to make the drop target work when there are
    no selected searches */
 .selectionbox-js .destination .contents,
 .selectionbox-js .destination .contents ul {
-    height: 200px;
+    height: 250px;
 }
 
 .selectionbox-js h2 {
     margin: 0 0 .5em 0;
 }
 
+.selectionbox-js .source .filters {
+    margin-bottom: 1em;
+}
+
+.selectionbox-js .destinations {
+    margin-top: 3.75rem;
+}
+
 .selectionbox-js .contents {
-    border: 2px solid #aaa;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
     overflow-y: scroll;
     padding: 0 .5em;
 }
@@ -451,7 +447,8 @@ textarea.code {
 
 .selectionbox-js .contents li,
 .selectionbox-js .contents .placeholder {
-    border: 2px solid #ddd;
+    border: 1px solid #aaa;
+    border-radius: 0.25rem;
     padding: .5em;
     margin: .5em 0;
     background-color: #eee;
@@ -466,21 +463,16 @@ textarea.code {
     padding-right: 2em;
 }
 
-.selectionbox-js .contents li .warning {
+.selectionbox-js .contents li .text-warning {
     display: block;
     font-size: .9em;
     font-style: italic;
-    color: #a00;
 }
 
 .selectionbox-js .contents li a.remove {
     position: absolute;
     right: .5em;
-}
-
-.selectionbox-js .contents li a.remove img {
-    height: 1em;
-    border-style: none;
+    color: #5C6273;
 }
 
 .selectionbox-js .contents .placeholder {
@@ -493,7 +485,7 @@ textarea.code {
 }
 
 .selectionbox-js .contents h3 {
-    margin: .5em;
+    margin: .5em 0;
 }
 
 .selectionbox-js .contents .section {
