@@ -48,10 +48,13 @@
 <div class="form-row">
   <div class="col-auto">
 % if ( RT->Config->Get('Crypt')->{'Outgoing'} eq 'GnuPG' ) {
-    <& '/Widgets/Form/Boolean:InputOnly',
+    <div class="form-inline">
+      <& '/Widgets/Form/Boolean:InputOnly',
         Name => 'Sign', CurrentValue => $self->{'Sign'},
-        DefaultLabel => loc( 'Sign using [_1]', $m->scomp('SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj ) ),
-    &>
+        DefaultLabel => loc( 'Sign using' ),
+      &>
+      &nbsp;<& 'SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj &>
+    </div>
 % } else {
     <& '/Widgets/Form/Boolean:InputOnly',
         Name => 'Sign', CurrentValue => $self->{'Sign'},
