@@ -102,7 +102,8 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-reminders {
     border-top: 3px solid #0277BD;
 }
-.titlebox.card.ticket-info-people {
+.titlebox.card.ticket-info-people, .titlebox.card.ticket-info-requestor, .titlebox.card.ticket-info-squelch,
+#ticket-update-message #recipients {
     border-top: 3px solid #0288D1;
 }
 .titlebox.card.ticket-info-dates {
@@ -111,7 +112,7 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-attachments {
     border-top: 3px solid #C2185B;
 }
-.titlebox.card.ticket-info-links {
+.titlebox.card.ticket-info-links, .titlebox.card.ticket-assets {
     border-top: 3px solid #388E3C;
 }
 .titlebox.card.ticket-info-merge {
@@ -119,6 +120,9 @@ div.results .titlebox .titlebox-content {
 }
 .titlebox.card.ticket-info-cfs {
     border-top: 3px solid #D32F2F;
+}
+.titlebox.card.messagedetails {
+    border-top: 3px solid #1976D2;
 }
 
 .titlebox .card-header span.toggle:hover {
