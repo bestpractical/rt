@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $user_key ) {
-<select name="<% $Name %>">
+<select class="form-control selectpicker" name="<% $Name %>">
 <option value=""><% loc("Queue's key") %></option>
 <option value="<% $user_key %>"><% $user_key %></option>
 </select>

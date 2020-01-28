@@ -46,25 +46,24 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-auto">
 % if ( RT->Config->Get('Crypt')->{'Outgoing'} eq 'GnuPG' ) {
-    <div class="form-inline">
+  <div class="form-inline">
+     <div class="form-group">
+       <& '/Widgets/Form/Boolean:InputOnly',
+          Name => 'Sign', CurrentValue => $self->{'Sign'},
+          DefaultLabel => loc( 'Sign using ' ),
+        &>
+        <& 'SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj &>
+      </div>
+% } else {
       <& '/Widgets/Form/Boolean:InputOnly',
         Name => 'Sign', CurrentValue => $self->{'Sign'},
-        DefaultLabel => loc( 'Sign using ' ),
-      &>
-      <& 'SelectKeyForSigning', User => $session{'CurrentUser'}->UserObj &>
-    </div>
-% } else {
-    <& '/Widgets/Form/Boolean:InputOnly',
-        Name => 'Sign', CurrentValue => $self->{'Sign'},
         DefaultLabel => loc( 'Sign' ),
-    &>
+      &>
 % }
-  </div>
-
-  <div class="col-md-auto">
-    <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'}, DefaultLabel => loc( 'Encrypt' ) &>
+    <div class="form-group">
+      <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'}, DefaultLabel => loc( 'Encrypt' ) &>
+    </div>
   </div>
 </div>
 
