@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use RT;
 use RT::Test nodata => 1, tests => undef;
-
+use Test::Warn;
 
 {
 
@@ -114,6 +114,34 @@ is($u->PrincipalObj->PrincipalType , 'Group' , "Principal 4 is a group");
     ok( !$id, "can't create duplicated group: $msg" );
     ( $id, $msg ) = $u2->CreateUserDefinedGroup( Name => 'testgroup' );
     ok( !$id, "can't create duplicated group even case is different: $msg" );
+}
+
+diag 'create a custom role and try to load role group before one has been created.';
+{
+    my $engineer = RT::CustomRole->new(RT->SystemUser);
+    my ($ok, $msg) = $engineer->Create(
+        Name      => 'Engineer',
+        MaxValues => 1,
+    );
+    ok($ok, "created role: $msg");
+
+    my $general = RT::Test->load_or_create_queue( Name => 'General' );
+
+    ($ok, $msg) = $engineer->AddToObject($general->id);
+    ok($ok, "added engineer to General: $msg");
+
+    ok(my $t = RT::Ticket->new(RT->SystemUser));
+    ok((my $id, $msg) = $t->Create( Queue => $general->Id,
+        Subject => 'Testing'
+    ));
+
+    my $group = RT::Group->new(RT->SystemUser);
+    $group->LoadRoleGroup(Object => $t, Name => 'Engineer');
+    is($group->Id, undef);
+
+    warning_like {
+        is($group->MembersObj, undef);
+    } qr/Can't call MembersObj on unloaded group, returning undef./, "Generates a warning about unloaded group";
 }
 
 done_testing;
