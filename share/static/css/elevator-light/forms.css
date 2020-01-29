@@ -473,6 +473,7 @@ textarea.code {
 .selectionbox-js .contents li a.remove {
     position: absolute;
     right: .5em;
+    color: #5C6273;
 }
 
 .selectionbox-js .contents li a.remove img {

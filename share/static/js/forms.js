@@ -50,6 +50,13 @@ jQuery(function() {
         }).on('click', '.remove', function (e) {
             e.preventDefault();
             jQuery(e.target).closest('li').remove();
+
+            // dispose of the bootstrap tooltip.
+            // without manually clearing here, the tooltip lingers after clicking remove.
+            var bs_tooltip = jQuery('div[id^="tooltip"]');
+            bs_tooltip.tooltip('hide');
+            bs_tooltip.tooltip('dispose');
+
             return false;
         });
 
