@@ -755,12 +755,17 @@ sub MembersObj {
     my $self = shift;
     my $members_obj = RT::GroupMembers->new( $self->CurrentUser );
 
-    #If we don't have rights, don't include any results
-    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+    if ( $self->PrincipalId ) {
+        #If we don't have rights, don't include any results
+        # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
+        $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
 
-    return ( $members_obj );
-
+        return ( $members_obj );
+    }
+    else {
+        RT::Logger->error( "Can't call MembersObj on unloaded group, returning undef." );
+        return undef;
+    }
 }
 
 
