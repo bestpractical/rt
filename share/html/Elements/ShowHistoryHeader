@@ -107,6 +107,8 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
 </%perl>
 % $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright );
+% # remove the cog (titleright_raw arg) if empty (no <li> element), needs to be done here, after the callback has been run
+% if ( $titleright !~ m{<li[ >]} ) { $titleright = ''; }
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright, class => 'fullwidth' &>
 % }
 
