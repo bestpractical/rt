@@ -56,6 +56,11 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
     min-width: 10em;
 }
 
+.selectowner {
+    max-width: 15.8em;
+    min-width: 10em;
+}
+
 .dashboard-subscription tr.frequency .value input {
     margin-bottom: 0.75em;
 }
@@ -127,7 +132,7 @@ svg.icon-helper {
 
 /* row colouring */
 .oddline {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(242, 242, 242);
 }
 
 .cke_toolgroup a.cke_button {
