@@ -55,12 +55,12 @@
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Reminders.html" name="UpdateReminders" id="UpdateReminders" method="post">
   <&|/Widgets/TitleBox, title => loc("Reminders"), class=>'ticket-info-reminders' &>
     <div class="row">
-      <div class="col-6">
+      <div class="col-9">
         <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 1, Edit => 1, ShowSave => 0 &>
       </div>
     </div>
   </&>
-  <div class="form-row">
+  <div class="form-row mt-0">
     <div class="col-12">
       <& /Elements/Submit, Label => loc('Save Changes') &>
     </div>

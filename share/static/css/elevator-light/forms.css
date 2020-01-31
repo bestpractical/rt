@@ -395,6 +395,15 @@ textarea.code {
     margin: 0;
 }
 
+/* reminders */
+#UpdateReminders .form-row.reminder-headers, #UpdateReminders [id^=reminder-] {
+    border-bottom: 1px solid #dee2e6;
+}
+
+#UpdateReminders .current-value {
+    background-color: unset;
+}
+
 /* javascript selection box */
 
 .selectionbox-js .source li .remove {
