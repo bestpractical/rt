@@ -1000,6 +1000,57 @@ my @tests = (
             is($twd->CustomFieldValuesAsString('Tags', Separator => '.'), 'snakes.clowns', 'Tags CF');
         },
     },
+    {
+        name => 'Attributes',
+        create => sub {
+            my $root = RT::User->new(RT->SystemUser);
+            my ($ok, $msg) = $root->Load('root');
+            ok($ok, $msg);
+
+            my $dashboard = RT::Dashboard->new($root);
+            ($ok, $msg) = $dashboard->Save(
+                Name => 'My Dashboard',
+                Privacy => 'RT::User-' . $root->Id,
+            );
+            ok($ok, $msg);
+
+            my $subscription = RT::Attribute->new($root);
+            ($ok, $msg) = $subscription->Create(
+                Name        => 'Subscription',
+                Description => 'Subscription to dashboard ' . $dashboard->Id,
+                ContentType => 'storable',
+                Object      => $root,
+                Content     => { 'Tuesday' => '1', 'DashboardId' => $dashboard->Id },
+            );
+        },
+        present => sub {
+            # Provided in core initialdata
+            my $homepage = RT::Attribute->new(RT->SystemUser);
+            $homepage->LoadByNameAndObject(Name => 'HomepageSettings', Object => RT->System);
+            ok($homepage->Id, 'Loaded homepage attribute');
+            is($homepage->Name, 'HomepageSettings', 'Name is HomepageSettings');
+            is($homepage->Description, 'HomepageSettings', 'Description is HomepageSettings');
+            is($homepage->ContentType, 'storable', 'ContentType is storable');
+
+            my $root = RT::User->new(RT->SystemUser);
+            my ($ok, $msg) = $root->Load('root');
+            ok($ok, $msg);
+
+            my $dashboard = RT::Attribute->new($root);
+            $dashboard->LoadByNameAndObject(Name => 'Dashboard', Object => $root);
+            ok($dashboard->Id, 'Loaded dashboard attribute with id ' . $dashboard->Id);
+
+            my $subscription = RT::Attribute->new($root);
+            $subscription->LoadByNameAndObject(Name => 'Subscription', Object => $root);
+            ok($subscription->Id, 'Loaded subscription attribute with id ' . $subscription->Id);
+            is($subscription->ContentType, 'storable', 'ContentType is storable');
+            is($subscription->Content->{DashboardId}, $dashboard->Id, 'Dashboard Id is ' . $dashboard->Id);
+            is( $subscription->Description,
+                'Subscription to dashboard ' . $dashboard->Id,
+                'Description is "Subscription to dashboard ' . $dashboard->Id . '"'
+              );
+        },
+    },
 );
 
 my $id = 0;
