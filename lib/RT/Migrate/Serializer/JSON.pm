@@ -540,6 +540,21 @@ sub CanonicalizeAttributes {
                     }
                     $record->{Content}{dashboards} = \@dashboards;
                 }
+                elsif ( $record->{Name} eq 'Subscription' ) {
+                    my $dashboard_id = $record->{Content}{DashboardId};
+                    if ( ref $dashboard_id eq 'SCALAR' && $$dashboard_id =~ /(\d+)$/ ) {
+                        my $id        = $1;
+                        my $attribute = RT::Attribute->new( RT->SystemUser );
+                        $attribute->Load( $id );
+                        if ( $attribute->Id ) {
+                            $record->{Content}{DashboardId} = {
+                                ObjectType  => $attribute->ObjectType,
+                                ObjectId    => $attribute->Object->Name,
+                                Description => $attribute->Description,
+                            };
+                        }
+                    }
+                }
             }
         }
 

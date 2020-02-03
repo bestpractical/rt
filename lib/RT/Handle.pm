@@ -1795,6 +1795,7 @@ sub InsertData {
             'Dashboard'             => 1,
             'HomepageSettings'      => 1,
             'Pref-DashboardsInMenu' => 2,
+            'Subscription'          => 2,
         );
         for my $item ( sort { ( $order{ $a->{Name} } || 0 ) <=> ( $order{ $b->{Name} } || 0 ) } @Attributes ) {
             if ( $item->{_Original} ) {
@@ -2846,6 +2847,20 @@ sub _CanonilizeAttributeContent {
             }
         }
         $item->{Content}{dashboards} = \@dashboards;
+    }
+    elsif ( $item->{Name} eq 'Subscription' ) {
+        my $entry = $item->{Content}{DashboardId};
+        if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+            if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                my $attributes = $object->Attributes;
+                $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
+                $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                if ( my $attribute = $attributes->First ) {
+                    $item->{Content}{DashboardId} = $attribute->Id;
+                    $item->{Description} = 'Subscription to dashboard ' . $attribute->Id;
+                }
+            }
+        }
     }
 }
 
