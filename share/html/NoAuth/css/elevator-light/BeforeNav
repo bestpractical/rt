@@ -77,10 +77,10 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
         var subjectWidth = jQuery('#header h1').width();
         availableWidth -= subjectWidth;
 
-        // in case subject is too long, set page-menu width to 40%
-        if (availableWidth < fullWidth * 0.4) {
-            availableWidth = fullWidth * 0.4;
-            subjectWidth = fullWidth * 0.6;
+        // in case subject is too long, set page-menu width to 50%
+        if (availableWidth < fullWidth * 0.5) {
+            availableWidth = fullWidth * 0.5;
+            subjectWidth = fullWidth * 0.5;
             jQuery('#header h1').css('width', subjectWidth);
         }
     }
