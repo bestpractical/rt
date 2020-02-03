@@ -140,3 +140,11 @@ ul.select-queue li + li {
 ul.select-queue li a:visited {
     color: #000;
 }
+
+.ticket-merge-text {
+    font-style: italic;
+}
+
+.ticket-merge-position {
+    padding-left: 2em;
+}
