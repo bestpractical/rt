@@ -1791,20 +1791,12 @@ sub InsertData {
         $RT::Logger->debug("Creating attributes...");
         my $sys = RT::System->new(RT->SystemUser);
 
-        for my $item (
-            sort {
-                $a->{Name} eq 'Pref-DashboardsInMenu' ? 1
-                  : (
-                    $b->{Name} eq 'Pref-DashboardsInMenu' ? -1
-                    : (
-                          $a->{Name} =~ /(?:^Dashboard|HomepageSettings)$/ ? 1
-                        : $b->{Name} =~ /(?:^Dashboard|HomepageSettings)$/ ? -1
-                        : 0
-                    )
-                  )
-            } @Attributes
-          )
-        {
+        my %order = (
+            'Dashboard'             => 1,
+            'HomepageSettings'      => 1,
+            'Pref-DashboardsInMenu' => 2,
+        );
+        for my $item ( sort { ( $order{ $a->{Name} } || 0 ) <=> ( $order{ $b->{Name} } || 0 ) } @Attributes ) {
             if ( $item->{_Original} ) {
                 $self->_UpdateOrDeleteObject( 'RT::Attribute', $item );
                 next;
