@@ -4541,6 +4541,10 @@ user.
 
 =back
 
+=item C<%CustomDateRangesUI>
+
+Custom Date Ranges can also be created through the Web GUI.
+
 =back
 
 =cut

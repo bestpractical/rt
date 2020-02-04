@@ -80,6 +80,12 @@ if (delete $ARGS{Update}) {
     $RT::Handle->BeginTransaction;
     my $has_error;
 
+    if( exists $ARGS{CustomDateRangeUI} ) {
+        my( $ok, $results ) = RT::Config->BuildCustomDateRangesUI( \%ARGS );
+        if( ! $ok ) { $has_error++; }
+        push @results, @$results;
+    }
+
     eval {
         for my $key (keys %ARGS) {
             next if $key =~ /-Current$/;
@@ -91,6 +97,7 @@ if (delete $ARGS{Update}) {
 
             my $val = $ARGS{$key};
             $val = '' if $val eq '__empty_value__';
+            next if ! exists $ARGS{$key . '-Current'};;
             my $prev = $ARGS{$key . '-Current'};
             next if $val eq $prev;
 

@@ -85,7 +85,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
     }
     else {
         $description = loc("core config");
-    }
+    } 
     $index_conf++;
 </%PERL>
   <div class="form-row <% $index_conf%2 ? 'oddline' : 'evenline'%>">
@@ -229,6 +229,7 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 % my $index_size = 0;
 % while ( my $attr = $attrs->Next ) {
 % next if $attr->Name eq 'UpgradeHistory';
+% my $meta = RT->Config->Meta( $attr->Name );
 <div class="<% $index_size%2 ? 'oddline' : 'evenline'%> form-row">
 % if ($attr->Name eq 'UserLogo') {
 %   my $content = $attr->Content;

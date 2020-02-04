@@ -1190,6 +1190,8 @@ our %META;
     },
     CustomDateRanges => {
         Type            => 'HASH',
+        Overridable => 0,
+        Hidden => 1,
         PostLoadCheck   => sub {
             my $config = shift;
             # use scalar context intentionally to avoid not a hash error
@@ -1218,6 +1220,10 @@ our %META;
                 }
             }
         },
+    },
+    CustomDateRangesUI => {
+        Type            => 'HASH',
+        Widget => '/Widgets/Form/CustomDateRange',
     },
     ExternalStorage => {
         Type            => 'HASH',
@@ -2487,6 +2493,128 @@ sub EnableExternalAuth {
     require RT::Authen::ExternalAuth;
     return;
 }
+
+sub BuildCustomDateRangesUI {
+    my $self = shift;
+    my $args = shift;
+
+    my $config = $self->Get( 'CustomDateRanges' );
+    my $content = $self->Get( 'CustomDateRangesUI' );
+    my @results;
+
+    my %label = (
+        from => 'From', # loc
+        to => 'To', # loc
+        from_fallback => 'From Value if Unset', # loc
+        to_fallback => 'To Value if Unset', # loc
+    );
+
+    my $ok = 1;
+    my $need_save;
+    if ($content) {
+        my @current_names = sort keys %{ $content->{'RT::Ticket'} };
+        for my $id ( 0 .. $#current_names ) {
+            my $current_name = $current_names[$id];
+            my $spec         = $content->{'RT::Ticket'}{$current_name};
+            my $name         = $args->{"$id-name"};
+
+            if ( $config && $config->{'RT::Ticket'}{$name} ) {
+                push @results, loc( "[_1] already exists", $name );
+                $ok = 0;
+                next;
+            }
+
+            if ( $args->{"$id-Delete"} ) {
+                delete $content->{'RT::Ticket'}{$current_name};
+                push @results, loc( 'Deleted [_1]', $current_name );
+                $need_save ||= 1;
+                next;
+            }
+
+            my $updated;
+            for my $field (qw/from from_fallback to to_fallback/) {
+                next if ( $spec->{$field} // '' ) eq $args->{"$id-$field"};
+                if ((   $args->{"$id-$field"}
+                        && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args->{"$id-$field"} )
+                    )
+                    || ( !$args->{"$id-$field"} && $field =~ /fallback/ )
+                  )
+                {
+                    $spec->{$field} = $args->{"$id-$field"};
+                    $updated ||= 1;
+                }
+                else {
+                    push @results, loc( 'Invalid [_1] for [_2]', loc( $label{$field} ), $name );
+                    $ok = 0;
+                    next;
+                }
+            }
+
+            if ( $spec->{business_time} != $args->{"$id-business_time"} ) {
+                $spec->{business_time} = $args->{"$id-business_time"};
+                $updated ||= 1;
+            }
+
+            $content->{'RT::Ticket'}{$name} = $spec;
+            if ( $name ne $current_name ) {
+                delete $content->{'RT::Ticket'}{$current_name};
+                $updated   ||= 1;
+            }
+
+            if ( $updated ) {
+                push @results, loc( 'Updated [_1]', $name );
+                $need_save ||= 1;
+            }
+        }
+    }
+
+    if ( $args->{name} ) {
+        for my $field (qw/from from_fallback to to_fallback business_time/) {
+            $args->{$field} = [ $args->{$field} ] unless ref $args->{$field};
+        }
+
+        my $i = 0;
+        for my $name ( @{ $args->{name} } ) {
+            if ($name) {
+                if ( $config && $config->{'RT::Ticket'}{$name} || $content && $content->{'RT::Ticket'}{$name} ) {
+                    push @results, loc( "[_1] already exists", $name );
+                    $ok = 0;
+                    $i++;
+                    next;
+                }
+            }
+            else {
+                $i++;
+                next;
+            }
+
+            my $spec = { business_time => $args->{business_time}[$i] };
+            for my $field ( qw/from from_fallback to to_fallback/ ) {
+                if ( ($args->{$field}[$i] && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args->{$field}[$i] ))
+                    || ( !$args->{$field}[$i] && $field =~ /fallback/  )
+                ) {
+                    $spec->{$field} = $args->{$field}[$i];
+                }
+                else {
+                    push @results, loc( 'Invalid [_1] for [_2]', loc($field), $name );
+                    $ok = 0;
+                    $i++;
+                    next;
+                }
+            }
+
+            $content->{'RT::Ticket'}{$name} = $spec;
+            push @results, loc( 'Created [_1]', $name );
+            $need_save ||= 1;
+            $i++;
+        }
+    }
+
+    $args->{CustomDateRangesUI}= $content;
+    return ( $ok, \@results);
+}
+
+sub loc { return RT->SystemUser->loc( @_ ) }
 
 my $database_config_cache_time = 0;
 my %original_setting_from_files;

@@ -2651,11 +2651,9 @@ sub CustomDateRanges {
         %ranges = %{ $config->{$type} } if $config->{$type};
     }
 
-    if ( my $attribute = RT->System->FirstAttribute('CustomDateRanges') ) {
-        if ( my $content = $attribute->Content ) {
-            for my $name ( keys %{ $content->{$type} || {} } ) {
-                $ranges{$name} ||= $content->{$type}{$name};
-            }
+    if ( my $configui =  RT->Config->Get('CustomDateRangesUI') ) {
+        for my $name ( keys %{ $configui->{$type} || {} } ) {
+            $ranges{$name} ||= $configui->{$type}{$name};
         }
     }
     return %ranges;
