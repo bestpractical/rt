@@ -1,0 +1,139 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Advanced.html" name="ModifyLifecycleAdvanced" method="post" enctype="multipart/form-data" class="mx-auto max-width-sm">
+  <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
+
+  <div class="form-row">
+    <span class="col-12">
+      <textarea class="form-control" rows="30" name="Config"><% $Config |n %></textarea>
+    </span>
+  </div>
+
+  <div class="form-row invalid-json hidden">
+    <div class="col-12">
+      <div class="alert alert-danger mb-0"><&|/l&>Invalid JSON</&></div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-6 d-flex">
+      <& /Elements/Submit, Label => loc('Validate'), Name => 'Validate' &>
+    </div>
+    <div class="col-6">
+      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update' &>
+    </div>
+  </div>
+
+</form>
+
+<%INIT>
+my ($title, @results);
+my $LifecycleObj = RT::Lifecycle->new();
+$LifecycleObj->Load(Name => $Name, Type => $Type);
+
+Abort( loc("Invalid lifecycle") ) unless $LifecycleObj->Name && $LifecycleObj->{data}{type} eq $Type;
+
+$title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
+
+$Config ||= JSON::to_json(RT->Config->Get('Lifecycles')->{$LifecycleObj->Name}, { canonical => 1, pretty => 1 });
+
+if ( $Validate || $Update ) {
+    my $lifecycle = JSON::from_json($Config);
+    my ( $valid, @warnings )
+        = $LifecycleObj->ValidateLifecycle( Lifecycle => $lifecycle, CurrentUser => $session{CurrentUser} );
+
+    my $updated;
+    if ($valid) {
+        if ($Validate) {
+            push @results, loc('Lifecycle is valid');
+        }
+        else {
+            ( $updated, my $msg ) = RT::Lifecycle->UpdateLifecycle(
+                CurrentUser  => $session{CurrentUser},
+                LifecycleObj => $LifecycleObj,
+                NewConfig    => $lifecycle,
+            );
+
+            if ($updated) {
+                push @results, loc('Lifecycle updated');
+            }
+            else {
+                push @results, $msg;
+            }
+        }
+
+    }
+    else {
+        push @results, @warnings;
+    }
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => {
+            Name => $LifecycleObj->Name,
+            Type => $LifecycleObj->Type,
+
+            # Get the latest canonicalized data if updated successfully
+            $updated ? () : ( Config => $Config ),
+        },
+    );
+}
+
+</%INIT>
+<%ARGS>
+$Name     => undef
+$Type     => undef
+$Config   => undef
+$Validate => undef
+$Update   => undef
+</%ARGS>

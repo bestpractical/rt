@@ -1397,6 +1397,7 @@ sub _BuildAdminMenu {
 
                 $page->child( basics => title => loc('Modify'),  path => "/Admin/Lifecycles/Modify.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
                 $page->child( mappings => title => loc('Mappings'),  path => "/Admin/Lifecycles/Mappings.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
+                $page->child( advanced => title => loc('Advanced'),  path => "/Admin/Lifecycles/Advanced.html?Type=" . $Type_uri . ";Name=" . $Name_uri );
             }
         }
         else {
