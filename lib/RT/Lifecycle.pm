@@ -835,7 +835,7 @@ sub _SaveLifecycles {
         return ($ok, $msg) if !$ok;
     }
 
-    RT::Lifecycle->FillCache;
+    RT->System->LifecycleCacheNeedsUpdate(1);
 
     return 1;
 }

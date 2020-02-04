@@ -130,6 +130,9 @@ sub Gateway {
         %$argsref
     );
 
+    RT->Config->RefreshConfigFromDatabase();
+    RT->System->MaybeRebuildLifecycleCache();
+
     # Set the scope to return from with TMPFAIL/FAILURE/SUCCESS
     $SCOPE = HERE;
 

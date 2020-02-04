@@ -302,6 +302,7 @@ sub HandleRequest {
     MaybeShowInstallModePage();
 
     MaybeRebuildCustomRolesCache();
+    RT->System->MaybeRebuildLifecycleCache();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
