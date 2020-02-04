@@ -85,7 +85,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
     }
     else {
         $description = loc("core config");
-    }
+    } 
     $index_conf++;
 </%PERL>
   <div class="form-row <% $index_conf%2 ? 'oddline' : 'evenline'%>">
@@ -105,6 +105,31 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 % }
     </div>
   </div>
+<%PERL>
+# dual options live both in the config files _and_ as an attribute
+# display the attribute
+my $dual_value;
+if ( $meta->{Dual} ) {
+    my $attribute = RT->System->FirstAttribute( $key );
+    if ( $attribute ) {
+        $dual_value = $attribute->Content;
+        $index_conf++;
+        $description = loc("database");
+    }
+}
+</%PERL>
+% if ( defined $dual_value ) {
+  <div class="form-row <% $index_conf%2 ? 'oddline' : 'evenline'%>">
+    <div class="col-md-4 collection-as-table value"><% $key %></div>
+    <div class="col-md-4 collection-as-table value">
+      <% stringify($dual_value) |n %>\
+    </div>
+    <div class="col-md-4 collection-as-table value">
+      <% $description %>
+    </div>
+  </div>
+% }
+
 % }
 </&>
 
