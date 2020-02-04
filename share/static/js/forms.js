@@ -1,21 +1,4 @@
 jQuery(function() {
-    // reset form submit info when user goes backward or forward for Safari
-    // other browsers don't need this trick and they can work directly.
-    if ( window.addEventListener ) {
-        window.addEventListener("popstate", function(e) {
-            jQuery('form').data('submitted', false);
-        });
-    }
-
-    jQuery('form').submit(function(e) {
-        var form = jQuery(this);
-        if (form.data('submitted') === true) {
-            e.preventDefault();
-        } else {
-            form.data('submitted', true);
-        }
-    });
-
     jQuery('.selectionbox-js').each(function () {
         var container = jQuery(this);
         var source = container.find('.source');
@@ -152,43 +135,19 @@ jQuery(function() {
         });
         refreshSource();
 
-        submit.click(function (e) {
-            e.preventDefault();
-
-            var url = form.attr('action');
-            var method = form.attr('method');
-            var params = form.data();
-
-            params.panes = {}
+        submit.click(function () {
             container.find('.destination').each(function () {
                 var pane = jQuery(this);
                 var name = pane.data('pane');
-                var items = [];
+
                 pane.find('li').each(function () {
                     var item = jQuery(this).data();
                     delete item.sortableItem;
-                    items.push(item);
+                    form.append('<input type="hidden" name="' + name + '" value="' + item.type + '-' + item.name + '" />');
                 });
-                params.panes[name] = items;
             });
 
-            jQuery.ajax({
-                url: url,
-                method: method,
-                data: { content: JSON.stringify(params) },
-                timeout: 30000, /* 30 seconds */
-                success: function (response) {
-                    if (response.ok) {
-                        window.location.reload();
-                    }
-                    else {
-                        alert(response.msg);
-                    }
-                },
-                error: function (xhr, reason) {
-                    alert(reason);
-                }
-            });
+            return true;
         });
     });
 });

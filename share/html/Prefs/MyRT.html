@@ -49,13 +49,14 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" class="mx-auto max-width-lg" action="<% RT->Config->Get('WebPath') %>/Helpers/UpdateDashboard" data-dashboard_id='MyRT'>
+<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
   <& /Widgets/SearchSelection,
     pane_name => \%pane_name,
     sections  => \@sections,
     selected  => \%selected,
     filters   => \@filters,
   &>
+  <input type="hidden" name="dashboard_id" value="MyRT">
   <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
 </form>
 
@@ -210,5 +211,15 @@ $m->callback(
     selected     => \%selected,
     filters      => \@filters,
 );
+
+if ($ARGS{UpdateSearches}) {
+    my ($ok, $msg) = UpdateDashboard( \%ARGS, \%item_for );
+    push @results, $ok ? loc('Preferences saved.') : $msg;
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => "/Prefs/MyRT.html",
+    );
+}
 
 </%INIT>

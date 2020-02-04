@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" class="mx-auto max-width-lg" action="<% RT->Config->Get('WebPath') %>/Helpers/UpdateDashboard" data-dashboard_id='<%$Dashboard->Id%>'>
+<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
   <& /Widgets/SearchSelection,
     pane_name => \%pane_name,
     sections  => \@sections,
@@ -211,6 +211,19 @@ $m->callback(
     selected     => \%selected,
     filters      => \@filters,
 );
+
+if ( $ARGS{UpdateSearches} ) {
+    $ARGS{dashboard_id} = $id;
+    my ($ok, $msg) = UpdateDashboard( \%ARGS, \%item_for );
+    push @results, $ok ? loc('Dashboard updated') : $msg;
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => "/Dashboards/Queries.html",
+        Arguments => { id => $id },
+    );
+}
+
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id
