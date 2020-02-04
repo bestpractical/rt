@@ -1118,7 +1118,8 @@ sub FindDependencies {
 
     $deps->Add( out => $self->ScripConditionObj );
     $deps->Add( out => $self->ScripActionObj );
-    $deps->Add( out => $self->TemplateObj );
+    my $template = $self->TemplateObj;
+    $deps->Add( out => $template ) if $template->Id;
 }
 
 sub __DependsOn {
