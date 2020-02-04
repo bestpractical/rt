@@ -58,37 +58,48 @@
 % my $ToMapping = $LifecycleObj->MoveMap($Other);
 % my @OtherStatuses = $Other->Valid;
 
-    <&| /Widgets/TitleBox, title => "Support Mappings with ".$Other->Name &>
+<&| /Widgets/TitleBox, title => "Support Mappings with ".$Other->Name &>
+  <div class="form-row">
 
-<h3><&|/l, $Other->Name, $LifecycleObj->Name &>Changing from [_1] to [_2]:</&></h3>
-<table>
+    <div class="col-md-4">
+      <h6><&|/l, $Other->Name, $LifecycleObj->Name &>Changing from [_1] to [_2]:</&></h6>
 % for my $OtherStatus (@OtherStatuses) {
-  <tr>
-    <td><% $OtherStatus %>:</td>
-    <td><& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{$OtherStatus}, Name => 'map-' . $Other->Name . '-' . $OtherStatus . '--' . $LifecycleObj->Name&></td>
-  </tr>
+      <div class="form-row">
+        <div class="col-md-3 label text-left"><% $OtherStatus %>:</div>
+        <div class="col-md-6">
+          <& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{$OtherStatus}, Name => 'map-' . $Other->Name . '-' . $OtherStatus . '--' . $LifecycleObj->Name &>
+        </div>
+      </div>
 % }
-</table>
+    </div>
 
-<h3><&|/l, $LifecycleObj->Name, $Other->Name &>Changing from [_1] to [_2]:</&></h3>
-<table>
+    <div class="col-md-4">
+      <h6><&|/l, $LifecycleObj->Name, $Other->Name &>Changing from [_1] to [_2]:</&></h6>
 % for my $MyStatus (@MyStatuses) {
-  <tr>
-    <td><% $MyStatus %>:</td>
-    <td><& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{$MyStatus}, Name => 'map-' . $LifecycleObj->Name . '-' . $MyStatus . '--' . $Other->Name &></td>
-  </tr>
+      <div class="form-row">
+        <div class="col-md-3 label text-left"><% $MyStatus %>:</div>
+        <div class="col-md-6">
+          <& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{$MyStatus}, Name => 'map-' . $LifecycleObj->Name . '-' . $MyStatus . '--' . $Other->Name &>
+        </div>
+      </div>
 % }
-</table>
+    </div>
+  </div>
+</&>
 
-    </&>
+<br>
+
 % }
 
 % unless ( scalar @lifecycles ) {
     <p><&|/l&>Mapping only available when more than one lifecycle exists</&></p>
 % }
 
-<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
-
+<div class="form-row">
+  <div class="col-md-12">
+    <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+  </div>
+</div>
 </form>
 <%INIT>
 my ($title, @results);

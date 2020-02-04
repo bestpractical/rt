@@ -90,25 +90,34 @@
         var editor = new RT.NewEditor( container, config, configuration );
     });
   </script>
-  <div>
-    <label class="switch">Auto Layout
-      <input type="checkbox" name="enableSimulation" id="enableSimulation">
-    </label>
-    <p>
-      Click in the open space to <strong>add a node</strong>.
-      <br>
-      To <strong>delete</strong> a node click on the node to select it and press the 'd' key.
-      <br>
-      Drag from one node to another while holding <strong>control</strong> to <strong>add an edge</strong>.
-      <br>
-      Drag a node to <strong>move the graph layout</strong>.
-      <br>
-      Click a nodes text to <strong>edit attributes</strong> of the node.
-      <br>
-      <strong>Click an edge</strong> to interact with it.
-      <br>
-      To disable the simulation and drag nodes to a location without force acting on them click the "Auto Layout" checkbox.
-    </p>
+  <div class="row">
+    <div class="col-md-auto">
+      <span class="current-value form-control">
+        <div class="custom-control custom-checkbox">
+          <input class="custom-control-input" type="checkbox" id="enableSimulation" name="enableSimulation" />
+          <label class="custom-control-label" for="enableSimulation"><&|/l&>Auto Layout</&></label>
+        </div>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-auto">
+      <p>
+        Click in the open space to <strong>add a node</strong>.
+        <br>
+        To <strong>delete</strong> a node click on the node to select it and press the 'd' key.
+        <br>
+        Drag from one node to another while holding <strong>control</strong> to <strong>add an edge</strong>.
+        <br>
+        Drag a node to <strong>move the graph layout</strong>.
+        <br>
+        Click a nodes text to <strong>edit attributes</strong> of the node.
+        <br>
+        <strong>Click an edge</strong> to interact with it.
+        <br>
+        To disable the simulation and drag nodes to a location without force acting on them click the "Auto Layout" checkbox.
+      </p>
+    </div>
   </div>
 </div>
 

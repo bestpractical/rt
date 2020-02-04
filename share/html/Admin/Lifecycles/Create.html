@@ -50,34 +50,62 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Create.html" name="CreateLifecycle" method="post" enctype="multipart/form-data">
+  <div class="row">
+    <div class="col-xl-6">
 
-<table>
-<tr><td align="right"><&|/l&>Lifecycle Name</&>:</td>
-<td><input name="Name" value="<% $Name %>" /></td>
-</tr>
+      <div class="form-row">
+        <div class="col-md-3 label text-left"><&|/l&>Lifecycle Name</&>:</div>
+        <div class="col-md-3"><input name="Name" value="<% $Name %>" class="form-control" /></div>
+      </div>
 
-<tr><td align="right"><&|/l&>Type</&>:</td>
-<td><select name="Type">
+      <div class="form-row">
+        <div class="col-md-3 label text-left"><&|/l&>Type</&>:</div>
+        <div class="col-md-3">
+          <select name="Type" class="form-control selectpicker">
 % for my $type (@types) {
-<option value="<% $type %>" <% $type eq $Type ? "selected=selected" : "" %>><% loc($type) %></option>
+            <option value="<% $type %>" <% $type eq $Type ? "selected=selected" : "" %>><% loc($type) %></option>
 % }
-</select></td></tr>
+          </select>
+        </div>
+      </div>
 
-<tr><td align="right"><&|/l&>Clone Lifecycle</&>:</td><td>
-<label><input type="radio" name="Clone" value="" <% ($Clone//'') eq '' ? "checked=checked" : "" %> /> (none)</label>
+      <div class="form-row">
+        <div class="col-md-3 label text-left"><&|/l&>Clone Lifecycle</&>:</div>
+        <div class="col-md-3">
+          <span class="current-value form-control">
+            <div class="custom-control custom-radio">
+              <input class="custom-control-input" type="radio" id="Clone-None" name="Clone" value="" <% ($Clone//'') eq '' ? "checked=checked" : "" %> />
+              <label class="custom-control-label" for="Clone-None">(<&|/l&>none</&>)</label>
+            </div>
+          </span>
+        </div>
+      </div>
 
 % for my $type (@types) {
-<div class="type" data-type="<% $type %>">
 % for my $lifecycle (@{ $lifecycles{$type} }) {
-<label><input type="radio" name="Clone" value="<% $lifecycle %>" <% ($Clone//'') eq $lifecycle ? "checked=checked" : "" %> /> <% $lifecycle %></label><br>
+      <div class="form-row type" data-type="<% $type %>">
+        <div class="col-md-3 label text-left"></div>
+        <div class="col-md-3">
+          <span class="current-value form-control">
+            <div class="custom-control custom-radio">
+              <input class="custom-control-input" type="radio" id="Clone-<%$lifecycle%>" name="Clone" value="<% $lifecycle %>" <% ($Clone//'') eq $lifecycle ? "checked=checked" : "" %> />
+              <label class="custom-control-label" for="Clone-<%$lifecycle%>"><% $lifecycle %></label>
+            </div>
+          </span>
+        </div>
+      </div>
 % }
-</div>
 % }
-</td></tr>
-</table>
 
-<& /Elements/Submit, Name => 'Create', Label => loc('Create') &>
+      <div class="form-row">
+        <div class="col-md-12">
+          <& /Elements/Submit, Name => 'Create', Label => loc('Create') &>
+        </div>
+      </div>
 
+    </div>
+  </div>
+</form>
 <script type="text/javascript">
 jQuery(function () {
     var showType = function (resetClone) {
