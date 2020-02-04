@@ -144,6 +144,9 @@ sub JSFiles {
         Chart.min.js
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
+        d3.min.js
+        lifecycleui-editor.js
+        lifecycleui-model.js
         }, RT->Config->Get('JSFiles');
 }
 
