@@ -179,7 +179,16 @@ jQuery(function() {
                 timeout: 30000, /* 30 seconds */
                 success: function (response) {
                     if (response.ok) {
-                        window.location.reload();
+                        // Force redirect back to the current page on submit.
+                        // If the user submits a post to "reset to default", then immediately
+                        // a post to save new changes, the JS was instructing the browser to
+                        // reload which then submitted the reset post again.
+
+                        // Instead of reload, the JS now redirects back to the current page
+                        // to clear out the previous post "state" so not to immediately reset
+                        // the new changes.
+                        var current_location = window.location;
+                        window.location.replace( current_location );
                     }
                     else {
                         alert(response.msg);
