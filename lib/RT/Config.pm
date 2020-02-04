@@ -1190,6 +1190,8 @@ our %META;
     },
     CustomDateRanges => {
         Type            => 'HASH',
+        WidgetArguments => { Hints  => 'Custom Data Ranges in the data base can be edited through the query editor', }, # loc
+        Dual  => 1,
         PostLoadCheck   => sub {
             my $config = shift;
             # use scalar context intentionally to avoid not a hash error

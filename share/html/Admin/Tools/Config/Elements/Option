@@ -72,6 +72,18 @@ return if $name =~ /Password/i && $name !~ /MinimumPasswordLength/;
 my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
 
 my $raw_value = RT->Config->Get( $name );
+if ( $meta->{Dual} ) {
+    my $attribute = RT->System->FirstAttribute( $name );
+    if ( $attribute ) {
+        # this actually does not work for CustomDateRanges when they have all been deleted
+        # since the top level ('RT::Ticket') may still exists, even though it's empty
+        if ( my $value_in_attribute = $attribute->Content ) {
+            $raw_value = { 'In Config Files'  => $raw_value,
+                           'In Data Base'     => $value_in_attribute,
+            };
+        }
+    }
+}
 my $val = $stringify->($raw_value);
 my $doc_url = "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$option->{Help}";
 my $widget = $meta->{'Widget'} || '/Widgets/Form/Code';
