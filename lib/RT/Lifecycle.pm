@@ -911,36 +911,33 @@ sub UpdateLifecycle {
         CurrentUser        => undef,
         LifecycleObj       => undef,
         NewConfig          => undef,
-        Attribute          => undef,
+        Configuration      => undef,
         @_,
     );
 
-    if ( $args{'Attribute'} ) {
-        my $attribute = RT::Attribute->new( RT->SystemUser );
+    if ( $args{'Configuration'} ) {
+        my $config = RT::Configuration->new( RT->SystemUser );
 
-        if ( $attribute->LoadByNameAndObject( Object => RT::System, Name => 'LifecycleAttribute-'.$args{'LifecycleObj'}->Name ) ) {
-            my ($ret, $msg) = $attribute->SetContent( $args{'Attribute'} );
+        if ( $config->Load( 'LifecycleConfiguration-'.$args{'LifecycleObj'}->Name ) ) {
+            my ($ret, $msg) = $config->SetContent( $args{'Configuration'} );
             if ( $ret ) {
-                RT::Logger->debug("Updating existing lifeycle attribute for " . $args{'LifecycleObj'}->Name);
+                RT::Logger->debug("Updating existing lifeycle configuration for " . $args{'LifecycleObj'}->Name);
             }
             else {
-                RT::Logger->debug("Could not update attribute for lifecycle ".$args{'LifecycleObj'}->Name.": $msg");
+                RT::Logger->debug("Could not update configuration for lifecycle ".$args{'LifecycleObj'}->Name.": $msg");
             }
         }
         else {
-            my ($ret, $msg) = $attribute->Create(
-                Name        => 'LifecycleAttribute-'.$args{'LifecycleObj'}->Name,
-                Description => 'LifecycleAttribute-'.$args{'LifecycleObj'}->Name,
-                Content     => $args{'Attribute'},
-                Object      => RT::System,
-                ContentType => 'storable',
-                ObjectType  => 'RT::System'
+            my ($ret, $msg) = $config->Create(
+                Name        => 'LifecycleConfiguration-'.$args{'LifecycleObj'}->Name,
+                Content     => $args{'Configuration'},
+                ContentType => 'perl',
             );
             if ( $ret ) {
-                RT::Logger->debug("Creating lifecycle attribute for: ".$args{'LifecycleObj'}->Name);
+                RT::Logger->debug("Creating lifecycle configuration for: ".$args{'LifecycleObj'}->Name);
             }
             else {
-                RT::Logger->debug("Could not create lifecycle attribute for ".$args{'LifecycleObj'}->Name.": $msg");
+                RT::Logger->debug("Could not create lifecycle configuration for ".$args{'LifecycleObj'}->Name.": $msg");
             }
         }
     }

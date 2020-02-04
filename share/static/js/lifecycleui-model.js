@@ -266,7 +266,7 @@ class LifecycleModel {
 
         var pos = {};
         if ( jQuery('#enableSimulation').is(":checked") ) {
-            pos = JSON.parse(jQuery('input[name="LifecycleAttribute"]').val())
+            pos = JSON.parse(jQuery('input[name="LifecycleConfiguration"]').val())
             pos["checked"] = 1;
         }
         else {
@@ -276,7 +276,7 @@ class LifecycleModel {
 
             pos["checked"] = 0;
         }
-        var attribute = jQuery('input[name="LifecycleAttribute"]');
-        attribute.val(JSON.stringify(pos));
+        var configuration = jQuery('input[name="LifecycleConfiguration"]');
+        configuration.val(JSON.stringify(pos));
     };
 }

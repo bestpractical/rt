@@ -83,11 +83,11 @@
   <script type="text/javascript">
     jQuery(function () {
       var container = document.getElementById('lifecycle-<% $id %>'),
-        config     = <% JSON($config) |n %>,
-        name       = <% $Lifecycle | j%>,
-        attribute  = <% $attribute |n %>;
+        config         = <% JSON($config) |n %>,
+        name           = <% $Lifecycle | j%>,
+        configuration  = <% $configuration |n %>;
 
-        var editor = new RT.NewEditor( container, config, attribute );
+        var editor = new RT.NewEditor( container, config, configuration );
     });
   </script>
   <div>
@@ -119,10 +119,10 @@ $Lifecycle ||= $Ticket->Lifecycle
 my $config = RT->Config->Get('Lifecycles')->{$Lifecycle};
 Abort("Invalid Lifecycle") if !$Lifecycle || !$config;
 
-my $attributes = RT::Attributes->new( RT->SystemUser );
-$attributes->Limit( FIELD => 'Description', VALUE => "LifecycleAttribute-$Lifecycle" );
-my $attribute = $attributes->First;
-$attribute = $attribute ? JSON($attribute->Content) : "{}";
+my $configurations = RT::Configurations->new( RT->SystemUser );
+$configurations->Limit( FIELD => 'Name', VALUE => "LifecycleConfiguration-$Lifecycle" );
+my $configuration = $configurations->First;
+$configuration = $configuration ? JSON($configuration->_DeserializeContent($configuration->Content)) : "{}";
 
 my $id = $Lifecycle . '-' . int(rand(2**31));
 </%INIT>

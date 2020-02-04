@@ -70,12 +70,12 @@ Abort("Invalid lifecycle") unless $LifecycleObj->Name
 $title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
 
 if ($Config) {
-    my $LifecycleAttribute = JSON::from_json($LifecycleAttribute);
+    my $LifecycleConfiguration = JSON::from_json($LifecycleConfiguration);
     my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
-        CurrentUser  => $session{CurrentUser},
-        LifecycleObj => $LifecycleObj,
-        NewConfig    => JSON::from_json($Config),
-        Attribute    => $LifecycleAttribute,
+        CurrentUser    => $session{CurrentUser},
+        LifecycleObj   => $LifecycleObj,
+        NewConfig      => JSON::from_json($Config),
+        Configuration  => $LifecycleConfiguration,
     );
     if ( $ok ) {
       push @results, "Lifecycle updated";
@@ -92,8 +92,8 @@ MaybeRedirectForResults(
 );
 </%INIT>
 <%ARGS>
-$Name               => undef
-$Type               => undef
-$Config             => undef
-$LifecycleAttribute => undef
+$Name                   => undef
+$Type                   => undef
+$Config                 => undef
+$LifecycleConfiguration => undef
 </%ARGS>

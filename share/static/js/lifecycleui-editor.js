@@ -1,17 +1,17 @@
 jQuery( document ).ready(function () {
     RT.NewEditor = class LifecycleEditorNew extends LifecycleModel {
-        constructor(container, config, attribute) {
+        constructor(container, config, configuration) {
             super("LifecycleModel");
 
             var self              = this;
             self.width            = 900;
             self.height           = 350;
             self.node_radius      = 35;
-            self.attribute        = attribute;
+            self.configuration    = configuration;
             self.initial          = 1;
             self.enableSimulation = 1;
 
-            if ( Object.keys(self.attribute).indexOf('checked') == -1 || self.attribute && self.attribute['checked'] ) {
+            if ( Object.keys(self.configuration).indexOf('checked') == -1 || self.configuration && self.configuration['checked'] ) {
                 jQuery('#enableSimulation').prop( "checked", true );
             }
             else {
@@ -67,8 +67,8 @@ jQuery( document ).ready(function () {
                     else self.links.push({id: ++self.links_seq, source: source, target: target, start: false, end: true});
                 });
                 if ( !self.enableSimulation ) {
-                    if (self.attribute[source.name][0]) source.x = parseFloat(self.attribute[source.name][0]);
-                    if (self.attribute[source.name][1]) source.y = parseFloat(self.attribute[source.name][1]);
+                    if (self.configuration[source.name][0]) source.x = parseFloat(self.configuration[source.name][0]);
+                    if (self.configuration[source.name][1]) source.y = parseFloat(self.configuration[source.name][1]);
                 }
             });
 
@@ -160,9 +160,9 @@ jQuery( document ).ready(function () {
                 pos[d.name] = [d.x, d.y];
             });
 
-            var attribute = jQuery('<input name="LifecycleAttribute" type="hidden">');
-            attribute.val(JSON.stringify(pos));
-            form.append(attribute);
+            var configuration = jQuery('<input name="LifecycleConfiguration" type="hidden">');
+            configuration.val(JSON.stringify(pos));
+            form.append(configuration);
 
             self.initial = 0;
             self.ExportAsConfiguration();
