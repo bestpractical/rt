@@ -597,3 +597,37 @@ jQuery( document ).ready(function () {
         }
     }
 });
+
+if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced') ) {
+    jQuery( document ).ready(function () {
+        function IsValidJSONString(str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        }
+
+        jQuery('#Config').bind('input propertychange', function() {
+            if ( IsValidJSONString(jQuery('#Config').val()) ) {
+                jQuery('#UpdateLifecycle').find(".button").each(function() {
+                    this.disabled = '';
+                });
+                jQuery('#ValidateLifecycle').find(".button").each(function() {
+                    this.disabled = '';
+                });
+                jQuery('.alert').hide();
+            }
+            else {
+                jQuery('#UpdateLifecycle').find(".button").each(function() {
+                    this.disabled = 'disabled';
+                });
+                jQuery('#ValidateLifecycle').find(".button").each(function() {
+                    this.disabled = 'disabled';
+                });
+                jQuery('.alert').show();
+            }
+        });
+    });
+}

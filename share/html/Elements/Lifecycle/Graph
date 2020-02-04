@@ -84,7 +84,7 @@
     jQuery(function () {
       var container = document.getElementById('lifecycle-<% $id %>'),
         config         = <% JSON($config) |n %>,
-        name           = <% $Lifecycle | j%>,
+        name           = <% $LifecycleName | j%>,
         configuration  = <% $configuration |n %>;
 
         var editor = new RT.NewEditor( container, config, configuration );
@@ -122,21 +122,17 @@
 </div>
 
 <%INIT>
-$Lifecycle ||= $Ticket->Lifecycle
-    if $Ticket;
-
-my $config = RT->Config->Get('Lifecycles')->{$Lifecycle};
-Abort("Invalid Lifecycle") if !$Lifecycle || !$config;
+my $config = RT->Config->Get('Lifecycles')->{$LifecycleName};
+Abort("Invalid Lifecycle") if !$LifecycleName || !$config;
 
 my $configurations = RT::Configurations->new( RT->SystemUser );
-$configurations->Limit( FIELD => 'Name', VALUE => "LifecycleConfiguration-$Lifecycle" );
+$configurations->Limit( FIELD => 'Name', VALUE => "LifecycleConfiguration-$LifecycleName" );
 my $configuration = $configurations->First;
 $configuration = $configuration ? JSON($configuration->_DeserializeContent($configuration->Content)) : "{}";
 
-my $id = $Lifecycle . '-' . int(rand(2**31));
+my $id = $LifecycleName . '-' . int(rand(2**31));
 </%INIT>
 
 <%ARGS>
-$Lifecycle => undef
-$Ticket    => undef
+$LifecycleName => undef
 </%ARGS>

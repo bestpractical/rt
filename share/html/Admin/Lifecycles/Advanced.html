@@ -49,51 +49,76 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/farbtastic.js"></script>
-
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Modify.html" name="ModifyLifecycle" method="post" enctype="multipart/form-data">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Advanced.html" name="ModifyLifecycleAdvanced" method="post" enctype="multipart/form-data">
   <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
   <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
-  <& /Elements/Lifecycle/Graph, LifecycleName => $LifecycleObj->Name &>
-  <div class="col-md-12">
-    <& /Elements/Submit, Label => loc('Save Changes') &>
+
+  <div class="form-row">
+    <span class="col-md-12">
+      <textarea class="form-control" cols="170" rows="20" name="Config" id="Config"><% JSON::to_json($config, { canonical => 1, pretty => 1 }) |n %></textarea>
+    </span>
+  </div>
+
+  <div class="form-row">
+    <div class="col-md-6 d-flex justify-content-between w-100">
+      <& /Elements/Submit, Label => loc('Validate lifecycle'), Name => 'ValidateLifecycle', id => 'ValidateLifecycle' &>
+    </div>
+    <div class="col-md-6">
+      <& /Elements/Submit, Label => loc('Update lifecycle'), Name => 'UpdateLifecycle', id => 'UpdateLifecycle' &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-md-auto">
+      <div class="alert alert-danger" style="display:none">JSON structure invalid</div>
+    </div>
+  </div>
+
   </div>
 </form>
+
 <%INIT>
 my ($title, @results);
 my $LifecycleObj = RT::Lifecycle->new( $session{'CurrentUser'} );
 $LifecycleObj->Load(Name => $Name, Type => $Type);
 
 Abort("Invalid lifecycle") unless $LifecycleObj->Name
-                               && $LifecycleObj->{data}{type} eq $Type;
+                                && $LifecycleObj->{data}{type} eq $Type;
 
 $title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
 
-if ($Config) {
-    my $LifecycleConfiguration = JSON::from_json($LifecycleConfiguration);
-    my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
-        CurrentUser    => $session{CurrentUser},
-        LifecycleObj   => $LifecycleObj,
-        NewConfig      => JSON::from_json($Config),
-        Configuration  => $LifecycleConfiguration,
-    );
-    if ( $ok ) {
-      push @results, "Lifecycle updated";
-    }
-    else {
-      push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";
+my $config = RT->Config->Get('Lifecycles')->{$LifecycleObj->Name};
+
+if ( $UpdateLifecycle or $ValidateLifecycle ) {
+    my @warnings = $LifecycleObj->ValidateLifecycle( JSON::from_json($Config) );
+    push @results, @warnings;
+    push @results, loc("Lifecycle is valid") if scalar @warnings eq 0;
+
+    $config = JSON::from_json($Config);
+
+    if ( $UpdateLifecycle && $Config ) {
+        my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
+            CurrentUser    => $session{CurrentUser},
+            LifecycleObj   => $LifecycleObj,
+            NewConfig      => JSON::from_json($Config),
+        );
+        if ( $ok ) {
+            push @results, "Lifecycle updated";
+        }
+        else {
+            push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";
+        }
+        # This code does automatic redirection if any updates happen.
+        MaybeRedirectForResults(
+            Actions   => \@results,
+            Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
+        );
     }
 }
-
-# This code does automatic redirection if any updates happen.
-MaybeRedirectForResults(
-    Actions   => \@results,
-    Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
-);
 </%INIT>
 <%ARGS>
 $Name                   => undef
 $Type                   => undef
 $Config                 => undef
-$LifecycleConfiguration => undef
+$ValidateLifecycle      => undef
+$UpdateLifecycle        => undef
 </%ARGS>
