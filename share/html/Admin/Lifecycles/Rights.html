@@ -1,0 +1,159 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Rights.html" name="ModifyLifecycleRights" method="post" enctype="multipart/form-data">
+  <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
+
+  <table class="table table-sm collection collection-as-table" cellspacing="0">
+    <tbody>
+      <tr class="collection-as-table">
+        <th class="collection-as-table">From Status</th>
+        <th class="collection-as-table">To Status</th>
+        <th class="collection-as-table">Right</th>
+      </tr>
+    </tbody>
+    <tbody class="list-item">
+% my $i = 1;
+% foreach my $right ( sort { $a->{'Name'} cmp $b->{'Name'} } @rights ) {
+      <tr>
+        <td class="collection-as-table">
+          <& /Elements/SelectStatus, Statuses => \@statuses, Default => $right->{'To'}, Name => "Right-To-$i" &>
+        </td>
+        <td class="collection-as-table">
+          <& /Elements/SelectStatus, Statuses => \@statuses, Default => $right->{'From'}, Name => "Right-From-$i" &>
+        </td>
+        <td class="collection-as-table">
+          <input type="text" value="<% $right->{'Name'} %>" class="form-control" Name="Right-Name-<%$i%>" />
+        </td>
+      </tr>
+% ++$i;
+% }
+      <tr>
+        <td class="collection-as-table"><& /Elements/SelectStatus, Statuses => \@statuses, Name => 'Right-To-0' &></td>
+        <td class="collection-as-table"><& /Elements/SelectStatus, Statuses => \@statuses, Name => 'Right-From-0' &></td>
+        <td class="collection-as-table"><input type="text" class="form-control" name='Right-Name-0' /></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="col-md-12">
+    <& /Elements/Submit, Label => loc('Update lifecycle rights'), Name => 'UpdateLifecycleRights', id => 'UpdateLifecycleRights' &>
+  </div>
+</form>
+
+<%INIT>
+my ($title, @results);
+my $LifecycleObj = RT::Lifecycle->new( $session{'CurrentUser'} );
+$LifecycleObj->Load(Name => $Name, Type => $Type);
+
+Abort("Invalid lifecycle") unless $LifecycleObj->Name
+                                && $LifecycleObj->{data}{type} eq $Type;
+
+$title = loc("Rights for lifecycle [_1]", $LifecycleObj->Name);
+
+my @statuses = $LifecycleObj->Statuses;
+push @statuses, '*';
+
+my $rights = $LifecycleObj->Rights('ticket') || ();
+
+my @rights;
+foreach my $key ( keys %{$rights} ) {
+    my ($to, $from) = $key =~ /(.+) \-\> (.+)/;
+    push @rights, { To => $to, From => $from, Name => $rights->{$key} };
+}
+
+if ($UpdateLifecycleRights) {
+    my %new_rights;
+    foreach my $arg ( keys %ARGS ) {
+        my ($field, $count) = $arg =~ /Right-(\w+)-(\d+)/;
+        next unless $field and defined $count && $ARGS{$arg};
+
+        if ( $new_rights{$count} ) {
+            $new_rights{$count}->{$field} = $ARGS{$arg};
+        }
+        else {
+            $new_rights{$count} = {};
+            $new_rights{$count}->{$field} = $ARGS{$arg};
+        }
+    }
+    my $new_rights;
+    # Convert to RT internal format
+    foreach my $right ( keys %new_rights ) {
+        $new_rights->{"$new_rights{$right}->{To} -> $new_rights{$right}->{From}"} = $new_rights{$right}->{Name};
+    }
+    my $config = RT->Config->Get('Lifecycles')->{$LifecycleObj->Name};
+    $config->{'rights'} = $new_rights;
+
+    my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
+        CurrentUser    => $session{CurrentUser},
+        LifecycleObj   => $LifecycleObj,
+        NewConfig      => $config,
+    );
+    if ( $ok ) {
+        push @results, "Lifecycle updated";
+    }
+    else {
+        push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";
+    }
+}
+
+# This code does automatic redirection if any updates happen.
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
+);
+</%INIT>
+<%ARGS>
+$Name                   => undef
+$Type                   => undef
+$UpdateLifecycleRights  => undef
+</%ARGS>

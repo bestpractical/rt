@@ -473,6 +473,18 @@ sub CheckRight {
     return $to eq 'deleted' ? 'DeleteTicket' : 'ModifyTicket';
 }
 
+=head3 Rights
+
+Lists all rights for lifecycle object self.
+
+=cut
+
+sub Rights {
+    my $self = shift;
+
+    return $self->{'data'}->{'rights'};
+}
+
 =head3 RightsDescription [TYPE]
 
 Returns hash with description of rights that are defined for
