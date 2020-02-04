@@ -280,6 +280,8 @@ sub HandleRequest {
 
     RT->Config->RefreshConfigFromDatabase();
 
+    MaybeRebuildLifecycleCache();
+
     $HTML::Mason::Commands::r->content_type("text/html; charset=utf-8");
 
     $HTML::Mason::Commands::m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
@@ -1287,6 +1289,15 @@ sub MaybeRebuildCustomRolesCache {
     if ($needs_update > $role_cache_time) {
         RT::CustomRoles->RegisterRoles;
         $role_cache_time = $needs_update;
+    }
+}
+
+my $lifecycle_cache_time = time;
+sub MaybeRebuildLifecycleCache {
+    my $needs_update =  RT->System->LifecycleCacheNeedsUpdate;
+    if ( $needs_update > $lifecycle_cache_time ) {
+        RT::Lifecycle->FillCache;
+        $lifecycle_cache_time = $needs_update;
     }
 }
 
