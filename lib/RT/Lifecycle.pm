@@ -275,6 +275,18 @@ sub IsValid {
     return 0;
 }
 
+=head3 Statuses
+
+Lists all statuses for lifecycle object self.
+
+=cut
+
+sub Statuses {
+    my $self = shift;
+
+    return @{$self->{'data'}->{''}};
+}
+
 =head3 StatusType
 
 Takes a status and returns its type, one of 'initial', 'active' or
