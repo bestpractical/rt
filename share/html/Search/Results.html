@@ -86,9 +86,11 @@
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
-<& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-auto">
+    <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
+  </div>
+  <div class="col-auto">
     <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Change</&>" />
   </div>
 </div>
