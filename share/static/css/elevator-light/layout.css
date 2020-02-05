@@ -32,12 +32,12 @@ div#body {
 
 div#footer {
     position: absolute;
-    text-align: right;
     font-size: 0.8em;
     background: #fff;
     padding-left: 15px;
     padding-right: 15px;
-    padding-top: 5px;
+    padding-top: 9px;
+    padding-bottom: 8px;
     bottom: 0;
     width: 100%;
     margin-left: 0;
@@ -54,19 +54,13 @@ div#footer #time {
     display: none
 }
 
-div#footer #bpscredits {
-    text-align: center;
-    background: url(../../../static/images/bpslogo_wt_sm.svg) no-repeat top center !important;
-    padding-top: 2.5em;
+div#footer p, div#footer a {
+    color: #ededed;
 }
 
-div#footer a {
-    color: white;
-}
-
-/* Override the default bootstrap p margin to reduce bottom spacing in footer */
+/* Override the default bootstrap p margin to reset bottom spacing in footer */
 div#footer p {
-    margin-bottom: .5rem;
+    margin-bottom: 0;
 }
 
 /* logo stuff */
