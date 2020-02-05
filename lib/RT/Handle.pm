@@ -314,13 +314,6 @@ sub CheckCompatibility {
                 $max_packet = sprintf("%.1fM", $max_packet/1024/1024);
                 warn "max_allowed_packet is set to $max_packet, which limits the maximum attachment or email size that RT can process.  Consider adjusting MySQL's max_allowed_packet setting.\n";
             }
-
-            my $redo_log_size = $show_var->("innodb_log_file_size");
-            $redo_log_size *= $show_var->("innodb_log_files_in_group");
-            if ( $redo_log_size / 10 < 5 * 1024 * 1024 ) {
-                $redo_log_size = sprintf("%.1fM",$redo_log_size/1024/1024);
-                warn "innodb_log_file_size is set to $redo_log_size; attachments can only be 10% of this value on MySQL 5.6.  Consider adjusting MySQL's innodb_log_file_size setting.\n";
-            }
         }
 
         # check that the DB encoding is utf8mb4
