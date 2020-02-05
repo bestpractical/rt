@@ -54,11 +54,16 @@ div.results .titlebox-title .left {
   border-width: 1px 1px 0 1px;
 }
 
+div.input-row-header div,
 div.results .titlebox,
 div.error-titlebox {
   border: none;
   background: none;
   font-weight: bold;
+}
+
+div.input-row-header div input {
+    vertical-align: middle;
 }
 
 div.results .titlebox-content {
