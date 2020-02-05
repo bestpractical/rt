@@ -48,6 +48,7 @@
 % for my $package (@packages) {
 %   my ($version_status, @lines) = RT->System->ParsedUpgradeHistory($package);
 <h4><% $package %> (<% $version_status %>)</h4>
+<div class="table-responsive">
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection upgrade-history">
 <thead>
 <tr class="collection-as-table">
@@ -63,6 +64,7 @@
 <& UpgradeHistoryRow, i => \$i, row => $upgrade &>
 % }
 </table>
+</div>
 % }
 
 <%init>

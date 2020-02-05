@@ -51,6 +51,7 @@
     next unless @cur_statuses;
 </%perl>
 
+<div class="table-responsive">
 <table border="0" cellspacing="0" cellpadding="1" width="100%" class="table queue-summary">
 
 <tr>
@@ -81,6 +82,7 @@ for my $queue (@$queues) {
 </tr>
 % }
 </table>
+</div>
 % }
 <%INIT>
 my $build_search_link = sub {
