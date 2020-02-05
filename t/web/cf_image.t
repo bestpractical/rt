@@ -26,10 +26,7 @@ $m->click_ok( "UpdateObjs" );
 $m->content_contains("Globally added custom field Images");
 
 
-$m->submit_form_ok({
-    form_name => "CreateTicketInQueue",
-    fields    => { Queue => 'General' },
-});
+$m->submit_form( form_name => "CreateTicketInQueue" );
 $m->content_contains("Upload one image");
 $m->submit_form_ok({
     form_name => "TicketCreate",

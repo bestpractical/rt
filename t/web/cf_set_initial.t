@@ -31,10 +31,7 @@ ok $m->login( $tester->Name, 123456, logout => 1), 'logged in';
 diag "check that we have no CFs on the create"
     ." ticket page when user has no SetInitialCustomField right";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_lacks('Test Set Initial CF', 'has no CF input');
     $m->content_lacks('Multi Set Initial CF', 'has no CF input');
 
@@ -66,10 +63,7 @@ RT::Test->set_rights(
 diag "check that we have the CF on the create"
     ." ticket page when user has SetInitialCustomField but no SeeCustomField";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_contains('Test Set Initial CF', 'has CF input');
     $m->content_contains('Multi Set Initial CF', 'has CF input');
 
