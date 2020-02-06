@@ -62,14 +62,18 @@ window.RT.Autocomplete.bind = function(from) {
             options.select = function(event, ui) {
                 var terms = this.value.split(what == 'Tickets' ? /\s+/ : /,\s*/);
                 terms.pop();                    // remove current input
-                terms.push( ui.item.value );    // add selected item
                 if ( what == 'Tickets' ) {
                     // remove non-integers in case subject search with spaces in (like "foo bar")
-                    terms = jQuery.grep(terms, function(term) {
-                        var str = term + ''; // stringify integers to call .match
-                        return str.match(/^\d+$/);
-                    } );
+                    var new_terms = [];
+                    for ( var i = 0; i < terms.length; i++ ) {
+                        if ( terms[i].match(/\D/) ) {
+                            break; // Items after the first non-integers are all parts of search string
+                        }
+                        new_terms.push(terms[i]);
+                    }
+                    terms = new_terms;
                 }
+                terms.push( ui.item.value );    // add selected item
                 terms.push(''); // add trailing delimeter so user can input another value directly
                 this.value = terms.join(what == 'Tickets' ? ' ' : ", ");
                 jQuery(this).change();
