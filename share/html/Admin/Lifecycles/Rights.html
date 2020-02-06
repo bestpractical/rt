@@ -59,6 +59,7 @@
         <th class="collection-as-table">From Status</th>
         <th class="collection-as-table">To Status</th>
         <th class="collection-as-table">Right</th>
+        <th class="collection-as-table"></th>
       </tr>
     </tbody>
     <tbody class="list-item">
@@ -73,6 +74,13 @@
         </td>
         <td class="collection-as-table">
           <input type="text" value="<% $right->{'Name'} %>" class="form-control" Name="Right-Name-<%$i%>" />
+        </td>
+
+        <td class="collection-as-table">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" name="Delete-<% $i %>" id="Delete-<% $i %>" value="1" class="custom-control-input"/>
+            <label class="custom-control-label" for="Delete-<% $i %>">remove</label>
+          </div>
         </td>
       </tr>
 % ++$i;
@@ -112,10 +120,19 @@ foreach my $key ( keys %{$rights} ) {
 }
 
 if ($UpdateLifecycleRights) {
+
+    # Delete any keys checked for delete
+    my %delete_id = ();
+    foreach my $arg ( keys %ARGS ) {
+        if ( $arg =~ /Delete-(\d+)/ ){
+            $delete_id{$1} = 1;
+        }
+    }
     my %new_rights;
     foreach my $arg ( keys %ARGS ) {
         my ($field, $count) = $arg =~ /Right-(\w+)-(\d+)/;
         next unless $field and defined $count && $ARGS{$arg};
+        next if $delete_id{$count};
 
         if ( $new_rights{$count} ) {
             $new_rights{$count}->{$field} = $ARGS{$arg};

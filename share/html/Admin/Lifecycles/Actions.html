@@ -60,6 +60,7 @@
         <th class="collection-as-table">To Status</th>
         <th class="collection-as-table">Label</th>
         <th class="collection-as-table">Update</th>
+        <th class="collection-as-table"></th>
         </tr>
     </tbody>
     <tbody class="list-item">
@@ -81,6 +82,12 @@
                 <option <% $action->{'update'} && $action->{'update'} eq 'Comment' ? qq[selected="selected"] : ''%> value="Comment">Comment</option>
                 <option <% !$action->{'update'} ? qq[selected='selected'] : '' %> value="">None</option>
             </select>
+            </td>
+            <td class="collection-as-table">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" name="Delete-<% $i %>" id="Delete-<% $i %>" value="1" class="custom-control-input"/>
+                <label class="custom-control-label" for="Delete-<% $i %>">remove</label>
+              </div>
             </td>
         </tr>
 % ++$i;
@@ -120,10 +127,19 @@ push @statuses, '*';
 my $actions = $LifecycleObj->{'data'}->{'actions'} || ();
 
 if ($UpdateLifecycleActions) {
+    # Delete any keys checked for delete
+    my %delete_id = ();
+    foreach my $arg ( keys %ARGS ) {
+        if ( $arg =~ /Delete-(\d+)/ ){
+            $delete_id{$1} = 1;
+        }
+    }
+
     my %new_actions;
     foreach my $arg ( keys %ARGS ) {
         my ($field, $count) = $arg =~ /Action-(\w+)-(\d+)/;
         next unless $field and defined $count && $ARGS{$arg};
+        next if $delete_id{$count};
 
         if ( $new_actions{$count} ) {
             $new_actions{$count}->{lc $field} = $ARGS{$arg};
