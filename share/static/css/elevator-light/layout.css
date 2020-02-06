@@ -13,23 +13,6 @@ div#body {
     z-index: 1;
 }
 
-@media (max-width: 800px) {
-    div#body {
-        padding: 3em 4.875%; /* 3em at 13px font size => 39px => 39/800 => .04875 */
-    }
-    /* at narrow widths we'll have broken into a single column, so the default
-       padding-right just causes the layout to degrade */
-    .boxcontainer {
-        padding-right: 0;
-    }
-}
-
-@media (max-width: 700px) {
-    div#body {
-        padding: 3em 0;
-    }
-}
-
 div#footer {
     position: absolute;
     font-size: 0.8em;
