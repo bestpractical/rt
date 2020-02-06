@@ -12,12 +12,6 @@
     height: 1.5em !important;
 }
 
-/* we use background: #547CCC; to help make the ticket timer look more like RT
-   but unfortunately that makes the stopwatch icon (being black) look bad */
-.ticket-timer .ticket-link img {
-    display: none;
-}
-
 .ticket-timer .ticket-link {
     white-space: nowrap;
     overflow: hidden;
