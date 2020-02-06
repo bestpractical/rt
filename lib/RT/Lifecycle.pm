@@ -200,7 +200,7 @@ sub ListAll {
 
     $self->FillCache unless keys %LIFECYCLES_CACHE;
 
-    return sort grep {$LIFECYCLES_CACHE{$_}{type} eq $for}
+    return sort grep {$LIFECYCLES_CACHE{$_}{type} eq $for && !$LIFECYCLES_CACHE{$_}{disabled}}
         grep $_ ne '__maps__', keys %LIFECYCLES_CACHE;
 }
 
