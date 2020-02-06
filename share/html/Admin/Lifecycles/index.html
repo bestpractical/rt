@@ -47,40 +47,122 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc("Admin Lifecycles") &>
 <& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
 
-<h1><&|/l&>Lifecycles</&></h1>
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Lifecycles/index.html">
+  <div class="form-row">
+    <div class="col-md-12">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledLifecycles" name="FindDisabledLifecycles" value="1" <% $FindDisabledLifecycles ? 'checked="checked"': '' |n%> />
+        <label class="custom-control-label" for="FindDisabledLifecycles"><&|/l&>Include disabled lifecycles in listing.</&></label>
+      </div>
+    </div>
+  </div>
 
-<table class="table collection collection-as-table" cellspacing="0">
-  <tbody>
-    <tr class="collection-as-table">
-      <th class="collection-as-table">Name</th>
-      <th class="collection-as-table">Type</th>
-    </tr>
-  </tbody>
-  <tbody class="list-item">
+  <div class="form-row">
+    <div class="col-md-12">
+      <div align="left">
+        <input type="submit" name="Go" class="form-control btn btn-primary" value="<&|/l&>Go!</&>" />
+      </div>
+    </div>
+  </div>
+
+  <table class="table collection collection-as-table" cellspacing="0">
+    <tbody>
+      <tr class="collection-as-table">
+        <th class="collection-as-table">Name</th>
+        <th class="collection-as-table">Type</th>
+        <th class="collection-as-table">Enabled</th>
+      </tr>
 % my $i = 0;
-% for my $lifecycle (@lifecycles) {
-% ++$i;
-    <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
-      <td class="collection-as-table"><a href="<% RT->Config->Get('WebURL') %>Admin/Lifecycles/Modify.html?Type=<% $lifecycle->Type |u %>&Name=<% $lifecycle->Name |u %>"><% $lifecycle->Name %></a></td>
-      <td class="collection-as-table"><% loc($lifecycle->Type) %></td>
-    </tr>
+% for my $key ( sort keys %lifecycles ) {
+%    next if grep { $key eq $_ } qw/approvals __maps__/;
+%    next if $lifecycles{$key}{'disabled'} and !$FindDisabledLifecycles;
+
+      <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
+        <td class="collection-as-table"><a href="<% RT->Config->Get('WebURL') %>Admin/Lifecycles/Modify.html?Type=<% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') |u %>&Name=<% $key %>"><% $key %></a></td>
+        <td class="collection-as-table"><% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') %></td>
+        <td class="collection-as-table">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input checkbox" id="enable-lifecycle-<% $key %>" name="enable-lifecycle-<% $key %>" value="1" <% $lifecycles{$key}{'disabled'} ? '' : 'checked="checked"' %> />
+            <label class="custom-control-label" for="enable-lifecycle-<% $key %>"></label>
+          </div>
+        </td>
+      </tr>
+%    ++$i;
 % }
-  </tbody>
-</table>
+    </tbody>
+  </table>
+
+  <div class="form-row">
+    <div class="col-md-12">
+      <div align="right">
+        <input type="submit" name="Submit" class="form-control btn btn-primary" value="<&|/l&>Update</&>" />
+      </div>
+    </div>
+  </div>
+
+</form>
 <%INIT>
-my @types = List::MoreUtils::uniq(
-    'ticket',
-    'asset',
-    sort keys %RT::Lifecycle::LIFECYCLES_TYPES,
-);
+my @results;
 
-my @lifecycles;
+my %lifecycles = ();
 
-for my $type (@types) {
-    push @lifecycles, map { RT::Lifecycle->Load(Name => $_, Type => $type) }
-                      sort { loc($a) cmp loc($b) }
-                      grep { $_ ne 'approvals' }
-                      RT::Lifecycle->ListAll($type);
+my $setting = RT::Configuration->new($session{'CurrentUser'});
+$setting->Load('Lifecycles');
+if ( $setting->Id ) {
+    %lifecycles = %{$setting->_DeserializeContent( $setting->Content )};
 }
+else {
+    %lifecycles = RT::Config->Get( "Lifecycles" );
+}
+if ( $Submit ) {
+    foreach my $lifecycle ( keys %lifecycles ) {
+        next if grep { $lifecycle eq $_ } qw/approvals __maps__/;
+        if ( $ARGS{"enable-lifecycle-$lifecycle"} ) {
+            if ( $lifecycles{$lifecycle}{'disabled'} && $lifecycles{$lifecycle}{'disabled'} eq 1 ) {
+              $lifecycles{$lifecycle}{'disabled'} = 0;
+              push @results, loc("Set lifecycle [_1] to enabled", $lifecycle);
+            }
+        }
+        elsif ( !$lifecycles{$lifecycle}{'disabled'} ) {
+            $lifecycles{$lifecycle}{'disabled'} = 1;
+            push @results, loc("Set lifecycle [_1] to disabled", $lifecycle);
+        }
+    }
+
+    if ( $setting->Id ) {
+      my ($ret, $msg) = $setting->SetContent( \%lifecycles );
+      if ( $ret ) {
+          RT::Logger->debug( "Updated lifecycle configuration content" );
+          RT::System->LifecycleCacheNeedsUpdate(1);
+      }
+      else {
+          RT::Logger->error( "Could not set lifeycle configuration content: $msg" );
+      }
+    }
+    else {
+      my ($ret, $msg) = $setting->Create(
+          Name        => 'Lifecycles',
+          Content     => \%lifecycles,
+          ContentType => 'perl',
+      );
+      if ( $ret ) {
+          RT::Logger->debug("Creating lifecycles configuration");
+      }
+      else {
+          RT::Logger->debug("Could not create lifecycles configuration: $msg" );
+      }
+    }
+}
+
+# This code does automatic redirection if any updates happen.
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { FindDisabledLifecycles => $FindDisabledLifecycles },
+);
 </%INIT>
+<%ARGS>
+$Submit                  => undef
+$FindDisabledLifecycles  => undef
+</%ARGS>
