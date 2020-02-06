@@ -121,6 +121,7 @@ $Class ||= $Collection->ColumnMapClassName;
 
 $InlineEdit = 0 unless $Collection->isa('RT::Tickets');
 
+$m->out('<div class="table-responsive">');
 $m->out('<table cellspacing="0"');
 $m->out(' class="table ' .  ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ($InlineEdit ? ' inline-edit' : '') . ' collection-as-table"');
 $m->out(' data-display-format="' . $m->interp->apply_escapes($DisplayFormat, 'h') . '"');
@@ -184,6 +185,7 @@ while ( my $record = $Collection->Next ) {
 }
 
 $m->out('</table>');
+$m->out('</div>');
 if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
   my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
   my $pages = int( $TotalFound / $Rows ) + $oddRows;

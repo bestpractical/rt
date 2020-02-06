@@ -84,6 +84,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
           <li>
               <tt><% $request->{Path} %></tt> - <i><&|/l, sprintf('%.4f', $seconds) &>[_1]s</&></i>
               <a href="#" onclick="return hideshow(<% "queries-$r" |n,j%>);"><&|/l, $count &>Toggle [quant,_1,query,queries]</&></a>
+            <div class="table-responsive">
               <table id="queries-<%$r%>" class="tablesorter hidden">
                   <thead>
                       <tr>
@@ -134,6 +135,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 %                 }
                   </tbody>
               </table>
+            </div>
           </li>
 %     }
     </ol>
