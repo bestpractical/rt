@@ -134,7 +134,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <div class="chart-type">
 
 <div class="form-row">
-  <div class="col-md-6">
+  <div class="col-xl-6">
 
 <form method="get" action="<% RT->Config->Get('WebPath') %>/Search/Chart.html">
 <input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
@@ -252,7 +252,7 @@ jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
     </form>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-xl-6">
     <div class="saved-search">
       <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
     </div>
