@@ -281,7 +281,10 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
 
             if ($role eq 'Owner') {
                 $ROLE_MAP->{$RecordClass}{$role}{edit} = sub {
-                    return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0));
+                    my $owner = $_[0]->OwnerObj;
+                    # if owner is missing (asset with no owner) $owner contains the error message, not an object
+                    if( ! ref $owner ) { $owner = RT->Nobody; }
+                    return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $owner->Id, DefaultValue => 0));
                 };
             }
 
