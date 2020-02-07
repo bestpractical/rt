@@ -22,9 +22,42 @@ ticket listing.
 
 =item *
 
-When we cored RT::Extension::ConfigInDatabase, we renamed table name to
-Configurations and also changed internal implementation to support storing
+When we cored RT::Extension::ConfigInDatabase, we renamed the table to
+Configurations and also changed the internal implementation to support storing
 regex there.
+
+=back
+
+=head1 DEPRECATED CODE
+
+Code that is no longer used after updates is marked as deprecated so it will log
+a warning for two versions before we remove it. This gives developers time to
+update their code. This section lists code that has been removed after this
+period.
+
+=over
+
+=item *
+
+SQLFilter callback in /Elements/QueueSummaryByLifecycle
+
+=item *
+
+AfterUpdateCustomFieldValue callback in share/html/Admin/CustomFields/Modify.html
+
+=item *
+
+share/html/Elements/Quicksearch, which was renamed to QueueList
+
+=item *
+
+The find_expired_rows setting for ObjectCustomFieldValues is now find_disabled_rows.
+
+=item *
+
+RT::Queue now has a SetDefaultValue method, so individual methods for setting/getting defaults
+are removed: SetInitialPriority, InitialPriority, SetFinalPriority, FinalPriority,
+SetDefaultDueIn, DefaultDueIn.
 
 =back
 
