@@ -58,7 +58,7 @@ a bug. You can then test just RT and not worry about possible side-effects
 on your system.
 
 You can install this Perl in an alternate location like C</opt/perl>, or
-to make it clear it's for RT, even C</opt/rt4/perl>. To make future
+to make it clear it's for RT, even C</opt/rt5/perl>. To make future
 upgrades easier, install in a version-specific directory like
 C</opt/perl-5.14.2>, then symlink C</opt/perl> to that directory. This
 makes it easy to switch to a newer version of Perl later by installing

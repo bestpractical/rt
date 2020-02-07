@@ -101,7 +101,7 @@ An example of using LDAP authentication and HTTP Basic auth:
 All of the following options control the behavior of RT's built-in external
 authentication which relies on the web server.  They are documented in detail
 under the "Authorization and user configuration" section of L<RT_Config>
-and you can read the documentation by running C<perldoc /opt/rt4/etc/RT_Config.pm>.
+and you can read the documentation by running C<perldoc /opt/rt5/etc/RT_Config.pm>.
 
 The list below is meant to make you aware of what's available.  You should read
 the full documentation as described above.

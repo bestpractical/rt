@@ -513,7 +513,7 @@ to easily create B<Classes>, B<Topics>, or B<Articles> from initialdata files.
 
 =head1 Running an initialdata file
 
-    /opt/rt4/sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
+    /opt/rt5/sbin/rt-setup-database --action insert --datafile /path/to/your/initialdata
 
 This may prompt you for a database password.
 

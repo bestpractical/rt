@@ -5,17 +5,17 @@ extension writers.  The following is tailored to RT administrators:
 
 =head2 Common issues
 
-RT now defaults to a database name of rt4 and an installation root of
-/opt/rt4.
+RT now defaults to a database name of rt5 and an installation root of
+/opt/rt5.
 
 If you are upgrading, you will likely want to specify that your database is
-still named rt3 (or import a backup of your database as rt4 so that you can
+still named rt3 (or import a backup of your database as rt5 so that you can
 feel more confident making the upgrade).
 
-You really shouldn't install RT4 into your RT3 source tree (/opt/rt3) and
+You really shouldn't install RT5 into your RT3 source tree (/opt/rt3) and
 instead should be using make install to set up a clean environment.  This will
 allow you to evaluate your local modifications and configuration changes as
-you migrate to 4.0.
+you migrate to 4.0 or 5.0.
 
 If you choose to force RT to install into /opt/rt3, or another existing RT 3.x
 install location, you will encounter issues because we removed the _Overlay
@@ -37,7 +37,7 @@ new configuration.
 
 RT::Extension::CustomField::Checkbox has been integrated into core, so you
 MUST uninstall it before upgrading. In addition, you must run
-/opt/rt4/etc/upgrade/4.0-customfield-checkbox-extension script to convert old
+/opt/rt5/etc/upgrade/4.0-customfield-checkbox-extension script to convert old
 data.
 
 =head2 RT_SiteConfig.pm
@@ -62,29 +62,29 @@ the new schema.
 
 =head2 Upgrading from installs with RTFM
 
-RT4 now includes an Articles functionality, merged from RTFM.  You should not
+RT5 now includes an Articles functionality, merged from RTFM.  You should not
 install and enable the RT::FM plugin separately on RT 4.  If you have existing
-data in RTFM, you can use the /opt/rt4/etc/upgrade/upgrade-articles script to upgrade
+data in RTFM, you can use the /opt/rt5/etc/upgrade/upgrade-articles script to upgrade
 that data.
 
 When running normal upgrade scripts, RT will warn if it finds existing RTFM
 tables that contain data and point you to the upgrade-articles script.
 
 This script should be run from your RT tarball.  It will immediately begin
-populating your new RT4 tables with data from RTFM.  If you have browsed in
-the RT4 UI and created new classes and articles, this script will fail
+populating your new RT5 tables with data from RTFM.  If you have browsed in
+the RT5 UI and created new classes and articles, this script will fail
 spectacularly.  Do *not* run this except on a fresh upgrade of RT.
 
 You can run this as
 
-  /opt/rt4/etc/upgrade/upgrade-articles
+  /opt/rt5/etc/upgrade/upgrade-articles
 
 It will ouput a lot of data about what it is changing.  You should review this
 for errors.
 
 If you are running RTFM 2.0 with a release of RT, there isn't currently an
 upgrade script that can port RTFM's internal CustomField and Transaction data
-to RT4.
+to RT5.
 
 You must also remove RT::FM from your @Plugins line in RT_SiteConfig.pm.
 
@@ -113,7 +113,7 @@ duplicate names.  Although the groups will still function, some parts of the
 interface (rights management, subgroup membership) may not work as expected
 with duplicate names.  Running
 
-    /opt/rt4/sbin/rt-validator --check
+    /opt/rt5/sbin/rt-validator --check
 
 will report duplicate group names, and running it with --resolve will fix
 duplicates by appending the group id to the name.
@@ -241,7 +241,7 @@ version of DBD::Pg RT will stop the upgrade during the 3.9.8 step and
 remind you to upgrade DBD::Pg.  If this happens, you can re-start your
 upgrade by running:
 
-   /opt/rt4/sbin/rt-setup-database --action insert --datadir etc/upgrade/3.9.8/
+   /opt/rt5/sbin/rt-setup-database --action insert --datadir etc/upgrade/3.9.8/
 
 Followed by re-running make upgrade-database and answering 3.9.8 when
 prompted for which RT version you're upgrading from.

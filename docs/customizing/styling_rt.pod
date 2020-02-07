@@ -18,11 +18,11 @@ RT comes with the following themes:
 
 =item elevator-light
 
-The default light theme for RT 4.6
+The default light theme for RT 5.0
 
 =item elevator-dark
 
-The dark theme for RT 4.6
+The dark theme for RT 5.0
 
 =back
 
@@ -145,7 +145,7 @@ this case, you'll want to create your own CSS directory.
 
 As shown above, the C<local> directory is the place to put
 local modifications to RT. Run the following commands in your
-C</opt/rt4> directory (or wherever your RT is installed) to get
+C</opt/rt5> directory (or wherever your RT is installed) to get
 started:
 
     $ mkdir -p local/static/css/localstyle
@@ -156,7 +156,7 @@ started:
 
 You can call your "localstyle" directory whatever you want and you don't
 have to copy the elevator-light theme to start from, but it's a good place
-to start off for RT4.
+to start off for RT 5.
 
 Now set C<$WebDefaultStylesheet> in RT_SiteConfig.pm to the new directory
 name you selected, for example:

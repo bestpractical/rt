@@ -29,7 +29,7 @@ as follows:
 
 B<Run C<perl Makefile.PL>> to check for dependencies, and minimum
 versions of RT.  If your RT is in an unusual location (not
-C</opt/rt4/>), you may need to set the C<RTHOME> environment variable to
+C</opt/rt5/>), you may need to set the C<RTHOME> environment variable to
 the root of your RT location.
 
 =item 2.
@@ -76,9 +76,9 @@ documentation carefully.
 Next, B<clear the cache>.  RT caches the files it serves, and installing
 a plugin requires clearing this cache to ensure that the changes are
 served.  This is done by removing files in the
-F</opt/rt4/var/mason_data/obj> directory:
+F</opt/rt5/var/mason_data/obj> directory:
 
-   rm -rf /opt/rt4/var/mason_data/obj
+   rm -rf /opt/rt5/var/mason_data/obj
 
 This step may not be necessary if the extension does not affect RT's
 display.

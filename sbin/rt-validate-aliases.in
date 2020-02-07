@@ -275,7 +275,7 @@ sub filter_mailgate {
 
         my @args = Text::ParseWords::shellwords($pipe);
 
-        # We allow "|/random-other-command /opt/rt4/bin/rt-mailgate ...",
+        # We allow "|/random-other-command /opt/rt5/bin/rt-mailgate ...",
         # we just need to strip off enough
         my $index = 0;
         $index++ while $args[$index] !~ m!/rt-mailgate!;

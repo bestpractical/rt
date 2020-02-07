@@ -20,6 +20,6 @@ our @Initial = sub {
     my $result = $dbh->selectall_arrayref("SELECT count(*) AS articlecount FROM FM_Articles", { Slice => {} } );
 
     if ($result->[0]{articlecount} > 0) {
-        RT->Logger->error("You appear to have RTFM Articles.  You can upgrade using the /opt/rt4/etc/upgrade/upgrade-articles script.  Read more about it in docs/UPGRADING-4.0");
+        RT->Logger->error("You appear to have RTFM Articles.  You can upgrade using the /opt/rt5/etc/upgrade/upgrade-articles script.  Read more about it in docs/UPGRADING-4.0");
     }
 };

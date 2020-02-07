@@ -155,7 +155,7 @@ following to your F<RT_SiteConfig.pm>:
 =head2 $ShredderStoragePath
 
 Directory containing Shredder backup dumps; defaults to
-F</opt/rt4/var/data/RT-Shredder> (assuming an /opt/rt4 installation).
+F</opt/rt5/var/data/RT-Shredder> (assuming an /opt/rt5 installation).
 
 To change this (for example, to /some/backup/path) add the following to
 your F<RT_SiteConfig.pm>:

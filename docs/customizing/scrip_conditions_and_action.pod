@@ -52,7 +52,7 @@ the configuration at Admin > Global > Conditions and click on 'On Resolve'.
 The condition has a Name, which is displayed in the Condition dropdown when
 you create a scrip, and a Description to identify it. The Condition Module is
 the RT module that executes the condition, in this case C<StatusChange>. You
-can find the code in C</opt/rt4/lib/RT/Condition/StatusChange.pm> and view
+can find the code in C</opt/rt5/lib/RT/Condition/StatusChange.pm> and view
 the documentation at L<RT::Condition::StatusChange>.
 
 Parameters to Pass shows the actual parameter that is passed to the module
@@ -82,7 +82,7 @@ Now assume we have an additional requirement to check if a custom field value
 we'll need to write some code. To start, create a new file for your new
 SpecialReviewNeeded module here:
 
-    /opt/rt4/local/lib/RT/Condition/SpecialReviewNeeded.pm
+    /opt/rt5/local/lib/RT/Condition/SpecialReviewNeeded.pm
 
 Creating it in the C<local> directory will keep it safe when you apply
 RT upgrades in the future.
@@ -150,7 +150,7 @@ existing actions on the action display page at Admin > Global > Actions.
 You find Notify AdminCcs, which might be close. Taking
 a quick look you see it has a Name and Description, like conditions, and
 the module it calls is C<Notify>, which can be found at
-C</opt/rt4/lib/RT/Action/Notify.pm>.
+C</opt/rt5/lib/RT/Action/Notify.pm>.
 
 The Parameter to Pass is AdminCc, and if you look at other notification
 actions you'll see many use Notify and just pass a different ticket role.
