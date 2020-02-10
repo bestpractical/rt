@@ -164,9 +164,9 @@ class LifecycleModel {
         while (i--) {
             var action, info;
             [action, info] = tempArr.splice(0, 2);
+            if (!action) continue;
 
-            var pattern = d.name+" ->|-> "+d.name;
-            var re = new RegExp(pattern,"g");
+            var re = new RegExp(d.name+" *->|-> *"+d.name,"g");
             if ( ! re.test(action) ) {
                 actions.push(action);
                 actions.push(info);
