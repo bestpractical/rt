@@ -451,7 +451,6 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
             my ($id, $msg) = $value->$mutator( $ARGS{$param} );
             push (@results, $msg);
         }
-        $m->callback(CallbackName => 'AfterUpdateCustomFieldValue', CustomFieldObj => $CustomFieldObj, CustomFieldValueObj => $value, ARGSRef => \%ARGS );
     }
 
 }
