@@ -65,24 +65,35 @@
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
 
 % if ($Object->isa('RT::Ticket')) {
+<div id="create-linked-ticket" class="container">
+  <form class="form-inline justify-content-center" action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
   <div class="form-row">
-    <div class="col-md-12">
-      <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
-        <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
-        <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="btn btn-primary">
-        <select name="LinkType" class="selectpicker">
-          <option value="DependsOn-new"><% loc('Depends on') %></option>
-          <option value="new-DependsOn"><% loc('Depended on by') %></option>
-          <option value="MemberOf-new"><% loc('Parents') %></option>
-          <option value="new-MemberOf"><% loc('Children') %></option>
-          <option value="RefersTo-new"><% loc('Refers to') %></option>
-          <option value="new-RefersTo"><% loc('Referred to by') %></option>
-        </select>
-        <&|/l&>Ticket in</&>
-        <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
-      </form>
+    <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
+    <div class="col-auto label">
+      <&|/l&>Create new</&>
+    </div>
+    <div class="col">
+      <select name="LinkType" class="selectpicker form-control">
+        <option value="DependsOn-new"><% loc('Depends on') %></option>
+        <option value="new-DependsOn"><% loc('Depended on by') %></option>
+        <option value="MemberOf-new"><% loc('Parents') %></option>
+        <option value="new-MemberOf"><% loc('Children') %></option>
+        <option value="RefersTo-new"><% loc('Refers to') %></option>
+        <option value="new-RefersTo"><% loc('Referred to by') %></option>
+      </select>
+    </div>
+    <div class="col-auto label">
+      <&|/l&>Ticket in</&>
+    </div>
+    <div class="col">
+      <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
+    </div>
+    <div class="col">
+      <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="form-control button btn btn-primary">
     </div>
   </div>
+  </form>
+</div>
 % }
 <%INIT>
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);
