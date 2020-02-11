@@ -1,11 +1,20 @@
 .titlebox {
-    margin-top: 1em;
+    margin-top: 20px;
     padding: 5px;
+}
+
+.titlebox .boxcontainer > :first-child > .titlebox {
+    margin-top: 15px;
+}
+
+.boxcontainer:not(:first-of-type) {
+    padding-left: 5px;
 }
 
 .titlebox .titlebox-title {
     position: relative;
     background-color: transparent;
+    padding-bottom: 0;
 }
 
 .titlebox .titlebox-title a {
@@ -88,7 +97,7 @@ div.results .titlebox .titlebox-content {
 }
 
 .titlebox .card-body {
-    padding-top: 0;
+    padding: 0 15px 15px 15px;
 }
 
 /* Ticket display page colored top borders */
