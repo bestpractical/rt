@@ -55,6 +55,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $QueueObj->Id %>" />
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
 
+<&| /Widgets/TitleBox, class => 'queue-info-basics' &>
   <div class="form-row">
     <div class="col-md-3 label">
       <&|/l&>Queue Name</&>:
@@ -237,6 +238,7 @@
   </div>
 % }
 
+</&>
   <div class="form-row">
     <div class="col-md-12">
 % if ( $Create ) {

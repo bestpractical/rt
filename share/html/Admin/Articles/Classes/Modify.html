@@ -57,6 +57,8 @@
 <input type="hidden" name="id" value="<%$ClassObj->Id%>" />
 % }
 
+<&| /Widgets/TitleBox, class => 'article-class-info-basics' &>
+
   <div class="form-row">
     <div class="col-md-3 label">
       <&|/l&>Class Name</&>:
@@ -164,6 +166,7 @@
 % }
 
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
+</&>
 
   <div class="form-row">
     <div class="col-md-12">

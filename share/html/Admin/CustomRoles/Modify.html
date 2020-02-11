@@ -55,6 +55,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $Create ? 'new': $RoleObj->Id %>" />
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
 
+<&| /Widgets/TitleBox, class => 'custom-role-info-basics' &>
 <div class="form-row">
   <div class="label col-md-3">
     <&|/l&>Role Name</&>:
@@ -121,6 +122,7 @@ disabled="disabled"
   </div>
 </div>
 
+</&>
 % if ( $Create ) {
 <& /Elements/Submit, Label => loc('Create') &>
 % } else {
