@@ -148,3 +148,7 @@ ul.select-queue li a:visited {
 .ticket-merge-position {
     padding-left: 2em;
 }
+
+#create-linked-ticket {
+    padding-top: 15px;
+}
