@@ -279,7 +279,7 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
                 value => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role) ) ) },
             };
 
-            if ($role eq 'Owner') {
+            if ( $RecordClass eq 'RT::Ticket' && $role eq 'Owner' ) {
                 $ROLE_MAP->{$RecordClass}{$role}{edit} = sub {
                     return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0));
                 };
