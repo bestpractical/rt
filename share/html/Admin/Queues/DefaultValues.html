@@ -49,11 +49,11 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues">
+<form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues" class="mx-auto max-width-lg">
 <input type="hidden" name="id" value="<% $queue->id %>" />
 
 <div class="ticket-info-basics">
-  <&| /Widgets/TitleBox, title => loc('Basics') &>
+  <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
   <div class="form-row">
     <div class="col-md-3 label">
       <&|/l&>Priority</&>:
@@ -92,7 +92,7 @@
 </div>
 
 <div class="ticket-info-dates">
-  <&|/Widgets/TitleBox, title => loc("Dates") &>
+  <&|/Widgets/TitleBox, title => loc("Dates"), content_class => 'mx-auto width-sm' &>
   <div class="form-row">
     <div class="col-md-3 label">
       <&|/l&>Starts</&>:
@@ -121,7 +121,7 @@
 
 % if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'People') ) {
 <div class="ticket-info-people">
-  <&|/Widgets/TitleBox, title => loc("People") &>
+  <&|/Widgets/TitleBox, title => loc("People"), content_class => 'mx-auto width-sm' &>
   <& /Elements/EditCustomFields,
       Object => RT::Ticket->new($session{CurrentUser}),
       CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
@@ -133,7 +133,7 @@
 
 % if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'Links') ) {
 <div class="ticket-info-links">
-  <&|/Widgets/TitleBox, title => loc("Links") &>
+  <&|/Widgets/TitleBox, title => loc("Links"), content_class => 'mx-auto width-sm' &>
   <& /Elements/EditCustomFields,
       Object => RT::Ticket->new($session{CurrentUser}),
       CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
@@ -146,7 +146,7 @@
 <& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}) &>
 
 <div class="ticket-info-cfs">
-  <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields") &>
+  <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields"), content_class => 'mx-auto width-sm' &>
   <& /Elements/EditCustomFields, CustomFields => $queue->TicketTransactionCustomFields->LimitToDefaultValuesSupportedTypes, Object => RT::Transaction->new($session{CurrentUser}), QueueObj => $queue, &>
   </&>
 </div>

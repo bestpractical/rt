@@ -49,11 +49,11 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip">
+<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip" class="mx-auto max-width-lg">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="From" value="<% $From || q{} %>" />
 
-<&| /Widgets/TitleBox, title => loc('Basics') &>
+<&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
 
 <& Elements/EditBasics, %ARGS, Scrip => $scrip &>
 

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, class => 'template-info-basics' &>
+<&| /Widgets/TitleBox, class => 'template-info-basics', content_class => 'mx-auto' &>
 <div class="form-row">
   <div class="col-md-3 label">
     <&|/l&>Name</&>:

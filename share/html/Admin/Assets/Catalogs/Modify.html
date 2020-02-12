@@ -49,10 +49,10 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" enctype="multipart/form-data" id="ModifyCatalog" action="Modify.html">
+<form method="post" enctype="multipart/form-data" id="ModifyCatalog" action="Modify.html" class="mx-auto max-width-lg">
   <input type="hidden" name="id" value="<% $catalog->id %>">
 
-  <&| /Widgets/TitleBox, title => loc("Basics"), class => "catalog-basics" &>
+  <&| /Widgets/TitleBox, title => loc("Basics"), class => "catalog-basics", content_class => 'mx-auto width-sm' &>
     <& Elements/EditBasics, %ARGS, CatalogObj => $catalog &>
   </&>
 

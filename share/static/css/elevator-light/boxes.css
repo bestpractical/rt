@@ -149,3 +149,35 @@ div.results .titlebox .titlebox-content {
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
+
+.max-width-xl {
+  max-width: 1200px;
+}
+
+.max-width-lg {
+  max-width: 992px;
+}
+
+.max-width-md {
+  max-width: 992px;
+}
+
+.max-width-sm {
+  max-width: 576px;
+}
+
+.width-xl {
+  width: 1200px;
+}
+
+.width-lg {
+  width: 992px;
+}
+
+.width-md {
+  width: 992px;
+}
+
+.width-sm {
+  width: 576px;
+}

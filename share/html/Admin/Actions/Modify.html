@@ -49,10 +49,10 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Modify.html" id="ModifyAction" name="ModifyAction">
+<form method="post" action="Modify.html" id="ModifyAction" name="ModifyAction" class="mx-auto max-width-lg">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
-<&| /Widgets/TitleBox, title => loc('Basics') &>
+<&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
 <& Elements/EditBasics, %ARGS, Action => $action, &>
 </&>
 

@@ -49,14 +49,14 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues">
+<form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues" class="mx-auto max-width-lg">
 <input type="hidden" name="id" value="<% $catalog->id %>" />
 
 <& /Elements/EditCustomFieldCustomGroupings,
     CustomFieldGenerator => sub {
         $catalog->AssetCustomFields->LimitToDefaultValuesSupportedTypes
     },
-    TitleBoxARGS => { title_class => "inverse" },
+    TitleBoxARGS => { title_class => "inverse", content_class => 'mx-auto width-sm' },
     Object => RT::Asset->new($session{CurrentUser})
 &>
 

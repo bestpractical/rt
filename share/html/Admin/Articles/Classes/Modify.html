@@ -49,7 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form name="ModifyClass" action="<% RT->Config->Get('WebPath') %>/Admin/Articles/Classes/Modify.html" method="post">
+<form name="ModifyClass" action="<% RT->Config->Get('WebPath') %>/Admin/Articles/Classes/Modify.html" method="post" class="mx-auto max-width-lg">
 <input type="hidden" name="Submitted" value="1" />
 %if ($Create ) {
 <input type="hidden" name="id" value="new" />
@@ -57,7 +57,7 @@
 <input type="hidden" name="id" value="<%$ClassObj->Id%>" />
 % }
 
-<&| /Widgets/TitleBox, class => 'article-class-info-basics' &>
+<&| /Widgets/TitleBox, class => 'article-class-info-basics', content_class => 'mx-auto width-sm' &>
 
   <div class="form-row">
     <div class="col-md-3 label">

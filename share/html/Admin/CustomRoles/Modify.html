@@ -51,11 +51,11 @@
 
 
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/CustomRoles/Modify.html" name="ModifyCustomRole" method="post" enctype="multipart/form-data">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/CustomRoles/Modify.html" name="ModifyCustomRole" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
 <input type="hidden" class="hidden" name="id" value="<% $Create ? 'new': $RoleObj->Id %>" />
 % $m->callback( CallbackName => 'FormStart', Create => $Create, ARGSRef => \%ARGS );
 
-<&| /Widgets/TitleBox, class => 'custom-role-info-basics' &>
+<&| /Widgets/TitleBox, class => 'custom-role-info-basics', content_class => 'mx-auto width-sm' &>
 <div class="form-row">
   <div class="label col-md-3">
     <&|/l&>Role Name</&>:

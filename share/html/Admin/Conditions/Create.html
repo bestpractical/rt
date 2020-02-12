@@ -49,9 +49,9 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Create.html" id="CreateCondition" name="CreateCondition">
+<form method="post" action="Create.html" id="CreateCondition" name="CreateCondition" class="mx-auto max-width-lg">
 
-<&| /Widgets/TitleBox, title => loc('Basics') &>
+<&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
 
 <& Elements/EditBasics, %ARGS, Condition => $condition, &>
 
