@@ -51,13 +51,7 @@
 <%INIT>
 my $queue = delete $ARGS{Default};
 if ( !$queue ) {
-    $queue = RT->Config->Get("DefaultQueue", $session{'CurrentUser'});
-
-    if (RT->Config->Get("RememberDefaultQueue", $session{'CurrentUser'})) {
-        if (my $session_default = $session{'DefaultQueue'}) {
-            $queue = $session_default;
-        }
-    }
+    $queue = GetDefaultQueue();
 }
 
 $m->callback(Queue => \$queue, CallbackName => 'DefaultQueue');

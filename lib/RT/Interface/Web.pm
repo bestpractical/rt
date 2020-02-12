@@ -4589,6 +4589,29 @@ sub LoadTransaction {
     return $Transaction;
 }
 
+=head2 GetDefaultQueue
+
+Processes global and user-level configuration options to find the default
+queue for the current user.
+
+Accepts no arguments, returns the ID of the default queue, if found, or undef.
+
+=cut
+
+sub GetDefaultQueue {
+    my $queue;
+
+    # RememberDefaultQueue tracks the last queue used by this user, if set.
+    if ( $session{'DefaultQueue'} && RT->Config->Get( "RememberDefaultQueue", $session{'CurrentUser'} ) ) {
+        $queue = $session{'DefaultQueue'};
+    }
+    else {
+        $queue = RT->Config->Get( "DefaultQueue", $session{'CurrentUser'} );
+    }
+
+    return $queue;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

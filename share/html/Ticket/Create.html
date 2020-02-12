@@ -331,12 +331,7 @@ my $Queue = $ARGS{Queue};
 
 # Use default queue from config site or user prefs if none provided
 unless ($Queue) {
-    if ( $session{'DefaultQueue'} && RT->Config->Get( "RememberDefaultQueue", $session{'CurrentUser'} ) ) {
-        $Queue = $session{'DefaultQueue'};
-    }
-    else {
-        $Queue = RT->Config->Get( "DefaultQueue", $session{'CurrentUser'} );
-    }
+    $Queue = GetDefaultQueue();
 }
 
 # pick first in list in normal order unless queue provided from form/url/defaults
