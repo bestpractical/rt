@@ -102,7 +102,7 @@ ul.sf-menu li {
 
 #page-navigation {
     position: absolute;
-    top: 3.8em;
+    top: 3.3em;
     right: 2em;
 }
 
@@ -182,7 +182,7 @@ ul.sf-menu li {
     float: left;
     margin-left: 1em;
     text-align: right;
-    margin-top: 0.5em;
+    margin-top: 0.33rem;
 }
 
 #topactions form input.btn {
@@ -201,7 +201,7 @@ ul.sf-menu li {
 #topactions {
     position: absolute;
     background: transparent;
-    top: 0.15em;
+    top: 0;
     right: 18em;
     width: auto;
     font-size: 0.9em;
@@ -283,7 +283,7 @@ ul.sf-menu li {
 .create-narrow { display: none; }
 
 #app-nav {
-    padding: 0.5rem;
+    padding: 0.25rem 0.5rem;
 }
 
 /* to stop a "flash" of an unstyled menu on an older browser,  hide the menu until superfish has initialized it */
