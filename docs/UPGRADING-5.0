@@ -14,6 +14,13 @@ extension writers, including deprecated code.
 
 =item *
 
+On MySQL and MariaDB, the default character set has been changed from
+utf8 to utf8mb4. This provides support for 4-byte characters such as
+emojis on tickets. Postgres and Oracle already had support for these
+characters and are not effected by this update.
+
+=item *
+
 The variables which alter the set of HTML elements allowed in HTML
 scrubbing have moved; they have been renamed, and are now found under
 L<RT::Interface::Web::Scrubber>.
