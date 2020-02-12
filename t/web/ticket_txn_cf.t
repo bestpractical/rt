@@ -52,10 +52,7 @@ my ( $ticket, $id );
 diag 'submit value on ticket create page';
 {
 
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_contains($cf_name, 'has cf field' );
 
     $m->submit_form(

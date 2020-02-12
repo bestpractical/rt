@@ -54,10 +54,7 @@ diag 'check valid inputs with various timezones in ticket create page';
 {
     my ( $ticket, $id );
 
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_contains('Select date', 'has cf field' );
 
     $m->submit_form(
@@ -165,10 +162,7 @@ diag 'check search build page';
 
 diag 'check invalid inputs';
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     my $form = $m->form_name("TicketCreate");
 
     $m->submit_form(
@@ -212,10 +206,7 @@ diag 'retain values when adding attachments';
     $txn_cf->AddToObject(RT::Queue->new(RT->SystemUser));
     my $txn_cfid = $txn_cf->id;
 
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_contains('test cf date', 'has cf' );
     $m->content_contains('test txn cf date', 'has txn cf' );
 

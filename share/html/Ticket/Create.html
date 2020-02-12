@@ -56,6 +56,7 @@
   <input type="submit" name="SubmitTicket" value="Create" style="display:none">
   <input type="hidden" class="hidden" name="id" value="new" />
   <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
+  <input type="hidden" name="QueueChanged" value="0" />
 
 % if ( $ARGS{'AddGroupCc'} ){
 <input type="hidden" class="hidden" name="AddGroupCc" value="<% $ARGS{'AddGroupCc'} %>" />
@@ -72,7 +73,6 @@
 
 <div id="ticket-create-metadata">
     <&| /Widgets/TitleBox, title => loc("Basics"), class=>'ticket-info-basics' &>
-    <input type="hidden" class="hidden" name="Queue" value="<% $QueueObj->Id %>" />
     <div>
     <& /Ticket/Elements/EditBasics,
         InTable => 1,
@@ -80,10 +80,12 @@
         defaults => \%ARGS,
         fields  => [
             {   name => 'Queue',
-                comp => '/Ticket/Elements/ShowQueue',
+                comp => '/Elements/SelectQueue',
                 args => {
-                    QueueObj => $QueueObj,
-                    Wrap => 1,
+                    Name           => 'Queue',
+                    Default        => $Queue,
+                    ShowNullOption => 0,
+                    AutoSubmit     => 1,
                 },
             },
             {   name => 'Status',
@@ -326,6 +328,25 @@
 <%INIT>
 $m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
 my $Queue = $ARGS{Queue};
+
+# Use default queue from config site or user prefs if none provided
+unless ($Queue) {
+    $Queue = GetDefaultQueue();
+}
+
+# pick first in list in normal order unless queue provided from form/url/defaults
+unless ($Queue) {
+    my $cache_key = SetObjectSessionCache(
+        ObjectType       => 'Queue',
+        CheckRight       => 'CreateTicket',
+        CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+    );
+
+    $Queue = $session{$cache_key}{objects}[0]->{Id};
+}
+
+Abort( loc( "Permission Denied" ) ) unless $Queue;
+
 $session{DefaultQueue} = $Queue;
 
 my $current_user = $session{'CurrentUser'};
@@ -473,7 +494,7 @@ $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create =
               checks_failure => $checks_failure, results => \@results );
 
 if ((!exists $ARGS{'AddMoreAttach'}) and (!exists $ARGS{'Go'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ( !$checks_failure && !$skip_create ) {
+    if ( !$checks_failure && !$skip_create && !$ARGS{'QueueChanged'} ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();

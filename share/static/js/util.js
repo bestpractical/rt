@@ -621,14 +621,6 @@ jQuery(function() {
         return false;
     });
 
-    jQuery(".ticket-create-modal").click(function(ev){
-        ev.preventDefault();
-        jQuery.get(
-            RT.Config.WebHomePath + "/Helpers/CreateInQueue",
-            showModal
-        );
-    });
-
     jQuery("#articles-create, .article-create-modal").click(function(ev){
         ev.preventDefault();
         jQuery.get(
