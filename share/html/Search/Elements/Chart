@@ -91,7 +91,7 @@ if ( RT->Config->Get('EnableJSChart') || !RT->Config->Get('DisableGD') ) {
           </div>
 % }
         </div>
-        <div class="col-auto">
+        <div class="col-auto chart-table-wrapper">
 % if ( ($ChartStyle || '') =~ /\btable\b/ ) {
           <& ChartTable, %ARGS, Table => { $report->FormatTable( %columns ) } &>
 % }
