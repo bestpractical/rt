@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 20;
+use RT::Test tests => undef;
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
@@ -45,14 +45,31 @@ $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
 
 $m->content_lacks( 'value="Update"', 'no update button' );
 
-$m->submit_form(
-    form_name => 'Dashboard-Searches-body',
-    fields =>
-      { 'Searches-body-Available' => "search-$search_id-RT::User-$user_id" },
-    button => 'add',
-);
+# add foo saved search to the dashboard
 
-$m->content_contains('Dashboard updated', 'added search foo to dashboard bar' );
+my $payload = {
+    "dashboard_id" => $dashboard_id,
+    "panes"        => {
+        "body"    => [
+            {
+              "description" => "foo",
+              "name" => "RT::User-" . $user_id . "-SavedSearch-" . $search_id,
+              "searchId" => "",
+              "searchType" => "Ticket",
+              "type" => "saved"
+            },
+        ],
+        "sidebar" => [
+        ]
+    }
+};
+
+my $json = JSON::to_json( $payload );
+my $res  = $m->post(
+    $url . '/Helpers/UpdateDashboard',
+    [ content => $json ],
+);
+is( $res->code, 200, "added search foo to dashboard bar" );
 
 # delete the created search
 
@@ -71,18 +88,25 @@ $m->content_lacks( $search_uri, 'deleted search foo' );
 # here is what we really want to test
 
 $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
-$m->content_contains('Deleted queries', 'found deleted message' );
+$m->content_contains('Unable to find search Saved Search: foo', 'found deleted message' );
 
-# Update button shows so we can update the deleted search easily
-$m->content_contains( 'value="Update"', 'found update button' );
+$payload = {
+    "dashboard_id" => $dashboard_id,
+    "panes"        => {
+        "body"    => [
+        ],
+        "sidebar" => [
+        ]
+    }
+};
 
-$m->submit_form(
-    form_name => 'Dashboard-Searches-body',
-    button    => 'update',
+$json = JSON::to_json( $payload );
+$res  = $m->post(
+    $url . '/Helpers/UpdateDashboard',
+    [ content => $json ],
 );
+is( $res->code, 200, "added search foo to dashboard" );
 
-$m->content_lacks('Deleted queries', 'deleted message is gone' );
-$m->content_lacks( 'value="Update"', 'update button is gone too' );
+$m->content_lacks('Unable to find search Saved Search: foo', 'deleted message is gone' );
 
-$m->get_warnings; # we'll get a lot of warnings because the deleted search
-
+done_testing;

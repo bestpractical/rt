@@ -17,18 +17,37 @@ sub create_dashboard {
     $m->click_button(value => 'Create');
     $m->title_is('Modify the dashboard Testing!');
 
+    my ( $dashboard_id ) = ( $m->uri =~ /id=(\d+)/ );
+    ok( $dashboard_id, "got a dashboard ID, $dashboard_id" );  # 8
+
     $m->follow_link_ok({text => 'Content'});
     $m->title_is('Modify the content of dashboard Testing!');
 
-    my $form = $m->form_name('Dashboard-Searches-body');
-    my @input = $form->find_input('Searches-body-Available');
-    my ($dashboards_component) =
-        map { ( $_->possible_values )[1] }
-        grep { ( $_->value_names )[1] =~ /Dashboards/ } @input;
-    $form->value('Searches-body-Available' => $dashboards_component );
-    $m->click_button(name => 'add');
-    $m->content_contains('Dashboard updated');
+    my $payload = {
+        "dashboard_id" => $dashboard_id,
+        "panes"        => {
+            "body" => [
+                {
+                  "description" => "Dashboards",
+                  "name" => "Dashboards",
+                  "searchId" => "",
+                  "searchType" => "",
+                  "type" => "component"
+                },
+            ],
+            "sidebar" => [
+            ],
+        },
+    };
 
+    my $json = JSON::to_json( $payload );
+    my $res  = $m->post(
+        $baseurl . '/Helpers/UpdateDashboard',
+        [ content => $json ],
+    );
+    is( $res->code, 200, "added 'Dashboards' to dashboard 'Testing!'" );
+
+    $m->get_ok($baseurl . '/Dashboards/Queries.html?id=' . $dashboard_id);
     $m->follow_link_ok({text => 'Show'});
     $m->title_is('Testing! Dashboard');
     $m->content_contains('My dashboards');
@@ -345,8 +364,6 @@ produces_dashboard_mail_ok(
     BodyLike   => qr/Mes tableaux de bord/,
     BodyUnlike => qr/My dashboards/,
 );
-
-
 
 @mails = RT::Test->fetch_caught_mails;
 is(@mails, 0, "no mail leftover");

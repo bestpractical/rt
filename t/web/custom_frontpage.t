@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 19;
+use RT::Test tests => undef;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -17,7 +17,7 @@ $user_obj->PrincipalObj->GrantRight(Right => 'EditSavedSearches');
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 
-ok $m->login( customer => 'customer' ), "logged in";
+ok $m->login( customer => 'customer' ), "logged in as non-root user";
 
 $m->get ( $url."Search/Build.html");
 
@@ -31,35 +31,105 @@ $m->click_button (name => 'SavedSearchSave');
 $m->get ( $url.'Prefs/MyRT.html' );
 $m->content_contains('stupid tickets', 'saved search listed in rt at a glance items');
 
-ok $m->login('root', 'password', logout => 1), 'we did log in as root';
+ok $m->login('root', 'password', logout => 1), 'logged in as root';
 
-$m->get ( $url.'Prefs/MyRT.html' );
-$m->form_name ('SelectionBox-body');
-# can't use submit form for mutli-valued select as it uses set_fields
-$m->field ('body-Selected' => ['component-QuickCreate', 'system-Unowned Tickets', 'system-My Tickets']);
-$m->click_button (name => 'remove');
-$m->form_name ('SelectionBox-body');
-#$m->click_button (name => 'body-Save');
-$m->get ( $url );
-$m->content_lacks ('highest priority tickets', 'remove everything from body pane');
+# remove all portlets from the body pane except 'newest unowned tickets'
+my $payload = {
+    "dashboard_id" => "MyRT",
+    "panes"        => {
+        "body"    => [
+            {
+              "description" => "Unowned Tickets",
+              "name" => "Unowned Tickets",
+              "searchId" => "",
+              "searchType" => "",
+              "type" => "system"
+            },
+        ],
+        "sidebar" => [
+            {
+              "description" => "MyReminders",
+              "name" => "MyReminders",
+              "searchId" => "",
+              "searchType" => "",
+              "type" => "component"
+            },
+            {
+              "description" => "QueueList",
+              "name" => "QueueList",
+              "searchId" => "",
+              "searchType" => "",
+              "type" => "component"
+            },
+            {
+              "description" => "Dashboards",
+              "name" => "Dashboards",
+              "searchId" => "",
+              "searchType" => "",
+              "type" => "component"
+            },
+            {
+              "description" => "RefreshHomepage",
+              "name" => "RefreshHomepage",
+              "searchId" => "",
+              "searchType" => "",
+              "type" => "component"
+            },
+        ]
+    }
+};
 
-$m->get ( $url.'Prefs/MyRT.html' );
-$m->form_name ('SelectionBox-body');
-$m->field ('body-Available' => ['component-QuickCreate', 'system-Unowned Tickets', 'system-My Tickets']);
-$m->click_button (name => 'add');
+my $json = JSON::to_json( $payload );
+my $res  = $m->post(
+    $url . 'Helpers/UpdateDashboard',
+    [ content => $json ],
+);
+is( $res->code, 200, "remove all portlets from body except 'newest unowned tickets'" );
 
-$m->form_name ('SelectionBox-body');
-$m->field ('body-Selected' => ['component-QuickCreate']);
-$m->click_button (name => 'movedown');
+$m->get( $url );
+$m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
+$m->content_lacks( 'highest priority tickets', "'highest priority tickets' is not present" );
+$m->content_lacks( 'Bookmarked Tickets<span class="results-count">', "'Bookmarked Tickets' is not present" );  # 'Bookmarked Tickets' also shows up in the nav, so we need to be more specific
+$m->content_lacks( 'Quick ticket creation', "'Quick ticket creation' is not present" );
 
-$m->form_name ('SelectionBox-body');
-$m->click_button (name => 'movedown');
+# add back the previously removed portlets
+push(
+    @{$payload->{panes}->{body}},
+    {
+      "description" => "My Tickets",
+      "name" => "My Tickets",
+      "searchId" => "",
+      "searchType" => "",
+      "type" => "system"
+    },
+    {
+      "description" => "Bookmarked Tickets",
+      "name" => "Bookmarked Tickets",
+      "searchId" => "",
+      "searchType" => "",
+      "type" => "system"
+    },
+    {
+      "description" => "QuickCreate",
+      "name" => "QuickCreate",
+      "searchId" => "",
+      "searchType" => "",
+      "type" => "component"
+    },
+);
 
-$m->form_name ('SelectionBox-body');
-#$m->click_button (name => 'body-Save');
-$m->get ( $url );
-$m->content_contains('highest priority tickets', 'adds them back');
+$json = JSON::to_json( $payload );
+$res  = $m->post(
+    $url . 'Helpers/UpdateDashboard',
+    [ content => $json ],
+);
+is( $res->code, 200, 'add back previously removed portlets' );
 
+$m->get( $url );
+$m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
+$m->content_contains( 'highest priority tickets', "'highest priority tickets' is present" );
+$m->content_contains( 'Bookmarked Tickets<span class="results-count">', "'Bookmarked Tickets' is present" );
+$m->content_contains( 'Quick ticket creation', "'Quick ticket creation' is present" );
 
 #create a saved search with special chars
 $m->get( $url . "Search/Build.html" );
@@ -73,22 +143,28 @@ $m->get( $url . 'Prefs/MyRT.html' );
 $m->content_contains( 'special chars [test] [_1] ~[_1~]',
     'saved search listed in rt at a glance items' );
 
-$m->get( $url . 'Prefs/MyRT.html' );
-$m->form_name('SelectionBox-body');
-$m->field(
-    'body-Available' => [
-        'component-QuickCreate',
-        'system-Unowned Tickets',
-        'system-My Tickets',
-        'saved-' . $name,
-    ]
+# add saved search to body
+push(
+    @{$payload->{panes}->{body}},
+    {
+      "description" => "special chars [test] [_1] ~[_1~]",
+      "name" => $name,
+      "searchId" => "",
+      "searchType" => "Ticket",
+      "type" => "saved"
+    },
 );
-$m->click_button( name => 'add' );
+
+$json = JSON::to_json( $payload );
+$res  = $m->post(
+    $url . 'Helpers/UpdateDashboard',
+    [ content => $json ],
+);
+is( $res->code, 200, 'add saved search to body' );
 
 $m->get($url);
 $m->content_like( qr/special chars \[test\] \d+ \[_1\]/,
-    'special chars in titlebox' );
-
+    "'special chars' is present" );
 
 # Edit a system saved search to contain "[more]"
 {
@@ -107,3 +183,4 @@ $m->content_like( qr/special chars \[test\] \d+ \[_1\]/,
     $m->content_contains($desc . " [more]", "found description: $desc");
 }
 
+done_testing;

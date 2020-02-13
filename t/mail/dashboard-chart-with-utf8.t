@@ -34,16 +34,43 @@ $m->form_name('ModifyDashboard');
 $m->field( 'Name' => 'dashboard foo' );
 $m->click_button( value => 'Create' );
 
-$m->follow_link_ok( { text => 'Content' } );
-my $form  = $m->form_name('Dashboard-Searches-body');
-my @input = $form->find_input('Searches-body-Available');
-my ($dashboards_component) =
-  map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ /^Chart/ } @input;
-$form->value( 'Searches-body-Available' => $dashboards_component );
-$m->click_button( name => 'add' );
-$m->content_contains('Dashboard updated');
+my ( $dashboard_id ) = ( $m->uri =~ /id=(\d+)/ );
+ok( $dashboard_id, "got an ID for the dashboard, $dashboard_id" );
 
+$m->get_ok( $baseurl . '/Dashboards/Queries.html?id=' . $dashboard_id );
+$m->follow_link_ok( { text => 'Content' } );
+
+# add content, Chart: chart foo, to dashboard body
+# we need to get the saved search id from the content before submitting the json.
+my $regex = qr/data-type="saved" data-name="RT::User-/ . $root->id . qr/-SavedSearch-(\d+)"/;
+my ( $saved_search_id ) = $m->content =~ /$regex/;
+ok( $saved_search_id, "got an ID for the saved search, $saved_search_id" );
+
+my $payload = {
+    "dashboard_id" => $dashboard_id,
+    "panes"        => {
+        "body"    => [
+            {
+              "description" => "chart foo",
+              "name" => "RT::User-" . $root->id . "-SavedSearch-" . $saved_search_id,
+              "searchId" => "",
+              "searchType" => "Chart",
+              "type" => "saved"
+            },
+        ],
+        "sidebar" => [
+        ],
+    }
+};
+
+my $json = JSON::to_json( $payload );
+my $res  = $m->post(
+    $baseurl . '/Helpers/UpdateDashboard',
+    [ content => $json ],
+);
+is( $res->code, 200, "add content 'Chart: chart foo' to dashboard body" );
+
+$m->get_ok( $baseurl . '/Dashboards/Queries.html?id=' . $dashboard_id );
 $m->follow_link_ok( { text => 'Subscription' } );
 $m->form_name('SubscribeDashboard');
 $m->field( 'Frequency' => 'daily' );
