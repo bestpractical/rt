@@ -58,9 +58,12 @@
 
 <script type="text/javascript">
 jQuery( function() {
+    jQuery('#SelectDisplayColumns').selectize();
+
     jQuery('[name=AddCol], [name=RemoveCol], [name=ColUp], [name=ColDown]').click( function() {
         var name = jQuery(this).attr('name');
         var form = jQuery(this).closest('form');
+
         jQuery.ajax({
             url: '<% RT->Config->Get('WebPath') %>/Helpers/BuildFormatString?' + name + '=1&' + form.serialize(),
             success: function (data) {
@@ -69,6 +72,7 @@ jQuery( function() {
                     form.find('select[name=CurrentDisplayColumns]').html(data.CurrentDisplayColumns);
                     form.find('select[name=SelectDisplayColumns]').val('').change();
                     form.find('[name=Link],[name=Title],[name=Size],[name=Face]').val('');
+                    form.find('[name=Link],[name=Title],[name=Size],[name=Face]').selectpicker('refresh');
                 }
                 else {
                     alert('<% loc("Failed to update format. Reason:") %>' + ' ' + data.message);
@@ -88,7 +92,7 @@ jQuery( function() {
     <div class="col-12 col-md-3">
       <div class="form-row">
         <div class="col-12">
-          <select name="SelectDisplayColumns" multiple="multiple" class="form-control selectpicker">
+          <select name="SelectDisplayColumns" id="SelectDisplayColumns" multiple="multiple">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
           <option class="<% CSSClass($field) %>" value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
