@@ -12,7 +12,7 @@
 
 .chart-picture input[name=Width],
 .chart-picture input[name=Height] {
-    width: 3em;
+    width: 4em;
     text-align: right;
 }
 
