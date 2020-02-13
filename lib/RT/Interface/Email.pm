@@ -213,7 +213,7 @@ sub Gateway {
         $bare_MailError->(To => $ErrorsTo, MIMEObj => $Message, @_)
     };
 
-    $args{'ticket'} ||= ExtractTicketId( $Message );
+    $args{'ticket'} ||= ExtractTicketId( $Message, $SystemQueueObj->SubjectTag );
 
     my $SystemTicket = RT::Ticket->new( RT->SystemUser );
     $SystemTicket->Load( $args{'ticket'} ) if ( $args{'ticket'} ) ;
@@ -608,10 +608,11 @@ will be used during ticket creation.
 
 sub ExtractTicketId {
     my $entity = shift;
+    my $tag = shift;
 
     my $subject = Encode::decode( "UTF-8", $entity->head->get('Subject') || '' );
     chomp $subject;
-    return ParseTicketId( $subject, $entity );
+    return ParseTicketId( $subject, $entity, $tag );
 }
 
 =head3 ParseTicketId
@@ -628,9 +629,10 @@ Returns the id if a match is found.  Otherwise returns undef.
 sub ParseTicketId {
     my $Subject = shift;
     my $Entity = shift;
+    my $tag = shift;
 
     my $rtname = RT->Config->Get('rtname');
-    my $test_name = RT->Config->Get('EmailSubjectTagRegex') || qr/\Q$rtname\E/i;
+    my $test_name = qr/\Q$tag\E/;
 
     # We use @captures and pull out the last capture value to guard against
     # someone using (...) instead of (?:...) in $EmailSubjectTagRegex.
