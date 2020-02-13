@@ -5,8 +5,7 @@ html {
 }
 
 div#body {
-    padding: 0 2.5em;
-    margin-top: 0.3em;
+    padding: 0 20px;
     margin-right: 0;
     margin-bottom: 0em;
     background: #fff;
@@ -107,7 +106,7 @@ div#header {
 
 div#header h1 {
     font-size: 1.4em;
-    padding-left: 2em;
+    padding-left: 20px;
     display: inline-block;
 }
 
@@ -152,5 +151,5 @@ ol ol {
   overflow: hidden;
   display: block;
   position: relative;
-  padding-bottom: 5em;
+  padding-bottom: 5.15em;
 }
