@@ -109,7 +109,7 @@ jQuery( function() {
 %# leave 1 col to save some space to the right "->"
         <div class="value col-8">
           <select name="Link" class="form-control selectpicker">
-              <option value="None">-</option>
+              <option value="">-</option>
               <option value="Display"><&|/l&>Display</&></option>
 % if ($IncludeTicketLinks) {
               <option value="Take"><&|/l&>Take</&></option>
