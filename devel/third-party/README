@@ -88,3 +88,8 @@ License: Icons: CC BY 4.0, Code: MIT License
 Description: an enhanced Suckerfish-style menu jQuery plugin
 Origin: https://github.com/joeldbirch/superfish
 License: MIT and GPL
+
+* selectize-0.12.6
+Description: bubble-like multiple user inputs
+Origin: https://selectize.github.io/selectize.js/
+License: Apache

@@ -52,7 +52,7 @@
     <&|/l&>One-time Cc</&>:
   </div>
   <div class="col-md-9 value">
-    <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1 &>
+    <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
     <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
   </div>
 </div>
@@ -84,6 +84,7 @@
               name="UpdateCc-<%$addr%>"
               class="onetime onetimecc custom-control-input"
               type="checkbox"
+              autocomplete="off"
 % my $clean_addr = $txn_addresses{$addr}->format;
               onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
               <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
@@ -104,7 +105,7 @@
     <&|/l&>One-time Bcc</&>:
   </div>
   <div class="col-md-9 value">
-    <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1 &>
+    <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
   </div>
 </div>
 
@@ -135,6 +136,7 @@
               name="UpdateBcc-<%$addr%>"
               class="onetime onetimebcc custom-control-input"
               type="checkbox"
+              autocomplete="off"
 % my $clean_addr = $txn_addresses{$addr}->format;
               onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
               <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >

@@ -11,6 +11,7 @@
 @import "bootstrap-combobox.css";
 @import "dropzone.css";
 @import "dropzone.customized.css";
+@import "selectize.default.css";
 
 @import "base.css";
 @import "collection.css";
@@ -40,6 +41,7 @@
 @import "dashboards.css";
 @import "ticket-lists.css";
 @import "ticket-search.css";
+@import "selectize.customized.css";
 @import "print.css";
 @import "Chart.css";
 @import "jquery.jgrowl.min.css";

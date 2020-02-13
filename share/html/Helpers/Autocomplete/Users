@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json; charset=utf-8');
+% $r->content_type('application/json; charset=utf-8') if $abort;
 <% JSON( \@suggestions ) |n %>
-% $m->abort;
+% $m->abort if $abort;
 <%ARGS>
 $return => ''
 $term => undef
@@ -58,6 +58,7 @@ $exclude => ''
 $op => undef
 $include_nobody => 0
 $include_system => 0
+$abort => 1
 </%ARGS>
 <%INIT>
 # Only allow certain return fields
@@ -107,7 +108,18 @@ $users->SimpleSearch( Privileged => $privileged,
 
 my @suggestions;
 while ( my $user = $users->Next ) {
-    my $suggestion = { id => $user->id, label => $user->Format, value => $user->$return };
+    my @searched_values;
+    for my $field ( sort keys %{ RT->Config->Get('UserSearchFields') } ) {
+        if ( $field =~ /^CF\.(?:\{(.*)}|(.*))$/ ) {
+            push @searched_values, $user->CustomFieldValuesAsString( $1 || $2 );
+        }
+        else {
+            push @searched_values, $user->$field;
+        }
+    }
+    my $text = join "\n", grep defined $_, @searched_values;
+
+    my $suggestion = { id => $user->id, label => $user->Format, value => $user->$return, text => $text };
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
     push @suggestions, $suggestion;
 }

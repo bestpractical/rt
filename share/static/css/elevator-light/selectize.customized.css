@@ -1,0 +1,48 @@
+.selectize-control.plugin-remove_button [data-value] .remove {
+  border-left: none;
+}
+
+.selectize-input {
+  padding: 5px 5px;
+  z-index: auto;
+  min-height: 34px;
+}
+
+.selectize-control.multi .selectize-input > div {
+  margin-right: 3px;
+  border: none;
+}
+.selectize-control.multi .selectize-input > div.active {
+  border: none;
+}
+
+.selectize-control.multi .selectize-input [data-value] {
+  background-image: -moz-linear-gradient(top, #4868b3, #4868b3);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#4868b3), to(#4868b3));
+  background-image: -webkit-linear-gradient(top, #4868b3, #4868b3);
+  background-image: -o-linear-gradient(top, #4868b3, #4868b3);
+  background-image: linear-gradient(to bottom, #4868b3, #4868b3);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff4868b3', endColorstr='#ff4868b3', GradientType=0);
+}
+.selectize-control.multi .selectize-input [data-value].active {
+  background-color: #0085d4;
+  background-image: -moz-linear-gradient(top, #284691, #284691);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#284691), to(#284691));
+  background-image: -webkit-linear-gradient(top, #284691, #284691);
+  background-image: -o-linear-gradient(top, #284691, #284691);
+  background-image: linear-gradient(to bottom, #284691, #284691);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff284691', endColorstr='#ff284691', GradientType=0);
+}
+
+.selectize-dropdown-content {
+  max-height: none;
+}
+
+.selectize-dropdown .create {
+  padding-left: 4px;
+}
+
+.selectize-dropdown .active {
+  background-color: #cfdeff;
+}
