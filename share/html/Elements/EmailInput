@@ -83,6 +83,7 @@
 
 % if (@options) {
     data-options="<% JSON(\@options) %>"
+    data-items="<% JSON([ map { $_->{value} } @options ]) %>"
 % }
 
 />

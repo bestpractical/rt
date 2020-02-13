@@ -50,9 +50,15 @@ window.RT.Autocomplete.bind = function(from) {
 
         if (what === 'Users' && input.is('[data-autocomplete-multiple]')) {
             var options = input.attr('data-options');
+            var items = input.attr('data-items');
             input.selectize({
                 plugins: ['remove_button', 'rt_drag_drop'],
                 options: options ? JSON.parse(options) : null,
+
+                // If input value contains multiple items, selectize only
+                // renders the first item somehow. Here we explicitly set
+                // items to get around this issue.
+                items: items ? JSON.parse(items) : null,
                 valueField: 'value',
                 labelField: 'label',
                 searchField: ['label', 'value', 'text'],
