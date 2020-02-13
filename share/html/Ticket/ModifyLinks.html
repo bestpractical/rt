@@ -65,7 +65,11 @@
 <& Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
 
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
+    </div>
+  </div>
 </form>
 
 % $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $Ticket);

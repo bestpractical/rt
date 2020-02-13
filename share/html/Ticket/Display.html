@@ -85,7 +85,6 @@ my $titleright = qq{
 <& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments, InlineEdit => $InlineEdit &>
 </&>
 </div>
-<br />
 
 % $m->callback( Ticket => $TicketObj, %ARGS, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowHistory' );
 

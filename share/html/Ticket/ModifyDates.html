@@ -57,7 +57,11 @@
 <&| /Widgets/TitleBox,title => loc('Modify dates for ticket #[_1]', $TicketObj->Id), class=> 'ticket-info-dates' &>
 <& Elements/EditDates, TicketObj => $TicketObj &>
 </&>
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
+    </div>
+  </div>
 </form>
 
 % $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $TicketObj);

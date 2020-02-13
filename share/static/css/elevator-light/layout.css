@@ -5,29 +5,11 @@ html {
 }
 
 div#body {
-    padding: 0 2.5em;
-    margin-top: 0.3em;
+    padding: 0 20px;
     margin-right: 0;
     margin-bottom: 0em;
     background: #fff;
     z-index: 1;
-}
-
-@media (max-width: 800px) {
-    div#body {
-        padding: 3em 4.875%; /* 3em at 13px font size => 39px => 39/800 => .04875 */
-    }
-    /* at narrow widths we'll have broken into a single column, so the default
-       padding-right just causes the layout to degrade */
-    .boxcontainer {
-        padding-right: 0;
-    }
-}
-
-@media (max-width: 700px) {
-    div#body {
-        padding: 3em 0;
-    }
 }
 
 div#footer {
@@ -124,7 +106,7 @@ div#header {
 
 div#header h1 {
     font-size: 1.4em;
-    padding-left: 2em;
+    padding-left: 20px;
     display: inline-block;
 }
 
@@ -169,5 +151,5 @@ ol ol {
   overflow: hidden;
   display: block;
   position: relative;
-  padding-bottom: 5em;
+  padding-bottom: 5.15em;
 }

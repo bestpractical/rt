@@ -64,18 +64,6 @@
     font-style: normal;
 }
 
-.summary {
-    padding-top: .1em;
-}
-
-div#body .ticket-info-basics,
-div#body .ticket-info-people,
-div#body .ticket-info-dates,
-div#body .ticket-info-links,
-div#body .ticket-info-reminders {
-    padding-top: .1em;
-}
-
 .unread-messages .titlebox-content :link {
     text-decoration: underline;
 }

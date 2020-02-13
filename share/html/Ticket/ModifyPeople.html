@@ -84,7 +84,11 @@ my $all_recipients_checked = (grep { !$_ } values %recips) ? 0 : 1;
 % }
 </ul>
 </&>
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
+    </div>
+  </div>
 </form>
 
 % $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $Ticket);
