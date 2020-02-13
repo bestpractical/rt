@@ -18,18 +18,33 @@ sub create_dashboard {
     $m->field( 'Name' => $name );
     $m->click_button( value => 'Create' );
 
+    my ( $dashboard_id ) = ( $m->uri =~ /id=(\d+)/ );
+    ok( $dashboard_id, "got a dashboard ID, $dashboard_id" );
+
     $m->follow_link_ok( { text => 'Content' } );
-    my $form  = $m->form_name('Dashboard-Searches-body');
-    my @input = $form->find_input('Searches-body-Available');
 
     my $add_component = sub {
-        my $name = shift;
-        my ($dashboards_component) =
-          map { ( $_->possible_values )[1] }
-          grep { ( $_->value_names )[1] =~ $name } @input;
-        $form->value( 'Searches-body-Available' => $dashboards_component );
-        $m->click_button( name => 'add' );
-        $m->content_contains('Dashboard updated');
+        my $component_name = shift;
+        my $arg;
+
+        if ( $component_name eq 'My Tickets' ) {
+            $arg = 'system-My Tickets';
+        }
+        else {  # component_name is 'My Assets'
+            $arg = 'component-MyAssets';
+        }
+
+        $m->submit_form_ok({
+            form_name => 'UpdateSearches',
+            fields    => {
+                dashboard_id => $dashboard_id,
+                body         => $arg,
+        },
+        button => 'UpdateSearches',
+        }, "added '$component_name' to dashboard '$name'" );
+
+        like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+        $m->content_contains( 'Dashboard updated' );
     };
 
     $add_component->('My Tickets') unless $assets;
