@@ -62,7 +62,7 @@
         <% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
     </span>
   </div>
-  <div class="titlebox-content collapse<% $bodyclass %><% $rolledup ? " hidden" : " show"%>" id="<% $tid %>">
+  <div class="titlebox-content collapse<% $bodyclass %><% $rolledup ? " hidden" : " show"%><% " $content_class" || '' %>" id="<% $tid %>">
     <div class="card-body">
 <%ARGS>
 $class => ''
@@ -78,6 +78,7 @@ $id => ''
 $hideable => 1
 $rolledup => 0
 $data => {}
+$content_class => ''
 </%ARGS>
 
 <%init>

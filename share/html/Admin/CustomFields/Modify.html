@@ -52,8 +52,10 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form method="post" action="Modify.html" name="ModifyCustomField" id="ModifyCustomField">
+<form method="post" action="Modify.html" name="ModifyCustomField" id="ModifyCustomField" class="mx-auto max-width-lg">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
+
+<&| /Widgets/TitleBox, title => 'Basics', class => 'custom-field-info-basics', content_class => 'mx-auto width-sm' &>
 
 <div class="form-row">
   <div class="label col-md-3">
@@ -186,43 +188,6 @@ jQuery( function() {
 </div>
 % }
 
-<div class="form-row">
-  <div class="label col-md-3">
-    <&|/l&>Link values to</&>
-  </div>
-  <div class="col-md-9 value">
-    <input class="form-control" type="text" size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="col-md-3"></div>
-  <div class="col-md-9">
-    <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
-    <&|/l&>Fill in this field with a URL.</&>
-    <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="label col-md-3">
-    <&|/l&>Include page</&>
-  </div>
-  <div class="col-md-9 value">
-    <input class="form-control" type="text" size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
-  </div>
-</div>
-
-<div class="form-row">
-  <div class="col-md-3"></div>
-  <div class="col-md-9">
-    <&|/l&>RT can include content from another web service when showing this custom field.</&>
-    <&|/l&>Fill in this field with a URL.</&>
-    <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
-    <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
-  </div>
-</div>
-
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
 <div class="form-row categoriesbasedon">
   <div class="col-md-3 label">
@@ -269,20 +234,58 @@ jQuery( function() {
 
 % $m->callback(CallbackName => 'EndOfTable', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
+</&>
 
-% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
+
+<&| /Widgets/TitleBox, title => 'Integration', class => 'custom-field-info-integration', content_class => 'mx-auto width-md' &>
+
 <div class="form-row">
-  <div class="col-md-3 label">
-    <h2><&|/l&>Values</&></h2>
+  <div class="label col-md-2">
+    <&|/l&>Link values to</&>
+  </div>
+  <div class="col-md-8">
+    <input class="form-control" type="text" size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3"></div>
-  <div class="edit_custom_field_values col-md-9">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
+    <&|/l&>Fill in this field with a URL.</&>
+    <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="label col-md-2">
+    <&|/l&>Include page</&>
+  </div>
+  <div class="col-md-8 value">
+    <input class="form-control" type="text" size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-2"></div>
+  <div class="col-md-8">
+    <&|/l&>RT can include content from another web service when showing this custom field.</&>
+    <&|/l&>Fill in this field with a URL.</&>
+    <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
+    <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
+  </div>
+</div>
+</&>
+
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
+<&| /Widgets/TitleBox, title => 'Values', class => 'custom-field-info-values', content_class => 'mx-auto width-md' &>
+<div class="form-row">
+  <div class="col-md-1"></div>
+  <div class="edit_custom_field_values col-md-11">
     <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
   </div>
 </div>
+</&>
 % }
 
 <div class="form-row">
@@ -294,8 +297,12 @@ jQuery( function() {
 </form>
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
-<div class="add_custom_field_value">
-<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+<div class="mx-auto max-width-lg">
+  <&| /Widgets/TitleBox, title => 'Add Values', class => 'custom-field-info-add-values', content_class => 'mx-auto width-md' &>
+    <div class="add_custom_field_value">
+      <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+    </div>
+  </&>
 </div>
 % }
 % $m->callback(%ARGS, CallbackName => 'EndOfPage', CustomFieldObj => $CustomFieldObj);

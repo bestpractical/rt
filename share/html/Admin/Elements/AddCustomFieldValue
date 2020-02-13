@@ -45,25 +45,20 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
-<div class="col-md-3 label">
-  <h3><&|/l&>Add Value</&></h3>
-</div>
-
 <div class="form-row">
-  <div class="col-md-3"></div>
-  <div class="col-md-9">
+  <div class="col-md-1"></div>
+  <div class="col-md-11">
 <form name="AddCustomFieldValue" action="Modify.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $CustomField->id %>" />
 
   <div class="form-row">
-    <div class="label col-md-2 text-left">
+    <div class="label col-md-1 text-left">
       <&|/l&>Sort</&>
     </div>
-    <div class="label col-md-2 text-left">
+    <div class="label col-md-3 text-left">
       <&|/l&>Name</&>
     </div>
-    <div class="label col-md-2 text-left">
+    <div class="label col-md-3 text-left">
       <&|/l&>Description</&>
     </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
@@ -75,13 +70,13 @@
 
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-new";
   <div class="form-row">
-    <div class="col-md-2 value">
+    <div class="col-md-1 value">
       <input class="form-control" type="text" size="3"  name="<% $paramtag %>-SortOrder" />
     </div>
-    <div class="col-md-2 value">
+    <div class="col-md-3 value">
       <input class="form-control" type="text" size="25" name="<% $paramtag %>-Name" />
     </div>
-    <div class="col-md-2 value">
+    <div class="col-md-3 value">
       <input class="form-control" type="text" size="45" name="<% $paramtag %>-Description" />
     </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
@@ -100,6 +95,7 @@
   </div>
 % $m->callback(CallbackName => 'AfterCustomFieldValueInput', CustomFieldObj => $CustomField, ARGSRef => \%ARGS );
 </form>
+</div>
 </div>
 
 <script type="text/javascript">

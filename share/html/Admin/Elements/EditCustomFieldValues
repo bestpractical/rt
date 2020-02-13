@@ -57,13 +57,13 @@
       <label class="custom-control-label" for="DeleteAll"></label>
     </div>
   </div>
-  <div class="label col-md-2 text-left">
+  <div class="label col-md-1 text-left">
     <&|/l&>Sort</&>
   </div>
-  <div class="label col-md-2 text-left">
+  <div class="label col-md-3 text-left">
     <&|/l&>Name</&>
   </div>
-  <div class="label col-md-2 text-left">
+  <div class="label col-md-3 text-left">
     <&|/l&>Description</&>
   </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
@@ -82,13 +82,13 @@
         <label class="custom-control-label" for="Delete-<% $paramtag %>"></label>
     </div>
   </div>
-  <div class="col-md-2 value">
+  <div class="col-md-1 value">
     <input class="form-control" type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->SortOrder %>" />
   </div>
-  <div class="col-md-2 value">
+  <div class="col-md-3 value">
     <input class="form-control" type="text" size="25" name="<% $paramtag %>-Name" value="<% $value->Name %>" />
   </div>
-  <div class="col-md-2 value">
+  <div class="col-md-3 value">
     <input class="form-control" type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description || '' %>" />
   </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
