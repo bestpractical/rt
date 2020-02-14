@@ -51,6 +51,10 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
  Abort(loc('This feature is only available to system administrators'));
 }
 
+if (RT->Config->Get('DisableConfigInDatabase')) {
+  Abort(loc('[_1] disabled', 'Configuration in database'));
+}
+
 my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
 
 my $options = RT->Config->LoadSectionMap();

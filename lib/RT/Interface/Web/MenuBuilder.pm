@@ -703,7 +703,9 @@ sub BuildMainNav {
 
     if ( $request_path =~ m{^/Admin/Tools/(Configuration|EditConfig)} ) {
         $page->child( display => title => loc('View'), path => "/Admin/Tools/Configuration.html" );
-        $page->child( history => title => loc('Edit'), path => "/Admin/Tools/EditConfig.html" );
+        unless (RT->Config->Get('DisableConfigInDatabase')) {
+            $page->child( history => title => loc('Edit'), path => "/Admin/Tools/EditConfig.html" );
+        }
     }
 
     # due to historical reasons of always having been in /Elements/Tabs
