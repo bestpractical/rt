@@ -290,7 +290,6 @@ diag 'retain values when adding attachments';
         },
         'jumbo form'
     );
-    $m->save_content('/tmp/x.html');
 
     $m->form_name("TicketModifyAll");
     is( $m->value( "Object-RT::Transaction--CustomField-$txn_cfid-Values" ),

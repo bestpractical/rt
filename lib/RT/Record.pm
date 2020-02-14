@@ -2026,12 +2026,6 @@ sub _AddCustomFieldValue {
         $new_value->{include_set_initial} = 1 if $args{'ForCreation'};
         $new_value->Load( $new_value_id );
 
-        # now that adding the new value was successful, delete the old one
-        if ( $old_value ) {
-            my ( $val, $msg ) = $old_value->Delete();
-            return ( 0, $msg ) unless $val;
-        }
-
         if ( $args{'RecordTransaction'} ) {
             my ( $TransactionId, $Msg, $TransactionObj ) =
               $self->_NewTransaction(

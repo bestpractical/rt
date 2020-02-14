@@ -109,6 +109,7 @@
   </div>
 </div>
 
+% $m->callback(CallbackName => 'AfterMessageBox', ARGSRef => \%ARGS, TicketObj => $TicketObj);
 </&>
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments, Count => RT->Config->Get('AttachmentListCount') &>
@@ -122,6 +123,8 @@ my $checks_failure = 0;
 
 my $TicketObj = LoadTicket($id);
 $id = $ARGS{'id'} = $TicketObj->id;
+
+$m->callback(CallbackName => 'Initial', ARGSRef => \%ARGS, TicketObj => $TicketObj);
 
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',

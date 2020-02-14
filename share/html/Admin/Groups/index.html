@@ -169,6 +169,15 @@ push @groups, { field => $GroupField3, op => $GroupOp3, string => $GroupString3 
 
 if ( scalar @groups ) {
     foreach my $group ( @groups ) {
+        if ( $group->{'string'} eq 'NULL' ) {
+            if ( $group->{'op'} =~ /!=|\bNOT\b/i ) {
+                $group->{'op'} = 'IS NOT';
+            }
+            else {
+                $group->{'op'} = 'IS';
+            }
+        }
+
         if ( $group->{'field'} =~ /^CustomField-(\d+)/ ) {
             $Groups->LimitCustomField(
                 CUSTOMFIELD => $1,

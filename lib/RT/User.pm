@@ -48,13 +48,15 @@
 
 =head1 NAME
 
-  RT::User - RT User object
+RT::User - RT User object
 
 =head1 SYNOPSIS
 
   use RT::User;
 
 =head1 DESCRIPTION
+
+Object to operate on a single RT user record.
 
 =head1 METHODS
 
@@ -108,7 +110,13 @@ sub _OverlayAccessible {
 
 =head2 Create { PARAMHASH }
 
+Create accepts all core RT::User fields (Name, EmailAddress, etc.) and
+user custom fields in the form UserCF.Foo where Foo is the name of the
+custom field.
 
+    my ($ret, $msg) = $user->Create( Name => 'mycroft',
+                                     EmailAddress => 'mycroft@example.com',
+                                     UserCF.Relationship => 'Brother' );
 
 =cut
 
@@ -185,7 +193,7 @@ sub Create {
 
     delete $args{'Disabled'};
 
-    $self->SUPER::Create(id => $principal_id , %args);
+    $self->SUPER::Create( id => $principal_id, map { $_ => $args{$_} } grep { !/^(?:User)?CF\./ } keys %args );
     my $id = $self->Id;
 
     #If the create failed.
@@ -195,6 +203,9 @@ sub Create {
 
         return ( 0, $self->loc('Could not create user') );
     }
+
+    # Handle any user CFs
+    $self->UpdateObjectCustomFieldValues( %args );
 
     my $aclstash = RT::Group->new($self->CurrentUser);
     my $stash_id = $aclstash->_CreateACLEquivalenceGroup($principal);
@@ -255,6 +266,44 @@ sub Create {
     $RT::Handle->Commit;
 
     return ( $id, $self->loc('User created') );
+}
+
+=head2 UpdateObjectCustomFieldValues
+
+Set User CFs from incoming args in the form UserCF.Foo.
+
+=cut
+
+sub UpdateObjectCustomFieldValues {
+    my $self = shift;
+    my %args   = @_;
+
+    foreach my $rtfield ( sort keys %args ) {
+        next unless $rtfield =~ /^UserCF\.(.+)$/i;
+        my $cf_name = $1;
+        my $value   = $args{$rtfield};
+        $value = '' unless defined $value;
+
+        my $current = $self->FirstCustomFieldValue($cf_name);
+        $current = '' unless defined $current;
+
+        if ( not length $current and not length $value ) {
+            $RT::Logger->debug("\tCF.$cf_name\tskipping, no value provided");
+            next;
+        }
+        elsif ( $current eq $value ) {
+            $RT::Logger->debug("\tCF.$cf_name\tunchanged => $value");
+            next;
+        }
+
+        $current = 'unset' unless length $current;
+        $RT::Logger->debug("\tCF.$cf_name\t$current => $value");
+
+        my ( $ok, $msg ) = $self->AddCustomFieldValue( Field => $cf_name, Value => $value );
+        $RT::Logger->error( $self->Name . ": Couldn't add value '$value' for '$cf_name': $msg" )
+          unless $ok;
+    }
+    return;
 }
 
 =head2 ValidateName STRING
@@ -867,11 +916,7 @@ sub CanonicalizeUserInfoFromExternalAuth {
             # Jump to the next attr in $args if this one isn't in the attr_match_list
             $RT::Logger->debug( "Attempting to use this canonicalization key:",$rt_attr);
             unless( ($args->{$rt_attr} // '') =~ /\S/ ) {
-                $RT::Logger->debug("This attribute (",
-                                    $rt_attr,
-                                    ") is null or incorrectly defined in the attr_map for this service (",
-                                    $service,
-                                    ")");
+                $RT::Logger->debug("No value provided for RT user attribute $rt_attr");
                 next;
             }
 
@@ -920,6 +965,9 @@ sub CanonicalizeUserInfoFromExternalAuth {
             $params{'EmailAddress'} = $UserObj->CanonicalizeEmailAddress($params{'EmailAddress'});
         }
         %$args = (%$args, %params);
+    }
+    else {
+        $RT::Logger->debug("No record found in configured external sources");
     }
 
     $RT::Logger->info(  (caller(0))[3],

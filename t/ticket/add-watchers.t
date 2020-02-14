@@ -1,4 +1,4 @@
-use RT::Test nodata => 1, tests => 34;
+use RT::Test nodata => 1, tests => undef;
 
 use strict;
 use warnings;
@@ -23,6 +23,18 @@ my $queue = RT::Queue->new(RT->SystemUser);
 my ($queue_id) = $queue->Create( Name => 'watcher tests '.$$);
 ok( $queue_id, 'queue created for watcher tests' );
 
+# Create custom role on the queue
+my $custom_role = RT::CustomRole->new(RT->SystemUser);
+my ($ok, $msg) = $custom_role->Create(
+    Name      => 'Custom Role',
+    MaxValues => 0,
+);
+ok($ok, "Created custom role: $msg");
+
+($ok, $msg) = $custom_role->AddToObject($queue->Id);
+ok($ok, "Added custom role to queue: $msg");
+my $custom_role_type = $custom_role->GroupType;
+
 # new privileged user to check rights
 my $user = RT::User->new( RT->SystemUser );
 my ($user_id) = $user->Create(
@@ -45,7 +57,8 @@ ok( !$user->HasRight( Right => 'ModifyTicket', Object => $queue ), "user can't m
 ok( !$user->HasRight( Right => 'Watch',        Object => $queue ), "user can't watch queue tickets" );
 
 my $ticket = RT::Ticket->new( RT->SystemUser );
-my ($rv, $msg) = $ticket->Create( Subject => 'watcher tests', Queue => $queue->Name );
+my $rv;
+($rv, $msg) = $ticket->Create( Subject => 'watcher tests', Queue => $queue->Name );
 ok( $ticket->id, "ticket created" );
 
 my $ticket2 = RT::Ticket->new( $cu );
@@ -57,6 +70,9 @@ ok( $ticket2->Subject, "ticket load by user" );
 ok( !$rv, "user can't add self as Cc" );
 ($rv, $msg) = $ticket2->AddWatcher( Type => 'Requestor', PrincipalId => $user->PrincipalId );
 ok( !$rv, "user can't add self as Requestor" );
+($rv, $msg) = $ticket2->AddWatcher( Type => $custom_role_type, PrincipalId => $user->PrincipalId );
+ok( !$rv, "user can't add self to Custom Role $msg" );
+
 $principal->GrantRight( Right => 'Watch'  , Object => $queue );
 ok(  $user->HasRight( Right => 'Watch',        Object => $queue ), "user can watch queue tickets" );
 ($rv, $msg) = $ticket2->AddWatcher( Type => 'Cc', PrincipalId => $user->PrincipalId );
@@ -107,12 +123,20 @@ ok( $rv, "user loaded queue" );
 ok( !$rv, "user can't add self as Cc" );
 ($rv, $msg) = $queue2->AddWatcher( Type => 'Requestor', PrincipalId => $user->PrincipalId );
 ok( !$rv, "user can't add self as Requestor" );
+($rv, $msg) = $queue2->AddWatcher( Type => $custom_role_type, PrincipalId => $user->PrincipalId );
+ok( !$rv, "user can't add self to Custom Role $msg" );
+
 $principal->GrantRight( Right => 'Watch'  , Object => $queue );
 ok(  $user->HasRight( Right => 'Watch',        Object => $queue ), "user can watch queue queues" );
 ($rv, $msg) = $queue2->AddWatcher( Type => 'Cc', PrincipalId => $user->PrincipalId );
 ok(  $rv, "user can add self as Cc by PrincipalId" );
 ($rv, $msg) = $queue2->AddWatcher( Type => 'Requestor', PrincipalId => $user->PrincipalId );
 ok(  $rv, "user can add self as Requestor by PrincipalId" );
+
+$principal->GrantRight( Right => 'ModifyQueueWatchers' , Object => $queue );
+ok( $user->HasRight( Right => 'ModifyQueueWatchers', Object => $queue ), "user can modify all queue watchers" );
+($rv, $msg) = $queue2->AddWatcher( Type => $custom_role_type, PrincipalId => $user->PrincipalId );
+ok( $rv, "user can add self to Custom Role $msg" );
 
 # remove user and try adding with Email address
 ($rv, $msg) = $queue->DeleteWatcher( Type => 'Cc',        PrincipalId => $user->PrincipalId );
@@ -125,3 +149,5 @@ ok(  $rv, "user can add self as Cc by Email" );
 ($rv, $msg) = $queue2->AddWatcher( Type => 'Requestor', Email => $user->EmailAddress );
 ok(  $rv, "user can add self as Requestor by Email" );
 
+
+done_testing();

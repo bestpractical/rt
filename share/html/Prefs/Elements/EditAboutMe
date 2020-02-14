@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form name="EditAboutMe" action="" method="post">
+<form name="EditAboutMe" action="" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$UserObj->Id%>" />
 
 <div class="form-row">

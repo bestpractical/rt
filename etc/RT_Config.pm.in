@@ -1231,16 +1231,6 @@ minutes.  Note that this only effects entry, not display.
 
 Set($DefaultTimeUnitsToHours, 0);
 
-=item C<$SignatureAboveQuote>
-
-By default RT places the signature at the bottom of the quoted text in
-the message box for ticket replies.  Set this to 1 to place the signature
-above the quoted text.
-
-=cut
-
-Set($SignatureAboveQuote, 0);
-
 =item C<$TimeInICal>
 
 By default, events in the iCal feed on the ticket search page
@@ -2450,6 +2440,23 @@ Grouping" are created by the L</%CustomFieldGroupings> setting.
 
 =over 4
 
+=item C<$DisplayTotalTimeWorked>
+
+Set to 1 to display Total Time Worked in the Basics section.
+
+Total Time Worked is a dynamic value containing a sum of Time Worked for
+the parent and all child tickets.  This value is generated when displaying
+the ticket and automatically updates when a child ticket is added or removed.
+Total Time Worked follows only parent/child link relationships.  Tickets
+linked with depends-on or refers-to links are not included.
+
+Total Time Worked is also available as a column for reports generated with
+the Query Builder.
+
+=cut
+
+Set($DisplayTotalTimeWorked, 0);
+
 =item C<$ShowMoreAboutPrivilegedUsers>
 
 This determines if the 'More about requestor' box on
@@ -3140,6 +3147,16 @@ C<$MessageBoxIncludeSignature>.
 
 Set($MessageBoxIncludeSignatureOnComment, 1);
 
+=item C<$SignatureAboveQuote>
+
+By default RT places the signature at the bottom of the quoted text in
+the message box for ticket replies.  Set this to 1 to place the signature
+above the quoted text.
+
+=cut
+
+Set($SignatureAboveQuote, 0);
+
 =back
 
 =head2 Attach Files
@@ -3304,14 +3321,14 @@ Set($AlwaysDownloadAttachments, undef);
 
 =item C<$AttachmentListCount>
 
-The number of attachments to display by default on ticket display and ticket
-reply pages. Attachments beyond this count will be displayed only after the
-user clicks a "Show all" link. The default value, C<undef>, means always show
+Sets the number of attachments to display on ticket display and ticket
+update pages (default is 5). Attachments beyond this number are displayed
+only after the user clicks the "Show all" link. Set to C<undef> to always show
 all attachments. A value of C<0> means show no attachments by default.
 
 =cut
 
-Set($AttachmentListCount, undef);
+Set($AttachmentListCount, 5);
 
 =item C<$PreferRichText>
 
@@ -3412,6 +3429,15 @@ It defaults to on.  Set this to 0 to disable it.
 =cut
 
 Set($QuoteFolding, 1);
+
+=item C<$QuoteWrapWidth>
+
+C<$QuoteWrapWidth> controls the number of columns to use when wrapping
+quoted text within transactions.
+
+=cut
+
+Set($QuoteWrapWidth, 70);
 
 =back
 

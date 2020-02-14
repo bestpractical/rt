@@ -372,7 +372,18 @@ sub CanonicalizeUserInfo {
     my $filter          = $config->{'filter'};
 
     # Get the list of unique attrs we need
-    my @attrs = values(%{$config->{'attr_map'}});
+    my @attrs;
+    for my $field ( values %{ $config->{'attr_map'} } ) {
+        if ( ref $field eq 'CODE' ) {
+            push @attrs, $field->();
+        }
+        elsif ( ref $field eq 'ARRAY' ) {
+            push @attrs, @$field;
+        }
+        else {
+            push @attrs, $field;
+        }
+    }
 
     # This is a bit confusing and probably broken. Something to revisit..
     my $filter_addition = ($key && $value) ? "(". $key . "=". escape_filter_value($value) .")" : "";
@@ -447,9 +458,39 @@ sub CanonicalizeUserInfo {
                 # weird even if you do have the old config.
                 if ($RT::LdapAttrMap and $RT::LdapAttrMap->{$key} eq 'dn') {
                     $params{$key} = $entry->dn();
-                } else {
-                    $params{$key} =
-                      ($entry->get_value($config->{'attr_map'}->{$key}))[0];
+                }
+                else {
+
+                    my $external_field = $config->{'attr_map'}{$key};
+                    my @list = grep defined && length, ref $external_field eq 'ARRAY' ? @$external_field : ($external_field);
+                    unless (@list) {
+                        $RT::Logger->error("Invalid LDAP mapping for $key, no defined fields");
+                        next;
+                    }
+
+                    my @values;
+                    foreach my $e (@list) {
+                        if ( ref $e eq 'CODE' ) {
+                            push @values,
+                              $e->(
+                                external_entry => $entry,
+                                mapping        => $config->{'attr_map'},
+                                rt_field       => $key,
+                                external_field => $external_field,
+                              );
+                        }
+                        elsif ( ref $e ) {
+                            $RT::Logger->error("Invalid type of LDAP mapping for $key, value is $e");
+                            next;
+                        }
+                        else {
+                            push @values, $entry->get_value( $e, asref => 1 );
+                        }
+                    }
+
+                    # Use the first value if multiple values are set in ldap
+                    @values = map { ref $_ eq 'ARRAY' ? $_->[0] : $_ } grep defined, @values;
+                    $params{$key} = join ' ', grep defined && length, @values;
                 }
             }
             $found = 1;

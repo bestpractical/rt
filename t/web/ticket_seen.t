@@ -69,12 +69,17 @@ diag "user B adds a message, we check that user A see notification and can clear
     );
 
     $agent_a->follow_link_ok(
-        { text => 'jump to the first unread message' },
+        { text => 'Jump to Unread' },
         'try to jump to first unread message'
     );
     like( $agent_a->base, qr/#txn-$reply_id$/, 'contains anchor' );
 
-    $agent_a->follow_link_ok({text => 'jump to the first unread message and mark all messages as seen'}, 'try to mark all as seen');
+    $agent_a->follow_link_ok(
+        { text => 'Jump & Mark as Seen' },
+        'try to jump to first unread message'
+    );
+    like( $agent_a->base, qr/#txn-$reply_id$/, 'contains anchor' );
+
     $agent_a->content_contains(
         'Marked all messages as seen',
         'see success message'

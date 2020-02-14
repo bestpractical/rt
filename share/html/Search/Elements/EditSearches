@@ -53,7 +53,7 @@
 <div class="form-row">
   <div class="col-md-4 label"><&|/l&>Privacy</&>:</div>
   <div class="col-md-8">
-<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@Objects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
+<& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
   </div>
 </div>
   <div class="form-row">
@@ -83,7 +83,7 @@
   <div class="form-row">
     <div class="col-md-4 label"><&|/l&>Load saved search</&>:</div>
     <div class="col-md-8 input-group">
-<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@Objects, SearchType => $Type &>
+<& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
 <input type="submit" class="button btn btn-primary" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
     </div>
   </div>
@@ -102,8 +102,13 @@ my $can_modify = $session{'CurrentUser'}->HasRight(
 );
 
 use RT::SavedSearch;
-my @Objects = RT::SavedSearch->new($session{CurrentUser})->_PrivacyObjects;
-push @Objects, RT::System->new( $session{'CurrentUser'} )
+my @LoadObjects = RT::SavedSearch->new($session{CurrentUser})->ObjectsForLoading;
+push @LoadObjects, RT::System->new( $session{'CurrentUser'} )
+    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
+                                          Right => 'SuperUser' );
+
+my @CreateObjects = RT::SavedSearch->new($session{CurrentUser})->ObjectsForCreating;
+push @CreateObjects, RT::System->new( $session{'CurrentUser'} )
     if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
                                           Right => 'SuperUser' );
 

@@ -135,18 +135,33 @@ foreach my $key (keys %ARGS) {
 
 # Process new users
 foreach my $member (grep $_, @AddMembersUsers) {
-    my $principal = RT::User->new($session{'CurrentUser'});
+    my $principal;
+    my $user = RT::User->new($session{'CurrentUser'});
 
     if ($member =~ /^User-(\d+)$/) {
         # Old style, using id
-        $principal->Load($1);
-    } else {
-        # New style, just a username
-        $principal->Load($member);
+        my ($ret, $msg) = $user->Load($1);
+        if ( $ret ){
+            $principal = $user->PrincipalObj;
+        }
+        else {
+            RT::Logger->error("Unable to load user with id $1: $msg");
+        }
+    }
+    else {
+        # Accept username or email address
+        my $msg;
+        ($principal, $msg) = RT->System->CanonicalizePrincipal( User => $member );
+        RT::Logger->error("Unable to load principal: $msg") unless $principal;
     }
 
-    my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
-    push (@results, $msg);
+    if ( $principal and $principal->Id ){
+        my ($val, $msg) = $Group->AddMember($principal->Id);
+        push (@results, $msg);
+    }
+    else {
+        push (@results, "Unable to load user $member");
+    }
 }
 
 # Process new groups

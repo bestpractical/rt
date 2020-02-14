@@ -615,4 +615,30 @@ now contains the reference to the message content as the name implies.
 
 =back
 
+=head1 UPGRADING FROM 4.4.4 AND EARLIER
+
+=over 4
+
+=item * Privacy Menu in Query Builder
+
+On the Query Builder, the Privacy menu loads groups you are a member of as potential
+places to save searches. However, it previously did not confirm the current user
+had the EditSavedSearches right, so you might try to save a search with a group
+and receive an error until that right was granted.
+
+This has been fixed, so now groups load only if you have rights to create the
+search via EditSavedSearches on the group or globally. This may change the groups
+that appear in the Privacy menu, but shouldn't change functionality since users
+without the correct rights were unable to create searches.
+
+=item * AttachmentListCount Default
+
+The C<AttachmentListCount> configuration option now defaults to 5.
+To restore the previous configuration and show all attachments,
+add the following to your C<RT_SiteConfig.pm>.
+
+    Set($AttachmentListCount, undef);
+
+=back
+
 =cut

@@ -16,6 +16,28 @@ eval { require DBD::SQLite; } or do {
     plan skip_all => 'Unable to test without DBD::SQLite';
 };
 
+my $employee_type_cf = RT::CustomField->new( RT->SystemUser );
+ok( $employee_type_cf->Create(
+        Name       => 'Employee Type',
+        LookupType => RT::User->CustomFieldLookupType,
+        Type       => 'Select',
+        MaxValues  => 1,
+    ),
+    'created cf Employee Type'
+);
+ok( $employee_type_cf->AddToObject( RT::User->new( RT->SystemUser ) ), 'applied Employee Type globally' );
+
+my $employee_id_cf = RT::CustomField->new( RT->SystemUser );
+ok( $employee_id_cf->Create(
+        Name       => 'Employee ID',
+        LookupType => RT::User->CustomFieldLookupType,
+        Type       => 'Freeform',
+        MaxValues  => 1,
+    ),
+    'created cf Employee ID'
+);
+ok( $employee_id_cf->AddToObject( RT::User->new( RT->SystemUser ) ), 'applied Employee ID globally' );
+
 my $dir    = File::Temp::tempdir( CLEANUP => 1 );
 my $dbname = File::Spec->catfile( $dir, 'rtauthtest' );
 my $table  = 'users';
@@ -25,12 +47,14 @@ my $schema = <<"EOF";
 CREATE TABLE users (
   username varchar(200) NOT NULL,
   password varchar(40) NULL,
-  email varchar(16) NULL
+  email varchar(16) NULL,
+  employee_type varchar(16) NULL,
+  employee_id varchar(16) NULL
 );
 EOF
 $dbh->do( $schema );
 $dbh->do(
-"INSERT INTO $table VALUES ( 'testuser', '$password', 'testuser\@invalid.tld')"
+"INSERT INTO $table VALUES ( 'testuser', '$password', 'testuser\@invalid.tld', 'engineer', '234')"
 );
 
 RT->Config->Set( ExternalAuthPriority        => ['My_SQLite'] );
@@ -40,7 +64,7 @@ RT->Config->Set( AutoCreate                  => undef );
 RT->Config->Set(
     ExternalSettings => {
         'My_SQLite' => {
-            'type'   => 'db',
+            'type'            => 'db',
             'database'        => $dbname,
             'table'           => $table,
             'dbi_driver'      => 'SQLite',
@@ -50,8 +74,16 @@ RT->Config->Set(
             'p_enc_sub'       => 'md5_hex',
             'attr_match_list' => ['Name'],
             'attr_map'        => {
-                'Name'           => 'username',
-                'EmailAddress'   => 'email',
+                'Name'                 => 'username',
+                'EmailAddress'         => 'email',
+                'FreeformContactInfo'  => [ 'username', 'email' ],
+                'CF.Employee Type'     => 'employee_type',
+                'UserCF.Employee Type' => 'employee_type',
+                'UserCF.Employee ID'   => sub {
+                    my %args = @_;
+                    return ( 'employee_type', 'employee_id' ) unless $args{external_entry};
+                    return ( $args{external_entry}->{employee_type}, $args{external_entry}->{employee_id} );
+                },
             }
         },
     }
@@ -75,6 +107,12 @@ diag "test user creation";
     my ($ok,$msg) = $testuser->Load( 'testuser' );
     ok($ok,$msg);
     is($testuser->EmailAddress,'testuser@invalid.tld');
+
+    is( $testuser->FreeformContactInfo, 'testuser testuser@invalid.tld', 'user FreeformContactInfo' );
+    is( $testuser->FirstCustomFieldValue('Employee Type'), 'engineer', 'user Employee Type value' );
+    is( $testuser->FirstCustomFieldValue('Employee ID'),   'engineer 234',      'user Employee ID value' );
+    is( $employee_type_cf->Values->Count,                  1,          'cf Employee Type values count' );
+    is( $employee_type_cf->Values->First->Name,            'engineer', 'cf Employee Type value' );
 }
 
 diag "test form login";

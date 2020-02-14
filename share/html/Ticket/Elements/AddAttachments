@@ -52,7 +52,7 @@
     <div>
         <label for="DeleteAttach-<%$attach_name%>"><% $attach_name %></label>
 %       $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeDeleteLink', AttachmentName => $attach_name );
-        (<a href="#" class="delete-attach" data-name="<%$attach_name%>" /><&|/l&>Delete</&></a>)
+        (<a href="#" class="delete-attach" data-name="<%$attach_name%>"><&|/l&>Delete</&></a>)
     </div>
 % } # end of foreach
 </div>
