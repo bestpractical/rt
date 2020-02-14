@@ -83,8 +83,12 @@
     <div id="pick-criteria">
       <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues, %ARGS &>
     </div>
-    <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
-    <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
+    <div class="form-row">
+      <div class="col-md-12">
+        <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
+        <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
+      </div>
+    </div>
   </div>
 
   <div id="editquery" class="col-xl-5">
@@ -108,7 +112,11 @@
 &>
 </div>
 
-<& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
+    </div>
+  </div>
 </form>
 
 <%INIT>

@@ -62,7 +62,11 @@
 <&|/Widgets/TitleBox, title => loc('Format'), &>
 <textarea class="form-control" name="Format" rows="8" cols="72"><% $Format %></textarea>
 </&>
-<& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => loc("Apply your changes")&>
+  <div class="form-row">
+    <div class="col-md-12">
+      <& /Elements/Submit, Label => loc("Apply"), Reset => 1, Caption => loc("Apply your changes")&>
+    </div>
+  </div>
 </form>
 
 <%INIT>
