@@ -66,7 +66,7 @@
       <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
         <i class="label">(<&|/l&>show suggestions</&>)</i>
       </a>
-      <div class="OneTimeCcs hidden">
+      <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
       <i class="col-md-auto">(<&|/l&>check to add</&>)</i>
@@ -118,7 +118,7 @@
       <a href="#" class="ToggleSuggestions" data-hide-label="<% $hide_label %>" data-show-label="<% $show_label %>">
         <i class="label">(<&|/l&>show suggestions</&>)</i>
       </a>
-      <div class="OneTimeCcs hidden">
+      <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
       <i class="col-md-auto">(<&|/l&>check to add</&>)</i>
@@ -152,7 +152,7 @@ jQuery(function() {
     jQuery('a.ToggleSuggestions').click(function(e) {
         e.preventDefault();
         var toggleSuggestions = jQuery(this);
-        var oneTimeCcs = toggleSuggestions.closest('td').find('.OneTimeCcs');
+        var oneTimeCcs = toggleSuggestions.closest('div').find('.OneTimeCcs');
         oneTimeCcs.toggleClass('hidden');
         var hideOrShow = oneTimeCcs.hasClass('hidden') ? toggleSuggestions.data('showLabel') : toggleSuggestions.data('hideLabel');
         toggleSuggestions.find('i').html('(' + hideOrShow + ')');
