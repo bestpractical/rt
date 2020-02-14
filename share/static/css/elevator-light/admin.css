@@ -206,6 +206,11 @@ div.inline-row i {
 .configuration .tab-content .tab-content {
     padding-top: 0;
 }
-.configuration .card.titlebox {
+
+.configuration .tab-content .card.titlebox {
     margin-top: 0;
+}
+
+.configuration > .titlebox-content {
+    margin-top: 20px;
 }
