@@ -83,7 +83,10 @@
 
 % if (@options) {
     data-options="<% JSON(\@options) %>"
-    data-items="<% JSON([ map { $_->{value} } @options ]) %>"
+% }
+
+% if (@items) {
+    data-items="<% JSON(\@items) %>"
 % }
 
 />
@@ -96,20 +99,37 @@
 
 <%INIT>
 my @options;
+my @items;
 if ($AutocompleteMultiple) {
-    for my $email ( @$Options, ( split '\s*,\s*', $Default || '' ) ) {
-        next unless $email =~ /\S/;
+
+    my $get_autocomplete_option = sub {
+        my $term = shift;
+        return unless $term =~ /\S/;
         my $json = $m->scomp(
             '/Helpers/Autocomplete/Users',
-            term => $email,
+            term => $term,
             max  => 1,
             $AutocompleteReturn ? ( return => $AutocompleteReturn ) : (),
             abort => 0,
         );
         if ($json) {
             if ( my $parsed = JSON::from_json($json) ) {
-                push @options, $parsed->[0] || ();
+                return $parsed->[0] || ();
             }
+        }
+        return;
+    };
+
+    for my $email ( @$Options ) {
+        if ( my $option = $get_autocomplete_option->($email) ) {
+            push @options, $option;
+        }
+    }
+
+    for my $email ( split '\s*,\s*', $Default || '' ) {
+        if ( my $option = $get_autocomplete_option->($email) ) {
+            push @options, $option;
+            push @items, $option->{value};
         }
     }
 }
