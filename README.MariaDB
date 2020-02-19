@@ -26,8 +26,11 @@ correct character set.
 
 This is done by adding the following lines to the MariaDB configuration:
 
-[client-server]
+[mysqld]
 character-set-server = utf8mb4
+
+[client]
+default-character-set = utf8mb4
 
 You can check the values your server is using by running this command:
     mysqladmin variables | grep -i character_set
