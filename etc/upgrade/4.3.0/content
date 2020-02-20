@@ -44,7 +44,7 @@ our @Initial = (
                 OPERATOR        => '!=',
                 VALUE           => '',
                 ENTRYAGGREGATOR => 'AND',
-            );
+            ) if RT->Config->Get('DatabaseType') ne 'Oracle';
             $users->Limit(
                 FIELD           => $column,
                 OPERATOR        => 'IS NOT',
