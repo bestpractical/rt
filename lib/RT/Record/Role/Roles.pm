@@ -282,6 +282,15 @@ sub Roles {
     return   map { $_->[0] }
             sort {   $a->[1]{SortOrder} <=> $b->[1]{SortOrder}
                   or $a->[0] cmp $b->[0] }
+            map {
+                if ( ref $self && $self->Id && $_->[0] =~ /^RT::CustomRole-(\d+)/ ) {
+                    my $id  = $1;
+                    my $ocr = RT::ObjectCustomRole->new( $self->CurrentUser );
+                    $ocr->LoadByCols( ObjectId => $self->Id, CustomRole => $id );
+                    $_->[1]{SortOrder} = $ocr->SortOrder if $ocr->Id;
+                }
+                $_;
+            }
             grep {
                 my $ok = 1;
                 for my $k (keys %attr) {
