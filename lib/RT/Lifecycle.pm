@@ -977,6 +977,20 @@ sub UpdateLifecycle {
             %{$args{NewConfig}}
         );
 
+        my @statuses;
+        foreach my $category ( qw(initial active inactive) ) {
+            for my $status (@{ $lifecycles->{$name}->{ $category } || [] }) {
+                push @statuses, $status;
+            }
+        }
+        unless ( $lifecycles->{$name}->{'defaults'} && $lifecycles->{$name}->{'defaults'}->{'on_create'} &&
+                    grep { $lifecycles->{$name}->{'defaults'}->{'on_create'} eq $_ } @statuses ) {
+            unless ( $lifecycles->{$name}->{'defaults'} ) {
+                $lifecycles->{$name}->{'defaults'} = {};
+            }
+            $lifecycles->{$name}->{'defaults'}->{'on_create'} = $lifecycles->{$name}->{'initial'}[0];
+        }
+
         # Remove any stale status mapppings that no longer apply
         for my $mapname ( keys %{$lifecycles->{__maps__}} ) {
             if ( $mapname =~ /($name) ->|-> ($name)/ ) {
