@@ -1598,21 +1598,6 @@ Admin -> Tools menu for SuperUsers.
 
 Set($StatementLog, undef);
 
-=item C<$HideOneTimeSuggestions>
-
-On ticket comment and correspond there are "One-time Cc" and "One-time Bcc"
-fields. As part of this section, RT includes a list of suggested email
-addresses based on the correspondence history for that ticket. This list may
-grow quite large over time.
-
-Enabling this option will hide the list behind a "(show suggestions)" link to
-cut down on page clutter. Once this option is clicked the link will change to
-"(hide suggestions)" and the full list of email addresses will be shown.
-
-=cut
-
-Set($HideOneTimeSuggestions, 0);
-
 =back
 
 
@@ -2436,7 +2421,7 @@ Grouping" are created by the L</%CustomFieldGroupings> setting.
 
 =back
 
-=head2 Ticket display
+=head2 Ticket options
 
 =over 4
 
@@ -2708,6 +2693,21 @@ Set this to 1 to hide unset fields.
 =cut
 
 Set($HideUnsetFieldsOnDisplay, 0);
+
+=item C<$HideOneTimeSuggestions>
+
+On ticket comment and correspond there are "One-time Cc" and "One-time Bcc"
+fields. As part of this section, RT includes a list of suggested email
+addresses based on the correspondence history for that ticket. This list may
+grow quite large over time.
+
+Enabling this option will hide the list behind a "(show suggestions)" link to
+cut down on page clutter. Once this option is clicked the link will change to
+"(hide suggestions)" and the full list of email addresses will be shown.
+
+=cut
+
+Set($HideOneTimeSuggestions, 0);
 
 =back
 
