@@ -375,16 +375,31 @@ sub _EnumLimit {
     # SQL::Statement changes != to <>.  (Can we remove this now?)
     $op = "!=" if $op eq "<>";
 
-    die "Invalid Operation: $op for $field"
-        unless $op eq "="
-        or $op     eq "!=";
+    die "Invalid Operation: $op for $field" unless $op =~ /^(?:=|!=|IN|NOT IN)$/i;
 
     my $meta = $FIELD_METADATA{$field};
-    if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
+    if ( defined $meta->[1] && defined $value ) {
         my $class = "RT::" . $meta->[1];
-        my $o     = $class->new( $sb->CurrentUser );
-        $o->Load($value);
-        $value = $o->Id || 0;
+
+        if ( ref $value eq 'ARRAY' ) {
+            my @values;
+            for my $i (@$value) {
+                if ( $i !~ /^\d+$/ ) {
+                    my $o = $class->new( $sb->CurrentUser );
+                    $o->Load($i);
+                    push @values, $o->Id || 0;
+                }
+                else {
+                    push @values, $i;
+                }
+            }
+            $value = \@values;
+        }
+        elsif ( $value !~ /^\d+$/ ) {
+            my $o = $class->new( $sb->CurrentUser );
+            $o->Load($value);
+            $value = $o->Id || 0;
+        }
     } elsif ( $field eq "Type" ) {
         $value = lc $value if $value =~ /^(ticket|approval|reminder)$/i;
     }
@@ -704,7 +719,12 @@ sub _StringLimit {
     }
 
     if ($field eq "Status") {
-        $value = lc $value;
+        if ( ref $value eq 'ARRAY' ) {
+            $value = [ map lc, @$value ];
+        }
+        else {
+            $value = lc $value;
+        }
     }
 
     $sb->Limit(
@@ -746,9 +766,21 @@ sub _QueueLimit {
 
     }
 
-    my $o = RT::Queue->new( $sb->CurrentUser );
-    $o->Load($value);
-    $value = $o->Id || 0;
+    if ( ref $value eq 'ARRAY' ) {
+        my @values;
+        for my $v ( @$value ) {
+            my $o = RT::Queue->new( $sb->CurrentUser );
+            $o->Load($v);
+            push @values, $o->Id || 0;
+        }
+        $value = \@values;
+    }
+    else {
+        my $o = RT::Queue->new( $sb->CurrentUser );
+        $o->Load($value);
+        $value = $o->Id || 0;
+    }
+
     $sb->Limit(
         FIELD         => $field,
         OPERATOR      => $op,
@@ -3150,6 +3182,68 @@ sub _parser {
                 next if $op =~ /^!=$|\bNOT\b/i;
                 next if $op =~ /^IS( NOT)?$/i and not $subkey;
                 $node->{Bundle} = $refs{$node->{Meta}[1] || ''} ||= [];
+            }
+        }
+    );
+
+    # Convert simple OR'd clauses to IN for better performance, e.g.
+    #     (Status = 'new' OR Status = 'open' OR Status = 'stalled')
+    # to
+    #     Status IN ('new', 'open', 'stalled')
+
+    $tree->traverse(
+        sub {
+            my $node   = shift;
+            my $parent = $node->getParent;
+            return if $parent eq 'root';    # Skip root's root
+
+            # For simple searches like "Status = 'new' OR Status = 'open'",
+            # the OR node is also the root node, go up one level.
+            $node = $parent if $node->isLeaf && $parent->isRoot;
+
+            return if $node->isLeaf;
+
+            if ( ( $node->getNodeValue // '' ) =~ /^or$/i && $node->getChildCount > 1 ) {
+                my @children = $node->getAllChildren;
+                my %info;
+                for my $child (@children) {
+
+                    # Only handle innermost ORs
+                    return unless $child->isLeaf;
+                    my $entry = $child->getNodeValue;
+                    return unless $entry->{Op} =~ /^!?=$/;
+
+                    # Handle String/Int/Id/Enum/Queue/Lifecycle only for
+                    # now. Others have more complicated logic inside, which
+                    # can't be easily converted.
+
+                    return unless ( $entry->{Meta}[0] // '' ) =~ /^(?:STRING|INT|ID|ENUM|QUEUE|LIFECYCLE)$/;
+
+                    for my $field (qw/Key SubKey Op Value/) {
+                        $info{$field}{ $entry->{$field} // '' } ||= 1;
+
+                        if ( $field eq 'Value' ) {
+
+                            # In case it's meta value like __Bookmarked__
+                            return if $entry->{Meta}[0] eq 'ID' && $entry->{$field} !~ /^\d+$/;
+                        }
+                        elsif ( keys %{ $info{$field} } > 1 ) {
+                            return;    # Skip if Key/SubKey/Op are different
+                        }
+                    }
+                }
+
+                my $first_child = shift @children;
+                my $entry       = $first_child->getNodeValue;
+                $entry->{Op} = $info{Op}{'='} ? 'IN' : 'NOT IN';
+                $entry->{Value} = [ sort keys %{ $info{Value} } ];
+                if ( $node->isRoot ) {
+                    $parent->removeChild($_) for @children;
+                }
+                else {
+                    $parent->removeChild($node);
+                    $parent->addChild($first_child);
+                }
             }
         }
     );
