@@ -539,9 +539,12 @@ sub _HasGroupRightQuery {
     }
     if ( my $right = $args{'Right'} ) {
         # Only find superuser or rights with the name $right
-        $query .= " AND (ACL.RightName = 'SuperUser' "
-            . ( $right ne 'SuperUser' ? "OR ACL.RightName = '$right'" : '' )
-        . ") ";
+        if ( $right eq 'SuperUser' ) {
+            $query .= " AND ACL.RightName = 'SuperUser' "
+        }
+        else {
+            $query .= " AND ACL.RightName IN ('SuperUser', '$right')";
+        }
     }
     return $query;
 }
@@ -657,13 +660,12 @@ sub _RolesWithRightQuery {
         . " PrincipalType != 'Group'";
 
     if ( my $right = $args{'Right'} ) {
-        $query .=
-            # Only find superuser or rights with the requested right
-            " AND ( RightName = '$right' "
-
-            # Check SuperUser if we were asked to
-            . ( $args{'IncludeSuperusers'} ? "OR RightName = 'SuperUser' " : '' )
-            . ")";
+        if ( $args{'IncludeSuperusers'} && $right ne 'SuperUser' ) {
+            $query .= " AND RightName IN ('SuperUser', '$right')";
+        }
+        else {
+            $query .= " AND RightName = '$right'";
+        }
     }
 
     # skip rights granted on system level if we were asked to
