@@ -36,6 +36,8 @@ changes made directly to the RT code, it's a good time to look at the hooks
 RT provides for custom code in extensions or in the local directory. See
 F<docs/writing_extensions.pod> for more information.
 
+=head2 Notable Changes
+
 =over
 
 =item *
