@@ -55,7 +55,7 @@
 
   <div class="form-row">
     <span class="col-md-12">
-      <textarea class="form-control" cols="170" rows="20" name="Config" id="Config"><% JSON::to_json($config, { canonical => 1, pretty => 1 }) |n %></textarea>
+      <textarea class="form-control" cols="170" rows="20" name="Config" id="Config"><% $Config |n %></textarea>
     </span>
   </div>
 
@@ -86,32 +86,38 @@ Abort("Invalid lifecycle") unless $LifecycleObj->Name
 
 $title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
 
-my $config = RT->Config->Get('Lifecycles')->{$LifecycleObj->Name};
+$Config = JSON::to_json(RT->Config->Get('Lifecycles')->{$LifecycleObj->Name}, { canonical => 1, pretty => 1 }) unless $Config;
 
-if ( $UpdateLifecycle or $ValidateLifecycle ) {
+if ( $ValidateLifecycle ) {
     my @warnings = $LifecycleObj->ValidateLifecycle( JSON::from_json($Config) );
     push @results, @warnings;
     push @results, loc("Lifecycle is valid") if scalar @warnings eq 0;
+}
 
-    $config = JSON::from_json($Config);
-
-    if ( $UpdateLifecycle && $Config ) {
-        my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
-            CurrentUser    => $session{CurrentUser},
-            LifecycleObj   => $LifecycleObj,
-            NewConfig      => JSON::from_json($Config),
-        );
-        if ( $ok ) {
-            push @results, "Lifecycle updated";
+if ( $UpdateLifecycle ) {
+    my @warnings = $LifecycleObj->ValidateLifecycle( JSON::from_json($Config) );
+    if ( scalar @warnings ) {
+        push @results, @warnings;
+    }
+    else {
+        if ( $UpdateLifecycle && $Config ) {
+            my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
+                CurrentUser    => $session{CurrentUser},
+                LifecycleObj   => $LifecycleObj,
+                NewConfig      => JSON::from_json($Config),
+            );
+            if ( $ok ) {
+                push @results, "Lifecycle updated";
+            }
+            else {
+                push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";
+            }
+            # This code does automatic redirection if any updates happen.
+            MaybeRedirectForResults(
+                Actions   => \@results,
+                Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
+            );
         }
-        else {
-            push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";
-        }
-        # This code does automatic redirection if any updates happen.
-        MaybeRedirectForResults(
-            Actions   => \@results,
-            Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
-        );
     }
 }
 </%INIT>
