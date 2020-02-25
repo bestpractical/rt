@@ -1079,8 +1079,6 @@ sub ValidateLifecycle {
         my $status = $lifecycle->{defaults}{$state};
         push @warnings, "Nonexistant status @{[lc $status]} in default states in ".$self->Name." lifecycle"
             unless $lifecycle->{canonical_case}{lc $status};
-        # $lifecycle->{defaults}{$state} =
-        #     $lifecycle->{canonical_case}{lc $status} || lc $status;
     }
     for my $from (keys %{ $lifecycle->{transitions} || {} }) {
         push @warnings, "Nonexistant status @{[lc $from]} in transitions in ".$self->Name." lifecycle"
