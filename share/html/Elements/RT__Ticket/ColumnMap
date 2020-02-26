@@ -407,19 +407,9 @@ if(RT->Config->Get('DisplayTotalTimeWorked')) {
 
         my $method = $field . 'AsString';
 
-        my %queues = RT->Config->Get('PriorityAsStringQueues');
-        if ( not keys %queues ) {
-            $COLUMN_MAP->{$field}{'value'} = sub {
-                return $printer->( $class, $_[0]->$method() );
-            };
-        }
-        else {
-            $COLUMN_MAP->{$field}{'value'} = sub {
-                return $queues{ $_[0]->QueueObj->Name }
-                    ? $printer->( $class, $_[0]->$method() )
-                    : $_[0]->$field;
-            };
-        }
+        $COLUMN_MAP->{$field}{'value'} = sub {
+            return $printer->( $class, $_[0]->$method() );
+        };
     }
 }
 

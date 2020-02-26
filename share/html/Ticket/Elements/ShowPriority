@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if (keys %queues and not $queues{$Ticket->QueueObj->Name}) {
+% if (!keys %config) {
 <% $Ticket->Priority %>/<% $Ticket->FinalPriority || ''%>
 % } else {
 % my $current = $Ticket->PriorityAsString || '';
@@ -57,7 +57,7 @@
 $Ticket => undef
 </%ARGS>
 <%INIT>
-my %queues = RT->Config->Get('PriorityAsStringQueues');
+my %config = RT->Config->Get('PriorityAsString');
 
 my $CSSClass = sub {
     my $value = shift;

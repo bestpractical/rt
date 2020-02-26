@@ -3751,17 +3751,7 @@ sub _PriorityAsString {
     my $priority = shift;
     return undef unless defined $priority && length $priority;
 
-    my %map;
-    my $queues = RT->Config->Get('PriorityAsStringQueues');
-    if (@_) {
-        %map = %{ shift(@_) };
-    }
-    elsif ( $queues and $queues->{ $self->QueueObj->Name } ) {
-        %map = %{ $queues->{ $self->QueueObj->Name } };
-    }
-    else {
-        %map = RT->Config->Get('PriorityAsString');
-    }
+    my %map = RT->Config->Get('PriorityAsString');
 
     # Count from high down to low until we find one that our number is
     # greater than or equal to.

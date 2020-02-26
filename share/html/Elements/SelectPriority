@@ -51,25 +51,8 @@ $Name => 'Priority'
 $Default => ''
 </%ARGS>
 <%INIT>
-my %queues = RT->Config->Get('PriorityAsStringQueues');
-
-# If enabled for all queues, always show the drop-down
-return $m->comp("/Elements/SelectPriorityAsString",%ARGS)
-    unless keys %queues;
-
-# Some callsites we can easily override with callbacks with logic to
-# know when to call SelectPriorityAsString; for ticket create and queue
-# modify, we need to inspect the callstack.
-my $caller      = $m->callers(1)->path;
-my $caller_args = $m->caller_args(1);
-my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
-if ( $caller eq "/Admin/Queues/Modify.html") {
-    $QueueObj->Load( $caller_args->{id} ) || $QueueObj->Load( $caller_args->{Name} );
-} elsif ( $caller eq "/Ticket/Create.html" or $caller eq "/m/ticket/create" ) {
-    $QueueObj->Load( $caller_args->{Queue} );
-}
-return $m->comp("/Elements/SelectPriorityAsString",%ARGS, Mapping => $queues{$QueueObj->Name})
-    if $QueueObj->Id and $queues{$QueueObj->Name};
+my %config = RT->Config->Get('PriorityAsString');
+return $m->comp("/Elements/SelectPriorityAsString",%ARGS) if keys %config;
 
 $Default = '' unless defined $Default;
 </%INIT>
