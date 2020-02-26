@@ -704,6 +704,7 @@ sub FillCache {
         # ->{actions} are handled below
         for my $state (keys %{ $lifecycle->{defaults} || {} }) {
             my $status = $lifecycle->{defaults}{$state};
+            next unless $status;
             warn "Nonexistant status @{[lc $status]} in default states in $name lifecycle"
                 unless $lifecycle->{canonical_case}{lc $status};
             $lifecycle->{defaults}{$state} =
