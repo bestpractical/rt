@@ -52,43 +52,55 @@
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/farbtastic.js"></script>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Modify.html" name="ModifyLifecycle" method="post" enctype="multipart/form-data">
-  <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
-  <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
-  <& /Elements/Lifecycle/Graph, LifecycleName => $LifecycleObj->Name &>
+  <input type="hidden" class="hidden" name="Name" value="<% $Name %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $Type %>" />
+  <input type="hidden" class="hidden" name="Update" value="1" />
+
+  <& /Elements/Lifecycle/Graph, Config => $Config, LifecycleName => $Name &>
   <div class="col-md-12">
-    <& /Elements/Submit, Label => loc('Save Changes') &>
+    <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
   </div>
 </form>
 <%INIT>
 my ($title, @results);
+$title = loc("Modify lifecycle [_1]", $Name);
+
+
 my $LifecycleObj = RT::Lifecycle->new( $session{'CurrentUser'} );
 $LifecycleObj->Load(Name => $Name, Type => $Type);
-
 Abort("Invalid lifecycle") unless $LifecycleObj->Name
-                               && $LifecycleObj->{data}{type} eq $Type;
+        && $LifecycleObj->{data}{type} eq $Type;
 
-$title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
+$Config = JSON::to_json(RT->Config->Get('Lifecycles')->{$Name}) unless $Config;
 
-if ($Config) {
+my $lifecycle;
+if ( $Update ) {
     my $LifecycleConfiguration = JSON::from_json($LifecycleConfiguration);
-    my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
-        CurrentUser    => $session{CurrentUser},
-        LifecycleObj   => $LifecycleObj,
-        NewConfig      => JSON::from_json($Config),
-        Configuration  => $LifecycleConfiguration,
-    );
-    if ( $ok ) {
-      push @results, "Lifecycle updated";
-    }
-    else {
-      push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";
+    $lifecycle = JSON::from_json($Config);
+
+    my @warnings = $LifecycleObj->ValidateLifecycle( $lifecycle );
+    push @results, @warnings;
+
+    unless ( scalar @warnings ) {
+        my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
+            CurrentUser    => $session{CurrentUser},
+            LifecycleObj   => $LifecycleObj,
+            NewConfig      => $lifecycle,
+            Configuration  => $LifecycleConfiguration,
+        );
+        if ( $ok ) {
+          push @results, "Lifecycle updated";
+        }
+        else {
+          push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";
+        }
     }
 }
 
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions   => \@results,
-    Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
+    Arguments => { Name => $Name, Type => $Type, Config => $Config },
 );
 </%INIT>
 <%ARGS>
@@ -96,4 +108,5 @@ $Name                   => undef
 $Type                   => undef
 $Config                 => undef
 $LifecycleConfiguration => undef
+$Update                 => undef
 </%ARGS>

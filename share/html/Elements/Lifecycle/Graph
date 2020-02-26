@@ -82,9 +82,9 @@
 
   <script type="text/javascript">
     jQuery(function () {
-      var container = document.getElementById('lifecycle-<% $id %>'),
-        config         = <% JSON($config) |n %>,
-        name           = <% $LifecycleName | j%>,
+      var container    = document.getElementById('lifecycle-<% $id %>'),
+        config         = <% $Config |n %>,
+        name           = <% $LifecycleName | j %>,
         configuration  = <% $configuration |n %>;
 
         var editor = new RT.NewEditor( container, config, configuration );
@@ -122,9 +122,6 @@
 </div>
 
 <%INIT>
-my $config = RT->Config->Get('Lifecycles')->{$LifecycleName};
-Abort("Invalid Lifecycle") if !$LifecycleName || !$config;
-
 my $configurations = RT::Configurations->new( RT->SystemUser );
 $configurations->Limit( FIELD => 'Name', VALUE => "LifecycleConfiguration-$LifecycleName" );
 my $configuration = $configurations->First;
@@ -134,5 +131,6 @@ my $id = $LifecycleName . '-' . int(rand(2**31));
 </%INIT>
 
 <%ARGS>
-$LifecycleName => undef
+$Config
+$LifecycleName
 </%ARGS>

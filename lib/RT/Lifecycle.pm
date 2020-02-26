@@ -1056,6 +1056,9 @@ sub ValidateLifecycle {
         inactive => [],
         actions => [],
     };
+    unless ( $lifecycle->{'initial'}[0] ) {
+        push @warnings, "Initial type status required";
+    }
 
     my @statuses;
     $lifecycle->{canonical_case} = {};
@@ -1106,9 +1109,6 @@ sub ValidateLifecycle {
 
         push @warnings, "Invalid right name ($lifecycle->{rights}{$schema}) in ".$self->Name." lifecycle; right names must be <= 25 characters"
             if length($lifecycle->{rights}{$schema}) > 25;
-
-        $lifecycle->{rights}{lc($from) . " -> " .lc($to)}
-            = $lifecycle->{rights}{$schema};
     }
 
     my %seen;
@@ -1128,7 +1128,6 @@ sub ValidateLifecycle {
         @actions = @{ $lifecycle->{'actions'} };
     }
 
-    $lifecycle->{'actions'} = [];
     while ( my ($transition, $info) = splice @actions, 0, 2 ) {
         my ($from, $to) = split /\s*->\s*/, $transition, 2;
         unless ($from and $to) {
@@ -1139,10 +1138,6 @@ sub ValidateLifecycle {
             unless $from eq '*' or $lifecycle->{canonical_case}{lc $from};
         push @warnings, "Nonexistant status @{[lc $to]} in action in ".$self->Name." lifecycle"
             unless $to eq '*' or $lifecycle->{canonical_case}{lc $to};
-        push @{ $lifecycle->{'actions'} },
-            { %$info,
-                from => ($lifecycle->{canonical_case}{lc $from} || lc $from),
-                to   => ($lifecycle->{canonical_case}{lc $to}   || lc $to),   };
     }
 
     # Lower-case the transition maps
