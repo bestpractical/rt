@@ -840,26 +840,23 @@ sub _CloneLifecycleMaps {
 }
 
 sub _SaveLifecycles {
-    my $class = shift;
-    my $lifecycles = shift;
+    my $class       = shift;
+    my $lifecycles  = shift;
     my $CurrentUser = shift;
 
     my $setting = RT::Configuration->new($CurrentUser);
     $setting->Load('Lifecycles');
     if ($setting->Id) {
-        if ($setting->Disabled) {
-            my ($ok, $msg) = $setting->SetDisabled(0);
-            return ($ok, $msg) if !$ok;
-        }
-
         my ($ok, $msg) = $setting->SetContent($lifecycles);
-        return ($ok, $msg) if !$ok;
+        RT->System->LifecycleCacheNeedsUpdate(1);
+        return ($ok, $msg)
     }
     else {
         my ($ok, $msg) = $setting->Create(
             Name    => 'Lifecycles',
             Content => $lifecycles,
         );
+         RT->System->LifecycleCacheNeedsUpdate(1);
         return ($ok, $msg) if !$ok;
     }
 
