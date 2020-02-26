@@ -940,7 +940,7 @@ sub UpdateLifecycle {
     );
 
     if ( $args{'Configuration'} ) {
-        my $config = RT::Configuration->new( RT->SystemUser );
+        my $config = RT::Configuration->new( $args{'CurrentUser'} );
 
         if ( $config->Load( 'LifecycleConfiguration-'.$args{'LifecycleObj'}->Name ) ) {
             my ($ret, $msg) = $config->SetContent( $args{'Configuration'} );
