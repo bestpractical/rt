@@ -3,7 +3,7 @@ use warnings;
 
 BEGIN {require './t/lifecycles/utils.pl'};
 
-diag 'Test web UI for ticket status when rights granted at role level';
+diag 'Test web UI for ticket status without SeeQueue right';
 {
     my ( $url, $agent ) = RT::Test->started_ok;
 
@@ -22,7 +22,6 @@ diag 'Test web UI for ticket status when rights granted at role level';
     ok $user_a && $user_a->id, 'loaded or created user';
 
     RT::Test->set_rights(
-        { Principal => 'AdminCc',  Right  => [qw(SeeQueue)] },
         { Principal => 'Everyone',  Right => [qw(ModifyTicket ShowTicket)] },
     );
 
@@ -35,11 +34,6 @@ diag 'Test web UI for ticket status when rights granted at role level';
         type       => 'option',
         name       => 'Status',
     );
-
-    # Greater equal to 2 because you can change to current status and current status (Unchanged) without 'SeeQueu'
-    ok $inputs->value_names eq 2, 'We are unable to transition to other statuses without role rights';
-
-    ok $ticket->AddRoleMember(Type => 'AdminCc', User => $user_a);
 
     $agent->get_ok($url . '/Ticket/Modify.html?id=' . $ticket->Id);
     $agent->form_name('TicketModify');
