@@ -967,38 +967,44 @@ sub UpdateLifecycle {
     }
 
     my $CurrentUser = $args{CurrentUser};
-    my $name = $args{LifecycleObj}->Name;
-    my $lifecycles = RT->Config->Get('Lifecycles');
+    my $lifecycles  = RT->Config->Get( "Lifecycles" );
 
-    %{$lifecycles->{$name}} = (
-        %{$lifecycles->{$name}},
-        %{$args{NewConfig}}
-    );
+    if ( $args{LifecycleObj} ) {
+        my $name = $args{LifecycleObj}->Name;
 
-    # Remove any stale status mapppings that no longer apply
-    for my $mapname ( keys %{$lifecycles->{__maps__}} ) {
-        if ( $mapname =~ /($name) ->|-> ($name)/ ) {
-            my $left  = $1;
-            my $right = $2;
-            next unless $right or $left;
+        %{$lifecycles->{$name}} = (
+            %{$lifecycles->{$name}},
+            %{$args{NewConfig}}
+        );
 
-            foreach my $mapping ( $lifecycles->{__maps__}->{$mapname} ) {
-                next unless scalar keys %{$mapping};
+        # Remove any stale status mapppings that no longer apply
+        for my $mapname ( keys %{$lifecycles->{__maps__}} ) {
+            if ( $mapname =~ /($name) ->|-> ($name)/ ) {
+                my $left  = $1;
+                my $right = $2;
+                next unless $right or $left;
 
-                my ($left_status, $right_status) = ((keys %{$mapping})[0], (values %{$mapping})[0]);
-                my $status = $left ? $left_status : $right_status;
+                foreach my $mapping ( $lifecycles->{__maps__}->{$mapname} ) {
+                    next unless scalar keys %{$mapping};
 
-                unless ( grep{ $status eq $_ } keys %{$lifecycles->{$name}->{'transitions'}} ) {
-                    RT::Logger->debug("Deleting mapping: $left_status -> $right_status, for status: $status" );
-                    delete $lifecycles->{'__maps__'}{$mapname};
+                    my ($left_status, $right_status) = ((keys %{$mapping})[0], (values %{$mapping})[0]);
+                    my $status = $left ? $left_status : $right_status;
+
+                    unless ( grep{ $status eq $_ } keys %{$lifecycles->{$name}->{'transitions'}} ) {
+                        RT::Logger->debug("Deleting mapping: $left_status -> $right_status, for status: $status" );
+                        delete $lifecycles->{'__maps__'}{$mapname};
+                    }
                 }
             }
         }
     }
+    else {
+        $lifecycles = $args{'NewConfig'};
+    }
     my ($ok, $msg) = $class->_SaveLifecycles($lifecycles, $CurrentUser);
     return ($ok, $msg) if !$ok;
 
-    return (1, $CurrentUser->loc("Lifecycle [_1] updated", $name));
+    return (1, $CurrentUser->loc("Lifecycle config updated"));
 }
 
 sub UpdateMaps {
