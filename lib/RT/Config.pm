@@ -1450,6 +1450,9 @@ our %META;
     EnableReminders => {
         Widget => '/Widgets/Form/Boolean',
     },
+    EnablePriorityAsString => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     ExternalStorageDirectLink => {
         Widget => '/Widgets/Form/Boolean',
     },

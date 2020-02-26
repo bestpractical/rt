@@ -51,8 +51,10 @@ $Name => 'Priority'
 $Default => ''
 </%ARGS>
 <%INIT>
-my %config = RT->Config->Get('PriorityAsString');
-return $m->comp("/Elements/SelectPriorityAsString",%ARGS) if keys %config;
+if ( RT->Config->Get('EnablePriorityAsString') ) {
+    my %config = RT->Config->Get('PriorityAsString');
+    return $m->comp( "/Elements/SelectPriorityAsString", %ARGS ) unless keys %config;
+}
 
 $Default = '' unless defined $Default;
 </%INIT>

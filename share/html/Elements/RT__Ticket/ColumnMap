@@ -384,7 +384,7 @@ if(RT->Config->Get('DisplayTotalTimeWorked')) {
     }
 }
 
-{
+if ( RT->Config->Get('EnablePriorityAsString') ) {
     my $printer = sub {
         my ( $class, $string ) = @_;
         return '' unless defined $string && length $string;

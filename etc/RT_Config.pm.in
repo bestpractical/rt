@@ -2709,6 +2709,20 @@ cut down on page clutter. Once this option is clicked the link will change to
 
 Set($HideOneTimeSuggestions, 0);
 
+=item C<$EnablePriorityAsString>
+
+Priority is stored as a number internally. This determines whether
+Priority is displayed to users as a number or using configured
+labels like Low, Medium, High. See L<%PriorityAsString> for details
+on this configuration.
+
+The default is enabled, so strings are shown. Set to C<0> to display
+numbers, which was the previous default for RT.
+
+=cut
+
+Set($EnablePriorityAsString, 1);
+
 =item C<%PriorityAsString>
 
 Specify a mapping between priority strings and the internal numeric

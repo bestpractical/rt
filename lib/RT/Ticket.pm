@@ -3749,7 +3749,7 @@ sub FinalPriorityAsString {
 sub _PriorityAsString {
     my $self     = shift;
     my $priority = shift;
-    return undef unless defined $priority && length $priority;
+    return undef unless defined $priority && length $priority && RT->Config->Get('EnablePriorityAsString');
 
     my %map = RT->Config->Get('PriorityAsString');
 
