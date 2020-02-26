@@ -106,16 +106,8 @@
 <%INIT>
 my @results;
 
-my %lifecycles = ();
+my %lifecycles = %{RT::Config->Get('Lifecycles')};
 
-my $setting = RT::Configuration->new($session{'CurrentUser'});
-$setting->Load('Lifecycles');
-if ( $setting->Id ) {
-    %lifecycles = %{$setting->_DeserializeContent( $setting->Content )};
-}
-else {
-    %lifecycles = RT::Config->Get( "Lifecycles" );
-}
 if ( $Submit ) {
     foreach my $lifecycle ( keys %lifecycles ) {
         next if grep { $lifecycle eq $_ } qw/approvals __maps__/;
@@ -131,29 +123,17 @@ if ( $Submit ) {
         }
     }
 
-    if ( $setting->Id ) {
-      my ($ret, $msg) = $setting->SetContent( \%lifecycles );
-      if ( $ret ) {
-          RT::Logger->debug( "Updated lifecycle configuration content" );
-          RT::System->LifecycleCacheNeedsUpdate(1);
-      }
-      else {
-          RT::Logger->error( "Could not set lifeycle configuration content: $msg" );
-      }
-    }
-    else {
-      my ($ret, $msg) = $setting->Create(
-          Name        => 'Lifecycles',
-          Content     => \%lifecycles,
-          ContentType => 'perl',
-      );
-      if ( $ret ) {
-          RT::Logger->debug("Creating lifecycles configuration");
-      }
-      else {
-          RT::Logger->debug("Could not create lifecycles configuration: $msg" );
-      }
-    }
+    my ($ret, $msg) = RT::Lifecycle->UpdateLifecycle(
+        CurrentUser    => $session{CurrentUser},
+        NewConfig      => \%lifecycles,
+    );
+    if ( $ret ) {
+      RT::Logger->debug( "Updated lifecycle configuration content" );
+      RT::System->LifecycleCacheNeedsUpdate(1);
+  }
+  else {
+      RT::Logger->error( "Could not set lifeycle configuration content: $msg" );
+  }
 }
 
 # This code does automatic redirection if any updates happen.
