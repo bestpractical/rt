@@ -398,6 +398,27 @@ else {
             Value => { Type => 'text', Size => 5 }
         },
     );
+
+    my %as_string = RT->Config->Get('PriorityAsStringQueues');
+    if ( %as_string && %queues && scalar(keys %queues) == grep {$as_string{$_}} keys %queues ) {
+        # Additionally, all queues in PriorityAsStringQueues must use the _same_
+        # values for each name; if "High" is mapped to 10 in one queue and 100
+        # in another, we can't use names
+        my %values;
+        my $match = 1;
+        for my $q (keys %queues) {
+            for my $priority (keys %{$as_string{$q}}) {
+                $match = 0 if exists $values{$priority} and $as_string{$q}{$priority} != $values{$priority};
+                $values{$priority} = $as_string{$q}{$priority};
+            }
+        }
+        if ( $match ) {
+            # Swap out the /Elements/SelectPriority for /Elements/SelectPriorityAsString
+            my ($priority) = grep {$_->{Name} eq "Priority"} @lines;
+            $priority->{Value}{Path} = "/Elements/SelectPriorityAsString";
+            $priority->{Value}{Arguments}{Mapping} = \%values;
+        }
+    }
 }
 
 $m->callback( Conditions => \@lines );

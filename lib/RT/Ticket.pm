@@ -3731,6 +3731,46 @@ sub Serialize {
     return %store;
 }
 
+sub PriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->Priority );
+}
+
+sub InitialPriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->InitialPriority );
+}
+
+sub FinalPriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->FinalPriority );
+}
+
+sub _PriorityAsString {
+    my $self     = shift;
+    my $priority = shift;
+    return undef unless defined $priority && length $priority;
+
+    my %map;
+    my $queues = RT->Config->Get('PriorityAsStringQueues');
+    if (@_) {
+        %map = %{ shift(@_) };
+    }
+    elsif ( $queues and $queues->{ $self->QueueObj->Name } ) {
+        %map = %{ $queues->{ $self->QueueObj->Name } };
+    }
+    else {
+        %map = RT->Config->Get('PriorityAsString');
+    }
+
+    # Count from high down to low until we find one that our number is
+    # greater than or equal to.
+    foreach my $label ( sort { $map{$b} <=> $map{$a} } keys %map ) {
+        return $label if $priority >= $map{$label};
+    }
+    return "unknown";
+}
+
 RT::Base->_ImportOverlays();
 
 1;

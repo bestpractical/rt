@@ -45,7 +45,24 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% if (keys %queues and not $queues{$Ticket->QueueObj->Name}) {
 <% $Ticket->Priority %>/<% $Ticket->FinalPriority || ''%>
+% } else {
+% my $current = $Ticket->PriorityAsString || '';
+% my $final = $Ticket->FinalPriorityAsString || '';
+<span class="ticket-info-priority-<% $CSSClass->(lc($current)) %>"><% loc($current) %></span>/\
+<span class="ticket-info-final-priority-<% $CSSClass->(lc($final)) %>"><% loc($final) %></span>
+% }
 <%ARGS>
 $Ticket => undef
 </%ARGS>
+<%INIT>
+my %queues = RT->Config->Get('PriorityAsStringQueues');
+
+my $CSSClass = sub {
+    my $value = shift;
+    return '' unless defined $value;
+    $value =~ s/[^A-Za-z0-9_-]/_/g;
+    return $value;
+};
+</%INIT>

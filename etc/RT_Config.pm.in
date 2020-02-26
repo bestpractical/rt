@@ -2709,6 +2709,42 @@ cut down on page clutter. Once this option is clicked the link will change to
 
 Set($HideOneTimeSuggestions, 0);
 
+=item C<%PriorityAsString>
+
+Specify a mapping between priority strings and the internal numeric
+representation
+
+=cut
+
+Set(%PriorityAsString, (Low => 0, Medium => 50, High => 100));
+
+=item C<@PriorityAsStringOrder>
+
+Fine-tuned control of the order of priorities as displayed in the drop-down
+box; usually this computed automatically and need not be set explicitly.  It
+can be used to limit the set of options presented during update, but allow a
+richer set of levels when they are adjusted automatically.
+
+=cut
+
+Set(@PriorityAsStringOrder, qw(Low Medium High));
+
+=item C<%PriorityAsStringQueues>
+
+Each key is the name of a different queue; queues which do not appear in
+this configuration will use RT's default numeric scale.  This option means
+that C<%PriorityAsString> and C<@PriorityAsStringOrder> are ignored (no
+global override, you must specify a set of priorities per queue).
+
+    Set(%PriorityAsStringQueues,
+       General => { Low => 0, Medium => 50, High => 100 },
+       Binary  => { Low => 0, High => 10 },
+    );
+
+=cut
+
+Set(%PriorityAsStringQueues, ());
+
 =back
 
 =head2 Group Summary Configuration

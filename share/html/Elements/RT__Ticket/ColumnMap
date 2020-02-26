@@ -384,6 +384,45 @@ if(RT->Config->Get('DisplayTotalTimeWorked')) {
     }
 }
 
+{
+    my $printer = sub {
+        my ( $class, $string ) = @_;
+        return '' unless defined $string && length $string;
+
+        my $request_path = $HTML::Mason::Commands::r->path_info // '';
+        if ( $request_path =~ /Results\.tsv/ ) {
+            return loc($string);
+        }
+
+        my $escaped     = $m->interp->apply_escapes( $string,      'h' );
+        my $loc_escaped = $m->interp->apply_escapes( loc($string), 'h' );
+        return \( qq{<span class="ticket-info-$class-} . lc($escaped) . qq{">$loc_escaped</span>} );
+
+    };
+    foreach my $field (qw(Priority InitialPriority FinalPriority)) {
+        $COLUMN_MAP->{ $field . 'Number' } ||= $COLUMN_MAP->{$field};
+
+        my $class = lc($field);
+        $class =~ s/(?=<.)(?=priority)/-/;
+
+        my $method = $field . 'AsString';
+
+        my %queues = RT->Config->Get('PriorityAsStringQueues');
+        if ( not keys %queues ) {
+            $COLUMN_MAP->{$field}{'value'} = sub {
+                return $printer->( $class, $_[0]->$method() );
+            };
+        }
+        else {
+            $COLUMN_MAP->{$field}{'value'} = sub {
+                return $queues{ $_[0]->QueueObj->Name }
+                    ? $printer->( $class, $_[0]->$method() )
+                    : $_[0]->$field;
+            };
+        }
+    }
+}
+
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
 return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
 </%init>

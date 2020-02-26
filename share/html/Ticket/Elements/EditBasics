@@ -162,6 +162,17 @@ if ($ExcludeOwner) {
 # inflate the marker for custom roles into the field specs for each one
 @fields = map { ($_->{special}||'') eq 'roles' ? @role_fields : $_ } @fields;
 
+my %as_string = RT->Config->Get('PriorityAsStringQueues');
+
+if ( keys %as_string && $TicketObj && $as_string{$TicketObj->QueueObj->Name} ) {
+    # Swap out the /Elements/SelectPriority for /Elements/SelectPriorityAsString
+    for my $field (@fields) {
+        next unless ($field->{comp}||'') eq "/Elements/SelectPriority";
+        $field->{comp} = "/Elements/SelectPriorityAsString";
+        $field->{args}{Mapping} = $as_string{$TicketObj->QueueObj->Name};
+    }
+}
+
 $m->callback( CallbackName => 'MassageFields', %ARGS, TicketObj => $TicketObj, Fields => \@fields );
 
 # Process the field list, skipping if html is provided and running the
