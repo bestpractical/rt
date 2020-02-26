@@ -57,6 +57,7 @@ jQuery( document ).ready(function () {
                 self.LinksForNodeFromConfig(source.name).forEach(function(targetName) {
                     // Get our target node
                     var target = self.nodes.filter(function(source) { return source.name === targetName; })[0];
+                    if (!target) { return };
 
                     if ( source.id < target.id ) {
                         self.links.push({id: ++self.links_seq, source: source, target: target, start: false, end: true});

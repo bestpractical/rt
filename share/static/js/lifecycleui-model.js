@@ -24,7 +24,7 @@ class LifecycleModel {
         var config = config || this.config;
 
         for (let [fromNode, toList] of Object.entries(config.transitions)) {
-            if ( fromNode == node ) {
+            if ( fromNode.toLowerCase() == node.toLowerCase() ) {
                 return toList;
             }
         }
@@ -39,7 +39,7 @@ class LifecycleModel {
             name;
         while (1) {
             name = 'status #' + ++i;
-            var index = self.nodes.findIndex(function(x) { return x.name == name });
+            var index = self.nodes.findIndex(function(x) { return x.name.toLowerCase() == name.toLowerCase() });
             if ( index < 0 ) {
                 break;
             }
@@ -136,7 +136,7 @@ class LifecycleModel {
         var self = this;
 
         jQuery.each(self.config.defaults, function (key, value) {
-            if (value === d.name) {
+            if (value && value.toLowerCase() === d.name.toLowerCase()) {
                 delete self.config.defaults[key];
             }
         });
@@ -146,9 +146,9 @@ class LifecycleModel {
         var self = this;
 
         jQuery.each(self.config.rights, function(key, value) {
-            var pattern = d.name+" ->|-> "+d.name;
+            var pattern = d.name.toLowerCase()+" ->|-> "+d.name.toLowerCase();
             var re = new RegExp(pattern,"g");
-            if ( re.test(key) ) {
+            if ( re.test(key.toLowerCase()) ) {
                 delete self.config.rights[key];
             }
         });
@@ -166,7 +166,7 @@ class LifecycleModel {
             [action, info] = tempArr.splice(0, 2);
             if (!action) continue;
 
-            var re = new RegExp(d.name+" *->|-> *"+d.name,"g");
+            var re = new RegExp(d.name.toLowerCase()+" *->|-> *"+d.name.toLowerCase(),"g");
             if ( ! re.test(action) ) {
                 actions.push(action);
                 actions.push(info);
