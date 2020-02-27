@@ -51,6 +51,7 @@ $Name => 'Priority'
 $Default => ''
 $QueueObj => undef
 %Queues => ()
+$ValueAsString => undef
 </%ARGS>
 <%INIT>
 use List::MoreUtils 'uniq';
@@ -89,6 +90,7 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
         }
     }
 
+    my %map;
     my %options;
 
     for my $name ( @names ) {
@@ -105,6 +107,19 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
         while ( my $label = shift @list ) {
             my $option = { Label => $label, Value => shift @list };
             push @{ $options{$name} }, $option;
+
+            $map{$label} //= $option->{Value};
+            if ( $ValueAsString && $map{$label} != $option->{Value} ) {
+                $ValueAsString = 0;
+            }
+        }
+    }
+
+    if ($ValueAsString) {
+        for my $name ( keys %options ) {
+            for my $option ( @{ $options{$name} } ) {
+                $option->{Value} = $option->{Label};
+            }
         }
     }
 

@@ -3133,6 +3133,45 @@ sub _parser {
         }
     );
 
+    if ( RT->Config->Get('EnablePriorityAsString') ) {
+        my $queues = $tree->GetReferencedQueues;
+        my %config = RT->Config->Get('PriorityAsString');
+        my @names;
+        if (%$queues) {
+            for my $id ( keys %$queues ) {
+                my $queue = RT::Queue->new( $self->CurrentUser );
+                $queue->Load($id);
+                if ( $queue->Id ) {
+                    push @names, $queue->__Value('Name');    # Skip ACL check
+                }
+            }
+        }
+        else {
+            @names = keys %config;
+        }
+
+        my %map;
+        for my $name (@names) {
+            if ( my $value = exists $config{$name} ? $config{$name} : $config{Default} ) {
+                my %hash = ref $value eq 'ARRAY' ? @$value : %$value;
+                for my $label ( keys %hash ) {
+                    $map{lc $label} //= $hash{$label};
+                }
+            }
+        }
+
+        $tree->traverse(
+            sub {
+                my $node = shift;
+                return unless $node->isLeaf;
+                my $value = $node->getNodeValue;
+                if ( $value->{Key} =~ /^(?:Initial|Final)?Priority$/i ) {
+                    $value->{Value} = $map{ lc $value->{Value} } if defined $map{ lc $value->{Value} };
+                }
+            }
+        );
+    }
+
     # Perform an optimization pass looking for watcher bundling
     $tree->traverse(
         sub {

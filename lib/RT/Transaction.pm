@@ -1261,6 +1261,20 @@ sub _CanonicalizeRoleName {
                 }
             }
         }
+        elsif ( $self->Field =~ /Priority/ && RT->Config->Get('EnablePriorityAsString') ) {
+            my $object = $self->Object;
+            my ( $old_value, $new_value );
+            if ( $object->isa('RT::Ticket') ) {
+                $old_value = $object->_PriorityAsString( $self->OldValue );
+                $new_value = $object->_PriorityAsString( $self->NewValue );
+                $old_value = $self->loc($old_value) if $old_value;
+                $new_value = $self->loc($new_value) if $new_value;
+            }
+            $old_value //= $self->OldValue;
+            $new_value //= $self->NewValue;
+
+            return ( "[_1] changed from [_2] to [_3]", $self->loc( $self->Field ), "'$old_value'", "'$new_value'" );    #loc()
+        }
         else {
             return ( "[_1] changed from [_2] to [_3]",
                     $self->loc($self->Field),

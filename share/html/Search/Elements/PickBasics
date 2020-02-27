@@ -385,7 +385,7 @@ else {
             Value => {
                 Type => 'component',
                 Path => '/Elements/SelectPriority',
-                Arguments => { Queues => \%queues },
+                Arguments => { Queues => \%queues, ValueAsString => 1 },
             },
         },
         {
