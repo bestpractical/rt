@@ -3,8 +3,8 @@ services: docker
 
 before_install:
   - docker build -t rt44 .
-  - docker run -d rt44
+  - docker run -d rt44 --name rt
   - docker ps -a
 
 script:
-    - docker exec -it rt44 bash -c "cd /usr/local/rt && prove -l t/*"
+    - docker exec -it rt bash -c "cd /usr/local/rt && prove -l t/*"
