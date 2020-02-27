@@ -82,7 +82,7 @@ $m->content_contains( 'ticket1', 'subject' );
 $m->content_contains( 'open', 'status' );
 $m->content_contains( 'cc@example.com', 'cc' );
 $m->content_contains( 'admincc@example.com', 'admincc' );
-$m->content_contains( '13/93', 'priority' );
+$m->text_contains( 'Low/Medium', 'priority' );
 $m->content_contains( '2 hour', 'time estimates' );
 $m->content_contains( '30 min', 'time worked' );
 $m->content_contains( '60 min', 'time left' );
