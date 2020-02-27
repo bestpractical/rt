@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %>/Asset/CreateInCatalog.html">
+<form action="<% RT->Config->Get('WebPath') %>/Asset/Create.html">
   <div class="create-asset-button">
-    <input type="submit" class="btn btn-primary asset-create-modal" value="<&|/l&>Create new asset</&>" />
+    <input type="submit" class="btn btn-primary" value="<&|/l&>Create new asset</&>" />
   </div>
 </form>

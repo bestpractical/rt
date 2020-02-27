@@ -216,7 +216,7 @@ sub BuildMainNav {
 
     if ($current_user->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
         my $assets = $top->child( "assets", title => loc("Assets"), path => "/Asset/Search/" );
-        $assets->child( "create", title => loc("Create"), path => "/Asset/CreateInCatalog.html" );
+        $assets->child( "create", title => loc("Create"), path => "/Asset/Create.html" );
         $assets->child( "search", title => loc("Search"), path => "/Asset/Search/" );
     }
 
