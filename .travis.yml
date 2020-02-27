@@ -1,4 +1,4 @@
-language: perl
+language: bash
 services: docker
 
 before_install:
