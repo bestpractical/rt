@@ -50,12 +50,12 @@
   <option value="">-</option>
 % }
 <%PERL>
-foreach my $label ( @order ) {
-    my ($value, $selected);
+for my $option ( @Options ) {
+    my $label = $option->{Label};
+    my $value = $option->{Value};
+    my $selected = '';
     if ( $label eq $default_label ) {
         ($value, $selected) = ($Default, 'selected="selected"');
-    } else {
-        ($value, $selected) = ($map{ $label }, '');
     }
 </%PERL>
   <option class="priority-<% lc $label %>" value="<% $value %>" <% $selected |n %>><% loc($label) %></option>
@@ -64,14 +64,12 @@ foreach my $label ( @order ) {
 <%ARGS>
 $Name => 'Priority'
 $Default => undef
+$QueueObj => undef
+@Options
 </%ARGS>
 <%INIT>
-
-my %map   = RT->Config->Get('PriorityAsString');
-my @order = sort { $map{$a} <=> $map{$b} } keys %map;
-
 my $default_label = '';
-if ( defined $Default && length $Default ) {
-    $default_label = RT::Ticket->_PriorityAsString( $Default, \%map ) || '';
+if ( defined $Default && length $Default && $QueueObj ) {
+    $default_label = RT::Ticket->_PriorityAsString( $Default, $QueueObj->__Value('Name') ) || '';
 }
 </%INIT>

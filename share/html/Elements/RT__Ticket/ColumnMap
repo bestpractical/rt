@@ -160,21 +160,21 @@ $COLUMN_MAP = {
         title     => 'Priority', # loc
         attribute => 'Priority',
         value     => sub { return $_[0]->Priority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'Priority', Default => $_[0]->Priority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'Priority', Default => $_[0]->Priority, QueueObj => $_[0]->QueueObj )) },
     },
     InitialPriority => {
         title     => 'InitialPriority', # loc
         attribute => 'InitialPriority',
         name      => 'Initial Priority',
         value     => sub { return $_[0]->InitialPriority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'InitialPriority', Default => $_[0]->InitialPriority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'InitialPriority', Default => $_[0]->InitialPriority, QueueObj => $_[0]->QueueObj)) },
     },
     FinalPriority => {
         title     => 'FinalPriority', # loc
         attribute => 'FinalPriority',
         name      => 'Final Priority',
         value     => sub { return $_[0]->FinalPriority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'FinalPriority', Default => $_[0]->FinalPriority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'FinalPriority', Default => $_[0]->FinalPriority, QueueObj => $_[0]->QueueObj)) },
     },
     EffectiveId => {
         title     => 'EffectiveId', # loc
@@ -408,7 +408,8 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
         my $method = $field . 'AsString';
 
         $COLUMN_MAP->{$field}{'value'} = sub {
-            return $printer->( $class, $_[0]->$method() );
+            # Fallback to numbers when the queue disables PriorityAsString
+            return $printer->( $class, $_[0]->$method() ) || $_[0]->$field;
         };
     }
 }

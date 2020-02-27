@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if (!RT->Config->Get('EnablePriorityAsString') || !keys %config) {
+% if ($use_numeric) {
 <% $Ticket->Priority %>/<% $Ticket->FinalPriority || ''%>
 % } else {
 % my $current = $Ticket->PriorityAsString || '';
@@ -57,7 +57,14 @@
 $Ticket => undef
 </%ARGS>
 <%INIT>
-my %config = RT->Config->Get('PriorityAsString');
+my $use_numeric = 1;
+
+if ( RT->Config->Get('EnablePriorityAsString') ) {
+    my %config     = RT->Config->Get('PriorityAsString');
+    my $queue_name = $Ticket->QueueObj->__Value('Name');    # Skip ACL check
+
+    $use_numeric = 0 if exists $config{$queue_name} ? $config{$queue_name} : $config{Default};
+}
 
 my $CSSClass = sub {
     my $value = shift;

@@ -129,6 +129,7 @@ unless ( @fields ) {
                     args => {
                         Name => $field,
                         Default => $defaults{$field} || $TicketObj->$field,
+                        QueueObj => $TicketObj->QueueObj,
                     }
                 }
             } ('Priority', 'Final Priority')

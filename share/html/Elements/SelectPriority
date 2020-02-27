@@ -49,11 +49,75 @@
 <%ARGS>
 $Name => 'Priority'
 $Default => ''
+$QueueObj => undef
+%Queues => ()
 </%ARGS>
 <%INIT>
+use List::MoreUtils 'uniq';
 if ( RT->Config->Get('EnablePriorityAsString') ) {
     my %config = RT->Config->Get('PriorityAsString');
-    return $m->comp( "/Elements/SelectPriorityAsString", %ARGS ) unless keys %config;
+
+    my @names;
+    if ($QueueObj) {
+        push @names, $QueueObj->__Value('Name');    # Skip ACL check
+    }
+    elsif (%Queues) {
+        for my $id ( keys %Queues ) {
+            my $queue = RT::Queue->new( $session{'CurrentUser'} );
+            $queue->Load($id);
+            if ( $queue->Id ) {
+                push @names, $queue->__Value('Name');    # Skip ACL check
+            }
+        }
+    }
+    else {
+        @names = keys %config;
+    }
+
+    my $use_numeric;
+    my @values;
+    for my $name ( sort { lc $a cmp lc $b } uniq @names ) {
+        my $value = exists $config{$name} ? $config{$name} : $config{Default};
+        if ($value) {
+            push @values, $value;
+        }
+        else {
+            RT->Logger->debug("PriorityAsString for Queue $name is disabled, skipping");
+            $use_numeric = 1;
+            last;
+        }
+    }
+
+    my @options;
+    my %map;
+
+    # Items in @values are hashrefs/arrayrefs, we still can de-duplicate
+    # using uniq because duplicated ones are totally identical.
+    for my $value ( uniq @values ) {
+        my @list;
+        if ( ref $value eq 'ARRAY' ) {
+            @list = @$value;
+        }
+        elsif ( ref $value eq 'HASH' ) {
+            @list = map { $_ => $value->{$_} } sort { $value->{$a} <=> $value->{$b} } keys %$value;
+        }
+
+        while ( my $label = shift @list ) {
+            my $option = { Label => $label, Value => shift @list };
+            if ( defined $map{$label} ) {
+                if ( $map{$label} != $option->{Value} ) {
+                    $use_numeric = 1;
+                    last;
+                }
+            }
+            else {
+                $map{$label} = $option->{Value};
+                push @options, $option;
+            }
+        }
+    }
+
+    return $m->comp( "/Elements/SelectPriorityAsString", %ARGS, Options => \@options ) unless $use_numeric;
 }
 
 $Default = '' unless defined $Default;
