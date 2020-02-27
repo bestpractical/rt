@@ -3,7 +3,7 @@ services: docker
 
 before_install:
   - docker build -t rt44 .
-  - docker run -d rt44 --name rt
+  - docker run -d --name rt rt44
   - docker ps -a
 
 script:
