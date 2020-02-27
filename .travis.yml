@@ -1,0 +1,10 @@
+language: perl
+services: docker
+
+before_install:
+  - docker build -t rt44 .
+  - docker run -d rt44
+  - docker ps -a
+
+script:
+    - docker exec -it rt44 bash -c "cd /usr/local/rt && prove -l t/*"
