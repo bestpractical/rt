@@ -1,6 +1,9 @@
 language: bash
 services: docker
 
+env:
+  - RT_TEST_PARALLEL=1
+
 # $TRAVIS_BUILD_DIR will have a clone of the current branch
 before_install:
   - docker build -t rt-base .
