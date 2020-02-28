@@ -223,7 +223,7 @@ AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
 my_group=$($PERL -MPOSIX=getgid -le 'print scalar getgrgid getgid')
-my_user=${USER:-$LOGNAME}
+my_user=$($PERL -MPOSIX=getuid -le 'print scalar getpwuid getuid')
 AC_ARG_WITH(my-user-group,
             AC_HELP_STRING([--with-my-user-group],
                            [set all users and groups to current user/group]),
