@@ -58,7 +58,7 @@ foreach my $label ( @order ) {
         ($value, $selected) = ($map{ $label }, '');
     }
 </%PERL>
-  <option class="<% lc $label %>" value="<% $value %>" <% $selected |n %>><% loc($label) %></option>
+  <option class="priority-<% lc $label %>" value="<% $value %>" <% $selected |n %>><% loc($label) %></option>
 % }
 </select>
 <%ARGS>
