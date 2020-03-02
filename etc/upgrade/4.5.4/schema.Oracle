@@ -1,0 +1,5 @@
+ALTER TABLE Attachments MODIFY id            NUMBER(19,0);
+ALTER TABLE Attachments MODIFY TransactionId NUMBER(19,0);
+ALTER TABLE Attachments MODIFY Parent        NUMBER(19,0);
+ALTER TABLE Transactions MODIFY id           NUMBER(19,0);
+ALTER TABLE ObjectCustomFieldValues MODIFY ObjectId NUMBER(19,0);
