@@ -1,10 +1,10 @@
 
 CREATE SEQUENCE ATTACHMENTS_seq;
 CREATE TABLE Attachments (
-        id              NUMBER(11,0) 
+        id              NUMBER(19,0) 
                         CONSTRAINT Attachments_Key PRIMARY KEY,
-        TransactionId   NUMBER(11,0) NOT NULL,
-        Parent          NUMBER(11,0) DEFAULT 0 NOT NULL, 
+        TransactionId   NUMBER(19,0) NOT NULL,
+        Parent          NUMBER(19,0) DEFAULT 0 NOT NULL, 
         MessageId       VARCHAR2(160),
         Subject         VARCHAR2(255),
         Filename        VARCHAR2(255),
@@ -106,7 +106,7 @@ CREATE TABLE ScripConditions (
 
 CREATE SEQUENCE TRANSACTIONS_seq;
 CREATE TABLE Transactions (
-        id                      NUMBER(11,0) 
+        id                      NUMBER(19,0) 
                 CONSTRAINT Transactions_Key PRIMARY KEY,
         ObjectType              VARCHAR2(255),
         ObjectId                NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -327,7 +327,7 @@ CREATE TABLE ObjectCustomFieldValues (
                 CONSTRAINT ObjectCustomFieldValues_Key PRIMARY KEY,
         CustomField     NUMBER(11,0) NOT NULL,
         ObjectType      VARCHAR2(25) NOT NULL,
-        ObjectId        NUMBER(11,0) DEFAULT 0 NOT NULL,
+        ObjectId        NUMBER(19,0) DEFAULT 0 NOT NULL,
         SortOrder       NUMBER(11,0) DEFAULT 0 NOT NULL,
         Content         VARCHAR2(255),
         LargeContent    CLOB,
