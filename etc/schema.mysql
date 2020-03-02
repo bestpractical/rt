@@ -1,8 +1,8 @@
 
 CREATE TABLE Attachments (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
-  TransactionId integer NOT NULL  ,
-  Parent integer NOT NULL DEFAULT 0  ,
+  id BIGINT NOT NULL  AUTO_INCREMENT,
+  TransactionId BIGINT NOT NULL  ,
+  Parent BIGINT NOT NULL DEFAULT 0  ,
   MessageId varchar(160) CHARACTER SET ascii NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
@@ -103,7 +103,7 @@ CREATE TABLE ScripConditions (
 
 
 CREATE TABLE Transactions (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id BIGINT NOT NULL  AUTO_INCREMENT,
   ObjectType varchar(64) CHARACTER SET ascii NOT NULL,
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
@@ -326,7 +326,7 @@ CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   ObjectType varchar(255) CHARACTER SET ascii NOT NULL,     # Final target of the Object
-  ObjectId int NOT NULL  ,                  # New -- Replaces Ticket
+  ObjectId BIGINT NOT NULL  ,                  # New -- Replaces Ticket
   SortOrder integer NOT NULL DEFAULT 0  ,   # New -- ordering for multiple values
 
   Content varchar(255) NULL  ,

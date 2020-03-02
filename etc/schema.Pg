@@ -14,9 +14,9 @@ CREATE SEQUENCE attachments_id_seq;
 
 
 CREATE TABLE Attachments (
-  id INTEGER DEFAULT nextval('attachments_id_seq'),
-  TransactionId integer NOT NULL  ,
-  Parent integer NOT NULL DEFAULT 0  ,
+  id BIGINT DEFAULT nextval('attachments_id_seq'),
+  TransactionId bigint NOT NULL  ,
+  Parent bigint NOT NULL DEFAULT 0  ,
   MessageId varchar(160) NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
@@ -184,7 +184,7 @@ CREATE TABLE ScripConditions (
 CREATE SEQUENCE transactions_id_seq;
 
 CREATE TABLE Transactions (
-  id INTEGER DEFAULT nextval('transactions_id_seq'),
+  id BIGINT DEFAULT nextval('transactions_id_seq'),
   ObjectType varchar(255) NOT NULL  ,
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
@@ -497,7 +497,7 @@ CREATE TABLE ObjectCustomFieldValues (
   id INTEGER DEFAULT nextval('objectcustomfieldvalues_id_s'),
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NULL  ,
-  ObjectId int NOT NULL  ,
+  ObjectId bigint NOT NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Content varchar(255) NULL  ,
