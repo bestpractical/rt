@@ -121,25 +121,25 @@ $m->follow_link_ok( { text => 'Articles', url_regex => qr!^/Articles/! },
 
 # Case sensitive search on small field.
 DoArticleSearch($m, $class->Name, 'Africa');
-$m->text_contains('Search results'); # Did we do a search?
+$m->text_contains('Last Updated'); # Did we do a search?
 $m->text_contains('blah blah 1');
 
 # Case insensitive search on small field.
 DoArticleSearch($m, $class->Name, 'africa');
-$m->text_contains('Search results'); # Did we do a search?
+$m->text_contains('Last Updated'); # Did we do a search?
 $m->text_contains('blah blah 1');
 
 # Case sensitive search on large field.
 DoArticleSearch($m, $class->Name, 'ipsum');
-$m->text_contains('Search results'); # Did we do a search?
+$m->text_contains('Last Updated'); # Did we do a search?
 $m->text_contains('hoi polloi 4');
 
 # Case insensitive search on large field.
 DoArticleSearch($m, $class->Name, 'lorem');
-$m->text_contains('Search results'); # Did we do a search?
 TODO:{
     local $TODO = 'Case insensitive search on LONGBLOB not available in MySQL'
       if RT->Config->Get('DatabaseType') eq 'mysql';
+    $m->text_contains('Last Updated'); # Did we do a search?
     $m->text_contains('hoi polloi 4');
 }
 
@@ -153,7 +153,7 @@ sub DoArticleSearch{
   my $search_text = shift;
 
   $m->follow_link_ok( {text => 'Articles'}, 'Articles Search');
-  $m->follow_link_ok( {text => 'in class '. $class_name}, 'Articles in class '. $class_name);
+  $m->follow_link_ok( {text => $class_name}, 'Articles in class '. $class_name);
   $m->text_contains('First article');
 
   $m->submit_form_ok( {

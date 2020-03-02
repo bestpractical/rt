@@ -56,11 +56,13 @@
 % } elsif (not @classes) {
 <i><&|/l&>You don't have permission to view Articles in any Class</&></i>
 % } else {
+<& /Widgets/TitleBoxStart, title => loc('Select Class') &>
 <ul class="list-group list-group-compact">
 % for my $class (@classes) {
-<li class="list-group-item"><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>in class [_1]</&></a></li>
+<li class="list-group-item"><a href="<%RT->Config->Get('WebPath')%>/Articles/Article/Search.html?<% $m->comp('/Elements/QueryString', %filtered, Class => $class->id) %>"><&|/l, $class->Name&>[_1]</&></a></li>
 % }
 </ul>
+<& /Widgets/TitleBoxEnd &>
 % }
   </div>
   <div class="col-md-6">
