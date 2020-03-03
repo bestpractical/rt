@@ -20,6 +20,12 @@ table.queue-summary th.collection-as-table a {
     color: #3858a3
 }
 
+table.collection-as-table th.collection-as-table,
+table.queue-summary th.collection-as-table {
+    color: #3858a3;
+    font-weight: 500; /* 500 is between regular (400) and bold (700) */
+}
+
 table.queue-summary th.collection-as-table {
     text-align: right
 }
