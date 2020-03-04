@@ -9,7 +9,6 @@ env:
 before_install:
   - docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:$DB_VERSION_TAG
   - docker build -t rt-base .
-  - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt rt-base
   - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt --link mariadb:db rt-base
   - docker ps -a
   - docker exec -it rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --disable-gpg --disable-smime && mkdir -p /rt/var && make testdeps"
