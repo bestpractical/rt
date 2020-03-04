@@ -1,6 +1,10 @@
 FROM netsandbox/request-tracker-base
 
 ENV RT_TEST_PARALLEL 1
+ENV RT_DBA_USER root
+ENV RT_DBA_PASSWORD password
+ENV RT_TEST_DB_HOST=172.17.0.2
+ENV RT_TEST_RT_HOST=172.17.0.3
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
   git \
@@ -11,6 +15,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   libgumbo1 \
   build-essential \
   libhtml-formatexternal-perl \
+  libdbd-mysql-perl \
   && rm -rf /var/lib/apt/lists/*
 
 RUN cpanm \

@@ -323,6 +323,7 @@ Set( \$ShowHistory, "always");
     }
     if ( $ENV{'RT_TEST_DB_HOST'} ) {
         print $config "Set( \$DatabaseHost , '$ENV{'RT_TEST_DB_HOST'}');\n";
+        print $config "Set( \$DatabaseRTHost , '$ENV{'RT_TEST_RT_HOST'}');\n";
     }
 
     if ( $args{'plugins'} ) {
