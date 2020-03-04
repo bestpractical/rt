@@ -49,19 +49,17 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions &>
 
-<form action="Visibility.html" method="post" name="Visibility">
+<form action="Visibility.html" method="post" name="Visibility" class="mx-auto max-width-lg">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
-<h2><&|/l, $role->Name &>Visibility for [_1]</&></h2>
-
-<div class="col-md-6">
+<&| /Widgets/TitleBox, class => 'custom-role-info-visibility', content_class => 'mx-auto width-sm' &>
 % for (@pages) {
 %     my ($label, $url) = @$_;
   <div class="form-row boolean">
-    <div class="col-md-3 label">
+    <div class="col-md-4 label">
       <% $label %>:
     </div>
-    <div class="col-md-9 value">
+    <div class="col-md-8 value">
       <div class="form-row">
         <div class="col-md-auto">
           <div class="custom-control custom-radio">
@@ -79,10 +77,8 @@
     </div>
   </div>
 % }
-</div>
-
-<& /Elements/Submit, Name => 'Update' &>
-
+</&>
+<& /Elements/Submit, Name => loc('Update') &>
 </form>
 
 <%ARGS>
