@@ -141,6 +141,10 @@ my @role_fields;
 unless ($ExcludeCustomRoles) {
     my $roles = $QueueObj->CustomRoles;
     $roles->LimitToSingleValue;
+
+    my @hidden = $QueueObj->HiddenCustomRoleIDsForURL;
+    $roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+
     $m->callback( CallbackName => 'ModifyCustomRoles', %ARGS, CustomRoles => $roles);
     while (my $role = $roles->Next) {
         push @role_fields, {

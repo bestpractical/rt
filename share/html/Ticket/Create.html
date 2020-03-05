@@ -176,6 +176,10 @@
 
 % my $roles = $QueueObj->CustomRoles;
 % $roles->LimitToMultipleValue;
+
+% my @hidden = $QueueObj->HiddenCustomRoleIDsForURL;
+% $roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
 <div class="form-row">

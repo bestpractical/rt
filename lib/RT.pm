@@ -767,6 +767,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::AdminConditionsAndActions' => '4.4.2',
     'RT::Extension::RightsInspector' => '5.0',
     'RT::Extension::ConfigInDatabase' => '5.0',
+    'RT::Extension::CustomRole::Visibility' => '5.0',
 );
 
 sub InitPlugins {
