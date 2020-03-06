@@ -93,7 +93,6 @@
 </div>
 
 % if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
-<h2><&|/l&>Search results</&></h2>
 <& /Elements/CollectionList,
     Collection => $articles, 
     AllowSorting => 1,
