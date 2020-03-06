@@ -74,7 +74,7 @@
     <span class="current-value"><%$Article->CreatorObj->Name%></span>
   </div>
   <div class="col-md-3 value text-left">
-    <span class="current-value">[<a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</span>
+    <span class="current-value font-weight-bold"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a></span>
   </div>
 </div>
 <div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row article-summary">
