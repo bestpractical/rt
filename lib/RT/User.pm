@@ -2248,18 +2248,15 @@ sub AddRecentlyViewedTicket {
     }
 
     my @tickets;
-    my $i = 0;
     for (@recentTickets) {
         my ($ticketId, $timestamp) = @$_;
         
         #Skip the ticket if it exists in recents already
         if ($ticketId != $ticket->Id) {
             push @tickets, $_;
-            if ($i >= $maxCount - 1) {
-                last;
-            }
+            # -1 is for the new ticket that will be added
+            last if @tickets >= $maxCount - 1;
         }
-        $i++;
     }
 
     #Add the new ticket
