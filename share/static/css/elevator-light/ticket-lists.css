@@ -21,7 +21,8 @@ table.queue-summary th.collection-as-table a {
 }
 
 table.collection-as-table th.collection-as-table,
-table.queue-summary th.collection-as-table {
+table.queue-summary th.collection-as-table,
+.article-headers .label {
     color: #3858a3;
     font-weight: 500; /* 500 is between regular (400) and bold (700) */
 }
