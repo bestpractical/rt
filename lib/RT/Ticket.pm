@@ -2623,7 +2623,6 @@ sub SeenUpTo {
         OPERATOR => '>',
         VALUE => $attr->Content
     ) if $attr;
-    $txns->RowsPerPage(1);
 
     my $next_unread_txn = $txns->First;
     if (wantarray) {
