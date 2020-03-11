@@ -682,6 +682,12 @@ my $build_main_nav = sub {
         );
     }
 
+    $tools->child( preview_searches =>
+        title       => loc('Preview Searches'),
+        description => loc('Preview results of search modules'),
+        path        => '/Tools/PreviewSearches.html',
+    );
+
     if ( $session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', Object => RT->System ) )
     {
         $build_admin_menu->(Menu());

@@ -1,0 +1,149 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc('Preview results of search modules') &>
+<& /Elements/Tabs &>
+
+<&| /Widgets/TitleBox, title => loc('Search Modules') &>
+  <div>
+    <&|/l&>RT can use searches packaged in modules for some utilities like rt-crontool. This page allows you to run the searches from these modules in the web UI to confirm they find the tickets you expect.</&>
+  </div>
+
+  <div>
+    <&|/l&>Note that the web version of the search will run as the logged in user. To see exactly the same results as rt-crontool, view the search with the user mapped via the Unix Login field or make sure your user account has the same rights as the user running rt-crontool.</&>
+  </div>
+</&>
+
+<form method="POST" action="PreviewSearches.html">
+  <table>
+    <tr>
+      <td align="right"><&|/l&>Search Module</&>:</td>
+      <td>
+        <select name="Search">
+%       for my $module ( @modules ) {
+          <option value="<% $module %>" <% $module eq $Search ? 'selected="selected"' : '' |n%>><% $module %></option>
+%       }
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td align="right"><&|/l&>Search argument</&>:</td>
+      <td><input name="SearchArg" size="60" value="<% $SearchArg %>" /></td>
+    </tr>
+    <tr>
+      <td align="right"><&|/l&>Format</&>:</td>
+      <td><textarea name="Format" rows="8" cols="72"><% $Format %></textarea></td>
+    </tr>
+    <tr>
+      <td align="right"><&|/l&>Rows per page</&>:</td>
+      <td>
+        <& /Elements/SelectResultsPerPage, Name => "Rows", Default => $Rows &>
+      </td>
+    </tr>
+  </table>
+  <& /Elements/Submit, Label => loc('Run') &>
+</form>
+
+% if ( $tickets ) {
+
+<&| /Widgets/TitleBox, title => loc('Found [quant,_1,ticket,tickets]', $tickets->CountAll) &>
+
+<& /Elements/CollectionList,
+    Collection => $tickets,
+    AllowSorting => 1,
+    Rows => $Rows,
+    Page => $Page,
+    Format => $Format,
+    SearchArg => $SearchArg,
+    Search => $Search,
+    PassArguments => [qw(Format Rows Page Order OrderBy Search SearchArg)],
+&>
+
+</&>
+% }
+
+<%INIT>
+
+use List::MoreUtils 'uniq';
+my @modules;
+for my $root (@INC) {
+    my $mask = File::Spec->catfile( $root, qw(RT Search *.pm) );
+    for my $file ( glob $mask ) {
+        my ($name) = $file =~ /(\w+).pm$/;
+        next if $name =~ /^(?:FromSQL|Simple)$/;
+        push @modules, "RT::Search::$name";
+    }
+}
+
+@modules = sort( uniq(@modules) );
+
+my $tickets;
+if ( $Search ) {
+    if ( $Search->require ) {
+        $tickets = RT::Tickets->new( $session{CurrentUser} );
+        my $search = $Search->new(
+            TicketsObj  => $tickets,
+            Argument    => $SearchArg,
+            CurrentUser => $session{CurrentUser},
+        );
+        $search->Prepare();
+    }
+    else {
+        $RT::Logger->error("Couldn't load $Search: $@");
+        Abort( loc( "Couldn't load [_1]", $Search ) );
+    }
+}
+
+</%INIT>
+
+<%ARGS>
+$Search => ''
+$SearchArg => ''
+$Format => RT->Config->Get('DefaultSearchResultFormat')
+$Page => 1
+$Rows => 50
+</%ARGS>
