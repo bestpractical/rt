@@ -1,4 +1,4 @@
-FROM netsandbox/request-tracker-base
+FROM bpssysadmin/rt-base-debian-stretch
 
 ENV RT_TEST_PARALLEL 1
 ENV RT_DBA_USER root
@@ -11,7 +11,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   autoconf \
   libnet-ldap-server-test-perl \
   libencode-hanextra-perl \
-#  libhtml-gumbo-perl \
   libgumbo1 \
   build-essential \
   libhtml-formatexternal-perl \
@@ -20,8 +19,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 
 RUN cpanm \
   Encode::Detect::Detector \
-  HTML::Gumbo
-# && rm -rf /root/.cpanm
+  HTML::Gumbo \
+ && rm -rf /root/.cpanm
+
+CMD tail -f /dev/null
 
 #RUN cd /usr/local/ \
 #  && git clone https://github.com/bestpractical/rt.git \
