@@ -164,3 +164,11 @@ padding-right:0.25em;
 .transaction .message-header-value.verify.done.trust-FULL      { color: #060; }
 .transaction .message-header-value.verify.done.trust-FULLY     { color: #060; }
 .transaction .message-header-value.verify.done.trust-ULTIMATE  { color: #060; }
+
+.transaction.other .content .details {
+  margin-top: 0.5em;
+}
+
+.transaction.other .content .details tr:not(:first-child) td.value {
+  border-top: 1px solid #ccc;
+}

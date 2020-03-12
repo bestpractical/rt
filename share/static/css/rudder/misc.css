@@ -25,6 +25,10 @@ td.labeltop {
     min-width: 6em;
 }
 
+.transaction.other .content .details td.label {
+    min-width: 0;
+}
+
 span.cflabel .type,
 td.cflabel .type {
     font-weight: normal;

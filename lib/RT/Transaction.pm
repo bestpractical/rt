@@ -1045,6 +1045,17 @@ sub _CanonicalizeRoleName {
                     $new = $date->AsString( Time => 0, Timezone => 'UTC' );
                 }
             }
+            elsif ( $cf->Type =~ /text/i ) {
+                if ( !defined($old) || $old eq '' ) {
+                    return ("[_1] added", $field);      #loc()
+                }
+                if ( !defined($new) || $new eq '' ) {
+                    return ("[_1] deleted", $field);    #loc()
+                }
+                else {
+                    return ("[_1] changed", $field);    #loc()
+                }
+            }
         }
 
         if ( !defined($old) || $old eq '' ) {

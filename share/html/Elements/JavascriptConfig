@@ -73,6 +73,8 @@ my $Catalog = {
     loading => "Loading...", #loc
     try_again => "Try again", #loc
     history_scroll_error => "Could not load ticket history. Reason:", #loc
+    show_details => "Show Details", #loc
+    hide_details => "Hide Details", #loc
 };
 $_ = loc($_) for values %$Catalog;
 

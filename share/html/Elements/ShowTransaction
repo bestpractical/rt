@@ -77,6 +77,33 @@ $m->comp(
     Parent => 0
 ) if $ShowBody;
 </%PERL>
+
+% if ( $old || $new ) {
+    <div class="details hidden %>" id="txn-<% $Transaction->Id %>-details">
+      <table>
+%     if ( $old eq loc('(no value)')  ) {
+        <tr>
+          <td class="value"><% $new |n %></td>
+        </tr>
+%     }
+%     elsif ( $new eq loc('(no value)')  ) {
+        <tr>
+          <td class="value"><% $old |n %></td>
+        </tr>
+%     }
+%     else {
+        <tr>
+          <td class="label"><% loc('From') %>:</td>
+          <td class="value" ><% $old |n %></td>
+        </tr>
+        <tr>
+          <td class="label"><% loc('To') %>:</td>
+          <td class="value"><% $new |n %></td>
+        </tr>
+%     }
+      </table>
+    </div>
+% }
   </div>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterContent' );
 </div>
@@ -227,6 +254,33 @@ elsif ( %$Attachments && $ShowActions ) {
     }
 }
 
+my ( $old, $new );
+if ( $txn_type eq 'CustomField' && $Transaction->Field ) {
+    my $cf = RT::CustomField->new( $session{CurrentUser} );
+    $cf->SetContextObject( $Transaction->Object );
+    $cf->Load( $Transaction->Field );
+    if ( $cf->Id && $cf->Type =~ /text/i ) {
+        $old = $Transaction->OldValue // loc('(no value)');
+        $old = $m->comp('/Elements/ScrubHTML', Content => $old);
+        $old =~ s|\n|<br />|g;
+
+        $new = $Transaction->NewValue // loc('(no value)');
+        $new = $m->comp('/Elements/ScrubHTML', Content => $new);
+        $new =~ s|\n|<br />|g;
+
+        my $id = $Transaction->Id;
+
+        # Ignore $ShowActions as it's a page helper, not a real action.
+        push @actions,
+            {
+            class   => "toggle-txn-details",
+            title   => loc('Show Details'),
+            onclick => "return toggleTransactionDetails('txn-$id-details', this)",
+            path    => '#',
+            };
+    }
+}
+
 my $CreatorObj = $Transaction->CreatorObj;
 
 $m->callback(
@@ -256,6 +310,10 @@ if ( @actions ) {
             )
             . ($a->{'class'}
                 ? ' class="'. $i->apply_escapes( $a->{'class'}, 'h' ) .'"'
+                : ''
+            )
+            . ($a->{'onclick'}
+                ? ' onclick="'. $i->apply_escapes( $a->{'onclick'}, 'h' ) .'"'
                 : ''
             )
             .'>'. $i->apply_escapes( $a->{'title'}, 'h' ) .'</a>'

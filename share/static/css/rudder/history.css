@@ -2,6 +2,7 @@ div.history-container {
     border: 0
 }
 
+.history .transaction.details div.content,
 .history .transaction.message div.content {
     padding-right: 0;
     padding-bottom: 3em;

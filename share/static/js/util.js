@@ -591,3 +591,13 @@ function toggle_hide_unset(e) {
 
     return false;
 }
+
+function toggleTransactionDetails (id, link) {
+    hideshow(id);
+
+    if (link) {
+        jQuery(link).text(RT.I18N.Catalog[jQuery('#'+id).is(':visible') ? 'hide_details' : 'show_details']);
+    }
+
+    return false;
+}
