@@ -48,8 +48,9 @@
 
 <& /Elements/CustomDateRangesSpecs, Location => "config files", Config => $from_config  &>
 % if ( $UserPreferences ) {
-    <& /Elements/CustomDateRangesSpecs, Location => "database", Config => $from_db &>
-    <& /Widgets/Form/CustomDateRangesInput, Location => "user preferences", Config => $from_user &>
+      <& /Elements/CustomDateRangesSpecs, Location => "database", Config => $from_db &>
+      <& /Elements/CustomDateRangesSpecs, Location => "other users settings", Config => $from_other_users &>
+      <& /Widgets/Form/CustomDateRangesInput, Location => "user preferences", Config => $from_user &>
 % }
 % else {
     <& /Widgets/Form/CustomDateRangesInput, Location => "database", Config => $from_db &>
@@ -62,7 +63,20 @@ Abort(loc("Permission Denied")) unless $session{'CurrentUser'}->HasRight( Object
 my $from_config   = RT->Config->Get('CustomDateRanges');
 my $from_db       = RT->Config->Get('CustomDateRangesUI');
 
-my $from_user     = $UserPreferences ? $session{'CurrentUser'}->UserObj->Preferences("CustomDateRanges" ) : undef;
+my ( $from_other_users, $from_user );
+if( $UserPreferences ) {
+    my $current_user_id = $session{'CurrentUser'}->Id;
+
+    # get the content of all Pref-CustomDateRanges attributes for other users
+    my $attributes = RT::Attributes->new( RT->SystemUser );
+    $attributes->Limit( FIELD => 'Name', VALUE => 'Pref-CustomDateRanges' );
+    $attributes->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $current_user_id );
+    $attributes->OrderBy( FIELD => 'Creator' );
+    my @from_other_users = map { $_->Content } @{$attributes->ItemsArrayRef};
+    $from_other_users = RT::Config::MergeCustomDateRangesSpecs( @from_other_users );
+
+    $from_user = $session{'CurrentUser'}->UserObj->Preferences("CustomDateRanges" );
+}
 
 </%INIT>
 <%ARGS>

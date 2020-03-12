@@ -2508,7 +2508,7 @@ sub AllCustomDateRanges {
     if ( $include_users ) {
         my $db_config = $self->Get( 'CustomDateRangesUI' );
         _CustomDateRangesSpecOrigin( $db_config, 'database', $cdr_origin );
-        $config = _MergeCustomDateRangesSpecs( $config, $db_config );
+        $config = MergeCustomDateRangesSpecs( $config, $db_config );
     }
     return ( $config, $cdr_origin );
 }
@@ -2530,7 +2530,7 @@ sub _CustomDateRangesSpecOrigin {
 }
 
 # merge all custom date ranges definitions into one
-sub _MergeCustomDateRangesSpecs {
+sub MergeCustomDateRangesSpecs {
     my @specs = @_;
     my $merged = {};
     foreach my $spec ( @specs ) {
