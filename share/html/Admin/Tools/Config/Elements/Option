@@ -82,7 +82,7 @@ my $is_immutable = $meta->{Immutable}
                 || ($is_code && $val =~ s/sub \{ "DUMMY" \}/sub { ... }/g)
                 || ($is_code && !$has_execute_code);
 
-my $current_value = $is_code ? $val : $raw_value;
+my $current_value = $is_code || $widget eq '/Widgets/Form/CustomDateRange' ? $val : $raw_value;
 my $args   = $meta->{'WidgetArguments'} || {};
 if ($widget eq '/Widgets/Form/Boolean') {
     %$args = (

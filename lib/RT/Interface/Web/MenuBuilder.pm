@@ -308,6 +308,12 @@ sub BuildMainNav {
         }
     }
 
+    if( $request_path  eq '/Prefs/SearchOptions.html' ) {
+        $page->child( custom_date_ranges => title => loc('Custom Date Ranges'), path => "/Prefs/CustomDateRanges.html" );
+    }
+    if( $request_path  eq '/Prefs/CustomDateRanges.html' ) {
+        $page->child( custom_date_ranges => title => loc('Search Preferences'), path => "/Prefs/SearchOptions.html" );
+    }
 
     if ( $request_path =~ m{^/Ticket/} ) {
         if ( ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {

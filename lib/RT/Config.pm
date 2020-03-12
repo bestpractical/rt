@@ -56,6 +56,7 @@ use File::Spec ();
 use Symbol::Global::Name;
 use List::MoreUtils 'uniq';
 use Clone ();
+use Data::Dumper;
 
 # Store log messages generated before RT::Logger is available
 our @PreInitLoggerMessages;
@@ -1224,6 +1225,10 @@ our %META;
     CustomDateRangesUI => {
         Type            => 'HASH',
         Widget => '/Widgets/Form/CustomDateRange',
+        WidgetArguments => {},
+        Section => 'Custom date ranges',
+        SortOrder => 1,
+        Overridable     => 1,
     },
     ExternalStorage => {
         Type            => 'HASH',
@@ -2494,12 +2499,72 @@ sub EnableExternalAuth {
     return;
 }
 
+sub AllCustomDateRanges {
+    my ( $self, $include_users ) = @_;
+    my $config =  $self->Get( 'CustomDateRanges' );
+    my $cdr_origin = {};
+    _CustomDateRangesSpecOrigin( $config, 'config files', $cdr_origin );
+
+    if ( $include_users ) {
+        my $db_config = $self->Get( 'CustomDateRangesUI' );
+        _CustomDateRangesSpecOrigin( $db_config, 'database', $cdr_origin );
+        $config = _MergeCustomDateRangesSpecs( $config, $db_config );
+    }
+    return ( $config, $cdr_origin );
+}
+
+# stores the origin of the custom date ranges specs, for error reporting
+# $spec is a CDR config (from CustomDateRanges, CustomDateRangesUI or a user preferences)
+# $origin is a string that gets recorded
+# $cdr_origin is a hash to which the origin gets added
+sub _CustomDateRangesSpecOrigin {
+    my( $spec, $origin, $cdr_origin ) = @_;
+    return {} if ! CustomDateRangesSpecHasContent( $spec );
+    foreach my $type ( keys %$spec ) {
+        my $spec_type =  $spec->{$type};
+        next if ref( $spec->{$type} ) ne 'HASH';
+        foreach my $name ( keys %{$spec->{$type}} ) {
+            $cdr_origin->{$type}->{$name} = $origin;
+        }
+    }
+}
+
+# merge all custom date ranges definitions into one
+sub _MergeCustomDateRangesSpecs {
+    my @specs = @_;
+    my $merged = {};
+    foreach my $spec ( @specs ) {
+        foreach my $type ( keys %$spec ) {
+            my $spec_type =  $spec->{$type};
+            foreach my $name ( keys %$spec_type ) {
+                $merged->{$type}->{$name} ||= $spec_type->{$name};
+            }
+        }
+    }
+    return $merged;
+}
+
+# returns true if one of the categories of custom date ranges (RT::Ticket...)
+# has any content, false otherwise
+sub CustomDateRangesSpecHasContent {
+    my $spec = shift;
+    return if ref( $spec ) ne 'HASH';
+    foreach my $type ( keys %$spec ) {
+        my $spec_type =  $spec->{$type};
+        next if ref( $spec_type ) ne 'HASH';
+        return 1 if scalar keys %$spec_type;
+    }
+    return;
+}
+
 sub BuildCustomDateRangesUI {
     my $self = shift;
     my $args = shift;
 
-    my $config = $self->Get( 'CustomDateRanges' );
-    my $content = $self->Get( 'CustomDateRangesUI' );
+    my $user_config = $args->{UserConfig} || 0;
+
+    my( $config, $origin ) = $self->AllCustomDateRanges( $user_config );
+    my $current = $user_config ? $HTML::Mason::Commands::session{'CurrentUser'}->UserObj->Preferences("CustomDateRanges") : $self->Get( 'CustomDateRangesUI' );
     my @results;
 
     my %label = (
@@ -2511,21 +2576,22 @@ sub BuildCustomDateRangesUI {
 
     my $ok = 1;
     my $need_save;
-    if ($content) {
-        my @current_names = sort keys %{ $content->{'RT::Ticket'} };
+    if ($current) {
+        my @current_names = sort keys %{ $current->{'RT::Ticket'} };
         for my $id ( 0 .. $#current_names ) {
             my $current_name = $current_names[$id];
-            my $spec         = $content->{'RT::Ticket'}{$current_name};
+            my $spec         = $current->{'RT::Ticket'}{$current_name};
             my $name         = $args->{"$id-name"};
 
             if ( $config && $config->{'RT::Ticket'}{$name} ) {
-                push @results, loc( "[_1] already exists", $name );
+                my $defined_in = $origin->{'RT::Ticket'}->{$name};
+                push @results, loc( "[_1] already exists in [_2]", $name, $defined_in );
                 $ok = 0;
                 next;
             }
 
             if ( $args->{"$id-Delete"} ) {
-                delete $content->{'RT::Ticket'}{$current_name};
+                delete $current->{'RT::Ticket'}{$current_name};
                 push @results, loc( 'Deleted [_1]', $current_name );
                 $need_save ||= 1;
                 next;
@@ -2555,9 +2621,9 @@ sub BuildCustomDateRangesUI {
                 $updated ||= 1;
             }
 
-            $content->{'RT::Ticket'}{$name} = $spec;
+            $current->{'RT::Ticket'}{$name} = $spec;
             if ( $name ne $current_name ) {
-                delete $content->{'RT::Ticket'}{$current_name};
+                delete $current->{'RT::Ticket'}{$current_name};
                 $updated   ||= 1;
             }
 
@@ -2576,8 +2642,9 @@ sub BuildCustomDateRangesUI {
         my $i = 0;
         for my $name ( @{ $args->{name} } ) {
             if ($name) {
-                if ( $config && $config->{'RT::Ticket'}{$name} || $content && $content->{'RT::Ticket'}{$name} ) {
-                    push @results, loc( "[_1] already exists", $name );
+                if ( $config && $config->{'RT::Ticket'}{$name} || $current && $current->{'RT::Ticket'}{$name} ) {
+                    my $defined_in = $origin->{'RT::Ticket'}->{$name};
+                    push @results, loc( "[_1] already exists in [_2]", $name, $defined_in );
                     $ok = 0;
                     $i++;
                     next;
@@ -2603,18 +2670,30 @@ sub BuildCustomDateRangesUI {
                 }
             }
 
-            $content->{'RT::Ticket'}{$name} = $spec;
+            $current->{'RT::Ticket'}{$name} = $spec;
             push @results, loc( 'Created [_1]', $name );
             $need_save ||= 1;
             $i++;
         }
     }
 
-    $args->{CustomDateRangesUI}= $content;
+    $args->{CustomDateRangesUI}= $current;
     return ( $ok, \@results);
 }
 
 sub loc { return RT->SystemUser->loc( @_ ) }
+
+sub Stringify {
+    my $value = shift;
+    return "" if !defined($value);
+
+    local $Data::Dumper::Terse = 1;
+    local $Data::Dumper::Indent = 2;
+    local $Data::Dumper::Sortkeys = 1;
+    my $output = Dumper $value;
+    chomp $output;
+    return $output;
+};
 
 my $database_config_cache_time = 0;
 my %original_setting_from_files;

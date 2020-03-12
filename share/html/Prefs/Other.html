@@ -54,6 +54,7 @@
 <&|/Widgets/TitleBox, title => loc( $section ) &>
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
 % next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
+% next if $option eq 'CustomDateRangesUI';
 % my $meta = RT->Config->Meta( $option );
 <& $meta->{'Widget'},
     Default      => 1,
@@ -98,7 +99,7 @@ if ( $Update ) {
             },
             Store => $preferences,
             Types => [RT->Config->Options], Default => 1, Arguments => \%ARGS,
-            DefaultValue => { map { $_ => RT->Config->Get($_) }
+            DefaultValue => { map { $_ => RT->Config->Get($_) // '' }
                 RT->Config->Options
             }, );
 

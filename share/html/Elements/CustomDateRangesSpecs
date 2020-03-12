@@ -46,33 +46,47 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-<& /Elements/CustomDateRangesSpecs, Location => "config files", Config => $from_config  &>
-% if ( $UserPreferences ) {
-    <& /Elements/CustomDateRangesSpecs, Location => "database", Config => $from_db &>
-    <& /Widgets/Form/CustomDateRangesInput, Location => "user preferences", Config => $from_user &>
+<&|/Widgets/TitleBox, title => loc( "Custom date ranges in [_1]", $Location) &>
+% if ( $Config && keys %{$Config->{'RT::Ticket'}} ) {
+  <div class="">
+    <div class="form-row input-row-header">
+      <div class="col-md-2"><&|/l&>Name</&></div>
+      <div class="col-md-2"><&|/l&>From</&></div>
+      <div class="col-md-2"><&|/l&>From Value if Unset</&></div>
+      <div class="col-md-2"><&|/l&>To</&></div>
+      <div class="col-md-2"><&|/l&>To Value if Unset</&></div>
+      <div class="col-md-1"><&|/l&>Business<br>Hours?</&></div>
+    </div>
+% my $i = 0;
+% for my $name ( sort keys %{$Config->{'RT::Ticket'}} ) {
+% $i++;
+    <div class="<% $i % 2 ? 'oddline' : 'evenline' %> form-row input-row">
+      <div class="col-md-2"><% $name %></div>
+%     my $spec = $Config->{'RT::Ticket'}{$name};
+%     my %date_range_spec = RT::Ticket->_ParseCustomDateRangeSpec($name, $spec);
+      <div class="col-md-2"><% $date_range_spec{from} %></div>
+      <div class="col-md-2"><% $date_range_spec{from_fallback} || '' %></div>
+      <div class="col-md-2"><% $date_range_spec{to} %></div>
+      <div class="col-md-2"><% $date_range_spec{to_fallback} || '' %></div>
+      <div class="col-md-1"><% $date_range_spec{business_time} ? loc('Yes') : loc('No') %></div>
+      <div class="col-md-1 evenline" style="background-color:white;"></div>
+    </div>
+% }
+  </div>
 % }
 % else {
-    <& /Widgets/Form/CustomDateRangesInput, Location => "database", Config => $from_db &>
+  <p><&|/l&>No custom date ranges in <% $Location %></&></p>
 % }
+</&>
+
 <%INIT>
 
 Abort(loc("Permission Denied")) unless $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')
-    || ( $UserPreferences && $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'ModifySelf' ) );
-
-my $from_config   = RT->Config->Get('CustomDateRanges');
-my $from_db       = RT->Config->Get('CustomDateRangesUI');
-
-my $from_user     = $UserPreferences ? $session{'CurrentUser'}->UserObj->Preferences("CustomDateRanges" ) : undef;
+    || $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'ModifySelf' );
 
 </%INIT>
+
 <%ARGS>
-$Save => $ARGS{updated},
-
-$Arguments    => {},
-
-$Default      => 0,
-$DefaultValue => '',
-$CurrentValue => '',
-$UserPreferences => 0,
-
+$Location
+$Config
 </%ARGS>

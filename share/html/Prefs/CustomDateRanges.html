@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,34 +45,36 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => loc("Custom Date Ranges") &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@actions &>
 
-<& /Elements/CustomDateRangesSpecs, Location => "config files", Config => $from_config  &>
-% if ( $UserPreferences ) {
-    <& /Elements/CustomDateRangesSpecs, Location => "database", Config => $from_db &>
-    <& /Widgets/Form/CustomDateRangesInput, Location => "user preferences", Config => $from_user &>
-% }
-% else {
-    <& /Widgets/Form/CustomDateRangesInput, Location => "database", Config => $from_db &>
-% }
+<form method="post" action="CustomDateRanges.html">
+    <& /Widgets/Form/CustomDateRange, UserPreferences => 1, %ARGS &>
+    <input type="hidden" name="UserConfig" value="1" />
+<& /Elements/Submit, Name => 'SavePreferences', Label => loc('Save Changes') &>
+</form>
+<form>
 <%INIT>
+my @actions;
 
-Abort(loc("Permission Denied")) unless $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')
-    || ( $UserPreferences && $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'ModifySelf' ) );
-
-my $from_config   = RT->Config->Get('CustomDateRanges');
-my $from_db       = RT->Config->Get('CustomDateRangesUI');
-
-my $from_user     = $UserPreferences ? $session{'CurrentUser'}->UserObj->Preferences("CustomDateRanges" ) : undef;
+if( $ARGS{SavePreferences} ) {
+    my( $ok, $results) = RT::Config->BuildCustomDateRangesUI( \%ARGS );
+    push @actions, @$results;
+    if( $ok ) {
+        my $CustomDateRangesSpec = $ARGS{CustomDateRangesUI};
+        if( values %{$CustomDateRangesSpec->{'RT::Ticket'}} ) {
+            my ($set_ok, $msg) = $session{'CurrentUser'}->UserObj->SetPreferences("CustomDateRanges", $CustomDateRangesSpec );
+            push @actions, $set_ok ? loc("Custom date ranges saved.") : $msg;
+        }
+        else {
+            my ($delete_ok, $msg) = $session{'CurrentUser'}->UserObj->DeletePreferences("CustomDateRanges");
+            push @actions, $delete_ok ? loc("Custom date ranges deleted.") : $msg;
+        }
+    }
+}
 
 </%INIT>
+
 <%ARGS>
-$Save => $ARGS{updated},
-
-$Arguments    => {},
-
-$Default      => 0,
-$DefaultValue => '',
-$CurrentValue => '',
-$UserPreferences => 0,
-
 </%ARGS>
