@@ -48,6 +48,7 @@
 <%ARGS>
 $id
 $ShowHeaders => 0
+$ReverseTransactionOrder => 0
 </%ARGS>
 <%INIT>
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
@@ -61,6 +62,7 @@ $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $TicketObj,
 <& /Elements/ShowHistory,
     Object => $TicketObj,
     ShowHeaders => $ShowHeaders,
+    ReverseTransactionOrder => $ReverseTransactionOrder,
     Attachments => $attachments,
     AttachmentContent => $attachment_content,
     %extra_args,

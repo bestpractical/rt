@@ -48,6 +48,7 @@
 <%ARGS>
 $Object
 $ShowHeaders       => 0
+$ReverseTransactionOrder  => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
@@ -93,6 +94,16 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
                              qq{</a>} );
         }
     }
+
+    my @TransactionHeaders= ( loc( 'Oldest transaction first' ), loc( 'Newest transaction first' ) );
+    my $Order = ( RT->Config->Get( "OldestTransactionsFirst", $Object->CurrentUser ) xor $ReverseTransactionOrder );
+    my $TransactionHeader= $TransactionHeaders[$Order];
+
+    my $switched_order = 1 - $ReverseTransactionOrder;
+    push( @elements, qq{<a href="?ReverseTransactionOrder=$switched_order;ForceShowHistory=1;ShowHeaders=$ShowHeaders;id=} .
+                     $Object->id.qq{#$histid">} .
+                     $TransactionHeader .
+                     qq{</a>} );
 
     # build the new link
     my $alt = loc('Edit');

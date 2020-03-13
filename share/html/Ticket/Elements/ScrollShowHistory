@@ -48,6 +48,7 @@
 <%ARGS>
 $Ticket
 $ShowHeaders => 0
+$ReverseTransactionOrder => 0
 </%ARGS>
 
 <%INIT>
@@ -59,11 +60,12 @@ my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
 
 my %extra_args = map { $_ => $ARGS{$_} // 1 } qw/ShowDisplayModes ShowTitle ScrollShowHistory/;
 $extra_args{ShowHeaders} = $ShowHeaders;
+$extra_args{ReverseTransactionOrder} = $ReverseTransactionOrder;
 
 $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $Ticket, ExtraArgs => \%extra_args );
 
-
-my $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
+# parens on the right side are required because 'xor' has a lower priority than '='
+my $oldestTransactionsFirst = ( RT->Config->Get( "OldestTransactionsFirst", $session{CurrentUser} ) xor $ReverseTransactionOrder );
 </%INIT>
 
 <& /Elements/ShowHistoryHeader,

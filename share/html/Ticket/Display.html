@@ -93,22 +93,26 @@ my $titleright = qq{
     <& /Ticket/Elements/ScrollShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ShowHeaders,
+        ReverseTransactionOrder => $ReverseTransactionOrder,
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ShowHeaders,
+        ReverseTransactionOrder => $ReverseTransactionOrder,
     &>
 % } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ShowHeaders,
+        ReverseTransactionOrder => $ReverseTransactionOrder,
     &>
 % } else {
     <& /Elements/ShowHistory ,
           Object => $TicketObj,
           Transactions => $transactions,
           ShowHeaders => $ShowHeaders,
+          ReverseTransactionOrder => $ReverseTransactionOrder,
           Attachments => $attachments,
           AttachmentContent => $attachment_content
     &>
@@ -124,6 +128,7 @@ my $titleright = qq{
 <%ARGS>
 $TicketObj => undef
 $ShowHeaders => 0
+$ReverseTransactionOrder => 0
 $HideUnsetFields => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
 $ForceShowHistory => 0
 $InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
@@ -267,7 +272,7 @@ MaybeRedirectForResults(
     Arguments => { id => $TicketObj->id },
 );
 
-my $transactions = $TicketObj->SortedTransactions;
+my $transactions = $TicketObj->SortedTransactions( $ReverseTransactionOrder );
 my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 
