@@ -1686,8 +1686,26 @@ our %META;
     LDAPPassword => {
         Widget => '/Widgets/Form/String',
     },
+    LDAPBase => {
+        Widget => '/Widgets/Form/String',
+    },
     LDAPGroupBase => {
         Widget => '/Widgets/Form/String',
+    },
+    LDAPOptions => {
+        Widget => '/Widgets/Form/Code',
+    },
+    LDAPFilter => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    LDAPMapping => {
+        Widget => '/Widgets/Form/Code',
+    },
+    LDAPGroupFilter => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    LDAPGroupMapping => {
+        Widget => '/Widgets/Form/Code',
     },
     LogDir => {
         Immutable => 1,
@@ -1788,6 +1806,12 @@ our %META;
                 return $ret;
             },
         }
+    },
+    AssetQueues => {
+        Widget => '/Widgets/Form/Code',
+    },
+    AssetBasicCustomFieldsOnCreate => {
+        Widget => '/Widgets/Form/MultilineString',
     },
     DefaultSearchResultOrder => {
         Widget => '/Widgets/Form/Select',
