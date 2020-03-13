@@ -127,3 +127,15 @@ td.current-recipients {
     vertical-align: top;
     padding-left: 50px;
 }
+
+.diff del {
+    color: #a00;
+}
+
+.diff {
+    color: #888;
+}
+
+.diff ins {
+    color: #080;
+}

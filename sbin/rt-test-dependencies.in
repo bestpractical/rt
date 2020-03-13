@@ -188,6 +188,7 @@ Text::Quoted 2.07
 Text::Template 1.44
 Text::WikiFormat 0.76
 Text::Wrapper
+Text::WordDiff
 Time::HiRes
 Time::ParseDate
 Tree::Simple 1.04

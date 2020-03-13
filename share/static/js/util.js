@@ -599,5 +599,12 @@ function toggleTransactionDetails (id, link) {
         jQuery(link).text(RT.I18N.Catalog[jQuery('#'+id).is(':visible') ? 'hide_details' : 'show_details']);
     }
 
+    var diff = jQuery('#' + id + ' .diff td.value');
+    if (!diff.children().length) {
+        diff.load(RT.Config.WebHomePath + '/Helpers/TextDiff', {
+            TransactionId: diff.closest('div[data-transaction-id]').attr('data-transaction-id')
+        });
+    }
+
     return false;
 }
