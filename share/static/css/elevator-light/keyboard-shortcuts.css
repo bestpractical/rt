@@ -25,6 +25,5 @@
 }
 
 .ticket-list .selected-row tr {
-    border-left-color: #3858a3;
-    border-left-width: 3px;
+    border-left: 3px solid #3858a3;
 }
