@@ -52,7 +52,7 @@ var initMenus = function() {
 
     var originalOffset = jQuery("#page-menu").offset().top;
     var floatMenu      = function () {
-        jQuery("#page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);
+        jQuery(".page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);
     };
     floatMenu();
     jQuery(window).scroll(floatMenu);

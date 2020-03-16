@@ -321,6 +321,7 @@ sub BuildMainNav {
     }
 
 
+    my $search_results_page_menu;
     if ( $request_path =~ m{^/Ticket/} ) {
         if ( ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
@@ -451,7 +452,8 @@ sub BuildMainNav {
                         $HTML::Mason::Commands::session{"collection-RT::Tickets"}->PrepForSerialization();
                     }
 
-                    my $search = $top->child('search')->child('tickets');
+                    my $search = $search_results_page_menu = $HTML::Mason::Commands::m->notes('search-results-page-menu', RT::Interface::Web::Menu->new());
+
                     # Don't display prev links if we're on the first ticket
                     if ( $item_map->{$id}->{prev} ) {
                         $search->child( first =>
@@ -583,6 +585,14 @@ sub BuildMainNav {
         {
             $current_search_menu = $search->child( current_search => title => loc('Current Search') );
             $current_search_menu->path("/Search/Results.html$args") if $has_query;
+
+            if ( $search_results_page_menu && $has_query ) {
+                $search_results_page_menu->child(
+                    current_search => title => loc('Back to Search'),
+                    sort_order     => -1,
+                    path           => "/Search/Results.html$args",
+                );
+            }
         }
         else {
             $current_search_menu = $page;

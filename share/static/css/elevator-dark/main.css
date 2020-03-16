@@ -105,23 +105,23 @@
 
 .darkmode .dropdown-item:focus *, .darkmode .dropdown-item:hover *,
 .darkmode .dropdown-item:focus, .darkmode .dropdown-item:hover,
-.darkmode #page-menu.sf-menu a:focus *, .darkmode #page-menu.sf-menu a:hover *,
-.darkmode #page-menu.sf-menu a:focus, .darkmode #page-menu.sf-menu a:hover,
+.darkmode .page-menu.sf-menu a:focus *, .darkmode .page-menu.sf-menu a:hover *,
+.darkmode .page-menu.sf-menu a:focus, .darkmode .page-menu.sf-menu a:hover,
 .darkmode #main-navigation .sf-menu li ul a:focus, .darkmode #main-navigation .sf-menu li ul a:hover {
     background: #3A474D !important;
 }
 
-.darkmode #page-navigation #page-menu {
+.darkmode .page-menu {
     border: 1px solid #515151;
     border-radius: 3px;
 }
 
-.darkmode #page-menu.sf-menu > li {
+.darkmode .page-menu.sf-menu > li {
     border-color: #515151;
     border-right: none;
 }
 
-.darkmode #page-menu.sf-menu > li:first-of-type {
+.darkmode .page-menu.sf-menu > li:first-of-type {
     border-left: none;
 }
 
