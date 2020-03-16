@@ -2083,9 +2083,6 @@ sub LoadSectionMap {
                     if ( $META{$option} ) {
                         next if $META{$option}{Invisible};
                     }
-                    else {
-                        RT->Logger->debug("No META info for option [$option], falling back to Code widget");
-                    }
                     push @{ $SectionMap->[-1]{Content}[-1]{Content}[-1]{Content} }, { Name => $option, Help => $name };
                 }
             }
