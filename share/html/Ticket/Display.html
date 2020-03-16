@@ -66,9 +66,13 @@ my $initial_label = $HideUnsetFields ? $show_label : $hide_label;
 my $url = "?HideUnsetFields=" . ($HideUnsetFields ? 0 : 1) . ";id=$ARGS{id}";
 my $url_html = $m->interp->apply_escapes($url, 'h');
 
+my $search_menu = $m->scomp( '/Elements/Menu', menu => HTML::Mason::Commands::SearchResultsPageMenu(), class => 'page-menu btn-group page-nav-shadow sf-menu sf-js-enabled sf-shadow', id => 'search-results-page-menu', 'parent_id' => 'page' ) || '';
 my $alt = loc('Edit');
 my $titleright = qq{
 <div class="btn-group dropdown">
+  <div class="search-results-page-menu-container">
+    $search_menu
+  </div>
   <a id="metadata-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>
   </a>

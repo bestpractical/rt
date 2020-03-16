@@ -321,6 +321,7 @@ sub BuildMainNav {
     }
 
 
+    my $search_results_page_menu;
     if ( $request_path =~ m{^/Ticket/} ) {
         if ( ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
@@ -451,21 +452,22 @@ sub BuildMainNav {
                         $HTML::Mason::Commands::session{"tickets"}->PrepForSerialization();
                     }
 
-                    my $search = $top->child('search')->child('tickets');
+                    $search_results_page_menu = $HTML::Mason::Commands::m->notes('search-results-page-menu', RT::Interface::Web::Menu->new());
+
                     # Don't display prev links if we're on the first ticket
                     if ( $item_map->{$id}->{prev} ) {
-                        $search->child( first =>
-                            title => '<< ' . loc('First'), class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{first});
-                        $search->child( prev =>
-                            title => '< ' . loc('Prev'),   class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev});
+                        $search_results_page_menu->child( first =>
+                            title => '<< ' . loc('First'), class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{first}, sort_order => 1 );
+                        $search_results_page_menu->child( prev =>
+                            title => '< ' . loc('Prev'),   class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev}, sort_order => 2 );
                     }
                     # Don't display next links if we're on the last ticket
                     if ( $item_map->{$id}->{next} ) {
-                        $search->child( next =>
-                            title => loc('Next') . ' >',  class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
+                        $search_results_page_menu->child( next =>
+                            title => loc('Next') . ' >',  class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next}, sort_order => 3 );
                         if ( $item_map->{last} ) {
-                            $search->child( last =>
-                                title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
+                            $search_results_page_menu->child( last =>
+                                title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last}, sort_order => 4 );
                         }
                     }
                 }
@@ -583,6 +585,11 @@ sub BuildMainNav {
         {
             $current_search_menu = $search->child( current_search => title => loc('Current Search') );
             $current_search_menu->path("/Search/Results.html$args") if $has_query;
+
+            if ( $search_results_page_menu && $has_query ) {
+                my $page_current_search = $search_results_page_menu->child( current_search => title => loc('< Back to search'), sort_order => -1 );
+                $page_current_search->path("/Search/Results.html$args") if $has_query;
+            }
         }
         else {
             $current_search_menu = $page;

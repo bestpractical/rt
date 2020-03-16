@@ -50,9 +50,9 @@ var initMenus = function() {
     jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' }).supposition();
     jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' }).supposition();
 
-    var originalOffset = jQuery("#page-menu").offset().top;
+    var originalOffset = jQuery(".page-menu").offset().top;
     var floatMenu      = function () {
-        jQuery("#page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);
+        jQuery(".page-menu").toggleClass("pinned", jQuery(document).scrollTop() > originalOffset);
     };
     floatMenu();
     jQuery(window).scroll(floatMenu);
@@ -62,7 +62,7 @@ var initMenus = function() {
     jQuery('#li-page-overflow-will_be_deleted').remove();
 
     rebalanceOverflowMenu('#app-nav', '#li-overflow');
-    rebalanceOverflowMenu('#page-menu', '#li-page-overflow');
+    rebalanceOverflowMenu('.page-menu', '#li-page-overflow');
 };
 
 // If everything is loaded, init NOW.  Otherwise, defer to DOM ready.
