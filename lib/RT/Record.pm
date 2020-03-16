@@ -2647,15 +2647,10 @@ sub CustomDateRanges {
 
     my %ranges;
 
-    if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+    if ( my( $config, $origin) = RT->Config->AllCustomDateRanges( 2 ) ) {
         %ranges = %{ $config->{$type} } if $config->{$type};
     }
 
-    if ( my $configui =  RT->Config->Get('CustomDateRangesUI') ) {
-        for my $name ( keys %{ $configui->{$type} || {} } ) {
-            $ranges{$name} ||= $configui->{$type}{$name};
-        }
-    }
     return %ranges;
 }
 

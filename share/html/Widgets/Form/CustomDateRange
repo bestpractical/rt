@@ -68,12 +68,7 @@ if( $UserPreferences ) {
     my $current_user_id = $session{'CurrentUser'}->Id;
 
     # get the content of all Pref-CustomDateRanges attributes for other users
-    my $attributes = RT::Attributes->new( RT->SystemUser );
-    $attributes->Limit( FIELD => 'Name', VALUE => 'Pref-CustomDateRanges' );
-    $attributes->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $current_user_id );
-    $attributes->OrderBy( FIELD => 'Creator' );
-    my @from_other_users = map { $_->Content } @{$attributes->ItemsArrayRef};
-    $from_other_users = RT::Config::MergeCustomDateRangesSpecs( @from_other_users );
+    $from_other_users = RT::Config->CustomDateRangesFromOtherUsers( );
 
     $from_user = $session{'CurrentUser'}->UserObj->Preferences("CustomDateRanges" );
 }
@@ -90,3 +85,25 @@ $CurrentValue => '',
 $UserPreferences => 0,
 
 </%ARGS>
+
+<%METHOD Process>
+<%ARGS>
+$Name
+
+$Arguments    => {},
+
+$Default      => 0,
+$DefaultValue => '',
+</%ARGS>
+<%INIT>
+my $value = $Arguments->{ $Name };
+$value = '' unless defined $value;
+
+if ( $value eq '' ) {
+    return $DefaultValue unless $Default;
+    return undef;
+}
+return $value;
+</%INIT>
+</%METHOD>
+

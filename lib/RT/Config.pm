@@ -2499,24 +2499,68 @@ sub EnableExternalAuth {
     return;
 }
 
+# Custom Date Ranges methods
+
+# return a single CDR config, plus a structure that gives the origin for each definition 
+# meaning of the $include_level parameter
+# 0 => return only the config file definitions (CustomDateRanges option)
+#          used when editing the definitions in the DB
+# 1 => return the config file + the global DB definitions (CustomDateRangesUI option)
+#          + definition from other users
+#          used when editing the definitions for a single user
+# 2 => return all definitions
+#          used when actually using the CDR
 sub AllCustomDateRanges {
-    my ( $self, $include_users ) = @_;
+    my ( $self, $include_level ) = @_;
     my $config =  $self->Get( 'CustomDateRanges' );
     my $cdr_origin = {};
     _CustomDateRangesSpecOrigin( $config, 'config files', $cdr_origin );
 
-    if ( $include_users ) {
+    if ( $include_level > 0 ) {
         my $db_config = $self->Get( 'CustomDateRangesUI' );
         _CustomDateRangesSpecOrigin( $db_config, 'database', $cdr_origin );
         $config = MergeCustomDateRangesSpecs( $config, $db_config );
+        my @from_other_users = $self->CustomDateRangesFromOtherUsers;
+        foreach my $cdr ( @from_other_users ) {
+            _CustomDateRangesSpecOrigin( $cdr, 'other user config', $cdr_origin );
+        }
+        $config = MergeCustomDateRangesSpecs( $config, $db_config,  @from_other_users );
     }
+    if ( $include_level > 1 ) {
+        my $current_user = $HTML::Mason::Commands::session{'CurrentUser'} || RT->SystemUser;
+        if( $current_user ) {
+            my $user_cdr = $current_user->UserObj->Preferences("CustomDateRanges" );
+            if($user_cdr ) {
+                _CustomDateRangesSpecOrigin( $user_cdr, 'user', $cdr_origin );
+                $config = MergeCustomDateRangesSpecs( $config, $user_cdr );
+            }
+        }
+    }
+
     return ( $config, $cdr_origin );
+}
+
+sub CustomDateRangesFromOtherUsers {
+
+    return {} unless RT->SystemUser;
+    my $current_user = $HTML::Mason::Commands::session{'CurrentUser'} || RT->SystemUser;
+
+    my $attributes = RT::Attributes->new( RT->SystemUser );
+    $attributes->Limit( FIELD => 'Name', VALUE => 'Pref-CustomDateRanges' );
+    $attributes->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $current_user->Id );
+    $attributes->OrderBy( FIELD => 'Creator' );
+    my @from_other_users = map { $_->Content } @{$attributes->ItemsArrayRef};
+
+    return MergeCustomDateRangesSpecs( @from_other_users );
 }
 
 # stores the origin of the custom date ranges specs, for error reporting
 # $spec is a CDR config (from CustomDateRanges, CustomDateRangesUI or a user preferences)
 # $origin is a string that gets recorded
 # $cdr_origin is a hash to which the origin gets added
+# annotating the original $spec would be nicer, but a spec can be a simple string, as in 
+# 'Resolution Time' => 'Resolved - Created', 
+# which doesn't allow for the origin to be recorded
 sub _CustomDateRangesSpecOrigin {
     my( $spec, $origin, $cdr_origin ) = @_;
     return {} if ! CustomDateRangesSpecHasContent( $spec );
@@ -2582,6 +2626,7 @@ sub BuildCustomDateRangesUI {
             my $current_name = $current_names[$id];
             my $spec         = $current->{'RT::Ticket'}{$current_name};
             my $name         = $args->{"$id-name"};
+            next if ! $name;
 
             if ( $config && $config->{'RT::Ticket'}{$name} ) {
                 my $defined_in = $origin->{'RT::Ticket'}->{$name};
@@ -2599,7 +2644,7 @@ sub BuildCustomDateRangesUI {
 
             my $updated;
             for my $field (qw/from from_fallback to to_fallback/) {
-                next if ( $spec->{$field} // '' ) eq $args->{"$id-$field"};
+                next if ( $spec->{$field} // '' ) eq ( $args->{"$id-$field"} // '' );
                 if ((   $args->{"$id-$field"}
                         && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args->{"$id-$field"} )
                     )

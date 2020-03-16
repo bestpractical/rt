@@ -52,7 +52,7 @@ $Format => undef
 
 $Face => undef
 $Size => undef
-$Link => undef
+$Link => ''
 $Title => undef
 
 $AddCol => undef

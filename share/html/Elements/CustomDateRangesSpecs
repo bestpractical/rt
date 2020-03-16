@@ -75,7 +75,7 @@
   </div>
 % }
 % else {
-  <p><&|/l&>No custom date ranges in <% $Location %></&></p>
+  <p><&|/l&>No custom date ranges in</&> <% $Location %></p>
 % }
 </&>
 
