@@ -49,7 +49,6 @@
     Name => $role->GroupType,
     Size => $Size,
     ($ShowPlaceholder ? (Placeholder => loc(RT->Nobody->Name)) : ()),
-    ($ShowEntryHint ? (EntryHint => $role->EntryHint) : ()),
     Default => $Default,
     Autocomplete => 1,
     AutocompleteReturn => "Name",
