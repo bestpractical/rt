@@ -1686,6 +1686,9 @@ our %META;
     LDAPPassword => {
         Widget => '/Widgets/Form/String',
     },
+    LDAPBase => {
+        Widget => '/Widgets/Form/String',
+    },
     LDAPGroupBase => {
         Widget => '/Widgets/Form/String',
     },
