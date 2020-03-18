@@ -49,27 +49,38 @@
 % unless ( defined $Default ) {
   <option value="">-</option>
 % }
+% for my $name ( sort { lc $a cmp lc $b } keys %Options ) {
+%   if ( $group_by_name ) {
+  <optgroup label="<% $name %>">
+%   }
 <%PERL>
-for my $option ( @Options ) {
-    my $label = $option->{Label};
-    my $value = $option->{Value};
-    my $selected = '';
-    if ( $label eq $default_label ) {
-        ($value, $selected) = ($Default, 'selected="selected"');
-    }
+    for my $option ( @{$Options{$name}} ) {
+        my $label = $option->{Label};
+        my $value = $option->{Value};
+        my $selected = '';
+        if ( $label eq $default_label ) {
+            ($value, $selected) = ($Default, 'selected="selected"');
+        }
 </%PERL>
-  <option class="priority-<% lc $label %>" value="<% $value %>" <% $selected |n %>><% loc($label) %></option>
+    <option class="priority-<% lc $label %>" value="<% $value %>" <% $selected |n %>><% loc($label) %></option>
+%   }
+%   if ( $group_by_name ) {
+  </optgroup>
+%   }
 % }
 </select>
 <%ARGS>
 $Name => 'Priority'
 $Default => undef
 $QueueObj => undef
-@Options
+%Options
 </%ARGS>
 <%INIT>
 my $default_label = '';
 if ( defined $Default && length $Default && $QueueObj ) {
     $default_label = RT::Ticket->_PriorityAsString( $Default, $QueueObj->__Value('Name') ) || '';
 }
+
+my %config = RT->Config->Get('PriorityAsString');
+my $group_by_name = keys %Options > 1;
 </%INIT>

@@ -70,30 +70,30 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
             }
         }
     }
+
+    if ( @names ) {
+        @names = uniq map { exists $config{$_} ? $_ : 'Default' } @names;
+    }
     else {
         @names = keys %config;
     }
 
+    @names = sort { lc $a cmp lc $b } @names;
+
     my $use_numeric;
-    my @values;
-    for my $name ( sort { lc $a cmp lc $b } uniq @names ) {
-        my $value = exists $config{$name} ? $config{$name} : $config{Default};
-        if ($value) {
-            push @values, $value;
-        }
-        else {
+    for my $name (@names) {
+        if ( !$config{$name} ) {
             RT->Logger->debug("PriorityAsString for Queue $name is disabled, skipping");
             $use_numeric = 1;
             last;
         }
     }
 
-    my @options;
-    my %map;
+    my %options;
 
-    # Items in @values are hashrefs/arrayrefs, we still can de-duplicate
-    # using uniq because duplicated ones are totally identical.
-    for my $value ( uniq @values ) {
+    for my $name ( @names ) {
+        my $value = $config{$name};
+
         my @list;
         if ( ref $value eq 'ARRAY' ) {
             @list = @$value;
@@ -104,20 +104,11 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
 
         while ( my $label = shift @list ) {
             my $option = { Label => $label, Value => shift @list };
-            if ( defined $map{$label} ) {
-                if ( $map{$label} != $option->{Value} ) {
-                    $use_numeric = 1;
-                    last;
-                }
-            }
-            else {
-                $map{$label} = $option->{Value};
-                push @options, $option;
-            }
+            push @{ $options{$name} }, $option;
         }
     }
 
-    return $m->comp( "/Elements/SelectPriorityAsString", %ARGS, Options => \@options ) unless $use_numeric;
+    return $m->comp( "/Elements/SelectPriorityAsString", %ARGS, Options => \%options ) unless $use_numeric;
 }
 
 $Default = '' unless defined $Default;
