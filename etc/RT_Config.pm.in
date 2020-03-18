@@ -3576,6 +3576,14 @@ Example:
 
 Password for LDAPUser.
 
+=item C<$LDAPBase>
+
+The LDAP search base.
+
+Example:
+
+    Set($LDAPBase, 'ou=Organisational Unit,dc=domain,dc=TLD');
+
 =item C<$LDAPFilter>
 
 The filter to use when querying LDAP for the set of users to sync.
