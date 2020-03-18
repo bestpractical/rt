@@ -46,12 +46,12 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ($use_numeric) {
-<% $Ticket->Priority %>/<% $Ticket->FinalPriority || ''%>
+<span class="Priority"><% $Ticket->Priority %></span>/<span class="FinalPriority"><% $Ticket->FinalPriority || ''%></span>
 % } else {
 % my $current = $Ticket->PriorityAsString || '';
 % my $final = $Ticket->FinalPriorityAsString || '';
-<span class="ticket-info-priority-<% $CSSClass->(lc($current)) %>"><% loc($current) %></span>/\
-<span class="ticket-info-final-priority-<% $CSSClass->(lc($final)) %>"><% loc($final) %></span>
+<span class="Priority ticket-info-priority-<% $CSSClass->(lc($current)) %>"><% loc($current) %></span>/\
+<span class="FinalPriority ticket-info-final-priority-<% $CSSClass->(lc($final)) %>"><% loc($final) %></span>
 % }
 <%ARGS>
 $Ticket => undef

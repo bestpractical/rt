@@ -93,7 +93,8 @@ $handle_block = sub {
         my @options = @{ $box->{'Options'} };
         while( defined( my $k = shift @options ) ) {
             my $v = shift @options;
-            $res .= qq{<option value="$k">$v</option>};
+            my $class = CSSClass($k);
+            $res .= qq{<option class="$class" value="$k">$v</option>};
         }
         $res .= qq{</select>};
         return $res;

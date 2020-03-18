@@ -179,7 +179,8 @@ for my $field (@fields) {
 <div>
 % }
 % for my $field (@fields) {
-  <div class="form-row">
+%# Prefer input name as css class, e.g. "FinalPriority" instead of "Final_Priority"
+  <div class="form-row <% CSSClass( $field->{args}{Name} || $field->{'name'} ) %>">
     <div class="label col-md-3"><% loc($field->{'name'}) %>:</div>
     <div class="value col-md-9"><% $field->{'html'} |n %></div>
   </div>
