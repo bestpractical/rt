@@ -137,6 +137,7 @@ else {
         Parents     Children
 
         Bookmark    Timer
+        UnreadMessages
 
         NEWLINE
         NBSP
