@@ -257,6 +257,16 @@ sub ConfigCacheNeedsUpdate {
     }
 }
 
+# This needs to be in RT::System as RT::Interface::Web and RT::Interface::Email both use this
+my $lifecycle_cache_time = time;
+sub MaybeRebuildLifecycleCache {
+    my $needs_update =  RT->System->LifecycleCacheNeedsUpdate;
+    if ( $needs_update > $lifecycle_cache_time ) {
+        RT::Lifecycle->FillCache;
+        $lifecycle_cache_time = $needs_update;
+    }
+}
+
 =head2 LifecycleCacheNeedsUpdate ( 1 )
 
 Attribute to decide when we need to flush the list of lifecycles

@@ -157,6 +157,7 @@ if ($UpdateLifecycleRights) {
     );
     if ( $ok ) {
         push @results, "Lifecycle updated";
+        RT::System->LifecycleCacheNeedsUpdate(1);
     }
     else {
         push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";
