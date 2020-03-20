@@ -58,7 +58,7 @@ my $modify_inline
     . '<a class="inline-edit-toggle cancel hidden" href="#">'
     . qq{<span class="fas fa-times icon-bordered fa-2x" alt="$cancel_label" data-toggle="tooltip" data-placement="top" data-original-title="$cancel_label"></span>}
     . '</a>';
-my $modify_basics = sprintf( $modify_inline, $m->interp->apply_escapes( $modify_url, 'h' ) );
+my $modify_basics = ($can_modify || $can_modify_cf) ? sprintf( $modify_inline, $m->interp->apply_escapes( $modify_url, 'h' ) ) : '';
 my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_edit_behavior{_default} || 'link') : 'hide';
 </%PERL>
 
@@ -90,12 +90,12 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
         title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
-        InlineEdit   => $InlineEdit,
+        InlineEdit   => ($can_modify || $can_modify_cf) ? $InlineEdit : 0,
         &>
 
 <%PERL>
 my $people_url = RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id;
-my $people_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $people_url, 'h' ) );
+my $people_inline = $can_modify_people ? sprintf( $modify_inline, $m->interp->apply_escapes( $people_url, 'h' ) ) : '';
 my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_edit_behavior{_default} || 'link') : 'hide';
 </%PERL>
     <&| /Widgets/TitleBox, title => loc('People'),
@@ -144,7 +144,7 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
 
 <%PERL>
 my $dates_url = RT->Config->Get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->Id;
-my $dates_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $dates_url, 'h' ) );
+my $dates_inline = $can_modify ? sprintf( $modify_inline, $m->interp->apply_escapes( $dates_url, 'h' ) ) : '';
 my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit_behavior{_default} || 'link') : 'hide';
 </%PERL>
     <&| /Widgets/TitleBox, title => loc("Dates"),
@@ -174,7 +174,7 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
 <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
 <%PERL>
 my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id;
-my $links_inline = sprintf( $modify_inline, $m->interp->apply_escapes( $links_url, 'h' ) );
+my $links_inline = $can_modify ? sprintf( $modify_inline, $m->interp->apply_escapes( $links_url, 'h' ) ) : '';
 my $links_behavior = $InlineEdit ? ($inline_edit_behavior{Links} || $inline_edit_behavior{_default} || 'link') : 'hide';
 my $alt = loc('Graph ticket links');
 my $links_graph = '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' . $alt . '"></span></a>';
