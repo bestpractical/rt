@@ -108,7 +108,7 @@ CREATE TABLE Transactions (
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) CHARACTER SET ascii NULL,
-  Field varchar(40) CHARACTER SET ascii NULL,
+  Field varchar(255) CHARACTER SET ascii NULL,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
   ReferenceType varchar(255) CHARACTER SET ascii NULL,
@@ -573,6 +573,6 @@ CREATE TABLE Configurations (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
+CREATE INDEX Configurations1 ON Configurations (Name, Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
 

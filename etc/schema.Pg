@@ -189,7 +189,7 @@ CREATE TABLE Transactions (
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
-  Field varchar(40) NULL  ,
+  Field varchar(255) NULL  ,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
   ReferenceType varchar(255) NULL,
@@ -793,6 +793,6 @@ CREATE TABLE Configurations (
     PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (LOWER(Name));
+CREATE INDEX Configurations1 ON Configurations (LOWER(Name), Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
 
