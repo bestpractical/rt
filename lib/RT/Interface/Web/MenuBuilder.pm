@@ -319,7 +319,8 @@ sub BuildMainNav {
                 my $actions = $page->child( actions => title => loc('Actions'), sort_order  => 95 );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
-                $can{'_ModifyOwner'} = $obj->CurrentUserCanSetOwner();
+                # since CurrentUserCanSetOwner returns ($ok, $msg), the parens ensure that $can{} gets $ok
+                ( $can{'_ModifyOwner'} ) = $obj->CurrentUserCanSetOwner();
                 my $can = sub {
                     unless ($_[0] eq 'ExecuteCode') {
                         return $can{$_[0]} || $can{'SuperUser'};
