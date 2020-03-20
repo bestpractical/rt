@@ -1,0 +1,5 @@
+-- Add transaction support for new config in database feature
+ALTER TABLE Transactions ALTER COLUMN Field TYPE varchar(255);
+
+DROP INDEX IF EXISTS Configurations1;
+CREATE INDEX Configurations1 ON Configurations (LOWER(Name), Disabled);

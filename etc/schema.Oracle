@@ -112,7 +112,7 @@ CREATE TABLE Transactions (
         ObjectId                NUMBER(11,0) DEFAULT 0 NOT NULL,
         TimeTaken               NUMBER(11,0) DEFAULT 0 NOT NULL,
         Type                    VARCHAR2(20),
-        Field                   VARCHAR2(40),
+        Field                   VARCHAR2(255),
         OldValue                VARCHAR2(255),
         NewValue                VARCHAR2(255),
         ReferenceType           VARCHAR2(255),
@@ -552,6 +552,5 @@ CREATE TABLE Configurations (
     LastUpdated     DATE
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (LOWER(Name));
+CREATE INDEX Configurations1 ON Configurations (LOWER(Name), Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
-
