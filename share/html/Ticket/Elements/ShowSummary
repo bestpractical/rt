@@ -64,7 +64,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
 
     <&| /Widgets/TitleBox, title => loc('The Basics'),
         (($can_modify || $can_modify_cf) ? (title_href => $modify_url) : ()),
-        ($modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_basics) : ()),
+        (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_basics) : ()),
         class => (join " ", 'ticket-info-basics', ($modify_behavior eq 'always' ? 'editing' : ())),
         data => { 'inline-edit-behavior' => $modify_behavior },
     &>
@@ -90,7 +90,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
         title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
-        InlineEdit   => $InlineEdit,
+        InlineEdit   => ($can_modify || $can_modify_cf) ? $InlineEdit : 0,
         &>
 
 <%PERL>
@@ -101,7 +101,7 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
     <&| /Widgets/TitleBox, title => loc('People'),
         (($can_modify || $can_modify_owner || $can_modify_people) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
         class => (join " ", 'ticket-info-people', ($people_behavior eq 'always' ? 'editing' : ())),
-        ($people_behavior =~ /^(link|click)$/ ? (titleright_raw => $people_inline) : ()),
+        (($can_modify || $can_modify_owner || $can_modify_people) && $people_behavior =~ /^(link|click)$/ ? (titleright_raw => $people_inline) : ()),
         data => { 'inline-edit-behavior' => $people_behavior },
     &>
 %       unless ($people_behavior eq 'always') {
@@ -150,7 +150,7 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
     <&| /Widgets/TitleBox, title => loc("Dates"),
         ($can_modify ? (title_href => $dates_url) : ()),
         class => (join " ", 'ticket-info-dates', ($dates_behavior eq 'always' ? 'editing' : ())),
-        ($dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
+        ($can_modify && $dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
         data => { 'inline-edit-behavior' => $dates_behavior },
     &>
 %       unless ($dates_behavior eq 'always') {
@@ -180,7 +180,7 @@ my $alt = loc('Graph ticket links');
 my $links_graph = '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' . $alt . '"></span></a>';
 
 my $links_titleright = join ' ',
-    ($links_behavior =~ /^(link|click)$/ ? ($links_inline) : ()),
+    ($can_modify && $links_behavior =~ /^(link|click)$/ ? ($links_inline) : ()),
     (RT->Config->Get('DisableGraphViz') ? () : $links_graph);
 my @extra;
 push @extra, (titleright_raw => $links_titleright) if $links_titleright;
