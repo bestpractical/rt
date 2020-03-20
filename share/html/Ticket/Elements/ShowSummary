@@ -108,7 +108,7 @@ $Attachments => undef
 <%INIT>
 my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
 my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
-my $can_modify_owner = $Ticket->CurrentUserCanSetOwner();
+my ($can_modify_owner) = $Ticket->CurrentUserCanSetOwner();
 my $can_modify_people = $Ticket->CurrentUserHasRight('Watch')
                      || $Ticket->CurrentUserHasRight('WatchAsAdminCc');
 </%INIT>
