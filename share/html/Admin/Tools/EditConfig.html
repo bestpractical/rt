@@ -140,14 +140,6 @@ if (delete $ARGS{Update}) {
             my $setting = RT::Configuration->new($session{CurrentUser});
             $setting->Load($key);
             if ($setting->Id) {
-                if ($setting->Disabled) {
-                    my ($ok, $msg) = $setting->SetDisabled(0);
-                    if (!$ok) {
-                        push @results, $msg;
-                        $has_error++;
-                    }
-                }
-
                 my ($ok, $msg) = $setting->SetContent($val);
                 push @results, $msg;
                 $has_error++ if !$ok;
