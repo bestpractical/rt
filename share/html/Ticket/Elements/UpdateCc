@@ -69,7 +69,7 @@
       <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
-      <i class="col-md-auto">(<&|/l&>check to add</&>)</i>
+      <div class="col-md-auto"><span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>check to add</&>"></span></div>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
         <label class="custom-control-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
@@ -121,7 +121,7 @@
       <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
-      <i class="col-md-auto">(<&|/l&>check to add</&>)</i>
+      <div class="col-md-auto"><span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>check to add</&>"></span></div>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="checkbox custom-control-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
         <label class="custom-control-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
