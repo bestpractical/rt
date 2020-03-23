@@ -1380,6 +1380,30 @@ sub _CanonicalizeRoleName {
         my $self = shift;
         return "Attachment content modified";
     },
+    SetConfig => sub  {
+        my $self = shift;
+        my ($new_value, $old_value);
+
+        # pull in old value from reference if exists
+        if ( $self->OldReference ) {
+            my $oldobj = RT::Configuration->new($self->CurrentUser);
+            $oldobj->Load($self->OldReference);
+            $old_value = $oldobj->Content;
+        }
+
+        # pull in new value from reference if exists
+        if ( $self->NewReference ) {
+            my $newobj = RT::Configuration->new($self->CurrentUser);
+            $newobj->Load($self->NewReference);
+            $new_value = $newobj->Content;
+        }
+        #loc()
+        return ('[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value // '', $new_value // '');
+    },
+    DeleteConfig => sub  {
+        my $self = shift;
+        return ('[_1] deleted"', $self->Field); #loc()
+    }
 );
 
 
