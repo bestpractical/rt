@@ -1762,7 +1762,7 @@ sub ACLEquivalenceObjects {
 =head2 id
 
 Returns the current value of id.
-(In the database, id is stored as int(11).)
+(In the database, id is stored as int(19).)
 
 
 =cut
@@ -1989,7 +1989,7 @@ sub _CoreAccessible {
     {
 
         id =>
-                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(19)', default => ''},
         ObjectType =>
                 {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         ObjectId =>

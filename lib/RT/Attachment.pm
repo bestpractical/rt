@@ -1035,7 +1035,7 @@ sub _CacheConfig {
 =head2 id
 
 Returns the current value of id.
-(In the database, id is stored as int(11).)
+(In the database, id is stored as int(19).)
 
 
 =cut
@@ -1044,7 +1044,7 @@ Returns the current value of id.
 =head2 TransactionId
 
 Returns the current value of TransactionId.
-(In the database, TransactionId is stored as int(11).)
+(In the database, TransactionId is stored as int(19).)
 
 
 
@@ -1053,7 +1053,7 @@ Returns the current value of TransactionId.
 
 Set TransactionId to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, TransactionId will be stored as a int(11).)
+(In the database, TransactionId will be stored as a int(19).)
 
 
 =cut
@@ -1062,7 +1062,7 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =head2 Parent
 
 Returns the current value of Parent.
-(In the database, Parent is stored as int(11).)
+(In the database, Parent is stored as int(19).)
 
 
 
@@ -1071,7 +1071,7 @@ Returns the current value of Parent.
 
 Set Parent to VALUE.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, Parent will be stored as a int(11).)
+(In the database, Parent will be stored as a int(19).)
 
 
 =cut
@@ -1226,11 +1226,11 @@ sub _CoreAccessible {
     {
 
         id =>
-                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(19)', default => ''},
         TransactionId =>
-                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(19)', default => ''},
         Parent =>
-                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => '0'},
+                {read => 1, write => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(19)', default => '0'},
         MessageId =>
                 {read => 1, write => 1, sql_type => 12, length => 160,  is_blob => 0,  is_numeric => 0,  type => 'varchar(160)', default => ''},
         Subject =>
