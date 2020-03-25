@@ -49,12 +49,6 @@ div.history-container {
  display: block;
 }
 
-
-.history .transaction span.date {
- width: 15em;
-}
-
-
 .history .transaction span.description {
  margin-left: 1em;
  font-weight: bold;
