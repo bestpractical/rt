@@ -1,0 +1,53 @@
+=head1 NAME
+
+    RT::CustomField
+
+=head1 Categories
+
+Categories allows for RT Custom Fields to be based on one another. Such
+that by choosing values for a parent field a child fields options can be
+restricted. To create these linked fields first create a parent Custom Field.
+Choose a Custom Field L<Type|/"SUPPORTED TYPES"> that supports C<Categories>
+then save the new custom field. From there the child can choose a parent Custom
+Field under the C<Categories Based On> drop down menu. Then when addding values to
+the child class there is a C<Categories> coloumn that links the new value to the
+parent custom field value.
+
+=head2 SUPPORTED TYPES
+
+=over
+
+=item Types:
+
+  Combobox: Select or enter one value
+  Select one value
+  Select multiple values
+
+=back
+
+=head2 Walkthrough
+
+First we make our parent Custom Field. This field C<States> will dictate
+the values available for the C<Cities> Custom Field. We enter our values
+into the custom field.
+
+=for html <img alt="Custom Fields parent class" src="images/cf-categories-states.png" width="75%" style="border: #00008B 1px solid;">
+
+Then we create the child custom field C<Cities> and choose it to have
+C<Category> based on C<States>. Now when we enter value options for the
+C<Cities> custom field where we relate each value to a value from the
+C<States> custom field in the C<Categories> column.
+
+=for html <img alt="Custom Fields child class" src="images/cf-categories-cities.png" width="75%" style="border: #00008B 1px solid;">
+
+We can then see on the ticket create page that until we select a value for
+C<States> the C<Cities> custom field is greyed out.
+
+=for html <img alt="Create ticket with CustomFields" src="images/cf-categories-no-select.png" width="75%" style="border: #00008B 1px solid;">
+
+After choosing a value for C<States> custom field our options for the C<Cities>
+custom field are reduced to only the applicable values.
+
+=for html <img alt="Parent CustomField value chosen" src="images/cf-categories-limited-cities.png" width="75%" style="border: #00008B 1px solid;">
+
+=cut
