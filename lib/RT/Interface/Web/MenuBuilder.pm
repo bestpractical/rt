@@ -176,8 +176,9 @@ sub BuildMainNav {
                     description => 'Group search'
     );
 
+    my $search_assets;
     if ($HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
-        my $search_assets = $search->child( assets => title => loc("Assets"), path => "/Search/Build.html?Class=RT::Assets" );
+        $search_assets = $search->child( assets => title => loc("Assets"), path => "/Search/Build.html?Class=RT::Assets" );
         if (!RT->Config->Get('AssetSQL_HideSimpleSearch')) {
             $search_assets->child("asset_simple", title => loc("Simple Search"), path => "/Asset/Search/");
         }
@@ -498,14 +499,24 @@ sub BuildMainNav {
         )
         || (   $request_path =~ m{^/Search/Simple\.html}
             && $HTML::Mason::Commands::DECODED_ARGS->{'q'} )
+
+        # TODO: Asset simple search and SQL search don't share query, we
+        # can't simply link to SQL search page on asset pages without
+        # identifying if it's from simple search or SQL search. For now,
+        # show "Current Search" only if asset simple search is disabled.
+
+        || ( $search_assets && $request_path =~ m{^/Asset/(?!Search/)} && RT->Config->Get('AssetSQL_HideSimpleSearch') )
       )
     {
         my $class = $HTML::Mason::Commands::DECODED_ARGS->{Class}
-            || ( $request_path =~ m{^/Transaction/} ? 'RT::Transactions' : 'RT::Tickets' );
+            || ( $request_path =~ m{^/(Transaction|Ticket|Asset)/} ? "RT::$1s" : 'RT::Tickets' );
 
         my $search;
         if ( $class eq 'RT::Tickets' ) {
             $search = $top->child('search')->child('tickets');
+        }
+        elsif ( $class eq 'RT::Assets' ) {
+            $search = $search_assets;
         }
         else {
             $search = $txns_tickets;
@@ -567,7 +578,8 @@ sub BuildMainNav {
 
         my $current_search_menu;
         if (   $class eq 'RT::Tickets' && $request_path =~ m{^/Ticket}
-            || $class eq 'RT::Transactions' && $request_path =~ m{^/Transaction} )
+            || $class eq 'RT::Transactions' && $request_path =~ m{^/Transaction}
+            || $class eq 'RT::Assets' && $request_path =~ m{^/Asset/(?!Search/)} )
         {
             $current_search_menu = $search->child( current_search => title => loc('Current Search') );
             $current_search_menu->path("/Search/Results.html$args") if $has_query;
