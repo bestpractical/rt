@@ -1512,6 +1512,7 @@ sub _parser {
                     my %lifecycle =
                       map { $_ => $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } }
                       grep { @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ inactive } || [] } }
+                      grep { $_ ne '__maps__' && $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'asset' }
                       keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
@@ -1553,7 +1554,9 @@ sub _parser {
                       grep {
                              @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ initial } || [] }
                           || @{ $RT::Lifecycle::LIFECYCLES{ $_ }{ active }  || [] }
-                      } keys %RT::Lifecycle::LIFECYCLES;
+                      }
+                      grep { $_ ne '__maps__' && $RT::Lifecycle::LIFECYCLES_CACHE{ $_ }{ type } eq 'asset' }
+                      keys %RT::Lifecycle::LIFECYCLES;
                     return unless %lifecycle;
 
                     my $sql;
