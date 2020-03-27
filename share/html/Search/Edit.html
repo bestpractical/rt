@@ -99,7 +99,7 @@ $Rows          => '50'
 $OrderBy       => 'id'
 $Order         => 'ASC'
 $Class         => 'RT::Tickets'
-$ObjectType    => 'RT::Ticket'
+$ObjectType    => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 
 @actions       => ()
 </%ARGS>

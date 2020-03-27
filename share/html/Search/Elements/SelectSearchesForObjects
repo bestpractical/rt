@@ -49,7 +49,7 @@
 @Objects => undef
 $Name => undef
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 $SearchType => $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket'
 </%args>
 <select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">

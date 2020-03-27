@@ -77,5 +77,5 @@ $addquery => 0
 $query => undef
 %queues => ()
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

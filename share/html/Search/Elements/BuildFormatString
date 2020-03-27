@@ -64,7 +64,7 @@ $SelectDisplayColumns => undef
 $CurrentDisplayColumns => undef
 
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>
 <%init>
 # This can't be in a <once> block, because otherwise we return the

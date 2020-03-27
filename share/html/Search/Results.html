@@ -141,10 +141,10 @@ if ( $Class eq 'RT::Tickets' ) {
     $hash_name = 'CurrentSearchHash';
 }
 else {
-    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType;
+    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
 }
 
-my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType;
+my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType || ();
 
 $session{'i'}++;
 $session{$session_name} = $Class->new($session{'CurrentUser'}) ;
@@ -276,5 +276,5 @@ $Order => undef
 $SavedSearchId => undef
 $SavedChartSearchId => undef
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

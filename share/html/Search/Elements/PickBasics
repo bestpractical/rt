@@ -459,5 +459,5 @@ $m->callback( Conditions => \@lines );
 <%ARGS>
 %queues => ()
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

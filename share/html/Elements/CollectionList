@@ -234,5 +234,5 @@ $ShowEmpty      => 0
 $InlineEdit     => RT->Config->Get('InlineEdit', $session{CurrentUser})
 $Query => 0
 $HasResults     => undef
-$ObjectType     => 'RT::Ticket'
+$ObjectType     => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

@@ -53,7 +53,7 @@ $Order => 'ASC'
 $PreserveNewLines => 0
 $UserData => 0
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>
 <%INIT>
 my $collection = $Class->new( $session{'CurrentUser'} );

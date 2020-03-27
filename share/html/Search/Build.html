@@ -152,10 +152,10 @@ if ( $Class eq 'RT::Tickets' ) {
     $hash_name = 'CurrentSearchHash';
 }
 else {
-    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType;
+    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
 }
 
-my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType;
+my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType || ();
 
 if ( $NewQuery ) {
 
@@ -360,5 +360,5 @@ elsif ( $query{'Query'} ) {
 $NewQuery => 0
 @clauses => ()
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>
