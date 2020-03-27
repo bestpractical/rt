@@ -126,11 +126,17 @@ use RT::Interface::Web::QueryBuilder::Tree;
 $ARGS{SavedChartSearchId} ||= 'new';
 
 my $title;
+my @cf_field_names;
+
 if ( $Class eq 'RT::Transactions' ) {
     $title = loc('Transaction Query Builder');
+    @cf_field_names = grep { $RT::Transactions::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
+        sort keys %RT::Transactions::FIELD_METADATA;
 }
 else {
-    $title = loc("Query Builder")
+    $title = loc("Query Builder");
+    @cf_field_names = grep { $RT::Tickets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
+        sort keys %RT::Tickets::FIELD_METADATA;
 }
 
 my %query;
@@ -226,11 +232,7 @@ my @options = $tree->GetDisplayedNodes;
 my @current_values = grep defined, @options[@clauses];
 my @new_values = ();
 
-my $cf_field_names =
-    join "|",
-     map quotemeta,
-    grep { $RT::Tickets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
-    sort keys %RT::Tickets::FIELD_METADATA;
+my $cf_field_names = join "|", map quotemeta, @cf_field_names;
 
 # Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
