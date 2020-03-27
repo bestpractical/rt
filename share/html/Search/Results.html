@@ -116,6 +116,11 @@ if ( $Class eq 'RT::Transactions' ) {
     $Order   ||= RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType};
     $OrderBy ||= RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType};
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    $Format  ||= RT->Config->Get('AssetSearchFormat');
+    $Order   ||= 'ASC';
+    $OrderBy ||= 'Name';
+}
 else {
     $Format  ||= $prefs->{'Format'}  || RT->Config->Get('DefaultSearchResultFormat');
     $Order   ||= $prefs->{'Order'}   || RT->Config->Get('DefaultSearchResultOrder');
@@ -194,6 +199,14 @@ if ( $Class eq 'RT::Transactions' ) {
         $title = loc("Find transactions");
     }
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    if ( $session{$session_name}->Query() ) {
+        $title = loc( 'Found [quant,_1,asset,assets]', $count );
+    }
+    else {
+        $title = loc("Find assets");
+    }
+}
 else {
     if ( $session{$session_name}->Query() ) {
         $title = loc( 'Found [quant,_1,ticket,tickets]', $count );
@@ -244,7 +257,7 @@ if ( RT->Config->Get('SearchResultsAutoRedirect') && $count == 1 &&
 # $count is not always precise unless $UseSQLForACLChecks is set to true,
 # check $session{$session_name}->First here is to make sure the ticket is there.
     RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
-            . ( $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket' )
+            . $Class->RecordClass->RecordType
             . "/Display.html?id="
             . $session{$session_name}->First->id );
 }

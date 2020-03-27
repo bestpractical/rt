@@ -177,10 +177,10 @@ sub BuildMainNav {
     );
 
     if ($HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
-        my $search_assets = $search->child( assets => title => loc("Assets"), path => "/Asset/Search/Build.html?NewQuery=1" );
+        my $search_assets = $search->child( assets => title => loc("Assets"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1" );
         if (!RT->Config->Get('AssetSQL_HideSimpleSearch')) {
             $search_assets->child("asset_simple", title => loc("Simple Search"), path => "/Asset/Search/");
-            $search_assets->child("assetsql", title => loc("New Search"), path => "/Asset/Search/Build.html?NewQuery=1");
+            $search_assets->child("assetsql", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1");
         }
     }
 
@@ -222,10 +222,10 @@ sub BuildMainNav {
         my $assets = $top->child(
             "assets",
             title => loc("Assets"),
-            path  => RT->Config->Get('AssetSQL_HideSimpleSearch') ? "/Asset/Search/Build.html?NewQuery=1" : "/Asset/Search/",
+            path  => RT->Config->Get('AssetSQL_HideSimpleSearch') ? "/Search/Build.html?Class=RT::Assets&NewQuery=1" : "/Asset/Search/",
         );
         $assets->child( "create", title => loc("Create"), path => "/Asset/CreateInCatalog.html" );
-        $assets->child( "search", title => loc("Search"), path => "/Asset/Search/Build.html?NewQuery=1" );
+        $assets->child( "search", title => loc("Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1" );
         if (!RT->Config->Get('AssetSQL_HideSimpleSearch')) {
             $assets->child( "simple_search", title => loc("Simple Search"), path => "/Asset/Search/" );
         }
@@ -591,6 +591,9 @@ sub BuildMainNav {
                 $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
                 $current_search_menu->child( chart => title => loc('Chart'),       path => "/Search/Chart.html$args" );
             }
+            elsif ( $class eq 'RT::Assets' ) {
+                $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Asset/Search/Bulk.html$args" );
+            }
 
             my $more = $current_search_menu->child( more => title => loc('Feeds') );
 
@@ -689,7 +692,7 @@ sub BuildMainNav {
 
         $page->child('csv',
             title => loc('Download Spreadsheet'),
-            path  => '/Asset/Search/Results.tsv?' . (keys %search ? QueryString(%search) : ''),
+            path  => '/Search/Results.tsv?' . QueryString(%search, Class => 'RT::Assets'),
         );
     } elsif ($request_path =~ m{^/Asset/Search/}) {
         my %search = map @{$_},
@@ -698,7 +701,7 @@ sub BuildMainNav {
             grep /^(?:q|SearchAssets|!?(Name|Description|Catalog|Status|Role\..+|CF\..+)|Order(?:By)?|Page)$/,
             keys %$HTML::Mason::Commands::DECODED_ARGS;
 
-        my $current_search = $HTML::Mason::Commands::session{"CurrentAssetSearchHash"} || {};
+        my $current_search = $HTML::Mason::Commands::session{"CurrentSearchHash-RT::Assets"} || {};
         my $search_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchLoad'} || $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
         my $args      = '';
         my $has_query;
@@ -706,6 +709,7 @@ sub BuildMainNav {
 
         my %query_args;
         my %fallback_query_args = (
+            Class => 'RT::Assets',
             SavedSearchId => ( $search_id eq 'new' ) ? undef : $search_id,
             (
                 map {
@@ -749,18 +753,18 @@ sub BuildMainNav {
 
         $page->child('edit_search',
             title      => loc('Edit Search'),
-            path       => '/Asset/Search/Build.html' . $args,
+            path       => '/Search/Build.html' . $args,
         );
-        $page->child( advanced => title => loc('Advanced'), path => '/Asset/Search/Edit.html' . $args );
+        $page->child( advanced => title => loc('Advanced'), path => '/Search/Edit.html' . $args );
         if ($has_query) {
-            $page->child( results => title => loc('Show Results'), path => '/Asset/Search/Results.html' . $args );
+            $page->child( results => title => loc('Show Results'), path => '/Search/Results.html' . $args );
             $page->child('bulk',
                 title => loc('Bulk Update'),
                 path => '/Asset/Search/Bulk.html' . $args,
             );
             $page->child('csv',
                 title => loc('Download Spreadsheet'),
-                path  => '/Asset/Search/Results.tsv' . $args,
+                path  => '/Search/Results.tsv' . $args,
             );
         }
     } elsif ($request_path =~ m{^/Admin/Global/CustomFields/Catalog-Assets\.html$}) {

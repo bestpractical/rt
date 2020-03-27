@@ -74,6 +74,9 @@ my $title;
 if ( $Class eq 'RT::Transactions' ) {
     $title = loc('Edit Transaction Query');
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    $title = loc('Edit Asset Query');
+}
 else {
     $title = loc("Edit Query")
 }
@@ -96,9 +99,9 @@ $SavedChartSearchId => 'new'
 $Query         => ''
 $Format        => ''
 $Rows          => '50'
-$OrderBy       => 'id'
 $Order         => 'ASC'
 $Class         => 'RT::Tickets'
+$OrderBy       => $Class eq 'RT::Assets' ? 'Name' : 'id'
 $ObjectType    => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 
 @actions       => ()

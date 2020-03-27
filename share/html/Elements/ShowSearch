@@ -85,11 +85,11 @@ if ($SavedSearch) {
         $query_link_url = RT->Config->Get('WebPath') .  "/Transaction/Search/Results.html";
     }
     elsif ( $SearchArg->{SearchType} eq 'Asset' ) {
-        $class = 'RT::Assets';
-        $query_link_url = RT->Config->Get('WebPath') . "/Asset/Search/Results.html";
-        $customize = RT->Config->Get('WebPath') . '/Asset/Search/Build.html?'
-            . $m->comp( '/Elements/QueryString',
-            SavedSearchLoad => $SavedSearch );
+        $class = $SearchArg->{Class} = 'RT::Assets';
+        $customize
+            = RT->Config->Get('WebPath')
+            . '/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch, Class => 'RT::Assets' );
     }
     elsif ( $SearchArg->{SearchType} ne 'Ticket' ) {
 

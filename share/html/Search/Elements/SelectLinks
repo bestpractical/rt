@@ -52,6 +52,7 @@
 </select>
 <%ARGS>
 $Name => 'LinksField'
+$Class => 'RT::Tickets'
 </%ARGS>
 
 <%INIT>
@@ -62,6 +63,6 @@ my @fields = (
     [ DependedOnBy => loc("Depended on by") ],
     [ RefersTo     => loc("Refers to") ],
     [ ReferredToBy => loc("Referred to by") ],
-    [ LinkedTo     => loc("Links to") ],
+    [ $Class eq 'RT::Tickets' ? 'LinkedTo' : 'Linked' => loc("Links to") ],
 );
 </%INIT>

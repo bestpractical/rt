@@ -81,7 +81,7 @@
 <div class="row">
   <div class="col-xl-7">
     <div id="pick-criteria">
-      <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues, %ARGS &>
+      <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues, catalogs => $catalogs, %ARGS &>
     </div>
     <div class="form-row">
       <div class="col-md-12">
@@ -133,6 +133,11 @@ if ( $Class eq 'RT::Transactions' ) {
     @cf_field_names = grep { $RT::Transactions::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
         sort keys %RT::Transactions::FIELD_METADATA;
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    $title = loc('Asset Query Builder');
+    @cf_field_names = grep { $RT::Assets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
+        sort keys %RT::Assets::FIELD_METADATA;
+}
 else {
     $title = loc("Query Builder");
     @cf_field_names = grep { $RT::Tickets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
@@ -168,13 +173,22 @@ if ( $NewQuery ) {
 
     my $current = $session{$hash_name};
     my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    my %orderby = (
+        'RT::Tickets'      => RT->Config->Get('DefaultSearchResultOrderBy'),
+        'RT::Transactions' => RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType},
+        'RT::Assets'       => 'Name',
+    );
+    my %order = (
+        'RT::Tickets'      => RT->Config->Get('DefaultSearchResultOrder'),
+        'RT::Transactions' => RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType},
+        'RT::Assets'       => 'ASC',
+    );
+
     my $default = {
         Query   => '',
         Format  => '',
-        OrderBy => $Class eq 'RT::Tickets' ? RT->Config->Get('DefaultSearchResultOrderBy')
-        : RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType},
-        Order => $Class eq 'RT::Tickets' ? RT->Config->Get('DefaultSearchResultOrder')
-        : RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType},
+        OrderBy => $orderby{$Class},
+        Order => $order{$Class},
         ObjectType  => $ObjectType,
         RowsPerPage => 50
     };
@@ -288,7 +302,8 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
                                   . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
 
 
-my $queues = $tree->GetReferencedQueues;
+my $queues = $Class ne 'RT::Assets' ? $tree->GetReferencedQueues : {};
+my $catalogs = $Class eq 'RT::Assets' ? $tree->GetReferencedCatalogs : {};
 
 # Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
@@ -296,6 +311,7 @@ my ( $AvailableColumns, $CurrentFormat );
     'Elements/BuildFormatString',
     %ARGS,
     queues => $queues,
+    catalogs => $catalogs,
     Format => $query{'Format'},
 );
 

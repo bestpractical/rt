@@ -49,6 +49,7 @@
 $Format => undef
 
 %queues => ()
+%catalogs => ()
 
 $Face => undef
 $Size => undef
@@ -106,6 +107,41 @@ if ( $Class eq 'RT::Transactions' ) {
     while ( my $CustomField = $CustomFields->Next ) {
         push @fields, "CustomField.{" . $CustomField->Name . "}";
     }
+}
+elsif ( $Class eq 'RT::Assets' ) {
+    $Format ||= RT->Config->Get('AssetSearchFormat');
+    @fields = qw(
+        id Name Description Status
+        CreatedBy LastUpdatedBy
+
+        Created     CreatedRelative
+        LastUpdated LastUpdatedRelative
+
+        RefersTo    ReferredToBy
+        DependsOn   DependedOnBy
+        MemberOf    Members
+        Parents     Children
+
+        Owner HeldBy Contacts
+
+        NEWLINE
+        NBSP
+    ); # loc_qw
+
+    my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+    foreach my $id (keys %catalogs) {
+        # Gotta load up the $catalog object, since catalogs get stored by name now.
+        my $catalog = RT::Catalog->new($session{'CurrentUser'});
+        $catalog->Load($id);
+        next unless $catalog->Id;
+        $CustomFields->LimitToCatalog($catalog->Id);
+        $CustomFields->SetContextObject( $catalog ) if keys %catalogs == 1;
+    }
+    $CustomFields->LimitToCatalog(0);
+    while ( my $CustomField = $CustomFields->Next ) {
+        push @fields, "CustomField.{" . $CustomField->Name . "}";
+    }
+
 }
 else {
     $Format ||= RT->Config->Get('DefaultSearchResultFormat');
@@ -240,6 +276,12 @@ elsif ( $AddCol ) {
             if ( $Class eq 'RT::Transactions' ) {
                 if ( $Link eq "Display" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Transaction/Display.html?id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
+            }
+            elsif ( $Class eq 'RT::Assets' ) {
+                if ( $Link eq "Display" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Asset/Display.html?id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
             }

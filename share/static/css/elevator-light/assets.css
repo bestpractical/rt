@@ -10,11 +10,3 @@
   padding-top: 10px;
   border-top: 1px solid #E0E6EC;
 }
-
-#comp-Asset-Search-Build #body {
-    position: relative;
-}
-
-#comp-Asset-Search-Build #pick-criteria {
-    min-height: 400px;
-}

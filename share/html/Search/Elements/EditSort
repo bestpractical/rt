@@ -113,6 +113,11 @@ if ( $Class eq 'RT::Tickets' ) {
     $fields{'Owner'} = 'Owner';
     $fields{ $_ . '.EmailAddress' } = $_ . '.EmailAddress' for qw(Requestor Cc AdminCc);
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    $fields{'Owner'} = 'Owner';
+    $fields{'HeldBy'} = 'HeldBy';
+    $fields{'Contact'} = 'Contact';
+}
 
 # Add all available CustomFields to the list of sortable columns.
 my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
@@ -126,7 +131,9 @@ if ( $Class eq 'RT::Tickets' ) {
         my $value = $role;
         $fields{$label . '.EmailAddress' } = $value . '.EmailAddress';
     }
+}
 
+if ( $Class =~ /^RT::(?:Tickets|Assets)$/ ) {
     # Add PAW sort
     $fields{'Custom.Ownership'} = 'Custom.Ownership';
 }

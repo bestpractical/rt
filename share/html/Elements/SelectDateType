@@ -53,5 +53,6 @@
 <%ARGS>
 $Name => 'DateType'
 $Prefix => ''
-@Options => qw(Created Started Resolved Told LastUpdated Starts Due Updated) # loc_qw
+$Class => 'RT::Tickets'
+@Options => $Class eq 'RT::Assets' ? qw(Created LastUpdated) : qw(Created Started Resolved Told LastUpdated Starts Due Updated) # loc_qw
 </%ARGS>

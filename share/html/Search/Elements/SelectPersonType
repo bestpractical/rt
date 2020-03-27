@@ -66,30 +66,40 @@
 </select>
 
 <%INIT>
-my @types;
-if ($Role) {
-   @types = (
-      [ "CustomRole.{" . $Role->Name . "}", $Role->Name ],
-   );
+my ( @types, @subtypes );
+if ( $Class eq 'RT::Assets' ) {
+    @types = qw(Owner HeldBy Contact);
+    @subtypes = @{ $RT::Assets::SEARCHABLE_SUBFIELDS{'User'} };
+
 }
-elsif ($Scope =~ /queue/) {
-   @types = qw(Cc AdminCc);
-}
-elsif ($Suffix eq 'Group') {
-   @types = qw(Owner Requestor Cc AdminCc Watcher);
-}
-else { 
-   @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
+else {
+   if ($Role) {
+       @types = (
+          [ "CustomRole.{" . $Role->Name . "}", $Role->Name ],
+       );
+   }
+   elsif ($Scope =~ /queue/) {
+      @types = qw(Cc AdminCc);
+   }
+   elsif ($Suffix eq 'Group') {
+      @types = qw(Owner Requestor Cc AdminCc Watcher);
+   }
+   else {
+      @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
+   }
+
+    @subtypes = @{ $RT::Tickets::SEARCHABLE_SUBFIELDS{'User'} };
 }
 
-my @subtypes = @{ $RT::Tickets::SEARCHABLE_SUBFIELDS{'User'} };
+$m->callback(Types => \@types, Subtypes => \@subtypes);
 
 </%INIT>
 <%ARGS>
 $AllowNull => 1
 $Suffix => ''
 $Default=>undef
-$Scope => 'ticket'
+$Class => 'RT::Tickets'
+$Scope => $Class eq 'RT::Assets' ? 'asset' : 'ticket'
 $Name => 'WatcherType'
 $Role => undef
 </%ARGS>
