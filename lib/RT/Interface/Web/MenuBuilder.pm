@@ -177,11 +177,11 @@ sub BuildMainNav {
     );
 
     if ($HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
-        my $search_assets = $search->child( assets => title => loc("Assets"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1" );
+        my $search_assets = $search->child( assets => title => loc("Assets"), path => "/Search/Build.html?Class=RT::Assets" );
         if (!RT->Config->Get('AssetSQL_HideSimpleSearch')) {
             $search_assets->child("asset_simple", title => loc("Simple Search"), path => "/Asset/Search/");
-            $search_assets->child("assetsql", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1");
         }
+        $search_assets->child("assetsql", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1");
     }
 
 
