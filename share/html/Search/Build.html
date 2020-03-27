@@ -147,15 +147,8 @@ for( qw(Query Format OrderBy Order RowsPerPage Class ObjectType) ) {
 my %saved_search;
 my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search );
 
-my $hash_name;
-if ( $Class eq 'RT::Tickets' ) {
-    $hash_name = 'CurrentSearchHash';
-}
-else {
-    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
-}
-
-my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType || ();
+my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
+my $session_name = join '-', 'collection', $Class, $ObjectType || ();
 
 if ( $NewQuery ) {
 

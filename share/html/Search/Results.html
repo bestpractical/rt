@@ -136,15 +136,8 @@ if ( !defined($Rows) ) {
 }
 $Page = 1 unless $Page && $Page > 0;
 
-my $hash_name;
-if ( $Class eq 'RT::Tickets' ) {
-    $hash_name = 'CurrentSearchHash';
-}
-else {
-    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
-}
-
-my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType || ();
+my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
+my $session_name = join '-', 'collection', $Class, $ObjectType || ();
 
 $session{'i'}++;
 $session{$session_name} = $Class->new($session{'CurrentUser'}) ;
@@ -219,7 +212,7 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 
-my $interval_name = $Class eq 'RT::Tickets' ? 'tickets_refresh_interval' : "${Class}_${ObjectType}_refresh_interval";
+my $interval_name = join '_', $Class, $ObjectType || (), 'refresh_interval';
 if ($ARGS{'SearchResultsRefreshInterval'}) {
     $session{$interval_name} = $ARGS{'SearchResultsRefreshInterval'};
 }

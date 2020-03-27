@@ -503,16 +503,16 @@ sub BuildMainNav {
         my $class = $HTML::Mason::Commands::DECODED_ARGS->{Class}
             || ( $request_path =~ m{^/Transaction/} ? 'RT::Transactions' : 'RT::Tickets' );
 
-        my ( $search, $hash_name );
+        my $search;
         if ( $class eq 'RT::Tickets' ) {
             $search = $top->child('search')->child('tickets');
-            $hash_name = 'CurrentSearchHash';
         }
         else {
             $search = $txns_tickets;
-            $hash_name = join '-', 'CurrentSearchHash', $class, $HTML::Mason::Commands::DECODED_ARGS->{ObjectType} || 'RT::Ticket';
         }
 
+        my $hash_name = join '-', 'CurrentSearchHash', $class,
+            $HTML::Mason::Commands::DECODED_ARGS->{ObjectType} || ( $class eq 'RT::Transactions' ? 'RT::Ticket' : () );
         my $current_search = $HTML::Mason::Commands::session{$hash_name} || {};
         my $search_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchLoad'} || $HTML::Mason::Commands::DECODED_ARGS->{'SavedSearchId'} || $current_search->{'SearchId'} || '';
         my $chart_id = $HTML::Mason::Commands::DECODED_ARGS->{'SavedChartSearchId'} || $current_search->{SavedChartSearchId};
