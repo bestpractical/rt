@@ -671,7 +671,8 @@ sub BuildMainNav {
 
     if ($request_path =~ m{^/Asset/} and $HTML::Mason::Commands::DECODED_ARGS->{id} and $HTML::Mason::Commands::DECODED_ARGS->{id} !~ /\D/) {
         _BuildAssetMenu( $request_path, $top, $widgets, $page, %args );
-    } elsif ($request_path =~ m{^/Asset/Search/(index.html)?$}) {
+    } elsif ( $request_path =~ m{^/Asset/Search/(?:index\.html)?$}
+        || ( $request_path =~ m{^/Asset/Search/Bulk\.html$} && $HTML::Mason::Commands::DECODED_ARGS->{Catalog} ) ) {
         my %search = map @{$_},
             grep defined $_->[1] && length $_->[1],
             map {ref $HTML::Mason::Commands::DECODED_ARGS->{$_} ? [$_, $HTML::Mason::Commands::DECODED_ARGS->{$_}[0]] : [$_, $HTML::Mason::Commands::DECODED_ARGS->{$_}] }
