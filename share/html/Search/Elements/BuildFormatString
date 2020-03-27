@@ -236,25 +236,34 @@ elsif ( $AddCol ) {
                     $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
                 }
             }
-            if ( $Link eq "Display" ) {
-                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
-                $column{Suffix} .= "</a>";
+
+            if ( $Class eq 'RT::Transactions' ) {
+                if ( $Link eq "Display" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Transaction/Display.html?id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
             }
-            elsif ( $Link eq "Take" ) {
-                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
-                $column{Suffix} .= "</a>";
-            }
-            elsif ( $Link eq "Respond" ) {
-                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Respond&id=__id__">};
-                $column{Suffix} .= "</a>";
-            }
-            elsif ( $Link eq "Comment" ) {
-                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&id=__id__">};
-                $column{Suffix} .= "</a>";
-            }
-            elsif ( $Link eq "Resolve" ) {
-                $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=__id__">};
-                $column{Suffix} .= "</a>";
+            elsif ( $Class eq 'RT::Tickets' ) {
+                if ( $Link eq "Display" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
+                elsif ( $Link eq "Take" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
+                elsif ( $Link eq "Respond" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Respond&id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
+                elsif ( $Link eq "Comment" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
+                elsif ( $Link eq "Resolve" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
             }
 
             if ($Title) {
