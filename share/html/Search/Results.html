@@ -88,7 +88,7 @@
 % }
 <div class="form-row">
   <div class="col-auto">
-    <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
+    <& /Elements/Refresh, Name => 'SearchResultsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
   </div>
   <div class="col-auto">
     <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Change</&>" />
