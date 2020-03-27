@@ -185,5 +185,6 @@ $selected{$_}++ for grep {defined} @{ $selected };
 <%ARGS>
 $CurrentFormat => undef
 $AvailableColumns => undef
-$IncludeTicketLinks => 1
+$Class => 'RT::Tickets'
+$IncludeTicketLinks => $Class eq 'RT::Tickets' ? 1 : 0
 </%ARGS>
