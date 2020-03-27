@@ -53,12 +53,10 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Asset/Search/Bulk.html" enctype="multipart/form-data" name="BulkUpdate" id="BulkUpdate">
-% foreach my $var ( @{$search{'PassArguments'}} )  {
+% use List::MoreUtils 'uniq';
+% foreach my $var ( uniq @{$search{'PassArguments'}}, qw(Query Format OrderBy Order Rows Page Token) )  {
 <input type="hidden" class="hidden" name="<% $var %>" value="<% $ARGS{$var} || '' %>" />
 % }
-% foreach my $var (qw(Query Format OrderBy Order Rows Page Token)) {
-<input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
-%}
 <& /Elements/CollectionList,
     %search,
     Collection      => $assets,
