@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-if (RT->Config->Get('AssetSQL_HideSimpleSearch')) {
+if (RT->Config->Get('AssetHideSimpleSearch')) {
     $m->redirect( RT->Config->Get("WebPath") .'/Search/Build.html?Class=RT::Assets' );
 }
 

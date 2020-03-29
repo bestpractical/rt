@@ -179,7 +179,7 @@ sub BuildMainNav {
     my $search_assets;
     if ($HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System )) {
         $search_assets = $search->child( assets => title => loc("Assets"), path => "/Search/Build.html?Class=RT::Assets" );
-        if (!RT->Config->Get('AssetSQL_HideSimpleSearch')) {
+        if (!RT->Config->Get('AssetHideSimpleSearch')) {
             $search_assets->child("asset_simple", title => loc("Simple Search"), path => "/Asset/Search/");
         }
         $search_assets->child("assetsql", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1");
@@ -223,11 +223,11 @@ sub BuildMainNav {
         my $assets = $top->child(
             "assets",
             title => loc("Assets"),
-            path  => RT->Config->Get('AssetSQL_HideSimpleSearch') ? "/Search/Build.html?Class=RT::Assets&NewQuery=1" : "/Asset/Search/",
+            path  => RT->Config->Get('AssetHideSimpleSearch') ? "/Search/Build.html?Class=RT::Assets&NewQuery=1" : "/Asset/Search/",
         );
         $assets->child( "create", title => loc("Create"), path => "/Asset/CreateInCatalog.html" );
         $assets->child( "search", title => loc("Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1" );
-        if (!RT->Config->Get('AssetSQL_HideSimpleSearch')) {
+        if (!RT->Config->Get('AssetHideSimpleSearch')) {
             $assets->child( "simple_search", title => loc("Simple Search"), path => "/Asset/Search/" );
         }
     }
@@ -505,7 +505,7 @@ sub BuildMainNav {
         # identifying if it's from simple search or SQL search. For now,
         # show "Current Search" only if asset simple search is disabled.
 
-        || ( $search_assets && $request_path =~ m{^/Asset/(?!Search/)} && RT->Config->Get('AssetSQL_HideSimpleSearch') )
+        || ( $search_assets && $request_path =~ m{^/Asset/(?!Search/)} && RT->Config->Get('AssetHideSimpleSearch') )
       )
     {
         my $class = $HTML::Mason::Commands::DECODED_ARGS->{Class}

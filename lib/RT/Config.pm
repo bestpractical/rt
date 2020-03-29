@@ -1437,7 +1437,7 @@ our %META;
     ServiceAgreements => {
         Type => 'HASH',
     },
-    AssetSQL_HideSimpleSearch => {
+    AssetHideSimpleSearch => {
         Widget => '/Widgets/Form/Boolean',
     },
     AllowUserAutocompleteForUnprivileged => {
