@@ -117,7 +117,7 @@ if ( $Class eq 'RT::Transactions' ) {
     $OrderBy ||= RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType};
 }
 elsif ( $Class eq 'RT::Assets' ) {
-    $Format  ||= RT->Config->Get('AssetSearchFormat');
+    $Format  ||= RT->Config->Get('AssetDefaultSearchResultFormat');
     $Order   ||= 'ASC';
     $OrderBy ||= 'Name';
 }

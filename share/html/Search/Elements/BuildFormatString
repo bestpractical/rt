@@ -109,7 +109,7 @@ if ( $Class eq 'RT::Transactions' ) {
     }
 }
 elsif ( $Class eq 'RT::Assets' ) {
-    $Format ||= RT->Config->Get('AssetSearchFormat');
+    $Format ||= RT->Config->Get('AssetDefaultSearchResultFormat');
     @fields = qw(
         id Name Description Status
         CreatedBy LastUpdatedBy

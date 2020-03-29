@@ -241,7 +241,7 @@ else {
         Assets => $assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
     );
 }
-$search{Format} ||= RT->Config->Get('AssetSearchFormat');
+$search{Format} ||= RT->Config->Get('AssetDefaultSearchResultFormat');
 
 my $DisplayFormat = "'__CheckBox.{UpdateAsset}__',". ($ARGS{Format} || $search{'Format'});
 $DisplayFormat =~ s/\s*,\s*('?__NEWLINE__'?)/,$1,''/gi;

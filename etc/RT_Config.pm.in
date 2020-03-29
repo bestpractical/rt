@@ -3067,6 +3067,23 @@ Set($AssetSearchFields, {
     Description => 'LIKE',
 });
 
+=item C<$AssetDefaultSearchResultFormat>
+
+The format that results of the asset search are displayed with.
+
+=cut
+
+# loc('Related tickets')
+Set($AssetDefaultSearchResultFormat, q[
+    '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    Description,
+    '__Status__ (__Catalog__)/TITLE:Status',
+    Owner,
+    HeldBy,
+    Contacts,
+    '__ActiveTickets__ __InactiveTickets__/TITLE:Related tickets',
+]);
+
 =item C<$AssetSimpleSearchFormat>
 
 The format that results of the asset simple search are displayed with.  This
