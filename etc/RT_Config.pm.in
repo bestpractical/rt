@@ -3067,17 +3067,17 @@ Set($AssetSearchFields, {
     Description => 'LIKE',
 });
 
-=item C<$AssetSearchFormat>
+=item C<$AssetSimpleSearchFormat>
 
-The format that results of the asset search are displayed with.  This is
-either a string, which will be used for all catalogs, or a hash
-reference, keyed by catalog's name/id.  If a hashref and neither name or
-id is found therein, falls back to the key ''.
+The format that results of the asset simple search are displayed with.  This
+is either a string, which will be used for all catalogs, or a hash
+reference, keyed by catalog's name/id.  If a hashref and neither name or id
+is found therein, falls back to the key ''.
 
 If you wish to use the multiple catalog format, your configuration would look
 something like:
 
-    Set($AssetSearchFormat, {
+    Set($AssetSimpleSearchFormat, {
         'General assets' => q[Format String for the General Assets Catalog],
         8                => q[Format String for Catalog 8],
         ''               => q[Format String for any catalogs not listed explicitly],
@@ -3086,7 +3086,7 @@ something like:
 =cut
 
 # loc('Related tickets')
-Set($AssetSearchFormat, q[
+Set($AssetSimpleSearchFormat, q[
     '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
     Description,
     '__Status__ (__Catalog__)/TITLE:Status',
