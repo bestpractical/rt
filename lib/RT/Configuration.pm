@@ -120,10 +120,7 @@ sub Create {
     return ( 0, $msg ) unless $id;
 
     if (ref ($args{'Content'}) ) {
-        ($args{'Content'}, my $error) = $self->_SerializeContent($args{'Content'}, $args{'Name'});
-        if ($error) {
-            return (0, $error);
-        }
+        $args{'Content'} = $self->_SerializeContent( $args{'Content'} );
         $args{'ContentType'} = 'perl';
     }
 
@@ -290,10 +287,7 @@ sub SetContent {
     }
 
     if (ref $value) {
-        ($value, my $error) = $self->_SerializeContent($value);
-        if ($error) {
-            return (0, $error);
-        }
+        $value = $self->_SerializeContent($value);
         $content_type = 'perl';
     }
 
