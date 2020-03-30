@@ -3084,6 +3084,23 @@ Set($AssetDefaultSearchResultFormat, q[
     '__ActiveTickets__ __InactiveTickets__/TITLE:Related tickets',
 ]);
 
+=item C<$AssetDefaultSearchResultOrderBy>
+
+What column should we order by for RT asset search results.
+
+=cut
+
+Set($AssetDefaultSearchResultOrderBy, 'Name');
+
+=item C<$AssetDefaultSearchResultOrder>
+
+When ordering asset search results by C<$AssetDefaultSearchResultOrderBy>,
+should the sort be ascending (ASC) or descending (DESC).
+
+=cut
+
+Set($AssetDefaultSearchResultOrder, 'ASC');
+
 =item C<$AssetSimpleSearchFormat>
 
 The format that results of the asset simple search are displayed with.  This

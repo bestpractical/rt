@@ -1685,6 +1685,9 @@ our %META;
         Widget => '/Widgets/Form/Integer',
     },
 
+    AssetDefaultSearchResultOrderBy => {
+        Widget => '/Widgets/Form/String',
+    },
     CanonicalizeEmailAddressMatch => {
         Widget => '/Widgets/Form/String',
     },
@@ -1797,6 +1800,10 @@ our %META;
         Widget => '/Widgets/Form/String',
     },
 
+    AssetDefaultSearchResultOrder => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(ASC DESC)] },
+    },
     LogToSyslog => {
         Immutable => 1,
         Widget => '/Widgets/Form/Select',

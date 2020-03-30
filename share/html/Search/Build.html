@@ -176,12 +176,12 @@ if ( $NewQuery ) {
     my %orderby = (
         'RT::Tickets'      => RT->Config->Get('DefaultSearchResultOrderBy'),
         'RT::Transactions' => RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType},
-        'RT::Assets'       => 'Name',
+        'RT::Assets'       => RT->Config->Get('AssetDefaultSearchResultOrderBy'),
     );
     my %order = (
         'RT::Tickets'      => RT->Config->Get('DefaultSearchResultOrder'),
         'RT::Transactions' => RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType},
-        'RT::Assets'       => 'ASC',
+        'RT::Assets'       => RT->Config->Get('AssetDefaultSearchResultOrder'),
     );
 
     my $default = {
