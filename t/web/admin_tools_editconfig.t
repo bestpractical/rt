@@ -89,7 +89,7 @@ sub run_test {
 
     my $rt_config_value = RT->Config->Get( $args{setting} );
 
-    cmp_deeply( $rt_configuration_value, stringify($args{new_value}), 'value from RT::Configuration->Load matches new value' );
+    is( $rt_configuration_value, stringify($args{new_value}), 'value from RT::Configuration->Load matches new value' );
     cmp_deeply( $rt_config_value, $args{new_value}, 'value from RT->Config->Get matches new value' );
 }
 
