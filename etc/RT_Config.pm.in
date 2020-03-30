@@ -3101,6 +3101,14 @@ should the sort be ascending (ASC) or descending (DESC).
 
 Set($AssetDefaultSearchResultOrder, 'ASC');
 
+=item C<$AssetShowSearchResultCount>
+
+Display search result count on asset lists. Defaults to 1 (show them).
+
+=cut
+
+Set($AssetShowSearchResultCount, 1);
+
 =item C<$AssetSimpleSearchFormat>
 
 The format that results of the asset simple search are displayed with.  This

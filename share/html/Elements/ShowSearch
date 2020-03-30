@@ -91,6 +91,7 @@ if ($SavedSearch) {
             = RT->Config->Get('WebPath')
             . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch, Class => 'RT::Assets' );
+        $ShowCount = RT->Config->Get('AssetShowSearchResultCount');
     }
     elsif ( $SearchArg->{SearchType} ne 'Ticket' ) {
 

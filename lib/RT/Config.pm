@@ -1440,6 +1440,9 @@ our %META;
     AssetHideSimpleSearch => {
         Widget => '/Widgets/Form/Boolean',
     },
+    AssetShowSearchResultCount => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     AllowUserAutocompleteForUnprivileged => {
         Widget => '/Widgets/Form/Boolean',
     },
