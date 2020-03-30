@@ -129,10 +129,10 @@
         </div>
       </div>
     </div>
-% my $cfs = $catalog_obj->AssetCustomFields;
-% $cfs->LimitToGrouping( 'RT::Asset' => 'Basics');
-% if ( $cfs->Count ) {
-    <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+% my $basic_cfs = $cfs->Clone;
+% $basic_cfs->LimitToGrouping( 'RT::Asset' => 'Basics');
+% if ( $basic_cfs->Count ) {
+    <& /Elements/BulkCustomFields, CustomFields => $basic_cfs, &>
 % }
   </&>
 
@@ -182,38 +182,38 @@
     </div>
 % }
 % }
-% my $cfs = $catalog_obj->AssetCustomFields;
-% $cfs->LimitToGrouping( 'RT::Asset' => 'People');
-% if ( $cfs->Count ) {
-    <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+% my $people_cfs = $cfs->Clone;
+% $people_cfs->LimitToGrouping( 'RT::Asset' => 'People');
+% if ( $people_cfs->Count ) {
+    <& /Elements/BulkCustomFields, CustomFields => $people_cfs, &>
 % }
   </&>
 
-%   my $cfs = $catalog_obj->AssetCustomFields;
-%   $cfs->LimitToGrouping( 'RT::Asset' => 'Dates');
-%   if ( $cfs->Count ) {
+%   my $date_cfs = $cfs->Clone;
+%   $date_cfs->LimitToGrouping( 'RT::Asset' => 'Dates');
+%   if ( $date_cfs->Count ) {
 
     <&| /Widgets/TitleBox, title => loc("Dates"), class => "asset-dates asset-bulk-dates", title_class => "inverse" &>
-      <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+      <& /Elements/BulkCustomFields, CustomFields => $date_cfs, &>
     </&>
 %   }
 
 % for my $group ( RT::CustomField->CustomGroupings( 'RT::Asset' ), '' ) {
-%   my $cfs = $catalog_obj->AssetCustomFields;
-%   $cfs->LimitToGrouping( 'RT::Asset' => $group);
-%   if ( $cfs->Count ) {
+%   my $group_cfs = $cfs->Clone;
+%   $group_cfs->LimitToGrouping( 'RT::Asset' => $group);
+%   if ( $group_cfs->Count ) {
     <&| /Widgets/TitleBox, class=>'asset-bulk-grouping asset-info-cfs asset-bulk-cfs', title => loc('Edit [_1]', ($group? loc($group) : loc('Custom Fields')) ), title_class => "inverse" &>
-      <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+      <& /Elements/BulkCustomFields, CustomFields => $group_cfs, &>
     </&>
 %   }
 % }
 
   <&|/Widgets/TitleBox, title => loc('Edit Links'), class => "asset-links asset-bulk-links", title_class => "inverse" &>
     <& /Elements/BulkLinks, Collection => $assets, %ARGS &>
-%   my $cfs = $catalog_obj->AssetCustomFields;
-%   $cfs->LimitToGrouping( 'RT::Asset' => 'Links');
+%   my $link_cfs = $cfs->Clone;
+%   $link_cfs->LimitToGrouping( 'RT::Asset' => 'Links');
 %   if ( $cfs->Count ) {
-      <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+      <& /Elements/BulkCustomFields, CustomFields => $link_cfs, &>
 %   }
   </&>
 
@@ -251,6 +251,35 @@ my $asset = RT::Asset->new( $session{'CurrentUser'} );
 delete $ARGS{$_} foreach grep { $ARGS{$_} =~ /^$/ } keys %ARGS;
 
 $DECODED_ARGS->{'UpdateAssetAll'} = 1 unless @UpdateAsset;
+
+my $cfs;
+if ( $ARGS{Query} ) {
+    $cfs = RT::CustomFields->new( $session{'CurrentUser'} );
+    $cfs->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+    $tree->ParseSQL(
+        Class       => 'RT::Assets',
+        Query       => $ARGS{Query},
+        CurrentUser => $session{CurrentUser},
+    );
+    my $catalogs = $tree->GetReferencedCatalogs;
+    my @ids;
+    for my $name ( keys %$catalogs ) {
+        my $catalog = RT::Catalog->new( $session{CurrentUser} );
+        $catalog->Load($name);
+        if ( $catalog->Id ) {
+            push @ids, $catalog->Id;
+            $cfs->SetContextObject($catalog) if keys %$catalogs == 1;
+        }
+        else {
+            RT->Logger->warning("Couldn't load catalog $name");
+        }
+    }
+    $cfs->LimitToGlobalOrObjectId(@ids);
+}
+else {
+    $cfs = $catalog_obj->AssetCustomFields;
+}
 
 if ( $ARGS{'CreateLinkedTicket'} ){
     my $url = RT->Config->Get('WebURL') . "Asset/CreateLinkedTicket.html";
