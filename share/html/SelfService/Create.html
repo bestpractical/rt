@@ -72,7 +72,7 @@
 <&|/l&>Requestors</&>:
 </div>
 <div class="value col-md-9">
-<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
+<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => RT->Config->Get('AllowUserAutocompleteForUnprivileged') ? 1 : 0 &>
 </div>
 </div>
 <div class="form-row">
@@ -80,7 +80,7 @@
 <&|/l&>Cc</&>:
 </div>
 <div class="value col-md-9">
-<& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => 1 &>
+<& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => RT->Config->Get('AllowUserAutocompleteForUnprivileged') ? 1 : 0 &>
 </div>
 </div>
 <div class="form-row">
