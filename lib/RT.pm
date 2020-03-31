@@ -766,7 +766,11 @@ our %CORED_PLUGINS = (
 
 sub InitPlugins {
     my $self    = shift;
-    my @plugins;
+    state @plugins;
+    state $plugins_were_initialized;
+    if ($plugins_were_initialized) {
+        return @plugins;
+    }
     require RT::Plugin;
     foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
         if ( $CORED_PLUGINS{$plugin} ) {
@@ -774,8 +778,15 @@ sub InitPlugins {
         }
         $plugin->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
+        if ($plugin->can("OnPreRegistration")) {
+            $plugin->OnPreRegistration();
+        }
         push @plugins, RT::Plugin->new(name =>$plugin);
+        if ($plugin->can("OnInit")) {
+            $plugin->OnInit();
+        }
     }
+    $plugins_were_initialized = 1;
     return @plugins;
 }
 

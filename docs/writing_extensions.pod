@@ -317,6 +317,48 @@ Here are some simple examples of what you might do in a callback:
     }
     </%init>
 
+=head1 Internal events
+
+RT will invoke special extension functions (when present) on certain events. 
+
+    package RT::Extension::Dummy;
+
+    use strict;
+    use warnings;
+
+    use RT;
+
+    our $VERSION = "v1.0.0";
+
+    sub OnPreRegistration {
+        RT::Logger->info(__PACKAGE__ . "::OnPreRegistration");
+
+        return;
+    }
+
+    sub OnInit {
+        RT::Logger->info(__PACKAGE__ . "::OnInit");
+
+        return;
+    }
+
+    1;
+
+The available events are:
+
+=head2 OnPreRegistration
+
+This method is called right before adding an entry to L<RT::Plugins> for this extension.
+
+Takes no parameters and expects no return value.
+
+=head2 OnInit
+
+This is the main initialization method. It is called once the extension is successfully 
+loaded and registered into L<RT::Plugins>.
+
+Takes no parameters and expects no return value.
+
 =head1 Changes to RT
 
 When writing an extension, the goal is to provide all of the new functionality
