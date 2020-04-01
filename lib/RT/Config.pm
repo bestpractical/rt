@@ -1381,6 +1381,47 @@ our %META;
             $self->Set( 'ExternalInfoPriority', \@values );
         },
     },
+    PriorityAsString => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            return unless $self->Get('EnablePriorityAsString');
+            my $config = $self->Get('PriorityAsString');
+
+            my %map;
+
+            for my $name ( keys %$config ) {
+                if ( my $value = $config->{$name} ) {
+                    my @list;
+                    if ( ref $value eq 'ARRAY' ) {
+                        @list = @$value;
+                    }
+                    elsif ( ref $value eq 'HASH' ) {
+                        @list = %$value;
+                    }
+                    else {
+                        RT->Logger->error("Invalid value for $name in PriorityAsString");
+                        undef $config->{$name};
+                    }
+
+                    while ( my $label = shift @list ) {
+                        my $value = shift @list;
+                        $map{$label} //= $value;
+
+                        if ( $map{$label} != $value ) {
+                            RT->Logger->debug("Priority $label is inconsistent: $map{$label} VS $value");
+                        }
+                    }
+
+                }
+            }
+
+            unless ( keys %map ) {
+                RT->Logger->debug("No valid PriorityAsString options");
+                $self->Set( 'EnablePriorityAsString', 0 );
+            }
+        },
+    },
     ServiceBusinessHours => {
         Type => 'HASH',
         PostLoadCheck   => sub {
@@ -1448,6 +1489,9 @@ our %META;
         Widget => '/Widgets/Form/Boolean',
     },
     EnableReminders => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    EnablePriorityAsString => {
         Widget => '/Widgets/Form/Boolean',
     },
     ExternalStorageDirectLink => {

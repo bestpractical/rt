@@ -209,7 +209,7 @@
           <&|/l&>Make priority</&>:
         </div>
         <div class="col-md-9 value">
-          <& /Elements/SelectPriority, Name => "Priority", Default => $ARGS{Priority} &>
+          <& /Elements/SelectPriority, Name => "Priority", Default => $ARGS{Priority}, Queues => $seen_queues &>
         </div>
       </div>
 

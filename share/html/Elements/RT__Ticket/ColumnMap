@@ -160,21 +160,21 @@ $COLUMN_MAP = {
         title     => 'Priority', # loc
         attribute => 'Priority',
         value     => sub { return $_[0]->Priority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'Priority', Default => $_[0]->Priority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'Priority', Default => $_[0]->Priority, QueueObj => $_[0]->QueueObj )) },
     },
     InitialPriority => {
         title     => 'InitialPriority', # loc
         attribute => 'InitialPriority',
         name      => 'Initial Priority',
         value     => sub { return $_[0]->InitialPriority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'InitialPriority', Default => $_[0]->InitialPriority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'InitialPriority', Default => $_[0]->InitialPriority, QueueObj => $_[0]->QueueObj)) },
     },
     FinalPriority => {
         title     => 'FinalPriority', # loc
         attribute => 'FinalPriority',
         name      => 'Final Priority',
         value     => sub { return $_[0]->FinalPriority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'FinalPriority', Default => $_[0]->FinalPriority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'FinalPriority', Default => $_[0]->FinalPriority, QueueObj => $_[0]->QueueObj)) },
     },
     EffectiveId => {
         title     => 'EffectiveId', # loc
@@ -399,6 +399,36 @@ if(RT->Config->Get('DisplayTotalTimeWorked')) {
         value => sub {
             return $_[0]->TotalTimeWorkedAsString;
         },
+    }
+}
+
+if ( RT->Config->Get('EnablePriorityAsString') ) {
+    my $printer = sub {
+        my ( $class, $string ) = @_;
+        return '' unless defined $string && length $string;
+
+        my $request_path = $HTML::Mason::Commands::r->path_info // '';
+        if ( $request_path =~ /Results\.tsv/ ) {
+            return loc($string);
+        }
+
+        my $escaped     = $m->interp->apply_escapes( $string,      'h' );
+        my $loc_escaped = $m->interp->apply_escapes( loc($string), 'h' );
+        return \( qq{<span class="ticket-info-$class-} . lc($escaped) . qq{">$loc_escaped</span>} );
+
+    };
+    foreach my $field (qw(Priority InitialPriority FinalPriority)) {
+        $COLUMN_MAP->{ $field . 'Number' } ||= $COLUMN_MAP->{$field};
+
+        my $class = lc($field);
+        $class =~ s/(?=<.)(?=priority)/-/;
+
+        my $method = $field . 'AsString';
+
+        $COLUMN_MAP->{$field}{'value'} = sub {
+            # Fallback to numbers when the queue disables PriorityAsString
+            return $printer->( $class, $_[0]->$method() ) || $_[0]->$field;
+        };
     }
 }
 

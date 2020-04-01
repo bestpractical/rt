@@ -45,63 +45,42 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
-  <div class="col-md-3 label">
-    <% $handle_block->( $Condition->{'Field'}, $Condition->{'Name'} .'Field' ) |n %>
-  </div>
-  <div class="col-md-2 operator">
-    <% $handle_block->( $Condition->{'Op'}, $Condition->{'Name'} .'Op') |n %>
-  </div>
-  <div class="col-md-7 value">
-    <% $handle_block->( $Condition->{'Value'}, 'ValueOf'. $Condition->{'Name'} ) |n %>
-  </div>
-</div>
-<%INIT>
-return unless $Condition && $Condition->{'Name'};
-
-$m->callback( Condition => \$Condition );
-return unless $Condition;
-
-my $handle_block;
-$handle_block = sub {
-    my $box = shift;
-    return $box unless ref $box;
-
-    my $name = shift;
-    if ( UNIVERSAL::isa($box, 'ARRAY') ) {
-        my $res = '';
-        $res .= $handle_block->( $_, $name ) foreach @$box;
-        return $res;
-    }
-
-    return undef unless UNIVERSAL::isa($box, 'HASH');
-    if ( $box->{'Type'} eq 'component' ) {
-        $box->{'Arguments'} ||= {},
-        return $m->scomp( $box->{'Path'}, %{ $box->{'Arguments'} }, Name => $name );
-    }
-    if ( $box->{'Type'} eq 'text' ) {
-        $box->{id} ||= $box->{name} ||= $name;
-        $box->{value} ||= delete($box->{Default}) || '';
-        $box->{class} ||= "form-control";
-        return "<input ".join(" ", map{$m->interp->apply_escapes(lc($_),'h')
-                                      .q{="}.$m->interp->apply_escapes($box->{$_},'h').q{"}}
-                                   sort keys %$box)." />";
-    }
-    if ( $box->{'Type'} eq 'select' ) {
-        my $res = '';
-        $res .= qq{<select id="$name" name="$name" class="form-control selectpicker">};
-        my @options = @{ $box->{'Options'} };
-        while( defined( my $k = shift @options ) ) {
-            my $v = shift @options;
-            my $class = CSSClass($k);
-            $res .= qq{<option class="$class" value="$k">$v</option>};
+<select class="select-priority selectpicker form-control" name="<% $Name %>">
+% unless ( defined $Default ) {
+  <option value="">-</option>
+% }
+% for my $name ( sort { lc $a cmp lc $b } keys %Options ) {
+%   if ( $group_by_name ) {
+  <optgroup label="<% $name %>">
+%   }
+<%PERL>
+    for my $option ( @{$Options{$name}} ) {
+        my $label = $option->{Label};
+        my $value = $option->{Value};
+        my $selected = '';
+        if ( $label eq $default_label ) {
+            ($value, $selected) = ($Default, 'selected="selected"');
         }
-        $res .= qq{</select>};
-        return $res;
-    }
-};
-
-</%INIT>
+</%PERL>
+    <option class="priority-<% lc $label %>" value="<% $value %>" <% $selected |n %>><% loc($label) %></option>
+%   }
+%   if ( $group_by_name ) {
+  </optgroup>
+%   }
+% }
+</select>
 <%ARGS>
-$Condition => {}
+$Name => 'Priority'
+$Default => undef
+$QueueObj => undef
+%Options
 </%ARGS>
+<%INIT>
+my $default_label = '';
+if ( defined $Default && length $Default && $QueueObj ) {
+    $default_label = RT::Ticket->_PriorityAsString( $Default, $QueueObj->__Value('Name') ) || '';
+}
+
+my %config = RT->Config->Get('PriorityAsString');
+my $group_by_name = keys %Options > 1;
+</%INIT>

@@ -89,7 +89,7 @@ jQuery( function() {
           <select name="SelectDisplayColumns" multiple="multiple" class="form-control selectpicker">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
-          <option value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
+          <option class="<% CSSClass($field) %>" value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
             <% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
 % }
           </select>

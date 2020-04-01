@@ -2709,6 +2709,62 @@ cut down on page clutter. Once this option is clicked the link will change to
 
 Set($HideOneTimeSuggestions, 0);
 
+=item C<$EnablePriorityAsString>
+
+Priority is stored as a number internally. This determines whether
+Priority is displayed to users as a number or using configured
+labels like Low, Medium, High. See L<%PriorityAsString> for details
+on this configuration.
+
+The default is enabled, so strings are shown. Set to C<0> to display
+numbers, which was the previous default for RT.
+
+=cut
+
+Set($EnablePriorityAsString, 1);
+
+=item C<%PriorityAsString>
+
+This setting allows you to define labels for priority values
+available on tickets. RT stores these values internally as a number,
+but this number will be hidden if C<$EnablePriorityAsString> is true.
+For the configuration, link the labels to numbers as shown below. If
+you have more or less priority settings, you can adjust the numbers,
+giving a unique number to each.
+
+    Set(%PriorityAsString,
+        Default => { Low => 0, Medium => 50, High => 100 },
+        General => [ Medium => 50, Low => 0, High => 80, 'On Fire' => 100],
+        Support => 0,
+    );
+
+The key is queue name or "Default", which is the fallback for unspecified
+queues. Values can be an ArrayRef, HashRef, or C<0>.
+
+=over
+
+=item ArrayRef
+
+This is the ordered String => Number map list. Pririty options will be
+rendered in the order they are listed in the list.
+
+=item HashRef
+
+This is the unordered String => Number map list. Priority options will be
+rendered in numerical ascending order.
+
+=item C<0>
+
+Priority is rendered as a number.
+
+=back
+
+=cut
+
+Set(%PriorityAsString,
+    Default => { Low => 0, Medium => 50, High => 100 },
+);
+
 =back
 
 =head2 Group Summary Configuration

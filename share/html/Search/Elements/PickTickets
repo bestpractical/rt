@@ -181,6 +181,7 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectPriority',
+            Arguments => { Queues => \%queues, ValueAsString => 1 },
         },
     },
 );

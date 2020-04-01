@@ -457,3 +457,11 @@ div.error .titlebox-title {
 div.error div.error {
     background-color: #fcc;
 }
+
+.priority.value  {
+    visibility: hidden;
+}
+
+.priority.value span.Priority {
+    visibility: visible;
+}

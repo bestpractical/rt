@@ -3738,6 +3738,49 @@ sub Serialize {
     return %store;
 }
 
+sub PriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->Priority );
+}
+
+sub InitialPriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->InitialPriority );
+}
+
+sub FinalPriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->FinalPriority );
+}
+
+sub _PriorityAsString {
+    my $self       = shift;
+    my $priority   = shift;
+    my $queue_name = shift || $self->QueueObj->__Value('Name');    # Skip ACL check
+
+    return undef unless defined $priority && length $priority && RT->Config->Get('EnablePriorityAsString');
+
+    my %config = RT->Config->Get('PriorityAsString');
+    my $value = ( exists $config{$queue_name} ? $config{$queue_name} : $config{Default} ) or return undef;
+    my %map;
+    if ( ref $value eq 'ARRAY' ) {
+        %map = @$value;
+    }
+    elsif ( ref $value eq 'HASH' ) {
+        %map = %$value;
+    }
+    else {
+        RT->Logger->warning("Invalid PriorityAsString value: $value");
+    }
+
+    # Count from high down to low until we find one that our number is
+    # greater than or equal to.
+    foreach my $label ( sort { $map{$b} <=> $map{$a} } keys %map ) {
+        return $label if $priority >= $map{$label};
+    }
+    return "unknown";
+}
+
 RT::Base->_ImportOverlays();
 
 1;

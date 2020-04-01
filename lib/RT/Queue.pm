@@ -1231,6 +1231,17 @@ sub SetDefaultValue {
         },
     );
 
+    if ( $args{Name} =~ /Priority/ && RT->Config->Get('EnablePriorityAsString') ) {
+        if ( $old_value ne $self->loc('(no value)') ) {
+            my $str = RT::Ticket->_PriorityAsString( $old_value, $self->Name );
+            $old_value = $self->loc($str) if $str;
+        }
+        if ( $new_value ne $self->loc('(no value)') ) {
+            my $str = RT::Ticket->_PriorityAsString( $new_value, $self->Name );
+            $new_value = $self->loc($str) if $str;
+        }
+    }
+
     if ( $ret ) {
         return ( $ret, $self->loc( 'Default value of [_1] changed from [_2] to [_3]', $args{Name}, $old_value, $new_value ) );
     }
