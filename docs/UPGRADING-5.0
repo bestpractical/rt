@@ -75,6 +75,25 @@ The updated rich text editor now shows the browser context menu (right-click
 menu) by default, so the MessageBoxUseSystemContextMenu configuration option is
 no longer needed and has been removed.
 
+=item *
+
+The extension PriorityAsString has been integrated into core RT. This may
+require some changes in your configuration.
+
+If you previously used numbers for priority and would like to continue
+to do so, you can set the new C<$EnablePriorityAsString> option to false.
+That will disable the new string-based display.
+
+If you would like to now use strings for priority like Low, Medium, High,
+check the new C<%PriorityAsString> configuration option. RT provides a simple
+default setting that may be sufficient. Set new values if you would like
+to customize your priority options.
+
+If you were previously using the PriorityAsString extension, you no longer
+need the extension installed. The C<%PriorityAsString>> configuration is
+simplified and consolidated, so check the documentation for details on
+updating your previous configuration.
+
 =back
 
 =cut
