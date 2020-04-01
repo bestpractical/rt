@@ -151,20 +151,15 @@ sub BuildMainNav {
     $tickets->child( new    => title => loc('New Search'),    path => "/Search/Build.html?NewQuery=1" );
 
     my $recents = $tickets->child( recent => title => loc('Recently Viewed'));
-    for ($current_user->RecentlyViewedTickets) {
-        my ($ticketId, $timestamp) = @$_;
-        my $ticket = RT::Ticket->new($current_user);
-        $ticket->Load($ticketId);
-        if ($ticket->Id) {
-            my $title = $ticket->Subject || loc("(No subject)");
-            if (length $title > 50) {
-                $title = substr($title, 0, 47);
-                $title =~ s/\s+$//;
-                $title .= "...";
-            }
-            $title = "#$ticketId: " . $title;
-            $recents->child( "$ticketId" => title => $title, path => "/Ticket/Display.html?id=" . $ticket->Id );
+    for my $ticket ( $current_user->RecentlyViewedTickets ) {
+        my $title = $ticket->{subject} || loc( "(No subject)" );
+        if ( length $title > 50 ) {
+            $title = substr($title, 0, 47);
+            $title =~ s/\s+$//;
+            $title .= "...";
         }
+        $title = "#$ticket->{id}: " . $title;
+        $recents->child( "$ticket->{id}" => title => $title, path => "/Ticket/Display.html?id=" . $ticket->{id} );
     }
 
     $search->child( articles => title => loc('Articles'),   path => "/Articles/Article/Search.html" )
