@@ -121,7 +121,7 @@ CREATE TABLE Transactions (
   ObjectId integer NULL DEFAULT 0 ,
   TimeTaken integer NULL DEFAULT 0 ,
   Type varchar(20) collate NOCASE NULL  ,
-  Field varchar(40) collate NOCASE NULL  ,
+  Field varchar(255) collate NOCASE NULL  ,
   OldValue varchar(255) collate NOCASE NULL  ,
   NewValue varchar(255) collate NOCASE NULL  ,
   ReferenceType varchar(255) collate NOCASE NULL  ,
@@ -582,6 +582,6 @@ CREATE TABLE Configurations (
     LastUpdated       timestamp                DEFAULT NULL
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
+CREATE INDEX Configurations1 ON Configurations (Name, Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
 

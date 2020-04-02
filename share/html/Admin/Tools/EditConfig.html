@@ -62,19 +62,6 @@ my $active_context = {
 
 my @results;
 
-use Data::Dumper;
-my $stringify = sub {
-    my $value = shift;
-    return "" if !defined($value);
-
-    local $Data::Dumper::Terse = 1;
-    local $Data::Dumper::Indent = 2;
-    local $Data::Dumper::Sortkeys = 1;
-    my $output = Dumper $value;
-    chomp $output;
-    return $output;
-};
-
 if (delete $ARGS{Update}) {
     RT->Config->BeginDatabaseConfigChanges;
     $RT::Handle->BeginTransaction;
@@ -138,16 +125,8 @@ if (delete $ARGS{Update}) {
             }
 
             my $setting = RT::Configuration->new($session{CurrentUser});
-            $setting->Load($key);
+            $setting->LoadByCols(Name => $key, Disabled => 0);
             if ($setting->Id) {
-                if ($setting->Disabled) {
-                    my ($ok, $msg) = $setting->SetDisabled(0);
-                    if (!$ok) {
-                        push @results, $msg;
-                        $has_error++;
-                    }
-                }
-
                 my ($ok, $msg) = $setting->SetContent($val);
                 push @results, $msg;
                 $has_error++ if !$ok;

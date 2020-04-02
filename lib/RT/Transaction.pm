@@ -1394,6 +1394,32 @@ sub _CanonicalizeRoleName {
         my $self = shift;
         return "Attachment content modified";
     },
+    SetConfig => sub  {
+        my $self = shift;
+        my ($new_value, $old_value);
+
+        # pull in new value from reference if exists
+        if ( $self->NewReference ) {
+            my $newobj = RT::Configuration->new($self->CurrentUser);
+            $newobj->Load($self->NewReference);
+            $new_value = $newobj->Content;
+        }
+
+        # pull in old value from reference if exists
+        if ( $self->OldReference ) {
+            my $oldobj = RT::Configuration->new($self->CurrentUser);
+            $oldobj->Load($self->OldReference);
+            $old_value = $oldobj->Content;
+            return ('[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value // '', $new_value // ''); #loc()
+        }
+        else {
+            return ('[_1] changed to "[_2]"', $self->Field, $new_value // ''); #loc()
+        }
+    },
+    DeleteConfig => sub  {
+        my $self = shift;
+        return ('[_1] deleted"', $self->Field); #loc()
+    }
 );
 
 
@@ -2013,7 +2039,7 @@ sub _CoreAccessible {
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
         Field =>
-                {read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varchar(40)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         OldValue =>
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         NewValue =>

@@ -2586,7 +2586,7 @@ sub LoadConfigFromDatabase {
     $database_config_cache_time = time;
 
     my $settings = RT::Configurations->new(RT->SystemUser);
-    $settings->UnLimit;
+    $settings->LimitToEnabled;
 
     my %seen;
 
