@@ -352,6 +352,7 @@ elsif ( $query{'Query'} ) {
     $TabArgs{QueryArgs} = \%query;
 }
 
+$m->callback( ARGSRef => \%ARGS, Query => \%query, CallbackName => 'BeforeDisplay' );
 </%INIT>
 
 <%ARGS>
