@@ -160,11 +160,23 @@ if ( $ARGS{'SavedSearchRevert'} ) {
     $ARGS{'SavedSearchLoad'} = $SavedSearch->{'Id'};
 }
 
+# See RT::Attribute for mappings of update, delete, display to actual
+# RT rights for the rights checks used here.
+
 if ( $ARGS{'SavedSearchLoad'} ) {
     my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
+
     if ( $container ) {
         my $search = RT::Attribute->new( $session{'CurrentUser'} );
         $search->Load( $id );
+
+        if ($search) {
+            unless ($search->CurrentUserHasRight('display')) {
+                push @results, loc("No permission to load search");
+                return @results;
+            }
+        }
+
         $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
         $SavedSearch->{'Object'}      = $search;
         $SavedSearch->{'Description'} = $search->Description;
