@@ -379,6 +379,8 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 </div>
 
 <%INIT>
+Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'ShowSearchBulkUpdate', Object => RT->System );
+
 my (@results);
 
 $m->callback(CallbackName => 'Initial', ARGSRef => \%ARGS, results_ref => \@results, QueryRef => \$Query, UpdateTicketRef => \@UpdateTicket);
