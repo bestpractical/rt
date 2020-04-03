@@ -321,6 +321,7 @@ unshift(@output, [ join "\n", @comments ]) if @comments;
 $output = form_compose(\@output);
 
 OUTPUT:
-$m->out("RT/".$RT::VERSION ." ".$status ."\n\n$output\n") if ($output || $status !~ /^200/);
+$output .= "\n" if $output && !$m->notes('raw-content');
+$m->out("RT/".$RT::VERSION ." ".$status ."\n\n$output") if ($output || $status !~ /^200/);
 return;
 </%INIT>

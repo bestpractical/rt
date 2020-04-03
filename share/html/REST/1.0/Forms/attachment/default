@@ -68,6 +68,7 @@ my @arglist = split( '/', $args || "" );
 my $content;
 
 if ( @arglist and $arglist[0] eq 'content' ) {
+    $m->notes( 'raw-content' => 1 );
     $c = $attachment->OriginalContent;
     $r->content_type($attachment->ContentType)
         if $attachment->ContentType !~ /^text\//;

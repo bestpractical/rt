@@ -198,8 +198,16 @@ sub form_compose {
         my $text = "";
 
         if ($c) {
-            $c =~ s/\n*$/\n/;
-            $text = "$c\n";
+
+            # $c means comments, but we also use it to render attachment
+            # contents, in which case massaging newlines is not a good idea.
+            if ( $HTML::Mason::Commands::m->notes('raw-content') ) {
+                $text = $c;
+            }
+            else {
+                $c =~ s/\n*$/\n/;
+                $text = "$c\n";
+            }
         }
         if ($e) {
             $text .= $e;

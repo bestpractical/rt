@@ -82,6 +82,7 @@ if ($aid) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];
     }
     if ($content) {
+        $m->notes( 'raw-content' => 1 );
         $c = $attachment->OriginalContent;
         # if we're sending a binary attachment (and only the attachment)
         # flag it so bin/rt knows to special case it
