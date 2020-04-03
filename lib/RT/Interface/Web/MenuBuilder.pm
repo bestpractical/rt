@@ -555,8 +555,9 @@ sub BuildMainNav {
 
         $current_search_menu->child( edit_search =>
             title => loc('Edit Search'), path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
-        $current_search_menu->child( advanced =>
-            title => loc('Advanced'),    path => "/Search/Edit.html$args" );
+        if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
+            $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
+        }
         $current_search_menu->child( custom_date_ranges =>
             title => loc('Custom Date Ranges'), path => "/Search/CustomDateRanges.html" ) if $class eq 'RT::Tickets';
         if ($has_query) {
@@ -565,7 +566,9 @@ sub BuildMainNav {
 
         if ( $has_query ) {
             if ( $class eq 'RT::Tickets' ) {
-                $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
+                if ( $current_user->HasRight( Right => 'ShowSearchBulkUpdate', Object => RT->System ) ) {
+                    $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
+                }
                 $current_search_menu->child( chart => title => loc('Chart'),       path => "/Search/Chart.html$args" );
             }
 

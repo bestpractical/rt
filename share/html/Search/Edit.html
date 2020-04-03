@@ -70,6 +70,8 @@
 </form>
 
 <%INIT>
+Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System );
+
 my $title;
 if ( $Class eq 'RT::Transactions' ) {
     $title = loc('Edit Transaction Query');
