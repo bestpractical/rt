@@ -597,11 +597,8 @@ sub BuildMainNav {
                     $rss_data{Query};
                 $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
 
-                if ($request_path =~ m{^/Search/Results.html}
-                    &&    #XXX TODO better abstraction
-                    $current_user->HasRight( Right => 'SuperUser', Object => RT->System )
-                   )
-                {
+                #XXX TODO better abstraction of SuperUser right check
+                if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
                     my $shred_args = QueryString(
                         Search          => 1,
                         Plugin          => 'Tickets',
