@@ -504,7 +504,7 @@ sub BuildMainNav {
                 map {
                     my $p = $_;
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
-                } qw(Query Format OrderBy Order Page Class ObjectType)
+                } qw(Query Format OrderBy Order Page Class ObjectType ResultPage)
             ),
             RowsPerPage => (
                 defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
@@ -568,7 +568,13 @@ sub BuildMainNav {
         $current_search_menu->child( custom_date_ranges =>
             title => loc('Custom Date Ranges'), path => "/Search/CustomDateRanges.html" ) if $class eq 'RT::Tickets';
         if ($has_query) {
-            $current_search_menu->child( results => title => loc('Show Results'), path => "/Search/Results.html$args" );
+            my $result_page = $HTML::Mason::Commands::DECODED_ARGS->{ResultPage};
+            if ( my $web_path = RT->Config->Get('WebPath') ) {
+                $result_page =~ s!^$web_path!!;
+            }
+
+            $result_page ||= '/Search/Results.html';
+            $current_search_menu->child( results => title => loc('Show Results'), path => "$result_page$args" );
         }
 
         if ( $has_query ) {
