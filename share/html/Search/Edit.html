@@ -55,6 +55,9 @@
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $SavedChartSearchId %>" />
 <input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
 <input type="hidden" class="hidden" name="ObjectType" value="<% $ObjectType %>" />
+% if ( $ResultPage ) {
+<input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
+% }
 % for my $input ( @ExtraQueryParams ) {
 <input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
 %   if ( defined $ARGS{$input} ) {
@@ -111,4 +114,5 @@ $ObjectType    => 'RT::Ticket'
 
 @actions       => ()
 @ExtraQueryParams => ()
+$ResultPage    => RT->Config->Get('WebPath') . '/Search/Results.html'
 </%ARGS>

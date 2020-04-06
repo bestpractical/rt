@@ -75,6 +75,9 @@
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
 <input type="hidden" class="hidden" name="ObjectType" value="<% $query{'ObjectType'} %>" />
 <input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
+% if ( $ResultPage ) {
+<input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
+% }
 % if ( $query{ExtraQueryParams} ) {
 %   for my $input ( ref $query{ExtraQueryParams} eq 'ARRAY' ?  @{$query{ExtraQueryParams}} : $query{ExtraQueryParams} ) {
 <input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
@@ -346,7 +349,7 @@ if ( $ARGS{'DoSearch'} ) {
         SavedChartSearchId => $ARGS{'SavedChartSearchId'},
         SavedSearchId => $saved_search{'Id'},
     );
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Search/Results.html?' . $redir_query_string);
+    RT::Interface::Web::Redirect("$ResultPage?$redir_query_string");
     $m->abort;
 }
 
@@ -374,4 +377,5 @@ $NewQuery => 0
 $Class => 'RT::Tickets'
 $ObjectType => 'RT::Ticket'
 @ExtraQueryParams => ()
+$ResultPage => RT->Config->Get('WebPath') . '/Search/Results.html'
 </%ARGS>
