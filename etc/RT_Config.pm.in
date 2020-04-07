@@ -149,6 +149,21 @@ Set( @StaticRoots, () );
 
 =back
 
+=item C<$LeaveUMask>
+
+Set C<$LeaveUMask> to 1 to tell the Plack runner to preserve the umask
+of the running process.  By default, Plack will set the umask to 0,
+essentially making the socket file world-writeable.  
+
+This setting only applies if you are using FastCGI on UNIX domain 
+sockets.
+
+=cut
+
+Set( @$LeaveUMask, 0 );
+
+=back
+
 
 
 

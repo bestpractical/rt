@@ -77,6 +77,7 @@ sub parse_options {
 
     if ($self->{server} eq "FCGI") {
         # We deal with the possible failure modes of this in ->run
+        $self->set_options(leave_umask => int(RT->Config->Get('LeaveUMask')));
     } elsif ($args{port}) {
         $self->{explicit_port} = 1;
         my $old_app = $self->{app};
