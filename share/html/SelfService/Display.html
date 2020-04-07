@@ -87,7 +87,7 @@
 
 <& /Elements/ShowHistory,
       Object => $Ticket,
-      ShowHeaders => $ARGS{'ShowHeaders'},
+      ShowHeaders => $ShowHeaders,
       DownloadableHeaders => 0,
 &>
 
@@ -174,4 +174,5 @@ $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%A
 
 <%ARGS>
 $id => undef
+$ShowHeaders => 0
 </%ARGS>

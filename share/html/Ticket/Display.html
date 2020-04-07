@@ -92,23 +92,23 @@ my $titleright = qq{
 % if ($ShowHistory eq "scroll") {
     <& /Ticket/Elements/ScrollShowHistory,
         Ticket => $TicketObj,
-        ShowHeaders => $ARGS{'ShowHeaders'},
+        ShowHeaders => $ShowHeaders,
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
-        ShowHeaders => $ARGS{'ShowHeaders'},
+        ShowHeaders => $ShowHeaders,
     &>
 % } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
-        ShowHeaders => $ARGS{'ShowHeaders'},
+        ShowHeaders => $ShowHeaders,
     &>
 % } else {
     <& /Elements/ShowHistory ,
           Object => $TicketObj,
           Transactions => $transactions,
-          ShowHeaders => $ARGS{'ShowHeaders'},
+          ShowHeaders => $ShowHeaders,
           Attachments => $attachments,
           AttachmentContent => $attachment_content
     &>

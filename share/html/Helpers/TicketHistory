@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $id
+$ShowHeaders => 0
 </%ARGS>
 <%INIT>
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
@@ -59,7 +60,7 @@ $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $TicketObj,
 </%INIT>
 <& /Elements/ShowHistory,
     Object => $TicketObj,
-    ShowHeaders => $ARGS{'ShowHeaders'},
+    ShowHeaders => $ShowHeaders,
     Attachments => $attachments,
     AttachmentContent => $attachment_content,
     %extra_args,

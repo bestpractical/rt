@@ -52,7 +52,7 @@
 
 <& /Elements/ShowHistory,
     Object => $Ticket,
-    ShowHeaders => $ARGS{'ShowHeaders'}, 
+    ShowHeaders => $ShowHeaders, 
     Attachments => $attachments,
     AttachmentContent => $attachment_content,
     DisplayPath => 'History.html',
@@ -62,6 +62,7 @@
 
 <%ARGS>
 $id => undef
+$ShowHeaders => 0
 </%ARGS>
 
 <%INIT>

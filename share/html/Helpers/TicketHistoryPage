@@ -51,6 +51,7 @@ $oldestTransactionsFirst => RT->Config->Get("OldestTransactionsFirst", $session{
 $lastTransactionId => undef
 $focusTransactionId => undef
 $loadAll => 0
+$ShowHeaders => 0
 </%ARGS>
 <%INIT>
 my $TicketObj = RT::Ticket->new($session{'CurrentUser'});
@@ -90,7 +91,7 @@ if ($focusTransactionId) { # make sure we load enough if we need to focus a tran
 </%INIT>
 <& /Elements/ShowHistoryPage,
     Object => $TicketObj,
-    ShowHeaders => $ARGS{'ShowHeaders'},
+    ShowHeaders => $ShowHeaders,
     Transactions => $transactions,
     %extra_args,
     &>
