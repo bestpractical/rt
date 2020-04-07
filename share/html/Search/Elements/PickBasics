@@ -256,6 +256,19 @@ else {
             },
         },
         {
+            Name => 'Lifecycle',
+            Field => loc('Lifecycle'),
+            Op => {
+                Type      => 'component',
+                Path      => '/Elements/SelectBoolean',
+                Arguments => { TrueVal => '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectLifecycle',
+            },
+        },
+        {
             Name => 'Status',
             Field => loc('Status'),
             Op => {
