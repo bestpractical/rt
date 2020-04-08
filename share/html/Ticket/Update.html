@@ -72,6 +72,14 @@
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
 % }
+
+% if ( $TicketObj->CurrentUserHasRight('SeeQueue') ) {
+<div class="form-row">
+  <div class="label col-md-3"><&|/l&>Queue</&>:</div>
+  <div class="value col-md-9"><span class="current-value form-control"><% $TicketObj->QueueObj->Name %></span></div>
+</div>
+% }
+
 <div class="form-row"><div class="label col-md-3"><&|/l&>Update Type</&>:</div>
 <div class="value col-md-9"><select class="form-control selectpicker" name="UpdateType" id="UpdateType">
 % if ($CanComment) {
