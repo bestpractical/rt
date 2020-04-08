@@ -84,8 +84,8 @@ our %FieldTypes = (
                 'Select box',              # loc
                 'List',                    # loc
             ],
-            single => [ 'Select box',              # loc
-                        'Dropdown',                # loc
+            single => [ 'Dropdown',                # loc
+                        'Select box',              # loc
                         'List',                    # loc
                       ]
         },
