@@ -45,46 +45,51 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<i><&|/l&>Current watchers</&>:</i>
-<table width="100%">
-<tr>
-  <td class="label"><&|/l&>Owner</&>:</td>
-  <td class="value"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-12">
+    <i><&|/l&>Current watchers</&>:</i>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="col-md-3 label"><&|/l&>Owner</&>:</div>
+  <div class="col-md-6 value"><& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&></div>
+</div>
 
 % my @role_fields;
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
 % $single_roles->LimitToSingleValue;
 % while (my $role = $single_roles->Next) {
-<tr>
-  <td class="label"><% $role->Name %>:
+<div class="form-row">
+  <div class="col-md-3 label"><% $role->Name %>:
 % if ( my $hint = $role->EntryHint ) {
     <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
 % }
-  <td class="value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></td>
-</tr>
+  </div>
+  <div class="col-md-6 value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></div>
+</div>
 
 % }
 
 % if ($Ticket->Requestors->MembersObj->Count) {
-<tr>
-  <td class="label"><&|/l&>Requestors</&>:</td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label"><&|/l&>Requestors</&>:</div>
+  <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></div>
+</div>
 % }
 
 % if ($Ticket->Cc->MembersObj->Count) {
-<tr>
-  <td class="label"><&|/l&>Cc</&>:</td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label"><&|/l&>Cc</&>:</div>
+  <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></div>
+</div>
 % }
 
 % if ($Ticket->AdminCc->MembersObj->Count) {
-<tr>
-  <td class="label"><&|/l&>AdminCc</&>:</td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></td>
-</tr>
+<div class="form-row">
+  <div class="col-md-3 label"><&|/l&>Admin Cc</&>:</div>
+  <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></div>
+</div>
 % }
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
@@ -92,28 +97,27 @@
 % while (my $role = $multi_roles->Next) {
 % my $group = $Ticket->RoleGroup($role->GroupType);
 % if ($group->Id && $group->MembersObj->Count) {
-<tr>
-  <td class="label"><% $role->Name %>:
+<div class="form-row">
+  <div class="col-md-3 label"><% $role->Name %>:
 % if ( my $hint = $role->EntryHint ) {
     <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
 % }
-  </td>
-  <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></td>
-</tr>
+  </div>
+  <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></div>
+</div>
 % }
 % }
 
-<tr>
-  <td colspan="2">
+<div class="form-row">
+  <div class="col-md-12">
     <i><&|/l&>Add new watchers</&>:</i>
-    <& AddWatchers, Ticket => $Ticket, ShowLabel => 0 &>
-  </td>
-</tr>
+  </div>
+</div>
+
+<& AddWatchers, Ticket => $Ticket, ShowLabel => 0 &>
 
 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'People', InTable => 1 &>
-</table>
 
 <%ARGS>
 $Ticket => undef
 </%ARGS>
-
