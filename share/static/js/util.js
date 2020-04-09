@@ -935,7 +935,7 @@ function scrollToJQueryObject(obj) {
     var viewportHeight = jQuery(window).height(),
         currentScrollPosition = jQuery(window).scrollTop(),
         currentItemPosition = obj.offset().top,
-        currentItemSize = obj.height() + obj.next().height();
+        currentItemSize = obj.height() + ( obj.next().height() ? obj.next().height() : 0 );
 
     if (currentScrollPosition + viewportHeight < currentItemPosition + currentItemSize) {
         jQuery('html, body').scrollTop(currentItemPosition - viewportHeight + currentItemSize);
