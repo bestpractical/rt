@@ -73,21 +73,36 @@
 
 % if ($Ticket->Requestors->MembersObj->Count) {
 <div class="form-row">
-  <div class="col-md-3 label"><&|/l&>Requestors</&>:</div>
+  <div class="col-md-3 label">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="delete-requestors-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Requestor-/)">
+      <label class="custom-control-label" for="delete-requestors-checkbox"><&|/l&>Requestors</&>:</label>
+    </div>
+  </div>
   <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &></div>
 </div>
 % }
 
 % if ($Ticket->Cc->MembersObj->Count) {
 <div class="form-row">
-  <div class="col-md-3 label"><&|/l&>Cc</&>:</div>
+  <div class="col-md-3 label">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="delete-cc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-Cc-/)">
+      <label class="custom-control-label" for="delete-cc-checkbox"><&|/l&>Cc</&>:</label>
+    </div>
+  </div>
   <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Cc &></div>
 </div>
 % }
 
 % if ($Ticket->AdminCc->MembersObj->Count) {
 <div class="form-row">
-  <div class="col-md-3 label"><&|/l&>Admin Cc</&>:</div>
+  <div class="col-md-3 label">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="delete-admincc-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-AdminCc-/)">
+      <label class="custom-control-label" for="delete-admincc-checkbox"><&|/l&>Admin Cc</&>:</label>
+    </div>
+  </div>
   <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &></div>
 </div>
 % }
@@ -98,10 +113,15 @@
 % my $group = $Ticket->RoleGroup($role->GroupType);
 % if ($group->Id && $group->MembersObj->Count) {
 <div class="form-row">
-  <div class="col-md-3 label"><% $role->Name %>:
-% if ( my $hint = $role->EntryHint ) {
-    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
-% }
+  <div class="col-md-3 label">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="delete-<% $role->id %>-checkbox" class="checkbox custom-control-input" onclick="setCheckbox(this, /^Ticket-DeleteWatcher-Type-RT::CustomRole-<% $role->Id %>-/)">
+      <label class="custom-control-label" for="delete-<% $role->id %>-checkbox"><% $role->Name %>:
+%     if ( my $hint = $role->EntryHint ) {
+        <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
+%     }
+      </label>
+    </div>
   </div>
   <div class="col-md-6 value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></div>
 </div>
