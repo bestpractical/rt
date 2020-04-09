@@ -57,7 +57,10 @@
 % $single_roles->LimitToSingleValue;
 % while (my $role = $single_roles->Next) {
 <tr>
-  <td class="label"><% $role->Name %>:</td>
+  <td class="label"><% $role->Name %>:
+% if ( my $hint = $role->EntryHint ) {
+    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
+% }
   <td class="value"><& /Elements/SingleUserRoleInput, role => $role, Ticket => $Ticket &></td>
 </tr>
 
@@ -90,7 +93,11 @@
 % my $group = $Ticket->RoleGroup($role->GroupType);
 % if ($group->Id && $group->MembersObj->Count) {
 <tr>
-  <td class="label"><% $role->Name %>:</td>
+  <td class="label"><% $role->Name %>:
+% if ( my $hint = $role->EntryHint ) {
+    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
+% }
+  </td>
   <td class="value"><& EditWatchers, TicketObj => $Ticket, Watchers => $group &></td>
 </tr>
 % }
