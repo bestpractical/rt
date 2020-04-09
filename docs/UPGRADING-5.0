@@ -36,6 +36,30 @@ changes made directly to the RT code, it's a good time to look at the hooks
 RT provides for custom code in extensions or in the local directory. See
 F<docs/writing_extensions.pod> for more information.
 
+=head2 Database Changes
+
+=over
+
+=item *
+
+For MySQL and MariaDB, the default character set has been updated to utf8mb4
+to accommodate more unicode characters including emojis. See F<README.MySQL>
+and F<README.MariaDB> for details.
+
+=item *
+
+The Id field in some tables is changed from INT to BIGINT to accommodate
+large RT systems that may hit the maximum number of ids. Because this
+change touches large RT tables like Transactions and Attachments, this
+upgrade step may take a while to run.
+
+You also will need free disk space equal to the size of these tables
+while running because MySQL, MariaDB, and Postgres will create a
+temporary copy of the table while running. If you don't have sufficient
+space, it can cause this step to fail.
+
+=back
+
 =head2 Notable Changes
 
 =over
