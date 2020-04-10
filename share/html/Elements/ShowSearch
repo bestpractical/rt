@@ -81,8 +81,11 @@ if ($SavedSearch) {
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} ||= 'Ticket';
     if ( $SearchArg->{SearchType} eq 'Transaction' ) {
-        $class = 'RT::Transactions';
-        $query_link_url = RT->Config->Get('WebPath') .  "/Transaction/Search/Results.html";
+        $class = $SearchArg->{Class} = 'RT::Transactions';
+        $customize
+            = RT->Config->Get('WebPath')
+            . '/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch, Class => 'RT::Transactions' );
         $ShowCount = RT->Config->Get('TransactionShowSearchResultCount')->{'RT::Ticket'};
     }
     elsif ( $SearchArg->{SearchType} eq 'Asset' ) {
