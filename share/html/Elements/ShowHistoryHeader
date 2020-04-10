@@ -55,6 +55,17 @@ $ScrollShowHistory => 0
 <%INIT>
 my $record_type = $Object->RecordType;
 my $histid      = "\L$record_type\E-" . $Object->id . "-history";
+
+my $reverse_txns = $ARGS{'ReverseTxns'};
+if ( $reverse_txns ) {
+    # If we got something, reverse it for the link
+    $reverse_txns = $reverse_txns eq 'ASC' ? 'DESC' : 'ASC';
+}
+else {
+    # Default the link to the opposite of the config setting
+    # Oldest Txns first is ASC, so reverse it for this option default
+    $reverse_txns = RT->Config->Get("OldestTransactionsFirst", $session{'CurrentUser'}) ? 'DESC' : 'ASC';
+}
 </%INIT>
 <div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
@@ -93,6 +104,11 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
                              qq{</a>} );
         }
     }
+
+    push( @elements, qq{<a href="?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} .
+                     $Object->id.qq{#$histid">} .
+                     loc("Reverse history order") .
+                     qq{</a>} );
 
     # build the new link
     my $alt = loc('Edit');
