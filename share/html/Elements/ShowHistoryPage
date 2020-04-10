@@ -59,6 +59,10 @@ $PathPrefix        => ''
 my $trans_content = {};
 my $trans_attachments = {};
 
+if ( $ARGS{'ReverseTxns'} ) {
+    $Transactions = $Object->SortedTransactions($ARGS{'ReverseTxns'});
+}
+
 for my $content (@{$AttachmentContent->ItemsArrayRef()}) {
     $trans_content->{$content->TransactionId}->{$content->Id} = $content;
 }
