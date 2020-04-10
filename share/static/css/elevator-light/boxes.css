@@ -87,6 +87,13 @@ div.results .titlebox .titlebox-content {
     padding: 0;
 }
 
+div.results .titlebox {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 5px;
+    bottom: -9px;
+}
+
 .titlebox .titlebox-content,
 .titlebox .card-header {
     border: none;
