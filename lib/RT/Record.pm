@@ -1729,13 +1729,24 @@ sub Transactions {
 Returns the result of L</Transactions> ordered per the
 I<OldestTransactionsFirst> preference/option.
 
+Pass an optional value 'ASC' or 'DESC' to force a specific
+order.
+
 =cut
 
 sub SortedTransactions {
     my $self  = shift;
+    my $order = shift || 0;
     my $txns  = $self->Transactions;
-    my $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
-        ? 'ASC' : 'DESC';
+
+    if ( $order && ( $order eq 'ASC' || $order eq 'DESC' ) ) {
+        # Use provided value
+    }
+    else {
+        $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
+            ? 'ASC' : 'DESC';
+    }
+
     $txns->OrderByCols(
         { FIELD => 'Created',   ORDER => $order },
         { FIELD => 'id',        ORDER => $order },

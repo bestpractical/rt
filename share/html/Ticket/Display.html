@@ -93,22 +93,26 @@ my $titleright = qq{
     <& /Ticket/Elements/ScrollShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } else {
     <& /Elements/ShowHistory ,
           Object => $TicketObj,
           Transactions => $transactions,
           ShowHeaders => $ARGS{'ShowHeaders'},
+          ReverseTxns => $ARGS{'ReverseTxns'},
           Attachments => $attachments,
           AttachmentContent => $attachment_content
     &>
@@ -267,7 +271,13 @@ MaybeRedirectForResults(
     Arguments => { id => $TicketObj->id },
 );
 
-my $transactions = $TicketObj->SortedTransactions;
+my $transactions;
+if ( $ARGS{'ReverseTxns'} ) {
+    $transactions = $TicketObj->SortedTransactions($ARGS{'ReverseTxns'});
+}
+else {
+    $transactions = $TicketObj->SortedTransactions;
+}
 my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 
