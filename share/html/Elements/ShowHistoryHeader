@@ -51,6 +51,7 @@ $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
+$SingleTransaction => 0
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -105,10 +106,13 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         }
     }
 
-    push( @elements, qq{<a href="?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} .
-                     $Object->id.qq{#$histid">} .
-                     loc("Reverse History Order") .
-                     qq{</a>} );
+    # Don't need to reverse history when showing a single transaction
+    unless ( $SingleTransaction ) {
+        push( @elements, qq{<a href="?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} .
+                         $Object->id.qq{#$histid">} .
+                         loc("Reverse History Order") .
+                         qq{</a>} );
+    }
 
     # build the new link
     my $alt = loc('Edit');

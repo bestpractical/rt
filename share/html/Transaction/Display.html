@@ -48,7 +48,7 @@
 <& /Elements/Header, Title => loc('Transaction #[_1]', $id) &>
 <& /Elements/Tabs &>
 
-<& /Elements/ShowHistoryHeader, Object => $txn, %ARGS &>
+<& /Elements/ShowHistoryHeader, Object => $txn, SingleTransaction => 1, %ARGS &>
 
 <& /Elements/ShowTransaction, Transaction => $txn,
     DisplayPath     => RT->Config->Get('WebPath') . '/Ticket/Display.html',
