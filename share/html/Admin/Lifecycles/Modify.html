@@ -53,8 +53,11 @@
 <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
 <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
 
-<& /Elements/Submit, Label => loc('Save Changes') &>
-
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+    </div>
+  </div>
 </form>
 <%INIT>
 my ($title, @results);

@@ -45,38 +45,67 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("Admin Lifecycles") &>
+<& /Admin/Elements/Header, Title => loc("Create a lifecycle") &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Create.html" name="CreateLifecycle" method="post" enctype="multipart/form-data">
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Create.html" name="CreateLifecycle" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
 
-<table>
-<tr><td align="right"><&|/l&>Lifecycle Name</&>:</td>
-<td><input name="Name" value="<% $Name %>" /></td>
-</tr>
+<&| /Widgets/TitleBox, class => 'lifecycle-info-basics', content_class => 'mx-auto width-sm' &>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Lifecycle Name</&>:
+    </div>
+    <div class="col-9 value">
+      <input type="text" name="Name" value="<% $Name %>" class="form-control" />
+    </div>
+  </div>
 
-<tr><td align="right"><&|/l&>Type</&>:</td>
-<td><select name="Type">
+  <div class="form-row">
+    <div class="col-3 label"><&|/l&>Type</&>:</div>
+    <div class="col-9 value">
+      <select name="Type" class="form-control selectpicker">
 % for my $type (@types) {
-<option value="<% $type %>" <% $type eq $Type ? "selected=selected" : "" %>><% loc($type) %></option>
+        <option value="<% $type %>" <% $type eq $Type ? "selected=selected" : "" %>><% loc($type) %></option>
 % }
-</select></td></tr>
+      </select>
+    </div>
+  </div>
 
-<tr><td align="right"><&|/l&>Clone Lifecycle</&>:</td><td>
-<label><input type="radio" name="Clone" value="" <% ($Clone//'') eq '' ? "checked=checked" : "" %> /> (none)</label>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Clone Lifecycle</&>:
+    </div>
+    <div class="col-9 value">
+      <ul class="list-group list-group-compact">
+        <li class="list-group-item">
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="Clone-None" name="Clone" value="" <% ($Clone//'') eq '' ? "checked=checked" : "" %> />
+            <label class="custom-control-label" for="Clone-None">(<&|/l&>none</&>)</label><br />
+          </div>
+        </li>
 
 % for my $type (@types) {
-<div class="type" data-type="<% $type %>">
-% for my $lifecycle (@{ $lifecycles{$type} }) {
-<label><input type="radio" name="Clone" value="<% $lifecycle %>" <% ($Clone//'') eq $lifecycle ? "checked=checked" : "" %> /> <% $lifecycle %></label><br>
+%   for my $lifecycle (@{ $lifecycles{$type} }) {
+        <li class="list-group-item type" data-type="<% $type %>">
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="Clone-<%$lifecycle%>" name="Clone" value="<% $lifecycle %>" <% ($Clone//'') eq $lifecycle ? "checked=checked" : "" %> />
+            <label class="custom-control-label" for="Clone-<%$lifecycle%>"><% $lifecycle %></label>
+          </div>
+        </li>
+%   }
 % }
-</div>
-% }
-</td></tr>
-</table>
+      </ul>
+    </div>
+  </div>
 
-<& /Elements/Submit, Name => 'Create', Label => loc('Create') &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'Create', Label => loc('Create') &>
+    </div>
+  </div>
+</&>
+</form>
 
 <script type="text/javascript">
 jQuery(function () {
