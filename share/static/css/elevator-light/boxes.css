@@ -129,6 +129,10 @@ div.results .titlebox .titlebox-content {
 .titlebox.card.ticket-info-cfs, .titlebox.card.asset-info-cfs {
     border-top: 3px solid #D32F2F;
 }
+/* reset to default border for .card-body */
+#comp-Admin-Queues-DefaultValues .titlebox.card.ticket-info-cfs {
+    border-top: 1px solid #dde4eb;
+}
 .titlebox.card.messagedetails {
     border-top: 3px solid #1976D2;
 }
