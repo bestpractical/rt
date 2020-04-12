@@ -775,10 +775,8 @@ sub BuildMainNav {
                 title => loc('Bulk Update'),
                 path => '/Asset/Search/Bulk.html' . $args,
             );
-            $page->child('csv',
-                title => loc('Download Spreadsheet'),
-                path  => '/Search/Results.tsv' . $args,
-            );
+            my $more = $page->child( more => title => loc('Feeds') );
+            $more->child( spreadsheet => title => loc('Spreadsheet'), path => "/Search/Results.tsv$args" );
         }
     } elsif ($request_path =~ m{^/Admin/Global/CustomFields/Catalog-Assets\.html$}) {
         $page->child("create", title => loc("Create New"), path => "/Admin/CustomFields/Modify.html?Create=1;LookupType=" . RT::Asset->CustomFieldLookupType);
