@@ -226,10 +226,10 @@ sub BuildMainNav {
             path  => RT->Config->Get('AssetHideSimpleSearch') ? "/Search/Build.html?Class=RT::Assets&NewQuery=1" : "/Asset/Search/",
         );
         $assets->child( "create", title => loc("Create"), path => "/Asset/CreateInCatalog.html" );
-        $assets->child( "search", title => loc("Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1" );
         if (!RT->Config->Get('AssetHideSimpleSearch')) {
             $assets->child( "simple_search", title => loc("Simple Search"), path => "/Asset/Search/" );
         }
+        $assets->child( "search", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1" );
     }
 
     my $tools = $top->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
