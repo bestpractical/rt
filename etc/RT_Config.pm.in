@@ -3075,13 +3075,18 @@ The format that results of the asset search are displayed with.
 
 # loc('Related tickets')
 Set($AssetDefaultSearchResultFormat, q[
+    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
     '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
-    Description,
-    '__Status__ (__Catalog__)/TITLE:Status',
+    Status,
+    Catalog,
     Owner,
-    HeldBy,
-    Contacts,
     '__ActiveTickets__ __InactiveTickets__/TITLE:Related tickets',
+    '__NEWLINE__',
+    '__NBSP__',
+    '<small>__Description__</small>',
+    '<small>__CreatedRelative__</small>',
+    '<small>__LastUpdatedRelative__</small>',
+    '<small>__Contacts__</small>',
 ]);
 
 =item C<$AssetDefaultSearchResultOrderBy>
@@ -3129,13 +3134,18 @@ something like:
 
 # loc('Related tickets')
 Set($AssetSimpleSearchFormat, q[
+    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
     '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
-    Description,
-    '__Status__ (__Catalog__)/TITLE:Status',
+    Status,
+    Catalog,
     Owner,
-    HeldBy,
-    Contacts,
     '__ActiveTickets__ __InactiveTickets__/TITLE:Related tickets',
+    '__NEWLINE__',
+    '__NBSP__',
+    '<small>__Description__</small>',
+    '<small>__CreatedRelative__</small>',
+    '<small>__LastUpdatedRelative__</small>',
+    '<small>__Contacts__</small>',
 ]);
 
 =item C<$AssetSummaryFormat>
