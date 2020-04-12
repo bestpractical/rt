@@ -99,7 +99,7 @@ my $COLUMN_MAP = {
             my $Asset = shift;
             my $Query = "RefersTo = 'asset:" . $Asset->id . "' AND Status = '__Active__'";
             my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
-            return \'[&nbsp;<a href="',$SearchURL,\'">Active</a>&nbsp;]';
+            return \'<a class="button btn btn-sm btn-primary" href="',$SearchURL,\'">Active</a>';
         }
     },
     InactiveTickets => {
@@ -108,7 +108,7 @@ my $COLUMN_MAP = {
             my $Asset = shift;
             my $Query = "RefersTo = 'asset:" . $Asset->id . "' AND Status = '__Inactive__'";
             my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
-            return \'[&nbsp;<a href="',$SearchURL,\'">Inactive</a>&nbsp;]';
+            return \'<a class="button btn btn-sm btn-primary" href="',$SearchURL,\'">Inactive</a>';
         }
     },
 };
