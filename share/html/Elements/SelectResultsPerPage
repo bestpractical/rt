@@ -58,7 +58,7 @@
 <%INIT>
 my @values = qw(0 10 25 50 100);
 my @labels = (loc('Unlimited'), qw(10 25 50 100));
-$Default = 50 unless defined $Default;
+$Default = 50 unless defined $Default && $Default =~ /^\d+$/;
 </%INIT>
 <%ARGS>
 
