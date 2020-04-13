@@ -589,7 +589,7 @@ sub BuildMainNav {
         }
 
         $current_search_menu->child( edit_search =>
-            title => loc('Edit Search'), path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+            title => loc('Edit Search'), path => "/Search/Build.html$args" );
         $current_search_menu->child( advanced =>
             title => loc('Advanced'),    path => "/Search/Edit.html$args" );
         $current_search_menu->child( custom_date_ranges =>
