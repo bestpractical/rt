@@ -1,0 +1,116 @@
+{
+    "InvalidKey":"Invalid Keys and Data will be silently ignored",
+    "Groups":[
+    {
+        "Name":"Test Group 1",
+        "Description":"This is the first test group",
+        "Members":{"Users":["testuser1","root"]}
+    }
+    ],
+    "Users":[
+    {
+        "Name":"testuser1",
+        "Gecos":"testuser1-gecos",
+        "RealName":"Testuser One",
+        "Password":"password",
+        "EmailAddress":"testuser1@somewhere",
+        "Comments":"the best user ever",
+        "Privileged":1,
+        "Disabled":0
+    }
+    ],
+    "Members":[
+    ],
+    "ACL":[
+    {
+        "Right":"SeeQueue",
+        "Queue":"Test Queue 1",
+        "UserId":"testuser1"
+    }
+    ],
+    "Queues":[
+    {
+        "Name":"Test Queue 1",
+        "Description":"Test Queue One",
+        "CommentAddress":"test-comment@example.com"
+    }
+    ],
+    "Classes":[
+    ],
+    "ScripActions":[
+    {
+        "Name":"Test Action 1",
+        "Description":"Same as Notify Requestors",
+        "ExecModule":"Notify",
+        "Argument":"Requestor"
+    }
+    ],
+    "ScripConditions":[
+    {
+        "Name":"Test Condition 1",
+        "Description":"Same as On Comment",
+        "ExecModule":"AnyTransaction",
+        "ApplicableTransTypes":"Comment"
+    }
+    ],
+    "Templates":[
+    {
+        "Queue":0,
+        "Name":"Test Template 1",
+        "Description":"A Test template",
+        "Content":"Subject: AutoReply: {$Ticket->Subject}\nContent-Type: text/html\n\n<p>Greetings,</p>\n\n<p>This message has been automatically generated in response to the \ncreation of a trouble ticket regarding <b>{$Ticket->Subject()}</b>,\na summary of which appears below.</p>\n\n<p>There is no need to reply to this message right now.  Your ticket has been\nassigned an ID of <b>{$Ticket->SubjectTag}</b>.</p>\n\n<p>Please include the string <b>{$Ticket->SubjectTag}</b>\nin the subject line of all future correspondence about this issue. To do so, \nyou may reply to this message.</p>\n\n<p>Thank you,<br/>\n{$Ticket->QueueObj->CorrespondAddress()}</p>\n\n<hr/>\n{$Transaction->Content(Type => 'text/html')}\n"
+    }
+    ],
+    "CustomFields":[
+    {
+        "Name":"Favorite Color red or blue",
+        "Type":"FreeformSingle",
+        "LookupType":"RT::Queue-RT::Ticket",
+        "ApplyTo":"Test Queue 1",
+        "Pattern":"^(red|blue)$"
+    },
+    {
+        "Name":"Favorite Song",
+        "Type":"SelectSingle",
+        "LookupType":"RT::Queue-RT::Ticket",
+        "RenderType":"Dropdown",
+        "Values":[
+            {"Name":"Never Gonna Give You Up - Rick Astley","Description":"Best Song Ever","SortOrder":1},
+            {"Name":"Nyan Cat","Description":"12 Hours Continuous","SortOrder":2}
+        ]
+    }
+    ],
+    "CustomRoles":[
+    ],
+    "Scrips":[
+    {
+        "Description":"Test Scrip 1",
+        "ScripCondition":"Test Condition 1",
+        "ScripAction":"Test Action 1",
+        "Template":"Test Template 1"
+    }
+    ],
+    "Attributes":[
+    {
+        "Name":"Test Search 1",
+        "Description":"Stalled Tickets Test 1",
+        "Content":{
+            "Query":"Status = 'stalled' AND Queue = 'Test Queue'",
+            "OrderBy":"id",
+            "Order":"DESC"
+        }
+    }
+    ],
+    "Initial":[
+        "sub {die('This Initial block will be skipped and never run')}",
+        "die('This Initial block will be skipped and never run, either')"
+    ],
+    "Final":[
+        "sub {die('This Final block will be skipped and never run')}",
+        "die('This Final block will be skipped and never run, either')"
+    ],
+    "Catalogs":[
+    ],
+    "Assets":[
+    ]
+}

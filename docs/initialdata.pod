@@ -28,11 +28,17 @@ some in your install with:
 
 =head1 What can be in an initialdata file?
 
-initialdata files are Perl, but often consist primarily of a bunch of data
-structures defining the new records you want and not much extra code.  There's
-nothing stopping you from writing a bunch of code, however!
+By default, initialdata files are Perl, but often consist primarily of a
+bunch of data structures defining the new records you want and not
+much extra code.  There's nothing stopping you from writing a bunch of
+code, however!
 
-The basic template of a new initialdata file should look something like this:
+RT's initialdata importer is also pluggable and you can add handlers for
+other formats using the option L<RT_Config/InitialdataFormatHandlers>.
+Starting in RT 5.0, RT supports JSON in addition to Perl. See below for
+details.
+
+The basic template of a new Perl initialdata file should look something like this:
 
     use strict;
     use warnings;
@@ -526,3 +532,82 @@ is to start reading the code there.
 RT takes care of the ordering so that your new queues are created before it
 processes the new ACLs for those queues.  This lets you refer to new queues you
 just created by Name.
+
+=head1 JSON initialdata
+
+To configure RT to load JSON-formatted initialdata, add this option:
+
+    Set( $InitialdataFormatHandlers,
+         [
+            'perl',
+            'RT::Initialdata::JSON',
+         ]
+       );
+
+There is a direct one-to-one mapping between the Perl initialdata structures and
+the JSON file data structures, with the exception of how the top-level elements
+are composed. In the Perl file, each array is named separately, like this:
+
+    @Queues = ( {...}, {...} );
+    @Scrips = ( {...}, {...} );
+
+To represent this in JSON, the root-level element is a JSON object--a key/value
+structure that is analogous to a perl hash. The key is the name of the array
+you would normally type as C<@Queues>, and the value is a JSON array:
+
+    {
+        "Queues":[ {...}, {...} ],
+        "Scrips":[ {...}, {...} ]
+    }
+
+You can find details on JSON formatting rules at L<http://json.org>.
+
+=head2 Example JSON File
+
+There is a JSON file with examples in the RT test files here:
+
+    F<t/data/initialdata/initialdata.json>
+
+=head2 Limitations
+
+The JSON initialdata format cannot support the full functionality of the perl
+format, as the perl format allows executable code. Specifically, these elements
+cannot be used, and if present, will be ignored:
+
+=over 4
+
+=item C<@Initial>
+
+No C<Initial> elements will be used.
+
+=item C<@Final>
+
+No C<Final> elements will be used.
+
+=item C<@Attributes>
+
+You can use an C<Attributes> element with some restrictions, but you cannot
+specify an C<Object> key inside it.  The only valid way to pass a value to the
+C<Object> key is via a perl object, and without executable code this is
+currently impossible.
+
+There are two valid ways you that you can specify attributes:
+
+=over 4
+
+=item System-Wide Attributes
+
+C<Attribute> elements without the C<Object> key in them are valid, and
+will pply system-wide as described in the RT documentation.
+
+=item As Children of Other Elements
+
+You can supply C<Attribute> elements as children of other objects in
+the JSON initialdata file, such as C<Users>. This sets the parent of the
+C<Attribte> as the C<Object> for the C<Attribute>.
+
+=back
+
+=back
+
+=cut
