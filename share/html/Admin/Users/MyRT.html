@@ -49,17 +49,18 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@actions &>
 
-<form method="post" class="mx-auto max-width-lg" action="<% RT->Config->Get('WebPath')  %> /Helpers/UpdateDashboard" data-dashboard_id = "MyRT" data-user_id = '<% $id %>'>
+<form method="post" action="MyRT.html?id=<% $id %>" name="UpdateSearches" class="mx-auto max-width-lg">
   <& /Widgets/SearchSelection,
                     pane_name => \%pane_name,
                     sections  => \@sections,
                     selected  => \%selected,
                     filters   => \@filters,
     &>
-<input type="hidden" name="id" value="<% $id %>"/>
+<input type="hidden" name="dashboard_id" value="MyRT">
+<input type="hidden" name="user_id" value=<% $id %>>
 <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
 </form>
-<form method="post" action="MyRT.html?id=<% $id %>">
+<form method="post" action="MyRT.html?id=<% $id %>" class="mx-auto max-width-lg">
   <input type="hidden" name="Reset" value="1" />
   <& /Elements/Submit, Label => loc('Reset to default') &>
 </form>
@@ -103,8 +104,9 @@ my @objs = ($sys);
 push @objs, RT::SavedSearch->new ($session{'CurrentUser'})->ObjectsForLoading
     if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
                                           Object => $RT::System );
+
+my @items;
 for my $object (@objs) {
-     my @items;
      my $object_id = ref($object) . '-' . $object->Id;
      $object_id = 'system' if $object eq $sys;
 
@@ -175,6 +177,17 @@ $m->callback(
     selected     => \%selected,
     filters      => \@filters,
 );
+
+if ( $ARGS{UpdateSearches} ) {
+    my ($ok, $msg) = UpdateDashboard( \%ARGS, \%item_for );
+    push @actions, $ok ? loc('Preferences saved for user [_1].', $UserObj->Name) : $msg;
+
+    MaybeRedirectForResults(
+        Actions   => \@actions,
+        Path      => "/Admin/Users/MyRT.html",
+        Arguments => { id => $id },
+    );
+}
 
 </%INIT>
 <%ARGS>

@@ -152,52 +152,19 @@ jQuery(function() {
         });
         refreshSource();
 
-        submit.click(function (e) {
-            e.preventDefault();
-
-            var url = form.attr('action');
-            var method = form.attr('method');
-            var params = form.data();
-
-            params.panes = {}
+        submit.click(function () {
             container.find('.destination').each(function () {
                 var pane = jQuery(this);
                 var name = pane.data('pane');
-                var items = [];
+
                 pane.find('li').each(function () {
                     var item = jQuery(this).data();
                     delete item.sortableItem;
-                    items.push(item);
+                    form.append('<input type="hidden" name="' + name + '" value="' + item.type + '-' + item.name + '" />');
                 });
-                params.panes[name] = items;
             });
 
-            jQuery.ajax({
-                url: url,
-                method: method,
-                data: { content: JSON.stringify(params) },
-                timeout: 30000, /* 30 seconds */
-                success: function (response) {
-                    if (response.ok) {
-                        // Force redirect back to the current page on submit.
-                        // If the user submits a post to "reset to default", then immediately
-                        // a post to save new changes, the JS was instructing the browser to
-                        // reload which then submitted the reset post again.
-
-                        // Instead of reload, the JS now redirects back to the current page
-                        // to clear out the previous post "state" so not to immediately reset
-                        // the new changes.
-                        var current_location = window.location;
-                        window.location.replace( current_location );
-                    }
-                    else {
-                        alert(response.msg);
-                    }
-                },
-                error: function (xhr, reason) {
-                    alert(reason);
-                }
-            });
+            return true;
         });
     });
 });
