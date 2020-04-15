@@ -718,7 +718,7 @@ sub BuildMainNav {
 
     if ( $request_path =~ m{^/Admin/Tools/(Configuration|EditConfig|ConfigHistory)} ) {
         $page->child( display => title => loc('View'), path => "/Admin/Tools/Configuration.html" );
-        $page->child( modify => title => loc('Edit'), path => "/Admin/Tools/EditConfig.html" );
+        $page->child( modify => title => loc('Edit'), path => "/Admin/Tools/EditConfig.html" ) if RT->Config->Get('ShowEditSystemConfig');
         $page->child( history => title => loc('History'), path => "/Admin/Tools/ConfigHistory.html" );
     }
 

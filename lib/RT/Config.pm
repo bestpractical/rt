@@ -1551,6 +1551,10 @@ our %META;
     ShowBccHeader => {
         Widget => '/Widgets/Form/Boolean',
     },
+    ShowEditSystemConfig => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
+    },
     ShowMoreAboutPrivilegedUsers => {
         Widget => '/Widgets/Form/Boolean',
     },

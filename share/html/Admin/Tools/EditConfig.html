@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+Abort( loc( 'Permission Denied' ) ) unless RT->Config->Get('ShowEditSystemConfig');
+
 my $title = loc('System Configuration');
 unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
  Abort(loc('This feature is only available to system administrators'));

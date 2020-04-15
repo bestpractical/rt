@@ -3598,6 +3598,18 @@ Set(%AdminSearchResultRows,
     Assets       => 50,
 );
 
+=item C<$ShowEditSystemConfig>
+
+Starting in RT 5.0, SuperUsers can edit RT system configuration via the web UI.
+Options set in the web UI take precedence over those set in configuration files.
+
+If you prefer to set configuration only via files, set C<$ShowEditSystemConfig>
+to 0 to disable the web UI editing interface.
+
+=cut
+
+Set($ShowEditSystemConfig, 1);
+
 =back
 
 
