@@ -160,4 +160,41 @@ have RT use C<cpanm> to install modules:
 
 Then run C<make fixdeps> and let RT install all of its dependencies.
 
+=head2 Permission Problems with Installed Perl Modules
+
+After running C<make fixdeps> using one of the configurations above, you might see
+errors like this when starting Apache and trying to access RT:
+
+    Can't locate UNIVERSAL/require.pm in @INC (@INC contains: /opt/rt4/sbin/../local/lib
+    /opt/rt4/sbin/../lib /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl
+    /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at
+    /opt/rt4/sbin/../lib/RT.pm line 60.
+    BEGIN failed--compilation aborted at /opt/rt4/sbin/../lib/RT.pm line 60.
+
+The reported module might be different depending on how the modules were installed.
+
+If you look for the module as a privileged user with a command like
+C<perldoc UNIVERSAL::require> the module will be found and in one
+of the paths reported in C<@INC>. So why can't it be located?
+
+One possible cause for this issue is the default umask on the system. Some Linux
+security hardening guides recommend changing the default umask from a default like
+C<0002> to a more restrictive value like C<0007>. One result of this is that all
+of the installed modules will have incorrect permissions for C<everyone>.
+
+Assuming the umask can't be changed, one fix is to update the permissions on the
+directories where the perl modules were installed. The following works on RHEL 7,
+update the paths for other perl module locations:
+
+    # Fix permissions on /usr/local/share/perl5 recursively
+    > find /usr/local/share/perl5 -type d -exec chmod o+rx {} \;
+
+    # Same for /usr/local/lib64/perl5
+    > find /usr/local/lib64/perl5 -type d -exec chmod o+rx {} \;
+
+You might experience the same issue when installing extensions.
+
+    # Fix same issue on RT local directories if needed
+    > find /opt/rt4/local -type d -exec chmod o+rx {} \;
+
 =cut
