@@ -1495,9 +1495,13 @@ Set the C<$InitialdataFormatHandlers> to an arrayref containing a list of
 format handler modules. The 'perl' entry is the system default, and handles
 perl-style intialdata files.
 
+The JSON format handler is also available in RT, but it is not loaded by
+default. Add it to your configuration as shown below to enable it.
+
     Set( $InitialdataFormatHandlers,
          [
             'perl',
+            'RT::Initialdata::JSON',
             'RT::Extension::Initialdata::Foo',
             ...
          [
