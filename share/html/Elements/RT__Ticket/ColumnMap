@@ -332,6 +332,54 @@ $COLUMN_MAP = {
             return \($m->scomp("/Ticket/Elements/PopupTimerLink", id => $_[0]->id ) );
         },
     },
+    CustomRoleAttribute => {
+        title     => sub { return pop @_ },
+        attribute => sub { return shift @_ },
+        value     => sub {
+            my $object    = shift;
+            my $role_attr = pop;
+
+            my ($role_name, $attribute) = $role_attr =~ qr/^([^.]+)\.(.+)$/;
+
+            my $role = RT::CustomRole->new (RT->SystemUser );
+            my ($ret, $msg) = $role->Load( $role_name );
+            unless ( $ret ) {
+                RT->Logger->error( "Could not load custom role '$role_name' : $msg" );
+                return;
+            }
+
+            my $group = RT::Group->new( $session{'CurrentUser'} );
+            ($ret, $msg) = $group->LoadRoleGroup( Name => $role->GroupType, Object => $object );
+            return unless $ret;
+
+            my $users = $group->UserMembersObj( Recursively => 0 );
+
+            my @temp;
+            while ( my $user = $users->Next ) {
+                next unless $user->Id;
+
+                my $identifier = $user->EmailAddress ? $user->EmailAddress : $user->Name;
+
+                if ( $attribute =~ /CustomField/ ) {
+                    my ($custom_field) = $attribute =~ /^CustomField\.\{(.+)\}$/;
+                    my $value = $user->FirstCustomFieldValue( $custom_field ) || '';
+
+                    push @temp, $value;
+                }
+                else {
+                    if ( $user->_Accessible( $attribute, 'read' ) ) {
+                        push @temp, $user->$attribute;
+                    }
+                    else {
+                        RT::Logger->error( "Cannot call $attribute on RT::User record" );
+                    }
+                }
+            }
+            my $out = join(', ', @temp) || '';
+
+            return $out;
+        },
+    }
 };
 </%ONCE>
 <%init>

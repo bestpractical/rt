@@ -3902,6 +3902,8 @@ sub _UploadedFile {
 sub GetColumnMapEntry {
     my %args = ( Map => {}, Name => '', Attribute => undef, @_ );
 
+    my $custom_role = RT::CustomRole->new( RT->SystemUser );
+
     # deal with the simplest thing first
     if ( $args{'Map'}{ $args{'Name'} } ) {
         return $args{'Map'}{ $args{'Name'} }{ $args{'Attribute'} };
@@ -3910,6 +3912,13 @@ sub GetColumnMapEntry {
     # complex things
     elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.(.+)$/ ) {
         $subkey =~ s/^\{(.*)\}$/$1/;
+
+        # If we are grabbing a custom role attribute
+        unless ( $custom_role->ValidateName( $mainkey ) ) {
+            $mainkey = "CustomRoleAttribute";
+            $subkey  = $args{'Name'};
+        }
+
         return undef unless $args{'Map'}->{$mainkey};
         return $args{'Map'}{$mainkey}{ $args{'Attribute'} }
             unless ref $args{'Map'}{$mainkey}{ $args{'Attribute'} } eq 'CODE';

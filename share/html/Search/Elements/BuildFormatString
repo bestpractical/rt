@@ -128,8 +128,32 @@ foreach my $id (keys %queues) {
     next unless $queue->Id;
     $CustomRoles->LimitToObjectId($queue->Id);
 }
-while ( my $Role = $CustomRoles->Next ) {
-    push @fields, "CustomRole.{" . $Role->Name . "}";
+
+my @user_fields = qw/id Name EmailAddress Organization RealName City Country/;
+my $user_cfs    = RT::CustomFields->new( $session{CurrentUser} );
+$user_cfs->Limit( FIELD => 'LookupType', VALUE => RT::User->CustomFieldLookupType );
+while ( my $user_cf = $user_cfs->Next ) {
+    push @user_fields, join '.', 'CustomField', '{' . $user_cf->Name . '}';
+}
+
+# Add all available CustomRoles to the list of sortable columns.
+while ( my $role = $CustomRoles->Next ) {
+
+    # Add all available CustomRoles to the list of sortable columns.
+    for my $user_field (@user_fields) {
+        push @fields, join '.', $role->Name, $user_field;
+    }
+
+    for my $user_field (@user_fields) {
+        push @fields, join '.', $role->Name, $user_field;
+    }
+}
+
+for my $watcher (qw/Owner Requestor Cc AdminCc/) {
+    for my $user_field (@user_fields) {
+        my $field = join '.', $watcher, $user_field;
+        push @fields, $field;
+    }
 }
 
 $m->callback( Fields => \@fields, ARGSRef => \%ARGS );

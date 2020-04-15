@@ -1378,6 +1378,8 @@ sub OrderByCols {
     my @res   = ();
     my $order = 0;
 
+    my $custom_role = RT::CustomRole->new( RT->SystemUser );
+
     foreach my $row (@args) {
         if ( $row->{ALIAS} ) {
             push @res, $row;
@@ -1417,14 +1419,22 @@ sub OrderByCols {
         }
 
         my ( $field, $subkey ) = split /\./, $row->{FIELD}, 2;
+
+        my $is_custom_role = !$custom_role->ValidateName( $field );
+
         my $meta = $FIELD_METADATA{$field};
-        if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
+        if ( $is_custom_role || defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
             my $type = $meta->[1] || '';
             my $class = $meta->[2] || 'Ticket';
             my $column = $subkey;
 
             if ($field eq 'CustomRole') {
                 my ($role, $col, $original_name) = $self->_CustomRoleDecipher( $column );
+                $column = $col || 'id';
+                $type = $role ? $role->GroupType : $original_name;
+            }
+            elsif ( $is_custom_role ) {
+                my ($role, $col, $original_name) = $self->_CustomRoleDecipher( "\{$field\}\.$column" );
                 $column = $col || 'id';
                 $type = $role ? $role->GroupType : $original_name;
             }
