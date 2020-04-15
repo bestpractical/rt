@@ -92,57 +92,6 @@ sub BuildMainNav {
     }
 
     my $home = $top->child( home => title => loc('Homepage'), path => '/' );
-    unless ($HTML::Mason::Commands::session{'dashboards_in_menu'}) {
-        my $dashboards_in_menu = $current_user->UserObj->Preferences(
-            'DashboardsInMenu',
-            {},
-        );
-
-        unless ($dashboards_in_menu->{dashboards}) {
-            my ($default_dashboards) =
-                RT::System->new( $current_user )
-                    ->Attributes
-                    ->Named('DashboardsInMenu');
-            if ($default_dashboards) {
-                $dashboards_in_menu = $default_dashboards->Content;
-            }
-        }
-
-        $HTML::Mason::Commands::session{'dashboards_in_menu'} = $dashboards_in_menu->{dashboards} || [];
-    }
-
-    my @dashboards;
-    for my $id ( @{$HTML::Mason::Commands::session{'dashboards_in_menu'}} ) {
-        my $dash = RT::Dashboard->new( $current_user );
-        my ( $status, $msg ) = $dash->LoadById($id);
-        if ( $status ) {
-            push @dashboards, $dash;
-        } else {
-            $RT::Logger->debug( "Failed to load dashboard $id: $msg, removing from menu" );
-            $home->RemoveDashboardMenuItem(
-                DashboardId => $id,
-                CurrentUser => $HTML::Mason::Commands::session{CurrentUser}->UserObj,
-            );
-            @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} } =
-              grep { $_ != $id } @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} };
-        }
-    }
-
-    my $dashes = $top->child('home');
-    if (@dashboards) {
-        for my $dash (@dashboards) {
-            $home->child( 'dashboard-' . $dash->id,
-                title => $dash->Name,
-                path  => '/Dashboards/' . $dash->id . '/' . $dash->Name
-            );
-        }
-    }
-    $dashes->child( edit => title => loc('Update This Menu'), path => 'Prefs/DashboardsInMenu.html' );
-    $dashes->child( more => title => loc('All Dashboards'),   path => 'Dashboards/index.html' );
-    my $dashboard = RT::Dashboard->new( $current_user );
-    if ( $dashboard->CurrentUserCanCreateAny ) {
-        $dashes->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
-    }
 
     my $search = $top->child( search => title => loc('Search'), path => '/Search/Simple.html' );
 
@@ -185,6 +134,52 @@ sub BuildMainNav {
         description => loc('Reports summarizing ticket resolution and status'),
         path        => loc('/Reports'),
     );
+
+    unless ($HTML::Mason::Commands::session{'dashboards_in_menu'}) {
+        my $dashboards_in_menu = $current_user->UserObj->Preferences(
+            'DashboardsInMenu',
+            {},
+        );
+
+        unless ($dashboards_in_menu->{dashboards}) {
+            my ($default_dashboards) =
+                RT::System->new( $current_user )
+                    ->Attributes
+                    ->Named('DashboardsInMenu');
+            if ($default_dashboards) {
+                $dashboards_in_menu = $default_dashboards->Content;
+            }
+        }
+
+        $HTML::Mason::Commands::session{'dashboards_in_menu'} = $dashboards_in_menu->{dashboards} || [];
+    }
+
+    my @dashboards;
+    for my $id ( @{$HTML::Mason::Commands::session{'dashboards_in_menu'}} ) {
+        my $dash = RT::Dashboard->new( $current_user );
+        my ( $status, $msg ) = $dash->LoadById($id);
+        if ( $status ) {
+            push @dashboards, $dash;
+        } else {
+            $RT::Logger->debug( "Failed to load dashboard $id: $msg, removing from menu" );
+            $home->RemoveDashboardMenuItem(
+                DashboardId => $id,
+                CurrentUser => $HTML::Mason::Commands::session{CurrentUser}->UserObj,
+            );
+            @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} } =
+              grep { $_ != $id } @{ $HTML::Mason::Commands::session{'dashboards_in_menu'} };
+        }
+    }
+
+    if (@dashboards) {
+        for my $dash (@dashboards) {
+            $reports->child( 'dashboard-' . $dash->id,
+                title => $dash->Name,
+                path  => '/Dashboards/' . $dash->id . '/' . $dash->Name
+            );
+        }
+    }
+
     $reports->child( resolvedbyowner =>
         title       => loc('Resolved by owner'),
         path        => '/Reports/ResolvedByOwner.html',
@@ -200,6 +195,14 @@ sub BuildMainNav {
         path        => '/Reports/CreatedByDates.html',
         description => loc('Examine tickets created in a queue between two dates'),
     );
+
+    $reports->child( edit => title => loc('Update This Menu'), path => '/Prefs/DashboardsInMenu.html' );
+    $reports->child( more => title => loc('All Dashboards'),   path => '/Dashboards/index.html' );
+    my $dashboard = RT::Dashboard->new( $current_user );
+    if ( $dashboard->CurrentUserCanCreateAny ) {
+        $reports->child('dashboard_create' => title => loc('New Dashboard'), path => "/Dashboards/Modify.html?Create=1" );
+    }
+
 
     if ($current_user->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
         my $articles = $top->child( articles => title => loc('Articles'), path => "/Articles/index.html");
