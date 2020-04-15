@@ -4,9 +4,20 @@ use warnings;
 use Test::Deep;
 use Data::Dumper ();
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set($ShowEditSystemConfig, 0);';
 
 my ( $url, $m ) = RT::Test->started_ok;
+ok( $m->login(), 'logged in' );
+
+$m->follow_link_ok( { text => 'System Configuration' }, 'followed link to "System Configuration"' );
+ok( !$m->find_link( text => 'Edit' ), 'no edit link' );
+$m->get_ok('/Admin/Tools/EditConfig.html');
+$m->content_contains('Permission Denied');
+
+RT::Test->stop_server;
+RT->Config->Set( ShowEditSystemConfig => 1 );
+
+( $url, $m ) = RT::Test->started_ok;
 ok( $m->login(), 'logged in' );
 
 $m->follow_link_ok( { text => 'System Configuration' }, 'followed link to "System Configuration"' );
