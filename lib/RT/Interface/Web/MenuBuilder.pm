@@ -189,21 +189,37 @@ sub BuildMainNav {
         }
     }
 
-    $reports->child( resolvedbyowner =>
-        title       => loc('Resolved by owner'),
-        path        => '/Reports/ResolvedByOwner.html',
-        description => loc('Examine tickets resolved in a queue, grouped by owner'),
-    );
-    $reports->child( resolvedindaterange =>
-        title       => loc('Resolved in date range'),
-        path        => '/Reports/ResolvedByDates.html',
-        description => loc('Examine tickets resolved in a queue between two dates'),
-    );
-    $reports->child( createdindaterange =>
-        title       => loc('Created in a date range'),
-        path        => '/Reports/CreatedByDates.html',
-        description => loc('Examine tickets created in a queue between two dates'),
-    );
+    # Get the list of reports in the Reports menu
+    unless (   $HTML::Mason::Commands::session{'reports_in_menu'}
+            && ref( $HTML::Mason::Commands::session{'reports_in_menu'}) eq 'ARRAY'
+            && @{$HTML::Mason::Commands::session{'reports_in_menu'}}
+           ) {
+        my $reports_in_menu = $current_user->UserObj->Preferences(
+            'ReportsInMenu',
+            {},
+        );
+        unless ( $reports_in_menu && ref $reports_in_menu eq 'ARRAY' ) {
+            my ($default_reports) =
+                RT::System->new( RT->SystemUser )
+                    ->Attributes
+                    ->Named('ReportsInMenu');
+            if ($default_reports) {
+                $reports_in_menu = $default_reports->Content;
+            }
+            else {
+                $reports_in_menu = [];
+            }
+        }
+
+        $HTML::Mason::Commands::session{'reports_in_menu'} = $reports_in_menu || [];
+    }
+
+    for my $report ( @{$HTML::Mason::Commands::session{'reports_in_menu'}} ) {
+        $reports->child(  $report->{id} =>
+            title       => $report->{title},
+            path        => $report->{path},
+        );
+    }
 
     $reports->child( edit => title => loc('Update This Menu'), path => '/Prefs/DashboardsInMenu.html' );
     $reports->child( more => title => loc('All Dashboards'),   path => '/Dashboards/index.html' );
