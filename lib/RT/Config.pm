@@ -1203,9 +1203,16 @@ our %META;
                 return;
             }
 
+            my $all_cdr = $config->AllCustomDateRanges( 2 ); # 2 means that _all_ definitions are loaded
+
             for my $class (keys %$ranges) {
                 if (ref($ranges->{$class}) eq 'HASH') {
                     for my $name (keys %{ $ranges->{$class} }) {
+                        my $existing_def = $all_cdr->{$class}{$name};
+                        if( $existing_def && $existing_def ne 'config files' ) {
+                            RT->Logger->warning("Custom Date Range $name (for $class) defined both in config files and in $existing_def");
+                            next;
+                        }
                         my $spec = $ranges->{$class}{$name};
                         if (!ref($spec) || ref($spec) eq 'HASH') {
                             # this will produce error messages if parsing fails
