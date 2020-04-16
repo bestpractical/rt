@@ -49,13 +49,21 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Modify.html" name="ModifyLifecycle" method="post" enctype="multipart/form-data">
-<input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
-<input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/d3.min.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui-model.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui-editor.js"></script>
 
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Modify.html" name="ModifyLifecycle" method="post" enctype="multipart/form-data" class="mx-auto max-width-xl">
+  <input type="hidden" class="hidden" name="Name" value="<% $Name %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $Type %>" />
+  <input type="hidden" class="hidden" name="Update" value="1" />
+  <input type="hidden" class="hidden" name="Config" />
+  <input type="hidden" class="hidden" name="Layout" />
+
+  <& /Elements/Lifecycle/Graph, Name => $Name, Config => $Config, Layout => $Layout &>
   <div class="form-row">
     <div class="col-12">
-      <& /Elements/Submit, Label => loc('Save Changes') &>
+      <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
     </div>
   </div>
 </form>
@@ -63,29 +71,72 @@
 my ($title, @results);
 my $LifecycleObj = RT::Lifecycle->new();
 $LifecycleObj->Load(Name => $Name, Type => $Type);
-
-Abort("Invalid lifecycle") unless $LifecycleObj->Name
-                               && $LifecycleObj->{data}{type} eq $Type;
+Abort( loc("Invalid lifecycle") ) unless $LifecycleObj->Name && $LifecycleObj->{data}{type} eq $Type;
 
 $title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
 
-if ($Config) {
-    my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
+if ( $Update ) {
+    my ( $ok, $msg ) = RT::Lifecycle->UpdateLifecycleLayout(
         CurrentUser  => $session{CurrentUser},
         LifecycleObj => $LifecycleObj,
-        NewConfig    => JSON::from_json($Config),
+        NewLayout    => $Layout ? JSON::from_json($Layout) : undef,
     );
-    push @results, $msg;
+
+
+    if ( $ok ) {
+        push @results, loc('Lifecycle layout updated');
+    }
+    elsif ($msg
+        && $msg ne loc('That is already the current value')
+        && $msg ne loc( '[_1] update: Nothing changed', "LifecycleLayout-$Name" ) )
+    {
+        # This is just svg layout change, no need to notify user if nothing changed.
+        push @results, $msg;
+    }
+
+    my $lifecycle = JSON::from_json($Config);
+    $lifecycle->{type} = $Type;
+
+    my ( $valid, @warnings )
+        = $LifecycleObj->ValidateLifecycle( Lifecycle => $lifecycle, CurrentUser => $session{CurrentUser} );
+
+    if ($valid) {
+        my ( $ok, $msg ) = RT::Lifecycle->UpdateLifecycle(
+            CurrentUser  => $session{CurrentUser},
+            LifecycleObj => $LifecycleObj,
+            NewConfig    => $lifecycle,
+        );
+        if ($ok) {
+            push @results, loc('Lifecycle updated');
+        }
+        else {
+            push @results, $msg;
+        }
+    }
+    else {
+        push @results, @warnings;
+    }
+}
+else {
+    $Config ||= JSON( RT->Config->Get('Lifecycles')->{$Name} );
+
+    unless ($Layout) {
+        my $conf = RT::Configuration->new( $session{CurrentUser} );
+        $conf->LoadByCols( 'Name' => "LifecycleLayout-$Name", Disabled => 0 );
+        $Layout = $conf->Id ? JSON( $conf->_DeserializeContent( $conf->Content ) ) : '';
+    }
 }
 
 # This code does automatic redirection if any updates happen.
 MaybeRedirectForResults(
     Actions   => \@results,
-    Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
+    Arguments => { Name => $Name, Type => $Type, Config => $Config },
 );
 </%INIT>
 <%ARGS>
-$Name => undef
-$Type => undef
+$Name   => undef
+$Type   => undef
 $Config => undef
+$Layout => undef
+$Update => undef
 </%ARGS>

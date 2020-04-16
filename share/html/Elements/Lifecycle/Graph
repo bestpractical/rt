@@ -1,0 +1,127 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<div class="lifecycle-ui" id="lifecycle-<% $id %>">
+  <div id="lifeycycle-ui-edit-node" class="lifeycycle-ui-edit-node collapse card card-body">
+    <input type="hidden" name="id" />
+    <div class="alert alert-warning invalid-name hidden"><&|/l&>Invalid name</&></div>
+    <div class="form-row">
+      <div class="col-3 label">
+        <label for="name"><&|/l&>Name</&>:</label>
+      </div>
+      <div class="col-9 value">
+        <input class="form-control" type="text" id="name" name="name" value="" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="col-3 label">
+        <label for="type"><&|/l&>Type</&>:</label>
+      </div>
+      <div class="col-9 value">
+        <select class="selectpicker form-control" id="type" name="type">
+          <option value="initial"><&|/l&>Initial</&></option>
+          <option value="active"><&|/l&>Active</&></option>
+          <option value="inactive"><&|/l&>Inactive</&></option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-12 text-right">
+        <button class="btn btn-light" id="CancelNode"><&|/l&>Cancel</&></button>
+        <button class="button btn btn-primary form-control" id="SaveNode"><&|/l&>Save</&></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-12">
+      <svg></svg>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    jQuery(function () {
+        new RT.NewLifecycleEditor( document.getElementById('lifecycle-<% $id %>'), <% $Config |n %> <% $Layout ? ", $Layout" : () |n %> );
+    });
+  </script>
+  <div class="row">
+    <div class="col-auto">
+      <span class="current-value form-control">
+        <div class="custom-control custom-checkbox">
+          <input class="custom-control-input" type="checkbox" id="enableSimulation" name="enableSimulation" />
+          <label class="custom-control-label" for="enableSimulation"><&|/l&>Auto Layout</&>
+            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Auto layout automatically calculates node positions</&>"></span>
+          </label>
+        </div>
+      </span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-auto">
+      <p>
+        <&|/l&>Click in the open space to <strong>add a node</strong>.<br>
+To <strong>delete</strong> a node click on the node to select it and press the 'd' key.<br>
+Drag from one node to another while holding <strong>control</strong> to <strong>add an edge</strong>.<br>
+Drag a node to <strong>move the graph layout</strong>.<br>
+Click a nodes text to <strong>edit attributes</strong> of the node.<br>
+<strong>Click an edge</strong> to interact with it.<br>
+To disable the simulation and drag nodes to a location without force acting on them click the "Auto Layout" checkbox.</&>
+      </p>
+    </div>
+  </div>
+</div>
+
+<%INIT>
+my $id = $Name . '-' . int(rand(2**31));
+</%INIT>
+
+<%ARGS>
+$Config
+$Name
+$Layout => ''
+</%ARGS>

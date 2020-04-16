@@ -1083,4 +1083,50 @@ sub ValidateLifecycleMaps {
     return @warnings ? ( 0, uniq @warnings ) : 1;
 }
 
+=head2 UpdateLifecycleLayout( CurrentUser => undef, LifecycleObj => undef, NewLayout => undef )
+
+Update lifecycle's web admin layout.
+
+Returns (STATUS, MESSAGE). STATUS is true if succeeded, otherwise false.
+
+=cut
+
+sub UpdateLifecycleLayout {
+    my $class = shift;
+    my %args  = (
+        CurrentUser  => undef,
+        LifecycleObj => undef,
+        NewLayout    => undef,
+        @_,
+    );
+
+    my $name = $args{LifecycleObj}->Name;
+
+    my $setting = RT::Configuration->new( $args{CurrentUser} );
+    $setting->LoadByCols( Name => "LifecycleLayout-$name", Disabled => 0 );
+
+    if ( $setting->Id ) {
+        my ( $ok, $msg );
+        if ( $args{NewLayout} ) {
+            ( $ok, $msg ) = $setting->SetContent( $args{NewLayout} );
+        }
+        else {
+            ( $ok, $msg ) = $setting->SetDisabled(1);
+        }
+        return ( $ok, $msg ) if !$ok;
+    }
+    elsif ( $args{NewLayout} ) {
+        my ( $ok, $msg ) = $setting->Create(
+            Name    => "LifecycleLayout-$name",
+            Content => $args{NewLayout},
+        );
+        return ( $ok, $msg ) if !$ok;
+    }
+    else {
+        return ( 0, $args{CurrentUser}->loc('That is already the current value') );
+    }
+
+    return 1;
+}
+
 1;
