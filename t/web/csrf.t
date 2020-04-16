@@ -220,6 +220,5 @@ $m->content_lacks("Possible cross-site request forgery");
 is($m->response->redirects, 0, "no redirection");
 like($m->response->request->uri, qr{^http://[^/]+\Q/SelfService/Create.html\E\?CSRF_Token=\w+$});
 $m->title_is('Create a ticket in #1');
-$m->content_contains('Describe the issue below:');
 
 done_testing;

@@ -61,10 +61,10 @@
 
 <div>
     <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-md-2">
             <&|/l&>Status</&>
         </div>
-        <div class="value col-md-9">
+        <div class="value col-md-8">
             <& /Ticket/Elements/SelectStatus,
                Name => "Status",
                TicketObj => $Ticket,
@@ -72,31 +72,37 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="label col-md-3">
+        <div class="form-group label col-md-2">
             <&|/l&>Subject</&>
         </div>
-        <div class="value col-md-9">
+        <div class="form-group value col-md-8">
             <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $Ticket->Subject || '' %>" />
         </div>
 
     </div>
-    <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
     <& /Elements/EditCustomFields, Object => $Ticket &>
 </div>
+<div class="form-group">
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
 % delete $ARGS{'QuoteTransaction'};
-<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
+<& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS &>
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
 % my $IncludeSignature = 1;
 <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
-    <br />
+</div>
+<div class="form-group">
+  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
+</div>
 
-
+<div class="form-row">
+  <div class="col-md-12">
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+  </div>
+</div>
 
   </&>
   </form>
