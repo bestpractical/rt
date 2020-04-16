@@ -98,11 +98,13 @@
     InTable         => 1,
     ForCreation     => 1,
     &>
-<& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $queue_obj &>
 </div>
-<&|/l&>Describe the issue below</&>:<br />
-<& /Elements/MessageBox, Default => $ARGS{Content} || ''  &>
-
+<div class="form-group">
+  <& /Elements/MessageBox, Default => $ARGS{Content} || ''  &>
+</div>
+<div class="form-group">
+  <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $queue_obj &>
+</div>
 <div class="form-row">
   <div class="col-md-12">
     <& /Elements/Submit, Label => loc("Create ticket")&>

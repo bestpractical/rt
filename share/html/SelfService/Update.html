@@ -80,9 +80,9 @@
         </div>
 
     </div>
-    <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
     <& /Elements/EditCustomFields, Object => $Ticket &>
 </div>
+<div class="form-group">
 % if (exists $ARGS{UpdateContent}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
@@ -93,10 +93,16 @@
 % my $IncludeSignature = 1;
 <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
-    <br />
+</div>
+<div class="form-group">
+  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
+</div>
 
-
+<div class="form-row">
+  <div class="col-md-12">
 <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+  </div>
+</div>
 
   </&>
   </form>
