@@ -1376,6 +1376,14 @@ sub _BuildAdminMenu {
 
     if ( $request_path =~ m{^/Admin/Lifecycles} ) {
         if (defined($HTML::Mason::Commands::DECODED_ARGS->{'Name'}) && defined($HTML::Mason::Commands::DECODED_ARGS->{'Type'}) ) {
+            my $lifecycles = $page->child( 'lifecycles' =>
+                title       => loc('Lifecycles'),
+                description => loc('Manage lifecycles'),
+                path        => '/Admin/Lifecycles/',
+            );
+            $lifecycles->child( select => title => loc('Select'), path => "/Admin/Lifecycles/" );
+            $lifecycles->child( create => title => loc('Create'), path => "/Admin/Lifecycles/Create.html" );
+
             my $LifecycleObj = RT::Lifecycle->new();
             $LifecycleObj->Load(Name => $HTML::Mason::Commands::DECODED_ARGS->{'Name'}, Type => $HTML::Mason::Commands::DECODED_ARGS->{'Type'});
 
