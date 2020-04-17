@@ -280,16 +280,25 @@ jQuery(function() {
     initDatePicker();
     jQuery('td.collection-as-table:not(.editable)').each( function() {
         if ( jQuery(this).children() ) {
-            var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
+	    var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
             if ( jQuery(this).children().height() > max_height ) {
                 jQuery(this).children().wrapAll('<div class="clip">');
                 jQuery(this).children('div.clip').height('' + max_height + 'px');
                 jQuery(this).append('<a href="#" class="unclip button btn btn-primary">' + loc_key('unclip') + '</a>');
+		jQuery(this).append('<a href="#" class="reclip button btn btn-primary" style="display: none;">' + loc_key('clip') + '</a>');
             }
         }
     });
     jQuery('a.unclip').click(function() {
         jQuery(this).siblings('div.clip').css('height', 'auto');
+        jQuery(this).hide();
+	jQuery(this).siblings('a.reclip').show();
+        return false;
+    });
+    jQuery('a.reclip').click(function() {
+	var max_height = jQuery(this).css('line-height').replace('px', '') * 6;
+        jQuery(this).siblings('div.clip').height('' + max_height + 'px');
+        jQuery(this).siblings('a.clip').show();
         jQuery(this).hide();
         return false;
     });
