@@ -52,6 +52,7 @@ use Storable ();
 
 
 package RT::Lifecycle;
+use List::MoreUtils 'uniq';
 
 our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
@@ -663,15 +664,14 @@ sub FillCache {
             actions => [],
         };
 
+        my ( $ret, @warnings ) = $self->ValidateLifecycle(Lifecycle => $lifecycle, Name => $name);
+        unless ( $ret ) {
+            warn $_ for @warnings;
+        }
+
         my @statuses;
-        $lifecycle->{canonical_case} = {};
         foreach my $category ( qw(initial active inactive) ) {
             for my $status (@{ $lifecycle->{ $category } || [] }) {
-                if (exists $lifecycle->{canonical_case}{lc $status}) {
-                    warn "Duplicate status @{[lc $status]} in lifecycle $name";
-                } else {
-                    $lifecycle->{canonical_case}{lc $status} = $status;
-                }
                 push @{ $LIFECYCLES_TYPES{$type}{$category} }, $status;
                 push @statuses, $status;
             }
@@ -681,17 +681,11 @@ sub FillCache {
         # ->{actions} are handled below
         for my $state (keys %{ $lifecycle->{defaults} || {} }) {
             my $status = $lifecycle->{defaults}{$state};
-            warn "Nonexistant status @{[lc $status]} in default states in $name lifecycle"
-                unless $lifecycle->{canonical_case}{lc $status};
             $lifecycle->{defaults}{$state} =
                 $lifecycle->{canonical_case}{lc $status} || lc $status;
         }
         for my $from (keys %{ $lifecycle->{transitions} || {} }) {
-            warn "Nonexistant status @{[lc $from]} in transitions in $name lifecycle"
-                unless $from eq '' or $lifecycle->{canonical_case}{lc $from};
             for my $status ( @{delete($lifecycle->{transitions}{$from}) || []} ) {
-                warn "Nonexistant status @{[lc $status]} in transitions in $name lifecycle"
-                    unless $lifecycle->{canonical_case}{lc $status};
                 push @{ $lifecycle->{transitions}{lc $from} },
                     $lifecycle->{canonical_case}{lc $status} || lc $status;
             }
@@ -699,22 +693,9 @@ sub FillCache {
         for my $schema (keys %{ $lifecycle->{rights} || {} }) {
             my ($from, $to) = split /\s*->\s*/, $schema, 2;
             unless ($from and $to) {
-                warn "Invalid right transition $schema in $name lifecycle";
                 next;
             }
-            warn "Nonexistant status @{[lc $from]} in right transition in $name lifecycle"
-                unless $from eq '*' or $lifecycle->{canonical_case}{lc $from};
-            warn "Nonexistant status @{[lc $to]} in right transition in $name lifecycle"
-                unless $to eq '*' or $lifecycle->{canonical_case}{lc $to};
-
-            warn "Invalid right name ($lifecycle->{rights}{$schema}) in $name lifecycle; right names must be ASCII"
-                if $lifecycle->{rights}{$schema} =~ /\P{ASCII}/;
-
-            warn "Invalid right name ($lifecycle->{rights}{$schema}) in $name lifecycle; right names must be <= 25 characters"
-                if length($lifecycle->{rights}{$schema}) > 25;
-
-            $lifecycle->{rights}{lc($from) . " -> " .lc($to)}
-                = delete $lifecycle->{rights}{$schema};
+            $lifecycle->{rights}{lc($from) . " -> " .lc($to)} = delete $lifecycle->{rights}{$schema};
         }
 
         my %seen;
@@ -738,13 +719,8 @@ sub FillCache {
         while ( my ($transition, $info) = splice @actions, 0, 2 ) {
             my ($from, $to) = split /\s*->\s*/, $transition, 2;
             unless ($from and $to) {
-                warn "Invalid action status change $transition in $name lifecycle";
                 next;
             }
-            warn "Nonexistant status @{[lc $from]} in action in $name lifecycle"
-                unless $from eq '*' or $lifecycle->{canonical_case}{lc $from};
-            warn "Nonexistant status @{[lc $to]} in action in $name lifecycle"
-                unless $to eq '*' or $lifecycle->{canonical_case}{lc $to};
             push @{ $lifecycle->{'actions'} },
                 { %$info,
                   from => ($lifecycle->{canonical_case}{lc $from} || lc $from),
@@ -752,26 +728,20 @@ sub FillCache {
         }
     }
 
+    my ( $ret, @warnings ) = $self->ValidateLifecycleMaps();
+    unless ( $ret ) {
+        warn $_ for @warnings;
+    }
+
     # Lower-case the transition maps
     for my $mapname (keys %{ $LIFECYCLES_CACHE{'__maps__'} || {} }) {
         my ($from, $to) = split /\s*->\s*/, $mapname, 2;
         unless ($from and $to) {
-            warn "Invalid lifecycle mapping $mapname";
             next;
         }
-        warn "Nonexistant lifecycle $from in $mapname lifecycle map"
-            unless $LIFECYCLES_CACHE{$from};
-        warn "Nonexistant lifecycle $to in $mapname lifecycle map"
-            unless $LIFECYCLES_CACHE{$to};
         my $map = delete $LIFECYCLES_CACHE{'__maps__'}{$mapname};
         $LIFECYCLES_CACHE{'__maps__'}{"$from -> $to"} = $map;
         for my $status (keys %{ $map }) {
-            warn "Nonexistant status @{[lc $status]} in $from in $mapname lifecycle map"
-                if $LIFECYCLES_CACHE{$from}
-                    and not $LIFECYCLES_CACHE{$from}{canonical_case}{lc $status};
-            warn "Nonexistant status @{[lc $map->{$status}]} in $to in $mapname lifecycle map"
-                if $LIFECYCLES_CACHE{$to}
-                    and not $LIFECYCLES_CACHE{$to}{canonical_case}{lc $map->{$status}};
             $map->{lc $status} = lc delete $map->{$status};
         }
     }
@@ -968,6 +938,149 @@ sub UpdateMaps {
     return ($ok, $msg) if !$ok;
 
     return (1, $CurrentUser->loc("Lifecycle mappings updated"));
+}
+
+=head2 ValidateLifecycle( CurrentUser => undef, Lifecycle => undef, Name => undef )
+
+Validate passed Lifecycle data structure.
+
+Returns (STATUS, MESSAGE). STATUS is true if succeeded, otherwise false.
+
+=cut
+
+sub ValidateLifecycle {
+    my $self = shift;
+    my %args  = (
+        CurrentUser => undef,
+        Lifecycle   => undef,
+        Name        => undef,
+        @_,
+    );
+    my $current_user = $args{CurrentUser} || RT->SystemUser;
+    my $name = $args{Name} || $self->Name;
+
+    my $lifecycle = $args{Lifecycle} or return ( 0, $current_user->loc('lifecycle undefined') );
+
+    my @warnings;
+
+    my $type = $lifecycle->{type} ||= 'ticket';
+
+    $lifecycle->{canonical_case} = {};
+    foreach my $category (qw(initial active inactive)) {
+        for my $status ( @{ $lifecycle->{$category} || [] } ) {
+            if ( exists $lifecycle->{canonical_case}{ lc $status } ) {
+                push @warnings, $current_user->loc( "Duplicate status [_1] in lifecycle [_2]", lc $status, $name );
+            }
+            else {
+                $lifecycle->{canonical_case}{ lc $status } = $status;
+            }
+        }
+    }
+
+    # Lower-case for consistency
+    # ->{actions} are handled below
+    for my $state ( keys %{ $lifecycle->{defaults} || {} } ) {
+        my $status = $lifecycle->{defaults}{$state};
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in default states in [_2] lifecycle", lc $status, $name )
+            unless $lifecycle->{canonical_case}{ lc $status };
+    }
+    for my $from ( keys %{ $lifecycle->{transitions} || {} } ) {
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in transitions in [_2] lifecycle", lc $from, $name )
+            unless $from eq '' || $lifecycle->{canonical_case}{ lc $from };
+
+        for my $status ( @{ ( $lifecycle->{transitions}{$from} ) || [] } ) {
+            push @warnings, $current_user->loc( "Nonexistant status [_1] in transitions in [_2] lifecycle", lc $status, $name )
+                unless $lifecycle->{canonical_case}{ lc $status };
+        }
+    }
+
+    for my $schema ( keys %{ $lifecycle->{rights} || {} } ) {
+        my ( $from, $to ) = split /\s*->\s*/, $schema, 2;
+        unless ( $from and $to ) {
+            push @warnings, $current_user->loc( "Invalid right transition [_1] in [_2] lifecycle", $schema, $name );
+            next;
+        }
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in right transition in [_2] lifecycle", lc $from, $name )
+            unless $from eq '*'
+            or $lifecycle->{canonical_case}{ lc $from };
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in right transition in [_2] lifecycle", lc $to, $name )
+            unless $to eq '*' || $lifecycle->{canonical_case}{ lc $to };
+
+        push @warnings,
+            $current_user->loc( "Invalid right name ([_1]) in [_2] lifecycle; right names must be ASCII", $lifecycle->{rights}{$schema}, $name )
+            if $lifecycle->{rights}{$schema} =~ /\P{ASCII}/;
+
+        push @warnings,
+            $current_user
+            ->loc( "Invalid right name ([_1]) in [_2] lifecycle; right names must be <= 25 characters", $lifecycle->{rights}{$schema}, $name )
+            if length( $lifecycle->{rights}{$schema} ) > 25;
+    }
+
+    my @actions;
+    if ( ref $lifecycle->{'actions'} eq 'HASH' ) {
+        foreach my $k ( sort keys %{ $lifecycle->{'actions'} } ) {
+            push @actions, $k, $lifecycle->{'actions'}{$k};
+        }
+    }
+    elsif ( ref $lifecycle->{'actions'} eq 'ARRAY' ) {
+        @actions = @{ $lifecycle->{'actions'} };
+    }
+
+    while ( my ( $transition, $info ) = splice @actions, 0, 2 ) {
+        my ( $from, $to ) = split /\s*->\s*/, $transition, 2;
+        unless ( $from and $to ) {
+            push @warnings, $current_user->loc( "Invalid action status change [_1], in [_2] lifecycle", $transition, $name );
+            next;
+        }
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in action in [_2] lifecycle", lc $from, $name )
+            unless $from eq '*'
+            or $lifecycle->{canonical_case}{ lc $from };
+        push @warnings, $current_user->loc( "Nonexistant status [_1] in action in [_2] lifecycle", lc $to, $name )
+            unless $to eq '*'
+            or $lifecycle->{canonical_case}{ lc $to };
+    }
+
+    return @warnings ? ( 0, uniq @warnings ) : 1;
+}
+
+=head2 ValidateLifecycleMaps( CurrentUser => undef )
+
+Validate lifecycle Maps.
+
+Returns (STATUS, MESSAGES). STATUS is true if succeeded, otherwise false.
+
+=cut
+
+sub ValidateLifecycleMaps {
+    my $self = shift;
+    my %args = (
+        CurrentUser => undef,
+        @_,
+    );
+    my $current_user = $args{CurrentUser} || RT->SystemUser;
+
+    my @warnings;
+    for my $mapname ( keys %{ $LIFECYCLES_CACHE{'__maps__'} || {} } ) {
+        my ( $from, $to ) = split /\s*->\s*/, $mapname, 2;
+        unless ( $from and $to ) {
+            push @warnings, $current_user->loc( "Invalid lifecycle mapping [_1]", $mapname );
+            next;
+        }
+        push @warnings, $current_user->loc( "Nonexistant lifecycle [_1] in [_2] lifecycle map", $from, $mapname )
+            unless $LIFECYCLES_CACHE{$from};
+        push @warnings, $current_user->loc( "Nonexistant lifecycle [_1] in [_2] lifecycle map", $to, $mapname )
+            unless $LIFECYCLES_CACHE{$to};
+
+        my $map = $LIFECYCLES_CACHE{'__maps__'}{$mapname};
+        for my $status ( keys %{$map} ) {
+            push @warnings, $current_user->loc( "Nonexistant status [_1] in [_2] in [_3] lifecycle map", lc $status, $from, $mapname )
+                if $LIFECYCLES_CACHE{$from} && !$LIFECYCLES_CACHE{$from}{canonical_case}{ lc $status };
+            push @warnings, $current_user->loc( "Nonexistant status [_1] in [_2] in [_3] lifecycle map", lc $map->{$status}, $to, $mapname )
+                if $LIFECYCLES_CACHE{$to} && !$LIFECYCLES_CACHE{$to}{canonical_case}{ lc $map->{$status} };
+        }
+    }
+
+    return @warnings ? ( 0, uniq @warnings ) : 1;
 }
 
 1;
