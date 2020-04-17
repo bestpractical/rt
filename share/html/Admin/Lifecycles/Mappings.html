@@ -49,6 +49,7 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
+% if ( @lifecycles ) {
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Mappings.html" name="ModifyMappings" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
   <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
   <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
@@ -98,6 +99,7 @@
   </div>
 
 </form>
+% }
 <%INIT>
 my ($title, @results);
 my $LifecycleObj = RT::Lifecycle->new();
@@ -138,6 +140,8 @@ my @lifecycles = map { RT::Lifecycle->Load(Name => $_, Type => $Type) }
                  sort { loc($a) cmp loc($b) }
                  grep { $_ ne $Name }
                  @lifecycle_names;
+
+push @results, loc("You only need mappings once you have two more [_1] lifecycles", loc($Type)) unless @lifecycles;
 </%INIT>
 <%ARGS>
 $Name => undef
