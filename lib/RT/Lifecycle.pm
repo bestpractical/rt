@@ -684,6 +684,14 @@ sub FillCache {
             $lifecycle->{defaults}{$state} =
                 $lifecycle->{canonical_case}{lc $status} || lc $status;
         }
+
+        unless ( $lifecycle->{defaults}
+            && $lifecycle->{defaults}{on_create}
+            && $lifecycle->{canonical_case}{ lc $lifecycle->{defaults}{on_create} } )
+        {
+            $lifecycle->{defaults}{on_create} = $lifecycle->{initial}[0];
+        }
+
         for my $from (keys %{ $lifecycle->{transitions} || {} }) {
             for my $status ( @{delete($lifecycle->{transitions}{$from}) || []} ) {
                 push @{ $lifecycle->{transitions}{lc $from} },
