@@ -77,6 +77,7 @@ my $Catalog = {
     lower_disabled => "disabled", # loc
     history_scroll_error => "Could not load ticket history. Reason:", #loc
     unclip => "Show all", #loc
+    clip => "Show less", #loc
 };
 $_ = loc($_) for values %$Catalog;
 

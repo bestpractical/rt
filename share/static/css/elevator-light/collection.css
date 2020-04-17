@@ -21,7 +21,8 @@
     overflow-y: hidden;
 }
 
-.collection-as-table a.unclip {
+.collection-as-table a.unclip,
+.collection-as-table a.reclip {
     font-size: smaller;
     font-weight: normal;
 }
