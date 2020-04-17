@@ -868,6 +868,14 @@ sub _CreateLifecycle {
     return (1, $CurrentUser->loc("Lifecycle [_1] created", $args{Name}));
 }
 
+=head2 CreateLifecycle( CurrentUser => undef, Name => undef, Type => undef, Clone => undef )
+
+Create a lifecycle. To clone from an existing lifecycle, pass its Name to Clone.
+
+Returns (STATUS, MESSAGE). STATUS is true if succeeded, otherwise false.
+
+=cut
+
 sub CreateLifecycle {
     my $class = shift;
     my %args = (
@@ -903,6 +911,14 @@ sub CreateLifecycle {
     return $class->_CreateLifecycle(%args);
 }
 
+=head2 UpdateLifecycle( CurrentUser => undef, LifecycleObj => undef, NewConfig => undef )
+
+Update passed lifecycle to the new configuration.
+
+Returns (STATUS, MESSAGE). STATUS is true if succeeded, otherwise false.
+
+=cut
+
 sub UpdateLifecycle {
     my $class = shift;
     my %args = (
@@ -923,6 +939,14 @@ sub UpdateLifecycle {
 
     return (1, $CurrentUser->loc("Lifecycle [_1] updated", $name));
 }
+
+=head2 UpdateMaps( CurrentUser => undef, Maps => undef )
+
+Update lifecycle maps.
+
+Returns (STATUS, MESSAGE). STATUS is true if succeeded, otherwise false.
+
+=cut
 
 sub UpdateMaps {
     my $class = shift;
