@@ -979,13 +979,15 @@ sub _BuildAdminMenu {
         $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
     }
 
-    my $lifecycles = $admin->child( lifecycles =>
-        title => loc('Lifecycles'),
-        path  => '/Admin/Lifecycles/',
-    );
+    if ( $current_user->HasRight( Object => RT->System, Right => 'SuperUser' ) ) {
+        my $lifecycles = $admin->child(
+            lifecycles => title => loc('Lifecycles'),
+            path       => '/Admin/Lifecycles/',
+        );
 
-    $lifecycles->child( select => title => loc('Select'), path => '/Admin/Lifecycles/');
-    $lifecycles->child( create => title => loc('Create'), path => '/Admin/Lifecycles/Create.html');
+        $lifecycles->child( select => title => loc('Select'), path => '/Admin/Lifecycles/' );
+        $lifecycles->child( create => title => loc('Create'), path => '/Admin/Lifecycles/Create.html' );
+    }
 
     my $admin_global = $admin->child( global =>
         title       => loc('Global'),
@@ -1374,7 +1376,7 @@ sub _BuildAdminMenu {
         }
     }
 
-    if ( $request_path =~ m{^/Admin/Lifecycles} ) {
+    if ( $request_path =~ m{^/Admin/Lifecycles} && $current_user->HasRight( Object => RT->System, Right => 'SuperUser' ) ) {
         if (defined($HTML::Mason::Commands::DECODED_ARGS->{'Name'}) && defined($HTML::Mason::Commands::DECODED_ARGS->{'Type'}) ) {
             my $lifecycles = $page->child( 'lifecycles' =>
                 title       => loc('Lifecycles'),
