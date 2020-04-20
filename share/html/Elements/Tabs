@@ -756,7 +756,8 @@ my $build_main_nav = sub {
                 my $actions = PageMenu()->child( actions => title => loc('Actions'), sort_order  => 95 );
 
                 my %can = %{ $obj->CurrentUser->PrincipalObj->HasRights( Object => $obj ) };
-                $can{'_ModifyOwner'} = $obj->CurrentUserCanSetOwner();
+                my $msg;
+                ( $can{'_ModifyOwner'}, $msg ) = $obj->CurrentUserCanSetOwner();
                 my $can = sub {
                     unless ($_[0] eq 'ExecuteCode') {
                         return $can{$_[0]} || $can{'SuperUser'};
