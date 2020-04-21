@@ -3909,7 +3909,7 @@ sub GetColumnMapEntry {
 
     # complex things
     elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.(.+)$/ ) {
-        $subkey =~ s/^\{(.*)\}$/$1/;
+        $subkey =~ s/^\{(.*)\}/$1/ unless $mainkey eq 'CustomRole';
         return undef unless $args{'Map'}->{$mainkey};
         return $args{'Map'}{$mainkey}{ $args{'Attribute'} }
             unless ref $args{'Map'}{$mainkey}{ $args{'Attribute'} } eq 'CODE';
