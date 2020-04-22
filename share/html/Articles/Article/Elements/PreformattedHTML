@@ -45,57 +45,76 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-
-my $parent_args = $m->caller_args(-1);
-
-my $name_prefix = '';
-$name_prefix = $ARGS{'Name'} .'-'
-    if $ARGS{'Name'}
-    && grep rindex($_, "$ARGS{'Name'}-Articles-", 0) == 0,
-        keys %$parent_args;
-
-foreach my $arg ( keys %$parent_args ) {
-    next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
-
-    my $Ticket = $ARGS{Ticket};
-    if ( !$Ticket and $parent_args->{id} and $parent_args->{id} ne 'new' ) {
-        $Ticket = RT::Ticket->new($session{'CurrentUser'});
-        $Ticket->Load($parent_args->{id});
-        unless ( $Ticket->id ) {
-            $RT::Logger->error("Couldn't load ticket ". $parent_args->{id} )
-        }
-    }
-
-    my $Queue = RT::Queue->new($session{CurrentUser});
-    if ($Ticket && $Ticket->Id) {
-        $Queue = $Ticket->QueueObj;
-    }
-
-    my $article = RT::Article->new($session{'CurrentUser'});
-    $article->LoadByInclude(
-        Field => substr($arg, length($name_prefix)),
-        Value => $parent_args->{$arg},
-        Queue => $Queue->Id,
-    );
-    next unless $article && $article->id;
-
-    my $formatted_article;
-
-    if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
-        $formatted_article = $m->scomp('/Articles/Article/Elements/PreformattedHTML',
-            Article => $article, Ticket => $Ticket
-        );
-    } else {
-        $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
-            Article => $article, Ticket => $Ticket
-        );
-    }
-
-    $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article, ARGSRef => \%ARGS );
-
-    $m->print($formatted_article);
-
+% if ($include{Name}) {
+<h2>#<%$Article->Id%>: <%$Article->Name || loc('(no name)')%></h2>
+% }
+% if ( $include{Summary} && ($Article->Summary||'') =~ /\S/ ) {
+<% $Article->Summary %><br />
+% }
+% while (my $cf = $cfs->Next) {
+%   next unless $include{"CF-Title-".$cf->Id} or $include{"CF-Value-".$cf->Id};
+%   my $values = $Article->CustomFieldValues($cf->Id);
+%   if ($values->Count == 1) {
+%     my $value = $values->First; 
+%     if ($include{"CF-Title-".$cf->Id}) {
+<h3><%      $cf->Name%>:</h3>
+%     }
+%     if ($value && $include{"CF-Value-".$cf->Id}) {
+<%      $get_content->( $cf, $value ) %>
+%     }
+%   } else {
+%     my $val = $values->Next;
+%     if ($include{"CF-Title-".$cf->Id}) {
+<h3><%      $cf->Name%>:</h3>
+%     }
+<ul>
+%     if ($val && $include{"CF-Value-".$cf->Id}) {
+<li><%      $get_content->( $cf, $val ) %></li>
+%     }
+%     while ($val = $values->Next) { 
+%       if ($include{"CF-Value-".$cf->Id}) {
+<li><%        $get_content->( $cf, $val ) %></li>
+%       }
+%     }
+</ul>
+%   }
+% }
+<%init>
+my $class = $Article->ClassObj;
+my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
+my $cfs = $class->ArticleCustomFields;
+while ( my $cf = $cfs->Next ) {
+    $include{"CF-Title-" . $cf->Id} = 1;
+    $include{"CF-Value-" . $cf->Id} = 1;
 }
-return;
-</%INIT>
+foreach my $key ( keys %include ) {
+    $include{$key} = not $class->FirstAttribute("Skip-$key");
+}
+
+my $get_content = sub {
+    my ($cf, $value) = @_;
+    return '' unless $value;
+
+    my $comp = "/Elements/ShowCustomField". $cf->Type;
+    my $content;
+    if ( $m->comp_exists( $comp ) ) {
+        $content = $m->scomp( $comp, Object => $value );
+    } else {
+        $content = $m->interp->apply_escapes( $value->Content, 'h' );
+    }
+
+    return '' unless defined $content && length $content;
+
+    $m->callback(
+        %ARGS,
+        CallbackName => 'ProcessContent', 
+        content => \$content,
+    );
+
+    return $content;
+};
+
+</%init>
+<%args>
+$Article
+</%args>
