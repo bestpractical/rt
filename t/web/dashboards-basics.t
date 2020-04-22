@@ -97,29 +97,28 @@ $m->content_contains("Modify the content of dashboard different dashboard");
 my ( $dashboard_id ) = ( $m->uri =~ /id=(\d+)/ );
 ok( $dashboard_id, "got a dashboard ID, $dashboard_id" );  # 8
 
-my $payload = {
-    "dashboard_id" => $dashboard_id,
-    "panes"        => {
-        "body"    => [
-            {
-              "description" => "Unowned Tickets",
-              "name" => "Unowned Tickets",
-              "searchId" => "4",
-              "searchType" => "",
-              "type" => "system"
-            },
-        ],
-        "sidebar" => [
-        ]
-    }
+my $args = {
+    UpdateSearches => "Save",
+    dashboard_id   => undef,
+    body           => [],
+    sidebar        => [],
 };
 
-my $json = JSON::to_json( $payload );
-my $res  = $m->post(
-    $url . 'Helpers/UpdateDashboard',
-    [ content => $json ],
+$args->{dashboard_id} = $dashboard_id;
+
+push(
+    @{$args->{body}},
+    ( "system-Unowned Tickets", )
 );
+
+my $res = $m->post(
+    $url . 'Dashboards/Queries.html?id=' . $dashboard_id,
+    $args,
+);
+
 is( $res->code, 200, "add 'unowned tickets' to body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 my $dashboard = RT::Dashboard->new($currentuser);
 $dashboard->LoadById($dashboard_id);
@@ -133,22 +132,18 @@ is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
 
 push(
-    @{$payload->{panes}->{body}},
-    {
-      "description" => "My Tickets",
-      "name" => "My Tickets",
-      "searchId" => "3",
-      "searchType" => "",
-      "type" => "system"
-    },
+    @{$args->{body}},
+    ( "system-My Tickets", )
 );
 
-$json = JSON::to_json( $payload );
-$res  = $m->post(
-    $url . 'Helpers/UpdateDashboard',
-    [ content => $json ],
+$res = $m->post(
+    $url . 'Dashboards/Queries.html?id=' . $dashboard_id,
+    $args,
 );
+
 is( $res->code, 200, "add 'My Tickets' to body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 $dashboard->LoadById($dashboard_id);
 @searches = $dashboard->Searches;
@@ -231,36 +226,28 @@ $m->content_contains("Saved dashboard system dashboard");
 $m->follow_link_ok({id => 'page-content'});
 
 my ( $system_dashboard_id ) = ( $m->uri =~ /id=(\d+)/ );
-ok( $system_dashboard_id, "got a dashboard ID for the system dashboard, $system_dashboard_id" );  # 10
+ok( $system_dashboard_id, "got a dashboard ID for the system dashboard, $system_dashboard_id" );
 
 # get the saved search name from the content
 my ( $saved_search_name ) = ( $m->content =~ /(RT::User-\d+-SavedSearch-\d+)/ );
 ok( $saved_search_name, "got a saved search name, $saved_search_name" );  # RT::User-27-SavedSearch-9
 
 # add 'personal search' to 'system dashboard' dashboard
-$payload = {
-    "dashboard_id" => $system_dashboard_id,
-    "panes"        => {
-        "body"    => [
-            {
-              "description" => "personal search",
-              "name" => $saved_search_name,
-              "searchId" => "4",
-              "searchType" => "Ticket",
-              "type" => "saved"
-            },
-        ],
-        "sidebar" => [
-        ]
-    }
-};
+$args->{dashboard_id} = $system_dashboard_id;
 
-$json = JSON::to_json( $payload );
-$res  = $m->post(
-    $url . 'Helpers/UpdateDashboard',
-    [ content => $json ],
+push(
+    @{$args->{body}},
+    ( "saved-" . $saved_search_name, )
 );
+
+$res = $m->post(
+    $url . 'Dashboards/Queries.html?id=' . $system_dashboard_id,
+    $args,
+);
+
 is( $res->code, 200, "add 'personal search' to body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 $m->get_ok($url."Dashboards/Queries.html?id=$system_dashboard_id");
 $m->content_contains("Warning: may not be visible to all viewers");

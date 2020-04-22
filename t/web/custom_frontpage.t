@@ -33,58 +33,27 @@ $m->content_contains('stupid tickets', 'saved search listed in rt at a glance it
 
 ok $m->login('root', 'password', logout => 1), 'logged in as root';
 
-# remove all portlets from the body pane except 'newest unowned tickets'
-my $payload = {
-    "dashboard_id" => "MyRT",
-    "panes"        => {
-        "body"    => [
-            {
-              "description" => "Unowned Tickets",
-              "name" => "Unowned Tickets",
-              "searchId" => "",
-              "searchType" => "",
-              "type" => "system"
-            },
-        ],
-        "sidebar" => [
-            {
-              "description" => "MyReminders",
-              "name" => "MyReminders",
-              "searchId" => "",
-              "searchType" => "",
-              "type" => "component"
-            },
-            {
-              "description" => "QueueList",
-              "name" => "QueueList",
-              "searchId" => "",
-              "searchType" => "",
-              "type" => "component"
-            },
-            {
-              "description" => "Dashboards",
-              "name" => "Dashboards",
-              "searchId" => "",
-              "searchType" => "",
-              "type" => "component"
-            },
-            {
-              "description" => "RefreshHomepage",
-              "name" => "RefreshHomepage",
-              "searchId" => "",
-              "searchType" => "",
-              "type" => "component"
-            },
-        ]
-    }
+my $args = {
+    UpdateSearches => "Save",
+    dashboard_id   => "MyRT",
+    body           => [],
+    sidebar        => [],
 };
 
-my $json = JSON::to_json( $payload );
-my $res  = $m->post(
-    $url . 'Helpers/UpdateDashboard',
-    [ content => $json ],
+# remove all portlets from the body pane except 'newest unowned tickets'
+push(
+    @{$args->{body}},
+    ( "system-Unowned Tickets", )
 );
+
+my $res = $m->post(
+    $url . 'Prefs/MyRT.html',
+    $args,
+);
+
 is( $res->code, 200, "remove all portlets from body except 'newest unowned tickets'" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Preferences saved' );
 
 $m->get( $url );
 $m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
@@ -94,36 +63,23 @@ $m->content_lacks( 'Quick ticket creation', "'Quick ticket creation' is not pres
 
 # add back the previously removed portlets
 push(
-    @{$payload->{panes}->{body}},
-    {
-      "description" => "My Tickets",
-      "name" => "My Tickets",
-      "searchId" => "",
-      "searchType" => "",
-      "type" => "system"
-    },
-    {
-      "description" => "Bookmarked Tickets",
-      "name" => "Bookmarked Tickets",
-      "searchId" => "",
-      "searchType" => "",
-      "type" => "system"
-    },
-    {
-      "description" => "QuickCreate",
-      "name" => "QuickCreate",
-      "searchId" => "",
-      "searchType" => "",
-      "type" => "component"
-    },
+    @{$args->{body}},
+    ( "system-My Tickets", "system-Bookmarked Tickets", "component-QuickCreate" )
 );
 
-$json = JSON::to_json( $payload );
-$res  = $m->post(
-    $url . 'Helpers/UpdateDashboard',
-    [ content => $json ],
+push(
+    @{$args->{sidebar}},
+    ( "component-MyReminders", "component-QueueList", "component-Dashboards", "component-RefreshHomepage", )
 );
+
+$res = $m->post(
+    $url . 'Prefs/MyRT.html',
+    $args,
+);
+
 is( $res->code, 200, 'add back previously removed portlets' );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Preferences saved' );
 
 $m->get( $url );
 $m->content_contains( 'newest unowned tickets', "'newest unowned tickets' is present" );
@@ -145,22 +101,18 @@ $m->content_contains( 'special chars [test] [_1] ~[_1~]',
 
 # add saved search to body
 push(
-    @{$payload->{panes}->{body}},
-    {
-      "description" => "special chars [test] [_1] ~[_1~]",
-      "name" => $name,
-      "searchId" => "",
-      "searchType" => "Ticket",
-      "type" => "saved"
-    },
+    @{$args->{body}},
+    ( "saved-" . $name )
 );
 
-$json = JSON::to_json( $payload );
-$res  = $m->post(
-    $url . 'Helpers/UpdateDashboard',
-    [ content => $json ],
+$res = $m->post(
+    $url . 'Prefs/MyRT.html',
+    $args,
 );
+
 is( $res->code, 200, 'add saved search to body' );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Preferences saved' );
 
 $m->get($url);
 $m->content_like( qr/special chars \[test\] \d+ \[_1\]/,

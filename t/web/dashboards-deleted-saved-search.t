@@ -47,29 +47,19 @@ $m->content_lacks( 'value="Update"', 'no update button' );
 
 # add foo saved search to the dashboard
 
-my $payload = {
+my $args = {
     "dashboard_id" => $dashboard_id,
-    "panes"        => {
-        "body"    => [
-            {
-              "description" => "foo",
-              "name" => "RT::User-" . $user_id . "-SavedSearch-" . $search_id,
-              "searchId" => "",
-              "searchType" => "Ticket",
-              "type" => "saved"
-            },
-        ],
-        "sidebar" => [
-        ]
-    }
+    "body"         => "saved-" . "RT::User-" . $user_id . "-SavedSearch-" . $search_id,
 };
 
-my $json = JSON::to_json( $payload );
-my $res  = $m->post(
-    $url . '/Helpers/UpdateDashboard',
-    [ content => $json ],
-);
-is( $res->code, 200, "added search foo to dashboard bar" );
+$m->submit_form_ok({
+    form_name => 'UpdateSearches',
+    fields    => $args,
+    button    => 'UpdateSearches',
+}, "added search foo to dashboard bar" );
+
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 # delete the created search
 
@@ -90,23 +80,20 @@ $m->content_lacks( $search_uri, 'deleted search foo' );
 $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
 $m->content_contains('Unable to find search Saved Search: foo', 'found deleted message' );
 
-$payload = {
+$args = {
     "dashboard_id" => $dashboard_id,
-    "panes"        => {
-        "body"    => [
-        ],
-        "sidebar" => [
-        ]
-    }
 };
 
-$json = JSON::to_json( $payload );
-$res  = $m->post(
-    $url . '/Helpers/UpdateDashboard',
-    [ content => $json ],
-);
-is( $res->code, 200, "added search foo to dashboard" );
+$m->submit_form_ok({
+    form_name => 'UpdateSearches',
+    fields    => $args,
+    button    => 'UpdateSearches',
+}, "removed search foo from dashboard" );
 
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
+
+$m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
 $m->content_lacks('Unable to find search Saved Search: foo', 'deleted message is gone' );
 
 done_testing;

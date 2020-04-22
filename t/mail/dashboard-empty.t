@@ -25,48 +25,26 @@ sub create_dashboard {
 
     my $add_component = sub {
         my $component_name = shift;
-
-        my $payload = {
-            "dashboard_id" => $dashboard_id,
-            "panes"        => {
-                "body" => [
-                ],
-                "sidebar" => [
-                ],
-            },
-        };
-
-        my $component = {
-            "description" => "",
-            "name" => "",
-            "searchId" => "",
-            "searchType" => "",
-            "type" => "",
-        };
+        my $arg;
 
         if ( $component_name eq 'My Tickets' ) {
-            my ( $search_id ) = $m->content =~ /data-search-id="(\d+)" data-description="My Tickets"/;
-            ok( $search_id, "got an ID for the search, $search_id");
-
-            $component->{type}        = 'system';
-            $component->{description} = 'My Tickets';
-            $component->{searchId}    = $search_id;
-            $component->{name}        = 'My Tickets';
+            $arg = 'system-My Tickets';
         }
         else {  # component_name is 'My Assets'
-            $component->{type}        = 'component';
-            $component->{description} = 'MyAssets';
-            $component->{name}        = 'MyAssets';
+            $arg = 'component-MyAssets';
         }
 
-        push @{$payload->{panes}->{body}}, $component;
+        $m->submit_form_ok({
+            form_name => 'UpdateSearches',
+            fields    => {
+                dashboard_id => $dashboard_id,
+                body         => $arg,
+        },
+        button => 'UpdateSearches',
+        }, "added '$component_name' to dashboard '$dashboard_name'" );
 
-        my $json = JSON::to_json( $payload );
-        my $res  = $m->post(
-            $baseurl . '/Helpers/UpdateDashboard',
-            [ content => $json ],
-        );
-        is( $res->code, 200, "added '$component_name' to dashboard '$dashboard_name'" );
+        like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+        $m->content_contains( 'Dashboard updated' );
     };
 
     $add_component->('My Tickets') unless $assets;

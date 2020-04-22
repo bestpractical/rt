@@ -41,34 +41,23 @@ $m->get_ok( $baseurl . '/Dashboards/Queries.html?id=' . $dashboard_id );
 $m->follow_link_ok( { text => 'Content' } );
 
 # add content, Chart: chart foo, to dashboard body
-# we need to get the saved search id from the content before submitting the json.
-my $regex = qr/data-type="saved" data-name="RT::User-/ . $root->id . qr/-SavedSearch-(\d+)"/;
-my ( $saved_search_id ) = $m->content =~ /$regex/;
+# we need to get the saved search id from the content before submitting the form.
+my $regex = qr/data-type="(\w+)" data-name="RT::User-/ . $root->id . qr/-SavedSearch-(\d+)"/;
+my ( $saved_search_type, $saved_search_id ) = $m->content =~ /$regex/;
+ok( $saved_search_type, "got a type for the saved search, $saved_search_type" );
 ok( $saved_search_id, "got an ID for the saved search, $saved_search_id" );
 
-my $payload = {
-    "dashboard_id" => $dashboard_id,
-    "panes"        => {
-        "body"    => [
-            {
-              "description" => "chart foo",
-              "name" => "RT::User-" . $root->id . "-SavedSearch-" . $saved_search_id,
-              "searchId" => "",
-              "searchType" => "Chart",
-              "type" => "saved"
-            },
-        ],
-        "sidebar" => [
-        ],
-    }
-};
+$m->submit_form_ok({
+    form_name => 'UpdateSearches',
+    fields    => {
+        dashboard_id => $dashboard_id,
+        body         => $saved_search_type . "-" . "RT::User-" . $root->id . "-SavedSearch-" . $saved_search_id,
+    },
+    button => 'UpdateSearches',
+}, "add content 'Chart: chart foo' to dashboard body" );
 
-my $json = JSON::to_json( $payload );
-my $res  = $m->post(
-    $baseurl . '/Helpers/UpdateDashboard',
-    [ content => $json ],
-);
-is( $res->code, 200, "add content 'Chart: chart foo' to dashboard body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 $m->get_ok( $baseurl . '/Dashboards/Queries.html?id=' . $dashboard_id );
 $m->follow_link_ok( { text => 'Subscription' } );

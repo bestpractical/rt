@@ -2,6 +2,8 @@ use strict;
 use warnings;
 
 use RT::Test tests => undef;
+
+my $root = RT::Test->load_or_create_user( Name => 'root' );
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -43,53 +45,35 @@ ok($dashboard_id, "got an ID for cachey dashboard, $dashboard_id");
 # add the search to the dashboard
 $m->follow_link_ok({text => 'Content'});
 
-# we need to get the saved search id from the content before submitting the json.
-my ($saved_search_id) = $m->content =~ /data-type="saved" data-name="RT::User-14-SavedSearch-(\d+)"/;
+# we need to get the saved search id from the content before submitting the args.
+my $regex = 'data-type="saved" data-name="RT::User-' . $root->id . '-SavedSearch-(\d+)"';
+my ($saved_search_id) = $m->content =~ /$regex/;
 ok($saved_search_id, "got an ID for the saved search, $saved_search_id");
 
-# add 'Original Name' portlet to body
-my $payload = {
-    "dashboard_id" => $dashboard_id,
-    "panes"        => {
-        "body"    => [
-            {
-              "description" => "Original Name",
-              "name" => "RT::User-14-SavedSearch-" . $saved_search_id,
-              "searchId" => "",
-              "searchType" => "Ticket",
-              "type" => "saved"
-            },
-        ],
-        "sidebar" => [
-        ]
-    }
+my $args = {
+    UpdateSearches => "Save",
+    dashboard_id   => $dashboard_id,
+    body           => [],
+    sidebar        => [],
 };
 
-my $json = JSON::to_json( $payload );
-my $res  = $m->post(
-    $url . 'Helpers/UpdateDashboard',
-    [ content => $json ],
-);
-is( $res->code, 200, "add 'Original Name' portlet to body" );
-
-# add 'inner dashboard' portlet to body
+# add 'Original Name' and 'inner dashboard' portlets to body
 push(
-    @{$payload->{panes}->{body}},
-    {
-      "description" => "inner dashboard",
-      "name" => "dashboard-" . $inner_id . "-RT::User-14",
-      "searchId" => "",
-      "searchType" => "",
-      "type" => "dashboard"
-    },
+    @{$args->{body}},
+    (
+      "saved-" . "RT::User-" . $root->id . "-SavedSearch-" . $saved_search_id,
+      "dashboard-dashboard-" . $inner_id . "-RT::User-" . $root->id,
+    )
 );
 
-$json = JSON::to_json( $payload );
-$res  = $m->post(
-    $url . 'Helpers/UpdateDashboard',
-    [ content => $json ],
+my $res = $m->post(
+    $url . 'Dashboards/Queries.html?id=' . $dashboard_id,
+    $args,
 );
-is( $res->code, 200, "add 'inner dashboard' portlet to body" );
+
+is( $res->code, 200, "add 'Original Name' and 'inner dashboard' portlets to body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 # subscribe to the dashboard
 $m->get_ok($url . "Dashboards/" . $dashboard_id . "/cachey%20dashboard");

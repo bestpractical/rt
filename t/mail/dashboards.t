@@ -23,29 +23,17 @@ sub create_dashboard {
     $m->follow_link_ok({text => 'Content'});
     $m->title_is('Modify the content of dashboard Testing!');
 
-    my $payload = {
-        "dashboard_id" => $dashboard_id,
-        "panes"        => {
-            "body" => [
-                {
-                  "description" => "Dashboards",
-                  "name" => "Dashboards",
-                  "searchId" => "",
-                  "searchType" => "",
-                  "type" => "component"
-                },
-            ],
-            "sidebar" => [
-            ],
+    $m->submit_form_ok({
+        form_name => 'UpdateSearches',
+        fields    => {
+            dashboard_id => $dashboard_id,
+            body         => 'component-Dashboards',
         },
-    };
+        button => 'UpdateSearches',
+    }, "added 'Dashboards' to dashboard 'Testing!'" );
 
-    my $json = JSON::to_json( $payload );
-    my $res  = $m->post(
-        $baseurl . '/Helpers/UpdateDashboard',
-        [ content => $json ],
-    );
-    is( $res->code, 200, "added 'Dashboards' to dashboard 'Testing!'" );
+    like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+    $m->content_contains( 'Dashboard updated' );
 
     $m->get_ok($baseurl . '/Dashboards/Queries.html?id=' . $dashboard_id);
     $m->follow_link_ok({text => 'Show'});
