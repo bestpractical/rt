@@ -58,7 +58,10 @@ $m->callback( %ARGS, CallbackName => 'Pre' );
 use RT::Interface::Email ();    # It's an exporter, but we don't care
 $r->content_type('text/plain; charset=utf-8');
 $m->error_format('text');
-my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%ARGS );
+
+my %decoded_args = RT::Interface::Web::DecodeARGS( \%ARGS );
+my ( $status, $error, $Ticket ) = RT::Interface::Email::Gateway( \%decoded_args );
+
 if ( $status == 1 ) {
   $m->out("ok\n");
   if ( $Ticket && $Ticket->Id ) {
