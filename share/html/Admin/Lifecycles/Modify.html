@@ -68,6 +68,13 @@
   </div>
 </form>
 <%INIT>
+
+if ( RT::Interface::Web->ClientIsIE() ) {
+    RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
+            . "Admin/Lifecycles/Advanced.html?"
+            . $m->comp( '/Elements/QueryString', %ARGS, RedirectedFromModify => 1 ) );
+}
+
 my ($title, @results);
 my $LifecycleObj = RT::Lifecycle->new();
 $LifecycleObj->Load(Name => $Name, Type => $Type);

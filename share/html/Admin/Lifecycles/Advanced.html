@@ -87,6 +87,10 @@ $title = loc("Modify lifecycle [_1]", $LifecycleObj->Name);
 
 $Config ||= JSON::to_json(RT->Config->Get('Lifecycles')->{$LifecycleObj->Name}, { canonical => 1, pretty => 1 });
 
+if ( $ARGS{RedirectedFromModify} && RT::Interface::Web->ClientIsIE() ) {
+    push @results, loc("The graphical lifecycle builder is not currently supported on IE 11. You can update the lifecycle configuration using the Advanced tab or access the lifecycle editor in a supported browser.");
+}
+
 if ( $Validate || $Update ) {
     my $lifecycle = JSON::from_json($Config);
     my ( $valid, @warnings )
