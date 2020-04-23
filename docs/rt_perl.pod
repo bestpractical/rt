@@ -160,4 +160,10 @@ have RT use C<cpanm> to install modules:
 
 Then run C<make fixdeps> and let RT install all of its dependencies.
 
+Modern versions of Perl no longer have C<.> (dot) in C<@INC> by default and this
+can cause issues when installing modules. If you're not running as root, you
+might also need to use sudo. You can do both of these with your C<cpanm> line:
+
+    export RT_FIX_DEPS_CMD="PERL5LIB='.' /opt/perl/bin/cpanm --sudo"
+
 =cut
