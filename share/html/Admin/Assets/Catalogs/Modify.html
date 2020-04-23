@@ -51,6 +51,7 @@
 
 <form method="post" enctype="multipart/form-data" id="ModifyCatalog" action="Modify.html" class="mx-auto max-width-lg">
   <input type="hidden" name="id" value="<% $catalog->id %>">
+  <input type="hidden" name="CatalogChanged" value="0">
 
   <&| /Widgets/TitleBox, title => loc("Basics"), class => "catalog-basics", content_class => 'mx-auto width-sm' &>
     <& Elements/EditBasics, %ARGS, CatalogObj => $catalog &>

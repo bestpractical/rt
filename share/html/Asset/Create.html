@@ -51,15 +51,15 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <span class="catalog <% CSSClass($catalog->Name) %>">
-  <form method="post" enctype="multipart/form-data" id="CreateAsset" action="Create.html">
+  <form method="post" enctype="multipart/form-data" id="CreateAsset" name="CreateAsset" action="Create.html">
     <input type="hidden" name="id" value="new">
-    <input type="hidden" name="Catalog" value="<% $catalog->id %>">
+    <input type="hidden" name="CatalogChanged" value="0" />
 
     <div id="Asset-Create-basics" class="asset-metadata form-row">
       <a name="basics"></a>
       <div class="col-md-6">
         <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
-          <& Elements/EditBasics, %ARGS, AssetObj => $asset, CatalogObj => $catalog &>
+          <& Elements/EditBasics, %ARGS, AssetObj => $asset, CatalogObj => $catalog, AutoSubmit => 1 &>
         </&>
       </div>
 
@@ -107,8 +107,7 @@ $Catalog => undef
 </%args>
 <%init>
 my $asset   = RT::Asset->new( $session{CurrentUser} );
-my $catalog = RT::Catalog->new( $session{CurrentUser} );
-$catalog->Load($Catalog);
+my $catalog = LoadDefaultCatalog( $Catalog || '' );
 
 Abort(loc("Unable to find catalog '[_1]'", $Catalog))
     unless $catalog->id;
@@ -131,6 +130,10 @@ if ($id eq "new") {
         CustomFields    => $catalog->AssetCustomFields,
         ARGSRef         => \%ARGS
     );
+
+    if ( $ARGS{CatalogChanged} ) {
+        $skip_create = 1;
+    }
 
     $m->callback(
         CallbackName    => 'BeforeCreate',

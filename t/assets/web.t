@@ -33,10 +33,10 @@ ok $m->login, "Logged in agent";
 diag "Create basic asset (no CFs)";
 {
     $m->follow_link_ok({ id => "assets-create" }, "Asset create link");
-    $m->submit_form_ok({ with_fields => { Catalog => $catalog->id } }, "Picked a catalog");
     $m->submit_form_ok({
         with_fields => {
             id          => 'new',
+            Catalog     => $catalog->id,
             Name        => 'Thinkpad T420s',
             Description => 'A laptop',
         },

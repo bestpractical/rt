@@ -80,6 +80,24 @@ sub create_catalog {
     }
 }
 
+sub load_or_create_catalog {
+    my $self = shift;
+    my %args = ( Disabled => 0, @_ );
+    my $obj = RT::Catalog->new( RT->SystemUser );
+    if ( $args{'Name'} ) {
+        $obj->LoadByCols( Name => $args{'Name'} );
+    } else {
+        die "Name is required";
+    }
+    unless ( $obj->id ) {
+        my ($val, $msg) = $obj->Create( %args );
+        die "$msg" unless $val;
+    }
+
+    return $obj;
+}
+
+
 sub create_asset {
     my %info  = @_;
     my $asset = RT::Asset->new( RT->SystemUser );
@@ -126,6 +144,17 @@ sub apply_cfs {
         }
     }
     return $success;
+}
+
+sub last_asset {
+    my $self = shift;
+    my $current = shift;
+    $current = $current ? RT::CurrentUser->new($current) : RT->SystemUser;
+    my $assets = RT::Assets->new( $current );
+    $assets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
+    $assets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
+    $assets->RowsPerPage( 1 );
+    return $assets->First;
 }
 
 1;

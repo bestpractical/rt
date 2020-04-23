@@ -45,16 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ($AssetObj->id) {
   <div class="form-row asset-catalog">
     <div class="label col-md-3">
       <&|/l&>Catalog</&>:
     </div>
     <div class="value col-md-9">
-      <& /Asset/Elements/SelectCatalog, Default => $current{Catalog} &>
+      <& /Asset/Elements/SelectCatalog, Default => $current{Catalog}, AutoSubmit => $AutoSubmit &>
     </div>
   </div>
-% }
   <div class="form-row asset-name">
     <div class="label col-md-3">
       <&|/l&>Name</&>:
@@ -95,8 +93,10 @@
 <%args>
 $AssetObj
 $CatalogObj => undef
+$AutoSubmit => 0
 </%args>
 <%init>
 my %current = map { $_ => ($ARGS{$_} || $AssetObj->$_ || '') }
                   $AssetObj->WritableAttributes;
+$CatalogObj ||= LoadDefaultCatalog($ARGS{'Catalog'} || ($AssetObj && $AssetObj->Catalog) || '' );
 </%init>
