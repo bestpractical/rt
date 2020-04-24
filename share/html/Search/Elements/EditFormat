@@ -134,7 +134,7 @@ jQuery( function() {
       <div class="form-row">
         <div class="col-md-3 label"><&|/l&>Style</&>:</div>
         <div class="col-md-8 value">
-          <select name="Face" class="form-controll selectpicker">
+          <select name="Face" class="form-control selectpicker">
             <option value="">-</option>
             <option value="Bold"><&|/l&>Bold</&></option>
             <option value="Italic"><&|/l&>Italic</&></option>
