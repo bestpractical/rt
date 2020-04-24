@@ -32,7 +32,7 @@ is scalar @attachments, 1, "Found one attachment";
 is $attachments[0]->ContentType, "text/plain", "Found the text part";
 is $attachments[0]->Content, $non_english_text, "Can get the text part content";
 
-ok !system('sbin/rt-externalize-attachments'), "rt-externalize-attachments ran successfully";
+ok( RT::Test->run_singleton_command('sbin/rt-externalize-attachments'), "rt-externalize-attachments ran successfully" );
 
 @attachments = @{ $ticket->Transactions->First->Attachments->ItemsArrayRef };
 is scalar @attachments, 1, "Found one attachment";

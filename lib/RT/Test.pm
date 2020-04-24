@@ -1798,6 +1798,35 @@ sub done_testing {
     $builder->done_testing(@_);
 }
 
+sub run_singleton_command {
+    my $self    = shift;
+    my $command = shift;
+    my @args    = @_;
+
+    my $dir = "$tmp{'directory'}/../singleton";
+    mkdir $dir unless -e $dir;
+
+    my $flag = $command;
+    $flag =~ s!/!-!g;
+    $flag = "$dir/$flag";
+
+    for ( 1 .. 100 ) {
+        if ( -e $flag ) {
+            sleep 1;
+        }
+        else {
+            open my $fh, '>', $flag or die $!;
+            close $fh;
+            last;
+        }
+    }
+
+    my $ret = !system( $command, @args );
+    unlink $flag;
+
+    return $ret;
+}
+
 END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
