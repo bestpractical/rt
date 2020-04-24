@@ -165,13 +165,10 @@ border: none;
   vertical-align: top;
 }
 
-.transaction div.downloadattachment .downloadcontenttype{
-  color: #ccc;
-  display: block;
-  margin-top: 0.25rem;
-padding-right:0.25em;
+.transaction div.downloadattachment .downloadfilename {
+  font-size: 0.9rem;
+  padding-left: 0.1em;
 }
-
 
 .transaction .message-header-key {
   width: 7em;
