@@ -122,7 +122,7 @@ for my $object (@objs) {
             $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
 
             my $setting = RT::SavedSearch->new($session{CurrentUser});
-            $setting->Load($object_id, $search->Id);
+            $setting->Load($object, $search->Id);
 
             $item->{possibly_hidden} = !$setting->IsVisibleTo($Dashboard->Privacy);
         }
