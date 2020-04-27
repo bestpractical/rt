@@ -47,28 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
-
 <& /Elements/ListActions, actions => \@results &>
 
-<& Elements/Deleted, searches => \@deleted, Dashboard => $Dashboard &>
-
-<& Elements/HiddenSearches, searches => \@hidden_searches, Dashboard => $Dashboard &>
-
-% for my $pane (@panes) {
-<form action="Queries.html" name="Dashboard-<%$pane->{Name}%>" method="post" enctype="multipart/form-data">
-<input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
-<input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
-
-<&| /Widgets/TitleBox, title => $pane->{DisplayName} &>
-% my ( $pane_name ) = $pane->{Name} =~ /Searches-(.+)/;
-    <& /Widgets/SelectionBox:show, self => $pane, grep( {
-            $_->{pane} eq $pane_name} @deleted ) ? ( ShowUpdate => 1 ) : () &>
-</&>
+<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
+  <& /Widgets/SearchSelection,
+    pane_name => \%pane_name,
+    sections  => \@sections,
+    selected  => \%selected,
+    filters   => \@filters,
+  &>
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
 </form>
-% }
-
 <%INIT>
-
 my @results;
 
 use RT::Dashboard;
@@ -80,197 +70,161 @@ unless ($ok) {
 }
 my $title = loc("Modify the content of dashboard [_1]", $Dashboard->Name);
 
-my %desc_of;
-my @items;
-my %selected;
-my %still_exists;
+my @sections;
+my %item_for;
 
-# add portlets (homepage componenets)
-my @components = @{ RT->Config->Get('HomepageComponents') };
+my @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('HomepageComponents')};
 
-for my $desc (@components) {
-    my $name = "component-$desc";
-    push @items, [$name, loc($desc)];
-    $desc_of{$name} = loc($desc);
-    $still_exists{$name} = 1;
-}
+$item_for{ $_->{type} }{ $_->{name} } = $_ for @components;
 
-# add dashboards
-my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
-for my $dashboard (@dashboards) {
-    # Users *can* set up mutually recursive dashboards, but don't make it THIS
-    # easy for them to shoot themselves in the foot.
-    next if $dashboard->Id == $Dashboard->Id;
+push @sections, {
+    id    => 'components',
+    label => loc("Components"),
+    items => \@components,
+};
 
-    my $name = 'dashboard-' . $dashboard->Id . '-' . $dashboard->Privacy;
-    my $type = loc('Dashboard'); # loc
-    my $desc = "$type: " . $dashboard->Name;
-    push @items, [$name, $desc];
-    $desc_of{$name} = $desc;
-    $still_exists{$name} = 1;
-}
-
-# add saved searches
-my @objs = RT::System->new($session{'CurrentUser'});
+my $sys = RT::System->new($session{'CurrentUser'});
+my @objs = ($sys);
 
 push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
     if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
                                           Object => $RT::System );
 
 for my $object (@objs) {
+    my @items;
+    my $object_id = ref($object) . '-' . $object->Id;
+    $object_id = 'system' if $object eq $sys;
+
+    # saved searches and charts
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $loc_desc, $search) = @$_;
-        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-        my $type = ( $SearchType eq 'Ticket' )
-          ? 'Saved Search'    # loc
-          : $SearchType;
-        $desc = loc($type) . ": $loc_desc";
-        my $privacy = $Dashboard->_build_privacy($object);
-        my $name = 'search-' . $search->Id . '-' . $privacy;
-        push @items, [$name, $desc];
-        $desc_of{$name} = $desc;
-        $still_exists{$name} = 1;
-    }
-}
 
-# Get the list of portlets already in use
-my @deleted;
-do {
-    my $panes = $Dashboard->Panes;
-    for my $pane (keys %$panes) {
-        for my $portlet (@{ $panes->{$pane} }) {
-            my $name;
-            my $type = $portlet->{portlet_type};
-
-            if ($type eq 'search' || $type eq 'dashboard') {
-                $name = join '-', $type, $portlet->{id}, $portlet->{privacy};
-            }
-            elsif ($type eq 'component') {
-                $name = join '-', 'component', $portlet->{component};
-            }
-
-            if (!$still_exists{$name}) {
-                push @deleted, {
-                    pane => $pane,
-                    name => $name,
-                    description => $portlet->{description},
-                };
-                next;
-            }
-
-            push @{ $selected{$pane} }, $name;
-            $desc_of{$name} = $portlet->{description};
+        my $SearchType = 'Ticket';
+        if ((ref($search->Content)||'') eq 'HASH') {
+            $SearchType = $search->Content->{'SearchType'}
+                if $search->Content->{'SearchType'};
         }
+        else {
+            $RT::Logger->debug("Search ".$search->id." ($desc) appears to have no Content");
+        }
+
+        my $item;
+        if ($object eq $sys && $SearchType eq 'Ticket') {
+            $item = { type => 'system', name => $desc, label => $loc_desc, search_id => $search->id };
+
+            # make system searches more easily accessible since dashboards
+            # historically used a human-readable description rather than
+            # something we can comfortably use as a hash key
+            $item_for{ $item->{type} }{ $search->id } = $item;
+        }
+        else {
+            my $oid = $object_id.'-SavedSearch-'.$search->Id;
+            $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
+
+            my $setting = RT::SavedSearch->new($session{CurrentUser});
+            $setting->Load($object, $search->Id);
+
+            $item->{possibly_hidden} = !$setting->IsVisibleTo($Dashboard->Privacy);
+        }
+
+        $item_for{ $item->{type} }{ $item->{name} } = $item;
+        push @items, $item;
     }
-};
 
-$m->callback(
-    CallbackName => 'PopulatePossibilities',
-    Dashboard    => $Dashboard,
-    items        => \@items,
-    desc_of      => \%desc_of,
-    still_exists => \%still_exists,
-    selected     => \%selected,
-);
+    for my $dashboard ($m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object, Flat => 1)) {
+        # Users *can* set up mutually recursive dashboards, but don't make it
+        # THIS easy for them to shoot themselves in the foot.
+        next if $dashboard->Id == $Dashboard->id;
 
-# Create selectionbox widgets for those portlets
+        my $name = 'dashboard-' . $dashboard->Id . '-' . $dashboard->Privacy;
+
+        my $item = { type => 'dashboard', name => $name, label => $dashboard->Name };
+        $item->{possibly_hidden} = !$dashboard->IsVisibleTo($Dashboard->Privacy);
+
+        $item_for{ $item->{type} }{ $item->{name} } = $item;
+        push @items, $item;
+    }
+
+    my $label = $object eq $sys           ? loc('System')
+              : $object->isa('RT::Group') ? $object->Label
+                                          : $object->Name;
+
+    push @sections, {
+        id    => $object_id,
+        label => $label,
+        items => [ sort { lc($a->{label}) cmp lc($b->{label}) } @items ],
+    };
+}
 
 my %pane_name = (
     'body'    => loc('Body'),
     'sidebar' => loc('Sidebar'),
 );
 
-$m->callback(
-    CallbackName => 'Panes',
-    Dashboard    => $Dashboard,
-    panes        => \%pane_name,
-);
-
-my @panes;
-for my $pane (sort keys %pane_name) {
-    my $sel = $m->comp(
-        '/Widgets/SelectionBox:new',
-        Action      => 'Queries.html',
-        Name        => "Searches-$pane",
-        DisplayName => $pane_name{$pane},
-        Available   => \@items,
-        Selected    => $selected{$pane},
-        AutoSave    => 1,
-        OnSubmit    => sub {
-            my $self = shift;
-
-            $m->callback(
-                CallbackName => 'Submit',
-                Dashboard    => $Dashboard,
-                Selected     => $self->{Current},
-                pane         => $pane,
-            );
-
-            my @portlets;
-            for (@{ $self->{Current} }) {
-                my $item = $_;
-                my $desc = $desc_of{$item};
-                my $portlet_type = $1 if $item =~ s/^(\w+)-//;
-
-                if ($portlet_type eq 'search' || $portlet_type eq 'dashboard') {
-                    my ($id, $privacy) = split '-', $item, 2;
-                    push @portlets, {
-                        portlet_type => $portlet_type,
-                        privacy      => $privacy,
-                        id           => $id,
-                        description  => $desc,
-                        pane         => $pane,
-                    };
-                }
-                elsif ($portlet_type eq 'component') {
-                    # Absolute paths stay absolute, relative paths go into
-                    # /Elements. This way, extensions that add portlets work.
-                    my $path = $item;
-                    $path = "/Elements/$path" if substr($path, 0, 1) ne '/';
-
-                    push @portlets, {
-                        portlet_type => $portlet_type,
-                        component    => $item,
-                        path         => $path,
-                        description  => $item,
-                        pane         => $pane,
-                    };
-                }
+my %selected;
+do {
+    my $panes = $Dashboard->Panes;
+    for my $pane (keys %$panes) {
+        my @items;
+        for my $saved (@{ $panes->{$pane} }) {
+            my $item;
+            if ($saved->{portlet_type} eq 'component') {
+                $item = $item_for{ $saved->{portlet_type} }{ $saved->{component} };
             }
-
-            # we want to keep all the other panes the same
-            my $panes = $Dashboard->Panes;
-            $panes->{$pane} = \@portlets;
-
-            # remove "deleted" warnings about this pane
-            @deleted = grep { $_->{pane} ne $pane } @deleted;
-
-            $m->callback(
-                CallbackName => 'BeforeUpdate',
-                Dashboard    => $Dashboard,
-                panes        => $panes,
-            );
-
-            my ($ok, $msg) = $Dashboard->Update(Panes => $panes);
-
-            if ($ok) {
-                push @results, loc("Dashboard updated");
+            elsif ($saved->{portlet_type} eq 'search') {
+                if ($saved->{privacy} =~ /^RT::System-/) {
+                    $item = $item_for{system}{$saved->{id}};
+                }
+                else {
+                    my $name = join '-', $saved->{privacy}, 'SavedSearch', $saved->{id};
+                    $item = $item_for{saved}{$name};
+                }
             }
             else {
-                push @results, loc("Dashboard could not be updated: [_1]", $msg);
+                my $type = $saved->{portlet_type};
+                my $name  = join '-', $type, $saved->{id}, $saved->{privacy};
+                $item = $item_for{$type}{$name};
             }
-        },
-    );
 
-    push @panes, $sel;
+            if ($item) {
+                push @items, $item;
+            }
+            else {
+                push @results, loc('Unable to find [_1] [_2]', $saved->{portlet_type}, $saved->{description});
+            }
+        }
+        $selected{$pane} = \@items;
+    }
+};
+
+my @filters = (
+    [ 'component' => loc('Components') ],
+    [ 'dashboard' => loc('Dashboards') ],
+    [ 'ticket'    => loc('Tickets') ],
+    [ 'chart'     => loc('Charts') ],
+);
+
+$m->callback(
+    CallbackName => 'Default',
+    pane_name    => \%pane_name,
+    sections     => \@sections,
+    selected     => \%selected,
+    filters      => \@filters,
+);
+
+if ( $ARGS{UpdateSearches} ) {
+    $ARGS{dashboard_id} = $id;
+    my ($ok, $msg) = UpdateDashboard( \%ARGS, \%item_for );
+    push @results, $ok ? loc('Dashboard updated') : $msg;
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Path      => "/Dashboards/Queries.html",
+        Arguments => { id => $id },
+    );
 }
 
-$m->comp('/Widgets/SelectionBox:process', %ARGS, self => $_ )
-    for @panes;
-
-my @hidden_searches = $Dashboard->PossibleHiddenSearches;
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id
 </%ARGS>
-

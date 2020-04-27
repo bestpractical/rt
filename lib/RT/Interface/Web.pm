@@ -4608,6 +4608,133 @@ sub GetDefaultQueue {
     return $queue;
 }
 
+=head2 UpdateDashboard
+
+Update global and user-level dashboard preferences.
+
+For arguments, takes submitted args from the page and a hashref of available
+items.
+
+Gets additional information for submitted items from the hashref of
+available items, since the args can't contain all information about the
+item.
+
+=cut
+
+sub UpdateDashboard {
+    my $args            = shift;
+    my $available_items = shift;
+
+    my $id = $args->{dashboard_id};
+
+    my $data = {
+        "dashboard_id" => $id,
+        "panes"        => {
+            "body"    => [],
+            "sidebar" => []
+        }
+    };
+
+    foreach my $arg (qw{ body sidebar }) {
+        my $pane   = $arg;
+        my $values = $args->{$pane};
+
+        next unless $values;
+
+        # force value to an arrayref so we can handle both single and multiple members of each pane.
+        $values = [$values] unless ref $values;
+
+        foreach my $value ( @{$values} ) {
+            $value =~ m/^(\w+)-(.+)$/i;
+            my $type = $1;
+            my $name = $2;
+            push @{ $data->{panes}->{$pane} }, { type => $type, name => $name };
+        }
+    }
+
+    my ( $ok, $msg );
+    if ( $id eq 'MyRT' ) {
+        my $user = $session{CurrentUser};
+
+        if ( my $user_id = $args->{user_id} ) {
+            my $UserObj = RT::User->new( $session{'CurrentUser'} );
+            ( $ok, $msg ) = $UserObj->Load($user_id);
+            return ( $ok, $msg ) unless $ok;
+
+            return ( $ok, $msg ) = $UserObj->SetPreferences( 'HomepageSettings', $data->{panes} );
+        } elsif ( $args->{is_global} ) {
+            my $sys = RT::System->new( $session{'CurrentUser'} );
+            my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
+            return ( $ok, $msg ) = $default_portlets->SetContent( $data->{panes} );
+        } else {
+            return ( $ok, $msg ) = $user->SetPreferences( 'HomepageSettings', $data->{panes} );
+        }
+    } else {
+        use RT::Dashboard;
+        my $Dashboard = RT::Dashboard->new( $session{'CurrentUser'} );
+        ( $ok, $msg ) = $Dashboard->LoadById($id);
+
+        # report error at the bottom
+        return ( $ok, $msg ) unless $ok && $Dashboard->Id;
+
+        my $content;
+        for my $pane_name ( keys %{ $data->{panes} } ) {
+            my @pane;
+
+            for my $item ( @{ $data->{panes}{$pane_name} } ) {
+                my %saved;
+                $saved{pane}         = $pane_name;
+                $saved{portlet_type} = $item->{type};
+
+                $saved{description} = $available_items->{ $item->{type} }{ $item->{name} }{label};
+
+                if ( $item->{type} eq 'component' ) {
+                    $saved{component} = $item->{name};
+
+                    # Absolute paths stay absolute, relative paths go into
+                    # /Elements. This way, extensions that add portlets work.
+                    my $path = $item->{name};
+                    $path = "/Elements/$path" if substr( $path, 0, 1 ) ne '/';
+
+                    $saved{path} = $path;
+                } elsif ( $item->{type} eq 'system' || $item->{type} eq 'saved' ) {
+                    $saved{portlet_type} = 'search';
+
+                    $item->{searchType} = $available_items->{ $item->{type} }{ $item->{name} }{search_type}
+                                          if exists $available_items->{ $item->{type} }{ $item->{name} }{search_type};
+
+                    my $type = $item->{searchType};
+                    $type = 'Saved Search' if !$type || $type eq 'Ticket';
+                    $saved{description} = loc($type) . ': ' . $saved{description};
+
+                    $item->{searchId} = $available_items->{ $item->{type} }{ $item->{name} }{search_id}
+                                        if exists $available_items->{ $item->{type} }{ $item->{name} }{search_id};
+
+                    if ( $item->{type} eq 'system' ) {
+                        $saved{privacy} = 'RT::System-1';
+                        $saved{id}      = $item->{searchId};
+                    } else {
+                        my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
+                        $saved{privacy} = "$obj_type-$obj_id";
+                        $saved{id}      = $search_id;
+                    }
+                } elsif ( $item->{type} eq 'dashboard' ) {
+                    my ( undef, $dashboard_id, $obj_type, $obj_id ) = split '-', $item->{name};
+                    $saved{privacy}     = "$obj_type-$obj_id";
+                    $saved{id}          = $dashboard_id;
+                    $saved{description} = loc('Dashboard') . ': ' . $saved{description};
+                }
+
+                push @pane, \%saved;
+            }
+
+            $content->{$pane_name} = \@pane;
+        }
+
+        return ( $ok, $msg ) = $Dashboard->Update( Panes => $content );
+    }
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

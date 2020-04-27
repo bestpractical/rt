@@ -393,3 +393,117 @@ textarea.code {
 #EditConfig ul.plugins {
     margin: 0;
 }
+
+/* javascript selection box */
+
+.selectionbox-js .source li .remove {
+    display: none;
+}
+
+/* make it look more like we're cloning */
+.selectionbox-js .source .placeholder {
+    display: none;
+}
+
+.selectionbox-js .destination {
+    margin-bottom: 2em;
+}
+
+.selectionbox-js .source .contents {
+    height: 526px;
+}
+
+/* include ul rule specifically to make the drop target work when there are
+   no selected searches */
+.selectionbox-js .destination .contents,
+.selectionbox-js .destination .contents ul {
+    height: 250px;
+}
+
+.selectionbox-js h2 {
+    margin: 0 0 .5em 0;
+}
+
+.selectionbox-js .source .filters {
+    margin-bottom: 1em;
+}
+
+.selectionbox-js .destinations {
+    margin-top: 3.75rem;
+}
+
+.selectionbox-js .contents {
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    overflow-y: scroll;
+    padding: 0 .5em;
+}
+
+.selectionbox-js .contents ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.selectionbox-js .contents li,
+.selectionbox-js .contents .placeholder {
+    border: 1px solid #aaa;
+    border-radius: 0.25rem;
+    padding: .5em;
+    margin: .5em 0;
+    background-color: #eee;
+    cursor: default;
+}
+
+.selectionbox-js .contents li {
+    position: relative;
+
+    /* wrap very long search names */
+    word-wrap: break-word;
+    padding-right: 2em;
+}
+
+.selectionbox-js .contents li .text-warning {
+    display: block;
+    font-size: .9em;
+    font-style: italic;
+}
+
+.selectionbox-js .contents li a.remove {
+    position: absolute;
+    right: .5em;
+    color: #5C6273;
+}
+
+.selectionbox-js .contents .placeholder {
+    box-sizing: border-box;
+    border-style: dashed;
+    opacity: 0.5;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+}
+
+.selectionbox-js .contents h3 {
+    margin: .5em 0;
+}
+
+.selectionbox-js .contents .section {
+    margin-bottom: 1em;
+}
+
+.selectionbox-js select[name=filter] {
+    float: right;
+}
+
+/* always show scrollbars */
+.selectionbox-js .contents::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+.selectionbox-js .contents::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}

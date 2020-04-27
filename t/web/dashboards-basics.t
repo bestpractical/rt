@@ -90,22 +90,31 @@ $m->content_lacks("Subscription", "we don't have the SubscribeDashboard right");
 $m->follow_link_ok({text => "Basics"});
 $m->content_contains("Modify the dashboard different dashboard");
 
+# add 'Unowned Tickets' to body of 'different dashboard' dashboard
 $m->follow_link_ok({text => "Content"});
 $m->content_contains("Modify the content of dashboard different dashboard");
-my $form = $m->form_name('Dashboard-Searches-body');
-my @input = $form->find_input('Searches-body-Available');
-my ($unowned) =
-  map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ /Saved Search: Unowned Tickets/ } @input;
-$form->value('Searches-body-Available' => $unowned );
-$m->click_button(name => 'add');
-$m->content_contains("Dashboard updated");
+
+my ( $id ) = ( $m->uri =~ /id=(\d+)/ );
+ok( $id, "got a dashboard ID, $id" );  # 8
+
+my $args = {
+    UpdateSearches => "Save",
+    body           => ["system-Unowned Tickets"],
+    sidebar        => [],
+};
+
+my $res = $m->post(
+    $url . "Dashboards/Queries.html?id=$id",
+    $args,
+);
+
+is( $res->code, 200, "add 'unowned tickets' to body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 my $dashboard = RT::Dashboard->new($currentuser);
-my ($id) = $m->content =~ /name="id" value="(\d+)"/;
-ok($id, "got an ID, $id");
 $dashboard->LoadById($id);
-is($dashboard->Name, "different dashboard");
+is($dashboard->Name, 'different dashboard', "'different dashboard' name is correct");
 
 is($dashboard->Privacy, 'RT::User-' . $user_obj->Id, "correct privacy");
 is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
@@ -114,19 +123,23 @@ my @searches = $dashboard->Searches;
 is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
 
-$form = $m->form_name('Dashboard-Searches-body');
-@input = $form->find_input('Searches-body-Available');
-my ($my_tickets) =
-  map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ /Saved Search: My Tickets/ } @input;
-$form->value('Searches-body-Available' => $my_tickets );
-$m->click_button(name => 'add');
-$m->content_contains("Dashboard updated");
+push(
+    @{$args->{body}},
+    ( "system-My Tickets", )
+);
 
-$dashboard = RT::Dashboard->new($currentuser);
+$res = $m->post(
+    $url . 'Dashboards/Queries.html?id=' . $id,
+    $args,
+);
+
+is( $res->code, 200, "add 'My Tickets' to body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
+
 $dashboard->LoadById($id);
-
 @searches = $dashboard->Searches;
+
 is(@searches, 2, "two saved searches in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct existing search name");
 like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search name");
@@ -139,6 +152,8 @@ $ticket->Create(
     Subject   => 'dashboard test',
 );
 
+$m->get_ok($url."Dashboards/index.html");
+$m->follow_link_ok({text => "different dashboard"});
 $m->follow_link_ok({id => 'page-show'});
 $m->content_contains("50 highest priority tickets I own");
 $m->content_contains("50 newest unowned tickets");
@@ -202,16 +217,29 @@ $m->content_contains("Saved dashboard system dashboard");
 
 $m->follow_link_ok({id => 'page-content'});
 
-$form = $m->form_name('Dashboard-Searches-body');
-@input = $form->find_input('Searches-body-Available');
-my ($personal) =
-  map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ /Saved Search: personal search/ } @input;
-$form->value('Searches-body-Available' => $personal );
-$m->click_button(name => 'add');
-$m->content_contains("Dashboard updated");
+my ( $system_id ) = ( $m->uri =~ /id=(\d+)/ );
+ok( $system_id, "got a dashboard ID for the system dashboard, $system_id" );
 
-$m->content_contains("The following queries may not be visible to all users who can see this dashboard.");
+# get the saved search name from the content
+my ( $saved_search_name ) = ( $m->content =~ /(RT::User-\d+-SavedSearch-\d+)/ );
+ok( $saved_search_name, "got a saved search name, $saved_search_name" );  # RT::User-27-SavedSearch-9
+
+push(
+    @{$args->{body}},
+    ( "saved-" . $saved_search_name, )
+);
+
+$res = $m->post(
+    $url . 'Dashboards/Queries.html?id=' . $system_id,
+    $args,
+);
+
+is( $res->code, 200, "add 'personal search' to body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
+
+$m->get_ok($url."Dashboards/Queries.html?id=$system_id");
+$m->content_contains("Warning: may not be visible to all viewers");
 
 $m->follow_link_ok({id => 'page-show'});
 $m->content_contains("personal search", "saved search shows up");
@@ -231,7 +259,7 @@ $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 $omech->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
 
 # make sure that navigating to dashboard pages with bad IDs throws an error
-my ($bad_id) = $personal =~ /^search-(\d+)/;
+my $bad_id = $system_id + 1;
 
 for my $page (qw/Modify Queries Render Subscription/) {
     $m->get("/Dashboards/$page.html?id=$bad_id");
