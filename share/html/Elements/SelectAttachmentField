@@ -46,13 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>" class="form-control selectpicker">
-<option value="Subject"><&|/l&>Subject</&></option>
+% if ( $Class eq 'RT::Assets' ) {
+  <option value="Name"><&|/l&>Name</&></option>
+  <option value="Description"><&|/l&>Description</&></option>
+% } else {
+  <option value="Subject"><&|/l&>Subject</&></option>
 % if ( RT->Config->Get('FullTextSearch')->{'Enable'} ) {
-<option value="Content"><&|/l&>Content</&></option>
+  <option value="Content"><&|/l&>Content</&></option>
 % }
-<option value="ContentType"><&|/l&>Content-Type</&></option>
-<option value="Filename"><&|/l&>Filename</&></option>
+  <option value="ContentType"><&|/l&>Content-Type</&></option>
+  <option value="Filename"><&|/l&>Filename</&></option>
+% }
 </select>
 <%ARGS>
+$Class => 'RT::Tickets'
 $Name => 'AttachmentField'
 </%ARGS>

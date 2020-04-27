@@ -3071,17 +3071,64 @@ Set($AssetSearchFields, {
     Description => 'LIKE',
 });
 
-=item C<$AssetSearchFormat>
+=item C<$AssetDefaultSearchResultFormat>
 
-The format that results of the asset search are displayed with.  This is
-either a string, which will be used for all catalogs, or a hash
-reference, keyed by catalog's name/id.  If a hashref and neither name or
-id is found therein, falls back to the key ''.
+The format that results of the asset search are displayed with.
+
+=cut
+
+# loc('Related tickets')
+Set($AssetDefaultSearchResultFormat, q[
+    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    Status,
+    Catalog,
+    Owner,
+    '__ActiveTickets__ __InactiveTickets__/TITLE:Related tickets',
+    '__NEWLINE__',
+    '__NBSP__',
+    '<small>__Description__</small>',
+    '<small>__CreatedRelative__</small>',
+    '<small>__LastUpdatedRelative__</small>',
+    '<small>__Contacts__</small>',
+]);
+
+=item C<$AssetDefaultSearchResultOrderBy>
+
+What column should we order by for RT asset search results.
+
+=cut
+
+Set($AssetDefaultSearchResultOrderBy, 'Name');
+
+=item C<$AssetDefaultSearchResultOrder>
+
+When ordering asset search results by C<$AssetDefaultSearchResultOrderBy>,
+should the sort be ascending (ASC) or descending (DESC).
+
+=cut
+
+Set($AssetDefaultSearchResultOrder, 'ASC');
+
+=item C<$AssetShowSearchResultCount>
+
+Display search result count on asset lists. Defaults to 1 (show them).
+
+=cut
+
+Set($AssetShowSearchResultCount, 1);
+
+=item C<$AssetSimpleSearchFormat>
+
+The format that results of the asset simple search are displayed with.  This
+is either a string, which will be used for all catalogs, or a hash
+reference, keyed by catalog's name/id.  If a hashref and neither name or id
+is found therein, falls back to the key ''.
 
 If you wish to use the multiple catalog format, your configuration would look
 something like:
 
-    Set($AssetSearchFormat, {
+    Set($AssetSimpleSearchFormat, {
         'General assets' => q[Format String for the General Assets Catalog],
         8                => q[Format String for Catalog 8],
         ''               => q[Format String for any catalogs not listed explicitly],
@@ -3090,14 +3137,19 @@ something like:
 =cut
 
 # loc('Related tickets')
-Set($AssetSearchFormat, q[
+Set($AssetSimpleSearchFormat, q[
+    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
     '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
-    Description,
-    '__Status__ (__Catalog__)/TITLE:Status',
+    Status,
+    Catalog,
     Owner,
-    HeldBy,
-    Contacts,
     '__ActiveTickets__ __InactiveTickets__/TITLE:Related tickets',
+    '__NEWLINE__',
+    '__NBSP__',
+    '<small>__Description__</small>',
+    '<small>__CreatedRelative__</small>',
+    '<small>__LastUpdatedRelative__</small>',
+    '<small>__Contacts__</small>',
 ]);
 
 =item C<$AssetSummaryFormat>
@@ -3145,6 +3197,18 @@ Set( $AssetBasicCustomFieldsOnCreate, [ 'foo', 'bar' ] );
 =cut
 
 # Set($AssetBasicCustomFieldsOnCreate, undef );
+
+=item C<$AssetHideSimpleSearch>
+
+Set to a true value to hide the legacy Asset Simple Search in favor of AssetSQL
+added in RT 5.0.
+
+When hidden, the Asset search menu shows the Current Search menu like tickets,
+giving quick access back to a search after clicking on an asset.
+
+=cut
+
+Set($AssetHideSimpleSearch, 0);
 
 =back
 

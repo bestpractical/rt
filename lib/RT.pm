@@ -769,6 +769,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::ConfigInDatabase' => '5.0',
     'RT::Extension::CustomRole::Visibility' => '5.0',
     'RT::Extension::PriorityAsString' => '5.0',
+    'RT::Extension::AssetSQL' => '5.0',
 );
 
 sub InitPlugins {

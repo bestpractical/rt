@@ -53,7 +53,7 @@ $Order => 'ASC'
 $PreserveNewLines => 0
 $UserData => 0
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>
 <%INIT>
 my $collection = $Class->new( $session{'CurrentUser'} );
@@ -70,7 +70,17 @@ else {
     push @limits, $Query;
 }
 
-$collection->FromSQL( join ' AND ', @limits );
+if ( $Query ) {
+    $collection->FromSQL( join ' AND ', @limits );
+}
+elsif ( $Class eq 'RT::Assets' ) {
+    my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
+    $ARGS{'Catalog'} = $catalog_obj->Id;
+    ProcessAssetsSearchArguments(
+        Assets => $collection, Catalog => $catalog_obj, ARGSRef => \%ARGS,
+    );
+}
+
 if ( $OrderBy =~ /\|/ ) {
     # Multiple Sorts
     my @OrderBy = split /\|/, $OrderBy;
@@ -83,6 +93,18 @@ if ( $OrderBy =~ /\|/ ) {
 else {
     $collection->OrderBy( FIELD => $OrderBy, ORDER => $Order );
 }
+
+if ( $Class eq 'RT::Assets' && !$Format ) {
+    $Format = q|id, Name, Description, Status, Catalog, |;
+    $Format .= "$_, " for RT::Asset->Roles;
+    my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
+    my $CFs = RT::CustomFields->new( $session{CurrentUser} );
+    $CFs->LimitToCatalog( $catalog_obj->Id );
+    $CFs->LimitToObjectId( 0 ); # LimitToGlobal but no LookupType restriction
+    $Format .= "'__CF.{$_}__/TITLE:$_', " for map {$_ = $_->Name; s/['\\]/\\$1/g; $_} @{$CFs->ItemsArrayRef};
+}
+
+$m->callback(CallbackName => "ModifyFormat", Format => \$Format );
 
 my $filename = $UserData ? 'UserTicketData.tsv' : undef;
 $m->comp( "/Elements/TSVExport", Collection => $collection, Format => $Format, PreserveNewLines => $PreserveNewLines, Filename => $filename );

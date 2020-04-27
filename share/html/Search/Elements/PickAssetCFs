@@ -45,29 +45,19 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<%ARGS>
+%catalogs => ()
+</%ARGS>
 <%init>
-my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
-$ARGS{'Catalog'} = $catalog_obj->Id;
-
-my $assets = RT::Assets->new($session{CurrentUser});
-ProcessAssetsSearchArguments(
-    Assets => $assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
-);
-
-my $Format = q|id, Name, Description, Status, Catalog, |;
-
-$Format .= "$_, " for RT::Asset->Roles;
-
-my $CFs = RT::CustomFields->new( $session{CurrentUser} );
-$CFs->LimitToCatalog( $catalog_obj->Id );
-$CFs->LimitToObjectId( 0 ); # LimitToGlobal but no LookupType restriction
-$Format .= "'__CF.{$_}__/TITLE:$_', " for map {$_ = $_->Name; s/(['\\])/\\$1/g; $_} @{$CFs->ItemsArrayRef};
-
-$m->callback(CallbackName => "ModifyFormat", Format => \$Format );
-
-my $comp = "/Asset/Elements/TSVExport";
-$comp = "/Elements/TSVExport" if $m->comp_exists("/Elements/TSVExport");
-
-$m->comp($comp, Collection => $assets, Format => $Format );
-
+my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'});
+foreach my $id (keys %catalogs) {
+    my $catalog = RT::Catalog->new($session{'CurrentUser'});
+    $catalog->Load($id);
+    next unless $catalog->Id;
+    $CustomFields->LimitToCatalog($catalog->Id);
+    $CustomFields->SetContextObject( $catalog ) if keys %catalogs == 1;
+}
+$CustomFields->LimitToCatalog(0);
+$CustomFields->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
 </%init>
+<& /Search/Elements/PickCFs, %ARGS, CustomFields => $CustomFields &>

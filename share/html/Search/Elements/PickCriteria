@@ -56,6 +56,10 @@
 %   if ( $ObjectType eq 'RT::Ticket' ) {
     <& PickTickets, queues => \%queues, %ARGS &>
 %   }
+% } elsif ( $Class eq 'RT::Assets' ) {
+    <& PickBasics, catalogs => \%catalogs, %ARGS &>
+    <& PickAssetCFs, catalogs => \%catalogs, %ARGS &>
+%   $m->callback( %ARGS, CallbackName => "AfterCFs" );
 % } else {
     <& PickBasics, queues => \%queues &>
     <& PickCustomRoles, queues => \%queues &>
@@ -76,6 +80,7 @@
 $addquery => 0
 $query => undef
 %queues => ()
+%catalogs => ()
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

@@ -143,7 +143,7 @@ my $Dirty = $is_dirty->(
 $Id            => 'new'
 $Object        => undef
 $Class         => 'RT::Tickets'
-$Type          => $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket'
+$Type          => $Class eq 'RT::Transactions' ? 'Transaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
 $Description   => ''
 $CurrentSearch => {}
 @SearchFields   => ()
@@ -157,7 +157,7 @@ $Query       => {}
 $SavedSearch => {}
 @SearchFields => qw(Query Format OrderBy Order RowsPerPage ObjectType)
 $Class        => 'RT::Tickets'
-$Type         => $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket'
+$Type         => $Class eq 'RT::Transactions' ? 'Transaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
 </%ARGS>
 <%INIT>
 

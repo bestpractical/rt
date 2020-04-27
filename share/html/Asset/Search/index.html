@@ -46,6 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
+if (RT->Config->Get('AssetHideSimpleSearch')) {
+    $m->redirect( RT->Config->Get("WebPath") .'/Search/Build.html?Class=RT::Assets' );
+}
+
 my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
 $ARGS{'Catalog'} = $catalog_obj->Id;
 

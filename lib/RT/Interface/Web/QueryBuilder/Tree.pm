@@ -120,6 +120,36 @@ sub GetReferencedQueues {
     return $queues;
 }
 
+=head2 GetReferencedCatalogs
+
+Returns a hash reference; each catalog referenced with an '=' operation
+will appear as a key whose value is 1.
+
+=cut
+
+sub GetReferencedCatalogs {
+    my $self = shift;
+
+    my $catalogs = {};
+
+    $self->traverse(
+        sub {
+            my $node = shift;
+
+            return if $node->isRoot;
+            return unless $node->isLeaf;
+
+            my $clause = $node->getNodeValue();
+            return unless $clause->{ Key } eq 'Catalog';
+            return unless $clause->{ Op } eq '=';
+
+            $catalogs->{ $clause->{ Value } } = 1;
+        }
+    );
+
+    return $catalogs;
+}
+
 =head2 GetQueryAndOptionList SELECTED_NODES
 
 Given an array reference of tree nodes that have been selected by the user,

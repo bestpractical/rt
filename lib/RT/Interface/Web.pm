@@ -4356,20 +4356,22 @@ sub ProcessAssetsSearchArguments {
         push @PassArguments, 'SearchAssets';
     }
 
-    my $Format = RT->Config->Get('AssetSearchFormat');
-    $Format = $Format->{$args{'Catalog'}->id}
-        || $Format->{$args{'Catalog'}->Name}
-        || $Format->{''} if ref $Format;
-    $Format ||= q[
-        '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-        '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
-        Description,
-        Status,
-    ];
+    if ( !$ARGSRef->{Format} ) {
+        my $Format = RT->Config->Get('AssetSimpleSearchFormat');
+        $Format = $Format->{$args{'Catalog'}->id}
+            || $Format->{$args{'Catalog'}->Name}
+            || $Format->{''} if ref $Format;
+        $ARGSRef->{Format} = $Format || q[
+            '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+            '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
+            Description,
+            Status,
+        ];
+    }
 
     $ARGSRef->{OrderBy} ||= 'id';
 
-    push @PassArguments, qw/OrderBy Order Page/;
+    push @PassArguments, qw/OrderBy Order Page Format/;
 
     return (
         OrderBy         => 'id',
@@ -4377,7 +4379,6 @@ sub ProcessAssetsSearchArguments {
         Rows            => 50,
         (map { $_ => $ARGSRef->{$_} } grep { defined $ARGSRef->{$_} } @PassArguments),
         PassArguments   => \@PassArguments,
-        Format          => $Format,
     );
 }
 
