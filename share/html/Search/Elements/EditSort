@@ -48,12 +48,12 @@
 % for my $o (0..3) {
 % $Order[$o] ||= ''; $OrderBy[$o] ||= '';
 <div class="form-row">
-  <div class="col-md-4 label">
+  <div class="col-sm-4 col-md-4 label">
 % if ($o == 0) {
 <&|/l&>Order by</&>:
 % }
   </div>
-  <div class="col-md-4 value">
+  <div class="col-sm-4 col-md-4 value">
     <select name="OrderBy" class="form-control selectpicker">
 % if ($o > 0) {
       <option value=""><&|/l&>~[none~]</&></option>
@@ -70,7 +70,7 @@ selected="selected"
 % }
     </select>
   </div>
-  <div class="col-md-4">
+  <div class="col-sm-4 col-md-4">
     <select name="Order" class="form-control selectpicker">
       <option value="ASC"
 % unless ( ($Order[$o]||'') eq "DESC" ) {
@@ -88,10 +88,10 @@ selected="selected"
 % }
 
 <div class="form-row">
-  <div class="col-md-4 label">
+  <div class="col-sm-4 col-md-4 label">
     <&|/l&>Rows per page</&>:
   </div>
-  <div class="col-md-4 value">
+  <div class="col-sm-4 col-md-4 value">
     <& /Elements/SelectResultsPerPage,
         Name => "RowsPerPage",
         Default => $RowsPerPage &>

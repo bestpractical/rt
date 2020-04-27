@@ -46,13 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="col-sm-3 col-md-3 label">
     <% $handle_block->( $Condition->{'Field'}, $Condition->{'Name'} .'Field' ) |n %>
   </div>
-  <div class="col-md-2 operator">
+  <div class="col-sm-3 col-md-2 operator">
     <% $handle_block->( $Condition->{'Op'}, $Condition->{'Name'} .'Op') |n %>
   </div>
-  <div class="col-md-7 value">
+  <div class="col-sm-6 col-md-7 value">
     <% $handle_block->( $Condition->{'Value'}, 'ValueOf'. $Condition->{'Name'} ) |n %>
   </div>
 </div>

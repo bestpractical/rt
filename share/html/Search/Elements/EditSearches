@@ -51,14 +51,14 @@
 % if ( $can_modify ) {
 
 <div class="form-row">
-  <div class="col-md-4 label"><&|/l&>Privacy</&>:</div>
-  <div class="col-md-8">
+  <div class="col-sm-3 col-md-4 label"><&|/l&>Privacy</&>:</div>
+  <div class="col-sm-9 col-md-8">
 <& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
   </div>
 </div>
   <div class="form-row">
-    <div class="col-md-4 label"><&|/l&>Description</&>:</div>
-    <div class="col-md-8 input-group">
+    <div class="col-sm-3 col-md-4 label"><&|/l&>Description</&>:</div>
+    <div class="col-sm-9 col-md-8 input-group">
       <input type="text" size="25" name="SavedSearchDescription" value="<% $Description || '' %>" class="form-control" />
 % if ($Id ne 'new') {
 % if ( $Dirty ) {
@@ -81,8 +81,8 @@
 
   <hr />
   <div class="form-row">
-    <div class="col-md-4 label"><&|/l&>Load saved search</&>:</div>
-    <div class="col-md-8 input-group">
+    <div class="col-sm-3 col-md-4 label"><&|/l&>Load saved search</&>:</div>
+    <div class="col-sm-9 col-md-8 input-group">
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
 <input type="submit" class="button btn btn-primary" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
     </div>
