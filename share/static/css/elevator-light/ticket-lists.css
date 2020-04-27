@@ -41,3 +41,20 @@ table.queue-summary th.collection-as-table {
   padding: 7px;
   vertical-align: middle;
 }
+
+.pagenum *,
+.paging a.nav {
+    padding: .5em;
+}
+
+.currentpage {
+    text-decoration: none;
+    font-weight: bold;
+    background: #eee;
+}
+
+div.paging {
+    font-size: 1.07em;
+    text-align: center;
+    padding-bottom: 1em;
+}
