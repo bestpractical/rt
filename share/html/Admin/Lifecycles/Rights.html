@@ -48,6 +48,11 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
+<div class="form-row">
+  <div class="col-12">
+    <p><&|/l&>Define custom rights and apply them to status transitions.  Once defined, these rights will appear on RT rights pages, like queue group rights, where you can assign them.</&></p>
+  </div>
+</div>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Rights.html" name="ModifyLifecycleRights" method="post" enctype="multipart/form-data" class="mx-auto max-width-md">
   <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />

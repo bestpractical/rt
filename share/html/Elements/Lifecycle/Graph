@@ -95,7 +95,7 @@
         <div class="custom-control custom-checkbox">
           <input class="custom-control-input" type="checkbox" id="enableSimulation" name="enableSimulation" />
           <label class="custom-control-label" for="enableSimulation"><&|/l&>Auto Layout</&>
-            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Auto layout automatically calculates node positions</&>"></span>
+            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Auto layout automatically spaces out statuses. Uncheck to manually reposition your lifecycle.</&>"></span>
           </label>
         </div>
       </span>
@@ -104,13 +104,12 @@
   <div class="row">
     <div class="col-auto">
       <p>
-        <&|/l&>Click in the open space to <strong>add a node</strong>.<br>
-To <strong>delete</strong> a node click on the node to select it and press the 'd' key.<br>
-Drag from one node to another while holding <strong>control</strong> to <strong>add an edge</strong>.<br>
-Drag a node to <strong>move the graph layout</strong>.<br>
-Click a nodes text to <strong>edit attributes</strong> of the node.<br>
-<strong>Click an edge</strong> to interact with it.<br>
-To disable the simulation and drag nodes to a location without force acting on them click the "Auto Layout" checkbox.</&>
+        <&|/l&>Click in the open space to <strong>add a status</strong>.<br>
+Click on the status text to <strong>edit</strong> the status.<br>
+Click and drag a status node to <strong>change the graph layout</strong>.<br>
+Control + click on a status and drag to another to <strong>add a transition</strong>.<br>
+Click on a status node to select it and press 'd' to <strong>delete</strong>.<br>
+<strong>Click on a transition line</strong> to delete.<br></&>
       </p>
     </div>
   </div>

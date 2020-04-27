@@ -48,6 +48,16 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
+<div class="form-row">
+  <div class="col-12">
+    <p><&|/l&>Create actions that will appear in the Actions menu for tickets or assets.</&></p>
+    <ul>
+      <li><&|/l&>From and To define the status transition.</&></li>
+      <li><&|/l&>Label is what users will see in the Actions menu.</&></li>
+      <li><&|/l&>Update type sets the default message type on the update page. Set to '-' to change status without showing the update page.</&></li>
+    </ul>
+  </div>
+</div>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Actions.html" name="ModifyLifecycleRights" method="post" enctype="multipart/form-data" class="mx-auto max-width-md">
   <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />

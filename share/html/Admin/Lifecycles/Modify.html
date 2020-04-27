@@ -48,6 +48,11 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
+<div class="form-row">
+  <div class="col-12">
+    <p><&|/l&>Create statuses for your lifecycle and define the transitions allowed between them.</&></p>
+  </div>
+</div>
 
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/d3.min.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/lifecycleui-model.js"></script>
