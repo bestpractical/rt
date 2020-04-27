@@ -105,8 +105,16 @@ div.error .titlebox-title .widget a {
   background-position: center -7px;
 }
 
-.label {
-  text-align: right;
+@media (min-width: 576px) {
+  .label {
+    text-align: right;
+  }
+}
+
+@media (max-width: 576px) {
+  .label {
+    text-align: left;
+  }
 }
 
 .value > ul {
