@@ -3196,7 +3196,11 @@ Set( $AssetBasicCustomFieldsOnCreate, [ 'foo', 'bar' ] );
 
 =item C<$AssetHideSimpleSearch>
 
-Set to a true value to hide the legacy Asset Simple Search in favor of RT 4.6's AssetSQL.
+Set to a true value to hide the legacy Asset Simple Search in favor of AssetSQL
+added in RT 5.0.
+
+When hidden, the Asset search menu shows the Current Search menu like tickets,
+giving quick access back to a search after clicking on an asset.
 
 =cut
 
