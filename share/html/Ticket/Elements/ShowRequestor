@@ -136,7 +136,7 @@
           [<a href="<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %>" ><&|/l&>Edit</&></a>]
 % }
         </div>
-        <div class="value col-md-9"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></div>
+        <div class="value col-sm-9 col-md-9"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></div>
       </div>
 % }
 

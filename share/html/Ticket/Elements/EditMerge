@@ -76,6 +76,6 @@ $Tickets => undef
 $Name => ''
 $Default => ''
 $MergeTextClass => 'ticket-merge-position'
-$LabelStyle => 'col-md-2'
-$ValueStyle => 'col-md-4'
+$LabelStyle => 'col-sm-2 col-md-2'
+$ValueStyle => 'col-sm-4 col-md-4'
 </%ARGS>

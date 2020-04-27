@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <div>
   <div class="form-row owner">
-    <div class="label col-md-3"><&|/l&>Owner</&>:</div>
+    <div class="label col-sm-3 col-md-3"><&|/l&>Owner</&>:</div>
 % my $owner = $Ticket->OwnerObj;
-    <div class="value col-md-9"><span class="current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
     <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
 % $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
     </span></div>
@@ -72,22 +72,22 @@
 
 %     my $user = $users->First || RT->Nobody;
   <div class="form-row">
-    <div class="label col-md-3"><% $role->Name %>:</div>
-    <div class="value col-md-9"><span class="current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
+    <div class="label col-sm-3 col-md-3"><% $role->Name %>:</div>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
   </div>
 % }
 
   <div class="form-row requestors">
-    <div class="label col-md-3"><&|/l&>Requestors</&>:</div>
-    <div class="value col-md-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span></div>
+    <div class="label col-sm-3 col-md-3"><&|/l&>Requestors</&>:</div>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span></div>
   </div>
   <div class="form-row cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3"><&|/l&>Cc</&>:</div>
-    <div class="value col-md-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span></div>
+    <div class="label col-sm-3 col-md-3"><&|/l&>Cc</&>:</div>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span></div>
   </div>
   <div class="form-row admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3"><&|/l&>AdminCc</&>:</div>
-    <div class="value col-md-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span></div>
+    <div class="label col-sm-3 col-md-3"><&|/l&>AdminCc</&>:</div>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span></div>
   </div>
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
@@ -98,8 +98,8 @@
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
   <div class="form-row">
-    <div class="label col-md-3"><% $role->Name %>:</div>
-    <div class="value col-md-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span></div>
+    <div class="label col-sm-3 col-md-3"><% $role->Name %>:</div>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span></div>
   </div>
 % }
 

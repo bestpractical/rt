@@ -186,12 +186,12 @@ for my $field (@fields) {
 % for my $field (@fields) {
 %# Prefer input name as css class, e.g. "FinalPriority" instead of "Final_Priority"
   <div class="form-row <% CSSClass( $field->{args}{Name} || $field->{'name'} ) %>">
-    <div class="label col-md-3"><% loc($field->{'name'}) %>:
+    <div class="label col-sm-3 col-md-3"><% loc($field->{'name'}) %>:
 %   if ( my $hint = $field->{hint} ) {
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
 %   }
     </div>
-    <div class="value col-md-9"><% $field->{'html'} |n %></div>
+    <div class="value col-sm-9 col-md-9"><% $field->{'html'} |n %></div>
   </div>
 % }
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );

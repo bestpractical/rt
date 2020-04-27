@@ -47,55 +47,55 @@
 %# END BPS TAGGED BLOCK }}}
 <div>
   <div class="date form-row created">
-    <div class="label col-md-3"><&|/l&>Created</&>:</div>\
-    <div class="value col-md-9"><span class="current-value"><% $Ticket->CreatedObj->AsString %></span></div>
+    <div class="label col-sm-3 col-md-3"><&|/l&>Created</&>:</div>\
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><% $Ticket->CreatedObj->AsString %></span></div>
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterCreated', TicketObj => $Ticket );
   <div class="date form-row starts<% $Ticket->StartsObj->Unix ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3"><&|/l&>Starts</&>:</div>\
-    <div class="value col-md-9"><span class="current-value"><% $Ticket->StartsObj->AsString %></span></div>
+    <div class="label col-sm-3 col-md-3"><&|/l&>Starts</&>:</div>\
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><% $Ticket->StartsObj->AsString %></span></div>
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterStarts', TicketObj => $Ticket );
   <div class="date form-row started<% $Ticket->StartedObj->Unix ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3"><&|/l&>Started</&>:</div>\
-    <div class="value col-md-9"><span class="current-value"><% $Ticket->StartedObj->AsString %></span></div>
+    <div class="label col-sm-3 col-md-3"><&|/l&>Started</&>:</div>\
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><% $Ticket->StartedObj->AsString %></span></div>
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterStarted', TicketObj => $Ticket );
   <div class="date form-row told<% $Ticket->ToldObj->Unix || $Ticket->CurrentUserHasRight('ModifyTicket') ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3">
+    <div class="label col-sm-3 col-md-3">
 % if ( $Ticket->CurrentUserHasRight('ModifyTicket' ) ) {
 <a href="<% RT->Config->Get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:
 % } else {
 <&|/l&>Last Contact</&>:
 % }
-</div><div class="value col-md-9"><span class="current-value"><% $Ticket->ToldObj->AsString %></span></div>
+</div><div class="value col-sm-9 col-md-9"><span class="current-value"><% $Ticket->ToldObj->AsString %></span></div>
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterTold', TicketObj => $Ticket );
 
   <div class="date form-row due<% $Ticket->DueObj->Unix ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3"><&|/l&>Due</&>:</div>\
+    <div class="label col-sm-3 col-md-3"><&|/l&>Due</&>:</div>\
 % my $due = $Ticket->DueObj;
 % if ( $due && $due->IsSet && $due->Diff < 0 && $Ticket->QueueObj->IsActiveStatus($Ticket->Status) ) {
-    <div class="value col-md-9"><span class="current-value"><span class="overdue"><% $due->AsString  %></span></div></span>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><span class="overdue"><% $due->AsString  %></span></div></span>
 % } else {
-    <div class="value col-md-9"><span class="current-value"><% $due->AsString  %></span></div>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><% $due->AsString  %></span></div>
 % }
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterDue', TicketObj => $Ticket );
 
   <div class="date form-row resolved<% $Ticket->ResolvedObj->Unix ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3"><&|/l&>Closed</&>:</div>\
-    <div class="value col-md-9"><span class="current-value"><% $Ticket->ResolvedObj->AsString  %></span></div>
+    <div class="label col-sm-3 col-md-3"><&|/l&>Closed</&>:</div>\
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><% $Ticket->ResolvedObj->AsString  %></span></div>
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterResolved', TicketObj => $Ticket );
 
   <div class="date form-row updated">
-    <div class="label col-md-3"><&|/l&>Updated</&>:</div>\
+    <div class="label col-sm-3 col-md-3"><&|/l&>Updated</&>:</div>\
 % my $UpdatedString = $Ticket->LastUpdated ? loc("[_1] by [_2]", $Ticket->LastUpdatedAsString, $m->scomp('/Elements/ShowUser', User => $Ticket->LastUpdatedByObj)) : loc("Never");
 % if ($UpdatedLink) {
-    <div class="value col-md-9"><span class="current-value"><a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a></span></div>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><a href="<% $UpdatedLink %>"><% $UpdatedString | n %></a></span></div>
 % } else {
-    <div class="value col-md-9"><span class="current-value"><% $UpdatedString | n %></span></div>
+    <div class="value col-sm-9 col-md-9"><span class="current-value"><% $UpdatedString | n %></span></div>
 % }
   </div>
 % $m->callback( %ARGS, CallbackName => 'AfterUpdated', TicketObj => $Ticket );

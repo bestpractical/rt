@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="col-md-3">
+<div class="col-sm-3 col-md-3">
   <select name="<% $SelectFieldName %>" class="selectpicker form-control">
 % foreach my $col (@fields) {
     <option <% ($UserField eq $col->[0]) ? 'selected="selected"' : '' |n %> value="<% $col->[0] %>"><% loc($col->[1]) %></option>
@@ -56,10 +56,10 @@
 % }
   </select>
 </div>
-<div class="col-md-3">
+<div class="col-sm-3 col-md-3">
   <& /Elements/SelectMatch, Name => $SelectOpName, Default => $UserOp &>
 </div>
-<div class="col-md-3">
+<div class="col-sm-3 col-md-3">
   <input type="text" size="8" name="<% $InputStringName %>" value="<% $UserString %>" class="form-control" />
 </div>
 <%INIT>

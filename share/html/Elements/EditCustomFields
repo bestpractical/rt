@@ -55,13 +55,13 @@
 % my $Type = $CustomField->Type || 'Unknown';
 
   <div class="form-row edit-custom-field cftype-<% $Type %>">
-    <div class="cflabel label col-md-3">
+    <div class="cflabel label col-sm-3 col-md-3">
       <span class="name"><% $CustomField->Name %>:</span>
 % if ( $CustomField->EntryHint ) {
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
 % }
     </div>
-    <div class="value col-md-9">
+    <div class="value col-sm-9 col-md-9">
 % my $default = $m->notes('Field-' . $CustomField->Id);
 % $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField,

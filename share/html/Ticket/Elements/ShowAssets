@@ -182,12 +182,12 @@ if ($ShowRelatedTickets) {
 </%perl>
 
         <div class="related-tickets form-row">
-          <div class="col-md-3 label">
+          <div class="col-sm-3 col-md-3 label">
             <a href="<% $url %>">
               <&|/l, $ShowRelatedTickets &>[_1] most recently updated related tickets</&>
             </a>
           </div>
-          <div class="col-md-9 value">
+          <div class="col-sm-9 col-md-9 value">
             <& /Elements/CollectionList,
                 %search,
                 Class             => "RT::Tickets",

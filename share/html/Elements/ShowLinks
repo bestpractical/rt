@@ -48,13 +48,13 @@
 <div class="container">
 % for my $type (@display) {
   <div class="form-row <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3">
+    <div class="label col-sm-3 col-md-3">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
         <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
 %     }
     </div>
-    <div class="value col-md-9"><span class="current-value">
+    <div class="value col-sm-9 col-md-9"><span class="current-value">
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
     </span></div>
   </div>
@@ -69,10 +69,10 @@
   <form class="form-inline justify-content-center" action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
   <div class="form-row">
     <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
-    <div class="col-auto label">
+    <div class="col-md-auto col-sm-2 label">
       <&|/l&>Create new</&>
     </div>
-    <div class="col">
+    <div class="col-sm-3 col-md">
       <select name="LinkType" class="selectpicker form-control">
         <option value="DependsOn-new"><% loc('Depends on') %></option>
         <option value="new-DependsOn"><% loc('Depended on by') %></option>
@@ -82,13 +82,14 @@
         <option value="new-RefersTo"><% loc('Referred to by') %></option>
       </select>
     </div>
-    <div class="col-auto label">
+    <div class="col-md-auto col-sm-3 label">
       <&|/l&>Ticket in</&>
     </div>
-    <div class="col">
+    <div class="col-md col-sm-3">
       <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
     </div>
-    <div class="col">
+    <div class="col-sm-3"></div>
+    <div class="col-md col-sm-12">
       <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="form-control button btn btn-primary">
     </div>
   </div>

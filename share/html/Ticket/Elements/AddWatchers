@@ -54,22 +54,22 @@
 
 % if ($Users and $Users->Count) {
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-sm-4 col-md-3">
       <&|/l&>Type</&>
     </div>
-    <div class="col-md-9">
+    <div class="col-sm-8 col-md-9">
       <&|/l&>Username</&>
     </div>
   </div>
 % while (my $u = $Users->Next ) {
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-sm-4 col-md-3">
       <&/Elements/SelectWatcherType,
         Name  => "Ticket-AddWatcher-Principal-". $u->PrincipalId,
         Queue => $Ticket->QueueObj,
       &>
     </div>
-    <div class="col-md-9">
+    <div class="col-sm-8 col-md-9">
       <span class="form-control current-value">
         <& '/Elements/ShowUser', User => $u, style=>'verbose' &>
       </span>
@@ -80,22 +80,22 @@
 
 % if ($Groups and $Groups->Count) {
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-sm-4 col-md-3">
       <&|/l&>Type</&>
     </div>
-    <div class="col-md-9">
+    <div class="col-sm-8 col-md-9">
       <&|/l&>Group</&>
     </div>
   </div>
 % while (my $g = $Groups->Next ) {
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-sm-4 col-md-3">
       <& /Elements/SelectWatcherType,
         Name  => "Ticket-AddWatcher-Principal-".$g->PrincipalId,
         Queue => $Ticket->QueueObj,
       &>
     </div>
-    <div class="col-md-9">
+    <div class="col-sm-8 col-md-9">
       <span class="form-control current-value">
         <%$g->Name%> (<%$g->Description%>)
       </span>
@@ -105,10 +105,10 @@
 % }
 
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-sm-4 col-md-3">
       <&|/l&>Type</&>
     </div>
-    <div class="col-md-9">
+    <div class="col-sm-8 col-md-9">
       <&|/l&>Email</&>
     </div>
   </div>
@@ -116,10 +116,10 @@
 % for my $email (@extras) {
 % $counter++;
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-sm-4 col-md-3">
       <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter, Queue => $Ticket->QueueObj &>
     </div>
-    <div class="col-md-9">
+    <div class="col-sm-8 col-md-9">
       <input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->format%>">
       <span class="form-control current-value">
         <%$email->format%>
@@ -129,10 +129,10 @@
 % }
 % for my $i (1 .. 3) {
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-sm-4 col-md-3">
       <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj &>
     </div>
-    <div class="col-md-6">
+    <div class="col-sm-8 col-md-8">
       <& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20' &>
     </div>
   </div>
