@@ -110,10 +110,10 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 <ul class="list-group list-group-compact">
   <li class="list-group-item">
     <div class="form-row">
-      <div class="col-md-auto">
+      <div class="col-auto">
         <% $type %>:
       </div>
-      <div class="col-md-auto">
+      <div class="col-auto">
 %     for my $addr (sort {$a->address cmp $b->address} values %{$headers{$type}}) {
 %         my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %         $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
@@ -125,7 +125,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %         $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
 %     }
 %     for my $addr (sort {$a->address cmp $b->address} values %{$no_squelch{$type}}) {
-<div class="col-md-auto">
+<div class="col-auto">
 <label><& /Elements/ShowUser, Address => $addr &></label>
 %         if ( $type eq 'Cc' ) {
 (<&|/l&>explicit one-time Cc</&>)

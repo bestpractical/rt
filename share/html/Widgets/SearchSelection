@@ -47,14 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="selectionbox-js">
   <div class="form-row">
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="source">
         <div class="filters">
           <div class="form-row">
-            <div class="col-md-auto">
+            <div class="col-auto">
               <input type="search" class="field form-control" name="search" placeholder="<&|/l&>Search…</&>" autocomplete="off">
             </div>
-            <div class="col-md-auto">
+            <div class="col-auto">
               <select class="form-control selectpicker" name="filter">
                   <option value=""><&|/l&>All Types</&></option>
 %             for (@filters) {
@@ -84,7 +84,7 @@
       </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="destinations">
 %     for my $pane (sort keys %pane_name) {
         <div class="destination" data-pane="<% $pane %>">

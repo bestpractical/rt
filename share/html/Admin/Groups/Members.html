@@ -55,7 +55,7 @@
 <&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Label) &>
 
 <div class="form-row">
-  <div class="col-md-6">
+  <div class="col-6">
     <h3><&|/l&>Current members</&></h3>
 
 % if ($Group->MembersObj->Count == 0 ) {
@@ -102,7 +102,7 @@ my @users = map {$_->[1]}
 % }
 
   </div>
-  <div class="col-md-6">
+  <div class="col-6">
     <h3><&|/l&>Add members</&></h3>
     <& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group,
         SkipUsers => \%UsersSeen, SkipGroups => \%GroupsSeen &>

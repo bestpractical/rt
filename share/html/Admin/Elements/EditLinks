@@ -47,19 +47,19 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="row">
 
-  <div class="col-md-6">
+  <div class="col-6">
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <h3><&|/l&>Current Links</&></h3>
       </div>
     </div>
     <div class="form-row">
-      <div class="col-md-3 label">
+      <div class="label col-3">
         <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &>
       </div>
-      <div class="col-md-9 value">
+      <div class="value col-9">
         <div class="form-row">
-          <div class="col-md-auto">
+          <div class="col-auto">
 % while (my $link = $Object->RefersTo->Next) {
             <& /Elements/EditLink, Link => $link, Mode => 'Target' &>
 %}
@@ -68,12 +68,12 @@
       </div>
     </div>
     <div class="form-row">
-      <div class="col-md-3 label">
+      <div class="label col-3">
         <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &>
       </div>
-      <div class="col-md-9 value">
+      <div class="value col-9">
         <div class="form-row">
-          <div class="col-md-auto">
+          <div class="col-auto">
 % while (my $link = $Object->ReferredToBy->Next) {
             <& /Elements/EditLink, Link => $link, Mode => 'Base' &>
 % }
@@ -82,21 +82,21 @@
       </div>
     </div>
     <div class="form-row">
-      <div class="col-md-3 label"></div>
-      <div class="col-md-9 value">
+      <div class="label col-3"></div>
+      <div class="value col-9">
         <i><&|/l&>(Check box to remove link)</&></i>
       </div>
     </div>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-6">
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <h3><&|/l&>New Links</&></h3>
       </div>
     </div>
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <& AddLinks, %ARGS &>
       </div>
     </div>

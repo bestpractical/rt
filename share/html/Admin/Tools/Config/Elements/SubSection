@@ -67,7 +67,7 @@
 
 % if ( $can_edit ) {
 <div class="form-row">
-  <span class="col-md-12">
+  <span class="col-12">
     <& /Elements/Submit, Label => loc('Save Changes') &>
   </span>
 </div>

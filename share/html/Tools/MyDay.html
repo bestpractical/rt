@@ -65,12 +65,12 @@
 
   <div <%$class|n%>>
 
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Worked</&>:
         </div>
-        <div class="col-md-auto value">
+        <div class="value col-auto">
           <div class="input-group mb-3">
             <input class="form-control" type="text" size="3" name="UpdateTimeWorked-<%$Ticket->Id%>" />
             <div class="input-group-append">
@@ -81,21 +81,21 @@
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Status</&>:
         </div>
-        <div class="col-md-auto value">
+        <div class="value col-auto">
           <& /Ticket/Elements/SelectStatus, Name=> 'UpdateStatus-'.$Ticket->Id, TicketObj => $Ticket &>
         </div>
       </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Comments</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <textarea class="form-control" name="UpdateContent-<%$Ticket->Id%>" rows="5" cols="60"></textarea>
         </div>
       </div>
@@ -103,7 +103,7 @@
   </div>
 % }
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Record all updates') ,  Reset => 1, ResetLabel => loc('Clear')&>
     </div>
   </div>

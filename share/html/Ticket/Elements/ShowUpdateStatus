@@ -48,7 +48,7 @@
 <div class="unread-messages">
 <&| /Widgets/TitleBox, title => loc('New messages'), title_href => "#txn-". $txn->id &>
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <span class="new-messages-on-ticket">
         <&|/l&>There are unread messages on this ticket.</&>
       </span>

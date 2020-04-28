@@ -66,7 +66,7 @@
 <& /Elements/EditCustomFieldCustomGroupings, %ARGS, Object => $TicketObj, AsTable => !!RT->Config->Get('EditCustomFieldsSingleColumn', $session{'CurrentUser'}) &>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
     </div>
   </div>

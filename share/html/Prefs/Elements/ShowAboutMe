@@ -47,42 +47,42 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
 %### Left column ###
-  <div class="col-md-6">
+  <div class="col-6">
 
     <&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
       <input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Email</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->EmailAddress%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Real Name</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->RealName%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Nickname</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->NickName || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Language</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value">
 % if ( $UserObj->Lang ) {
             <&|/l, $lang &>[_1]</&>
@@ -94,10 +94,10 @@
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Timezone</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value">
 % if ( $UserObj->Timezone ) {
             <%$UserObj->Timezone%>
@@ -116,37 +116,37 @@
 
     <&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Residence</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->HomePhone || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Work</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->WorkPhone || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Mobile</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->MobilePhone || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Pager</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->PagerPhone || ''%></span>
         </div>
       </div>
@@ -160,68 +160,68 @@
 
 %### Right column ###
 
-  <div class="col-md-6">
+  <div class="col-6">
 
     <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Organization</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->Organization || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Address1</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->Address1 || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Address2</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->Address2 || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>City</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->City || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>State</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->State || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Zip</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->Zip || ''%></span>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Country</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <span class="current-value"><%$UserObj->Country || ''%></span>
         </div>
       </div>

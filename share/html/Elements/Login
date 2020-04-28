@@ -69,19 +69,19 @@
 <form id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
 
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Username</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <input class="form-control" type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" />
     </div>
   </div>
 
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Password</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <input class="form-control" type="password" name="pass" />
     </div>
   </div>
@@ -98,7 +98,7 @@ jQuery(function(){
 </script>
 
   <div class="form-row">
-    <div class="col-md-12 text-right">
+    <div class="col-12 text-right">
       <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Login</&>" />
     </div>
   </div>

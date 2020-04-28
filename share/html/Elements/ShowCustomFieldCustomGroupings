@@ -96,7 +96,7 @@ for my $group ( @Groupings ) {
     <input type="hidden" class="hidden" name="id" value="<% $Object->id %>" />
     <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
     <div class="form-row">
-      <div class="col-md-12 text-right">
+      <div class="col-12 text-right">
         <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
       </div>
     </div>

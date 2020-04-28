@@ -67,7 +67,7 @@
 % }
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit,
         Name => 'RemoveScrips',
         Caption => loc("Un-apply selected scrips"),
@@ -95,7 +95,7 @@
 <& SelectStageForAdded &>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit,
         Name => 'AddScrips',
         Caption => loc("Apply selected scrips"),

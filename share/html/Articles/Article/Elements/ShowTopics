@@ -46,10 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Topics</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value">
 % my $topics = RT::ObjectTopics->new($session{'CurrentUser'});
 % $topics->LimitToObject($article);

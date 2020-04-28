@@ -57,16 +57,16 @@
 %     my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 %     my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
   <div class="form-row">
-    <div class="label col-md-2">
+    <div class="label col-2">
       <% $cf->Name %>
     </div>
-    <div class="value col-md-4">
+    <div class="value col-4">
       <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
     </div>
-    <div class="label col-md-2">
+    <div class="label col-2">
       <&|/l&>not</&>
     </div>
-    <div class="value col-md-4">
+    <div class="value col-4">
       <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
     </div>
   </div>

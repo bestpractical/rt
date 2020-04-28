@@ -46,37 +46,37 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Name</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $ARGS{"Name"} || $Action->Name || '' %></span>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Description</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $ARGS{"Description"} || $Action->Description || '' %></span>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Action Module</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $ARGS{"ExecModule"} || $Action->ExecModule || ''%></span>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Parameters to Pass</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $ARGS{"Argument"} || $Action->Argument || '' %></span>
   </div>
 </div>

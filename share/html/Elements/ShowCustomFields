@@ -66,8 +66,8 @@
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes, Grouping => $Grouping );
   <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
-    <div class="label col-md-3"><% $CustomField->Name %>:</div>
-    <div class="value col-md-9 <% $count ? '' : ' no-value' %>">
+    <div class="label col-3"><% $CustomField->Name %>:</div>
+    <div class="value col-9 <% $count ? '' : ' no-value' %>">
       <span class="current-value">
 % unless ( $count ) {
 <&|/l&>(no value)</&>

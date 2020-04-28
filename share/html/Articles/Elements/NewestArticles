@@ -48,37 +48,37 @@
 <& /Widgets/TitleBoxStart, title => loc("[_1] newest articles", $rows), bodyclass=> '' &>
 
 <div class="form-row article-headers">
-  <div class="col-md-auto label text-right">
+  <div class="label col-auto text-right">
     <&|/l&>#</&>
   </div>
-  <div class="col-md-4 label text-left">
+  <div class="label col-4 text-left">
     <&|/l&>Name</&>
   </div>
-  <div class="col-md-4 label text-left">
+  <div class="label col-4 text-left">
     <&|/l&>Created by</&>
   </div>
-  <div class="col-md-3 label text-left">
+  <div class="label col-3 text-left">
     &nbsp;
   </div>
 </div>
 % while (my $Article = $MyArticles->Next) {
 % $i++;
 <div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row article-metadata">
-  <div class="col-md-auto value text-right">
+  <div class="value col-auto text-right">
     <span class="current-value font-weight-bold"><%$Article->Id%></span>
   </div>
-  <div class="col-md-4 value text-left">
+  <div class="value col-4 text-left">
     <span class="current-value font-weight-bold"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></span>
   </div>
-  <div class="col-md-4 value text-left">
+  <div class="value col-4 text-left">
     <span class="current-value"><%$Article->CreatorObj->Name%></span>
   </div>
-  <div class="col-md-3 value text-left">
+  <div class="value col-3 text-left">
     <span class="current-value font-weight-bold"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a></span>
   </div>
 </div>
 <div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row article-summary">
-  <div class="col-md-11 col-md-offset-1">
+  <div class="col-11 col-offset-1">
     <span class="current-value"><small><%$Article->Summary || loc('(no Summary)')%></small></span>
   </div>
 </div>

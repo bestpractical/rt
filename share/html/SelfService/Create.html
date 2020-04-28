@@ -59,35 +59,35 @@
 <&|/Widgets/TitleBox, title => $title, class => 'ticket-info-basics' &>
 <div>
 <div class="queue form-row">
-<div class="label col-md-2">
+<div class="label col-2">
 <&|/l&>Queue</&>:
 </div>
-<div class="value col-md-8">
+<div class="value col-8">
     <span class="current-value form-control"><strong><%$queue_obj->Name || ''%></strong> <% $queue_obj->Description ? '('.$queue_obj->Description.')' : '' %></span>
 </div>
 </div>
 <% $m->callback( CallbackName => 'AfterQueue', %ARGS, QueueObj => $queue_obj ) %>
 <div class="form-row">
-<div class="form-group label col-md-2">
+<div class="form-group label col-2">
 <&|/l&>Requestors</&>:
 </div>
-<div class="value col-md-8">
+<div class="value col-8">
 <& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => RT->Config->Get('AllowUserAutocompleteForUnprivileged') ? 1 : 0 &>
 </div>
 </div>
 <div class="form-row">
-<div class="form-group label col-md-2">
+<div class="form-group label col-2">
 <&|/l&>Cc</&>:
 </div>
-<div class="value col-md-8">
+<div class="value col-8">
 <& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => RT->Config->Get('AllowUserAutocompleteForUnprivileged') ? 1 : 0 &>
 </div>
 </div>
 <div class="form-row">
-<div class="form-group label col-md-2">
+<div class="form-group label col-2">
 <&|/l&>Subject</&>:
 </div>
-<div class="form-group value col-md-8">
+<div class="form-group value col-8">
 <input class="form-control" type="text" name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 </div>
 </div>
@@ -106,7 +106,7 @@
   <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $queue_obj &>
 </div>
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Label => loc("Create ticket")&>
   </div>
 </div>

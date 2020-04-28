@@ -53,13 +53,13 @@
 % while (my $CF = $CustomFields->Next()) {
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
 <div class="form-row">
-<div class="label cflabel col-md-3">
+<div class="label cflabel col-3">
   <span class="name"><% $CF->Name %>:</span>
 % if ( $CF->EntryHint ) {
   <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
 % }
 </div>
-<div class="value col-md-9">
+<div class="value col-9">
 <& /Elements/EditCustomField,
     %ARGS,
     CustomField => $CF,

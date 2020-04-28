@@ -87,8 +87,8 @@
 <&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
 <div>
   <div class="form-row input-row">
-    <div class="label col-md-3"><&|/l&>Update Type</&>:</div>
-    <div class="value col-md-9">
+    <div class="label col-3"><&|/l&>Update Type</&>:</div>
+    <div class="value col-9">
       <select name="UpdateType" id="UpdateType" class="form-control selectpicker">
 % if ($CanComment) {
         <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -101,8 +101,8 @@
     </div>
   </div>
   <div class="form-row input-row">
-    <div class="label col-md-3"><&|/l&>Subject</&>:</div>
-    <div class="value col-md-9"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
+    <div class="label col-3"><&|/l&>Subject</&>:</div>
+    <div class="value col-9"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
     </div>
   </div>
@@ -112,8 +112,8 @@
 <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
 
   <div class="form-row input-row">
-    <div class="label col-md-3"><&|/l&>Message</&>:</div>
-    <div class="value col-md-9 messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
+    <div class="label col-3"><&|/l&>Message</&>:</div>
+    <div class="value col-9 messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent})) {
     <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0 &>

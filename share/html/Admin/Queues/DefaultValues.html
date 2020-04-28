@@ -55,19 +55,19 @@
 <div class="ticket-info-basics">
   <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Priority</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectPriority, Name => "InitialPriority", Default => $queue->DefaultValue('InitialPriority'), QueueObj => $queue &>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Final Priority</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectPriority, Name => "FinalPriority", Default => $queue->DefaultValue('FinalPriority'), QueueObj => $queue &>
       <span><em><&|/l&>requires running rt-crontool</&></em></span>
     </div>
@@ -80,10 +80,10 @@
   &>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Article</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectArticle, QueueObj => $queue, Default => $queue->DefaultValue('Article'), Name => 'Article' &>
     </div>
   </div>
@@ -94,19 +94,19 @@
 <div class="ticket-info-dates">
   <&|/Widgets/TitleBox, title => loc("Dates"), content_class => 'mx-auto width-sm' &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Starts</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Due</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &>
     </div>
   </div>
@@ -152,12 +152,12 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
   </div>
 </div>
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
   </div>
 </div>
