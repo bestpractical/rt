@@ -49,6 +49,17 @@ characters and are not effected by this update.
 
 =item *
 
+System configuration options can now be changed by SuperUsers via the
+web UI. File-based configuration options are still loaded. Changes made
+via the web UI take precedence over file-based options if both are set.
+
+If you prefer to keep all configuration in files and disable editing in
+the web UI, set this option to 0:
+
+    Set($ShowEditSystemConfig, 0);
+
+=item *
+
 The variables which alter the set of HTML elements allowed in HTML
 scrubbing have moved; they have been renamed, and are now found under
 L<RT::Interface::Web::Scrubber>.
