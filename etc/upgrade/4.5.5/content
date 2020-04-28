@@ -1,0 +1,41 @@
+use strict;
+use warnings;
+
+our @Initial = (
+    # add default reports
+    sub {
+        my $reports_in_menu = 'ReportsInMenu';
+        my $attr = RT::Attribute->new( RT->System );
+        my( $ok, $msg) = $attr->LoadByNameAndObject( Object => RT->System, Name => $reports_in_menu );
+        # add attribute only if it does not already exist
+        if( ! $ok ) {
+            RT->Logger->debug( "Adding default reports in menu" );
+            my $content = [
+                {
+                    id          => 'resolvedbyowner',
+                    title       => 'Resolved by owner', # loc
+                    path        => '/Reports/ResolvedByOwner.html',
+                    description => 'Examine tickets resolved in a queue, grouped by owner', #loc
+                },
+                {
+                    id          => 'resolvedindaterange',
+                    title       => 'Resolved in date range', # loc
+                    path        => '/Reports/ResolvedByDates.html',
+                    description => 'Examine tickets resolved in a queue between two dates', # loc
+                },
+                {
+                    id          => 'createdindaterange',
+                    title       => 'Created in a date range', # loc
+                    path        => '/Reports/CreatedByDates.html',
+                    description => 'Examine tickets created in a queue between two dates', # loc
+                },
+            ];
+
+            RT->System->AddAttribute(
+                        Name => $reports_in_menu,
+                        Description => 'Content of the Reports menu',
+                        Content => $content,
+            );
+        }
+    }    
+);
