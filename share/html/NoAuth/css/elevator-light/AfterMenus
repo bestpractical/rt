@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <script type="text/javascript">
 var initMenus = function() {
-    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' });
+    jQuery("#app-nav.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' }).supposition();
     jQuery("#page-menu.toplevel").addClass('sf-menu sf-js-enabled sf-shadow').superfish({ speed: 'fast' }).supposition();
 
     var originalOffset = jQuery("#page-menu").offset().top;
