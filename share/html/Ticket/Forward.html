@@ -113,8 +113,12 @@
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments, Count => RT->Config->Get('AttachmentListCount') &>
 
-<& /Elements/Submit, Label => loc('Forward Message and Return'), Name => 'ForwardAndReturn' &>
-<& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Forward Message and Return'), Name => 'ForwardAndReturn' &>
+      <& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
+    </div>
+  </div>
 </form>
 <%INIT>
 my ($status, $msg);

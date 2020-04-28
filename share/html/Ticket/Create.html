@@ -235,7 +235,11 @@
         <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
       </div>
     </&>
-    <& /Elements/Submit, Label => loc("Create"), id => 'SubmitTicket' &>
+    <div class="form-row">
+      <div class="col-12">
+        <& /Elements/Submit, Label => loc("Create"), id => 'SubmitTicket' &>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -326,7 +330,11 @@
 
 </div>
 </div>
-<& /Elements/Submit, Label => loc("Create") &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc("Create") &>
+    </div>
+  </div>
 </div>
 </form>
 
