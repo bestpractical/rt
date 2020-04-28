@@ -116,7 +116,7 @@ if ( $Update ) {
     }
     else {
         push @results, loc('Unable to update visibility: [_1]', $msg);
-        %hidden = $role->HiddenForURLs;
+        %hidden = %{ $role->HiddenForURLs };
     }
 
     MaybeRedirectForResults(
