@@ -182,13 +182,13 @@ sub BuildMainNav {
         if (!RT->Config->Get('AssetHideSimpleSearch')) {
             $search_assets->child("asset_simple", title => loc("Simple Search"), path => "/Asset/Search/");
         }
-        $search_assets->child("assetsql", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1");
+        $search_assets->child("assetsql", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets;NewQuery=1");
     }
 
 
-    my $txns = $search->child( transactions => title => loc('Transactions'), path => '/Search/Build.html?Class=RT::Transactions&ObjectType=RT::Ticket' );
-    my $txns_tickets = $txns->child( tickets => title => loc('Tickets'), path => "/Search/Build.html?Class=RT::Transactions&ObjectType=RT::Ticket" );
-    $txns_tickets->child( new => title => loc('New Search'), path => "/Search/Build.html?Class=RT::Transactions&ObjectType=RT::Ticket&NewQuery=1" );
+    my $txns = $search->child( transactions => title => loc('Transactions'), path => '/Search/Build.html?Class=RT::Transactions;ObjectType=RT::Ticket' );
+    my $txns_tickets = $txns->child( tickets => title => loc('Tickets'), path => "/Search/Build.html?Class=RT::Transactions;ObjectType=RT::Ticket" );
+    $txns_tickets->child( new => title => loc('New Search'), path => "/Search/Build.html?Class=RT::Transactions;ObjectType=RT::Ticket;NewQuery=1" );
 
     my $reports = $top->child( reports =>
         title       => loc('Reports'),
@@ -223,13 +223,13 @@ sub BuildMainNav {
         my $assets = $top->child(
             "assets",
             title => loc("Assets"),
-            path  => RT->Config->Get('AssetHideSimpleSearch') ? "/Search/Build.html?Class=RT::Assets&NewQuery=1" : "/Asset/Search/",
+            path  => RT->Config->Get('AssetHideSimpleSearch') ? "/Search/Build.html?Class=RT::Assets;NewQuery=1" : "/Asset/Search/",
         );
         $assets->child( "create", title => loc("Create"), path => "/Asset/Create.html" );
         if (!RT->Config->Get('AssetHideSimpleSearch')) {
             $assets->child( "simple_search", title => loc("Simple Search"), path => "/Asset/Search/" );
         }
-        $assets->child( "search", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets&NewQuery=1" );
+        $assets->child( "search", title => loc("New Search"), path => "/Search/Build.html?Class=RT::Assets;NewQuery=1" );
     }
 
     my $tools = $top->child( tools => title => loc('Tools'), path => '/Tools/index.html' );
@@ -782,7 +782,7 @@ sub BuildMainNav {
         $page->child("create", title => loc("Create New"), path => "/Admin/CustomFields/Modify.html?Create=1;LookupType=" . RT::Asset->CustomFieldLookupType);
     } elsif ($request_path =~ m{^/Admin/CustomFields(/|/index\.html)?$}
             and $HTML::Mason::Commands::DECODED_ARGS->{'Type'} and $HTML::Mason::Commands::DECODED_ARGS->{'Type'} eq RT::Asset->CustomFieldLookupType) {
-        $page->child("create")->path( $page->child("create")->path . "&LookupType=" . RT::Asset->CustomFieldLookupType );
+        $page->child("create")->path( $page->child("create")->path . ";LookupType=" . RT::Asset->CustomFieldLookupType );
     } elsif ($request_path =~ m{^/Admin/Assets/Catalogs/}) {
         my $actions = $request_path =~ m{/((index|Create)\.html)?$}
             ? $page
@@ -1101,7 +1101,7 @@ sub _BuildAdminMenu {
         path => "/Admin/CustomFields/?Type=" . RT::Asset->CustomFieldLookupType
     );
     $assets_cfs->child( "select", title => loc("Select"), path => $assets_cfs->path );
-    $assets_cfs->child( "create", title => loc("Create"), path => "/Admin/CustomFields/Modify.html?Create=1&LookupType=" . RT::Asset->CustomFieldLookupType);
+    $assets_cfs->child( "create", title => loc("Create"), path => "/Admin/CustomFields/Modify.html?Create=1;LookupType=" . RT::Asset->CustomFieldLookupType);
 
     $admin_global->child( 'group-rights' =>
         title       => loc('Group Rights'),
@@ -1215,10 +1215,10 @@ sub _BuildAdminMenu {
 
                 my $cfs = $queue->child( 'custom-fields' => title => loc('Custom Fields') );
                 my $ticket_cfs = $cfs->child( 'tickets' => title => loc('Tickets'),
-                    path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket&id=' . $id );
+                    path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket;id=' . $id );
 
                 my $txn_cfs = $cfs->child( 'transactions' => title => loc('Transactions'),
-                    path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction&id='.$id );
+                    path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction;id='.$id );
 
                 $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
                 $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
@@ -1328,12 +1328,12 @@ sub _BuildAdminMenu {
             if ( $from_queue ) {
                 $admin_cat = "Queues/Scrips.html?id=$from_queue";
                 $create_path_arg = "?Queue=$from_queue";
-                $from_query_param = "&From=$from_queue";
+                $from_query_param = ";From=$from_queue";
             }
             elsif ( $from_arg eq 'Global' ) {
                 $admin_cat = 'Global/Scrips.html';
                 $create_path_arg = '?Global=1';
-                $from_query_param = '&From=Global';
+                $from_query_param = ';From=Global';
             }
             else {
                 $admin_cat = 'Scrips';
