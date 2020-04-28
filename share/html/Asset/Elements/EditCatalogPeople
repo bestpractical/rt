@@ -57,7 +57,7 @@ $Object
   </div>
 % }
 
-<div class="col-md-12">
+<div class="col-12">
   <div class="form-row">
     <em><&|/l&>(Check box to delete)</&></em>
   </div>

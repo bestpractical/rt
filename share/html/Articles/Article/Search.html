@@ -50,7 +50,7 @@
 
 % unless ( keys %ARGS ) {
 <div class="form-row">
-  <div class="col-md-6">
+  <div class="col-6">
 % if (not $classes_configured) {
 <& /Articles/Elements/NeedsSetup &>
 % } elsif (not @classes) {
@@ -65,15 +65,15 @@
 <& /Widgets/TitleBoxEnd &>
 % }
   </div>
-  <div class="col-md-6">
+  <div class="col-6">
 <form action="Search.html" method="get">
 <& /Widgets/TitleBoxStart, title => loc('Saved searches') &>
 <&|/l&>Load saved search:</&><br />
 <div class="form-row">
-  <div class="col-md-auto value">
+  <div class="value col-auto">
     <& Elements/SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
   </div>
-  <div class="col-md-auto">
+  <div class="col-auto">
     <input class="btn btn-primary form-control" value="<%loc('Load')%>" name="Load" type="submit" />
   </div>
 </div>

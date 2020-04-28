@@ -169,15 +169,15 @@ $self => undef
 <& SelectionBox:current, self => $self &>
 
 <div class="form-row">
-  <div class="col-md-5">
+  <div class="col-5">
     <&|/l&>Available</&>:
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-5">
+  <div class="col-5">
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple" class="tall selection-box form-control">
 % for (@{$self->{Available}}) {
           <option value="<% $_->[0] %>"><% $_->[1] %></option>
@@ -188,18 +188,18 @@ $self => undef
   </div>
 
 % unless ($self->{ReadOnly}) {
-  <div class="col-md-auto">
+  <div class="col-auto">
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <input aria-label="Add" name="add" type="submit" class="button btn btn-primary form-control" value=" &rarr; " />
       </div>
     </div>
   </div>
 % }
 
-  <div class="col-md-5">
+  <div class="col-5">
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple" class="tall selection-box form-control">
 % for (@{$self->{Current}}) {
           <option value="<% $_ %>"
@@ -214,7 +214,7 @@ $self => undef
 
 % unless ($self->{'ReadOnly'}) {
     <div class="form-row">
-      <div class="col-md-12 text-center">
+      <div class="col-12 text-center">
 % unless ($ARGS{'NoArrows'}) {
         <input aria-label="Move up" name="moveup" type="submit" class="button btn btn-primary form-control" value=" &uarr; " />
         <input aria-label="Move down" name="movedown" type="submit" class="button btn btn-primary form-control" value=" &darr; " />
@@ -238,7 +238,7 @@ $self => undef
 % $caption = loc('Selections modified. Please save your changes');
 % }
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
 <& /Elements/Submit, Caption => loc($caption), Label => loc('Save'), Name => $name.'-Save' &>
   </div>
 </div>

@@ -46,46 +46,46 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Name</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input type="text" class="form-control" name="Name" size="60" value="<% $ARGS{"Name"} || $Condition->Name || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Description</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Condition->Description || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Condition Module</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input type="text" class="form-control" name="ExecModule" size="60" value="<% $ARGS{"ExecModule"} || $Condition->ExecModule || ''%>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Parameters to Pass</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input type="text" class="form-control" name="Argument" size="60" value="<% $ARGS{"Argument"} || $Condition->Argument || '' %>"/>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Applicable Transaction Types</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input type="text" class="form-control" name="ApplicableTransTypes" size="60" value="<% $ARGS{"ApplicableTransTypes"} || $Condition->ApplicableTransTypes || '' %>" />
   </div>
 </div>

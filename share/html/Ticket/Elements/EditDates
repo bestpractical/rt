@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <div>
   <div class="form-row">
-    <div class="label col-md-3"><&|/l&>Starts</&>:</div>
-    <div class="value col-md-9">
+    <div class="label col-3"><&|/l&>Starts</&>:</div>
+    <div class="value col-9">
         <div class="form-row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -66,8 +66,8 @@
     </span>
   </div>
   <div class="form-row">
-    <div class="label col-md-3"><&|/l&>Started</&>:</div>
-    <div class="value col-md-9">
+    <div class="label col-3"><&|/l&>Started</&>:</div>
+    <div class="value col-9">
         <div class="form-row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -86,10 +86,10 @@
   </div>
 
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Last Contact</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
         <div class="form-row">
           <div class="col-auto">
         <& /Elements/SelectDate,
@@ -107,8 +107,8 @@
     </span>
   </div>
   <div class="form-row">
-    <div class="label col-md-3"><&|/l&>Due</&>:</div>
-    <div class="value col-md-9">
+    <div class="label col-3"><&|/l&>Due</&>:</div>
+    <div class="value col-9">
         <div class="form-row">
           <div class="col-auto">
         <& /Elements/SelectDate,

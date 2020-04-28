@@ -52,18 +52,18 @@
 
 % if (!$Modify) {
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Topic Name</&>
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Name" size="30" />
   </div>
 </div>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Description</&>
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Description" size="50" />
   </div>
 </div>
@@ -78,20 +78,20 @@
 <%def .edit>
 &nbsp;
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     Topic Name:
   </div>
-  <div class="value col-md-9 input-group">
+  <div class="value col-9 input-group">
       <input class="form-control" type="text" name="Topic-<%$topic->Id%>-Name" size="20" value="<%$topic->Name%>" />
       <input type="submit" class="btn btn-primary" name="Update" value="Update">
   </div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     Description:
   </div>
-  <div class="value col-md-9 input-group">
+  <div class="value col-9 input-group">
       <input class="form-control" type="text" name="Topic-<%$topic->Id%>-Description" size="20" value="<%$topic->Description%>" />
       <input type="submit" class="btn btn-primary" name="Delete-Topic-<%$topic->Id%>" value="Delete" />
   </div>

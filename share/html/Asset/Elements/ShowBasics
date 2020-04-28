@@ -46,37 +46,37 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 asset-catalog label">
+  <div class="label col-3 asset-catalog">
     <&|/l&>Catalog</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& ShowCatalog, Asset => $AssetObj &>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 asset-name label">
+  <div class="col-3 asset-name label">
     <&|/l&>Name</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $AssetObj->Name || '' %></span>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 asset-description label">
+  <div class="col-3 asset-description label">
     <&|/l&>Description</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $AssetObj->Description || '' %></span>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 asset-status label">
+  <div class="col-3 asset-status label">
     <&|/l&>Status</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $AssetObj->Status || '' %></span>
   </div>
 </div>

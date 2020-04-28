@@ -55,10 +55,10 @@ jQuery(function(){
 </script>
 <form name="GroupSearch" method="post" action="<% RT->Config->Get('WebPath') %>/Group/Search.html">
   <div class="form-row">
-    <div class="col-md-auto">
+    <div class="col-auto">
       <input type="text" class="form-control" name="GroupString" value="<% $Default %>" data-autocomplete="Groups" data-autocomplete-return="Name" id="autocomplete-GroupString" />
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
       <input type="submit" name="GroupSearch" value="<&|/l&>Search</&>" class="form-control btn btn-primary button" />
     </div>
   </div>

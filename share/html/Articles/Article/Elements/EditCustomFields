@@ -47,13 +47,13 @@
 %# END BPS TAGGED BLOCK }}}
 % while (my $CustomField = $CustomFields->Next()) {
 <div class="form-row">
-  <div class="cflabel label col-md-3">
+  <div class="cflabel label col-3">
     <span class="name"><%$CustomField->Name%>:</span>
 % if ( $CustomField->EntryHint ) {
     <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
 % }
   </div>
-  <div class="col-md-9 value entry">
+  <div class="value col-9 entry">
     <& /Elements/EditCustomField, 
       Object => $ArticleObj, 
       CustomField => $CustomField, 

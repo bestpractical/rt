@@ -52,7 +52,7 @@
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Scrips/index.html">
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledScrips" name="FindDisabledScrips" value="1" <% $FindDisabledScrips ? 'checked="checked"': '' |n%> />
         <label class="custom-control-label" for="FindDisabledScrips"><&|/l&>Include disabled scrips in listing.</&></label>
@@ -61,7 +61,7 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div align="right">
         <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Go!</&>" />
       </div>

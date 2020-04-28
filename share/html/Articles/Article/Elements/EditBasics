@@ -46,26 +46,26 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Name</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Name" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Name) || $ARGS{'Name'} || ''|h%>" size="50" />
   </div>
 </div>
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Summary</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Summary" value="<%($ARGS{'id'} eq 'new' ? '' : $ArticleObj->Summary) || $ARGS{'Summary'} ||'' |h%>" size="50" />
   </div>
 </div>
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Class</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
 % if ($EditClass) {
 <& /Articles/Elements/SelectClass, Name => 'Class', Default =>$ArticleObj->ClassObj->Id&>
 % } else {
@@ -76,34 +76,34 @@
 </div>
 % if ($ARGS{'id'} ne 'new') {
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Creator</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value form-control"><& /Elements/ShowUser, User => $ArticleObj->CreatorObj &></span>
   </div>
 </div>
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Created</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value form-control"><%$ArticleObj->CreatedObj->AsString%></span>
   </div>
 </div>
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Updated</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value form-control"><%$ArticleObj->LastUpdatedObj->AsString%></span>
   </div>
 </div>
 % }
 % if ($ARGS{'id'} eq 'new' || $ArticleObj->CurrentUserHasRight('DisableArticle')) {
 <div class="form-row">
-  <div class="col-md-3 label"></div>
-  <div class="col-md-9 value">
+  <div class="label col-3"></div>
+  <div class="value col-9">
     <input type="hidden" class="hidden" name="SetEnabled" value="1" />
     <div class="custom-control custom-checkbox">
       <input type="checkbox" id="Enabled" name="Enabled" class="custom-control-input" value="1" <% ( $ArticleObj->id && $ArticleObj->Disabled || $ARGS{'Disabled'} ) ? '' : 'checked="checked"' |n %> />

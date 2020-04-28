@@ -71,13 +71,13 @@ for my $section (@sections) {
 <div class="asset-metadata">
   <div class="form-row">
 % for my $section (@sections) {
-      <div class="col-md-4">
+      <div class="col-4">
         <&| /Widgets/TitleBox, title => loc($section), title_href => $can_edit ? $link{$section} : "", title_class => "inverse", class => "asset-\L$section" &>
           <& "Show$section", AssetObj => $AssetObj &>
         </&>
       </div>
 % }
-      <div class="col-md-4">
+      <div class="col-4">
         <& /Elements/ShowCustomFieldCustomGroupings,
           Object => $AssetObj,
           title_href => $can_edit ? RT->Config->Get("WebPath") . "/Asset/ModifyCFs.html" : "",

@@ -54,19 +54,19 @@
 % }
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Links to').':', Relation => 'RefersTo' &>
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="<%$id%>-RefersTo" value="<% $ARGSRef->{"$id-RefersTo"} || '' %>" <% $exclude |n%>/>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <& /Elements/ShowRelationLabel, Object => $Object, Label => loc('Linked to by').':', Relation => 'ReferredToBy' &>
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="RefersTo-<%$id%>" value="<% $ARGSRef->{"RefersTo-$id"} || '' %>" <% $exclude |n%>/>
     </div>
   </div>

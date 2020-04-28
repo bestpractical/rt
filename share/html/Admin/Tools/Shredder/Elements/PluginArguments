@@ -53,7 +53,7 @@ $Plugin => ''
 % for my $a ( $plugin_obj->SupportArgs ) {
   <div class="form-row">
 %  if( $plugin_obj->ArgIsBoolean( $a ) ) {
-    <div class="col-md-9 offset-md-3">
+    <div class="col-9 offset-md-3">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" id="<% "$Plugin:$a" %>" name="<% "$Plugin:$a" %>" class="custom-control-input" value="<% $ARGS{ "$Plugin:$a" } || '' %>" />
         <label class="custom-control-label" for="<% "$Plugin:$a" %>"><% loc($a) %></label>
@@ -61,8 +61,8 @@ $Plugin => ''
       </div>
     </div>
 %  } else {
-    <div class="col-md-3 label"><% loc($a) %></div>
-    <div class="col-md-9 value">
+    <div class="label col-3"><% loc($a) %></div>
+    <div class="value col-9">
       <input type="text" name="<% "$Plugin:$a" %>" id="<% "$Plugin:$a" %>" class="form-control" value="<% $ARGS{ "$Plugin:$a" } || '' %>" />
 %     if( $arguments_help{$a} ) {
           <span class="hints d-block"><% $arguments_help{$a}->{type} . ' - ' . $arguments_help{$a}->{help} |n%></span>
@@ -73,7 +73,7 @@ $Plugin => ''
 % }
   <div id="shredder-submit-button" class="<% $Plugin? '': 'hidden' %>">
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <& /Elements/Submit, Name => 'Search', Label => loc('Search') &>
       </div>
     </div>

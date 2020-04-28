@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 % for my $role ( $AssetObj->Roles ) {
 <div class="asset-people-<% CSSClass($role) %> form-row">
-  <div class="label col-md-3"><% loc($role) %>:</div>
-  <div class="value col-md-9">
+  <div class="label col-3"><% loc($role) %>:</div>
+  <div class="value col-9">
     <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1 &>
   </div>
 </div>

@@ -49,14 +49,14 @@
 see docs/extending/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>" class="widget form-row">
-  <div class="col-md-<% $LabelCols %> label">
+  <div class="label col-<% $LabelCols %>">
 % if( $LabelLink ) {
     <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
 % } else {
     <% $Description // '' %>
 % }
   </div>
-  <div class="col-md-<% $ValueCols %> value">
+  <div class="value col-<% $ValueCols %>">
     <& SELF:InputOnly, %ARGS &>
 % if ( $Default ) {
     <span class="comment"><% $DefaultLabel %></span>

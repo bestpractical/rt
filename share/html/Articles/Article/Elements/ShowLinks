@@ -46,10 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Refers to</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
 % my $refersto = $article->RefersTo;
 <ul class="list-group list-group-compact">
 % while (my $link = $refersto->Next) {
@@ -73,10 +73,10 @@
 </ul>
   </div>
 
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Referred to by</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
 <ul class="list-group list-group-compact">
 % my $referredtoby = $article->ReferredToBy;
 % while (my $link = $referredtoby->Next) {

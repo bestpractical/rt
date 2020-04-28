@@ -72,27 +72,27 @@
 <hr />
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1 &>
   </div>
 </div>
 
 <&|/Widgets/TitleBox, title => $title &>
   <div class="form-row">
-    <div class="col-md-6">
+    <div class="col-6">
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make Owner</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectOwner, Name => "Owner", Default => $ARGS{Owner} || '' &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label"></div>
-        <div class="col-md-9 value">
+        <div class="label col-3"></div>
+        <div class="value col-9">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" id="ForceOwnerChange" class="checkbox custom-control-input" name="ForceOwnerChange"
               <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %>
@@ -103,55 +103,55 @@
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Add Requestor</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor} &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Remove Requestor</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor} &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Add Cc</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc} &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Remove Cc</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc} &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Add AdminCc</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc} &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Remove AdminCc</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc} &>
         </div>
       </div>
@@ -161,10 +161,10 @@
 % $single_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $single_roles->Next) {
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l, $role->Name &>Make [_1]</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SingleUserRoleInput, role => $role, ShowPlaceholder => 0, ShowEntryHint => 0, Size => 20, Default => $ARGS{"RT::CustomRole-" . $role->Id} &>
         </div>
       </div>
@@ -175,105 +175,105 @@
 % $multi_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $multi_roles->Next) {
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l, $role->Name &>Add [_1]</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/EmailInput, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id} &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l, $role->Name &>Remove [_1]</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/EmailInput, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id} &>
         </div>
       </div>
 % }
 
     </div>
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make subject</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="Subject" size="20" value="<% $ARGS{Subject} || '' %>"/>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make priority</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectPriority, Name => "Priority", Default => $ARGS{Priority}, Queues => $seen_queues &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make queue</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectQueue, Name => "Queue", Default => $ARGS{Queue} &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make Status</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Ticket/Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}, Queues => $seen_queues &>
         </div>
       </div>
 
 % if ($hasSLA) {
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make SLA</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectSLA, Name => "SLA", Default => $ARGS{SLA} &>
         </div>
       </div>
 % }
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make date Starts</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectDate, Name => "Starts_Date", Default => $ARGS{Starts_Date} || '' &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make date Started</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectDate, Name => "Started_Date", Default => $ARGS{Started_Date} || '' &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make date Told</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectDate, Name => "Told_Date", Default => $ARGS{Told_Date} || '' &>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label">
+        <div class="label col-3">
           <&|/l&>Make date Due</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectDate, Name => "Due_Date", Default => $ARGS{Due_Date} || '' &>
         </div>
       </div>
@@ -282,10 +282,10 @@
 </&>
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Update Type</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <select class="form-control selectpicker" name="UpdateType" id="UpdateType">
           <option value="private" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'private' ? 'selected="selected"' : '' %> ><&|/l&>Comments (Not sent to requestors)</&></option>
         <option value="response" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'response' ? 'selected="selected"' : '' %>><&|/l&>Reply to requestors</&></option>
@@ -294,10 +294,10 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Subject</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || "" %>" />
     </div>
   </div>
@@ -306,10 +306,10 @@
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', CustomFields => $TxnCFs );
 % while (my $CF = $TxnCFs->Next()) {
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <% $CF->Name %>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/EditCustomField,
         CustomField => $CF,
         Object => RT::Transaction->new( $session{'CurrentUser'} ),
@@ -319,10 +319,10 @@
 % } # end if while
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Message</&>:
     </div>
-    <div class="col-md-9 value messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
+    <div class="value col-9 messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
 %# Currently, bulk update always starts with Comment not Reply selected, so we check this unconditionally
 % my $IncludeSignature = RT->Config->Get('MessageBoxIncludeSignatureOnComment');
       <& /Elements/MessageBox, Name => "UpdateContent", 
@@ -334,8 +334,8 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 
   <div class="form-row">
-    <div class="col-md-3 label"></div>
-    <div class="col-md-9">
+    <div class="label col-3"></div>
+    <div class="col-9">
       <& /Ticket/Elements/AddAttachments, %ARGS &>
     </div>
   </div>
@@ -364,7 +364,7 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 </&>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Label => loc('Update') &>
   </div>
 </div>
