@@ -1307,11 +1307,7 @@ sub _BuildAdminMenu {
             if ( $obj and $obj->id ) {
                 $page->child( basics       => title => loc('Basics'),       path => "/Admin/CustomRoles/Modify.html?id=".$id );
                 $page->child( 'applies-to' => title => loc('Applies to'),   path => "/Admin/CustomRoles/Objects.html?id=" . $id );
-
-                if ( $current_user->HasRight( Object => $obj, Right => 'AdminCustomRoles' ) ) {
-                    $page->child( 'visibility' => title => loc('Visibility'), path => "/Admin/CustomRoles/Visibility.html?id=" . $id );
-                }
-
+                $page->child( 'visibility' => title => loc('Visibility'),   path => "/Admin/CustomRoles/Visibility.html?id=" . $id );
             }
         }
     }
