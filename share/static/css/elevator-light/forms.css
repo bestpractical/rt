@@ -15,6 +15,7 @@
    -moz-border-radius: 0.5em;
    -webkit-border-radius: 0.5em;
    border-radius: 0.5em;
+   border-color: transparent;
 }
 
 .button:hover, input.button:hover, button:hover, input[type=reset]:hover, input[type=submit]:hover, input[class=button]:hover {
