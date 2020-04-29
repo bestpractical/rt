@@ -205,6 +205,10 @@
     background: rgba(255, 255, 255, 0) !important;
 }
 
+.darkmode .titlebox .titlebox-title .right {
+    padding-top: 0.4em;
+}
+
 .darkmode svg.icon-bordered {
     border: solid 0.05em #717171;
 }
