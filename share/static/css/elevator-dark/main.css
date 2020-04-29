@@ -303,3 +303,7 @@
 .darkmode .messagebox-container.action-response textarea {
     color: #484e53 !important;
 }
+
+.darkmode .titlebox .card-header {
+    padding-bottom: inherit;
+}
