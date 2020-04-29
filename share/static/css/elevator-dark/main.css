@@ -110,6 +110,35 @@
     background: #3A474D !important;
 }
 
+.darkmode #page-navigation #page-menu {
+    border: 1px solid #515151;
+    border-radius: 3px;
+}
+
+.darkmode #page-menu.sf-menu > li {
+    border-color: #515151;
+    border-right: none;
+}
+
+.darkmode #page-menu.sf-menu > li:first-of-type {
+    border-left: none;
+}
+
+.darkmode .sf-menu.sf-shadow ul {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: 1px solid #515151;
+}
+
+.darkmode div#quickbar {
+    height: 2.7rem;
+    box-shadow: none;
+    border-bottom: 1px solid #515151;
+}
+
 .darkmode .nav-tabs {
     background: #171A1F;
     border-color: #3A3C43;
