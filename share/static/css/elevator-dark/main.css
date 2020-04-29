@@ -283,3 +283,18 @@
 .darkmode .history .transaction .messagebody {
     border-color: #515151;
 }
+
+/* Ticket history transaction link colors.
+   This is a copy of the colors from elevator-light.  While not ideal to replicate the definitions here,
+   we need to specifically override the cascading background color definition at the top of this css page. */
+.darkmode .transaction.basics .type, .darkmode .transaction.basics .type * { background: #D32F2F !important; }
+.darkmode .transaction.cfs .type, .darkmode .transaction.cfs .type * { background: #D32F2F !important; }
+.darkmode .transaction.people .type, .darkmode .transaction.people .type * { background: #0288D1 !important; }
+.darkmode .transaction.links .type, .darkmode .transaction.links .type * { background: #388E3C !important; }
+.darkmode .transaction.dates .type, .darkmode .transaction.dates .type * { background: #7B1FA2 !important; }
+.darkmode .transaction.message .type, .darkmode .transaction.message .type * { background: #1976D2 !important; }
+.darkmode .transaction.reminders .type, .darkmode .transaction.reminders .type * { background: #0277BD !important; }
+.darkmode .transaction.other .type, .darkmode .transaction.other .type * { background: #B0BEC5 !important; }
+.darkmode .transaction.error .type, .darkmode .transaction.error .type * { background: #900 !important; }
+.darkmode .transaction.attachment-truncate .type, .transaction.attachment-drop .type,
+.darkmode .transaction.attachment-truncate .type *, .transaction.attachment-drop .type * { background-color: #FF5722 !important; }
