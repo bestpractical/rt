@@ -302,3 +302,8 @@
 .darkmode .transaction.error .type, .darkmode .transaction.error .type * { background: #900 !important; }
 .darkmode .transaction.attachment-truncate .type, .transaction.attachment-drop .type,
 .darkmode .transaction.attachment-truncate .type *, .transaction.attachment-drop .type * { background-color: #FF5722 !important; }
+
+.darkmode .messagebox-container.action-private textarea,
+.darkmode .messagebox-container.action-response textarea {
+    color: #484e53 !important;
+}
