@@ -205,6 +205,11 @@
     background: rgba(255, 255, 255, 0) !important;
 }
 
+.darkmode .transaction table + div.downloadattachment {
+    position: relative;
+    top: 0.6em;
+}
+
 .darkmode svg.icon-bordered {
     border: solid 0.05em #717171;
 }
