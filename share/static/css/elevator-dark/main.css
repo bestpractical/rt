@@ -1,13 +1,14 @@
 @import "../elevator-light/main.css";
 
 .darkmode, .darkmode * {
-    background: #171A1F !important;
-    color: #FFF !important;
+    background: #2C3539 !important;
+    color: #ededed !important;
 }
 
-.darkmode input, .darkmode select {
-    background: #25292F !important;
-    border-color: #3A3C43 !important;
+.darkmode input, .darkmode select,
+.darkmode .btn-light {
+    background: #323D42 !important;
+    border-color: #717171 !important;
 }
 
 .darkmode input::-webkit-input-placeholder {
@@ -37,7 +38,7 @@
 
 .darkmode .card {
     background: #25292F;
-    border-color: #3A3C43;
+    border-color: #515151;
 }
 
 .darkmode label {
@@ -88,16 +89,25 @@
 }
 
 .darkmode .dropdown-menu {
-    background: #171A1F;
-    border-color: #3A3C43;
+    background: #323D42 !important;
+    border-color: #717171 !important;
+}
+
+.darkmode .dropdown-item *, .darkmode .dropdown-item *,
+.darkmode .dropdown-item,
+.darkmode a.dropdown-item {
+    background: #323D42 !important;
 }
 
 .darkmode .dropdown-divider {
     border-color: #3A3C43;
 }
 
-.darkmode .dropdown-item:focus, .darkmode .dropdown-item:hover {
-    background: #25292F;
+.darkmode .dropdown-item:focus *, .darkmode .dropdown-item:hover *,
+.darkmode .dropdown-item:focus, .darkmode .dropdown-item:hover,
+.darkmode #page-menu.sf-menu a:focus, .darkmode #page-menu.sf-menu a:hover,
+.darkmode #main-navigation .sf-menu li ul a:focus, .darkmode #main-navigation .sf-menu li ul a:hover {
+    background: #3A474D !important;
 }
 
 .darkmode .nav-tabs {
@@ -119,6 +129,14 @@
 
 .darkmode .table a, .darkmode .table th {
     color: #FFF;
+}
+
+.darkmode table.table th {
+    border: none;
+}
+
+.darkmode .table th, .darkmode .table td {
+    border-top: 1px solid #6d6f71;
 }
 
 .darkmode .btn:hover {
@@ -176,19 +194,58 @@
     background-color: #114 !important;
 }
 
-/* row colouring */
-.oddline {
-    background: rgba(255, 255, 255, 0.1) !important;
-}
-
-.darkmode tr.oddline {
-    background: rgba(255, 255, 255, 0.1) !important;
-}
-
-.darkmode .oddline .collection-as-table {
-    background: rgba(255, 255, 255, 0.1) !important;
+.darkmode tr.oddline *,
+.darkmode tr.oddline .collection-as-table,
+.darkmode .oddline .collection-as-table,
+.darkmode .oddline .collection-as-table * {
+    background: #323D42 !important;
 }
 
 .darkmode tr.oddline td a {
     background: rgba(255, 255, 255, 0) !important;
+}
+
+.darkmode svg.icon-bordered {
+    border: solid 0.05em #717171;
+}
+
+.darkmode .history .transaction {
+    border-top: 1px solid #515151;
+}
+
+.darkmode div.history-container {
+    border-left: 1px solid #515151;
+    border-right: 1px solid #515151;
+    border-bottom: 1px solid #515151;
+}
+
+.darkmode .history .transaction div.metadata span.actions {
+    border: 1px solid #717171;
+}
+
+.darkmode div#footer {
+    border-top: 1px solid #515151;
+}
+
+.darkmode .form-control,
+.darkmode .selectize-input {
+    background: #323D42 !important;
+    border-color: #717171;
+}
+
+.darkmode .form-control .filter-option-inner-inner,
+.darkmode .form-control option {
+    background: #323D42 !important;
+}
+
+.darkmode div.results .titlebox, .darkmode div.error-titlebox,
+.darkmode div.results .titlebox .titlebox-content,
+.darkmode div.results .titlebox .card-body,
+.darkmode div.results .titlebox .card-body > *,
+.darkmode div.results .titlebox .card-body > * > * {
+    background: #3C494F !important;
+}
+
+.darkmode .history .transaction .messagebody {
+    border-color: #515151;
 }
