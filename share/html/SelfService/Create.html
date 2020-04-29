@@ -107,7 +107,7 @@
 </div>
 <div class="form-row">
   <div class="col-12">
-    <& /Elements/Submit, Label => loc("Create ticket")&>
+    <& /Elements/Submit, Label => loc("Create ticket"), Name => 'SubmitTicket' &>
   </div>
 </div>
 
@@ -144,12 +144,10 @@ my $skip_create = 0;
 
 $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, results => \@results );
 
-if ( !exists $ARGS{'AddMoreAttach'} and defined($ARGS{'id'}) and $ARGS{'id'} eq 'new' ) { # new ticket?
-    if ( !$skip_create ) {
-        $m->comp('Display.html', %ARGS);
-        $RT::Logger->crit("After display call; error is $@");
-        $m->abort();
-    }
+if ( !$skip_create && $ARGS{'SubmitTicket'} ) {
+    $m->comp('Display.html', %ARGS);
+    $RT::Logger->crit("After display call; error is $@");
+    $m->abort();
 }
 
 </%init>
