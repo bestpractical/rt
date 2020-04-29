@@ -114,9 +114,12 @@ $m->callback( CallbackName => 'MassageQueries',
     EmptyMessages   => \@empty_messages,
 );
 
+my $format = ( exists RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name}
+    ? RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name}
+    : RT->Config->Get('LinkedQueuePortletFormats')->{'Default'} );
+
 for my $query ( @queries ) {
     my $empty_message = shift @empty_messages;
-    my $format = $Format;
     my $order_by = $OrderBy;
     my $rows = $Rows;
 
@@ -161,5 +164,4 @@ return unless $portlet_config{ $queue };
 $TicketObj
 $OrderBy => 'Due'
 $Rows => 8
-$Format => RT->Config->Get( 'LinkedQueuePortletFormats' )->{ 'Default' }
 </%ARGS>
