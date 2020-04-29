@@ -33,7 +33,7 @@ $m->content_contains("Create a new ticket", 'ticket create page');
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Attachments test');
 $m->field('Content', 'Some content');
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->content_contains('Attachments test', 'we have subject on the page');

@@ -59,7 +59,7 @@ $m->field('Subject', 'Encryption test');
 $m->field('Content', 'Some content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok(!$m->value('Sign', 2), "sign tick box is unchecked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -128,7 +128,7 @@ $m->field('Subject', 'Signing test');
 $m->field('Content', 'Some other content');
 ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
 ok($m->value('Sign', 2), "sign tick box is checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -201,7 +201,7 @@ $m->field('Subject', 'Crypt+Sign test');
 $m->field('Content', 'Some final? content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok($m->value('Sign', 2), "sign tick box is checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -267,7 +267,7 @@ $m->field('Content', 'Thought you had me figured out didya');
 $m->field(Encrypt => undef, 2); # turn off encryption
 ok(!$m->value('Encrypt', 2), "encrypt tick box is now unchecked");
 ok($m->value('Sign', 2), "sign tick box is still checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed

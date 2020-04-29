@@ -40,7 +40,7 @@ $m->field( 'Attach',  $path );
 $m->field( 'Content', 'Some content' );
 my $cf_content = 'cf' . 'a' x 998 . 'cfb';
 $m->field( "Object-RT::Ticket--CustomField-$cfid-Value", $cf_content );
-$m->submit;
+$m->click('SubmitTicket');
 is( $m->status, 200, "request successful" );
 
 $m->content_contains( "File '$name' dropped because its size (1010 bytes) exceeded configured maximum size setting (1000 bytes).", 'dropped message' );

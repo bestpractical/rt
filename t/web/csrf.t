@@ -189,7 +189,7 @@ $m->field('Attach',  $logofile);
 
 # Lose the referer before the POST
 $m->add_header(Referer => undef);
-$m->submit;
+$m->click('SubmitTicket');
 $m->content_contains("Possible cross-site request forgery");
 $m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
 $m->follow_link(text_regex => qr{resume your request});

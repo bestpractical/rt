@@ -132,7 +132,7 @@ sub create_a_ticket {
         }
     }
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is $m->status, 200, "request successful";
 
     $m->content_lacks("unable to sign outgoing email messages");

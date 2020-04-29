@@ -105,6 +105,7 @@ diag "check that we don't have the cf on create";
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
+        button => 'SubmitTicket',
     );
     my ($tid) = ($m->content =~ /Ticket (\d+) created/i);
     ok $tid, "created a ticket succesfully";

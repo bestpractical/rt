@@ -47,6 +47,7 @@ $m->submit_form(
     fields => {
         Subject => 'test ticket',
     },
+    button => 'SubmitTicket',
 );
 $m->content_contains( 'Ticket 1 created in queue', 'Created ticket' );
 
@@ -86,6 +87,7 @@ $m->submit_form(
     fields => {
         Subject => 'test ticket 2',
     },
+    button => 'SubmitTicket',
 );
 $m->content_contains( 'Ticket 2 created in queue', 'Created ticket' );
 

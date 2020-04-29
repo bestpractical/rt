@@ -29,7 +29,7 @@ my $url = $agent->rt_base_url;
     my $string = Encode::decode("UTF-8","I18N Web Testing æøå");
     $agent->field('Subject' => "Ticket with utf8 body");
     $agent->field('Content' => $string);
-    ok($agent->submit, "Created new ticket with $string as Content");
+    ok($agent->click('SubmitTicket'), "Created new ticket with $string as Content");
     $agent->content_contains($string, "Found the content");
     ok($agent->{redirected_uri}, "Did redirection");
 
@@ -51,7 +51,7 @@ my $url = $agent->rt_base_url;
     my $string = Encode::decode( "UTF-8","I18N Web Testing æøå");
     $agent->field('Subject' => $string);
     $agent->field('Content' => "Ticket with utf8 subject");
-    ok($agent->submit, "Created new ticket with $string as Content");
+    ok($agent->click('SubmitTicket'), "Created new ticket with $string as Content");
     $agent->content_contains($string, "Found the content");
     ok($agent->{redirected_uri}, "Did redirection");
 

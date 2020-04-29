@@ -44,6 +44,7 @@ diag('create a ticket to see the autoreply mail') if $ENV{TEST_VERBOSE};
         form_name => 'TicketCreate',
         fields      => { Subject => $subject, Content => "<h1>$content</h1>",
         ContentType => 'text/html' },
+        button => 'SubmitTicket',
     );
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
     $m->follow_link( url_regex => qr/ShowEmailRecord/ );

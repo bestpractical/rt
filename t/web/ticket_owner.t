@@ -40,7 +40,7 @@ diag "current user has no right to own, nobody selected as owner on create";
     is $form->value('Owner'), RT->Nobody->id, 'correct owner selected';
     ok !grep($_ == $user_a->id, $form->find_input('Owner')->possible_values),
         'user A can not own tickets';
-    $agent_a->submit;
+    $agent_a->click('SubmitTicket');
 
     $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
@@ -62,7 +62,7 @@ diag "user can chose owner of a new ticket";
     ok grep($_ == $user_b->id,  $form->find_input('Owner')->possible_values),
         'user B is listed as potential owner';
     $agent_a->select('Owner', $user_b->id);
-    $agent_a->submit;
+    $agent_a->click('SubmitTicket');
 
     $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);

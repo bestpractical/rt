@@ -51,7 +51,7 @@ ok $m->login( 'user', 'password' ), 'logged in as user';
     my $form = $m->form_name( 'TicketCreate' );
     my $sla  = $form->find_input( 'SLA' );
     is_deeply( [$sla->possible_values], [ 2, 4 ], 'possible sla' );
-    $m->submit_form( fields => { Subject => 'ticket foo with default sla' } );
+    $m->submit_form( fields => { Subject => 'ticket foo with default sla' }, button => 'SubmitTicket' );
 
     my $ticket = RT::Test->last_ticket;
     ok( $ticket->id, 'ticket is created' );
@@ -64,7 +64,7 @@ ok $m->login( 'user', 'password' ), 'logged in as user';
 {
     $m->goto_create_ticket( $queue->id );
     my $form = $m->form_name( 'TicketCreate' );
-    $m->submit_form( fields => { Subject => 'ticket foo with default sla', SLA => 4 } );
+    $m->submit_form( fields => { Subject => 'ticket foo with default sla', SLA => 4 }, button => 'SubmitTicket' );
 
     my $ticket = RT::Test->last_ticket;
     ok( $ticket->id, 'ticket is created' );
@@ -95,7 +95,7 @@ ok $m->login( 'user', 'password' ), 'logged in as user';
     $m->goto_create_ticket( $queue->id );
     my $form = $m->form_name( 'TicketCreate' );
     ok( !$form->find_input( 'SLA' ), 'no SLA input' );
-    $m->submit_form( fields => { Subject => 'ticket foo without sla' } );
+    $m->submit_form( fields => { Subject => 'ticket foo without sla' }, button => 'SubmitTicket' );
 
     my $ticket = RT::Test->last_ticket;
     ok( $ticket->id,               'ticket is created' );

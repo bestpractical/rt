@@ -33,7 +33,7 @@ diag "user_a doesn't show up in create form";
     is $input->value, RT->Nobody->Id, 'correct owner selected';
     ok((not scalar grep { $_ == $user_a->Id } $input->possible_values), 'no user_a value in dropdown');
     $form->value('Requestors', 'user_a@example.com');
-    $agent_root->submit;
+    $agent_root->click('SubmitTicket');
 
     $agent_root->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
     my ($id) = ($agent_root->content =~ /Ticket (\d+) created in queue/);
