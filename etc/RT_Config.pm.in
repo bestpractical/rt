@@ -2008,7 +2008,7 @@ This can also be configured via the web UI.
 
 =cut
 
-Set($LogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-logo.png");
+Set($LogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-logo.svg");
 
 =item C<$LogoLinkURL>
 
