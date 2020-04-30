@@ -307,3 +307,8 @@
 .darkmode .titlebox .card-header {
     padding-bottom: inherit;
 }
+
+.darkmode .dropzone,
+.darkmode .dropzone .dz-details {
+    border: 1px solid #717171 !important;
+}
