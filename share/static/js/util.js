@@ -690,6 +690,29 @@ jQuery(function() {
 
     loadCollapseStates();
     Chart.platform.disableCSSInjection = true;
+
+    if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced.html') != -1 ) {
+        var validate_json = function (str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        };
+
+        jQuery('[name=Config]').bind('input propertychange', function() {
+            var form = jQuery(this).closest('form');
+            if ( validate_json(jQuery(this).val()) ) {
+                form.find('input[type=submit]').prop('disabled', false);
+                form.find('.invalid-json').addClass('hidden');
+            }
+            else {
+                form.find('input[type=submit]').prop('disabled', true);
+                form.find('.invalid-json').removeClass('hidden');
+            }
+        });
+    }
 });
 
 /* inline edit */

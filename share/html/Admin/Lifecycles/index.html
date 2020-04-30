@@ -1,0 +1,154 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2017 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => loc("Admin Lifecycles") &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Lifecycles/index.html">
+  <div class="form-row">
+    <div class="col-auto">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledLifecycles" name="FindDisabledLifecycles" value="1" <% $FindDisabledLifecycles ? 'checked="checked"': '' |n%> />
+        <label class="custom-control-label" for="FindDisabledLifecycles"><&|/l&>Include disabled lifecycles in listing.</&></label>
+      </div>
+    </div>
+    <div class="col-auto">
+      <input type="submit" name="Go" class="form-control btn btn-primary" value="<&|/l&>Go!</&>" />
+    </div>
+  </div>
+
+  <table class="table collection collection-as-table" cellspacing="0">
+    <tbody>
+      <tr class="collection-as-table">
+        <th class="collection-as-table"><&|/l&>Name</&></th>
+        <th class="collection-as-table"><&|/l&>Type</&></th>
+        <th class="collection-as-table"><&|/l&>Enabled</&></th>
+      </tr>
+% my $i = 0;
+% for my $key ( sort keys %lifecycles ) {
+%    next if grep { $key eq $_ } qw/approvals __maps__/;
+%    next if $lifecycles{$key}{'disabled'} and !$FindDisabledLifecycles;
+
+      <tr class="<% $i % 2 ? 'oddline' : 'evenline' %>">
+        <td class="collection-as-table"><a href="<% RT->Config->Get('WebURL') %>Admin/Lifecycles/Modify.html?Type=<% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') |u %>&Name=<% $key %>"><% $key %></a></td>
+        <td class="collection-as-table"><% $lifecycles{$key}{'type'} ? loc($lifecycles{$key}{'type'}) : loc('ticket') %></td>
+        <td class="collection-as-table">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input checkbox" id="enable-lifecycle-<% $key %>" name="enable-lifecycle-<% $key %>" value="1" <% $lifecycles{$key}{'disabled'} ? '' : 'checked="checked"' %> />
+            <label class="custom-control-label" for="enable-lifecycle-<% $key %>"></label>
+          </div>
+        </td>
+      </tr>
+%    ++$i;
+% }
+    </tbody>
+  </table>
+
+  <div class="form-row">
+    <div class="col-12">
+      <div align="right">
+        <input type="submit" name="Submit" class="form-control btn btn-primary" value="<&|/l&>Update</&>" />
+      </div>
+    </div>
+  </div>
+
+</form>
+<%INIT>
+my @results;
+
+my %lifecycles = %{RT::Config->Get('Lifecycles')};
+
+if ($Submit) {
+    my $changed;
+    foreach my $lifecycle ( keys %lifecycles ) {
+        next if grep { $lifecycle eq $_ } qw/approvals __maps__/;
+        if ( $ARGS{"enable-lifecycle-$lifecycle"} ) {
+            if ( $lifecycles{$lifecycle}{'disabled'} ) {
+                $lifecycles{$lifecycle}{'disabled'} = 0;
+                $changed ||= 1;
+            }
+        }
+        elsif ( !$lifecycles{$lifecycle}{'disabled'} ) {
+            my $class = ( $lifecycles{$lifecycle}{'type'} // '' ) eq 'asset' ? 'RT::Catalogs' : 'RT::Queues';
+            my $objects = $class->new($session{CurrentUser});
+            $objects->Limit( FIELD => 'Lifecycle', VALUE => $lifecycle );
+            my $names = join ', ', map { $_->Name } @{ $objects->ItemsArrayRef };
+            if ( $names ) {
+                push @results,
+                    loc( "Could not disable active lifecycle [_1]: it is used by [_2] [_3]",
+                    $lifecycle, lc $class->Table, $names );
+            }
+            else {
+                $lifecycles{$lifecycle}{'disabled'} = 1;
+                $changed ||= 1;
+            }
+        }
+    }
+
+    if ($changed) {
+        my ( $ret, $msg ) = RT::Lifecycle->_SaveLifecycles( \%lifecycles, $session{CurrentUser}, );
+        if ($ret) {
+            push @results, loc("Updated lifecycle configuration");
+        }
+        else {
+            RT::Logger->error("Could not set lifeycle configuration content: $msg");
+            push @results, $msg;
+        }
+    }
+}
+
+# This code does automatic redirection if any updates happen.
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { FindDisabledLifecycles => $FindDisabledLifecycles },
+);
+</%INIT>
+<%ARGS>
+$Submit                  => undef
+$FindDisabledLifecycles  => undef
+</%ARGS>

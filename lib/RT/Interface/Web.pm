@@ -302,6 +302,7 @@ sub HandleRequest {
     MaybeShowInstallModePage();
 
     MaybeRebuildCustomRolesCache();
+    RT->System->MaybeRebuildLifecycleCache();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
@@ -1882,6 +1883,11 @@ sub RequestENV {
     my $name = shift;
     my $env = $HTML::Mason::Commands::m->cgi_object->env;
     return $name ? $env->{$name} : $env;
+}
+
+sub ClientIsIE {
+    # IE 11.0 dropped "MSIE", so we can't use that alone
+    return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
 }
 
 package HTML::Mason::Commands;

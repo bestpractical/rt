@@ -257,6 +257,38 @@ sub ConfigCacheNeedsUpdate {
     }
 }
 
+# This needs to be in RT::System as RT::Interface::Web and RT::Interface::Email both use this
+my $lifecycle_cache_time = time;
+sub MaybeRebuildLifecycleCache {
+    my $needs_update = RT->System->LifecycleCacheNeedsUpdate;
+    if ( $needs_update > $lifecycle_cache_time ) {
+        RT::Lifecycle->FillCache;
+        $lifecycle_cache_time = $needs_update;
+    }
+}
+
+=head2 LifecycleCacheNeedsUpdate ( 1 )
+
+Attribute to decide when we need to flush the list of lifecycles
+and re-register any changes. This is needed for the lifecycle UI editor.
+
+If passed a true value, will update the attribute to be the current time.
+
+=cut
+
+sub LifecycleCacheNeedsUpdate {
+    my $self   = shift;
+    my $update = shift;
+
+    if ($update) {
+        return $self->SetAttribute(Name => 'LifecycleCacheNeedsUpdate', Content => time);
+    }
+    else {
+        my $cache = $self->FirstAttribute('LifecycleCacheNeedsUpdate');
+        return (defined $cache ? $cache->Content : 0);
+    }
+}
+
 =head2 AddUpgradeHistory package, data
 
 Adds an entry to the upgrade history database. The package can be either C<RT>

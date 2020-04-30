@@ -2628,15 +2628,16 @@ sub LoadConfigFromDatabase {
 
         my $type = $meta->{Type} || 'SCALAR';
 
-        # hashes combine, but we don't want that behavior because the previous
-        # config settings will shadow any change that the database config makes
-        if ($type eq 'HASH') {
-            $self->Set($name, ());
-        }
-
         my $val = $type eq 'ARRAY' ? $value
                 : $type eq 'HASH'  ? [ %$value ]
                                    : [ $value ];
+
+        # hashes combine, but by default previous config settings shadow
+        # later changes, here we want database configs to shadow file ones.
+        if ($type eq 'HASH') {
+            $val = [ $self->Get($name), @$val ];
+            $self->Set($name, ());
+        }
 
         $self->SetFromConfig(
             Option     => \$name,
