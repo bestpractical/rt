@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <form name="UserSearch" method="post" action="<% RT->Config->Get('WebPath') %>/User/Search.html">
   <div class="form-row justify-content-center">
-    <div class="col-md-4">
+    <div class="col-4">
       <input type="text" class="form-control" name="UserString" value="<% $Default %>" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
       <input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button btn btn-primary form-control" />
     </div>
   </div>

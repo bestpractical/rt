@@ -79,7 +79,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
                 <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
                 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
                 <div class="form-row">
-                  <div class="col-md-12 text-right">
+                  <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -114,7 +114,7 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
                 <div class="form-row">
-                  <div class="col-md-12 text-right">
+                  <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -163,7 +163,7 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
                 <div class="form-row">
-                  <div class="col-md-12 text-right">
+                  <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -204,11 +204,11 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
                 <& /Elements/EditLinks, Object => $Ticket, TwoColumn => 0 &>
 
                 <h3><&|/l&>Merge</&></h3>
-                <& /Ticket/Elements/EditMerge, Ticket => $Ticket, LabelStyle => 'col-md-3',
-                   ValueStyle => 'col-md-9', MergeTextClass => '', %ARGS &>
+                <& /Ticket/Elements/EditMerge, Ticket => $Ticket, LabelStyle => 'col-3',
+                   ValueStyle => 'col-9', MergeTextClass => '', %ARGS &>
 
                 <div class="form-row">
-                  <div class="col-md-12 text-right">
+                  <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>

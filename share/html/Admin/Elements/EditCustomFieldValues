@@ -51,23 +51,23 @@
 % }
 
 <div class="form-row">
-  <div class="label col-md-auto">
+  <div class="label col-auto">
     <div class="custom-control custom-checkbox">
       <input class="custom-control-input" type="checkbox" id='DeleteAll' name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-/)" />
       <label class="custom-control-label" for="DeleteAll"></label>
     </div>
   </div>
-  <div class="label col-md-1 text-left">
+  <div class="label col-1 text-left">
     <&|/l&>Sort</&>
   </div>
-  <div class="label col-md-3 text-left">
+  <div class="label col-3 text-left">
     <&|/l&>Name</&>
   </div>
-  <div class="label col-md-3 text-left">
+  <div class="label col-3 text-left">
     <&|/l&>Description</&>
   </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-    <div class="label categoryheader col-md-2 text-left">
+    <div class="label categoryheader col-2 text-left">
       <&|/l&>Category</&>
     </div>
 % }
@@ -76,23 +76,23 @@
 % while ( my $value = $values->Next ) {
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-". $value->Id;
 <div class="form-row">
-  <div class='col-md-auto'>
+  <div class='col-auto'>
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="Delete-<% $paramtag %>" name="Delete-<% $paramtag %>" />
         <label class="custom-control-label" for="Delete-<% $paramtag %>"></label>
     </div>
   </div>
-  <div class="col-md-1 value">
+  <div class="value col-1">
     <input class="form-control" type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->SortOrder %>" />
   </div>
-  <div class="col-md-3 value">
+  <div class="value col-3">
     <input class="form-control" type="text" size="25" name="<% $paramtag %>-Name" value="<% $value->Name %>" />
   </div>
-  <div class="col-md-3 value">
+  <div class="value col-3">
     <input class="form-control" type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description || '' %>" />
   </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-  <div class="col-md-2 value">
+  <div class="value col-2">
 % my $selected = $value->Category;
 % $selected = '' unless defined $selected;
     <select class="editcategory form-control selectpicker" name="<% $paramtag %>-Category" size="1">
@@ -103,7 +103,7 @@
     </select>
   </div>
 % }
-  <div class="col-md-2">
+  <div class="col-2">
     <input type="button" class="delete_custom_field_value button btn btn-primary" data-cfv-id="<% $value->id %>" value="<&|/l&>Delete</&>" onclick="delete_custom_field_value(<% $value->id %>)" />
   </div>
 % $m->callback(CallbackName => 'AfterCustomFieldValueInput', CustomFieldObj => $CustomField, CustomFieldValueObj => $value, ARGSRef => \%ARGS );

@@ -104,8 +104,8 @@ elsif ($widget eq '/Widgets/Form/Select') {
     );
 }
 my $row_start = qq{<div class="widget form-row">
-  <div class="col-md-4 label"><a href="$doc_url" target="_blank">$name</a></div>
-  <div class="col-md-8 value">
+  <div class="label col-4"><a href="$doc_url" target="_blank">$name</a></div>
+  <div class="value col-8">
 };
 my $row_end = qq{</div></div>};
 

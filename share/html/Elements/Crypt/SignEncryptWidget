@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-auto">
+  <div class="col-auto">
 % if ( RT->Config->Get('Crypt')->{'Outgoing'} eq 'GnuPG' ) {
     <& '/Widgets/Form/Boolean:InputOnly',
         Name => 'Sign', CurrentValue => $self->{'Sign'},
@@ -60,7 +60,7 @@
   </div>
 % }
 
-  <div class="col-md-auto">
+  <div class="col-auto">
     <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'}, DefaultLabel => loc( 'Encrypt' ) &>
   </div>
 </div>

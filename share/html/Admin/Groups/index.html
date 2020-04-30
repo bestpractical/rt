@@ -56,10 +56,10 @@
     <div class="col-xl-6">
 
       <div class="form-row">
-        <div class="col-md-3 label text-left">
+        <div class="label col-3 text-left">
           <&|/l&>Go to group</&>
         </div>
-        <div class="col-md-3 value">
+        <div class="value col-3">
           <input type="text" class="form-control" name="GroupString" value="" data-autocomplete="Groups" id="autocomplete-GroupString" />
           <script type="text/javascript">
     jQuery(function(){
@@ -81,7 +81,7 @@
     <div class="col-xl-6">
 
       <div class="form-row">
-        <div class="col-md-3 label text-left">
+        <div class="label col-3 text-left">
           <&|/l&>Find groups whose</&>
         </div>
         <& /Elements/SelectGroups,
@@ -91,7 +91,7 @@
         &>
       </div>
       <div class="form-row">
-        <div class="col-md-3 label text-left">
+        <div class="label col-3 text-left">
           <&|/l&>And groups whose</&>
         </div>
           <& /Elements/SelectGroups,
@@ -104,7 +104,7 @@
           &>
       </div>
       <div class="form-row">
-        <div class="col-md-3 label text-left">
+        <div class="label col-3 text-left">
           <&|/l&>And groups whose</&>
         </div>
         <& /Elements/SelectGroups,
@@ -117,7 +117,7 @@
         &>
       </div>
       <div class="form-row">
-        <div class="col-md-12">
+        <div class="col-12">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="checkbox custom-control-input" id="FindDisabledGroups" name="FindDisabledGroups" value="1" <% $FindDisabledGroups? 'checked="checked"': '' |n %> />
             <label class="custom-control-label" for="FindDisabledGroups"><&|/l&>Include disabled groups in listing.</&></label><br />
@@ -126,7 +126,7 @@
       </div>
 
       <div class="form-row">
-        <div class="col-md-12 text-right">
+        <div class="col-12 text-right">
           <input type="submit" class="form-control btn btn-primary button" name="Go" value="<&|/l&>Go!</&>" />
         </div>
       </div>

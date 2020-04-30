@@ -59,10 +59,10 @@
 
 % if ( not $disabled ) {
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <span class="current-value form-control">
 % if ( $scrip->IsGlobal ) {
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
@@ -85,9 +85,9 @@
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="checkbox custom-control-input" name="Enabled" id="Enabled" value="1" <% $EnabledChecked |n%> />
         <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
@@ -98,7 +98,7 @@
 </&>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
     </div>
   </div>
@@ -106,7 +106,7 @@
 % if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
     </div>
   </div>

@@ -58,28 +58,28 @@
 <&| /Widgets/TitleBox, title => 'Basics', class => 'custom-field-info-basics', content_class => 'mx-auto width-sm' &>
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Name</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Name" value="<% $CustomFieldObj->Name || $Name || '' %>" size="20" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Description</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Description" value="<% $CustomFieldObj->Description || $Description || '' %>" size="80" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Type</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Admin/Elements/SelectCustomFieldType,
       Name => "TypeComposite",
       Default => $CustomFieldObj->TypeComposite,
@@ -89,10 +89,10 @@
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->HasRenderTypes ) {
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Render Type</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Admin/Elements/SelectCustomFieldRenderType,
         Name            => "RenderType",
         TypeComposite   => $CustomFieldObj->TypeComposite,
@@ -104,10 +104,10 @@
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->IsSelectionType and RT->Config->Get('CustomFieldValuesSources') and ( scalar(@{RT->Config->Get('CustomFieldValuesSources')}) > 0 ) ) {
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Field values source:</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
   </div>
 </div>
@@ -115,20 +115,20 @@
 
 % if ( $CustomFieldObj->Id and $CustomFieldObj->IsCanonicalizeType and RT->Config->Get('CustomFieldValuesCanonicalizers') and ( scalar(@{RT->Config->Get('CustomFieldValuesCanonicalizers')}) > 0 ) ) {
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Canonicalizer:</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Admin/Elements/EditCustomFieldValuesCanonicalizer, CustomField => $CustomFieldObj &>
   </div>
 </div>
 % }
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Applies to</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Admin/Elements/SelectCustomFieldLookupType,
       Name => "LookupType",
       Default => $CustomFieldObj->LookupType || $LookupType,
@@ -155,19 +155,19 @@ jQuery( function() {
 </script>
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Entry Hint</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="EntryHint" value="<% $CustomFieldObj->EntryHint // $EntryHint // '' %>" size="80" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Validation</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Widgets/ComboBox,
       Name    => 'Pattern',
       Default => $CustomFieldObj->Pattern || $Pattern,
@@ -179,10 +179,10 @@ jQuery( function() {
 
 % if ( $CustomFieldObj->SupportDefaultValues ) {
 <div class="form-row">
-  <div class="label col-md-3 edit_default_values">
+  <div class="label col-3 edit_default_values">
     <&|/l, $CustomFieldObj->MaxValues &>Default [numerate,_1,value,values]</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Elements/EditCustomField, NamePrefix => 'Default-', CustomField => $CustomFieldObj, ShowEmptyOption => 1 &>
   </div>
 </div>
@@ -190,10 +190,10 @@ jQuery( function() {
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType ) {
 <div class="form-row categoriesbasedon">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Categories are based on</&>
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Admin/Elements/SelectCustomField,
       Name => "BasedOn",
       LookupType => $CustomFieldObj->LookupType,
@@ -205,8 +205,8 @@ jQuery( function() {
 % }
 
 <div class="form-row">
-  <div class="col-md-3 label"></div>
-  <div class="col-md-9 value">
+  <div class="label col-3"></div>
+  <div class="value col-9">
     <input type="hidden" class="hidden" name="SetUniqueValues" value="1" />
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="UniqueValues" name="UniqueValues" value="1" <% $UniqueValuesChecked |n %> />
@@ -220,8 +220,8 @@ jQuery( function() {
 % $m->callback(CallbackName => 'BeforeEnabled', CustomField => $CustomFieldObj, CFvalidations => \@CFvalidations);
 
 <div class="form-row">
-  <div class="col-md-3 label"></div>
-  <div class="col-md-9 value">
+  <div class="label col-3"></div>
+  <div class="value col-9">
     <input type="hidden" class="hidden" name="SetEnabled" value="1" />
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="Enabled" name="Enabled" value="1" <% $EnabledChecked |n %> />
@@ -240,17 +240,17 @@ jQuery( function() {
 <&| /Widgets/TitleBox, title => 'Integration', class => 'custom-field-info-integration', content_class => 'mx-auto width-md' &>
 
 <div class="form-row">
-  <div class="label col-md-2">
+  <div class="label col-2">
     <&|/l&>Link values to</&>
   </div>
-  <div class="col-md-8">
+  <div class="col-8">
     <input class="form-control" type="text" size="60" name="LinkValueTo"  value="<% $CustomFieldObj->LinkValueTo || $LinkValueTo || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-2"></div>
-  <div class="col-md-8">
+  <div class="col-2"></div>
+  <div class="col-8">
     <&|/l&>RT can make this custom field's values into hyperlinks to another service.</&>
     <&|/l&>Fill in this field with a URL.</&>
     <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
@@ -258,17 +258,17 @@ jQuery( function() {
 </div>
 
 <div class="form-row">
-  <div class="label col-md-2">
+  <div class="label col-2">
     <&|/l&>Include page</&>
   </div>
-  <div class="col-md-8 value">
+  <div class="value col-8">
     <input class="form-control" type="text" size="60" name="IncludeContentForValue" value="<% $CustomFieldObj->IncludeContentForValue || $IncludeContentForValue || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-2"></div>
-  <div class="col-md-8">
+  <div class="col-2"></div>
+  <div class="col-8">
     <&|/l&>RT can include content from another web service when showing this custom field.</&>
     <&|/l&>Fill in this field with a URL.</&>
     <&|/l_unsafe, '<tt>__id__</tt>', '<tt>__CustomField__</tt>' &>RT will replace [_1] and [_2] with the record's id and the custom field's value, respectively.</&>
@@ -280,8 +280,8 @@ jQuery( function() {
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
 <&| /Widgets/TitleBox, title => 'Values', class => 'custom-field-info-values', content_class => 'mx-auto width-md' &>
 <div class="form-row">
-  <div class="col-md-1"></div>
-  <div class="edit_custom_field_values col-md-11">
+  <div class="col-1"></div>
+  <div class="edit_custom_field_values col-11">
     <& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
   </div>
 </div>
@@ -289,7 +289,7 @@ jQuery( function() {
 % }
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Name => 'Update', Label => $id eq 'new'? loc('Create'): loc('Save Changes') &>
   </div>
 </div>

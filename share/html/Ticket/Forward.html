@@ -61,34 +61,34 @@
 <&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
 <div>
   <div class="form-row">
-    <div class="label col-md-2"><&|/l&>From</&>:</div>
-    <div class="value col-md-9"><% $from %></div>
+    <div class="label col-2"><&|/l&>From</&>:</div>
+    <div class="value col-9"><% $from %></div>
   </div>
 
   <div class="form-row">
-    <div class="label col-md-2"><&|/l&>Subject</&>:</div>
-    <div class="value col-md-9"><input class="form-control"   type="text" name="Subject" value="<% $ARGS{'Subject'} || $subject %>" /></div>
+    <div class="label col-2"><&|/l&>Subject</&>:</div>
+    <div class="value col-9"><input class="form-control"   type="text" name="Subject" value="<% $ARGS{'Subject'} || $subject %>" /></div>
   </div>
 
   <div class="form-row">
-    <div class="label col-md-2"><&|/l&>To</&>:</div>
-    <div class="value col-md-9"><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></div>
+    <div class="label col-2"><&|/l&>To</&>:</div>
+    <div class="value col-9"><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></div>
   </div>
 
   <div class="form-row">
-    <div class="label col-md-2"><&|/l&>Cc</&>:</div>
-    <div class="value col-md-9"><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></div>
+    <div class="label col-2"><&|/l&>Cc</&>:</div>
+    <div class="value col-9"><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></div>
   </div>
 
   <div class="form-row">
-    <div class="label col-md-2"><&|/l&>Bcc</&>:</div>
-    <div class="value col-md-9"><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></div>
+    <div class="label col-2"><&|/l&>Bcc</&>:</div>
+    <div class="value col-9"><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></div>
   </div>
 
 % if ( $gnupg_widget ) {
   <div class="form-row">
-    <span class="label col-md-2 empty">&nbsp;</span>
-    <div class="value col-md-9">
+    <span class="label col-2 empty">&nbsp;</span>
+    <div class="value col-9">
 <& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,

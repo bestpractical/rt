@@ -84,7 +84,7 @@ $m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 <& /Asset/Elements/AssetSearchPeople, %ARGS, CatalogObj => $catalog_obj &>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
     </div>
   </div>
@@ -97,7 +97,7 @@ $m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 
 % if ( $has_assets_cfs ) {
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
     </div>
   </div>

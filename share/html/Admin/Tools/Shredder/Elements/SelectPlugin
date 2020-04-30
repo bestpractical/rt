@@ -50,8 +50,8 @@ $Plugin => ''
 </%ARGS>
 <& PluginHelp, %ARGS, Plugin => 'Base' &>
 <div class="shredder-form form-row">
-  <div class="col-md-auto label"><&|/l&>Select plugin</&>: </div>
-  <div class="col-md-auto">
+  <div class="label col-auto"><&|/l&>Select plugin</&>: </div>
+  <div class="col-auto">
     <select name="Plugin" class="form-control selectpicker" onchange="showShredderPluginTab(this.value);">
       <option value=""><% loc('(no value)') %></option>
 % foreach my $p( keys %plugins ) {

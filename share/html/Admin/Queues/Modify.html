@@ -57,10 +57,10 @@
 
 <&| /Widgets/TitleBox, class => 'queue-info-basics', content_class => 'mx-auto width-sm' &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Queue Name</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
 % if ($InternalQueue) {
       <% $QueueObj->Name %>
 % } else {
@@ -70,19 +70,19 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Description</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="Description" value="<% $Create ? "" : $QueueObj->Description || $Description || '' %>" size="60" />
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Lifecycle</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
 % if ($InternalQueue) {
       <% $QueueObj->Lifecycle %>
 % } else {
@@ -97,44 +97,44 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Subject Tag</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $QueueObj->SubjectTag || '' ) %>" size="60" />
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Sort Order</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="SortOrder" value="<% $Create ? 0 : $QueueObj->SortOrder || $SortOrder || 0 %>" size="60" />
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Reply Address</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="email" class="form-control" name="CorrespondAddress" value="<% $Create ? "" : $QueueObj->CorrespondAddress || $CorrespondAddress || '' %>" />
       <span><em><&|/l , RT->Config->Get('CorrespondAddress')&>(If left blank, will default to [_1])</&></em></span>
     </div>
 
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Comment Address</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="email" class="form-control" name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || $CommentAddress || '' %>" />
       <span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label"></div>
-    <div class="col-md-9 value">
+    <div class="label col-3"></div>
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="SLAEnabled" name="SLAEnabled" value="1" 
 % if ( $QueueObj->id && !$QueueObj->SLADisabled ) {
@@ -150,13 +150,13 @@
 % my $CFs = $QueueObj->CustomFields;
 % while (my $CF = $CFs->Next) {
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <% $CF->Name %>:
 % if ( $CF->EntryHint ) {
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
 % }
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/EditCustomField, CustomField => $CF,
                                     Object => $QueueObj, &>
     </div>
@@ -165,8 +165,8 @@
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} ) {
   <div class="form-row">
-    <div class="col-md-3 label"></div>
-    <div class="col-md-9 value">
+    <div class="label col-3"></div>
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Sign" name="Sign" value="1" <% $QueueObj->Sign? 'checked="checked"': '' |n%> />
         <label class="custom-control-label" for="Sign"><&|/l&>Sign by default</&></label>
@@ -175,8 +175,8 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label"></div>
-    <div class="col-md-9 value">
+    <div class="label col-3"></div>
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Encrypt" name="Encrypt" value="1" <% $QueueObj->Encrypt? 'checked="checked"': '' |n%> />
         <label class="custom-control-label" for="Encrypt"><&|/l&>Encrypt by default</&></label>
@@ -185,8 +185,8 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label"></div>
-    <div class="col-md-9 value">
+    <div class="label col-3"></div>
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="SignAuto" name="SignAuto" value="1" <% $QueueObj->SignAuto? 'checked="checked"': '' |n%> />
         <label class="custom-control-label" for="SignAuto"><&|/l_unsafe, "<b>","</b>","<i>","</i>"&>Sign all auto-generated mail.  [_1]Caution[_2]: Enabling this option alters the signature from providing [_3]authentication[_4] to providing [_3]integrity[_4].</&></label>
@@ -197,8 +197,8 @@
 
 % unless ($InternalQueue) {
   <div class="form-row">
-    <div class="col-md-3 label"></div>
-    <div class="col-md-9 value">
+    <div class="label col-3"></div>
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
         <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this queue)</&></label>
@@ -211,7 +211,7 @@
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} ) {
   <div class="form-row">
-    <div class="col-md-12"> <% # colspan=4 %>
+    <div class="col-12"> <% # colspan=4 %>
       <input type="hidden" class="hidden" name="SetCrypt" value="1" />
 % if ( my $email = $QueueObj->CorrespondAddress || RT->Config->Get('CorrespondAddress') ) {
       <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
@@ -225,7 +225,7 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-12"> <% # colspan=4 %>
+    <div class="col-12"> <% # colspan=4 %>
 % if ( my $email = $QueueObj->CommentAddress || RT->Config->Get('CommentAddress') ) {
       <& /Admin/Elements/ShowKeyInfo, Type => 'private', EmailAddress => $email &>
 % } else {
@@ -240,7 +240,7 @@
 
 </&>
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
 % if ( $Create ) {
       <& /Elements/Submit, Label => loc('Create') &>
 % } else {

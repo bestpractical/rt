@@ -63,13 +63,13 @@
 <&|/Widgets/TitleBox, title => loc('Options'), bodyclass => "", class => "mx-auto max-width-lg" &>
 <form method="post" action="MyRT.html">
 <div class="form-row">
-  <div class="col-md-auto label">
+  <div class="label col-auto">
     <&|/l&>Rows per box</&>:
   </div>
-  <div class="col-md-auto">
+  <div class="col-auto">
     <input class="form-control" type="text" name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
   </div>
-  <div class="col-md-auto">
+  <div class="col-auto">
     <input type="submit" class="button form-control btn btn-primary" name="UpdateSummaryRows" value="<% loc('Save') %>" />
   </div>
 </div>

@@ -46,23 +46,23 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-1"></div>
-  <div class="col-md-11">
+  <div class="col-1"></div>
+  <div class="col-11">
 <form name="AddCustomFieldValue" action="Modify.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $CustomField->id %>" />
 
   <div class="form-row">
-    <div class="label col-md-1 text-left">
+    <div class="label col-1 text-left">
       <&|/l&>Sort</&>
     </div>
-    <div class="label col-md-3 text-left">
+    <div class="label col-3 text-left">
       <&|/l&>Name</&>
     </div>
-    <div class="label col-md-3 text-left">
+    <div class="label col-3 text-left">
       <&|/l&>Description</&>
     </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-    <div class="label categoryheader col-md-2 text-left">
+    <div class="label categoryheader col-2 text-left">
       <&|/l&>Category</&>
     </div>
 % }
@@ -70,17 +70,17 @@
 
 % my $paramtag = "CustomField-". $CustomField->Id ."-Value-new";
   <div class="form-row">
-    <div class="col-md-1 value">
+    <div class="value col-1">
       <input class="form-control" type="text" size="3"  name="<% $paramtag %>-SortOrder" />
     </div>
-    <div class="col-md-3 value">
+    <div class="value col-3">
       <input class="form-control" type="text" size="25" name="<% $paramtag %>-Name" />
     </div>
-    <div class="col-md-3 value">
+    <div class="value col-3">
       <input class="form-control" type="text" size="45" name="<% $paramtag %>-Description" />
     </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
-    <div class="col-md-2 value">
+    <div class="value col-2">
       <select class="form-control selectpicker editcategory " name="<% $paramtag %>-Category" size="1">
 <option value=""><&|/l&>(no value)</&></option>
 % while (my $Value = $Categories->Next) {
@@ -89,7 +89,7 @@
       </select>
     </div>
 % }
-    <div class="col-md-2">
+    <div class="col-2">
       <input type="submit" class="btn btn-primary btn-sm form-control" name="AddValue" value="<&|/l&>Add</&>" />
     </div>
   </div>

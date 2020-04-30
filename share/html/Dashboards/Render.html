@@ -74,12 +74,12 @@
 
 % my $body = $show_cb->('body');
 % my $sidebar = $show_cb->('sidebar');
-  <div class="col-md-<% $sidebar =~ /\S/ ? 8 : 12 %>">
+  <div class="col-<% $sidebar =~ /\S/ ? 8 : 12 %>">
     <% $body |n %>
   </div>
 
 % if ( $sidebar =~ /\S/ ) {
-  <div class="col-md-4">
+  <div class="col-4">
     <% $sidebar |n %>
   </div>
 % }

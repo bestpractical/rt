@@ -47,28 +47,28 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, class => 'template-info-basics', content_class => 'mx-auto width-md' &>
 <div class="form-row">
-  <div class="col-md-2 label">
+  <div class="label col-2">
     <&|/l&>Name</&>:
   </div>
-  <div class="col-md-6 value">
+  <div class="value col-6">
     <input type="text" class="form-control" name="Name" value="<%$Name||''%>" size="80" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-2 label">
+  <div class="label col-2">
     <&|/l&>Description</&>:
   </div>
-  <div class="col-md-6 value">
+  <div class="value col-6">
     <input type="text" class="form-control" name="Description" value="<%$Description||''%>" size="80" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-2 label">
+  <div class="label col-2">
     <&|/l&>Type</&>:
   </div>
-  <div class="col-md-6 value">
+  <div class="value col-6">
     <div class="custom-control custom-radio">
       <input type="radio" name="Type" class="custom-control-input" id="Type-Perl" value="Perl" <% $Type eq "Perl" ? 'checked="checked"' : "" |n %>></input>
       <label class="custom-control-label" for="Type-Perl"><&|/l&>Perl</&></label><br />
@@ -81,10 +81,10 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-2 label">
+  <div class="label col-2">
     <&|/l&>Content</&>:
   </div>
-  <div class="col-md-8 value">
+  <div class="value col-8">
     <textarea name="Content" class="form-control" rows="25" cols="80" wrap="soft">
 <%$Content||''%></textarea>
   </div>

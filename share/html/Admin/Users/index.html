@@ -61,10 +61,10 @@
 <div class="row">
   <div class="col-xl-6">
     <div class="form-row">
-      <div class="col-md-3 label text-left">
+      <div class="label col-3 text-left">
         <&|/l&>Go to user</&>
       </div>
-      <div class="col-md-3">
+      <div class="col-3">
         <input type="text" class="form-control" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
       </div>
     </div>
@@ -84,14 +84,14 @@ jQuery(function(){
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
     <div class="form-row">
-      <div class="col-md-3 label text-left">
+      <div class="label col-3 text-left">
         <&|/l&>Find all users whose</&>
       </div>
       <& /Elements/SelectUsers, %ARGS, Fields => \@fields &>
     </div>
 
     <div class="form-row">
-      <div class="col-md-3 label text-left">
+      <div class="label col-3 text-left">
         <&|/l&>And all users whose</&>
       </div>
       <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
@@ -105,7 +105,7 @@ jQuery(function(){
     </div>
 
     <div class="form-row">
-      <div class="col-md-3 label text-left">
+      <div class="label col-3 text-left">
         <&|/l&>And all users whose</&>
       </div>
       <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
@@ -121,7 +121,7 @@ jQuery(function(){
 </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
         <label class="custom-control-label" for="FindDisabledUsers"><&|/l&>Include disabled users in search.</&></label>
@@ -130,7 +130,7 @@ jQuery(function(){
   </div>
 
   <div class="form-row">
-    <div class="col-md-12 text-right">
+    <div class="col-12 text-right">
       <input type="submit" class="button btn btn-primary" value="<&|/l&>Go!</&>" name="Go" />
     </div>
   </div>

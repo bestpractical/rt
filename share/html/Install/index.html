@@ -57,11 +57,11 @@
 
 <div class="select-lang">
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Select another language</&>:
     </div>
 
-    <div class="col-md-9 input-group">
+    <div class="col-9 input-group">
       <& /Elements/SelectLang,
         Name => 'Lang',
         Default => $lang_handle? $lang_handle->language_tag : undef,
@@ -92,7 +92,7 @@
 </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc( "Let's go!"), Name => 'Run' &>
     </div>
   </div>

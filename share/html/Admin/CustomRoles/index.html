@@ -57,17 +57,17 @@
 % }
 
 <div class="form-row">
-  <div class="col-md-auto">
+  <div class="col-auto">
     <select class="form-control selectpicker" name="SearchField">
 % foreach my $col (qw(Name Description EntryHint)) {
       <option <% $SearchField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
 % }
     </select>
   </div>
-  <div class="col-md-auto">
+  <div class="col-auto">
     <& /Elements/SelectMatch, Name => 'SearchOp', Default => $SearchOp &>
   </div>
-  <div class="col-md-auto">
+  <div class="col-auto">
     <input class="form-control" type="text" size="8" name="SearchString" value="<% $SearchString %>" />
   </div>
 </div>
@@ -81,7 +81,7 @@
 
 
 <div class="form-row">
-  <div class="col-md-12 text-right">
+  <div class="col-12 text-right">
     <input type="submit" class="button btn btn-sm" value="<&|/l&>Go!</&>" />
   </div>
 </div>

@@ -57,13 +57,13 @@
 
     <div id="Asset-Create-basics" class="asset-metadata form-row">
       <a name="basics"></a>
-      <div class="col-md-6">
+      <div class="col-6">
         <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
           <& Elements/EditBasics, %ARGS, AssetObj => $asset, CatalogObj => $catalog, AutoSubmit => 1 &>
         </&>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-6">
         <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
             <& Elements/EditPeople, %ARGS, AssetObj => $asset &>
         </&>
@@ -72,7 +72,7 @@
 
     <div id="Asset-Create-details" class="form-row<% RT->Config->Get('AssetBasicCustomFieldsOnCreate') ? ' hidden' : '' %>">
       <a name="details"></a>
-      <div class="col-md-6">
+      <div class="col-6">
         <& /Elements/EditCustomFieldCustomGroupings,
           Object => $asset,
           TitleBoxARGS => { title_class => "inverse" },
@@ -82,7 +82,7 @@
         &>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-6">
         <&| /Widgets/TitleBox, title => loc("Links"), class => "asset-links", title_class => "inverse" &>
           <& /Elements/AddLinks,
             Object          => $asset,
@@ -93,7 +93,7 @@
     </div>
 
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <& /Elements/Submit, Label => loc('Create asset') &>
       </div>
     </div>

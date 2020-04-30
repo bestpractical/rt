@@ -81,7 +81,7 @@ foreach my $asset (@asset_objs){
 
 % if ( @asset_objs == 1 ){
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <&|/l_unsafe,
         $m->scomp("/Elements/SelectNewTicketQueue"),
         @description &>Create a new ticket in the [_1] queue about asset #[_2]: [_3].</&>
@@ -90,7 +90,7 @@ foreach my $asset (@asset_objs){
 % }
 % else {
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <&|/l_unsafe,
         $m->scomp("/Elements/SelectNewTicketQueue"),
         &>Create a new ticket in the [_1] queue about multiple assets.</&>
@@ -105,7 +105,7 @@ foreach my $asset (@asset_objs){
 %         my $addr = join ', ', keys %{$role_addresses{$role}};
 %         next unless defined $addr and length $addr;
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div class="custom-control custom-radio">
         <input class="custom-control-input" id="radio-<%$role%>" type="radio" name="Requestors" value="<% $addr %>" <% $first ? 'checked="checked"' : '' |n%>/>
         <label class="custom-control-label" for="radio-<%$role%>"><&|/l, loc($role), $addr &>Use asset [_1] as ticket Requestor: [_2]</&></label>
@@ -116,7 +116,7 @@ foreach my $asset (@asset_objs){
 %     }
 % }
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc("Go"), Caption => loc("This will take you to a partially filled ticket creation form.") &>
     </div>
   </div>

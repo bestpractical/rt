@@ -55,19 +55,19 @@
 
 <&| /Widgets/TitleBox, title => loc('Dashboard') &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Dashboard</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <span class="current-value form-control"><% $Dashboard->Name %></span>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Queries</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
 % my @portlets = grep { defined } $Dashboard->Portlets;
 % if (!@portlets) {
       <span class="current-value form-control">(<&|/l&>none</&>)</span>
@@ -87,19 +87,19 @@
 <&| /Widgets/TitleBox, title => loc('Subscription') &>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Frequency</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="form-row">
-        <div class="col-md-auto">
+        <div class="col-auto">
           <div class="custom-control custom-radio">
             <input type="radio" id="Frequency-daily" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" |n %> class="custom-control-input">
             <label class="custom-control-label" for="Frequency-daily"><&|/l&>daily, on</&></label>
           </div>
         </div>
 % for my $day ( qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/ ) {
-        <div class="col-md-auto">
+        <div class="col-auto">
           <input type="hidden" class="hidden" name="<% $day %>-Magic" value="1" />
           <div class="custom-control custom-checkbox">
             <input type="checkbox" id="Frequency-daily-<% $day %>" name="<% $day %>" class="custom-control-input" value="1" <% $fields{$day} ? 'checked="checked"' : '' %>>
@@ -109,7 +109,7 @@
 % }
       </div>
       <div class="form-row">
-        <div class="col-md-auto">
+        <div class="col-auto">
           <span class="current-value form-control">
             <div class="custom-control custom-radio">
               <input type="radio" id="Frequency-weekly" name="Frequency" value="weekly" <% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" |n %> class="custom-control-input">
@@ -117,7 +117,7 @@
             </div>
           </span>
         </div>
-        <div class="col-md-auto">
+        <div class="col-auto">
           <select name="Dow" class="form-control selectpicker">
               <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' |n %>><&|/l&>Monday</&></option>
               <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' |n %>><&|/l&>Tuesday</&></option>
@@ -128,22 +128,22 @@
               <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' |n %>><&|/l&>Sunday</&></option>
           </select>
         </div>
-        <div class="col-md-auto">
+        <div class="col-auto">
           <span class="current-value form-control"><&|/l&>every</&></span>
         </div>
-        <div class="col-md-auto">
+        <div class="col-auto">
           <select name="Fow" class="form-control selectpicker">
 % for my $f ( qw/1 2 3 4/ ) {
             <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' |n %>><% $f %></option>
 % }
           </select>
         </div>
-        <div class="col-md-auto">
+        <div class="col-auto">
           <span class="current-value form-control"><&|/l&>weeks</&></span>
         </div>
       </div>
       <div class="form-row">
-        <div class="col-md-auto">
+        <div class="col-auto">
           <span class="current-value form-control">
             <div class="custom-control custom-radio">
               <input type="radio" id="Frequency-monthly" name="Frequency" value="monthly" <% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" |n %> class="custom-control-input">
@@ -151,7 +151,7 @@
             </div>
           </span>
         </div>
-        <div class="col-md-auto">
+        <div class="col-auto">
           <select name="Dom" class="form-control selectpicker">
 % for my $dom (1..31) {
             <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' |n %>><% loc($dom) %></option>
@@ -160,7 +160,7 @@
         </div>
       </div>
       <div class="form-row">
-        <div class="col-md-auto">
+        <div class="col-auto">
           <span class="current-value form-control">
             <div class="custom-control custom-radio">
               <input type="radio" id="Frequency-never" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" |n %> class="custom-control-input">
@@ -173,12 +173,12 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Hour</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="row">
-        <div class="col-md-auto">
+        <div class="col-auto">
           <select name="Hour" class="form-control selectpicker">
 % my $formatter = RT::Date->new($session{CurrentUser})->LocaleObj;
 % my $dt = DateTime->now;
@@ -198,7 +198,7 @@
 % }
           </select>
         </div>
-        <div class="col-md-auto">
+        <div class="col-auto">
           <span class="current-value form-control">(<%$timezone%>)</span>
         </div>
       </div>
@@ -206,12 +206,12 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Language</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="row">
-        <div class="col-md-auto">
+        <div class="col-auto">
           <& /Elements/SelectLang,
               Name => 'Language',
               Default => $fields{'Language'},
@@ -223,12 +223,12 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Rows</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="row">
-        <div class="col-md-auto">
+        <div class="col-auto">
           <select name="Rows" class="form-control selectpicker">
 % for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
             <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' |n %>><% loc($rows || 'Unlimited') %></option>
@@ -240,8 +240,8 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label"></div>
-    <div class="col-md-9 value">
+    <div class="label col-3"></div>
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" id="SuppressIfEmpty" name="SuppressIfEmpty" class="custom-control-input" value="1"  <% $fields{'SuppressIfEmpty'} ? 'checked="checked"' : "" |n %>>
         <label class="custom-control-label" for="SuppressIfEmpty"><&|/l&>Suppress if empty (Check this to avoid sending mail if all searches have no results)</&></label>
@@ -262,7 +262,7 @@
 </&>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
 % if ($SubscriptionObj) {
       <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
 % } else {

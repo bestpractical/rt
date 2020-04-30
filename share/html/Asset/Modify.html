@@ -56,13 +56,13 @@
   <input type="hidden" name="DisplayAfter" value="<% $DisplayAfter ? 1 : 0 %>">
 
   <div class="asset-metadata form-row">
-    <div class="col-md-6">
+    <div class="col-6">
       <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics", title_class => "inverse" &>
           <& Elements/EditBasics, %ARGS, AssetObj => $asset &>
       </&>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-6">
       <&| /Widgets/TitleBox, title => loc("Custom Fields"), class => "asset-info-cfs", title_class => "inverse" &>
           <& /Elements/EditCustomFields, Object => $asset, Grouping => '' &>
       </&>
@@ -70,7 +70,7 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
     </div>
   </div>

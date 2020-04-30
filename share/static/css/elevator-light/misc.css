@@ -52,7 +52,8 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
 }
 
 .datepicker {
-    width: 17em;
+    max-width: 17em;
+    min-width: 10em;
 }
 
 .dashboard-subscription tr.frequency .value input {
