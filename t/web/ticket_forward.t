@@ -22,6 +22,7 @@ $m->submit_form(
         Content => 'this is content',
         Attach  => $att_file,
     },
+    button => 'SubmitTicket'
 );
 $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
 RT::Test->clean_caught_mails;
@@ -122,7 +123,7 @@ diag "Forward Transaction with attachments but empty content" if $ENV{TEST_VERBO
     $m->set_fields(
         Attach  => RT::Test::get_relocatable_file('bpslogo.png', '..', 'data'), # an image!
     );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_like( qr/Ticket \d+ created/i,  'created the ticket' );
     $m->content_like( qr/awesome.p\%C3\%A1tch/, 'uploaded patch file' );
     $m->content_like( qr/text\/x-diff/,     'uploaded patch file content type' );

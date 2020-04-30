@@ -21,7 +21,7 @@ diag "w/o attachments";
 
     $m->form_name('TicketCreate');
     $m->content_contains("Create a new ticket", 'ticket create page');
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 }
 
@@ -34,7 +34,7 @@ diag "with one attachment";
     $m->field('Attach',  LogoFile);
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
@@ -56,7 +56,7 @@ diag "with two attachments";
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
@@ -83,7 +83,7 @@ diag "with one attachment, but delete one along the way";
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
@@ -115,7 +115,7 @@ diag "with one attachment, but delete one along the way";
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
@@ -386,7 +386,7 @@ diag "create with attachment";
     $m->field('Subject', 'Subject');
     $m->field('Content', 'Message');
     ok($m->current_form->find_input('AddMoreAttach'), "more than one attachment");
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Download favicon.png', 'page has file name');
@@ -458,7 +458,7 @@ diag "check content type and content";
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
@@ -506,7 +506,7 @@ diag "update and create";
     $m->field('Attach',  FaviconFile);
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_lacks('Download bpslogo.png', 'page has file name');

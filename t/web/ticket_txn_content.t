@@ -49,7 +49,7 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->field( 'Attach',  $plain_file );
     $m->field( 'Content', 'this is main content' );
     $m->field( 'ContentType', $type ) unless $type eq 'text/plain';
-    $m->submit;
+    $m->click('SubmitTicket');
     is( $m->status, 200, "request successful" );
     $m->content_contains('with plain attachment',
         'we have subject on the page' );

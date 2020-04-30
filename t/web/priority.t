@@ -20,7 +20,7 @@ for my $field (qw/InitialPriority FinalPriority/) {
     is( $form->value($field), '', "$field default value" );
 }
 
-$m->submit_form_ok( { fields => { Subject => 'Test PriorityAsString', InitialPriority => 50 } }, 'Create ticket' );
+$m->submit_form_ok( { fields => { Subject => 'Test PriorityAsString', InitialPriority => 50 }, button => 'SubmitTicket' }, 'Create ticket' );
 $m->text_like( qr{Priority:\s*Medium/Low}, 'Priority/FinalPriority on display' );
 
 $m->follow_link_ok( { text => 'Basics' } );

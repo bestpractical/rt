@@ -69,7 +69,7 @@ is_deeply(
 );
 
 note('submit populated form');
-$m->submit_form( fields => { Subject => 'ticket foo', 'Queue' => $queue1->id, $cf_form_id => $cf_test_value } );
+$m->submit_form( fields => { Subject => 'ticket foo', 'Queue' => $queue1->id, $cf_form_id => $cf_test_value }, button => 'SubmitTicket' );
 $m->text_contains( 'test_cf',      'custom field populated in display' );
 $m->text_contains( $cf_test_value, 'custom field populated in display' );
 

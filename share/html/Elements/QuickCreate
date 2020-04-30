@@ -86,7 +86,7 @@
 
 <div class="form-row">
   <div class="col-12">
-    <& /Elements/Submit, Label => loc('Create') &>
+    <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Create') &>
   </div>
 </div>
 </form>

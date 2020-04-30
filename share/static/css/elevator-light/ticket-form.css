@@ -3,10 +3,6 @@
     font-weight: normal;
 }
 
-.messagedetails {
-    margin-bottom: 0.5em;
-}
-
 .messagedetails input[type="text"],
 .messagedetails input[type="email"] {
     -webkit-box-sizing: border-box;

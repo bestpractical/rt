@@ -21,6 +21,7 @@ diag 'test without attachments' if $ENV{TEST_VERBOSE};
     $m->submit_form(
         form_number => 3,
         fields      => { Subject => $subject, Content => $content },
+        button      => 'SubmitTicket',
     );
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
     $m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/ },
@@ -57,6 +58,7 @@ diag 'test with attachemnts' if $ENV{TEST_VERBOSE};
     $m->submit_form(
         form_number => 3,
         fields => { Subject => $subject, Content => $content, Attach => $file },
+        button => 'SubmitTicket',
     );
     $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
     $m->content_contains( $filename, 'attached filename' );

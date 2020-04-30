@@ -53,7 +53,6 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
-  <input type="submit" name="SubmitTicket" value="Create" style="display:none">
   <input type="hidden" class="hidden" name="id" value="new" />
   <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
   <input type="hidden" name="QueueChanged" value="0" />
@@ -235,7 +234,11 @@
         <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
       </div>
     </&>
-    <& /Elements/Submit, Label => loc("Create"), id => 'SubmitTicket' &>
+    <div class="form-row">
+      <div class="col-12">
+        <& /Elements/Submit, Label => loc("Create"), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -326,7 +329,11 @@
 
 </div>
 </div>
-<& /Elements/Submit, Label => loc("Create") &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc("Create"), Name => 'SubmitTicket' &>
+    </div>
+  </div>
 </div>
 </form>
 
@@ -466,7 +473,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 
-if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
+if ( $ARGS{SubmitTicket} ) {
     my $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         Operation => 'Create',
@@ -498,12 +505,10 @@ $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => 
 $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
 
-if ((!exists $ARGS{'AddMoreAttach'}) and (!exists $ARGS{'Go'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ( !$checks_failure && !$skip_create && !$ARGS{'QueueChanged'} ) {
-        $m->comp('Display.html', %ARGS);
-        $RT::Logger->crit("After display call; error is $@");
-        $m->abort();
-    }
+if ( !$checks_failure && !$skip_create && $ARGS{SubmitTicket} ) {
+    $m->comp('Display.html', %ARGS);
+    $RT::Logger->crit("After display call; error is $@");
+    $m->abort();
 }
 PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>]);
 PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>]);
