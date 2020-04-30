@@ -312,3 +312,11 @@
 .darkmode .dropzone .dz-details {
     border: 1px solid #717171 !important;
 }
+
+.darkmode ul.toplevel.sf-menu > li > a.sf-with-ul:after {
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-down' viewBox='0 0 12 8' height='100%' width='100%' fill='none' stroke='rgb(237,237,237)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 5 -5' /></svg>") no-repeat center center;
+}
+
+.darkmode ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-right' viewBox='0 0 7 12' height='100%' width='100%' fill='none' stroke='rgb(237,237,237)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 -5 5' /></svg>") no-repeat center center;
+}
