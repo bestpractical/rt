@@ -246,6 +246,8 @@ sub child {
             $path =~ s/index\.html$//;
             $path =~ s/\/+$//;
 
+            require URI::Escape;
+            $base_path = URI::Escape::uri_unescape($base_path);
             if ( $path eq $base_path ) {
                 $self->{children}{$key}->active(1);
             }
