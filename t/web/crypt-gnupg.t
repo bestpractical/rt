@@ -350,12 +350,12 @@ my $nokey = RT::Test->load_or_create_user(Name => 'nokey', EmailAddress => 'noke
 $nokey->PrincipalObj->GrantRight(Right => 'CreateTicket');
 $nokey->PrincipalObj->GrantRight(Right => 'OwnTicket');
 
+#    qr/.*nokey\@example.com' via WKD: No data/,
 my $tick = RT::Ticket->new( RT->SystemUser );
-warning_like {
+warnings_exist {
     $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
                   Owner => $nokey);
 } [
-    qr/nokey\@example.com: skipped: public key not found/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
@@ -372,12 +372,12 @@ To: general\@example.com
 
 hello
 MAIL
- 
+
 my $status;
-warning_like {
+warnings_exist {
     ($status, $id) = RT::Test->send_via_mailgate($mail);
 } [
-    qr/nokey\@example.com: skipped: public key not found/,
+    qr/nokey\@example.com.\s(skipped: public key not found|via WKD: No data)/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 
@@ -393,9 +393,17 @@ is ($tick->Subject,
     "Correct subject"
 );
 
-# test key selection
+# test key selection, GPG2.2+ can pick different signatures for keys based on updated rules/behaviour
+# Note: need to check that upgrading with old preferred keys in db will still work correctly with GPG2
 my $key1 = "EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FC2";
 my $key2 = "75E156271DCCF02DDD4A7A8CDF651FA0632C4F50";
+my $key_sig1 = '299728D87681E34B744E31B046CA26A25AB388D9';
+my $key_sig2 = '4A203DDC79EBD0CC9D48BA94568810E072208BA5';
+
+# get key1/2 from gpg and update if updated fingerprint
+my @keys_from_gpg = $user->AvailableKeys;
+$key1 = $key_sig1 if (shift(@keys_from_gpg) eq $key_sig1 );
+$key2 = $key_sig2 if (shift(@keys_from_gpg) eq $key_sig2 );
 
 ok($user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
@@ -458,8 +466,8 @@ like($content, qr/KR-<recipient\@example\.com>-K/,
 like($content, qr/KR-nokey \(no pubkey!\)-K/,
      "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
-$m->next_warning_like(qr/public key not found/);
-$m->next_warning_like(qr/public key not found/);
+$m->next_warning_like(qr/(public key not found|No public key)/);
+$m->next_warning_like(qr/(public key not found|No public key)/);
 $m->no_leftover_warnings_ok;
 
 done_testing;
