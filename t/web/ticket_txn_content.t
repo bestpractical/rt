@@ -54,7 +54,7 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->content_contains('with plain attachment',
         'we have subject on the page' );
     $m->content_contains('this is main content', 'main content' );
-    $m->content_contains("Download $plain_name", 'download plain file link' );
+    ok( $m->find_link( text => $plain_name, url_regex => qr{Attachment/} ), 'download plain file link' );
 
     # Check for Message-IDs
     follow_parent_with_headers_link($m, url_regex => qr/Attachment\/WithHeaders\//, n => 1);
@@ -89,7 +89,7 @@ for my $type ( 'text/plain', 'text/html' ) {
     is( $m->status, 200, "request successful" );
 
     $m->content_contains("this is main reply content", 'main reply content' );
-    $m->content_contains("Download $html_name", 'download html file link' );
+    ok( $m->find_link( text => $html_name, url_regex => qr{Attachment/} ), 'download html file link' );
 
     # Check for Message-IDs
     follow_parent_with_headers_link($m, url_regex => qr/Attachment\/WithHeaders\//, n => 2);

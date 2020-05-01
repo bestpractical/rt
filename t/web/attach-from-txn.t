@@ -53,8 +53,8 @@ $m->field('UpdateContent', 'Message');
 $m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
-$m->content_contains("Download $LogoName", 'page has file name');
-$m->content_contains("Download $ImageName", 'page has file name');
+ok( $m->find_link( text => $LogoName, url_regex => qr{Attachment/} ), 'page has file link');
+ok( $m->find_link( text => $ImageName, url_regex => qr{Attachment/} ), 'page has file link');
 
 # clear mail catcher
 RT::Test->fetch_caught_mails;
