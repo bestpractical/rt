@@ -59,6 +59,7 @@
 <script type="text/javascript">
 jQuery( function() {
     jQuery('#SelectDisplayColumns').selectize();
+    jQuery('.selectize-dropdown-content').addClass("selectize-max-height");
 
     jQuery('[name=AddCol], [name=RemoveCol], [name=ColUp], [name=ColDown]').click( function() {
         var name = jQuery(this).attr('name');
