@@ -140,7 +140,7 @@ sub BuildMainNav {
 
     my $reports = $top->child( reports =>
         title       => loc('Reports'),
-        description => loc('Reports summarizing ticket resolution and status'),
+        description => loc('Reports and Dashboards'),
         path        => loc('/Reports'),
     );
 
