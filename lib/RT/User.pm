@@ -2055,26 +2055,35 @@ sub PreferredKey
     }
 
 
-
     my $prefkey = $self->FirstAttribute('PreferredKey');
     return $prefkey->Content if $prefkey;
 
-    # we don't have a preferred key for this user, so now we must query GPG
-    my %res = RT::Crypt->GetKeysForEncryption($self->EmailAddress);
-    return undef unless defined $res{'info'};
-    my @keys = @{ $res{'info'} };
-    return undef if @keys == 0;
-
-    if (@keys == 1) {
-        $prefkey = $keys[0]->{'Fingerprint'};
-    } else {
-        # prefer the maximally trusted key
-        @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
-        $prefkey = $keys[0]->{'Fingerprint'};
-    }
+    ($prefkey) = $self->AvailableKeys;
+    return undef unless ($prefkey);
 
     $self->SetAttribute(Name => 'PreferredKey', Content => $prefkey);
     return $prefkey;
+}
+
+=head2 AvailableKeys
+
+This will query GPG and return a list of fingerprints ordered by maximally trusted key found
+for the users email address. Returns C<undef> if no keys can be found.
+
+=cut
+
+sub AvailableKeys {
+    my $self = shift;
+    my %res = RT::Crypt->GetKeysForEncryption($self->EmailAddress);
+    return ( ) unless defined $res{'info'};
+    my @keys = @{ $res{'info'} };
+    return ( ) if @keys == 0;
+
+    if (@keys == 1) {
+        return $keys[0]->{'Fingerprint'};
+    } else {
+        return map { $_->{'Fingerprint'} } sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
+    }
 }
 
 sub PrivateKey {
