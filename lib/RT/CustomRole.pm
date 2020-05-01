@@ -715,6 +715,10 @@ sub SetHiddenForURLs {
     my $self   = shift;
     my $hidden = shift;
 
+    unless ( $self->CurrentUser->HasRight(Object => $RT::System, Right => 'AdminCustomRoles') ) {
+        return (0, $self->loc('Permission Denied'));
+    }
+
     return $self->SetAttribute(
         Name    => 'HiddenForURLs',
         Content => $hidden,
@@ -730,6 +734,17 @@ sub IsHiddenForURL {
 
     $url //= $current_url;
     return $self->HiddenForURLs->{$url};
+}
+
+
+sub _Set {
+    my $self = shift;
+
+    unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AdminCustomRoles' ) ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    return $self->SUPER::_Set(@_);
 }
 
 sub _CoreAccessible {
