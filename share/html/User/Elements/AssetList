@@ -61,8 +61,43 @@ my $Format = q[
     Description,
 ];
 $m->callback( CallbackName => 'ModifyFormat', %ARGS, Format => \$Format );
+
+my %QueryProperties = (
+    Query      => join(' OR ', map { "$_.id = ".$User->Id } ('HeldBy', 'Contact', 'Owner') ),
+    OrderBy    => 'id',
+    Order      => 'ASC',
+);
+
+$m->callback( CallbackName => 'ModifyQueryProperties',
+    %ARGS,
+    QueryProperties => \%QueryProperties,
+);
+
+my $query_string = $m->comp('/Elements/QueryString',
+    Class       => 'RT::Assets',
+    Query       => $QueryProperties{Query},
+    OrderBy     => $QueryProperties{OrderBy},
+    Order       => $QueryProperties{Order},
+);
+
+my $search_url  =
+    RT->Config->Get('WebPath') .
+    '/Search/Results.html?' .
+    $query_string;
+
+my $bulk_update_url  =
+    RT->Config->Get('WebPath') .
+    '/Asset/Search/Bulk.html?' .
+    $query_string;
+
 </%init>
-<&| /Widgets/TitleBox, title => $Title, class => "user asset-list" &>
+<&| /Widgets/TitleBox,
+    title => $Title,
+    title_href => $search_url,
+    titleright => 'Bulk Update',
+    titleright_href => $bulk_update_url,
+    class => "user asset-list",
+&>
     <& /Elements/CollectionList,
         Collection      => $assets,
         OrderBy         => 'id',
