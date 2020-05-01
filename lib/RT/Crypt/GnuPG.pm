@@ -1344,7 +1344,7 @@ my %parse_keyword = map { $_ => 1 } qw(
     DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
     NO_SECKEY NO_PUBKEY
-    NO_RECP INV_RECP NODATA UNEXPECTED
+    NO_RECP INV_RECP NODATA UNEXPECTED FAILURE
 );
 
 # keywords we ignore without any messages as we parse them using other
@@ -1572,8 +1572,20 @@ sub ParseStatus {
                 Reason     => $reason,
             };
         }
+        elsif ( $keyword eq 'FAILURE' ) {
+            # FAILURE encrypt 167772218
+            my ($op, $rcode) = split /\s+/, $args;
+            my $reason = ReasonCodeToText( $keyword, $rcode );
+            push @res, {
+                Operation  => ucfirst($op),
+                Status     => 'ERROR',
+                Message    => "Failed to $op",
+                ReasonCode => $rcode,
+                Reason     => $reason,
+            };
+        }
         else {
-            $RT::Logger->warning("Keyword $keyword is unknown");
+            $RT::Logger->warning("Keyword $keyword is unknown : status line is $line");
             next;
         }
         $res[-1]{'Keyword'} = $keyword if @res && !$res[-1]{'Keyword'};
