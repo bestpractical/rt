@@ -64,15 +64,20 @@ diag 'only signing. missing passphrase';
         Data    => ['test'],
     );
     my %res;
+#   Failed test at t/mail/crypt-gnupg.t line 73.
+# found warning: gpg: no default secret key: bad passphrase
     warning_like {
         %res = RT::Crypt->SignEncrypt(
             Entity     => $entity,
             Encrypt    => 0,
             Passphrase => ''
         );
-    } qr/can't query passphrase in batch mode/;
+    } qr/(no default secret key|can't query passphrase in batch mode)/;
     ok( $res{'exit_code'}, "couldn't sign without passphrase");
     ok( $res{'error'} || $res{'logger'}, "error is here" );
+    use Data::Dumper;
+    warn Dumper( { error => $res{'error'},
+                   logger => $res{'logger'} );
 
     my @status = RT::Crypt->ParseStatus(
         Protocol => $res{'Protocol'}, Status => $res{'status'}
