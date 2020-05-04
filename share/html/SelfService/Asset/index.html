@@ -46,4 +46,4 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc("My Assets") &>
-<& /User/Elements/AssetList, User => $session{'CurrentUser'}->UserObj, Roles => [''], Title => loc('My Assets') &>
+<& /User/Elements/AssetList, User => $session{'CurrentUser'}->UserObj, Roles => [qw(HeldBy)], Title => loc('My Assets') &>
