@@ -336,6 +336,8 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
         if @{ RT->Config->Get( 'ExternalAuthPriority' ) || [] };
 
+    AttemptTokenAuthentication($ARGS) unless _UserLoggedIn();
+
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
 
@@ -866,6 +868,39 @@ sub AttemptPasswordAuthentication {
         return (1, HTML::Mason::Commands::loc('Logged in'));
     }
 }
+
+sub AttemptTokenAuthentication {
+    my $ARGS = shift;
+    my ($pass, $user) = ('', '');
+    if ((RequestENV('HTTP_AUTHORIZATION')||'') =~ /^token (.*)$/i) {
+        $pass ||= $1;
+        my ($user_obj, $token) = RT::Authen::Token->UserForAuthString($pass, $user);
+        if ( $user_obj ) {
+            # log in
+            my $remote_addr = RequestENV('REMOTE_ADDR');
+            $RT::Logger->info("Successful login for @{[$user_obj->Name]} from $remote_addr using authentication token #@{[$token->Id]} (\"@{[$token->Description]}\")");
+
+            # It's important to nab the next page from the session before we blow
+            # the session away
+            my $next = RT::Interface::Web::RemoveNextPage($ARGS->{'next'});
+            $next = $next->{'url'} if ref $next;
+
+            RT::Interface::Web::InstantiateNewSession();
+            $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+
+            # Really the only time we don't want to redirect here is if we were
+            # passed user and pass as query params in the URL.
+            if ($next) {
+                RT::Interface::Web::Redirect($next);
+            }
+            elsif ($ARGS->{'next'}) {
+                # Invalid hash, but still wants to go somewhere, take them to /
+                RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+            }
+        }
+    }
+}
+
 
 =head2 LoadSessionFromCookie
 
