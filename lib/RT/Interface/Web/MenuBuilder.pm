@@ -299,7 +299,7 @@ sub BuildMainNav {
         $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html' );
         $settings->child( myrt           => title => loc('RT at a glance'), path => '/Prefs/MyRT.html' );
         $settings->child( dashboards_in_menu =>
-            title => loc('Dashboards in menu'),
+            title => loc('Modify Reports menu'),
             path  => '/Prefs/DashboardsInMenu.html',
         );
         $settings->child( queue_list    => title => loc('Queue list'),   path => '/Prefs/QueueList.html' );
@@ -1147,7 +1147,7 @@ sub _BuildAdminMenu {
         path        => '/Admin/Global/MyRT.html',
     );
     $admin_global->child( 'dashboards-in-menu' =>
-        title       => loc('Dashboards in menu'),
+        title       => loc('Modify Reports menu'),
         description => loc('Customize dashboards in menu'),
         path        => '/Admin/Global/DashboardsInMenu.html',
     );
@@ -1270,7 +1270,7 @@ sub _BuildAdminMenu {
                 $page->child( history     => title => loc('History'),        path => "/Admin/Users/History.html?id=" . $id );
                 $page->child( 'my-rt'     => title => loc('RT at a glance'), path => "/Admin/Users/MyRT.html?id=" . $id );
                 $page->child( 'dashboards-in-menu' =>
-                    title => loc('Dashboards in menu'),
+                    title => loc('Modify Reports menu'),
                     path  => '/Admin/Users/DashboardsInMenu.html?id=' . $id,
                 );
                 if ( RT->Config->Get('Crypt')->{'Enable'} ) {
