@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 %# Roles => [''] triggers the magical RoleLimit behavior that matches any role
-<& /Group/Elements/AssetList, Group => $Group, Roles => [''], Title => loc('Assigned Assets') &>
+<& /Group/Elements/AssetList, Group => $Group, Title => loc('Assigned Assets') &>
 <%ARGS>
 $Group
 </%ARGS>

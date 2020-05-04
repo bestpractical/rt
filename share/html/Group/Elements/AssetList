@@ -47,14 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my $assets = RT::Assets->new($session{CurrentUser});
-$m->callback( CallbackName => 'ModifyAssetSearch', %ARGS, Assets => $assets, Roles => \@Roles );
-for my $role (@Roles) {
-    $assets->RoleLimit(
-        TYPE        => $role,
-        VALUE       => $Group->PrincipalId,
-        SUBCLAUSE   => "Role$role",
-    );
-}
+
 my $Format = q[
     '<b><a href="__WebHomePath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
     '<b><a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
@@ -63,15 +56,20 @@ my $Format = q[
 $m->callback( CallbackName => 'ModifyFormat', %ARGS, Format => \$Format );
 
 my %QueryProperties = (
-    Query      => join(' OR ', map { "$_.id = ".$Group->PrincipalId } ('HeldBy', 'Contact', 'Owner') ),
+    Query      => join(' OR ', map { "$_.id = ".$Group->PrincipalId } @Roles ),
     OrderBy    => 'id',
     Order      => 'ASC',
 );
-
 $m->callback( CallbackName => 'ModifyQueryProperties',
     %ARGS,
     QueryProperties => \%QueryProperties,
+    Roles => \@Roles,
 );
+
+my ($ok, $msg) = $assets->FromSQL($QueryProperties{Query});
+RT->Logger->error('Unable to parse asset query ' . $QueryProperties{Query} . ' : $msg')
+    unless $ok;
+$m->callback( CallbackName => 'ModifyAssetSearch', %ARGS, Assets => $assets, Roles => \@Roles );
 
 my $query_string = $m->comp('/Elements/QueryString',
     Class       => 'RT::Assets',
@@ -110,6 +108,6 @@ my $bulk_update_url  =
 <%ARGS>
 $Group
 $Title
-@Roles
+@Roles => ('HeldBy', 'Contact', 'Owner')
 $HasResults => undef
 </%ARGS>
