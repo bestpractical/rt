@@ -441,14 +441,14 @@ sub BuildMainNav {
                 ) if $can->('ModifyTicket')
                   && $HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
-                if ( defined $HTML::Mason::Commands::session{"tickets"} ) {
+                if ( defined $HTML::Mason::Commands::session{"collection-RT::Tickets"} ) {
                     # we have to update session data if we get new ItemMap
-                    my $updatesession = 1 unless ( $HTML::Mason::Commands::session{"tickets"}->{'item_map'} );
+                    my $updatesession = 1 unless ( $HTML::Mason::Commands::session{"collection-RT::Tickets"}->{'item_map'} );
 
-                    my $item_map = $HTML::Mason::Commands::session{"tickets"}->ItemMap;
+                    my $item_map = $HTML::Mason::Commands::session{"collection-RT::Tickets"}->ItemMap;
 
                     if ($updatesession) {
-                        $HTML::Mason::Commands::session{"tickets"}->PrepForSerialization();
+                        $HTML::Mason::Commands::session{"collection-RT::Tickets"}->PrepForSerialization();
                     }
 
                     my $search = $top->child('search')->child('tickets');
