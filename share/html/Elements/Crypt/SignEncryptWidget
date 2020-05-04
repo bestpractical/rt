@@ -60,8 +60,8 @@
         Name => 'Sign', CurrentValue => $self->{'Sign'},
         DefaultLabel => loc( 'Sign' ),
     &>
-  </div>
 % }
+  </div>
 
   <div class="col-auto">
     <& /Widgets/Form/Boolean:InputOnly, Name => 'Encrypt', CurrentValue => $self->{'Encrypt'}, DefaultLabel => loc( 'Encrypt' ) &>
