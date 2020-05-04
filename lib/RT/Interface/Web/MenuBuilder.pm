@@ -456,18 +456,54 @@ sub BuildMainNav {
 
                     # Don't display prev links if we're on the first ticket
                     if ( $item_map->{$id}->{prev} ) {
-                        $search->child( first =>
-                            title => '<< ' . loc('First'), class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{first});
-                        $search->child( prev =>
-                            title => '< ' . loc('Prev'),   class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev});
+                        $search->child(
+                            first        => title => q{<span class="fas fa-angle-double-left"></span>},
+                            escape_title => 0,
+                            class        => "nav",
+                            path         => "/Ticket/Display.html?id=" . $item_map->{first},
+                            attributes   => {
+                                'data-toggle'         => 'tooltip',
+                                'data-original-title' => loc('First'),
+                                alt                   => loc('First'),
+                            },
+                        );
+                        $search->child(
+                            prev         => title => q{<span class="fas fa-angle-left"></span>},
+                            escape_title => 0,
+                            class        => "nav",
+                            path         => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev},
+                            attributes   => {
+                                'data-toggle'         => 'tooltip',
+                                'data-original-title' => loc('Prev'),
+                                alt                   => loc('Prev'),
+                            },
+                        );
                     }
                     # Don't display next links if we're on the last ticket
                     if ( $item_map->{$id}->{next} ) {
-                        $search->child( next =>
-                            title => loc('Next') . ' >',  class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
+                        $search->child(
+                            next         => title => q{<span class="fas fa-angle-right"></span>},
+                            escape_title => 0,
+                            class        => "nav",
+                            path         => "/Ticket/Display.html?id=" . $item_map->{$id}->{next},
+                            attributes   => {
+                                'data-toggle'         => 'tooltip',
+                                'data-original-title' => loc('Next'),
+                                alt                   => loc('Next'),
+                            },
+                        );
                         if ( $item_map->{last} ) {
-                            $search->child( last =>
-                                title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
+                            $search->child(
+                                last         => title => q{<span class="fas fa-angle-double-right"></span>},
+                                escape_title => 0,
+                                class        => "nav",
+                                path         => "/Ticket/Display.html?id=" . $item_map->{last},
+                                attributes   => {
+                                    'data-toggle'         => 'tooltip',
+                                    'data-original-title' => loc('Last'),
+                                    alt                   => loc('Last'),
+                                },
+                            );
                         }
                     }
                 }
@@ -588,9 +624,15 @@ sub BuildMainNav {
 
             if ( $search_results_page_menu && $has_query ) {
                 $search_results_page_menu->child(
-                    current_search => title => loc('Back to Search'),
+                    current_search => title => q{<span class="fas fa-list"></span>},
+                    escape_title   => 0,
                     sort_order     => -1,
                     path           => "/Search/Results.html$args",
+                    attributes     => {
+                        'data-toggle'         => 'tooltip',
+                        'data-original-title' => loc('Return to Search Results'),
+                        alt                   => loc('Return to Search Results'),
+                    },
                 );
             }
         }
