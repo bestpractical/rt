@@ -50,8 +50,11 @@
 
 <& /Elements/GotoGroup, Default => $GroupString||'' &>
 
-<p> <&|/l&>This will search for groups by looking in the following fields:</&> <% $search_fields %></p>
-
+<div class="form-row text-center">
+  <div class="col-12">
+    <&|/l&>This will search for groups by looking in the following fields:</&> <% $search_fields %>
+  </div>
+</div>
 % if ($GroupString) {
 
 % unless ( $groups->Count ) {
