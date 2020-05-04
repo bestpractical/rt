@@ -54,8 +54,8 @@ jQuery(function(){
 });
 </script>
 <form name="GroupSearch" method="post" action="<% RT->Config->Get('WebPath') %>/Group/Search.html">
-  <div class="form-row">
-    <div class="col-auto">
+  <div class="form-row justify-content-center">
+    <div class="col-4">
       <input type="text" class="form-control" name="GroupString" value="<% $Default %>" data-autocomplete="Groups" data-autocomplete-return="Name" id="autocomplete-GroupString" />
     </div>
     <div class="col-auto">
