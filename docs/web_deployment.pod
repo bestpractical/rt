@@ -32,40 +32,6 @@ spontaneously logged in as other users in the system.
 See also L<authentication/Apache configuration>, in case you intend to
 use Apache to provide authentication.
 
-=head3 mod_fastcgi
-
-    # Tell FastCGI to put its temporary files somewhere sane; this may
-    # be necessary if your distribution doesn't already set it
-    #FastCgiIpcDir /tmp
-
-    FastCgiServer /opt/rt5/sbin/rt-server.fcgi -processes 5 -idle-timeout 300
-
-    <VirtualHost rt.example.com>
-        ### Optional apache logs for RT
-        # Ensure that your log rotation scripts know about these files
-        # ErrorLog /opt/rt5/var/log/apache2.error
-        # TransferLog /opt/rt5/var/log/apache2.access
-        # LogLevel debug
-
-        AddDefaultCharset UTF-8
-
-        ScriptAlias / /opt/rt5/sbin/rt-server.fcgi/
-
-        DocumentRoot "/opt/rt5/share/html"
-        <Location />
-            <IfVersion >= 2.4> # For Apache 2.4
-                Require all granted
-            </IfVersion>
-            <IfVersion < 2.4>  # For Apache 2.2
-                Order allow,deny
-                Allow from all
-            </IfVersion>
-
-            Options +ExecCGI
-            AddHandler fastcgi-script fcgi
-        </Location>
-    </VirtualHost>
-
 =head3 mod_fcgid
 
 B<WARNING>: Before mod_fcgid 2.3.6, the maximum request size was 1GB.
@@ -94,14 +60,7 @@ to return to the old default.
 
         DocumentRoot "/opt/rt5/share/html"
         <Location />
-            <IfVersion >= 2.4> # For Apache 2.4
-                Require all granted
-            </IfVersion>
-            <IfVersion < 2.4>  # For Apache 2.2
-                Order allow,deny
-                Allow from all
-            </IfVersion>
-
+            Require all granted
             Options +ExecCGI
             AddHandler fcgid-script fcgi
         </Location>
@@ -133,14 +92,7 @@ C<SetHandler modperl>, as the example below uses.
 
         DocumentRoot "/opt/rt5/share/html"
         <Location />
-            <IfVersion >= 2.4> # For Apache 2.4
-                Require all granted
-            </IfVersion>
-            <IfVersion < 2.4>  # For Apache 2.2
-                Order allow,deny
-                Allow from all
-            </IfVersion>
-
+            Require all granted
             SetHandler modperl
             PerlResponseHandler Plack::Handler::Apache2
             PerlSetVar psgi_app /opt/rt5/sbin/rt-server
@@ -150,14 +102,6 @@ C<SetHandler modperl>, as the example below uses.
             Plack::Handler::Apache2->preload("/opt/rt5/sbin/rt-server");
         </Perl>
     </VirtualHost>
-
-=head3 mod_perl 1.xx
-
-B<WARNING: mod_perl 1.99_xx is not supported.>
-
-To run RT using mod_perl 1.xx please see L<Plack::Handler::Apache1> for
-configuration examples.
-
 
 =head2 nginx
 
