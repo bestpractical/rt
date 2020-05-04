@@ -1,0 +1,14 @@
+CREATE TABLE AuthTokens (
+    id                int(11)         NOT NULL AUTO_INCREMENT,
+    Owner             int(11)         NOT NULL DEFAULT 0,
+    Token             varchar(256)    NULL,
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    LastUsed          datetime                 DEFAULT NULL,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           datetime                 DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       datetime                 DEFAULT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);

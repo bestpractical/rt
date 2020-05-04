@@ -507,6 +507,7 @@ sub InitClasses {
     require RT::Configuration;
     require RT::Configurations;
     require RT::REST2;
+    require RT::Authen::Token;
 
     _BuildTableAttributes();
 
@@ -773,6 +774,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::AssetSQL' => '5.0',
     'RT::Extension::LifecycleUI' => '5.0',
     'RT::Extension::REST2' => '5.0',
+    'RT::Authen::Token' => '5.0',
 );
 
 sub InitPlugins {
