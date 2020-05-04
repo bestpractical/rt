@@ -1,0 +1,138 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$Owner
+</%ARGS>
+<%INIT>
+my $tokens = RT::Authen::Token::AuthTokens->new($session{CurrentUser});
+$tokens->LimitOwner(VALUE => $Owner);
+</%INIT>
+<div class="authtoken-list" data-owner="<% $Owner %>">
+  <span class="loading"><img src="<%RT->Config->Get('WebPath')%>/static/images/loading.gif" alt="<%loc('Loading')%>" title="<%loc('Loading')%>" /></span>
+% if ($tokens->Count == 0) {
+  <em><&|/l&>No authentication tokens.</&></em>
+% } else {
+  <ul class="list-group">
+% while (my $token = $tokens->Next) {
+    <div class="form-row">
+      <div class="col-6">
+        <li class="list-group" id="auth-token-<% $token->Id %>">
+
+% my $used = $token->LastUsedObj;
+% my $last_updated = '';
+% if ($used->IsSet) {
+% $last_updated = loc( $used->AgeAsString, "used [_1]" );
+% } else {
+% $last_updated = loc( "never used" );
+% }
+          <&| /Widgets/TitleBox,
+            title          => $token->Description,
+            title_href     => "#auth-token-".$token->Id,
+            titleright_raw => $last_updated,
+            rolledup       => 0
+          &>
+% if ($ARGS{ShowModifyForm} && $ARGS{Token} == $token->Id) {
+%   if ($ARGS{Update} || $ARGS{Revoke}) {
+            <& /Elements/AuthToken/ModifyResults, %ARGS, Token => $token->Id, Owner => $Owner &>
+% }
+% }
+            <form class="authtoken-form" method="post" data-ajax-url="<% RT->Config->Get('WebPath') %>/Helpers/AuthToken/Modify" action="<% RT->Config->Get('WebPath') %><% $r->uri %>">
+              <div class="form-row">
+% if ($ARGS{id}) {
+                <input type="hidden" name="id" value="<% $ARGS{id} %>">
+% }
+                <input type="hidden" name="Token" value="<% $token->id %>">
+                 <input type="hidden" name="Owner" value="<% $Owner %>">
+
+                <div class="col-4">
+                  <label class="label"><&|/l&>Description</&>:
+                    <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>What's this token for?</&>"></span>
+                  </label>
+                </div>
+                <div class="col-8">
+                  <span class="value"><input class="form-control" type="text" name="Description" value="<% $ARGS{Description} // $token->Description %>" size="16" /></span>
+                </div>
+
+                <div class="col-4">
+                  <label class="label"><&|/l&>Last Used</&>:</label>
+                </div>
+                <div class="col-8">
+% my $used = $token->LastUsedObj;
+                  <span class="value">
+% if ($used->IsSet) {
+                  <% $used->AgeAsString %>
+% } else {
+                  <&|/l&>never</&>
+% }
+                  </span>
+                </div>
+
+                <div class="col-4">
+                  <label class="label"><&|/l&>Created</&>:</label>
+                </div>
+                <div class="col-8">
+                  <span class="value"><% $token->CreatedObj->AgeAsString %></span>
+                </div>
+
+                <div class="col-6">
+                  <input class="button btn btn-primary" type="submit" name="Update" value="<&|/l&>Save</&>"></input>
+                </div>
+                <div class="col-6">
+                  <input class="button btn btn-primary" type="submit" name="Revoke" value="<&|/l&>Revoke</&>"></input>
+                </div>
+                <span class="loading"><img src="<%RT->Config->Get('WebPath')%>/static/images/loading.gif" alt="<%loc('Loading')%>" title="<%loc('Loading')%>" /></span>
+            </form>
+          </div>
+          </&>
+        </li>
+      </div>
+    </div>
+% }
+  </ul>
+% }
+</div>

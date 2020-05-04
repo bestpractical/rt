@@ -1,0 +1,15 @@
+CREATE SEQUENCE AuthTokens_seq;
+CREATE TABLE AuthTokens (
+    id              NUMBER(11,0)    CONSTRAINT AuthTokens_key PRIMARY KEY,
+    Owner           NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Token           VARCHAR2(256),
+    Description     varchar2(255)   DEFAULT '',
+    LastUsed        DATE,
+    Creator         NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Created         DATE,
+    LastUpdatedBy   NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    LastUpdated     DATE
+);
+
+CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);
+

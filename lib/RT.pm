@@ -506,6 +506,7 @@ sub InitClasses {
     require RT::CustomFieldValues::Canonicalizer;
     require RT::Configuration;
     require RT::Configurations;
+    require RT::Authen::Token;
 
     _BuildTableAttributes();
 

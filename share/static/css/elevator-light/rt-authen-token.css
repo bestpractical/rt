@@ -1,0 +1,73 @@
+.authtoken-form-container {
+    display: none;
+}
+
+.authtoken-form .loading {
+    float: right;
+    display: none;
+}
+
+.authtoken-form.submitting .buttons {
+    display: none;
+}
+
+.authtoken-form.submitting .loading {
+    display: inline;
+}
+
+.authtoken-form .error {
+    color: red;
+}
+
+.authstring {
+    font-size: 1.2em;
+    font-family: monospace;
+    padding: .3em;
+    border: 1px dashed black;
+    background-color: #f9f9f9;
+}
+
+.authtoken-success {
+    margin-bottom: 15px;
+}
+
+.authtoken-list ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.authtoken-list ul li + li {
+    margin-top: 1em;
+}
+
+.authtoken-list .description {
+    font-weight: bold;
+}
+
+.authtoken-list .lastused {
+    font-style: italic;
+    color: #666;
+}
+
+.authtoken-list .loading {
+    display: none;
+}
+
+.authtoken-list.refreshing {
+    opacity: 0.3;
+}
+.authtoken-list.refreshing .loading {
+    display: inline;
+}
+
+.authtoken-form input[name=Update] {
+    float: right;
+}
+
+.authtoken-form input[name=Revoke] {
+    float: left;
+}
+
+.auth-token-messages {
+    margin: 1rem 0rem 0rem 0px;
+}

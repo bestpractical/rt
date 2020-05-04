@@ -304,6 +304,10 @@ sub BuildMainNav {
         );
         $settings->child( queue_list    => title => loc('Queue list'),   path => '/Prefs/QueueList.html' );
 
+        if ( $current_user->HasRight( Right => 'ManageAuthTokens', Object => RT->System ) ) {
+            $settings->child('about_me')->add_after(auth_tokens => title => loc('Auth Tokens'), path => '/Prefs/AuthTokens.html');
+        }
+
         my $search_menu = $settings->child( 'saved-searches' => title => loc('Saved Searches') );
         my $searches = [ $HTML::Mason::Commands::m->comp( "/Search/Elements/SearchesForObject",
                           Object => RT::System->new( $current_user )) ];
@@ -1529,6 +1533,20 @@ sub _BuildAdminMenu {
         } else {
             $page->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
             $page->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
+        }
+    }
+
+    my $request_path_token = $request_path =~ s!/{2,}!/!g;
+    if ( $request_path_token =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} and $admin->child("users") ) {
+        if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
+            my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
+            my $obj = RT::User->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+            $obj->Load($id);
+
+            if ( $obj and $obj->id ) {
+                my $tabs = PageMenu();
+                $tabs->child(auth_tokens => title => loc('Auth Tokens'), path => '/Admin/Users/AuthTokens.html?id=' . $id);
+            }
         }
     }
 }
