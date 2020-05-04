@@ -1,0 +1,141 @@
+=head1 Tracking Changes In RT
+
+With the C<rt-dump-initialdata> tool there is now a method to track changes
+to RT's admin configurations like scrips/rights/queues/groups/etc. For more
+specifics see the documentation for C<rt-dump-initialdata>.
+
+This is particularly useful when performing changes to RT on a dev server and
+then wanting to copy those changes over to a production server.
+
+It is important to note that this is not a replacement for traditional database
+back-ups.
+
+=cut
+
+=head2 Taking changes from dev RT to production RT
+
+In this scenario, we will assume that we have two RT instances one dev server
+and one prod server. We also assume that at the start of this example the RT's
+configurations are the same.
+
+The first step is to always validate that our RT data is valid:
+
+    sbin/rt-validator --check
+
+Next, we will take a JSON initialdata dump of our in sync dev RT:
+
+  sbin/rt-dump-initialdata --directory --sync base
+
+This should create a new directory "base" that contains your "initialdata.json"
+file for your RT.
+
+Now say we want to add a new rights configuration to our "support" queue and we also
+want to create a new RT::Scrip to automate some part of the support process.
+
+We can put all these changes into place and test on the dev RT. Once we are happy
+with the changes we do not need to go and manually copy these changes over to the
+production system. Instead, we can use the rt-dump-initialdata tool to dump the changes.
+
+Dump the changes made to the dev RT instance since the last JSON dump:
+
+  sbin/rt-dump-initialdata --directory new --base base/initialdata.json
+
+This should create a new directory called "new", in this directory, you will have
+another "initialdata.json" file along with a "changes.json" file that only has the
+differences between the base and new RT initialdata. For this example our changes file
+will have our new queue, some rights configurations and the new scrip we created:
+
+    {
+        "ACL" : [
+            {
+                "GroupDomain" : "SystemInternal",
+                "GroupType" : "Everyone",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "CreateTicket"
+            },
+            {
+                "GroupDomain" : "SystemInternal",
+                "GroupType" : "Everyone",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "ReplyToTicket"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "CommentOnTicket"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "SeeQueue"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "ReplyToTicket"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "CreateTicket"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "ShowTicket"
+            }
+        ],
+        "Queues" : [
+            {
+                "CommentAddress" : "",
+                "CorrespondAddress" : "",
+                "Description" : "",
+                "Lifecycle" : "default",
+                "Name" : "Support",
+                "SLADisabled" : 1,
+                "SortOrder" : 0
+            }
+        ],
+        "Scrips" : [
+            {
+                "CustomCommitCode" : "",
+                "CustomIsApplicableCode" : "",
+                "CustomPrepareCode" : "",
+                "Description" : "On Support Request Do Something",
+                "Queue" : [
+                    {
+                    "ObjectId" : "Support",
+                    "SortOrder" : 18,
+                    "Stage" : "TransactionCreate",
+                    "id" : 37
+                    }
+                ],
+                "ScripAction" : "User Defined",
+                "ScripCondition" : "User Defined",
+                "Template" : "Blank"
+            }
+        ]
+    }
+
+
+You can now apply the changes.json initialdata to your production RT:
+
+  sbin/rt-setup-database --action insert --datafile new/changes.json
+
+You can see all the options provided by the rt-dump-initialdata tool by running:
+
+  sbin/rt-dump-initialdata --help
+
+=cut
