@@ -47,22 +47,55 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my $assets = RT::Assets->new($session{CurrentUser});
-$m->callback( CallbackName => 'ModifyAssetSearch', %ARGS, Assets => $assets, Roles => \@Roles );
-for my $role (@Roles) {
-    $assets->RoleLimit(
-        TYPE        => $role,
-        VALUE       => $Group->PrincipalId,
-        SUBCLAUSE   => "Role$role",
-    );
-}
+
 my $Format = q[
     '<b><a href="__WebHomePath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
     '<b><a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
     Description,
 ];
 $m->callback( CallbackName => 'ModifyFormat', %ARGS, Format => \$Format );
+
+my %QueryProperties = (
+    Query      => join(' OR ', map { "$_.id = ".$Group->PrincipalId } @Roles ),
+    OrderBy    => 'id',
+    Order      => 'ASC',
+);
+$m->callback( CallbackName => 'ModifyQueryProperties',
+    %ARGS,
+    QueryProperties => \%QueryProperties,
+    Roles => \@Roles,
+);
+
+my ($ok, $msg) = $assets->FromSQL($QueryProperties{Query});
+RT->Logger->error('Unable to parse asset query ' . $QueryProperties{Query} . ' : $msg')
+    unless $ok;
+$m->callback( CallbackName => 'ModifyAssetSearch', %ARGS, Assets => $assets, Roles => \@Roles );
+
+my $query_string = $m->comp('/Elements/QueryString',
+    Class       => 'RT::Assets',
+    Query       => $QueryProperties{Query},
+    OrderBy     => $QueryProperties{OrderBy},
+    Order       => $QueryProperties{Order},
+);
+
+my $search_url  =
+    RT->Config->Get('WebPath') .
+    '/Search/Results.html?' .
+    $query_string;
+
+my $bulk_update_url  =
+    RT->Config->Get('WebPath') .
+    '/Asset/Search/Bulk.html?' .
+    $query_string;
+
 </%INIT>
-<&| /Widgets/TitleBox, title => $Title, class => "group asset-list" &>
+<&| /Widgets/TitleBox,
+    title => $Title,
+    title_href => $search_url,
+    titleright => loc('Bulk Update'),
+    titleright_href => $bulk_update_url,
+    class => "group asset-list",
+&>
     <& /Elements/CollectionList,
         Collection      => $assets,
         OrderBy         => 'id',
@@ -75,6 +108,6 @@ $m->callback( CallbackName => 'ModifyFormat', %ARGS, Format => \$Format );
 <%ARGS>
 $Group
 $Title
-@Roles
+@Roles => ('HeldBy', 'Contact', 'Owner')
 $HasResults => undef
 </%ARGS>
