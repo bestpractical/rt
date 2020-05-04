@@ -50,34 +50,56 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<br />
-
-% for my $pane ( @panes ) {
 <&|/Widgets/TitleBox,
     title => loc('Dashboards in menu'),
     bodyclass => ""
 &>
-<& /Widgets/SelectionBox:show, self => $pane &>
+<& /Widgets/SelectionBox:show, self => $dashboard_pane &>
 </&>
-% }
 
 <&|/Widgets/TitleBox, title => loc("Reset dashboards in menu") &>
-<form method="post" action="DashboardsInMenu.html">
-<input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button form-control btn btn-primary"" value="<% loc('Reset to default') %>">
-</form>
+<div class="form-row mt-3 mb-1 ml-3">
+  <form method="post" action="DashboardsInMenu.html">
+    <input type="submit" name="ResetDashboards" class="button form-control btn btn-primary" value="<% loc('Reset dashboards to default') %>">
+  </form>
+</div>
 </&>
 
+<&|/Widgets/TitleBox,
+    title => loc('Reports in menu'),
+    bodyclass => ""
+&>
+<& /Widgets/SelectionBox:show, self => $report_pane &>
+</&>
+
+<&|/Widgets/TitleBox, title => loc("Reset reports in menu") &>
+<div class="form-row mt-3 mb-1 ml-3">
+  <form method="post" action="DashboardsInMenu.html">
+    <input type="submit" name="ResetReports" class="button form-control btn btn-primary" value="<% loc('Reset reports to default') %>">
+  </form>
+</div>
+</&>
 
 <%INIT>
 my @results;
-my $title = loc("Customize").' '.loc("dashboards in menu");
+my $title = loc("Customize").' '.loc("reports menu");
 my $user = $session{'CurrentUser'}->UserObj;
 
-if ($ARGS{Reset}) {
+if ( $ARGS{ResetDashboards} ) {
+    # Empty DashboardsInMenu pref means to use system default.
     my ($ok, $msg) = $user->SetPreferences('DashboardsInMenu', {});
     push @results, $ok ? loc('Preferences saved.') : $msg;
     delete $session{'dashboards_in_menu'};
+}
+
+if ( $ARGS{ResetReports} ) {
+    if ( $user->Preferences('ReportsInMenu') ) {
+        # Empty ReportsInMenu pref means empty, not to use default,
+        # thus we need to delete preference instead.
+        my ( $ok, $msg ) = $user->DeletePreferences('ReportsInMenu');
+        push @results, $ok ? loc('Preferences saved.') : $msg;
+        delete $session{'reports_in_menu'};
+    }
 }
 
 my ($default_dashboards) =
@@ -91,7 +113,7 @@ my $current_dashboards = $dashboard_pref->{dashboards} || [];
 
 my @dashboards = map { [$_->id, $_->Name] } $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
 
-my @panes = $m->comp(
+my ($dashboard_pane) = $m->comp(
     '/Admin/Elements/ConfigureDashboardsInMenu',
     Action => 'DashboardsInMenu.html',
     panes => ['dashboards_in_menu'],
@@ -106,8 +128,37 @@ my @panes = $m->comp(
     }
 );
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
-    for @panes;
+my ( @reports, %reports );
+for my $report ( @{ ListOfReports() } ) {
+    push @reports, [ $report->{id}, $report->{title} ];
+    $reports{ $report->{id} } = $report;
+}
+
+my ($default_reports) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('ReportsInMenu');
+my $report_pref
+    = $session{CurrentUser}->UserObj->Preferences( 'ReportsInMenu', $default_reports ? $default_reports->Content : () );
+my $current_reports = [ map { $_->{id} } @{ $report_pref || [] } ];
+
+my ($report_pane) = $m->comp(
+    '/Admin/Elements/ConfigureDashboardsInMenu',
+    Action           => 'DashboardsInMenu.html',
+    panes            => ['reports_in_menu'],
+    items            => \@reports,
+    current_portlets => $current_reports,
+    OnSave           => sub {
+        my ($conf) = @_;
+        my $user_reports = [];
+        foreach my $id ( @{ $conf->{dashboards} } ) {
+            push @$user_reports, $reports{$id} if $reports{$id};
+        }
+        my ( $ok, $msg ) = $user->SetPreferences( 'ReportsInMenu', $user_reports );
+        push @results, $msg unless $ok;
+
+        delete $session{'reports_in_menu'};
+    }
+);
+
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ ) for ( $dashboard_pane, $report_pane );
 
 </%INIT>
 
