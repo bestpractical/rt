@@ -45,16 +45,15 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("Dashboards in menu") &>
+<& /Admin/Elements/Header, Title => loc("Reports menu") &>
 <& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@actions &>
-<br />
-% for my $pane (@panes) {
 <&|/Widgets/TitleBox, title => loc('Dashboards in menu'), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane &></&>
-<br />
-% }
+<& /Widgets/SelectionBox:show, self => $dashboard_pane &></&>
+
+<&|/Widgets/TitleBox, title => loc('Reports in menu'), bodyclass => "" &>
+<& /Widgets/SelectionBox:show, self => $report_pane &></&>
 <%init>
 my @actions;
 my $sys = RT::System->new( $session{'CurrentUser'} );
@@ -76,7 +75,7 @@ while ( my $dashboard = $dashboards->Next ) {
     push @dashboards, [$dashboard->id, $dashboard->Name];
 }
 
-my @panes = $m->comp(
+my ($dashboard_pane) = $m->comp(
     '/Admin/Elements/ConfigureDashboardsInMenu',
     Action => 'DashboardsInMenu.html',
     panes => ['dashboards_in_menu'],
@@ -105,8 +104,42 @@ my @panes = $m->comp(
     }
 );
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
-    for @panes;
+my ($reports_attr) = RT::System->new( RT->SystemUser )->Attributes->Named('ReportsInMenu');
+
+my ( @reports, %reports );
+for my $report ( @{ ListOfReports() } ) {
+    push @reports, [ $report->{id}, $report->{title} ];
+    $reports{ $report->{id} } = $report;
+}
+
+my ($report_pane) = $m->comp(
+    '/Admin/Elements/ConfigureDashboardsInMenu',
+    Action           => 'DashboardsInMenu.html',
+    panes            => ['reports_in_menu'],
+    ReadOnly         => !$has_right,
+    items            => \@reports,
+    current_portlets => [ map { $_->{id} } @{ $reports_attr->Content || [] } ],
+    OnSave           => sub {
+        my ($conf) = @_;
+        my ( $status, $msg );
+
+        if ( !$has_right ) {
+            push @actions, loc('Permission Denied');
+        }
+        else {
+            my $system_reports = [];
+            foreach my $id ( @{ $conf->{dashboards} } ) {
+                push @$system_reports, $reports{$id} if $reports{$id};
+            }
+
+            ( $status, $msg ) = $reports_attr->SetContent($system_reports);
+            push @actions, $msg unless $status;
+        }
+        push @actions, $status ? loc('Global reports in menu saved.') : $msg;
+    }
+);
+
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ ) for ( $dashboard_pane, $report_pane );
 
 
 </%init>
