@@ -3,6 +3,8 @@ class LifecycleModel {
     constructor() {
         this.links_seq = 0;
         this.nodes_seq = 0;
+        // Here we store the '' => transitions
+        this.create_nodes = [];
     }
 
     // Generate nodes from config
@@ -24,7 +26,10 @@ class LifecycleModel {
         var config = config || this.config;
 
         for (let [fromNode, toList] of Object.entries(config.transitions)) {
-            if ( fromNode.toLowerCase() == node.toLowerCase() ) {
+            if ( fromNode == '' ) {
+                this.create_nodes = toList;
+            }
+            else if ( fromNode.toLowerCase() == node.toLowerCase() ) {
                 return toList;
             }
         }
@@ -199,6 +204,8 @@ class LifecycleModel {
 
         var nodeIndex = self.nodes.findIndex(function(x) { return x.id == node.id });
 
+        var oldValue =  self.nodes[nodeIndex];
+
         self.nodes[nodeIndex] = {...self.nodes[nodeIndex], ...args};
         var nodeUpdated = self.nodes[nodeIndex];
 
@@ -219,6 +226,17 @@ class LifecycleModel {
             var index = self.links.findIndex(function(x) { return x.id == link.id });
             self.links[index] = {...link, target: nodeUpdated}
         });
+        // Only need to check for target
+        var tempArr = [];
+        self.create_nodes.forEach(function(target) {
+            if ( target != oldValue.name ) {
+                tempArr.push(target);
+            }
+            else {
+                tempArr.push(nodeUpdated.name);
+            }
+        });
+        self.create_nodes = tempArr;
     }
 
     ExportAsConfiguration () {
@@ -238,7 +256,7 @@ class LifecycleModel {
         });
 
         // Grab our links
-        config.transitions[""] = self.config.transitions ? self.config.transitions[""]: [];
+        config.transitions[""] = self.create_nodes;
 
         var seen = {};
         self.nodes.forEach(function(source) {
