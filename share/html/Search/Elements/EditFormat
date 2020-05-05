@@ -106,7 +106,7 @@ jQuery( function() {
 
     <div class="col-12 col-md-3">
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Link</&>:</div>
+        <div class="label col-4"><&|/l&>Link</&>:</div>
 %# leave 1 col to save some space to the right "->"
         <div class="value col-8">
           <select name="Link" class="form-control selectpicker">
@@ -123,12 +123,12 @@ jQuery( function() {
       </div>
 
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Title</&>:</div>
+        <div class="label col-4"><&|/l&>Title</&>:</div>
         <div class="value col-8"><input type="text" name="Title" size="10" class="form-control" /></div>
       </div>
 
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Size</&>:</div>
+        <div class="label col-4"><&|/l&>Size</&>:</div>
         <div class="value col-8">
           <select name="Size" class="form-control selectpicker">
             <option value="">-</option>
@@ -139,7 +139,7 @@ jQuery( function() {
       </div>
 
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Style</&>:</div>
+        <div class="label col-4"><&|/l&>Style</&>:</div>
         <div class="value col-8">
           <select name="Face" class="form-control selectpicker">
             <option value="">-</option>
