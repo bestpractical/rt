@@ -58,9 +58,13 @@
 
 <script type="text/javascript">
 jQuery( function() {
+    jQuery('#SelectDisplayColumns').selectize();
+    jQuery('.selectize-dropdown-content').addClass("selectize-max-height");
+
     jQuery('[name=AddCol], [name=RemoveCol], [name=ColUp], [name=ColDown]').click( function() {
         var name = jQuery(this).attr('name');
         var form = jQuery(this).closest('form');
+
         jQuery.ajax({
             url: '<% RT->Config->Get('WebPath') %>/Helpers/BuildFormatString?' + name + '=1&' + form.serialize(),
             success: function (data) {
@@ -69,6 +73,7 @@ jQuery( function() {
                     form.find('select[name=CurrentDisplayColumns]').html(data.CurrentDisplayColumns);
                     form.find('select[name=SelectDisplayColumns]').val('').change();
                     form.find('[name=Link],[name=Title],[name=Size],[name=Face]').val('');
+                    form.find('[name=Link],[name=Title],[name=Size],[name=Face]').selectpicker('refresh');
                 }
                 else {
                     alert('<% loc("Failed to update format. Reason:") %>' + ' ' + data.message);
@@ -88,7 +93,7 @@ jQuery( function() {
     <div class="col-12 col-md-3">
       <div class="form-row">
         <div class="col-12">
-          <select name="SelectDisplayColumns" multiple="multiple" class="form-control selectpicker">
+          <select name="SelectDisplayColumns" id="SelectDisplayColumns" multiple="multiple">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
           <option class="<% CSSClass($field) %>" value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
@@ -101,11 +106,11 @@ jQuery( function() {
 
     <div class="col-12 col-md-3">
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Link</&>:</div>
+        <div class="label col-4"><&|/l&>Link</&>:</div>
 %# leave 1 col to save some space to the right "->"
         <div class="value col-8">
           <select name="Link" class="form-control selectpicker">
-              <option value="None">-</option>
+              <option value="">-</option>
               <option value="Display"><&|/l&>Display</&></option>
 % if ($IncludeTicketLinks) {
               <option value="Take"><&|/l&>Take</&></option>
@@ -118,12 +123,12 @@ jQuery( function() {
       </div>
 
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Title</&>:</div>
+        <div class="label col-4"><&|/l&>Title</&>:</div>
         <div class="value col-8"><input type="text" name="Title" size="10" class="form-control" /></div>
       </div>
 
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Size</&>:</div>
+        <div class="label col-4"><&|/l&>Size</&>:</div>
         <div class="value col-8">
           <select name="Size" class="form-control selectpicker">
             <option value="">-</option>
@@ -134,7 +139,7 @@ jQuery( function() {
       </div>
 
       <div class="form-row">
-        <div class="label col-3"><&|/l&>Style</&>:</div>
+        <div class="label col-4"><&|/l&>Style</&>:</div>
         <div class="value col-8">
           <select name="Face" class="form-control selectpicker">
             <option value="">-</option>
