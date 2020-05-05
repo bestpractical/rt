@@ -105,6 +105,7 @@
 
 .darkmode .dropdown-item:focus *, .darkmode .dropdown-item:hover *,
 .darkmode .dropdown-item:focus, .darkmode .dropdown-item:hover,
+.darkmode #page-menu.sf-menu a:focus *, .darkmode #page-menu.sf-menu a:hover *,
 .darkmode #page-menu.sf-menu a:focus, .darkmode #page-menu.sf-menu a:hover,
 .darkmode #main-navigation .sf-menu li ul a:focus, .darkmode #main-navigation .sf-menu li ul a:hover {
     background: #3A474D !important;
