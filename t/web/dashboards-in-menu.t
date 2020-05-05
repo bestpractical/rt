@@ -84,7 +84,7 @@ $m->click_button(name => 'Delete');
 
 diag "Reset dashboard menu";
 $m->get_ok( $baseurl."/Prefs/DashboardsInMenu.html");
-$m->form_with_fields('Reset');
+$m->form_with_fields('ResetDashboards');
 $m->click;
 $m->content_contains( 'Preferences saved', 'prefs saved' );
 ok( $m->find_link( text => 'system foo' ), 'got system foo link' );
