@@ -317,6 +317,17 @@ sub BuildMainNav {
             );
 
         }
+
+        if ( $request_path =~ qr{/Prefs/(?:SearchOptions|CustomDateRanges)\.html} ) {
+            $page->child(
+                search_options => title => loc('Search Preferences'),
+                path               => "/Prefs/SearchOptions.html"
+            );
+            $page->child(
+                custom_date_ranges => title => loc('Custom Date Ranges'),
+                path               => "/Prefs/CustomDateRanges.html"
+            );
+        }
     }
     my $logout_url = RT->Config->Get('LogoutURL');
     if ( $current_user->Name

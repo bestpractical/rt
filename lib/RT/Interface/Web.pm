@@ -4779,11 +4779,13 @@ sub ListOfReports {
     return $list_of_reports;
 }
 
-=head2 ProcessCustomDateRanges ARGSRef => ARGSREF
+=head2 ProcessCustomDateRanges ARGSRef => ARGSREF, UserPreference => 0|1
 
 For system database configuration, it adds corresponding arguments to the
 passed ARGSRef, and the following code on EditConfig.html page will do the
 real update job.
+
+For user preference, it updates attributes accordingly.
 
 Returns an array of results messages.
 
@@ -4791,17 +4793,29 @@ Returns an array of results messages.
 
 sub ProcessCustomDateRanges {
     my %args = (
-        ARGSRef => undef,
+        ARGSRef        => undef,
+        UserPreference => 0,
         @_
     );
     my $args_ref = $args{ARGSRef};
 
-    my $config  = RT->Config->Get('CustomDateRanges');
-    my $db_config = RT::Configuration->new( $session{CurrentUser} );
-    $db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
+    my ( $config, $content );
+    if ( $args{UserPreference} ) {
+        $config = { 'RT::Ticket' => { RT::Ticket->CustomDateRanges( ExcludeUser => $session{CurrentUser}->Id ) } };
+        $content = $session{CurrentUser}->Preferences('CustomDateRanges');
 
-    my $content;
-    $content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
+        # SetPreferences also checks rights, we short-circuit to avoid
+        # returning misleading messages.
+
+        return ( 0, loc("No permission to set preferences") )
+            unless $session{CurrentUser}->CurrentUserCanModify('Preferences');
+    }
+    else {
+        $config = RT->Config->Get('CustomDateRanges');
+        my $db_config = RT::Configuration->new( $session{CurrentUser} );
+        $db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
+        $content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
+    }
 
     my @results;
     my %label = (
@@ -4911,8 +4925,24 @@ sub ProcessCustomDateRanges {
     }
 
     if ($need_save) {
-        $args_ref->{'CustomDateRangesUI-Current'} = ''; # EditConfig.html needs this to update CustomDateRangesUI
-        $args_ref->{CustomDateRangesUI} = $content;
+        if ( $args{UserPreference} ) {
+            my ( $ret, $msg );
+            if ( keys %{$content->{'RT::Ticket'}} ) {
+                ( $ret, $msg ) = $session{CurrentUser}->SetPreferences( 'CustomDateRanges', $content );
+            }
+            else {
+                ( $ret, $msg ) = $session{CurrentUser}->DeletePreferences( 'CustomDateRanges' );
+            }
+
+            unless ($ret) {
+                RT->Logger->error($msg);
+                push @results, $msg;
+            }
+        }
+        else {
+            $args_ref->{'CustomDateRangesUI-Current'} = ''; # EditConfig.html needs this to update CustomDateRangesUI
+            $args_ref->{CustomDateRangesUI} = $content;
+        }
     }
     return @results;
 }
