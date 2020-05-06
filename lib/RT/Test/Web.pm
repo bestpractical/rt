@@ -243,6 +243,31 @@ sub warning_like {
     return Test::More::like($warnings[0], $re, $name);
 }
 
+
+sub warnings_exist {
+    my $self = shift;
+    my $re   = shift;
+    my $name = shift;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my @warnings = $self->get_warnings;
+    if (@warnings == 0) {
+        Test::More::fail("no warnings emitted; expected 1");
+        return 0;
+    }
+    else {
+        foreach my $warning (@warnings) {
+	   if ($warning =~ $re) {
+               return Test::More::pass($name);
+	   }
+	}
+    }
+    Test::More::fail("no warnings emitted matching $re");
+    return 0;
+}
+
+
 sub next_warning_like {
     my $self = shift;
     my $re   = shift;
