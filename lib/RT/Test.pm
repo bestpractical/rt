@@ -1486,6 +1486,25 @@ sub import_gnupg_key {
         RT::Test->file_content( [ $path, $key ] ) );
 }
 
+
+sub import_gnupg2_key {
+    my $self = shift;
+    my $key  = shift;
+    my $type = shift || 'secret';
+
+    $key =~ s/\@/-at-/g;
+    $key .= ".$type.key";
+
+    my $path = find_relocatable_path( 'data', 'gnupg2', 'keys' );
+
+    die "can't find the dir where gnupg keys are stored"
+      unless $path;
+
+    return RT::Crypt::GnuPG->ImportKey(
+        RT::Test->file_content( [ $path, $key ] ) );
+}
+
+
 sub lsign_gnupg_key {
     my $self = shift;
     my $key = shift;

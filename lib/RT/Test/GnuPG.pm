@@ -52,12 +52,121 @@ use warnings;
 use Test::More;
 use base qw(RT::Test);
 use File::Temp qw(tempdir);
+use Cwd;
+use File::Path qw (make_path);
+use File::Copy;
+use GnuPG::Interface;
+use RT::Crypt::GnuPG;
 
 our @EXPORT =
-  qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options 
-          check_text_emails send_email_and_check_transaction
+  qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options
+          check_text_emails send_email_and_check_trangnsaction
           create_and_test_outgoing_emails
+          copy_test_keys_to_homedir copy_test_keyring_to_homedir
+          get_test_gnupg_interface get_test_data_dir
+          $homedir $gnupg_version $using_legacy_gnupg
           );
+
+no warnings qw(redefine once);
+
+BEGIN {
+    use vars qw($homedir $gnupg_version $using_legacy_gnupg);
+    my $tempdir_template = 'test_gnupg_XXXXXXXXX';
+    $homedir = tempdir( $tempdir_template, DIR => '/tmp', CLEANUP => 1);
+
+    $ENV{'GNUPGHOME'} =  $homedir;
+
+    my %supported_opt = map { $_ => 1 } qw(
+       always_trust
+       armor
+       batch
+       comment
+       compress_algo
+       default_key
+       encrypt_to
+       extra_args
+       force_v3_sigs
+       homedir
+       logger_fd
+       no_greeting
+       no_options
+       no_verbose
+       openpgp
+       options
+       passphrase_fd
+       quiet
+       recipients
+       rfc1991
+       status_fd
+       textmode
+       verbose
+                                      );
+
+    *RT::Crypt::GnuPG::_PrepareGnuPGOptions = sub {
+        my %opt = @_;
+        $opt{homedir} = $homedir;
+        my %res = map { lc $_ => $opt{ $_ } } grep $supported_opt{ lc $_ }, keys %opt;
+        $res{'extra_args'} ||= [];
+        foreach my $o ( grep !$supported_opt{ lc $_ }, keys %opt ) {
+            push @{ $res{'extra_args'} }, '--'. lc $o;
+            push @{ $res{'extra_args'} }, $opt{ $o }
+                if defined $opt{ $o };
+        }
+        return %res;
+    };
+
+    make_path($homedir, { mode => 0700 });
+    my $data_path = RT::Test::get_abs_relocatable_dir( File::Spec->updir(), 'data');
+    copy('$data_path/gpg.conf', $homedir . '/gpg.conf');
+
+    my $gnupg = GnuPG::Interface->new;
+    $gnupg->options->hash_init(
+       RT::Crypt::GnuPG::_PrepareGnuPGOptions( ),
+    );
+
+    $gnupg_version = $gnupg->version;
+    $using_legacy_gnupg = 1;
+
+    if ($gnupg->cmp_version($gnupg_version, '2.2') >= 0 ) {
+        $using_legacy_gnupg = 0;
+
+        my $agentconf = IO::File->new( "> " . $homedir . "/gpg-agent.conf" );
+        # Classic gpg can't use loopback pinentry programs like fake-pinentry.pl.
+
+        # default to empty passphrase pinentry
+        # passphrase in "pinentry-program $data_path/gnupg2/bin/fake-pinentry.pl\n"
+        $agentconf->write(
+            "allow-preset-passphrase\n".
+                "allow-loopback-pinentry\n".
+                "pinentry-program $data_path/gnupg2/bin/empty-pinentry.pl\n"
+            );
+
+        $agentconf->close();
+
+        my $error = system("gpg-connect-agent", "--homedir", "$homedir", '/bye');
+        if ($error) {
+            warn "gpg-connect-agent returned error : $error";
+        }
+
+        $error = system('gpg-connect-agent', "--homedir", "$homedir", 'reloadagent', '/bye');
+        if ($error) {
+            warn "gpg-connect-agent returned error : $error";
+        }
+
+        $error = system("gpg-agent", '--homedir', "$homedir");
+        if ($error) {
+            warn "gpg-agent returned error : $error";
+        }
+    }
+}
+
+
+END {
+    unless ($using_legacy_gnupg) {
+        system('gpgconf', '--homedir', $homedir,'--quiet', '--kill', 'gpg-agent');
+        delete $ENV{'GNUPGHOME'};
+    }
+}
 
 sub import {
     my $class = shift;
@@ -73,7 +182,8 @@ sub import {
     return $class->export_to_level(1)
         if $^C;
 
-    RT::Test::diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
+    RT::Test::diag "GnuPG --homedir over-ridden for tests : " . $ENV{'GNUPGHOME'};
+    RT::Test::diag "GnuPG --homedir from config " . RT->Config->Get('GnuPGOptions')->{'homedir'};
 
     $class->set_rights(
         Principal => 'Everyone',
@@ -363,3 +473,77 @@ sub create_and_test_outgoing_emails {
         }
     }
 }
+
+sub copy_test_keyring_to_homedir {
+    my (%args) = @_;
+    my $srcdir;
+    if ($using_legacy_gnupg || $args{use_legacy_keys}) {
+        $srcdir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg keyrings/ );
+    }
+    else {
+        $srcdir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg2 keyrings/ );
+    }
+    opendir(my $DIR, $srcdir) || die "can't opendir $srcdir: $!";
+    my @files = readdir($DIR);
+    foreach my $file (@files) {
+        if(-f "$srcdir/$file" ) {
+            copy "$srcdir/$file", "$homedir/$file";
+        }
+    }
+    closedir($DIR);
+}
+
+sub copy_test_keys_to_homedir {
+    my (%args) = @_;
+    my $srcdir;
+    if ($using_legacy_gnupg || $args{use_legacy_keys}) {
+        $srcdir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg keys/ );
+    }
+    else {
+        $srcdir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg2 keys/ );
+    }
+
+    opendir(my $DIR, $srcdir) || die "can't opendir $srcdir: $!";
+    my @files = readdir($DIR);
+    foreach my $file (@files) {
+        if(-f "$srcdir/$file" ) {
+            copy "$srcdir/$file", "$homedir/$file";
+        }
+    }
+    closedir($DIR);
+}
+
+sub get_test_data_dir {
+    my (%args) = @_;
+    my $test_data_dir;
+    if ($using_legacy_gnupg || $args{use_legacy_keys}) {
+        $test_data_dir = RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                                        qw(data gnupg keyrings) );
+
+    }
+    else {
+        $test_data_dir = RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                                            qw(data gnupg2 keyrings) );
+
+    }
+    return $test_data_dir;
+
+}
+
+sub get_test_gnupg_interface {
+    my $gnupg = GnuPG::Interface->new;
+    $gnupg->options->hash_init(
+       RT::Crypt::GnuPG::_PrepareGnuPGOptions( ),
+    );
+    return $gnupg;
+}
+
+1;
