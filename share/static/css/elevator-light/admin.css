@@ -211,6 +211,7 @@ div.inline-row i {
     margin-top: 0;
 }
 
+.configuration .tab-content .card.titlebox .card.titlebox,
 .configuration > .titlebox-content {
     margin-top: 20px;
 }
