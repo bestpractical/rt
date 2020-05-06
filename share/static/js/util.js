@@ -1001,3 +1001,18 @@ function toggle_bookmark(url, id) {
         jQuery('.toggle-bookmark-' + id).replaceWith(data);
     });
 }
+
+// Targeting IE11 in CSS isn't the cleanest or easiest to do.
+// If the browser is IE11, add a class to the body to easily detect.
+// This could easily be added to for other browser versions if need.
+jQuery(function() {
+    var ua = window.navigator.userAgent;
+    if (ua.indexOf('Trident/') > 0) {
+        var rv = ua.indexOf('rv:');
+        var version = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+
+        if (version === 11) {
+            document.body.classList.add('IE11');
+        }
+    }
+});

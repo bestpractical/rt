@@ -378,6 +378,19 @@ ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
     right: 5px;
 }
 
+/* IE11 only, top and child nav down and right arrows.
+   IE11 is a lot more specific about what it allows for svg url background definitions.
+   We know png works for IE11, so rather than change what works for every other browser, just use png where it's needed.
+   Both the pngs and specific definitions for the chevrons can be removed once IE11 is EOL.
+*/
+body.IE11 ul.toplevel.sf-menu > li > a.sf-with-ul:after {
+    background: url("../../../static/images/chevron-down.png") no-repeat center center;
+}
+
+body.IE11 ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
+    background: url("../../../static/images/chevron-right.png") no-repeat center center;
+}
+
 @media (max-width: 900px) {
     #topactions .create-wide   { display: none; }
     #topactions .create-medium { display: block; }
