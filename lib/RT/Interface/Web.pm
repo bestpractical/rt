@@ -4748,6 +4748,150 @@ sub UpdateDashboard {
     }
 }
 
+=head2 ProcessCustomDateRanges ARGSRef => ARGSREF
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessCustomDateRanges {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+    my $args_ref = $args{ARGSRef};
+
+    my $config  = RT->Config->Get('CustomDateRanges');
+    my $db_config = RT::Configuration->new( $session{CurrentUser} );
+    $db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
+
+    my $content;
+    $content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
+
+    my @results;
+    my %label = (
+        from          => 'From',                   # loc
+        to            => 'To',                     # loc
+        from_fallback => 'From Value if Unset',    # loc
+        to_fallback   => 'To Value if Unset',      # loc
+    );
+
+    my $need_save;
+    if ($content) {
+        my @current_names = sort keys %{ $content->{'RT::Ticket'} };
+        for my $id ( 0 .. $#current_names ) {
+            my $current_name = $current_names[$id];
+            my $spec         = $content->{'RT::Ticket'}{$current_name};
+            my $name         = $args_ref->{"$id-name"};
+
+            if ( $config && $config->{'RT::Ticket'}{$name} ) {
+                push @results, loc( "[_1] already exists", $name );
+                next;
+            }
+
+            if ( $args_ref->{"$id-Delete"} ) {
+                delete $content->{'RT::Ticket'}{$current_name};
+                push @results, loc( 'Deleted [_1]', $current_name );
+                $need_save ||= 1;
+                next;
+            }
+
+            my $updated;
+            for my $field (qw/from from_fallback to to_fallback/) {
+                next if ( $spec->{$field} // '' ) eq $args_ref->{"$id-$field"};
+                if ((   $args_ref->{"$id-$field"}
+                        && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args_ref->{"$id-$field"} )
+                    )
+                    || ( !$args_ref->{"$id-$field"} && $field =~ /fallback/ )
+                   )
+                {
+                    $spec->{$field} = $args_ref->{"$id-$field"};
+                    $updated ||= 1;
+                }
+                else {
+                    push @results, loc( 'Invalid [_1] for [_2]', loc( $label{$field} ), $name );
+                    next;
+                }
+            }
+
+            if ( $spec->{business_time} != $args_ref->{"$id-business_time"} ) {
+                $spec->{business_time} = $args_ref->{"$id-business_time"};
+                $updated ||= 1;
+            }
+
+            $content->{'RT::Ticket'}{$name} = $spec;
+            if ( $name ne $current_name ) {
+                delete $content->{'RT::Ticket'}{$current_name};
+                $updated ||= 1;
+            }
+
+            if ($updated) {
+                push @results, loc( 'Updated [_1]', $name );
+                $need_save ||= 1;
+            }
+        }
+    }
+
+    if ( $args_ref->{name} ) {
+        for my $field (qw/from from_fallback to to_fallback business_time/) {
+            $args_ref->{$field} = [ $args_ref->{$field} ] unless ref $args_ref->{$field};
+        }
+
+        my $i = 0;
+        for my $name ( @{ $args_ref->{name} } ) {
+            if ($name) {
+                if ( $config && $config->{'RT::Ticket'}{$name} || $content && $content->{'RT::Ticket'}{$name} ) {
+                    push @results, loc( "[_1] already exists", $name );
+                    $i++;
+                    next;
+                }
+            }
+            else {
+                $i++;
+                next;
+            }
+
+            my $spec = { business_time => $args_ref->{business_time}[$i] };
+            for my $field (qw/from from_fallback to to_fallback/) {
+                if ((   $args_ref->{$field}[$i]
+                        && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args_ref->{$field}[$i] )
+                    )
+                    || ( !$args_ref->{$field}[$i] && $field =~ /fallback/ )
+                   )
+                {
+                    $spec->{$field} = $args_ref->{$field}[$i];
+                }
+                else {
+                    push @results, loc( 'Invalid [_1] for [_2]', loc($field), $name );
+                    $i++;
+                    next;
+                }
+            }
+
+            $content->{'RT::Ticket'}{$name} = $spec;
+            push @results, loc( 'Created [_1]', $name );
+            $need_save ||= 1;
+            $i++;
+        }
+    }
+
+    if ($need_save) {
+        my ( $ret, $msg );
+        if ( $db_config->id ) {
+            ( $ret, $msg ) = $db_config->SetContent($content);
+        }
+        else {
+            ( $ret, $msg ) = $db_config->Create(Name => 'CustomDateRangesUI', Content => $content);
+        }
+
+        unless ($ret) {
+            RT->Logger->error("Couldn't save content: $msg");
+            push @results, $msg;
+        }
+    }
+    return @results;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
