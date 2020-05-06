@@ -99,6 +99,17 @@
             "OrderBy":"id",
             "Order":"DESC"
         }
+    },
+    {
+        "Name":"Test Search 2",
+        "Description":"Stalled Tickets Test 2",
+        "ObjectType":"RT::User",
+        "Object":"root",
+        "Content":{
+            "Query":"Status = 'stalled' AND Queue = 'Test Queue'",
+            "OrderBy":"id",
+            "Order":"DESC"
+        }
     }
     ],
     "Initial":[

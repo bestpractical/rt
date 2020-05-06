@@ -801,6 +801,11 @@ sub FindDependencies {
     $self->SUPER::FindDependencies($walker, $deps);
 
     $deps->Add( out => $self->PrincipalObj->Object );
+
+    if ($self->PrincipalObj->Object->Domain eq 'ACLEquivalence') {
+        $deps->Add( out => $self->PrincipalObj->Object->InstanceObj );
+    }
+
     $deps->Add( out => $self->Object );
 }
 

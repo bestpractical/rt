@@ -852,10 +852,10 @@ sub InsertData {
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets);
+           @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
            @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
-           @Catalogs, @Assets);
+           @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics);
 
     local $@;
 
@@ -906,6 +906,10 @@ sub InsertData {
                 Final           => \@Final,
                 Catalogs        => \@Catalogs,
                 Assets          => \@Assets,
+                Articles        => \@Articles,
+                OCFVs           => \@OCFVs,
+                Topics          => \@Topics,
+                ObjectTopics    => \@ObjectTopics,
             },
         ) or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:" . $@);
     }
@@ -928,7 +932,15 @@ sub InsertData {
     if ( @Groups ) {
         $RT::Logger->debug("Creating groups...");
         foreach my $item (@Groups) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Group', $item,
+                    { CustomFields => \@OCFVs, Attributes => \@Attributes } );
+                next;
+            }
+
             my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
+
             my $new_entry = RT::Group->new( RT->SystemUser );
             $item->{'Domain'} ||= 'UserDefined';
             my $member_of = delete $item->{'MemberOf'};
@@ -941,6 +953,8 @@ sub InsertData {
                 $RT::Logger->debug($return .".");
                 $_->{Object} = $new_entry for @{$attributes || []};
                 push @Attributes, @{$attributes || []};
+                $_->{Object} = $new_entry for @{$ocfvs || []};
+                push @OCFVs, @{$ocfvs || []};
             }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
@@ -985,11 +999,18 @@ sub InsertData {
     if ( @Users ) {
         $RT::Logger->debug("Creating users...");
         foreach my $item (@Users) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::User', $item,
+                    { CustomFields => \@OCFVs, Attributes => \@Attributes } );
+                next;
+            }
+
             my $member_of = delete $item->{'MemberOf'};
             if ( $item->{'Name'} eq 'root' && $root_password ) {
                 $item->{'Password'} = $root_password;
             }
             my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
 
             no warnings 'redefine';
             local *RT::User::CanonicalizeUserInfo = sub { 1 }
@@ -1003,6 +1024,8 @@ sub InsertData {
                 $RT::Logger->debug( $return ."." );
                 $_->{Object} = $new_entry for @{$attributes || []};
                 push @Attributes, @{$attributes || []};
+                $_->{Object} = $new_entry for @{$ocfvs || []};
+                push @OCFVs, @{$ocfvs || []};
             }
             if ( $member_of ) {
                 $member_of = [ $member_of ] unless ref $member_of eq 'ARRAY';
@@ -1038,37 +1061,18 @@ sub InsertData {
         }
         $RT::Logger->debug("done.");
     }
-    if ( @Members ) {
-        $RT::Logger->debug("Adding users and groups to groups...");
-        for my $item (@Members) {
-            my $group = RT::Group->new(RT->SystemUser);
-            $group->LoadUserDefinedGroup( delete $item->{Group} );
-            unless ($group->Id) {
-                RT->Logger->error("Unable to find group '$group' to add members to");
-                next;
-            }
-
-            my $class = delete $item->{Class} || 'RT::User';
-            my $member = $class->new( RT->SystemUser );
-            $item->{Domain} = 'UserDefined' if $member->isa("RT::Group");
-            $member->LoadByCols( %$item );
-            unless ($member->Id) {
-                RT->Logger->error("Unable to find $class '".($item->{id} || $item->{Name})."' to add to ".$group->Name);
-                next;
-            }
-
-            my ( $return, $msg) = $group->AddMember( $member->PrincipalObj->Id );
-            unless ( $return ) {
-                $RT::Logger->error( $msg );
-            } else {
-                $RT::Logger->debug( $return ."." );
-            }
-        }
-    }
     if ( @Queues ) {
         $RT::Logger->debug("Creating queues...");
         for my $item (@Queues) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Queue', $item,
+                    { CustomFields => \@OCFVs, Attributes => \@Attributes } );
+                next;
+            }
+
             my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
+
             my $new_entry = RT::Queue->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
@@ -1077,6 +1081,8 @@ sub InsertData {
                 $RT::Logger->debug( $return ."." );
                 $_->{Object} = $new_entry for @{$attributes || []};
                 push @Attributes, @{$attributes || []};
+                $_->{Object} = $new_entry for @{$ocfvs || []};
+                push @OCFVs, @{$ocfvs || []};
             }
         }
         $RT::Logger->debug("done.");
@@ -1084,25 +1090,32 @@ sub InsertData {
     if ( @Classes ) {
         $RT::Logger->debug("Creating classes...");
         for my $item (@Classes) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Class', $item, { Attributes => \@Attributes } );
+                next;
+            }
+
             my $attributes = delete $item->{ Attributes };
             # Back-compat for the old "Queue" argument
             if ( exists $item->{'Queue'} ) {
                 $item->{'ApplyTo'} = delete $item->{'Queue'};
             }
 
-            my $apply_to = delete $item->{'ApplyTo'};
+            my $apply_to = (delete $item->{'ApplyTo'}) || 0;
+            $apply_to = [ $apply_to ] unless ref $apply_to;
+
             my $new_entry = RT::Class->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
             } else {
                 $RT::Logger->debug( $return ."." );
-                if ( !$apply_to ) {
-                    ( $return, $msg) = $new_entry->AddToObject( RT::Queue->new(RT->SystemUser) );
-                    $RT::Logger->error( $msg ) unless $return;
-                } else {
-                    $apply_to = [ $apply_to ] unless ref $apply_to;
-                    for my $name ( @{ $apply_to } ) {
+
+                for my $name ( @{ $apply_to } ) {
+                    if ( !$name ) {
+                        ( $return, $msg) = $new_entry->AddToObject( RT::Queue->new(RT->SystemUser) );
+                        $RT::Logger->error( $msg ) unless $return;
+                    } else {
                         my $queue = RT::Queue->new( RT->SystemUser );
                         $queue->Load( $name );
                         if ( $queue->id ) {
@@ -1125,6 +1138,12 @@ sub InsertData {
         $RT::Logger->debug("Creating Catalogs...");
 
         for my $item (@Catalogs) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Catalog', $item, { Attributes => \@Attributes } );
+                next;
+            }
+
+            my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::Catalog->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
@@ -1133,14 +1152,79 @@ sub InsertData {
             else {
                 $RT::Logger->debug( $return ."." );
             }
+
+            $_->{Object} = $new_entry for @{$attributes || []};
+            push @Attributes, @{$attributes || []};
         }
 
         $RT::Logger->debug("done.");
     }
+
+    if ( @Topics ) {
+        $RT::Logger->debug("Creating Topics...");
+
+        for my $item ( @Topics ) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Topic', $item );
+                next;
+            }
+
+            my $obj = delete $item->{Object};
+
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+            elsif ( !ref $obj ) {
+                my $class = RT::Class->new(RT->SystemUser);
+                $class->Load($obj);
+                if ( $class->id ) {
+                    $obj = $class;
+                }
+            }
+
+            if ( !$obj ) {
+                $RT::Logger->error( "Invalid class $obj" );
+                next;
+            }
+
+            if ( $item->{Parent} && $item->{Parent} =~ /\D/ ) {
+                my $topic = RT::Topic->new( RT->SystemUser );
+                $topic->LoadByCols( Name => $item->{Parent} );
+                if ( $topic->id ) {
+                    $item->{Parent} = $topic->id;
+                }
+                else {
+                    $RT::Logger->error( "Invalid parent $item->{Parent}" );
+                    next;
+                }
+            }
+
+            my $new_entry  = RT::Topic->new( RT->SystemUser );
+            my ( $return, $msg ) = $new_entry->Create( %$item, ObjectType => ref $obj, ObjectId => $obj->id );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return . "." );
+            }
+        }
+
+        $RT::Logger->debug("done.");
+    }
+
     if ( @Assets ) {
         $RT::Logger->debug("Creating Assets...");
 
-        for my $item (@Catalogs) {
+        for my $item (@Assets) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Asset', $item,
+                    { CustomFields => \@OCFVs, Attributes => \@Attributes } );
+                next;
+            }
+
+            my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
+
             my $new_entry = RT::Asset->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
@@ -1149,6 +1233,45 @@ sub InsertData {
             else {
                 $RT::Logger->debug( $return ."." );
             }
+
+            $_->{Object} = $new_entry for @{$attributes || []};
+            push @Attributes, @{$attributes || []};
+            $_->{Object} = $new_entry for @{$ocfvs || []};
+            push @OCFVs, @{$ocfvs || []};
+        }
+
+        $RT::Logger->debug("done.");
+    }
+
+    if ( @Articles ) {
+        $RT::Logger->debug("Creating Articles...");
+
+        for my $item (@Articles) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Article', $item,
+                    { CustomFields => \@OCFVs, Attributes => \@Attributes, ObjectTopics => \@ObjectTopics } );
+                next;
+            }
+
+            my $attributes = delete $item->{ Attributes };
+            my $ocfvs = delete $item->{ CustomFields };
+            my $object_topics = delete $item->{ Topics };
+
+            my $new_entry = RT::Article->new(RT->SystemUser);
+            my ( $return, $msg ) = $new_entry->Create(%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
+
+            $_->{Object} = $new_entry for @{$attributes || []};
+            push @Attributes, @{$attributes || []};
+            $_->{Object} = $new_entry for @{$ocfvs || []};
+            push @OCFVs, @{$ocfvs || []};
+            $_->{Object} = $new_entry for @{$object_topics || []};
+            push @ObjectTopics, @{$object_topics || []};
         }
 
         $RT::Logger->debug("done.");
@@ -1157,7 +1280,14 @@ sub InsertData {
 
     if ( @CustomFields ) {
         $RT::Logger->debug("Creating custom fields...");
+        my @deferred_BasedOn;
+
         for my $item ( @CustomFields ) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::CustomField', $item, { Attributes => \@Attributes } );
+                next;
+            }
+
             my $attributes = delete $item->{ Attributes };
             my $new_entry = RT::CustomField->new( RT->SystemUser );
             my $values    = delete $item->{'Values'};
@@ -1184,8 +1314,7 @@ sub InsertData {
                     if ($ok) {
                         $item->{'BasedOn'} = $basedon->Id;
                     } else {
-                        $RT::Logger->error("Unable to load $item->{BasedOn} as a $item->{LookupType} CF.  Skipping BasedOn: $msg");
-                        delete $item->{'BasedOn'};
+                        push @deferred_BasedOn, [$new_entry, delete $item->{'BasedOn'}];
                     }
                 } else {
                     $RT::Logger->error("Unable to load CF $item->{BasedOn} because no LookupType was specified.  Skipping BasedOn");
@@ -1207,22 +1336,25 @@ sub InsertData {
 
             my $class = $new_entry->RecordClassFromLookupType;
             if ($class) {
-                if ($new_entry->IsOnlyGlobal and $apply_to) {
-                    $RT::Logger->warn("ApplyTo provided for global custom field ".$new_entry->Name );
-                    undef $apply_to;
-                }
-                if ( !$apply_to ) {
-                    # Apply to all by default
+                $apply_to = [ $apply_to ] unless ref $apply_to;
+                for my $name ( @{ $apply_to } ) {
                     my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
-                    ( $return, $msg) = $ocf->Create( CustomField => $new_entry->Id );
-                    $RT::Logger->error( $msg ) unless $return and $ocf->Id;
-                } else {
-                    $apply_to = [ $apply_to ] unless ref $apply_to;
-                    for my $name ( @{ $apply_to } ) {
+
+                    # global CF
+                    if (!$name) {
+                        ( $return, $msg ) = $ocf->Create(
+                            CustomField => $new_entry->Id,
+                        );
+                        $RT::Logger->error( $msg ) unless $return and $ocf->Id;
+                    }
+                    else {
+                        if ($new_entry->IsOnlyGlobal) {
+                            $RT::Logger->warn("ApplyTo '$name' provided for global custom field ".$new_entry->Name );
+                        }
+
                         my $obj = $class->new(RT->SystemUser);
                         $obj->Load($name);
                         if ( $obj->Id ) {
-                            my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
                             ( $return, $msg ) = $ocf->Create(
                                 CustomField => $new_entry->Id,
                                 ObjectId    => $obj->Id,
@@ -1239,18 +1371,40 @@ sub InsertData {
             push @Attributes, @{$attributes || []};
         }
 
+        for ( @deferred_BasedOn ) {
+            my ($cf, $name) = @$_;
+            my $basedon = RT::CustomField->new($RT::SystemUser);
+            my ($ok, $msg ) = $basedon->LoadByCols(
+                Name => $name,
+                LookupType => $cf->LookupType,
+                Disabled => 0,
+            );
+            if ($ok) {
+                ($ok, $msg) = $cf->SetBasedOn($basedon->Id);
+                $RT::Logger->error("Unable to set $name as a " . $cf->LookupType . " BasedOn CF: $msg") if !$ok;
+            }
+            else {
+                $RT::Logger->error("Unable to load $name as a " . $cf->LookupType . " CF.  Skipping BasedOn: $msg");
+            }
+        }
+
         $RT::Logger->debug("done.");
     }
 
     if ( @CustomRoles ) {
         $RT::Logger->debug("Creating custom roles...");
         for my $item ( @CustomRoles ) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::CustomRole', $item, { Attributes => \@Attributes } );
+                next;
+            }
+
             my $attributes = delete $item->{ Attributes };
             my $apply_to = delete $item->{'ApplyTo'};
 
             my $new_entry = RT::CustomRole->new( RT->SystemUser );
 
-            my ( $ok, $msg ) = $new_entry->Create(%$item);
+            my ( $ok, $msg ) = $new_entry->Create(%$item, Disabled => 0);
             if (!$ok) {
                 $RT::Logger->error($msg);
                 next;
@@ -1266,14 +1420,77 @@ sub InsertData {
 
             $_->{Object} = $new_entry for @{$attributes || []};
             push @Attributes, @{$attributes || []};
+
+            if ( $item->{Disabled} ) {
+                ( $ok, $msg ) = $new_entry->SetDisabled( $item->{Disabled} );
+                if ( !$ok ) {
+                    $RT::Logger->error( "Couldn't set Disabled to custom role $item->{Name}: $msg" );
+                }
+            }
         }
 
         $RT::Logger->debug("done.");
     }
 
+    if ( @Members ) {
+        $RT::Logger->debug("Adding users and groups to groups...");
+        for my $item (@Members) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::GroupMember', $item );
+                next;
+            }
+
+            my $name = delete $item->{Group};
+            my $domain = delete $item->{GroupDomain} || 'UserDefined';
+            my $instance = delete $item->{GroupInstance};
+
+            if ($domain =~ /^(.+)-Role$/) {
+                 my $class = $1;
+                 if (!$class->DOES("RT::Record::Role::Roles")) {
+                     RT->Logger->error("Invalid group domain '$domain' for group $name; skipping adding membership");
+                     next;
+                 }
+                 my $object = $class->new(RT->SystemUser);
+                 $object->Load($instance);
+                 $instance = $object->Id;
+            }
+
+            my $group = RT::Group->new(RT->SystemUser);
+            $group->LoadByCols(
+                $name =~ /\D/ ? ( Name => $name ) : ( id => $name ),
+                Domain => $domain,
+                (defined $instance ? (Instance => $instance) : ()),
+            );
+            unless ($group->Id) {
+                RT->Logger->error("Unable to find $domain group '$name' to add members to");
+                next;
+            }
+
+            my $class = delete $item->{Class} || 'RT::User';
+            my $member = $class->new( RT->SystemUser );
+            $item->{Domain} = 'UserDefined' if $member->isa("RT::Group");
+            $member->LoadByCols( %$item );
+            unless ($member->Id) {
+                RT->Logger->error("Unable to find $class '".($item->{id} || $item->{Name})."' to add to ".$group->Name);
+                next;
+            }
+
+            my ( $return, $msg) = $group->AddMember( $member->PrincipalObj->Id );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            } else {
+                $RT::Logger->debug( $return ."." );
+            }
+        }
+    }
+
     if ( @ACL ) {
         $RT::Logger->debug("Creating ACL...");
         for my $item (@ACL) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::ACE', $item );
+                next;
+            }
 
             my ($princ, $object);
 
@@ -1294,6 +1511,14 @@ sub InsertData {
                 my ($ok, $msg) = $object->Load( $item->{'Queue'} );
                 unless ( $ok ) {
                     RT->Logger->error("Unable to load queue ".$item->{Queue}.": $msg");
+                    next;
+                }
+            } elsif ( $item->{'Group'} || ($item->{ObjectType}||'') eq 'RT::Group') {
+                my $name = $item->{'Group'} || $item->{ObjectId};
+                $object = RT::Group->new(RT->SystemUser);
+                my ($ok, $msg) = $object->LoadUserDefinedGroup($name);
+                unless ( $ok ) {
+                    RT->Logger->error("Unable to load user-defined group $name: $msg");
                     next;
                 }
             } elsif ( $item->{ObjectType} and $item->{ObjectId}) {
@@ -1322,9 +1547,7 @@ sub InsertData {
                   $princ->LoadSystemInternalGroup( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
                   $princ->LoadRoleGroup( Object => RT->System, Name => $item->{'GroupType'} );
-                } elsif ( $item->{'GroupDomain'} eq 'RT::Queue-Role' &&
-                          $item->{'Queue'} )
-                {
+                } elsif ( $item->{'GroupDomain'} =~ /-Role$/ ) {
                   $princ->LoadRoleGroup( Object => $object, Name => $item->{'GroupType'} );
                 } else {
                   $princ->Load( $item->{'GroupId'} );
@@ -1341,6 +1564,8 @@ sub InsertData {
                     next;
                 }
             }
+
+            $item->{Right} = delete $item->{RightName} if $item->{RightName};
 
             # Grant it
             my @rights = ref($item->{'Right'}) eq 'ARRAY' ? @{$item->{'Right'}} : $item->{'Right'};
@@ -1364,6 +1589,11 @@ sub InsertData {
         $RT::Logger->debug("Creating ScripActions...");
 
         for my $item (@ScripActions) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::ScripAction', $item );
+                next;
+            }
+
             my $new_entry = RT::ScripAction->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
@@ -1381,6 +1611,11 @@ sub InsertData {
         $RT::Logger->debug("Creating ScripConditions...");
 
         for my $item (@ScripConditions) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::ScripCondition', $item );
+                next;
+            }
+
             my $new_entry = RT::ScripCondition->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
@@ -1398,6 +1633,11 @@ sub InsertData {
         $RT::Logger->debug("Creating templates...");
 
         for my $item (@Templates) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Template', $item );
+                next;
+            }
+
             my $new_entry = RT::Template->new(RT->SystemUser);
             my ( $return, $msg ) = $new_entry->Create(%$item);
             unless ( $return ) {
@@ -1413,12 +1653,37 @@ sub InsertData {
         $RT::Logger->debug("Creating scrips...");
 
         for my $item (@Scrips) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Scrip', $item );
+                next;
+            }
+
             my $new_entry = RT::Scrip->new(RT->SystemUser);
 
-            my @queues = ref $item->{'Queue'} eq 'ARRAY'? @{ $item->{'Queue'} }: $item->{'Queue'} || 0;
-            push @queues, 0 unless @queues; # add global queue at least
+            my @queues = ref $item->{'Queue'} eq 'ARRAY'
+                       ? @{ $item->{'Queue'} }
+                       : ($item->{'Queue'})
+                if $item->{'Queue'};
 
-            my ( $return, $msg ) = $new_entry->Create( %$item, Queue => shift @queues );
+            if (!@queues) {
+                push @queues, 0 unless $item->{'NoAutoGlobal'};
+            }
+
+            my $remove_global = (delete $item->{'NoAutoGlobal'}) && !@queues;
+
+            my %args = %$item;
+            $args{Queue} = shift @queues;
+            if (ref($args{Queue})) {
+                # transform ScripObject->Create API into Scrip->Create API
+                $args{Queue}{Queue} = delete $args{Queue}{ObjectId};
+                $args{Queue}{ObjectSortOrder} = delete $args{Queue}{SortOrder};
+                %args = (
+                    %args,
+                    %{ $args{Queue} },
+                );
+            }
+
+            my ( $return, $msg ) = $new_entry->Create(%args);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
                 next;
@@ -1426,29 +1691,151 @@ sub InsertData {
             else {
                 $RT::Logger->debug( $return ."." );
             }
+
+            if ($remove_global) {
+                my ($return, $msg) = $new_entry->RemoveFromObject(ObjectId => 0);
+                $RT::Logger->error( "Couldn't unapply scrip globally: $msg" )
+                    unless $return;
+            }
+
             foreach my $q ( @queues ) {
-                my ($return, $msg) = $new_entry->AddToObject(
-                    ObjectId => $q,
-                    Stage    => $item->{'Stage'},
+                my %args = (
+                    Stage => $item->{'Stage'},
+                    (ref($q) ? %$q : (ObjectId => $q)),
                 );
-                $RT::Logger->error( "Couldn't apply scrip to $q: $msg" )
+
+                my ($return, $msg) = $new_entry->AddToObject(%args);
+
+                $RT::Logger->error( "Couldn't apply scrip to $args{ObjectId}: $msg" )
                     unless $return;
             }
         }
         $RT::Logger->debug("done.");
     }
-    if ( @Attributes ) {
-        $RT::Logger->debug("Creating attributes...");
-        my $sys = RT::System->new(RT->SystemUser);
 
-        for my $item (@Attributes) {
+    if ( @ObjectTopics ) {
+        $RT::Logger->debug( "Creating ObjectTopics..." );
+
+        for my $item ( @ObjectTopics ) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::ObjectTopic', $item );
+                next;
+            }
+
             my $obj = delete $item->{Object};
 
             if ( ref $obj eq 'CODE' ) {
                 $obj = $obj->();
             }
 
+            my $topic = RT::Topic->new( RT->SystemUser );
+            if ( $item->{Topic} =~ /\D/ ) {
+                $topic->LoadByCols( Name => $item->{Topic} );
+            }
+            else {
+                $topic->Load( $item->{Topic} );
+            }
+
+            if ( !$topic->id ) {
+                $RT::Logger->error( "Couldn't load topic $item->{Topic}" );
+                next;
+            }
+
+            $item->{Topic} = $topic->id;
+
+            my ( $return, $msg ) = $obj->AddTopic( %$item );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return . "." );
+            }
+
+        }
+
+        $RT::Logger->debug( "done." );
+    }
+
+    if ( @OCFVs ) {
+        $RT::Logger->debug("Creating ObjectCustomFieldValues...");
+
+        for my $item (@OCFVs) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::ObjectCustomFieldValue', $item );
+                next;
+            }
+
+            my $obj = delete $item->{Object};
+
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+
+            $item->{Field} = delete $item->{CustomField} if $item->{CustomField};
+            $item->{Value} = delete $item->{Content} if $item->{Content};
+
+            $self->_CanonilizeObjectCustomFieldValue( $item );
+
+            my ( $return, $msg ) = $obj->AddCustomFieldValue (%$item);
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
+        }
+        $RT::Logger->debug("done.");
+    }
+
+    if ( @Attributes ) {
+        $RT::Logger->debug("Creating attributes...");
+        my $sys = RT::System->new(RT->SystemUser);
+
+        my %order = (
+            'Dashboard'             => 1,
+            'HomepageSettings'      => 1,
+            'Pref-DashboardsInMenu' => 2,
+            'Subscription'          => 2,
+        );
+        for my $item ( sort { ( $order{ $a->{Name} } || 0 ) <=> ( $order{ $b->{Name} } || 0 ) } @Attributes ) {
+            if ( $item->{_Original} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Attribute', $item );
+                next;
+            }
+
+            my $obj = delete $item->{Object};
+
+            if ( ref $obj eq 'CODE' ) {
+                $obj = $obj->();
+            }
+            elsif ( $obj && !ref $obj ) {
+                if ( $obj eq 'RT::System' ) {
+                    $obj = RT->System;
+                }
+                elsif ( my $class = delete $item->{ObjectType} ) {
+                    my $id = $obj;
+                    $obj = $class->new( RT->SystemUser );
+                    if ( $class eq 'RT::Group') {
+                        $obj->LoadUserDefinedGroup( $id );
+                    }
+                    else {
+                        $obj->Load( $id );
+                    }
+                    if ( !$obj->id ) {
+                        $RT::Logger->error( "Failed to load object $class-$id" );
+                        next;
+                    }
+                }
+                else {
+                    $RT::Logger->error( "Invalid object $obj" );
+                    next;
+                }
+            }
+
             $obj ||= $sys;
+
+            $self->_CanonilizeAttributeContent($item);
+
             my ( $return, $msg ) = $obj->AddAttribute (%$item);
             unless ( $return ) {
                 $RT::Logger->error( $msg );
@@ -1976,6 +2363,520 @@ sub _TableNames {
     }
 
     return @res;
+}
+
+sub _UpdateOrDeleteObject {
+    my $self = shift;
+    my $class  = shift;
+    my $values = shift;
+    my $refs   = shift;
+
+    if ( delete $values->{_Updated} ) {
+        return $self->_UpdateObject( $class, $values, $refs );
+    }
+    elsif ( delete $values->{_Deleted} ) {
+        return $self->_DeleteObject( $class, $values, $refs );
+    }
+    else {
+        RT->Logger->error( "Unknown action in $class" );
+        return;
+    }
+}
+
+sub _UpdateObject {
+    my $self   = shift;
+    my $class  = shift;
+    my $values = shift;
+    my $refs   = shift;
+
+    my $object = $self->_LoadObject($class, $values);
+    return unless $object;
+
+    my $original = delete $values->{_Original};
+
+    for my $type ( qw/Attributes CustomFields Topics/ ) {
+        if ( my $items = delete $values->{$type} ) {
+            if ( $type eq 'Attributes' ) {
+                for my $item ( @$items ) {
+                    my $attributes = $object->Attributes;
+                    $attributes->Limit( FIELD => 'Name',        VALUE => $item->{Name} );
+                    $attributes->Limit( FIELD => 'Description', VALUE => $item->{Description} );
+                    if ( my $attribute = $attributes->First ) {
+                        $item->{_Updated}  = 1;
+                        $item->{_Original} = {
+                            Name        => $item->{Name},
+                            Description => $item->{Description},
+                            ObjectType  => $class,
+                            ObjectId    => $object->Name,
+                        };
+                    }
+                }
+            }
+            elsif ( $type eq 'CustomFields' ) {
+                my @new_items;
+                my ( %old, %new );
+
+                for my $item ( @$items ) {
+                    $self->_CanonilizeObjectCustomFieldValue( $item );
+                    push @{ $new{ $item->{CustomField} } }, $item;
+                }
+
+                for my $name ( keys %new ) {
+                    my $cf = $object->LoadCustomFieldByIdentifier( $name );
+                    if ( $cf->id ) {
+                        $old{$name} = $object->CustomFieldValues( $cf );
+                    }
+                }
+
+                for my $item ( @$items ) {
+                    next
+                      if $old{ $item->{CustomField} }
+                      && $old{ $item->{CustomField} }->HasEntry( $item->{Content}, $item->{LargeContent} );
+                    push @new_items, $item;
+                }
+
+                for my $name ( keys %old ) {
+                    my $ocfvs = $old{$name};
+                    while ( my $ocfv = $ocfvs->Next ) {
+                        next if grep {
+                            ( $ocfv->Content // '' ) eq ( $_->{Content} // '' )
+                              && ( $ocfv->LargeContent // '' ) eq ( $_->{LargeContent} // '' )
+                        } @{ $new{$name} };
+
+                        my ( $ret, $msg ) = $ocfv->Delete();
+                        unless ( $ret ) {
+                            RT->Logger->error( "Couldn't delete ocfv#" . $ocfv->id . ": $msg" );
+                        }
+                    }
+                }
+                @$items = @new_items;
+            }
+            elsif ( $type eq 'Topics' ) {
+                my @new_items;
+                my %old = map { $_->Topic->Name => 1 } @{ $object->Topics->ItemsArrayRef || [] };
+                my %new = map { $_->{Topic} => 1 } @$items;
+
+                for my $item ( @$items ) {
+                    next if $old{ $item->{Topic} };
+                    push @new_items, $item;
+                }
+
+                for my $name ( keys %old ) {
+                    next if $new{$name};
+
+                    my $topic = RT::Topic->new( RT->SystemUser );
+                    $topic->Load( $name );
+                    if ( $topic->id ) {
+                        my ( $ret, $msg ) = $object->DeleteTopic( Topic => $topic->id );
+                        unless ( $ret ) {
+                            RT->Logger->error(
+                                "Couldn't delete topic#" . $topic->id . "from object#" . $object->id . ": $msg" );
+                        }
+                    }
+                    else {
+                        RT->Logger->error( "Couldn't load topic $name" );
+                    }
+                }
+
+                @$items = @new_items;
+            }
+
+            for my $item ( @$items ) {
+                $item->{Object} = $object;
+            }
+
+            if ( $refs->{$type} ) {
+                push @{ $refs->{$type} }, @$items;
+            }
+            else {
+                RT->Logger->error( "$class doesn't support $type in initialdata" );
+            }
+        }
+    }
+
+    for my $field ( sort { $a eq 'ApplyTo' || $b eq 'ApplyTo' ? 1 : 0 } keys %$values ) {
+
+        if ( $class eq 'RT::Attribute' ) {
+            if ( $field eq 'Content' ) {
+                $self->_CanonilizeAttributeContent( $values );
+            }
+        }
+
+        my $value = $values->{$field};
+
+        if ( $class eq 'RT::CustomField' ) {
+            if ( $field eq 'ApplyTo' ) {
+                my %current;
+                my %new;
+
+                my $ocfs = RT::ObjectCustomFields->new(RT->SystemUser);
+                $ocfs->LimitToCustomField($object->id);
+
+                while ( my $ocf = $ocfs->Next ) {
+                    if ( $ocf->ObjectId == 0 ) {
+                        $current{0} = 1;
+                    }
+                    else {
+                        my $added = $object->RecordClassFromLookupType->new( RT->SystemUser );
+                        $current{$ocf->ObjectId} = 1;
+                    }
+                }
+
+                for my $item ( @{ $value || [] } ) {
+                    if ( $item eq 0 ) {
+                        $new{0} = 1;
+                    }
+                    else {
+                        my $added = $object->RecordClassFromLookupType->new( RT->SystemUser );
+                        $added->Load($item);
+                        if ( $added->id ) {
+                            $new{$added->id} = 1;
+                        }
+                    }
+                }
+
+                for my $id ( keys %current ) {
+                    next if $new{$id};
+                    my $ocf = RT::ObjectCustomField->new(RT->SystemUser);
+                    $ocf->LoadByCols( CustomField => $object->id, ObjectId => $id );
+                    if ( $ocf->id ) {
+                        my ( $ret, $msg) = $ocf->Delete;
+                        if ( !$ret ) {
+                            RT->Logger->error( "Couldn't delete ObjectCustomField #" . $ocf->id . ": $msg" );
+                        }
+                    }
+                }
+
+                for my $id ( keys %new ) {
+                    next if $current{$id};
+                    my $ocf = RT::ObjectCustomField->new( RT->SystemUser );
+                    $ocf->LoadByCols( CustomField => $object->id, ObjectId => $id );
+                    if ( !$ocf->id ) {
+                        my ( $ret, $msg ) = $ocf->Create( CustomField => $object->id, ObjectId => $id );
+                        if ( !$ret ) {
+                            RT->Logger->error( "Couldn't create ObjectCustomField for CustomField #"
+                                  . $object->id
+                                  . " and ObjectId #$id: $msg" );
+                        }
+                    }
+                }
+                next;
+            }
+            elsif ( $field eq 'Values' ) {
+                my %current;
+                my %new;
+
+                my $cfvs = $object->Values;
+
+                # Only support core cfvs for now
+                next unless $cfvs->isa( 'RT::CustomFieldValues' );
+
+                while ( my $cfv = $cfvs->Next ) {
+                    $current{ $cfv->Name } = $cfv;
+                }
+
+                for my $item ( @{ $value || [] } ) {
+                    $new{ $item->{Name} } = $item;
+                }
+
+                for my $name ( keys %current ) {
+                    if ( $new{$name} ) {
+                        for my $column ( qw/Description Category SortOrder/ ) {
+                            if ( ( $current{$name}->$column // '' ) ne ( $new{$name}{$column} // '' ) ) {
+                                my ( $ret, $msg ) =
+                                  $current{$name}->_Set( Field => $column, Value => $new{$name}{$column} );
+                                unless ( $ret ) {
+                                    RT->Logger->error( "Couldn't update CustomFieldValue#"
+                                          . $current{$name}->id
+                                          . " $column to $new{$name}{$column}: $msg" );
+                                    next;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        my ( $ret, $msg ) = $current{$name}->Delete;
+                        if ( !$ret ) {
+                            RT->Logger->error( "Couldn't delete CustomFieldValue #" . $current{$name}->id . ": $msg" );
+                        }
+                    }
+                }
+
+                for my $name ( keys %new ) {
+                    next if $current{$name};
+                    my ( $ret, $msg ) =
+                      $object->AddValue( map { $_ => $new{$name}{$_} } qw/Name Description Category SortOrder/ );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't create CustomFieldValue $new{$name}{Name} to CustomField #"
+                              . $object->id
+                              . ": $msg" );
+                    }
+                }
+                next;
+            }
+        }
+
+        next unless $object->can( $field ) || $object->_Accessible( $field, 'read' );
+        my $old_value = $object->can( $field ) ? $object->$field : $object->_Value( $field );
+
+        if ( ( $old_value // '' ) ne ( $values->{$field} // '' ) ) {
+            my $set_method = "Set$field";
+            if ( $object->can( $set_method ) || $object->_Accessible( $field, 'write' ) ) {
+                my ( $ret, $msg );
+                if ( $object->can( $set_method ) ) {
+                    ( $ret, $msg ) = $object->$set_method( $values->{$field} );
+                }
+                elsif ( $object->_Accessible( $field, 'write' ) ) {
+                    ( $ret, $msg ) = $object->_Set( Field => $field, Value => $value );
+                }
+                unless ( $ret ) {
+                    RT->Logger->error( "Couldn't update $class#" . $object->id . " $field to $value: $msg" );
+                    next;
+                }
+            }
+            else {
+                RT->Logger->error( "Couldn't update $field for $class" );
+            }
+        }
+    }
+}
+
+sub _DeleteObject {
+    my $self   = shift;
+    my $class  = shift;
+    my $values = shift;
+
+    my $object = $self->_LoadObject( $class, $values );
+    return unless $object;
+    my ( $return, $msg ) = $object->Delete();
+    unless ( $return ) {
+        $RT::Logger->error( $msg );
+    }
+}
+
+sub _LoadObject {
+    my $self   = shift;
+    my $class  = shift;
+    my $values = shift;
+
+    if ( $class eq 'RT::System' ) {
+        return RT->System;
+    }
+
+    my $object = $class->new( RT->SystemUser );
+
+    if ( !ref $values ) {
+        if ( $class eq 'RT::Group' ) {
+            $object->LoadUserDefinedGroup( $values );
+        }
+        else {
+            $object->Load( $values );
+        }
+        return $object->id ? $object : undef;
+    }
+
+    if ( $class eq 'RT::ACE' ) {
+        my ( $principal_id, $principal_type );
+        if ( $values->{_Original}{UserId} ) {
+            my $user = RT::User->new(RT->SystemUser);
+            $user->Load( $values->{_Original}{UserId} );
+            if ( $user->id ) {
+                $principal_id = $user->PrincipalId;
+                $principal_type = 'User';
+            }
+            else {
+                RT->Logger->error( "Couldn't load user $values->{_Original}{UserId}" );
+                return;
+            }
+        }
+        elsif ( $values->{_Original}{GroupId} ) {
+            my $group = RT::Group->new(RT->SystemUser);
+            $group->LoadByCols( Domain => $values->{_Original}{GroupDomain}, Name => $values->{_Original}{GroupId} );
+            if ( $group->id ) {
+                $principal_id = $group->PrincipalId;
+                $principal_type = 'Group';
+            }
+            else {
+                RT->Logger->error( "Couldn't load group $values->{_Original}{UserId}" );
+                return;
+            }
+        }
+        else {
+            RT->Logger->error( "Invalid principal type in $class" );
+            return;
+        }
+
+        $object->LoadByValues(
+            PrincipalId   => $principal_id,
+            PrincipalType => $principal_type,
+            map { $_ => $values->{_Original}{$_} } grep { $values->{_Original}{$_} } qw/ObjectType ObjectId RightName/,
+        );
+    }
+    elsif ( $class eq 'RT::GroupMember' ) {
+        my $group = RT::Group->new( RT->SystemUser );
+        $group->LoadUserDefinedGroup( $values->{_Original}{Group} );
+        unless ( $group->id ) {
+            RT->Logger->error( "Couldn't load group $values->{_Original}{Group}" );
+            return;
+        }
+
+        my $member;
+        if ( $values->{_Original}{Class} eq 'RT::User' ) {
+            $member = RT::User->new( RT->SystemUser );
+            $member->Load( $values->{_Original}{Name} );
+            unless ( $member->id ) {
+                RT->Logger->error( "Couldn't load user $values->{_Original}{Name}" );
+                return;
+            }
+        }
+        else {
+            $member = RT::Group->new( RT->SystemUser );
+            $member->LoadUserDefinedGroup( $values->{_Original}{Name} );
+            unless ( $member->id ) {
+                RT->Logger->error( "Couldn't load group $values->{_Original}{Name}" );
+                return;
+            }
+        }
+        $object->LoadByCols( Group => $group->PrincipalObj, Member => $member->PrincipalObj );
+    }
+    elsif ( $class eq 'RT::Template' ) {
+        $object->LoadByName( Name => $values->{_Original}{Name}, Queue => $values->{_Original}{Queue} );
+    }
+    elsif ( $class eq 'RT::Scrip' ) {
+        $object->LoadByCols( Description => $values->{_Original}{Description} );
+    }
+    else {
+        if ( $class eq 'RT::Group' ) {
+            $object->LoadByCols( Domain => $values->{Domain}, Name => $values->{_Original}{Name} );
+        }
+        elsif ( $class eq 'RT::Attribute' ) {
+            my $obj = $values->{_Original}{Object};
+            if ( $obj eq 'RT::System' ) {
+                $obj = RT->System;
+            }
+            elsif ( my $class = $values->{_Original}{ObjectType} ) {
+                my $id = $obj;
+                $obj = $class->new( RT->SystemUser );
+                if ( $class eq 'RT::Group' ) {
+                    $obj->LoadUserDefinedGroup( $id );
+                }
+                else {
+                    $obj->Load( $id );
+                }
+                if ( !$obj->id ) {
+                    $RT::Logger->error( "Failed to load object $class-$id" );
+                    return;
+                }
+            }
+            else {
+                $RT::Logger->error( "Invalid object $obj" );
+                return;
+            }
+            my $attributes = $obj->Attributes;
+            $attributes->Limit( FIELD => 'Name', VALUE => $values->{_Original}{Name} );
+            $attributes->Limit( FIELD => 'Description', VALUE => $values->{_Original}{Description} );
+            if ( my $attribute = $attributes->First ) {
+                $object = $attribute;
+            }
+        }
+        else {
+            $object->Load( $values->{_Original}{Name} );
+        }
+    }
+
+    return $object->id ? $object : undef;
+}
+
+sub _CanonilizeAttributeContent {
+    my $self = shift;
+    my $item = shift or return;
+    if ( $item->{Name} =~ /HomepageSettings$/ ) {
+        my $content = $item->{Content};
+        for my $type ( qw/body sidebar/ ) {
+            if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
+                for my $entry ( @{ $content->{$type} } ) {
+                    if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+                        if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                            my $attributes = $object->Attributes;
+                            $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+                            $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                            if ( my $attribute = $attributes->First ) {
+                                $entry->{name} =
+                                  ref( $object ) . '-' . $object->Id . '-SavedSearch-' . $attribute->Id;
+                            }
+                        }
+                        delete $entry->{$_} for qw/ObjectType ObjectId Description/;
+                    }
+                }
+            }
+        }
+    }
+    elsif ( $item->{Name} eq 'Dashboard' ) {
+        my $content = $item->{Content}{Panes};
+        for my $type ( qw/body sidebar/ ) {
+            if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
+                for my $entry ( @{ $content->{$type} } ) {
+                    if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+                        if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                            my $attributes = $object->Attributes;
+                            $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+                            $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                            if ( my $attribute = $attributes->First ) {
+                                $entry->{id} = $attribute->id;
+                                $entry->{privacy} = ref( $object ) . '-' . $object->Id;
+                            }
+                        }
+                        delete $entry->{$_} for qw/ObjectType ObjectId Description/;
+                    }
+                }
+            }
+        }
+    }
+    elsif ( $item->{Name} eq 'Pref-DashboardsInMenu' ) {
+        my @dashboards;
+        for my $entry ( @{ $item->{Content}{dashboards} } ) {
+            if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+                if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                    my $attributes = $object->Attributes;
+                    $attributes->Limit( FIELD => 'Name', VALUE => 'Dashboard' );
+                    $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                    if ( my $attribute = $attributes->First ) {
+                        push @dashboards, $attribute->id;
+                    }
+                }
+            }
+        }
+        $item->{Content}{dashboards} = \@dashboards;
+    }
+    elsif ( $item->{Name} eq 'Subscription' ) {
+        my $entry = $item->{Content}{DashboardId};
+        if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+            if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                my $attributes = $object->Attributes;
+                $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
+                $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                if ( my $attribute = $attributes->First ) {
+                    $item->{Content}{DashboardId} = $attribute->Id;
+                    $item->{Description} = 'Subscription to dashboard ' . $attribute->Id;
+                }
+            }
+        }
+    }
+}
+
+sub _CanonilizeObjectCustomFieldValue {
+    my $self = shift;
+    my $item = shift;
+    if ( $item->{LargeContent} ) {
+        if ( ( $item->{ContentEncoding} // '' ) eq 'base64' ) {
+            $item->{LargeContent} = MIME::Base64::decode_base64( $item->{LargeContent} );
+            delete $item->{ContentEncoding};
+        }
+        else {
+            $item->{LargeContent} = Encode::encode( 'UTF-8', $item->{'LargeContent'} )
+              if utf8::is_utf8( $item->{LargeContent} );
+        }
+    }
 }
 
 __PACKAGE__->FinalizeDatabaseType;

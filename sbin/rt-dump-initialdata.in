@@ -1,0 +1,500 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+# fix lib paths, some may be relative
+BEGIN {
+    require File::Spec;
+    my @libs = ("@RT_LIB_PATH@", "@LOCAL_LIB_PATH@");
+    my $bin_path;
+
+    for my $lib (@libs) {
+        unless ( File::Spec->file_name_is_absolute($lib) ) {
+            unless ($bin_path) {
+                if ( File::Spec->file_name_is_absolute(__FILE__) ) {
+                    $bin_path = ( File::Spec->splitpath(__FILE__) )[1];
+                }
+                else {
+                    require FindBin;
+                    no warnings "once";
+                    $bin_path = $FindBin::Bin;
+                }
+            }
+            $lib = File::Spec->catfile( $bin_path, File::Spec->updir, $lib );
+        }
+        unshift @INC, $lib;
+    }
+
+}
+
+use RT;
+RT::LoadConfig();
+RT::Init();
+
+@RT::Record::ISA = qw( DBIx::SearchBuilder::Record RT::Base );
+
+use RT::Migrate;
+use RT::Migrate::Serializer::JSON;
+use Getopt::Long;
+use Pod::Usage qw//;
+use Time::HiRes qw//;
+
+my %OPT;
+GetOptions(
+    \%OPT,
+    "help|?",
+    "verbose|v!",
+    "quiet|q!",
+
+    "directory|d=s",
+    "force|f!",
+    "size|s=i",
+
+    "users!",
+    "groups!",
+    "deleted!",
+
+    "scrips!",
+    "acls!",
+    "assets!",
+
+    "sync",
+
+    "gc=i",
+    "page=i",
+
+    "base=s",
+) or Pod::Usage::pod2usage();
+
+Pod::Usage::pod2usage(-verbose => 1) if $OPT{help};
+
+my %args;
+$args{Directory}   = $OPT{directory};
+$args{Force}       = $OPT{force};
+$args{MaxFileSize} = $OPT{size} if $OPT{size};
+
+$args{AllUsers}       = $OPT{users}    if defined $OPT{users};
+$args{AllGroups}      = $OPT{groups}   if defined $OPT{groups};
+$args{FollowDeleted}  = $OPT{deleted}  if defined $OPT{deleted};
+$args{FollowDisabled} = $OPT{disabled} if defined $OPT{disabled};
+
+$args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
+$args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
+
+$args{FollowAssets} = $OPT{assets} if defined $OPT{assets};
+
+$args{Sync} = 1 if $OPT{sync} || $OPT{base};
+
+$args{GC}   = defined $OPT{gc}   ? $OPT{gc}   : 5000;
+$args{Page} = defined $OPT{page} ? $OPT{page} : 100;
+
+my $walker;
+
+my $gnuplot = `which gnuplot`;
+my $msg = "";
+if (-t STDOUT and not $OPT{verbose} and not $OPT{quiet}) {
+    $args{Progress} = RT::Migrate::progress(
+        top    => \&gnuplot,
+        bottom => sub { print "\n$msg"; $msg = ""; },
+        counts => sub { $walker->ObjectCount },
+        bars   => [
+            qw/Queue User Group GroupMember Attribute CustomField CustomFieldValue
+              ObjectCustomField ObjectCustomFieldValue Catalog Asset ACE CustomRole
+              Class Article ScripAction ScripCondition Template Scrip/
+        ],
+        max => { estimate() },
+    );
+    $args{MessageHandler} = sub {
+        print "\r", " "x60, "\r", $_[-1]; $msg = $_[-1];
+    };
+    $args{Verbose}  = 0;
+}
+$args{Verbose} = 0 if $OPT{quiet};
+
+
+$walker = RT::Migrate::Serializer::JSON->new( FollowTickets => 0, FollowTransactions => 0, %args );
+
+my $log = RT::Migrate::setup_logging( $walker->{Directory} => 'initialdata.log' );
+print "Logging warnings and errors to $log\n" if $log;
+
+print "Beginning dumping initialdata...";
+my %counts = $walker->Export;
+
+my @files = $walker->Files;
+print "Wrote @{[scalar @files]} files:\n";
+print "    $_\n" for @files;
+print "\n";
+
+print "Total object counts:\n";
+for (sort {$counts{$b} <=> $counts{$a}} keys %counts) {
+    printf "%8d %s\n", $counts{$_}, $_;
+}
+
+if ($log and -s $log) {
+    print STDERR "\n! Some warnings or errors occurred during initialdata dumping."
+                ."\n! Please see $log for details.\n\n";
+} else {
+    unlink $log;
+}
+
+sub estimate {
+    $| = 1;
+    my %e;
+
+    # Expected types we'll serialize
+    my @types = map { "RT::$_" } qw/
+      Queue User Group GroupMember Attribute CustomField CustomFieldValue
+      ObjectCustomField ObjectCustomFieldValue Catalog Asset ACE CustomRole
+      Class Article ScripAction ScripCondition Template Scrip/;
+
+    for my $class (@types) {
+        print "Estimating $class count...";
+        my $collection;
+        if ( $class eq 'RT::ACE' ) {
+            $collection = 'RT::ACL';
+        }
+        else {
+            $collection = $class . ( UNIVERSAL::can( $class . 'es', 'new' ) ? 'es' : 's' );
+        }
+
+        if ($collection->require) {
+            my $objs = $collection->new( RT->SystemUser );
+            $objs->FindAllRows;
+            $objs->UnLimit;
+            $objs->{allow_deleted_search} = 1 if $class eq "RT::Asset";
+            $e{$class} = $objs->DBIx::SearchBuilder::Count;
+        }
+        print "\r", " "x60, "\r";
+    }
+
+    return %e;
+}
+
+
+sub gnuplot {
+    my ($elapsed, $rows, $cols) = @_;
+    my $length = $walker->StackSize;
+    my $file = $walker->Directory . "/progress.plot";
+    open(my $dat, ">>", $file);
+    printf $dat "%10.3f\t%8d\n", $elapsed, $length;
+    close $dat;
+
+    if ($rows <= 24 or not $gnuplot) {
+        print "\n\n";
+    } elsif ($elapsed) {
+        my $gnuplot = qx|
+            gnuplot -e '
+                set term dumb $cols @{[$rows - 12]};
+                set xlabel "Seconds";
+                unset key;
+                set xrange [0:*];
+                set yrange [0:*];
+                set title "Queue length";
+                plot "$file" using 1:2 with lines
+            '
+        |;
+        if ($? == 0 and $gnuplot) {
+            $gnuplot =~ s/^(\s*\n)//;
+            print $gnuplot;
+            unlink $file;
+        } else {
+            warn "Couldn't run gnuplot (\$? == $?): $!\n";
+        }
+    } else {
+        print "\n" for 1..($rows - 13);
+    }
+}
+
+use JSON;
+my $JSON = JSON->new->pretty->canonical;
+
+sub find_differences {
+    my $type           = shift;
+    my $base_records   = shift || [];
+    my $edited_records = shift || [];
+
+    my ( %base_by_id, %edited_by_id );
+
+    for my $base_record ( @$base_records ) {
+        my $id = $base_record->{id};
+
+        if ( !$id ) {
+            die "Missing id for this record in base file: " . encode_json( $base_record );
+        }
+        $base_by_id{$id} = $base_record;
+    }
+
+    for my $record ( @$base_records, @$edited_records ) {
+        if ( $type eq 'CustomFields' && $record->{Values} ) {
+            delete $_->{id} for @{$record->{Values}};
+        }
+
+        if ( $record->{CustomFields} ) {
+            @{$record->{CustomFields}} = grep { !$_->{Disabled} } @{$record->{CustomFields}};
+            delete $_->{id} for @{$record->{CustomFields}};
+        }
+
+        if ( $record->{Topics} ) {
+            delete $_->{id} for @{$record->{Topics}};
+        }
+    }
+
+    my @changes;
+    for my $edited_record ( @$edited_records ) {
+        my $id = delete $edited_record->{id};
+
+        if ( my $base_record = delete $base_by_id{$id} ) {
+            delete $base_record->{id};
+            next if $JSON->encode( $base_record ) eq $JSON->encode( $edited_record );
+
+            for my $field ( keys %$edited_record ) {
+
+                if ( $field eq 'CustomFields' ) {
+                    my ( %cf_base, %cf_edited );
+                    for my $ocfv ( @{$base_record->{$field} }) {
+                        push @{$cf_base{$ocfv->{CustomField}}}, $ocfv;
+                    }
+
+                    for my $ocfv ( @{$edited_record->{$field} }) {
+                        push @{$cf_edited{$ocfv->{CustomField}}}, $ocfv;
+                    }
+
+                    for my $cf ( keys %cf_edited ) {
+                        if ( $JSON->encode( [ $cf_base{$cf} ] ) eq $JSON->encode( [ $cf_edited{$cf} ] ) ) {
+                            delete $cf_edited{$cf};
+                            delete $cf_base{$cf};
+                        }
+                    }
+                    @{ $base_record->{$field} }   = map { @{ $cf_base{$_} } } sort keys %cf_base;
+                    @{ $edited_record->{$field} } = map { @{ $cf_edited{$_} } } sort keys %cf_edited;
+                }
+
+                if ( $JSON->encode( [ $base_record->{$field} ] ) eq $JSON->encode( [ $edited_record->{$field} ] ) ) {
+                    delete $edited_record->{$field};
+                }
+            }
+            $edited_record->{_Updated} = 1;
+            $edited_record->{_Original} = $base_record;
+        }
+        push @changes, $edited_record;
+    }
+
+    for my $base_record ( values %base_by_id ) {
+        delete $base_record->{id};
+        push @changes, { _Deleted => 1, _Original => $base_record };
+    }
+    return @changes;
+}
+
+if ( $OPT{base} ) {
+    my $slurp_json = sub {
+        my $file = shift;
+        local $/;
+        open( my $f, '<encoding(UTF-8)', $file )
+          or die "Cannot open initialdata file '$file' for read: $@";
+        return JSON->new->decode( scalar <$f> );
+    };
+
+    my $base_records = $slurp_json->( $OPT{base} );
+    my $edited_records = $slurp_json->( File::Spec->catfile( $walker->{Directory}, 'initialdata.json' ) );
+
+    my %changes;
+    for my $type ( keys %$base_records ) {
+        my @changes = find_differences( $type, $base_records->{$type}, $edited_records->{$type} );
+        $changes{$type} = \@changes if @changes;
+    }
+
+    for my $type ( keys %$edited_records ) {
+        if ( !$base_records->{$type} ) {
+            my @changes = find_differences( $type, [], $edited_records->{$type} );
+            $changes{$type} = \@changes if @changes;
+        }
+    }
+
+    print "\n";
+    if ( %changes ) {
+        my $file = File::Spec->catfile( $walker->{Directory}, 'changes.json' );
+        open my $fh, '>encoding(UTF-8)', $file or die "Can't open $file to write: $!";
+        print $fh $JSON->encode(\%changes);
+
+        print "Changes are saved to changes.json\n";
+        print "Changes summary:\n";
+
+        for my $name ( sort { @{$changes{$b}} <=> @{$changes{$a}} || $a cmp $b } keys %changes ) {
+            my $collection = "RT::$name";
+            $collection = 'RT::GroupMembers' if $collection eq 'RT::Members';
+            my $class;
+            if ( $collection->can( '_SingularClass' ) ) {
+                $class = $collection->_SingularClass;
+            }
+            else {
+                $class = $collection;
+                $class =~ s!s$!!;
+            }
+            printf "%8d %s\n", scalar @{$changes{$name}}, $class;
+        }
+    }
+    else {
+        print "There are no changes found compared to $OPT{base}\n";
+    }
+}
+
+
+=head1 NAME
+
+rt-dump-initialdata - Serialize an RT database to disk
+
+=head1 SYNOPSIS
+
+    rt-validator --check && rt-dump-initialdata
+
+This script is used to write out the objects initialdata supports from
+RT database to disk, for later import into a different RT instance.  It
+requires that the data in the database be self-consistent, in order to
+do so; please make sure that the database being exported passes
+validation by L<rt-validator> before attempting to use
+C<rt-dump-initialdata>.
+
+While running, it will attempt to estimate the number of remaining
+objects to be dumped; these estimates are pessimistic, and will be
+incorrect if C<--no-users> or C<--no-groups> is used.
+
+If the controlling terminal is large enough (more than 25 columns high)
+and the C<gnuplot> program is installed, it will also show a textual
+graph of the queue size over time.
+
+=head2 OPTIONS
+
+=over
+
+=item B<--directory> I<name>
+
+The name of the output directory to write data files to, which should
+not exist yet; it is a fatal error if it does.  Defaults to
+C<< ./I<$Organization>:I<Date>/ >>, where I<$Organization> is as set in
+F<RT_SiteConfig.pm>, and I<Date> is today's date.
+
+=item B<--force>
+
+Remove the output directory before starting.
+
+=item B<--no-users>
+
+By default, all privileged users are dumped; passing C<--no-users>
+limits it to only those users which are referenced by dumped tickets
+and history, and are thus necessary for internal consistency.
+
+=item B<--no-groups>
+
+By default, all groups are dumped; passing C<--no-groups> limits it
+to only system-internal groups, which are needed for internal
+consistency.
+
+=item B<--no-assets>
+
+By default, all assets are dumped; passing C<--no-assets> skips
+assets during serialization.
+
+=item B<--no-disabled>
+
+By default, all queues, custom fields, etc, including disabled ones, are
+dumped; passing C<--no-disabled> skips such disabled records during
+serialization.
+
+=item B<--no-deleted>
+
+By default, all assets, including deleted ones, are dumped; passing
+C<--no-deleted> skips deleted assets.
+
+=item B<--no-scrips>
+
+By default, all scrips and templates are dumped; passing C<--no-scrips>
+skips them.
+
+=item B<--no-acls>
+
+By default, all ACLs are dumped; passing C<--no-acls> skips them.
+
+=item B<--sync>
+
+By default, record ids are ordinarily excluded. Pass C<--sync> to
+include record ids if you intend to use this for sync rather than
+creating a generic initialdata.
+
+=item B<--base> I<file>
+
+The file path which the to be generated I<initialdata.json> will compare to.
+If there are any changes, they will be saved to I<changes.json>.
+
+This option implies C<--sync>.
+
+=item B<--gc> I<n>
+
+Adjust how often the garbage collection sweep is done; lower numbers are
+more frequent.  It shares the same code with C<rt-serializer>, See
+L<rt-serializer/GARBAGE COLLECTION>.
+
+=item B<--page> I<n>
+
+Adjust how many rows are pulled from the database in a single query.  Disable
+paging by setting this to 0.  Defaults to 100.
+
+=item B<--quiet>
+
+Do not show graphical progress UI.
+
+=item B<--verbose>
+
+Do not show graphical progress UI, but rather log was each row is
+written out.
+
+=back
+
+=cut

@@ -584,30 +584,6 @@ No C<Initial> elements will be used.
 
 No C<Final> elements will be used.
 
-=item C<@Attributes>
-
-You can use an C<Attributes> element with some restrictions, but you cannot
-specify an C<Object> key inside it.  The only valid way to pass a value to the
-C<Object> key is via a perl object, and without executable code this is
-currently impossible.
-
-There are two valid ways you that you can specify attributes:
-
-=over 4
-
-=item System-Wide Attributes
-
-C<Attribute> elements without the C<Object> key in them are valid, and
-will pply system-wide as described in the RT documentation.
-
-=item As Children of Other Elements
-
-You can supply C<Attribute> elements as children of other objects in
-the JSON initialdata file, such as C<Users>. This sets the parent of the
-C<Attribte> as the C<Object> for the C<Attribute>.
-
-=back
-
 =back
 
 =cut

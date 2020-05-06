@@ -65,6 +65,13 @@ sub CheckDB {
         Object => RT->System
         );
     &$tester ($r, "Test Search 1 found in DB - should be $tester ($m)");
+
+    my $root = RT::Test->load_or_create_user( Name => 'root' );
+    ( $r, $m ) = RT::Attribute->new($su)->LoadByNameAndObject(
+        Name   => 'Test Search 2',
+        Object => $root
+    );
+    &$tester( $r, "Test Search 2 found in DB - should be $tester ($m)" );
 }
 
 sub not_ok {

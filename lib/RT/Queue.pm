@@ -280,7 +280,7 @@ sub _ValidateName {
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
+    if ( $tempqueue->Name() && ( !$self->id || $tempqueue->id != $self->id ) ) {
         return (undef, $self->loc("Queue already exists") );
     }
 
@@ -1089,11 +1089,13 @@ sub FindDependencies {
                   VALUE    => 'RT::Queue-' );
     $deps->Add( in => $objs );
 
-    # Tickets
-    $objs = RT::Tickets->new( $self->CurrentUser );
-    $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
-    $objs->{allow_deleted_search} = 1;
-    $deps->Add( in => $objs );
+    # Tickets (skipped early as an optimization)
+    if ($walker->{FollowTickets} || !defined($walker->{FollowTickets})) {
+        $objs = RT::Tickets->new( $self->CurrentUser );
+        $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
+        $objs->{allow_deleted_search} = 1;
+        $deps->Add( in => $objs );
+    }
 
     # Object Custom Roles
     $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
