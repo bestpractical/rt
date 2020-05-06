@@ -111,6 +111,17 @@ need the extension installed. The C<%PriorityAsString>> configuration is
 simplified and consolidated, so check the documentation for details on
 updating your previous configuration.
 
+=item *
+
+Dashboards previously in the Home menu have been moved to the Reports menu.
+The reports previously in the Reports menu are still there, but you can now
+edit the Reports menu like the previous Home menu, so you can remove the
+default reports if you like.
+
+All other dashboard menu functionality should be the same including editing
+your own menu, the global settings, and setting a user's menu from the user
+admin page for that user.
+
 =back
 
 =cut
