@@ -4750,6 +4750,10 @@ sub UpdateDashboard {
 
 =head2 ProcessCustomDateRanges ARGSRef => ARGSREF
 
+For system database configuration, it adds corresponding arguments to the
+passed ARGSRef, and the following code on EditConfig.html page will do the
+real update job.
+
 Returns an array of results messages.
 
 =cut
@@ -4876,18 +4880,8 @@ sub ProcessCustomDateRanges {
     }
 
     if ($need_save) {
-        my ( $ret, $msg );
-        if ( $db_config->id ) {
-            ( $ret, $msg ) = $db_config->SetContent($content);
-        }
-        else {
-            ( $ret, $msg ) = $db_config->Create(Name => 'CustomDateRangesUI', Content => $content);
-        }
-
-        unless ($ret) {
-            RT->Logger->error("Couldn't save content: $msg");
-            push @results, $msg;
-        }
+        $args_ref->{'CustomDateRangesUI-Current'} = ''; # EditConfig.html needs this to update CustomDateRangesUI
+        $args_ref->{CustomDateRangesUI} = $content;
     }
     return @results;
 }
