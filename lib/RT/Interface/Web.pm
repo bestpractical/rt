@@ -4784,15 +4784,15 @@ sub ProcessCustomDateRanges {
             my $spec         = $content->{'RT::Ticket'}{$current_name};
             my $name         = $args_ref->{"$id-name"};
 
-            if ( $config && $config->{'RT::Ticket'}{$name} ) {
-                push @results, loc( "[_1] already exists", $name );
-                next;
-            }
-
             if ( $args_ref->{"$id-Delete"} ) {
                 delete $content->{'RT::Ticket'}{$current_name};
                 push @results, loc( 'Deleted [_1]', $current_name );
                 $need_save ||= 1;
+                next;
+            }
+
+            if ( $config && $config->{'RT::Ticket'}{$name} ) {
+                push @results, loc( "[_1] already exists", $name );
                 next;
             }
 
