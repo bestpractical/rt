@@ -45,52 +45,34 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Custom Date Ranges') &>
-<& /Elements/Tabs &>
 
-<& /Elements/ListActions, actions => \@results &>
-
-<&|/Widgets/TitleBox, title => loc('Custom Date Ranges In Config Files'), class => 'mx-auto max-width-xl' &>
-% if ( $config && keys %{$config->{'RT::Ticket'}} ) {
-  <& /Elements/ShowCustomDateRanges, CustomDateRanges => $config->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
+<div class="table-responsive">
+  <table class="table collection-as-table">
+    <tr class="collection-as-table">
+      <th class="collection-as-table"><&|/l&>Name</&></th>
+      <th class="collection-as-table"><&|/l&>From</&></th>
+      <th class="collection-as-table"><&|/l&>From Value if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>To</&></th>
+      <th class="collection-as-table"><&|/l&>To Value if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>Business Hours?</&></th>
+    </tr>
+% my $i = 0;
+% for my $name ( sort keys %CustomDateRanges ) {
+% $i++;
+    <tr class="collection-as-table">
+      <td class="collection-as-table"><% $name %></td>
+%     my %date_range_spec = $ObjectType->_ParseCustomDateRangeSpec($name, $CustomDateRanges{$name});
+      <td class="collection-as-table"><% $date_range_spec{from} %></td>
+      <td class="collection-as-table"><% $date_range_spec{from_fallback} || '' %></td>
+      <td class="collection-as-table"><% $date_range_spec{to} %></td>
+      <td class="collection-as-table"><% $date_range_spec{to_fallback} || '' %></td>
+      <td class="collection-as-table"><% $date_range_spec{business_time} ? loc('Yes') : loc('No') %></td>
+    </tr>
 % }
-% else {
-  <p class="mt-3 mt-1 ml-3"><&|/l&>No custom date ranges in config files</&></p>
-% }
-</&>
-
-<form name="CustomDateRanges" method="POST" method="?">
-  <&|/Widgets/TitleBox, title => loc('Custom Date Ranges'), class => 'mx-auto max-width-xl' &>
-    <& /Elements/EditCustomDateRanges, CustomDateRanges => $content->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
-    <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
-  </&>
-</form>
-
-<%INIT>
-
-Abort(loc("Permission Denied")) unless $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser');
-
-my $config = RT->Config->Get('CustomDateRanges');
-my $db_config = RT::Configuration->new( $session{CurrentUser} );
-$db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
-
-my $content;
-
-$content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
-
-my @results;
-
-if ($Save) {
-    push @results, ProcessCustomDateRanges( ARGSRef => \%ARGS );
-}
-
-MaybeRedirectForResults(
-    Actions => \@results,
-    Path    => '/Search/CustomDateRanges.html',
-);
-
-</%INIT>
+  </table>
+</div>
 
 <%ARGS>
-$Save => undef
+%CustomDateRanges => ()
+$ObjectType => 'RT::Ticket'
 </%ARGS>
