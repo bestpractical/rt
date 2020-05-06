@@ -840,6 +840,14 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
       GroupType => 'privileged',
       Right  => 'ShowApprovalsTab', },
 
+    {   GroupDomain => 'SystemInternal',
+        GroupType   => 'Privileged',
+        Right       => 'ShowSearchAdvanced',
+    },
+    {   GroupDomain => 'SystemInternal',
+        GroupType   => 'Privileged',
+        Right       => 'ShowSearchBulkUpdate',
+    },
 );
 
 # Predefined searches

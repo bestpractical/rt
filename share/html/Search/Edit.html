@@ -55,6 +55,15 @@
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $SavedChartSearchId %>" />
 <input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
 <input type="hidden" class="hidden" name="ObjectType" value="<% $ObjectType %>" />
+% if ( $ResultPage ) {
+<input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
+% }
+% for my $input ( @ExtraQueryParams ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%   if ( defined $ARGS{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
+%   }
+% }
 
 <&|/Widgets/TitleBox, title => loc('Query'), &>
 <textarea class="form-control" name="Query" rows="8" cols="72"><% $Query %></textarea>
@@ -70,6 +79,8 @@
 </form>
 
 <%INIT>
+Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System );
+
 my $title;
 if ( $Class eq 'RT::Transactions' ) {
     $title = loc('Edit Transaction Query');
@@ -105,4 +116,6 @@ $OrderBy       => $Class eq 'RT::Assets' ? 'Name' : 'id'
 $ObjectType    => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 
 @actions       => ()
+@ExtraQueryParams => ()
+$ResultPage    => RT->Config->Get('WebPath') . '/Search/Results.html'
 </%ARGS>

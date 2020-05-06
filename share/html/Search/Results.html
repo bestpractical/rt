@@ -75,7 +75,8 @@
     SavedSearchId => $ARGS{'SavedSearchId'},
     SavedChartSearchId => $ARGS{'SavedChartSearchId'},
     ObjectType => $ObjectType,
-    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType)],
+    @ExtraQueryParams ? ( map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } 'ExtraQueryParams', @ExtraQueryParams ) : (),
+    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType ExtraQueryParams), @ExtraQueryParams],
 &>
 % }
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
@@ -86,6 +87,14 @@
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
+
+% for my $input ( @ExtraQueryParams ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%   if ( defined $ARGS{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
+%   }
+% }
+
 <div class="form-row">
   <div class="col-auto">
     <& /Elements/Refresh, Name => 'SearchResultsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
@@ -283,4 +292,5 @@ $SavedSearchId => undef
 $SavedChartSearchId => undef
 $Class => 'RT::Tickets'
 $ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
+@ExtraQueryParams => ()
 </%ARGS>

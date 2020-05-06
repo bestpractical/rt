@@ -594,7 +594,7 @@ sub BuildMainNav {
                 map {
                     my $p = $_;
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
-                } qw(Query Format OrderBy Order Page Class ObjectType)
+                } qw(Query Format OrderBy Order Page Class ObjectType ResultPage)
             ),
             RowsPerPage => (
                 defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
@@ -611,6 +611,13 @@ sub BuildMainNav {
         else {
             my %final_query_args = ();
             # key => callback to avoid unnecessary work
+
+            if ( my $extra_params = $query_args->{ExtraQueryParams} ) {
+                $final_query_args{ExtraQueryParams} = $extra_params;
+                for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                    $final_query_args{$param} = $query_args->{$param};
+                }
+            }
 
             for my $param (keys %fallback_query_args) {
                 $final_query_args{$param} = defined($query_args->{$param})
@@ -659,18 +666,27 @@ sub BuildMainNav {
         }
 
         $current_search_menu->child( edit_search =>
-            title => loc('Edit Search'), path => "/Search/Build.html$args" );
-        $current_search_menu->child( advanced =>
-            title => loc('Advanced'),    path => "/Search/Edit.html$args" );
+            title => loc('Edit Search'), path => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+        if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
+            $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
+        }
         $current_search_menu->child( custom_date_ranges =>
             title => loc('Custom Date Ranges'), path => "/Search/CustomDateRanges.html" ) if $class eq 'RT::Tickets';
         if ($has_query) {
-            $current_search_menu->child( results => title => loc('Show Results'), path => "/Search/Results.html$args" );
+            my $result_page = $HTML::Mason::Commands::DECODED_ARGS->{ResultPage};
+            if ( my $web_path = RT->Config->Get('WebPath') ) {
+                $result_page =~ s!^$web_path!!;
+            }
+
+            $result_page ||= '/Search/Results.html';
+            $current_search_menu->child( results => title => loc('Show Results'), path => "$result_page$args" );
         }
 
         if ( $has_query ) {
             if ( $class eq 'RT::Tickets' ) {
-                $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
+                if ( $current_user->HasRight( Right => 'ShowSearchBulkUpdate', Object => RT->System ) ) {
+                    $current_search_menu->child( bulk  => title => loc('Bulk Update'), path => "/Search/Bulk.html$args" );
+                }
                 $current_search_menu->child( chart => title => loc('Chart'),       path => "/Search/Chart.html$args" );
             }
             elsif ( $class eq 'RT::Assets' ) {
@@ -702,11 +718,8 @@ sub BuildMainNav {
                     $rss_data{Query};
                 $more->child( ical => title => loc('iCal'), path => '/NoAuth/iCal/' . $ical_path );
 
-                if ($request_path =~ m{^/Search/Results.html}
-                    &&    #XXX TODO better abstraction
-                    $current_user->HasRight( Right => 'SuperUser', Object => RT->System )
-                   )
-                {
+                #XXX TODO better abstraction of SuperUser right check
+                if ( $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
                     my $shred_args = QueryString(
                         Search          => 1,
                         Plugin          => 'Tickets',

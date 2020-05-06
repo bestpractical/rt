@@ -53,6 +53,14 @@
 % foreach my $var (qw(Query Format OrderBy Order Rows Page SavedSearchId SavedChartSearchId Token)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
+
+% for my $input ( @ExtraQueryParams ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%   if ( defined $ARGS{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
+%   }
+% }
+
 <& /Elements/CollectionList, 
     Query => $Query,
     DisplayFormat => $DisplayFormat,
@@ -379,6 +387,8 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 </div>
 
 <%INIT>
+Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'ShowSearchBulkUpdate', Object => RT->System );
+
 my (@results);
 
 $m->callback(CallbackName => 'Initial', ARGSRef => \%ARGS, results_ref => \@results, QueryRef => \$Query, UpdateTicketRef => \@UpdateTicket);
@@ -516,4 +526,5 @@ $Order => 'ASC'
 $OrderBy => 'id'
 $Query => undef
 @UpdateTicket => ()
+@ExtraQueryParams => ()
 </%args>

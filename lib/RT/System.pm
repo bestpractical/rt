@@ -94,6 +94,8 @@ __PACKAGE__->AddRight( General => LoadSavedSearch     => 'Allow loading of saved
 __PACKAGE__->AddRight( General => CreateSavedSearch   => 'Allow creation of saved searches'); # loc
 __PACKAGE__->AddRight( Admin   => ExecuteCode         => 'Allow writing Perl code in templates, scrips, etc'); # loc
 __PACKAGE__->AddRight( General => SeeSelfServiceGroupTicket => 'See tickets for other group members in SelfService' ); # loc
+__PACKAGE__->AddRight( Staff   => ShowSearchAdvanced    => 'Show search "Advanced" menu' ); # loc
+__PACKAGE__->AddRight( Staff   => ShowSearchBulkUpdate  => 'Show search "Bulk Update" menu' ); # loc
 
 =head2 AvailableRights
 
