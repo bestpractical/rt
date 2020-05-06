@@ -154,11 +154,12 @@
 Abort(loc("Permission Denied")) unless $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser');
 
 my $config = RT->Config->Get('CustomDateRanges');
-my $attribute = RT->System->FirstAttribute('CustomDateRanges') || RT::Attribute->new( $session{CurrentUser} );
+my $db_config = RT::Configuration->new( $session{CurrentUser} );
+$db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
 
 my $content;
 
-$content = $attribute->Content if $attribute->id;
+$content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
 
 my @results;
 
@@ -268,12 +269,11 @@ if ($Save) {
 
     if ($need_save) {
         my ( $ret, $msg );
-        if ( $attribute->id ) {
-            ( $ret, $msg ) = $attribute->SetContent($content);
+        if ( $db_config->id ) {
+            ( $ret, $msg ) = $db_config->SetContent($content);
         }
         else {
-            ( $ret, $msg )
-              = $attribute->Create( Name => 'CustomDateRanges', Object => RT->System, Content => $content );
+            ( $ret, $msg ) = $db_config->Create(Name => 'CustomDateRangesUI', Content => $content);
         }
 
         unless ($ret) {
