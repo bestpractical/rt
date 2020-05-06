@@ -67,10 +67,16 @@ if (delete $ARGS{Update}) {
     $RT::Handle->BeginTransaction;
     my $has_error;
 
+    if ( delete $ARGS{CustomDateRanges} ) {
+        push @results, ProcessCustomDateRanges( ARGSRef => \%ARGS );
+    }
+
     eval {
         for my $key (keys %ARGS) {
             next if $key =~ /-Current$/;
             next if $key eq 'tab' || $key eq 'section' || $key eq 'subsection';
+            # Get rid of extra arguments like in CustomDateRanges
+            next if !exists $ARGS{$key . '-Current'};
 
             my $meta = RT->Config->Meta( $key );
             my $widget = $meta->{Widget} || '/Widgets/Form/Code';

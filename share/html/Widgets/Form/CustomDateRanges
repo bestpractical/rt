@@ -45,11 +45,18 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Custom Date Ranges') &>
-<& /Elements/Tabs &>
+<%DOC>
+see docs/extending/using_forms_widgets.pod
 
-<& /Elements/ListActions, actions => \@results &>
+This is a special widget only for custom date ranges, it obeys the
+InputOnly/Process basic structure but no general arguments like Name,
+Default, etc.
+</%DOC>
 
+<& SELF:InputOnly, %ARGS &>
+
+<%METHOD InputOnly>
+<input type="hidden" name="CustomDateRanges" value="1" />
 <&|/Widgets/TitleBox, title => loc('Custom Date Ranges In Config Files'), class => 'mx-auto max-width-xl' &>
 % if ( $config && keys %{$config->{'RT::Ticket'}} ) {
   <& /Elements/ShowCustomDateRanges, CustomDateRanges => $config->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
@@ -59,38 +66,20 @@
 % }
 </&>
 
-<form name="CustomDateRanges" method="POST" method="?">
-  <&|/Widgets/TitleBox, title => loc('Custom Date Ranges'), class => 'mx-auto max-width-xl' &>
-    <& /Elements/EditCustomDateRanges, CustomDateRanges => $content->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
-    <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
-  </&>
-</form>
+<&|/Widgets/TitleBox, title => loc('Custom Date Ranges'), class => 'mx-auto max-width-xl' &>
+  <& /Elements/EditCustomDateRanges, CustomDateRanges => $content->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
+</&>
 
 <%INIT>
-
-Abort(loc("Permission Denied")) unless $session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser');
 
 my $config = RT->Config->Get('CustomDateRanges');
 my $db_config = RT::Configuration->new( $session{CurrentUser} );
 $db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
 
 my $content;
-
 $content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
-
-my @results;
-
-if ($Save) {
-    push @results, ProcessCustomDateRanges( ARGSRef => \%ARGS );
-}
-
-MaybeRedirectForResults(
-    Actions => \@results,
-    Path    => '/Search/CustomDateRanges.html',
-);
-
 </%INIT>
+</%METHOD>
 
-<%ARGS>
-$Save => undef
-</%ARGS>
+<%METHOD Process>
+</%METHOD>

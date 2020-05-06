@@ -670,8 +670,6 @@ sub BuildMainNav {
         if ( $current_user->HasRight( Right => 'ShowSearchAdvanced', Object => RT->System ) ) {
             $current_search_menu->child( advanced => title => loc('Advanced'), path => "/Search/Edit.html$args" );
         }
-        $current_search_menu->child( custom_date_ranges =>
-            title => loc('Custom Date Ranges'), path => "/Search/CustomDateRanges.html" ) if $class eq 'RT::Tickets';
         if ($has_query) {
             my $result_page = $HTML::Mason::Commands::DECODED_ARGS->{ResultPage};
             if ( my $web_path = RT->Config->Get('WebPath') ) {

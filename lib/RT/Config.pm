@@ -1190,6 +1190,7 @@ our %META;
     },
     CustomDateRanges => {
         Type            => 'HASH',
+        Widget          => '/Widgets/Form/CustomDateRanges',
         PostLoadCheck   => sub {
             my $config = shift;
             # use scalar context intentionally to avoid not a hash error
@@ -1218,6 +1219,10 @@ our %META;
                 }
             }
         },
+    },
+    CustomDateRangesUI => {
+        Type            => 'HASH',
+        Widget          => '/Widgets/Form/CustomDateRanges',
     },
     ExternalStorage => {
         Type            => 'HASH',
