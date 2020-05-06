@@ -978,3 +978,32 @@ function toggle_bookmark(url, id) {
         jQuery('.toggle-bookmark-' + id).replaceWith(data);
     });
 }
+
+jQuery(function() {
+    var cache = {};
+    jQuery('input.rt-autocomplete').each(
+        function () {
+            var field = jQuery( this ).attr( 'data-field' );
+            var query = jQuery( this ).attr( 'data-query' );
+            jQuery( this ) .autocomplete({
+            minLength: 2,
+            source: function(request, response) {
+                if ( request.term in cache ) {
+                    response( cache[ request.term ] );
+                }
+                else {
+                    jQuery.ajax({
+                        url: RT.Config.WebPath + '/Helpers/Autocomplete/' + field + '?' + query,
+                        dataType: "json",
+                        data: request,
+                        success: function( data ) {
+                            cache[ request.term ] = data;
+                            response( data );
+                        }
+                    });
+                }
+            }
+        });
+    });
+});
+

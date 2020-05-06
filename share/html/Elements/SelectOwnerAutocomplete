@@ -73,32 +73,7 @@ my $query = $m->comp('/Elements/QueryString',
     limit   => $limit,
 );
 
-my $id = $TicketObj ? "autocomplete-$Name-" . $TicketObj->Id : $Name;
 </%INIT>
 
-<input type="text" id="<% $id %>" name="<%$Name%>" value="<% $value %>" class="form-control input-<% $Name %>" />
-<script type="text/javascript">
-    jQuery(function() {
-        var cache = {};
-        jQuery('#<% $id %>').autocomplete({
-            minLength: 2,
-            source: function(request, response) {
-                if ( request.term in cache ) {
-                    response( cache[ request.term ] );
-                }
-                else {
-                    jQuery.ajax({
-                        url: RT.Config.WebPath + "/Helpers/Autocomplete/Owners?"+<% $query|n,j %>,
-                        dataType: "json",
-                        data: request,
-                        success: function( data ) {
-                            cache[ request.term ] = data;
-                            response( data );
-                        }
-                    });
-                }
-            }
-        });
-    });
-</script>
+<input type="text"name="<%$Name%>" value="<% $value %>" class="form-control rt-autocomplete" data-field="Owners" data-query="<% $query %>"/>
 
