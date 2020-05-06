@@ -52,12 +52,119 @@ use warnings;
 use Test::More;
 use base qw(RT::Test);
 use File::Temp qw(tempdir);
+use Cwd;
+use File::Path qw (make_path);
+use File::Copy;
+use GnuPG::Interface;
+use RT::Crypt::GnuPG;
 
 our @EXPORT =
-  qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options 
+  qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options
           check_text_emails send_email_and_check_transaction
           create_and_test_outgoing_emails
           );
+
+use vars qw($homedir $gnupg_version $using_legacy_gnupg);
+no warnings qw(redefine once);
+
+BEGIN {
+    if (-f "test/gnupghome") {
+        my $record = IO::File->new( "< t/data/gnupghome" );
+        $homedir = <$record>;
+        $record->close();
+    } else {
+        $homedir = tempdir( DIR => '/tmp');
+        my $record = IO::File->new( "> t/data/gnupghome" );
+        $record->write($homedir);
+        $record->close();
+    }
+
+    $ENV{'GNUPGHOME'} =  $homedir;
+
+    my %supported_opt = map { $_ => 1 } qw(
+       always_trust
+       armor
+       batch
+       comment
+       compress_algo
+       default_key
+       encrypt_to
+       extra_args
+       force_v3_sigs
+       homedir
+       logger_fd
+       no_greeting
+       no_options
+       no_verbose
+       openpgp
+       options
+       passphrase_fd
+       quiet
+       recipients
+       rfc1991
+       status_fd
+       textmode
+       verbose
+                                      );
+
+    *RT::Crypt::GnuPG::_PrepareGnuPGOptions = sub {
+
+        # you are here - need to force no-default-key option, maybe add as a flag to GPG::Interface
+        # also need to copy / specify keychain, etc from new 2.1 test dir maybe - provide helper to handle that here
+        # also need to update references to 2.1 to 2.2
+        # Added --keyring and --no-default-keyring options to GnuPG::Options
+        my %opt = @_;
+        $opt{homedir} = $homedir;
+        my %res = map { lc $_ => $opt{ $_ } } grep $supported_opt{ lc $_ }, keys %opt;
+        $res{'extra_args'} ||= [];
+        foreach my $o ( grep !$supported_opt{ lc $_ }, keys %opt ) {
+            push @{ $res{'extra_args'} }, '--'. lc $o;
+            push @{ $res{'extra_args'} }, $opt{ $o }
+                if defined $opt{ $o };
+        }
+        return %res;
+    };
+
+    make_path($homedir, { mode => 0700 });
+    copy('t/data//gpg.conf', $homedir . '/gpg.conf');
+
+    my $gnupg = GnuPG::Interface->new;
+    $gnupg->options->hash_init(
+       RT::Crypt::GnuPG::_PrepareGnuPGOptions( ),
+    );
+
+    $gnupg_version = $gnupg->version;
+    $using_legacy_gnupg = 1;
+
+    if ($gnupg->cmp_version($gnupg_version, '2.2') >= 0 ) {
+        $using_legacy_gnupg = 0;
+        my $agentconf = IO::File->new( "> " . $homedir . "/gpg-agent.conf" );
+        # Classic gpg can't use loopback pinentry programs like fake-pinentry.pl.
+
+        $agentconf->write(
+            "allow-preset-passphrase\n".
+                "allow-loopback-pinentry\n".
+                "pinentry-program " . getcwd() . "/test/fake-pinentry.pl\n"
+            );
+        $agentconf->close();
+
+        my $error = system("gpg-connect-agent", "--homedir", "$homedir", '/bye');
+        if ($error) {
+            warn "gpg-connect-agent returned error : $error";
+        }
+
+        $error = system('gpg-connect-agent', "--homedir", "$homedir", 'reloadagent', '/bye');
+        if ($error) {
+            warn "gpg-connect-agent returned error : $error";
+        }
+
+        $error = system("gpg-agent", '--homedir', "$homedir");
+        if ($error) {
+            warn "gpg-agent returned error : $error";
+        }
+
+    }
+}
 
 sub import {
     my $class = shift;
@@ -73,7 +180,8 @@ sub import {
     return $class->export_to_level(1)
         if $^C;
 
-    RT::Test::diag "GnuPG --homedir " . RT->Config->Get('GnuPGOptions')->{'homedir'};
+    RT::Test::diag "GnuPG --homedir over-ridden for tests : " . $ENV{'GNUPGHOME'};
+    RT::Test::diag "GnuPG --homedir from config " . RT->Config->Get('GnuPGOptions')->{'homedir'};
 
     $class->set_rights(
         Principal => 'Everyone',
