@@ -58,25 +58,28 @@
 </div>
   <div class="form-row">
     <div class="label col-4"><&|/l&>Description</&>:</div>
-    <div class="col-8 input-group">
+    <div class="col-8">
       <input type="text" size="25" name="SavedSearchDescription" value="<% $Description || '' %>" class="form-control" />
+    </div>
+  </div>
+  <div class="form-row justify-content-end">
 % if ($Id ne 'new') {
 % if ( $Dirty ) {
-<input type="submit" class="button btn btn-primary" name="SavedSearchRevert" value="<%loc('Revert')%>" />
+<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
-<input type="submit" class="button btn btn-primary" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchDelete" value="<%loc('Delete')%>" />
 % if ( $AllowCopy ) {
-<input type="submit" class="button btn btn-primary" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
+<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
 % }
 
 % if ( $Object && $Object->Id && $Object->CurrentUserHasRight('update') ) {
-<input type="submit" class="button btn btn-primary" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
+<input type="submit" class="button btn btn-primary mr-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
 % } elsif ( !$Object ) {
-<input type="submit" class="button btn btn-primary" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
+<input type="submit" class="button btn btn-primary mr-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
 % }
-    </div>
+  </div>
   </div>
 
   <hr />
