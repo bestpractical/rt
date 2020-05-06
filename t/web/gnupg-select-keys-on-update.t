@@ -45,7 +45,7 @@ diag "check that signing doesn't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->next_warning_like(qr/(secret key not available|No secret key)/);
+    $m->warnings_exist(qr/(secret key not available|No secret key)/);
     $m->no_leftover_warnings_ok;
 }
 
@@ -191,7 +191,6 @@ diag "check that things still doesn't work if two keys are not trusted";
     RT::Test->lsign_gnupg_key( $fpr1 );
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com' );
     ok $res{'info'}[0]{'TrustLevel'} > 0, 'trusted key';
-    is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
 }
 
 diag "check that we see key selector even if only one key is trusted but there are more keys";

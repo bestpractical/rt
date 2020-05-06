@@ -60,11 +60,11 @@ foreach my $file ( @files ) {
     );
     $m->content_like(qr/This is .*ID:$eid/ims, "$eid: content is there and message is decrypted");
 
-    $m->next_warning_like(qr/public key not found/);
+    $m->next_warning_like(qr/(No public key|public key not found)/);
 
     # some mails contain multiple signatures
     if ($eid == 5 || $eid == 17 || $eid == 18) {
-        $m->next_warning_like(qr/public key not found/);
+            $m->next_warning_like(qr/(No public key|public key not found)/);
     }
 
     $m->no_leftover_warnings_ok;

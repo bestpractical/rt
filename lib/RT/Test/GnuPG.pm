@@ -57,13 +57,15 @@ use File::Path qw (make_path);
 use File::Copy;
 use GnuPG::Interface;
 use RT::Crypt::GnuPG;
+use IO::Handle;
+use GnuPG::Handles;
 
 our @EXPORT =
   qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options
           check_text_emails send_email_and_check_trangnsaction
           create_and_test_outgoing_emails
           copy_test_keys_to_homedir copy_test_keyring_to_homedir
-          get_test_gnupg_interface get_test_data_dir
+          get_test_gnupg_interface get_test_gnupg_handles get_test_data_dir
           $homedir $gnupg_version $using_legacy_gnupg
           );
 
@@ -544,6 +546,29 @@ sub get_test_gnupg_interface {
        RT::Crypt::GnuPG::_PrepareGnuPGOptions( ),
     );
     return $gnupg;
+}
+
+sub get_test_gnupg_handles {
+    my %opts = @_;
+
+    my ( $input, $output, $error ) = ( IO::Handle->new(),
+                                       IO::Handle->new(),
+                                       IO::Handle->new(),
+                                   );
+
+    my ($tmp_fh, $tmp_fn);
+    if ($opts{temp_file_output}) {
+        ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
+        binmode $tmp_fh, ':raw';
+        $output = $tmp_fh;
+    }
+
+    my $handles = GnuPG::Handles->new( stdin    => $input,
+                                       stdout   => $output,
+                                       stderr   => $error,
+                                   );
+
+    return ($opts{temp_file_output}) ? ( $handles, $tmp_fh, $tmp_fn ) : $handles;
 }
 
 1;

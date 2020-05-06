@@ -2,22 +2,86 @@
 use strict;
 use warnings;
 
-my $homedir;
-BEGIN {
-    require RT::Test;
-    $homedir =
-      RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
-        qw/data gnupg keyrings/ );
-}
-
-use RT::Test::GnuPG tests => 100, gnupg_options => { homedir => $homedir };
+use RT::Test::GnuPG tests => 100;
 use Test::Warn;
 
-my $gnupg;
-my ($gnupg_version, $gnupg_subversion) = split /\./, GnuPG::Interface->new->version;
+copy_test_keyring_to_homedir(use_legacy_keys => 1);
 
 use_ok('RT::Crypt');
 use_ok('MIME::Entity');
+
+diag 'only signing. missing passphrase';
+{
+    my $entity = MIME::Entity->build(
+        From    => 'rt@example.com',
+        Subject => 'test',
+        Data    => ['test'],
+    );
+    my %res;
+
+    # We don't use Test::Warn here, because it apparently only captures up
+    # to the first newline -- and the meat of this message is on the fourth
+    # line.
+
+    my @warnings;
+    {
+        local $SIG{__WARN__} = sub {
+            push @warnings, map { split("\n", $_) } @_;
+        };
+
+        %res = RT::Crypt->SignEncrypt(
+            Entity     => $entity,
+            Encrypt    => 0,
+            Passphrase => ''
+        );
+        ok( scalar @warnings, "Got warnings" );
+        ok (grep { m/(no default secret key|can't query passphrase in batch mode|No passphrase given)/ } @warnings );
+    }
+    ok( $res{'exit_code'}, "couldn't sign without passphrase");
+    ok( $res{'error'} || $res{'logger'}, "error is here" );
+
+    my @status = RT::Crypt->ParseStatus(
+        Protocol => $res{'Protocol'}, Status => $res{'status'}
+    );
+    is( scalar @status, 1, 'one record');
+    like( $status[0]->{'Operation'}, qr/(Sign|PassphraseCheck)/, 'operation is correct');
+    like( $status[0]->{'Status'}, qr/(ERROR|MISSING)/, 'missing passphrase');
+}
+
+diag 'only signing. wrong passphrase';
+{
+    my $entity = MIME::Entity->build(
+        From    => 'rt@example.com',
+        Subject => 'test',
+        Data    => ['test'],
+    );
+
+    my %res;
+    my @warnings;
+    {
+        local $SIG{__WARN__} = sub {
+            push @warnings, map { split("\n", $_) } @_;
+        };
+
+        %res = RT::Crypt->SignEncrypt(
+            Entity     => $entity,
+            Encrypt    => 0,
+            Passphrase => 'wrong',
+        );
+        ok( scalar @warnings, "Got warnings" );
+        ok (grep { m/bad passphrase/i } @warnings );
+    }
+    ok( $res{'exit_code'}, "couldn't sign with bad passphrase");
+    ok( $res{'error'} || $res{'logger'}, "error is here" );
+
+    my @status = RT::Crypt->ParseStatus(
+        Protocol => $res{'Protocol'}, Status => $res{'status'}
+    );
+    is( scalar @status, 1, 'one record');
+
+    like( $status[0]->{'Operation'}, qr/(Sign|PassphraseCheck)/, 'operation is correct');
+    like( $status[0]->{'Status'}, qr/(ERROR|BAD)/, 'wrong passphrase');
+}
 
 diag 'only signing. correct passphrase';
 {
@@ -32,7 +96,7 @@ diag 'only signing. correct passphrase';
         Protocol => $res{'Protocol'}, Status => $res{'status'}
     );
 
-    if ($gnupg_version < 2 ) {
+    if ($using_legacy_gnupg) {
         ok( !$res{'logger'}, "log is here as well" ) or diag $res{'logger'};
         is( scalar @status, 2, 'two records: passphrase, signing');
         is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
@@ -69,62 +133,7 @@ diag 'only signing. correct passphrase';
     is( $status[0]->{'Trust'}, 'ULTIMATE', 'have trust value');
 }
 
-diag 'only signing. missing passphrase';
-{
-    my $entity = MIME::Entity->build(
-        From    => 'rt@example.com',
-        Subject => 'test',
-        Data    => ['test'],
-    );
-    my %res;
-    warning_like {
-        %res = RT::Crypt->SignEncrypt(
-            Entity     => $entity,
-            Encrypt    => 0,
-            Passphrase => ''
-        );
-    } qr/(no default secret key|can't query passphrase in batch mode)/;
-    use Data::Dumper;
-    warn Dumper({res => \%res });
 
-    ok( $res{'exit_code'}, "couldn't sign without passphrase");
-    ok( $res{'error'} || $res{'logger'}, "error is here" );
-
-    my @status = RT::Crypt->ParseStatus(
-        Protocol => $res{'Protocol'}, Status => $res{'status'}
-    );
-    is( scalar @status, 1, 'one record');
-    is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
-    is( $status[0]->{'Status'}, 'MISSING', 'missing passphrase');
-}
-
-diag 'only signing. wrong passphrase';
-{
-    my $entity = MIME::Entity->build(
-        From    => 'rt@example.com',
-        Subject => 'test',
-        Data    => ['test'],
-    );
-
-    my %res;
-    warning_like {
-        %res = RT::Crypt->SignEncrypt(
-            Entity     => $entity,
-            Encrypt    => 0,
-            Passphrase => 'wrong',
-        );
-    } qr/bad passphrase/;
-
-    ok( $res{'exit_code'}, "couldn't sign with bad passphrase");
-    ok( $res{'error'} || $res{'logger'}, "error is here" );
-
-    my @status = RT::Crypt->ParseStatus(
-        Protocol => $res{'Protocol'}, Status => $res{'status'}
-    );
-    is( scalar @status, 1, 'one record');
-    is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
-    is( $status[0]->{'Status'}, 'BAD', 'wrong passphrase');
-}
 
 diag 'encryption only';
 {
@@ -164,20 +173,26 @@ diag 'encryption only, bad recipient';
     );
 
     my %res;
-    warning_like {
+    my @warnings;
+    {
+        local $SIG{__WARN__} = sub {
+            push @warnings, map { split("\n", $_) } @_;
+        };
+
         %res = RT::Crypt->SignEncrypt(
             Entity => $entity,
             Sign   => 0,
         );
-    } qr/(public key not found|No public key)/;
-
+        ok( scalar @warnings, "Got warnings" );
+        ok (grep { m/(public key not found|No public key|No Data)/i } @warnings );
+    }
     ok( $res{'exit_code'}, 'no way to encrypt without keys of recipients');
     ok( $res{'logger'}, "errors are in logger" );
 
     my @status = RT::Crypt->ParseStatus(
         Protocol => $res{'Protocol'}, Status => $res{'status'}
     );
-    is( scalar @status, 1, 'one record');
+    ok( scalar @status, 'have records');
     is( $status[0]->{'Keyword'}, 'INV_RECP', 'invalid recipient');
 }
 
@@ -191,12 +206,17 @@ diag 'encryption and signing with combined method';
     );
     my %res = RT::Crypt->SignEncrypt( Entity => $entity, Passphrase => 'test' );
     ok( !$res{'exit_code'}, "successful encryption with signing" );
-    ok( !$res{'logger'}, "no records in logger" );
+    if ($using_legacy_gnupg) {
+        ok( !$res{'logger'}, "no records in logger" );
+    }
+    else {
+        ok(1);
+    }
 
     my @status = RT::Crypt->ParseStatus(
         Protocol => $res{'Protocol'}, Status => $res{'status'}
     );
-    if ($gnupg_version < 2) {
+    if ($using_legacy_gnupg) {
         is( scalar @status, 3, 'three records: passphrase, sign and encrypt');
         is( $status[0]->{'Operation'}, 'PassphraseCheck', 'operation is correct');
         is( $status[0]->{'Status'}, 'DONE', 'done');
@@ -211,6 +231,7 @@ diag 'encryption and signing with combined method';
         is( $status[0]->{'Status'}, 'DONE', 'done');
         is( $status[1]->{'Operation'}, 'Encrypt', 'operation is correct');
         is( $status[1]->{'Status'}, 'DONE', 'done');
+        ok(1);
     }
 
     ok($entity, 'get an encrypted and signed part');
@@ -235,7 +256,14 @@ diag 'encryption and signing with cascading, sign on encrypted';
     ok( !$res{'logger'}, "no records in logger" );
     %res = RT::Crypt->SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );
     ok( !$res{'exit_code'}, 'successful signing' );
-    ok( !$res{'logger'}, "no records in logger" );
+
+    if ($using_legacy_gnupg) {
+        ok( !$res{'logger'}, "no records in logger" );
+    }
+    else {
+        ok(1);
+    }
+
 
     my @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
     is( scalar @parts, 1, 'one protected part, top most' );
@@ -351,7 +379,8 @@ diag 'wrong signed/encrypted parts: wrong proto';
 
 diag 'verify inline and in attachment signatures';
 {
-    open( my $fh, '<', "$homedir/signed_old_style_with_attachment.eml" ) or die $!;
+    my $email_dir = get_test_data_dir(use_legacy_keys => 1);
+    open( my $fh, '<', "$email_dir/signed_old_style_with_attachment.eml" ) or die $!;
     my $parser = new MIME::Parser;
     my $entity = $parser->parse( $fh );
 

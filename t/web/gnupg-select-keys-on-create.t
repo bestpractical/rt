@@ -1,8 +1,10 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
 use RT::Action::SendEmail;
+
+use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
+require RT::Test;
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -28,13 +30,14 @@ diag "check that signing doesn't work if there is no key";
         'unable to sign outgoing email messages',
         'problems with passphrase'
     );
-    $m->warning_like(qr/signing failed: secret key not available/);
+    $m->warnings_exist(qr/signing failed: (No secret key|secret key not available)/);
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 }
 
 {
+
     RT::Test->import_gnupg_key('rt-recipient@example.com');
     RT::Test->trust_gnupg_key('rt-recipient@example.com');
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-recipient@example.com' );
@@ -66,14 +69,14 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->next_warning_like(qr/public key not found/) for 1 .. 2;
+    $m->next_warning_like(qr/(No public key|public key not found)/) for 1 .. 2;
     $m->no_leftover_warnings_ok;
 }
 
 diag "import first key of rt-test\@example.com";
 my $fpr1 = '';
 {
-    RT::Test->import_gnupg_key('rt-test@example.com', 'secret');
+    RT::Test->import_gnupg2_key('rt-test@example.com', 'secret');
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com' );
     is $res{'info'}[0]{'TrustLevel'}, 0, 'is not trusted key';
     $fpr1 = $res{'info'}[0]{'Fingerprint'};
@@ -170,7 +173,7 @@ diag "check that things still doesn't work if two keys are not trusted";
 
 {
     RT::Test->lsign_gnupg_key( $fpr1 );
-    my %res = RT::Crypt->GetKeysInfo( Key => 'rt-test@example.com' );
+    my %res = RT::Crypt->GetKeysForEncryption(Recipient => 'rt-test@example.com');
     ok $res{'info'}[0]{'TrustLevel'} > 0, 'trusted key';
     is $res{'info'}[1]{'TrustLevel'}, 0, 'is not trusted key';
 }

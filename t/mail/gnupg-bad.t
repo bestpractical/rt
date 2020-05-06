@@ -5,10 +5,9 @@ use RT::Test::GnuPG
   tests         => 7,
   gnupg_options => {
     passphrase => 'rt-test',
-    homedir => RT::Test::get_abs_relocatable_dir(
-        File::Spec->updir(), qw/data gnupg keyrings/
-    ),
   };
+
+copy_test_keyring_to_homedir(use_legacy_keys => 1);
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

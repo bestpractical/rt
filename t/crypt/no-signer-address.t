@@ -35,8 +35,8 @@ my ($status, undef, $msg) = $ticket->Create(
 );
 ok( $status, "created ticket" ) or diag "error: $msg";
 
-is( scalar @warnings, 1, "Got a warning" );
-like( $warnings[0], qr{signing failed: secret key not available},
+ok( scalar @warnings, "Got a warning" );
+like( $warnings[0], qr/signing failed: (No secret key|secret key not available)/,
     "Found warning of no secret key");
 
 done_testing;
