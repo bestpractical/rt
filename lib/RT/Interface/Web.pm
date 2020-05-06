@@ -4683,7 +4683,6 @@ sub UpdateDashboard {
             return ( $ok, $msg ) = $user->SetPreferences( 'HomepageSettings', $data->{panes} );
         }
     } else {
-        use RT::Dashboard;
         my $Dashboard = RT::Dashboard->new( $session{'CurrentUser'} );
         ( $ok, $msg ) = $Dashboard->LoadById($id);
 
