@@ -4589,9 +4589,19 @@ Set( %ServiceBusinessHours, );
 =item C<%CustomDateRanges>
 
 This option lets you declare additional date ranges to be calculated
-and displayed in search results. Durations between any two core fields,
-as well as custom fields, are supported. Each custom date range is
-added as an additional display column in the search builder.
+and displayed in search results. Durations between any two core date
+fields, as well as date custom fields, are supported. Each custom
+date range is added as an additional display column in the query builder.
+
+You can create basic date calculations via the web UI. SuperUsers can
+create them in the main System Configuration section. Individual users
+can also create date ranges in the Search options section of user
+preferences. More complicated configurations, such as those with
+custom code, can be added in your C<RT_SiteConfig.pm> file as described
+below.
+
+Business hours are also supported in calculations if you have
+L<%ServiceBusinessHours> configured.
 
 Set C<%CustomDateRanges> to a nested structure similar to the following:
 
