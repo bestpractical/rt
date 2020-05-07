@@ -45,15 +45,41 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>" id="<% $Name %>" class="form-control selectpicker custom-date-range-field">
-<option value="" >-</option>
-% for my $field ( $ObjectType->new( $session{CurrentUser} )->CustomDateRangeFields ) {
-<option <% $field eq ($Default//'') ? 'selected="selected"' : '' |n %> value="<% $field %>" ><% $field %></option>
-% }
-</select>
+<%DOC>
+see docs/extending/using_forms_widgets.pod
 
-<%ARGS>
-$Name => ''
-$Default => ''
-$ObjectType => 'RT::Ticket'
-</%ARGS>
+This is a special widget only for custom date ranges, it obeys the
+InputOnly/Process basic structure but no general arguments like Name,
+Default, etc.
+</%DOC>
+
+<& SELF:InputOnly, %ARGS &>
+
+<%METHOD InputOnly>
+<input type="hidden" name="CustomDateRanges" value="1" />
+<&|/Widgets/TitleBox, title => loc('Custom Date Ranges In Config Files'), class => 'mx-auto max-width-xl' &>
+% if ( $config && keys %{$config->{'RT::Ticket'}} ) {
+  <& /Elements/ShowCustomDateRanges, CustomDateRanges => $config->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
+% }
+% else {
+  <p class="mt-3 mt-1 ml-3"><&|/l&>No custom date ranges in config files</&></p>
+% }
+</&>
+
+<&|/Widgets/TitleBox, title => loc('Custom Date Ranges'), class => 'mx-auto max-width-xl' &>
+  <& /Elements/EditCustomDateRanges, CustomDateRanges => $content->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
+</&>
+
+<%INIT>
+
+my $config = RT->Config->Get('CustomDateRanges');
+my $db_config = RT::Configuration->new( $session{CurrentUser} );
+$db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
+
+my $content;
+$content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
+</%INIT>
+</%METHOD>
+
+<%METHOD Process>
+</%METHOD>

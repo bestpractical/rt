@@ -1,0 +1,112 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+%# TODO selectpicker options exceeding the table are invisible in .table-responsive
+%# <div class="table-responsive">
+<div>
+  <table class="collection-as-table table">
+    <tr class="collection-as-table text-center">
+      <th class="collection-as-table"><&|/l&>Name</&></th>
+      <th class="collection-as-table"><&|/l&>From</&></th>
+      <th class="collection-as-table"><&|/l&>From Value<br>if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>To</&></th>
+      <th class="collection-as-table"><&|/l&>To Value<br>if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>Business<br>Hours?</&></th>
+      <th class="collection-as-table text-left">
+        <input type="checkbox" name="DeleteAll" value="1" onclick="setCheckbox(this, /^\d+-Delete$/)" />
+        <&|/l&>Delete</&>
+      </th>
+    </tr>
+% my $i = 0;
+% if ( keys %CustomDateRanges ) {
+% my $id = 0;
+%   for my $name ( sort keys %CustomDateRanges ) {
+% $i++;
+    <tr class="collection-as-table">
+      <td class="collection-as-table"><input type="text" name="<% $id %>-name" value="<% $name %>" class="form-control" /></td>
+%       my %date_range_spec = $ObjectType->_ParseCustomDateRangeSpec($name, $CustomDateRanges{$name});
+      <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-from", Default => $date_range_spec{from} &></td>
+      <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-from_fallback", Default => $date_range_spec{from_fallback} &></td>
+      <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-to", Default => $date_range_spec{to} &></td>
+      <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => "$id-to_fallback", Default => $date_range_spec{to_fallback} &></td>
+      <td class="collection-as-table">
+        <select name="<% $id %>-business_time" class="form-control selectpicker">
+          <option value="1" <% $date_range_spec{business_time} ? 'selected="selected"' : '' |n%>><&|/l&>Yes</&></option>
+          <option value="0" <% $date_range_spec{business_time} ? '': 'selected="selected"' |n%>><&|/l&>No</&></option>
+        </select>
+      </td>
+      <td class="collection-as-table"><input type="checkbox" name="<% $id %>-Delete" value="1" /></td>
+    </tr>
+%     $id++;
+%   }
+% }
+
+% for ( 1 .. 3 ) {
+% $i++;
+    <tr class="collection-as-table">
+      <td class="collection-as-table"><input type="text" name="name" value="" class="form-control" /></td>
+      <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'from' &></td>
+      <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'from_fallback' &></td>
+      <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'to' &></td>
+      <td class="collection-as-table"><& /Elements/SelectCustomDateRangeField, Name => 'to_fallback' &></td>
+      <td class="collection-as-table">
+        <select name="business_time" class="form-control selectpicker">
+          <option value="1"><&|/l&>Yes</&></option>
+          <option value="0" selected="selected"><&|/l&>No</&></option>
+        </select>
+      </td>
+      <td class="collection-as-table"></td>
+    </tr>
+% }
+  </table>
+</div>
+
+<%ARGS>
+%CustomDateRanges => ()
+$ObjectType => 'RT::Ticket'
+</%ARGS>

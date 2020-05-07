@@ -2648,18 +2648,45 @@ Return all of the custom date ranges of current class.
 
 sub CustomDateRanges {
     my $self = shift;
-    my $type = ref $self || $self;
+    my %args = (
+        Type          => undef,
+        ExcludeSystem => undef,
+        ExcludeUsers  => undef,
+        ExcludeUser   => undef,
+        @_,
+    );
 
+    my $type = $args{Type} || ref $self || $self,;
     my %ranges;
 
-    if ( my $config = RT->Config->Get('CustomDateRanges') ) {
-        %ranges = %{ $config->{$type} } if $config->{$type};
+    if ( !$args{ExcludeSystem} ) {
+        if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+            for my $name ( keys %{ $config->{$type} || {} } ) {
+                $ranges{$name} ||= $config->{$type}{$name};
+            }
+        }
+
+        if ( my $db_config = RT->Config->Get('CustomDateRangesUI') ) {
+            for my $name ( keys %{ $db_config->{$type} || {} } ) {
+                $ranges{$name} ||= $db_config->{$type}{$name};
+            }
+        }
     }
 
-    if ( my $attribute = RT->System->FirstAttribute('CustomDateRanges') ) {
-        if ( my $content = $attribute->Content ) {
-            for my $name ( keys %{ $content->{$type} || {} } ) {
-                $ranges{$name} ||= $content->{$type}{$name};
+    if ( !$args{ExcludeUsers} ) {
+        my $attributes = RT::Attributes->new( RT->SystemUser );
+        $attributes->Limit( FIELD => 'Name',       VALUE => 'Pref-CustomDateRanges' );
+        $attributes->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+        if ( $args{ExcludeUser} ) {
+            $attributes->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $args{ExcludeUser} );
+        }
+        $attributes->OrderBy( FIELD => 'id' );
+
+        while ( my $attribute = $attributes->Next ) {
+            if ( my $content = $attribute->Content ) {
+                for my $name ( keys %{ $content->{$type} || {} } ) {
+                    $ranges{$name} ||= $content->{$type}{$name};
+                }
             }
         }
     }

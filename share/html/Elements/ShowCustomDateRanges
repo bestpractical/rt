@@ -45,15 +45,34 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>" id="<% $Name %>" class="form-control selectpicker custom-date-range-field">
-<option value="" >-</option>
-% for my $field ( $ObjectType->new( $session{CurrentUser} )->CustomDateRangeFields ) {
-<option <% $field eq ($Default//'') ? 'selected="selected"' : '' |n %> value="<% $field %>" ><% $field %></option>
+
+<div class="table-responsive">
+  <table class="table collection-as-table">
+    <tr class="collection-as-table">
+      <th class="collection-as-table"><&|/l&>Name</&></th>
+      <th class="collection-as-table"><&|/l&>From</&></th>
+      <th class="collection-as-table"><&|/l&>From Value<br>if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>To</&></th>
+      <th class="collection-as-table"><&|/l&>To Value<br>if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>Business<br>Hours?</&></th>
+    </tr>
+% my $i = 0;
+% for my $name ( sort keys %CustomDateRanges ) {
+% $i++;
+    <tr class="collection-as-table">
+      <td class="collection-as-table"><% $name %></td>
+%     my %date_range_spec = $ObjectType->_ParseCustomDateRangeSpec($name, $CustomDateRanges{$name});
+      <td class="collection-as-table"><% $date_range_spec{from} %></td>
+      <td class="collection-as-table"><% $date_range_spec{from_fallback} || '' %></td>
+      <td class="collection-as-table"><% $date_range_spec{to} %></td>
+      <td class="collection-as-table"><% $date_range_spec{to_fallback} || '' %></td>
+      <td class="collection-as-table"><% $date_range_spec{business_time} ? loc('Yes') : loc('No') %></td>
+    </tr>
 % }
-</select>
+  </table>
+</div>
 
 <%ARGS>
-$Name => ''
-$Default => ''
+%CustomDateRanges => ()
 $ObjectType => 'RT::Ticket'
 </%ARGS>

@@ -45,15 +45,56 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>" id="<% $Name %>" class="form-control selectpicker custom-date-range-field">
-<option value="" >-</option>
-% for my $field ( $ObjectType->new( $session{CurrentUser} )->CustomDateRangeFields ) {
-<option <% $field eq ($Default//'') ? 'selected="selected"' : '' |n %> value="<% $field %>" ><% $field %></option>
+<& /Elements/Header, Title => loc('Custom Date Ranges') &>
+<& /Elements/Tabs &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<&|/Widgets/TitleBox, title => loc('System Custom Date Ranges'), class => 'mx-auto max-width-xl' &>
+% if ( keys %{$system_config->{'RT::Ticket'}} ) {
+  <& /Elements/ShowCustomDateRanges, CustomDateRanges => $system_config->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
 % }
-</select>
+% else {
+  <p class="mt-3 mt-1 ml-3"><&|/l&>No system custom date ranges</&></p>
+% }
+</&>
+
+<&|/Widgets/TitleBox, title => loc('Other Users Custom Date Ranges'), class => 'mx-auto max-width-xl' &>
+% if ( keys %{$user_config->{'RT::Ticket'}} ) {
+  <& /Elements/ShowCustomDateRanges, CustomDateRanges => $user_config->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
+% }
+% else {
+  <p class="mt-3 mt-1 ml-3"><&|/l&>No other users custom date ranges</&></p>
+% }
+</&>
+
+<form name="CustomDateRanges" method="POST">
+  <&|/Widgets/TitleBox, title => loc('My Custom Date Ranges'), class => 'mx-auto max-width-xl' &>
+    <& /Elements/EditCustomDateRanges, CustomDateRanges => $content->{'RT::Ticket'} || {}, ObjectType => 'RT::Ticket' &>
+    <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
+  </&>
+</form>
+
+<%INIT>
+my $system_config = { 'RT::Ticket' => { RT::Ticket->CustomDateRanges( ExcludeUsers => 1 ) } };
+my $user_config = {
+    'RT::Ticket' => { RT::Ticket->CustomDateRanges( ExcludeSystem => 1, ExcludeUser => $session{CurrentUser}->Id ) } };
+
+my $content = $session{CurrentUser}->Preferences('CustomDateRanges');
+
+my @results;
+
+if ($Save) {
+    push @results, ProcessCustomDateRanges( ARGSRef => \%ARGS, UserPreference => 1 );
+}
+
+MaybeRedirectForResults(
+    Actions => \@results,
+    Path    => '/Prefs/CustomDateRanges.html',
+);
+
+</%INIT>
 
 <%ARGS>
-$Name => ''
-$Default => ''
-$ObjectType => 'RT::Ticket'
+$Save => undef
 </%ARGS>
