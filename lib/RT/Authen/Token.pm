@@ -92,6 +92,8 @@ sub UserForAuthString {
 
 RT-Authen-Token - token-based authentication
 
+=cut
+
 =head1 DESCRIPTION
 
 Allow for users to generate and login with authentication tokens.
@@ -116,7 +118,7 @@ Authentication tokens are stored securely (hashed and salted) in the
 database just like passwords, and so cannot be recovered after they are
 generated.
 
-=item Update your Apache configuration
+=head2 Update your Apache configuration
 
 If you are running RT under Apache, add the following directive to your RT
 Apache configuration to allow RT to access the Authorization header.

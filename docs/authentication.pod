@@ -86,6 +86,11 @@ An example of using LDAP authentication and HTTP Basic auth:
     </Location>
 
 
+If you using token authorization then add the following directive to your RT
+Apache configuration to allow RT to access the Authorization header.
+
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
 =head3 RT Configuration Options
 
 All of the following options control the behavior of RT's built-in external
