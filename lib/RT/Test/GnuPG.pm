@@ -60,24 +60,18 @@ use RT::Crypt::GnuPG;
 
 our @EXPORT =
   qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options
-          check_text_emails send_email_and_check_transaction
+          check_text_emails send_email_and_check_trangnsaction
           create_and_test_outgoing_emails
+          copy_test_keys_to_homedir copy_test_keyring_to_homedir get_test_gnupg_interface
+          $homedir $gnupg_version $using_legacy_gnupg
           );
 
-use vars qw($homedir $gnupg_version $using_legacy_gnupg);
 no warnings qw(redefine once);
 
 BEGIN {
-    if (-f "test/gnupghome") {
-        my $record = IO::File->new( "< t/data/gnupghome" );
-        $homedir = <$record>;
-        $record->close();
-    } else {
-        $homedir = tempdir( DIR => '/tmp');
-        my $record = IO::File->new( "> t/data/gnupghome" );
-        $record->write($homedir);
-        $record->close();
-    }
+    use vars qw($homedir $gnupg_version $using_legacy_gnupg);
+    my $tempdir_template = 'test_gnupg_XXXXXXXXX';
+    $homedir = tempdir( $tempdir_template, DIR => '/tmp', CLEANUP => 1);
 
     $ENV{'GNUPGHOME'} =  $homedir;
 
@@ -126,7 +120,8 @@ BEGIN {
     };
 
     make_path($homedir, { mode => 0700 });
-    copy('t/data//gpg.conf', $homedir . '/gpg.conf');
+    my $data_path = RT::Test::get_abs_relocatable_dir( File::Spec->updir(), 'data');
+    copy('$data_path/gpg.conf', $homedir . '/gpg.conf');
 
     my $gnupg = GnuPG::Interface->new;
     $gnupg->options->hash_init(
@@ -141,11 +136,14 @@ BEGIN {
         my $agentconf = IO::File->new( "> " . $homedir . "/gpg-agent.conf" );
         # Classic gpg can't use loopback pinentry programs like fake-pinentry.pl.
 
+        # default to empty passphrase pinentry
+        # passphrase in "pinentry-program $data_path/gnupg2/bin/fake-pinentry.pl\n"
         $agentconf->write(
             "allow-preset-passphrase\n".
                 "allow-loopback-pinentry\n".
-                "pinentry-program " . getcwd() . "/test/fake-pinentry.pl\n"
+                "pinentry-program $data_path/gnupg2/bin/empty-pinentry.pl\n"
             );
+
         $agentconf->close();
 
         my $error = system("gpg-connect-agent", "--homedir", "$homedir", '/bye');
@@ -162,7 +160,14 @@ BEGIN {
         if ($error) {
             warn "gpg-agent returned error : $error";
         }
+    }
+}
 
+
+END {
+    unless ($using_legacy_gnupg) {
+        system('gpgconf', '--homedir', $homedir,'--quiet', '--kill', 'gpg-agent');
+        delete $ENV{'GNUPGHOME'};
     }
 }
 
@@ -471,3 +476,60 @@ sub create_and_test_outgoing_emails {
         }
     }
 }
+
+sub copy_test_keyring_to_homedir {
+    my (%args) = @_;
+    my $srcdir;
+    if ($using_legacy_gnupg || $args{use_legacy_keys}) {
+        $srcdir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg keyrings/ );
+    }
+    else {
+        $srcdir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg2 keyrings/ );
+    }
+    opendir(my $DIR, $srcdir) || die "can't opendir $srcdir: $!";
+    my @files = readdir($DIR);
+    foreach my $file (@files) {
+        if(-f "$srcdir/$file" ) {
+            copy "$srcdir/$file", "$homedir/$file";
+        }
+    }
+    closedir($DIR);
+}
+
+sub copy_test_keys_to_homedir {
+    my (%args) = @_;
+    my $srcdir;
+    if ($using_legacy_gnupg || $args{use_legacy_keys}) {
+        $srcdir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg keys/ );
+    }
+    else {
+        $srcdir =
+            RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
+                                               qw/data gnupg2 keys/ );
+    }
+
+    opendir(my $DIR, $srcdir) || die "can't opendir $srcdir: $!";
+    my @files = readdir($DIR);
+    foreach my $file (@files) {
+        if(-f "$srcdir/$file" ) {
+            copy "$srcdir/$file", "$homedir/$file";
+        }
+    }
+    closedir($DIR);
+}
+
+sub get_test_gnupg_interface {
+    my $gnupg = GnuPG::Interface->new;
+    $gnupg->options->hash_init(
+       RT::Crypt::GnuPG::_PrepareGnuPGOptions( ),
+    );
+    return $gnupg;
+}
+
+1;
