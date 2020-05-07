@@ -45,5 +45,19 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/AuthToken/List, Owner => $ARGS{owner} &>
-% $m->abort;
+
+<& /Elements/AuthToken/Create, Owner => $UserObj->Id, %ARGS &>
+
+<%ARGS>
+$id => undef
+</%ARGS>
+<%INIT>
+my @results;
+
+my $UserObj = RT::User->new( $session{'CurrentUser'} );
+$UserObj->Load( $id );
+unless ( $UserObj->id ) {
+    Abort( loc("Couldn't load user #[_1]", $id) );
+}
+$id = $ARGS{'id'} = $UserObj->id;
+</%INIT>

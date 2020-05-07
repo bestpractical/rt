@@ -45,13 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%ARGS>
-$Owner
-</%ARGS>
-<%INIT>
-my $tokens = RT::Authen::Token::AuthTokens->new($session{CurrentUser});
-$tokens->LimitOwner(VALUE => $Owner);
-</%INIT>
+
 <div class="authtoken-list" data-owner="<% $Owner %>">
   <span class="loading"><img src="<%RT->Config->Get('WebPath')%>/static/images/loading.gif" alt="<%loc('Loading')%>" title="<%loc('Loading')%>" /></span>
 % if ($tokens->Count == 0) {
@@ -81,7 +75,7 @@ $tokens->LimitOwner(VALUE => $Owner);
             <& /Elements/AuthToken/ModifyResults, %ARGS, Token => $token->Id, Owner => $Owner &>
 % }
 % }
-            <form class="authtoken-form" method="post" data-ajax-url="<% RT->Config->Get('WebPath') %>/Helpers/AuthToken/Modify" action="<% RT->Config->Get('WebPath') %><% $r->uri %>">
+            <form class="authtoken-form" method="post" action="<% RT->Config->Get('WebPath') . $Path %>">
               <div class="form-row">
 % if ($ARGS{id}) {
                 <input type="hidden" name="id" value="<% $ARGS{id} %>">
@@ -136,3 +130,13 @@ $tokens->LimitOwner(VALUE => $Owner);
   </ul>
 % }
 </div>
+
+<%INIT>
+my $tokens = RT::Authen::Token::AuthTokens->new($session{CurrentUser});
+$tokens->LimitOwner(VALUE => $Owner);
+</%INIT>
+
+<%ARGS>
+$Owner
+$Path
+</%ARGS>

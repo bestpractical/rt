@@ -45,32 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
 <& /Elements/Header, Title => loc('My authentication tokens') &>
 <& /Elements/Tabs &>
-<& /Elements/ListActions, actions => \@results &>
 
-<div class="form-row">
-  <div class="col-12">
-    <p><&|/l&>Authentication tokens allow other applications to use your user
-        account without having to share your password, while allowing you to
-       revoke access on an application-specific basis. Changing your password
-        <em>does not</em> invalidate your auth tokens; you must revoke them here.
-    </&></p>
-  </div>
-
-  <div class="col-12">
-    <& /Elements/AuthToken/CreateForm, %ARGS, Owner => $UserObj->Id &>
-  </div>
-
-  <div id="auth-token-messages" class="auth-token-messages col-12">
-  </div>
-
-  <div class="col-12">
-    <& /Elements/AuthToken/List, %ARGS, Owner => $UserObj->Id &>
-  </div>
-</div>
+<& /Elements/AuthToken/AuthTokens, Owner => $owner, Path => '/Prefs/AuthTokens.html', %ARGS &>
 
 <%INIT>
-my @results;
-my $UserObj = $session{'CurrentUser'}->UserObj;
+my $owner = $session{'CurrentUser'}->UserObj->Id;
 </%INIT>

@@ -94,14 +94,13 @@ RT-Authen-Token - token-based authentication
 
 =head1 DESCRIPTION
 
-This module adds the ability for users to generate and login with
-authentication tokens. Users with the C<ManageAuthTokens> permission
-will see a new "Auth Tokens" menu item under "Logged in as ____" ->
-Settings. On that page they will be able to generate new tokens and
-modify or revoke existing tokens.
+Allow for users to generate and login with authentication tokens.
+Users with the C<ManageAuthTokens> permission will see a new "Auth Tokens"
+menu item under "Logged in as ____" -> Settings. On that page they will
+be able to generate new tokens and modify or revoke existing tokens.
 
 Once you have an authentication token, you may use it in place of a
-password to log into RT. (Additionally, L<RT::Extension::REST2> allows
+password to log into RT. (Additionally, L<REST2> allows
 for using auth tokens with the C<Authorization: token> HTTP header.) One
 common use case is to use an authentication token as an
 application-specific password, so that you may revoke that application's
@@ -123,6 +122,7 @@ If you are running RT under Apache, add the following directive to your RT
 Apache configuration to allow RT to access the Authorization header.
 
     SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
 =cut
 
 1;

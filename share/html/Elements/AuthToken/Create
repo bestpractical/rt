@@ -45,39 +45,53 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%ARGS>
-$Token
-$Description => ''
-$Update => 0
-$Revoke => 0
-</%ARGS>
-<%INIT>
-my $TokenObj = RT::Authen::Token::AuthToken->new($session{CurrentUser});
-$TokenObj->Load($Token);
-my ($error, $ok, $msg);
-
-if ($Update) {
-    if (!length($Description)) {
-        $error = loc("Description cannot be blank.");
-    }
-
-    if ($Description ne $TokenObj->Description) {
-        ($ok, $msg) = $TokenObj->SetDescription($Description);
-        $error = $msg if !$ok;
-    }
-}
-elsif ($Revoke) {
-    ($ok, $msg) = $TokenObj->Delete;
-}
-</%INIT>
-<div id="messages" class="auth-token-messages col-6">
-% if ( $error ) {
-  <div class="alert alert-danger" role="alert">
-    <% $error %>
-  </div>
-% } if ( $msg ) {
-    <div class="alert alert-success" role="alert">
-      <% $msg %>
-    </div>
+<div class="modal" id="create-auth-token">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title"><&|/l&>Create auth token</&></h5>
+        <a id="auth-token-close-modal" href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+        </div>
+        <div class="modal-body">
+          <form class="authtoken-form" method="POST" action="<% RT->Config->Get('WebPath') . $Path %>">
+            <div class="form-row">
+              <input type="hidden" name="Owner" value="<% $Owner %>">
+% if ( $res{'CanSet'} ){
+              <div class="label col-3">
+                <&|/l, $session{'CurrentUser'}->Name()&>[_1]'s current password</&>:
+              </div>
+              <div class="value col-9">
+                <input class="form-control" type="password" name="Password" size="16" autocomplete="off" /></td>
+              </div>
 % }
+              <div class="col-3 label">
+                <&|/l&>Description</&>:<br><em><&|/l&>What's this token for?</&></em>
+              </div>
+              <div class="value col-9">
+                <input class="form-control" type="text" name="Description" value="<% $Description %>" size="16" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-12">
+                <& /Elements/Submit, Label => loc("Create"), Name => 'CreateToken' &>
+              </div>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
 </div>
+
+<%INIT>
+# Don't require password for systems with some form of federated auth
+my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+</%INIT>
+
+<%ARGS>
+$Path
+$Owner
+$Description => ''
+</%ARGS>

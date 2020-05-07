@@ -917,6 +917,13 @@ sub BuildMainNav {
         $page->child( history => title => loc('History'), path => "/Admin/Tools/ConfigHistory.html" );
     }
 
+    if ( $request_path =~ m{^/Prefs/AuthTokens} ) {
+        $page->child( select_auth_token => title => loc('Select'), path => '/Prefs/AuthTokens.html');
+        $page->child( create_auth_token => title => loc('Create'),
+            raw_html => q[<a class="btn menu-item" href="#create-auth-token" data-toggle="modal" rel="modal:open">].loc("Create")."</a>"
+        );
+    }
+
     # due to historical reasons of always having been in /Elements/Tabs
     $HTML::Mason::Commands::m->callback( CallbackName => 'Privileged', Path => $request_path, Search_Args => $args, Has_Query => $has_query, ARGSRef => \%args, CallbackPage => '/Elements/Tabs' );
 }
@@ -1346,6 +1353,16 @@ sub _BuildAdminMenu {
                     $page->child( keys    => title => loc('Private keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
                 }
                 $page->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
+
+                my $auth_tokens = $page->child(auth_tokens => title => loc('Auth Tokens'), path => '/Admin/Users/AuthTokens.html?id=' . $id);
+
+                # Only show the create option on the auth token select page because we use a modal
+                if ( $request_path =~ m{^(/Admin/Users/AuthTokens.html)} and $admin->child("users") ) {
+                    $auth_tokens->child( select_auth_token => title => loc('Select'), path => '/Admin/Users/AuthTokens.html?id='.$id);
+                    $auth_tokens->child( create_auth_token => title => loc('Create'),
+                        raw_html => q[<a class="btn menu-item" href="#create-auth-token" data-toggle="modal" rel="modal:open">].loc("Create")."</a>"
+                    );
+                }
             }
         }
 
@@ -1533,20 +1550,6 @@ sub _BuildAdminMenu {
         } else {
             $page->child( select => title => loc('Select'), path => "/Admin/Articles/Classes/" );
             $page->child( create => title => loc('Create'), path => "/Admin/Articles/Classes/Modify.html?Create=1" );
-        }
-    }
-
-    my $request_path_token = $request_path =~ s!/{2,}!/!g;
-    if ( $request_path_token =~ m{^(/Admin/Users|/User/(Summary|History)\.html)} and $admin->child("users") ) {
-        if ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} && $HTML::Mason::Commands::DECODED_ARGS->{'id'} =~ /^\d+$/ ) {
-            my $id = $HTML::Mason::Commands::DECODED_ARGS->{'id'};
-            my $obj = RT::User->new( $HTML::Mason::Commands::session{'CurrentUser'} );
-            $obj->Load($id);
-
-            if ( $obj and $obj->id ) {
-                my $tabs = PageMenu();
-                $tabs->child(auth_tokens => title => loc('Auth Tokens'), path => '/Admin/Users/AuthTokens.html?id=' . $id);
-            }
         }
     }
 }

@@ -349,47 +349,7 @@ sub HandleRequest {
 
         # Authenticate if the user is trying to login via user/pass query args
         my ($authed, $msg) = AttemptPasswordAuthentication($ARGS);
-
-        unless ($authed) {
-            my $get_env = sub {
-                my $key = shift;
-                if (RT::Interface::Web->can('RequestENV')) {
-                    return RT::Interface::Web::RequestENV($key)
-                }
-                return $ENV{$key};
-            };
-
-            my ($pass, $user) = ('', '');
-            if (($get_env->('HTTP_AUTHORIZATION')||'') =~ /^token (.*)$/i) {
-                $pass ||= $1;
-            }
-            unless ( defined $pass ) {
-                my ($user_obj, $token) = RT::Authen::Token->UserForAuthString($pass, $user);
-                if ( $user_obj ) {
-                    # log in
-                    my $remote_addr = $get_env->('REMOTE_ADDR');
-                    $RT::Logger->info("Successful login for @{[$user_obj->Name]} from $remote_addr using authentication token #@{[$token->Id]} (\"@{[$token->Description]}\")");
-
-                    # It's important to nab the next page from the session before we blow
-                    # the session away
-                    my $next = RT::Interface::Web::RemoveNextPage($ARGS->{'next'});
-                    $next = $next->{'url'} if ref $next;
-
-                    RT::Interface::Web::InstantiateNewSession();
-                    $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
-
-                    # Really the only time we don't want to redirect here is if we were
-                    # passed user and pass as query params in the URL.
-                    if ($next) {
-                        RT::Interface::Web::Redirect($next);
-                    }
-                    elsif ($ARGS->{'next'}) {
-                        # Invalid hash, but still wants to go somewhere, take them to /
-                        RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
-                    }
-                }
-            }
-        }
+        AttemptTokenAuthentification($ARGS);
 
         unless ($authed) {
             my $m = $HTML::Mason::Commands::m;
@@ -906,6 +866,50 @@ sub AttemptPasswordAuthentication {
         }
 
         return (1, HTML::Mason::Commands::loc('Logged in'));
+    }
+}
+
+sub AttemptTokenAuthentification {
+    my $ARGS = shift;
+    return if RT::Interface::Web::_UserLoggedIn();
+
+    my $get_env = sub {
+        my $key = shift;
+        if (RT::Interface::Web->can('RequestENV')) {
+            return RT::Interface::Web::RequestENV($key)
+        }
+        return $ENV{$key};
+    };
+
+    my ($pass, $user) = ('', '');
+    if (($get_env->('HTTP_AUTHORIZATION')||'') =~ /^token (.*)$/i) {
+        $pass ||= $1;
+    }
+    return unless defined $pass;
+
+    my ($user_obj, $token) = RT::Authen::Token->UserForAuthString($pass, $user);
+    if ( $user_obj ) {
+        # log in
+        my $remote_addr = $get_env->('REMOTE_ADDR');
+        $RT::Logger->info("Successful login for @{[$user_obj->Name]} from $remote_addr using authentication token #@{[$token->Id]} (\"@{[$token->Description]}\")");
+
+        # It's important to nab the next page from the session before we blow
+        # the session away
+        my $next = RT::Interface::Web::RemoveNextPage($ARGS->{'next'});
+        $next = $next->{'url'} if ref $next;
+
+        RT::Interface::Web::InstantiateNewSession();
+        $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+
+        # Really the only time we don't want to redirect here is if we were
+        # passed user and pass as query params in the URL.
+        if ($next) {
+            RT::Interface::Web::Redirect($next);
+        }
+        elsif ($ARGS->{'next'}) {
+            # Invalid hash, but still wants to go somewhere, take them to /
+            RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+        }
     }
 }
 

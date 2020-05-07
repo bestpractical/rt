@@ -45,30 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("[_1]'s authentication tokens",$UserObj->Name)  &>
+
+<& /Elements/Header, Title => loc('My authentication tokens') &>
 <& /Elements/Tabs &>
-<& /Elements/ListActions, actions => \@results &>
 
-<div class="form-row">
-  <div class="auth-tokens col-12">
-    <p><&|/l&>Authentication tokens allow other applications to use your user
-        account without having to share your password, while allowing you to
-       revoke access on an application-specific basis. Changing your password
-        <em>does not</em> invalidate your auth tokens; you must revoke them here.</&>
-    </p>
-  </div>
-</div>
+<& /Elements/AuthToken/AuthTokens, Owner => $id, Path => '/Prefs/AuthTokens.html', %ARGS &>
 
-<& /Elements/AuthToken/CreateButton, %ARGS, Owner => $UserObj->Id &>
-<& /Elements/AuthToken/List, %ARGS, Owner => $UserObj->Id &>
-</div>
-
-<%ARGS>
-$id => undef
-</%ARGS>
 <%INIT>
-my @results;
-
 my $UserObj = RT::User->new( $session{'CurrentUser'} );
 $UserObj->Load( $id );
 unless ( $UserObj->id ) {
@@ -76,3 +59,7 @@ unless ( $UserObj->id ) {
 }
 $id = $ARGS{'id'} = $UserObj->id;
 </%INIT>
+
+<%ARGS>
+$id => undef
+</%ARGS>

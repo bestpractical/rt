@@ -1,0 +1,146 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/ListActions, actions => \@results &>
+
+<div class="form-row">
+    <div class="col-12">
+    <p><&|/l&>Authentication tokens allow other applications to use your user account without having to share your password, while allowing you to revoke access on an application-specific basis. Changing your password <em>does not</em> invalidate your auth tokens; you must revoke them here.</&></p>
+    </div>
+
+% if ( $Authstring ) {
+    <div class="modal authtoken-success" id="auth-token-auth-string">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <&|/l, $Description &>This is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again.</&>
+            <a id="auth-token-close-modal" href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </a>
+        </div>
+        <div class="col-12 authstring text-center">
+            <span><% $Authstring %></span>
+        </div>
+        </div>
+    </div>
+    </div>
+% }
+
+    <div class="col-12">
+    <& /Elements/AuthToken/Create, Path => $Path, Owner => $Owner &>
+    </div>
+
+    <div class="col-12">
+    <& /Elements/AuthToken/List, Path => $Path, Owner => $Owner &>
+    </div>
+</div>
+
+<%INIT>
+my @results;
+
+if ( $Update || $Revoke ) {
+    my $error = '';
+
+    my $token = RT::Authen::Token::AuthToken->new( $session{CurrentUser} );
+    $token->Load( $ARGS{'Token'} );
+    my ($ok, $msg);
+    if ( $Update ) {
+        if ( !length( $Description ) ) {
+            push @results, loc( "Description cannot be blank." );
+        }
+
+        if ( $Description ne $token->Description ) {
+            ($ok, $msg) = $token->SetDescription( $Description );
+            push @results, $msg;
+        }
+    }
+    elsif ($Revoke) {
+        ($ok, $msg) = $token->Delete;
+        push @results, $msg;
+    }
+}
+
+my ($authstring);
+if ( $CreateToken ) {
+    my $token = RT::Authen::Token::AuthToken->new( $session{CurrentUser} );
+
+    # Don't require password for systems with some form of federated auth
+    my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+
+    if ( !length( $Description ) ) {
+        push @results, loc("Description cannot be blank.");
+    }
+    elsif ( $res{'CanSet'} && !length( $ARGS{'Password'} ) ) {
+        push @results, loc("Please enter your current password.");
+    }
+    elsif ( $res{'CanSet'} && !$session{CurrentUser}->IsPassword($ARGS{'Password'} ) ) {
+        push @results, loc("Please enter your current password correctly.");
+    }
+    else {
+        ((my $ok), (my $msg), $Authstring) = $token->Create(
+            Owner       => $Owner,
+            Description => $Description,
+        );
+        if ( $ok ) {
+            push @results, loc( "New token successfully created" );
+        }
+        else {
+            push @results, loc( "Something went wrong" );
+        }
+    }
+}
+</%INIT>
+
+<%ARGS>
+$Path
+$Owner
+$Update      => 0
+$Revoke      => 0
+$CreateToken => 0
+$Authstring  => ''
+$Description => ''
+</%ARGS>
