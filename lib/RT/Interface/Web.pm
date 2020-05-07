@@ -4983,6 +4983,78 @@ sub ProcessCustomDateRanges {
     return @results;
 }
 
+=head2 ProcessAuthToken ARGSRef => ARGSREF
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessAuthToken {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+    my $args_ref = $args{ARGSRef};
+
+    my @results;
+    my $token = RT::AuthToken->new( $session{CurrentUser} );
+
+    if ( $args_ref->{Create} ) {
+
+        # Don't require password for systems with some form of federated auth
+        my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+
+        if ( !length( $args_ref->{Description} ) ) {
+            push @results, loc("Description cannot be blank.");
+        }
+        elsif ( $res{'CanSet'} && !length( $args_ref->{Password} ) ) {
+            push @results, loc("Please enter your current password.");
+        }
+        elsif ( $res{'CanSet'} && !$session{CurrentUser}->IsPassword( $args_ref->{Password} ) ) {
+            push @results, loc("Please enter your current password correctly.");
+        }
+        else {
+            my ( $ok, $msg, $auth_string ) = $token->Create(
+                Owner       => $args_ref->{Owner},
+                Description => $args_ref->{Description},
+            );
+            if ($ok) {
+            }
+            push @results, $msg;
+            push @results,
+                loc(
+                '"[_1]" is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again.',
+                $auth_string
+                );
+        }
+    }
+    elsif ( $args_ref->{Update} || $args_ref->{Revoke} ) {
+
+        $token->Load( $args_ref->{Token} );
+        if ( $token->Id ) {
+            if ( $args_ref->{Update} ) {
+                if ( length( $args_ref->{Description} ) ) {
+                    if ( $args_ref->{Description} ne $token->Description ) {
+                        my ( $ok, $msg ) = $token->SetDescription( $args_ref->{Description} );
+                        push @results, $msg;
+                    }
+                }
+                else {
+                    push @results, loc("Description cannot be blank.");
+                }
+            }
+            elsif ( $args_ref->{Revoke} ) {
+                my ( $ok, $msg ) = $token->Delete;
+                push @results, $msg;
+            }
+        }
+        else {
+            push @results, loc("Could not find token: [_1]", $args_ref->{Token});
+        }
+    }
+    return @results;
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 
