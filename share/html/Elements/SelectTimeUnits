@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="selectpicker form-control TimeUnits" id="<% $Name %>" name="<% $Name %>">
+<select class="selectpicker form-control TimeUnits" name="<% $Name %>">
 <option value="minutes" <% $Default eq 'minutes' ? 'selected="selected"' : '' |n%>>
     <% loc('Minutes') %>
 </option>
