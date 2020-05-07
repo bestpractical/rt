@@ -100,7 +100,7 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
         }
 
         // remove item from main menu and add it to the overflow menu
-        item.remove();
+        jQuery(item).remove();
         overflowMenu.children('ul').prepend(item);
         overflowMenu.addClass('has-overflow');
     }
