@@ -1,8 +1,10 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
 use RT::Action::SendEmail;
+
+use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
+require RT::Test;
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -28,17 +30,20 @@ diag "check that signing doesn't work if there is no key";
         'unable to sign outgoing email messages',
         'problems with passphrase'
     );
-    $m->warning_like(qr/signing failed: secret key not available/);
+    $m->warnings_exist(qr/signing failed: (No secret key|secret key not available)/);
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 }
 
 {
+
     RT::Test->import_gnupg_key('rt-recipient@example.com');
     RT::Test->trust_gnupg_key('rt-recipient@example.com');
     my %res = RT::Crypt->GetKeysInfo( Key => 'rt-recipient@example.com' );
     is $res{'info'}[0]{'TrustTerse'}, 'ultimate', 'ultimately trusted key';
+    # use Data::Dumper;
+    # warn Dumper ( { keys_info_after => $res{'info'} }) ;
 }
 
 diag "check that things don't work if there is no key";
@@ -66,7 +71,7 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->next_warning_like(qr/public key not found/) for 1 .. 2;
+    $m->next_warning_like(qr/(No public key|public key not found)/) for 1 .. 2;
     $m->no_leftover_warnings_ok;
 }
 

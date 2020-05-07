@@ -1,25 +1,18 @@
 use strict;
 use warnings;
 
-my $homedir;
-BEGIN {
-    require RT::Test;
-    $homedir =
-      RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
-        qw/data gnupg keyrings/ );
-}
-
 use RT::Test::GnuPG
   tests         => 53,
   actual_server => 1,
   gnupg_options => {
     passphrase => 'rt-test',
-    homedir    => $homedir,
   };
 
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 use MIME::Base64;
+
+copy_test_keys_to_homedir(use_legacy_keys => 1);
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -69,16 +62,67 @@ my $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --batch --no-tty --armor --sign),
+        qw(echo "recipient" | gpg --batch --yes --no-tty --armor --sign),
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
-        '--passphrase'  => 'recipient',
+        '--passphrase-fd'  => 0,
         '--no-permission-warning',
     ),
     \"fnord\r\n",
     \$buf,
     \*STDOUT
 );
+
+warn "encrypted via cli : $buf";
+
+#####
+
+my $gnupg = get_test_gnupg_interface;
+# This time we'll catch the standard error for our perusing
+my ( $input, $output, $error ) = ( IO::Handle->new(),
+                                   IO::Handle->new(),
+                                   IO::Handle->new(),
+                               );
+
+my $handles = GnuPG::Handles->new( stdin    => $input,
+                                   stdout   => $output,
+                                   stderr   => $error,
+                               );
+
+# indicate our pasphrase through the
+# convenience method
+$gnupg->options->default_key('recipient@example.com');
+$gnupg->passphrase( "recipient" );
+
+# this sets up the communication
+my $pid = $gnupg->sign( handles => $handles );
+
+my @original_plaintext = ("fnord\r\n");
+
+# this passes in the plaintext
+print $input @original_plaintext;
+
+# this closes the communication channel,
+# indicating we are done
+close $input;
+
+my @ciphertext   = <$output>;  # reading the output
+my @error_output = <$error>;   # reading the error
+
+close $output;
+close $error;
+
+waitpid $pid, 0;  # clean up the finished GnuPG process
+
+use Data::Dumper;
+warn Dumper ({ciphertext => \@ciphertext,
+              error_output => \@error_output
+          });
+
+
+$buf = join('',@ciphertext);
+
+#####
 
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
@@ -89,6 +133,9 @@ Subject: signed message for queue
 $buf
 EOF
 RT::Test->close_mailgate_ok($mail);
+
+exit;
+
 
 {
     my $tick = RT::Test->last_ticket;
@@ -112,16 +159,18 @@ $buf = '';
 
 run3(
     shell_quote(
-        qw(gpg --batch --no-tty --armor --sign --clearsign),
+        qw(echo "recipient" | gpg --batch --yes --no-tty --armor --sign --clearsign),
         '--default-key' => 'recipient@example.com',
         '--homedir'     => $homedir,
-        '--passphrase'  => 'recipient',
+        '--passphrase-fd'  => 0,
         '--no-permission-warning',
     ),
     \"clearfnord\r\n",
     \$buf,
     \*STDOUT
 );
+
+diag "encrypted via cli : $buf";
 
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
