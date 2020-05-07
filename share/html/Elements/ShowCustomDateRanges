@@ -51,10 +51,10 @@
     <tr class="collection-as-table">
       <th class="collection-as-table"><&|/l&>Name</&></th>
       <th class="collection-as-table"><&|/l&>From</&></th>
-      <th class="collection-as-table"><&|/l&>From Value if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>From Value<br>if Unset</&></th>
       <th class="collection-as-table"><&|/l&>To</&></th>
-      <th class="collection-as-table"><&|/l&>To Value if Unset</&></th>
-      <th class="collection-as-table"><&|/l&>Business Hours?</&></th>
+      <th class="collection-as-table"><&|/l&>To Value<br>if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>Business<br>Hours?</&></th>
     </tr>
 % my $i = 0;
 % for my $name ( sort keys %CustomDateRanges ) {
