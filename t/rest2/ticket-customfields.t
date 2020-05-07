@@ -1,13 +1,15 @@
 use strict;
 use warnings;
-use RT::Extension::REST2::Test tests => undef;
+use RT::Test::REST2 tests => undef;
 use Test::Deep;
 
-my $mech = RT::Extension::REST2::Test->mech;
+# Test using integer priorities
+RT->Config->Set(EnablePriorityAsString => 0);
+my $mech = RT::Test::REST2->mech;
 
-my $auth = RT::Extension::REST2::Test->authorization_header;
+my $auth = RT::Test::REST2->authorization_header;
 my $rest_base_path = '/REST/2.0';
-my $user = RT::Extension::REST2::Test->user;
+my $user = RT::Test::REST2->user;
 
 my $queue = RT::Test->load_or_create_queue( Name => "General" );
 

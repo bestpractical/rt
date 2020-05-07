@@ -1,9 +1,9 @@
 use strict;
 use warnings;
-use RT::Extension::REST2::Test tests => undef;
+use RT::Test::REST2 tests => undef;
 
-my $mech = RT::Extension::REST2::Test->mech;
-my $auth = RT::Extension::REST2::Test->authorization_header;
+my $mech = RT::Test::REST2->mech;
+my $auth = RT::Test::REST2->authorization_header;
 my $rest_base_path = '/REST/2.0';
 
 sub is_404 {

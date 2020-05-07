@@ -1,15 +1,15 @@
 use strict;
 use warnings;
-use RT::Extension::REST2::Test tests => undef;
+use RT::Test::REST2 tests => undef;
 use Test::Deep;
 
-my $mech = RT::Extension::REST2::Test->mech;
+my $mech = RT::Test::REST2->mech;
 my ( $baseurl, $m ) = RT::Test->started_ok;
 diag "Started server at $baseurl";
 
-my $auth = RT::Extension::REST2::Test->authorization_header;
+my $auth = RT::Test::REST2->authorization_header;
 my $rest_base_path = '/REST/2.0';
-my $admin = RT::Extension::REST2::Test->user;
+my $admin = RT::Test::REST2->user;
 $admin->PrincipalObj->GrantRight( Right => 'SuperUser' );
 
 my $queue = RT::Test->load_or_create_queue( Name => "General" );
@@ -75,7 +75,7 @@ is( $res->code, 200, 'Fetched ticket via REST2 API');
 
 
 # Test as a user.
-my $user = RT::Extension::REST2::Test->user;
+my $user = RT::Test::REST2->user;
 
 $user->PrincipalObj->GrantRight( Right => 'CreateTicket' );
 $user->PrincipalObj->GrantRight( Right => 'ModifyTicket' );
