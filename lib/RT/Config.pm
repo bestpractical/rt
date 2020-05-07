@@ -1218,6 +1218,38 @@ our %META;
                     RT->Logger->error("Config option \%CustomDateRanges{$class} is not a HASH");
                 }
             }
+
+            my %system_config = %$ranges;
+            if ( my $db_config = $config->Get('CustomDateRangesUI') ) {
+                for my $type ( keys %$db_config ) {
+                    for my $name ( keys %{ $db_config->{$type} || {} } ) {
+                        if ( $system_config{$type}{$name} ) {
+                            RT->Logger->warning("$type custom date range $name is defined by config file and db");
+                        }
+                        else {
+                            $system_config{$name} = $db_config->{$type}{$name};
+                        }
+                    }
+                }
+            }
+
+            for my $type ( keys %system_config ) {
+                my $attributes = RT::Attributes->new( RT->SystemUser );
+                $attributes->Limit( FIELD => 'Name',       VALUE => 'Pref-CustomDateRanges' );
+                $attributes->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+                $attributes->OrderBy( FIELD => 'id' );
+
+                while ( my $attribute = $attributes->Next ) {
+                    if ( my $content = $attribute->Content ) {
+                        for my $name ( keys %{ $content->{$type} || {} } ) {
+                            if ( $system_config{$type}{$name} ) {
+                                RT->Logger->warning( "$type custom date range $name is defined by system and user #"
+                                        . $attribute->ObjectId );
+                            }
+                        }
+                    }
+                }
+            }
         },
     },
     CustomDateRangesUI => {
