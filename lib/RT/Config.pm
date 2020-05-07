@@ -1893,6 +1893,9 @@ our %META;
     LogToSyslogConf => {
         Immutable     => 1,
     },
+    ShowMobileSite => {
+        Widget => '/Widgets/Form/Boolean',
+    }
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
