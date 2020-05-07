@@ -3,6 +3,7 @@ if (!window.RT.Autocomplete) window.RT.Autocomplete = {}
 
 window.RT.Autocomplete.Classes = {
     Users: 'user',
+    Owners: 'owner',
     Groups: 'group',
     Tickets: 'tickets',
     Queues: 'queues',
@@ -129,6 +130,9 @@ window.RT.Autocomplete.bind = function(from) {
             options.minLength = 2;
             options.delay = 2;
         }
+        else if (what == 'Owners') {
+            options.minLength = 2;
+        }
 
         if (input.is('[data-autocomplete-privileged]')) {
             queryargs.push("privileged=1");
@@ -195,6 +199,11 @@ window.RT.Autocomplete.bind = function(from) {
         var exclude = input.attr('data-autocomplete-exclude');
         if (exclude) {
             queryargs.push("exclude="+exclude);
+        }
+
+        var limit = input.attr("data-autocomplete-limit");
+        if (limit) {
+            queryargs.push("limit="+limit);
         }
 
         if (queryargs.length)
