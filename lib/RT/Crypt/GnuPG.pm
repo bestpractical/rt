@@ -338,6 +338,7 @@ sub CallGnuPG {
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
     );
+
     $gnupg->options->armor( 1 );
     $gnupg->options->meta_interactive( 0 );
     $gnupg->options->default_key( $args{Signer} )
@@ -1351,10 +1352,10 @@ my %parse_keyword = map { $_ => 1 } qw(
 # keywords as starting point or just ignore as they are useless for us
 my %ignore_keyword = map { $_ => 1 } qw(
     NEED_PASSPHRASE MISSING_PASSPHRASE BEGIN_SIGNING PLAINTEXT PLAINTEXT_LENGTH
-    BEGIN_ENCRYPTION SIG_ID VALIDSIG
+    BEGIN_ENCRYPTION SIG_ID VALIDSIG NEWSIG IMPORT_OK
     ENC_TO BEGIN_DECRYPTION END_DECRYPTION GOODMDC
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
-    DECRYPTION_INFO KEY_CONSIDERED PINENTRY_LAUNCHED DECRYPTION_KEY NEWSIG
+    DECRYPTION_INFO KEY_CONSIDERED PINENTRY_LAUNCHED DECRYPTION_KEY
 );
 
 sub ParseStatus {
