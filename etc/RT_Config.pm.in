@@ -1627,6 +1627,18 @@ be overridden by users in their preferences.
 
 =cut
 
+Set($ShowMobileSite, 0);
+
+=item C<$ShowMobileSite>
+
+Starting with RT 5.0, RT's web interface is fully responsive and
+will render correctly on most mobile devices. However, RT also has
+a mobile-optimized mode that shows a limited feature set
+focused on ticket updates. To default to this site when RT is accessed
+from a mobile device, enable this option (set to 1).
+
+=cut
+
 Set($WebDefaultStylesheet, "elevator-light");
 
 =item C<$DefaultQueue>

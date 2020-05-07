@@ -122,6 +122,13 @@ All other dashboard menu functionality should be the same including editing
 your own menu, the global settings, and setting a user's menu from the user
 admin page for that user.
 
+=item *
+
+Accessing RT from a mobile device no longer defaults to the mobile-optimized
+interface. RT 5.0 is fully responsive so the full UI can be used on mobile
+devices. Set the configuration option C<$ShowMobileSite> to true to restore
+the previous behavior.
+
 =back
 
 =cut

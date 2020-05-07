@@ -1167,6 +1167,7 @@ sub SendStaticFile {
 sub MobileClient {
     my $self = shift;
 
+    return undef unless RT->Config->Get('ShowMobileSite');
 
 if ((RequestENV('HTTP_USER_AGENT') || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60|Mobile)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
     return 1;
