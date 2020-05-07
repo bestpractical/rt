@@ -306,6 +306,10 @@ sub PSGIApp {
     };
 
     my $app = $self->StaticWrap($mason);
+
+    # Add REST2
+    $app = RT::REST2::PSGIWrap('RT::REST2', $app);
+
     for my $plugin (RT->Config->Get("Plugins")) {
         my $wrap = $plugin->can("PSGIWrap")
             or next;
