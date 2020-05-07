@@ -48,7 +48,7 @@
 % $m->out($$_) for grep {ref $_} @actions;
 % if (grep {not ref $_} @actions) {
 <div class="results">
-<&| /Widgets/TitleBox, title => loc('Results'), %{$titlebox || {}} &>
+<&| /Widgets/TitleBox, title => loc('Results'), content_class => 'listactions', %{$titlebox || {}} &>
   <ul class="action-results">
 % foreach my $action (grep {not ref $_} @actions) {
     <li><%$action%></li>

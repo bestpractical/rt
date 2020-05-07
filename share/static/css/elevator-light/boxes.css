@@ -100,6 +100,11 @@ div.results .titlebox .titlebox-content {
     padding: 0 15px 15px 15px;
 }
 
+/* Suppress bottom and side padding for results messages */
+.titlebox .listactions .card-body {
+    padding: 0;
+}
+
 /* Ticket display page colored top borders */
 /* Keep in sync with transaction colors in history.css */
 /* material.io reference: https://material.io/design/color/#tools-for-picking-colors */
