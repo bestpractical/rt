@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Extension::REST2::Test tests => undef;
+use RT::Test::REST2 tests => undef;
 use Test::Deep;
 
 BEGIN {
@@ -8,11 +8,11 @@ BEGIN {
         unless RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
 }
 
-my $mech = RT::Extension::REST2::Test->mech;
+my $mech = RT::Test::REST2->mech;
 
-my $auth = RT::Extension::REST2::Test->authorization_header;
+my $auth = RT::Test::REST2->authorization_header;
 my $rest_base_path = '/REST/2.0';
-my $user = RT::Extension::REST2::Test->user;
+my $user = RT::Test::REST2->user;
 
 # Empty DB
 {

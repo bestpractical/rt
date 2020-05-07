@@ -1,16 +1,16 @@
 use strict;
 use warnings;
-use RT::Extension::REST2::Test tests => undef;
+use RT::Test::REST2 tests => undef;
 use Test::Deep;
 #use Test::Warn;
 
 use Data::Dumper;
-my $mech = RT::Extension::REST2::Test->mech;
+my $mech = RT::Test::REST2->mech;
 
-my $auth = RT::Extension::REST2::Test->authorization_header;
+my $auth = RT::Test::REST2->authorization_header;
 
 my $rest_base_path = '/REST/2.0';
-my $test_user = RT::Extension::REST2::Test->user;
+my $test_user = RT::Test::REST2->user;
 $test_user->PrincipalObj->RevokeRight(Right => 'ShowUserHistory');
 
 my $user_foo = RT::Test->load_or_create_user(

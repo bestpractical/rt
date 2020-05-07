@@ -1,12 +1,12 @@
 use strict;
 use warnings;
-use RT::Extension::REST2::Test tests => undef;
+use RT::Test::REST2 tests => undef;
 
-use_ok('RT::Extension::REST2::Util', qw(expand_uid));
+use_ok('RT::REST2::Util', qw(expand_uid));
 
 diag "Test expand_uid with default RT Organization of example.com";
 {
-    my $base_url = RT::Extension::REST2->base_uri;
+    my $base_url = RT::REST2->base_uri;
 
     my $uid_parts = expand_uid('RT::User-test');
     is($uid_parts->{'type'}, 'user', 'Got correct class');
@@ -29,7 +29,7 @@ RT->Config->Set('Organization', 'name-with-dashes');
 
 diag "Test expand_uid with Organization name with dashes";
 {
-    my $base_url = RT::Extension::REST2->base_uri;
+    my $base_url = RT::REST2->base_uri;
 
     my $uid_parts = expand_uid('RT::User-test');
     is($uid_parts->{'type'}, 'user', 'Got correct class');
@@ -48,10 +48,10 @@ diag "Test expand_uid with Organization name with dashes";
     is($uid_parts->{'_url'}, $base_url . '/customfield/3', 'Got correct url');
 }
 
-my $mech = RT::Extension::REST2::Test->mech;
-my $auth = RT::Extension::REST2::Test->authorization_header;
+my $mech = RT::Test::REST2->mech;
+my $auth = RT::Test::REST2->authorization_header;
 my $rest_base_path = '/REST/2.0';
-my $user = RT::Extension::REST2::Test->user;
+my $user = RT::Test::REST2->user;
 
 $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
 
