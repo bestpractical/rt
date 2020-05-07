@@ -373,16 +373,6 @@ $COLUMN_MAP = {
    }
 };
 
-my %ranges = RT::Ticket->CustomDateRanges;
-for my $name (keys %ranges) {
-    $COLUMN_MAP->{$name} = {
-        title => $name,
-        value => sub {
-            $_[0]->CustomDateRange($name, $ranges{$name});
-        },
-    };
-}
-
 </%ONCE>
 <%init>
 # if no encryption support, then KeyOwnerName and KeyRequestors fall back to the regular
@@ -430,6 +420,16 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
             return $printer->( $class, $_[0]->$method() ) || $_[0]->$field;
         };
     }
+}
+
+my %ranges = RT::Ticket->CustomDateRanges;
+for my $name (keys %ranges) {
+    $COLUMN_MAP->{$name} = {
+        title => $name,
+        value => sub {
+            $_[0]->CustomDateRange($name, $ranges{$name});
+        },
+    };
 }
 
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );
