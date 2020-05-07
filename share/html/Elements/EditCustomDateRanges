@@ -53,10 +53,10 @@
     <tr class="collection-as-table text-center">
       <th class="collection-as-table"><&|/l&>Name</&></th>
       <th class="collection-as-table"><&|/l&>From</&></th>
-      <th class="collection-as-table"><&|/l&>From Value if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>From Value<br>if Unset</&></th>
       <th class="collection-as-table"><&|/l&>To</&></th>
-      <th class="collection-as-table"><&|/l&>To Value if Unset</&></th>
-      <th class="collection-as-table"><&|/l&>Business Hours?</&></th>
+      <th class="collection-as-table"><&|/l&>To Value<br>if Unset</&></th>
+      <th class="collection-as-table"><&|/l&>Business<br>Hours?</&></th>
       <th class="collection-as-table text-left">
         <input type="checkbox" name="DeleteAll" value="1" onclick="setCheckbox(this, /^\d+-Delete$/)" />
         <&|/l&>Delete</&>
