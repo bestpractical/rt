@@ -100,6 +100,7 @@ $m->callback( CallbackName => 'MassageTitleBox',
     titleright_raw  => $titleright_raw,
     title_class     => $title_class,
     class           => $class,
+    content_class   => 'linked-queue-portlet',
 &>
 
 <%PERL>

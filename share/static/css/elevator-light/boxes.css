@@ -105,6 +105,11 @@ div.results .titlebox .titlebox-content {
     padding: 0;
 }
 
+/* Add some space before the displayed link table */
+.titlebox .linked-queue-portlet .card-body {
+    padding: 15px 15px 15px 15px;
+}
+
 /* Ticket display page colored top borders */
 /* Keep in sync with transaction colors in history.css */
 /* material.io reference: https://material.io/design/color/#tools-for-picking-colors */
