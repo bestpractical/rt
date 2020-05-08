@@ -1516,32 +1516,65 @@ sub _CalculateTime {
 
 sub new {
     my $self = shift;
-    state $setup_custom_date_ranges = 1;
-    if ($setup_custom_date_ranges) {
+    $self->_SetupCustomDateRanges;
+    return $self->SUPER::new(@_);
+}
 
-        my %ranges = RT::Ticket->CustomDateRanges;
-        for my $name ( sort keys %ranges ) {
-            my %extra_info;
-            my $spec = $ranges{$name};
-            if ( ref $spec && $spec->{business_time} )
-            {
-                $extra_info{business_time} = 1;
-            }
 
-            push @GROUPINGS, $name => $extra_info{business_time} ? 'DurationInBusinessHours' : 'Duration';
-            push @STATISTICS,
-                (
-                "ALL($name)" => [ "Summary of $name", 'CustomDateRangeAll', $name, \%extra_info ],
-                "SUM($name)" => [ "Total $name",   'CustomDateRange', 'SUM', $name, \%extra_info ],
-                "AVG($name)" => [ "Average $name", 'CustomDateRange', 'AVG', $name, \%extra_info ],
-                "MIN($name)" => [ "Minimum $name", 'CustomDateRange', 'MIN', $name, \%extra_info ],
-                "MAX($name)" => [ "Maximum $name", 'CustomDateRange', 'MAX', $name, \%extra_info ],
-                );
+sub _SetupCustomDateRanges {
+    my $self = shift;
+    my %names;
+
+    # Remove old custom date range groupings
+    for my $field ( grep {ref} @STATISTICS ) {
+        if ( $field->[1] && $field->[1] eq 'CustomDateRangeAll' ) {
+            $names{ $field->[2] } = 1;
         }
-        $setup_custom_date_ranges = 0;
     }
 
-    return $self->SUPER::new(@_);
+    my ( @new_groupings, @new_statistics );
+    while (@GROUPINGS) {
+        my $name = shift @GROUPINGS;
+        my $type = shift @GROUPINGS;
+        if ( !$names{$name} ) {
+            push @new_groupings, $name, $type;
+        }
+    }
+
+    while (@STATISTICS) {
+        my $key    = shift @STATISTICS;
+        my $info   = shift @STATISTICS;
+        my ($name) = $key =~ /^(?:ALL|SUM|AVG|MIN|MAX)\((.+)\)$/;
+        unless ( $name && $names{$name} ) {
+            push @new_statistics, $key, $info;
+        }
+    }
+
+    # Add new ones
+    my %ranges = RT::Ticket->CustomDateRanges;
+    for my $name ( sort keys %ranges ) {
+        my %extra_info;
+        my $spec = $ranges{$name};
+        if ( ref $spec && $spec->{business_time} ) {
+            $extra_info{business_time} = 1;
+        }
+
+        push @new_groupings, $name => $extra_info{business_time} ? 'DurationInBusinessHours' : 'Duration';
+        push @new_statistics,
+            (
+            "ALL($name)" => [ "Summary of $name", 'CustomDateRangeAll', $name, \%extra_info ],
+            "SUM($name)" => [ "Total $name",   'CustomDateRange', 'SUM', $name, \%extra_info ],
+            "AVG($name)" => [ "Average $name", 'CustomDateRange', 'AVG', $name, \%extra_info ],
+            "MIN($name)" => [ "Minimum $name", 'CustomDateRange', 'MIN', $name, \%extra_info ],
+            "MAX($name)" => [ "Maximum $name", 'CustomDateRange', 'MAX', $name, \%extra_info ],
+            );
+    }
+
+    @GROUPINGS  = @new_groupings;
+    @STATISTICS = @new_statistics;
+    %GROUPINGS  = %STATISTICS = ();
+
+    return 1;
 }
 
 RT::Base->_ImportOverlays();
