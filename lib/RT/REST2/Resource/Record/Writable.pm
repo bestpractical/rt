@@ -361,7 +361,7 @@ sub create_record {
     # Lookup CustomFields by name.
     if ($cfs) {
         foreach my $id (keys(%$cfs)) {
-			my $value = delete $cfs->{$id};
+            my $value = delete $cfs->{$id};
             if ( ref($value) eq 'HASH' ) {
                 foreach my $field ( 'FileName', 'FileType', 'FileContent' ) {
                     return ( 0, 0, "$field is a required field for Image/Binary ObjectCustomFieldValue" )
