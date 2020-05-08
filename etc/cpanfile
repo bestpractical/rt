@@ -106,6 +106,17 @@ requires 'Term::ReadKey';
 requires 'Term::ReadLine';
 requires 'Text::ParseWords';
 
+# REST2
+requires 'Encode';
+requires 'Module::Runtime';
+requires 'Moose';
+requires 'MooseX::NonMoose';
+requires 'MooseX::Role::Parameterized';
+requires 'namespace::autoclean';
+requires 'Sub::Exporter';
+requires 'Web::Machine' => '0.12';
+requires 'Module::Path';
+requires 'Path::Dispatcher' => '1.07';
 
 on 'develop' => sub {
     requires 'Email::Abstract';
@@ -130,6 +141,7 @@ on 'develop' => sub {
     requires 'Test::Warn';
     requires 'Test::WWW::Mechanize', '>= 1.30';
     requires 'Test::WWW::Mechanize::PSGI';
+    requires 'Try::Tiny';
     requires 'WWW::Mechanize', '>= 1.80';
     requires 'XML::Simple';
 };
