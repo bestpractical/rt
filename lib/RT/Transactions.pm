@@ -902,7 +902,7 @@ sub _parser {
     #   Lifecycle => TicketQueueLifecycle
     #   Status => TicketStatus
 
-    state ( $active_status_node, $inactive_status_node );
+    my ( $active_status_node, $inactive_status_node );
     my $escape_quotes = sub {
         my $text = shift;
         $text =~ s{(['\\])}{\\$1}g;

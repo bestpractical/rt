@@ -3035,7 +3035,7 @@ sub _parser {
     );
     die join "; ", map { ref $_ eq 'ARRAY' ? $_->[ 0 ] : $_ } @results if @results;
 
-    state ( $active_status_node, $inactive_status_node );
+    my ( $active_status_node, $inactive_status_node );
 
     my $escape_quotes = sub {
         my $text = shift;

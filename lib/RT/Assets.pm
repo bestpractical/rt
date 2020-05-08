@@ -1494,7 +1494,7 @@ sub _parser {
         return $text;
     };
 
-    state ( $active_status_node, $inactive_status_node );
+    my ( $active_status_node, $inactive_status_node );
 
     $tree->traverse(
         sub {
