@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" id="<%$Name%>" class="selectpicker form-control">
+<select name="<%$Name%>" class="selectpicker form-control <%$Name%>">
 %if ($DefaultValue) {
 <option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
 %}
