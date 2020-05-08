@@ -1,12 +1,12 @@
-package RT::Extension::REST2::Resource::Tickets;
+package RT::REST2::Resource::Tickets;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Collection';
-with 'RT::Extension::REST2::Resource::Collection::ProcessPOSTasGET';
+extends 'RT::REST2::Resource::Collection';
+with 'RT::REST2::Resource::Collection::ProcessPOSTasGET';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
@@ -16,7 +16,7 @@ sub dispatch_rules {
 }
 
 use Encode qw( decode_utf8 );
-use RT::Extension::REST2::Util qw( error_as_json );
+use RT::REST2::Util qw( error_as_json );
 use RT::Search::Simple;
 
 has 'query' => (

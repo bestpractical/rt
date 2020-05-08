@@ -1,16 +1,16 @@
-package RT::Extension::REST2::Resource::CustomFieldValue;
+package RT::REST2::Resource::CustomFieldValue;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
-use RT::Extension::REST2::Util qw(expand_uid);
+use RT::REST2::Util qw(expand_uid);
 
-extends 'RT::Extension::REST2::Resource::Record';
-with 'RT::Extension::REST2::Resource::Record::Readable',
-     'RT::Extension::REST2::Resource::Record::Hypermedia',
-     'RT::Extension::REST2::Resource::Record::Deletable',
-     'RT::Extension::REST2::Resource::Record::Writable';
+extends 'RT::REST2::Resource::Record';
+with 'RT::REST2::Resource::Record::Readable',
+     'RT::REST2::Resource::Record::Hypermedia',
+     'RT::REST2::Resource::Record::Deletable',
+     'RT::REST2::Resource::Record::Writable';
 
 has 'customfield' => (
     is  => 'ro',
@@ -88,7 +88,7 @@ sub hypermedia_links {
             ref  => 'self',
             type => $class,
             id   => $id,
-            _url => RT::Extension::REST2->base_uri . "/$cf_class/$cf_id/$class/$id",
+            _url => RT::REST2->base_uri . "/$cf_class/$cf_id/$class/$id",
         },
         {
             %$cf_entry,

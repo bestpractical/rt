@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Resource::Record::WithETag;
+package RT::REST2::Resource::Record::WithETag;
 use strict;
 use warnings;
 

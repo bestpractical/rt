@@ -1,10 +1,10 @@
-package RT::Extension::REST2::Resource::Record::Hypermedia;
+package RT::REST2::Resource::Record::Hypermedia;
 use strict;
 use warnings;
 
 use Moose::Role;
 use namespace::autoclean;
-use RT::Extension::REST2::Util qw(expand_uid expand_uri custom_fields_for);
+use RT::REST2::Util qw(expand_uid expand_uri custom_fields_for);
 use JSON qw(to_json);
 
 sub hypermedia_links {
@@ -25,7 +25,7 @@ sub _self_link {
         ref     => 'self',
         type    => $class,
         id      => $id,
-        _url    => RT::Extension::REST2->base_uri . "/$class/$id",
+        _url    => RT::REST2->base_uri . "/$class/$id",
     };
 }
 

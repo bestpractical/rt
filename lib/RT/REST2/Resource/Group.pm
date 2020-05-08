@@ -1,19 +1,19 @@
-package RT::Extension::REST2::Resource::Group;
+package RT::REST2::Resource::Group;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
-use RT::Extension::REST2::Util qw(expand_uid);
+use RT::REST2::Util qw(expand_uid);
 
-extends 'RT::Extension::REST2::Resource::Record';
-with 'RT::Extension::REST2::Resource::Record::Readable'
+extends 'RT::REST2::Resource::Record';
+with 'RT::REST2::Resource::Record::Readable'
         => { -alias => { serialize => '_default_serialize' } },
-    'RT::Extension::REST2::Resource::Record::DeletableByDisabling',
+    'RT::REST2::Resource::Record::DeletableByDisabling',
         => { -alias => { delete_resource => '_delete_resource' } },
-    'RT::Extension::REST2::Resource::Record::Writable',
+    'RT::REST2::Resource::Record::Writable',
         => { -alias => { create_record => '_create_record' } },
-    'RT::Extension::REST2::Resource::Record::Hypermedia'
+    'RT::REST2::Resource::Record::Hypermedia'
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } };
 
 sub dispatch_rules {
@@ -49,7 +49,7 @@ sub hypermedia_links {
     my $id = $self->record->id;
     push @$links,
       { ref  => 'members',
-        _url => RT::Extension::REST2->base_uri . "/group/$id/members",
+        _url => RT::REST2->base_uri . "/group/$id/members",
       };
     return $links;
 }

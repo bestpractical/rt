@@ -1,14 +1,14 @@
-package RT::Extension::REST2::Resource::Record::Writable;
+package RT::REST2::Resource::Record::Writable;
 use strict;
 use warnings;
 
 use Moose::Role;
 use namespace::autoclean;
 use JSON ();
-use RT::Extension::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields );
+use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields );
 use List::MoreUtils 'uniq';
 
-with 'RT::Extension::REST2::Resource::Role::RequestBodyIsJSON'
+with 'RT::REST2::Resource::Role::RequestBodyIsJSON'
      => { type => 'HASH' };
 
 requires 'record';

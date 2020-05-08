@@ -1,11 +1,11 @@
-package RT::Extension::REST2::Resource;
+package RT::REST2::Resource;
 use strict;
 use warnings;
 
 use Moose;
 use MooseX::NonMoose;
 use namespace::autoclean;
-use RT::Extension::REST2::Util qw(expand_uid format_datetime custom_fields_for);
+use RT::REST2::Util qw(expand_uid format_datetime custom_fields_for);
 
 extends 'Web::Machine::Resource';
 
@@ -53,7 +53,7 @@ sub expand_field {
                         $content = {
                             content_type => $ocfv->ContentType,
                             filename     => $content,
-                            _url         => RT::Extension::REST2->base_uri . "/download/cf/" . $ocfv->id,
+                            _url         => RT::REST2->base_uri . "/download/cf/" . $ocfv->id,
                         };
                     }
                     push @{ $values{ $cf->Id }{values} }, $content;

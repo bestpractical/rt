@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Middleware::ErrorAsJSON;
+package RT::REST2::Middleware::ErrorAsJSON;
 
 use strict;
 use warnings;
@@ -7,7 +7,7 @@ use base 'Plack::Middleware';
 
 use Plack::Util;
 use HTTP::Status qw(is_error status_message);
-use RT::Extension::REST2::Util 'error_as_json';
+use RT::REST2::Util 'error_as_json';
 
 sub call {
     my ( $self, $env ) = @_;

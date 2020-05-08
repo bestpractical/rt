@@ -1,17 +1,17 @@
-package RT::Extension::REST2::Resource::Catalog;
+package RT::REST2::Resource::Catalog;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Record';
+extends 'RT::REST2::Resource::Record';
 with (
-    'RT::Extension::REST2::Resource::Record::Readable',
-    'RT::Extension::REST2::Resource::Record::Hypermedia'
+    'RT::REST2::Resource::Record::Readable',
+    'RT::REST2::Resource::Record::Hypermedia'
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
-    'RT::Extension::REST2::Resource::Record::DeletableByDisabling',
-    'RT::Extension::REST2::Resource::Record::Writable',
+    'RT::REST2::Resource::Record::DeletableByDisabling',
+    'RT::REST2::Resource::Record::Writable',
 );
 
 sub dispatch_rules {
@@ -42,7 +42,7 @@ sub hypermedia_links {
     push @$links, {
         ref  => 'create',
         type => 'asset',
-        _url => RT::Extension::REST2->base_uri . '/asset?Catalog=' . $catalog->Id,
+        _url => RT::REST2->base_uri . '/asset?Catalog=' . $catalog->Id,
     } if $catalog->CurrentUserHasRight('CreateAsset');
 
     return $links;

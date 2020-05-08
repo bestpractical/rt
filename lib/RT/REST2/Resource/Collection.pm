@@ -1,16 +1,16 @@
-package RT::Extension::REST2::Resource::Collection;
+package RT::REST2::Resource::Collection;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource';
+extends 'RT::REST2::Resource';
 
 use Scalar::Util qw( blessed );
 use Web::Machine::FSM::States qw( is_status_code );
 use Module::Runtime qw( require_module );
-use RT::Extension::REST2::Util qw( serialize_record expand_uid format_datetime );
+use RT::REST2::Util qw( serialize_record expand_uid format_datetime );
 use POSIX qw( ceil );
 
 has 'collection_class' => (

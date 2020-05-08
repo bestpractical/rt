@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Resource::Role::RequestBodyIsJSON;
+package RT::REST2::Resource::Role::RequestBodyIsJSON;
 use strict;
 use warnings;
 
@@ -6,7 +6,7 @@ use MooseX::Role::Parameterized;
 use namespace::autoclean;
 
 use JSON ();
-use RT::Extension::REST2::Util qw( error_as_json );
+use RT::REST2::Util qw( error_as_json );
 use Moose::Util::TypeConstraints qw( enum );
 
 parameter 'type' => (

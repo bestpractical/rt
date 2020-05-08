@@ -1,17 +1,17 @@
-package RT::Extension::REST2::Resource::User;
+package RT::REST2::Resource::User;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
-use RT::Extension::REST2::Util qw(expand_uid);
+use RT::REST2::Util qw(expand_uid);
 
-extends 'RT::Extension::REST2::Resource::Record';
+extends 'RT::REST2::Resource::Record';
 with (
-    'RT::Extension::REST2::Resource::Record::Readable',
-    'RT::Extension::REST2::Resource::Record::DeletableByDisabling',
-    'RT::Extension::REST2::Resource::Record::Writable',
-    'RT::Extension::REST2::Resource::Record::Hypermedia'
+    'RT::REST2::Resource::Record::Readable',
+    'RT::REST2::Resource::Record::DeletableByDisabling',
+    'RT::REST2::Resource::Record::Writable',
+    'RT::REST2::Resource::Record::Hypermedia'
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
 );
 
@@ -93,7 +93,7 @@ sub hypermedia_links {
         push @$links,
             {
             ref  => 'memberships',
-            _url => RT::Extension::REST2->base_uri . "/user/$id/groups",
+            _url => RT::REST2->base_uri . "/user/$id/groups",
             };
     }
 
