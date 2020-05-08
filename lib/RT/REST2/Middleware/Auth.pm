@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Middleware::Auth;
+package RT::REST2::Middleware::Auth;
 
 use strict;
 use warnings;

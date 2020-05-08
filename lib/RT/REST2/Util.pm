@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Util;
+package RT::REST2::Util;
 use strict;
 use warnings;
 
@@ -48,7 +48,7 @@ sub expand_uid {
     return {
         type    => $class,
         id      => $id,
-        _url    => RT::Extension::REST2->base_uri . "/$class/$id",
+        _url    => RT::REST2->base_uri . "/$class/$id",
     };
 }
 
@@ -148,7 +148,7 @@ sub serialize_record {
                     $content = {
                         content_type => $ocfv->ContentType,
                         filename     => $content,
-                        _url         => RT::Extension::REST2->base_uri . "/download/cf/" . $ocfv->id,
+                        _url         => RT::REST2->base_uri . "/download/cf/" . $ocfv->id,
                     };
                 }
                 push @{ $values{$cf->Id}{values} }, $content;

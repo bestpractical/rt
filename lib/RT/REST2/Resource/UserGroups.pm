@@ -1,12 +1,12 @@
-package RT::Extension::REST2::Resource::UserGroups;
+package RT::REST2::Resource::UserGroups;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Collection';
-with 'RT::Extension::REST2::Resource::Role::RequestBodyIsJSON' =>
+extends 'RT::REST2::Resource::Collection';
+with 'RT::REST2::Resource::Role::RequestBodyIsJSON' =>
   {type => 'ARRAY'};
 
 has 'user' => (
@@ -63,7 +63,7 @@ sub serialize {
         my $result = {
             type => 'group',
             id   => $item->id,
-            _url => RT::Extension::REST2->base_uri . "/group/" . $item->id,
+            _url => RT::REST2->base_uri . "/group/" . $item->id,
         };
         push @results, $result;
     }

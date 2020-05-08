@@ -1,13 +1,13 @@
-package RT::Extension::REST2::Resource::ObjectCustomFieldValue;
+package RT::REST2::Resource::ObjectCustomFieldValue;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
-use RT::Extension::REST2::Util qw( error_as_json );
+use RT::REST2::Util qw( error_as_json );
 
-extends 'RT::Extension::REST2::Resource::Record';
-with 'RT::Extension::REST2::Resource::Record::WithETag';
+extends 'RT::REST2::Resource::Record';
+with 'RT::REST2::Resource::Record::WithETag';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(

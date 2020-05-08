@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Dispatcher;
+package RT::REST2::Dispatcher;
 use strict;
 use warnings;
 use Moose;
@@ -8,7 +8,7 @@ use Plack::Request;
 use List::MoreUtils 'uniq';
 
 use Module::Pluggable (
-    search_path => ['RT::Extension::REST2::Resource'],
+    search_path => ['RT::REST2::Resource'],
     sub_name    => '_resource_classes',
     require     => 1,
     max_depth   => 5,

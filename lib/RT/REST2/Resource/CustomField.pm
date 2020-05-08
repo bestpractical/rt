@@ -1,17 +1,17 @@
-package RT::Extension::REST2::Resource::CustomField;
+package RT::REST2::Resource::CustomField;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Record';
-with 'RT::Extension::REST2::Resource::Record::Readable',
+extends 'RT::REST2::Resource::Record';
+with 'RT::REST2::Resource::Record::Readable',
         => { -alias => { serialize => '_default_serialize' } },
-     'RT::Extension::REST2::Resource::Record::Hypermedia'
+     'RT::REST2::Resource::Record::Hypermedia'
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
-     'RT::Extension::REST2::Resource::Record::DeletableByDisabling',
-     'RT::Extension::REST2::Resource::Record::Writable';
+     'RT::REST2::Resource::Record::DeletableByDisabling',
+     'RT::REST2::Resource::Record::Writable';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
@@ -61,7 +61,7 @@ sub hypermedia_links {
     if ($self->record->IsSelectionType) {
         push @$links, {
             ref  => 'customfieldvalues',
-            _url => RT::Extension::REST2->base_uri . "/customfield/" . $self->record->id . "/values",
+            _url => RT::REST2->base_uri . "/customfield/" . $self->record->id . "/values",
         };
     }
     return $links;

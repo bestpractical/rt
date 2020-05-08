@@ -1,17 +1,17 @@
-package RT::Extension::REST2::Resource::Ticket;
+package RT::REST2::Resource::Ticket;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Record';
+extends 'RT::REST2::Resource::Record';
 with (
-    'RT::Extension::REST2::Resource::Record::Readable',
-    'RT::Extension::REST2::Resource::Record::Hypermedia'
+    'RT::REST2::Resource::Record::Readable',
+    'RT::REST2::Resource::Record::Hypermedia'
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
-    'RT::Extension::REST2::Resource::Record::Deletable',
-    'RT::Extension::REST2::Resource::Record::Writable'
+    'RT::REST2::Resource::Record::Deletable',
+    'RT::REST2::Resource::Record::Writable'
         => { -alias => { create_record => '_create_record' } },
 );
 

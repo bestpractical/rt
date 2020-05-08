@@ -1,11 +1,11 @@
-package RT::Extension::REST2::Resource::RT;
+package RT::REST2::Resource::RT;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource';
+extends 'RT::REST2::Resource';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(

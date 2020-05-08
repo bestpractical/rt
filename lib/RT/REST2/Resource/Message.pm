@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Resource::Message;
+package RT::REST2::Resource::Message;
 use strict;
 use warnings;
 
@@ -6,8 +6,8 @@ use Moose;
 use namespace::autoclean;
 use MIME::Base64;
 
-extends 'RT::Extension::REST2::Resource';
-use RT::Extension::REST2::Util qw( error_as_json update_custom_fields );
+extends 'RT::REST2::Resource';
+use RT::REST2::Util qw( error_as_json update_custom_fields );
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(

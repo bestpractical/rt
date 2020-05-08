@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Middleware::Log;
+package RT::REST2::Middleware::Log;
 
 use strict;
 use warnings;

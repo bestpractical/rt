@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Resource::Collection::QueryByJSON;
+package RT::REST2::Resource::Collection::QueryByJSON;
 use strict;
 use warnings;
 
@@ -8,8 +8,8 @@ use namespace::autoclean;
 use JSON ();
 
 with (
-    'RT::Extension::REST2::Resource::Collection::ProcessPOSTasGET',
-    'RT::Extension::REST2::Resource::Role::RequestBodyIsJSON'
+    'RT::REST2::Resource::Collection::ProcessPOSTasGET',
+    'RT::REST2::Resource::Role::RequestBodyIsJSON'
          => { type => 'ARRAY' },
 );
 

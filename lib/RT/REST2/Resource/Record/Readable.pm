@@ -1,4 +1,4 @@
-package RT::Extension::REST2::Resource::Record::Readable;
+package RT::REST2::Resource::Record::Readable;
 use strict;
 use warnings;
 
@@ -10,10 +10,10 @@ requires 'record_class';
 requires 'current_user';
 requires 'base_uri';
 
-with 'RT::Extension::REST2::Resource::Record::WithETag';
+with 'RT::REST2::Resource::Record::WithETag';
 
 use JSON ();
-use RT::Extension::REST2::Util qw( serialize_record );
+use RT::REST2::Util qw( serialize_record );
 use Scalar::Util qw( blessed );
 
 sub serialize {
@@ -37,7 +37,7 @@ sub serialize {
         $data->{$field} = $result;
     }
 
-    if ($self->does('RT::Extension::REST2::Resource::Record::Hypermedia')) {
+    if ($self->does('RT::REST2::Resource::Record::Hypermedia')) {
         $data->{_hyperlinks} = $self->hypermedia_links;
     }
 

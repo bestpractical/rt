@@ -1,16 +1,16 @@
-package RT::Extension::REST2::Resource::TicketsBulk;
+package RT::REST2::Resource::TicketsBulk;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource';
-with 'RT::Extension::REST2::Resource::Role::RequestBodyIsJSON' =>
+extends 'RT::REST2::Resource';
+with 'RT::REST2::Resource::Role::RequestBodyIsJSON' =>
   { type => 'ARRAY' };
 
-use RT::Extension::REST2::Util qw(expand_uid);
-use RT::Extension::REST2::Resource::Ticket;
+use RT::REST2::Util qw(expand_uid);
+use RT::REST2::Resource::Ticket;
 use JSON ();
 
 sub dispatch_rules {
@@ -36,7 +36,7 @@ sub from_json {
         for my $param ( @$params ) {
             my $id = delete $param->{id};
             if ( $id && $id =~ /^\d+$/ ) {
-                my $resource = RT::Extension::REST2::Resource::Ticket->new(
+                my $resource = RT::REST2::Resource::Ticket->new(
                     request      => $self->request,
                     response     => $self->response,
                     record_class => 'RT::Ticket',
@@ -52,7 +52,7 @@ sub from_json {
     }
     else {
         for my $param ( @$params ) {
-            my $resource = RT::Extension::REST2::Resource::Ticket->new(
+            my $resource = RT::REST2::Resource::Ticket->new(
                 request      => $self->request,
                 response     => $self->response,
                 record_class => 'RT::Ticket',

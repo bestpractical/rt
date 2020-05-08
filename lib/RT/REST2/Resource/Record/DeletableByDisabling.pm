@@ -1,11 +1,11 @@
-package RT::Extension::REST2::Resource::Record::DeletableByDisabling;
+package RT::REST2::Resource::Record::DeletableByDisabling;
 use strict;
 use warnings;
 
 use Moose::Role;
 use namespace::autoclean;
 
-with 'RT::Extension::REST2::Resource::Record::Deletable';
+with 'RT::REST2::Resource::Record::Deletable';
 
 sub delete_resource {
     my $self = shift;

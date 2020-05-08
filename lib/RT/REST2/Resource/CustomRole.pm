@@ -1,13 +1,13 @@
-package RT::Extension::REST2::Resource::CustomRole;
+package RT::REST2::Resource::CustomRole;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Record';
-with 'RT::Extension::REST2::Resource::Record::Readable',
-     'RT::Extension::REST2::Resource::Record::Hypermedia';
+extends 'RT::REST2::Resource::Record';
+with 'RT::REST2::Resource::Record::Readable',
+     'RT::REST2::Resource::Record::Hypermedia';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(

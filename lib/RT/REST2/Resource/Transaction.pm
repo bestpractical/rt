@@ -1,13 +1,13 @@
-package RT::Extension::REST2::Resource::Transaction;
+package RT::REST2::Resource::Transaction;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Record';
-with 'RT::Extension::REST2::Resource::Record::Readable',
-     'RT::Extension::REST2::Resource::Record::Hypermedia'
+extends 'RT::REST2::Resource::Record';
+with 'RT::REST2::Resource::Record::Readable',
+     'RT::REST2::Resource::Record::Hypermedia'
          => { -alias => { hypermedia_links => '_default_hypermedia_links' } };
 
 sub dispatch_rules {
@@ -30,7 +30,7 @@ sub hypermedia_links {
         my $id = $attachment->Id;
         push @$links, {
             ref  => 'attachment',
-            _url => RT::Extension::REST2->base_uri . "/attachment/$id",
+            _url => RT::REST2->base_uri . "/attachment/$id",
         };
     }
 

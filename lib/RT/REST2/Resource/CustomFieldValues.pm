@@ -1,12 +1,12 @@
-package RT::Extension::REST2::Resource::CustomFieldValues;
+package RT::REST2::Resource::CustomFieldValues;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Collection';
-with 'RT::Extension::REST2::Resource::Collection::QueryByJSON';
+extends 'RT::REST2::Resource::Collection';
+with 'RT::REST2::Resource::Collection::QueryByJSON';
 
 has 'customfield' => (
     is  => 'ro',
@@ -48,7 +48,7 @@ sub serialize {
             type => 'customfieldvalue',
             id   => $item->id,
             name   => $item->Name,
-            _url => RT::Extension::REST2->base_uri . "/customfield/" . $cf->id . '/value/' . $item->id,
+            _url => RT::REST2->base_uri . "/customfield/" . $cf->id . '/value/' . $item->id,
         };
         push @results, $result;
     }

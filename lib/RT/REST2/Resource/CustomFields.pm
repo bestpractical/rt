@@ -1,12 +1,12 @@
-package RT::Extension::REST2::Resource::CustomFields;
+package RT::REST2::Resource::CustomFields;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::Extension::REST2::Resource::Collection';
-with 'RT::Extension::REST2::Resource::Collection::QueryByJSON';
+extends 'RT::REST2::Resource::Collection';
+with 'RT::REST2::Resource::Collection::QueryByJSON';
 
 has 'object_applied_to' => (
     is  => 'ro',
