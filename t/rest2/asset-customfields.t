@@ -151,8 +151,8 @@ my $no_asset_cf_values = bag(
         Disabled   => 0,
         LookupType => RT::Asset->CustomFieldLookupType,
         MaxValues  => 1,
-	Name       => 'Single',
-	Type       => 'Freeform',
+    Name       => 'Single',
+    Type       => 'Freeform',
     }), 'single cf');
 
     $res = $mech->get($multi_url,
@@ -164,8 +164,8 @@ my $no_asset_cf_values = bag(
         Disabled   => 0,
         LookupType => RT::Asset->CustomFieldLookupType,
         MaxValues  => 0,
-	Name       => 'Multi',
-	Type       => 'Freeform',
+    Name       => 'Multi',
+    Type       => 'Freeform',
     }), 'multi cf');
 }
 

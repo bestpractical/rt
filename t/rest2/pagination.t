@@ -125,41 +125,41 @@ my $bravo_id = $bravo->Id;
 {
     my $url = "$rest_base_path/queues/all";
     for my $param ( 'per_page', 'page' ) {
-	for my $value ( 'abc', '-10', '30' ) {
-	    # No need to test the following combination.
-	    next if $param eq 'per_page' && $value eq '30';
+    for my $value ( 'abc', '-10', '30' ) {
+        # No need to test the following combination.
+        next if $param eq 'per_page' && $value eq '30';
 
-	    my $res = $mech->post_json("$url?$param=$value",
-		[],
-		'Authorization' => $auth,
-	    );
-	    is($res->code, 200);
+        my $res = $mech->post_json("$url?$param=$value",
+        [],
+        'Authorization' => $auth,
+        );
+        is($res->code, 200);
 
-	    my $content = $mech->json_response;
-	    if ($param eq 'page') {
-		if ($value eq '30') {
-		    is($content->{count}, 0);
-		    is($content->{page}, 30);
-		    is(scalar @{$content->{items}}, 0);
-		    like($content->{prev_page}, qr[$url\?page=1]);
-		} else {
-		    is($content->{count}, 3);
-		    is($content->{page}, 1);
-		    is(scalar @{$content->{items}}, 3);
-		    is($content->{prev_page}, undef);
-		}
-	    }
-	    is($content->{pages}, 1);
-	    if ($param eq 'per_page') {
-		if ($value eq '30') {
-		    is($content->{per_page}, 30);
-		} else {
-		    is($content->{per_page}, 20);
-		}
-	    }
-	    is($content->{total}, 3);
-	    is($content->{next_page}, undef);
-	}
+        my $content = $mech->json_response;
+        if ($param eq 'page') {
+        if ($value eq '30') {
+            is($content->{count}, 0);
+            is($content->{page}, 30);
+            is(scalar @{$content->{items}}, 0);
+            like($content->{prev_page}, qr[$url\?page=1]);
+        } else {
+            is($content->{count}, 3);
+            is($content->{page}, 1);
+            is(scalar @{$content->{items}}, 3);
+            is($content->{prev_page}, undef);
+        }
+        }
+        is($content->{pages}, 1);
+        if ($param eq 'per_page') {
+        if ($value eq '30') {
+            is($content->{per_page}, 30);
+        } else {
+            is($content->{per_page}, 20);
+        }
+        }
+        is($content->{total}, 3);
+        is($content->{next_page}, undef);
+    }
     }
 }
 
