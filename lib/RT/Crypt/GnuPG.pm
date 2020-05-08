@@ -1627,12 +1627,13 @@ sub GetKeysForEncryption {
     foreach my $key ( splice @{ $res{'info'} } ) {
         # skip disabled keys
         next if $key->{'Capabilities'} =~ /D/;
+        # skip signatures with no user
+        next unless $key->{User}[0];
         # skip keys not suitable for encryption
         next unless $key->{'Capabilities'} =~ /e/i;
         # skip disabled, expired, revoked and keys with no trust,
         # but leave keys with unknown trust level
         next if $key->{'TrustLevel'} < 0;
-
         push @{ $res{'info'} }, $key;
     }
     delete $res{'info'} unless @{ $res{'info'} };
@@ -1733,6 +1734,7 @@ sub ParseKeysInfo {
                 _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = $self->ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
+            $info{_type} = $tag;
             push @res, \%info;
         }
         elsif ( $tag eq 'sec' || $gnupg_versions[0] >= 2 && $tag eq 'ssb' ) {
@@ -1746,6 +1748,7 @@ sub ParseKeysInfo {
                 _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = $self->ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
+            $info{_type} = $tag;
             push @res, \%info;
         }
         elsif ( $tag eq 'uid' ) {
@@ -1754,9 +1757,11 @@ sub ParseKeysInfo {
                 = (split /:/, $line)[0,4,5,8];
             $info{ $_ } = $self->ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
+            $info{_type} = $tag;
             push @{ $res[-1]{'User'} ||= [] }, \%info;
         }
         elsif ( $tag eq 'fpr' ) {
+            $res[-1]{_type} = $tag;
             $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
         }
     }
