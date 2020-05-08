@@ -132,7 +132,7 @@ check( $_, exec => -1 )
     for grep {m{^share/(po|fonts)/}} @files;
 
 check( $_, exec => -1 )
-    for grep {m{^t/data/}} @files;
+    for grep {m{^t/data/.*((?!/bin).)}} @files;
 
 check( $_, exec => -1, bps_tag => -1 )
     for grep {m{^etc/[^/]+$}} @files;

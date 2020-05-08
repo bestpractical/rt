@@ -258,10 +258,10 @@ sub warnings_exist {
     }
     else {
         foreach my $warning (@warnings) {
-	   if ($warning =~ $re) {
+           if ($warning =~ $re) {
                return Test::More::pass($name);
-	   }
-	}
+           }
+        }
     }
     Test::More::fail("no warnings emitted matching $re");
     return 0;
