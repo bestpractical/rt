@@ -78,7 +78,7 @@ ul.sf-menu li {
     position: absolute;
     top: 1px;
     left: 0;
-    z-index: 9999;
+    z-index: 1000;
     text-color: #000;
 }
 
