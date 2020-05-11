@@ -9,6 +9,6 @@ CREATE TABLE AuthTokens (
     LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
     LastUpdated       datetime                 DEFAULT NULL,
     PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
 CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);
