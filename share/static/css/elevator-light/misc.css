@@ -105,7 +105,6 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
 
 .modal {
   background: rgb(0, 0, 0, .70); 
-  z-index: 10000; 
 }
 
 /* manipulate the svg image for selected bookmarks */
