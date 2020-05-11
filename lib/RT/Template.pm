@@ -676,6 +676,16 @@ sub _DowngradeFromHTML {
     my $orig_entity = $self->MIMEObj;
 
     my $new_entity = $orig_entity->dup; # this will fail badly if we go away from InCore parsing
+
+    # We're going to make this multipart/alternative below, so clear out the Subject
+    # header copied from the original when we dup'd above.
+    # Alternative parts should have just formatting headers like Content-Type
+    # so maybe we should clear all, but staying conservative for now.
+
+    if ( $new_entity->head->get('Subject') ) {
+        $new_entity->head->delete('Subject');
+    }
+
     $new_entity->head->mime_attr( "Content-Type" => 'text/plain' );
     $new_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
 
