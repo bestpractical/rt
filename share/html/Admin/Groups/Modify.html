@@ -91,11 +91,15 @@
   <& /Elements/EditCustomFieldCustomGroupings , Object => $Group, &>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
 
-% if ( $Create ) {
-<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
-% } else {
-<& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
-% }
+  <div class="form-row">
+    <div class="col-12">
+%   if ( $Create ) {
+      <& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+%   } else {
+      <& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
+%   }
+    </div>
+  </div>
 </form>
 <%INIT>
 

@@ -109,7 +109,11 @@ my @users = map {$_->[1]}
   </div>
 </div>
 </&>
-<& /Elements/Submit, Label => loc('Modify Members'), Reset => 1 &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Modify Members'), Reset => 1 &>
+    </div>
+  </div>
 </form>
 
 

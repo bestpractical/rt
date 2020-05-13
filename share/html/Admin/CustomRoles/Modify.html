@@ -123,11 +123,15 @@ disabled="disabled"
 </div>
 
 </&>
-% if ( $Create ) {
-<& /Elements/Submit, Label => loc('Create') &>
-% } else {
-<& /Elements/Submit, Label => loc('Save Changes') &>
-% }
+  <div class="form-row">
+    <div class="col-12">
+%   if ( $Create ) {
+      <& /Elements/Submit, Label => loc('Create') &>
+%   } else {
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+%   }
+    </div>
+  </div>
 </form>
 
 

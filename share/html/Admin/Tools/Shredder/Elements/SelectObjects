@@ -63,7 +63,11 @@
 % foreach my $o( @Objects ) {
       <& ObjectCheckBox, Object => $o &>
 % }
-      <& /Elements/Submit, Name => 'Wipeout', Label => loc('Wipeout') &>
+      <div class="form-row">
+        <div class="col-12">
+          <& /Elements/Submit, Name => 'Wipeout', Label => loc('Wipeout') &>
+        </div>
+      </div>
     </div>
 % }
   </&>

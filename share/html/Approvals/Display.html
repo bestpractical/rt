@@ -54,7 +54,11 @@
 <hr />
 <& Elements/Approve, ticket => $Ticket, ShowApproving => 0 &>
 </&>
-<& /Elements/Submit&>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit &>
+    </div>
+  </div>
 </form>
 <& Elements/ShowDependency, Ticket => $Ticket &>
 

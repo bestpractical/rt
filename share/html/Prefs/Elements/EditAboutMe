@@ -260,7 +260,11 @@
 
 <& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
 
-<& /Elements/Submit, Label => loc('Save Preferences') &>
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit, Label => loc('Save Preferences') &>
+  </div>
+</div>
 
 %if ( $AdminUser ) {
 <&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>
