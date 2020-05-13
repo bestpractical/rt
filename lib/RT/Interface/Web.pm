@@ -5019,13 +5019,17 @@ sub ProcessAuthToken {
                 Description => $args_ref->{Description},
             );
             if ($ok) {
+                push @results, $msg;
+                push @results,
+                    loc(
+                        '"[_1]" is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again.',
+                        $auth_string
+                    );
             }
-            push @results, $msg;
-            push @results,
-                loc(
-                '"[_1]" is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again.',
-                $auth_string
-                );
+            else {
+                push @results, loc('Unable to create a new authentication token. Contact your RT administrator.');
+                RT->Logger->error('Unable to create authentication token: ' . $msg);
+            }
         }
     }
     elsif ( $args_ref->{Update} || $args_ref->{Revoke} ) {
