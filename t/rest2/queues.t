@@ -9,7 +9,11 @@ my $user = RT::Test::REST2->user;
 
 $user->PrincipalObj->GrantRight( Right => 'SuperUser' );
 
-my $queue_obj = RT::Test->load_or_create_queue( Name => "General" );
+my $queue_obj = RT::Test->load_or_create_queue(
+    Name              => "General",
+    CorrespondAddress => 'general@example.com',
+    CommentAddress    => 'comment@example.com',
+);
 
 my $single_cf = RT::CustomField->new( RT->SystemUser );
 
