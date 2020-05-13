@@ -542,7 +542,7 @@ CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRol
 CREATE SEQUENCE Configurations_seq;
 CREATE TABLE Configurations (
     id              NUMBER(11,0)    CONSTRAINT Configurations_key PRIMARY KEY,
-    Name            VARCHAR2(255) CONSTRAINT Configurations_Name_Unique unique  NOT NULL,
+    Name            VARCHAR2(255) NOT NULL,
     Content         CLOB,
     ContentType     VARCHAR2(80),
     Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL,
