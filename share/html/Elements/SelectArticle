@@ -54,7 +54,7 @@
 % while (my $article = $articles->Next) {
 <option <% ( $article->Name eq $Default) ? qq[ selected="selected"] : '' |n %>
     value="<%$article->Id%>">
-<%$article->Name || loc('(no name)')%><% $IncludeSummary ? ': ' . $article->Summary || '' : '' %>
+<%$article->Name || loc('(no name)')%><% $IncludeSummary ? ': ' .  ($article->Summary || '') : '' %>
 </option>
 % }
 </select>
