@@ -103,6 +103,16 @@ C<SetHandler modperl>, as the example below uses.
         </Perl>
     </VirtualHost>
 
+=head3 Token Authentication
+
+If you plan to set up token-based access, possibly to use L<RT::REST2>,
+add the following directive to your RT Apache configuration to allow
+RT to access the Authorization header.
+
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+More information is available in L<RT::Authen::Token>.
+
 =head2 nginx
 
 C<nginx> requires that you start RT's fastcgi process externally, for

@@ -15,6 +15,24 @@ may be all you need.  The administration pages under Admin → Users
 provide new user creation as well as password setting and control of RT's
 privileged flag for existing users.
 
+=head1 Token Authentication
+
+Authentication tokens are typically used for accessing RT's REST APIs,
+often L<RT::REST2>. To set up token access, first select an RT user
+account you will use when accessing APIs and give that user account
+appropriate rights to operate on tickets based on what you plan to do
+(read ticket information, create tickets, update tickets, etc.).
+
+You can then give that user the right ManageAuthTokens which will
+add a new option in the menu Logged in as > Settings > AuthTokens.
+
+When setting up token authentication, add the following directive to
+your RT Apache configuration to allow RT to access the Authorization header.
+
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+You can find more information about tokens in L<RT::Authen::Token>.
+
 =head1 External Authentication
 
 There are two primary types of external authentication: in one you type your
@@ -84,7 +102,6 @@ An example of using LDAP authentication and HTTP Basic auth:
     <Location /REST/1.0/NoAuth/mail-gateway>
         Require local
     </Location>
-
 
 =head3 RT Configuration Options
 

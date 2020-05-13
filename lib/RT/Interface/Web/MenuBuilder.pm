@@ -296,6 +296,9 @@ sub BuildMainNav {
         my $settings = $about_me->child( settings => title => loc('Settings'), path => '/Prefs/Other.html' );
         $settings->child( options        => title => loc('Preferences'),        path => '/Prefs/Other.html' );
         $settings->child( about_me       => title => loc('About me'),       path => '/Prefs/AboutMe.html' );
+        if ( $current_user->HasRight( Right => 'ManageAuthTokens', Object => RT->System ) ) {
+            $settings->child( auth_tokens => title => loc('Auth Tokens'), path => '/Prefs/AuthTokens.html' );
+        }
         $settings->child( search_options => title => loc('Search options'), path => '/Prefs/SearchOptions.html' );
         $settings->child( myrt           => title => loc('RT at a glance'), path => '/Prefs/MyRT.html' );
         $settings->child( dashboards_in_menu =>
@@ -326,6 +329,12 @@ sub BuildMainNav {
             $page->child(
                 custom_date_ranges => title => loc('Custom Date Ranges'),
                 path               => "/Prefs/CustomDateRanges.html"
+            )
+        }
+
+        if ( $request_path =~ m{^/Prefs/AuthTokens\.html} ) {
+            $page->child( create_auth_token => title => loc('Create'),
+                raw_html => q[<a class="btn menu-item" href="#create-auth-token" data-toggle="modal" rel="modal:open">].loc("Create")."</a>"
             );
         }
     }
@@ -1351,6 +1360,26 @@ sub _BuildAdminMenu {
                     $page->child( keys    => title => loc('Private keys'),   path => "/Admin/Users/Keys.html?id=" . $id );
                 }
                 $page->child( 'summary'   => title => loc('User Summary'),   path => "/User/Summary.html?id=" . $id );
+
+                if ( $current_user->HasRight( Right => 'ManageAuthTokens', Object => RT->System ) ) {
+                    my $auth_tokens = $page->child(
+                        auth_tokens => title => loc('Auth Tokens'),
+                        path        => '/Admin/Users/AuthTokens.html?id=' . $id
+                    );
+
+                    if ( $request_path =~ m{^/Admin/Users/AuthTokens\.html} ) {
+                        $auth_tokens->child(
+                            select_auth_token => title => loc('Select'),
+                            path              => '/Admin/Users/AuthTokens.html?id=' . $id,
+                        );
+                        $auth_tokens->child(
+                            create_auth_token => title => loc('Create'),
+                            raw_html =>
+                                q[<a class="btn menu-item" href="#create-auth-token" data-toggle="modal" rel="modal:open">]
+                                . loc("Create") . "</a>"
+                        );
+                    }
+                }
             }
         }
 

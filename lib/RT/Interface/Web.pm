@@ -336,6 +336,8 @@ sub HandleRequest {
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
         if @{ RT->Config->Get( 'ExternalAuthPriority' ) || [] };
 
+    AttemptTokenAuthentication($ARGS) unless _UserLoggedIn();
+
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
 
@@ -866,6 +868,39 @@ sub AttemptPasswordAuthentication {
         return (1, HTML::Mason::Commands::loc('Logged in'));
     }
 }
+
+sub AttemptTokenAuthentication {
+    my $ARGS = shift;
+    my ($pass, $user) = ('', '');
+    if ((RequestENV('HTTP_AUTHORIZATION')||'') =~ /^token (.*)$/i) {
+        $pass ||= $1;
+        my ($user_obj, $token) = RT::Authen::Token->UserForAuthString($pass, $user);
+        if ( $user_obj ) {
+            # log in
+            my $remote_addr = RequestENV('REMOTE_ADDR');
+            $RT::Logger->info("Successful login for @{[$user_obj->Name]} from $remote_addr using authentication token #@{[$token->Id]} (\"@{[$token->Description]}\")");
+
+            # It's important to nab the next page from the session before we blow
+            # the session away
+            my $next = RT::Interface::Web::RemoveNextPage($ARGS->{'next'});
+            $next = $next->{'url'} if ref $next;
+
+            RT::Interface::Web::InstantiateNewSession();
+            $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+
+            # Really the only time we don't want to redirect here is if we were
+            # passed user and pass as query params in the URL.
+            if ($next) {
+                RT::Interface::Web::Redirect($next);
+            }
+            elsif ($ARGS->{'next'}) {
+                # Invalid hash, but still wants to go somewhere, take them to /
+                RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+            }
+        }
+    }
+}
+
 
 =head2 LoadSessionFromCookie
 
@@ -4943,6 +4978,82 @@ sub ProcessCustomDateRanges {
         else {
             $args_ref->{'CustomDateRangesUI-Current'} = ''; # EditConfig.html needs this to update CustomDateRangesUI
             $args_ref->{CustomDateRangesUI} = $content;
+        }
+    }
+    return @results;
+}
+
+=head2 ProcessAuthToken ARGSRef => ARGSREF
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessAuthToken {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+    my $args_ref = $args{ARGSRef};
+
+    my @results;
+    my $token = RT::AuthToken->new( $session{CurrentUser} );
+
+    if ( $args_ref->{Create} ) {
+
+        # Don't require password for systems with some form of federated auth
+        my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+
+        if ( !length( $args_ref->{Description} ) ) {
+            push @results, loc("Description cannot be blank.");
+        }
+        elsif ( $res{'CanSet'} && !length( $args_ref->{Password} ) ) {
+            push @results, loc("Please enter your current password.");
+        }
+        elsif ( $res{'CanSet'} && !$session{CurrentUser}->IsPassword( $args_ref->{Password} ) ) {
+            push @results, loc("Please enter your current password correctly.");
+        }
+        else {
+            my ( $ok, $msg, $auth_string ) = $token->Create(
+                Owner       => $args_ref->{Owner},
+                Description => $args_ref->{Description},
+            );
+            if ($ok) {
+                push @results, $msg;
+                push @results,
+                    loc(
+                        '"[_1]" is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again.',
+                        $auth_string
+                    );
+            }
+            else {
+                push @results, loc('Unable to create a new authentication token. Contact your RT administrator.');
+                RT->Logger->error('Unable to create authentication token: ' . $msg);
+            }
+        }
+    }
+    elsif ( $args_ref->{Update} || $args_ref->{Revoke} ) {
+
+        $token->Load( $args_ref->{Token} );
+        if ( $token->Id ) {
+            if ( $args_ref->{Update} ) {
+                if ( length( $args_ref->{Description} ) ) {
+                    if ( $args_ref->{Description} ne $token->Description ) {
+                        my ( $ok, $msg ) = $token->SetDescription( $args_ref->{Description} );
+                        push @results, $msg;
+                    }
+                }
+                else {
+                    push @results, loc("Description cannot be blank.");
+                }
+            }
+            elsif ( $args_ref->{Revoke} ) {
+                my ( $ok, $msg ) = $token->Delete;
+                push @results, $msg;
+            }
+        }
+        else {
+            push @results, loc("Could not find token: [_1]", $args_ref->{Token});
         }
     }
     return @results;
