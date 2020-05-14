@@ -156,7 +156,9 @@ sub PushBasics {
 
 sub JSON {
     my $self = shift;
-    return $self->{JSON} ||= JSON->new->utf8->pretty->canonical;
+    $self->{JSON} ||= JSON->new->pretty->canonical;
+    $self->{JSON} = $self->{JSON}->utf8 if RT->Config->Get('DatabaseType') =~ /Pg|Oracle/;
+    return $self->{JSON};
 }
 
 sub OpenFile {
