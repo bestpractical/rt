@@ -405,6 +405,7 @@ sub CallGnuPG {
             $err ||= "Can't close gnupg $_ handle: $!";
         }
     }
+
     $RT::Logger->debug( $res{'status'} ) if $res{'status'};
     $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
     $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
@@ -1607,12 +1608,16 @@ sub _ParseUserHint {
 
 sub _PrepareGnuPGOptions {
     my %opt = @_;
-    my %res = map { lc $_ => $opt{ $_ } } grep $supported_opt{ lc $_ }, keys %opt;
-    $res{'extra_args'} ||= [];
-    foreach my $o ( grep !$supported_opt{ lc $_ }, keys %opt ) {
-        push @{ $res{'extra_args'} }, '--'. lc $o;
-        push @{ $res{'extra_args'} }, $opt{ $o }
-            if defined $opt{ $o };
+    my %res = ( extra_args => (delete $opt{extra_args} // [ ]) );
+    foreach my $raw_opt (keys %opt) {
+        (my $clean_opt = lc ($raw_opt) ) =~ s/\-/_/g;
+        if ($supported_opt{$clean_opt}) {
+            $res{$clean_opt} = $opt{$raw_opt};
+        } else {
+            push @{ $res{'extra_args'} }, '--'. lc $raw_opt;
+            push @{ $res{'extra_args'} }, $opt{ $raw_opt }
+                if defined $opt{ $raw_opt };
+        }
     }
     return %res;
 }
