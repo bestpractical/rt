@@ -79,7 +79,7 @@ sub serialize {
     if ($data->{Values}) {
         if ($self->record->BasedOn && defined $self->request->param('category')) {
             my $category = $self->request->param('category') || '';
-            @{$data->{Values}} = grep {$_->{category} eq $category} @{$data->{Values}};
+            @{ $data->{Values} } = grep { ( $_->{category} // '' ) eq $category } @{ $data->{Values} };
         }
         @{$data->{Values}} = map {$_->{name}} @{$data->{Values}};
     }

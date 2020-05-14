@@ -41,6 +41,7 @@ my ($asset_url, $asset_id);
 {
     my $payload = {
         Name    => 'Asset creation using REST',
+        Description => 'Asset description',
         Catalog => 'General assets',
         Content => 'Testing asset creation using REST API.',
     };
