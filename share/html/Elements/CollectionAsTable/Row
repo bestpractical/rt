@@ -193,6 +193,13 @@ foreach my $column (@Format) {
 
     $m->out( '</td>' . "\n" );
 }
+
+# Fill up the last row, like how NEWLINE is handled above
+while ( $item < $maxitems ) {
+    $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
+    $item++;
+}
+
 $m->out('</tr>');
 $m->out('</tbody>');
 </%init>

@@ -210,6 +210,16 @@ my $render_attachment = sub {
                 ." of '$content_type' type"
             );
 
+            my $skip_quote_folding;
+            $m->callback(
+                CallbackName     => 'ModifyContent',
+                ARGSRef          => \%ARGS,
+                Object           => $Object,
+                Transaction      => $Transaction,
+                Content          => \$content,
+                SkipQuoteFolding => \$skip_quote_folding,
+            );
+
             # if it's a text/html clean the body and show it
             if ( $content_type eq 'text/html' ) {
                 $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
@@ -234,7 +244,8 @@ my $render_attachment = sub {
                     object  => $Object,
                 );
 
-                if ( !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+                if ( !$skip_quote_folding && !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+
                     eval {
                         require HTML::Quoted;
                         $content = HTML::Quoted->extract($content)
@@ -261,7 +272,7 @@ my $render_attachment = sub {
 
             # It's a text type we don't have special handling for
             else {
-                if ( !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+                if ( !$skip_quote_folding && !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
                     eval {
                         require Text::Quoted;
                         Text::Quoted::set_quote_characters(undef);

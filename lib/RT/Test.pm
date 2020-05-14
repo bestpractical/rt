@@ -1798,6 +1798,43 @@ sub done_testing {
     $builder->done_testing(@_);
 }
 
+# Some utilities must only run one process at a time, so they check
+# for other running processes and quit if another is found. In parallel
+# test mode, this can cause test failures if two tests happen to run at
+# the same time.
+
+# This test helper checks for a running process, and if found sleeps and
+# tries again for a short time rather than immediately failing.
+
+sub run_singleton_command {
+    my $self    = shift;
+    my $command = shift;
+    my @args    = @_;
+
+    my $dir = "$tmp{'directory'}/../singleton";
+    mkdir $dir unless -e $dir;
+
+    my $flag = $command;
+    $flag =~ s!/!-!g;
+    $flag = "$dir/$flag";
+
+    for ( 1 .. 100 ) {
+        if ( -e $flag ) {
+            sleep 1;
+        }
+        else {
+            open my $fh, '>', $flag or die $!;
+            close $fh;
+            last;
+        }
+    }
+
+    my $ret = !system( $command, @args );
+    unlink $flag;
+
+    return $ret;
+}
+
 END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
