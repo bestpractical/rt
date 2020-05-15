@@ -1752,7 +1752,7 @@ sub ParseKeysInfo {
             push @{ $res[-1]{'User'} ||= [] }, \%info;
         }
         elsif ( $tag eq 'fpr' ) {
-            $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
+            $res[-1]{'Fingerprint'} ||= (split /:/, $line, 10)[8];
         }
     }
     return @res;
