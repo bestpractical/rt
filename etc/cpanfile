@@ -182,7 +182,7 @@ feature 'sqlite' => sub {
 # Optional features
 feature 'gpg' => sub {
     requires 'File::Which';
-    requires 'GnuPG::Interface';
+    requires 'GnuPG::Interface', '>= 1.00';
     requires 'PerlIO::eol';
 };
 
