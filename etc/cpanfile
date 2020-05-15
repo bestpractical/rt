@@ -113,9 +113,9 @@ requires 'MooseX::NonMoose';
 requires 'MooseX::Role::Parameterized';
 requires 'namespace::autoclean';
 requires 'Sub::Exporter';
-requires 'Web::Machine' => '0.12';
+requires 'Web::Machine' => '>= 0.12';
 requires 'Module::Path';
-requires 'Path::Dispatcher' => '1.07';
+requires 'Path::Dispatcher' => '>= 1.07';
 
 on 'develop' => sub {
     requires 'Email::Abstract';
