@@ -383,4 +383,11 @@ sub gnupg_version {
     state $gnupg_version = version->parse(GnuPG::Interface->new->version);
 }
 
+END {
+    if ( gnupg_version() >= 2 ) {
+        system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
+            && warn $!;
+    }
+}
+
 1;
