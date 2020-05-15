@@ -52,6 +52,7 @@ use warnings;
 use Test::More;
 use base qw(RT::Test);
 use File::Temp qw(tempdir);
+use 5.010;
 
 our @EXPORT =
   qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options 
@@ -97,6 +98,16 @@ sub bootstrap_more_config {
         $args->{gnupg_options} ? %{ $args->{gnupg_options} } : (),
     );
     $gnupg_options{homedir} ||= scalar tempdir( CLEANUP => 1 );
+
+    my $conf = File::Spec->catfile( $gnupg_options{homedir}, 'gpg.conf' );
+    if ( gnupg_version() >= 2 ) {
+        open my $fh, '>', $conf or die $!;
+        print $fh "pinentry-mode loopback\n";
+        close $fh;
+    }
+    else {
+        unlink $conf if -e $conf;
+    }
 
     use Data::Dumper;
     local $Data::Dumper::Terse = 1; # "{...}" instead of "$VAR1 = {...};"
@@ -365,3 +376,11 @@ sub create_and_test_outgoing_emails {
         }
     }
 }
+
+sub gnupg_version {
+    GnuPG::Interface->require or return;
+    require version;
+    state $gnupg_version = version->parse(GnuPG::Interface->new->version);
+}
+
+1;
