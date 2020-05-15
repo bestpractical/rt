@@ -330,6 +330,7 @@ sub CallGnuPG {
     my %GnuPGOptions = RT->Config->Get('GnuPGOptions');
     my %opt = (
         'digest-algo' => 'SHA1',
+        'cert-digest-algo' => 'SHA256',
         %GnuPGOptions,
         %{ $args{Options} || {} },
     );
