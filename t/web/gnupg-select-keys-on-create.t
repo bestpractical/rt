@@ -28,7 +28,7 @@ diag "check that signing doesn't work if there is no key";
         'unable to sign outgoing email messages',
         'problems with passphrase'
     );
-    $m->warning_like(qr/signing failed: secret key not available/);
+    $m->warning_like(qr/signing failed: (?:secret key not available|No secret key)/);
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
@@ -66,7 +66,7 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->next_warning_like(qr/public key not found/) for 1 .. 2;
+    $m->next_warning_like(qr/public key not found|No public key/) for 1 .. 2;
     $m->no_leftover_warnings_ok;
 }
 

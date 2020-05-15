@@ -355,7 +355,7 @@ warning_like {
     $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
                   Owner => $nokey);
 } [
-    qr/nokey\@example.com: skipped: public key not found/,
+    qr/nokey\@example.com: skipped: public key not found|error retrieving 'nokey\@example.com' via WKD: No data/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
@@ -377,7 +377,7 @@ my $status;
 warning_like {
     ($status, $id) = RT::Test->send_via_mailgate($mail);
 } [
-    qr/nokey\@example.com: skipped: public key not found/,
+    qr/nokey\@example.com: skipped: public key not found|error retrieving 'nokey\@example.com' via WKD: No data/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 
@@ -458,8 +458,8 @@ like($content, qr/KR-<recipient\@example\.com>-K/,
 like($content, qr/KR-nokey \(no pubkey!\)-K/,
      "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
-$m->next_warning_like(qr/public key not found/);
-$m->next_warning_like(qr/public key not found/);
+$m->next_warning_like(qr/public key not found|No public key/);
+$m->next_warning_like(qr/public key not found|No public key/);
 $m->no_leftover_warnings_ok;
 
 done_testing;
