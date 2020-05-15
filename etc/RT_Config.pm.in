@@ -2991,6 +2991,10 @@ Set C<Dashboards> to a hash with Encrypt and Sign keys to control
 whether dashboards should be encrypted and/or signed correspondingly.
 By default they are not encrypted or signed.
 
+Similarly, set C<DigestEmail> to a hash with Encrypt and Sign keys
+to control whether digest email should be encrypted and/or signed.
+By default they are not encrypted or signed.
+
 =back
 
 =cut
@@ -3005,6 +3009,10 @@ Set( %Crypt,
     AllowEncryptDataInDB      => 0,
 
     Dashboards => {
+        Encrypt => 0,
+        Sign    => 0,
+    },
+    DigestEmail => {
         Encrypt => 0,
         Sign    => 0,
     },
