@@ -52,6 +52,8 @@ use warnings;
 use Test::More;
 use base qw(RT::Test);
 use File::Temp qw(tempdir);
+use IPC::Run3 'run3';
+use File::Copy;
 use 5.010;
 
 our @EXPORT =
@@ -97,7 +99,7 @@ sub bootstrap_more_config {
         'no-permission-warning' => undef,
         $args->{gnupg_options} ? %{ $args->{gnupg_options} } : (),
     );
-    $gnupg_options{homedir} ||= scalar tempdir( CLEANUP => 1 );
+    $gnupg_options{homedir} ||= new_homedir();
 
     my $conf = File::Spec->catfile( $gnupg_options{homedir}, 'gpg.conf' );
     if ( gnupg_version() >= 2 ) {
@@ -381,6 +383,25 @@ sub gnupg_version {
     GnuPG::Interface->require or return;
     require version;
     state $gnupg_version = version->parse(GnuPG::Interface->new->version);
+}
+
+sub new_homedir {
+    my $source = shift;
+    my $dir = tempdir();
+
+    if ($source) {
+        opendir my $dh, $source or die $!;
+        for my $file ( grep {/\.gpg$/} readdir $dh ) {
+            copy( File::Spec->catfile( $source, $file ), File::Spec->catfile( $dir, $file ) ) or die $!;
+        }
+        closedir $dh;
+        if ( gnupg_version() >= 2 ) {
+            # Do the data migration
+            run3( [ 'gpg', '--homedir', $dir, '--list-secret-keys' ], \undef, \undef, \undef );
+        }
+    }
+
+    return $dir;
 }
 
 END {
