@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use RT::Test::GnuPG
-  tests         => 53,
+  tests         => 50,
   actual_server => 1,
   gnupg_options => {
     passphrase => 'rt-test',
@@ -191,78 +191,150 @@ RT::Test->close_mailgate_ok($mail);
 }
 
 
-# # test that if it gets base64 transfer-encoded, we still get the content out
-# $buf = encode_base64($buf);
-# $mail = RT::Test->open_mailgate_ok($baseurl);
-# print $mail <<"EOF";
-# From: recipient\@example.com
-# To: general\@$RT::rtname
-# Content-transfer-encoding: base64
-# Subject: Encrypted message for queue
+#####
 
-# $buf
-# EOF
-# RT::Test->close_mailgate_ok($mail);
 
-# {
-#     my $tick = RT::Test->last_ticket;
-#     is( $tick->Subject, 'Encrypted message for queue',
-#         "Created the ticket"
-#     );
+# test for signed and encrypted mail
+{
+    my $buf = '';
+    run3(
+        shell_quote(
+            qw(gpg --batch --no-tty --encrypt --armor --sign),
+            '--recipient'   => 'general@example.com',
+            '--default-key' => 'recipient@example.com',
+            '--homedir'     => $homedir,
+            '--passphrase'  => 'recipient',
+            '--no-permission-warning',
+        ),
+        \"orzzzzzz\r\n",
+        \$buf,
+        \*STDOUT,
+        \*STDERR
+    );
 
-#     my $txn = $tick->Transactions->First;
-#     my ($msg, $attach, $orig) = @{$txn->Attachments->ItemsArrayRef};
+    my $mail = RT::Test->open_mailgate_ok($baseurl);
+    print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Subject: Encrypted message for queue
 
-#     is( $msg->GetHeader('X-RT-Incoming-Encryption'),
-#         'Success',
-#         'recorded incoming mail that is encrypted'
-#     );
-#     is( $msg->GetHeader('X-RT-Privacy'),
-#         'GnuPG',
-#         'recorded incoming mail that is encrypted'
-#     );
-#     like( $attach->Content, qr/orz/);
+$buf
+EOF
+    RT::Test->close_mailgate_ok($mail);
 
-#     is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
-#     ok(index($orig->Content, $buf) != -1, 'found original msg');
-# }
+    my $tick = RT::Test->last_ticket;
+    is( $tick->Subject, 'Encrypted message for queue',
+        "Created the ticket"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, $attach, $orig, @other_attachments) = @{$txn->Attachments->ItemsArrayRef};
+
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+        'Success',
+        'recorded incoming mail that is encrypted'
+    );
+    is( $msg->GetHeader('X-RT-Privacy'),
+        'GnuPG',
+        'recorded incoming mail that is encrypted'
+    );
+
+    is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
+    ok(index($orig->Content, $buf) != -1, 'found original msg');
+}
+
+
+# test that if it gets base64 transfer-encoded, we still get the content out
+{
+    my $buf = '';
+    run3(
+        shell_quote(
+            qw(gpg --batch --no-tty --encrypt --armor --sign),
+            '--recipient'   => 'general@example.com',
+            '--default-key' => 'recipient@example.com',
+            '--homedir'     => $homedir,
+            '--passphrase'  => 'recipient',
+            '--no-permission-warning',
+        ),
+        \"orzzzzzz\r\n",
+        \$buf,
+        \*STDOUT,
+        \*STDERR
+    );
+
+    $buf = encode_base64($buf);
+    $mail = RT::Test->open_mailgate_ok($baseurl);
+    print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Content-transfer-encoding: base64
+Subject: Encrypted message for queue
+
+$buf
+EOF
+    RT::Test->close_mailgate_ok($mail);
+
+    my $tick = RT::Test->last_ticket;
+    is( $tick->Subject, 'Encrypted message for queue',
+        "Created the ticket"
+    );
+
+    my $txn = $tick->Transactions->First;
+    my ($msg, $attach, $orig) = @{$txn->Attachments->ItemsArrayRef};
+
+    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+        'Success',
+        'recorded incoming mail that is encrypted'
+    );
+    is( $msg->GetHeader('X-RT-Privacy'),
+        'GnuPG',
+        'recorded incoming mail that is encrypted'
+    );
+    like( $attach->Content, qr/orz/);
+
+    is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
+    ok(index($orig->Content, $buf) != -1, 'found original msg');
+}
 
 # # test for signed mail by other key
-# $buf = '';
-
-# run3(
-#     shell_quote(
-#         qw(gpg --batch --no-tty --armor --sign),
-#         '--default-key' => 'rt@example.com',
-#         '--homedir'     => $homedir,
-#         '--passphrase'  => 'test',
-#         '--no-permission-warning',
-#     ),
-#     \"alright\r\n",
-#     \$buf,
-#     \*STDOUT
-# );
-
-# $mail = RT::Test->open_mailgate_ok($baseurl);
-# print $mail <<"EOF";
+# {
+#    my $buf = '';
+#    run3(
+#        shell_quote(
+#            qw(gpg --batch --no-tty --armor --sign),
+#            '--default-key' => 'rt@example.com',
+#            '--homedir'     => $homedir,
+#            '--passphrase'  => 'test',
+#            '--no-permission-warning',
+#            ( $using_legacy_gnupg ? ( ) : ( '--passphrase-fd' => 0)),
+#            't/data/alright.txt'
+#        ),
+#        ( $using_legacy_gnupg ? ( \"\n" ) : \'test\r\n'),
+#        \$buf,
+#        \*STDOUT,
+#        \*STDERR
+#    );
+#
+#    $mail = RT::Test->open_mailgate_ok($baseurl);
+#    print $mail <<"EOF";
 # From: recipient\@example.com
 # To: general\@$RT::rtname
 # Subject: signed message for queue
 
 # $buf
 # EOF
-# RT::Test->close_mailgate_ok($mail);
+#    RT::Test->close_mailgate_ok($mail);
 
-# {
-#     my $tick = RT::Test->last_ticket;
-#     my $txn = $tick->Transactions->First;
-#     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
-#     # XXX: in this case, which credential should we be using?
-#     is( $msg->GetHeader('X-RT-Incoming-Signature'),
-#         'Test User <rt@example.com>',
-#         'recorded incoming mail signed by others'
-#     );
-# }
+#    my $tick = RT::Test->last_ticket;
+#    my $txn = $tick->Transactions->First;
+#    my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
+
+# # XXX: in this case, which credential should we be using?
+# is( $msg->GetHeader('X-RT-Incoming-Signature'),
+#     'Test User <rt@example.com>',
+#     'recorded incoming mail signed by others'
+# );
+#}
 
 # # test for encrypted mail with key not associated to the queue
 # $buf = '';
@@ -342,33 +414,33 @@ RT::Test->close_mailgate_ok($mail);
 # }
 
 
-# # test that if it gets base64 transfer-encoded long mail then it doesn't hang
-# {
-#     local $SIG{ALRM} = sub {
-#         ok 0, "timed out, web server is probably in deadlock";
-#         exit;
-#     };
-#     alarm 30;
-#     $buf = encode_base64('a'x(250*1024));
-#     $mail = RT::Test->open_mailgate_ok($baseurl);
-#     print $mail <<"EOF";
-# From: recipient\@example.com
-# To: general\@$RT::rtname
-# Content-transfer-encoding: base64
-# Subject: Long not encrypted message for queue
+# test that if it gets base64 transfer-encoded long mail then it doesn't hang
+{
+    local $SIG{ALRM} = sub {
+        ok 0, "timed out, web server is probably in deadlock";
+        exit;
+    };
+    alarm 30;
+    my $buf = encode_base64('a'x(250*1024));
+    my $mail = RT::Test->open_mailgate_ok($baseurl);
+    print $mail <<"EOF";
+From: recipient\@example.com
+To: general\@$RT::rtname
+Content-transfer-encoding: base64
+Subject: Long not encrypted message for queue
 
-# $buf
-# EOF
-#     RT::Test->close_mailgate_ok($mail);
-#     alarm 0;
+$buf
+EOF
+    RT::Test->close_mailgate_ok($mail);
+    alarm 0;
 
-#     my $tick = RT::Test->last_ticket;
-#     is( $tick->Subject, 'Long not encrypted message for queue',
-#         "Created the ticket"
-#     );
-#     my $content = $tick->Transactions->First->Content;
-#     like $content, qr/a{1024,}/, 'content is not lost';
-# }
+    my $tick = RT::Test->last_ticket;
+    is( $tick->Subject, 'Long not encrypted message for queue',
+        "Created the ticket"
+    );
+    my $content = $tick->Transactions->First->Content;
+    like $content, qr/a{1024,}/, 'content is not lost';
+}
 
 
 sub write_gpg_input {
