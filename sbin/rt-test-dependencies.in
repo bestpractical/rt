@@ -271,7 +271,7 @@ DBD::SQLite 1.00
 
 $deps{'GPG'} = [ text_to_hash( << '.') ];
 File::Which
-GnuPG::Interface
+GnuPG::Interface 1.00
 PerlIO::eol
 .
 
