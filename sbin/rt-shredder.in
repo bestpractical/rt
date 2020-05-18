@@ -80,6 +80,15 @@ after wiping out.
 By default creates files named F<< <ISO_date>-XXXX.sql >> in the current
 directory.
 
+=head2 --no-sqldump
+
+Don't generate the SQL dump file.
+
+The SQL dump file provides you with a way to "undo" the removal of
+records from your RT database, if needed. Use this option only if
+you are sure you have a recent, valid database backup in case you
+need to recover data that may have been shredded in error.
+
 =head2 --object (DEPRECATED)
 
 Option has been deprecated, use plugin C<Objects> instead.
@@ -143,7 +152,7 @@ parse_args();
 
 my $shredder = RT::Shredder->new;
 
-{
+if ( !$opt{'no-sqldump'} ) {
     my $plugin = eval { $shredder->AddDumpPlugin( Arguments => {
         file_name    => $opt{'sqldump'},
         from_storage => 0,
@@ -241,6 +250,10 @@ sub parse_args
     $tmp = undef;
     if( GetOptions( 'sqldump=s' => \$tmp ) && $tmp ) {
         $opt{'sqldump'} = $tmp;
+    }
+
+    if( GetOptions( 'no-sqldump' => \$tmp ) && $tmp ) {
+        $opt{'no-sqldump'} = $tmp;
     }
     return;
 }
