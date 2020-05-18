@@ -80,6 +80,10 @@ after wiping out.
 By default creates files named F<< <ISO_date>-XXXX.sql >> in the current
 directory.
 
+=head2 --no-sqldump
+
+Don't generate the SQL dump.
+
 =head2 --object (DEPRECATED)
 
 Option has been deprecated, use plugin C<Objects> instead.
@@ -143,7 +147,7 @@ parse_args();
 
 my $shredder = RT::Shredder->new;
 
-{
+if ( !$opt{'no-sqldump'} ) {
     my $plugin = eval { $shredder->AddDumpPlugin( Arguments => {
         file_name    => $opt{'sqldump'},
         from_storage => 0,
@@ -241,6 +245,10 @@ sub parse_args
     $tmp = undef;
     if( GetOptions( 'sqldump=s' => \$tmp ) && $tmp ) {
         $opt{'sqldump'} = $tmp;
+    }
+
+    if( GetOptions( 'no-sqldump' => \$tmp ) && $tmp ) {
+        $opt{'no-sqldump'} = $tmp;
     }
     return;
 }
