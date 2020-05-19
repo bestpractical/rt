@@ -129,6 +129,14 @@ interface. RT 5.0 is fully responsive so the full UI can be used on mobile
 devices. Set the configuration option C<$ShowMobileSite> to true to restore
 the previous behavior.
 
+=item *
+
+RT can now run with GnuPG 2.2. On install or upgrade, it requires the updated
+version of L<GnuPG::Interface>. C<make testdeps> will test for the correct version.
+RT should also still run with GnuPG 1.4.x. It is not supported for GnuPG versions
+2.0 or 2.1. On some Linux systems, you may need to add a new repo to get an
+updated GnuPG package with some version of 2.2.
+
 =back
 
 =cut

@@ -3,10 +3,9 @@ use warnings;
 
 my $homedir;
 BEGIN {
-    require RT::Test;
-    $homedir =
-      RT::Test::get_abs_relocatable_dir( File::Spec->updir(),
-        qw/data gnupg keyrings/ );
+    require RT::Test::GnuPG;
+    $homedir = RT::Test::GnuPG::new_homedir(
+        RT::Test::get_abs_relocatable_dir( File::Spec->updir(), qw/data gnupg keyrings/ ) ),
 }
 
 use RT::Test::GnuPG

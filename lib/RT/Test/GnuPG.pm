@@ -52,6 +52,9 @@ use warnings;
 use Test::More;
 use base qw(RT::Test);
 use File::Temp qw(tempdir);
+use IPC::Run3 'run3';
+use File::Copy;
+use 5.010;
 
 our @EXPORT =
   qw(create_a_ticket update_ticket cleanup_headers set_queue_crypt_options 
@@ -94,7 +97,17 @@ sub bootstrap_more_config {
         'no-permission-warning' => undef,
         $args->{gnupg_options} ? %{ $args->{gnupg_options} } : (),
     );
-    $gnupg_options{homedir} ||= scalar tempdir( CLEANUP => 1 );
+    $gnupg_options{homedir} ||= new_homedir();
+
+    my $conf = File::Spec->catfile( $gnupg_options{homedir}, 'gpg.conf' );
+    if ( gnupg_version() >= 2 ) {
+        open my $fh, '>', $conf or die $!;
+        print $fh "pinentry-mode loopback\n";
+        close $fh;
+    }
+    else {
+        unlink $conf if -e $conf;
+    }
 
     use Data::Dumper;
     local $Data::Dumper::Terse = 1; # "{...}" instead of "$VAR1 = {...};"
@@ -363,3 +376,37 @@ sub create_and_test_outgoing_emails {
         }
     }
 }
+
+sub gnupg_version {
+    GnuPG::Interface->require or return;
+    require version;
+    state $gnupg_version = version->parse(GnuPG::Interface->new->version);
+}
+
+sub new_homedir {
+    my $source = shift;
+    my $dir = tempdir();
+
+    if ($source) {
+        opendir my $dh, $source or die $!;
+        for my $file ( grep {/\.gpg$/} readdir $dh ) {
+            copy( File::Spec->catfile( $source, $file ), File::Spec->catfile( $dir, $file ) ) or die $!;
+        }
+        closedir $dh;
+        if ( gnupg_version() >= 2 ) {
+            # Do the data migration
+            run3( [ 'gpg', '--homedir', $dir, '--list-secret-keys' ], \undef, \undef, \undef );
+        }
+    }
+
+    return $dir;
+}
+
+END {
+    if ( gnupg_version() >= 2 ) {
+        system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
+            && warn $!;
+    }
+}
+
+1;
