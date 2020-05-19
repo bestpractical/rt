@@ -156,7 +156,7 @@ ul.sf-menu li {
     float: right;
     width: auto;
     top: 2em;
-    z-index: 95;
+    z-index: 94;
 }
 
 .page-menu.pinned li:hover ul,
