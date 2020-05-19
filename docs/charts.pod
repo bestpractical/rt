@@ -7,17 +7,25 @@ last year?) to regular status reports that you then include in
 shared dashboards that everyone can see.
 
 RT has had charts for a long time, but many significant improvements
-came in RT 4.2. If you're running a version of RT earlier than
-4.2 some options and features described here may not be available.
+were made in RT 4.2. Another significant change was made in RT 5.0
+when we converted the web chart library to Chart.js.
 
 =head1 Enabling Charts
 
 =head2 C<$EnableJSChart>
 
-By default this option is enabled, if you'd like to disable JS charting
-then you can set this configuration value to false. To use GD charts
-instead of JS charts ensure that the C<--enable-gd> option is being
-used.
+Starting in RT 5.0, by default charts are rendered by Chart.js,
+a javascript charting library. If you'd like to disable javascript
+rendered charts, you can set this configuration value to false. To use
+GD charts instead of JS charts, set the C<--enable-gd> option
+when running the configure script to install RT.
+
+If you send charts in dashboards via email, GD is still used to
+generate embedded chart images for email. If GD isn't available,
+users can click on the link in email and view charts in RT.
+However, the chart in RT will then show data based on the time
+you click rather than capturing ticket data at the time the email
+was generated.
 
 =head2 Installing GD
 
