@@ -385,7 +385,7 @@ sub gnupg_version {
 
 sub new_homedir {
     my $source = shift;
-    my $dir = tempdir();
+    my $dir = tempdir( CLEANUP => 1 );
 
     if ($source) {
         opendir my $dh, $source or die $!;
