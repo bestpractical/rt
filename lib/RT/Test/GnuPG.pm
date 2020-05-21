@@ -402,11 +402,4 @@ sub new_homedir {
     return $dir;
 }
 
-END {
-    if ( gnupg_version() >= 2 ) {
-        system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
-            && warn $!;
-    }
-}
-
 1;
