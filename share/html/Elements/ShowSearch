@@ -78,8 +78,14 @@ if ($SavedSearch) {
         $m->out(loc("Saved search [_1] not found", $m->interp->apply_escapes($SavedSearch, 'h'))) unless $IgnoreMissing;
         return;
     }
-    $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
-    $SearchArg->{'SearchType'} ||= 'Ticket';
+    if ( $SearchArg->{'SearchType'} && $SearchArg->{'SearchType'} eq 'Chart' ) {
+        $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
+        $SearchArg->{'SavedChartSearchId'} ||= $SavedSearch;
+    }
+    else {
+        $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
+        $SearchArg->{'SearchType'} ||= 'Ticket';
+    }
     if ( $SearchArg->{SearchType} eq 'Transaction' ) {
         $class = $SearchArg->{Class} = 'RT::Transactions';
         $customize
