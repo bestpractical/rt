@@ -276,7 +276,10 @@ sub Roles {
     my $self = shift;
     my %attr = @_;
 
-    return   map { $_->[0] }
+    my $key  = join ',', @_;
+    return @{ $self->{_Roles}{$key} } if ref($self) && $self->{_Roles}{$key};
+
+    my @roles =  map { $_->[0] }
             sort {   $a->[1]{SortOrder} <=> $b->[1]{SortOrder}
                   or $a->[0] cmp $b->[0] }
             grep {
@@ -289,6 +292,13 @@ sub Roles {
                  or $_->[1]{AppliesToObjectPredicate}->($self) }
              map { [ $_, $self->Role($_) ] }
             keys %{ $self->_ROLES };
+
+    # Cache at ticket/queue object level mainly to reduce calls of
+    # custom role's AppliesToObjectPredicate for performance.
+    if ( ref($self) =~ /RT::(?:Ticket|Queue)/ ) {
+        $self->{_Roles}{$key} = \@roles;
+    }
+    return @roles;
 }
 
 {
