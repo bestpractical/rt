@@ -82,6 +82,7 @@ diag 'create roles and add them to the queue' if $ENV{'TEST_VERBOSE'};
 for my $t ($t1, $t2) {
     diag 'test managing watchers of new roles on #' . $t->id if $ENV{'TEST_VERBOSE'};
 
+    $t->Load($t->Id);
     my ($ok, $msg) = $t->AddWatcher(Type => $sales->GroupType, Principal => $ricky->PrincipalObj);
     ok($ok, "add sales: $msg");
     is($t->RoleAddresses($sales->GroupType), $ricky->EmailAddress, 'sales ricky');
