@@ -411,7 +411,8 @@ sub AddToObject {
         unless $queue->CurrentUserHasRight('AdminCustomRoles');
     my $rec = RT::ObjectCustomRole->new( $self->CurrentUser );
     my ( $status, $add ) = $rec->Add( %args, CustomRole => $self );
-    my $msg = $self->loc("[_1] added to queue [_2]", $self->Name, $queue->Name) if $status;
+    my $msg;
+    $msg = $self->loc("[_1] added to queue [_2]", $self->Name, $queue->Name) if $status;
 
     return ( $add, $msg );
 }
@@ -450,7 +451,8 @@ sub RemoveFromObject {
     $rec->LoadByCols( CustomRole => $self->id, ObjectId => $args{'ObjectId'} );
     return (0, $self->loc('Custom role is not added') ) unless $rec->id;
     my ( $status, $delete ) = $rec->Delete;
-    my $msg = $self->loc("[_1] removed from queue [_2]", $self->Name, $queue->Name) if $status;
+    my $msg;
+    $msg = $self->loc("[_1] removed from queue [_2]", $self->Name, $queue->Name) if $status;
 
     return ( $delete, $msg );
 }

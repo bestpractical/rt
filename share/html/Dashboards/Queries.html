@@ -214,7 +214,8 @@ for my $pane (sort keys %pane_name) {
             for (@{ $self->{Current} }) {
                 my $item = $_;
                 my $desc = $desc_of{$item};
-                my $portlet_type = $1 if $item =~ s/^(\w+)-//;
+                my $portlet_type;
+                $portlet_type = $1 if $item =~ s/^(\w+)-//;
 
                 if ($portlet_type eq 'search' || $portlet_type eq 'dashboard') {
                     my ($id, $privacy) = split '-', $item, 2;
