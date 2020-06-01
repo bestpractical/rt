@@ -698,8 +698,12 @@ sub SetDisabled {
     $RT::Handle->Commit();
 
     if ( $value == 0 ) {
+        $self->_RegisterAsRole;
+        RT->System->CustomRoleCacheNeedsUpdate(1);
         return (1, $self->loc("Custom role enabled"));
     } else {
+        $self->_UnregisterAsRole;
+        RT->System->CustomRoleCacheNeedsUpdate(1);
         return (1, $self->loc("Custom role disabled"));
     }
 }
