@@ -194,6 +194,12 @@ by ID.
 Any of these link types accept either a single value or arrayref of values
 parseable by L<RT::URI>.
 
+=item LazyRoleGroups
+
+A boolean to control if to create role groups immediately or just when
+necessary. It defaults to C<$RT::Record::Role::Roles::LAZY_ROLE_GROUPS>,
+which is false by default.
+
 =back
 
 Returns a tuple of (status, msg) on failure and (id, msg, non-fatal errors) on
@@ -214,6 +220,7 @@ sub Create {
         Contact         => undef,
 
         Status          => undef,
+        LazyRoleGroups  => $RT::Record::Role::Roles::LAZY_ROLE_GROUPS,
         @_
     );
     my @non_fatal_errors;
@@ -272,11 +279,13 @@ sub Create {
     # Let users who just created an asset see it until the end of this method.
     $self->{_object_is_readable} = 1;
 
-    # Create role groups
-    unless ($self->_CreateRoleGroups()) {
-        RT->Logger->error("Couldn't create role groups for asset ". $self->id);
-        RT->DatabaseHandle->Rollback();
-        return (0, $self->loc("Couldn't create role groups for asset"));
+    if ( !$args{LazyRoleGroups} ) {
+        # Create role groups
+        unless ($self->_CreateRoleGroups()) {
+            RT->Logger->error("Couldn't create role groups for asset ". $self->id);
+            RT->DatabaseHandle->Rollback();
+            return (0, $self->loc("Couldn't create role groups for asset"));
+        }
     }
 
     # Figure out users for roles
