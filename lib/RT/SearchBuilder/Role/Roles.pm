@@ -393,7 +393,7 @@ sub RoleLimit {
         # positive condition case
 
         $group_members ||= $self->_GroupMembersJoin(
-            GroupsAlias => $groups, New => 1, Left => 0
+            GroupsAlias => $groups, New => 1,
         );
         if ($args{FIELD} eq "id") {
             my @ids;
@@ -430,6 +430,7 @@ sub RoleLimit {
             else {
                 my $cgm_2 = $self->NewAlias('CachedGroupMembers');
                 my $group_members_2 = $self->Join(
+                    TYPE   => 'LEFT',
                     ALIAS1 => $group_members,
                     FIELD1 => 'MemberId',
                     ALIAS2 => $cgm_2,
