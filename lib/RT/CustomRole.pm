@@ -191,21 +191,19 @@ sub _RegisterAsRole {
         AppliesToObjectPredicate => sub {
             my $object = shift;
 
-            # reload the role to avoid capturing $self across requests
-            my $role = RT::CustomRole->new(RT->SystemUser);
-            $role->Load($id);
-
-            return 0 if $role->Disabled;
+            # for callers not specific to any queue, e.g. ColumnMap
+            if (!ref($object)) {
+                return 1;
+            }
 
             # all roles are also available on RT::System for granting rights
             if ($object->isa('RT::System')) {
                 return 1;
             }
 
-            # for callers not specific to any queue, e.g. ColumnMap
-            if (!ref($object)) {
-                return 1;
-            }
+            # reload the role to avoid capturing $self across requests
+            my $role = RT::CustomRole->new(RT->SystemUser);
+            $role->Load($id);
 
             # custom roles apply to queues, so canonicalize a ticket
             # into its queue
