@@ -59,6 +59,7 @@ use HTML::Scrubber;
 use RT::Interface::Web;
 use RT::Interface::Web::Request;
 use RT::ObjectCustomFieldValues;
+use RT::REST2;
 use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
