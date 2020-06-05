@@ -25,6 +25,7 @@
 .collection-as-table a.reclip {
     font-size: smaller;
     font-weight: normal;
+    margin-top: 0.3rem;
 }
 
 /* squeeze multiple-lined headers */
