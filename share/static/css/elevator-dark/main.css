@@ -262,6 +262,10 @@
     border-top: 1px solid #515151;
 }
 
+.darkmode span.current-value.form-control {
+    background: #2C3539 !important;
+}
+
 .darkmode .form-control,
 .darkmode .selectize-input {
     background: #323D42 !important;
