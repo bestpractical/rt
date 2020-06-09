@@ -1,5 +1,2 @@
 -- Add transaction support for new config in database feature
 ALTER TABLE Transactions MODIFY Field VARCHAR2(255);
-
-DROP INDEX Configurations1;
-CREATE INDEX Configurations1 ON Configurations (LOWER(Name), Disabled);

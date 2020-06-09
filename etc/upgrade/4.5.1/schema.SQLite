@@ -10,6 +10,5 @@ CREATE TABLE Configurations (
     LastUpdated       timestamp                DEFAULT NULL
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
+CREATE INDEX Configurations1 ON Configurations (Name, Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
-

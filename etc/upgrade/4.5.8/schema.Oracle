@@ -1,1 +1,0 @@
-ALTER TABLE Configurations DROP CONSTRAINT Configurations_Name_Unique;

@@ -1,2 +1,0 @@
-DROP INDEX IF EXISTS Configurations1;
-CREATE INDEX Configurations1 ON Configurations (Name, Disabled);

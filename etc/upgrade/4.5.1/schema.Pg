@@ -12,5 +12,5 @@ CREATE TABLE Configurations (
     PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (LOWER(Name));
+CREATE INDEX Configurations1 ON Configurations (LOWER(Name), Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
