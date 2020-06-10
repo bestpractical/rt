@@ -101,10 +101,3 @@ td.editable > form.editor .form-row {
 .titlebox .inline-edit-display {
   display: block;
 }
-
-/* Because of .table-responsive's overflow setting, we need to give
- * inline-edit tooltips enough space to show up, otherwise the edit
- * icons would flicker and you can't really click it */
-.table-responsive.inline-edit {
-  min-height: 60px;
-}
