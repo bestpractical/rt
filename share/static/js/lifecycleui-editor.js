@@ -242,13 +242,6 @@ jQuery(function () {
                 self.ToggleSimulation();
                 return true;
             });
-
-            jQuery('.submit').click(function(e) {
-                e.preventDefault();
-                self.ExportAsConfiguration();
-
-                document.ModifyLifecycle.submit();
-            });
         }
 
         RenderNode() {
