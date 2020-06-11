@@ -4657,6 +4657,23 @@ Default Business Hours setting is in $ServiceBusinessHours{'Default'}.
 
 Set( %ServiceBusinessHours, );
 
+=item C<%PriorityToSLA>
+
+Set mapping between priority values and SLA's so that when priority is
+updated the corresponding SLA will be set.
+
+Both stringified and numeric priority values are supported, for example:
+
+    Set(%PriorityToSLA,
+        Low    => '8h',
+        Medium => '4h',
+        High   => '2h',
+    );
+
+=cut
+
+Set( %PriorityToSLA, );
+
 =back
 
 =head2 Custom Date Ranges

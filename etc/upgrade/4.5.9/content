@@ -1,0 +1,17 @@
+use strict;
+use warnings;
+
+our @ScripActions = (
+    {   Name        => 'Set SLA according to Priority',    # loc
+        Description => 'Set SLA according to Priority',    # loc
+        ExecModule  => 'SetSLAFromPriority',
+    },
+);
+
+our @Scrips = (
+    {   Description    => "On Priority Change Set SLA according to Priority",
+        ScripCondition => 'On Priority Change',
+        ScripAction    => 'Set SLA according to Priority',
+        Template       => 'Blank'
+    },
+);

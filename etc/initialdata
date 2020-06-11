@@ -125,6 +125,10 @@
        Description => 'Set the due date according to an agreement' , # loc
        ExecModule  => 'SLA_SetDue',
     },
+    {  Name        => 'Set SLA according to Priority', # loc
+       Description => 'Set SLA according to Priority', # loc
+       ExecModule  => 'SetSLAFromPriority',
+    },
 );
 
 @ScripConditions = (
@@ -829,6 +833,10 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
     {  Description       => "Set due date if needed according to SLA",
        ScripCondition    => 'Require due set according to SLA',
        ScripAction       => 'Set due date according to SLA',
+       Template          => 'Blank' },
+    {  Description       => "On Priority Change Set SLA according to Priority",
+       ScripCondition    => 'On Priority Change',
+       ScripAction       => 'Set SLA according to Priority',
        Template          => 'Blank' },
 );
 
