@@ -115,6 +115,7 @@
                     DefaultValue    => RT::SLA->GetDefaultServiceLevel(Queue => $QueueObj) ? 0 : 1,
                     QueueObj        => $QueueObj,
                 },
+                keys %{ RT->Config->Get('PriorityToSLA') || {} } ? ( hint => loc("Automatically set by Priority") ) : (),
             }),
         ]
         &>

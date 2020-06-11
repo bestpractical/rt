@@ -104,6 +104,7 @@ unless ( @fields ) {
                 DefaultFromArgs => 0,
                 TicketObj => $TicketObj,
             },
+            keys %{ RT->Config->Get('PriorityToSLA') || {} } ? ( hint => loc("Automatically set by Priority") ) : (),
         }),
         # Time Estimated, Worked, and Left
         (
