@@ -78,8 +78,13 @@ class LifecycleModel {
         if ( link.start && link.end ) {
             self.links.splice(index, 1);
 
-            self.UpdateChecks(d.source);
-            self.UpdateChecks(d.target);
+            self.DeleteRights(d.source);
+            self.DeleteDefaults(d.source);
+            self.DeleteActions(d.source);
+
+            self.DeleteRights(d.target);
+            self.DeleteDefaults(d.target);
+            self.DeleteActions(d.target);
         }
         else if( link.start ) {
             link.end = true;
@@ -109,7 +114,9 @@ class LifecycleModel {
         var index = self.nodes.findIndex(function(x) { return x.id == d.id });
         self.DeleteLinksForNode(self.nodes[index]);
 
-        self.UpdateChecks(d);
+        self.DeleteRights(d);
+        self.DeleteDefaults(d);
+        self.DeleteActions(d);
 
         self.nodes.splice(index, 1);
     }
@@ -130,15 +137,7 @@ class LifecycleModel {
         });
     }
 
-    UpdateChecks(d) {
-        var self = this;
-
-        self.CheckRights(d);
-        self.CheckDefaults(d);
-        self.CheckActions(d);
-    }
-
-    CheckDefaults(d) {
+    DeleteDefaults(d) {
         var self = this;
 
         jQuery.each(self.config.defaults, function (key, value) {
@@ -148,7 +147,7 @@ class LifecycleModel {
         });
     }
 
-    CheckRights(d) {
+    DeleteRights(d) {
         var self = this;
 
         jQuery.each(self.config.rights, function(key, value) {
@@ -160,7 +159,7 @@ class LifecycleModel {
         });
     }
 
-    CheckActions(d) {
+    DeleteActions(d) {
         var self = this;
 
         var actions = [];
@@ -194,13 +193,17 @@ class LifecycleModel {
             }
             return true;
         });
-        self.UpdateChecks(node);
+        self.DeleteRights(node);
+        self.DeleteDefaults(node);
+        self.DeleteActions(node);
     }
 
     UpdateNodeModel(node, args) {
         var self = this;
 
-        self.UpdateChecks(node);
+        self.DeleteRights(node);
+        self.DeleteDefaults(node);
+        self.DeleteActions(node);
 
         var nodeIndex = self.nodes.findIndex(function(x) { return x.id == node.id });
 
