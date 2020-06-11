@@ -397,13 +397,22 @@ sub Create {
         Resolved        => $Resolved->ISO,
         Due             => $Due->ISO,
         $args{ 'Type' } eq 'ticket'
-          ? ( SLA => $args{ SLA } || RT::SLA->GetDefaultServiceLevel( Queue => $QueueObj ), )
+          ? ( SLA => $args{ SLA } )
           : (),
     );
 
 # Parameters passed in during an import that we probably don't want to touch, otherwise
     foreach my $attr (qw(id Creator Created LastUpdated LastUpdatedBy)) {
         $params{$attr} = $args{$attr} if $args{$attr};
+    }
+
+    if ( exists $params{SLA} && !$params{SLA} && !$QueueObj->SLADisabled ) {
+        if ( defined $params{Priority} and length $params{Priority} and ( my $map = RT->Config->Get('PriorityToSLA') ) )
+        {
+            $params{SLA} = $map->{ $params{Priority} }
+                || $map->{ $self->_PriorityAsString( $params{Priority}, $QueueObj->Name ) };
+        }
+        $params{SLA} ||= RT::SLA->GetDefaultServiceLevel( Queue => $QueueObj );
     }
 
     # Delete null integer parameters
