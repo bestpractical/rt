@@ -309,7 +309,7 @@ class LifecycleModel {
 
         self.config = {...self.config, ...config};
 
-        var field = jQuery('input[name=Config]');
+        var field = jQuery('form[name=ModifyLifecycle] input[name=Config]');
         field.val(JSON.stringify(self.config));
 
         var pos;
@@ -319,7 +319,7 @@ class LifecycleModel {
                 pos[d.name] = [Math.round(d.x), Math.round(d.y)];
             });
         }
-        var layout = jQuery('input[name=Layout]');
+        var layout = jQuery('form[name=ModifyLifecycle] input[name=Layout]');
         layout.val(pos ? JSON.stringify(pos) : '');
     };
 }
