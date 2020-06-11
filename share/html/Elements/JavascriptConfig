@@ -49,7 +49,7 @@
 my $Config = {};
 $Config->{$_} = RT->Config->Get( $_, $session{CurrentUser} )
   for qw(rtname WebPath MessageBoxRichText MessageBoxRichTextHeight
-         MaxAttachmentSize);
+         MaxAttachmentSize PriorityToSLA);
 
 my $CurrentUser = {};
 if ($session{CurrentUser} and $session{CurrentUser}->id) {

@@ -723,6 +723,42 @@ jQuery(function() {
             }
         });
     }
+
+    if ( !jQuery.isEmptyObject(RT.Config.PriorityToSLA) ) {
+        var priority_input = jQuery(':input[name=Priority], :input[name=InitialPriority]');
+        if ( priority_input.length ) {
+
+            var form = priority_input.closest('form');
+            var sla_input = form.find('select[name=SLA]');
+
+            if ( sla_input.length ) {
+                // readonly still doesn't work with select :/
+                sla_input.attr('disabled', true);
+                priority_input.change( function() {
+                    var value = jQuery(this).val();
+                    var sla = RT.Config.PriorityToSLA[value];
+                    if ( !sla && priority_input.is('select') ) {
+                        // Find priority string
+                        var value_string = priority_input.find('option:selected').text();
+                        sla = RT.Config.PriorityToSLA[value_string];
+                    }
+
+                    if ( sla ) {
+                        sla_input.val(sla).change();
+                        if ( !sla_input.attr('disabled') ) {
+                            sla_input.attr('disabled', true).selectpicker('refresh');
+                        }
+                    }
+                    else {
+                        // No corresponding SLA, allow user to edit
+                        if ( sla_input.attr('disabled') ) {
+                            sla_input.attr('disabled', false).selectpicker('refresh');
+                        }
+                    }
+                }).change();
+            }
+        }
+    }
 });
 
 /* inline edit */
