@@ -336,3 +336,14 @@
 .darkmode #cke_Content .cke_contents .cke_wysiwyg_frame {
     background-color: #333d42 !important;
 }
+
+.darkmode .cke_combo_arrow, .darkmode .cke_button_arrow {
+    border-top: 3px solid #aeb0b1 !important;
+}
+
+.darkmode #cke_UpdateContent, .darkmode #cke_Content,
+.darkmode .cke_contents,
+.darkmode .cke_toolbar .cke_combo_button,
+.darkmode .cke_toolbar .cke_toolgroup {
+    border-color: #717171 !important;
+}
