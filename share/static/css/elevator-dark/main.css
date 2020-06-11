@@ -325,3 +325,14 @@
 .darkmode ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-right' viewBox='0 0 7 12' height='100%' width='100%' fill='none' stroke='rgb(237,237,237)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 -5 5' /></svg>") no-repeat center center;
 }
+
+/* CKEditor darkmode fixes */
+
+.darkmode .cke_toolbar .cke_combo_button,
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text,
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_open,
+.darkmode .cke_toolbox .cke_toolbar .cke_toolgroup,
+.darkmode .cke_toolbox .cke_toolbar .cke_toolgroup a,
+.darkmode #cke_Content .cke_contents .cke_wysiwyg_frame {
+    background-color: #333d42 !important;
+}
