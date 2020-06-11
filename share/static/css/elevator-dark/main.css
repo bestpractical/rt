@@ -347,3 +347,7 @@
 .darkmode .cke_toolbar .cke_toolgroup {
     border-color: #717171 !important;
 }
+
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text {
+    color: #c9ccce !important;
+}
