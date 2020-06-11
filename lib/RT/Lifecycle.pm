@@ -889,7 +889,7 @@ sub CreateLifecycle {
     return $class->_CreateLifecycle(%args);
 }
 
-=head2 UpdateLifecycle( CurrentUser => undef, LifecycleObj => undef, NewConfig => undef )
+=head2 UpdateLifecycle( CurrentUser => undef, LifecycleObj => undef, NewConfig => undef, Maps => undef )
 
 Update passed lifecycle to the new configuration.
 
@@ -903,6 +903,7 @@ sub UpdateLifecycle {
         CurrentUser  => undef,
         LifecycleObj => undef,
         NewConfig    => undef,
+        Maps         => undef,
         @_,
     );
 
@@ -911,6 +912,10 @@ sub UpdateLifecycle {
     my $lifecycles = RT->Config->Get('Lifecycles');
 
     $lifecycles->{$name} = $args{NewConfig};
+
+    if ( $args{Maps} ) {
+        %{ $lifecycles->{__maps__} } = ( %{ $lifecycles->{__maps__} || {} }, %{ $args{Maps} }, );
+    }
 
     my ($ok, $msg) = $class->_SaveLifecycles($lifecycles, $CurrentUser);
     return ($ok, $msg) if !$ok;

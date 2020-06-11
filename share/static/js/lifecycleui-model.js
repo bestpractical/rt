@@ -265,6 +265,27 @@ class LifecycleModel {
             actions.push(info);
         }
         self.config.actions = actions;
+
+        let config_name = jQuery('form[name=ModifyLifecycle] input[name=Name]').val();
+        for (let item in self.maps) {
+            if ( item.match(config_name + ' *->')) {
+                let maps = self.maps[item];
+                for ( let from in maps ) {
+                    if ( from === oldValue.name ) {
+                        maps[nodeUpdated.name] = maps[from];
+                        delete maps[from];
+                    }
+                }
+            }
+            else if ( item.match('-> *' + config_name) ) {
+                let maps = self.maps[item];
+                for ( let from in maps ) {
+                    if ( maps[from] === oldValue.name ) {
+                        maps[from] = nodeUpdated.name;
+                    }
+                }
+            }
+        }
     }
 
     ExportAsConfiguration () {
@@ -321,5 +342,8 @@ class LifecycleModel {
         }
         var layout = jQuery('form[name=ModifyLifecycle] input[name=Layout]');
         layout.val(pos ? JSON.stringify(pos) : '');
+
+        var maps = jQuery('form[name=ModifyLifecycle] input[name=Maps]');
+        maps.val(JSON.stringify(self.maps));
     };
 }
