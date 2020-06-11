@@ -351,3 +351,12 @@
 .darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text {
     color: #c9ccce !important;
 }
+
+/* invert color for toolbar pngs */
+.darkmode a.cke_button .cke_button_icon {
+    -webkit-filter: invert(100%) brightness(110%);
+    -moz-filter: invert(100%) brightness(110%);
+    -ms-filter: invert(100%) brightness(110%);
+    -o-filter: invert(100%) brightness(110%);
+    filter: invert(100%) brightness(110%);
+}
