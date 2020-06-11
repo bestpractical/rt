@@ -200,10 +200,6 @@ class LifecycleModel {
     UpdateNodeModel(node, args) {
         var self = this;
 
-        self.DeleteRights(node);
-        self.DeleteDefaults(node);
-        self.DeleteActions(node);
-
         var nodeIndex = self.nodes.findIndex(function(x) { return x.id == node.id });
 
         var oldValue =  self.nodes[nodeIndex];
@@ -228,6 +224,9 @@ class LifecycleModel {
             var index = self.links.findIndex(function(x) { return x.id == link.id });
             self.links[index] = {...link, target: nodeUpdated}
         });
+
+        if ( oldValue.name === nodeUpdated.name ) return;
+
         // Only need to check for target
         var tempArr = [];
         self.create_nodes.forEach(function(target) {
@@ -239,6 +238,33 @@ class LifecycleModel {
             }
         });
         self.create_nodes = tempArr;
+
+        for (let type in self.config.defaults) {
+            if ( self.config.defaults[type] === oldValue.name ) {
+                self.config.defaults[type] = nodeUpdated.name;
+            }
+        }
+
+        let re_from = new RegExp(oldValue.name + ' *->');
+        let re_to = new RegExp('-> *' + oldValue.name);
+
+        for (let action in self.config.rights) {
+            let updated = action.replace(re_from, nodeUpdated.name + ' ->').replace(re_to, '-> ' + nodeUpdated.name);
+            if ( action != updated ) {
+                self.config.rights[updated] = self.config.rights[action];
+                delete self.config.rights[action];
+            }
+        }
+
+        let actions = [];
+        for ( let i = 0; i < self.config.actions.length; i += 2 ) {
+            let action = self.config.actions[i];
+            let info = self.config.actions[i+1];
+            let updated = action.replace(re_from, nodeUpdated.name + ' ->').replace(re_to, '-> ' + nodeUpdated.name);
+            actions.push(updated);
+            actions.push(info);
+        }
+        self.config.actions = actions;
     }
 
     ExportAsConfiguration () {
