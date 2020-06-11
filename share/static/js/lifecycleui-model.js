@@ -77,14 +77,11 @@ class LifecycleModel {
         // delete link if we have both transitions already
         if ( link.start && link.end ) {
             self.links.splice(index, 1);
-
-            self.DeleteRights(d.source);
-            self.DeleteDefaults(d.source);
-            self.DeleteActions(d.source);
-
-            self.DeleteRights(d.target);
-            self.DeleteDefaults(d.target);
-            self.DeleteActions(d.target);
+            var from = d.source.name.toLowerCase();
+            var to = d.target.name.toLowerCase();
+            var pattern = from + ' *-> *' + to + '|' + to + ' *-> *' + from;
+            self.DeleteRights(null, pattern);
+            self.DeleteActions(null, pattern);
         }
         else if( link.start ) {
             link.end = true;
@@ -147,21 +144,27 @@ class LifecycleModel {
         });
     }
 
-    DeleteRights(d) {
+    DeleteRights(d, pattern) {
         var self = this;
+        if ( !pattern ) {
+            pattern = d.name.toLowerCase() + " *->|-> *" + d.name.toLowerCase();
+        }
 
+        var re = new RegExp(pattern);
         jQuery.each(self.config.rights, function(key, value) {
-            var pattern = d.name.toLowerCase()+" ->|-> "+d.name.toLowerCase();
-            var re = new RegExp(pattern,"g");
             if ( re.test(key.toLowerCase()) ) {
                 delete self.config.rights[key];
             }
         });
     }
 
-    DeleteActions(d) {
+    DeleteActions(d, pattern) {
         var self = this;
+        if ( !pattern ) {
+            pattern = d.name.toLowerCase() + " *->|-> *" + d.name.toLowerCase();
+        }
 
+        var re = new RegExp(pattern);
         var actions = [];
         var tempArr = self.config.actions || [];
 
@@ -171,7 +174,6 @@ class LifecycleModel {
             [action, info] = tempArr.splice(0, 2);
             if (!action) continue;
 
-            var re = new RegExp(d.name.toLowerCase()+" *->|-> *"+d.name.toLowerCase(),"g");
             if ( ! re.test(action) ) {
                 actions.push(action);
                 actions.push(info);
@@ -193,9 +195,6 @@ class LifecycleModel {
             }
             return true;
         });
-        self.DeleteRights(node);
-        self.DeleteDefaults(node);
-        self.DeleteActions(node);
     }
 
     UpdateNodeModel(node, args) {
