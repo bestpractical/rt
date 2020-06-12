@@ -115,7 +115,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     }
 
     # build the new link
-    my $alt = loc('Edit');
+    my $alt = loc('Options');
     my $titleright = qq{<div class="btn-group dropdown"><a id="history-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span></a><ul class="dropdown-menu dropdown-menu-right">};
 
     # foreach of the elements, build a new <li>$element</li> and append to the output.
