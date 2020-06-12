@@ -64,8 +64,9 @@
   <input type="hidden" class="hidden" name="Update" value="1" />
   <input type="hidden" class="hidden" name="Config" />
   <input type="hidden" class="hidden" name="Layout" />
+  <input type="hidden" class="hidden" name="Maps" />
 
-  <& /Elements/Lifecycle/Graph, Name => $Name, Config => $Config, Layout => $Layout &>
+  <& /Elements/Lifecycle/Graph, Name => $Name, Config => $Config, Layout => $Layout, Maps => $Maps &>
   <div class="form-row">
     <div class="col-12">
       <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
@@ -117,6 +118,7 @@ if ( $Update ) {
             CurrentUser  => $session{CurrentUser},
             LifecycleObj => $LifecycleObj,
             NewConfig    => $lifecycle,
+            Maps         => JSON::from_json($Maps),
         );
         if ($ok) {
             push @results, loc('Lifecycle updated');
@@ -131,6 +133,7 @@ if ( $Update ) {
 }
 else {
     $Config ||= JSON( RT->Config->Get('Lifecycles')->{$Name} );
+    $Maps ||= JSON( RT->Config->Get('Lifecycles')->{__maps__} || {} );
 
     unless ($Layout) {
         my $conf = RT::Configuration->new( $session{CurrentUser} );
@@ -150,5 +153,6 @@ $Name   => undef
 $Type   => undef
 $Config => undef
 $Layout => undef
+$Maps   => undef
 $Update => undef
 </%ARGS>

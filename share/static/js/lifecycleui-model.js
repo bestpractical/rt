@@ -77,9 +77,11 @@ class LifecycleModel {
         // delete link if we have both transitions already
         if ( link.start && link.end ) {
             self.links.splice(index, 1);
-
-            self.UpdateChecks(d.source);
-            self.UpdateChecks(d.target);
+            var from = d.source.name.toLowerCase();
+            var to = d.target.name.toLowerCase();
+            var pattern = from + ' *-> *' + to + '|' + to + ' *-> *' + from;
+            self.DeleteRights(null, pattern);
+            self.DeleteActions(null, pattern);
         }
         else if( link.start ) {
             link.end = true;
@@ -109,7 +111,9 @@ class LifecycleModel {
         var index = self.nodes.findIndex(function(x) { return x.id == d.id });
         self.DeleteLinksForNode(self.nodes[index]);
 
-        self.UpdateChecks(d);
+        self.DeleteRights(d);
+        self.DeleteDefaults(d);
+        self.DeleteActions(d);
 
         self.nodes.splice(index, 1);
     }
@@ -130,15 +134,7 @@ class LifecycleModel {
         });
     }
 
-    UpdateChecks(d) {
-        var self = this;
-
-        self.CheckRights(d);
-        self.CheckDefaults(d);
-        self.CheckActions(d);
-    }
-
-    CheckDefaults(d) {
+    DeleteDefaults(d) {
         var self = this;
 
         jQuery.each(self.config.defaults, function (key, value) {
@@ -148,21 +144,27 @@ class LifecycleModel {
         });
     }
 
-    CheckRights(d) {
+    DeleteRights(d, pattern) {
         var self = this;
+        if ( !pattern ) {
+            pattern = d.name.toLowerCase() + " *->|-> *" + d.name.toLowerCase();
+        }
 
+        var re = new RegExp(pattern);
         jQuery.each(self.config.rights, function(key, value) {
-            var pattern = d.name.toLowerCase()+" ->|-> "+d.name.toLowerCase();
-            var re = new RegExp(pattern,"g");
             if ( re.test(key.toLowerCase()) ) {
                 delete self.config.rights[key];
             }
         });
     }
 
-    CheckActions(d) {
+    DeleteActions(d, pattern) {
         var self = this;
+        if ( !pattern ) {
+            pattern = d.name.toLowerCase() + " *->|-> *" + d.name.toLowerCase();
+        }
 
+        var re = new RegExp(pattern);
         var actions = [];
         var tempArr = self.config.actions || [];
 
@@ -172,7 +174,6 @@ class LifecycleModel {
             [action, info] = tempArr.splice(0, 2);
             if (!action) continue;
 
-            var re = new RegExp(d.name.toLowerCase()+" *->|-> *"+d.name.toLowerCase(),"g");
             if ( ! re.test(action) ) {
                 actions.push(action);
                 actions.push(info);
@@ -194,13 +195,10 @@ class LifecycleModel {
             }
             return true;
         });
-        self.UpdateChecks(node);
     }
 
     UpdateNodeModel(node, args) {
         var self = this;
-
-        self.UpdateChecks(node);
 
         var nodeIndex = self.nodes.findIndex(function(x) { return x.id == node.id });
 
@@ -226,6 +224,9 @@ class LifecycleModel {
             var index = self.links.findIndex(function(x) { return x.id == link.id });
             self.links[index] = {...link, target: nodeUpdated}
         });
+
+        if ( oldValue.name === nodeUpdated.name ) return;
+
         // Only need to check for target
         var tempArr = [];
         self.create_nodes.forEach(function(target) {
@@ -237,6 +238,54 @@ class LifecycleModel {
             }
         });
         self.create_nodes = tempArr;
+
+        for (let type in self.config.defaults) {
+            if ( self.config.defaults[type] === oldValue.name ) {
+                self.config.defaults[type] = nodeUpdated.name;
+            }
+        }
+
+        let re_from = new RegExp(oldValue.name + ' *->');
+        let re_to = new RegExp('-> *' + oldValue.name);
+
+        for (let action in self.config.rights) {
+            let updated = action.replace(re_from, nodeUpdated.name + ' ->').replace(re_to, '-> ' + nodeUpdated.name);
+            if ( action != updated ) {
+                self.config.rights[updated] = self.config.rights[action];
+                delete self.config.rights[action];
+            }
+        }
+
+        let actions = [];
+        for ( let i = 0; i < self.config.actions.length; i += 2 ) {
+            let action = self.config.actions[i];
+            let info = self.config.actions[i+1];
+            let updated = action.replace(re_from, nodeUpdated.name + ' ->').replace(re_to, '-> ' + nodeUpdated.name);
+            actions.push(updated);
+            actions.push(info);
+        }
+        self.config.actions = actions;
+
+        let config_name = jQuery('form[name=ModifyLifecycle] input[name=Name]').val();
+        for (let item in self.maps) {
+            if ( item.match(config_name + ' *->')) {
+                let maps = self.maps[item];
+                for ( let from in maps ) {
+                    if ( from === oldValue.name ) {
+                        maps[nodeUpdated.name] = maps[from];
+                        delete maps[from];
+                    }
+                }
+            }
+            else if ( item.match('-> *' + config_name) ) {
+                let maps = self.maps[item];
+                for ( let from in maps ) {
+                    if ( maps[from] === oldValue.name ) {
+                        maps[from] = nodeUpdated.name;
+                    }
+                }
+            }
+        }
     }
 
     ExportAsConfiguration () {
@@ -281,7 +330,7 @@ class LifecycleModel {
 
         self.config = {...self.config, ...config};
 
-        var field = jQuery('input[name=Config]');
+        var field = jQuery('form[name=ModifyLifecycle] input[name=Config]');
         field.val(JSON.stringify(self.config));
 
         var pos;
@@ -291,7 +340,10 @@ class LifecycleModel {
                 pos[d.name] = [Math.round(d.x), Math.round(d.y)];
             });
         }
-        var layout = jQuery('input[name=Layout]');
+        var layout = jQuery('form[name=ModifyLifecycle] input[name=Layout]');
         layout.val(pos ? JSON.stringify(pos) : '');
+
+        var maps = jQuery('form[name=ModifyLifecycle] input[name=Maps]');
+        maps.val(JSON.stringify(self.maps));
     };
 }
