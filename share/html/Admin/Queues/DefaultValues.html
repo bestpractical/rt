@@ -143,7 +143,7 @@
 </div>
 % }
 
-<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}) &>
+<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}), Groupings => \@groupings &>
 
 <div class="ticket-info-cfs">
   <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields"), content_class => 'mx-auto width-sm' &>
@@ -168,6 +168,9 @@ my $queue = RT::Queue->new( $session{CurrentUser} );
 $queue->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 
 my $title = loc( 'Default Values for queue [_1]', $queue->Name );
+my @groupings = (RT::CustomField->CustomGroupings('RT::Ticket'), '');
+
+$m->callback( CallbackName => 'Init', ARGSRef => \%ARGS, Queue => $queue, Title => \$title, Groupings => \@groupings );
 
 my @results;
 if ( $ARGS{Reset} ) {
