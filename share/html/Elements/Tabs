@@ -933,13 +933,12 @@ my $build_main_nav = sub {
             ),
         );
 
+        my %final_query_args = ();
+        # key => callback to avoid unnecessary work
         if ($QueryString) {
             $args = '?' . $QueryString;
         }
         else {
-            my %final_query_args = ();
-            # key => callback to avoid unnecessary work
-
             for my $param (keys %fallback_query_args) {
                 $final_query_args{$param} = defined($QueryArgs->{$param})
                                           ? $QueryArgs->{$param}
@@ -973,6 +972,13 @@ my $build_main_nav = sub {
         $current_search_menu->child( advanced =>
             title => loc('Advanced'),    path => "/Search/Edit.html$args" );
         if ($has_query) {
+            # If we load a saved chart we want to have a default sensible rows per page value
+            if ( $request_path =~ m{^/Search/Chart.html} && $final_query_args{'SavedChartSearchId'} ) {
+                unless ( defined $final_query_args{'RowsPerPage'} ) {
+                    $args =~ s/RowsPerPage=/RowsPerPage=10/;
+                }
+            }
+
             $current_search_menu->child( results => title => loc('Show Results'), path => "/Search/Results.html$args" );
         }
 
