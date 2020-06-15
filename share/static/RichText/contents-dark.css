@@ -1,0 +1,37 @@
+/* general toolbar */
+.cke_panel_list * {
+    background: #2C3539 !important;
+}
+
+.cke_panel_block * {
+    background: #2C3539;
+    color: #ededed !important;
+}
+
+.cke_panel_listItem a {
+    border: none;
+}
+
+/* color toolbar */
+.cke_colorauto,
+.cke_colormore:hover {
+    background: #2C3539 !important;
+}
+
+a.cke_colorbox {
+    border: 1px solid #2C3539;
+}
+
+/* emoji toolbar */
+.cke_emoji-navigation_item svg,
+.cke_emoji-search svg {
+    -webkit-filter: invert(100%) brightness(110%);
+    -moz-filter: invert(100%) brightness(110%);
+    -ms-filter: invert(100%) brightness(110%);
+    -o-filter: invert(100%) brightness(110%);
+    filter: invert(100%) brightness(110%);
+}
+
+.cke_emoji-inner_panel * {
+    background: transparent !important;
+}

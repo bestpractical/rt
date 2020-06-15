@@ -723,6 +723,16 @@ jQuery(function() {
             }
         });
     }
+
+    if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
+        // Toolbar dropdowns insert iframes, we can apply css files there.
+        jQuery('body').on('DOMNodeInserted', '.cke_panel', function(e) {
+            setTimeout( function(){
+                var content = jQuery(e.target).find('iframe').contents();
+                content.find('head').append('<link rel="stylesheet" type="text/css" href="' + RT.Config.WebPath + '/static/RichText/contents-dark.css" media="screen">');
+            }, 0);
+        });
+    }
 });
 
 /* inline edit */
