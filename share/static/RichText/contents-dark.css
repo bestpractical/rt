@@ -1,3 +1,13 @@
+/* main input color */
+.cke_editable {
+    color: #ededed !important;
+}
+
+.cke_editable.action-response,
+.cke_editable.action-comment {
+    color: #333 !important;
+}
+
 /* general toolbar */
 .cke_panel_list * {
     background: #2C3539 !important;
