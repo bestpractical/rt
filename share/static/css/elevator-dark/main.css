@@ -360,3 +360,10 @@
     -o-filter: invert(100%) brightness(110%);
     filter: invert(100%) brightness(110%);
 }
+
+/* fix combo height to show borders correctly */
+.darkmode .cke_combo_text {
+    margin-top: 1px;
+    margin-bottom: 1px;
+    line-height: 24px;
+}
