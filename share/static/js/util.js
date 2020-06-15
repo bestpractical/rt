@@ -732,6 +732,38 @@ jQuery(function() {
                 content.find('head').append('<link rel="stylesheet" type="text/css" href="' + RT.Config.WebPath + '/static/RichText/contents-dark.css" media="screen">');
             }, 0);
         });
+
+        // "More colors" in color toolbars insert content directly into main DOM.
+        // This is to rescue colored elements from global dark bg color.
+        jQuery('body').on('DOMNodeInserted', '.cke_dialog_container', function(e) {
+            if ( !jQuery(e.target).find('.ColorCell:visible').length ) return;
+
+            // Override global dark bg color
+            jQuery(e.target).find('.ColorCell:visible').each(function() {
+                var style = jQuery(this).attr('style').replace(/background-color:([^;]+);/, 'background-color: $1 !important');
+                jQuery(this).attr('style', style);
+            });
+
+            // Sync highlight color on hover
+            var sync_highlight = function(e) {
+                var bg = jQuery(e).css('background-color');
+                setTimeout(function() {
+                    var style = jQuery('[id^=cke_][id$=_hicolor]:visible').attr('style').replace(/background-color:[^;]+;/, 'background-color: ' + bg + ' !important');
+                    jQuery('[id^=cke_][id$=_hicolor]:visible').attr('style', style);
+                }, 0);
+            };
+
+            jQuery(e.target).find('.ColorCell:visible').hover(function() {
+                sync_highlight(this);
+            });
+
+            // Sync highlight and selected color on click
+            jQuery(e.target).find('.ColorCell:visible').click(function() {
+                sync_highlight(this);
+                var style = jQuery('[id^=cke_][id$=_selhicolor]:visible').attr('style').replace(/background-color:([^;]+);/, 'background-color: $1 !important');
+                jQuery('[id^=cke_][id$=_selhicolor]:visible').attr('style', style);
+            });
+        });
     }
 });
 
