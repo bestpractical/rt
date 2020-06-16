@@ -94,7 +94,7 @@
 <select
   name="<%$name%>" id="<%$name%>"
 
-    class="CF-Edit CF-<%$CustomField->id%>-Edit <% $RenderType eq 'Dropdown' ? 'selectpicker' : 'form-control' %>"
+    class="CF-Edit CF-<%$CustomField->id%>-Edit form-control <% $RenderType eq 'Dropdown' ? 'selectpicker' : '' %>"
 %   if ( $use_chosen ) {
     data-live-search="true"
 %   }

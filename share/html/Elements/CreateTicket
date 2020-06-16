@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" name="CreateTicketInQueue" id="CreateTicketInQueue" \
+<form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" method="POST" name="CreateTicketInQueue" id="CreateTicketInQueue" \
 % $m->callback(CallbackName => 'InFormElement');
 >
 

@@ -1,12 +1,13 @@
 jQuery(function () {
     RT.NewLifecycleEditor = class LifecycleEditorNew extends LifecycleModel {
-        constructor(container, config, layout) {
+        constructor(container, config, maps, layout) {
             super("LifecycleModel");
 
             var self              = this;
             self.width            = 900;
             self.height           = 350;
             self.node_radius      = 35;
+            self.maps             = maps;
             self.layout           = layout;
             self.enableSimulation = 1;
 
@@ -240,13 +241,6 @@ jQuery(function () {
             jQuery('#enableSimulation').click(function(e) {
                 self.ToggleSimulation();
                 return true;
-            });
-
-            jQuery('.submit').click(function(e) {
-                e.preventDefault();
-                self.ExportAsConfiguration();
-
-                document.ModifyLifecycle.submit();
             });
         }
 

@@ -125,7 +125,7 @@ $Class ||= $Collection->ColumnMapClassName;
 
 $InlineEdit = 0 unless $Collection->isa('RT::Tickets');
 
-$m->out('<div class="table-responsive' . ($InlineEdit ? ' inline-edit' : '') . '">');
+$m->out('<div class="table-responsive">');
 $m->out('<table cellspacing="0"');
 $m->out(' class="table ' .  ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ($InlineEdit ? ' inline-edit' : '') . ' collection-as-table"');
 $m->out(' data-display-format="' . $m->interp->apply_escapes($DisplayFormat, 'h') . '"');

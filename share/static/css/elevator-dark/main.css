@@ -262,6 +262,10 @@
     border-top: 1px solid #515151;
 }
 
+.darkmode span.current-value.form-control {
+    background: #2C3539 !important;
+}
+
 .darkmode .form-control,
 .darkmode .selectize-input {
     background: #323D42 !important;
@@ -320,4 +324,46 @@
 
 .darkmode ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
     background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-right' viewBox='0 0 7 12' height='100%' width='100%' fill='none' stroke='rgb(237,237,237)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 -5 5' /></svg>") no-repeat center center;
+}
+
+/* CKEditor darkmode fixes */
+
+.darkmode .cke_toolbar .cke_combo_button,
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text,
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_open,
+.darkmode .cke_toolbox .cke_toolbar .cke_toolgroup,
+.darkmode .cke_toolbox .cke_toolbar .cke_toolgroup a,
+.darkmode #cke_Content .cke_contents .cke_wysiwyg_frame {
+    background-color: #333d42 !important;
+}
+
+.darkmode .cke_combo_arrow, .darkmode .cke_button_arrow {
+    border-top: 3px solid #aeb0b1 !important;
+}
+
+.darkmode #cke_UpdateContent, .darkmode #cke_Content,
+.darkmode .cke_contents,
+.darkmode .cke_toolbar .cke_combo_button,
+.darkmode .cke_toolbar .cke_toolgroup {
+    border-color: #717171 !important;
+}
+
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text {
+    color: #c9ccce !important;
+}
+
+/* invert color for toolbar pngs */
+.darkmode a.cke_button .cke_button_icon {
+    -webkit-filter: invert(100%) brightness(110%);
+    -moz-filter: invert(100%) brightness(110%);
+    -ms-filter: invert(100%) brightness(110%);
+    -o-filter: invert(100%) brightness(110%);
+    filter: invert(100%) brightness(110%);
+}
+
+/* fix combo height to show borders correctly */
+.darkmode .cke_combo_text {
+    margin-top: 1px;
+    margin-bottom: 1px;
+    line-height: 24px;
 }

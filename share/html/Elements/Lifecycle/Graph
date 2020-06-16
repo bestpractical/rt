@@ -86,7 +86,7 @@
 
   <script type="text/javascript">
     jQuery(function () {
-        new RT.NewLifecycleEditor( document.getElementById('lifecycle-<% $id %>'), <% $Config |n %> <% $Layout ? ", $Layout" : () |n %> );
+        new RT.NewLifecycleEditor( document.getElementById('lifecycle-<% $id %>'), <% $Config |n %>, <% $Maps |n %> <% $Layout ? ", $Layout" : () |n %> );
     });
   </script>
   <div class="row">
@@ -122,5 +122,6 @@ my $id = $Name . '-' . int(rand(2**31));
 <%ARGS>
 $Config
 $Name
+$Maps
 $Layout => ''
 </%ARGS>
