@@ -8,6 +8,10 @@
     color: #333 !important;
 }
 
+.marker {
+    background-color: #9b870c;
+}
+
 /* general toolbar */
 .cke_panel_list * {
     background: #2C3539 !important;
