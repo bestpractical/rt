@@ -147,6 +147,9 @@ jQuery(function($) {
                            .attr('value', v[0])
                            .text(v[0]));
     });
+    // Refresh selectpicker so we have a default value
+    $('select#section').val(section_css_mapping[0][0]);
+    $('.selectpicker').selectpicker('refresh');
 
     function update_sitecss(text) {
         if (!text)
