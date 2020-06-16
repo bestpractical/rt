@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="titlebox card<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>"\
+<div class="titlebox body-content-class card<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>"\
 % for my $key (keys %$data) {
  data-<% $key %>="<% $data->{$key} %>"\
 % }
