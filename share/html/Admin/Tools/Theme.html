@@ -59,10 +59,7 @@
     <div id="upload-logo">
       <h2>Logo</h2>
       <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" checked="checked" class="custom-control-input" id="logo-size" value=1 onchange="setLogoSize()">
-        <label class="custom-control-label" for="logo-size">Shrink logo</label>
-      </div>
+      <button onclick="setLogoSize()" class="button btn btn-primary" id="logo-size"><&|/l&>Full Size</&></button>
 
       <form method="POST" enctype="multipart/form-data">
         <div class="form-row">
@@ -248,27 +245,56 @@ jQuery(window).on('load',function() {
 
     if (!el_canvas.getContext) return;
 
-    var context      = el_canvas.getContext("2d");
+    setLogoSize();
+});
+
+function setLogoSize() {
+  var logo      = jQuery("#logo-theme-editor img");
+  var canvas    = jQuery("#logo-color-picker");
+  var el_canvas = canvas.get(0);
+
+  if (!el_canvas.getContext) return;
+  // Set logo to same size as CSS input
+  var container = jQuery('#user_css');
+
+  var context = el_canvas.getContext("2d");
+  var button  = jQuery('#logo-size');
+
+  if ( button.text() == '<&|/l&>Preview</&>' ) {
+    var ratio = Math.min(container.width() / logo.width(), container.height() / logo.height());
+
+    el_canvas.width  = logo.width()*ratio;
+    el_canvas.height = logo.height()*ratio;
+
+    // Re-draw our scaled down image
+    context.drawImage(logo.get(0), 0, 0, logo.width()*ratio, logo.height()*ratio );
+
+    button.text( "<&|/l&>Full Size</&>" );
+  }
+  else {
     el_canvas.width  = logo.width();
     el_canvas.height = logo.height();
-    context.drawImage(logo.get(0), 0, 0);
 
-    logo.hide().after(canvas);
-    canvas.show().click(function(ev) {
-        ev.preventDefault();
-        var R = 0,
-            G = 1,
-            B = 2,
-            A = 3;
-        var pixel = this.getContext("2d").getImageData(ev.offsetX, ev.offsetY, 1, 1).data;
-        // Farbtastic expects values in the range of 0..1
-        var rgba  = $.makeArray(pixel).map(function(v,i) { return v / 255 });
-        var wheel = $.farbtastic("#color-picker");
-        wheel.setHSL( wheel.RGBToHSL( rgba.slice(R,A) ) );
-        // XXX TODO factor in the alpha channel too
-    });
-    $('#logo-picker-hint').show();
-});
+    context.drawImage(logo.get(0), 0, 0);
+    button.text( "<&|/l&>Preview</&>" );
+  }
+
+  logo.hide().after(canvas);
+  canvas.show().click(function(ev) {
+      ev.preventDefault();
+      var R = 0,
+          G = 1,
+          B = 2,
+          A = 3;
+      var pixel = this.getContext("2d").getImageData(ev.offsetX, ev.offsetY, 1, 1).data;
+      // Farbtastic expects values in the range of 0..1
+      var rgba  = jQuery.makeArray(pixel).map(function(v,i) { return v / 255 });
+      var wheel = jQuery.farbtastic("#color-picker");
+      wheel.setHSL( wheel.RGBToHSL( rgba.slice(R,A) ) );
+      // XXX TODO factor in the alpha channel too
+  });
+  jQuery('#logo-picker-hint').show();
+}
 </script>
 <%INIT>
 unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')) {
