@@ -1506,6 +1506,17 @@ ticket display page automatically.
 
 Set($SearchResultsAutoRedirect, 0);
 
+
+=item C<$ShowSearchNavigation>
+
+Option to build the search navigation options in the RT menu ( First, Last, Prev, Next ).
+This feature requires the re-running of the current search in order to accuratly create
+the menu links, disabling it can speed up ticket load time.
+
+=cut
+
+Set($ShowSearchNavigation, 1);
+
 =back
 
 

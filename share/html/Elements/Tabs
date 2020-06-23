@@ -861,31 +861,33 @@ my $build_main_nav = sub {
                     path  => "/Articles/Article/ExtractIntoClass.html?Ticket=".$obj->id,
                 ) if $session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System );
 
-                if ( defined $session{"tickets"} ) {
-                    # we have to update session data if we get new ItemMap
-                    my $updatesession = 1 unless ( $session{"tickets"}->{'item_map'} );
+                if ( RT::Config->Get( 'ShowSearchNavigation' ) ) {
+                    if ( defined $session{"tickets"} ) {
+                        # we have to update session data if we get new ItemMap
+                        my $updatesession = 1 unless ( $session{"tickets"}->{'item_map'} );
 
-                    my $item_map = $session{"tickets"}->ItemMap;
+                        my $item_map = $session{"tickets"}->ItemMap;
 
-                    if ($updatesession) {
-                        $session{"tickets"}->PrepForSerialization();
-                    }
+                        if ($updatesession) {
+                            $session{"tickets"}->PrepForSerialization();
+                        }
 
-                    my $search = Menu()->child('search')->child('tickets');
-                    # Don't display prev links if we're on the first ticket
-                    if ( $item_map->{$id}->{prev} ) {
-                        $search->child( first =>
-                            title => '<< ' . loc('First'), class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{first});
-                        $search->child( prev =>
-                            title => '< ' . loc('Prev'),   class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev});
-                    }
-                    # Don't display next links if we're on the last ticket
-                    if ( $item_map->{$id}->{next} ) {
-                        $search->child( next =>
-                            title => loc('Next') . ' >',  class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
-                        if ( $item_map->{last} ) {
-                            $search->child( last =>
-                                title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
+                        my $search = Menu()->child('search')->child('tickets');
+                        # Don't display prev links if we're on the first ticket
+                        if ( $item_map->{$id}->{prev} ) {
+                            $search->child( first =>
+                                title => '<< ' . loc('First'), class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{first});
+                            $search->child( prev =>
+                                title => '< ' . loc('Prev'),   class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev});
+                        }
+                        # Don't display next links if we're on the last ticket
+                        if ( $item_map->{$id}->{next} ) {
+                            $search->child( next =>
+                                title => loc('Next') . ' >',  class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{$id}->{next});
+                            if ( $item_map->{last} ) {
+                                $search->child( last =>
+                                    title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
+                            }
                         }
                     }
                 }
