@@ -568,6 +568,16 @@ our %META;
             Description => 'Hide unset fields?' # loc
         }
     },
+    ShowSearchNavigation => {
+        Section     => 'Ticket display',
+        Overridable => 1,
+        SortOrder   => 12,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Show search navigation', # loc
+            Hints       => 'Show search navigation links of "First", "Last", "Prev" and "Next"', # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {
