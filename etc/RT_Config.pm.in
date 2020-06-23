@@ -1334,7 +1334,7 @@ generated SQL statements, at the cost of the aforementioned bugs.
 
 Set($UseSQLForACLChecks, 1);
 
-=item C<$TicketsItemMapSize>
+=item C<$TicketsItemMapSize>, C<$ShowSearchNavigation>
 
 On the display page of a ticket from search results, RT provides links
 to the first, next, previous and last ticket from the results.  In
@@ -1346,9 +1346,12 @@ to build these links. If the full result set is larger than this
 number, RT will omit the "last" link in the menu.  Set this to zero to
 always examine all results.
 
+Set C<$ShowSearchNavigation> to 0 to not build these links.
+
 =cut
 
 Set($TicketsItemMapSize, 1000);
+Set($ShowSearchNavigation, 1);
 
 =item C<$SearchResultsRefreshInterval>
 
