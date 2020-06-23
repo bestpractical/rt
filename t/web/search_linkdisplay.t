@@ -59,4 +59,25 @@ $ref = $m->find_link( url_regex => qr!/Article/Display.html! );
 ok( $ref, "found article link" );
 is( $ref->text, $article->URIObj->Resolver->AsString, $article->URIObj->Resolver->AsString . " is displayed" );
 
+
+# Get a search that returns multiple tickets
+$m->get_ok("/Search/Results.html?Format=id,RefersTo;Query=id>0");
+
+ok $m->goto_ticket( $ticket->Id ), 'opened diplay page of ticket # '.$ticket->Id;
+my $t_link = $m->find_link( id => "search-tickets-next" )->url;
+is ($t_link, "/Ticket/Display.html?id=".$ticket2->Id, 'link to the next ticket in current search found');
+
+diag "Set ShowSearchNavigation to false and confirm we do not load navigation links.";
+{
+  RT::Test->stop_server;
+  RT->Config->Set( 'ShowSearchNavigation' => 0 );
+  ($baseurl, $m) = RT::Test->started_ok;
+
+  # Get a search that returns multiple tickets
+  $m->get_ok("/Search/Results.html?Format=id,RefersTo;Query=id>0");
+
+  ok $m->goto_ticket( $ticket->Id ), 'opened diplay page of ticket # '.$ticket->Id;
+  $t_link = $m->find_link( id => "search-tickets-next" );
+  is($t_link, undef, "Search navigation results are not rendered");
+}
 done_testing;
