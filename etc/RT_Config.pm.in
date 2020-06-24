@@ -1476,8 +1476,18 @@ fail to exist in an external service; this is so requestors who
 are not in LDAP can still be created when they email in.
 See L<RT::Authen::ExternalAuth> for details.
 
+=item C<$DisablePasswordForAuthToken>
+
+If you have a mix of RT and federated authentication, RT can't directly
+verify a user's password against the federated IdP. You can explicitly
+disable the password prompt when creating a token by setting this option
+to true (1).
+
 =back
 
+=cut
+
+Set($DisablePasswordForAuthToken, 0);
 
 =head2 Initialdata Formats
 
