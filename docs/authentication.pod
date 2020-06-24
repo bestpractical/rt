@@ -31,6 +31,14 @@ your RT Apache configuration to allow RT to access the Authorization header.
 
     SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
+
+If you have a mix of local and external authentication you can disable
+requiring a password to create tokens with the following line
+in RT_SiteConfig.pm :
+
+   Set($DisablePasswordForAuthToken, 1);
+
+
 You can find more information about tokens in L<RT::Authen::Token>.
 
 =head1 External Authentication

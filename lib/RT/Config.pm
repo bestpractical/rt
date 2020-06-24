@@ -1290,6 +1290,12 @@ our %META;
         Widget    => '/Widgets/Form/Boolean',
     },
 
+    DisablePasswordForAuthToken => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
+    },
+
+
     ExternalSettings => {
         Immutable     => 1,
         Obfuscate => sub {

@@ -5001,15 +5001,20 @@ sub ProcessAuthToken {
     if ( $args_ref->{Create} ) {
 
         # Don't require password for systems with some form of federated auth
+        # or if configured to not require a password
         my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+        my $require_password = 1;
+        if ( RT->Config->Get('DisablePasswordForAuthToken') or not $res{'CanSet'}) {
+            $require_password = 0;
+        }
 
         if ( !length( $args_ref->{Description} ) ) {
             push @results, loc("Description cannot be blank.");
         }
-        elsif ( $res{'CanSet'} && !length( $args_ref->{Password} ) ) {
+        elsif ( $require_password && !length( $args_ref->{Password} ) ) {
             push @results, loc("Please enter your current password.");
         }
-        elsif ( $res{'CanSet'} && !$session{CurrentUser}->IsPassword( $args_ref->{Password} ) ) {
+        elsif ( $require_password && !$session{CurrentUser}->IsPassword( $args_ref->{Password} ) ) {
             push @results, loc("Please enter your current password correctly.");
         }
         else {

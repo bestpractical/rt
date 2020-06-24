@@ -57,7 +57,7 @@
       <div class="modal-body">
         <form method="POST">
           <input type="hidden" name="Owner" value="<% $Owner %>">
-%         if ( $res{'CanSet'} ){
+%         if ( $require_password ){
           <div class="form-row">
             <div class="label col-4">
               <&|/l, $session{'CurrentUser'}->Name()&>[_1]'s current password</&>:
@@ -89,8 +89,13 @@
 </div>
 
 <%INIT>
-# Don't require password for systems with some form of federated auth
+# Don't require password for systems with some form of federated auth,
+# or if configured to not require a password
 my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+my $require_password = 1;
+if ( RT->Config->Get('DisablePasswordForAuthToken') or not $res{'CanSet'}) {
+   $require_password = 0;
+}
 </%INIT>
 
 <%ARGS>

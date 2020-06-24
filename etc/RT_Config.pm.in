@@ -1476,7 +1476,18 @@ fail to exist in an external service; this is so requestors who
 are not in LDAP can still be created when they email in.
 See L<RT::Authen::ExternalAuth> for details.
 
+=item C<$DisablePasswordForAuthToken>
+
+If you have a mix of local and external authentication you can disable
+requiring a password to create tokens with the following line
+in RT_SiteConfig.pm. You can find more information about tokens
+in L<RT::Authen::Token>.
+
 =back
+
+=cut
+
+Set($DisablePasswordForAuthToken, 0);
 
 
 =head2 Initialdata Formats
