@@ -53,6 +53,7 @@ $return => ''
 $term => undef
 $max => undef
 $exclude => ''
+$limit => undef
 </%ARGS>
 <%INIT>
 # Only allow certain return fields
@@ -96,6 +97,10 @@ if ( @excludes ) { # exclude ids already these
 $m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
 $max //= 10;
 
+# Add additional limit to SQL if provided
+if ( $limit ) {
+    $sql = "($sql) AND ($limit)";
+}
 $tickets->FromSQL($sql);
 $tickets->RowsPerPage( $max );
 
