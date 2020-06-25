@@ -156,5 +156,23 @@ And there are the basics of the query builder! To implement these basics to
 build reports, please see the Dashboard & Reports document. For definitions of
 piece of RT metadata, please see the Definitions of Ticket Metadata document.
 
+=head1 Searching Custom Fields
+
+If you use custom fields on your tickets, you might initially load the Query
+Builder and not see them listed. If your custom fields are applied to
+individual queues and not globally, they won't show up as options on a
+new search. However, once you add a queue to your search, as shown above, the
+custom fields applied to the queue or queues in your search will be displayed.
+You can then add custom field values to your search just like other fields.
+
+In addition to exact queue name searches like "Queue = 'RT'", the query builder
+also allows 'LIKE' searches. This can be useful if you have several queues that
+follow some naming pattern, like "IT Support", "Printer Support", and "Email Support".
+To include all of these, you can use "Queue LIKE 'Support'".
+
+Using the Advanced tab, you can also type one other criteria to search for queues
+by their lifecycle. TicketSQL supports "Lifecycle = 'support'" if you type it
+directly into the Advanced search box.
+
 =cut
 
