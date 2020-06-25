@@ -8,11 +8,7 @@ to find exactly what you're looking for (and no more) are discussed below.
 The Query Builder is the heart of reporting in RT, which is covered in the
 L<Dashboard and Reports|docs/dashboards_reporting.pod> document.
 
-To follow along with the examples, go to
-L<issues.bestpractical.com|http://issues.bestpractical.com> and try the
-searches yourself.
-
-=head1 Example
+=head1 Basic Ticket Searches
 
 Let's look for tickets in the "RT" queue (RT's bugtracker for itself) that have
 been resolved in the last year. (These examples assume it's currently mid June,
@@ -152,10 +148,6 @@ add the following to your query:
 
 AND CF.{TransportType} IS NOT NULL
 
-And there are the basics of the query builder! To implement these basics to
-build reports, please see the Dashboard & Reports document. For definitions of
-piece of RT metadata, please see the Definitions of Ticket Metadata document.
-
 =head1 Searching Custom Fields
 
 If you use custom fields on your tickets, you might initially load the Query
@@ -176,3 +168,10 @@ directly into the Advanced search box.
 
 =cut
 
+=head1 Learn More
+
+To use the query builder to build and save reports, see
+L<Dashboard and Reports|docs/dashboards_reporting.pod>. For definitions of
+RT metadata, see L<Ticket Metadata|docs/ticket_metadata.pod>.
+
+=cut
