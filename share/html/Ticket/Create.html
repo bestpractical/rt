@@ -85,6 +85,7 @@
                     Default        => $Queue,
                     ShowNullOption => 0,
                     AutoSubmit     => 1,
+                    ShowAllQueues  => 0,
                 },
             },
             {   name => 'Status',
@@ -352,6 +353,7 @@ unless ($Queue) {
         ObjectType       => 'Queue',
         CheckRight       => 'CreateTicket',
         CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+        ShowAll          => 0,
     );
 
     $Queue = $session{$cache_key}{objects}[0]->{Id};
