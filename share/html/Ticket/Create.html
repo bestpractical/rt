@@ -356,7 +356,7 @@ unless ($Queue) {
         ShowAll          => 0,
     );
 
-    $Queue = $session{$cache_key}{objects}[0]->{Id};
+    $Queue = $session{$cache_key}{objects}[0]->{Id} if $session{$cache_key}{objects}[0];
 }
 
 Abort( loc( "Permission Denied" ) ) unless $Queue;
