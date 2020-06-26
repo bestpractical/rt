@@ -199,7 +199,7 @@ sub Init {
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses(%args);
-    RT->Config->LoadConfigFromDatabase();
+    RT->Config->LoadConfigFromDatabase() unless $args{SkipConfigurations};
     InitLogging();
     ProcessPreInitMessages();
     InitPlugins();
