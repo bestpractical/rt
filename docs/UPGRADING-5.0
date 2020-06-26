@@ -148,6 +148,27 @@ RT should also still run with GnuPG 1.4.x. It is not supported for GnuPG version
 2.0 or 2.1. On some Linux systems, you may need to add a new repo to get an
 updated GnuPG package with some version of 2.2.
 
+=item *
+
+RT search results and reports now allow inline editing of tickets, this greatly
+improves usability and convenience.
+
+Editable fields that require an ACL search per ticket, particularly Owner may
+result in slower page load times. You can make the owner field autocomplete
+to avoid the extra queries using the AutocompleteOwner configuration field
+L<https://docs.bestpractical.com/rt/4.4.4/RT_Config.html#AutocompleteOwners>.
+
+It may be possible to improve query times for owner and other ACL checking
+inline edit queries by adding an index to the ACL table, but the cost and
+benefit of any new index will vary according to the dataset and database.
+Adding the following indexes has been reported to help performance on some
+datasets with Postgres 9 : 
+
+ CREATE INDEX ACL2 ON acl (objecttype, objectid);
+
+ CREATE INDEX ACL3 ON acl (principalid, rightname, principaltype);
+
+
 =back
 
 =cut
