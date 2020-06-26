@@ -156,7 +156,8 @@ improves usability and convenience.
 Editable fields that require an ACL search per ticket, particularly Owner may
 result in slower page load times. You can make the owner field autocomplete
 to avoid the extra queries using the AutocompleteOwner configuration field
-L<https://docs.bestpractical.com/rt/4.4.4/RT_Config.html#AutocompleteOwners>.
+L<https://docs.bestpractical.com/rt/4.4.4/RT_Config.html#AutocompleteOwners>
+or use the OwnerReadonly field if editing is not required.
 
 It may be possible to improve query times for owner and other ACL checking
 inline edit queries by adding an index to the ACL table, but the cost and

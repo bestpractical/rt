@@ -104,6 +104,12 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->QueueObj->Name },
         edit      => sub { return \($m->scomp('/Elements/SelectQueue', Default => $_[0]->Queue, Name => 'Queue', ShowNullOption => 0)) },
     },
+    OwnerReadonly =>  {
+        title     => 'Owner', # loc
+        attribute => 'Owner',
+        value     => sub { return sprintf('%s (%s)',$_[0]->OwnerObj->Name, $_[0]->OwnerObj->RealName) },
+
+    },
     OwnerName => {
         title     => 'Owner', # loc
         attribute => 'Owner',
