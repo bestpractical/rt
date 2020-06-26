@@ -280,8 +280,13 @@ CREATE TABLE ACL (
 
 CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
 
-
-
+---
+--- Indexes that could help performance for owner lookups in inline-edit fields
+--- reported to improve performance with Postgres 9.4
+---
+--- CREATE INDEX ACL2 ON acl (objecttype, objectid);
+--- CREATE INDEX ACL3 ON acl (principalid, rightname, principaltype);
+---
 
 
 
