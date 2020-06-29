@@ -148,7 +148,42 @@ RT should also still run with GnuPG 1.4.x. It is not supported for GnuPG version
 2.0 or 2.1. On some Linux systems, you may need to add a new repo to get an
 updated GnuPG package with some version of 2.2.
 
+=item *
+
+RT search results now allow inline editing of ticket metadata, greatly
+improving usability and convenience.
+
+Some fields that require extra processing per ticket, particularly Owner, may
+result in slower page load times. If you experience these slower page loads,
+there are a few options to improve performance:
+
+=over
+
+=item *
+
+Display Owner as an autocomplete box rather than a dropdown using the
+L<AutocompleteOwners|https://docs.bestpractical.com/rt/4.4.4/RT_Config.html#AutocompleteOwners>
+configuration option. This may also help other areas of RT in addition to
+searches.
+
+=item *
+
+Update your search result format to use OwnerDisplayOnly rather than OwnerName
+in search results. This will disable inline edit for the Owner field, but this
+may be acceptable if the search is not used for editing or users don't have
+rights to edit Owner.
+
+=back
+
+We are investigating options to improve the underlying queries. Some users have
+reported improved performance with the following indexes, at least on Postgres:
+
+   CREATE INDEX ACL2 ON acl (objecttype, objectid);
+   CREATE INDEX ACL3 ON acl (principalid, rightname, principaltype);
+
+We are performing testing and looking for additional feedback before adding these
+to default RT.
+
 =back
 
 =cut
-

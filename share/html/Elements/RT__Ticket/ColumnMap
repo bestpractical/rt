@@ -104,6 +104,11 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->QueueObj->Name },
         edit      => sub { return \($m->scomp('/Elements/SelectQueue', Default => $_[0]->Queue, Name => 'Queue', ShowNullOption => 0)) },
     },
+    OwnerDisplayOnly =>  {
+        title     => 'Owner', # loc
+        attribute => 'Owner',
+        value     => sub { return \($m->scomp("/Elements/ShowUser", User => $_[0]->OwnerObj)) },
+    },
     OwnerName => {
         title     => 'Owner', # loc
         attribute => 'Owner',
