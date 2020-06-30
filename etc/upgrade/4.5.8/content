@@ -6,13 +6,13 @@ our @Final;
 push @Final, sub {
     # skip unless fulltextsearch is enabled
     my $fts_config = RT->Config->Get('FullTextSearch');
-    return unless ($fts_config->{'Enable'});
+    return 1 unless ($fts_config->{'Enable'});
 
     # check config to see if db type is applicable
     my $db_type = RT->Config->Get('DatabaseType');
-    return unless ($db_type eq 'Pg' or $db_type eq 'mysql');
+    return 1 unless ($db_type eq 'Pg' or $db_type eq 'mysql');
 
-    my $dbh = RT->DatabaseHandle->dbh;
+    my $dbh = $RT::Handle::admin_dbh;
 
     # get tablename from config, fall back to default tablename
     my $table = $fts_config->{'Table'} || 'AttachmentsIndex';
@@ -25,6 +25,7 @@ push @Final, sub {
             warn "failed to update fulltext search table $table key to bigint : $@ : " . $dbh->errstr
         }
     }
+    return 1;
 };
 
 ###
@@ -36,7 +37,7 @@ sub get_pg_ddl_query {
 
 sub get_mysql_ddl_query {
     my ($table) = @_;
-    return "ALTER TABLE $table MODIFY id BIGINT NOT NULL AUTO_INCREMENT;";
+    return "ALTER TABLE $table MODIFY id BIGINT NOT NULL AUTO_INCREMENT, CONVERT TO CHARACTER SET utf8mb4;";
 }
 
 sub table_exists {

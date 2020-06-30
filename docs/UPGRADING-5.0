@@ -58,6 +58,11 @@ while running because MySQL, MariaDB, and Postgres will create a
 temporary copy of the table while running. If you don't have sufficient
 space, it can cause this step to fail.
 
+If you have Fulltext searching enabled in mysql, mariadb or postgres this
+step can require a significantly large amount of disk space and you can skip
+this step for the fulltexts search index table by skipping the db upgrade in 4.5.8,
+i.e. run make upgrade-database twice, first to 4.5.7 then from 4.5.9
+
 =back
 
 =head2 Notable Changes
