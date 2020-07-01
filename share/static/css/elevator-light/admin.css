@@ -83,32 +83,6 @@ table.upgrade-history .upgrade-history-parent .widget a.rolled-up {
     background-image: url(../../../static/images/css/rolldown-arrow.gif);
 }
 
-#manage-user-data div.title {
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-div.inline-row {
-    margin-bottom: 10px;
-    display: inline-flex;
-    width: 100%;
-}
-
-div.inline-row div {
-    max-width: 150px;
-    display: block;
-}
-
-div.inline-row a {
-    text-align: center;
-    width: 85%;
-}
-
-div.inline-row i {
-    text-align: left;
-    width: 85%;
-}
-
 #comp-Admin .list-menu {
     float: left
 }
@@ -124,13 +98,6 @@ div.inline-row i {
     margin-left: 1em;
     padding-left: 1em;
     padding-bottom: 1em;
-}
-
-#manage-user-data div.form-row i {
-    text-align: left;
-    display: block;
-    font-size: 0.8em;
-    white-space: normal;
 }
 
 #rights-inspector.error .results {
