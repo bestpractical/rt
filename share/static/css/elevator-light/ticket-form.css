@@ -1,5 +1,6 @@
 #ticket-create-metadata .cflabel .name,
-#ticket-update-metadata .cflabel .name {
+#ticket-update-metadata .cflabel .name,
+#ticket-info-basics .cflabel .name {
     font-weight: normal;
 }
 
