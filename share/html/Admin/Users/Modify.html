@@ -321,19 +321,37 @@
 </form>
 
 % if ( $UserObj->Id ) {
-    <& /Elements/Modal, ModalId => "user-info-modal", Method => 'POST', Action => RT->Config->Get('WebPath') . '/Admin/Users/Modify.html', Fields => [
-    { Label   => loc("Are you sure you want to anonymize user: [_1]?", $UserObj->Name) },
-    { Input => 'Hidden', Value => $UserObj->Id, Name => 'id' },
-    { Input => 'Hidden', Value => 1, Name => 'Anonymize' },
-    {
-        Label    => loc("Check to clear user custom fields") . ":",
-        Input    => 'checkbox',
-        Class    => 'checkbox',
-        Name     => 'clear_customfields',
-        Value    => 'On',
-    },
-]
-&>
+<div id="user-info-modal" class="modal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-2">
+      <div class="modal-header">
+        <h5 class="modal-title"><&|/l&>Anonymize User</&></h5>
+        <a class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <div class="modal-body">
+        <form id="user-info-modal-form" action="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html" method="POST">
+          <input type="hidden" name="id" value="<% $UserObj->Id %>" />
+          <input type="hidden" name="Anonymize" value="1" />
+
+          <div class="form-row">
+            <div class="custom-control custom-checkbox">
+              <input class="custom-control-input" type="checkbox" id="clear_customfields" name="clear_customfields" />
+              <label class="custom-control-label" for="clear_customfields"><&|/l&>Check to clear user custom fields</&></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row justify-content-end">
+          <div class="col-auto">
+            <button type="Submit" class="button"><&|/l&>Anonymize</&></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 % }
 <%INIT>
 
