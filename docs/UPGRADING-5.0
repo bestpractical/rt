@@ -184,6 +184,15 @@ reported improved performance with the following indexes, at least on Postgres:
 We are performing testing and looking for additional feedback before adding these
 to default RT.
 
+=item *
+
+Users who are currently using the
+L<RT::Authen::Token|https://metacpan.org/pod/RT::Authen::Token> extension
+should remove C<RT::Authen::Token> from the plugin list and run the
+F<etc/upgrade/upgrade-authtokens> utility after completing all the other
+upgrade steps from the F<README>. Please also remove
+F<local/plugins/RT-Authen-Token> from your RT installation.
+
 =back
 
 =cut
