@@ -383,8 +383,8 @@ sub action_insert {
 
     RT->System->AddUpgradeHistory($package => \%upgrade_data);
 
+    $RT::Handle::admin_dbh = get_admin_dbh();
     my @ret;
-
     my $upgrade = sub { @ret = $RT::Handle->InsertData( $file, $root_password ) };
 
     for my $file (@{$args{backcompat} || []}) {
