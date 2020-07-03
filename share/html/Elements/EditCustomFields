@@ -55,7 +55,7 @@
 % my $Type = $CustomField->Type || 'Unknown';
 
   <div class="form-row edit-custom-field cftype-<% $Type %>">
-    <div class="cflabel label col-<% $LabelCols %>">
+    <div class="label col-<% $LabelCols %>">
       <% $CustomField->Name %>:
 % if ( $CustomField->EntryHint ) {
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>

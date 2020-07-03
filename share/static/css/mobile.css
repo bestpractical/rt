@@ -106,7 +106,7 @@ hr.clear {
 }
 
 
-.label, .labeltop, .cflabel {
+.label, .labeltop {
     font-weight: normal;
 }
 .value { 
@@ -408,7 +408,7 @@ div.txn-content {
 
 }
 
-.label, .cflabel {
+.label {
     text-align: left;
     width: 10em;
     color: #666;
