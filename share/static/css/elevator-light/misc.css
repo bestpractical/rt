@@ -28,11 +28,6 @@ hr.clear {
     font-size: 1px;
 }
 
-/* Custom fields */
-
-.cflabel .name { font-weight: bold; }
-.cflabel .type { font-style: italic; }
-
 .query-stacktrace-toggle {
     float: right;
 }
