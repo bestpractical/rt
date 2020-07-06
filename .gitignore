@@ -16,6 +16,7 @@
 /etc/upgrade/upgrade-sla
 /etc/upgrade/upgrade-assets
 /etc/upgrade/upgrade-authtokens
+/etc/upgrade/upgrade-configurations
 /etc/upgrade/vulnerable-passwords
 /lib/RT/Generated.pm
 /Makefile

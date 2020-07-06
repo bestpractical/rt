@@ -1,0 +1,212 @@
+#!@PERL@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+#                                          <sales@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use 5.10.1;
+use strict;
+use warnings;
+
+use lib "@LOCAL_LIB_PATH@";
+use lib "@RT_LIB_PATH@";
+
+use Term::ReadKey;
+use Getopt::Long;
+
+$| = 1; # unbuffer all output.
+
+my %args;
+GetOptions(
+    \%args,
+    'dba=s', 'dba-password=s', 'prompt-for-dba-password',
+);
+
+no warnings 'once';
+use RT::Interface::CLI qw(Init);
+Init();
+
+my $db_type = RT->Config->Get('DatabaseType') || '';
+my $db_host = RT->Config->Get('DatabaseHost') || '';
+my $db_port = RT->Config->Get('DatabasePort') || '';
+my $db_name = RT->Config->Get('DatabaseName') || '';
+my $db_user = RT->Config->Get('DatabaseUser') || '';
+my $db_pass = RT->Config->Get('DatabasePassword') || '';
+
+my $dba_user = $args{'dba'} || $ENV{'RT_DBA_USER'} || RT->Config->Get('DatabaseAdmin') || '';
+my $dba_pass = $args{'dba-password'} || $ENV{'RT_DBA_PASSWORD'};
+
+if ( !$args{force} && ( !defined $dba_pass || $args{'prompt-for-dba-password'} ) ) {
+    $dba_pass = get_dba_password();
+    chomp $dba_pass if defined($dba_pass);
+}
+
+
+my $dbh = $RT::Handle->dbh;
+
+unless ( grep { lc $_ eq 'rtxdatabasesettings' } $RT::Handle->_TableNames ) {
+    warn "Could not find RT::Extension::ConfigInDatabase data to migrate";
+    exit;
+}
+
+print "Working with:\n"
+    ."Type:\t$db_type\nHost:\t$db_host\nPort:\t$db_port\nName:\t$db_name\n"
+    ."User:\t$db_user\nDBA:\t$dba_user" . ($args{'skip-create'} ? ' (No DBA)' : '') . "\n\n";
+
+print "Upgrading Configurations table...\n";
+
+my @columns = qw(id Name Content ContentType Disabled Creator Created LastUpdatedBy LastUpdated);
+copy_tables('RTxDatabaseSettings','Configurations',\@columns);
+
+fix_id_sequence('Configurations', {
+    Pg     => 'configurations_id_seq',
+    Oracle => 'Configurations_seq',
+});
+
+my $configs = RT::Configurations->new( RT->SystemUser );
+$configs->Limit( FIELD => 'ContentType', VALUE => 'storable' );
+use Storable;
+use MIME::Base64;
+while ( my $config = $configs->Next ) {
+    my $thawed = eval { Storable::thaw( decode_base64( $config->_Value('Content') ) ) };
+    if ($@) {
+        $RT::Logger->error( "Storable deserialization of database setting " . $config->Name . " failed: $@" );
+    }
+    else {
+        $RT::Handle->BeginTransaction();
+        my ( $ret, $msg ) = $config->__Set( Field => 'ContentType', Value => 'perl' );
+        if ($ret) {
+            ( $ret, $msg ) = $config->__Set( Field => 'Content', Value => $config->_SerializeContent($thawed) );
+        }
+
+        if ($ret) {
+            $RT::Handle->Commit();
+        }
+        else {
+            $RT::Logger->error( "Couldn't upgrade database setting " . $config->Name . ": $msg" );
+            $RT::Handle->Rollback();
+        }
+    }
+}
+
+print "Configurations table upgrades complete.\n";
+
+sub copy_tables {
+    my ($source, $dest, $columns) = @_;
+    my $column_list = join(', ',@$columns);
+    my $sql;
+    # SQLite: http://www.sqlite.org/lang_insert.html
+    if ( $db_type eq 'mysql' || $db_type eq 'SQLite' ) {
+        $sql = "insert into $dest ($column_list) select $column_list from $source";
+    }
+    # Oracle: http://www.adp-gmbh.ch/ora/sql/insert/select_and_subquery.html
+    elsif ( $db_type eq 'Pg' || $db_type eq 'Oracle' ) {
+        $sql = "insert into $dest ($column_list) (select $column_list from $source)";
+    }
+    $RT::Logger->debug($sql);
+    $dbh->do($sql);
+}
+
+sub fix_id_sequence {
+    my ($table, $sequence_per_db) = @_;
+    my $sequence = $sequence_per_db->{$db_type} or return;
+
+    my $admin_dbh = get_admin_dbh();
+
+    my ($max) = $admin_dbh->selectrow_array("SELECT MAX(id) FROM $table;");
+    my $next_id = ($max || 0) + 1;
+    RT->Logger->info("Resetting $sequence to $next_id\n");
+
+    my @sql;
+    if ($db_type eq 'Pg') {
+        @sql = "ALTER SEQUENCE $sequence RESTART WITH $next_id;";
+    }
+    elsif ($db_type eq 'Oracle') {
+        @sql = (
+            "ALTER SEQUENCE $sequence INCREMENT BY " . ($next_id - 1) . ";",
+            "SELECT $sequence.nextval FROM dual;",
+            "ALTER SEQUENCE $sequence INCREMENT BY 1;",
+        );
+    }
+
+    $RT::Logger->debug($_) for @sql;
+    $admin_dbh->do($_) for @sql;
+}
+
+sub get_dba_password {
+    return "" if $db_type eq 'SQLite';
+    print "In order to create or update your RT database,"
+        . " this script needs to connect to your "
+        . " $db_type instance on $db_host (port '$db_port') as $dba_user\n";
+    print "Please specify that user's database password below. If the user has no database\n";
+    print "password, just press return.\n\n";
+    print "Password: ";
+    ReadMode('noecho');
+    my $password = ReadLine(0);
+    ReadMode('normal');
+    print "\n";
+    return ($password);
+}
+
+sub get_admin_dbh {
+    return _get_dbh( RT::Handle->DSN, $dba_user, $dba_pass );
+}
+
+sub _get_dbh {
+    my ($dsn, $user, $pass) = @_;
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    unless ( $dbh ) {
+        my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
+        if ( $args{'debug'} ) {
+            require Carp; Carp::confess( $msg );
+        } else {
+            print STDERR $msg; exit -1;
+        }
+    }
+    return $dbh;
+}
