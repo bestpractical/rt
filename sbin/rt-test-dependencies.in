@@ -223,7 +223,7 @@ File::Which
 HTML::Entities
 Locale::PO
 Log::Dispatch::Perl
-Mojo::DOM
+Mojolicious
 Plack::Middleware::Test::StashWarnings 0.08
 Pod::Simple 3.24
 Set::Tiny
@@ -313,6 +313,7 @@ my %AVOID = (
     'Devel::StackTrace' => [qw(1.28 1.29)],
     'DateTime::Locale'  => [qw(1.00 1.01)],
     'DBD::mysql'        => [qw(4.042)],
+    'Mojolicious'         => [qw(8.54)],
 );
 
 check_perl_version();
