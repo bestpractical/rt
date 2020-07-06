@@ -193,6 +193,15 @@ F<etc/upgrade/upgrade-authtokens> utility after completing all the other
 upgrade steps from the F<README>. Please also remove
 F<local/plugins/RT-Authen-Token> from your RT installation.
 
+=item *
+
+Users who are currently using the L<RT::Extension::ConfigInDatabase>
+extension should remove C<RT::Extension::ConfigInDatabase> from the plugin
+list and run the F<etc/upgrade/upgrade-configurations> utility after
+completing all the other upgrade steps from the F<README>. Please also
+remove F<local/plugins/RT-Extension-ConfigInDatabase> from your RT
+installation.
+
 =back
 
 =cut
