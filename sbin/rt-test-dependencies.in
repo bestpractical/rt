@@ -252,6 +252,7 @@ Apache::Request
 .
 
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
+DBIx::SearchBuilder 1.68
 DBD::mysql 2.1018
 .
 
