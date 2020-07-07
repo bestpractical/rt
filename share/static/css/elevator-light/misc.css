@@ -91,13 +91,6 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
     overflow: auto;
 }
 
-#download-my-data div.form-row i {
-    text-align: left;
-    display: block;
-    font-size: 0.8em;
-    white-space: normal;
-}
-
 .modal {
   background: rgb(0, 0, 0, .70); 
 }
