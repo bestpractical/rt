@@ -54,6 +54,7 @@
             <div class="col-auto">
               <input type="search" class="field form-control" name="search" placeholder="<&|/l&>Search…</&>" autocomplete="off">
             </div>
+%           if ( @filters ) {
             <div class="col-auto">
               <select class="form-control selectpicker" name="filter">
                   <option value=""><&|/l&>All Types</&></option>
@@ -63,6 +64,7 @@
 % }
               </select>
             </div>
+%           }
           </div>
         </div>
 

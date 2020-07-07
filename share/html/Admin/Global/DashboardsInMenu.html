@@ -49,98 +49,147 @@
 <& /Elements/Tabs &>
 
 <& /Elements/ListActions, actions => \@actions &>
-<&|/Widgets/TitleBox, title => loc('Dashboards in menu'), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $dashboard_pane &></&>
 
-<&|/Widgets/TitleBox, title => loc('Reports in menu'), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $report_pane &></&>
+<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
+  <& /Widgets/SearchSelection,
+    pane_name => { dashboard => loc('Dashboards in menu') },
+    sections  => [{
+                    id    => 'dashboards',
+                    label => loc("Dashboards"),
+                    items => \@dashboard_components,
+                }],
+    selected  => \%selected,
+    filters   => [],
+  &>
+  <input type="hidden" name="dashboard_id" value="DashboardsInMenu">
+
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+</form>
+
+<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
+  <& /Widgets/SearchSelection,
+    pane_name => { report => loc('Reports in menu') },
+    sections  => [{
+                  id    => 'reports',
+                  label => loc("Reports"),
+                  items => \@report_components,
+              }],
+    selected  => \%selected,
+    filters   => [],
+  &>
+  <input type="hidden" name="dashboard_id" value="ReportsInMenu">
+
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+</form>
+
 <%init>
 my @actions;
+my $title = loc("Customize").' '.loc("reports menu");
 my $sys = RT::System->new( $session{'CurrentUser'} );
 
 my $has_right = $session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser');
 
+my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 1 );
+my @report_components = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ ListOfReports() };
+
 my ($dashboard_attr) = $sys->Attributes->Named('DashboardsInMenu');
-my $default_dashboards_in_menu =
-    $dashboard_attr && $dashboard_attr->Content->{dashboards}
-  ? $dashboard_attr->Content->{dashboards}
-  : [];
-
-use RT::Dashboards;
-my $dashboards = RT::Dashboards->new( $RT::SystemUser );
-$dashboards->LimitToPrivacy('RT::System-' . $sys->id);
-
-my @dashboards;
-while ( my $dashboard = $dashboards->Next ) {
-    push @dashboards, [$dashboard->id, $dashboard->Name];
-}
-
-my ($dashboard_pane) = $m->comp(
-    '/Admin/Elements/ConfigureDashboardsInMenu',
-    Action => 'DashboardsInMenu.html',
-    panes => ['dashboards_in_menu'],
-    ReadOnly => !$has_right,
-    items => \@dashboards,
-    current_portlets => $default_dashboards_in_menu,
-    OnSave => sub {
-        my ( $conf ) = @_;
-        my ( $status, $msg );
-
-        if (!$has_right) {
-            push @actions, loc( 'Permission Denied' );
-        }
-        elsif ( $dashboard_attr ) {
-            ($status, $msg) = $dashboard_attr->SetContent($conf);
-        }
-        else {
-            $dashboard_attr = RT::Attribute->new($RT::SystemUser);
-            ( $status, $msg ) = $dashboard_attr->Create(
-                Name    => 'DashboardsInMenu',
-                Object  => $sys,
-                Content => $conf,
-            );
-        }
-        push @actions, $status ? loc('Global dashboards in menu saved.') : $msg;
-    }
-);
-
 my ($reports_attr) = RT::System->new( RT->SystemUser )->Attributes->Named('ReportsInMenu');
 
-my ( @reports, %reports );
-for my $report ( @{ ListOfReports() } ) {
-    push @reports, [ $report->{id}, $report->{title} ];
-    $reports{ $report->{id} } = $report;
-}
+if ($ARGS{UpdateSearches}) {
+    if ( !$has_right ) {
+        push @actions, loc('Permission Denied');
+    }
+    else {
+        if ( $ARGS{'dashboard_id'} eq 'DashboardsInMenu' ) {
+            my @dashboard_ids;
 
-my ($report_pane) = $m->comp(
-    '/Admin/Elements/ConfigureDashboardsInMenu',
-    Action           => 'DashboardsInMenu.html',
-    panes            => ['reports_in_menu'],
-    ReadOnly         => !$has_right,
-    items            => \@reports,
-    current_portlets => [ map { $_->{id} } @{ $reports_attr->Content || [] } ],
-    OnSave           => sub {
-        my ($conf) = @_;
-        my ( $status, $msg );
+            my $dashboard_names = ref $ARGS{'dashboard'} eq 'ARRAY' ? $ARGS{'dashboard'} : [$ARGS{'dashboard'}];
+            foreach my $name ( @{$dashboard_names} ) {
+                next unless $name;
+                $name =~ s/dashboard-//;
 
-        if ( !$has_right ) {
-            push @actions, loc('Permission Denied');
+                my $attribute = RT::Attribute->new( $session{'CurrentUser'} );
+
+                my ($ret, $msg) = $attribute->LoadByCols( Name => 'Dashboard', Description => $name );
+                if ( $ret ) {
+                    push @dashboard_ids, $attribute->Id;
+                }
+                else {
+                    RT::Logger->error( "Could not load dashboard: $msg" );
+                    push @actions, "Could not load dashboard $name";
+                }
+            }
+            my ( $ok, $msg );
+            if ( $dashboard_attr ) {
+                ( $ok, $msg ) = $dashboard_attr->SetContent({ dashboards => \@dashboard_ids });
+            }
+            else {
+                $dashboard_attr = RT::Attribute->new($RT::SystemUser);
+                ( $ok, $msg ) = $dashboard_attr->Create(
+                    Name    => 'DashboardsInMenu',
+                    Object  => $sys,
+                    Content => { 'dashboards' => \@dashboard_ids },
+                );
+            }
+            push @actions, $ok ? loc('Global dashboards in menu saved.') : $msg;
+            delete $session{'dashboards_in_menu'};
         }
         else {
-            my $system_reports = [];
-            foreach my $id ( @{ $conf->{dashboards} } ) {
-                push @$system_reports, $reports{$id} if $reports{$id};
-            }
+          my $report_names = ref $ARGS{'report'} eq 'ARRAY' ? $ARGS{'report'} : [$ARGS{'report'}];
+          my @ret;
+          foreach my $report ( @report_components ) {
+              last unless $report_names->[0];
 
-            ( $status, $msg ) = $reports_attr->SetContent($system_reports);
-            push @actions, $msg unless $status;
+              push @ret, $report if grep { $_ =~ /report-$report->{'name'}/ } @{$report_names};
+          }
+          my ( $ok, $msg );
+          if ( $reports_attr ) {
+              ( $ok, $msg ) = $reports_attr->SetContent( \@ret );
+          }
+          else {
+              $reports_attr = RT::Attribute->new($RT::SystemUser);
+              ( $ok, $msg ) = $reports_attr->Create(
+                  Name    => 'ReportsInMenu',
+                  Object  => $sys,
+                  Content => { 'reports' => \@ret },
+              );
+          }
+          push @actions, $ok ? loc('Preferences saved for reports in menu.') : $msg;
+          delete $session{'reports_in_menu'};
         }
-        push @actions, $status ? loc('Global reports in menu saved.') : $msg;
     }
-);
+}
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ ) for ( $dashboard_pane, $report_pane );
+my %selected;
 
+my $default_dashboards_in_menu =
+    $dashboard_attr && $dashboard_attr->Content
+  ? $dashboard_attr->Content
+  : { dashboards => [] };
 
+# prefs returns an array of Dashboard ID's
+my $selected_dashboard_ids = $default_dashboards_in_menu->{'dashboards'} || [];
+
+my @selected_dashboards;
+foreach my $id ( @{$selected_dashboard_ids} ) {
+    my $attribute = RT::Attribute->new( RT->SystemUser );
+    my ($ret, $msg) = $attribute->Load( $id );
+    unless ( $ret ) {
+        RT::Logger->error( "Could not load dashboard: $id" );
+        next;
+    }
+
+    push @selected_dashboards, {
+      id      => $id,
+      name    => $attribute->Description,
+      label   => $attribute->Description,
+      type    => 'dashboard'
+    };
+}
+$selected{'dashboard'} = \@selected_dashboards;
+
+my $report_pref = $reports_attr ? $reports_attr->Content : [];
+
+my @report_pref_sanitized = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ $report_pref };
+$selected{'report'} = \@report_pref_sanitized || [];
 </%init>
-

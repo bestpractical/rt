@@ -50,14 +50,24 @@
 
 <& /Elements/ListActions, actions => \@actions &>
 
-<&|/Widgets/TitleBox,
-    title => loc('Dashboards in menu'),
-    bodyclass => ""
-&>
-<& /Widgets/SelectionBox:show, self => $dashboard_pane &>
-</&>
+<form method="post" action="DashboardsInMenu.html" name="UpdateSearches" class="mx-auto max-width-lg">
+  <& /Widgets/SearchSelection,
+    pane_name => { dashboard => loc('Dashboards in menu') },
+    sections  => [{
+                    id    => 'dashboards',
+                    label => loc("Dashboards"),
+                    items => \@dashboard_components,
+                }],
+    selected  => \%selected,
+    filters   => [],
+  &>
+  <input type="hidden" name="id" value="<% $id %>" />
+  <input type="hidden" name="dashboard_id" value="DashboardsInMenu" />
 
-<&|/Widgets/TitleBox, title => loc("Reset dashboards in menu") &>
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+</form>
+
+<&|/Widgets/TitleBox, title => loc("Reset dashboards in menu"), class => "mx-auto max-width-lg" &>
 <div class="mt-3 mb-1 ml-3">
   <form method="post" action="DashboardsInMenu.html">
     <input type="hidden" name="id" value="<% $id %>" />
@@ -66,14 +76,24 @@
 </div>
 </&>
 
-<&|/Widgets/TitleBox,
-    title => loc('Reports in menu'),
-    bodyclass => ""
-&>
-<& /Widgets/SelectionBox:show, self => $report_pane &>
-</&>
+<form method="post" action="DashboardsInMenu.html" name="UpdateSearches" class="mx-auto max-width-lg">
+  <& /Widgets/SearchSelection,
+    pane_name => { report => loc('Reports in menu') },
+    sections  => [{
+                  id    => 'reports',
+                  label => loc("Reports"),
+                  items => \@report_components,
+              }],
+    selected  => \%selected,
+    filters   => [],
+  &>
+  <input type="hidden" name="id" value="<% $id %>" />
+  <input type="hidden" name="dashboard_id" value="ReportsInMenu" />
 
-<&|/Widgets/TitleBox, title => loc("Reset reports in menu") &>
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+</form>
+
+<&|/Widgets/TitleBox, title => loc("Reset reports in menu"), class => "mx-auto max-width-lg" &>
 <div class="mt-3 mb-1 ml-3">
   <form method="post" action="DashboardsInMenu.html">
     <input type="hidden" name="id" value="<% $id %>" />
@@ -84,6 +104,7 @@
 
 <%init>
 my @actions;
+
 my $UserObj = RT::User->new($session{'CurrentUser'});
 $UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
 my $title = loc("Reports menu for the user [_1]", $UserObj->Name);
@@ -103,75 +124,85 @@ if ( $ARGS{ResetReports} ) {
     }
 }
 
-my ($default_dashboards) =
-RT::System->new($session{'CurrentUser'})->Attributes->Named('DashboardsInMenu');
+my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
+my @report_components = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ ListOfReports() };
 
-my $user = RT::CurrentUser->new( $session{CurrentUser} );
-$user->Load( $UserObj->id );
-my @dashboards =
-  map { [ $_->id, $_->Name ] }
-  $m->comp( "/Dashboards/Elements/ListOfDashboards", User => $user, IncludeSuperuserGroups => 0 );
+if ($ARGS{UpdateSearches}) {
+  if ( $ARGS{'dashboard_id'} eq 'DashboardsInMenu' ) {
+      my @dashboard_ids;
 
+      my $dashboard_names = ref $ARGS{'dashboard'} eq 'ARRAY' ? $ARGS{'dashboard'} : [$ARGS{'dashboard'}];
+      foreach my $name ( @{$dashboard_names} ) {
+          next unless $name;
+          $name =~ s/dashboard-//;
 
-my $current_pref =
-  $UserObj->Preferences( 'DashboardsInMenu',
-    $default_dashboards ? $default_dashboards->Content : () );
-my $current_portlets =
-    $current_pref && $current_pref->{dashboards}
-  ? $current_pref->{dashboards}
-  : [];
+          my $attribute = RT::Attribute->new( $session{'CurrentUser'} );
 
-my ($dashboard_pane) = $m->comp(
-    '/Admin/Elements/ConfigureDashboardsInMenu',
-    Action           => "DashboardsInMenu.html?id=$id",
-    panes            => ['dashboards_in_menu'],
-    items            => \@dashboards,
-    current_portlets => $current_portlets,
-    OnSave => sub {
-        my ($conf) = @_;
-        my ( $ok, $msg ) =
-          $UserObj->SetPreferences( 'DashboardsInMenu', $conf );
-        push @actions,
-          $ok ? loc('Preferences saved for dashboards in menu.') : $msg;
+          my ($ret, $msg) = $attribute->LoadByCols( Name => 'Dashboard', Description => $name );
+          if ( $ret ) {
+              push @dashboard_ids, $attribute->Id;
+          }
+          else {
+              RT::Logger->error( "Could not load dashboard: $msg" );
+              push @actions, "Could not load dashboard $name";
+          }
+      }
+
+      my ( $ok, $msg ) = $UserObj->SetPreferences( $ARGS{'dashboard_id'}, { 'dashboards' => \@dashboard_ids } );
+      push @actions, $ok ? loc('Preferences saved for dashboards in menu.') : $msg;
+      delete $session{'dashboards_in_menu'};
+  }
+  else {
+    my $report_names = ref $ARGS{'report'} eq 'ARRAY' ? $ARGS{'report'} : [$ARGS{'report'}];
+    my @ret;
+    foreach my $report ( @report_components ) {
+        last unless $report_names->[0];
+
+        push @ret, $report if grep { $_ =~ /report-$report->{'name'}/ } @{$report_names};
     }
-);
 
-my ( @reports, %reports );
-for my $report ( @{ ListOfReports() } ) {
-    push @reports, [ $report->{id}, $report->{title} ];
-    $reports{ $report->{id} } = $report;
+    my ( $ok, $msg ) = $UserObj->SetPreferences( $ARGS{'dashboard_id'}, \@ret );
+    push @actions, $ok ? loc('Preferences saved for reports in menu.') : $msg;
+    delete $session{'reports_in_menu'};
+  }
 }
 
-my ($default_reports) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('ReportsInMenu');
-my $report_pref = $UserObj->Preferences( 'ReportsInMenu', $default_reports ? $default_reports->Content : () );
-my $current_reports = [ map { $_->{id} } @{ $report_pref || [] } ];
+my %selected;
 
-my ($report_pane) = $m->comp(
-    '/Admin/Elements/ConfigureDashboardsInMenu',
-    Action           => "DashboardsInMenu.html?id=$id",
-    panes            => ['reports_in_menu'],
-    items            => \@reports,
-    current_portlets => $current_reports,
-    OnSave           => sub {
-        my ($conf) = @_;
-        my $user_reports = [];
-        foreach my $id ( @{ $conf->{dashboards} } ) {
-            push @$user_reports, $reports{$id} if $reports{$id};
-        }
+my ($default_dashboards) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('DashboardsInMenu');
+my $dashboard_pref
+    = $UserObj->Preferences( 'DashboardsInMenu', $default_dashboards ? $default_dashboards->Content : () );
 
-        my ( $ok, $msg ) = $UserObj->SetPreferences( 'ReportsInMenu', $user_reports );
-        if ($ok) {
-            push @actions, loc('Preferences saved for dashboards in menu.');
-        }
-        else {
-            push @actions, $msg;
-        }
+# prefs returns an array of Dashboard ID's
+my $selected_dashboard_ids = $dashboard_pref->{'dashboards'} || [];
+
+my @selected_dashboards;
+foreach my $id ( @{$selected_dashboard_ids} ) {
+    my $attribute = RT::Attribute->new( RT->SystemUser );
+    my ($ret, $msg) = $attribute->Load( $id );
+    unless ( $ret ) {
+        RT::Logger->error( "Could not load dashboard: $id" );
+        next;
     }
-);
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ ) for ( $dashboard_pane, $report_pane );
+    push @selected_dashboards, {
+      id      => $id,
+      name    => $attribute->Description,
+      label   => $attribute->Description,
+      type    => 'dashboard'
+    };
+}
+$selected{'dashboard'} = \@selected_dashboards;
 
+my $report_pref = $UserObj->Preferences('ReportsInMenu');
+unless ($report_pref) {
+    my ($defaults) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('ReportsInMenu');
+    $report_pref = $defaults ? $defaults->Content : {};
+}
+my @report_pref_sanitized = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ $report_pref };
+$selected{'report'} = \@report_pref_sanitized || [];
 </%init>
+
 <%ARGS>
 $id => undef
 </%ARGS>
