@@ -105,25 +105,6 @@ no longer needed and has been removed.
 
 =item *
 
-The extension PriorityAsString has been integrated into core RT. This may
-require some changes in your configuration.
-
-If you previously used numbers for priority and would like to continue
-to do so, you can set the new C<$EnablePriorityAsString> option to false.
-That will disable the new string-based display.
-
-If you would like to now use strings for priority like Low, Medium, High,
-check the new C<%PriorityAsString> configuration option. RT provides a simple
-default setting that may be sufficient. Set new values if you would like
-to customize your priority options.
-
-If you were previously using the PriorityAsString extension, you no longer
-need the extension installed. The C<%PriorityAsString>> configuration is
-simplified and consolidated, so check the documentation for details on
-updating your previous configuration.
-
-=item *
-
 Dashboards previously in the Home menu have been moved to the Reports menu.
 The reports previously in the Reports menu are still there, but you can now
 edit the Reports menu like the previous Home menu, so you can remove the
@@ -184,14 +165,61 @@ reported improved performance with the following indexes, at least on Postgres:
 We are performing testing and looking for additional feedback before adding these
 to default RT.
 
-=item *
+=back
 
-Users who are currently using the
-L<RT::Authen::Token|https://metacpan.org/pod/RT::Authen::Token> extension
-should remove C<RT::Authen::Token> from the plugin list and run the
-F<etc/upgrade/upgrade-authtokens> utility after completing all the other
-upgrade steps from the F<README>. Please also remove
-F<local/plugins/RT-Authen-Token> from your RT installation.
+=head2 Extensions Integrated into RT 5
+
+The following extensions are now part of RT 5. If you previously used any as
+an extension, you no longer need the extension after upgrading and can
+remove the C<Plugin> line from your RT configuration.
+
+Changes you may need to apply if you previously used the extension
+are described below.
+
+=over
+
+=item RT::Extension::QuoteSelection
+
+=item RT::Extension::RightsInspector
+
+=item RT::Extension::ConfigInDatabase
+
+=item RT::Extension::CustomRole::Visibility
+
+=item RT::Extension::PriorityAsString
+
+If you previously used numbers for priority and would like to continue
+to do so, you can set the new C<$EnablePriorityAsString> option to false.
+That will disable the new string-based display.
+
+If you would like to now use strings for priority like Low, Medium, High,
+check the new C<%PriorityAsString> configuration option. RT provides a simple
+default setting that may be sufficient. Set new values if you would like
+to customize your priority options.
+
+If you were previously using the PriorityAsString extension, you no longer
+need the extension installed. The C<%PriorityAsString>> configuration is
+simplified and consolidated, so check the documentation for details on
+updating your previous configuration.
+
+=item RT::Extension::AssetSQL
+
+The configuration option $AssetSQL_HideSimpleSearch is now $AssetHideSimpleSearch.
+The configuration option $AssetSearchFormat is now $AssetSimpleSearchFormat.
+
+See the configuration documentation in L<RT_Config.pm> for new configuration
+options added for AssetSQL and the new asset query builder.
+
+=item RT::Extension::LifecycleUI
+
+=item RT::Extension::REST2
+
+=item RT::Authen::Token
+
+If you previously used L<RT::Authen::Token|https://metacpan.org/pod/RT::Authen::Token>
+as an extension, run the F<etc/upgrade/upgrade-authtokens> utility
+after completing all the other upgrade steps from the F<README>. This
+will migrate your existing tokens to the new core RT tables.
 
 =back
 
