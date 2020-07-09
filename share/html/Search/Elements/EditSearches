@@ -79,9 +79,9 @@
 % } elsif ( !$Object ) {
 <input type="submit" class="button btn btn-primary mr-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
-% }
     </div>
   </div>
+% }
 
   <hr />
   <div class="form-row">
