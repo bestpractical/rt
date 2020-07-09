@@ -846,6 +846,7 @@ sub InsertData {
     my $root_password = shift;
     my %args     = (
         disconnect_after => 1,
+        admin_dbh        => undef,
         @_
     );
 
@@ -925,7 +926,7 @@ sub InsertData {
         $RT::Logger->debug("Running initial actions...");
         foreach ( @Initial ) {
             local $@;
-            eval { $_->(); 1 } or return (0, "One of initial functions failed: $@");
+            eval { $_->( admin_dbh => $args{admin_dbh} ); 1 } or return (0, "One of initial functions failed: $@");
         }
         $RT::Logger->debug("Done.");
     }
@@ -1850,7 +1851,7 @@ sub InsertData {
         $RT::Logger->debug("Running final actions...");
         for ( @Final ) {
             local $@;
-            eval { $_->(); };
+            eval { $_->( admin_dbh => $args{admin_dbh} ); };
             $RT::Logger->error( "Failed to run one of final actions: $@" )
                 if $@;
         }
