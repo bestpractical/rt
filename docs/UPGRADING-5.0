@@ -151,29 +151,19 @@ updated GnuPG package with some version of 2.2.
 =item *
 
 RT search results now allow inline editing of ticket metadata, greatly
-improving usability and convenience.
+improving usability and convenience. Editable fields are now the default
+for most ticket fields in search results.
 
-Some fields that require extra processing per ticket, particularly Owner, may
-result in slower page load times. If you experience these slower page loads,
-there are a few options to improve performance:
+The ticket Owner field sometimes requires extra work to build and can
+result in slower page load times, so the default Owner format is
+read-only. To enable inline edit for Owner, update your search to use
+the format OwnerNameEdit.
 
-=over
-
-=item *
-
-Display Owner as an autocomplete box rather than a dropdown using the
+If you experience slower page loads with OwnerNameEdit, you can
+display Owner as an autocomplete box rather than a dropdown using the
 L<AutocompleteOwners|https://docs.bestpractical.com/rt/4.4.4/RT_Config.html#AutocompleteOwners>
 configuration option. This may also help other areas of RT in addition to
 searches.
-
-=item *
-
-Update your search result format to use OwnerDisplayOnly rather than OwnerName
-in search results. This will disable inline edit for the Owner field, but this
-may be acceptable if the search is not used for editing or users don't have
-rights to edit Owner.
-
-=back
 
 We are investigating options to improve the underlying queries. Some users have
 reported improved performance with the following indexes, at least on Postgres:
