@@ -557,7 +557,7 @@ $m->callback( Conditions => \@lines );
 
     // create a text input box and hide it for use with matches / doesn't match
     // NB: if you give text a name it will add an additional term to the query!
-    var text = jQuery('<input>').attr('type','text');
+    var text = jQuery('<input>').attr('type','text').attr('class', 'form-control');
     text.hide();
     text.bind('change',function() {
         hidden[0].value = text[0].value;
