@@ -1,0 +1,58 @@
+use strict;
+use warnings;
+
+our @Final;
+
+push @Final, sub {
+    # skip unless fulltextsearch is enabled
+    my $fts_config = RT->Config->Get('FullTextSearch');
+    return unless ($fts_config->{'Enable'});
+
+    # check config to see if db type is applicable
+    my $db_type = RT->Config->Get('DatabaseType');
+    return unless ($db_type eq 'Pg' or $db_type eq 'mysql');
+
+    my $dbh = RT->DatabaseHandle->dbh;
+
+    # get tablename from config, fall back to default tablename
+    my $table = $fts_config->{'Table'} || 'AttachmentsIndex';
+    if (table_exists($dbh, $table)) {
+        my $query = ($db_type eq 'Pg') ? get_pg_ddl_query($table) : get_mysql_ddl_query($table) ;
+        my $rv;
+        eval { $rv = $dbh->do($query); };
+        # check dbh err string
+        if ($@) {
+            warn "failed to update fulltext search table $table key to bigint : $@ : " . $dbh->errstr
+        }
+    }
+};
+
+###
+
+sub get_pg_ddl_query {
+    my ($table) = @_;
+    return "ALTER TABLE $table ALTER COLUMN id SET DATA TYPE BIGINT;";
+}
+
+sub get_mysql_ddl_query {
+    my ($table) = @_;
+    return "ALTER TABLE $table MODIFY id BIGINT NOT NULL AUTO_INCREMENT;";
+}
+
+sub table_exists {
+    my ($dbh,$table) = @_;
+    my $schema = RT->Config->Get('DatabaseName');
+    if (RT->Config->Get('DatabaseType') eq 'Pg') {
+        $table = lc($table);
+        $schema = 'public';
+    }
+    my $exists = 0;
+    eval {
+        my $sth = $dbh->table_info('%', $schema, $table, 'TABLE');
+        $sth->execute or die $dbh->errstr;
+        my @info = $sth->fetchrow_array;
+        $exists = scalar @info;
+    };
+    warn "couldn't get table $@" if $@;
+    return $exists;
+}
