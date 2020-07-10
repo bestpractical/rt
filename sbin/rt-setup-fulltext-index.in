@@ -223,7 +223,7 @@ CREATE TABLE $table (
     weight INTEGER NOT NULL,
     query  VARCHAR(3072) NOT NULL,
     INDEX(query)
-) ENGINE=SPHINX CONNECTION="$url" CHARACTER SET utf8
+) ENGINE=SPHINX CONNECTION="$url" CHARACTER SET utf8mb4
 END
 
     do_error_is_ok( dba_handle() => "DROP TABLE $table" )
@@ -263,7 +263,7 @@ source rt {
     sql_user        = $sphinx_conf{'user'}
     sql_pass        = $sphinx_conf{'pass'}
 
-    sql_query_pre   = SET NAMES utf8
+    sql_query_pre   = SET NAMES utf8mb4
     sql_query       = \\
         SELECT a.id, a.content FROM Attachments a \\
         JOIN Transactions txn ON a.TransactionId = txn.id AND txn.ObjectType = 'RT::Ticket' \\
