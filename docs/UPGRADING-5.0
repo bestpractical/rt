@@ -193,6 +193,13 @@ F<etc/upgrade/upgrade-authtokens> utility after completing all the other
 upgrade steps from the F<README>. Please also remove
 F<local/plugins/RT-Authen-Token> from your RT installation.
 
+=item *
+
+If you previously used the L<RT::Extension::ConfigInDatabase>
+extension, run the F<etc/upgrade/upgrade-configurations> utility
+after completing all the other upgrade steps from the F<README>. This
+will migrate your existing configuration to the new core RT tables.
+
 =back
 
 =cut

@@ -53,8 +53,6 @@ use 5.10.1;
 package RT::Configuration;
 use base 'RT::Record';
 
-use Storable ();
-use MIME::Base64;
 use JSON ();
 
 =head1 NAME
@@ -79,7 +77,7 @@ Must be unique.
 =item Content
 
 If you provide a reference, we will automatically serialize the data structure
-using L<Storable>. Otherwise any string is passed through as-is.
+using L<Data::Dumper>. Otherwise any string is passed through as-is.
 
 =item ContentType
 
