@@ -32,6 +32,19 @@ spontaneously logged in as other users in the system.
 See also L<authentication/Apache configuration>, in case you intend to
 use Apache to provide authentication.
 
+=head3 prefork MPM
+
+Apache can run with several different
+L<Multi-Processing Modules (MPMs)|https://httpd.apache.org/docs/2.4/mpm.html>.
+RT is designed to run only with the L<prefork MPM|https://httpd.apache.org/docs/2.4/mod/prefork.html>.
+RT will run with the event MPM, but it will run very poorly
+and you are likely to see issues like intermittent errors when loading
+pages, slowness, and possible excessive memory usage.
+
+In the past, Apache defaulted to the prefork MPM, but the packaged Apache
+on many newer Linux systems defaults to event, so it is important to
+make sure Apache is configured to use prefork on your RT server.
+
 =head3 mod_fastcgi
 
     # Tell FastCGI to put its temporary files somewhere sane; this may
