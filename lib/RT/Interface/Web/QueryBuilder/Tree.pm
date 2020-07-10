@@ -120,7 +120,7 @@ sub GetReferencedQueues {
                 }
                 elsif ( $clause->{Op} =~ /^LIKE$/i ) {
                     my $qs = RT::Queues->new( $args{CurrentUser} || $HTML::Mason::Commands::session{CurrentUser} );
-                    $qs->Limit( FIELD => 'Name', VALUE => $clause->{Value}, OPERATOR => 'LIKE' );
+                    $qs->Limit( FIELD => 'Name', VALUE => $clause->{Value}, OPERATOR => 'LIKE', CASESENSITIVE => 0 );
                     while ( my $q = $qs->Next ) {
                         next unless $q->id;
                         $queues->{ $q->id } ||= 1;
