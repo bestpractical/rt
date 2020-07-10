@@ -93,16 +93,25 @@ sub Init {
     }
 
     my %args = (
-        type => 'Blob',
-        account_name  => $self->AccountName,
+        type               => 'Blob',
+        account_name       => $self->AccountName,
         primary_access_key => $self->AccountKey,
-        container_name => $self->ContainerName,
-        protocol => 'https',
-        api_version => '2012-02-12',
+        container_name     => $self->ContainerName,
+        protocol           => 'https',
+        api_version        => '2012-02-12',
     );
 
     my $Azure = Net::Azure::StorageClient->new(%args);
     $self->Azure($Azure);
+
+    my $response = $Azure->create_container($self->ContainerName);
+    if (!$response->is_error) {
+        RT->Logger->debug("Created new container '".$self->ContainerName."' on Azure");
+    }
+    elsif ($response->code ne 409) {
+        RT->Logger->error("Can't create new container '".$self->ContainerName."' on Azure: " . $response->message);
+        return;
+    }
 
     return $self;
 }
