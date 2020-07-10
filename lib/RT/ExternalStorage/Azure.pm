@@ -147,7 +147,13 @@ sub Store {
 }
 
 sub DownloadURLFor {
-    return;
+    my $self = shift;
+    my $object = shift;
+
+    my $column = $object->isa('RT::Attachment') ? 'Content' : 'LargeContent';
+    my $digest = $object->__Value($column);
+
+    return "https://" . $self->AccountName . ".blob.core.windows.net/" . $self->ContainerName . "/" . $digest;
 }
 
 =head1 NAME
@@ -225,6 +231,33 @@ RT what Container name to use in your F<RT_SiteConfig.pm> file:
     );
 
 =back
+
+=head2 Direct Linking
+
+This storage engine supports direct linking. This means that RT can link
+I<directly> to Azure when listing attachments, showing image previews, etc.
+This relieves some bandwidth pressure from RT because ordinarily it would
+have to download each attachment from Azure to be able to serve it.
+
+To enable direct linking you must first make all blobs in your container
+publicly viewable.
+
+B<Beware that this could have serious implications for billing and
+privacy>. RT cannot enforce its access controls for content on Azure. This
+is tempered somewhat by the fact that users must be able to guess the
+SHA-256 digest of the file to be able to access it. But there is nothing
+stopping someone from tweeting a URL to a file hosted on your Azure. These
+concerns do not arise when using an RT-mediated link to Azure, since RT
+uses an access key to upload to and download from Azure.
+
+To make all content in an Azure container publicly viewable, navigate to
+the container in the Azure web UI. Click the "Change access level" link
+and set the "Public access level" to "Blob".
+
+Finally, set C<$ExternalStorageDirectLink> to 1 in your
+F<RT_SiteConfig.pm> file:
+
+    Set($ExternalStorageDirectLink, 1);
 
 =head1 TROUBLESHOOTING
 
