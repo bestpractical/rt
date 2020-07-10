@@ -189,7 +189,7 @@ our %GROUPINGS_META = (
                 require RT::Interface::Web::QueryBuilder::Tree;
                 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
                 $tree->ParseSQL( Query => $args->{'Query'}, CurrentUser => $self->CurrentUser );
-                $queues = $args->{'Queues'} = $tree->GetReferencedQueues;
+                $queues = $args->{'Queues'} = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
             }
             return () unless $queues;
 

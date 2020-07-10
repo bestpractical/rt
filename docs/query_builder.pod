@@ -210,9 +210,8 @@ Status "is" and "Active". This will then filter out inactive statuses.
 
 =head1 Learn More
 
-To use the query builder to to build and save reports, see
+To use the query builder to build and save reports, see
 L<Dashboard and Reports|docs/dashboards_reporting.pod>. For definitions of
 RT metadata, see L<Ticket Metadata|docs/ticket_metadata.pod>.
 
 =cut
-
