@@ -351,11 +351,11 @@ AC_SUBST(RT_EXTERNALAUTH)
 dnl ExternalStorage
 AC_ARG_WITH(attachment-store,
 	    AC_HELP_STRING([--with-attachment-store=TYPE],
-	    		   [which attachment storage RT will use for attachments (default: database) (database, disk, S3 and Dropbox are valid)]), 
+			   [which attachment storage RT will use for attachments (default: database) (database, disk, S3, Azure and Dropbox are valid)]),
             ATTACHMENT_STORE=$withval,
             ATTACHMENT_STORE=database)
-if test "$ATTACHMENT_STORE" != 'database' -a "$ATTACHMENT_STORE" != 'disk' -a "$ATTACHMENT_STORE" != 'S3' -a "$ATTACHMENT_STORE" != 'Dropbox' ; then
-	AC_MSG_ERROR([Only database, disk, S3 and Dropbox are valid db types])
+if test "$ATTACHMENT_STORE" != 'database' -a "$ATTACHMENT_STORE" != 'disk' -a "$ATTACHMENT_STORE" != 'S3' -a "$ATTACHMENT_STORE" != 'Azure' -a "$ATTACHMENT_STORE" != 'Dropbox' ; then
+	AC_MSG_ERROR([Only database, disk, S3, Azure and Dropbox are valid db types])
 fi
 AC_SUBST(ATTACHMENT_STORE)
 

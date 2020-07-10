@@ -206,6 +206,10 @@ feature 's3' => sub {
     requires 'Amazon::S3';
 };
 
+feature 'azure' => sub {
+    requires 'Net::Azure::StorageClient';
+};
+
 feature 'dropbox' => sub {
     requires 'File::Dropbox', '>= 0.7';
 };
