@@ -3795,6 +3795,8 @@ L<RT::ExternalStorage::Disk>, which stores files on directly onto disk.
 
 L<RT::ExternalStorage::AmazonS3>, which stores files on Amazon's S3 service.
 
+L<RT::ExternalStorage::Azure>, which stores files on the Azure Storage service.
+
 L<RT::ExternalStorage::Dropbox>, which stores files in Dropbox.
 
 See each storage engine's documentation for the configuration it requires
@@ -3834,8 +3836,8 @@ server is no longer involved in retrieving and then immediately serving
 each attachment.
 
 Of the storage engines that RT ships, only
-L<RT::ExternalStorage::AmazonS3> supports this feature, and you must
-manually configure it to allow direct linking.
+L<RT::ExternalStorage::AmazonS3> and L<RT::ExternalStorage::Azure> support
+this feature, and you must manually configure it to allow direct linking.
 
 Set this to 1 to link directly to files in external storage.
 

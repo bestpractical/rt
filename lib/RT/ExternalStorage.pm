@@ -100,6 +100,8 @@ documentation in each for necessary configuration details:
 
 =item L<RT::ExternalStorage::AmazonS3>
 
+=item L<RT::ExternalStorage::Azure>
+
 =back
 
 =head2 Restart your webserver
