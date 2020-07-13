@@ -200,8 +200,9 @@ sub Create {
             my ( $ret, $msg ) = $self->_NewTransaction( Type => 'Create' );
             if ($ret) {
                 ( $ret, $msg ) = $self->AddAttribute(
-                    Name    => 'ContentHistory',
-                    Content => $args{'ContentType'} eq 'storable'
+                    Name        => 'ContentHistory',
+                    Description => $self->Name,
+                    Content     => $args{'ContentType'} eq 'storable'
                     ? $self->_DeserializeContent( $args{'Content'} )
                     : $args{'Content'},
                 );
@@ -501,8 +502,9 @@ sub _Set {
                 else {
                     RT->Logger->debug("Couldn't find ContentHistory, creating one from old value");
                     my ( $ret, $msg ) = $self->AddAttribute(
-                        Name    => 'ContentHistory',
-                        Content => $self->__Value('ContentType') eq 'storable'
+                        Name        => 'ContentHistory',
+                        Description => $self->Name,
+                        Content     => $self->__Value('ContentType') eq 'storable'
                         ? $self->_DeserializeContent($old_value)
                         : $old_value,
                     );
@@ -516,8 +518,9 @@ sub _Set {
 
                 if ( $return[0] ) {
                     my ( $ret, $msg ) = $self->AddAttribute(
-                        Name    => 'ContentHistory',
-                        Content => $self->__Value('ContentType') eq 'storable'
+                        Name        => 'ContentHistory',
+                        Description => $self->Name,
+                        Content     => $self->__Value('ContentType') eq 'storable'
                         ? $self->_DeserializeContent( $args{'Value'} )
                         : $args{'Value'},
                     );
