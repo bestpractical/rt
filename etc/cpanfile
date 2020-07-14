@@ -48,7 +48,7 @@ requires 'HTML::Mason::PSGIHandler', '>= 0.52';
 requires 'HTML::Quoted';
 requires 'HTML::RewriteAttributes', '>= 0.05';
 requires 'HTML::Scrubber', '>= 0.08';
-requires 'HTTP::Message', '>= 6.0';
+requires 'HTTP::Message', '>= 6.07';
 requires 'IPC::Run3';
 requires 'JavaScript::Minifier::XS';
 requires 'JSON';
