@@ -405,7 +405,7 @@ sub new_homedir {
 }
 
 END {
-    if ( gnupg_version() >= 2 ) {
+    if ( RT::Test->builder()->has_plan && gnupg_version() >= 2 ) {
         system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
             && warn $!;
     }
