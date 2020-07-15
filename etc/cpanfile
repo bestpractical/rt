@@ -22,7 +22,7 @@ requires 'DateTime', '>= 0.44';
 requires 'DateTime::Format::Natural', '>= 0.67';
 requires 'DateTime::Locale', '>= 0.40, != 1.00, != 1.01';
 requires 'DBI', '>= 1.37';
-requires 'DBIx::SearchBuilder', '>= 1.65';
+requires 'DBIx::SearchBuilder', '>= 1.68';
 requires 'Devel::GlobalDestruction';
 requires 'Devel::StackTrace', '>= 1.19, != 1.28, != 1.29';
 requires 'Digest::base';
@@ -48,7 +48,7 @@ requires 'HTML::Mason::PSGIHandler', '>= 0.52';
 requires 'HTML::Quoted';
 requires 'HTML::RewriteAttributes', '>= 0.05';
 requires 'HTML::Scrubber', '>= 0.08';
-requires 'HTTP::Message', '>= 6.0';
+requires 'HTTP::Message', '>= 6.07';
 requires 'IPC::Run3';
 requires 'JavaScript::Minifier::XS';
 requires 'JSON';
@@ -124,7 +124,7 @@ on 'develop' => sub {
     requires 'HTML::Entities';
     requires 'Locale::PO';
     requires 'Log::Dispatch::Perl';
-    requires 'Mojo::DOM';
+    requires 'Mojolicious', '!= 8.54';
     requires 'Plack::Middleware::Test::StashWarnings', '>= 0.08';
     requires 'Pod::Simple', '>= 3.24';
     requires 'Set::Tiny';
@@ -170,7 +170,6 @@ feature 'oracle' => sub {
 };
 
 feature 'pg' => sub {
-    requires 'DBIx::SearchBuilder', '>= 1.66';
     requires 'DBD::Pg', '>= 1.43';
 };
 

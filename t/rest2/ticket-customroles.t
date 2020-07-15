@@ -40,7 +40,7 @@ for my $email (qw/multi@example.com test@localhost multi2@example.com single2@ex
 }
 
 $user->PrincipalObj->GrantRight( Right => $_ )
-    for qw/CreateTicket ShowTicket ModifyTicket OwnTicket AdminUsers SeeGroup/;
+    for qw/CreateTicket ShowTicket ModifyTicket OwnTicket AdminUsers SeeGroup SeeQueue/;
 
 # Create and view ticket with no watchers
 {

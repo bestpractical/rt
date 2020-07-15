@@ -28,11 +28,6 @@ hr.clear {
     font-size: 1px;
 }
 
-/* Custom fields */
-
-.cflabel .name { font-weight: bold; }
-.cflabel .type { font-style: italic; }
-
 .query-stacktrace-toggle {
     float: right;
 }
@@ -94,13 +89,6 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
     margin-left: 1em;
     margin-top: 1em;
     overflow: auto;
-}
-
-#download-my-data div.form-row i {
-    text-align: left;
-    display: block;
-    font-size: 0.8em;
-    white-space: normal;
 }
 
 .modal {

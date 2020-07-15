@@ -67,6 +67,8 @@ sub import {
     my %args  = @_;
     my $t     = $class->builder;
 
+    RT::Test::plan( skip_all => 'ENV SKIP_GPG_TESTS is set to true.' )
+      if $ENV{'SKIP_GPG_TESTS'};
     RT::Test::plan( skip_all => 'GnuPG required.' )
       unless GnuPG::Interface->require;
     RT::Test::plan( skip_all => 'gpg executable is required.' )

@@ -483,6 +483,9 @@ sub CustomRoles {
         $roles->LimitToObjectId( $self->Id );
         $roles->ApplySortOrder;
     }
+    else {
+        $roles->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'ACL' );
+    }
     return ($roles);
 }
 

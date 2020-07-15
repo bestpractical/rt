@@ -45,6 +45,18 @@ o   Various and sundry perl modules
         of the modules required, and you may be better off installing
         the modules that way.
 
+OPTIONAL DEPENDENCIES
+---------------------
+
+o   Full-text indexing support in your database
+
+        The databases listed above all have options for full-text indexing
+        (excluding SQLite). See docs/full_text_indexing.pod for details.
+
+o   An external HTML converter
+
+        Installing an external utility to convert HTML can improve performance.
+        See the $HTMLFormatter configuration option for details.
 
 GENERAL INSTALLATION
 --------------------

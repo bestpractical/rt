@@ -420,14 +420,16 @@ textarea.code {
 }
 
 .selectionbox-js .source .contents {
-    height: 526px;
+    min-height: 250px; /* to be consistent with the following .destination */
+    max-height: 1000px;
 }
 
 /* include ul rule specifically to make the drop target work when there are
    no selected searches */
 .selectionbox-js .destination .contents,
 .selectionbox-js .destination .contents ul {
-    height: 250px;
+    min-height: 250px;
+    max-height: 500px;
 }
 
 .selectionbox-js h2 {

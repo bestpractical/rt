@@ -89,13 +89,23 @@
 			out = function () {
 				var $this = $(this),
 					o = getOptions($this);
-				if (ios) {
-					$.proxy(close, $this, o)();
-				}
-				else {
-					clearTimeout(o.sfTimer);
-					o.sfTimer = setTimeout($.proxy(close, $this, o), o.delay);
-				}
+
+                                // (BPS) On iPhone, when the main navigation is collapsed
+                                // into More, clicking the Home "a" link with the sub menu
+                                // expanded isn't going back to Home.
+                                // To fix it we removed the iOS specific logic which was
+                                // intentionally not clearing and setting timeout.
+                                // Following the git blame history for superfish didn't
+                                // explain why the timeout reset was being skipped for iOS.
+                                // https://github.com/joeldbirch/superfish/commit/112f237
+
+                                // Since it appears superfish is no longer being maintained,
+                                // this edit fixes the problem until the bug is fixed in
+                                // upstream, or if comment from the author indicates a
+                                // different cause or better fix.
+                                // https://github.com/joeldbirch/superfish/issues/182
+				clearTimeout(o.sfTimer);
+				o.sfTimer = setTimeout($.proxy(close, $this, o), o.delay);
 			},
 			touchHandler = function (e) {
 				var $this = $(this),

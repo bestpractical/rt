@@ -98,7 +98,7 @@ div#quickbar {
 }
 
 div#header {
-    margin-top: 1.1em;
+    padding-top: 1.1em;
     border-bottom-color: #547CCC;
     border-bottom-width: 2px;
     border-bottom-style: solid;

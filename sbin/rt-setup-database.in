@@ -354,8 +354,13 @@ sub action_insert {
     unless ($RAN_INIT) {
         $RT::Handle = RT::Handle->new;
         my $dbh = get_admin_dbh();
-        my $has_custom_roles = grep { lc($_) eq 'customroles' } $RT::Handle->_TableNames($dbh);
-        RT::Init(SkipCustomRoles => !$has_custom_roles);
+        my %skip_args;
+        my %tables = map { lc $_ => 1 } $RT::Handle->_TableNames($dbh);
+        for my $item ( qw/CustomRoles Configurations/ ) {
+            $skip_args{"Skip$item"} = 1 unless $tables{lc $item};
+        }
+        RT::Init(%skip_args);
+
         $RAN_INIT++;
     }
     $log_actions = 1;
@@ -385,7 +390,7 @@ sub action_insert {
 
     my @ret;
 
-    my $upgrade = sub { @ret = $RT::Handle->InsertData( $file, $root_password ) };
+    my $upgrade = sub { @ret = $RT::Handle->InsertData( $file, $root_password, admin_dbh => get_admin_dbh() ) };
 
     for my $file (@{$args{backcompat} || []}) {
         my $lines = do {local $/; local @ARGV = ($file); <>};

@@ -105,25 +105,6 @@ no longer needed and has been removed.
 
 =item *
 
-The extension PriorityAsString has been integrated into core RT. This may
-require some changes in your configuration.
-
-If you previously used numbers for priority and would like to continue
-to do so, you can set the new C<$EnablePriorityAsString> option to false.
-That will disable the new string-based display.
-
-If you would like to now use strings for priority like Low, Medium, High,
-check the new C<%PriorityAsString> configuration option. RT provides a simple
-default setting that may be sufficient. Set new values if you would like
-to customize your priority options.
-
-If you were previously using the PriorityAsString extension, you no longer
-need the extension installed. The C<%PriorityAsString>> configuration is
-simplified and consolidated, so check the documentation for details on
-updating your previous configuration.
-
-=item *
-
 Dashboards previously in the Home menu have been moved to the Reports menu.
 The reports previously in the Reports menu are still there, but you can now
 edit the Reports menu like the previous Home menu, so you can remove the
@@ -148,7 +129,93 @@ RT should also still run with GnuPG 1.4.x. It is not supported for GnuPG version
 2.0 or 2.1. On some Linux systems, you may need to add a new repo to get an
 updated GnuPG package with some version of 2.2.
 
+=item *
+
+RT search results now allow inline editing of ticket metadata, greatly
+improving usability and convenience. Editable fields are now the default
+for most ticket fields in search results.
+
+The ticket Owner field sometimes requires extra work to build and can
+result in slower page load times, so the default Owner format is
+read-only. To enable inline edit for Owner, update your search to use
+the format OwnerNameEdit.
+
+If you experience slower page loads with OwnerNameEdit, you can
+display Owner as an autocomplete box rather than a dropdown using the
+L<AutocompleteOwners|https://docs.bestpractical.com/rt/4.4.4/RT_Config.html#AutocompleteOwners>
+configuration option. This may also help other areas of RT in addition to
+searches.
+
+We are investigating options to improve the underlying queries. Some users have
+reported improved performance with the following indexes, at least on Postgres:
+
+   CREATE INDEX ACL2 ON acl (objecttype, objectid);
+   CREATE INDEX ACL3 ON acl (principalid, rightname, principaltype);
+
+We are performing testing and looking for additional feedback before adding these
+to default RT.
+
+=back
+
+=head2 Extensions Integrated into RT 5
+
+The following extensions are now part of RT 5. If you previously used any as
+an extension, you no longer need the extension after upgrading and can
+remove the C<Plugin> line from your RT configuration.
+
+Changes you may need to apply if you previously used the extension
+are described below.
+
+=over
+
+=item RT::Extension::QuoteSelection
+
+=item RT::Extension::RightsInspector
+
+=item RT::Extension::ConfigInDatabase
+
+If you previously used L<RT::Extension::ConfigInDatabase>
+as an extension, run the F<etc/upgrade/upgrade-configurations> utility
+after completing all the other upgrade steps from the F<README>. This
+will migrate your existing configuration to the new core RT tables.
+
+=item RT::Extension::CustomRole::Visibility
+
+=item RT::Extension::PriorityAsString
+
+If you previously used numbers for priority and would like to continue
+to do so, you can set the new C<$EnablePriorityAsString> option to false.
+That will disable the new string-based display.
+
+If you would like to now use strings for priority like Low, Medium, High,
+check the new C<%PriorityAsString> configuration option. RT provides a simple
+default setting that may be sufficient. Set new values if you would like
+to customize your priority options.
+
+If you were previously using the PriorityAsString extension, you no longer
+need the extension installed. The C<%PriorityAsString>> configuration is
+simplified and consolidated, so check the documentation for details on
+updating your previous configuration.
+
+=item RT::Extension::AssetSQL
+
+The configuration option $AssetSQL_HideSimpleSearch is now $AssetHideSimpleSearch.
+The configuration option $AssetSearchFormat is now $AssetSimpleSearchFormat.
+
+See the configuration documentation in L<RT_Config.pm> for new configuration
+options added for AssetSQL and the new asset query builder.
+
+=item RT::Extension::LifecycleUI
+
+=item RT::Extension::REST2
+
+=item RT::Authen::Token
+
+If you previously used L<RT::Authen::Token|https://metacpan.org/pod/RT::Authen::Token>
+as an extension, run the F<etc/upgrade/upgrade-authtokens> utility
+after completing all the other upgrade steps from the F<README>. This
+will migrate your existing tokens to the new core RT tables.
+
 =back
 
 =cut
-

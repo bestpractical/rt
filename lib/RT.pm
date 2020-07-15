@@ -199,7 +199,7 @@ sub Init {
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses(%args);
-    RT->Config->LoadConfigFromDatabase();
+    RT->Config->LoadConfigFromDatabase() unless $args{SkipConfigurations};
     InitLogging();
     ProcessPreInitMessages();
     InitPlugins();
@@ -775,6 +775,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::LifecycleUI' => '5.0',
     'RT::Extension::REST2' => '5.0',
     'RT::Authen::Token' => '5.0',
+    'RT::Extension::QuoteSelection' => 5.0,
 );
 
 sub InitPlugins {

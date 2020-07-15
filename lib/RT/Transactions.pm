@@ -1002,7 +1002,7 @@ sub _parser {
     );
 
     if ( RT->Config->Get('EnablePriorityAsString') ) {
-        my $queues = $tree->GetReferencedQueues;
+        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
         my %config = RT->Config->Get('PriorityAsString');
         my @names;
         if (%$queues) {

@@ -94,9 +94,6 @@
       <& /Elements/Submit, Label => loc('Save Changes') &>
     </div>
   </div>
-
-</div>
-
 </form>
 
 % }
@@ -108,7 +105,11 @@
 % }
 
 % if( RT->Config->Get('SelfServiceDownloadUserData') ) {
-<& /SelfService/User/Elements/RelatedData, UserObj => $user &>
+<div class="form-row">
+  <div class="col-6">
+    <& /SelfService/User/Elements/RelatedData, UserObj => $user &>
+  </div>
+</div>
 % }
 
 <%INIT>

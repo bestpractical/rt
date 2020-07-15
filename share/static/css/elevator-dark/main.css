@@ -1,5 +1,15 @@
 @import "../elevator-light/main.css";
 
+.darkmode .farbtastic .wheel {
+  background: url(../../../static/images/farbtastic/wheel.png) no-repeat !important;
+}
+.darkmode .farbtastic .overlay {
+  background: url(../../../static/images/farbtastic/mask.png) no-repeat !important;
+}
+.darkmode .farbtastic .marker, .darkmode .farbtastic .marker {
+  background: url(../../../static/images/farbtastic/marker.png) no-repeat !important;
+}
+
 .darkmode, .darkmode * {
     background: #2C3539 !important;
     color: #ededed !important;

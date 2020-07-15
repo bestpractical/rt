@@ -99,6 +99,10 @@ will appear as a key whose value is 1.
 
 sub GetReferencedQueues {
     my $self = shift;
+    my %args = (
+        CurrentUser => '',
+        @_
+    );
 
     my $queues = {};
 
@@ -110,10 +114,30 @@ sub GetReferencedQueues {
             return unless $node->isLeaf;
 
             my $clause = $node->getNodeValue();
-            return unless $clause->{Key} =~ /^(?:Ticket)?Queue$/;
-            return unless $clause->{Op} eq '=';
-
-            $queues->{ $clause->{Value} } = 1;
+            if ( $clause->{Key} =~ /^(?:Ticket)?Queue$/ ) {
+                if ( $clause->{Op} eq '=' ) {
+                    $queues->{ $clause->{Value} } ||= 1;
+                }
+                elsif ( $clause->{Op} =~ /^LIKE$/i ) {
+                    my $qs = RT::Queues->new( $args{CurrentUser} || $HTML::Mason::Commands::session{CurrentUser} );
+                    $qs->Limit( FIELD => 'Name', VALUE => $clause->{Value}, OPERATOR => 'LIKE', CASESENSITIVE => 0 );
+                    while ( my $q = $qs->Next ) {
+                        next unless $q->id;
+                        $queues->{ $q->id } ||= 1;
+                    }
+                }
+            }
+            elsif ( $clause->{Key} eq 'Lifecycle' ) {
+                if ( $clause->{Op} eq '=' ) {
+                    my $qs = RT::Queues->new( $args{CurrentUser} || $HTML::Mason::Commands::session{CurrentUser} );
+                    $qs->Limit( FIELD => 'Lifecycle', VALUE => $clause->{Value} );
+                    while ( my $q = $qs->Next ) {
+                        next unless $q->id;
+                        $queues->{ $q->id } ||= 1;
+                    }
+                }
+            }
+            return;
         }
     );
 
