@@ -387,6 +387,7 @@ sub gnupg_version {
 
 sub new_homedir {
     my $source = shift;
+    return if $ENV{'SKIP_GPG_TESTS'} || !RT::Test->find_executable('gpg') || !GnuPG::Interface->require;
     my $dir = tempdir();
 
     if ($source) {
