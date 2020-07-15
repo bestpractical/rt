@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,22 +64,22 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
 </%PERL>
 <div class="downloadattachment">
 % if (my $url = RT->System->ExternalStorageURLFor($message)) {
-<a href="<% $url %>">
+<a href="<% $url %>"
 % } else {
-<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | un %>" target="_blank">
+<a href="<% $AttachmentPath %>/<% $Transaction->Id %>/<% $message->Id %>/<% $name | un %>" target="_blank"
 % }
-% # the defined name denotes a downloadable attachment, else just text content in the transaction.
-% my ( $download_alt, $fa_classes );
-% if ( length $name ) {
-%    $download_alt = loc( 'Download [_1]', $name );
-%    $fa_classes = 'fas fa-paperclip';
+% if ( length $name ) {  # download link with filename
+% my $download_alt = loc( 'Download [_1] [_2]', $message->ContentType, $message->FriendlyContentLength );
+alt="<% $download_alt %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% $download_alt %>">
+  <span class="fas fa-paperclip fa-2x"></span>
+  <span class="downloadfilename"><% $name %></span>
+</a>
 % }
-% else {
-%    $download_alt = loc( 'View source' );
-%    $fa_classes = 'far fa-file';
-% }
-<span class="<% $fa_classes %> fa-2x" alt="<% $download_alt %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% $download_alt %>"></span></a>
-
+% else {  # view source and view source headers, without filename or size
+% my $view_source_alt = loc( 'View source' );
+>
+  <span class="far fa-file fa-2x" alt="<% $view_source_alt %>" data-toggle="tooltip" data-placement="bottom" data-original-title="<% $view_source_alt %>"></span>
+</a>
 % if ( $DownloadableHeaders && ! length $name && $message->ContentType =~ /text/  ) {
 % my $download_with_headers_alt = loc('View source with headers');
 <a href="<% $AttachmentPath %>/WithHeaders/<% $message->Id %>" target="_blank">
@@ -89,10 +89,9 @@ foreach my $message ( @{ $Attachments->{ $Parent || 0 } || [] } ) {
   </span>
 </a>
 % }
-
+% }
 % $m->callback(CallbackName => 'AfterDownloadLinks', ARGSRef => \%ARGS, Object => $Object, Transaction => $Transaction, Attachment => $message);
 <br />
-<span class="downloadcontenttype"><% $message->ContentType %> <% $message->FriendlyContentLength %></span>
 </div>
 %   }
 %# If there is sub-messages, open a dedicated div
@@ -211,6 +210,16 @@ my $render_attachment = sub {
                 ." of '$content_type' type"
             );
 
+            my $skip_quote_folding;
+            $m->callback(
+                CallbackName     => 'ModifyContent',
+                ARGSRef          => \%ARGS,
+                Object           => $Object,
+                Transaction      => $Transaction,
+                Content          => \$content,
+                SkipQuoteFolding => \$skip_quote_folding,
+            );
+
             # if it's a text/html clean the body and show it
             if ( $content_type eq 'text/html' ) {
                 $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
@@ -235,7 +244,8 @@ my $render_attachment = sub {
                     object  => $Object,
                 );
 
-                if ( !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+                if ( !$skip_quote_folding && !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+
                     eval {
                         require HTML::Quoted;
                         $content = HTML::Quoted->extract($content)
@@ -262,7 +272,7 @@ my $render_attachment = sub {
 
             # It's a text type we don't have special handling for
             else {
-                if ( !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
+                if ( !$skip_quote_folding && !length $name && RT->Config->Get( 'QuoteFolding', $session{CurrentUser} ) ) {
                     eval {
                         require Text::Quoted;
                         Text::Quoted::set_quote_characters(undef);

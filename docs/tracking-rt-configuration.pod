@@ -1,0 +1,155 @@
+=head1 Tracking Changes In RT
+
+Many organizations run a test RT in addition to their production system
+so they can test changes before deploying them on their live instance.
+This approach is a great way to try things before changing production,
+but one challenge is that you need to repeat any updates you make in the
+test environment step-by-step in your production environment.
+
+The L<rt-dump-initialdata> tool included with RT provides a way to track
+these changes in your test environment and export them so you can then
+import them in your production environment. Using this tool, you can create
+new queues, groups, scrips, and even grant rights, then export all of the
+new configuration into a readable format.
+
+Note that this utility is not a replacement for traditional database back-ups.
+
+=head2 Migrating changes from test RT to production RT
+
+As described above, let's look at an example of how you would make some
+changes on a test RT server and then migrate them to a production server.
+We'll assume that the configuration information between these two
+instances is the same (same queues, groups, scripts, etc.). There are
+ways to still use these tools if there are differences, but you'll have
+the best results if they are in sync.
+
+A good first step before starting is to validate that your RT data is valid:
+
+    sbin/rt-validator --check
+
+If L<rt-validator> reports any issues, it's good to investigate and fix those
+first.
+
+Next, take a JSON initialdata dump of our in dev RT:
+
+    sbin/rt-dump-initialdata --sync --directory base
+
+This should create a new directory "base" that contains a file
+"initialdata.json" with your RT configuration. This contains
+information like queue configuration, groups, custom fields,
+scripts, etc. It does not contain ticket data, transactions,
+attachments, etc. The C<--sync> option includes the ids of
+various objects from the database to aid in finding updated
+records.
+
+Now say you want to add a new rights configuration to your "Support" queue
+and also want to create a new scrip to automate some part of the support
+process. You can make these changes on the test RT and save. Once you
+are happy with the changes, run L<rt-dump-initialdata> again to output
+the changes:
+
+    sbin/rt-dump-initialdata --sync --directory new --base base/initialdata.json
+
+For this run, C<--base> should point to the directory you created in the previous
+step.
+
+When you run it, a new directory "new" is created. The directory will have
+another "initialdata.json" file along with a "changes.json" file that only
+has the differences between the base and new RT initialdata. For this
+example our changes file will have our new queue, some rights configurations
+and the new scrip we created:
+
+    {
+        "ACL" : [
+            {
+                "GroupDomain" : "SystemInternal",
+                "GroupType" : "Everyone",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "CreateTicket"
+            },
+            {
+                "GroupDomain" : "SystemInternal",
+                "GroupType" : "Everyone",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "ReplyToTicket"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "CommentOnTicket"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "SeeQueue"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "ReplyToTicket"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "CreateTicket"
+            },
+            {
+                "GroupDomain" : "RT::Queue-Role",
+                "GroupType" : "AdminCc",
+                "ObjectId" : "Support",
+                "ObjectType" : "RT::Queue",
+                "RightName" : "ShowTicket"
+            }
+        ],
+        "Queues" : [
+            {
+                "CommentAddress" : "",
+                "CorrespondAddress" : "",
+                "Description" : "",
+                "Lifecycle" : "default",
+                "Name" : "Support",
+                "SLADisabled" : 1,
+                "SortOrder" : 0
+            }
+        ],
+        "Scrips" : [
+            {
+                "CustomCommitCode" : "",
+                "CustomIsApplicableCode" : "",
+                "CustomPrepareCode" : "",
+                "Description" : "On Support Request Do Something",
+                "Queue" : [
+                    {
+                    "ObjectId" : "Support",
+                    "SortOrder" : 18,
+                    "Stage" : "TransactionCreate",
+                    "id" : 37
+                    }
+                ],
+                "ScripAction" : "User Defined",
+                "ScripCondition" : "User Defined",
+                "Template" : "Blank"
+            }
+        ]
+    }
+
+
+You can now apply the changes.json initialdata to your production RT:
+
+    sbin/rt-setup-database --action insert --datafile new/changes.json
+
+The output is JSON, so is human-readable. You can view the contents to
+confirm it contains what you expect before running against your
+production instance.
+
+=cut

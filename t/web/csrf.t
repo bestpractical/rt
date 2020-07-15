@@ -189,11 +189,11 @@ $m->field('Attach',  $logofile);
 
 # Lose the referer before the POST
 $m->add_header(Referer => undef);
-$m->submit;
+$m->click('SubmitTicket');
 $m->content_contains("Possible cross-site request forgery");
 $m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
 $m->follow_link(text_regex => qr{resume your request});
-$m->content_contains('Download bpslogo.png', 'page has file name');
+ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 $m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/bpslogo\.png/ } );
 is($m->content, $logo_contents, "Binary content matches");
 
@@ -220,6 +220,5 @@ $m->content_lacks("Possible cross-site request forgery");
 is($m->response->redirects, 0, "no redirection");
 like($m->response->request->uri, qr{^http://[^/]+\Q/SelfService/Create.html\E\?CSRF_Token=\w+$});
 $m->title_is('Create a ticket in #1');
-$m->content_contains('Describe the issue below:');
 
 done_testing;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,18 +54,18 @@
 
   <&| /Widgets/TitleBox, title => loc("Roles"), class => "catalog-roles" &>
     <div class="form-row">
-      <div class="col-md-6">
+      <div class="col-6">
         <& /Asset/Elements/EditCatalogPeople, %ARGS, Object => $catalog &>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-6">
         <& /Asset/Elements/AddCatalogPeople, Object => $catalog &>
       </div>
     </div>
   </&>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Save'), Name => "Update" &>
     </div>
   </div>

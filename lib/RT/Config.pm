@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1190,6 +1190,7 @@ our %META;
     },
     CustomDateRanges => {
         Type            => 'HASH',
+        Widget          => '/Widgets/Form/CustomDateRanges',
         PostLoadCheck   => sub {
             my $config = shift;
             # use scalar context intentionally to avoid not a hash error
@@ -1217,7 +1218,43 @@ our %META;
                     RT->Logger->error("Config option \%CustomDateRanges{$class} is not a HASH");
                 }
             }
+
+            my %system_config = %$ranges;
+            if ( my $db_config = $config->Get('CustomDateRangesUI') ) {
+                for my $type ( keys %$db_config ) {
+                    for my $name ( keys %{ $db_config->{$type} || {} } ) {
+                        if ( $system_config{$type}{$name} ) {
+                            RT->Logger->warning("$type custom date range $name is defined by config file and db");
+                        }
+                        else {
+                            $system_config{$name} = $db_config->{$type}{$name};
+                        }
+                    }
+                }
+            }
+
+            for my $type ( keys %system_config ) {
+                my $attributes = RT::Attributes->new( RT->SystemUser );
+                $attributes->Limit( FIELD => 'Name',       VALUE => 'Pref-CustomDateRanges' );
+                $attributes->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+                $attributes->OrderBy( FIELD => 'id' );
+
+                while ( my $attribute = $attributes->Next ) {
+                    if ( my $content = $attribute->Content ) {
+                        for my $name ( keys %{ $content->{$type} || {} } ) {
+                            if ( $system_config{$type}{$name} ) {
+                                RT->Logger->warning( "$type custom date range $name is defined by system and user #"
+                                        . $attribute->ObjectId );
+                            }
+                        }
+                    }
+                }
+            }
         },
+    },
+    CustomDateRangesUI => {
+        Type            => 'HASH',
+        Widget          => '/Widgets/Form/CustomDateRanges',
     },
     ExternalStorage => {
         Type            => 'HASH',
@@ -1381,6 +1418,47 @@ our %META;
             $self->Set( 'ExternalInfoPriority', \@values );
         },
     },
+    PriorityAsString => {
+        Type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            return unless $self->Get('EnablePriorityAsString');
+            my $config = $self->Get('PriorityAsString');
+
+            my %map;
+
+            for my $name ( keys %$config ) {
+                if ( my $value = $config->{$name} ) {
+                    my @list;
+                    if ( ref $value eq 'ARRAY' ) {
+                        @list = @$value;
+                    }
+                    elsif ( ref $value eq 'HASH' ) {
+                        @list = %$value;
+                    }
+                    else {
+                        RT->Logger->error("Invalid value for $name in PriorityAsString");
+                        undef $config->{$name};
+                    }
+
+                    while ( my $label = shift @list ) {
+                        my $value = shift @list;
+                        $map{$label} //= $value;
+
+                        if ( $map{$label} != $value ) {
+                            RT->Logger->debug("Priority $label is inconsistent: $map{$label} VS $value");
+                        }
+                    }
+
+                }
+            }
+
+            unless ( keys %map ) {
+                RT->Logger->debug("No valid PriorityAsString options");
+                $self->Set( 'EnablePriorityAsString', 0 );
+            }
+        },
+    },
     ServiceBusinessHours => {
         Type => 'HASH',
         PostLoadCheck   => sub {
@@ -1395,6 +1473,12 @@ our %META;
     },
     ServiceAgreements => {
         Type => 'HASH',
+    },
+    AssetHideSimpleSearch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AssetShowSearchResultCount => {
+        Widget => '/Widgets/Form/Boolean',
     },
     AllowUserAutocompleteForUnprivileged => {
         Widget => '/Widgets/Form/Boolean',
@@ -1448,6 +1532,9 @@ our %META;
         Widget => '/Widgets/Form/Boolean',
     },
     EnableReminders => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    EnablePriorityAsString => {
         Widget => '/Widgets/Form/Boolean',
     },
     ExternalStorageDirectLink => {
@@ -1506,6 +1593,10 @@ our %META;
     },
     ShowBccHeader => {
         Widget => '/Widgets/Form/Boolean',
+    },
+    ShowEditSystemConfig => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
     },
     ShowMoreAboutPrivilegedUsers => {
         Widget => '/Widgets/Form/Boolean',
@@ -1638,6 +1729,9 @@ our %META;
         Widget => '/Widgets/Form/Integer',
     },
 
+    AssetDefaultSearchResultOrderBy => {
+        Widget => '/Widgets/Form/String',
+    },
     CanonicalizeEmailAddressMatch => {
         Widget => '/Widgets/Form/String',
     },
@@ -1684,6 +1778,9 @@ our %META;
         Widget => '/Widgets/Form/String',
     },
     LDAPPassword => {
+        Widget => '/Widgets/Form/String',
+    },
+    LDAPBase => {
         Widget => '/Widgets/Form/String',
     },
     LDAPGroupBase => {
@@ -1747,6 +1844,10 @@ our %META;
         Widget => '/Widgets/Form/String',
     },
 
+    AssetDefaultSearchResultOrder => {
+        Widget => '/Widgets/Form/Select',
+        WidgetArguments => { Values => [qw(ASC DESC)] },
+    },
     LogToSyslog => {
         Immutable => 1,
         Widget => '/Widgets/Form/Select',
@@ -1796,6 +1897,9 @@ our %META;
     LogToSyslogConf => {
         Immutable     => 1,
     },
+    ShowMobileSite => {
+        Widget => '/Widgets/Form/Boolean',
+    }
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
@@ -2058,9 +2162,6 @@ sub LoadSectionMap {
                     next unless $sigil =~ m{[\@\%\$]};    # no sigil => this is a value for a select option
                     if ( $META{$option} ) {
                         next if $META{$option}{Invisible};
-                    }
-                    else {
-                        RT->Logger->debug("No META info for option [$option], falling back to Code widget");
                     }
                     push @{ $SectionMap->[-1]{Content}[-1]{Content}[-1]{Content} }, { Name => $option, Help => $name };
                 }
@@ -2542,7 +2643,7 @@ sub LoadConfigFromDatabase {
     $database_config_cache_time = time;
 
     my $settings = RT::Configurations->new(RT->SystemUser);
-    $settings->UnLimit;
+    $settings->LimitToEnabled;
 
     my %seen;
 
@@ -2571,15 +2672,16 @@ sub LoadConfigFromDatabase {
 
         my $type = $meta->{Type} || 'SCALAR';
 
-        # hashes combine, but we don't want that behavior because the previous
-        # config settings will shadow any change that the database config makes
-        if ($type eq 'HASH') {
-            $self->Set($name, ());
-        }
-
         my $val = $type eq 'ARRAY' ? $value
                 : $type eq 'HASH'  ? [ %$value ]
                                    : [ $value ];
+
+        # hashes combine, but by default previous config settings shadow
+        # later changes, here we want database configs to shadow file ones.
+        if ($type eq 'HASH') {
+            $val = [ $self->Get($name), @$val ];
+            $self->Set($name, ());
+        }
 
         $self->SetFromConfig(
             Option     => \$name,

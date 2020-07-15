@@ -1,13 +1,24 @@
 @import "../elevator-light/main.css";
 
-.darkmode, .darkmode * {
-    background: #171A1F !important;
-    color: #FFF !important;
+.darkmode .farbtastic .wheel {
+  background: url(../../../static/images/farbtastic/wheel.png) no-repeat !important;
+}
+.darkmode .farbtastic .overlay {
+  background: url(../../../static/images/farbtastic/mask.png) no-repeat !important;
+}
+.darkmode .farbtastic .marker, .darkmode .farbtastic .marker {
+  background: url(../../../static/images/farbtastic/marker.png) no-repeat !important;
 }
 
-.darkmode input, .darkmode select {
-    background: #25292F !important;
-    border-color: #3A3C43 !important;
+.darkmode, .darkmode * {
+    background: #2C3539 !important;
+    color: #ededed !important;
+}
+
+.darkmode input, .darkmode select,
+.darkmode .btn-light {
+    background: #323D42 !important;
+    border-color: #717171 !important;
 }
 
 .darkmode input::-webkit-input-placeholder {
@@ -37,7 +48,7 @@
 
 .darkmode .card {
     background: #25292F;
-    border-color: #3A3C43;
+    border-color: #515151;
 }
 
 .darkmode label {
@@ -88,16 +99,55 @@
 }
 
 .darkmode .dropdown-menu {
-    background: #171A1F;
-    border-color: #3A3C43;
+    background: #323D42 !important;
+    border-color: #717171 !important;
+}
+
+.darkmode .dropdown-item *, .darkmode .dropdown-item *,
+.darkmode .dropdown-item,
+.darkmode a.dropdown-item {
+    background: #323D42 !important;
 }
 
 .darkmode .dropdown-divider {
     border-color: #3A3C43;
 }
 
-.darkmode .dropdown-item:focus, .darkmode .dropdown-item:hover {
-    background: #25292F;
+.darkmode .dropdown-item:focus *, .darkmode .dropdown-item:hover *,
+.darkmode .dropdown-item:focus, .darkmode .dropdown-item:hover,
+.darkmode .page-menu.sf-menu a:focus *, .darkmode .page-menu.sf-menu a:hover *,
+.darkmode .page-menu.sf-menu a:focus, .darkmode .page-menu.sf-menu a:hover,
+.darkmode #main-navigation .sf-menu li ul a:focus, .darkmode #main-navigation .sf-menu li ul a:hover {
+    background: #3A474D !important;
+}
+
+.darkmode .page-menu {
+    border: 1px solid #515151;
+    border-radius: 3px;
+}
+
+.darkmode .page-menu.sf-menu > li {
+    border-color: #515151;
+    border-right: none;
+}
+
+.darkmode .page-menu.sf-menu > li:first-of-type {
+    border-left: none;
+}
+
+.darkmode .sf-menu.sf-shadow ul {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: 1px solid #515151;
+}
+
+.darkmode div#quickbar {
+    height: 2.7rem;
+    box-shadow: none;
+    border-bottom: 1px solid #515151;
 }
 
 .darkmode .nav-tabs {
@@ -119,6 +169,14 @@
 
 .darkmode .table a, .darkmode .table th {
     color: #FFF;
+}
+
+.darkmode table.table th {
+    border: none;
+}
+
+.darkmode .table th, .darkmode .table td {
+    border-top: 1px solid #6d6f71;
 }
 
 .darkmode .btn:hover {
@@ -176,19 +234,146 @@
     background-color: #114 !important;
 }
 
-/* row colouring */
-.oddline {
-    background: rgba(255, 255, 255, 0.1) !important;
-}
-
-.darkmode tr.oddline {
-    background: rgba(255, 255, 255, 0.1) !important;
-}
-
-.darkmode .oddline .collection-as-table {
-    background: rgba(255, 255, 255, 0.1) !important;
+.darkmode tr.oddline *,
+.darkmode tr.oddline .collection-as-table,
+.darkmode .oddline .collection-as-table,
+.darkmode .oddline .collection-as-table * {
+    background: #323D42 !important;
 }
 
 .darkmode tr.oddline td a {
     background: rgba(255, 255, 255, 0) !important;
+}
+
+.darkmode .transaction table + div.downloadattachment {
+    position: relative;
+    top: 0.6em;
+}
+
+.darkmode svg.icon-bordered {
+    border: solid 0.05em #717171;
+}
+
+.darkmode .history .transaction {
+    border-top: 1px solid #515151;
+}
+
+.darkmode div.history-container {
+    border-left: 1px solid #515151;
+    border-right: 1px solid #515151;
+    border-bottom: 1px solid #515151;
+}
+
+.darkmode .history .transaction div.metadata span.actions {
+    border: 1px solid #717171;
+}
+
+.darkmode div#footer {
+    border-top: 1px solid #515151;
+}
+
+.darkmode span.current-value.form-control {
+    background: #2C3539 !important;
+}
+
+.darkmode .form-control,
+.darkmode .selectize-input {
+    background: #323D42 !important;
+    border-color: #717171;
+}
+
+.darkmode .form-control .filter-option-inner-inner,
+.darkmode .form-control option {
+    background: #323D42 !important;
+}
+
+.darkmode div.results .titlebox, .darkmode div.error-titlebox,
+.darkmode div.results .titlebox .titlebox-content,
+.darkmode div.results .titlebox .card-body,
+.darkmode div.results .titlebox .card-body > *,
+.darkmode div.results .titlebox .card-body > * > * {
+    background: #3C494F !important;
+}
+
+.darkmode .history .transaction .messagebody {
+    border-color: #515151;
+}
+
+/* Ticket history transaction link colors.
+   This is a copy of the colors from elevator-light.  While not ideal to replicate the definitions here,
+   we need to specifically override the cascading background color definition at the top of this css page. */
+.darkmode .transaction.basics .type, .darkmode .transaction.basics .type * { background: #D32F2F !important; }
+.darkmode .transaction.cfs .type, .darkmode .transaction.cfs .type * { background: #D32F2F !important; }
+.darkmode .transaction.people .type, .darkmode .transaction.people .type * { background: #0288D1 !important; }
+.darkmode .transaction.links .type, .darkmode .transaction.links .type * { background: #388E3C !important; }
+.darkmode .transaction.dates .type, .darkmode .transaction.dates .type * { background: #7B1FA2 !important; }
+.darkmode .transaction.message .type, .darkmode .transaction.message .type * { background: #1976D2 !important; }
+.darkmode .transaction.reminders .type, .darkmode .transaction.reminders .type * { background: #0277BD !important; }
+.darkmode .transaction.other .type, .darkmode .transaction.other .type * { background: #B0BEC5 !important; }
+.darkmode .transaction.error .type, .darkmode .transaction.error .type * { background: #900 !important; }
+.darkmode .transaction.attachment-truncate .type, .transaction.attachment-drop .type,
+.darkmode .transaction.attachment-truncate .type *, .transaction.attachment-drop .type * { background-color: #FF5722 !important; }
+
+.darkmode .messagebox-container.action-private textarea,
+.darkmode .messagebox-container.action-response textarea {
+    color: #484e53 !important;
+}
+
+.darkmode .titlebox .card-header {
+    padding-bottom: inherit;
+}
+
+.darkmode .dropzone,
+.darkmode .dropzone .dz-details {
+    border: 1px solid #717171 !important;
+}
+
+.darkmode ul.toplevel.sf-menu > li > a.sf-with-ul:after {
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-down' viewBox='0 0 12 8' height='100%' width='100%' fill='none' stroke='rgb(237,237,237)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 5 -5' /></svg>") no-repeat center center;
+}
+
+.darkmode ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' id='i-chevron-right' viewBox='0 0 7 12' height='100%' width='100%' fill='none' stroke='rgb(237,237,237)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'><path d='M1 1 l5 5 -5 5' /></svg>") no-repeat center center;
+}
+
+/* CKEditor darkmode fixes */
+
+.darkmode .cke_toolbar .cke_combo_button,
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text,
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_open,
+.darkmode .cke_toolbox .cke_toolbar .cke_toolgroup,
+.darkmode .cke_toolbox .cke_toolbar .cke_toolgroup a,
+.darkmode #cke_Content .cke_contents .cke_wysiwyg_frame {
+    background-color: #333d42 !important;
+}
+
+.darkmode .cke_combo_arrow, .darkmode .cke_button_arrow {
+    border-top: 3px solid #aeb0b1 !important;
+}
+
+.darkmode #cke_UpdateContent, .darkmode #cke_Content,
+.darkmode .cke_contents,
+.darkmode .cke_toolbar .cke_combo_button,
+.darkmode .cke_toolbar .cke_toolgroup {
+    border-color: #717171 !important;
+}
+
+.darkmode .cke_toolbox .cke_toolbar .cke_combo .cke_combo_text {
+    color: #c9ccce !important;
+}
+
+/* invert color for toolbar pngs */
+.darkmode a.cke_button .cke_button_icon {
+    -webkit-filter: invert(100%) brightness(110%);
+    -moz-filter: invert(100%) brightness(110%);
+    -ms-filter: invert(100%) brightness(110%);
+    -o-filter: invert(100%) brightness(110%);
+    filter: invert(100%) brightness(110%);
+}
+
+/* fix combo height to show borders correctly */
+.darkmode .cke_combo_text {
+    margin-top: 1px;
+    margin-bottom: 1px;
+    line-height: 24px;
 }

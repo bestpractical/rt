@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,6 +56,10 @@
 %   if ( $ObjectType eq 'RT::Ticket' ) {
     <& PickTickets, queues => \%queues, %ARGS &>
 %   }
+% } elsif ( $Class eq 'RT::Assets' ) {
+    <& PickBasics, catalogs => \%catalogs, %ARGS &>
+    <& PickAssetCFs, catalogs => \%catalogs, %ARGS &>
+%   $m->callback( %ARGS, CallbackName => "AfterCFs" );
 % } else {
     <& PickBasics, queues => \%queues &>
     <& PickCustomRoles, queues => \%queues &>
@@ -66,8 +70,8 @@
 % }
 
 <div class="form-row">
-  <div class="col-md-3 label"><&|/l&>Aggregator</&></div>
-  <div class="col-md-9 operator"><& SelectAndOr, Name => "AndOr" &></div>
+  <div class="label col-3"><&|/l&>Aggregator</&></div>
+  <div class="col-9 operator"><& SelectAndOr, Name => "AndOr" &></div>
 </div>
 
 </&>
@@ -76,6 +80,7 @@
 $addquery => 0
 $query => undef
 %queues => ()
+%catalogs => ()
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

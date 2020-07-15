@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,10 +54,10 @@
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 
   <div class="form-row">
-    <div class="col-md-auto label">
+    <div class="label col-auto">
       <&|/l&>Only show custom fields for:</&>
     </div>
-    <div class="col-md-auto value">
+    <div class="value col-auto">
       <select name="Type" class="form-control selectpicker">
         <option value="" <% !$Type && 'selected="selected"'%> ><% loc('(any)') %></option>
 % for my $type ( $tmp->LookupTypes ) {
@@ -68,7 +68,7 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="ShowDisabled" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n %> />
         <label class="custom-control-label" for="ShowDisabled"><&|/l&>Include disabled custom fields in listing.</&></label>
@@ -79,7 +79,7 @@
 % $m->callback(CallbackName => 'BeforeSubmit');
 
   <div class="form-row">
-    <div class="col-md-12 text-right">
+    <div class="col-12 text-right">
       <input type="submit" class="form-control btn btn-primary" value="<% loc('Go!') %>" />
     </div>
   </div>

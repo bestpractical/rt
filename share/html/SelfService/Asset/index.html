@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,4 +46,4 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc("My Assets") &>
-<& /User/Elements/AssetList, User => $session{'CurrentUser'}->UserObj, Roles => [''], Title => loc('My Assets') &>
+<& /User/Elements/AssetList, User => $session{'CurrentUser'}->UserObj, Roles => [qw(HeldBy)], Title => loc('My Assets') &>

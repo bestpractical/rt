@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -94,7 +94,7 @@
 <select
   name="<%$name%>" id="<%$name%>"
 
-    class="CF-Edit CF-<%$CustomField->id%>-Edit <% $RenderType eq 'Dropdown' ? 'selectpicker' : 'form-control' %>"
+    class="CF-Edit CF-<%$CustomField->id%>-Edit form-control <% $RenderType eq 'Dropdown' ? 'selectpicker' : '' %>"
 %   if ( $use_chosen ) {
     data-live-search="true"
 %   }

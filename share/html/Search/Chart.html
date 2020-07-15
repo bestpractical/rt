@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@ $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
 
-my @search_fields = qw(Query GroupBy ChartStyle ChartFunction Width Height);
+my @search_fields = ( qw(Query GroupBy ChartStyle ChartFunction Width Height ExtraQueryParams), @ExtraQueryParams );
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
     SearchFields => [@search_fields],
@@ -75,6 +75,14 @@ my %query;
     if ($saved_search->{'CurrentSearch'}->{'Object'}) {
         foreach my $search_field (@{ $saved_search->{'SearchFields'} }) {
             $query{$search_field} = $saved_search->{'CurrentSearch'}->{'Object'}->Content->{$search_field};
+        }
+
+        my $content = $saved_search->{'CurrentSearch'}->{'Object'}->Content;
+        if ( my $extra_params = $content->{ExtraQueryParams} ) {
+            $query{ExtraQueryParams} = $extra_params;
+            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                $query{$param} = $content->{$param};
+            }
         }
     }
 
@@ -140,6 +148,15 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
+% if ( $query{ExtraQueryParams} ) {
+%   for my $input ( ref $query{ExtraQueryParams} eq 'ARRAY' ?  @{$query{ExtraQueryParams}} : $query{ExtraQueryParams} ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%       if ( defined $query{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $query{$input} %>" />
+%       }
+%   }
+% }
+
     <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
       <fieldset><legend><% loc('Group tickets by') %></legend>
         <& Elements/SelectGroupBy,
@@ -181,16 +198,16 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
     <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
       <input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
       <div class="form-row">
-        <div class="col-md-auto label">
+        <div class="label col-auto">
           <label><% loc('Style') %>:</label>
         </div>
-        <div class="col-md-auto value">
+        <div class="value col-auto">
           <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar(?:-stacked)?|line(?:-stacked)?|table)\b/ ? $1 : undef &>
         </div>
-        <div class="col-md-auto label">
+        <div class="label col-auto">
           <label><% loc("Width") %>:</label>
         </div>
-        <div class="col-md-auto value">
+        <div class="value col-auto">
           <div class="input-group mb-3">
             <input class="form-control" type="text" name="Width" value="<% $query{'Width'} || q{} %>">
             <div class="input-group-append">
@@ -198,11 +215,11 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
             </div>
           </div>
         </div>
-        <div class="col-md-auto label">
+        <div class="label col-auto">
           &#x00d7;
           <label><% loc("Height") %>:</label>
         </div>
-        <div class="col-md-auto value">
+        <div class="value col-auto">
           <div class="input-group mb-3">
             <input class="form-control" type="text" name="Height" value="<% $query{'Height'} || q{} %>">
             <div class="input-group-append">
@@ -245,7 +262,7 @@ jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 </script>
 
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
       </div>
     </div>
@@ -261,3 +278,7 @@ jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 
 </div>
 </div>
+
+<%ARGS>
+@ExtraQueryParams => ()
+</%ARGS>

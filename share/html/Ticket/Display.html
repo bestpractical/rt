@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,9 +66,13 @@ my $initial_label = $HideUnsetFields ? $show_label : $hide_label;
 my $url = "?HideUnsetFields=" . ($HideUnsetFields ? 0 : 1) . ";id=$ARGS{id}";
 my $url_html = $m->interp->apply_escapes($url, 'h');
 
-my $alt = loc('Edit');
+my $search_menu = $m->scomp( '/Elements/Menu', menu => HTML::Mason::Commands::SearchResultsPageMenu(), class => 'page-menu page-nav-shadow sf-menu sf-js-enabled sf-shadow', id => 'search-results-page-menu', 'parent_id' => 'page' ) || '';
+my $alt = loc('Options');
 my $titleright = qq{
 <div class="btn-group dropdown">
+  <div class="search-results-page-menu-container">
+    $search_menu
+  </div>
   <a id="metadata-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     <span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>
   </a>
@@ -93,22 +97,26 @@ my $titleright = qq{
     <& /Ticket/Elements/ScrollShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } else {
     <& /Elements/ShowHistory ,
           Object => $TicketObj,
           Transactions => $transactions,
           ShowHeaders => $ARGS{'ShowHeaders'},
+          ReverseTxns => $ARGS{'ReverseTxns'},
           Attachments => $attachments,
           AttachmentContent => $attachment_content
     &>
@@ -267,13 +275,19 @@ MaybeRedirectForResults(
     Arguments => { id => $TicketObj->id },
 );
 
-my $transactions = $TicketObj->SortedTransactions;
+my $transactions;
+if ( $ARGS{'ReverseTxns'} ) {
+    $transactions = $TicketObj->SortedTransactions($ARGS{'ReverseTxns'});
+}
+else {
+    $transactions = $TicketObj->SortedTransactions;
+}
 my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 
 my %link_rel;
-if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
-    my $item_map = $session{'tickets'}->ItemMap;
+if (defined $session{'collection-RT::Tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
+    my $item_map = $session{'collection-RT::Tickets'}->ItemMap;
     $link_rel{first} = "/Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$TicketObj->Id}{prev};
     $link_rel{prev}  = "/Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{prev} if $item_map->{$TicketObj->Id}{prev};
     $link_rel{next}  = "/Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{next} if $item_map->{$TicketObj->Id}{next};

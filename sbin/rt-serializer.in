@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -99,10 +99,12 @@ GetOptions(
 
     "users!",
     "groups!",
+    "disabled!",
     "deleted!",
 
     "scrips!",
     "tickets!",
+    "transactions!",
     "acls!",
     "limit-queues=s@",
     "limit-cfs=s@",
@@ -123,13 +125,15 @@ $args{Directory}   = $OPT{directory};
 $args{Force}       = $OPT{force};
 $args{MaxFileSize} = $OPT{size} if $OPT{size};
 
-$args{AllUsers}      = $OPT{users}    if defined $OPT{users};
-$args{AllGroups}     = $OPT{groups}   if defined $OPT{groups};
-$args{FollowDeleted} = $OPT{deleted}  if defined $OPT{deleted};
+$args{AllUsers}       = $OPT{users}    if defined $OPT{users};
+$args{AllGroups}      = $OPT{groups}   if defined $OPT{groups};
+$args{FollowDeleted}  = $OPT{deleted}  if defined $OPT{deleted};
+$args{FollowDisabled} = $OPT{disabled} if defined $OPT{disabled};
 
-$args{FollowScrips}  = $OPT{scrips}   if defined $OPT{scrips};
-$args{FollowTickets} = $OPT{tickets}  if defined $OPT{tickets};
-$args{FollowACL}     = $OPT{acls}     if defined $OPT{acls};
+$args{FollowScrips}       = $OPT{scrips}       if defined $OPT{scrips};
+$args{FollowTickets}      = $OPT{tickets}      if defined $OPT{tickets};
+$args{FollowTransactions} = $OPT{transactions} if defined $OPT{transactions};
+$args{FollowACL}          = $OPT{acls}         if defined $OPT{acls};
 
 $args{HyperlinkUnmigrated} = $OPT{'hyperlink-unmigrated'} if defined $OPT{'hyperlink-unmigrated'};
 
@@ -181,7 +185,7 @@ if ($OPT{'limit-cfs'}) {
 }
 
 if (($OPT{clone} or $OPT{incremental})
-        and grep { /^(users|groups|deleted|scrips|tickets|acls|assets)$/ } keys %OPT) {
+        and grep { /^(users|groups|deleted|disabled|scrips|tickets|transactions|acls|assets)$/ } keys %OPT) {
     die "You cannot specify object types when cloning.\n\nPlease see $0 --help.\n";
 }
 
@@ -356,6 +360,12 @@ consistency.
 By default, all assets are serialized; passing C<--no-assets> skips
 assets during serialization.
 
+=item B<--no-disabled>
+
+By default, all queues, custom fields, etc, including disabled ones, are
+serialized; passing C<--no-disabled> skips such disabled records during
+serialization.
+
 =item B<--no-deleted>
 
 By default, all tickets and assets, including deleted ones, are
@@ -393,6 +403,10 @@ The hyperlinks will use the serializing RT's configured URL.
 
 Without this option, such links are instead dropped, and transactions which
 had updated such links will be replaced with an explanatory message.
+
+=item B<--no-transactions>
+
+Skip serialization of all transactions on any records (not just tickets).
 
 =item B<--clone>
 

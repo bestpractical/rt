@@ -10,14 +10,70 @@ before you upgrade and look for changes to features you currently use.
 See F<devel/docs/UPGRADING-5.0> for internals changes relevant to
 extension writers, including deprecated code.
 
+=head2 Upgrading Recommendations
+
+RT now defaults to a database name of rt5 and an installation root of
+/opt/rt5.
+
+If you are upgrading, you will likely want to specify that your database is
+still named rt4 or even rt3. Alternatively, you could import a backup of your
+database as rt5 to conform to the new default, although this isn't required.
+
+Upgrading to RT 5 over an existing RT 4 installation (/opt/rt4) is not
+recommended and will almost certainly cause issues. Instead, do a fresh
+install into /opt/rt5 (or your custom location) for the code portion of the
+upgrade. Then import your existing database and run the database upgrade
+steps using make upgrade-database.
+
+We recommend this approach because of the large number of changes to the code
+base for this major release. We moved some things to new locations and old
+files are not removed as part of the upgrade process. These old files will
+still be detected by RT in some cases and will cause issues.
+
+Installing a fresh code base will also allow you to evaluate your local
+modifications and configuration changes as you migrate to 5.0. If you have
+changes made directly to the RT code, it's a good time to look at the hooks
+RT provides for custom code in extensions or in the local directory. See
+F<docs/writing_extensions.pod> for more information.
+
+=head2 Database Changes
+
 =over
 
 =item *
 
-On MySQL and MariaDB, the default character set has been changed from
-utf8 to utf8mb4. This provides support for 4-byte characters such as
-emojis on tickets. Postgres and Oracle already had support for these
-characters and are not effected by this update.
+For MySQL and MariaDB, the default character set has been updated to utf8mb4
+to accommodate more unicode characters including emojis. See F<README.MySQL>
+and F<README.MariaDB> for details.
+
+=item *
+
+The Id field in some tables is changed from INT to BIGINT to accommodate
+large RT systems that may hit the maximum number of ids. Because this
+change touches large RT tables like Transactions and Attachments, this
+upgrade step may take a while to run.
+
+You also will need free disk space equal to the size of these tables
+while running because MySQL, MariaDB, and Postgres will create a
+temporary copy of the table while running. If you don't have sufficient
+space, it can cause this step to fail.
+
+=back
+
+=head2 Notable Changes
+
+=over
+
+=item *
+
+System configuration options can now be changed by SuperUsers via the
+web UI. File-based configuration options are still loaded. Changes made
+via the web UI take precedence over file-based options if both are set.
+
+If you prefer to keep all configuration in files and disable editing in
+the web UI, set this option to 0:
+
+    Set($ShowEditSystemConfig, 0);
 
 =item *
 
@@ -47,7 +103,119 @@ The updated rich text editor now shows the browser context menu (right-click
 menu) by default, so the MessageBoxUseSystemContextMenu configuration option is
 no longer needed and has been removed.
 
+=item *
+
+Dashboards previously in the Home menu have been moved to the Reports menu.
+The reports previously in the Reports menu are still there, but you can now
+edit the Reports menu like the previous Home menu, so you can remove the
+default reports if you like.
+
+All other dashboard menu functionality should be the same including editing
+your own menu, the global settings, and setting a user's menu from the user
+admin page for that user.
+
+=item *
+
+Accessing RT from a mobile device no longer defaults to the mobile-optimized
+interface. RT 5.0 is fully responsive so the full UI can be used on mobile
+devices. Set the configuration option C<$ShowMobileSite> to true to restore
+the previous behavior.
+
+=item *
+
+RT can now run with GnuPG 2.2. On install or upgrade, it requires the updated
+version of L<GnuPG::Interface>. C<make testdeps> will test for the correct version.
+RT should also still run with GnuPG 1.4.x. It is not supported for GnuPG versions
+2.0 or 2.1. On some Linux systems, you may need to add a new repo to get an
+updated GnuPG package with some version of 2.2.
+
+=item *
+
+RT search results now allow inline editing of ticket metadata, greatly
+improving usability and convenience. Editable fields are now the default
+for most ticket fields in search results.
+
+The ticket Owner field sometimes requires extra work to build and can
+result in slower page load times, so the default Owner format is
+read-only. To enable inline edit for Owner, update your search to use
+the format OwnerNameEdit.
+
+If you experience slower page loads with OwnerNameEdit, you can
+display Owner as an autocomplete box rather than a dropdown using the
+L<AutocompleteOwners|https://docs.bestpractical.com/rt/4.4.4/RT_Config.html#AutocompleteOwners>
+configuration option. This may also help other areas of RT in addition to
+searches.
+
+We are investigating options to improve the underlying queries. Some users have
+reported improved performance with the following indexes, at least on Postgres:
+
+   CREATE INDEX ACL2 ON acl (objecttype, objectid);
+   CREATE INDEX ACL3 ON acl (principalid, rightname, principaltype);
+
+We are performing testing and looking for additional feedback before adding these
+to default RT.
+
+=back
+
+=head2 Extensions Integrated into RT 5
+
+The following extensions are now part of RT 5. If you previously used any as
+an extension, you no longer need the extension after upgrading and can
+remove the C<Plugin> line from your RT configuration.
+
+Changes you may need to apply if you previously used the extension
+are described below.
+
+=over
+
+=item RT::Extension::QuoteSelection
+
+=item RT::Extension::RightsInspector
+
+=item RT::Extension::ConfigInDatabase
+
+If you previously used L<RT::Extension::ConfigInDatabase>
+as an extension, run the F<etc/upgrade/upgrade-configurations> utility
+after completing all the other upgrade steps from the F<README>. This
+will migrate your existing configuration to the new core RT tables.
+
+=item RT::Extension::CustomRole::Visibility
+
+=item RT::Extension::PriorityAsString
+
+If you previously used numbers for priority and would like to continue
+to do so, you can set the new C<$EnablePriorityAsString> option to false.
+That will disable the new string-based display.
+
+If you would like to now use strings for priority like Low, Medium, High,
+check the new C<%PriorityAsString> configuration option. RT provides a simple
+default setting that may be sufficient. Set new values if you would like
+to customize your priority options.
+
+If you were previously using the PriorityAsString extension, you no longer
+need the extension installed. The C<%PriorityAsString>> configuration is
+simplified and consolidated, so check the documentation for details on
+updating your previous configuration.
+
+=item RT::Extension::AssetSQL
+
+The configuration option $AssetSQL_HideSimpleSearch is now $AssetHideSimpleSearch.
+The configuration option $AssetSearchFormat is now $AssetSimpleSearchFormat.
+
+See the configuration documentation in L<RT_Config.pm> for new configuration
+options added for AssetSQL and the new asset query builder.
+
+=item RT::Extension::LifecycleUI
+
+=item RT::Extension::REST2
+
+=item RT::Authen::Token
+
+If you previously used L<RT::Authen::Token|https://metacpan.org/pod/RT::Authen::Token>
+as an extension, run the F<etc/upgrade/upgrade-authtokens> utility
+after completing all the other upgrade steps from the F<README>. This
+will migrate your existing tokens to the new core RT tables.
+
 =back
 
 =cut
-

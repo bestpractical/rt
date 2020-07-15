@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,33 +60,33 @@
 <&|/Widgets/TitleBox, title => loc('Basics') &>
 
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Name</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
         <input class="form-control" type="text" name="Name" value="<%$Dashboard->Name%>" />
     </div>
   </div>
 
   <div class="form-row">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Privacy</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
     </div>
   </div>
 </&>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
     </div>
   </div>
 
 % if ($Dashboard->Id && $can_delete) {
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
     </div>
   </div>

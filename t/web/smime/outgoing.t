@@ -256,7 +256,7 @@ sub create_a_ticket {
         }
     }
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is $m->status, 200, "request successful";
 
     unlike($m->content, qr/unable to sign outgoing email messages/);

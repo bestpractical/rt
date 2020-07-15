@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -94,6 +94,8 @@ __PACKAGE__->AddRight( General => LoadSavedSearch     => 'Allow loading of saved
 __PACKAGE__->AddRight( General => CreateSavedSearch   => 'Allow creation of saved searches'); # loc
 __PACKAGE__->AddRight( Admin   => ExecuteCode         => 'Allow writing Perl code in templates, scrips, etc'); # loc
 __PACKAGE__->AddRight( General => SeeSelfServiceGroupTicket => 'See tickets for other group members in SelfService' ); # loc
+__PACKAGE__->AddRight( Staff   => ShowSearchAdvanced    => 'Show search "Advanced" menu' ); # loc
+__PACKAGE__->AddRight( Staff   => ShowSearchBulkUpdate  => 'Show search "Bulk Update" menu' ); # loc
 
 =head2 AvailableRights
 
@@ -254,6 +256,38 @@ sub ConfigCacheNeedsUpdate {
     } else {
         my $cache = $self->FirstAttribute('ConfigCacheNeedsUpdate');
         return (defined $cache ? $cache->Content : 0 );
+    }
+}
+
+# This needs to be in RT::System as RT::Interface::Web and RT::Interface::Email both use this
+my $lifecycle_cache_time = time;
+sub MaybeRebuildLifecycleCache {
+    my $needs_update = RT->System->LifecycleCacheNeedsUpdate;
+    if ( $needs_update > $lifecycle_cache_time ) {
+        RT::Lifecycle->FillCache;
+        $lifecycle_cache_time = $needs_update;
+    }
+}
+
+=head2 LifecycleCacheNeedsUpdate ( 1 )
+
+Attribute to decide when we need to flush the list of lifecycles
+and re-register any changes. This is needed for the lifecycle UI editor.
+
+If passed a true value, will update the attribute to be the current time.
+
+=cut
+
+sub LifecycleCacheNeedsUpdate {
+    my $self   = shift;
+    my $update = shift;
+
+    if ($update) {
+        return $self->SetAttribute(Name => 'LifecycleCacheNeedsUpdate', Content => time);
+    }
+    else {
+        my $cache = $self->FirstAttribute('LifecycleCacheNeedsUpdate');
+        return (defined $cache ? $cache->Content : 0);
     }
 }
 

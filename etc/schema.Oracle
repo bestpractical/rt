@@ -1,10 +1,10 @@
 
 CREATE SEQUENCE ATTACHMENTS_seq;
 CREATE TABLE Attachments (
-        id              NUMBER(11,0) 
+        id              NUMBER(19,0) 
                         CONSTRAINT Attachments_Key PRIMARY KEY,
-        TransactionId   NUMBER(11,0) NOT NULL,
-        Parent          NUMBER(11,0) DEFAULT 0 NOT NULL, 
+        TransactionId   NUMBER(19,0) NOT NULL,
+        Parent          NUMBER(19,0) DEFAULT 0 NOT NULL, 
         MessageId       VARCHAR2(160),
         Subject         VARCHAR2(255),
         Filename        VARCHAR2(255),
@@ -106,13 +106,13 @@ CREATE TABLE ScripConditions (
 
 CREATE SEQUENCE TRANSACTIONS_seq;
 CREATE TABLE Transactions (
-        id                      NUMBER(11,0) 
+        id                      NUMBER(19,0) 
                 CONSTRAINT Transactions_Key PRIMARY KEY,
         ObjectType              VARCHAR2(255),
         ObjectId                NUMBER(11,0) DEFAULT 0 NOT NULL,
         TimeTaken               NUMBER(11,0) DEFAULT 0 NOT NULL,
         Type                    VARCHAR2(20),
-        Field                   VARCHAR2(40),
+        Field                   VARCHAR2(255),
         OldValue                VARCHAR2(255),
         NewValue                VARCHAR2(255),
         ReferenceType           VARCHAR2(255),
@@ -327,7 +327,7 @@ CREATE TABLE ObjectCustomFieldValues (
                 CONSTRAINT ObjectCustomFieldValues_Key PRIMARY KEY,
         CustomField     NUMBER(11,0) NOT NULL,
         ObjectType      VARCHAR2(25) NOT NULL,
-        ObjectId        NUMBER(11,0) DEFAULT 0 NOT NULL,
+        ObjectId        NUMBER(19,0) DEFAULT 0 NOT NULL,
         SortOrder       NUMBER(11,0) DEFAULT 0 NOT NULL,
         Content         VARCHAR2(255),
         LargeContent    CLOB,
@@ -542,7 +542,7 @@ CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRol
 CREATE SEQUENCE Configurations_seq;
 CREATE TABLE Configurations (
     id              NUMBER(11,0)    CONSTRAINT Configurations_key PRIMARY KEY,
-    Name            VARCHAR2(255) CONSTRAINT Configurations_Name_Unique unique  NOT NULL,
+    Name            VARCHAR2(255) NOT NULL,
     Content         CLOB,
     ContentType     VARCHAR2(80),
     Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL,
@@ -552,6 +552,20 @@ CREATE TABLE Configurations (
     LastUpdated     DATE
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (LOWER(Name));
+CREATE INDEX Configurations1 ON Configurations (LOWER(Name), Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
 
+CREATE SEQUENCE AuthTokens_seq;
+CREATE TABLE AuthTokens (
+    id              NUMBER(11,0)    CONSTRAINT AuthTokens_key PRIMARY KEY,
+    Owner           NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Token           VARCHAR2(256),
+    Description     varchar2(255)   DEFAULT '',
+    LastUsed        DATE,
+    Creator         NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    Created         DATE,
+    LastUpdatedBy   NUMBER(11,0)    DEFAULT 0 NOT NULL,
+    LastUpdated     DATE
+);
+
+CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -129,6 +129,9 @@ sub Gateway {
         message => undef,
         %$argsref
     );
+
+    RT->Config->RefreshConfigFromDatabase();
+    RT->System->MaybeRebuildLifecycleCache();
 
     # Set the scope to return from with TMPFAIL/FAILURE/SUCCESS
     $SCOPE = HERE;
@@ -1466,17 +1469,21 @@ sub _HTMLFormatter {
     return $formatter if defined $formatter;
 
     my $wanted = RT->Config->Get("HTMLFormatter");
+    my @options = ("w3m", "elinks", "links", "html2text", "lynx", "core");
 
     my @order;
     if ($wanted) {
         @order = ($wanted, "core");
     } else {
-        @order = ("w3m", "elinks", "links", "html2text", "lynx", "core");
+        @order = @options;
     }
     # Always fall back to core, even if it is not listed
     for my $prog (@order) {
         if ($prog eq "core") {
             RT->Logger->debug("Using internal Perl HTML -> text conversion");
+            if ( !$ENV{HARNESS_ACTIVE} ) {
+                RT->Logger->warn("Running with the internal HTML converter can result in performance issues with some HTML. Install one of the following utilities with your package manager to improve performance with an external tool: " . join (', ', grep { $_ ne 'core' } @options));
+            }
             require HTML::FormatText::WithLinks::AndTables;
             $formatter = \&_HTMLFormatText;
         } else {

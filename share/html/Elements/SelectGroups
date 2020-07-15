@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="col-md-3">
+<div class="col-3">
   <select name="<% $SelectFieldName %>" class="selectpicker form-control">
 % foreach my $col (RT::Group->BasicColumns) {
     <option <% ($GroupField eq $col->[0]) ? 'selected="selected"' : '' %> value="<% $col->[0] %>"><% loc($col->[1]) %></option>
@@ -56,10 +56,10 @@
 % }
   </select>
 </div>
-<div class="col-md-3">
+<div class="col-3">
   <& /Elements/SelectMatch, Name => $SelectOpName, Default => $GroupOp &>
 </div>
-<div class="col-md-3">
+<div class="col-3">
   <input type="text" size="8" name="<% $InputStringName %>" value="<% $GroupString %>" class="form-control"/>
 </div>
 <%INIT>

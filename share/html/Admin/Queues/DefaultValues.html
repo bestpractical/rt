@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,20 +55,20 @@
 <div class="ticket-info-basics">
   <&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Priority</&>:
     </div>
-    <div class="col-md-9 value">
-      <& /Elements/SelectPriority, Name => "InitialPriority", Default => $queue->DefaultValue('InitialPriority') &>
+    <div class="value col-9">
+      <& /Elements/SelectPriority, Name => "InitialPriority", Default => $queue->DefaultValue('InitialPriority'), QueueObj => $queue &>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Final Priority</&>:
     </div>
-    <div class="col-md-9 value">
-      <& /Elements/SelectPriority, Name => "FinalPriority", Default => $queue->DefaultValue('FinalPriority') &>
+    <div class="value col-9">
+      <& /Elements/SelectPriority, Name => "FinalPriority", Default => $queue->DefaultValue('FinalPriority'), QueueObj => $queue &>
       <span><em><&|/l&>requires running rt-crontool</&></em></span>
     </div>
   </div>
@@ -80,10 +80,10 @@
   &>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Article</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectArticle, QueueObj => $queue, Default => $queue->DefaultValue('Article'), Name => 'Article' &>
     </div>
   </div>
@@ -94,19 +94,19 @@
 <div class="ticket-info-dates">
   <&|/Widgets/TitleBox, title => loc("Dates"), content_class => 'mx-auto width-sm' &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Starts</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectDate, Name => "Starts", Default => $queue->DefaultValue('Starts') || '' &>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Due</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectDate, Name => "Due", Default => $queue->DefaultValue('Due') || '' &>
     </div>
   </div>
@@ -143,7 +143,7 @@
 </div>
 % }
 
-<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}) &>
+<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}), Groupings => \@groupings &>
 
 <div class="ticket-info-cfs">
   <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields"), content_class => 'mx-auto width-sm' &>
@@ -152,12 +152,12 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
   </div>
 </div>
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
   </div>
 </div>
@@ -168,6 +168,9 @@ my $queue = RT::Queue->new( $session{CurrentUser} );
 $queue->Load($id) || Abort( loc( "Couldn't load object [_1]", $id ) );
 
 my $title = loc( 'Default Values for queue [_1]', $queue->Name );
+my @groupings = (RT::CustomField->CustomGroupings('RT::Ticket'), '');
+
+$m->callback( CallbackName => 'Init', ARGSRef => \%ARGS, Queue => $queue, Title => \$title, Groupings => \@groupings );
 
 my @results;
 if ( $ARGS{Reset} ) {

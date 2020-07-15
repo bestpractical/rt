@@ -1,8 +1,8 @@
 
 CREATE TABLE Attachments (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
-  TransactionId integer NOT NULL  ,
-  Parent integer NOT NULL DEFAULT 0  ,
+  id BIGINT NOT NULL  AUTO_INCREMENT,
+  TransactionId BIGINT NOT NULL  ,
+  Parent BIGINT NOT NULL DEFAULT 0  ,
   MessageId varchar(160) CHARACTER SET ascii NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
@@ -103,12 +103,12 @@ CREATE TABLE ScripConditions (
 
 
 CREATE TABLE Transactions (
-  id INTEGER NOT NULL  AUTO_INCREMENT,
+  id BIGINT NOT NULL  AUTO_INCREMENT,
   ObjectType varchar(64) CHARACTER SET ascii NOT NULL,
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) CHARACTER SET ascii NULL,
-  Field varchar(40) CHARACTER SET ascii NULL,
+  Field varchar(255) CHARACTER SET ascii NULL,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
   ReferenceType varchar(255) CHARACTER SET ascii NULL,
@@ -326,7 +326,7 @@ CREATE TABLE ObjectCustomFieldValues (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   CustomField int NOT NULL  ,
   ObjectType varchar(255) CHARACTER SET ascii NOT NULL,     # Final target of the Object
-  ObjectId int NOT NULL  ,                  # New -- Replaces Ticket
+  ObjectId BIGINT NOT NULL  ,                  # New -- Replaces Ticket
   SortOrder integer NOT NULL DEFAULT 0  ,   # New -- ordering for multiple values
 
   Content varchar(255) NULL  ,
@@ -573,6 +573,20 @@ CREATE TABLE Configurations (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4;
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
+CREATE INDEX Configurations1 ON Configurations (Name, Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
 
+CREATE TABLE AuthTokens (
+    id                int(11)         NOT NULL AUTO_INCREMENT,
+    Owner             int(11)         NOT NULL DEFAULT 0,
+    Token             varchar(256)    NULL,
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    LastUsed          datetime                 DEFAULT NULL,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           datetime                 DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       datetime                 DEFAULT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB CHARACTER SET utf8mb4;
+
+CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);

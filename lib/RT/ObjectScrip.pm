@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -269,6 +269,8 @@ sub FindDependencies {
         my $obj = RT::Queue->new( $self->CurrentUser );
         $obj->Load( $self->ObjectId );
         $deps->Add( out => $obj );
+
+        $deps->Add( out => $self->ScripObj->TemplateObj($obj->Id) );
     }
 }
 

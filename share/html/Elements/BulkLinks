@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,13 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-6">
+  <div class="col-6">
 <h3><&|/l&>Current Links</&></h3>
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Depends on</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <div class="form-row">
 % if ( $hash{DependsOn} ) {
 % for my $link ( values %{$hash{DependsOn}} ) {
@@ -63,10 +63,10 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Depended on by</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
 % if ( $hash{DependedOnBy} ) {
 % for my $link ( values %{$hash{DependedOnBy}} ) {
       <& EditLink, Link => $link, Mode => 'Base' &>
@@ -75,10 +75,10 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Parents</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
 % if ( $hash{MemberOf} ) {
 % for my $link ( values %{$hash{MemberOf}} ) {
       <& EditLink, Link => $link, Mode => 'Target' &>
@@ -87,10 +87,10 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Children</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
 % if ( $hash{Members} ) {
 % for my $link ( values %{$hash{Members}} ) {
       <& EditLink, Link => $link, Mode => 'Base' &>
@@ -99,10 +99,10 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Refers to</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
 % if ( $hash{RefersTo} ) {
 % for my $link ( values %{$hash{RefersTo}} ) {
       <& EditLink, Link => $link, Mode => 'Target' &>
@@ -111,10 +111,10 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Referred to by</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
 % if ( $hash{ReferredToBy} ) {
 % for my $link ( values %{$hash{ReferredToBy}} ) {
       <& EditLink, Link => $link, Mode => 'Base' &>
@@ -123,67 +123,67 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3"></div>
-  <div class="col-md-9">
+  <div class="col-3"></div>
+  <div class="col-9">
     <i><&|/l&>(Check box to delete)</&></i>
   </div>
 </div>
 </div>
 
-<div class="col-md-6">
+<div class="col-6">
 <h3><&|/l&>New Links</&></h3>
 <em><&|/l&>Enter tickets or URIs to link to. Separate multiple entries with spaces.</&></em>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Depends on</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="<% $record_type %>-DependsOn" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-DependsOn' } || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Depended on by</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="DependsOn-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'DependsOn-'. $record_type } || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Parents</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="<% $record_type %>-MemberOf" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-MemberOf'} || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Children</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="MemberOf-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'MemberOf-'. $record_type } || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Refers to</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="<% $record_type %>-RefersTo" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ $record_type .'-RefersTo'} || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Referred to by</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="RefersTo-<% $record_type %>" data-autocomplete="Tickets" data-autocomplete-multiple="1" value="<% $ARGS{ 'RefersTo-'. $record_type } || '' %>" />
   </div>
 </div>

@@ -23,12 +23,12 @@ diag "check that signing doesn't work if there is no key";
     $m->tick( Sign => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_contains(
         'unable to sign outgoing email messages',
         'problems with passphrase'
     );
-    $m->warning_like(qr/signing failed: secret key not available/);
+    $m->warning_like(qr/signing failed: (?:secret key not available|No secret key)/);
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
@@ -50,7 +50,7 @@ diag "check that things don't work if there is no key";
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_contains(
         'You are going to encrypt outgoing email messages',
         'problems with keys'
@@ -66,7 +66,7 @@ diag "check that things don't work if there is no key";
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
 
-    $m->next_warning_like(qr/public key not found/) for 1 .. 2;
+    $m->next_warning_like(qr/public key not found|No public key/) for 1 .. 2;
     $m->no_leftover_warnings_ok;
 }
 
@@ -88,7 +88,7 @@ diag "check that things still doesn't work if key is not trusted";
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_contains(
         'You are going to encrypt outgoing email messages',
         'problems with keys'
@@ -103,7 +103,7 @@ diag "check that things still doesn't work if key is not trusted";
     is scalar $input->possible_values, 1, 'one option';
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_contains(
         'You are going to encrypt outgoing email messages',
         'problems with keys'
@@ -137,7 +137,7 @@ diag "check that things still doesn't work if two keys are not trusted";
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_contains(
         'You are going to encrypt outgoing email messages',
         'problems with keys'
@@ -152,7 +152,7 @@ diag "check that things still doesn't work if two keys are not trusted";
     is scalar $input->possible_values, 2, 'two options';
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_contains(
         'You are going to encrypt outgoing email messages',
         'problems with keys'
@@ -184,7 +184,7 @@ diag "check that we see key selector even if only one key is trusted but there a
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_contains(
         'You are going to encrypt outgoing email messages',
         'problems with keys'
@@ -213,7 +213,7 @@ diag "check that key selector works and we can select trusted key";
     $m->tick( Encrypt => 1 );
     $m->field( Requestors => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_contains(
         'You are going to encrypt outgoing email messages',
         'problems with keys'
@@ -228,7 +228,7 @@ diag "check that key selector works and we can select trusted key";
     is scalar $input->possible_values, 2, 'two options';
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->content_like( qr/Ticket \d+ created in queue/i, 'ticket created' );
 
     my @mail = RT::Test->fetch_caught_mails;
@@ -249,7 +249,7 @@ for my $encrypt (0, 1) {
     $m->field( Cc => 'rt-test@example.com' );
     $m->field( Content => 'Some content' );
     $m->field( Attach => $0 );
-    $m->submit;
+    $m->click('SubmitTicket');
 
     if ($encrypt) {
         $m->content_contains(
@@ -266,7 +266,7 @@ for my $encrypt (0, 1) {
         is scalar $input->possible_values, 2, 'two options';
 
         $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-        $m->submit;
+        $m->click('SubmitTicket');
     }
 
     $m->content_like( qr/Ticket \d+ created in queue/i, 'ticket created' );

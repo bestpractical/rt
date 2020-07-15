@@ -20,6 +20,13 @@ table.queue-summary th.collection-as-table a {
     color: #3858a3
 }
 
+table.collection-as-table th.collection-as-table,
+table.queue-summary th.collection-as-table,
+.article-headers .label {
+    color: #3858a3;
+    font-weight: 500; /* 500 is between regular (400) and bold (700) */
+}
+
 table.queue-summary th.collection-as-table {
     text-align: right
 }
@@ -40,4 +47,21 @@ table.queue-summary th.collection-as-table {
   color: #5C6273;
   padding: 7px;
   vertical-align: middle;
+}
+
+.pagenum *,
+.paging a.nav {
+    padding: .5em;
+}
+
+.currentpage {
+    text-decoration: none;
+    font-weight: bold;
+    background: #eee;
+}
+
+div.paging {
+    font-size: 1.07em;
+    text-align: center;
+    padding-bottom: 1em;
 }

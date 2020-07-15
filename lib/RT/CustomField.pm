@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -84,8 +84,8 @@ our %FieldTypes = (
                 'Select box',              # loc
                 'List',                    # loc
             ],
-            single => [ 'Select box',              # loc
-                        'Dropdown',                # loc
+            single => [ 'Dropdown',                # loc
+                        'Select box',              # loc
                         'List',                    # loc
                       ]
         },
@@ -265,6 +265,7 @@ sub Create {
         Pattern                => '',
         Description            => '',
         Disabled               => 0,
+        SortOrder              => 0,
         LookupType             => '',
         LinkValueTo            => '',
         IncludeContentForValue => '',
@@ -361,6 +362,7 @@ sub Create {
         ValuesClass       => $args{'ValuesClass'},
         Description       => $args{'Description'},
         Disabled          => $args{'Disabled'},
+        SortOrder         => $args{'SortOrder'},
         LookupType        => $args{'LookupType'},
         UniqueValues      => $args{'UniqueValues'},
         CanonicalizeClass => $args{'CanonicalizeClass'},

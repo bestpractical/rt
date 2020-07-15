@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,6 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<% RT->Config->Get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
-  <input type="submit" name="SubmitTicket" value="Create" style="display:none">
   <input type="hidden" class="hidden" name="id" value="new" />
   <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
   <input type="hidden" name="QueueChanged" value="0" />
@@ -86,6 +85,7 @@
                     Default        => $Queue,
                     ShowNullOption => 0,
                     AutoSubmit     => 1,
+                    ShowAllQueues  => 0,
                 },
             },
             {   name => 'Status',
@@ -153,38 +153,42 @@
 % $m->callback(CallbackName => 'BeforeRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS);
 
 <div class="form-row">
-<div class="label col-md-2"><&|/l&>Requestors</&>:</div>
-<div class="value col-md-9">
+<div class="label col-2"><&|/l&>Requestors</&>:</div>
+<div class="value col-9">
 <& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
 % $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 </div>
 </div>
 
 <div class="form-row">
-<div class="label col-md-2"><&|/l&>Cc</&>:
+<div class="label col-2"><&|/l&>Cc</&>:
 <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to a list of email addresses. These people will receive future updates.</&>"></span>
 </div>
-<div class="value col-md-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1 &></div>
+<div class="value col-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1 &></div>
 </div>
 
 <div class="form-row">
-<div class="label col-md-2"><&|/l&>Admin Cc</&>:
+<div class="label col-2"><&|/l&>Admin Cc</&>:
 <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to a list of administrative email addresses. These people will receive future updates.</&>"></span>
 </div>
-<div class="value col-md-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1 &></div>
+<div class="value col-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1 &></div>
 </div>
 
 % my $roles = $QueueObj->CustomRoles;
 % $roles->LimitToMultipleValue;
+
+% my @hidden = $QueueObj->HiddenCustomRoleIDsForURL;
+% $roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+
 % $m->callback( CallbackName => 'ModifyCustomRoles', ARGSRef => \%ARGS, CustomRoles => $roles );
 % while (my $role = $roles->Next) {
 <div class="form-row">
-  <div class="form-group label col-md-2"><% $role->Name %>:
+  <div class="form-group label col-2"><% $role->Name %>:
 % if ($role->EntryHint) {
     <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 % }
   </div>
-  <div class="form-group value col-md-9"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></div>
+  <div class="form-group value col-9"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></div>
 </div>
 % }
 
@@ -198,10 +202,10 @@
 &>
 
 <div class="form-row">
-<div class="form-group label col-md-2">
+<div class="form-group label col-2">
 <&|/l&>Subject</&>:
 </div>
-<div class="form-group value col-md-9">
+<div class="form-group value col-9">
 <input class="form-control" type="text" name="Subject" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </div>
@@ -209,8 +213,8 @@
 
 % if ( $gnupg_widget ) {
 <div class="form-row">
-  <div class="label col-md-2 empty"></div>
-  <div class="value col-md-9"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &></div>
+  <div class="label col-2 empty"></div>
+  <div class="value col-9"><& /Elements/Crypt/SignEncryptWidget, self => $gnupg_widget, QueueObj => $QueueObj &></div>
 </div>
 % }
 % if ( RT->Config->Get('ArticleOnTicketCreate')) {
@@ -231,7 +235,11 @@
         <& /Ticket/Elements/AddAttachments, %ARGS, QueueObj => $QueueObj &>
       </div>
     </&>
-    <& /Elements/Submit, Label => loc("Create"), id => 'SubmitTicket' &>
+    <div class="form-row">
+      <div class="col-12">
+        <& /Elements/Submit, Label => loc("Create"), Name => 'SubmitTicket', id => 'SubmitTicket' &>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -246,34 +254,36 @@
 <div>
 
 <div class="form-row">
-  <div class="label col-md-3"><&|/l&>Priority</&>:</div>
-  <div class="value col-md-9"><& /Elements/SelectPriority,
+  <div class="label col-3"><&|/l&>Priority</&>:</div>
+  <div class="value col-9"><& /Elements/SelectPriority,
       Name => "InitialPriority",
-    Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
+      Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->DefaultValue('InitialPriority'),
+      QueueObj => $QueueObj,
   &></div>
 </div>
 
-<div class="form-row">
-  <div class="label col-md-3"><&|/l&>Final Priority</&>:</div>
-  <div class="value col-md-9"><& /Elements/SelectPriority,
+<div class="form-row FinalPriority">
+  <div class="label col-3"><&|/l&>Final Priority</&>:</div>
+  <div class="value col-9"><& /Elements/SelectPriority,
     Name => "FinalPriority",
     Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->DefaultValue('FinalPriority'),
+    QueueObj => $QueueObj,
   &></div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3"><&|/l&>Time Estimated</&>:</div>
-  <div class="value col-md-9"><& /Elements/EditTimeValue, Name => 'TimeEstimated', Default => $ARGS{TimeEstimated} || '' &></div>
+  <div class="label col-3"><&|/l&>Time Estimated</&>:</div>
+  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeEstimated', Default => $ARGS{TimeEstimated} || '' &></div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3"><&|/l&>Time Worked</&>:</div>
-  <div class="value col-md-9"><& /Elements/EditTimeValue, Name => 'TimeWorked', Default => $ARGS{TimeWorked} || '' &></div>
+  <div class="label col-3"><&|/l&>Time Worked</&>:</div>
+  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeWorked', Default => $ARGS{TimeWorked} || '' &></div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3"><&|/l&>Time Left</&>:</div>
-  <div class="value col-md-9"><& /Elements/EditTimeValue, Name => 'TimeLeft', Default => $ARGS{TimeLeft} || '' &></div>
+  <div class="label col-3"><&|/l&>Time Left</&>:</div>
+  <div class="value col-9"><& /Elements/EditTimeValue, Name => 'TimeLeft', Default => $ARGS{TimeLeft} || '' &></div>
 </div>
 </div>
 </&>
@@ -285,12 +295,12 @@
 
 <div>
 <div class="form-row">
-  <div class="label col-md-3"><&|/l&>Starts</&>:</div>
-  <div class="value col-md-9"><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &></div>
+  <div class="label col-3"><&|/l&>Starts</&>:</div>
+  <div class="value col-9"><& /Elements/SelectDate, Name => "Starts", Default => $ARGS{Starts} || $QueueObj->DefaultValue('Starts') || '' &></div>
 </div>
 <div class="form-row">
-  <div class="label col-md-3"><&|/l&>Due</&>:</div>
-  <div class="value col-md-9"><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></div>
+  <div class="label col-3"><&|/l&>Due</&>:</div>
+  <div class="value col-9"><& /Elements/SelectDate, Name => "Due", Default => $ARGS{Due} || $QueueObj->DefaultValue('Due') || '' &></div>
 </div>
 <& /Elements/EditCustomFields,
     %ARGS,
@@ -320,7 +330,11 @@
 
 </div>
 </div>
-<& /Elements/Submit, Label => loc("Create") &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc("Create"), Name => 'SubmitTicket' &>
+    </div>
+  </div>
 </div>
 </form>
 
@@ -339,9 +353,10 @@ unless ($Queue) {
         ObjectType       => 'Queue',
         CheckRight       => 'CreateTicket',
         CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
+        ShowAll          => 0,
     );
 
-    $Queue = $session{$cache_key}{objects}[0]->{Id};
+    $Queue = $session{$cache_key}{objects}[0]->{Id} if $session{$cache_key}{objects}[0];
 }
 
 Abort( loc( "Permission Denied" ) ) unless $Queue;
@@ -460,7 +475,7 @@ $m->comp( '/Elements/Crypt/SignEncryptWidget:Process',
 );
 
 
-if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
+if ( $ARGS{SubmitTicket} ) {
     my $status = $m->comp('/Elements/Crypt/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         Operation => 'Create',
@@ -492,12 +507,10 @@ $m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => 
 $m->comp( '/Articles/Elements/CheckSkipCreate', ARGSRef => \%ARGS, skip_create => \$skip_create,
               checks_failure => $checks_failure, results => \@results );
 
-if ((!exists $ARGS{'AddMoreAttach'}) and (!exists $ARGS{'Go'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ( !$checks_failure && !$skip_create && !$ARGS{'QueueChanged'} ) {
-        $m->comp('Display.html', %ARGS);
-        $RT::Logger->crit("After display call; error is $@");
-        $m->abort();
-    }
+if ( !$checks_failure && !$skip_create && $ARGS{SubmitTicket} ) {
+    $m->comp('Display.html', %ARGS);
+    $RT::Logger->crit("After display call; error is $@");
+    $m->abort();
 }
 PageMenu->child( basics => raw_html =>  q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . loc('Basics') . q[</a>]);
 PageMenu->child( details => raw_html =>  q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . loc('Details') . q[</a>]);

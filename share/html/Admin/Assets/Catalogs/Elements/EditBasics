@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,28 +46,28 @@
 %#
 %# END BPS TAGGED BLOCK }}}
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Name</&>
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="Name" value="<% $current{Name} %>" size="40">
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Description</&>
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="Description" value="<% $current{Description} %>" size="40">
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Lifecycle</&>
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Widgets/Form/Select:InputOnly,
           Name         => 'Lifecycle',
           Values       => [ sort { loc($a) cmp loc($b) } RT::Lifecycle->List( $CatalogObj->LifecycleType ) ],
@@ -78,9 +78,9 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label"></div>
+    <div class="label col-3"></div>
     <input name="SetDisabled" type="hidden" value="1">
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input name="Disabled" type="checkbox" class="checkbox custom-control-input" id="Disabled" value="1" <% $current{Disabled} ? "checked" : "" %>>
         <label class="custom-control-label" for="Disabled"><&|/l&>Disabled?</&></label>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,5 +53,6 @@
 <%ARGS>
 $Name => 'DateType'
 $Prefix => ''
-@Options => qw(Created Started Resolved Told LastUpdated Starts Due Updated) # loc_qw
+$Class => 'RT::Tickets'
+@Options => $Class eq 'RT::Assets' ? qw(Created LastUpdated) : qw(Created Started Resolved Told LastUpdated Starts Due Updated) # loc_qw
 </%ARGS>

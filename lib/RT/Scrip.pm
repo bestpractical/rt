@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -200,9 +200,10 @@ sub Create {
     return ( $id, $msg ) unless $id;
 
     (my $status, $msg) = RT::ObjectScrip->new( $self->CurrentUser )->Add(
-        Scrip    => $self,
-        Stage    => $args{'Stage'},
-        ObjectId => $args{'Queue'},
+        Scrip     => $self,
+        Stage     => $args{'Stage'},
+        ObjectId  => $args{'Queue'},
+        SortOrder => $args{'ObjectSortOrder'},
     );
     $RT::Logger->error( "Couldn't add scrip: $msg" ) unless $status;
 
@@ -1117,7 +1118,8 @@ sub FindDependencies {
 
     $deps->Add( out => $self->ScripConditionObj );
     $deps->Add( out => $self->ScripActionObj );
-    $deps->Add( out => $self->TemplateObj );
+    my $template = $self->TemplateObj;
+    $deps->Add( out => $template ) if $template->Id;
 }
 
 sub __DependsOn {

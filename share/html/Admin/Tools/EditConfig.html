@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,6 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+Abort( loc( 'Permission Denied' ) ) unless RT->Config->Get('ShowEditSystemConfig');
+
 my $title = loc('System Configuration');
 unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
  Abort(loc('This feature is only available to system administrators'));
@@ -62,28 +64,21 @@ my $active_context = {
 
 my @results;
 
-use Data::Dumper;
-my $stringify = sub {
-    my $value = shift;
-    return "" if !defined($value);
-
-    local $Data::Dumper::Terse = 1;
-    local $Data::Dumper::Indent = 2;
-    local $Data::Dumper::Sortkeys = 1;
-    my $output = Dumper $value;
-    chomp $output;
-    return $output;
-};
-
 if (delete $ARGS{Update}) {
     RT->Config->BeginDatabaseConfigChanges;
     $RT::Handle->BeginTransaction;
     my $has_error;
 
+    if ( delete $ARGS{CustomDateRanges} ) {
+        push @results, ProcessCustomDateRanges( ARGSRef => \%ARGS );
+    }
+
     eval {
         for my $key (keys %ARGS) {
             next if $key =~ /-Current$/;
             next if $key eq 'tab' || $key eq 'section' || $key eq 'subsection';
+            # Get rid of extra arguments like in CustomDateRanges
+            next if !exists $ARGS{$key . '-Current'};
 
             my $meta = RT->Config->Meta( $key );
             my $widget = $meta->{Widget} || '/Widgets/Form/Code';
@@ -138,16 +133,8 @@ if (delete $ARGS{Update}) {
             }
 
             my $setting = RT::Configuration->new($session{CurrentUser});
-            $setting->Load($key);
+            $setting->LoadByCols(Name => $key, Disabled => 0);
             if ($setting->Id) {
-                if ($setting->Disabled) {
-                    my ($ok, $msg) = $setting->SetDisabled(0);
-                    if (!$ok) {
-                        push @results, $msg;
-                        $has_error++;
-                    }
-                }
-
                 my ($ok, $msg) = $setting->SetContent($val);
                 push @results, $msg;
                 $has_error++ if !$ok;

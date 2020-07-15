@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,73 +53,82 @@
 
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/static/js/farbtastic.js"></script>
 
-<div id="simple-customize">
-<div id="upload-logo">
-  <h2>Logo</h2>
-  <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
-  <form method="POST" enctype="multipart/form-data">
-    <div class="form-row">
-      <div class="col-md-auto">
-        <div class="custom-file">
-          <input type="file" name="logo-upload" class="custom-file-input" id="logo-upload" />
-          <label class="custom-file-label" for="logo-upload"><&|/l&>Upload a new logo</&></label>
+<div class="row">
+
+  <div id="simple-customize" class="col-6">
+    <div id="upload-logo">
+      <h2>Logo</h2>
+      <& /Elements/Logo, id => 'logo-theme-editor', ShowName => 0 &>
+      <button onclick="setLogoSize()" class="button btn btn-primary" id="logo-size"><&|/l&>Full Size</&></button>
+
+      <form method="POST" enctype="multipart/form-data">
+        <div class="form-row">
+          <div class="col-auto">
+            <div class="custom-file">
+              <input type="file" name="logo-upload" class="custom-file-input" id="logo-upload" />
+              <label class="custom-file-label" for="logo-upload"><&|/l&>Upload a new logo</&></label>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="gd-support">
+        <div class="gd-support">
 % if ($valid_image_types) {
-    <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
+          <&|/l, $valid_image_types &>Your system supports automatic color suggestions for: [_1]</&>
 % } else {
-    <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
+          <&|/l&>GD is disabled or not installed. You can upload an image, but you won't get automatic color suggestions.</&>
 % }
+        </div>
+        <input class="button btn btn-primary" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
+        <input class="button btn btn-primary" type="submit" value="<&|/l&>Upload</&>" />
+      </form>
     </div>
-    <input class="button btn btn-primary" name="reset_logo" value="<&|/l&>Reset to default RT Logo</&>" type="submit" />
-    <input class="button btn btn-primary" type="submit" value="<&|/l&>Upload</&>" />
-  </form>
+  </div>
+
+  <div id="custom-css" class="col-6">
+    <h2><&|/l&>Custom CSS (Advanced)</&></h2>
+
+    <form method="POST" id="custom-css-form">
+      <textarea class="form-control mb-2" rows="20" id="user_css" name="user_css" wrap="off"><% $user_css %></textarea>
+      <input id="try" type="submit" class="button btn btn-primary" value="<&|/l&>Try</&>" />
+      <input id="reset" type="reset" class="button btn btn-primary" value="<&|/l&>Reset</&>" type="submit" />
+      <input name="reset_css" class="button btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
+      <input class="button btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
+    </form>
+  </div>
 </div>
 
-<div id="customize-theme">
-  <h2><&|/l&>Customize the RT theme</&></h2>
-  <ol class="list-group-compact list-group">
-    <li class="list-group-item">
-      <label for="section"><&|/l&>Select a section</&>:</label>
-      <select class="selectpicker" id="section"></select>
-    </li>
-    <li class="list-group-item">
-      <div class="description">
-        <&|/l&>Select a color for the section</&>:
-        <div id="logo-picker-hint" style="display: none;">
-          <&|/l&>You can also click on the logo above to get colors!</&>
+<br>
+
+<div class="row">
+  <div id="customize-theme" class="col-6">
+    <h2><&|/l&>Customize the RT theme</&></h2>
+    <ol class="list-group-compact list-group">
+      <li class="list-group-item">
+        <label for="section"><&|/l&>Select a section</&>:</label>
+        <select class="selectpicker" id="section"></select>
+      </li>
+      <li class="list-group-item">
+        <div class="description">
+          <&|/l&>Select a color for the section</&>:
+          <div id="logo-picker-hint" style="display: none;">
+            <&|/l&>You can also click on the logo above to get colors!</&>
+          </div>
         </div>
-      </div>
 % if ($colors) {
-<div class="button btn btn-primary primary-colors">
+        <div class="button btn btn-primary primary-colors">
 %   for (@$colors) {
 %     my $fg = $_->{l} >= $text_threshold ? 'black' : 'white';
-<button type="button" class="button btn btn-primary color-template"
-        style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
+          <button type="button" class="button btn btn-primary color-template"
+                  style="background-color: rgb(<% $_->{c} %>); color: <% $fg %>;">
   <&|/l&>Text</&>
-</button>
+          </button>
 %   }
-</div>
+        </div>
 % }
-      <div id="color-picker"></div>
-      <canvas id="logo-color-picker" title="<&|/l&>Click to choose a color</&>"></canvas>
-    </li>
-  </ol>
-</div>
-</div>
-
-<div id="custom-css">
-  <h2><&|/l&>Custom CSS (Advanced)</&></h2>
-
-  <form method="POST">
-    <textarea classs="form-control" rows=20 id="user_css" name="user_css" wrap="off"><% $user_css %></textarea><br />
-    <input id="try" type="submit" class="button btn btn-primary" value="<&|/l&>Try</&>" />
-    <input id="reset" type="reset" class="button btn btn-primary" value="<&|/l&>Reset</&>" type="submit" />
-    <input name="reset_css" class="button btn btn-primary" value="<&|/l&>Reset to default RT Theme</&>" type="submit" />
-    <input class="button btn btn-primary" value="<&|/l&>Save</&>" type="submit" />
-  </form>
+        <div id="color-picker"></div>
+        <canvas id="logo-color-picker" title="<&|/l&>Click to choose a color</&>"></canvas>
+      </li>
+    </ol>
+  </div>
 </div>
 
 <%ONCE>
@@ -128,7 +137,7 @@ my @sections = (
     ['Menu bar'     => ['div#quickbar', '#main-navigation #app-nav.sf-shadow > li, #main-navigation #app-nav.sf-shadow > li > a, #prefs-menu > li, #prefs-menu > li > a, #logo .rtname']],
     ['Title bar'    => ['div#header']],
     ['Page title'   => ['div#header h1']],
-    ['Page content' => ['div#body']],
+    ['Page content' => ['div#body, .body-content-class']],
     ['Buttons'      => ['input[type="reset"], input[type="submit"], input[class="button"]']],
     ['Button hover' => ['input[type="reset"]:hover, input[type="submit"]:hover, input[class="button"]:hover']],
     ['Search results' => ['table.collection-as-table th.collection-as-table a']],
@@ -147,6 +156,9 @@ jQuery(function($) {
                            .attr('value', v[0])
                            .text(v[0]));
     });
+    // Refresh selectpicker so we have a default value, at least for Firefox
+    $('select#section').val(section_css_mapping[0][0]);
+    $('.selectpicker').selectpicker('refresh');
 
     function update_sitecss(text) {
         if (!text)
@@ -233,27 +245,56 @@ jQuery(window).on('load',function() {
 
     if (!el_canvas.getContext) return;
 
-    var context      = el_canvas.getContext("2d");
+    setLogoSize();
+});
+
+function setLogoSize() {
+  var logo      = jQuery("#logo-theme-editor img");
+  var canvas    = jQuery("#logo-color-picker");
+  var el_canvas = canvas.get(0);
+
+  if (!el_canvas.getContext) return;
+  // Set logo to same size as CSS input
+  var container = jQuery('#user_css');
+
+  var context = el_canvas.getContext("2d");
+  var button  = jQuery('#logo-size');
+
+  if ( button.text() == '<&|/l&>Preview</&>' ) {
+    var ratio = Math.min(container.width() / logo.width(), container.height() / logo.height());
+
+    el_canvas.width  = logo.width()*ratio;
+    el_canvas.height = logo.height()*ratio;
+
+    // Re-draw our scaled down image
+    context.drawImage(logo.get(0), 0, 0, logo.width()*ratio, logo.height()*ratio );
+
+    button.text( "<&|/l&>Full Size</&>" );
+  }
+  else {
     el_canvas.width  = logo.width();
     el_canvas.height = logo.height();
-    context.drawImage(logo.get(0), 0, 0);
 
-    logo.hide().after(canvas);
-    canvas.show().click(function(ev) {
-        ev.preventDefault();
-        var R = 0,
-            G = 1,
-            B = 2,
-            A = 3;
-        var pixel = this.getContext("2d").getImageData(ev.offsetX, ev.offsetY, 1, 1).data;
-        // Farbtastic expects values in the range of 0..1
-        var rgba  = $.makeArray(pixel).map(function(v,i) { return v / 255 });
-        var wheel = $.farbtastic("#color-picker");
-        wheel.setHSL( wheel.RGBToHSL( rgba.slice(R,A) ) );
-        // XXX TODO factor in the alpha channel too
-    });
-    $('#logo-picker-hint').show();
-});
+    context.drawImage(logo.get(0), 0, 0);
+    button.text( "<&|/l&>Preview</&>" );
+  }
+
+  logo.hide().after(canvas);
+  canvas.show().click(function(ev) {
+      ev.preventDefault();
+      var R = 0,
+          G = 1,
+          B = 2,
+          A = 3;
+      var pixel = this.getContext("2d").getImageData(ev.offsetX, ev.offsetY, 1, 1).data;
+      // Farbtastic expects values in the range of 0..1
+      var rgba  = jQuery.makeArray(pixel).map(function(v,i) { return v / 255 });
+      var wheel = jQuery.farbtastic("#color-picker");
+      wheel.setHSL( wheel.RGBToHSL( rgba.slice(R,A) ) );
+      // XXX TODO factor in the alpha channel too
+  });
+  jQuery('#logo-picker-hint').show();
+}
 </script>
 <%INIT>
 unless ($session{'CurrentUser'}->HasRight( Object=> RT->System, Right => 'SuperUser')) {

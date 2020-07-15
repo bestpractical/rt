@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,13 +48,13 @@
 <div class="container">
 % for my $type (@display) {
   <div class="form-row <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
-    <div class="label col-md-3">
+    <div class="label col-4 col-md-3">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
         <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
 %     }
     </div>
-    <div class="value col-md-9"><span class="current-value">
+    <div class="value col-8 col-md-9"><span class="current-value">
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
     </span></div>
   </div>
@@ -72,7 +72,7 @@
     <div class="col-auto label">
       <&|/l&>Create new</&>
     </div>
-    <div class="col">
+    <div class="col-auto">
       <select name="LinkType" class="selectpicker form-control">
         <option value="DependsOn-new"><% loc('Depends on') %></option>
         <option value="new-DependsOn"><% loc('Depended on by') %></option>
@@ -85,10 +85,10 @@
     <div class="col-auto label">
       <&|/l&>Ticket in</&>
     </div>
-    <div class="col">
+    <div class="col-auto">
       <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
     </div>
-    <div class="col">
+    <div class="col-auto">
       <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="form-control button btn btn-primary">
     </div>
   </div>

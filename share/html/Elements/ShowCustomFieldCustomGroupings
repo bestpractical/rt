@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -96,7 +96,7 @@ for my $group ( @Groupings ) {
     <input type="hidden" class="hidden" name="id" value="<% $Object->id %>" />
     <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
     <div class="form-row">
-      <div class="col-md-12 text-right">
+      <div class="col-12 text-right">
         <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
       </div>
     </div>

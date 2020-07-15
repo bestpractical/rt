@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,14 +46,14 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 label"></div>
-  <div class="col-md-9 value">
+  <div class="label col-3"></div>
+  <div class="value col-9">
     <i><&|/l&>Enter articles, tickets, or other URLs related to this article.</&></i>
   </div>
 </div>
 <div class="form-row">
-  <div class="col-md-3 label"></div>
-  <div class="col-md-9 label text-left">
+  <div class="label col-3"></div>
+  <div class="label col-9 text-left">
     <& LinkEntryInstructions &>
   </div>
 </div>
@@ -61,12 +61,12 @@
 <i><&|/l&>(Check boxes to delete)</&></i>
 % }
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <div class="form-row">
-      <div class="col-md-3 label">
+      <div class="label col-3">
         <&|/l&>Refers to</&>:
       </div>
-      <div class="col-md-auto value">
+      <div class="value col-auto">
         <input class="form-control" type="text" name="<%$id%>-RefersTo" value="<%$ARGS{$id.'-RefersTo'}||''%>" />
       </div>
       <ul class="list-group list-group-compact">
@@ -99,12 +99,12 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <div class="form-row">
-      <div class="col-md-3 label">
+      <div class="label col-3">
         <&|/l&>Referred to by</&>:
       </div>
-      <div class="col-md-auto value">
+      <div class="value col-auto">
         <input class="form-control" type="text" name="RefersTo-<%$id%>" value="<%$ARGS{'RefersTo-'.$id}||''%>" />
       </div>
       <ul class="list-group list-group-compact">

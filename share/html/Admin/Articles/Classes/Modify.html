@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,27 +60,27 @@
 <&| /Widgets/TitleBox, class => 'article-class-info-basics', content_class => 'mx-auto width-sm' &>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Class Name</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="Name" value="<% $ClassObj->Name || $Name || ''%>" />
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Description</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" class="form-control" name="Description" value="<% $ClassObj->Description || $Description || '' %>" size=60 />
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Enabled" name="Enabled" value="1" <%$EnabledChecked%>>
         <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this class)</&></label>
@@ -89,15 +89,15 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <h5 class="mt-3"><&|/l&>When inserting articles in this class into emails:</&></h5>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
         <label class="custom-control-label" for="Include-Name"><&|/l&>Include article name</&></label>
@@ -106,9 +106,9 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-Summary" name="Include-Summary" value="1" <% $include{Summary} %>>
         <label class="custom-control-label" for="Include-Summary"><&|/l&>Include article summary</&></label>
@@ -117,9 +117,9 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-EscapeHTML" name="Include-EscapeHTML" value="1" <% $include{EscapeHTML} %>>
         <label class="custom-control-label" for="Include-EscapeHTML"><&|/l&>Escape HTML (Unchecking this box is potentially unsafe)</&></label>
@@ -131,18 +131,18 @@
   <h5 class="mt-3"><&|/l&>Include custom field:</&></h5>
 % while (my $cf = $cfs->Next) {
   <div class="form-row">
-    <div class="col-md-3 label pt-0">
+    <div class="label col-3 pt-0">
       <% $cf->Name %>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="form-row">
-        <div class="col-md-auto">
+        <div class="col-auto">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input checkbox" id="Include-CF-Title-<% $cf->Id %>" name="Include-CF-Title-<% $cf->Id %>" <% $include{"CF-Title-".$cf->Id} %> />
             <label class="custom-control-label" for="Include-CF-Title-<% $cf->Id %>"><&|/l&>Title</&></label>
           </div>
         </div>
-        <div class="col-md-auto">
+        <div class="col-auto">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input checkbox" id="Include-CF-Value-<% $cf->Id %>" name="Include-CF-Value-<% $cf->Id %>" <% $include{"CF-Value-".$cf->Id} %> />
             <label class="custom-control-label" for="Include-CF-Value-<% $cf->Id %>"><&|/l&>Value</&></label>
@@ -170,7 +170,7 @@
 </&>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
 % if ( $Create ) {
       <& /Elements/Submit, Label => loc('Create') &>
 % } else {

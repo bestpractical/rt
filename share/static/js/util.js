@@ -283,13 +283,23 @@ jQuery(function() {
             var max_height = jQuery(this).css('line-height').replace('px', '') * 5;
             if ( jQuery(this).children().height() > max_height ) {
                 jQuery(this).children().wrapAll('<div class="clip">');
-                jQuery(this).children('div.clip').height('' + max_height + 'px');
+                var height = '' + max_height + 'px';
+                jQuery(this).children('div.clip').attr('clip-height', height).height(height);
                 jQuery(this).append('<a href="#" class="unclip button btn btn-primary">' + loc_key('unclip') + '</a>');
+                jQuery(this).append('<a href="#" class="reclip button btn btn-primary" style="display: none;">' + loc_key('clip') + '</a>');
             }
         }
     });
     jQuery('a.unclip').click(function() {
         jQuery(this).siblings('div.clip').css('height', 'auto');
+        jQuery(this).hide();
+        jQuery(this).siblings('a.reclip').show();
+        return false;
+    });
+    jQuery('a.reclip').click(function() {
+        var clip_div = jQuery(this).siblings('div.clip');
+        clip_div.height(clip_div.attr('clip-height'));
+        jQuery(this).siblings('a.unclip').show();
         jQuery(this).hide();
         return false;
     });
@@ -690,6 +700,81 @@ jQuery(function() {
 
     loadCollapseStates();
     Chart.platform.disableCSSInjection = true;
+
+    if ( window.location.href.indexOf('/Admin/Lifecycles/Advanced.html') != -1 ) {
+        var validate_json = function (str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        };
+
+        jQuery('[name=Config]').bind('input propertychange', function() {
+            var form = jQuery(this).closest('form');
+            if ( validate_json(jQuery(this).val()) ) {
+                form.find('input[type=submit]').prop('disabled', false);
+                form.find('.invalid-json').addClass('hidden');
+            }
+            else {
+                form.find('input[type=submit]').prop('disabled', true);
+                form.find('.invalid-json').removeClass('hidden');
+            }
+        });
+    }
+
+    if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
+
+        // Add action type into iframe to customize default font color
+        jQuery(['action-response', 'action-comment']).each(function(index, class_name) {
+            jQuery('.' + class_name).on('DOMNodeInserted', 'iframe', function(e) {
+                setTimeout(function() {
+                    jQuery(e.target).contents().find('.cke_editable').addClass(class_name);
+                }, 100);
+            });
+        });
+
+        // Toolbar dropdowns insert iframes, we can apply css files there.
+        jQuery('body').on('DOMNodeInserted', '.cke_panel', function(e) {
+            setTimeout( function(){
+                var content = jQuery(e.target).find('iframe').contents();
+                content.find('head').append('<link rel="stylesheet" type="text/css" href="' + RT.Config.WebPath + '/static/RichText/contents-dark.css" media="screen">');
+            }, 0);
+        });
+
+        // "More colors" in color toolbars insert content directly into main DOM.
+        // This is to rescue colored elements from global dark bg color.
+        jQuery('body').on('DOMNodeInserted', '.cke_dialog_container', function(e) {
+            if ( !jQuery(e.target).find('.ColorCell:visible').length ) return;
+
+            // Override global dark bg color
+            jQuery(e.target).find('.ColorCell:visible').each(function() {
+                var style = jQuery(this).attr('style').replace(/background-color:([^;]+);/, 'background-color: $1 !important');
+                jQuery(this).attr('style', style);
+            });
+
+            // Sync highlight color on hover
+            var sync_highlight = function(e) {
+                var bg = jQuery(e).css('background-color');
+                setTimeout(function() {
+                    var style = jQuery('[id^=cke_][id$=_hicolor]:visible').attr('style').replace(/background-color:[^;]+;/, 'background-color: ' + bg + ' !important');
+                    jQuery('[id^=cke_][id$=_hicolor]:visible').attr('style', style);
+                }, 0);
+            };
+
+            jQuery(e.target).find('.ColorCell:visible').hover(function() {
+                sync_highlight(this);
+            });
+
+            // Sync highlight and selected color on click
+            jQuery(e.target).find('.ColorCell:visible').click(function() {
+                sync_highlight(this);
+                var style = jQuery('[id^=cke_][id$=_selhicolor]:visible').attr('style').replace(/background-color:([^;]+);/, 'background-color: $1 !important');
+                jQuery('[id^=cke_][id$=_selhicolor]:visible').attr('style', style);
+            });
+        });
+    }
 });
 
 /* inline edit */
@@ -935,7 +1020,7 @@ function scrollToJQueryObject(obj) {
     var viewportHeight = jQuery(window).height(),
         currentScrollPosition = jQuery(window).scrollTop(),
         currentItemPosition = obj.offset().top,
-        currentItemSize = obj.height() + obj.next().height();
+        currentItemSize = obj.height() + ( obj.next().height() ? obj.next().height() : 0 );
 
     if (currentScrollPosition + viewportHeight < currentItemPosition + currentItemSize) {
         jQuery('html, body').scrollTop(currentItemPosition - viewportHeight + currentItemSize);
@@ -978,3 +1063,18 @@ function toggle_bookmark(url, id) {
         jQuery('.toggle-bookmark-' + id).replaceWith(data);
     });
 }
+
+// Targeting IE11 in CSS isn't the cleanest or easiest to do.
+// If the browser is IE11, add a class to the body to easily detect.
+// This could easily be added to for other browser versions if need.
+jQuery(function() {
+    var ua = window.navigator.userAgent;
+    if (ua.indexOf('Trident/') > 0) {
+        var rv = ua.indexOf('rv:');
+        var version = parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+
+        if (version === 11) {
+            document.body.classList.add('IE11');
+        }
+    }
+});

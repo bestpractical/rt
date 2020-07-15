@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,20 +49,20 @@
 
 <form action="<%RT->Config->Get('WebPath')%>/SelfService/Article/Search.html">
   <div class="form-row">
-    <span class="label col-md-auto">
+    <span class="label col-auto">
       <&|/l&>Search for Articles matching</&>
     </span>
-    <div class="value col-md-auto">
+    <div class="value col-auto">
       <input class="form-control" type="text" size=20 name="Articles_Content" />
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
       <input class="form-control btn btn-primary" type="submit" value="Search">
     </div>
   </div>
 </form>
 
   <div class="form-row">
-    <span class="label col-md-auto">
+    <span class="label col-auto">
 % if ($Articles_Content) {
 %   if ($articles_basics->Count || $articles_content->Count) {
 <&|/l,$Articles_Content&>Articles matching [_1]</&>
@@ -77,7 +77,7 @@
 % while (my $article = $articles_content->Next) {
 %   $dedupe_articles{$article->Id}++;
   <div class="form-row">
-    <span class="value col-md-auto">
+    <span class="value col-auto">
       <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
     </span>
   </div>
@@ -86,7 +86,7 @@
 % while (my $article = $articles_basics->Next) {
 %   next if $dedupe_articles{$article->Id};
   <div class="form-row">
-    <span class="value col-md-auto">
+    <span class="value col-auto">
       <a href="Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
     </span>
   </div>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -113,10 +113,10 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
 %                 $recips{$addr->address}++;
                     <div class="form-row">
-                      <div class="col-md-auto">
+                      <div class="col-auto">
                         <b><%loc($type)%></b>:
                       </div>
-                      <div class="col-md-auto">
+                      <div class="col-auto">
 %                 my $show_checkbox = 1;
 %                 if ( grep {$_ eq $addr->address} @{$action->{NoSquelch}{$type}} ) {
 %                     $show_checkbox = 0;

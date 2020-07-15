@@ -28,11 +28,6 @@ hr.clear {
     font-size: 1px;
 }
 
-/* Custom fields */
-
-.cflabel .name { font-weight: bold; }
-.cflabel .type { font-style: italic; }
-
 .query-stacktrace-toggle {
     float: right;
 }
@@ -52,7 +47,13 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
 }
 
 .datepicker {
-    width: 17em;
+    max-width: 17em;
+    min-width: 10em;
+}
+
+.selectowner {
+    max-width: 15.8em;
+    min-width: 10em;
 }
 
 .dashboard-subscription tr.frequency .value input {
@@ -90,16 +91,8 @@ textarea.messagebox, #cke_Content, #cke_UpdateContent {
     overflow: auto;
 }
 
-#download-my-data div.form-row i {
-    text-align: left;
-    display: block;
-    font-size: 0.8em;
-    white-space: normal;
-}
-
 .modal {
   background: rgb(0, 0, 0, .70); 
-  z-index: 10000; 
 }
 
 /* manipulate the svg image for selected bookmarks */
@@ -126,7 +119,7 @@ svg.icon-helper {
 
 /* row colouring */
 .oddline {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(242, 242, 242);
 }
 
 .cke_toolgroup a.cke_button {

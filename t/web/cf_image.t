@@ -34,6 +34,7 @@ $m->submit_form_ok({
         Subject => 'Test ticket',
         Content => 'test',
     },
+    button => 'SubmitTicket',
 });
 $m->content_like( qr/Ticket \d+ created/,
                   "a ticket is created succesfully" );

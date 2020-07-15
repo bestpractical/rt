@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -176,8 +176,8 @@ foreach my $column (@Format) {
     if ( $attrs{edit} ) {
         $m->out( '<form method="POST" action="' . RT->Config->Get('WebPath') . '/Helpers/TicketUpdate?id=' . $record->id . '" class="editor" autocomplete="off">' );
         $m->out( $attrs{edit} );
-        $m->out( '<span class="cancel text-danger far fa-times-circle" data-toggle="tooltip" data-placement="top" data-original-title="' . loc('Cancel') . '"></span>' );
-        $m->out( '<span class="submit text-success far fa-check-circle" data-toggle="tooltip" data-placement="top" data-original-title="' . loc('Save') . '"></span>' );
+        $m->out( '<span class="cancel text-danger far fa-times-circle" data-toggle="tooltip" data-placement="left" data-original-title="' . loc('Cancel') . '"></span>' );
+        $m->out( '<span class="submit text-success far fa-check-circle" data-toggle="tooltip" data-placement="right" data-original-title="' . loc('Save') . '"></span>' );
         $m->out('<div class="spinner-border spinner-border-sm loading" role="status"><span class="sr-only">Loading...</span></div>');
         $m->out('</form>');
         $m->out('<div class="value"><span>');
@@ -186,13 +186,20 @@ foreach my $column (@Format) {
     $m->out(@out) if @out;
 
     if ( $attrs{edit} ) {
-        $m->out(  '</span> <span class="fas fa-pencil-alt edit-icon" data-toggle="tooltip" data-placement="top" data-original-title="'
+        $m->out(  '</span> <span class="fas fa-pencil-alt edit-icon" data-toggle="tooltip" data-placement="left" data-original-title="'
                 . loc('Edit')
                 . '"></span></div>' );
     }
 
     $m->out( '</td>' . "\n" );
 }
+
+# Fill up the last row, like how NEWLINE is handled above
+while ( $item < $maxitems ) {
+    $m->out(qq{<td class="collection-as-table">&nbsp;</td>\n});
+    $item++;
+}
+
 $m->out('</tr>');
 $m->out('</tbody>');
 </%init>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,35 +57,35 @@
 
 <&| /Widgets/TitleBox, class => 'custom-role-info-basics', content_class => 'mx-auto width-sm' &>
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Role Name</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Name" value="<% $Create ? "" : $RoleObj->Name || $Name %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Description</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <input class="form-control" type="text" name="Description" value="<% $Create ? "" : $RoleObj->Description || $Description || '' %>" size="60" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3">
+  <div class="label col-3">
     <&|/l&>Entry Hint</&>:
   </div>
-  <div class="value col-md-9">
+  <div class="value col-9">
     <input class="form-control" type="text" name="EntryHint" value="<% $Create ? "" : $RoleObj->EntryHint || $EntryHint || '' %>" size="60" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="label col-md-3"></div>
-  <div class="value col-md-9">
+  <div class="label col-3"></div>
+  <div class="value col-9">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="Multiple" name="Multiple" value="1"
 % if ( $Create || $RoleObj->UnlimitedValues ) {
@@ -111,8 +111,8 @@ disabled="disabled"
 <input type="hidden" class="hidden" name="SetMultiple" value="1" />
 
 <div class="form-row">
-  <div class="label col-md-3"></div>
-  <div class="value col-md-9">
+  <div class="label col-3"></div>
+  <div class="value col-9">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" class="custom-control-input" id="Enabled" name="Enabled" value="1" <%$EnabledChecked|n%> />
       <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this custom role)</&></label>
@@ -123,11 +123,15 @@ disabled="disabled"
 </div>
 
 </&>
-% if ( $Create ) {
-<& /Elements/Submit, Label => loc('Create') &>
-% } else {
-<& /Elements/Submit, Label => loc('Save Changes') &>
-% }
+  <div class="form-row">
+    <div class="col-12">
+%   if ( $Create ) {
+      <& /Elements/Submit, Label => loc('Create') &>
+%   } else {
+      <& /Elements/Submit, Label => loc('Save Changes') &>
+%   }
+    </div>
+  </div>
 </form>
 
 

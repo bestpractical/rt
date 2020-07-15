@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -124,7 +124,6 @@ sub JSFiles {
         i18n.js
         util.js
         autocomplete.js
-        jquery.event.hover-1.0.js
         superfish.min.js
         jquery.supposition.js
         chosen.jquery.min.js
@@ -302,6 +301,7 @@ sub HandleRequest {
     MaybeShowInstallModePage();
 
     MaybeRebuildCustomRolesCache();
+    RT->System->MaybeRebuildLifecycleCache();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
@@ -334,6 +334,8 @@ sub HandleRequest {
     # attempt external auth
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
         if @{ RT->Config->Get( 'ExternalAuthPriority' ) || [] };
+
+    AttemptTokenAuthentication($ARGS) unless _UserLoggedIn();
 
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
@@ -866,6 +868,39 @@ sub AttemptPasswordAuthentication {
     }
 }
 
+sub AttemptTokenAuthentication {
+    my $ARGS = shift;
+    my ($pass, $user) = ('', '');
+    if ((RequestENV('HTTP_AUTHORIZATION')||'') =~ /^token (.*)$/i) {
+        $pass ||= $1;
+        my ($user_obj, $token) = RT::Authen::Token->UserForAuthString($pass, $user);
+        if ( $user_obj ) {
+            # log in
+            my $remote_addr = RequestENV('REMOTE_ADDR');
+            $RT::Logger->info("Successful login for @{[$user_obj->Name]} from $remote_addr using authentication token #@{[$token->Id]} (\"@{[$token->Description]}\")");
+
+            # It's important to nab the next page from the session before we blow
+            # the session away
+            my $next = RT::Interface::Web::RemoveNextPage($ARGS->{'next'});
+            $next = $next->{'url'} if ref $next;
+
+            RT::Interface::Web::InstantiateNewSession();
+            $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+
+            # Really the only time we don't want to redirect here is if we were
+            # passed user and pass as query params in the URL.
+            if ($next) {
+                RT::Interface::Web::Redirect($next);
+            }
+            elsif ($ARGS->{'next'}) {
+                # Invalid hash, but still wants to go somewhere, take them to /
+                RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+            }
+        }
+    }
+}
+
+
 =head2 LoadSessionFromCookie
 
 Load or setup a session cookie for the current user.
@@ -1166,6 +1201,7 @@ sub SendStaticFile {
 sub MobileClient {
     my $self = shift;
 
+    return undef unless RT->Config->Get('ShowMobileSite');
 
 if ((RequestENV('HTTP_USER_AGENT') || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60|Mobile)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
     return 1;
@@ -1884,6 +1920,11 @@ sub RequestENV {
     return $name ? $env->{$name} : $env;
 }
 
+sub ClientIsIE {
+    # IE 11.0 dropped "MSIE", so we can't use that alone
+    return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -1892,6 +1933,10 @@ use Scalar::Util qw(blessed);
 
 sub Menu {
     return $HTML::Mason::Commands::m->notes('menu');
+}
+
+sub SearchResultsPageMenu {
+    return $HTML::Mason::Commands::m->notes('search-results-page-menu');
 }
 
 sub PageMenu {
@@ -1917,7 +1962,9 @@ sub RenderMenu {
     $res .= '<ul';
     $res .= ' id="'. $interp->apply_escapes($id, 'h') .'"'
         if $id;
-    $res .= ' class="toplevel"' if $toplevel;
+    my $class = $args{class} // '';
+    $class .= ' toplevel' if $toplevel;
+    $res .= " class='$class'";
     $res .= ">\n";
 
     for my $child ($menu->children) {
@@ -1943,7 +1990,7 @@ sub RenderMenu {
             if ( $tmp = $child->class ) {
                 $res .= ' '. $interp->apply_escapes($tmp, 'h');
             }
-            $res .= ' btn' if ( defined $id && $id eq 'page-menu' );
+            $res .= ' btn' if ( defined $id && ( $id eq 'page-menu' || $id eq 'search-results-page-menu' ) );
             $res .= '"';
 
             my $path = $child->path;
@@ -4356,20 +4403,22 @@ sub ProcessAssetsSearchArguments {
         push @PassArguments, 'SearchAssets';
     }
 
-    my $Format = RT->Config->Get('AssetSearchFormat');
-    $Format = $Format->{$args{'Catalog'}->id}
-        || $Format->{$args{'Catalog'}->Name}
-        || $Format->{''} if ref $Format;
-    $Format ||= q[
-        '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-        '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
-        Description,
-        Status,
-    ];
+    if ( !$ARGSRef->{Format} ) {
+        my $Format = RT->Config->Get('AssetSimpleSearchFormat');
+        $Format = $Format->{$args{'Catalog'}->id}
+            || $Format->{$args{'Catalog'}->Name}
+            || $Format->{''} if ref $Format;
+        $ARGSRef->{Format} = $Format || q[
+            '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+            '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
+            Description,
+            Status,
+        ];
+    }
 
     $ARGSRef->{OrderBy} ||= 'id';
 
-    push @PassArguments, qw/OrderBy Order Page/;
+    push @PassArguments, qw/OrderBy Order Page Format/;
 
     return (
         OrderBy         => 'id',
@@ -4377,7 +4426,6 @@ sub ProcessAssetsSearchArguments {
         Rows            => 50,
         (map { $_ => $ARGSRef->{$_} } grep { defined $ARGSRef->{$_} } @PassArguments),
         PassArguments   => \@PassArguments,
-        Format          => $Format,
     );
 }
 
@@ -4606,6 +4654,408 @@ sub GetDefaultQueue {
     }
 
     return $queue;
+}
+
+=head2 UpdateDashboard
+
+Update global and user-level dashboard preferences.
+
+For arguments, takes submitted args from the page and a hashref of available
+items.
+
+Gets additional information for submitted items from the hashref of
+available items, since the args can't contain all information about the
+item.
+
+=cut
+
+sub UpdateDashboard {
+    my $args            = shift;
+    my $available_items = shift;
+
+    my $id = $args->{dashboard_id};
+
+    my $data = {
+        "dashboard_id" => $id,
+        "panes"        => {
+            "body"    => [],
+            "sidebar" => []
+        }
+    };
+
+    foreach my $arg (qw{ body sidebar }) {
+        my $pane   = $arg;
+        my $values = $args->{$pane};
+
+        next unless $values;
+
+        # force value to an arrayref so we can handle both single and multiple members of each pane.
+        $values = [$values] unless ref $values;
+
+        foreach my $value ( @{$values} ) {
+            $value =~ m/^(\w+)-(.+)$/i;
+            my $type = $1;
+            my $name = $2;
+            push @{ $data->{panes}->{$pane} }, { type => $type, name => $name };
+        }
+    }
+
+    my ( $ok, $msg );
+    if ( $id eq 'MyRT' ) {
+        my $user = $session{CurrentUser};
+
+        if ( my $user_id = $args->{user_id} ) {
+            my $UserObj = RT::User->new( $session{'CurrentUser'} );
+            ( $ok, $msg ) = $UserObj->Load($user_id);
+            return ( $ok, $msg ) unless $ok;
+
+            return ( $ok, $msg ) = $UserObj->SetPreferences( 'HomepageSettings', $data->{panes} );
+        } elsif ( $args->{is_global} ) {
+            my $sys = RT::System->new( $session{'CurrentUser'} );
+            my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
+            return ( $ok, $msg ) = $default_portlets->SetContent( $data->{panes} );
+        } else {
+            return ( $ok, $msg ) = $user->SetPreferences( 'HomepageSettings', $data->{panes} );
+        }
+    } else {
+        my $Dashboard = RT::Dashboard->new( $session{'CurrentUser'} );
+        ( $ok, $msg ) = $Dashboard->LoadById($id);
+
+        # report error at the bottom
+        return ( $ok, $msg ) unless $ok && $Dashboard->Id;
+
+        my $content;
+        for my $pane_name ( keys %{ $data->{panes} } ) {
+            my @pane;
+
+            for my $item ( @{ $data->{panes}{$pane_name} } ) {
+                my %saved;
+                $saved{pane}         = $pane_name;
+                $saved{portlet_type} = $item->{type};
+
+                $saved{description} = $available_items->{ $item->{type} }{ $item->{name} }{label};
+
+                if ( $item->{type} eq 'component' ) {
+                    $saved{component} = $item->{name};
+
+                    # Absolute paths stay absolute, relative paths go into
+                    # /Elements. This way, extensions that add portlets work.
+                    my $path = $item->{name};
+                    $path = "/Elements/$path" if substr( $path, 0, 1 ) ne '/';
+
+                    $saved{path} = $path;
+                } elsif ( $item->{type} eq 'system' || $item->{type} eq 'saved' ) {
+                    $saved{portlet_type} = 'search';
+
+                    $item->{searchType} = $available_items->{ $item->{type} }{ $item->{name} }{search_type}
+                                          if exists $available_items->{ $item->{type} }{ $item->{name} }{search_type};
+
+                    my $type = $item->{searchType};
+                    $type = 'Saved Search' if !$type || $type eq 'Ticket';
+                    $saved{description} = loc($type) . ': ' . $saved{description};
+
+                    $item->{searchId} = $available_items->{ $item->{type} }{ $item->{name} }{search_id}
+                                        if exists $available_items->{ $item->{type} }{ $item->{name} }{search_id};
+
+                    if ( $item->{type} eq 'system' ) {
+                        $saved{privacy} = 'RT::System-1';
+                        $saved{id}      = $item->{searchId};
+                    } else {
+                        my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
+                        $saved{privacy} = "$obj_type-$obj_id";
+                        $saved{id}      = $search_id;
+                    }
+                } elsif ( $item->{type} eq 'dashboard' ) {
+                    my ( undef, $dashboard_id, $obj_type, $obj_id ) = split '-', $item->{name};
+                    $saved{privacy}     = "$obj_type-$obj_id";
+                    $saved{id}          = $dashboard_id;
+                    $saved{description} = loc('Dashboard') . ': ' . $saved{description};
+                }
+
+                push @pane, \%saved;
+            }
+
+            $content->{$pane_name} = \@pane;
+        }
+
+        return ( $ok, $msg ) = $Dashboard->Update( Panes => $content );
+    }
+}
+
+=head2 ListOfReports
+
+Returns the list of reports registered with RT.
+
+=cut
+
+sub ListOfReports {
+
+    # TODO: Make this a dynamic list generated by loading files in the Reports
+    # directory
+
+    my $list_of_reports = [
+        {
+            id          => 'resolvedbyowner',
+            title       => 'Resolved by owner', # loc
+            path        => '/Reports/ResolvedByOwner.html',
+        },
+        {
+            id          => 'resolvedindaterange',
+            title       => 'Resolved in date range', # loc
+            path        => '/Reports/ResolvedByDates.html',
+        },
+        {
+            id          => 'createdindaterange',
+            title       => 'Created in a date range', # loc
+            path        => '/Reports/CreatedByDates.html',
+        },
+    ];
+
+    return $list_of_reports;
+}
+
+=head2 ProcessCustomDateRanges ARGSRef => ARGSREF, UserPreference => 0|1
+
+For system database configuration, it adds corresponding arguments to the
+passed ARGSRef, and the following code on EditConfig.html page will do the
+real update job.
+
+For user preference, it updates attributes accordingly.
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessCustomDateRanges {
+    my %args = (
+        ARGSRef        => undef,
+        UserPreference => 0,
+        @_
+    );
+    my $args_ref = $args{ARGSRef};
+
+    my ( $config, $content );
+    if ( $args{UserPreference} ) {
+        $config = { 'RT::Ticket' => { RT::Ticket->CustomDateRanges( ExcludeUser => $session{CurrentUser}->Id ) } };
+        $content = $session{CurrentUser}->Preferences('CustomDateRanges');
+
+        # SetPreferences also checks rights, we short-circuit to avoid
+        # returning misleading messages.
+
+        return ( 0, loc("No permission to set preferences") )
+            unless $session{CurrentUser}->CurrentUserCanModify('Preferences');
+    }
+    else {
+        $config = RT->Config->Get('CustomDateRanges');
+        my $db_config = RT::Configuration->new( $session{CurrentUser} );
+        $db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
+        $content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
+    }
+
+    my @results;
+    my %label = (
+        from          => 'From',                   # loc
+        to            => 'To',                     # loc
+        from_fallback => 'From Value if Unset',    # loc
+        to_fallback   => 'To Value if Unset',      # loc
+    );
+
+    my $need_save;
+    if ($content) {
+        my @current_names = sort keys %{ $content->{'RT::Ticket'} };
+        for my $id ( 0 .. $#current_names ) {
+            my $current_name = $current_names[$id];
+            my $spec         = $content->{'RT::Ticket'}{$current_name};
+            my $name         = $args_ref->{"$id-name"};
+
+            if ( $args_ref->{"$id-Delete"} ) {
+                delete $content->{'RT::Ticket'}{$current_name};
+                push @results, loc( 'Deleted [_1]', $current_name );
+                $need_save ||= 1;
+                next;
+            }
+
+            if ( $config && $config->{'RT::Ticket'}{$name} ) {
+                push @results, loc( "[_1] already exists", $name );
+                next;
+            }
+
+            my $updated;
+            for my $field (qw/from from_fallback to to_fallback/) {
+                next if ( $spec->{$field} // '' ) eq $args_ref->{"$id-$field"};
+                if ((   $args_ref->{"$id-$field"}
+                        && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args_ref->{"$id-$field"} )
+                    )
+                    || ( !$args_ref->{"$id-$field"} && $field =~ /fallback/ )
+                   )
+                {
+                    $spec->{$field} = $args_ref->{"$id-$field"};
+                    $updated ||= 1;
+                }
+                else {
+                    push @results, loc( 'Invalid [_1] for [_2]', loc( $label{$field} ), $name );
+                    next;
+                }
+            }
+
+            if ( $spec->{business_time} != $args_ref->{"$id-business_time"} ) {
+                $spec->{business_time} = $args_ref->{"$id-business_time"};
+                $updated ||= 1;
+            }
+
+            $content->{'RT::Ticket'}{$name} = $spec;
+            if ( $name ne $current_name ) {
+                delete $content->{'RT::Ticket'}{$current_name};
+                $updated ||= 1;
+            }
+
+            if ($updated) {
+                push @results, loc( 'Updated [_1]', $name );
+                $need_save ||= 1;
+            }
+        }
+    }
+
+    if ( $args_ref->{name} ) {
+        for my $field (qw/from from_fallback to to_fallback business_time/) {
+            $args_ref->{$field} = [ $args_ref->{$field} ] unless ref $args_ref->{$field};
+        }
+
+        my $i = 0;
+        for my $name ( @{ $args_ref->{name} } ) {
+            if ($name) {
+                if ( $config && $config->{'RT::Ticket'}{$name} || $content && $content->{'RT::Ticket'}{$name} ) {
+                    push @results, loc( "[_1] already exists", $name );
+                    $i++;
+                    next;
+                }
+            }
+            else {
+                $i++;
+                next;
+            }
+
+            my $spec = { business_time => $args_ref->{business_time}[$i] };
+            for my $field (qw/from from_fallback to to_fallback/) {
+                if ((   $args_ref->{$field}[$i]
+                        && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args_ref->{$field}[$i] )
+                    )
+                    || ( !$args_ref->{$field}[$i] && $field =~ /fallback/ )
+                   )
+                {
+                    $spec->{$field} = $args_ref->{$field}[$i];
+                }
+                else {
+                    push @results, loc( 'Invalid [_1] for [_2]', loc($field), $name );
+                    $i++;
+                    next;
+                }
+            }
+
+            $content->{'RT::Ticket'}{$name} = $spec;
+            push @results, loc( 'Created [_1]', $name );
+            $need_save ||= 1;
+            $i++;
+        }
+    }
+
+    if ($need_save) {
+        if ( $args{UserPreference} ) {
+            my ( $ret, $msg );
+            if ( keys %{$content->{'RT::Ticket'}} ) {
+                ( $ret, $msg ) = $session{CurrentUser}->SetPreferences( 'CustomDateRanges', $content );
+            }
+            else {
+                ( $ret, $msg ) = $session{CurrentUser}->DeletePreferences( 'CustomDateRanges' );
+            }
+
+            unless ($ret) {
+                RT->Logger->error($msg);
+                push @results, $msg;
+            }
+        }
+        else {
+            $args_ref->{'CustomDateRangesUI-Current'} = ''; # EditConfig.html needs this to update CustomDateRangesUI
+            $args_ref->{CustomDateRangesUI} = $content;
+        }
+    }
+    return @results;
+}
+
+=head2 ProcessAuthToken ARGSRef => ARGSREF
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessAuthToken {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+    my $args_ref = $args{ARGSRef};
+
+    my @results;
+    my $token = RT::AuthToken->new( $session{CurrentUser} );
+
+    if ( $args_ref->{Create} ) {
+
+        # Don't require password for systems with some form of federated auth
+        my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+
+        if ( !length( $args_ref->{Description} ) ) {
+            push @results, loc("Description cannot be blank.");
+        }
+        elsif ( $res{'CanSet'} && !length( $args_ref->{Password} ) ) {
+            push @results, loc("Please enter your current password.");
+        }
+        elsif ( $res{'CanSet'} && !$session{CurrentUser}->IsPassword( $args_ref->{Password} ) ) {
+            push @results, loc("Please enter your current password correctly.");
+        }
+        else {
+            my ( $ok, $msg, $auth_string ) = $token->Create(
+                Owner       => $args_ref->{Owner},
+                Description => $args_ref->{Description},
+            );
+            if ($ok) {
+                push @results, $msg;
+                push @results,
+                    loc(
+                        '"[_1]" is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again.',
+                        $auth_string
+                    );
+            }
+            else {
+                push @results, loc('Unable to create a new authentication token. Contact your RT administrator.');
+                RT->Logger->error('Unable to create authentication token: ' . $msg);
+            }
+        }
+    }
+    elsif ( $args_ref->{Update} || $args_ref->{Revoke} ) {
+
+        $token->Load( $args_ref->{Token} );
+        if ( $token->Id ) {
+            if ( $args_ref->{Update} ) {
+                if ( length( $args_ref->{Description} ) ) {
+                    if ( $args_ref->{Description} ne $token->Description ) {
+                        my ( $ok, $msg ) = $token->SetDescription( $args_ref->{Description} );
+                        push @results, $msg;
+                    }
+                }
+                else {
+                    push @results, loc("Description cannot be blank.");
+                }
+            }
+            elsif ( $args_ref->{Revoke} ) {
+                my ( $ok, $msg ) = $token->Delete;
+                push @results, $msg;
+            }
+        }
+        else {
+            push @results, loc("Could not find token: [_1]", $args_ref->{Token});
+        }
+    }
+    return @results;
 }
 
 package RT::Interface::Web;

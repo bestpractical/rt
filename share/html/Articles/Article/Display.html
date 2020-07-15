@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,46 +50,46 @@
 
 <&| /Widgets/TitleBox, title => loc('The Basics'), class => 'article-basics', &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Summary</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <span class="current-value"><%$article->Summary%></span>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Class</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <span class="current-value"><%$article->ClassObj->Name%></span>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Creator</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <span class="current-value"><& /Elements/ShowUser, User => $article->CreatorObj &></span>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Created</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <span class="current-value"><%$article->CreatedObj->AsString%></span>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Updated</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <span class="current-value"><%$article->LastUpdatedObj->AsString%></span>
     </div>
   </div>

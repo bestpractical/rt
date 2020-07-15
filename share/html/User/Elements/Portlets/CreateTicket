@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,10 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation'), class => "user create-ticket" &>
 <form action="<%RT->Config->Get('WebPath')%>/Ticket/Create.html">
-<&|/l&>Create a ticket with this user as the Requestor in Queue:&nbsp;</&>
 <input type="hidden" name="Requestors" value="<%$User->EmailAddress%>">
-<& /Elements/SelectNewTicketQueue &>
-<input type="submit" name="CreateTicket" value="<&|/l&>Create</&>" class="button btn btn-primary form-control">
+  <div class="form-row">
+    <div class="col-auto label">
+      <&|/l&>Create a ticket with this user as the Requestor in Queue</&>:
+    </div>
+    <div class="col-auto">
+      <& /Elements/SelectNewTicketQueue &>
+    </div>
+    <div class="col-auto">
+      <input type="submit" name="CreateTicket" value="<&|/l&>Create</&>" class="button btn btn-primary form-control">
+    </div>
+  </div>
 </form>
 </&>
 <%ARGS>

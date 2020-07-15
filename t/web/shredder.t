@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test;
+use RT::Test tests => undef;
 
 RT::Config->Set('ShredderStoragePath', RT::Test->temp_directory . '');
 

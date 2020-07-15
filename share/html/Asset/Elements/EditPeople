@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 % for my $role ( $AssetObj->Roles ) {
 <div class="asset-people-<% CSSClass($role) %> form-row">
-  <div class="label col-md-3"><% loc($role) %>:</div>
-  <div class="value col-md-9">
+  <div class="label col-3"><% loc($role) %>:</div>
+  <div class="value col-9">
     <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1 &>
   </div>
 </div>

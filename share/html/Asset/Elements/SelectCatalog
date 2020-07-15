@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,6 +60,7 @@ $ShowAll => 0
 $Default => undef
 $UpdateSession => 1
 $ShowNullOption => 0
+$AutoSubmit     => 0
 </%args>
 <%init>
 my $catalog_obj = LoadDefaultCatalog($Default || '');
@@ -67,4 +68,6 @@ if ( $UpdateSession && $catalog_obj->Id ){
     $session{'DefaultCatalog'} = $catalog_obj->Id;
     $Default = $catalog_obj->Id;
 }
+$ARGS{OnChange} = "jQuery(this).closest('form').find('input[name=CatalogChanged]').val(1);";
+$ARGS{OnChange} .= "jQuery(this).closest('form').submit();" if $AutoSubmit;
 </%init>

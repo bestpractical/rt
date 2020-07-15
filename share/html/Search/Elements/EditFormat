@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,18 +47,24 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="edit-columns">
 
-  <div class="form-row text-center">
-    <div class="col-md-3"><&|/l&>Add Columns</&>:</div>
-    <div class="col-md-3"><&|/l&>Format</&>:</div>
-    <div class="col-md-1"></div>
-    <div class="col-md-4"><&|/l&>Show Columns</&>:</div>
+  <div class="d-none d-md-block">
+    <div class="form-row text-center">
+      <div class="col-3"><&|/l&>Add Columns</&>:</div>
+      <div class="col-3"><&|/l&>Format</&>:</div>
+      <div class="col-1"></div>
+      <div class="col-4"><&|/l&>Show Columns</&>:</div>
+    </div>
   </div>
 
 <script type="text/javascript">
 jQuery( function() {
+    jQuery('#SelectDisplayColumns').selectize();
+    jQuery('.selectize-dropdown-content').addClass("selectize-max-height");
+
     jQuery('[name=AddCol], [name=RemoveCol], [name=ColUp], [name=ColDown]').click( function() {
         var name = jQuery(this).attr('name');
         var form = jQuery(this).closest('form');
+
         jQuery.ajax({
             url: '<% RT->Config->Get('WebPath') %>/Helpers/BuildFormatString?' + name + '=1&' + form.serialize(),
             success: function (data) {
@@ -67,6 +73,7 @@ jQuery( function() {
                     form.find('select[name=CurrentDisplayColumns]').html(data.CurrentDisplayColumns);
                     form.find('select[name=SelectDisplayColumns]').val('').change();
                     form.find('[name=Link],[name=Title],[name=Size],[name=Face]').val('');
+                    form.find('[name=Link],[name=Title],[name=Size],[name=Face]').selectpicker('refresh');
                 }
                 else {
                     alert('<% loc("Failed to update format. Reason:") %>' + ' ' + data.message);
@@ -83,13 +90,13 @@ jQuery( function() {
 
   <div class="form-row">
 
-    <div class="col-md-3">
+    <div class="col-12 col-md-3">
       <div class="form-row">
-        <div class="col-md-12">
-          <select name="SelectDisplayColumns" multiple="multiple" class="form-control selectpicker">
+        <div class="col-12">
+          <select name="SelectDisplayColumns" id="SelectDisplayColumns" multiple="multiple">
 % my %seen;
 % foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
-          <option value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
+          <option class="<% CSSClass($field) %>" value="<% $field %>" <% $selected{$field} ? 'selected="selected"' : '' |n%>>\
             <% $field =~ /^(?:CustomField|CF)\./ ? $field : loc($field) %></option>
 % }
           </select>
@@ -97,13 +104,13 @@ jQuery( function() {
       </div>
     </div>
 
-    <div class="col-md-3">
+    <div class="col-12 col-md-3">
       <div class="form-row">
-        <div class="col-md-3 label"><&|/l&>Link</&>:</div>
+        <div class="label col-4"><&|/l&>Link</&>:</div>
 %# leave 1 col to save some space to the right "->"
-        <div class="col-md-8 value">
+        <div class="value col-8">
           <select name="Link" class="form-control selectpicker">
-              <option value="None">-</option>
+              <option value="">-</option>
               <option value="Display"><&|/l&>Display</&></option>
 % if ($IncludeTicketLinks) {
               <option value="Take"><&|/l&>Take</&></option>
@@ -116,13 +123,13 @@ jQuery( function() {
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label"><&|/l&>Title</&>:</div>
-        <div class="col-md-8 value"><input type="text" name="Title" size="10" class="form-control" /></div>
+        <div class="label col-4"><&|/l&>Title</&>:</div>
+        <div class="value col-8"><input type="text" name="Title" size="10" class="form-control" /></div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label"><&|/l&>Size</&>:</div>
-        <div class="col-md-8 value">
+        <div class="label col-4"><&|/l&>Size</&>:</div>
+        <div class="value col-8">
           <select name="Size" class="form-control selectpicker">
             <option value="">-</option>
             <option value="Small"><&|/l&>Small</&></option>
@@ -132,9 +139,9 @@ jQuery( function() {
       </div>
 
       <div class="form-row">
-        <div class="col-md-3 label"><&|/l&>Style</&>:</div>
-        <div class="col-md-8 value">
-          <select name="Face" class="form-controll selectpicker">
+        <div class="label col-4"><&|/l&>Style</&>:</div>
+        <div class="value col-8">
+          <select name="Face" class="form-control selectpicker">
             <option value="">-</option>
             <option value="Bold"><&|/l&>Bold</&></option>
             <option value="Italic"><&|/l&>Italic</&></option>
@@ -143,17 +150,17 @@ jQuery( function() {
       </div>
     </div>
 
-    <div class="col-md-1">
+    <div class="col-2 col-md-1">
       <div class="form-row">
-        <div class="col-md-12">
+        <div class="col-12">
           <input type="submit" class="button btn btn-primary" name="AddCol" value=" &rarr; " />
         </div>
       </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-10 col-md-4">
       <div class="form-row">
-        <div class="col-md-12">
+        <div class="col-12">
           <select size="8" class="tall form-control" name="CurrentDisplayColumns">
 % my $i=0;
 % my $current = $ARGS{CurrentDisplayColumns} || ''; $current =~ s/^\d+>//;
@@ -166,7 +173,7 @@ jQuery( function() {
       </div>
 
       <div class="form-row">
-        <div class="col-md-12 text-center">
+        <div class="col-12 text-center">
           <input type="submit" class="button btn btn-primary" name="ColUp" value=" &uarr; " />
           <input type="submit" class="button btn btn-primary" name="ColDown" value=" &darr; " />
           <input type="submit" class="button btn btn-primary" name="RemoveCol" value="<%loc('Delete')%>" />
@@ -185,5 +192,6 @@ $selected{$_}++ for grep {defined} @{ $selected };
 <%ARGS>
 $CurrentFormat => undef
 $AvailableColumns => undef
-$IncludeTicketLinks => 1
+$Class => 'RT::Tickets'
+$IncludeTicketLinks => $Class eq 'RT::Tickets' ? 1 : 0
 </%ARGS>

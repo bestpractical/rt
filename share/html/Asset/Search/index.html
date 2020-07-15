@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,6 +46,10 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
+if (RT->Config->Get('AssetHideSimpleSearch')) {
+    $m->redirect( RT->Config->Get("WebPath") .'/Search/Build.html?Class=RT::Assets' );
+}
+
 my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
 $ARGS{'Catalog'} = $catalog_obj->Id;
 
@@ -80,7 +84,7 @@ $m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 <& /Asset/Elements/AssetSearchPeople, %ARGS, CatalogObj => $catalog_obj &>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
     </div>
   </div>
@@ -93,7 +97,7 @@ $m->callback( CallbackName => 'Initial', Assets => $assets, ARGSRef => \%ARGS);
 
 % if ( $has_assets_cfs ) {
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Search'), Name => 'SearchAssets' &>
     </div>
   </div>

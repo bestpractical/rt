@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,6 +66,17 @@ if ($Scope =~ /queue/) {
 else { 
     @types = $Queue->Roles(Single => 0);
 }
+
+my @NewTypes;
+for my $name (@types) {
+    if (my ($id) = $name =~ /^RT::CustomRole-(\d+)$/) {
+        my $role = RT::CustomRole->new($session{CurrentUser});
+        $role->Load($id);
+        next if $role->IsHiddenForURL;
+    }
+    push @NewTypes, $name;
+}
+@types = @NewTypes;
 
 $m->callback( Types => \@types, %ARGS, CallbackName => 'ModifyWatcherTypes' );
 </%INIT>

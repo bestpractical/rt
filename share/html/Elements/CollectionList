@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,6 +55,10 @@ if (!$Collection) {
         }
         $Query = join ' AND ', @limits;
     }
+    $Collection->FromSQL($Query);
+}
+elsif (!$Collection && $Class eq 'RT::Assets') {
+    $Collection = RT::Assets->new( $session{'CurrentUser'} );
     $Collection->FromSQL($Query);
 }
 
@@ -230,5 +234,5 @@ $ShowEmpty      => 0
 $InlineEdit     => RT->Config->Get('InlineEdit', $session{CurrentUser})
 $Query => 0
 $HasResults     => undef
-$ObjectType     => 'RT::Ticket'
+$ObjectType     => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

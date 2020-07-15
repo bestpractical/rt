@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,7 +64,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
 
     <&| /Widgets/TitleBox, title => loc('The Basics'),
         (($can_modify || $can_modify_cf) ? (title_href => $modify_url) : ()),
-        ($modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_basics) : ()),
+        (($can_modify || $can_modify_cf) && $modify_behavior =~ /^(link|click)$/ ? (titleright_raw => $modify_basics) : ()),
         class => (join " ", 'ticket-info-basics', ($modify_behavior eq 'always' ? 'editing' : ())),
         data => { 'inline-edit-behavior' => $modify_behavior },
     &>
@@ -79,7 +79,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
                 <& /Ticket/Elements/EditBasics, TicketObj => $Ticket, InTable => 1, ExcludeOwner => 1, ExcludeCustomRoles => 1 &>
                 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
                 <div class="form-row">
-                  <div class="col-md-12 text-right">
+                  <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -90,7 +90,7 @@ my $modify_behavior = $InlineEdit ? ($inline_edit_behavior{Basics} || $inline_ed
     <& /Elements/ShowCustomFieldCustomGroupings,
         Object       => $Ticket,
         title_href   => ($can_modify || $can_modify_cf) ? RT->Config->Get('WebPath')."/Ticket/Modify.html" : "",
-        InlineEdit   => $InlineEdit,
+        InlineEdit   => ($can_modify || $can_modify_cf) ? $InlineEdit : 0,
         &>
 
 <%PERL>
@@ -101,7 +101,7 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
     <&| /Widgets/TitleBox, title => loc('People'),
         (($can_modify || $can_modify_owner || $can_modify_people) ? (title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id) : ()),
         class => (join " ", 'ticket-info-people', ($people_behavior eq 'always' ? 'editing' : ())),
-        ($people_behavior =~ /^(link|click)$/ ? (titleright_raw => $people_inline) : ()),
+        (($can_modify || $can_modify_owner || $can_modify_people) && $people_behavior =~ /^(link|click)$/ ? (titleright_raw => $people_inline) : ()),
         data => { 'inline-edit-behavior' => $people_behavior },
     &>
 %       unless ($people_behavior eq 'always') {
@@ -114,7 +114,7 @@ my $people_behavior = $InlineEdit ? ($inline_edit_behavior{People} || $inline_ed
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditPeopleInline, Ticket => $Ticket &>
                 <div class="form-row">
-                  <div class="col-md-12 text-right">
+                  <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -150,7 +150,7 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
     <&| /Widgets/TitleBox, title => loc("Dates"),
         ($can_modify ? (title_href => $dates_url) : ()),
         class => (join " ", 'ticket-info-dates', ($dates_behavior eq 'always' ? 'editing' : ())),
-        ($dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
+        ($can_modify && $dates_behavior =~ /^(link|click)$/ ? (titleright_raw => $dates_inline) : ()),
         data => { 'inline-edit-behavior' => $dates_behavior },
     &>
 %       unless ($dates_behavior eq 'always') {
@@ -163,7 +163,7 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
                 <input type="hidden" class="hidden" name="id" value="<% $Ticket->id %>" />
                 <& /Ticket/Elements/EditDates, TicketObj => $Ticket &>
                 <div class="form-row">
-                  <div class="col-md-12 text-right">
+                  <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -171,6 +171,13 @@ my $dates_behavior = $InlineEdit ? ($inline_edit_behavior{Dates} || $inline_edit
 %       }
     </&>
 % $m->callback( %ARGS, CallbackName => 'AfterDates' );
+% my (@extra);
+% push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
+
+<& /Ticket/Elements/ShowLinkedQueues,
+    TicketObj => $Ticket,
+&>
+
 <& /Ticket/Elements/ShowAssets, Ticket => $Ticket &>
 <%PERL>
 my $links_url = RT->Config->Get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->Id;
@@ -180,9 +187,8 @@ my $alt = loc('Graph ticket links');
 my $links_graph = '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' . $alt . '"></span></a>';
 
 my $links_titleright = join ' ',
-    ($links_behavior =~ /^(link|click)$/ ? ($links_inline) : ()),
+    ($can_modify && $links_behavior =~ /^(link|click)$/ ? ($links_inline) : ()),
     (RT->Config->Get('DisableGraphViz') ? () : $links_graph);
-my @extra;
 push @extra, (titleright_raw => $links_titleright) if $links_titleright;
 </%PERL>
 % $m->callback( %ARGS, CallbackName => 'LinksExtra', extra => \@extra );
@@ -204,11 +210,11 @@ push @extra, (titleright_raw => $links_titleright) if $links_titleright;
                 <& /Elements/EditLinks, Object => $Ticket, TwoColumn => 0 &>
 
                 <h3><&|/l&>Merge</&></h3>
-                <& /Ticket/Elements/EditMerge, Ticket => $Ticket, LabelStyle => 'col-md-3',
-                   ValueStyle => 'col-md-9', MergeTextClass => '', %ARGS &>
+                <& /Ticket/Elements/EditMerge, Ticket => $Ticket, LabelStyle => 'col-3',
+                   ValueStyle => 'col-9', MergeTextClass => '', %ARGS &>
 
                 <div class="form-row">
-                  <div class="col-md-12 text-right">
+                  <div class="col-12 text-right">
                     <input type="submit" class="button btn btn-primary" value="<&|/l&>Save</&>" />
                   </div>
                 </div>
@@ -226,7 +232,7 @@ $InlineEdit => 0
 <%INIT>
 my $can_modify = $Ticket->CurrentUserHasRight('ModifyTicket');
 my $can_modify_cf = $Ticket->CurrentUserHasRight('ModifyCustomField');
-my $can_modify_owner = $Ticket->CurrentUserCanSetOwner();
+my ($can_modify_owner) = $Ticket->CurrentUserCanSetOwner();
 my $can_modify_people = $Ticket->CurrentUserHasRight('Watch')
                      || $Ticket->CurrentUserHasRight('WatchAsAdminCc');
 

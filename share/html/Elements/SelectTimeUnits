@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select class="selectpicker form-control TimeUnits" id="<% $Name %>" name="<% $Name %>">
+<select class="selectpicker form-control TimeUnits" name="<% $Name %>">
 <option value="minutes" <% $Default eq 'minutes' ? 'selected="selected"' : '' |n%>>
     <% loc('Minutes') %>
 </option>

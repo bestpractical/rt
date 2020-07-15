@@ -1,0 +1,168 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<%PERL>
+
+foreach my $queues ( @{ $portlet_config{ $queue } } ) {
+    foreach my $queue_name ( keys %{ $queues } ) {
+        my $queue_obj = RT::Queue->new( $session{ CurrentUser } );
+        my ( $ret ) = $queue_obj->Load( $queue_name );
+        unless ( $ret ) {
+            RT::Logger->error( "Couldn't load queue $queue_name" );
+            next;
+        }
+        my $link_types = $queues->{$queue_name};
+        my $query      = "Queue = '$queue_name'";
+
+        my $ticket_id = $TicketObj->id;
+        if ( grep { lc $_ eq 'all' } @$link_types ) {
+            $query .= " AND ( LinkedTo = $ticket_id OR LinkedFrom = $ticket_id )";
+        }
+        else {
+            my @link_relations = map { $_ . " = $ticket_id" } @$link_types;
+            my $link_query = join( ' OR ', @link_relations );
+            if ($link_query) {
+                $query .= ' AND ( ' . $link_query . ' )';
+            }
+            else {
+                $query = 'id=0';
+            }
+        }
+
+        # create an identifiable class name for the linked queue portlet so
+        # we can specifically target it apart from ticket-info-links.
+        my $linked_queue_class = 'linked-queue';
+
+        my $query_string = $m->comp( '/Elements/QueryString', Query => $query );
+        my $title_href = RT->Config->Get( 'WebPath' ) .  "/Search/Results.html?$query_string";
+        my $title_class = 'inverse';
+        my $class = 'ticket-info-links' . ' ' . $linked_queue_class;
+        my $titleright_raw = '';
+
+$m->callback( CallbackName => 'MassageTitleBox',
+    ARGSRef         => \%ARGS,
+    title           => \$queue_name,
+    title_href      => \$title_href,
+    titleright_raw  => \$titleright_raw,
+    title_class     => \$title_class,
+    class           => \$class,
+);
+
+</%PERL>
+
+<&| /Widgets/TitleBox,
+    title           => $queue_name,
+    title_href      => $title_href,
+    titleright_raw  => $titleright_raw,
+    title_class     => $title_class,
+    class           => $class,
+    content_class   => 'linked-queue-portlet',
+&>
+
+<%PERL>
+my @queries = map { "$query AND $_" } q{Status = '__Active__'}, q{Status = '__Inactive__'};
+my @empty_messages
+    = ( loc( '(No active tickets)', $queue_name ), loc( '(No inactive tickets)', $queue_name ) );
+
+$m->callback( CallbackName => 'MassageQueries',
+    ARGSRef         => \%ARGS,
+    Queue           => $queue_name,
+    Queries         => \@queries,
+    EmptyMessages   => \@empty_messages,
+);
+
+my $format = ( exists RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name}
+    ? RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name}
+    : RT->Config->Get('LinkedQueuePortletFormats')->{'Default'} );
+
+for my $query ( @queries ) {
+    my $empty_message = shift @empty_messages;
+    my $order_by = $OrderBy;
+    my $rows = $Rows;
+
+$m->callback( CallbackName => 'MassageSearchArgs',
+    ARGSRef      => \%ARGS,
+    Queue        => $queue_name,
+    Query        => $query,
+    Format       => \$format,
+    OrderBy      => \$order_by,
+    Rows         => \$rows,
+);
+    my $tickets = RT::Tickets->new($session{CurrentUser});
+    $tickets->FromSQL($query);
+    if ( $tickets->Count ) {
+</%PERL>
+<& /Elements/CollectionList, %ARGS,
+    Class            => 'RT::Tickets',
+    Query            => $query,
+    Format           => $format,
+    OrderBy          => $order_by,
+    Rows             => $rows,
+    ShowHeader       => 0,
+&>
+
+% } else {
+    <div class="empty-message"><% $empty_message %></div>
+% }
+% }
+
+</&>
+%   }
+%}
+<%INIT>
+my %portlet_config = RT->Config->Get( 'LinkedQueuePortlets' );
+return unless %portlet_config;
+my $queue = $TicketObj->QueueObj->Name;
+return unless $portlet_config{ $queue };
+</%INIT>
+
+
+<%ARGS>
+$TicketObj
+$OrderBy => 'Due'
+$Rows => 8
+</%ARGS>

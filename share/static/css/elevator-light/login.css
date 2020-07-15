@@ -13,7 +13,7 @@
 
 #quick-personal {
     position: absolute;
-    z-index: 9999;
+    z-index: 1000;
     left: 0;
     /* This avoids a very weird bug in Chrome where opening a select causes a
      * hover event at (0,0), which will be over top of the menu sometimes */

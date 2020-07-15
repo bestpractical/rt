@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -248,7 +248,10 @@ Returns an empty hashref if the role doesn't exist.
 =cut
 
 sub Role {
-    return \%{ $_[0]->_ROLES->{$_[1]} || {} };
+    my $self = shift;
+    my $type = shift;
+    return {} unless $self->HasRole( $type );
+    return \%{ $self->_ROLES->{$type} };
 }
 
 =head2 Roles
@@ -287,7 +290,7 @@ sub Roles {
                 $ok }
             grep { !$_->[1]{AppliesToObjectPredicate}
                  or $_->[1]{AppliesToObjectPredicate}->($self) }
-             map { [ $_, $self->Role($_) ] }
+             map { [ $_, $self->_ROLES->{$_} ] }
             keys %{ $self->_ROLES };
 }
 

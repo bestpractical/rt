@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,24 +62,24 @@
 
   <&| /Widgets/TitleBox, title => loc('Basics'), class => 'group-info-basics', content_class => 'mx-auto width-sm' &>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Name</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" name="Name" class="form-control" value="<%$Group->Name||$Name||''%>" />
     </div>
   </div>
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Description</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <input type="text" name="Description" class="form-control" value="<%$Group->Description||$Description||''%>" size="60" />
     </div>
   </div>
   <& /Elements/EditCustomFields, Object => $Group, Grouping => 'Basics', InTable => 1 &>
   <div class="form-row">
-    <div class="value col-md-9 offset-md-3">
+    <div class="value col-9 offset-md-3">
       <div class="custom-control custom-checkbox">
         <input type="hidden" class="hidden" name="SetEnabled" value="1" />
         <input type="checkbox" id="Enabled" name="Enabled" class="custom-control-input" value="1" <%$EnabledChecked%> />
@@ -91,11 +91,15 @@
   <& /Elements/EditCustomFieldCustomGroupings , Object => $Group, &>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
 
-% if ( $Create ) {
-<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
-% } else {
-<& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
-% }
+  <div class="form-row">
+    <div class="col-12">
+%   if ( $Create ) {
+      <& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+%   } else {
+      <& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
+%   }
+    </div>
+  </div>
 </form>
 <%INIT>
 

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -76,6 +76,6 @@ $Tickets => undef
 $Name => ''
 $Default => ''
 $MergeTextClass => 'ticket-merge-position'
-$LabelStyle => 'col-md-2'
-$ValueStyle => 'col-md-4'
+$LabelStyle => 'col-2'
+$ValueStyle => 'col-4'
 </%ARGS>

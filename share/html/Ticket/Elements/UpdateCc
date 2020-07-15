@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,18 +48,18 @@
 % $m->callback(CallbackName => 'BeforeCc', ARGSRef => \%ARGS, Ticket => $TicketObj, one_time_Ccs => \@one_time_Ccs, txn_addresses => \%txn_addresses);
 
 <div class="form-row">
-  <div class="col-md-2 label">
+  <div class="label col-2">
     <&|/l&>One-time Cc</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
     <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
   </div>
 </div>
 
-<div class="form-row">
-  <div class="col-md-2 label"></div>
-  <div class="col-md-9 value">
+<div class="form-row mt-0">
+  <div class="label col-2"></div>
+  <div class="value col-9">
     <div class="form-row">
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
@@ -69,14 +69,14 @@
       <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
-      <i class="col-md-auto">(<&|/l&>check to add</&>)</i>
+      <div class="col-auto"><span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>check to add</&>"></span></div>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
         <label class="custom-control-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
       </div>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
-      <div class="col-md-auto">
+      <div class="col-auto">
         <span class="ticket-update-suggested-cc">
           <div class="custom-control custom-checkbox">
             <input
@@ -101,17 +101,17 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-2 label">
+  <div class="label col-2">
     <&|/l&>One-time Bcc</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Elements/EmailInput, Name => 'UpdateBcc', Size => undef, Default => $ARGS{UpdateBcc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
   </div>
 </div>
 
-<div class="form-row">
-  <div class="col-md-2 label"></div>
-  <div class="col-md-9 value">
+<div class="form-row mt-0">
+  <div class="label col-2"></div>
+  <div class="value col-9">
     <div class="form-row">
 %if (scalar @one_time_Ccs) {
 %   if ($hide_cc_suggestions) {
@@ -121,14 +121,14 @@
       <div class="OneTimeCcs d-flex flex-wrap hidden">
 %   }
 
-      <i class="col-md-auto">(<&|/l&>check to add</&>)</i>
+      <div class="col-auto"><span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>check to add</&>"></span></div>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="checkbox custom-control-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
         <label class="custom-control-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
       </div>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
-      <div class="col-md-auto">
+      <div class="col-auto">
         <span class="ticket-update-suggested-cc">
           <div class="custom-control custom-checkbox">
             <input

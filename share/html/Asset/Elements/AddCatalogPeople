@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,10 +51,10 @@ $Object
 <div class="add-user">
   <h3><&|/l&>Add a person</&></h3>
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-3">
       <& SelectRoleType, Object => $Object, Name => "AddUserRoleMember-Role" &>
     </div>
-    <div class="col-md-9">
+    <div class="col-9">
       <input type="text" name="AddUserRoleMember"
         data-autocomplete="Users"
         data-autocomplete-return="Name"
@@ -68,10 +68,10 @@ $Object
 <div class="add-group">
   <h3><&|/l&>Add a group</&></h3>
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-3">
       <& SelectRoleType, Object => $Object, Name => "AddGroupRoleMember-Role" &>
     </div>
-    <div class="col-md-9">
+    <div class="col-9">
       <input type="text" name="AddGroupRoleMember"
         data-autocomplete="Groups"
         data-autocomplete-return="Name"

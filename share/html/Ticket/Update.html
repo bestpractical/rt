@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -72,8 +72,16 @@
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$TicketObj->Id%>" />
 % }
-<div class="form-row"><div class="label col-md-3"><&|/l&>Update Type</&>:</div>
-<div class="value col-md-9"><select class="form-control selectpicker" name="UpdateType" id="UpdateType">
+
+% if ( $TicketObj->CurrentUserHasRight('SeeQueue') ) {
+<div class="form-row">
+  <div class="label col-3"><&|/l&>Queue</&>:</div>
+  <div class="value col-9"><span class="current-value form-control"><% $TicketObj->QueueObj->Name %></span></div>
+</div>
+% }
+
+<div class="form-row"><div class="label col-3"><&|/l&>Update Type</&>:</div>
+<div class="value col-9"><select class="form-control selectpicker" name="UpdateType" id="UpdateType">
 % if ($CanComment) {
 <option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$CommentDefault |n %>><&|/l&>Comments (Not sent to requestors)</&></option>
 % }
@@ -146,8 +154,8 @@
 
 % if ( $gnupg_widget ) {
 <div class="form-row">
-  <div class="col-md-2 label empty"></div>
-  <div class="col-md-9 value">
+  <div class="label col-2 empty"></div>
+  <div class="value col-9">
     <& /Elements/Crypt/SignEncryptWidget,
         self => $gnupg_widget,
         TicketObj => $TicketObj,
@@ -158,10 +166,10 @@
 % $m->callback( %ARGS, CallbackName => 'AfterGnuPG' );
 
 <div class="form-row">
-  <div class="form-group col-md-2 label">
+  <div class="form-group label col-2">
     <&|/l&>Subject</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input class="form-control" type="text" name="UpdateSubject" value="<% $ARGS{UpdateSubject} || $TicketObj->Subject || '' %>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
   </div>
@@ -191,7 +199,7 @@
 % $m->callback( %ARGS, CallbackName => 'BeforeSubmit', Ticket => $TicketObj );
 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Label => loc('Update Ticket'), Name => 'SubmitTicket', id => 'SubmitTicket' &>
   </div>
 </div>

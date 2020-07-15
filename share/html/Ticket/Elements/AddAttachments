@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,8 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % if ( $attachments ) {
-<div class="form-row attachment"><div class="label col-md-3"><&|/l&>Attached file</&>:</div>
-<div class="value col-md-9">
+<div class="form-row attachment"><div class="label col-3"><&|/l&>Attached file</&>:</div>
+<div class="value col-9">
 % foreach my $attach_name ( sort keys %$attachments ) {
     <div>
         <label for="DeleteAttach-<%$attach_name%>"><% $attach_name %></label>
@@ -172,8 +172,8 @@ jQuery( function() {
 </div>
 % if ($HasExisting) {
 <div class="form-row">
-  <div class="label col-md-3"><&|/l&>Include attachments</&>:</div>
-  <div class="value col-md-9" id="reuse-attachments">
+  <div class="label col-3"><&|/l&>Include attachments</&>:</div>
+  <div class="value col-9" id="reuse-attachments">
     <& /Ticket/Elements/ShowAttachments,
       Ticket       => $TicketObj,
       Selectable   => 1,

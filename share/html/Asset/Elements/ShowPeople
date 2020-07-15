@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,14 +53,14 @@ my $CatalogObj = $AssetObj->CatalogObj;
 </%init>
 % for my $role ($AssetObj->Roles) {
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <% loc($role) %>:
     </div>
 % if ($AssetObj->Role($role)->{Single}) {
 %      my $users = $AssetObj->RoleGroup($role)->UserMembersObj(Recursively => 0);
 %      $users->FindAllRows;
 %      my $user = $users->Next;
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="user-accordion accordion">
 %     if ( $user->id != RT->Nobody->id ) {
         <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Role => $role &>
@@ -70,7 +70,7 @@ my $CatalogObj = $AssetObj->CatalogObj;
       </div>
     </div>
 % } else {
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <div class="user-accordion accordion">
         <& ShowRoleMembers, Group => $AssetObj->RoleGroup($role), Role => $role &>
         <& ShowRoleMembers, Group => $CatalogObj->RoleGroup($role), Role => $role, Skip => $AssetObj->RoleGroup($role), Note => loc("(via this asset's catalog)") &>

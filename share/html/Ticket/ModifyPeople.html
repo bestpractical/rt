@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -85,7 +85,7 @@ my $all_recipients_checked = (grep { !$_ } values %recips) ? 0 : 1;
 </ul>
 </&>
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
     </div>
   </div>

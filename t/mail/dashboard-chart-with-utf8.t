@@ -34,15 +34,29 @@ $m->form_name('ModifyDashboard');
 $m->field( 'Name' => 'dashboard foo' );
 $m->click_button( value => 'Create' );
 
+my ( $dashboard_id ) = ( $m->uri =~ /id=(\d+)/ );
+ok( $dashboard_id, "got an ID for the dashboard, $dashboard_id" );
+
 $m->follow_link_ok( { text => 'Content' } );
-my $form  = $m->form_name('Dashboard-Searches-body');
-my @input = $form->find_input('Searches-body-Available');
-my ($dashboards_component) =
-  map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ /^Chart/ } @input;
-$form->value( 'Searches-body-Available' => $dashboards_component );
-$m->click_button( name => 'add' );
-$m->content_contains('Dashboard updated');
+
+# add content, Chart: chart foo, to dashboard body
+# we need to get the saved search id from the content before submitting the form.
+my $regex = qr/data-type="(\w+)" data-name="RT::User-/ . $root->id . qr/-SavedSearch-(\d+)"/;
+my ( $saved_search_type, $saved_search_id ) = $m->content =~ /$regex/;
+ok( $saved_search_type, "got a type for the saved search, $saved_search_type" );
+ok( $saved_search_id, "got an ID for the saved search, $saved_search_id" );
+
+$m->submit_form_ok({
+    form_name => 'UpdateSearches',
+    fields    => {
+        dashboard_id => $dashboard_id,
+        body         => $saved_search_type . "-" . "RT::User-" . $root->id . "-SavedSearch-" . $saved_search_id,
+    },
+    button => 'UpdateSearches',
+}, "add content 'Chart: chart foo' to dashboard body" );
+
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 $m->follow_link_ok( { text => 'Subscription' } );
 $m->form_name('SubscribeDashboard');

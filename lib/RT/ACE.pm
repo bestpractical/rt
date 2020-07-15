@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -801,6 +801,11 @@ sub FindDependencies {
     $self->SUPER::FindDependencies($walker, $deps);
 
     $deps->Add( out => $self->PrincipalObj->Object );
+
+    if ($self->PrincipalObj->Object->Domain eq 'ACLEquivalence') {
+        $deps->Add( out => $self->PrincipalObj->Object->InstanceObj );
+    }
+
     $deps->Add( out => $self->Object );
 }
 

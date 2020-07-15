@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,9 +58,9 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <& /Admin/Elements/ConfigHelp &>
 <&|/Widgets/TitleBox, title => loc("Current Configuration"), class => 'fullwidth' &>
   <div class="form-row">
-    <div class="col-md-4 label text-left"><&|/l&>Option</&></div>
-    <div class="col-md-4 label text-left"><&|/l&>Value</&></div>
-    <div class="col-md-4 label text-left"><&|/l&>Source</&></div>
+    <div class="label col-4 text-left"><&|/l&>Option</&></div>
+    <div class="label col-4 text-left"><&|/l&>Value</&></div>
+    <div class="label col-4 text-left"><&|/l&>Source</&></div>
   </div>
 
 <%PERL>
@@ -89,15 +89,15 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
     $index_conf++;
 </%PERL>
   <div class="form-row <% $index_conf%2 ? 'oddline' : 'evenline'%>">
-    <div class="col-md-4 collection-as-table value"><% $key %></div>
-    <div class="col-md-4 collection-as-table value">
+    <div class="value col-4 collection-as-table"><% $key %></div>
+    <div class="value col-4 collection-as-table">
 % if ( $key =~ /Password/i and $key !~ /MinimumPasswordLength/ ) {
 <em><% loc('Password not printed' ) %></em>\
 % } else {
 <% stringify($val) |n %>\
 % }
     </div>
-    <div class="col-md-4 collection-as-table value">
+    <div class="value col-4 collection-as-table">
 % if ( $meta->{'Source'}{'SiteConfig'} ) {
 <% $description %>
 % } else {
@@ -110,11 +110,11 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 
 <div class="form-row">
 
-  <div class="col-md-8">
+  <div class="col-8">
     <&|/Widgets/TitleBox, title=> loc("RT core variables") &>
       <div class="form-row">
-        <div class="col-md-6 collection-as-table label text-left"><&|/l&>Variable</&></div>
-        <div class="col-md-6 collection-as-table label text-left"><&|/l&>Value</&></div>
+        <div class="label col-6 collection-as-table text-left"><&|/l&>Variable</&></div>
+        <div class="label col-6 collection-as-table text-left"><&|/l&>Value</&></div>
       </div>
 <%PERL>
 { no strict qw/refs/;
@@ -125,8 +125,8 @@ foreach my $key ( sort keys %{*RT::} ) {
     $index_var++;
 </%PERL>
       <div class="form-row collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
-        <div class="col-md-6 collection-as-table value">RT::<% $key %></div>
-        <div class="col-md-6 collection-as-table value">
+        <div class="value col-6 collection-as-table">RT::<% $key %></div>
+        <div class="value col-6 collection-as-table">
 % if ( $key =~ /Password(?!Length)/i ) { 
 <em><% loc('Password not printed' ) %></em>\
 % } else {
@@ -140,8 +140,8 @@ foreach my $key ( sort keys %{*RT::} ) {
 
     <&|/Widgets/TitleBox, title => loc("RT Size") &>
       <div class="form-row">
-        <div class="collection-as-table col-md-6 label text-left"><&|/l&>Object</&></div>
-        <div class="collection-as-table col-md-6 label text-left"><&|/l&>Size</&></div>
+        <div class="collection-as-table label col-6 text-left"><&|/l&>Object</&></div>
+        <div class="collection-as-table label col-6 text-left"><&|/l&>Size</&></div>
       </div>
 
 <%PERL>
@@ -165,15 +165,15 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
     $index_size++;
 </%PERL>
       <div class="<% $index_size%2 ? 'oddline' : 'evenline'%> form-row">
-        <div class="collection-as-table col-md-6 value"><% $type %></div>
-        <div class="collection-as-table col-md-6 value"><% $count %></div>
+        <div class="collection-as-table value col-6"><% $type %></div>
+        <div class="collection-as-table value col-6"><% $count %></div>
       </div>
 % }
     </&>
 
   </div>
 
-  <div class="col-md-4">
+  <div class="col-4">
 
     <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
       <ol class="list-group-compact list-group">
@@ -222,8 +222,8 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 
 <&|/Widgets/TitleBox, title => loc("Global Attributes") &>
   <div class="collection form-row">
-    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Name</&></div>
-    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Value</&></div>
+    <div class="collection-as-table label col-6 text-left"><&|/l&>Name</&></div>
+    <div class="collection-as-table label col-6 text-left"><&|/l&>Value</&></div>
   </div>
 % my $attrs = $RT::System->Attributes;
 % my $index_size = 0;
@@ -234,17 +234,17 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 %   my $content = $attr->Content;
 %   $content->{data} = defined $content->{data} ? 'DATA' : 'undef'
 %       if exists $content->{data};
-<div class="col-md-6 label">
+<div class="label col-6">
   <% $attr->Name %>
 </div>
-<div class="col-md-6 value">
+<div class="value col-6">
   <% stringify($content) |n %>
 </div>
 % } else {
-<div class="col-md-6 label">
+<div class="label col-6">
   <% $attr->Name %>
 </div>
-<div class="col-md-6 value">
+<div class="value col-6">
   <% stringify($attr->Content) |n %>
 </div>
 % }
@@ -255,24 +255,24 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 
 <&|/Widgets/TitleBox, title => loc("Loaded RT Extensions")&>
   <div class="collection form-row">
-    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Extension</&></div>
-    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Version</&></div>
+    <div class="collection-as-table label col-6 text-left"><&|/l&>Extension</&></div>
+    <div class="collection-as-table label col-6 text-left"><&|/l&>Version</&></div>
   </div>
 % my $row = 0;
 % foreach my $pluginName (grep $_, RT->Config->Get('Plugins')) {
 % my $plugin = RT::Plugin->new( name => $pluginName );
 <div class="<% $row++ %2 ? 'oddline' : 'evenline'%> form-row">
-<div class="collection-as-table col-md-6 value"><%$plugin->Name%></div>
-<div class="collection-as-table col-md-6 value"><%$plugin->Version%></div>
+<div class="collection-as-table value col-6"><%$plugin->Name%></div>
+<div class="collection-as-table value col-6"><%$plugin->Version%></div>
 </div>
 % }
 </&>
 
 <&|/Widgets/TitleBox, title => loc("Loaded perl modules")&>
   <div class="collection form-row">
-    <div class="collection-as-table col-md-4 label text-left"><&|/l&>Module</&></div>
-    <div class="collection-as-table col-md-4 label text-left"><&|/l&>Version</&></div>
-    <div class="collection-as-table col-md-4 label text-left"><&|/l&>Source</&></div>
+    <div class="collection-as-table label col-4 text-left"><&|/l&>Module</&></div>
+    <div class="collection-as-table label col-4 text-left"><&|/l&>Version</&></div>
+    <div class="collection-as-table label col-4 text-left"><&|/l&>Source</&></div>
   </div>
 
 <%perl>
@@ -290,9 +290,9 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 }
 </%perl>
 <div class="<% $i++ %2 ? 'oddline' : 'evenline'%> form-row">
-<div class="collection-as-table col-md-4 value"><% $item %></div>
-    <div class="collection-as-table col-md-4 value"><%$ver%></div>
-    <div class="collection-as-table col-md-4 value"><% $INC{$distfile} || '' %></div>
+<div class="collection-as-table value col-4"><% $item %></div>
+    <div class="collection-as-table value col-4"><%$ver%></div>
+    <div class="collection-as-table value col-4"><% $INC{$distfile} || '' %></div>
 </div>
 % }
 </&>
@@ -310,23 +310,23 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 
 <&|/Widgets/TitleBox, title=> loc("Environment variables") &>
   <div class="collection form-row">
-    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Variable</&></div>
-    <div class="collection-as-table col-md-6 label text-left"><&|/l&>Value</&></div>
+    <div class="collection-as-table label col-6 text-left"><&|/l&>Variable</&></div>
+    <div class="collection-as-table label col-6 text-left"><&|/l&>Value</&></div>
   </div>
 % my $row = 0;
 % for my $key (sort keys %ENV) {
 <div class="collection-as-table <% $row++ %2 ? 'oddline' : 'evenline'%> form-row">
-<div class="collection-as-table col-md-6 value"><% $key %></div>
-<div class="collection-as-table col-md-6 value"><% $ENV{$key} %></div>
+<div class="collection-as-table value col-6"><% $key %></div>
+<div class="collection-as-table value col-6"><% $ENV{$key} %></div>
 </div>
 % }
 </&>
 
 <&|/Widgets/TitleBox, title => loc("Operating System") &>
   <div class="collection evenline form-row">
-    <div class="collection-as-table col-md-6 label text-left">Deployment type</div>
+    <div class="collection-as-table label col-6 text-left">Deployment type</div>
 
-    <div class="collection-as-table col-md-6"><%
+    <div class="collection-as-table col-6"><%
       $INC{'mod_perl.pm'} ? "mod_perl" :
       $INC{'FCGI.pm'}     ? "fastcgi"  :
                             "standalone" %>
@@ -359,8 +359,8 @@ my $row = 1;
 </%perl>
 % while (my ($name, $output) = splice @os_info, 0, 2) {
 <div class="collection-as-table <% $row++ % 2 ? "oddline" : "evenline" %> form-row">
-<div class="collection-as-table col-md-6 value"><% $name %></div>
-<div class="collection-as-table col-md-6 value" style="white-space: pre-wrap; font-family: monospace"><% $output %></div>
+<div class="collection-as-table value col-6"><% $name %></div>
+<div class="collection-as-table value col-6" style="white-space: pre-wrap; font-family: monospace"><% $output %></div>
 </div>
 % }
 </&>

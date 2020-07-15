@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,6 +52,7 @@
 </select>
 <%ARGS>
 $Name => 'LinksField'
+$Class => 'RT::Tickets'
 </%ARGS>
 
 <%INIT>
@@ -62,6 +63,6 @@ my @fields = (
     [ DependedOnBy => loc("Depended on by") ],
     [ RefersTo     => loc("Refers to") ],
     [ ReferredToBy => loc("Referred to by") ],
-    [ LinkedTo     => loc("Links to") ],
+    [ $Class eq 'RT::Tickets' ? 'LinkedTo' : 'Linked' => loc("Links to") ],
 );
 </%INIT>

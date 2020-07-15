@@ -1,33 +1,33 @@
 # English translation for rt
-# Copyright (c) 2013 Rosetta Contributors and Canonical Ltd 2013
+# Copyright (c) 2020 Rosetta Contributors and Canonical Ltd 2020
 # This file is distributed under the same license as the rt package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-06-26 19:30+0000\n"
-"PO-Revision-Date: 2015-11-09 22:58+0000\n"
+"POT-Creation-Date: 2020-07-10 17:51+0000\n"
+"PO-Revision-Date: 2020-07-10 17:40+0000\n"
 "Last-Translator: Shawn M Moore <sartak@gmail.com>\n"
 "Language-Team: English <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-01-31 18:42+0000\n"
-"X-Generator: Launchpad (build 18862)\n"
+"X-Launchpad-Export-Date: 2020-07-10 22:52+0000\n"
+"X-Generator: Launchpad (build 4809fcb62f445aaa3ae919f7f6c3cc7d156ea57a)\n"
 
 # Spaces in role names make life needlessly difficult;
 # just translate it!
-#: lib/RT/Asset.pm:87
+#: lib/RT/Asset.pm:87 lib/RT/Assets.pm:88 share/html/Search/Elements/BuildFormatString:129
 msgid "HeldBy"
 msgstr "Held By"
 
-#: share/html/Elements/Tabs:551 share/html/m/_elements/header:69
+#: lib/RT/Interface/Web/MenuBuilder.pm:94 share/html/m/_elements/header:69
 msgid "Homepage"
 msgstr "Home"
 
-#: share/html/Admin/Users/Modify.html:184 share/html/Prefs/Elements/EditAboutMe:82 share/html/Prefs/Elements/ShowAboutMe:88
+#: share/html/Admin/Users/Modify.html:245 share/html/Prefs/Elements/EditAboutMe:109 share/html/Prefs/Elements/ShowAboutMe:120
 msgid "Residence"
 msgstr "Home"
 

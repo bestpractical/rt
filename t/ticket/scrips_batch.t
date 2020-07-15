@@ -66,7 +66,7 @@ END
 
     $m->goto_create_ticket( $queue );
     $m->form_name('TicketCreate');
-    $m->submit;
+    $m->click('SubmitTicket');
 
     is_deeply parse_handle($tmp_fh), ['Create'], 'Create';
 

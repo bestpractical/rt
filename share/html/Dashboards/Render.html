@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -74,12 +74,12 @@
 
 % my $body = $show_cb->('body');
 % my $sidebar = $show_cb->('sidebar');
-  <div class="col-md-<% $sidebar =~ /\S/ ? 8 : 12 %>">
+  <div class="col-<% $sidebar =~ /\S/ ? 8 : 12 %>">
     <% $body |n %>
   </div>
 
 % if ( $sidebar =~ /\S/ ) {
-  <div class="col-md-4">
+  <div class="col-4">
     <% $sidebar |n %>
   </div>
 % }

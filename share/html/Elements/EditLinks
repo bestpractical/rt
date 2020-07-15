@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,8 +51,8 @@
 
 <div>
   <div class="form-row">
-    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></div>
-    <div class="value col-md-9">
+    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depends on').':', Relation => 'DependsOn' &></div>
+    <div class="value col-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->DependsOn->Next) {
         <div class="list-group-item">
@@ -63,8 +63,8 @@
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></div>
-    <div class="value col-md-9">
+    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Depended on by').':', Relation => 'DependedOnBy' &></div>
+    <div class="value col-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->DependedOnBy->Next) {
         <div class="list-group-item">
@@ -75,8 +75,8 @@
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></div>
-    <div class="value col-md-9">
+    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Parents').':', Relation => 'Parents' &></div>
+    <div class="value col-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->MemberOf->Next) {
         <div class="list-group-item">
@@ -87,8 +87,8 @@
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></div>
-    <div class="value col-md-9">
+    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Children').':', Relation => 'Children' &></div>
+    <div class="value col-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->Members->Next) {
         <div class="list-group-item">
@@ -99,8 +99,8 @@
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></div>
-    <div class="value col-md-9">
+    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Refers to').':', Relation => 'RefersTo' &></div>
+    <div class="value col-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->RefersTo->Next) {
         <div class="list-group-item">
@@ -111,8 +111,8 @@
     </div>
   </div>
   <div class="form-row">
-    <div class="label col-md-3"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></div>
-    <div class="value col-md-9">
+    <div class="label col-3"><& ShowRelationLabel, Object => $Object, Label => loc('Referred to by').':', Relation => 'ReferredToBy' &></div>
+    <div class="value col-9">
       <div class="checkboxes list-group list-group-compact">
 % while (my $link = $Object->ReferredToBy->Next) {
         <div class="list-group-item">
@@ -124,7 +124,7 @@
   </div>
   <div class="form-row">
     <span class="empty"></span>
-    <div class="value col-md-9"><i><&|/l&>(Check box to delete)</&></i></div>
+    <div class="value col-9"><i><&|/l&>(Check box to delete)</&></i></div>
   </div>
 </div>
 

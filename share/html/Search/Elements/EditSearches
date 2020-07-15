@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,38 +51,42 @@
 % if ( $can_modify ) {
 
 <div class="form-row">
-  <div class="col-md-4 label"><&|/l&>Privacy</&>:</div>
-  <div class="col-md-8">
+  <div class="label col-4"><&|/l&>Privacy</&>:</div>
+  <div class="col-8">
 <& SelectSearchObject, Name => 'SavedSearchOwner', Objects => \@CreateObjects, Object => ( $Object && $Object->id ) ? $Object->Object : '' &>
   </div>
 </div>
   <div class="form-row">
-    <div class="col-md-4 label"><&|/l&>Description</&>:</div>
-    <div class="col-md-8 input-group">
+    <div class="label col-4"><&|/l&>Description</&>:</div>
+    <div class="col-8">
       <input type="text" size="25" name="SavedSearchDescription" value="<% $Description || '' %>" class="form-control" />
+    </div>
+  </div>
+  <div class="form-row justify-content-end">
+    <div class="col-auto">
 % if ($Id ne 'new') {
 % if ( $Dirty ) {
-<input type="submit" class="button btn btn-primary" name="SavedSearchRevert" value="<%loc('Revert')%>" />
+<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
-<input type="submit" class="button btn btn-primary" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchDelete" value="<%loc('Delete')%>" />
 % if ( $AllowCopy ) {
-<input type="submit" class="button btn btn-primary" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
+<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
 % }
 
 % if ( $Object && $Object->Id && $Object->CurrentUserHasRight('update') ) {
-<input type="submit" class="button btn btn-primary" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
+<input type="submit" class="button btn btn-primary mr-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Update')%>" />
 % } elsif ( !$Object ) {
-<input type="submit" class="button btn btn-primary" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
+<input type="submit" class="button btn btn-primary mr-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
-% }
     </div>
   </div>
+% }
 
   <hr />
   <div class="form-row">
-    <div class="col-md-4 label"><&|/l&>Load saved search</&>:</div>
-    <div class="col-md-8 input-group">
+    <div class="label col-4"><&|/l&>Load saved search</&>:</div>
+    <div class="col-8 input-group">
 <& SelectSearchesForObjects, Name => 'SavedSearchLoad', Objects => \@LoadObjects, SearchType => $Type &>
 <input type="submit" class="button btn btn-primary" value="<% loc('Load') %>" id="SavedSearchLoadSubmit" name="SavedSearchLoadSubmit" />
     </div>
@@ -116,7 +120,7 @@ my $is_dirty = sub {
     my %arg = (
         Query       => {},
         SavedSearch => {},
-        SearchFields => [qw(Query Format OrderBy Order RowsPerPage ObjectType)],
+        SearchFields => [qw(Query Format OrderBy Order RowsPerPage ObjectType ExtraQueryParams), @ExtraQueryParams],
         @_
     );
 
@@ -143,12 +147,13 @@ my $Dirty = $is_dirty->(
 $Id            => 'new'
 $Object        => undef
 $Class         => 'RT::Tickets'
-$Type          => $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket'
+$Type          => $Class eq 'RT::Transactions' ? 'Transaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
 $Description   => ''
 $CurrentSearch => {}
 @SearchFields   => ()
 $AllowCopy     => 1
 $Title         => loc('Saved searches')
+@ExtraQueryParams => ()
 </%ARGS>
 
 <%METHOD Init>
@@ -157,7 +162,7 @@ $Query       => {}
 $SavedSearch => {}
 @SearchFields => qw(Query Format OrderBy Order RowsPerPage ObjectType)
 $Class        => 'RT::Tickets'
-$Type         => $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket'
+$Type         => $Class eq 'RT::Transactions' ? 'Transaction' : $Class eq 'RT::Assets' ? 'Asset' : 'Ticket'
 </%ARGS>
 <%INIT>
 
@@ -182,6 +187,24 @@ if ( $ARGS{'SavedSearchLoad'} ) {
         $SavedSearch->{'Object'}      = $search;
         $SavedSearch->{'Description'} = $search->Description;
         $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
+
+        if ( my $extra_params = $search->SubValue('ExtraQueryParams') ) {
+            $Query->{ExtraQueryParams} = $extra_params;
+            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                $Query->{$param} = $search->SubValue($param);
+            }
+        }
+        else {
+            delete $Query->{ExtraQueryParams};
+        }
+
+        # Remove all extra params not set in saved search.
+        if ( my $extra_params = $ARGS{ExtraQueryParams} ) {
+            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                next if defined $search->SubValue($param);
+                delete $Query->{$param};
+            }
+        }
 
         if ( $ARGS{'SavedSearchRevert'} ) {
             push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Description'} );
@@ -242,7 +265,8 @@ return @results;
 <%ARGS>
 $Query        => {}
 $SavedSearch  => {}
-@SearchFields => qw(Query Format OrderBy Order RowsPerPage ObjectType)
+@ExtraQueryParams => ()
+@SearchFields => ( qw(Query Format OrderBy Order RowsPerPage ObjectType ExtraQueryParams), @ExtraQueryParams )
 </%ARGS>
 <%INIT>
 
@@ -254,7 +278,7 @@ my $id   = $SavedSearch->{'Id'};
 my $desc = $SavedSearch->{'Description'};
 my $privacy = $SavedSearch->{'Privacy'};
 
-my %params = map { $_ => $Query->{$_} } @SearchFields;
+my %params = map { $_ => $Query->{$_} } grep { defined $Query->{$_} } @SearchFields;
 my ($new_obj_type, $new_obj_id) = split(/\-/, ($privacy || ''));
 
 if ( $obj && $obj->id ) {

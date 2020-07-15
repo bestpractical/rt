@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -280,7 +280,7 @@ sub _ValidateName {
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
+    if ( $tempqueue->Name() && ( !$self->id || $tempqueue->id != $self->id ) ) {
         return (undef, $self->loc("Queue already exists") );
     }
 
@@ -482,6 +482,9 @@ sub CustomRoles {
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
         $roles->LimitToObjectId( $self->Id );
         $roles->ApplySortOrder;
+    }
+    else {
+        $roles->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'ACL' );
     }
     return ($roles);
 }
@@ -1089,11 +1092,13 @@ sub FindDependencies {
                   VALUE    => 'RT::Queue-' );
     $deps->Add( in => $objs );
 
-    # Tickets
-    $objs = RT::Tickets->new( $self->CurrentUser );
-    $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
-    $objs->{allow_deleted_search} = 1;
-    $deps->Add( in => $objs );
+    # Tickets (skipped early as an optimization)
+    if ($walker->{FollowTickets} || !defined($walker->{FollowTickets})) {
+        $objs = RT::Tickets->new( $self->CurrentUser );
+        $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
+        $objs->{allow_deleted_search} = 1;
+        $deps->Add( in => $objs );
+    }
 
     # Object Custom Roles
     $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
@@ -1231,6 +1236,17 @@ sub SetDefaultValue {
         },
     );
 
+    if ( $args{Name} =~ /Priority/ && RT->Config->Get('EnablePriorityAsString') ) {
+        if ( $old_value ne $self->loc('(no value)') ) {
+            my $str = RT::Ticket->_PriorityAsString( $old_value, $self->Name );
+            $old_value = $self->loc($str) if $str;
+        }
+        if ( $new_value ne $self->loc('(no value)') ) {
+            my $str = RT::Ticket->_PriorityAsString( $new_value, $self->Name );
+            $new_value = $self->loc($str) if $str;
+        }
+    }
+
     if ( $ret ) {
         return ( $ret, $self->loc( 'Default value of [_1] changed from [_2] to [_3]', $args{Name}, $old_value, $new_value ) );
     }
@@ -1262,6 +1278,82 @@ sub SetSLA {
     );
     return ($status, $msg) unless $status;
     return ($status, $self->loc("Queue's default service level has been changed"));
+}
+
+sub InitialPriority {
+    my $self = shift;
+    RT->Deprecated( Instead => "DefaultValue('InitialPriority')", Remove => '4.6' );
+    return $self->DefaultValue('InitialPriority');
+}
+
+sub FinalPriority {
+    my $self = shift;
+    RT->Deprecated( Instead => "DefaultValue('FinalPriority')", Remove => '4.6' );
+    return $self->DefaultValue('FinalPriority');
+}
+
+sub DefaultDueIn {
+    my $self = shift;
+    RT->Deprecated( Instead => "DefaultValue('Due')", Remove => '4.6' );
+
+    # DefaultDueIn used to be a number of days; so if the DefaultValue is,
+    # say, "3 days" then return 3
+    my $due = $self->DefaultValue('Due');
+    if (defined($due) && $due =~ /^(\d+) days?$/i) {
+        return $1;
+    }
+
+    return $due;
+}
+
+sub SetInitialPriority {
+    my $self = shift;
+    my $value = shift;
+    RT->Deprecated( Instead => "SetDefaultValue", Remove => '4.6' );
+    return $self->SetDefaultValue(
+        Name => 'InitialPriority',
+        Value => $value,
+    );
+}
+
+sub SetFinalPriority {
+    my $self = shift;
+    my $value = shift;
+    RT->Deprecated( Instead => "SetDefaultValue", Remove => '4.6' );
+    return $self->SetDefaultValue(
+        Name => 'FinalPriority',
+        Value => $value,
+    );
+}
+
+sub SetDefaultDueIn {
+    my $self = shift;
+    my $value = shift;
+
+    # DefaultDueIn used to be a number of days; so if we're setting to,
+    # say, "3" then add the word "days" to match the way the new
+    # DefaultValues works
+    $value .= " days" if defined($value) && $value =~ /^\d+$/;
+
+    RT->Deprecated( Instead => "SetDefaultValue", Remove => '4.6' );
+    return $self->SetDefaultValue(
+        Name => 'Due',
+        Value => $value,
+    );
+}
+
+sub HiddenCustomRoleIDsForURL {
+    my $self = shift;
+    my $url  = shift;
+
+    my $roles = $self->CustomRoles;
+    my @ids;
+
+    while (my $role = $roles->Next) {
+        push @ids, $role->Id if $role->IsHiddenForURL($url);
+    }
+
+    return @ids;
 }
 
 RT::Base->_ImportOverlays();

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,49 +55,49 @@
 % );
 % if ( $res{'exit_code'} ) {
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <% loc("Couldn't get [_1] keys information", $protocol) %>
   </div>
 </div>
 % } elsif ( !keys %{ $res{'info'} } ) {
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <% loc('No [_1] keys for this address', $protocol) %>
   </div>
 </div>
 % } else {
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <% loc("[_1] key '[_2]'", $protocol, $res{'info'}{'Formatted'} ) %>
   </div>
 </div>
 
 % if ( $Type ne 'private' && $res{'info'}{'Trust'} ) {
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <% loc('Trust') %>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% loc( $res{'info'}{'Trust'} ) %></span>
   </div>
 </div>
 % }
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <% loc('Fingerprint') %>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $res{'info'}{'Fingerprint'} %></span>
   </div>
 </div>
 
 % $_->CurrentUser( $session{CurrentUser} ) for grep {$_} (@{$res{'info'}}{qw|Created Expire|});
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <% loc('Created') %>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value">
       <% $res{'info'}{'Created'}? $res{'info'}{'Created'}->AsString( Time => 0 ): loc('never') %>
     </span>
@@ -105,10 +105,10 @@
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <% loc('Expire') %>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value">
       <% $res{'info'}{'Expire'}? $res{'info'}{'Expire'}->AsString( Time => 0 ): loc('never') %>
     </span>
@@ -119,10 +119,10 @@
 % if ($uinfo->{'Created'} or $uinfo->{'Expire'}) {
 %   $_->CurrentUser( $session{CurrentUser} ) for grep {$_} ($uinfo->{'Created'}, $uinfo->{'Expire'});
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <% loc('User (created - expire)') %>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value">
       <% $uinfo->{'String'} %> \
      (<% $uinfo->{'Created'}? $uinfo->{'Created'}->AsString( Time => 0 ): loc('never') %> - <% $uinfo->{'Expire'}? $uinfo->{'Expire'}->AsString( Time => 0 ): loc('never') %>)
@@ -131,10 +131,10 @@
 </div>
 % } else {
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <% loc('User') %>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <span class="current-value"><% $uinfo->{'String'} %></span>
   </div>
 </div>
@@ -146,7 +146,7 @@
 
 % if ( @protocols ) {
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     &nbsp;
   </div>
 </div>

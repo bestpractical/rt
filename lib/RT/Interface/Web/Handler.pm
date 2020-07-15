@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -306,6 +306,10 @@ sub PSGIApp {
     };
 
     my $app = $self->StaticWrap($mason);
+
+    # Add REST2
+    $app = RT::REST2::PSGIWrap('RT::REST2', $app);
+
     for my $plugin (RT->Config->Get("Plugins")) {
         my $wrap = $plugin->can("PSGIWrap")
             or next;

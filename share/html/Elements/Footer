@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,14 +56,14 @@
 % # display 3 columns on login page
 % # display 1 column center aligned once logged in, without the "For support and sales..." section
 % my $cols = ( $Menu ? '12' : '4' );
-  <div class="col-md-<% $cols %>">
+  <div class="col-<% $cols %>">
     <p id="version" class="text-center <% $Menu ? 'pb-1' : 'text-md-left' %>"><span><&|/l_unsafe, $RT::VERSION, &>RT Version [_1]</&></span></p>
   </div>
-  <div class="col-md-<% $cols %>">
+  <div class="col-<% $cols %>">
     <p id="bpscredits" class="text-center"><span><&|/l_unsafe, '2020', '&#187;&#124;&#171;', '<a href="https://bestpractical.com/about">Best Practical Solutions, LLC</a>', &>Copyright 1996-[_1] [_2] [_3].</&></span></p>
   </div>
 % if (!$Menu) {
-  <div class="col-md-4">
+  <div class="col-4">
     <p id="legal" class="text-md-right text-center"><&|/l_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>For support and sales inquiries, please contact [_1].</&></p>
   </div>
 % }

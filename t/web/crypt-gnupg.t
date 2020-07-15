@@ -59,7 +59,7 @@ $m->field('Subject', 'Encryption test');
 $m->field('Content', 'Some content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok(!$m->value('Sign', 2), "sign tick box is unchecked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -128,7 +128,7 @@ $m->field('Subject', 'Signing test');
 $m->field('Content', 'Some other content');
 ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
 ok($m->value('Sign', 2), "sign tick box is checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -201,7 +201,7 @@ $m->field('Subject', 'Crypt+Sign test');
 $m->field('Content', 'Some final? content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok($m->value('Sign', 2), "sign tick box is checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -267,7 +267,7 @@ $m->field('Content', 'Thought you had me figured out didya');
 $m->field(Encrypt => undef, 2); # turn off encryption
 ok(!$m->value('Encrypt', 2), "encrypt tick box is now unchecked");
 ok($m->value('Sign', 2), "sign tick box is still checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -355,7 +355,7 @@ warning_like {
     $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
                   Owner => $nokey);
 } [
-    qr/nokey\@example.com: skipped: public key not found/,
+    qr/nokey\@example.com: skipped: public key not found|error retrieving 'nokey\@example.com' via WKD: No data/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
@@ -377,7 +377,7 @@ my $status;
 warning_like {
     ($status, $id) = RT::Test->send_via_mailgate($mail);
 } [
-    qr/nokey\@example.com: skipped: public key not found/,
+    qr/nokey\@example.com: skipped: public key not found|error retrieving 'nokey\@example.com' via WKD: No data/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 
@@ -458,8 +458,8 @@ like($content, qr/KR-<recipient\@example\.com>-K/,
 like($content, qr/KR-nokey \(no pubkey!\)-K/,
      "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
-$m->next_warning_like(qr/public key not found/);
-$m->next_warning_like(qr/public key not found/);
+$m->next_warning_like(qr/public key not found|No public key/);
+$m->next_warning_like(qr/public key not found|No public key/);
 $m->no_leftover_warnings_ok;
 
 done_testing;

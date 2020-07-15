@@ -21,7 +21,7 @@ diag "w/o attachments";
 
     $m->form_name('TicketCreate');
     $m->content_contains("Create a new ticket", 'ticket create page');
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 }
 
@@ -34,12 +34,12 @@ diag "with one attachment";
     $m->field('Attach',  LogoFile);
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
     $m->content_contains('Some content', 'and content');
-    $m->content_contains('Download bpslogo.png', 'page has file name');
+    ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 diag "with two attachments";
@@ -56,13 +56,13 @@ diag "with two attachments";
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
     $m->content_contains('Some content', 'and content');
-    $m->content_contains('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 SKIP: {
@@ -83,13 +83,13 @@ diag "with one attachment, but delete one along the way";
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
     $m->content_contains('Some content', 'and content');
-    $m->content_lacks('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( !$m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 diag "with one attachment, but delete one along the way";
@@ -115,13 +115,13 @@ diag "with one attachment, but delete one along the way";
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
     $m->content_contains('Some content', 'and content');
-    $m->content_lacks('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( !$m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 }
@@ -143,7 +143,7 @@ diag "with one attachment";
     $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
-    $m->content_contains('Download bpslogo.png', 'page has file name');
+    ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 diag "with two attachments";
@@ -167,8 +167,8 @@ diag "with two attachments";
     $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
-    $m->content_contains('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 SKIP: {
@@ -195,8 +195,8 @@ diag "with one attachment, delete one along the way";
     $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
-    $m->content_lacks('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( !$m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 }
 
@@ -218,7 +218,7 @@ diag "with one attachment";
     is($m->status, 200, "request successful");
 
     $m->goto_ticket( $ticket->id );
-    $m->content_contains('Download bpslogo.png', 'page has file name');
+    ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 diag "with two attachments";
@@ -243,8 +243,8 @@ diag "with two attachments";
     is($m->status, 200, "request successful");
 
     $m->goto_ticket( $ticket->id );
-    $m->content_contains('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 SKIP: {
@@ -272,8 +272,8 @@ diag "with one attachment, delete one along the way";
     is($m->status, 200, "request successful");
 
     $m->goto_ticket( $ticket->id );
-    $m->content_lacks('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( !$m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 }
 
@@ -301,8 +301,8 @@ diag "one attachment";
 
     foreach my $ticket ( @tickets ) {
         $m->goto_ticket( $ticket->id );
-        $m->content_lacks('Download bpslogo.png', 'page has file name');
-        $m->content_contains('Download favicon.png', 'page has file name');
+        ok( !$m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
+        ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
     }
 }
 
@@ -334,8 +334,8 @@ diag "two attachments";
 
     foreach my $ticket ( @tickets ) {
         $m->goto_ticket( $ticket->id );
-        $m->content_contains('Download bpslogo.png', 'page has file name');
-        $m->content_contains('Download favicon.png', 'page has file name');
+        ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
+        ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
     }
 }
 
@@ -370,8 +370,8 @@ diag "one attachment, delete one along the way";
 
     foreach my $ticket ( @tickets ) {
         $m->goto_ticket( $ticket->id );
-        $m->content_lacks('Download bpslogo.png', 'page has file name');
-        $m->content_contains('Download favicon.png', 'page has file name');
+        ok( !$m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
+        ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
     }
 }
 }
@@ -386,10 +386,10 @@ diag "create with attachment";
     $m->field('Subject', 'Subject');
     $m->field('Content', 'Message');
     ok($m->current_form->find_input('AddMoreAttach'), "more than one attachment");
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 diag "update with attachment";
@@ -408,7 +408,7 @@ diag "update with attachment";
     $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 }
 
 diag "mobile ui";
@@ -458,13 +458,13 @@ diag "check content type and content";
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
 
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
     $m->content_contains('Attachments test', 'we have subject on the page');
     $m->content_contains('Some content', 'and content');
-    $m->content_contains('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download mobile.css', 'page has file name');
+    ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
+    ok( $m->find_link( text => 'mobile.css', url_regex => qr{Attachment/} ), 'page has the file link' );
 
     $m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/bpslogo\.png/ } );
     is($m->response->header('Content-Type'), 'image/png', 'Content-Type of png lacks charset' );
@@ -506,16 +506,17 @@ diag "update and create";
     $m->field('Attach',  FaviconFile);
     $m->field('Subject', 'Attachments test');
     $m->field('Content', 'Some content');
-    $m->submit;
+    $m->click('SubmitTicket');
     is($m->status, 200, "request successful");
 
-    $m->content_lacks('Download bpslogo.png', 'page has file name');
-    $m->content_contains('Download favicon.png', 'page has file name');
+    ok( !$m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
+    ok( $m->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page has the file link' );
 
     $m2->form_name('TicketUpdate');
     $m2->click('SubmitTicket');
-    $m2->content_contains('Download bpslogo.png', 'page has file name');
-    $m2->content_lacks('Download favicon.png', 'page has no file name');
+    ok( $m2->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
+    ok( !$m2->find_link( text => 'favicon.png', url_regex => qr{Attachment/} ), 'page lacks the file link' );
+
 }
 
 done_testing;

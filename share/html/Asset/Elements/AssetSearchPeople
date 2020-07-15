@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,18 +48,18 @@
 <&| /Widgets/TitleBox, class => "asset-search-people", title => loc('People') &>
 % for my $role (RT::Asset->Roles) {
   <div class="asset-role-<% CSSClass($role) %> form-row">
-    <div class="label col-md-2">
+    <div class="label col-2">
       <% loc($role) %>
     </div>
-    <div class="value col-md-4">
+    <div class="value col-4">
       <input class="form-control" type="text" id="Role.<% $role %>" name="Role.<% $role %>"
         data-autocomplete="Users" value="<% $ARGS{"Role.$role"} || '' %>"
       />
     </div>
-    <div class="label col-md-2">
+    <div class="label col-2">
       <&|/l&>not</&>
     </div>
-    <div class="value col-md-4">
+    <div class="value col-4">
       <input class="form-control" type="text" id="!Role.<% $role %>" name="!Role.<% $role %>"
         data-autocomplete="Users" value="<% $ARGS{"!Role.$role"} || '' %>"
       />
@@ -75,16 +75,16 @@
 % my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 % my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
   <div class="form-row">
-    <div class="label col-md-2">
+    <div class="label col-2">
       <% $cf->Name %>
     </div>
-    <div class="value col-md-4">
+    <div class="value col-4">
       <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
     </div>
-    <div class="label col-md-2">
+    <div class="label col-2">
       <&|/l&>not</&>
     </div>
-    <div class="value col-md-4">
+    <div class="value col-4">
       <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
     </div>
   </div>

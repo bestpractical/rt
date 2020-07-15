@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -80,10 +80,10 @@ sub progress_bar {
 
     my $fraction = $args{max} ? $args{now} / $args{max} : 0;
 
-    my $max_width = $args{cols} - 30;
+    my $max_width = $args{cols} - 35;
     my $bar_width = int($max_width * $fraction);
 
-    return sprintf "%20s |%-" . $max_width . "s| %3d%%\n",
+    return sprintf "%25s |%-" . $max_width . "s| %3d%%\n",
         $args{label}, $args{char} x $bar_width, $fraction*100;
 }
 
@@ -129,8 +129,16 @@ sub progress {
 
         my %counts = $args{counts}->();
         for my $class (map {"RT::$_"} @{$args{bars}}) {
-            my $display = $class;
-            $display =~ s/^RT::(.*)/@{[$1]}s:/;
+            my $display;
+            if ( $class eq 'RT::ACE' ) {
+                $display = 'ACL:';
+            }
+            else {
+                $display = $class;
+                my $suffix = UNIVERSAL::can( $class . 'es', 'new' ) ? 'es' : 's';
+                $display =~ s/^RT::(.*)/@{[$1]}$suffix:/;
+            }
+
             print progress_bar(
                 label => $display,
                 now   => $counts{$class},
@@ -163,9 +171,9 @@ sub progress {
             }
         }
         print "\n";
-        printf "%20s %s\n", "Elapsed time:",
+        printf "%25s %s\n", "Elapsed time:",
             format_time($elapsed);
-        printf "%20s %s\n", "Estimated left:",
+        printf "%25s %s\n", "Estimated left:",
             (defined $left) ? format_time($left) : "-";
 
         $args{bottom}->($elapsed, $rows, $cols);

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,10 +47,10 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Basics'), class=>'asset-search-grouping asset-search-basics' &>
   <div class="form-row">
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="form-row">
-        <div class="label col-md-3"><&|/l&>Catalog</&></div>
-        <div class="value col-md-9">
+        <div class="label col-3"><&|/l&>Catalog</&></div>
+        <div class="value col-9">
           <& /Asset/Elements/SelectCatalog, Name => 'Catalog', CheckRight => "ShowCatalog",
             Default => $ARGS{'Catalog'}, OnChange => "jQuery('#AssetSearch').submit()"
           &>
@@ -58,10 +58,10 @@
       </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="form-row">
-        <div class="label col-md-3"><&|/l&>Status</&></div>
-        <div class="value col-md-9">
+        <div class="label col-3"><&|/l&>Status</&></div>
+        <div class="value col-9">
           <& /Asset/Elements/SelectStatus, Name => 'Status', Catalogs => { $CatalogObj->id => 1 }, DefaultValue => 1,
             Default => ($ARGS{'Status'} || '')
           &>
@@ -71,27 +71,27 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="form-row">
-        <div class="label col-md-2"><&|/l&>Name</&></div>
-        <div class="value col-md-4">
+        <div class="label col-2"><&|/l&>Name</&></div>
+        <div class="value col-4">
           <input class="form-control" type="text" id="Name" name="Name" value="<% $ARGS{Name} || ''%>" />
         </div>
-        <div class="label col-md-2"><&|/l&>not</&></div>
-        <div class="value col-md-4">
+        <div class="label col-2"><&|/l&>not</&></div>
+        <div class="value col-4">
           <input class="form-control" type="text" id="!Name" name="!Name" value="<% $ARGS{"!Name"} || ''%>" />
         </div>
       </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-6">
       <div class="form-row">
-        <div class="label col-md-2"><&|/l&>Description</&></div>
-        <div class="value col-md-4">
+        <div class="label col-2"><&|/l&>Description</&></div>
+        <div class="value col-4">
           <input class="form-control" type="text" id="Description" name="Description" value="<% $ARGS{Description} || ''%>" />
         </div>
-        <div class="label col-md-2"><&|/l&>not</&></div>
-        <div class="value col-md-4">
+        <div class="label col-2"><&|/l&>not</&></div>
+        <div class="value col-4">
           <input class="form-control" type="text" id="!Description" name="!Description" value="<% $ARGS{"!Description"} || ''%>" />
         </div>
       </div>
@@ -99,7 +99,7 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
 % my $CFs = RT::CustomFields->new( $session{CurrentUser} );
 % $CFs->LimitToCatalog( $CatalogObj->Id );
 % $CFs->LimitToObjectId(0); # LimitToGlobal but no LookupType restriction
@@ -109,16 +109,16 @@
 % my $value  = ref($ARGS{$name}) ? $ARGS{$name}[0] : $ARGS{$name} || '';
 % my $negval = ref($ARGS{"!$name"}) ? $ARGS{"!$name"}[0] : $ARGS{"!$name"} || '';
       <div class="form-row">
-        <div class="label col-md-2">
+        <div class="label col-2">
           <% $cf->Name %>
         </div>
-        <div class="value col-md-4">
+        <div class="value col-4">
           <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => $name, Default => $value &>
         </div>
-        <div class="label col-md-2">
+        <div class="label col-2">
           <&|/l&>not</&>
         </div>
-        <div class="value col-md-4">
+        <div class="value col-4">
           <& /Elements/SelectCustomFieldValue, CustomField => $cf, Name => "!$name", Default => $negval &>
         </div>
       </div>

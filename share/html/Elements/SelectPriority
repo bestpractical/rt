@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,7 +49,82 @@
 <%ARGS>
 $Name => 'Priority'
 $Default => ''
+$QueueObj => undef
+%Queues => ()
+$ValueAsString => undef
 </%ARGS>
 <%INIT>
+use List::MoreUtils 'uniq';
+if ( RT->Config->Get('EnablePriorityAsString') ) {
+    my %config = RT->Config->Get('PriorityAsString');
+
+    my @names;
+    if ($QueueObj) {
+        push @names, $QueueObj->__Value('Name');    # Skip ACL check
+    }
+    elsif (%Queues) {
+        for my $id ( keys %Queues ) {
+            my $queue = RT::Queue->new( $session{'CurrentUser'} );
+            $queue->Load($id);
+            if ( $queue->Id ) {
+                push @names, $queue->__Value('Name');    # Skip ACL check
+            }
+        }
+    }
+
+    if ( @names ) {
+        @names = uniq map { exists $config{$_} ? $_ : 'Default' } @names;
+    }
+    else {
+        @names = keys %config;
+    }
+
+    @names = sort { lc $a cmp lc $b } @names;
+
+    my $use_numeric;
+    for my $name (@names) {
+        if ( !$config{$name} ) {
+            RT->Logger->debug("PriorityAsString for Queue $name is disabled, skipping");
+            $use_numeric = 1;
+            last;
+        }
+    }
+
+    my %map;
+    my %options;
+
+    for my $name ( @names ) {
+        my $value = $config{$name};
+
+        my @list;
+        if ( ref $value eq 'ARRAY' ) {
+            @list = @$value;
+        }
+        elsif ( ref $value eq 'HASH' ) {
+            @list = map { $_ => $value->{$_} } sort { $value->{$a} <=> $value->{$b} } keys %$value;
+        }
+
+        while ( my $label = shift @list ) {
+            my $option = { Label => $label, Value => shift @list };
+            push @{ $options{$name} }, $option;
+
+            $map{$label} //= $option->{Value};
+            if ( $ValueAsString && $map{$label} != $option->{Value} ) {
+                $ValueAsString = 0;
+            }
+        }
+    }
+
+    if ($ValueAsString) {
+        for my $name ( keys %options ) {
+            for my $option ( @{ $options{$name} } ) {
+                $option->{Value} = $option->{Label};
+            }
+        }
+    }
+
+    return $m->comp( "/Elements/SelectPriorityAsString", %ARGS, Options => \%options ) unless $use_numeric;
+}
+
 $Default = '' unless defined $Default;
 </%INIT>

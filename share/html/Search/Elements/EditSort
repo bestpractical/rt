@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,12 +48,12 @@
 % for my $o (0..3) {
 % $Order[$o] ||= ''; $OrderBy[$o] ||= '';
 <div class="form-row">
-  <div class="col-md-4 label">
+  <div class="label col-4">
 % if ($o == 0) {
 <&|/l&>Order by</&>:
 % }
   </div>
-  <div class="col-md-4 value">
+  <div class="value col-4">
     <select name="OrderBy" class="form-control selectpicker">
 % if ($o > 0) {
       <option value=""><&|/l&>~[none~]</&></option>
@@ -70,7 +70,7 @@ selected="selected"
 % }
     </select>
   </div>
-  <div class="col-md-4">
+  <div class="col-4">
     <select name="Order" class="form-control selectpicker">
       <option value="ASC"
 % unless ( ($Order[$o]||'') eq "DESC" ) {
@@ -88,10 +88,10 @@ selected="selected"
 % }
 
 <div class="form-row">
-  <div class="col-md-4 label">
+  <div class="label col-4">
     <&|/l&>Rows per page</&>:
   </div>
-  <div class="col-md-4 value">
+  <div class="value col-4">
     <& /Elements/SelectResultsPerPage,
         Name => "RowsPerPage",
         Default => $RowsPerPage &>
@@ -113,6 +113,11 @@ if ( $Class eq 'RT::Tickets' ) {
     $fields{'Owner'} = 'Owner';
     $fields{ $_ . '.EmailAddress' } = $_ . '.EmailAddress' for qw(Requestor Cc AdminCc);
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    $fields{'Owner'} = 'Owner';
+    $fields{'HeldBy'} = 'HeldBy';
+    $fields{'Contact'} = 'Contact';
+}
 
 # Add all available CustomFields to the list of sortable columns.
 my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
@@ -126,7 +131,9 @@ if ( $Class eq 'RT::Tickets' ) {
         my $value = $role;
         $fields{$label . '.EmailAddress' } = $value . '.EmailAddress';
     }
+}
 
+if ( $Class =~ /^RT::(?:Tickets|Assets)$/ ) {
     # Add PAW sort
     $fields{'Custom.Ownership'} = 'Custom.Ownership';
 }

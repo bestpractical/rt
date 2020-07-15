@@ -223,7 +223,7 @@ AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
 my_group=$($PERL -MPOSIX=getgid -le 'print scalar getgrgid getgid')
-my_user=${USER:-$LOGNAME}
+my_user=$($PERL -MPOSIX=getuid -le 'print scalar getpwuid getuid')
 AC_ARG_WITH(my-user-group,
             AC_HELP_STRING([--with-my-user-group],
                            [set all users and groups to current user/group]),
@@ -462,12 +462,15 @@ AC_CONFIG_FILES([
                  etc/upgrade/time-worked-history
                  etc/upgrade/upgrade-articles
                  etc/upgrade/upgrade-assets
+                 etc/upgrade/upgrade-authtokens
+                 etc/upgrade/upgrade-configurations
                  etc/upgrade/vulnerable-passwords
                  etc/upgrade/upgrade-sla
                  sbin/rt-ldapimport
                  sbin/rt-attributes-viewer
                  sbin/rt-preferences-viewer
                  sbin/rt-session-viewer
+                 sbin/rt-dump-initialdata
                  sbin/rt-dump-metadata
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies

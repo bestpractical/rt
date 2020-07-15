@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,10 +58,10 @@
 <&|/l&>You can insert ticket content into any freeform, text or wiki field.</&>
 </p>
 <div class="form-row">
-  <div class="col-md-2 label text-left">
+  <div class="label col-2 text-left">
     <&|/l&>Field</&>
   </div>
-  <div class="col-md-auto label text-left">
+  <div class="label col-auto text-left">
     <&|/l&>Ticket update</&>
   </div>
 </div>
@@ -69,7 +69,7 @@
 % while ( my $trans = $transactions->Next ) { 
 % next unless $trans->HasContent && $trans->Content;
 <div class="<% ($i++)%2 ? 'oddline' : 'evenline'%> form-row" >
-  <div class="col-md-2 value">
+  <div class="value col-2">
     <select class="form-control selectpicker" name="Transaction-<%$trans->Id%>">
       <option value="">-</option>
 % while (my $cf = $CustomFields->Next) {
@@ -77,14 +77,14 @@
 % }
     </select>
   </div>
-  <div class="col-md-auto value">
+  <div class="value col-auto">
     <b><%$trans->CreatedObj->AsString%>: <%$trans->Description%></b>
     <pre><%$trans->Content%></pre>
   </div>
 </div>
 % } 
 <div class="form-row">
-  <div class="col-md-12">
+  <div class="col-12">
     <& /Elements/Submit, Label => loc('Create'), color => "#993333" &>
   </div>
 </div>

@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 33;
+use RT::Test tests => undef;
+
+my $root = RT::Test->load_or_create_user( Name => 'root' );
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -42,25 +44,36 @@ ok($dashboard_id, "got an ID, $dashboard_id");
 
 # add the search to the dashboard
 $m->follow_link_ok({text => 'Content'});
-my $form = $m->form_name('Dashboard-Searches-body');
-my @input = $form->find_input('Searches-body-Available');
-my ($search_value) =
-  map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ /Saved Search: Original Name/ } @input;
-$form->value('Searches-body-Available' => $search_value );
-$m->click_button(name => 'add');
-$m->text_contains('Dashboard updated');
 
-# add the dashboard to the dashboard
-$m->follow_link_ok({text => 'Content'});
-$form = $m->form_name('Dashboard-Searches-body');
-@input = $form->find_input('Searches-body-Available');
-my ($dashboard_value) =
-  map { ( $_->possible_values )[1] }
-  grep { ( $_->value_names )[1] =~ /Dashboard: inner dashboard/ } @input;
-$form->value('Searches-body-Available' => $dashboard_value );
-$m->click_button(name => 'add');
-$m->text_contains('Dashboard updated');
+# we need to get the saved search id from the content before submitting the args.
+my $regex = 'data-type="saved" data-name="RT::User-' . $root->id . '-SavedSearch-(\d+)"';
+my ($saved_search_id) = $m->content =~ /$regex/;
+ok($saved_search_id, "got an ID for the saved search, $saved_search_id");
+
+my $args = {
+    UpdateSearches => "Save",
+    dashboard_id   => $dashboard_id,
+    body           => [],
+    sidebar        => [],
+};
+
+# add 'Original Name' and 'inner dashboard' portlets to body
+push(
+    @{$args->{body}},
+    (
+      "saved-" . "RT::User-" . $root->id . "-SavedSearch-" . $saved_search_id,
+      "dashboard-dashboard-" . $inner_id . "-RT::User-" . $root->id,
+    )
+);
+
+my $res = $m->post(
+    $url . 'Dashboards/Queries.html?id=' . $dashboard_id,
+    $args,
+);
+
+is( $res->code, 200, "add 'Original Name' and 'inner dashboard' portlets to body" );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 # subscribe to the dashboard
 $m->follow_link_ok({text => 'Subscription'});
@@ -72,9 +85,9 @@ $m->text_contains('Subscribed to dashboard cachey dashboard');
 
 # rename the search
 $m->follow_link_ok({text => 'Tickets'}, 'to query builder');
-$form = $m->form_name('BuildQuery');
-@input = $form->find_input('SavedSearchLoad');
-($search_value) =
+my $form = $m->form_name('BuildQuery');
+my @input = $form->find_input('SavedSearchLoad');
+my ($search_value) =
   map { ( $_->possible_values )[1] }
   grep { ( $_->value_names )[1] =~ /Original Name/ } @input;
 $form->value('SavedSearchLoad' => $search_value );
@@ -107,3 +120,5 @@ TODO: {
 $m->get_ok("/Dashboards/Render.html?id=$dashboard_id");
 $m->text_contains('New Name');
 $m->text_unlike(qr/Original Name/); # t-w-m lacks text_lacks
+
+done_testing;

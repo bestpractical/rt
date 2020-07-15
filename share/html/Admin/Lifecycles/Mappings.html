@@ -1,0 +1,155 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+<div class="form-row">
+  <div class="col-12">
+    <p><&|/l&>If a ticket is moved from one queue or catalog to another, these mappings define how statuses should be updated.</&></p>
+  </div>
+</div>
+
+% if ( @lifecycles ) {
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Mappings.html" name="ModifyMappings" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
+  <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
+
+% for my $Other (@lifecycles) {
+% my $FromMapping = $Other->MoveMap($LifecycleObj);
+% my $ToMapping = $LifecycleObj->MoveMap($Other);
+% my @OtherStatuses = $Other->Valid;
+
+<&| /Widgets/TitleBox, title => $Other->Name &>
+  <div class="form-row">
+    <div class="col-6">
+      <h6 class="text-center my-3"><&|/l, $Other->Name, $LifecycleObj->Name &>From [_1] to [_2]</&></h6>
+% for my $OtherStatus (@OtherStatuses) {
+      <div class="form-row">
+        <div class="col-4 label">
+          <% $OtherStatus %>:
+        </div>
+        <div class="col-8 value">
+          <& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{$OtherStatus}, Name => 'map-' . $Other->Name . '-' . $OtherStatus . '--' . $LifecycleObj->Name&>
+        </div>
+      </div>
+% }
+    </div>
+
+    <div class="col-6">
+      <h6 class="text-center my-3"><&|/l, $LifecycleObj->Name, $Other->Name &>From [_1] to [_2]</&></h6>
+% for my $MyStatus (@MyStatuses) {
+      <div class="form-row">
+        <div class="col-4 label">
+          <% $MyStatus %>:
+        </div>
+        <div class="col-8 value">
+          <& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{$MyStatus}, Name => 'map-' . $LifecycleObj->Name . '-' . $MyStatus . '--' . $Other->Name &>
+        </div>
+      </div>
+% }
+    </div>
+  </div>
+</&>
+% }
+
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+    </div>
+  </div>
+
+</form>
+% }
+<%INIT>
+my ($title, @results);
+my $LifecycleObj = RT::Lifecycle->new();
+$LifecycleObj->Load(Name => $Name, Type => $Type);
+
+Abort( loc("Invalid lifecycle") ) unless $LifecycleObj->Name && $LifecycleObj->{data}{type} eq $Type;
+
+my @MyStatuses = $LifecycleObj->Valid;
+
+$title = loc("Lifecycle [_1] Mappings", $LifecycleObj->Name);
+
+# This code does automatic redirection if any updates happen.
+MaybeRedirectForResults(
+    Actions   => \@results,
+    Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
+);
+
+my @lifecycle_names = grep { $_ ne 'approvals' } RT::Lifecycle->ListAll($Type);
+
+if ($Update) {
+    my %maps;
+    my $lifecycle_re = join '|', map { quotemeta($_) } @lifecycle_names;
+    for my $key (keys %ARGS) {
+        my ($from_lifecycle, $from_status, $to_lifecycle) = $key =~ /^map-($lifecycle_re)-(.*)--($lifecycle_re)$/ or next;
+        if (my $to_status = $ARGS{$key}) {
+            $maps{"$from_lifecycle -> $to_lifecycle"}{$from_status} = $to_status;
+        }
+    }
+
+    my ($ok, $msg) = RT::Lifecycle->UpdateMaps(
+        CurrentUser  => $session{CurrentUser},
+        Maps         => \%maps,
+    );
+    push @results, $msg;
+}
+
+my @lifecycles = map { RT::Lifecycle->Load(Name => $_, Type => $Type) }
+                 sort { loc($a) cmp loc($b) }
+                 grep { $_ ne $Name }
+                 @lifecycle_names;
+
+push @results, loc("You only need mappings once you have two more [_1] lifecycles", loc($Type)) unless @lifecycles;
+</%INIT>
+<%ARGS>
+$Name => undef
+$Type => undef
+$Update => undef
+</%ARGS>

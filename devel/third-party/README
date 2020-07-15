@@ -39,6 +39,11 @@ Description: WYSIWYG text editor
 Origin: https://github.com/ckeditor/ckeditor4
 License: GPL 2
 
+* d3
+Description: Bring data to life with SVG, Canvas and HTML
+Origin: https://d3js.org
+License: BSD 3-Clause
+
 * dropzone-4.0.1
 Description: drag and drop attachment uploader
 Origin: https://github.com/enyo/dropzone

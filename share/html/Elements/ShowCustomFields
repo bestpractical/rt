@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,8 +66,8 @@
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes, Grouping => $Grouping );
   <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
-    <div class="label col-md-3"><% $CustomField->Name %>:</div>
-    <div class="value col-md-9 <% $count ? '' : ' no-value' %>">
+    <div class="label col-3"><% $CustomField->Name %>:</div>
+    <div class="value col-9 <% $count ? '' : ' no-value' %>">
       <span class="current-value">
 % unless ( $count ) {
 <&|/l&>(no value)</&>

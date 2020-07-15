@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,7 +48,7 @@
 <& /Elements/Header, Title => loc('Transaction #[_1]', $id) &>
 <& /Elements/Tabs &>
 
-<& /Elements/ShowHistoryHeader, Object => $txn, %ARGS &>
+<& /Elements/ShowHistoryHeader, Object => $txn, SingleTransaction => 1, %ARGS &>
 
 <& /Elements/ShowTransaction, Transaction => $txn,
     DisplayPath     => RT->Config->Get('WebPath') . '/Ticket/Display.html',

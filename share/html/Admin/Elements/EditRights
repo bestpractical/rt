@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -186,7 +186,7 @@ if ($anchor =~ /AddPrincipal/) {
 <div class="rights-editor">
   <input type="hidden" value="" name="Anchor" />
   <div class="form-row">
-    <div class="col-md-3">
+    <div class="col-3">
       <div class="principal-tabs">
         <ul class="nav nav-tabs flex-column nav-pills" role="tablist" aria-orientation="vertical">
 <%perl>
@@ -241,7 +241,7 @@ jQuery(function() {
         </ul>
       </div>
     </div>
-    <div class="col-md-9">
+    <div class="col-9">
       <div class="tab-content">
 <%perl>
 # Now generate our rights panels for each principal

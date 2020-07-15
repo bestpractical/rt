@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,7 +55,7 @@
 <&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Label) &>
 
 <div class="form-row">
-  <div class="col-md-6">
+  <div class="col-6">
     <h3><&|/l&>Current members</&></h3>
 
 % if ($Group->MembersObj->Count == 0 ) {
@@ -102,14 +102,18 @@ my @users = map {$_->[1]}
 % }
 
   </div>
-  <div class="col-md-6">
+  <div class="col-6">
     <h3><&|/l&>Add members</&></h3>
     <& /Admin/Elements/SelectNewGroupMembers, Name => "AddMembers", Group => $Group,
         SkipUsers => \%UsersSeen, SkipGroups => \%GroupsSeen &>
   </div>
 </div>
 </&>
-<& /Elements/Submit, Label => loc('Modify Members'), Reset => 1 &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Modify Members'), Reset => 1 &>
+    </div>
+  </div>
 </form>
 
 

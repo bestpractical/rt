@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,7 +55,7 @@
 % if ( $is_global ) {
 <h2><&|/l&>Applies to all objects</&></h2>
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="RemoveClass-<% $Class->id %>" name="RemoveClass-<% $Class->id %>" value="0" />
         <label class="custom-control-label" for="RemoveClass-<% $Class->id %>"><&|/l&>check this box to remove this Class globally and be able to choose specific Queues.</&></label>
@@ -66,7 +66,7 @@
 <h2><&|/l&>Apply globally</&></h2>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="AddClass-<% $Class->id %>" name="AddClass-<% $Class->id %>" value="0" />
         <label class="custom-control-label" for="AddClass-<% $Class->id %>"><&|/l&>check this box to apply this Class globally to all Queues.</&></label>
@@ -110,7 +110,7 @@
 % }
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Name => 'UpdateObjs' &>
     </div>
   </div>

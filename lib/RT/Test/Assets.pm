@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,7 +52,7 @@ use warnings;
 package RT::Test::Assets;
 use base 'RT::Test';
 
-our @EXPORT = qw(create_catalog create_asset create_assets create_cf apply_cfs);
+our @EXPORT = qw(create_catalog create_asset create_assets create_cf apply_cfs assetsql);
 
 sub import {
     my $class = shift;
@@ -79,6 +79,24 @@ sub create_catalog {
         return;
     }
 }
+
+sub load_or_create_catalog {
+    my $self = shift;
+    my %args = ( Disabled => 0, @_ );
+    my $obj = RT::Catalog->new( RT->SystemUser );
+    if ( $args{'Name'} ) {
+        $obj->LoadByCols( Name => $args{'Name'} );
+    } else {
+        die "Name is required";
+    }
+    unless ( $obj->id ) {
+        my ($val, $msg) = $obj->Create( %args );
+        die "$msg" unless $val;
+    }
+
+    return $obj;
+}
+
 
 sub create_asset {
     my %info  = @_;
@@ -126,6 +144,56 @@ sub apply_cfs {
         }
     }
     return $success;
+}
+
+sub last_asset {
+    my $self = shift;
+    my $current = shift;
+    $current = $current ? RT::CurrentUser->new($current) : RT->SystemUser;
+    my $assets = RT::Assets->new( $current );
+    $assets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
+    $assets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
+    $assets->RowsPerPage( 1 );
+    return $assets->First;
+}
+
+sub assetsql {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my $options = shift;
+    my @expected = @_;
+    my $currentuser = RT->SystemUser;
+
+    my $sql;
+    if (ref($options)) {
+        $sql = delete $options->{sql};
+        $currentuser = delete $options->{CurrentUser} if $options->{CurrentUser};
+        die "Unexpected options: " . join ', ', keys %$options if keys %$options;
+    }
+    else {
+        $sql = $options;
+    }
+
+    my $count = scalar @expected;
+
+    my $assets = RT::Assets->new($currentuser);
+    $assets->FromSQL($sql);
+    $assets->OrderBy( FIELD => 'Name', ORDER => 'ASC' );
+
+    Test::More::is($assets->Count, $count, "number of assets from [$sql]");
+    my $i = 0;
+    while (my $asset = $assets->Next) {
+        my $expected = shift @expected;
+        if (!$expected) {
+            Test::More::fail("got more assets (" . $asset->Name . ") than expected from [$sql]");
+            next;
+        }
+        ++$i;
+        Test::More::is($asset->Name, $expected->Name, "asset ($i/$count) from [$sql]");
+    }
+    while (my $expected = shift @expected) {
+        Test::More::fail("got fewer assets than expected (" . $expected->Name . ") from [$sql]");
+    }
 }
 
 1;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,50 +50,50 @@
 
 <div class="form-row">
 %### Left column ###
-  <div class="col-md-6">
+  <div class="col-6">
 
     <&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
       <input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Email</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="EmailAddress" value="<%$UserObj->EmailAddress%>" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Real Name</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="RealName" value="<%$UserObj->RealName%>" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Nickname</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="NickName" value="<%$UserObj->NickName || ''%>" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Language</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectLang, Name => 'Lang', Default => $UserObj->Lang &>
         </div>
       </div>
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Timezone</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <& /Elements/SelectTimezone, Name => 'Timezone', Default => $UserObj->Timezone &>
         </div>
       </div>
@@ -105,43 +105,43 @@
 
     <&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Residence</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="tel" name="HomePhone" value="<%$UserObj->HomePhone || ''%>" size="13" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Work</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="tel" name="WorkPhone" value="<%$UserObj->WorkPhone || ''%>" size="13" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Mobile</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="tel" name="MobilePhone" value="<%$UserObj->MobilePhone || ''%>" size="13" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Pager</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="tel" name="PagerPhone" value="<%$UserObj->PagerPhone || ''%>" size="13" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-12">
+        <div class="label col-12">
           <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Phones' &>
         </div>
       </div>
@@ -153,7 +153,7 @@
   </div>
 
 %### Right column ###
-  <div class="col-md-6
+  <div class="col-6
   ">
 
     <&| /Widgets/TitleBox, title => loc( $AccessControlName ), id => "user-prefs-access-control" &>
@@ -169,10 +169,10 @@
 % my $AdminUser = $session{'CurrentUser'}->HasRight( Object => RT->System, Right => 'AdminUsers' );
     <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Organization</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
 %if ( $AdminUser ) {
           <input class="form-control" type="text" name="Organization" value="<%$UserObj->Organization || ''%>" />
 %} else {
@@ -181,61 +181,61 @@
         </div>
       </div>
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Address1</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="Address1" value="<%$UserObj->Address1 || ''%>" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Address2</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="Address2" value="<%$UserObj->Address2 || ''%>" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>City</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="City" value="<%$UserObj->City || ''%>" size="14" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>State</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="State" value="<%$UserObj->State || ''%>" size="3" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Zip</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="Zip" value="<%$UserObj->Zip || ''%>" size="9" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Country</&>:
         </div>
-        <div class="col-md-9 value">
+        <div class="value col-9">
           <input class="form-control" type="text" name="Country" value="<%$UserObj->Country || ''%>" />
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-12">
+        <div class="col-12">
           <& /Elements/EditCustomFields, Object => $UserObj, Grouping => 'Location' &>
         </div>
       </div>
@@ -249,7 +249,7 @@
 
 %if ($UserObj->Privileged) {
 <div class="form-row">
-  <div class="col-md-6">
+  <div class="col-6">
     <&| /Widgets/TitleBox, title => loc('Signature'), id => "user-prefs-signature" &>
       <textarea class="form-control signature" cols="80" rows="5" name="Signature" wrap="hard">
       <%$UserObj->Signature || ''%></textarea>
@@ -260,7 +260,11 @@
 
 <& /Elements/EditCustomFieldCustomGroupings, Object => $UserObj &>
 
-<& /Elements/Submit, Label => loc('Save Preferences') &>
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit, Label => loc('Save Preferences') &>
+  </div>
+</div>
 
 %if ( $AdminUser ) {
 <&| /Widgets/TitleBox, title => loc('Secret authentication token'), id => "user-prefs-feeds" &>

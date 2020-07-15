@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -136,7 +136,7 @@
           [<a href="<% RT->Config->Get('WebPath') . '/Admin/Users/Memberships.html?id=' . $requestor->id %>" ><&|/l&>Edit</&></a>]
 % }
         </div>
-        <div class="value col-md-9"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></div>
+        <div class="value col-9"><& /Elements/ShowMemberships, UserObj => $requestor, Limit => $grouplimit &></div>
       </div>
 % }
 

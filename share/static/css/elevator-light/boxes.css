@@ -100,34 +100,48 @@ div.results .titlebox .titlebox-content {
     padding: 0 15px 15px 15px;
 }
 
+/* Suppress bottom and side padding for results messages */
+.titlebox .list-actions .card-body {
+    padding: 0;
+}
+
+/* Add some space before the displayed link table */
+.titlebox .linked-queue-portlet .card-body {
+    padding: 15px 15px 15px 15px;
+}
+
 /* Ticket display page colored top borders */
 /* Keep in sync with transaction colors in history.css */
 /* material.io reference: https://material.io/design/color/#tools-for-picking-colors */
 
-.titlebox.card.ticket-info-basics {
+.titlebox.card.ticket-info-basics, .titlebox.card.asset-basics {
     border-top: 3px solid #D32F2F;
 }
 .titlebox.card.ticket-info-reminders {
     border-top: 3px solid #0277BD;
 }
 .titlebox.card.ticket-info-people, .titlebox.card.ticket-info-requestor, .titlebox.card.ticket-info-squelch,
-#ticket-update-message #recipients {
+#ticket-update-message #recipients, .titlebox.card.asset-people {
     border-top: 3px solid #0288D1;
 }
-.titlebox.card.ticket-info-dates {
+.titlebox.card.ticket-info-dates, .titlebox.card.asset-dates {
     border-top: 3px solid #7B1FA2;
 }
 .titlebox.card.ticket-info-attachments {
     border-top: 3px solid #EF6C00;
 }
-.titlebox.card.ticket-info-links, .titlebox.card.ticket-assets {
+.titlebox.card.ticket-info-links, .titlebox.card.ticket-assets, .titlebox.card.asset-links {
     border-top: 3px solid #388E3C;
 }
 .titlebox.card.ticket-info-merge {
     border-top: 3px solid #5D4037;
 }
-.titlebox.card.ticket-info-cfs {
+.titlebox.card.ticket-info-cfs, .titlebox.card.asset-info-cfs {
     border-top: 3px solid #D32F2F;
+}
+/* reset to default border for .card-body */
+#comp-Admin-Queues-DefaultValues .titlebox.card.ticket-info-cfs {
+    border-top: 1px solid #dde4eb;
 }
 .titlebox.card.messagedetails {
     border-top: 3px solid #1976D2;

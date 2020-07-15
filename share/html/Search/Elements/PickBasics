@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -212,6 +212,122 @@ if ( $Class eq 'RT::Transactions' ) {
         },
     );
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    @lines = (
+        {
+            Name => 'id',
+            Field => loc('id'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectEqualityOperator',
+            },
+            Value => { Type => 'text', Size => 5 }
+        },
+        {
+            Name => 'Attachment',
+            Field => {
+                Type => 'component',
+                Path => '/Elements/SelectAttachmentField',
+                Arguments => { Class => 'RT::Assets' },
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => {
+                    True => loc("matches"),
+                    False => loc("doesn't match"),
+                    TrueVal => 'LIKE',
+                    FalseVal => 'NOT LIKE',
+                },
+            },
+            Value => { Type => 'text', Size => 20 },
+        },
+        {
+            Name => 'Catalog',
+            Field => loc('Catalog'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Asset/Elements/SelectCatalog',
+                Arguments => { NamedValues => 1, ShowNullOption => 1, UpdateSession => 0, CheckRight => 'ShowAsset' },
+            },
+        },
+        {
+            Name => 'Status',
+            Field => loc('Status'),
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Asset/Elements/SelectStatus',
+                Arguments => { Catalogs => \%catalogs },
+            },
+        },
+        {
+            Name => 'Watcher',
+            Field => {
+                Type => 'component',
+                Path => 'SelectPersonType',
+                Arguments => { Default => 'Owner', Class => 'RT::Assets' },
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectMatch',
+            },
+            Value => { Type => 'text', Size => 20 }
+        },
+        {
+            Name => 'WatcherGroup',
+            Field => {
+                Type => 'component',
+                Path => 'SelectPersonType',
+                Arguments => { Default => 'Owner', Suffix => 'Group', Class => 'RT::Assets' },
+            },
+            Op => {
+                Type => 'select',
+                Options => [ '=' => loc('is') ],
+            },
+            Value => { Type => 'text', Size => 20, "data-autocomplete" => "Groups" }
+        },
+        {
+            Name => 'Date',
+            Field => {
+                Type => 'component',
+                Path => '/Elements/SelectDateType',
+                Arguments => { Class => 'RT::Assets' },
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectDateRelation',
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectDate',
+                Arguments => { ShowTime => 0, Default => '' },
+            },
+        },
+        {
+            Name => 'Links',
+            Field => {
+                Type => 'component',
+                Path => 'SelectLinks',
+            },
+            Op => {
+                Type => 'component',
+                Path => '/Elements/SelectBoolean',
+                Arguments => { TrueVal=> '=', FalseVal => '!=' },
+            },
+            Value => { Type => 'text', Size => 5 }
+        },
+    );
+}
 else {
     @lines = (
         {
@@ -253,6 +369,19 @@ else {
                 Type => 'component',
                 Path => '/Elements/SelectQueue',
                 Arguments => { NamedValues => 1, },
+            },
+        },
+        {
+            Name => 'Lifecycle',
+            Field => loc('Lifecycle'),
+            Op => {
+                Type      => 'component',
+                Path      => '/Elements/SelectBoolean',
+                Arguments => { TrueVal => '=', FalseVal => '!=' },
+            },
+            Value => {
+                Type => 'component',
+                Path => '/Elements/SelectLifecycle',
             },
         },
         {
@@ -385,6 +514,7 @@ else {
             Value => {
                 Type => 'component',
                 Path => '/Elements/SelectPriority',
+                Arguments => { Queues => \%queues, ValueAsString => 1 },
             },
         },
         {
@@ -404,6 +534,7 @@ $m->callback( Conditions => \@lines );
 
 </%INIT>
 
+% if ( $Class =~ /^RT::(?:Tickets|Transactions)$/ ) {
 <script type="text/javascript">
     jQuery(function() {
 
@@ -426,7 +557,7 @@ $m->callback( Conditions => \@lines );
 
     // create a text input box and hide it for use with matches / doesn't match
     // NB: if you give text a name it will add an additional term to the query!
-    var text = jQuery('<input>').attr('type','text');
+    var text = jQuery('<input>').attr('type','text').attr('class', 'form-control');
     text.hide();
     text.bind('change',function() {
         hidden[0].value = text[0].value;
@@ -455,8 +586,10 @@ $m->callback( Conditions => \@lines );
     selector.after(text);
     });
 </script>
+% }
 <%ARGS>
 %queues => ()
+%catalogs => ()
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

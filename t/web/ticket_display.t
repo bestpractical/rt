@@ -31,7 +31,7 @@ diag "test ShowTicket right";
     $m->get_ok( '/Ticket/Create.html?Queue=' . $queue->id,
         'go to ticket create page' );
     my $form = $m->form_name('TicketCreate');
-    $m->submit_form( fields => { Subject => 'ticket foo', $cf_form_id => $cf_test_value } );
+    $m->submit_form( fields => { Subject => 'ticket foo', $cf_form_id => $cf_test_value }, button => 'SubmitTicket' );
 
     my $ticket = RT::Test->last_ticket;
     ok( $ticket->id, 'ticket is created' );

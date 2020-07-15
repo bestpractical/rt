@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,10 +51,22 @@ $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
+$SingleTransaction => 0
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
 my $histid      = "\L$record_type\E-" . $Object->id . "-history";
+
+my $reverse_txns = $ARGS{'ReverseTxns'};
+if ( $reverse_txns ) {
+    # If we got something, reverse it for the link
+    $reverse_txns = $reverse_txns eq 'ASC' ? 'DESC' : 'ASC';
+}
+else {
+    # Default the link to the opposite of the config setting
+    # Oldest Txns first is ASC, so reverse it for this option default
+    $reverse_txns = RT->Config->Get("OldestTransactionsFirst", $session{'CurrentUser'}) ? 'DESC' : 'ASC';
+}
 </%INIT>
 <div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
@@ -94,8 +106,16 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
         }
     }
 
+    # Don't need to reverse history when showing a single transaction
+    unless ( $SingleTransaction ) {
+        push( @elements, qq{<a href="?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} .
+                         $Object->id.qq{#$histid">} .
+                         loc("Reverse history order") .
+                         qq{</a>} );
+    }
+
     # build the new link
-    my $alt = loc('Edit');
+    my $alt = loc('Options');
     my $titleright = qq{<div class="btn-group dropdown"><a id="history-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span></a><ul class="dropdown-menu dropdown-menu-right">};
 
     # foreach of the elements, build a new <li>$element</li> and append to the output.

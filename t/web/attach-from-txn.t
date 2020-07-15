@@ -33,7 +33,7 @@ $m->content_contains("Create a new ticket", 'ticket create page');
 $m->form_name('TicketCreate');
 $m->field('Subject', 'Attachments test');
 $m->field('Content', 'Some content');
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->content_contains('Attachments test', 'we have subject on the page');
@@ -53,8 +53,8 @@ $m->field('UpdateContent', 'Message');
 $m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
-$m->content_contains("Download $LogoName", 'page has file name');
-$m->content_contains("Download $ImageName", 'page has file name');
+ok( $m->find_link( text => $LogoName, url_regex => qr{Attachment/} ), 'page has file link');
+ok( $m->find_link( text => $ImageName, url_regex => qr{Attachment/} ), 'page has file link');
 
 # clear mail catcher
 RT::Test->fetch_caught_mails;

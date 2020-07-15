@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,17 +57,17 @@
 % }
 
   <div class="form-row">
-    <div class="col-md-auto">
+    <div class="col-auto">
       <select name="QueueField" class="form-control selectpicker">
 % foreach my $col (qw(Name Description CorrespondAddress CommentAddress Lifecycle SubjectTag)) {
         <option <% $QueueField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
 % }
       </select>
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
       <& /Elements/SelectMatch, Name => 'QueueOp', Default => $QueueOp &>
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
       <input type="text" class="form-control" size="8" name="QueueString" value="<% $QueueString %>" />
     </div>
   </div>
@@ -75,7 +75,7 @@
 <br />
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledQueues" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
         <label class="custom-control-label" for="FindDisabledQueues"><&|/l&>Include disabled queues in listing.</&></label>
@@ -84,7 +84,7 @@
   </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <div align="right">
         <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Go!</&>" />
       </div>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,8 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Asset/Search/Bulk.html" enctype="multipart/form-data" name="BulkUpdate" id="BulkUpdate">
-% foreach my $var ( @{$search{'PassArguments'}} )  {
+% use List::MoreUtils 'uniq';
+% foreach my $var ( uniq @{$search{'PassArguments'}}, qw(Query Format OrderBy Order Rows Page Token) )  {
 <input type="hidden" class="hidden" name="<% $var %>" value="<% $ARGS{$var} || '' %>" />
 % }
 <& /Elements/CollectionList,
@@ -67,7 +68,7 @@
 % }
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit,
         Name => 'Update',
         Label => loc('Update'),
@@ -78,7 +79,7 @@
   </div>
   <div class="submit">
     <div class="form-row">
-      <div class="buttons col-md-12">
+      <div class="buttons col-12">
         <span class="caption"></span>
           <input type="submit" id="bulk-update-create-linked-ticket" name="CreateLinkedTicket"  value="Create Linked Ticket" class="button btn btn-primary form-control" alt="Create a ticket with checked assets linked" />
       </div>
@@ -88,21 +89,21 @@
 
   <&| /Widgets/TitleBox, title => loc("Basics"), class => "asset-basics asset-bulk-basics", title_class => "inverse" &>
     <div class="form-row">
-      <div class="col-md-6">
+      <div class="col-6">
         <div class="form-row">
-          <div class="label col-md-3">
+          <div class="label col-3">
             <&|/l&>Catalog</&>
           </div>
-          <div class="col-md-9 value">
-            <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', Default => $catalog_obj->id, UpdateSession => 0, &>
+          <div class="value col-9">
+            <& /Asset/Elements/SelectCatalog, Name => 'UpdateCatalog', UpdateSession => 0, ShowNullOption => 1 &>
           </div>
         </div>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-6">
         <div class="form-row">
-          <div class="col-md-3 label"><&|/l&>Name</&></div>
-          <div class="col-md-9 value">
+          <div class="label col-3"><&|/l&>Name</&></div>
+          <div class="value col-9">
             <input class="form-control" type="text" name="UpdateName" value="<% $ARGS{'Name'}||'' %>" size="40">
           </div>
         </div>
@@ -110,28 +111,28 @@
     </div>
 
     <div class="form-row">
-      <div class="col-md-6 asset-catalog">
+      <div class="col-6 asset-catalog">
         <div class="form-row">
-          <div class="label col-md-3"><&|/l&>Description</&></div>
-          <div class="col-md-9 value">
+          <div class="label col-3"><&|/l&>Description</&></div>
+          <div class="value col-9">
             <input class="form-control" type="text" name="UpdateDescription" value="<% $ARGS{'Description'}||'' %>" size="40">
           </div>
         </div>
       </div>
 
-      <div class="col-md-6 asset-status">
+      <div class="col-6 asset-status">
         <div class="form-row">
-          <div class="label col-md-3"><&|/l&>Status</&></div>
-          <div class="col-md-9 value">
-            <& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1, CatalogObj => $catalog_obj &>
+          <div class="label col-3"><&|/l&>Status</&></div>
+          <div class="value col-9">
+            <& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1 &>
           </div>
         </div>
       </div>
     </div>
-% my $cfs = $catalog_obj->AssetCustomFields;
-% $cfs->LimitToGrouping( 'RT::Asset' => 'Basics');
-% if ( $cfs->Count ) {
-    <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+% my $basic_cfs = $cfs->Clone;
+% $basic_cfs->LimitToGrouping( 'RT::Asset' => 'Basics');
+% if ( $basic_cfs->Count ) {
+    <& /Elements/BulkCustomFields, CustomFields => $basic_cfs, &>
 % }
   </&>
 
@@ -141,12 +142,12 @@
 % if ( $role->{'Single'} ) {
 % my $input = "SetRoleMember-$rname";
     <div class="form-row">
-      <div class="col-md-6">
+      <div class="col-6">
         <div class="form-row">
-          <div class="label col-md-3">
+          <div class="label col-3">
             <% loc($rname) %>
           </div>
-          <div class="col-md-9 value">
+          <div class="value col-9">
             <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
           </div>
         </div>
@@ -155,20 +156,20 @@
 % } else {
 % my $input = "AddRoleMember-$rname";
     <div class="form-row">
-      <div class="col-md-6">
+      <div class="col-6">
         <div class="form-row">
-          <div class="label col-md-3"><% loc("Add [_1]", loc($rname)) %></div>
-          <div class="col-md-9 value">
+          <div class="label col-3"><% loc("Add [_1]", loc($rname)) %></div>
+          <div class="value col-9">
             <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
           </div>
         </div>
       </div>
 
 % $input = "RemoveRoleMember-$rname";
-      <div class="col-md-6">
+      <div class="col-6">
         <div class="form-row">
-          <div class="label col-md-3"><% loc("Remove [_1]", loc($rname)) %></div>
-          <div class="col-md-9 value">
+          <div class="label col-3"><% loc("Remove [_1]", loc($rname)) %></div>
+          <div class="value col-9">
             <input class="form-control" type="text" value="<% $ARGS{ $input } || '' %>" name="<% $input %>" id="<% $input %>" data-autocomplete="Users" data-autocomplete-return="Name" />
 
             <div class="custom-control custom-checkbox">
@@ -181,43 +182,43 @@
     </div>
 % }
 % }
-% my $cfs = $catalog_obj->AssetCustomFields;
-% $cfs->LimitToGrouping( 'RT::Asset' => 'People');
-% if ( $cfs->Count ) {
-    <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+% my $people_cfs = $cfs->Clone;
+% $people_cfs->LimitToGrouping( 'RT::Asset' => 'People');
+% if ( $people_cfs->Count ) {
+    <& /Elements/BulkCustomFields, CustomFields => $people_cfs, &>
 % }
   </&>
 
-%   my $cfs = $catalog_obj->AssetCustomFields;
-%   $cfs->LimitToGrouping( 'RT::Asset' => 'Dates');
-%   if ( $cfs->Count ) {
+%   my $date_cfs = $cfs->Clone;
+%   $date_cfs->LimitToGrouping( 'RT::Asset' => 'Dates');
+%   if ( $date_cfs->Count ) {
 
     <&| /Widgets/TitleBox, title => loc("Dates"), class => "asset-dates asset-bulk-dates", title_class => "inverse" &>
-      <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+      <& /Elements/BulkCustomFields, CustomFields => $date_cfs, &>
     </&>
 %   }
 
 % for my $group ( RT::CustomField->CustomGroupings( 'RT::Asset' ), '' ) {
-%   my $cfs = $catalog_obj->AssetCustomFields;
-%   $cfs->LimitToGrouping( 'RT::Asset' => $group);
-%   if ( $cfs->Count ) {
+%   my $group_cfs = $cfs->Clone;
+%   $group_cfs->LimitToGrouping( 'RT::Asset' => $group);
+%   if ( $group_cfs->Count ) {
     <&| /Widgets/TitleBox, class=>'asset-bulk-grouping asset-info-cfs asset-bulk-cfs', title => loc('Edit [_1]', ($group? loc($group) : loc('Custom Fields')) ), title_class => "inverse" &>
-      <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+      <& /Elements/BulkCustomFields, CustomFields => $group_cfs, &>
     </&>
 %   }
 % }
 
   <&|/Widgets/TitleBox, title => loc('Edit Links'), class => "asset-links asset-bulk-links", title_class => "inverse" &>
     <& /Elements/BulkLinks, Collection => $assets, %ARGS &>
-%   my $cfs = $catalog_obj->AssetCustomFields;
-%   $cfs->LimitToGrouping( 'RT::Asset' => 'Links');
+%   my $link_cfs = $cfs->Clone;
+%   $link_cfs->LimitToGrouping( 'RT::Asset' => 'Links');
 %   if ( $cfs->Count ) {
-      <& /Elements/BulkCustomFields, CustomFields => $cfs, &>
+      <& /Elements/BulkCustomFields, CustomFields => $link_cfs, &>
 %   }
   </&>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Update'), Name => 'Update' &>
     </div>
   </div>
@@ -231,11 +232,18 @@ my $catalog_obj = LoadDefaultCatalog($ARGS{'Catalog'} || '');
 $ARGS{'Catalog'} = $catalog_obj->Id;
 
 my $assets = RT::Assets->new($session{CurrentUser});
-my %search = ProcessAssetsSearchArguments(
-    Assets => $assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
-);
+my %search;
+if ( $ARGS{Query} ) {
+    $assets->FromSQL($ARGS{Query});
+}
+else {
+    %search = ProcessAssetsSearchArguments(
+        Assets => $assets, Catalog => $catalog_obj, ARGSRef => \%ARGS,
+    );
+}
+$search{Format} ||= RT->Config->Get('AssetDefaultSearchResultFormat');
 
-my $DisplayFormat = "'__CheckBox.{UpdateAsset}__',". $search{'Format'};
+my $DisplayFormat = "'__CheckBox.{UpdateAsset}__',". ($ARGS{Format} || $search{'Format'});
 $DisplayFormat =~ s/\s*,\s*('?__NEWLINE__'?)/,$1,''/gi;
 
 my $asset = RT::Asset->new( $session{'CurrentUser'} );
@@ -243,6 +251,35 @@ my $asset = RT::Asset->new( $session{'CurrentUser'} );
 delete $ARGS{$_} foreach grep { $ARGS{$_} =~ /^$/ } keys %ARGS;
 
 $DECODED_ARGS->{'UpdateAssetAll'} = 1 unless @UpdateAsset;
+
+my $cfs;
+if ( $ARGS{Query} ) {
+    $cfs = RT::CustomFields->new( $session{'CurrentUser'} );
+    $cfs->LimitToLookupType( RT::Asset->CustomFieldLookupType );
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new;
+    $tree->ParseSQL(
+        Class       => 'RT::Assets',
+        Query       => $ARGS{Query},
+        CurrentUser => $session{CurrentUser},
+    );
+    my $catalogs = $tree->GetReferencedCatalogs;
+    my @ids;
+    for my $name ( keys %$catalogs ) {
+        my $catalog = RT::Catalog->new( $session{CurrentUser} );
+        $catalog->Load($name);
+        if ( $catalog->Id ) {
+            push @ids, $catalog->Id;
+            $cfs->SetContextObject($catalog) if keys %$catalogs == 1;
+        }
+        else {
+            RT->Logger->warning("Couldn't load catalog $name");
+        }
+    }
+    $cfs->LimitToGlobalOrObjectId(@ids);
+}
+else {
+    $cfs = $catalog_obj->AssetCustomFields;
+}
 
 if ( $ARGS{'CreateLinkedTicket'} ){
     my $url = RT->Config->Get('WebURL') . "Asset/CreateLinkedTicket.html";
@@ -272,7 +309,7 @@ elsif ( $ARGS{Update} ) {
 
     MaybeRedirectForResults(
         Actions     => \@results,
-        Arguments   => { map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } @{$search{'PassArguments'}} },
+        Arguments   => { map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } @{$search{'PassArguments'}}, qw(Query Format OrderBy Order Rows Page Token) },
     );
 }
 </%INIT>

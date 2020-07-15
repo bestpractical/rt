@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -100,7 +100,7 @@ var rebalanceOverflowMenu = function (menuId, overflowId) {
         }
 
         // remove item from main menu and add it to the overflow menu
-        item.remove();
+        jQuery(item).remove();
         overflowMenu.children('ul').prepend(item);
         overflowMenu.addClass('has-overflow');
     }

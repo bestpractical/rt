@@ -1,0 +1,166 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => loc("Create a lifecycle") &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Create.html" name="CreateLifecycle" method="post" enctype="multipart/form-data" class="mx-auto max-width-lg">
+
+<&| /Widgets/TitleBox, class => 'lifecycle-info-basics', content_class => 'mx-auto width-sm' &>
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Lifecycle Name</&>:
+    </div>
+    <div class="col-9 value">
+      <input type="text" name="Name" value="<% $Name %>" class="form-control" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-3 label"><&|/l&>Type</&>:</div>
+    <div class="col-9 value">
+      <select name="Type" class="form-control selectpicker">
+% for my $type (@types) {
+        <option value="<% $type %>" <% $type eq $Type ? "selected=selected" : "" %>><% loc($type) %></option>
+% }
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-3 label">
+      <&|/l&>Clone Lifecycle</&>:
+    </div>
+    <div class="col-9 value">
+      <ul class="list-group list-group-compact">
+        <li class="list-group-item">
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="Clone-None" name="Clone" value="" <% ($Clone//'') eq '' ? "checked=checked" : "" %> />
+            <label class="custom-control-label" for="Clone-None">(<&|/l&>none</&>)</label><br />
+          </div>
+        </li>
+
+% for my $type (@types) {
+%   for my $lifecycle (@{ $lifecycles{$type} }) {
+        <li class="list-group-item type" data-type="<% $type %>">
+          <div class="custom-control custom-radio">
+            <input type="radio" class="custom-control-input" id="Clone-<%$lifecycle%>" name="Clone" value="<% $lifecycle %>" <% ($Clone//'') eq $lifecycle ? "checked=checked" : "" %> />
+            <label class="custom-control-label" for="Clone-<%$lifecycle%>"><% $lifecycle %></label>
+          </div>
+        </li>
+%   }
+% }
+      </ul>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'Create', Label => loc('Create') &>
+    </div>
+  </div>
+</&>
+</form>
+
+<script type="text/javascript">
+jQuery(function () {
+    var showType = function (resetClone) {
+        var type = jQuery('select[name=Type]').val();
+        jQuery('.type').hide();
+        jQuery('.type[data-type="'+type+'"]').show();
+        if (resetClone) {
+            jQuery('input[name=Clone][value=""]').prop('checked', true);
+        }
+    };
+    showType(false);
+    jQuery('select[name=Type]').change(function () { showType(true) });
+});
+</script>
+<%INIT>
+my @results;
+
+my @types = List::MoreUtils::uniq(
+    'ticket',
+    'asset',
+    sort keys %RT::Lifecycle::LIFECYCLES_TYPES,
+);
+
+my %lifecycles;
+
+for my $type (@types) {
+    @{ $lifecycles{$type} } = sort { loc($a) cmp loc($b) }
+                              grep { $_ ne 'approvals' }
+                              RT::Lifecycle->ListAll($type);
+}
+
+if ($Create) {
+    my ($ok, $msg) = RT::Lifecycle->CreateLifecycle(
+        CurrentUser => $session{CurrentUser},
+        Name        => $Name,
+        Type        => $Type,
+        Clone       => $Clone,
+    );
+
+    if ($ok) {
+        MaybeRedirectForResults(
+            Actions   => [ $msg ],
+            Path      => 'Admin/Lifecycles/Modify.html',
+            Arguments => { Type => $Type, Name => $Name },
+        );
+    }
+    else {
+        push @results, $msg if !$ok;
+    }
+}
+</%INIT>
+<%ARGS>
+$Name => undef
+$Type => 'ticket'
+$Clone => undef
+$Create => undef
+</%ARGS>

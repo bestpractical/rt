@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -81,8 +81,20 @@ if ($SavedSearch) {
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} ||= 'Ticket';
     if ( $SearchArg->{SearchType} eq 'Transaction' ) {
-        $class = 'RT::Transactions';
-        $query_link_url = RT->Config->Get('WebPath') .  "/Transaction/Search/Results.html";
+        $class = $SearchArg->{Class} = 'RT::Transactions';
+        $customize
+            = RT->Config->Get('WebPath')
+            . '/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch, Class => 'RT::Transactions' );
+        $ShowCount = RT->Config->Get('TransactionShowSearchResultCount')->{'RT::Ticket'};
+    }
+    elsif ( $SearchArg->{SearchType} eq 'Asset' ) {
+        $class = $SearchArg->{Class} = 'RT::Assets';
+        $customize
+            = RT->Config->Get('WebPath')
+            . '/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch, Class => 'RT::Assets' );
+        $ShowCount = RT->Config->Get('AssetShowSearchResultCount');
     }
     elsif ( $SearchArg->{SearchType} ne 'Ticket' ) {
 
@@ -157,6 +169,9 @@ if ($ShowCount) {
     my $title;
     if ( $class eq 'RT::Transactions' ) {
         $title = loc('(Found [quant,_1,transaction,transactions])', $count);
+    }
+    elsif ( $class eq 'RT::Assets' ) {
+        $title = loc('(Found [quant,_1,asset,assets])', $count);
     }
     else {
         $title = loc('(Found [quant,_1,ticket,tickets])', $count);

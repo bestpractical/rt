@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,39 +45,37 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% if ($AssetObj->id) {
   <div class="form-row asset-catalog">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Catalog</&>:
     </div>
-    <div class="value col-md-9">
-      <& /Asset/Elements/SelectCatalog, Default => $current{Catalog} &>
+    <div class="value col-9">
+      <& /Asset/Elements/SelectCatalog, Default => $current{Catalog}, AutoSubmit => $AutoSubmit &>
     </div>
   </div>
-% }
   <div class="form-row asset-name">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Name</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <input class="form-control" type="text" name="Name" value="<% $current{Name} %>" size="40">
     </div>
   </div>
 
   <div class="form-row asset-description">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Description</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <input class="form-control" type="text" name="Description" value="<% $current{Description} %>" size="40">
     </div>
   </div>
 
   <div class="form-row asset-status">
-    <div class="label col-md-3">
+    <div class="label col-3">
       <&|/l&>Status</&>:
     </div>
-    <div class="value col-md-9">
+    <div class="value col-9">
       <& /Asset/Elements/SelectStatus, Name => 'Status', AssetObj => $AssetObj, CatalogObj => $CatalogObj &>
     </div>
   </div>
@@ -95,8 +93,10 @@
 <%args>
 $AssetObj
 $CatalogObj => undef
+$AutoSubmit => 0
 </%args>
 <%init>
 my %current = map { $_ => ($ARGS{$_} || $AssetObj->$_ || '') }
                   $AssetObj->WritableAttributes;
+$CatalogObj ||= LoadDefaultCatalog($ARGS{'Catalog'} || ($AssetObj && $AssetObj->Catalog) || '' );
 </%init>

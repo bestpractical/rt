@@ -4,12 +4,24 @@ use warnings;
 use Test::Deep;
 use Data::Dumper ();
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set($ShowEditSystemConfig, 0);';
 
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login(), 'logged in' );
 
 $m->follow_link_ok( { text => 'System Configuration' }, 'followed link to "System Configuration"' );
+ok( !$m->find_link( text => 'Edit' ), 'no edit link' );
+$m->get_ok('/Admin/Tools/EditConfig.html');
+$m->content_contains('Permission Denied');
+
+RT::Test->stop_server;
+RT->Config->Set( ShowEditSystemConfig => 1 );
+
+( $url, $m ) = RT::Test->started_ok;
+ok( $m->login(), 'logged in' );
+
+$m->follow_link_ok( { text => 'System Configuration' }, 'followed link to "System Configuration"' );
+$m->follow_link_ok( { text => 'History' }, 'followed link to History page' );
 $m->follow_link_ok( { text => 'Edit' }, 'followed link to Edit page' );
 
 my $tests = [
@@ -41,6 +53,24 @@ my $tests = [
 
 run_test( %{$_} ) for @{$tests};
 
+# check tx log for configuration
+my $transactions = RT::Transactions->new(RT->SystemUser);
+$transactions->Limit(FIELD => 'ObjectType', VALUE =>  'RT::Configuration');
+$transactions->OrderBy(FIELD => 'Created', ORDER => 'ASC');
+my $tx_items = $transactions->ItemsArrayRef;
+
+my $i = 0;
+foreach my $change (@{$tests}) {
+    check_transaction( $tx_items->[$i++], $change );
+}
+
+# check config history page
+$m->get_ok( $url . '/Admin/Tools/ConfigHistory.html');
+$i = 0;
+foreach my $change (@{$tests}) {
+    check_history_page_item($tx_items->[$i++], $change );
+}
+
 sub run_test {
     my %args = @_;
 
@@ -70,8 +100,29 @@ sub run_test {
 
     my $rt_config_value = RT->Config->Get( $args{setting} );
 
-    cmp_deeply( $rt_configuration_value, stringify($args{new_value}), 'value from RT::Configuration->Load matches new value' );
+    is( $rt_configuration_value, stringify($args{new_value}), 'value from RT::Configuration->Load matches new value' );
     cmp_deeply( $rt_config_value, $args{new_value}, 'value from RT->Config->Get matches new value' );
+}
+
+sub check_transaction {
+    my ($tx, $change) = @_;
+    is($tx->ObjectType, 'RT::Configuration', 'tx is config change');
+    is($tx->Field, $change->{setting}, 'tx matches field changed');
+    is($tx->NewValue, stringify($change->{new_value}), 'tx value matches');
+}
+
+sub check_history_page_item {
+    my ($tx, $change) = @_;
+    my $link = sprintf('ConfigHistory.html?id=%d#txn-%d', $tx->ObjectId, $tx->id);
+    ok($m->find_link(url => $link), 'found tx link in history');
+    $m->text_contains(compactify($change->{new_value}), 'fetched tx has new value');
+    $m->text_contains("$change->{setting} changed", 'fetched tx has changed field');
+}
+
+sub compactify {
+    my $value = stringify(shift);
+    $value =~ s/\s+/ /g;
+    return $value;
 }
 
 sub stringify {

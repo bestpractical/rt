@@ -1,0 +1,2 @@
+-- Add transaction support for new config in database feature
+ALTER TABLE Transactions MODIFY Field VARCHAR(255) CHARACTER SET ascii DEFAULT NULL;

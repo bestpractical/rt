@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -64,7 +64,11 @@
     Content     => $TemplateObj->Content // $ARGS{Content},
     Type        => $TemplateObj->Type // $ARGS{Type},
 &>
-<& /Elements/Submit, Label => $SubmitLabel, Reset => 1 &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => $SubmitLabel, Reset => 1 &>
+    </div>
+  </div>
 </form>
 
 

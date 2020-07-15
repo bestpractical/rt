@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -75,16 +75,25 @@
 <input type="hidden" class="hidden" name="Format" value="<% $query{'Format'} %>" />
 <input type="hidden" class="hidden" name="ObjectType" value="<% $query{'ObjectType'} %>" />
 <input type="hidden" class="hidden" name="Class" value="<% $Class %>" />
-
-
+% if ( $ResultPage ) {
+<input type="hidden" class="hidden" name="ResultPage" value="<% $ResultPage %>" />
+% }
+% if ( $query{ExtraQueryParams} ) {
+%   for my $input ( ref $query{ExtraQueryParams} eq 'ARRAY' ?  @{$query{ExtraQueryParams}} : $query{ExtraQueryParams} ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%       if ( defined $query{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $query{$input} %>" />
+%       }
+%   }
+% }
 
 <div class="row">
   <div class="col-xl-7">
     <div id="pick-criteria">
-      <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues, %ARGS &>
+      <& Elements/PickCriteria, query => $query{'Query'}, queues => $queues, catalogs => $catalogs, %ARGS &>
     </div>
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <& /Elements/Submit,  Label => loc('Add these terms'), SubmitId => 'AddClause', Name => 'AddClause'&>
         <& /Elements/Submit, Label => loc('Add these terms and Search'), SubmitId => 'DoSearch', Name => 'DoSearch'&>
       </div>
@@ -113,7 +122,7 @@
 </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Update format and Search'), Name => 'DoSearch', id=>"formatbuttons"&>
     </div>
   </div>
@@ -126,36 +135,40 @@ use RT::Interface::Web::QueryBuilder::Tree;
 $ARGS{SavedChartSearchId} ||= 'new';
 
 my $title;
+my @cf_field_names;
+
 if ( $Class eq 'RT::Transactions' ) {
     $title = loc('Transaction Query Builder');
+    @cf_field_names = grep { $RT::Transactions::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
+        sort keys %RT::Transactions::FIELD_METADATA;
+}
+elsif ( $Class eq 'RT::Assets' ) {
+    $title = loc('Asset Query Builder');
+    @cf_field_names = grep { $RT::Assets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
+        sort keys %RT::Assets::FIELD_METADATA;
 }
 else {
-    $title = loc("Query Builder")
+    $title = loc("Query Builder");
+    @cf_field_names = grep { $RT::Tickets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
+        sort keys %RT::Tickets::FIELD_METADATA;
 }
 
 my %query;
-for( qw(Query Format OrderBy Order RowsPerPage Class ObjectType) ) {
+for( qw(Query Format OrderBy Order RowsPerPage Class ObjectType ExtraQueryParams), @ExtraQueryParams ) {
     $query{$_} = $ARGS{$_} if defined $ARGS{$_};
 }
 
 my %saved_search;
 my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, Query => \%query, SavedSearch => \%saved_search );
 
-my $hash_name;
-if ( $Class eq 'RT::Tickets' ) {
-    $hash_name = 'CurrentSearchHash';
-}
-else {
-    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType;
-}
-
-my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType;
+my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
+my $session_name = join '-', 'collection', $Class, $ObjectType || ();
 
 if ( $NewQuery ) {
 
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
-    %query = ();
+    %query = map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } 'ExtraQueryParams', @ExtraQueryParams;
     %saved_search = ( Id => 'new' );
 
     # ..then wipe the session out..
@@ -169,13 +182,22 @@ if ( $NewQuery ) {
 
     my $current = $session{$hash_name};
     my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    my %orderby = (
+        'RT::Tickets'      => RT->Config->Get('DefaultSearchResultOrderBy'),
+        'RT::Transactions' => RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType},
+        'RT::Assets'       => RT->Config->Get('AssetDefaultSearchResultOrderBy'),
+    );
+    my %order = (
+        'RT::Tickets'      => RT->Config->Get('DefaultSearchResultOrder'),
+        'RT::Transactions' => RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType},
+        'RT::Assets'       => RT->Config->Get('AssetDefaultSearchResultOrder'),
+    );
+
     my $default = {
         Query   => '',
         Format  => '',
-        OrderBy => $Class eq 'RT::Tickets' ? RT->Config->Get('DefaultSearchResultOrderBy')
-        : RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType},
-        Order => $Class eq 'RT::Tickets' ? RT->Config->Get('DefaultSearchResultOrder')
-        : RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType},
+        OrderBy => $orderby{$Class},
+        Order => $order{$Class},
         ObjectType  => $ObjectType,
         RowsPerPage => 50
     };
@@ -194,6 +216,13 @@ if ( $NewQuery ) {
     if ( $query{'Format'} ) {
         # Clean unwanted junk from the format
         $query{'Format'} = $m->comp( '/Elements/ScrubHTML', Content => $query{'Format'} );
+    }
+
+    if ( !$ARGS{SavedSearchLoad} and ( my $extra_params = $current->{ExtraQueryParams} ) ) {
+        $query{ExtraQueryParams} //= $extra_params;
+        for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+            $query{$param} //= $current->{$param};
+        }
     }
 }
 
@@ -226,11 +255,7 @@ my @options = $tree->GetDisplayedNodes;
 my @current_values = grep defined, @options[@clauses];
 my @new_values = ();
 
-my $cf_field_names =
-    join "|",
-     map quotemeta,
-    grep { $RT::Tickets::FIELD_METADATA{$_}->[0] eq 'CUSTOMFIELD' }
-    sort keys %RT::Tickets::FIELD_METADATA;
+my $cf_field_names = join "|", map quotemeta, @cf_field_names;
 
 # Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
@@ -293,7 +318,8 @@ my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>
                                   . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
 
 
-my $queues = $tree->GetReferencedQueues;
+my $queues = $Class ne 'RT::Assets' ? $tree->GetReferencedQueues : {};
+my $catalogs = $Class eq 'RT::Assets' ? $tree->GetReferencedCatalogs : {};
 
 # Deal with format changes
 my ( $AvailableColumns, $CurrentFormat );
@@ -301,6 +327,7 @@ my ( $AvailableColumns, $CurrentFormat );
     'Elements/BuildFormatString',
     %ARGS,
     queues => $queues,
+    catalogs => $catalogs,
     Format => $query{'Format'},
 );
 
@@ -333,7 +360,7 @@ if ( $ARGS{'DoSearch'} ) {
         SavedChartSearchId => $ARGS{'SavedChartSearchId'},
         SavedSearchId => $saved_search{'Id'},
     );
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Search/Results.html?' . $redir_query_string);
+    RT::Interface::Web::Redirect("$ResultPage?$redir_query_string");
     $m->abort;
 }
 
@@ -352,11 +379,14 @@ elsif ( $query{'Query'} ) {
     $TabArgs{QueryArgs} = \%query;
 }
 
+$m->callback( ARGSRef => \%ARGS, Query => \%query, CallbackName => 'BeforeDisplay' );
 </%INIT>
 
 <%ARGS>
 $NewQuery => 0
 @clauses => ()
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
+@ExtraQueryParams => ()
+$ResultPage => RT->Config->Get('WebPath') . '/Search/Results.html'
 </%ARGS>

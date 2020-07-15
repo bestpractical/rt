@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,37 +46,37 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Description</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Condition</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Action</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-3 label">
+  <div class="label col-3">
     <&|/l&>Template</&>:
   </div>
-  <div class="col-md-9 value">
+  <div class="value col-9">
     <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
   </div>
 </div>

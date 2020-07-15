@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,18 +55,18 @@
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <div>
   <div class="form-row input-row">
-    <div class="label col-md-3"><&|/l&>Subject</&>:</div>
-    <div class="value col-md-9"><input type="text" size="50" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" /></div>
+    <div class="label col-3"><&|/l&>Subject</&>:</div>
+    <div class="value col-9"><input type="text" size="50" class="form-control" name="Subject" value="<% $args->{Subject} || '' %>" /></div>
   </div>
   <div class="form-row input-row">
-    <div class="label col-md-3"><&|/l&>Queue</&>:</div>
-    <div class="value col-md-9">
+    <div class="label col-3"><&|/l&>Queue</&>:</div>
+    <div class="value col-9">
       <& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
     </div>
   </div>
   <div class="form-row input-row">
-      <div class="label col-md-3"><&|/l&>Owner</&>:</div>
-      <div class="value col-md-9">
+      <div class="label col-3"><&|/l&>Owner</&>:</div>
+      <div class="value col-9">
         <select type="select" name="Owner" class="selectpicker form-control">
 % my $default_owner = $args->{Owner} || $session{'CurrentUser'}->id;
           <option value="<%$session{'CurrentUser'}->id%>" <% $default_owner == $session{'CurrentUser'}->id ? 'selected="selected"' : '' |n %>><&|/l&>Me</&></option>
@@ -75,18 +75,18 @@
       </div>
   </div>
   <div class="form-row input-row">
-    <div class="label col-md-3"><&|/l&>Requestors</&>:</div>
-    <div class="value col-md-9"><& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &></div>
+    <div class="label col-3"><&|/l&>Requestors</&>:</div>
+    <div class="value col-9"><& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &></div>
   </div>
   <div class="form-row input-row">
-    <div class="label col-md-3"><&|/l&>Content</&>:</div>
-    <div class="value col-md-9"><textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></div>
+    <div class="label col-3"><&|/l&>Content</&>:</div>
+    <div class="value col-9"><textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></div>
   </div>
 </div>
 
 <div class="form-row">
-  <div class="col-md-12">
-    <& /Elements/Submit, Label => loc('Create') &>
+  <div class="col-12">
+    <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Create') &>
   </div>
 </div>
 </form>

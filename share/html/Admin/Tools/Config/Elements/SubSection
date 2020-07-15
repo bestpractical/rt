@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
 % if( @{$subsection->{Content}}) {
 % my $id = join '-', 'form', $current_context->{tab}, $current_context->{section}, $current_context->{subsection} || ();
 <form id="<% $id %>" name="EditConfig" method="post" action="EditConfig.html#<% $id %>">
@@ -67,7 +66,7 @@
 
 % if ( $can_edit ) {
 <div class="form-row">
-  <span class="col-md-12">
+  <span class="col-12">
     <& /Elements/Submit, Label => loc('Save Changes') &>
   </span>
 </div>

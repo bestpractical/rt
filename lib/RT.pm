@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -199,7 +199,7 @@ sub Init {
     ConnectToDatabase();
     InitSystemObjects();
     InitClasses(%args);
-    RT->Config->LoadConfigFromDatabase();
+    RT->Config->LoadConfigFromDatabase() unless $args{SkipConfigurations};
     InitLogging();
     ProcessPreInitMessages();
     InitPlugins();
@@ -506,6 +506,8 @@ sub InitClasses {
     require RT::CustomFieldValues::Canonicalizer;
     require RT::Configuration;
     require RT::Configurations;
+    require RT::REST2;
+    require RT::Authen::Token;
 
     _BuildTableAttributes();
 
@@ -767,6 +769,13 @@ our %CORED_PLUGINS = (
     'RT::Extension::AdminConditionsAndActions' => '4.4.2',
     'RT::Extension::RightsInspector' => '5.0',
     'RT::Extension::ConfigInDatabase' => '5.0',
+    'RT::Extension::CustomRole::Visibility' => '5.0',
+    'RT::Extension::PriorityAsString' => '5.0',
+    'RT::Extension::AssetSQL' => '5.0',
+    'RT::Extension::LifecycleUI' => '5.0',
+    'RT::Extension::REST2' => '5.0',
+    'RT::Authen::Token' => '5.0',
+    'RT::Extension::QuoteSelection' => 5.0,
 );
 
 sub InitPlugins {

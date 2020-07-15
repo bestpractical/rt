@@ -1,0 +1,182 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+<div class="form-row">
+  <div class="col-12">
+    <p><&|/l&>Define custom rights and apply them to status transitions.  Once defined, these rights will appear on RT rights pages, like queue group rights, where you can assign them.</&></p>
+  </div>
+</div>
+
+<form action="<%RT->Config->Get('WebPath')%>/Admin/Lifecycles/Rights.html" name="ModifyLifecycleRights" method="post" enctype="multipart/form-data" class="mx-auto max-width-md">
+  <input type="hidden" class="hidden" name="Name" value="<% $LifecycleObj->Name %>" />
+  <input type="hidden" class="hidden" name="Type" value="<% $LifecycleObj->Type %>" />
+
+  <table class="table collection collection-as-table" cellspacing="0">
+    <tr class="collection-as-table text-center">
+      <th class="collection-as-table"><&|/l&>From</&></th>
+      <th class="collection-as-table"><&|/l&>To</&></th>
+      <th class="collection-as-table"><&|/l&>Right Name</&></th>
+      <th class="collection-as-table text-left">
+        <input type="checkbox" name="DeleteAll" value="1" onclick="setCheckbox(this, /^Delete-\d+$/)" />
+        <&|/l&>Delete</&>
+      </th>
+    </tr>
+% my $i = 1;
+% foreach my $right ( sort { $a->{'Name'} cmp $b->{'Name'} } @rights ) {
+    <tr>
+      <td class="collection-as-table">
+        <& /Elements/SelectStatus, Statuses => \@statuses, Default => $right->{'From'}, Name => "Right-From-$i" &>
+      </td>
+      <td class="collection-as-table">
+        <& /Elements/SelectStatus, Statuses => \@statuses, Default => $right->{'To'}, Name => "Right-To-$i" &>
+      </td>
+      <td class="collection-as-table">
+        <input type="text" value="<% $right->{'Name'} %>" class="form-control" Name="Right-Name-<%$i%>" />
+      </td>
+
+      <td class="collection-as-table">
+        <input type="checkbox" name="Delete-<% $i %>" id="Delete-<% $i %>" value="1" />
+      </td>
+    </tr>
+% ++$i;
+% }
+
+% for my $i ( $i .. $i+2 ) {
+    <tr>
+      <td class="collection-as-table"><& /Elements/SelectStatus, Statuses => \@statuses, Name => "Right-From-$i" &></td>
+      <td class="collection-as-table"><& /Elements/SelectStatus, Statuses => \@statuses, Name => "Right-To-$i" &></td>
+      <td class="collection-as-table"><input type="text" class="form-control" name='Right-Name-<% $i %>' /></td>
+      <td class="collection-as-table"></td>
+    </tr>
+% }
+  </table>
+
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update' &>
+    </div>
+  </div>
+</form>
+
+<%INIT>
+my ($title, @results);
+my $LifecycleObj = RT::Lifecycle->new( $session{'CurrentUser'} );
+$LifecycleObj->Load(Name => $Name, Type => $Type);
+
+Abort( loc("Invalid lifecycle") ) unless $LifecycleObj->Name && $LifecycleObj->{data}{type} eq $Type;
+
+$title = loc("Rights for lifecycle [_1]", $LifecycleObj->Name);
+
+my @statuses = ( $LifecycleObj->Valid, '*' );
+
+my @rights;
+
+if ($Update) {
+
+    my %delete_id = ();
+    foreach my $arg ( keys %ARGS ) {
+        if ( $arg =~ /Delete-(\d+)/ ) {
+            $delete_id{$1} = 1;
+        }
+    }
+    my %new_rights;
+    foreach my $arg ( keys %ARGS ) {
+        my ( $field, $count ) = $arg =~ /Right-(\w+)-(\d+)/;
+        next unless $field && $count && $ARGS{$arg};
+        next if $delete_id{$count};
+
+        if ( $new_rights{$count} ) {
+            $new_rights{$count}->{$field} = $ARGS{$arg};
+        }
+        else {
+            $new_rights{$count}->{$field} = $ARGS{$arg};
+        }
+    }
+    my $new_rights;
+
+    foreach my $right ( values %new_rights ) {
+        next unless $right->{From} && $right->{To} && $right->{Name};
+        $new_rights->{"$right->{From} -> $right->{To}"} = $right->{Name};
+    }
+
+    my $config = RT->Config->Get('Lifecycles')->{$LifecycleObj->Name};
+    $config->{'rights'} = $new_rights;
+
+    my ( $ok, $msg ) = RT::Lifecycle->UpdateLifecycle(
+        CurrentUser  => $session{CurrentUser},
+        LifecycleObj => $LifecycleObj,
+        NewConfig    => $config,
+    );
+    if ($ok) {
+        push @results, loc("Lifecycle updated");
+    }
+    else {
+        push @results, $msg;
+    }
+
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
+    );
+}
+else {
+    my $rights = $LifecycleObj->{'data'}->{'rights'};
+    foreach my $key ( sort keys %{$rights} ) {
+        my ($from, $to) = split /\s*->\s*/, $key, 2;
+        push @rights, { To => $to, From => $from, Name => $rights->{$key} };
+    }
+}
+
+</%INIT>
+<%ARGS>
+$Name   => undef
+$Type   => undef
+$Update => undef
+</%ARGS>

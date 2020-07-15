@@ -1,0 +1,2 @@
+-- Add transaction support for new config in database feature
+ALTER TABLE Transactions ALTER COLUMN Field TYPE varchar(255);

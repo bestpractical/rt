@@ -59,7 +59,8 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
             fields    => {
                 Subject   => 'test ip',
                 $cf_field => $ip,
-            }
+            },
+            button => 'SubmitTicket',
         );
 
         $agent->content_like( qr/$valid{$ip}/, "IP on the page" );
@@ -84,7 +85,8 @@ diag "create a ticket via web with CIDR" if $ENV{'TEST_VERBOSE'};
         fields    => {
             Subject                                       => 'test ip',
             $cf_field => $val,
-        }
+        },
+        button    => 'SubmitTicket'
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;
@@ -106,7 +108,8 @@ diag "create a ticket and edit IP field using Edit page" if $ENV{'TEST_VERBOSE'}
     ok $agent->goto_create_ticket($q), "go to create ticket";
     $agent->submit_form(
         form_name => 'TicketCreate',
-        fields    => { Subject => 'test ip', }
+        fields    => { Subject => 'test ip', },
+        button => 'SubmitTicket'
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;
@@ -190,7 +193,8 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
             fields    => {
                 Subject   => 'test ip',
                 $cf_field => $invalid,
-            }
+            },
+            button    => 'SubmitTicket'
         );
 
         $agent->content_like( qr/is not a valid IP address range/,
@@ -209,7 +213,8 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
         fields    => {
             Subject   => 'test ip',
             $cf_field => $val,
-        }
+        },
+        button    => 'SubmitTicket'
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;
@@ -239,7 +244,8 @@ diag "search tickets by IP range" if $ENV{'TEST_VERBOSE'};
         fields    => {
             Subject   => 'test ip',
             $cf_field => $val,
-        }
+        },
+        button    => 'SubmitTicket'
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;
@@ -272,7 +278,8 @@ diag "create two tickets with different IPs and check several searches" if $ENV{
         fields    => {
             Subject   => 'test ip',
             $cf_field => $first_ip,
-        }
+        },
+        button    => 'SubmitTicket'
     );
 
     my ($id1) = $agent->content =~ /Ticket (\d+) created/;
@@ -284,7 +291,8 @@ diag "create two tickets with different IPs and check several searches" if $ENV{
         fields    => {
             Subject   => 'test ip',
             $cf_field => $second_ip,
-        }
+        },
+        button => 'SubmitTicket'
     );
 
     my ($id2) = $agent->content =~ /Ticket (\d+) created/;
@@ -374,7 +382,8 @@ diag "create two tickets with different IP ranges and check several searches" if
         fields    => {
             Subject   => 'test ip',
             $cf_field => 'ddcd::/16',
-        }
+        },
+        button    => 'SubmitTicket'
     );
 
     my ($id1) = $agent->content =~ /Ticket (\d+) created/;
@@ -386,7 +395,8 @@ diag "create two tickets with different IP ranges and check several searches" if
         fields    => {
             Subject   => 'test ip',
             $cf_field => 'edcd::/16',
-        }
+        },
+        button    => 'SubmitTicket'
     );
 
     my ($id2) = $agent->content =~ /Ticket (\d+) created/;

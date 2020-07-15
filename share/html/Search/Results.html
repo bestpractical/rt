@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -75,7 +75,8 @@
     SavedSearchId => $ARGS{'SavedSearchId'},
     SavedChartSearchId => $ARGS{'SavedChartSearchId'},
     ObjectType => $ObjectType,
-    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType)],
+    @ExtraQueryParams ? ( map { $_ => $ARGS{$_} } grep { defined $ARGS{$_} } 'ExtraQueryParams', @ExtraQueryParams ) : (),
+    PassArguments => [qw(Query Format Rows Page Order OrderBy SavedSearchId SavedChartSearchId Class ObjectType ExtraQueryParams), @ExtraQueryParams],
 &>
 % }
 % $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterResults' );
@@ -86,9 +87,17 @@
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
+
+% for my $input ( @ExtraQueryParams ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%   if ( defined $ARGS{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
+%   }
+% }
+
 <div class="form-row">
   <div class="col-auto">
-    <& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
+    <& /Elements/Refresh, Name => 'SearchResultsRefreshInterval', Default => $session{$interval_name}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
   </div>
   <div class="col-auto">
     <input type="submit" class="button btn btn-primary form-control" value="<&|/l&>Change</&>" />
@@ -116,6 +125,11 @@ if ( $Class eq 'RT::Transactions' ) {
     $Order   ||= RT->Config->Get('TransactionDefaultSearchResultOrder')->{$ObjectType};
     $OrderBy ||= RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType};
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    $Format  ||= RT->Config->Get('AssetDefaultSearchResultFormat');
+    $Order   ||= RT->Config->Get('AssetDefaultSearchResultOrder');
+    $OrderBy ||= RT->Config->Get('AssetDefaultSearchResultOrderBy');
+}
 else {
     $Format  ||= $prefs->{'Format'}  || RT->Config->Get('DefaultSearchResultFormat');
     $Order   ||= $prefs->{'Order'}   || RT->Config->Get('DefaultSearchResultOrder');
@@ -136,15 +150,8 @@ if ( !defined($Rows) ) {
 }
 $Page = 1 unless $Page && $Page > 0;
 
-my $hash_name;
-if ( $Class eq 'RT::Tickets' ) {
-    $hash_name = 'CurrentSearchHash';
-}
-else {
-    $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType;
-}
-
-my $session_name = $Class eq 'RT::Tickets' ? 'tickets' : join '-', 'collection', $Class, $ObjectType;
+my $hash_name = join '-', 'CurrentSearchHash', $Class, $ObjectType || ();
+my $session_name = join '-', 'collection', $Class, $ObjectType || ();
 
 $session{'i'}++;
 $session{$session_name} = $Class->new($session{'CurrentUser'}) ;
@@ -201,6 +208,14 @@ if ( $Class eq 'RT::Transactions' ) {
         $title = loc("Find transactions");
     }
 }
+elsif ( $Class eq 'RT::Assets' ) {
+    if ( $session{$session_name}->Query() ) {
+        $title = loc( 'Found [quant,_1,asset,assets]', $count );
+    }
+    else {
+        $title = loc("Find assets");
+    }
+}
 else {
     if ( $session{$session_name}->Query() ) {
         $title = loc( 'Found [quant,_1,ticket,tickets]', $count );
@@ -219,7 +234,7 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 
-my $interval_name = $Class eq 'RT::Tickets' ? 'tickets_refresh_interval' : "${Class}_${ObjectType}_refresh_interval";
+my $interval_name = join '_', $Class, $ObjectType || (), 'refresh_interval';
 if ($ARGS{'SearchResultsRefreshInterval'}) {
     $session{$interval_name} = $ARGS{'SearchResultsRefreshInterval'};
 }
@@ -251,7 +266,7 @@ if ( RT->Config->Get('SearchResultsAutoRedirect') && $count == 1 &&
 # $count is not always precise unless $UseSQLForACLChecks is set to true,
 # check $session{$session_name}->First here is to make sure the ticket is there.
     RT::Interface::Web::Redirect( RT->Config->Get('WebURL')
-            . ( $Class eq 'RT::Transactions' ? 'Transaction' : 'Ticket' )
+            . $Class->RecordClass->RecordType
             . "/Display.html?id="
             . $session{$session_name}->First->id );
 }
@@ -276,5 +291,6 @@ $Order => undef
 $SavedSearchId => undef
 $SavedChartSearchId => undef
 $Class => 'RT::Tickets'
-$ObjectType => 'RT::Ticket'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
+@ExtraQueryParams => ()
 </%ARGS>

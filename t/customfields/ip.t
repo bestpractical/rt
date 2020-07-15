@@ -53,7 +53,8 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
         fields    => {
             Subject   => 'test ip',
             $cf_field => $val,
-        }
+        },
+        button    => 'SubmitTicket',
     );
 
     $agent->content_contains( $val, "IP on the page" );
@@ -73,7 +74,8 @@ diag "create a ticket and edit IP field using Edit page"
     ok $agent->goto_create_ticket($q), "go to create ticket";
     $agent->submit_form(
         form_name => 'TicketCreate',
-        fields    => { Subject => 'test ip', }
+        fields    => { Subject => 'test ip', },
+        button    => 'SubmitTicket',
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;
@@ -124,7 +126,8 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
             fields    => {
                 Subject   => 'test ip',
                 $cf_field => $valid,
-            }
+            },
+            button    => 'SubmitTicket',
         );
 
         my ($id) = $agent->content =~ /Ticket (\d+) created/;
@@ -163,7 +166,8 @@ diag "search tickets by IP" if $ENV{'TEST_VERBOSE'};
         fields    => {
             Subject   => 'test ip',
             $cf_field => $val,
-        }
+        },
+        button    => 'SubmitTicket',
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;
@@ -188,7 +192,8 @@ diag "create two tickets with different IPs and check several searches"
         fields    => {
             Subject   => 'test ip',
             $cf_field => '192.168.21.10',
-        }
+        },
+        button    => 'SubmitTicket',
     );
 
     my ($id1) = $agent->content =~ /Ticket (\d+) created/;
@@ -200,7 +205,8 @@ diag "create two tickets with different IPs and check several searches"
         fields    => {
             Subject   => 'test ip',
             $cf_field => '192.168.22.10',
-        }
+        },
+        button    => 'SubmitTicket',
     );
 
     my ($id2) = $agent->content =~ /Ticket (\d+) created/;
@@ -258,7 +264,8 @@ diag "create a ticket with an IP of 10.0.0.1 and search for doesn't match '10.0.
         fields    => {
             Subject   => 'local',
             $cf_field => '10.0.0.1',
-        }
+        },
+        button    => 'SubmitTicket',
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;

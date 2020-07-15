@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>" id="<%$Name%>" class="form-control selectpicker">
+<select name="<%$Name%>" class="form-control selectpicker <%$Name%>">
 % if ($DefaultValue) {
 <option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel |n%></option>
 % }

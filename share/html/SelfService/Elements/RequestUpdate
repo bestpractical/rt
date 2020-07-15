@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,25 +54,25 @@ action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
 >
     <input type="hidden" class="hidden" name="QuickCreate" value="1" />
     <div class="form-row">
-      <div class="label col-md-3">
+      <div class="label col-3">
         <&|/l&>Subject</&>:
       </div>
-      <div class="value col-md-9">
+      <div class="value col-9">
         <input class="form-control" type="text" size="50" name="Subject" value="<% $args->{Subject} || loc('Please update my user information') %>" />
       </div>
     </div>
 
       <div class="form-row">
-        <div class="label col-md-3">
+        <div class="label col-3">
           <&|/l&>Description</&>:
         </div>
-        <div class="value col-md-9">
+        <div class="value col-9">
           <textarea class="form-control" name="Content" cols="50" rows="3"><% $args->{Content} || ''%></textarea></td>
         </div>
       </div>
 
       <div class="form-row">
-        <div class="col-md-12">
+        <div class="col-12">
           <& /Elements/Submit, Label => loc('Submit') &>
         </div>
       </div>

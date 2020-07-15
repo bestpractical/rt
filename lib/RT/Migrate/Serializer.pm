@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,6 @@ use warnings;
 
 use base 'RT::DependencyWalker';
 
-use Storable qw//;
 sub cmp_version($$) { RT::Handle::cmp_version($_[0],$_[1]) };
 use RT::Migrate::Incremental;
 use RT::Migrate::Serializer::IncrementalRecord;
@@ -67,9 +66,11 @@ sub Init {
         AllUsers            => 1,
         AllGroups           => 1,
         FollowDeleted       => 1,
+        FollowDisabled      => 1,
 
         FollowScrips        => 0,
         FollowTickets       => 1,
+        FollowTransactions  => 1,
         FollowACL           => 0,
         FollowAssets        => 1,
 
@@ -87,8 +88,10 @@ sub Init {
                   AllUsers
                   AllGroups
                   FollowDeleted
+                  FollowDisabled
                   FollowScrips
                   FollowTickets
+                  FollowTransactions
                   FollowAssets
                   FollowACL
                   Queues
@@ -198,7 +201,7 @@ sub PushCollections {
 
         $class->require or next;
         my $collection = $class->new( RT->SystemUser );
-        $collection->FindAllRows;   # be explicit
+        $collection->FindAllRows if $self->{FollowDisabled};
         $collection->CleanSlate;    # some collections (like groups and users) join in _Init
         $collection->UnLimit;
         $collection->OrderBy( FIELD => 'id' );
@@ -327,11 +330,8 @@ sub PushBasics {
 sub InitStream {
     my $self = shift;
 
-    # Write the initial metadata
     my $meta = $self->Metadata;
-    $! = 0;
-    Storable::nstore_fd( $meta, $self->{Filehandle} );
-    die "Failed to write metadata: $!" if $!;
+    $self->WriteMetadata($meta);
 
     return unless cmp_version($meta->{VersionFrom}, $meta->{Version}) < 0;
 
@@ -402,6 +402,28 @@ sub Process {
         return $self->Visit(%args);
     }
 
+    if (!$self->{FollowDisabled}) {
+        return if ($obj->can('Disabled') || $obj->_Accessible('Disabled', 'read'))
+               && $obj->Disabled
+
+               # Disabled for OCFV means "old value" which we want to keep
+               # in the history
+               && !$obj->isa('RT::ObjectCustomFieldValue');
+
+        if ($obj->isa('RT::ACE')) {
+            my $principal = $obj->PrincipalObj;
+            return if $principal->Disabled;
+
+            # [issues.bestpractical.com #32662]
+            return if $principal->Object->Domain eq 'ACLEquivalence'
+                   && (!$principal->Object->InstanceObj->Id
+                     || $principal->Object->InstanceObj->Disabled);
+
+            return if !$obj->Object->isa('RT::System')
+                   && $obj->Object->Disabled;
+        }
+    }
+
     return $self->SUPER::Process( @_ );
 }
 
@@ -451,7 +473,21 @@ sub Observe {
         return 0 if $obj->Status eq "deleted" and not $self->{FollowDeleted};
         return $self->{FollowAssets};
     } elsif ($obj->isa("RT::ACE")) {
+        if (!$self->{FollowDisabled}) {
+            my $principal = $obj->PrincipalObj;
+            return 0 if $principal->Disabled;
+
+            # [issues.bestpractical.com #32662]
+            return if $principal->Object->Domain eq 'ACLEquivalence'
+                   && (!$principal->Object->InstanceObj->Id
+                     || $principal->Object->InstanceObj->Disabled);
+
+            return 0 if !$obj->Object->isa('RT::System')
+                     && $obj->Object->Disabled;
+        }
         return $self->{FollowACL};
+    } elsif ($obj->isa("RT::Transaction")) {
+        return $self->{FollowTransactions};
     } elsif ($obj->isa("RT::Scrip") or $obj->isa("RT::Template") or $obj->isa("RT::ObjectScrip")) {
         return $self->{FollowScrips};
     } elsif ($obj->isa("RT::GroupMember")) {
@@ -460,6 +496,10 @@ sub Observe {
             return 0 unless $grp->UID eq $from;
         } elsif ($grp->Domain eq "SystemInternal") {
             return 0 if $grp->UID eq $from;
+        }
+        if (!$self->{FollowDisabled}) {
+            return 0 if $grp->Disabled
+                     || $obj->MemberObj->Disabled;
         }
     }
 
@@ -501,9 +541,7 @@ sub Visit {
         if ($self->{Transform}{"+$class"}) {
             my @extra = $self->{Transform}{"+$class"}->(\%data,\$class);
             for my $e (@extra) {
-                $! = 0;
-                Storable::nstore_fd($e, $self->{Filehandle});
-                die "Failed to write: $!" if $!;
+                $self->WriteRecord($e);
                 $self->{ObjectCount}{$e->[0]}++;
             }
         }
@@ -532,11 +570,7 @@ sub Visit {
         );
     }
 
-    # Write it out; nstore_fd doesn't trap failures to write, so we have
-    # to; by clearing $! and checking it afterwards.
-    $! = 0;
-    Storable::nstore_fd(\@store, $self->{Filehandle});
-    die "Failed to write: $!" if $!;
+    $self->WriteRecord(\@store);
 
     $self->{ObjectCount}{$store[0]}++;
 }

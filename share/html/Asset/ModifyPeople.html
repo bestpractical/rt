@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,22 +58,22 @@
 
   <&| /Widgets/TitleBox, title => loc("People"), class => "asset-people", title_class => "inverse" &>
     <div class="form-row">
-      <div class="col-md-4">
+      <div class="col-4">
         <& /Asset/Elements/EditCatalogPeople, %ARGS, Object => $asset &>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-4">
         <& /Asset/Elements/AddCatalogPeople, Object => $asset &>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-4">
          <& /Elements/EditCustomFields, Object => $asset, Grouping => 'People' &>
       </div>
     </div>
   </&>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit, Label => loc('Save'), Name => "Update" &>
     </div>
   </div>

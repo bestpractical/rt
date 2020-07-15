@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -182,12 +182,12 @@ if ($ShowRelatedTickets) {
 </%perl>
 
         <div class="related-tickets form-row">
-          <div class="col-md-3 label">
+          <div class="label col-3">
             <a href="<% $url %>">
               <&|/l, $ShowRelatedTickets &>[_1] most recently updated related tickets</&>
             </a>
           </div>
-          <div class="col-md-9 value">
+          <div class="value col-9">
             <& /Elements/CollectionList,
                 %search,
                 Class             => "RT::Tickets",

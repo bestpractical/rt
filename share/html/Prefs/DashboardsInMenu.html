@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,64 +50,151 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<br />
+<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
+  <& /Widgets/SearchSelection,
+    pane_name => { dashboard => loc('Dashboards in menu') },
+    sections  => [{
+                    id    => 'dashboards',
+                    label => loc("Dashboards"),
+                    items => \@dashboard_components,
+                }],
+    selected  => \%selected,
+    filters   => [],
+  &>
+  <input type="hidden" name="dashboard_id" value="DashboardsInMenu">
 
-% for my $pane ( @panes ) {
-<&|/Widgets/TitleBox,
-    title => loc('Dashboards in menu'),
-    bodyclass => ""
-&>
-<& /Widgets/SelectionBox:show, self => $pane &>
-</&>
-% }
-
-<&|/Widgets/TitleBox, title => loc("Reset dashboards in menu") &>
-<form method="post" action="DashboardsInMenu.html">
-<input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button form-control btn btn-primary"" value="<% loc('Reset to default') %>">
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
 </form>
+
+<&|/Widgets/TitleBox, title => loc("Reset dashboards in menu"), class => "mx-auto max-width-lg" &>
+<div class="mt-3 mb-1 ml-3">
+  <form method="post" action="DashboardsInMenu.html">
+    <input type="submit" name="ResetDashboards" class="button form-control btn btn-primary" value="<% loc('Reset dashboards to default') %>">
+  </form>
+</div>
 </&>
 
+<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
+  <& /Widgets/SearchSelection,
+    pane_name => { report => loc('Reports in menu') },
+    sections  => [{
+                  id    => 'reports',
+                  label => loc("Reports"),
+                  items => \@report_components,
+              }],
+    selected  => \%selected,
+    filters   => [],
+  &>
+  <input type="hidden" name="dashboard_id" value="ReportsInMenu">
+
+  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+</form>
+
+<&|/Widgets/TitleBox, title => loc("Reset reports in menu"), class => "mx-auto max-width-lg" &>
+<div class="mt-3 mb-1 ml-3">
+  <form method="post" action="DashboardsInMenu.html">
+    <input type="submit" name="ResetReports" class="button form-control btn btn-primary" value="<% loc('Reset reports to default') %>">
+  </form>
+</div>
+</&>
 
 <%INIT>
 my @results;
-my $title = loc("Customize").' '.loc("dashboards in menu");
+my $title = loc("Customize").' '.loc("reports menu");
 my $user = $session{'CurrentUser'}->UserObj;
 
-if ($ARGS{Reset}) {
+if ( $ARGS{ResetDashboards} ) {
+    # Empty DashboardsInMenu pref means to use system default.
     my ($ok, $msg) = $user->SetPreferences('DashboardsInMenu', {});
     push @results, $ok ? loc('Preferences saved.') : $msg;
     delete $session{'dashboards_in_menu'};
 }
 
-my ($default_dashboards) =
-RT::System->new($session{'CurrentUser'})->Attributes->Named('DashboardsInMenu');
+if ( $ARGS{ResetReports} ) {
+    if ( $user->Preferences('ReportsInMenu') ) {
+        # Empty ReportsInMenu pref means empty, not to use default,
+        # thus we need to delete preference instead.
+        my ( $ok, $msg ) = $user->DeletePreferences('ReportsInMenu');
+        push @results, $ok ? loc('Preferences saved.') : $msg;
+        delete $session{'reports_in_menu'};
+    }
+}
 
-my $dashboard_pref =
-  $session{CurrentUser}->UserObj->Preferences( 'DashboardsInMenu',
-    $default_dashboards ? $default_dashboards->Content : () );
+my @dashboard_components = map {{ type => 'dashboard', id => $_->id, name => $_->Name, label => $_->Name }} $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
+my @report_components = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ ListOfReports() };
 
-my $current_dashboards = $dashboard_pref->{dashboards} || [];
+if ($ARGS{UpdateSearches}) {
+    if ( $ARGS{'dashboard_id'} eq 'DashboardsInMenu' ) {
+        my @dashboard_ids;
 
-my @dashboards = map { [$_->id, $_->Name] } $m->comp("/Dashboards/Elements/ListOfDashboards", IncludeSuperuserGroups => 0 );
+        my $dashboard_names = ref $ARGS{'dashboard'} eq 'ARRAY' ? $ARGS{'dashboard'} : [$ARGS{'dashboard'}];
+        foreach my $name ( @{$dashboard_names} ) {
+            next unless $name;
+            $name =~ s/dashboard-//;
 
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureDashboardsInMenu',
-    Action => 'DashboardsInMenu.html',
-    panes => ['dashboards_in_menu'],
-    items => \@dashboards,
-    current_portlets => $current_dashboards,
-    OnSave => sub {
-        my ( $conf ) = @_;
-        my ( $ok, $msg ) =
-          $user->SetPreferences( 'DashboardsInMenu', $conf );
+            my $attribute = RT::Attribute->new( $session{'CurrentUser'} );
+
+            my ($ret, $msg) = $attribute->LoadByCols( Name => 'Dashboard', Description => $name );
+            if ( $ret ) {
+                push @dashboard_ids, $attribute->Id;
+            }
+            else {
+                RT::Logger->error( "Could not load dashboard: $msg" );
+                push @results, "Could not load dashboard $name";
+            }
+        }
+
+        my ( $ok, $msg ) = $user->SetPreferences( $ARGS{'dashboard_id'}, { 'dashboards' => \@dashboard_ids } );
         push @results, $ok ? loc('Preferences saved for dashboards in menu.') : $msg;
         delete $session{'dashboards_in_menu'};
     }
-);
+    else {
+      my $report_names = ref $ARGS{'report'} eq 'ARRAY' ? $ARGS{'report'} : [$ARGS{'report'}];
+      my @ret;
+      foreach my $report ( @report_components ) {
+          last unless $report_names->[0];
 
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
-    for @panes;
+          push @ret, $report if grep { $_ =~ /report-$report->{'name'}/ } @{$report_names};
+      }
 
+      my ( $ok, $msg ) = $user->SetPreferences( $ARGS{'dashboard_id'}, \@ret );
+      push @results, $ok ? loc('Preferences saved for reports in menu.') : $msg;
+      delete $session{'reports_in_menu'};
+    }
+}
+
+my %selected;
+
+my ($default_dashboards) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('DashboardsInMenu');
+my $dashboard_pref = $user->Preferences( 'DashboardsInMenu', $default_dashboards ? $default_dashboards->Content : () );
+
+# prefs returns an array of Dashboard ID's
+my $selected_dashboard_ids = $dashboard_pref->{'dashboards'} || [];
+
+my @selected_dashboards;
+foreach my $id ( @{$selected_dashboard_ids} ) {
+    my $attribute = RT::Attribute->new( RT->SystemUser );
+    my ($ret, $msg) = $attribute->Load( $id );
+    unless ( $ret ) {
+        RT::Logger->error( "Could not load dashboard: $id" );
+        next;
+    }
+
+    push @selected_dashboards, {
+      id      => $id,
+      name    => $attribute->Description,
+      label   => $attribute->Description,
+      type    => 'dashboard'
+    };
+}
+$selected{'dashboard'} = \@selected_dashboards;
+
+my $report_pref = $user->Preferences('ReportsInMenu');
+unless ($report_pref) {
+    my ($defaults) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('ReportsInMenu');
+    $report_pref = $defaults ? $defaults->Content : [];
+}
+my @report_pref_sanitized = map { {%$_, name => $_->{'title'}, type => 'report', label => $_->{'title'} } } @{ $report_pref };
+$selected{'report'} = \@report_pref_sanitized || [];
 </%INIT>
 

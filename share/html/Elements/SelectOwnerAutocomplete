@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -67,36 +67,6 @@ if ( $Default and not $Default =~ /\D/ ) {
 
 # Map to a string of RT::Ticket-1|RT::Queue-5|...
 my $limit = join '|', map { join '-', ref($_), ($_->id || '') } @$Objects;
-
-my $query = $m->comp('/Elements/QueryString',
-    return  => $ValueAttribute,
-    limit   => $limit,
-);
 </%INIT>
 
-<input type="text" name="<%$Name%>" id="<%$Name%>" value="<% $value %>" class="form-control" />
-<script type="text/javascript">
-    jQuery(function() {
-        var cache = {};
-        jQuery("#"+<% $Name |n,j%>).autocomplete({
-            minLength: 2,
-            source: function(request, response) {
-                if ( request.term in cache ) {
-                    response( cache[ request.term ] );
-                }
-                else {
-                    jQuery.ajax({
-                        url: RT.Config.WebPath + "/Helpers/Autocomplete/Owners?"+<% $query|n,j %>,
-                        dataType: "json",
-                        data: request,
-                        success: function( data ) {
-                            cache[ request.term ] = data;
-                            response( data );
-                        }
-                    });
-                }
-            }
-        });
-    });
-</script>
-
+<input type="text" name="<%$Name%>" value="<% $value %>" data-autocomplete="Owners" data-autocomplete-return="<% $ValueAttribute %>" data-autocomplete-limit="<% $limit %>" class="form-control" />

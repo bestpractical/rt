@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,20 +54,20 @@
 <h2><&|/l&>Save this search</&></h2>
 
 <div class="form-row">
-  <div class="col-md-auto label">
+  <div class="label col-auto">
     <&|/l&>Name:</&>
   </div>
-  <div class="col-md-auto value">
+  <div class="value col-auto">
     <input class="form-control" type="text" name="NewSearchName" value="<%$Name||''%>">
   </div>
-  <div class="col-md-auto label">
+  <div class="label col-auto">
     <&|/l&>Privacy:</&>
   </div>
-  <div class="col-md-auto value">
+  <div class="value col-auto">
     <& SelectSearchPrivacy, Name => 'SearchPrivacy', Default => $Privacy &>
   </div>
 
-  <div class="col-md-auto">
+  <div class="col-auto">
 %     if ($CurrentSearch && $CurrentSearch ne 'new') {
 <input class="form-control btn btn-primary" value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
 <input class="form-control btn btn-primary" value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
@@ -82,10 +82,10 @@
 
 <h2><&|/l&>Load a saved search</&></h2>
 <div class="form-row">
-  <div class="col-md-auto value">
+  <div class="value col-auto">
     <& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
   </div>
-  <div class="col-md-auto">
+  <div class="col-auto">
     <input class="form-control btn btn-primary" value="<%loc('Load')%>" name="Load" type="submit">
   </div>
 </div>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,20 +48,20 @@
 <div class="bulk-edit-custom-fields">
 
   <div class="form-row">
-    <div class="col-md-4 label text-left">
+    <div class="label col-4 text-left">
       <&|/l&>Name</&>
     </div>
-    <div class="col-md-4 label text-left">
+    <div class="label col-4 text-left">
       <&|/l&>Add values</&>
     </div>
-    <div class="col-md-4 label text-left">
+    <div class="label col-4 text-left">
       <&|/l&>Delete values</&>
     </div>
   </div>
 % my $i = 0;
 % while (my $cf = $CustomFields->Next) {
   <div class="form-row <% ++$i%2 ? 'oddline': 'evenline' %>">
-    <div class="col-md-4 label text-left">
+    <div class="label col-4 text-left">
       <div class="form-row">
         <% $cf->Name %>
       </div>
@@ -78,50 +78,50 @@
 %   MaxValues => 0, Rows => $rows, Multiple => 1, Cols => 25,
 %   Default => $ARGS{"Bulk-Delete-CustomField-$cf_id-Values"} || $ARGS{"Bulk-Delete-CustomField-$cf_id-Value"}, );
 % if ($cf->Type eq 'Select') {
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldSelect, @add &>
     </div>
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldSelect, @del &>
 % } elsif ($cf->Type eq 'Combobox') {
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldCombobox, @add &>
     </div>
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldCombobox, @del &>
 % } elsif ($cf->Type eq 'Freeform') {
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldFreeform, @add &>
     </div>
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldFreeform, @del &>
 % } elsif ($cf->Type eq 'Text') {
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldText, @add &>
 % } elsif ($cf->Type eq 'Wikitext') {
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldWikitext, @add &>
 % } elsif ($cf->Type eq 'Date') {
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldDate, @add &>
     </div>
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldDate, @del &>
 % } elsif ($cf->Type eq 'DateTime') {
 % # Pass datemanip format to prevent another tz date conversion
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldDateTime, @add, Default => undef, Format => 'datemanip' &>
     </div>
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldDateTime, @del, Default => undef, Format => 'datemanip' &>
 % } elsif ($cf->Type eq 'Autocomplete') {
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldAutocomplete, @add &>
     </div>
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <& /Elements/EditCustomFieldAutocomplete, @del &>
 % } else {
-    <div class="col-md-4 value">
+    <div class="value col-4">
       <em><&|/l&>(Unsupported custom field type)</&></em>
     </div>
   </div>

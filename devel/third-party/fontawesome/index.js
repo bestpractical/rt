@@ -16,6 +16,11 @@ import {
     faPencilAlt as fasPencilAlt,
     faTimes as fasTimes,
     faPaperclip as fasPaperclip,
+    faList as fasList,
+    faAngleLeft as fasAngleLeft,
+    faAngleDoubleLeft as fasAngleDoubleLeft,
+    faAngleRight as fasAngleRight,
+    faAngleDoubleRight as fasAngleDoubleRight,
 } from '@fortawesome/free-solid-svg-icons'
 
 
@@ -58,6 +63,11 @@ library.add(
     fasPencilAlt,
     fasTimes,
     fasPaperclip,
+    fasList,
+    fasAngleLeft,
+    fasAngleDoubleLeft,
+    fasAngleRight,
+    fasAngleDoubleRight,
     // Regular
     farEdit,
     farBookmark,

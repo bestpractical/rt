@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,7 @@
 
 % if ( $show_menu ) {
 <div id="main-navigation"><& /Elements/Menu, menu => Menu(), id => 'app-nav' &></div>
-<div id="page-navigation" class="btn-group page-nav-shadow"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', 'parent_id' => 'page' &></div>
+<div id="page-navigation" class="btn-group page-nav-shadow"><& /Elements/Menu, menu => PageMenu(), id => 'page-menu', class => 'page-menu', 'parent_id' => 'page' &></div>
 % }
 <div id="topactions"><& /Elements/WidgetBar, menu => PageWidgets() &></div>
 

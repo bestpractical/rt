@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -120,13 +120,13 @@ if ($GroupString) {
 
 % if ( $Users && $Users->Count ) {
     <div class="form-row">
-      <div class="col-md-3">
+      <div class="col-3">
         <&|/l&>User</&>
       </div>
     </div>
 % while ( my $u = $Users->Next ) {
     <div class="form-row">
-      <div class="col-md-3">
+      <div class="col-3">
         <input type="hidden" name="Dashboard-Subscription-Users-<%$u->id%>" value="0" />
         <div class="custom-control custom-checkbox">
           <input type="checkbox" id="Dashboard-Subscription-Users-<%$u->id%>" name="Dashboard-Subscription-Users-<%$u->id%>" class="custom-control-input" value="1">
@@ -139,13 +139,13 @@ if ($GroupString) {
 
 % if ( $Groups && $Groups->Count ) {
     <div class="form-row">
-      <div class="col-md-3">
+      <div class="col-3">
         <&|/l&>Group</&>
       </div>
     </div>
 % while ( my $g = $Groups->Next ) {
     <div class="form-row">
-      <div class="col-md-3">
+      <div class="col-3">
         <input type="hidden" name="Dashboard-Subscription-Groups-<%$g->id%>" value="0" />
         <div class="custom-control custom-checkbox">
           <input type="checkbox" id="Dashboard-Subscription-Groups-<%$g->id%>" name="Dashboard-Subscription-Groups-<%$g->id%>" class="custom-control-input" value="1">
@@ -157,14 +157,14 @@ if ($GroupString) {
 % }
 
     <div class="form-row">
-      <div class="col-md-3">
+      <div class="col-3">
         <&|/l&>Email</&>
       </div>
     </div>
 
 % for my $i (1 .. 3) {
     <div class="form-row">
-      <div class="col-md-3">
+      <div class="col-3">
         <& /Elements/EmailInput, Name => 'Dashboard-Subscription-Email-' . $i, Size => '20' &>
       </div>
     </div>
@@ -174,7 +174,7 @@ if ($GroupString) {
   <div class="current-recipients col-xl-6">
 
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <&|/l&>Current Recipients</&>:
       </div>
     </div>
