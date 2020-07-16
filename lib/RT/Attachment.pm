@@ -158,7 +158,9 @@ sub Create {
 
     # MIME::Head doesn't support perl strings well and can return
     # octets which later will be double encoded in low-level code
-    $head = Encode::decode( 'UTF-8', $head );
+    unless ( $head =~ m/[^\x00-\x7f]/ ) {
+        $head = Encode::decode( 'UTF-8', $head );
+    }
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
     # and we should act accordingly.  
