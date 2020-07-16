@@ -214,6 +214,21 @@ running the tests in parallel.
 
     RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
 
+=head2 Improving Test Performance
+
+For best test performance, you should use a SQLite database type.  Furthermore,
+you should put the t/tmp directory in a RAM-based filesystem.  This will
+eliminate the overhead of SQLite's calls to C<fsync> or equivalent.
+
+On Linux, for example, you can create a RAM-based file system and link
+it to t/tmp as follows:
+
+    mkdir /ram                  # Or your preferred location
+    chown my_user /ram
+    mount -t tmpfs none /ram
+    rm -rf rt/t/tmp
+    ln -s /ram rt/t/tmp
+
 =head2 Tests with Docker
 
 RT has a Dockerfile that can be used to run the test suite for some configurations.
