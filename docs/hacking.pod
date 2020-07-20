@@ -46,7 +46,7 @@ Branches should be reviewed by another developer before being merged.
 Reviewers should make sure that the branch accomplishes what it claims
 to, and does not introduce any unwanted behavior in doing so.  Commit
 messages explain the B<why> as much as the B<what> of each commit, and
-not include extranous changes.
+not include extraneous changes.
 
 
 =head1 Code conventions
@@ -116,7 +116,7 @@ Because C<loc()> and C</l> are used to generate strings for human
 eyes, they generally must be used "close to the browser". These are
 directly in Mason templates, or in functions that return text that
 will be passed through Mason. However, in many places in RT we have
-hardcoded strings which need translations. For example, the C<$RIGHTS>
+hard-coded strings that need translations. For example, the C<$RIGHTS>
 hash in F<lib/RT/Queue.pm> maps rights' names (which must be
 translatable) to their descriptions (which also must be translatable).
 However, when we're declaring such structures, we do not want to
@@ -189,7 +189,7 @@ before running tests.  To do this in place without installing:
     make fixdeps
 
 Adjust the relevant database options as necessary if you want to test on
-Postgres, Oracle, or SQLite.  The default is MySQL/MariaDB.
+PostgreSQL, Oracle, or SQLite.  The default is MySQL/MariaDB.
 
 To run the test suite:
 
@@ -221,13 +221,13 @@ you should put the t/tmp directory in a RAM-based filesystem.  This will
 eliminate the overhead of SQLite's calls to C<fsync> or equivalent.
 
 On Linux, for example, you can create a RAM-based file system and link
-it to t/tmp as follows:
+it to t/tmp as follows, assuming you are in the top-level "rt" directory:
 
     mkdir /ram                  # Or your preferred location
     chown my_user /ram
     mount -t tmpfs none /ram
-    rm -rf rt/t/tmp
-    ln -s /ram rt/t/tmp
+    rm -rf t/tmp
+    ln -s /ram t/tmp
 
 =head2 Tests with Docker
 
