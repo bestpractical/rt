@@ -86,6 +86,7 @@ our @GROUPINGS = (
     Cc            => 'Watcher',         #loc_left_pair
     AdminCc       => 'Watcher',         #loc_left_pair
     Watcher       => 'Watcher',         #loc_left_pair
+    CustomRole    => 'Watcher',
 
     Created       => 'Date',            #loc_left_pair
     Starts        => 'Date',            #loc_left_pair
@@ -126,13 +127,62 @@ our %GROUPINGS_META = (
         Function => 'GenerateUserFunction',
     },
     Watcher => {
-        SubFields => [grep RT::User->_Accessible($_, "public"), qw(
-            Name RealName NickName
-            EmailAddress
-            Organization
-            Lang City Country Timezone
-        )],
+        SubFields => sub {
+            my $self = shift;
+            my $args = shift;
+
+            my @fields = grep RT::User->_Accessible( $_, "public" ),
+                qw( Name RealName NickName EmailAddress Organization Lang City Country Timezone);
+
+            my @res;
+            if ( $args->{key} =~ /^CustomRole/ ) {
+                my $queues = $args->{'Queues'};
+                if ( !$queues && $args->{'Query'} ) {
+                    require RT::Interface::Web::QueryBuilder::Tree;
+                    my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+                    $tree->ParseSQL( Query => $args->{'Query'}, CurrentUser => $self->CurrentUser );
+                    $queues = $args->{'Queues'} = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
+                }
+                return () unless $queues;
+
+                my $crs = RT::CustomRoles->new( $self->CurrentUser );
+                for my $id ( keys %$queues ) {
+                    my $queue = RT::Queue->new( $self->CurrentUser );
+                    $queue->Load($id);
+                    next unless $queue->id;
+
+                    $crs->LimitToObjectId( $queue->id );
+                }
+                while ( my $cr = $crs->Next ) {
+                    for my $field (@fields) {
+                        push @res, [ $cr->Name, $field ], "CustomRole.{" . $cr->id . "}.$field";
+                    }
+                }
+            }
+            else {
+                for my $field (@fields) {
+                    push @res, [ $args->{key}, $field ], "$args->{key}.$field";
+                }
+            }
+            return @res;
+        },
         Function => 'GenerateWatcherFunction',
+        Label    => sub {
+            my $self = shift;
+            my %args = (@_);
+
+            my $key;
+            if ( $args{KEY} =~ /^CustomRole\.\{(\d+)\}/ ) {
+                my $id = $1;
+                my $cr = RT::CustomRole->new( $self->CurrentUser );
+                $cr->Load($id);
+                $key = $cr->Name;
+            }
+            else {
+                $key = $args{KEY};
+            }
+            return join ' ', $key, $args{SUBKEY};
+        },
     },
     Date => {
         SubFields => [qw(
@@ -400,7 +450,7 @@ sub Groupings {
             push @fields, map { ([$field, $_], "$field.$_") } @{ $meta->{'SubFields'} };
         }
         elsif ( my $code = $self->FindImplementationCode( $meta->{'SubFields'} ) ) {
-            push @fields, $code->( $self, \%args );
+            push @fields, $code->( $self, { %args, key => $field } );
         }
         else {
             $RT::Logger->error(
@@ -417,10 +467,10 @@ sub IsValidGrouping {
     my %args = (@_);
     return 0 unless $args{'GroupBy'};
 
-    my ($key, $subkey) = split /\./, $args{'GroupBy'}, 2;
+    my ($key, $subkey) = split /(?<!CustomRole)\./, $args{'GroupBy'}, 2;
 
     %GROUPINGS = @GROUPINGS unless keys %GROUPINGS;
-    my $type = $GROUPINGS{$key};
+    my $type = $self->_GroupingType( $key );
     return 0 unless $type;
     return 1 unless $subkey;
 
@@ -432,7 +482,7 @@ sub IsValidGrouping {
         return 1 if grep $_ eq $subkey, @{ $meta->{'SubFields'} };
     }
     elsif ( my $code = $self->FindImplementationCode( $meta->{'SubFields'}, 'silent' ) ) {
-        return 1 if grep $_ eq "$key.$subkey", $code->( $self, \%args );
+        return 1 if grep $_ eq "$key.$subkey", $code->( $self, { %args, key => $key } );
     }
     return 0;
 }
@@ -540,10 +590,10 @@ sub SetupGroupings {
             RT->Logger->error("'$e' is not a valid grouping for reports; skipping");
             next;
         }
-        my ($key, $subkey) = split /\./, $e, 2;
+        my ($key, $subkey) = split /(?<!CustomRole)\./, $e, 2;
         $e = { $self->_FieldToFunction( KEY => $key, SUBKEY => $subkey ) };
         $e->{'TYPE'} = 'grouping';
-        $e->{'INFO'} = $GROUPINGS{ $key };
+        $e->{'INFO'} = $self->_GroupingType($key);
         $e->{'META'} = $GROUPINGS_META{ $e->{'INFO'} };
         $e->{'POSITION'} = $i++;
         push @group_by, $e;
@@ -647,7 +697,7 @@ sub _FieldToFunction {
 
     $args{'FIELD'} ||= $args{'KEY'};
 
-    my $meta = $GROUPINGS_META{ $GROUPINGS{ $args{'KEY'} } };
+    my $meta = $GROUPINGS_META{ $self->_GroupingType( $args{'KEY'} ) };
     return ('FUNCTION' => 'NULL') unless $meta;
 
     return %args unless $meta->{'Function'};
@@ -877,6 +927,7 @@ sub GenerateWatcherFunction {
 
     my $type = $args{'FIELD'};
     $type = '' if $type eq 'Watcher';
+    $type =~ s!^CustomRole\.\{(\d+)\}!RT::CustomRole-$1!g;
 
     my $column = $args{'SUBKEY'} || 'Name';
 
@@ -1124,6 +1175,14 @@ sub FormatTable {
     }
 
     return thead => \@head, tbody => \@body, tfoot => \@footer;
+}
+
+sub _GroupingType {
+    my $self = shift;
+    my $key  = shift or return;
+    # keys for custom roles are like "CustomRole.{1}"
+    $key = 'CustomRole' if $key =~ /^CustomRole/;
+    return $GROUPINGS{$key};
 }
 
 RT::Base->_ImportOverlays();
