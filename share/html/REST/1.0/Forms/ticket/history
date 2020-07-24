@@ -101,17 +101,8 @@ if ($type) {
 if ($tid) {
     my @data;
     my $t = RT::Transaction->new($session{CurrentUser});
-
-    # this paragraph limits the transaction ID query to transactions on this ticket. 
-    # Otherwise you can query any transaction from any ticket, which makes no sense.
-    my $Transactions = $ticket->Transactions;
-    my $tok=0;
-    while (my $T = $Transactions->Next()) {
-        $tok=1 if ($T->Id == $tid)
-    }
-    if ($tok) {
-        $t->Load($tid);
-    } else {
+    $t->Load($tid);
+    if ( $t->ObjectType ne 'RT::Ticket' || $t->Object->Id != $ticket->id ) {
         return [ "# Transaction $tid is not related to Ticket $id", [], {}, 1 ];
     }
 
