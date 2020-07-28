@@ -81,11 +81,8 @@ div.results .titlebox-content {
 
 div.error-titlebox .titlebox-title span.left {
   border: none;
-  border-right: 2px solid #b00;
   margin-left: 0;
   padding-left: 2.3em;
-  background-color: #f00;
-  color: #fff;
 }
 
 div.error-titlebox .titlebox-content {
