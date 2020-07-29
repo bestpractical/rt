@@ -151,7 +151,7 @@ else {
         Status ExtendedStatus UpdateStatus
         Type
 
-        OwnerName OwnerDisplayOnly Requestors Cc AdminCc CreatedBy LastUpdatedBy
+        OwnerName OwnerNameEdit Requestors Cc AdminCc CreatedBy LastUpdatedBy
 
         Priority InitialPriority FinalPriority
 
