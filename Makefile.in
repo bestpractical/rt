@@ -232,7 +232,10 @@ DB_RT_PASS		=	@DB_RT_PASS@
 TEST_FILES = t/*.t t/*/*.t t/*/*/*.t
 TEST_VERBOSE = 0
 
-RT_TEST_PARALLEL_NUM ?= 5
+# By default, use all the cores we have for parallel tests.
+# If the nproc command is not implemented on our system,
+# default to 5.
+RT_TEST_PARALLEL_NUM ?= $(shell nproc 2>/dev/null || 5)
 
 
 ####################################################################
