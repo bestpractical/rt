@@ -776,6 +776,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::REST2' => '5.0',
     'RT::Authen::Token' => '5.0',
     'RT::Extension::QuoteSelection' => 5.0,
+    'RT::Extension::FormattedTransactions' => 5.0,
 );
 
 sub InitPlugins {

@@ -45,33 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/ShowHistoryHeader, %ARGS &>
-
-% $m->callback( %ARGS, Object => $Object, CallbackName => 'BeforeTransactions' );
-
-<& /Elements/ShowHistoryPage, %ARGS &>
-
-</div>
-% if ($ShowDisplayModes or $ShowTitle) {
-<& /Widgets/TitleBoxEnd &>
-% }
-</div>
-<script type="text/javascript">
-jQuery(function() {
-    jQuery('.toggle-txn-details').click(function () {
-        return toggleTransactionDetails.apply(this);
-    });
-});
-</script>
-<%ARGS>
-$Object
-$Transactions      => $Object->SortedTransactions
-$Attachments       => $Object->Attachments( WithHeaders => 1 )
-$AttachmentContent => $Object->TextAttachments
-
-$ShowHeaders       => 0
-$ShowTitle         => 1
-$ShowDisplayModes  => 1
-
-$PathPrefix        => ''
-</%ARGS>
+% $m->comp( '/Helpers/TextDiff', %ARGS );

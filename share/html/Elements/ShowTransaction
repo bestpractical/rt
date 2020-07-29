@@ -83,6 +83,50 @@ $m->comp(
 ) if $ShowBody;
 </%PERL>
   </div>
+% if ($Transaction->Type eq 'CustomField' && $Transaction->Field ) {
+%     my ($old, $new);
+%     my $cf = RT::CustomField->new( $session{CurrentUser} );
+%     $cf->SetContextObject( $Transaction->Object );
+%     $cf->Load( $Transaction->Field );
+%     if ($cf->Id && $cf->Type =~ /text/i) {
+%        $old = $Transaction->OldValue // loc('(no value)');
+%        $old = $m->comp('/Elements/ScrubHTML', Content => $old);
+%        $old =~ s|\n|<br />|g;
+%        $new = $Transaction->NewValue // loc('(no value)');
+%        $new = $m->comp('/Elements/ScrubHTML', Content => $new);
+%        $new =~ s|\n|<br />|g;
+<div class="details hidden" id="txn-<% $Transaction->Id %>-details">
+  <table>
+% if ( $old eq loc('(no value)')  ) {
+    <tr>
+      <td class="label"><% loc('Added') %>:</td>
+      <td class="value"><% $new |n %></td>
+    </tr>
+% }
+% elsif ( $new eq loc('(no value)')  ) {
+    <tr>
+      <td class="label"><% loc('Deleted') %>:</td>
+      <td class="value"><% $old |n %></td>
+    </tr>
+% }
+% else {
+    <tr>
+      <td class="label"><% loc('From') %>:</td>
+      <td class="value" ><% $old |n %></td>
+    </tr>
+    <tr>
+      <td class="label"><% loc('To') %>:</td>
+      <td class="value"><% $new |n %></td>
+    </tr>
+    <tr class="diff">
+      <td class="label"><% loc('Changes') %>:</td>
+      <td class="value"><% loc('Loading...') %></td>
+    </tr>
+% }
+  </table>
+</div>
+%     }
+% }
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterContent' );
 </div>
 
@@ -165,7 +209,14 @@ if ( $txn_type =~ /EmailRecord$/ ) {
 
     $ShowBody = 0;
 }
-
+elsif ($txn_type eq 'CustomField' && $Transaction->Field) {
+    my $cf = RT::CustomField->new( $session{CurrentUser} );
+    $cf->SetContextObject( $Transaction->Object );
+    $cf->Load( $Transaction->Field );
+    if ($cf->Id && $cf->Type =~ /text/i) {
+        push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
+    }
+}
 # If the transaction has anything attached to it at all
 elsif ( %$Attachments && $ShowActions ) {
     my %has_right = map {
