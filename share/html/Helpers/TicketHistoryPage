@@ -94,4 +94,12 @@ if ($focusTransactionId) { # make sure we load enough if we need to focus a tran
     Transactions => $transactions,
     %extra_args,
     &>
+
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('.transaction .toggle-txn-details').click(function () {
+        return toggleTransactionDetails.apply(this);
+    });
+});
+</script>
 % $m->abort();
