@@ -138,7 +138,6 @@ push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
 for my $object (@objs) {
     my @items;
     my $object_id = ref($object) . '-' . $object->Id;
-    $object_id = 'system' if $object eq $sys;
 
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $loc_desc, $search) = @$_;
