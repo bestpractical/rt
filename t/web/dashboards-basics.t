@@ -99,7 +99,7 @@ ok( $id, "got a dashboard ID, $id" );  # 8
 
 my $args = {
     UpdateSearches => "Save",
-    body           => ["system-Unowned Tickets"],
+    body           => ["saved-" . $m->dom->find('[data-description="Unowned Tickets"]')->first->attr('data-name')],
     sidebar        => [],
 };
 
@@ -125,7 +125,7 @@ like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
 
 push(
     @{$args->{body}},
-    ( "system-My Tickets", )
+    "saved-" . $m->dom->find('[data-description="My Tickets"]')->first->attr('data-name'),
 );
 
 $res = $m->post(
