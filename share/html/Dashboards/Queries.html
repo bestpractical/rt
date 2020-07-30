@@ -93,7 +93,6 @@ push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
 for my $object (@objs) {
     my @items;
     my $object_id = ref($object) . '-' . $object->Id;
-    $object_id = 'system' if $object eq $sys;
 
     # saved searches and charts
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
@@ -109,23 +108,13 @@ for my $object (@objs) {
         }
 
         my $item;
-        if ($object eq $sys) {
-            $item = { type => 'system', name => $desc, label => $loc_desc, search_type => $SearchType, search_id => $search->id };
+        my $oid = $object_id.'-SavedSearch-'.$search->Id;
+        $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
 
-            # make system searches more easily accessible since dashboards
-            # historically used a human-readable description rather than
-            # something we can comfortably use as a hash key
-            $item_for{ $item->{type} }{ $search->id } = $item;
-        }
-        else {
-            my $oid = $object_id.'-SavedSearch-'.$search->Id;
-            $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
+        my $setting = RT::SavedSearch->new($session{CurrentUser});
+        $setting->Load($object, $search->Id);
 
-            my $setting = RT::SavedSearch->new($session{CurrentUser});
-            $setting->Load($object, $search->Id);
-
-            $item->{possibly_hidden} = !$setting->IsVisibleTo($Dashboard->Privacy);
-        }
+        $item->{possibly_hidden} = !$setting->IsVisibleTo($Dashboard->Privacy);
 
         $item_for{ $item->{type} }{ $item->{name} } = $item;
         push @items, $item;
@@ -172,13 +161,8 @@ do {
                 $item = $item_for{ $saved->{portlet_type} }{ $saved->{component} };
             }
             elsif ($saved->{portlet_type} eq 'search') {
-                if ($saved->{privacy} =~ /^RT::System-/) {
-                    $item = $item_for{system}{$saved->{id}};
-                }
-                else {
-                    my $name = join '-', $saved->{privacy}, 'SavedSearch', $saved->{id};
-                    $item = $item_for{saved}{$name};
-                }
+                my $name = join '-', $saved->{privacy}, 'SavedSearch', $saved->{id};
+                $item = $item_for{saved}{$name};
             }
             else {
                 my $type = $saved->{portlet_type};

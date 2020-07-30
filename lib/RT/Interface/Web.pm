@@ -4744,7 +4744,7 @@ sub UpdateDashboard {
                     $path = "/Elements/$path" if substr( $path, 0, 1 ) ne '/';
 
                     $saved{path} = $path;
-                } elsif ( $item->{type} eq 'system' || $item->{type} eq 'saved' ) {
+                } elsif ( $item->{type} eq 'saved' ) {
                     $saved{portlet_type} = 'search';
 
                     $item->{searchType} = $available_items->{ $item->{type} }{ $item->{name} }{search_type}
@@ -4757,14 +4757,9 @@ sub UpdateDashboard {
                     $item->{searchId} = $available_items->{ $item->{type} }{ $item->{name} }{search_id}
                                         if exists $available_items->{ $item->{type} }{ $item->{name} }{search_id};
 
-                    if ( $item->{type} eq 'system' ) {
-                        $saved{privacy} = 'RT::System-1';
-                        $saved{id}      = $item->{searchId};
-                    } else {
-                        my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
-                        $saved{privacy} = "$obj_type-$obj_id";
-                        $saved{id}      = $search_id;
-                    }
+                    my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
+                    $saved{privacy} = "$obj_type-$obj_id";
+                    $saved{id}      = $search_id;
                 } elsif ( $item->{type} eq 'dashboard' ) {
                     my ( undef, $dashboard_id, $obj_type, $obj_id ) = split '-', $item->{name};
                     $saved{privacy}     = "$obj_type-$obj_id";
