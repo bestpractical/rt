@@ -128,8 +128,8 @@ for my $object (@objs) {
         }
 
         my $item;
-        if ($object eq $sys && $SearchType eq 'Ticket') {
-            $item = { type => 'system', name => $desc, label => $loc_desc, search_id => $search->id };
+        if ($object eq $sys) {
+            $item = { type => 'system', name => $desc, label => $loc_desc, search_type => $SearchType, search_id => $search->id };
 
             # make system searches more easily accessible since dashboards
             # historically used a human-readable description rather than
