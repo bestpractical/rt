@@ -135,4 +135,49 @@ $m->content_like( qr/special chars \[test\] \d+ \[_1\]/,
     $m->content_contains($desc . " [more]", "found description: $desc");
 }
 
+# Add some system non-ticket searches
+$m->get_ok( $url . "/Search/Chart.html?Query=" . 'id=1' );
+
+$m->submit_form(
+    form_name => 'SaveSearch',
+    fields    => {
+        SavedSearchDescription => 'first chart',
+        SavedSearchOwner       => 'RT::System-1',
+    },
+    button => 'SavedSearchSave',
+);
+$m->content_contains("Chart first chart saved", 'saved first chart' );
+
+$m->get_ok( $url . "/Search/Build.html?Class=RT::Transactions&Query=" . 'TicketId=1' );
+
+$m->submit_form(
+    form_name => 'BuildQuery',
+    fields    => {
+        SavedSearchDescription => 'first txn search',
+        SavedSearchOwner       => 'RT::System-1',
+    },
+    button => 'SavedSearchSave',
+);
+# We don't show saved message on page :/
+$m->content_contains("Save as New", 'saved first txn search' );
+
+$m->get_ok( $url . 'Prefs/MyRT.html' );
+push(
+    @{$args->{body}},
+    "saved-" . $m->dom->find('[data-description="first chart"]')->first->attr('data-name'),
+    "saved-" . $m->dom->find('[data-description="first txn search"]')->first->attr('data-name'),
+);
+
+$res = $m->post(
+    $url . 'Prefs/MyRT.html',
+    $args,
+);
+
+is( $res->code, 200, 'add system saved searches to body' );
+$m->text_contains( 'Preferences saved' );
+
+$m->get_ok($url);
+$m->text_contains('first chart');
+$m->text_contains('first txn search');
+
 done_testing;
