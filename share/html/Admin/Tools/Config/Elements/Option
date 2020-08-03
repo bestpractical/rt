@@ -66,7 +66,7 @@ $doc_version =~ s/\.\d+-\d+-g\w+$//;  # 4.4.3-1-g123 -> 4.4
 my $name = $option->{Name};
 my $meta = RT->Config->Meta( $name );
 return if $meta->{Invisible} || $meta->{Deprecated};
-return if $name =~ /Password/i && $name !~ /MinimumPasswordLength/;
+return if ($name =~ /Password/i and not (defined $meta->{DoNotObfuscate} && $meta->{DoNotObfuscate}) );
 
 my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
 

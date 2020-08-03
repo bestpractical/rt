@@ -1727,6 +1727,7 @@ our %META;
     },
     MinimumPasswordLength => {
         Widget => '/Widgets/Form/Integer',
+        DoNotObfuscate => 1,
     },
     MoreAboutRequestorGroupsLimit => {
         Widget => '/Widgets/Form/Integer',
