@@ -922,12 +922,11 @@ my $build_main_nav = sub {
                     $p => $DECODED_ARGS->{$p} || $current_search->{$p}
                 } qw(Query Format OrderBy Order Page)
             ),
-            RowsPerPage => (
-                defined $DECODED_ARGS->{'RowsPerPage'}
-                ? $DECODED_ARGS->{'RowsPerPage'}
-                : $current_search->{'RowsPerPage'}
-            ),
         );
+
+        if ( defined ( my $rows = $DECODED_ARGS->{'RowsPerPage'} // $current_search->{'RowsPerPage'} ) ) {
+            $fallback_query_args{RowsPerPage} = $rows;
+        }
 
         if ($QueryString) {
             $args = '?' . $QueryString;
