@@ -47,7 +47,13 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('RT Administration') &>
 <& /Elements/Tabs &>
-<& /Elements/ListMenu, menu => Menu()->child('admin')  &>
+<div class="row">
+   <div class="boxcontainer col-md-5">
+      <& /Elements/ListMenu, menu => Menu()->child('admin')  &>
+   </div>
+   <div class="boxcontainer col-md-7">
 % if (RT->Config->Get('ShowRTPortal')) {
-<& /Admin/Elements/Portal &>
+      <& /Admin/Elements/Portal &>
 % }
+   </div>
+</div>

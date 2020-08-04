@@ -5,6 +5,9 @@ ul.list-menu {
  list-style: none;
     width: 35%;
 }
+div.boxcontainer ul.list-menu {
+  width:90%;
+}
 ul.list-menu > li {
     margin-bottom: .5em;
     margin-top: .5em;
@@ -24,8 +27,8 @@ ul.list-menu ul li {
  margin-right: 0.5em;
 }
 
-#rt-portal .titlebox iframe {
-    height: 100%;
+iframe.rt-portal {
+    height: 300px;
     width: 100%;
     border: 0;
 }
@@ -47,6 +50,12 @@ ul.list-menu ul li {
 #rt-portal .titlebox.rolled-up {
     bottom: auto;
     padding-bottom: 0;
+}
+
+iframe.rt-portlet {
+    height: 200px;
+    width: 100%;
+    border: 0;
 }
 
 .admin-hint {
