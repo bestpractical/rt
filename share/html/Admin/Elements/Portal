@@ -45,8 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div id="rt-portal">
 <&| /Widgets/TitleBox, title => loc('RT Portal') &>
-<iframe src="https://bestpractical.com/rt/integration/news?utm_source=rt&utm_medium=iframe&utm_campaign=<%$RT::VERSION%>"></iframe>
+<iframe src="https://bestpractical.com/rt/integration/news?utm_source=rt&utm_medium=iframe&utm_campaign=<%$RT::VERSION%>" class="rt-portal"></iframe>
 </&>
-</div>
