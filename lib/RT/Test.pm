@@ -214,6 +214,30 @@ sub import {
     __PACKAGE__->export_to_level($level);
 }
 
+sub MakeDatabaseNonDurableForTesting {
+    my ($db_type, $dbh) = @_;
+
+    # If environment variable RT_TEST_DB_DURABLE is non-zero,
+    # don't make the DB non-durable.
+    return if $ENV{RT_TEST_DB_DURABLE};
+
+    if ($db_type =~ /sqlite/i) {
+        #print STDERR "Sending PRAGMA synchronous = 0;\n";
+        if (!$dbh->do(q{PRAGMA synchronous = 0;})) {
+            print STDERR "PRAGMA synchronous failed!\n";
+        }
+    } elsif ($db_type =~ /pg/i) {
+        #print STDERR "Sending SET synchronous_commit = OFF;\n";
+        if (!$dbh->do(q{SET synchronous_commit = OFF;})) {
+            print STDERR "SET synchronous_commit = OFF failed!\n";
+        }
+    }
+
+    # For MySQL, none of the settings mentioned at
+    # http://www.tocker.ca/2013/11/04/reducing-mysql-durability-for-testing.html
+    # helped much, so we don't bother doing anything. :(
+}
+
 sub is_empty($;$) {
     my ($v, $d) = shift;
     local $Test::Builder::Level = $Test::Builder::Level + 1;
@@ -622,6 +646,11 @@ sub _get_dbh {
         my $msg = "Failed to connect to $dsn as user '$user': ". $DBI::errstr;
         print STDERR $msg; exit -1;
     }
+
+    # Do what we can to make DB handle less durable to speed up tests
+    if ($dsn =~ /dbi:([^:]+):/i) {
+        MakeDatabaseNonDurableForTesting($1, $dbh);
+    }
     return $dbh;
 }
 
@@ -678,6 +707,17 @@ sub __reconnect_rt {
     # look at %DBIHandle and $PrevHandle in DBIx::SB::Handle for explanation
     $RT::Handle = RT::Handle->new;
     $RT::Handle->dbh( undef );
+
+    # Override RT::Handle::PostConnectActions
+    {
+        no warnings 'redefine';
+        *RT::Handle::PostConnectActions = sub {
+            my ($db_type, $dbh) = @_;
+            MakeDatabaseNonDurableForTesting($db_type, $dbh);
+        };
+        use warnings 'redefine';
+    }
+
     $RT::Handle->Connect(
         $as_dba
         ? (User => $ENV{RT_DBA_USER}, Password => $ENV{RT_DBA_PASSWORD})
