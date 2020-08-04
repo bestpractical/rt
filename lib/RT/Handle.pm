@@ -137,7 +137,17 @@ sub Connect {
         $self->dbh->do("SET bytea_output = 'escape'") if $version >= 9.0;
     }
 
+    PostConnectActions($db_type, $self->dbh);
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
+}
+
+=head2 PostConnectActions
+
+Perform any post-connect queries.  In production, this function
+does nothing; it exists to be overridden by test code.
+
+=cut
+sub PostConnectActions {
 }
 
 =head2 BuildDSN
