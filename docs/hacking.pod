@@ -214,6 +214,28 @@ running the tests in parallel.
 
     RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
 
+=head2 Database Optimizations for Testing
+
+To improve the speed of testing, you may adjust the database configuration
+to optimize speed at the expense of losing durability (and potential database
+corruption.)
+
+For SQLite, the test suite automatically uses C<PRAGMA synchronous = 0> to
+eliminate many calls to C<fsync>, thereby greatly reducing disk I/O.
+
+For PostgreSQL, the test suite automatically uses C<SET
+synchronous_commit = OFF> to improve performance.  However, a much
+greater performance improvement can be realized by setting C<fsync =
+off> in the C<postgresql.conf> file.  (DO NOT set C<fsync = off> in a
+production system; doing so risks corrupting your entire PostgreSQL
+database.)
+
+For MySQL or MariaDB, the C<eatmydata> wrapper at L<https://www.flamingspork.com/projects/libeatmydata/>
+may be used to wrap the MySQL or MariaDB daemon; this uses C<LD_PRELOAD>
+to eliminate calls to C<fsync> and similar system calls.  (DO NOT user
+C<eatmydata> in a production system; doing so risks corrupting your entire
+MySQL database.)
+
 =head2 Tests with Docker
 
 RT has a Dockerfile that can be used to run the test suite for some configurations.
