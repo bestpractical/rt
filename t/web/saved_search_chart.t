@@ -128,29 +128,16 @@ sub page_chart_link_has {
     );
 }
 
-# load the first chart
-$m->field('SavedSearchLoad' => $saved_search_ids[0]);
-$m->click('SavedSearchLoadSubmit');
+for my $i ( 0 .. 1 ) {
+    $m->form_name('SaveSearch');
 
-page_chart_link_has($m, $saved_search_ids[0]);
+    # load chart $saved_search_ids[$i]
+    $m->field( 'SavedSearchLoad' => $saved_search_ids[$i] );
+    $m->click('SavedSearchLoadSubmit');
+    page_chart_link_has( $m, $saved_search_ids[$i] );
+    is( $m->form_number(3)->value('SavedChartSearchId'), $saved_search_ids[$i] );
+}
 
-$m->form_name('SaveSearch');
-is($m->form_number(3)->value('SavedChartSearchId'), $saved_search_ids[0]);
-
-$m->form_name('SaveSearch');
-
-# now load the second chart
-$m->field('SavedSearchLoad' => $saved_search_ids[1]);
-$m->click('SavedSearchLoadSubmit');
-
-page_chart_link_has($m, $saved_search_ids[1]);
-
-is(
-    $m->form_number(3)->value('SavedChartSearchId'), $saved_search_ids[1],
-    'Second form is seen as a hidden field'
-);
-
-page_chart_link_has($m, $saved_search_ids[1]);
 
 diag "saving a chart without changing its config shows up on dashboards (I#31557)";
 {
