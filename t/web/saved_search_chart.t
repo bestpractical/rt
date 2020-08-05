@@ -106,12 +106,22 @@ for ([A => 'subject="'.$$.'A"'], [BorC => 'subject="'.$$.'B" OR subject="'.$$.'C
 
 }
 
+$m->submit_form(
+    form_name => 'SaveSearch',
+    fields    => {
+        SavedSearchDescription => 'a copy',
+        SavedSearchOwner       => $owner,
+    },
+    button => 'SavedSearchCopy',
+);
+$m->text_contains('Chart a copy saved.');
+
 $m->form_name('SaveSearch');
 my @saved_search_ids =
     $m->current_form->find_input('SavedSearchLoad')->possible_values;
 shift @saved_search_ids; # first value is blank
 
-cmp_ok(@saved_search_ids, '==', 2, 'Two saved charts were made');
+cmp_ok(@saved_search_ids, '==', 3, '3 saved charts were made');
 
 # TODO get find_link('page-chart')->URI->params to work...
 sub page_chart_link_has {
@@ -128,7 +138,7 @@ sub page_chart_link_has {
     );
 }
 
-for my $i ( 0 .. 1 ) {
+for my $i ( 0 .. 2 ) {
     $m->form_name('SaveSearch');
 
     # load chart $saved_search_ids[$i]
@@ -138,6 +148,18 @@ for my $i ( 0 .. 1 ) {
     is( $m->form_number(3)->value('SavedChartSearchId'), $saved_search_ids[$i] );
 }
 
+diag "testing the content of chart copy content";
+{
+    my ($from) = $saved_search_ids[1] =~ /SavedSearch-(\d+)$/;
+    my ($to)   = $saved_search_ids[2] =~ /SavedSearch-(\d+)$/;
+    my $from_attr = RT::Attribute->new( RT->SystemUser );
+    $from_attr->Load($from);
+    ok( $from_attr->Id, "Found attribute #$from" );
+    my $to_attr = RT::Attribute->new( RT->SystemUser );
+    $to_attr->Load($to);
+    ok( $to_attr->Id, "Found attribute #$to" );
+    is_deeply( $from_attr->Content, $to_attr->Content, 'Chart copy content is correct' );
+}
 
 diag "saving a chart without changing its config shows up on dashboards (I#31557)";
 {
@@ -155,7 +177,7 @@ diag "saving a chart without changing its config shows up on dashboards (I#31557
     @saved_search_ids =
         $m->current_form->find_input('SavedSearchLoad')->possible_values;
     shift @saved_search_ids; # first value is blank
-    my $chart_without_updates_id = $saved_search_ids[2];
+    my $chart_without_updates_id = $saved_search_ids[3];
     ok($chart_without_updates_id, 'got a saved chart id');
 
     my ($privacy, $user_id, $search_id) = $chart_without_updates_id =~ /^(RT::User-(\d+))-SavedSearch-(\d+)$/;
