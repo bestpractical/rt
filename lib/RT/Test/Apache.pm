@@ -54,10 +54,12 @@ my %MODULES = (
     '2.2' => {
         "mod_perl" => [qw(authz_host env alias perl)],
         "fastcgi"  => [qw(authz_host env alias mime fastcgi)],
+
     },
     '2.4' => {
         "mod_perl" => [qw(mpm_worker authz_core authn_core authz_host env alias perl)],
         "fastcgi"  => [qw(mpm_worker authz_core authn_core authz_host env alias mime fastcgi)],
+        "fcgid"  => [qw(mpm_worker authz_core authn_core authz_host env alias mime fcgid)],
     },
 );
 
