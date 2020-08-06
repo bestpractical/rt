@@ -29,6 +29,7 @@ FcgidConnectTimeout 20
 FcgidProcessTableFile %%tmp_dir%%/shm
 FcgidIPCDir %%tmp_dir%%
 FcgidInitialEnv RT_TESTING 1
+FcgidInitialEnv RT_SITE_CONFIG %%RT_SITE_CONFIG%%
 
 ScriptAlias / %%RT_SBIN_PATH%%/rt-server.fcgi/
 
