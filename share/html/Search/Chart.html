@@ -222,6 +222,6 @@ jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 
 </div>
 <div class="saved-search">
-    <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
+    <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts'), AllowCopy => 1 &>
 </div>
 </div>

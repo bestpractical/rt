@@ -106,8 +106,8 @@ if ($self->{SearchId} eq 'new') {
     }
 }
 
-if ( $args->{SavedSearchSave} ) {
-    if ( my $search = $self->{CurrentSearch}{Object} ) {
+if ( $args->{SavedSearchSave} || $args->{SavedSearchCopy} ) {
+    if ( ( my $search = $self->{CurrentSearch}{Object} ) && !$args->{SavedSearchCopy} ) {
         # rename
         $search->SetDescription( $args->{SavedSearchDescription} );
         $search->SetSubValues(%$SearchParams);
@@ -115,6 +115,14 @@ if ( $args->{SavedSearchSave} ) {
     }
     else {
         # new saved search
+        if (   $args->{SavedSearchCopy}
+            && $self->{CurrentSearch}{Object}
+            && (  !$args->{SavedSearchDescription}
+                || $args->{SavedSearchDescription} eq $self->{CurrentSearch}{Object}->Description )
+           )
+        {
+            $args->{SavedSearchDescription} = loc( "[_1] copy", $self->{CurrentSearch}{Object}->Description );
+        }
 
         $SearchParams->{$_} //= $defaults->{$_} for @{$self->{SearchFields}};
 
@@ -166,7 +174,7 @@ $defaults => {}
     Type          => $self->{SearchType},
     CurrentSearch => $self->{CurrentSearch},
     Title         => $Title,
-    AllowCopy     => 0,
+    AllowCopy     => $AllowCopy,
     $self->{CurrentSearch}{Object} ? 
     ( Object        => $self->{CurrentSearch}{Object},
     Description   => $self->{CurrentSearch}{Object}->Description, ) : (),
@@ -188,6 +196,7 @@ foreach my $field ( @{$self->{SearchFields}} ) {
 $self   => undef
 $Action => ''
 $Title  => loc('Saved searches')
+$AllowCopy => 0
 </%ARGS>
 <%init>
 </%init>
