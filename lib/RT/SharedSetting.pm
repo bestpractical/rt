@@ -385,6 +385,18 @@ sub CurrentUserCanCreate { 1 }
 sub CurrentUserCanModify { 1 }
 sub CurrentUserCanDelete { 1 }
 
+=head2 ColumnMapClassName
+
+ColumnMap needs a massaged collection class name to load the correct list
+display.  Equivalent to L<RT::SearchBuilder/ColumnMapClassName>, but provided
+for a record instead of a collection.
+
+Returns a string.  May be called as a package method.
+
+=cut
+
+sub ColumnMapClassName { return RT::Record::ColumnMapClassName(shift) }
+
 ### Internal methods
 
 # _GetObject: helper routine to load the correct object whose parameters
