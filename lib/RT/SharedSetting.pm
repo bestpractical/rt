@@ -385,6 +385,14 @@ sub CurrentUserCanCreate { 1 }
 sub CurrentUserCanModify { 1 }
 sub CurrentUserCanDelete { 1 }
 
+=head2 ColumnMapClassName
+
+Equivalent to L<RT::Record/ColumnMapClassName>
+
+=cut
+
+sub ColumnMapClassName { return RT::Record::ColumnMapClassName(shift) }
+
 ### Internal methods
 
 # _GetObject: helper routine to load the correct object whose parameters

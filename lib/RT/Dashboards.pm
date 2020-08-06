@@ -120,10 +120,6 @@ sub SortDashboards {
     return;
 }
 
-sub ColumnMapClassName {
-    return 'RT__Dashboard';
-}
-
 RT::Base->_ImportOverlays();
 
 1;
