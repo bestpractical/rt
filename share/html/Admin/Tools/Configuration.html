@@ -91,7 +91,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
   <div class="form-row <% $index_conf%2 ? 'oddline' : 'evenline'%>">
     <div class="value col-4 collection-as-table"><% $key %></div>
     <div class="value col-4 collection-as-table">
-% if ( $key =~ /Password/i and $key !~ /MinimumPasswordLength/ ) {
+% if ( fieldname_is_blocklisted($key) ) {
 <em><% loc('Password not printed' ) %></em>\
 % } else {
 <% stringify($val) |n %>\
@@ -127,7 +127,7 @@ foreach my $key ( sort keys %{*RT::} ) {
       <div class="form-row collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
         <div class="value col-6 collection-as-table">RT::<% $key %></div>
         <div class="value col-6 collection-as-table">
-% if ( $key =~ /Password(?!Length)/i ) { 
+% if ( fieldname_is_blocklisted($key)) {
 <em><% loc('Password not printed' ) %></em>\
 % } else {
 <% ${'RT::'.$key} %>
@@ -317,7 +317,12 @@ if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
 % for my $key (sort keys %ENV) {
 <div class="collection-as-table <% $row++ %2 ? 'oddline' : 'evenline'%> form-row">
 <div class="collection-as-table value col-6"><% $key %></div>
+% if ( fieldname_is_blocklisted($key) ) {
+<div class="collection-as-table value col-6"><% loc('Password not printed' ) %></div>
+% }
+% else {
 <div class="collection-as-table value col-6"><% $ENV{$key} %></div>
+% }
 </div>
 % }
 </&>
@@ -367,12 +372,13 @@ my $row = 1;
 </div>
 <%INIT>
 use Data::Dumper;
+use RT::Util;
 local $Data::Dumper::Terse = 1;
 local $Data::Dumper::Indent = 2;
 
 sub stringify {
     my $value = shift;
-    my $output = Dumper $value;
+    my $output = Dumper filter_sensitive_fields($value, loc('Sensitive field value not printed'));
     RT::Interface::Web::EscapeHTML(\$output);
     $output =~ s/ /&nbsp;/g;
     $output =~ s!\n!<br />!g;
