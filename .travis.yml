@@ -10,7 +10,7 @@ env:
 
 # $TRAVIS_BUILD_DIR will have a clone of the current branch
 before_install:
-  - docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:$DB_VERSION_TAG
+  - docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d --mount type=tmpfs,destination=/var/lib/mysql mariadb:$DB_VERSION_TAG
   - docker build -t rt-base .
   - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt --link mariadb:db rt-base
   - docker ps -a
