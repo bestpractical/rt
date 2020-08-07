@@ -10,7 +10,7 @@ env:
 
 # $TRAVIS_BUILD_DIR will have a clone of the current branch
 before_install:
-  - docker run --name postgresql --mount type=tmpfs,destination=/var/lib/postgresql -e POSTGRES_PASSWORD=password -d postgres:$DB_VERSION_TAG
+  - docker run --name postgresql --mount type=tmpfs,destination=/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d postgres:$DB_VERSION_TAG
   - docker build -t rt-base .
   - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt --link postgresql:db rt-base
   - docker ps -a
