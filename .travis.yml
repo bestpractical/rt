@@ -1,21 +1,41 @@
 language: bash
 services: docker
+os: linux
+dist: xenial
 
 notifications:
   slack:
     secure: ebb/6lbr1ob7wMh04C5PzM5/NNz6IstEUaUROA7BATuKKgPetl6qwmQNwvlwE5zYvJQBWQwKJ70JaCzJkXK6JVMVRRAWsXINJTzMfSqsoXEcJ59c5isf0bsnspVO7jxHTfXF/NZngR4EuPwH5v5lWp9m++j90t9nBKFFVi34WUE=
 
-env:
-  - RT_TEST_PARALLEL=1 RT_DBA_USER=postgres RT_DBA_PASSWORD=password DB_VERSION_TAG=9.6
+jobs:
+  include:
+  - stage: test
+    env:
+      - RT_TEST_PARALLEL=1 RT_DBA_USER=postgres RT_DBA_PASSWORD=password DB_VERSION_TAG=9.6
 
 # $TRAVIS_BUILD_DIR will have a clone of the current branch
-before_install:
-  - docker run --name postgresql --mount type=tmpfs,destination=/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d postgres:$DB_VERSION_TAG
-  - docker build -t rt-base .
-  - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt --link postgresql:db rt-base
-  - docker ps -a
-  - docker exec -it rt bash -c "apt-get update && apt-get install -y libdbd-pg-perl"
-  - docker exec -it rt bash -c "cd /rt && ./configure.ac --with-db-type=Pg --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --disable-gpg --disable-smime && mkdir -p /rt/var && make testdeps"
+    before_install:
+      - docker run --name postgresql --mount type=tmpfs,destination=/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d postgres:$DB_VERSION_TAG
+      - docker build -t rt-base .
+      - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt --link postgresql:db rt-base
+      - docker ps -a
+      - docker exec -it rt bash -c "apt-get update && apt-get install -y libdbd-pg-perl"
+      - docker exec -it rt bash -c "cd /rt && ./configure.ac --with-db-type=Pg --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --disable-gpg --disable-smime && mkdir -p /rt/var && make testdeps"
 
-script:
-    - docker exec -it rt bash -c "cd /rt && prove -lj9 t/*"
+    script:
+        - docker exec -it rt bash -c "cd /rt && prove -lj9 t/*"
+
+  - stage: test
+    env:
+      - RT_TEST_PARALLEL=1 RT_DBA_USER=root RT_DBA_PASSWORD=password DB_VERSION_TAG=10.3
+
+# $TRAVIS_BUILD_DIR will have a clone of the current branch
+    before_install:
+      - docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:$DB_VERSION_TAG
+      - docker build -t rt-base .
+      - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt --link mariadb:db rt-base
+      - docker ps -a
+      - docker exec -it rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --disable-gpg --disable-smime && mkdir -p /rt/var && make testdeps"
+
+    script:
+        - docker exec -it rt bash -c "cd /rt && prove -lj9 t/*"
