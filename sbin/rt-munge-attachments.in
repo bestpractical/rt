@@ -70,7 +70,7 @@ BEGIN {    # BEGIN RT CMD BOILERPLATE
 # Read in the options
 my %opts;
 use Getopt::Long;
-GetOptions( \%opts, "help|h", "search=s", "replacement=s", 'tickets=s' );
+GetOptions( \%opts, "help|h", "search=s", "replacement=s", 'tickets=s', 'skip-headers', 'skip-content' );
 
 if ( $opts{'help'} || !$opts{'search'} ) {
     require Pod::Usage;
@@ -81,6 +81,8 @@ if ( $opts{'help'} || !$opts{'search'} ) {
 use RT -init;
 
 my $replacement = $opts{'replacement'} || '';
+my $headers     = $opts{'skip-headers'} ? 0 : 1;
+my $content     = $opts{'skip-content'} ? 0 : 1;
 
 my $search = $opts{'search'};
 
@@ -113,6 +115,8 @@ else {
 }
 
 my ( $ret, $msg ) = $attachments->ReplaceAttachments(
+    Headers     => $headers,
+    Content     => $content,
     Search      => Encode::decode( 'UTF-8', $search ),
     Replacement => Encode::decode( 'UTF-8', $replacement ),
     $opts{tickets} ? ( FilterBySearchString => 0 ) : (),
@@ -166,5 +170,15 @@ Limit attachments to the specified tickets. Note that if tickets are not
 specified, RT will pre-filter attachments by the search string use SQL,
 which might bypass attachments of which contents are encoded(like
 base64). Use this option to prevent the pre-filter behavior.
+
+=item --skip-headers
+
+BY default headers are also munged, to disable munging of headers set the
+--skip-headers flag.
+
+=item --skip-content
+
+BY default transaction content is munged, to disable munging of content set the
+--skip-content flag.
 
 =back
