@@ -96,32 +96,31 @@ $m->comp(
 %        $new = $m->comp('/Elements/ScrubHTML', Content => $new);
 %        $new =~ s|\n|<br />|g;
 <div class="details hidden" id="txn-<% $Transaction->Id %>-details">
-  <table>
 % if ( $old eq loc('(no value)')  ) {
-    <tr>
-      <td class="label"><% loc('Added') %>:</td>
-      <td class="value"><% $new |n %></td>
-    </tr>
+  <div class="form-row">
+      <div class="label col-2"><% loc('Added') %>:</div>
+      <div class="value col-10"><% $new |n %></div>
+  </div>
 % }
 % elsif ( $new eq loc('(no value)')  ) {
-    <tr>
-      <td class="label"><% loc('Deleted') %>:</td>
-      <td class="value"><% $old |n %></td>
-    </tr>
+    <div class="form-row">
+      <div class="label col-2"><% loc('Deleted') %>:</div>
+      <div class="value col-10"><% $old |n %></div>
+    </div>
 % }
 % else {
-    <tr>
-      <td class="label"><% loc('From') %>:</td>
-      <td class="value" ><% $old |n %></td>
-    </tr>
-    <tr>
-      <td class="label"><% loc('To') %>:</td>
-      <td class="value"><% $new |n %></td>
-    </tr>
-    <tr class="diff">
-      <td class="label"><% loc('Changes') %>:</td>
-      <td class="value"><% loc('Loading...') %></td>
-    </tr>
+    <div class="form-row">
+      <div class="label col-2"><% loc('From') %>:</div>
+      <div class="value col-10"><% $old |n %></div>
+    </div>
+    <div class="form-row">
+      <div class="label col-2"><% loc('To') %>:</div>
+      <div class="value col-10"><% $new |n %></div>
+    </div>
+    <div class="form-row diff">
+      <div class="label col-2"><% loc('Changes') %>:</div>
+      <div class="value col-10"><% loc('Loading...') %></div>
+    </div>
 % }
   </table>
 </div>

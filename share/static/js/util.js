@@ -1093,7 +1093,7 @@ function toggleTransactionDetails () {
         jQuery(this).text(RT.I18N.Catalog['show_details']);
     }
 
-    var diff = details_div.find('.diff td.value');
+    var diff = details_div.find('.diff div.value');
     if (!diff.children().length) {
         diff.load(RT.Config.WebHomePath + '/Helpers/TextDiff', {
             TransactionId: txn_div.attr('data-transaction-id')
