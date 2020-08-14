@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 63;
+use RT::Test;
 my $plain_file = File::Spec->catfile( RT::Test->temp_directory, 'attachment.txt' );
 open my $plain_fh, '>', $plain_file or die $!;
 print $plain_fh "this is plain content";
@@ -112,3 +112,42 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->content_contains("this is main reply content", 'email contains main reply content');
     $m->back;
 }
+
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject => 'with main body',
+            Content => 'this is main body',
+            Attach  => $plain_file,
+        }
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+$m->content_contains( "Download $plain_name", 'download plain file link' );
+$m->follow_link_ok( { text => 'Reply', url_regex => qr/QuoteTransaction=/ }, 'reply the create transaction' );
+my $form    = $m->form_name( 'TicketUpdate' );
+my $content = $form->find_input( 'UpdateContent' );
+like( $content->value, qr/this is main body/, 'has transaction content' );
+
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject => 'without main body',
+            Attach  => $plain_file,
+        }
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+$m->content_contains( "Download $plain_name", 'download plain file link' );
+$m->follow_link_ok( { text => 'Reply', url_regex => qr/QuoteTransaction=/ }, 'reply the create transaction' );
+$form    = $m->form_name( 'TicketUpdate' );
+$content = $form->find_input( 'UpdateContent' );
+like( $content->value, qr/This transaction appears to have no content/, 'no transaction content' );
+
+done_testing;

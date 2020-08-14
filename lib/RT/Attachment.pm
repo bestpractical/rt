@@ -561,6 +561,18 @@ sub IsMessageContentType {
     return $self->ContentType =~ m{^\s*message/}i ? 1 : 0;
 }
 
+=head2 IsAttachmentContentDisposition
+
+Returns a boolean indicating if the Content-Disposition of this attachment
+is a MIME attachment.
+
+=cut
+
+sub IsAttachmentContentDisposition {
+    my $self = shift;
+    return ( $self->GetHeader('Content-Disposition') // '' ) =~ m{^\s*attachment\b}i ? 1 : 0;
+}
+
 =head2 Addresses
 
 Returns a hashref of all addresses related to this attachment.
