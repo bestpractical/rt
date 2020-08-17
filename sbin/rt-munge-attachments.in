@@ -70,7 +70,7 @@ BEGIN {    # BEGIN RT CMD BOILERPLATE
 # Read in the options
 my %opts;
 use Getopt::Long;
-GetOptions( \%opts, "help|h", "search=s", "replacement=s", 'tickets=s', 'skip-headers', 'skip-content' );
+GetOptions( \%opts, "help|h", "search=s", "replacement=s", 'tickets=s', 'transactions=s', 'skip-headers', 'skip-content' );
 
 if ( $opts{'help'} || !$opts{'search'} ) {
     require Pod::Usage;
@@ -86,11 +86,10 @@ my $content     = $opts{'skip-content'} ? 0 : 1;
 
 my $search = $opts{'search'};
 
-my $attachments;
+my $attachments = RT::Attachments->new( RT->SystemUser );
 if ( $opts{tickets} ) {
     my @tickets = split /\s*,\s*/, $opts{tickets};
 
-    $attachments = RT::Attachments->new( RT->SystemUser );
     my $txn_alias   = $attachments->TransactionAlias;
     $attachments->Limit(
         ALIAS => $txn_alias,
@@ -110,8 +109,15 @@ if ( $opts{tickets} ) {
         OPERATOR => 'IN',
     );
 }
-else {
-    $attachments = RT::Attachments->new( RT->SystemUser );
+
+if ( $opts{'transactions'} ) {
+    my @transactions = split /\s*,\s*/, $opts{'transactions'};
+
+    $attachments->Limit(
+        FIELD    => 'TransactionId',
+        VALUE    => \@transactions,
+        OPERATOR => 'IN',
+    );
 }
 
 my ( $ret, $msg ) = $attachments->ReplaceAttachments(
@@ -119,7 +125,7 @@ my ( $ret, $msg ) = $attachments->ReplaceAttachments(
     Content     => $content,
     Search      => Encode::decode( 'UTF-8', $search ),
     Replacement => Encode::decode( 'UTF-8', $replacement ),
-    $opts{tickets} ? ( FilterBySearchString => 0 ) : (),
+    $opts{tickets} || $opts{transactions} ? ( FilterBySearchString => 0 ) : (),
 );
 print STDERR $msg . "\n";
 
@@ -166,10 +172,15 @@ Provide a string to replace the value matched by the search.
 
 =item --tickets=1,2,3
 
-Limit attachments to the specified tickets. Note that if tickets are not
-specified, RT will pre-filter attachments by the search string use SQL,
+Limit attachments to the specified tickets. Note that if tickets or transactions
+are not specified, RT will pre-filter attachments by the search string use SQL,
 which might bypass attachments of which contents are encoded(like
 base64). Use this option to prevent the pre-filter behavior.
+
+=item --transactions=123,456,7
+
+Limit attachments to the specified transactions. If specified the default pre-filtering
+will be prevented. This option can work alongside the --tickets flag.
 
 =item --skip-headers
 
