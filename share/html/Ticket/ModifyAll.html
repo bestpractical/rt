@@ -84,10 +84,10 @@
 <& Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
 
+<div class="ticket-update-message">
 <&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
-<div>
   <div class="form-row input-row">
-    <div class="label col-3"><&|/l&>Update Type</&>:</div>
+    <div class="label col-2"><&|/l&>Update Type</&>:</div>
     <div class="value col-9">
       <select name="UpdateType" id="UpdateType" class="form-control selectpicker">
 % if ($CanComment) {
@@ -101,7 +101,7 @@
     </div>
   </div>
   <div class="form-row input-row">
-    <div class="label col-3"><&|/l&>Subject</&>:</div>
+    <div class="label col-2"><&|/l&>Subject</&>:</div>
     <div class="value col-9"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
     </div>
@@ -109,11 +109,8 @@
 
   <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket &>
 
-<& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-
   <div class="form-row input-row">
-    <div class="label col-3"><&|/l&>Message</&>:</div>
-    <div class="value col-9 messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
+    <div class="value col-12 messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent})) {
     <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0 &>
@@ -122,9 +119,9 @@
 % }
     </div>
   </div>
-</div>
+  <& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
 </&>
-  
+</div>
 
   <div class="form-row">
     <div class="col-12">
