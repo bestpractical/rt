@@ -46,18 +46,31 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
-
+use JSON;
 use Data::Dumper;
 my $stringify = sub {
     my $value = shift;
-    return "" if !defined($value);
+    return ('', '') if !defined($value);
 
+    my $output;
     local $Data::Dumper::Terse = 1;
     local $Data::Dumper::Indent = 2;
     local $Data::Dumper::Sortkeys = 1;
-    my $output = Dumper $value;
-    chomp $output;
-    return $output;
+    my $format = '';
+    if (ref $value) {
+        eval { $output = to_json($value, {utf8 => 1, pretty => 1, canonical => 1}) };
+        if ( $@ ) {
+            $output = Dumper($value);
+            $format = 'code';
+        }
+        else {
+            $format = 'json';
+        }
+    } else {
+        $output = $value;
+    }
+    chomp($output);
+    return($output, $format);
 };
 
 my $doc_version = $RT::VERSION;
@@ -67,20 +80,18 @@ my $name = $option->{Name};
 my $meta = RT->Config->Meta( $name );
 return if $meta->{Invisible} || $meta->{Deprecated} || $meta->{Obfuscate};
 
-my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
-
 my $raw_value = RT->Config->Get( $name );
-my $val = $stringify->($raw_value);
+my ($val, $format) = $stringify->($raw_value);
 my $doc_url = "https://docs.bestpractical.com/rt/$doc_version/RT_Config.html#$option->{Help}";
-my $widget = $meta->{'Widget'} || '/Widgets/Form/Code';
-my $is_code = $widget eq '/Widgets/Form/Code';
+my $widget = $meta->{'Widget'} || '/Widgets/Form/JSON';
 
+# CustomDateRanges could contain subrefs, but we supply limited/safe
+# widgets that contain plain inputs only.
 my $is_immutable = $meta->{Immutable}
                 || $meta->{Obfuscate}
-                || ($is_code && $val =~ s/sub \{ "DUMMY" \}/sub { ... }/g)
-                || ($is_code && !$has_execute_code);
+                || ( $format eq 'code' && $widget ne '/Widgets/Form/CustomDateRanges' );
 
-my $current_value = $is_code ? $val : $raw_value;
+my $current_value = $format ? $val : $raw_value;
 my $args   = $meta->{'WidgetArguments'} || {};
 if ($widget eq '/Widgets/Form/Boolean') {
     %$args = (
@@ -111,8 +122,8 @@ my $row_end = qq{</div></div>};
 
 <!-- start option <% $name %> -->
 % if ( $meta->{EditLink} ) {
-% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
-<% $row_start |n %><textarea disabled class="<% $is_code ? 'code' : '' %> form-control" rows="6" cols="80"><% $current_value %></textarea><br />
+% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code' || $widget eq '/Widgets/Form/JSON' ) {
+<% $row_start |n %><textarea disabled class="<% $format %> form-control" rows="6" cols="80"><% $current_value %></textarea><br />
 % } else {
 <% $row_start |n %><input type="text" disabled value="<% $current_value %>" class="form-control" /><br/>
 % }
@@ -126,8 +137,8 @@ my $row_end = qq{</div></div>};
 <div class="text-right"><em><% loc('Must modify in config file' ) %></em></div>
 <% $row_end |n%>
 % } elsif ( $is_immutable ) {
-% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code') {
-<% $row_start |n %><textarea disabled class="<% $is_code ? 'code' : '' %> form-control" rows="6" cols="80"><% $current_value %></textarea>
+% if ($widget eq '/Widgets/Form/MultilineString' || $widget eq '/Widgets/Form/Code' || $widget eq '/Widgets/Form/JSON') {
+<% $row_start |n %><textarea disabled class="<% $format %> form-control" rows="6" cols="80"><% $current_value %></textarea>
 % } else {
 <% $row_start |n %><input type="text" disabled value="<% $current_value %>" class="form-control" />
 % }
