@@ -24,6 +24,10 @@ $m->follow_link_ok( { text => 'System Configuration' }, 'followed link to "Syste
 $m->follow_link_ok( { text => 'History' }, 'followed link to History page' );
 $m->follow_link_ok( { text => 'Edit' }, 'followed link to Edit page' );
 
+# In the tests below, new_value is *always* the string we feed
+# into the Web form.  For compound objects such as hashes and arrays,
+# we have a separate expected member that is the Perl data structure
+# resulting from feeding new_value into the Web interface.
 my $tests = [
     {
         name      => 'change a string value',
@@ -41,13 +45,15 @@ my $tests = [
         name      => 'change an arrayref value',
         form_id   => 'form-System-Extra_security',
         setting   => 'ReferrerWhitelist',
-        new_value => ['www.example.com:443', 'www3.example.com:80'],
+        new_value => '["www.example.com:443", "www3.example.com:80"]',
+        expected  => ['www.example.com:443', 'www3.example.com:80'],
     },
     {
         name      => 'change a hashref value',
         form_id   => 'form-System-Outgoing_mail',
         setting   => 'OverrideOutgoingMailFrom',
-        new_value => { 1 => 'new-outgoing-from@example.com' },
+        new_value => '{"1":"new-outgoing-from@example.com"}',
+        expected  => {1 => 'new-outgoing-from@example.com'},
     },
 ];
 
@@ -80,7 +86,7 @@ sub run_test {
         {
             form_id => $args{form_id},
             fields  => {
-                $args{setting} => stringify( $args{new_value} ),
+                $args{setting} => $args{new_value},
             },
         },
         'form was submitted successfully'
@@ -100,22 +106,26 @@ sub run_test {
 
     my $rt_config_value = RT->Config->Get( $args{setting} );
 
-    is( $rt_configuration_value, stringify($args{new_value}), 'value from RT::Configuration->Load matches new value' );
-    cmp_deeply( $rt_config_value, $args{new_value}, 'value from RT->Config->Get matches new value' );
+    is( $rt_configuration_value, stringify($args{expected}) || $args{new_value}, 'value from RT::Configuration->Load matches new value' );
+    cmp_deeply( $rt_config_value, $args{expected} || $args{new_value}, 'value from RT->Config->Get matches new value' );
 }
 
 sub check_transaction {
     my ($tx, $change) = @_;
     is($tx->ObjectType, 'RT::Configuration', 'tx is config change');
     is($tx->Field, $change->{setting}, 'tx matches field changed');
-    is($tx->NewValue, stringify($change->{new_value}), 'tx value matches');
+    is($tx->NewValue, stringify($change->{expected}) || $change->{new_value}, 'tx value matches');
 }
 
 sub check_history_page_item {
     my ($tx, $change) = @_;
     my $link = sprintf('ConfigHistory.html?id=%d#txn-%d', $tx->ObjectId, $tx->id);
     ok($m->find_link(url => $link), 'found tx link in history');
-    $m->text_contains(compactify($change->{new_value}), 'fetched tx has new value');
+    if ($change->{expected}) {
+        $m->text_contains(compactify($change->{expected}), 'fetched tx has new value');
+    } else {
+        $m->text_contains($change->{new_value});
+    }
     $m->text_contains("$change->{setting} changed", 'fetched tx has changed field');
 }
 
