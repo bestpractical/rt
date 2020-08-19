@@ -59,7 +59,14 @@
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket # [_1]', $Ticket->Id), class=>'ticket-info-basics' &>
 <div>
-<& Elements/EditBasics, TicketObj => $Ticket, defaults => \%ARGS, ExcludeCustomRoles => 1, InTable => 1 &>
+  <& Elements/EditBasics,
+    TicketObj => $Ticket,
+    defaults  => \%ARGS,
+    ExcludeCustomRoles => 1,
+    InTable   => 1,
+    LabelCols => 2,
+    ValueCols => 8,
+&>
 <& /Elements/EditCustomFields, Object => $Ticket, Grouping => 'Basics', InTable => 1 &>
 </div>
 </&>
@@ -88,7 +95,7 @@
 <&| /Widgets/TitleBox, title => loc('Update ticket'), class => 'messagedetails' &>
   <div class="form-row input-row">
     <div class="label col-2"><&|/l&>Update Type</&>:</div>
-    <div class="value col-9">
+    <div class="value col-8">
       <select name="UpdateType" id="UpdateType" class="form-control selectpicker">
 % if ($CanComment) {
         <option value="private" ><&|/l&>Comments (Not sent to requestors)</&></option>
@@ -102,7 +109,7 @@
   </div>
   <div class="form-row input-row">
     <div class="label col-2"><&|/l&>Subject</&>:</div>
-    <div class="value col-9"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
+    <div class="value col-8"><input class="form-control" type="text" name="UpdateSubject" value="<%$Ticket->Subject%>" />
 % $m->callback( %ARGS, CallbackName => 'AfterSubject' );
     </div>
   </div>
