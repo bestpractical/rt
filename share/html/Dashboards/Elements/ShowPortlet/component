@@ -51,6 +51,7 @@ $Portlet
 $Rows => 20
 $Preview => 0
 $HasResults
+$in_sidebar => 0
 </%args>
 <%init>
 my $full_path = $Portlet->{path};
@@ -65,5 +66,5 @@ my $allowed = grep { $_ eq $path } @{RT->Config->Get('HomepageComponents')};
 %         RT->Logger->warning("You may need to replace the component 'Quicksearch' in the HomepageComponents config with 'QueueList'. See the UPGRADING-4.4 document.");
 %     }
 % } else {
-%     $m->comp($full_path, HasResults => $HasResults);
+%     $m->comp($full_path, HasResults => $HasResults, in_sidebar => $in_sidebar);
 % }

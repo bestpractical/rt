@@ -69,6 +69,7 @@ else {
     }
 }
 
+my $in_sidebar = (lc($Pane) eq 'sidebar') ? 1 : 0;
 my @panes = @{ $current_dashboard->Panes->{$Pane} || [] };
 
 Abort("Possible recursive dashboard detected.") if $Depth > 8;
@@ -83,7 +84,8 @@ for my $portlet (@panes) {
         Dashboard  => $current_dashboard,
         Pane       => $Pane,
         Depth      => $Depth + 1,
-        HasResults => $HasResults
+        HasResults => $HasResults,
+        in_sidebar => $in_sidebar
     );
 }
 </%perl>

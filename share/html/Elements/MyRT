@@ -49,12 +49,12 @@
 <div class="myrt row">
 
 <div class="<% 'boxcontainer col-md-' . ( $sidebar ? '8' : '12' ) %>">
-% $show_cb->($_) foreach @$body;
+% $show_cb->($_, 0) foreach @$body;
 </div>
 
 % if ( $sidebar ) {
 <div class="boxcontainer col-md-4">
-% $show_cb->($_) foreach @$sidebar;
+% $show_cb->($_, 1) foreach @$sidebar;
 </div>
 % }
 
@@ -84,7 +84,7 @@ $sidebar = undef unless $sidebar && @$sidebar;
 my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 
 my $show_cb = sub {
-    my $entry = shift;
+    my ($entry, $in_sidebar) = @_;
     my $type  = $entry->{type};
     my $name = $entry->{'name'};
     if ( $type eq 'component' ) {
@@ -96,7 +96,7 @@ my $show_cb = sub {
             }
         }
         else {
-            $m->comp( $name, %{ $entry->{arguments} || {} } );
+            $m->comp( $name, %{ $entry->{arguments} || {} }, in_sidebar => $in_sidebar );
         }
     } elsif ( $type eq 'system' ) {
         $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
