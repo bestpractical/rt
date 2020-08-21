@@ -47,13 +47,25 @@
 %# END BPS TAGGED BLOCK }}}
 <form name="UserSearch" method="post" action="<% RT->Config->Get('WebPath') %>/User/Search.html">
   <div class="form-row justify-content-center">
-    <div class="col-4">
+    <div class="col-<% $ValueCols %>">
       <input type="text" class="form-control" name="UserString" value="<% $Default %>" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
     </div>
+% if ($in_sidebar) {
+  </div>
+  <div class="form-row">
+    <div class="col-12">
+      <div class="submit">
+        <input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button btn btn-primary form-control" />
+      </div>
+    </div>
+  </div>
+% }
+% else {    
     <div class="col-auto">
       <input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button btn btn-primary form-control" />
     </div>
   </div>
+%} 
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a user is chosen
@@ -65,4 +77,8 @@ jQuery(function(){
 </form>
 <%ARGS>
 $Default => ''
+$in_sidebar => 0
 </%ARGS>
+<%INIT>
+my $ValueCols = ($in_sidebar) ? 12 : 4;
+</%INIT>

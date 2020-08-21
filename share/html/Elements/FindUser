@@ -46,5 +46,5 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc('Find a user')&>
-<& /Elements/GotoUser &>
+<& /Elements/GotoUser, %ARGS &>
 </&>
