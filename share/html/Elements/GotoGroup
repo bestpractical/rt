@@ -55,14 +55,31 @@ jQuery(function(){
 </script>
 <form name="GroupSearch" method="post" action="<% RT->Config->Get('WebPath') %>/Group/Search.html">
   <div class="form-row justify-content-center">
-    <div class="col-4">
+    <div class="col-<% $ValueCols %>">
       <input type="text" class="form-control" name="GroupString" value="<% $Default %>" data-autocomplete="Groups" data-autocomplete-return="Name" id="autocomplete-GroupString" />
     </div>
+% if ($in_sidebar) {
+  </div>
+  <div class="form-row">
+    <div class="col-12">
+      <div class="submit">
+        <input type="submit" name="UserSearch" value="<&|/l&>Search</&>" class="button btn btn-primary form-control" />
+      </div>
+    </div>
+  </div>
+% }
+% else {    
     <div class="col-auto">
       <input type="submit" name="GroupSearch" value="<&|/l&>Search</&>" class="form-control btn btn-primary button" />
     </div>
-  </div>
+</div>
+%} 
 </form>
 <%ARGS>
 $Default => ''
+$in_sidebar => 0
 </%ARGS>
+<%INIT>
+my $ValueCols = ($in_sidebar) ? 12 : 4;
+</%INIT>
+
