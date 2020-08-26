@@ -171,10 +171,16 @@ sub Set {
     if ( $format eq 'unix' ) {
         return $self->Unix( $args{'Value'} );
     }
-    elsif (
-        ($format eq 'sql' || $format eq 'iso')
-        && $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/
-    ) {
+    elsif ($format eq 'sql' && $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/) {
+        local $@;
+        my $u = eval { Time::Local::timegm($6, $5, $4, $3, $2-1, $1) } || 0;
+        $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
+        return $self->Unix( $u > 0 ? $u : 0 );
+    }
+    elsif 
+        ( $format eq 'iso' &&
+          ( $args{'Value'} =~ /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d):(\d\d)Z?$/ ||
+            $args{'Value'} =~ /^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)Z?$/)) {
         local $@;
         my $u = eval { Time::Local::timegm($6, $5, $4, $3, $2-1, $1) } || 0;
         $RT::Logger->warning("Invalid date $args{'Value'}: $@") if $@ && !$u;
