@@ -1222,6 +1222,16 @@ our %META;
     ServiceAgreements => {
         Type => 'HASH',
     },
+
+    ShowSearchNavigation => {
+        Section     => 'Ticket display',
+        Overridable => 1,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Build search results navigation menu items', # loc
+            Hints       => '( First, Last, Prev, Next )'
+        }
+    }
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();

@@ -240,7 +240,7 @@ my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 
 my %link_rel;
-if (RT::Config->Get( 'ShowSearchNavigation' ) && defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
+if (RT::Config->Get( 'ShowSearchNavigation', $session{'CurrentUser'} ) && defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
     my $item_map = $session{'tickets'}->ItemMap;
     $link_rel{first} = "/Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$TicketObj->Id}{prev};
     $link_rel{prev}  = "/Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{prev} if $item_map->{$TicketObj->Id}{prev};
