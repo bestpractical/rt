@@ -145,6 +145,7 @@ else {
       RT::Interface::Web::SquishedCSS( $style )->Key;
     @css_files = "/NoAuth/css/$style/squished-$key.css";
 }
+$m->callback( CallbackName => "MassageCSSFiles", CSSFiles => \@css_files );
 
 # We use BodyClass in its $ARGS form so that callbacks have a chance to
 # massage it
