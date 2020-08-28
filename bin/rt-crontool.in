@@ -74,7 +74,8 @@ use Getopt::Long;
 use RT::Interface::CLI qw(GetCurrentUser loc);
 
 my ( $search, $condition, $actions, $search_arg, $condition_arg, $actions_arg,
-     $template, $template_id, $transaction, $transaction_type, $reload_ticket, $help, $log, $verbose );
+     $template, $template_id, $transaction, $transaction_type, $reload_ticket, $help, $log, $verbose,
+     $max_processes, $max_tickets_per_process );
 GetOptions(
     "search=s"           => \$search,
     "search-arg=s"       => \$search_arg,
@@ -87,6 +88,8 @@ GetOptions(
     "transaction=s"      => \$transaction,
     "transaction-type=s" => \$transaction_type,
     "reload-ticket"      => \$reload_ticket,
+    "max-processes=i"    => \$max_processes,
+    "max-tickets-per-process=i" => \$max_tickets_per_process,
     "log=s"              => \$log,
     "verbose|v"          => \$verbose,
     "help"               => \$help,
@@ -153,8 +156,45 @@ $search  = $search->new(
 );
 $search->Prepare();
 
-#for each ticket we've found
-while ( my $ticket = $tickets->Next() ) {
+if ($max_processes) {
+    $max_tickets_per_process ||= 100;
+    require Parallel::ForkManager;
+    my $pm         = Parallel::ForkManager->new($max_processes);
+    my @ticket_ids = map { $_->Id } @{ $tickets->ItemsArrayRef };
+
+    # DB connection couldn't be shared between processes
+    $RT::Handle->Disconnect;
+
+    while (@ticket_ids) {
+        my @ids = splice @ticket_ids, 0, $max_tickets_per_process;
+        my $pid = $pm->start and next;
+
+        # Reconnect to DB and initialize logging in each child
+        $RT::Handle->Connect;
+        RT->Config->Set( 'LogToFile',      $log || RT->Config->Get('LogToSTDERR') );
+        RT->Config->Set( 'LogToFileNamed', 'rt-crontool-' . time . "-$$.log" );
+        undef $RT::Logger;
+        RT::InitLogging();
+
+        for my $id (@ids) {
+            my $ticket = RT::Ticket->new($CurrentUser);
+            $ticket->Load($id);
+            process_ticket($ticket);
+        }
+        $pm->finish;
+    }
+    $pm->wait_all_children;
+}
+else {
+
+    #for each ticket we've found
+    while ( my $ticket = $tickets->Next() ) {
+        process_ticket($ticket);
+    }
+}
+
+sub process_ticket {
+    my $ticket = shift;
     $ticket->Load($ticket->Id) if $reload_ticket;
     print $ticket->Id() . ":\n" if ($verbose);
 
@@ -399,6 +439,12 @@ rt-crontool - a tool to act on tickets from an external scheduling tool
         --search RT::Search::ActiveTicketsInQueue  --search-arg general \
         --action RT::Action::EscalatePriority
 
+    # Process tickets in parallel
+      rt-crontool \
+        --search RT::Search::ActiveTicketsInQueue  --search-arg general \
+        --action RT::Action::SomeTimeConsumingAction
+        --max-processes 10 --max-tickets-per-process 100
+
 =head1 DESCRIPTION
 
 This script is a tool to act on tickets from an external scheduling tool, such
@@ -459,6 +505,16 @@ Specify the comma separated list of transactions' types you want to use
 
 Reload ticket before processing in tickets iteration. This is to refresh
 ticket metadata, which is useful especially for long-running jobs.
+
+=item max-processes
+
+Specify the max number of children to maintain. This implies parallel
+processing, which is false by default.
+
+=item max-ticket-per-process
+
+Specify the max number of tickets to process in each child. Only take effect with --max-processes.
+Default is 100.
 
 =item log
 
