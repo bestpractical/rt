@@ -527,6 +527,18 @@ function addprincipal_onchange(ev, ui) {
     }
 }
 
+// disable submit on enter in autocomplete boxes
+jQuery(function() {
+    jQuery('input[data-autocomplete], input.ui-autocomplete-input').each(function() {
+        var input = jQuery(this);
+
+        input.on('keypress', function(event) {
+            if (event.keyCode === 13 && jQuery('ul.ui-autocomplete').is(':visible')) {
+                return false;
+            }
+        });
+    });
+});
 
 function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
