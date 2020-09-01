@@ -422,8 +422,9 @@ sub HasRights {
     }
     my $roles;
     {
+        my $groups_table = $self->_MaybeQuoteName('Groups');
         my $query
-            = "SELECT DISTINCT Groups.Name "
+            = "SELECT DISTINCT $groups_table.Name "
             . $self->_HasRoleRightQuery(
                 EquivObjects => $args{'EquivObjects'}
             );
@@ -555,8 +556,8 @@ sub _HasRoleRight {
 
     my @roles = $self->RolesWithRight(%args);
     return 0 unless @roles;
-
-    my $query = "SELECT Groups.id "
+    my $groups_table = $self->_MaybeQuoteName('Groups');
+    my $query = "SELECT $groups_table.id "
         . $self->_HasRoleRightQuery( %args, Roles => \@roles );
 
     $self->_Handle->ApplyLimits( \$query, 1 );
@@ -574,14 +575,15 @@ sub _HasRoleRightQuery {
                  @_
                );
 
+    my $groups_table = $self->_MaybeQuoteName('Groups');
     my $query =
-        " FROM Groups, Principals, CachedGroupMembers WHERE "
+        " FROM $groups_table, Principals, CachedGroupMembers WHERE "
 
         # Never find disabled things
         . "Principals.Disabled = 0 " . "AND CachedGroupMembers.Disabled = 0 "
 
         # We always grant rights to Groups
-        . "AND Principals.id = Groups.id "
+        . "AND Principals.id = $groups_table.id "
         . "AND Principals.PrincipalType = 'Group' "
 
 # See if the principal is a member of the group recursively or _is the rightholder_
@@ -594,7 +596,7 @@ sub _HasRoleRightQuery {
 
     if ( $args{'Roles'} ) {
         $query .= "AND (" . join( ' OR ',
-            map $RT::Handle->__MakeClauseCaseInsensitive('Groups.Name', '=', "'$_'"),
+            map $RT::Handle->__MakeClauseCaseInsensitive("$groups_table.Name", '=', "'$_'"),
             @{ $args{'Roles'} }
         ) . ")";
     }

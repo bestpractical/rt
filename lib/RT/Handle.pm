@@ -271,9 +271,18 @@ sub CheckCompatibility {
         return (0, "couldn't get version of the mysql server")
             unless $version;
 
+        # allow checking if mysql or mariadb
+        my $subtype = ($version =~ m/mariadb/i) ? 'mariadb' : 'mysql';
         ($version) = $version =~ /^(\d+\.\d+)/;
         return (0, "RT is unsupported on MySQL versions before 4.1.  Your version is $version.")
             if $version < 4.1;
+
+        # Installed DBIx::SearchBuilder must have table name quoting for mysql 8
+        if ($version >= 8 and $subtype eq 'mysql') {
+            unless ($self->can('QuoteName')) {
+                return (0, "RT support for MySQL 8 requires a DBIx::SearchBuilder with table quoting support, check that you have the latest version of DBIx::SearchBuilder installed");
+            }
+        }
 
         # MySQL must have InnoDB support
         local $dbh->{FetchHashKeyName} = 'NAME_lc';
