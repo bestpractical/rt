@@ -410,7 +410,7 @@ sub create_record {
     # if a record class handles CFs in ->Create, use it (so it doesn't generate
     # spurious transactions and interfere with default values, etc). Otherwise,
     # add OCFVs after ->Create
-    if ($record->isa('RT::Ticket') || $record->isa('RT::Asset')) {
+    if ($record->isa('RT::Ticket') || $record->isa('RT::Asset') || $record->isa('RT::Article') ) {
         if ($cfs) {
             while (my ($id, $value) = each(%$cfs)) {
                 delete $cfs->{$id};
