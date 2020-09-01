@@ -476,14 +476,16 @@ sub _RoleClauses {
     my $groups = shift;
     my @objects = @_;
 
+    my $groups_table = $self->RecordClass->_MaybeQuoteName($groups);
+
     my @groups_clauses;
     foreach my $obj ( @objects ) {
         my $type = ref($obj)? ref($obj): $obj;
 
-        my $role_clause = $RT::Handle->__MakeClauseCaseInsensitive("$groups.Domain", '=', "'$type-Role'");
+        my $role_clause = $RT::Handle->__MakeClauseCaseInsensitive("$groups_table.Domain", '=', "'$type-Role'");
 
         if ( my $id = eval { $obj->id } ) {
-            $role_clause .= " AND $groups.Instance = $id";
+            $role_clause .= " AND $groups_table.Instance = $id";
         }
         push @groups_clauses, "($role_clause)";
     }
