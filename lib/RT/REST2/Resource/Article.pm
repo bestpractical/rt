@@ -46,52 +46,68 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::REST2::Resource::Transactions;
+package RT::REST2::Resource::Article;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
 
-extends 'RT::REST2::Resource::Collection';
-with 'RT::REST2::Resource::Collection::QueryByJSON';
+extends 'RT::REST2::Resource::Record';
+with (
+    'RT::REST2::Resource::Record::Readable',
+    'RT::REST2::Resource::Record::Hypermedia'
+        => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
+    'RT::REST2::Resource::Record::Deletable',
+    'RT::REST2::Resource::Record::Writable'
+        => { -alias => { create_record => '_create_record' } },
+);
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/transactions/?$},
-        block => sub { { collection_class => 'RT::Transactions' } },
+        regex => qr{^/article/?$},
+        block => sub { { record_class => 'RT::Article' } },
     ),
     Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/(ticket|queue|asset|user|group|article)/(\d+)/history/?$},
-        block => sub {
-            my ($match, $req) = @_;
-            my ($class, $id) = ($match->pos(1), $match->pos(2));
-
-            my $package = 'RT::' . ucfirst $class;
-            my $record = $package->new( $req->env->{"rt.current_user"} );
-
-            $record->Load($id);
-            return { collection => $record->Transactions };
-        },
-    ),
-    Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/(queue|user)/([^/]+)/history/?$},
-        block => sub {
-            my ($match, $req) = @_;
-            my ($class, $id) = ($match->pos(1), $match->pos(2));
-
-            my $record;
-            if ($class eq 'queue') {
-                $record = RT::Queue->new($req->env->{"rt.current_user"});
-            }
-            elsif ($class eq 'user') {
-                $record = RT::User->new($req->env->{"rt.current_user"});
-            }
-
-            $record->Load($id);
-            return { collection => $record->Transactions };
-        },
+        regex => qr{^/article/(\d+)/?$},
+        block => sub { { record_class => 'RT::Article', record_id => shift->pos(1) } },
     )
+}
+
+sub create_record {
+    my $self = shift;
+    my $data = shift;
+
+    return (\400, "Invalid Class") if !$data->{Class};
+
+    my $class = RT::Class->new(RT->SystemUser);
+    $class->Load($data->{Class});
+
+    return (\400, "Invalid Class") if !$class->Id;
+
+    return ( \403, $self->record->loc("Permission Denied") )
+        unless $self->record->CurrentUser->HasRight(
+        Right  => 'CreateArticle',
+        Object => $class,
+        )
+        and $class->Disabled != 1;
+
+    my ($ok, $txn, $msg) = $self->_create_record($data);
+    return ($ok, $msg);
+}
+
+sub forbidden {
+    my $self = shift;
+    return 0 unless $self->record->id;
+    return !$self->record->CurrentUserHasRight('ShowArticle');
+}
+
+sub hypermedia_links {
+    my $self = shift;
+    my $links = $self->_default_hypermedia_links(@_);
+    push @$links, $self->_transaction_history_link;
+
+    return $links;
 }
 
 __PACKAGE__->meta->make_immutable;

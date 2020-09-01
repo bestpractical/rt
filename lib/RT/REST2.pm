@@ -638,6 +638,51 @@ Below are some examples using the endpoints above.
     DELETE /catalog/:name
         disable catalog
 
+=head3 Articles
+
+    GET /articles?query=<JSON>
+    POST /articles
+        search for articles using L</JSON searches> syntax
+
+    POST /article
+        create an article; provide JSON content
+
+    GET /article/:id
+        retrieve an article
+
+    PUT /article/:id
+        update an article's metadata; provide JSON content
+
+    DELETE /article/:id
+        set status to deleted
+
+    GET /article/:id/history
+        retrieve list of transactions for article
+
+=head3 Classes
+
+    GET /classes/all
+        retrieve list of all classes you can see
+
+    GET /classes?query=<JSON>
+    POST /classes
+        search for classes using L</JSON searches> syntax
+
+    POST /class
+        create a class; provide JSON content
+
+    GET /class/:id
+    GET /class/:name
+        retrieve a class by numeric id or name
+
+    PUT /class/:id
+    PUT /class/:name
+        update a class's metadata; provide JSON content
+
+    DELETE /class/:id
+    DELETE /class/:name
+        disable class
+
 =head3 Users
 
     GET /users?query=<JSON>

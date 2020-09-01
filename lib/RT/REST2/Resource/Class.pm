@@ -46,53 +46,81 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::REST2::Resource::Transactions;
+package RT::REST2::Resource::Class;
 use strict;
 use warnings;
 
 use Moose;
 use namespace::autoclean;
+use RT::REST2::Util qw(expand_uid);
 
-extends 'RT::REST2::Resource::Collection';
-with 'RT::REST2::Resource::Collection::QueryByJSON';
+extends 'RT::REST2::Resource::Record';
+with (
+    'RT::REST2::Resource::Record::Readable',
+    'RT::REST2::Resource::Record::Hypermedia'
+        => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
+    'RT::REST2::Resource::Record::DeletableByDisabling',
+    'RT::REST2::Resource::Record::Writable',
+);
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/transactions/?$},
-        block => sub { { collection_class => 'RT::Transactions' } },
+        regex => qr{^/class/?$},
+        block => sub { { record_class => 'RT::Class' } },
     ),
     Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/(ticket|queue|asset|user|group|article)/(\d+)/history/?$},
-        block => sub {
-            my ($match, $req) = @_;
-            my ($class, $id) = ($match->pos(1), $match->pos(2));
-
-            my $package = 'RT::' . ucfirst $class;
-            my $record = $package->new( $req->env->{"rt.current_user"} );
-
-            $record->Load($id);
-            return { collection => $record->Transactions };
-        },
+        regex => qr{^/class/(\d+)/?$},
+        block => sub { { record_class => 'RT::Class', record_id => shift->pos(1) } },
     ),
     Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/(queue|user)/([^/]+)/history/?$},
+        regex => qr{^/class/([^/]+)/?$},
         block => sub {
             my ($match, $req) = @_;
-            my ($class, $id) = ($match->pos(1), $match->pos(2));
-
-            my $record;
-            if ($class eq 'queue') {
-                $record = RT::Queue->new($req->env->{"rt.current_user"});
-            }
-            elsif ($class eq 'user') {
-                $record = RT::User->new($req->env->{"rt.current_user"});
-            }
-
-            $record->Load($id);
-            return { collection => $record->Transactions };
+            my $class = RT::Class->new($req->env->{"rt.current_user"});
+            $class->Load($match->pos(1));
+            return { record => $class };
         },
-    )
+    ),
 }
+
+sub hypermedia_links {
+    my $self = shift;
+    my $links = $self->_default_hypermedia_links(@_);
+    my $class = $self->record;
+
+    push @$links, {
+        ref  => 'create',
+        type => 'article',
+        _url => RT::REST2->base_uri . '/article?Class=' . $class->Id,
+    } if $class->CurrentUserHasRight('CreateArticle');
+
+    return $links;
+}
+
+around 'serialize' => sub {
+    my $orig = shift;
+    my $self = shift;
+    my $data = $self->$orig(@_);
+
+    # Load Article Custom Fields for this class
+    if ( my $article_cfs = $self->record->ArticleCustomFields ) {
+        my @values;
+        while (my $cf = $article_cfs->Next) {
+            my $entry = expand_uid($cf->UID);
+            my $content = {
+                %$entry,
+                ref      => 'customfield',
+                name     => $cf->Name,
+            };
+
+            push @values, $content;
+        }
+
+        $data->{ArticleCustomFields} = \@values;
+    }
+
+    return $data;
+};
 
 __PACKAGE__->meta->make_immutable;
 
