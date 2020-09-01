@@ -1765,7 +1765,7 @@ sub DropIndex {
     if ( $db_type eq 'mysql' ) {
         $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} );
         $res = $dbh->do(
-            'drop index '. $dbh->quote_identifier($args{'Name'}) ." on $args{'Table'}",
+            'drop index '. $dbh->quote_identifier($args{'Name'}) ." on ". $dbh->quote_identifier($args{'Table'}),
         );
     }
     elsif ( $db_type eq 'Pg' ) {
@@ -1824,8 +1824,9 @@ sub CreateIndex {
     my $self = shift;
     my %args = ( Table => undef, Name => undef, Columns => [], CaseInsensitive => {}, @_ );
 
-    $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} )
-        if RT->Config->Get('DatabaseType') eq 'mysql';
+    if (RT->Config->Get('DatabaseType') eq 'mysql') {
+        $args{'Table'} = $self->QuoteName( $self->_CanonicTableNameMysql( $args{'Table'} ));
+    }
 
     my $name = $args{'Name'};
     unless ( $name ) {

@@ -109,13 +109,28 @@ note "test ->CreateIndex and ->IndexesThatBeginWith methods";
         );
         ok $name, $msg;
     }
+    {
+        # this case is a later addition that exists because MySQL 8
+        # made "Groups" a reserved word, requiring it to be quoted
+        # in these contexts.
+        my ($name, $msg) = $handle->CreateIndex(
+            Table => 'Groups', Name => 'test_groups1',
+            Columns => ['Creator'],
+        );
+        ok $name, $msg;
+    }
 
     my @list = $handle->IndexesThatBeginWith( Table => 'Users', Columns => ['Organization'] );
     is_deeply([sort map $_->{Name}, @list], [qw(test_users1 test_users2)]);
 
+    @list = $handle->IndexesThatBeginWith( Table => 'Groups', Columns => ['Creator'] );
+    is_deeply([sort map $_->{Name}, @list], [qw(test_groups1)]);
+
     my ($status, $msg) = $handle->DropIndex( Table => 'Users', Name => 'test_users1' );
     ok $status, $msg;
     ($status, $msg) = $handle->DropIndex( Table => 'Users', Name => 'test_users2' );
+    ok $status, $msg;
+    ($status, $msg) = $handle->DropIndex( Table => 'Groups', Name => 'test_groups1' );
     ok $status, $msg;
 }
 

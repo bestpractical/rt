@@ -7,7 +7,9 @@ my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'test ticke
 
 RT::Test->db_is_valid;
 
-$RT::Handle->dbh->do("DELETE FROM Groups where Domain IN ('RT::Queue-Role', 'RT::Ticket-Role')");
+my $groups_table = RT::Group->can('QuotedTableName') ? RT::Group->QuotedTableName('Groups') : 'Groups';
+
+$RT::Handle->dbh->do("DELETE FROM $groups_table where Domain IN ('RT::Queue-Role', 'RT::Ticket-Role')");
 DBIx::SearchBuilder::Record::Cachable->FlushCache;
 
 for my $object ( $ticket, $ticket->QueueObj ) {
