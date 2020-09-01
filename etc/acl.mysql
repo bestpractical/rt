@@ -1,5 +1,7 @@
 
 sub acl {
+    my $dbh = shift;
+    my $mysql_version = $dbh->{mysql_serverversion};
     my $db_name = RT->Config->Get('DatabaseName');
     my $db_rthost = RT->Config->Get('DatabaseRTHost');
     my $db_user = RT->Config->Get('DatabaseUser');
@@ -13,12 +15,23 @@ sub acl {
         return;
     }
     $db_name =~ s/([_%\\])/\\$1/g;
-    return (
-        "GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE
+
+    my @sql;
+    # run 2 part acl update for mysql or mariadb 8 or higher
+    if ($mysql_version > 8011) {
+       @sql = (
+        "CREATE USER IF NOT EXISTS '$db_user'\@'$db_rthost' IDENTIFIED BY '$db_pass';",
+        "GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE ON `$db_name`.* TO '$db_user'\@'$db_rthost';",
+    );
+    }
+    else {
+       @sql = ("GRANT SELECT,INSERT,CREATE,INDEX,UPDATE,DELETE
                ON `$db_name`.*
                TO '$db_user'\@'$db_rthost'
-               IDENTIFIED BY '$db_pass';",
-    );
+               IDENTIFIED BY '$db_pass';");
+   }
+
+    return (@sql);
 }
 
 1;
