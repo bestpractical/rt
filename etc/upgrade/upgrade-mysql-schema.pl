@@ -306,7 +306,7 @@ sub convert_table {
     }
     for my $conversiontype (qw(char_to_binary binary_to_char)) {
         next unless @{$alter_aggregator{$conversiontype}};
-        push @sql_commands, qq{ALTER TABLE $table\n   }.
+        push @sql_commands, qq{ALTER TABLE `$table`\n   }.
             join(",\n   ",@{$alter_aggregator{$conversiontype}});
     }
 }

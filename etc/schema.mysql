@@ -70,7 +70,7 @@ CREATE TABLE Principals (
 ) ENGINE=InnoDB CHARACTER SET ascii;
 
 
-CREATE TABLE Groups (
+CREATE TABLE `Groups` (
   id INTEGER NOT NULL  AUTO_INCREMENT,
   Name varchar(200) NULL  ,
   Description varchar(255) NULL  ,
@@ -83,8 +83,8 @@ CREATE TABLE Groups (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB CHARACTER SET utf8;
 
-CREATE INDEX Groups1 ON Groups (Domain, Name, Instance);
-CREATE INDEX Groups2 On Groups (Instance);
+CREATE INDEX Groups1 ON `Groups` (Domain, Name, Instance);
+CREATE INDEX Groups2 On `Groups` (Instance);
 
 CREATE TABLE ScripConditions (
   id INTEGER NOT NULL  AUTO_INCREMENT,

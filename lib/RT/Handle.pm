@@ -1760,7 +1760,7 @@ sub DropIndex {
     if ( $db_type eq 'mysql' ) {
         $args{'Table'} = $self->_CanonicTableNameMysql( $args{'Table'} );
         $res = $dbh->do(
-            'drop index '. $dbh->quote_identifier($args{'Name'}) ." on $args{'Table'}",
+            'drop index '. $dbh->quote_identifier($args{'Name'}) ." on ". $dbh->quote_identifier($args{'Table'}),
         );
     }
     elsif ( $db_type eq 'Pg' ) {
@@ -1839,9 +1839,10 @@ sub CreateIndex {
         }
     }
 
+    my $table = $self->can('QuoteName') ? $self->QuoteName( $args{'Table'} ) : $args{'Table'};
     my $sql = "CREATE"
         . ($args{'Unique'}? ' UNIQUE' : '')
-        ." INDEX $name ON $args{'Table'}"
+        ." INDEX $name ON $table"
         ."(". join( ', ', @columns ) .")"
     ;
 
