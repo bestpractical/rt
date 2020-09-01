@@ -24,7 +24,7 @@ my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'test ticke
     $RT::Handle->dbh->do( "DELETE FROM ObjectCustomFieldValues where CustomField=" . $cf->id );
 
     my ( $ecode, $res ) = RT::Test->run_validator( resolve => 1 );
-    isnt( $ecode, 0, 'non-zero exit code' );
+    isnt( $ecode, 0, 'non-zero exit code' ) or diag ($res);
     like(
         $res,
         qr/Transactions references a nonexistent record in CustomFields/,
@@ -59,7 +59,7 @@ my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'test ticke
     $RT::Handle->dbh->do( "DELETE FROM Principals where id=" . $user->PrincipalId );
 
     my ( $ecode, $res ) = RT::Test->run_validator( resolve => 1 );
-    isnt( $ecode, 0, 'non-zero exit code' );
+    isnt( $ecode, 0, 'non-zero exit code' ) or diag ($res);
     like(
         $res,
         qr/Transactions references a nonexistent record in Users/,
