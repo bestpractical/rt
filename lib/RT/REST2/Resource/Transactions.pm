@@ -67,22 +67,8 @@ sub dispatch_rules {
             my ($match, $req) = @_;
             my ($class, $id) = ($match->pos(1), $match->pos(2));
 
-            my $record;
-            if ($class eq 'ticket') {
-                $record = RT::Ticket->new($req->env->{"rt.current_user"});
-            }
-            elsif ($class eq 'queue') {
-                $record = RT::Queue->new($req->env->{"rt.current_user"});
-            }
-            elsif ($class eq 'asset') {
-                $record = RT::Asset->new($req->env->{"rt.current_user"});
-            }
-            elsif ($class eq 'user') {
-                $record = RT::User->new($req->env->{"rt.current_user"});
-            }
-            elsif ($class eq 'group') {
-                $record = RT::Group->new($req->env->{"rt.current_user"});
-            }
+            my $package = 'RT::' . ucfirst $class;
+            my $record = $package->new( $req->env->{"rt.current_user"} );
 
             $record->Load($id);
             return { collection => $record->Transactions };
