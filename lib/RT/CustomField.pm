@@ -1838,9 +1838,8 @@ sub _CanonicalizeValueWithCanonicalizer {
     my $self = shift;
     my $args = shift;
 
-    return 1 if !$self->CanonicalizeClass;
+    my $class = $self->__Value('CanonicalizeClass') or return 1;
 
-    my $class = $self->CanonicalizeClass;
     $class->require or die "Can't load $class: $@";
     my $canonicalizer = $class->new($self->CurrentUser);
 
