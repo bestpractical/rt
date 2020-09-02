@@ -81,6 +81,7 @@ You should start from reading L<RT::Crypt>.
             'queue.address@example.com' => 'passphrase',
             '' => 'fallback',
         },
+        OtherCertificatesToSend => '/opt/rt4/var/data/smime/other-certs.pem',
     );
 
 =head3 OpenSSL
@@ -118,6 +119,14 @@ created by untrusted CAs.
 C<Passphrase> may be set to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
 '' key is used as a default.
+
+=head3 OtherCertificatesToSend
+
+C<OtherCertificatesToSend> is a path to a PEM-formatted certificate file.
+Certificates in the file will be include in outgoing signed emails.
+
+Depending on use cases, you might need to include a chain of certificates so
+receiving agents can verify. CA could also be included here.
 
 =head2 Keyring configuration
 
@@ -216,6 +225,7 @@ sub SignEncrypt {
         Sign => 1,
         Signer => undef,
         Passphrase => undef,
+        OtherCertificatesToSend => undef,
 
         Encrypt => 1,
         Recipients => undef,
@@ -280,6 +290,7 @@ sub _SignEncrypt {
         Sign => 1,
         Signer => undef,
         Passphrase => undef,
+        OtherCertificatesToSend => undef,
 
         Encrypt => 1,
         Recipients => [],
@@ -351,10 +362,12 @@ sub _SignEncrypt {
         $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} )
             unless defined $args{'Passphrase'};
 
+        $args{OtherCertificatesToSend} //= $opts->{OtherCertificatesToSend};
         push @commands, [
             $self->OpenSSLPath, qw(smime -sign),
             -signer => $file,
             -inkey  => $file,
+            $args{OtherCertificatesToSend} ? ( -certfile => $args{OtherCertificatesToSend} ) : (),
             (defined $args{'Passphrase'} && length $args{'Passphrase'})
                 ? (qw(-passin env:SMIME_PASS))
                 : (),
