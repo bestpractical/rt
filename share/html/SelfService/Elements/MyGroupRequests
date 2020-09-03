@@ -107,6 +107,10 @@ if ($status) {
 }
 
 my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+
+$m->callback( CallbackName => 'ModifyQuery', ARGSRef => \%ARGS, Query => \$Query, Page => \$Page,
+    Rows => \$Rows, Order => \@Order, OrderBy => \@OrderBy, Format => \$Format );
+
 </%INIT>
 <%ARGS>
 $title => undef
