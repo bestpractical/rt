@@ -60,13 +60,6 @@
     <div class="value col-9"><span class="current-value"><% loc($Ticket->SLA) %></span></div>
   </div>
 % }
-% my $totalTimeWorked = 0;
-% if (RT->Config->Get('DisplayTotalTimeWorked') && ($totalTimeWorked = $Ticket->TotalTimeWorked)) {
-  <div class="total time worked sum form-row">
-    <div class="label col-3"><&|/l&>Total Time Worked</&>:</div>
-    <div class="value col-9"><span class="current-value"><& ShowTime, minutes => $totalTimeWorked &></span></div>
-  </div>
-% }
 % if ($show_time_worked) {
 % if ($Ticket->TimeEstimated) {
   <div class="time estimated form-row">
@@ -79,6 +72,13 @@
   <div class="time worked sum form-row">
     <div class="label col-3"><&|/l&>Worked</&>:</div>
     <div class="value col-9"><span class="current-value"><& ShowTime, minutes => $Ticket->TimeWorked &></span></div>
+  </div>
+% }
+% my $totalTimeWorked = 0;
+% if (RT->Config->Get('DisplayTotalTimeWorked') && ($totalTimeWorked = $Ticket->TotalTimeWorked)) {
+  <div class="total time worked sum form-row">
+    <div class="label col-3"><&|/l&>Total Time Worked</&>:</div>
+    <div class="value col-9"><span class="current-value"><& ShowTime, minutes => $totalTimeWorked &></span></div>
   </div>
 % }
 % if ( keys %$time_worked ) {
