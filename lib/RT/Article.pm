@@ -114,6 +114,9 @@ sub Create {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    return ( undef, $self->loc('Name is required') )
+        unless ($args{Name} =~ /\S/);
+
     return ( undef, $self->loc('Name in use') )
       unless $self->ValidateName( $args{'Name'} );
 
