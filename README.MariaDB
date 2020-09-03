@@ -1,3 +1,6 @@
+CHARACTER SETS
+--------------
+
 Starting with RT 5.0.0, the minimum supported MariaDB version is 10.2.5
 because this is the first version to provide full support for 4 byte
 utf8 characters in tables and indexes. Read on for details on this
@@ -59,3 +62,24 @@ settings. For more information:
 
 https://stackoverflow.com/a/41148052
 https://mariadb.com/kb/en/character-sets/
+
+TIME ZONE TABLES
+----------------
+
+Charts in RT can use time zone conversion for dates and this requires that
+time zones are loaded into the database. MariaDB on some platforms such as
+Centos (and possibly others) have time zone tables, but they are not
+populated and need to be loaded manually.
+
+On Unix-like systems, you can use the mysql_tzinfo_to_sql utility, which
+uses the zoneinfo data provided on the system. Documentation on loading the
+time zones using the mysql_tzinfo_to_sql tool can be found at:
+
+https://mariadb.com/kb/en/mysql_tzinfo_to_sql/
+
+You can confirm that timezone tables are populated by running:
+
+    select CONVERT_TZ( '2020-07-27 20:00:00', 'UTC', 'Europe/London' );
+
+If the result is "2020-07-27 21:00:00" the timezones are populated. If the
+result is NULL then time zones are not populated.
