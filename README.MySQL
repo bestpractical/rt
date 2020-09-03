@@ -62,3 +62,16 @@ settings. For more information:
 
 https://stackoverflow.com/a/41148052
 https://dev.mysql.com/doc/refman/5.7/en/charset-unicode-sets.html
+
+Charts in RT 5 use timezone conversion for dates, which requires that timezones are loaded into the database. Mysql and mariadb on some platforms such as centos and azure
+have time zone tables in but they are not populated, and require that it is loaded manually.
+
+On Unix-like systems, you can use the mysql_tzinfo_to_sql utility, which uses the zoneinfo data provided on the system. Documentation on loading the timezones using the mysql_tzinfo_to_sql tool can be found at https://mariadb.com/kb/en/mysql_tzinfo_to_sql/
+
+If you are using Windows, then you will need to import pre-populated time zone tables. Some are available at MySQL's website at https://dev.mysql.com/downloads/timezones.html
+
+You can confirm that timezone tables are populated by running:
+
+select CONVERT_TZ( '2012-07-27 20:00:00', 'UTC', 'Europe/London' );
+
+If the result is "2012-07-27 21:00:00" the timezones are populated, if the result is null then timezones are not populated.
