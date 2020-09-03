@@ -464,7 +464,7 @@ sub InsertACL {
     }
 
     local *acl;
-    do $path || return (0, "Couldn't load ACLs: " . $@);
+    do "./$path" || return (0, "Couldn't load ACLs: " . $@);
     my @acl = acl($dbh);
     foreach my $statement (@acl) {
         my $sth = $dbh->prepare($statement)
