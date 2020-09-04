@@ -2173,7 +2173,7 @@ sub CustomFieldValueIsEmpty {
            : $self->LoadCustomFieldByIdentifier( $args{'Field'} );
 
     if ($cf) {
-        if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
+        if ( $cf->__Value('Type') =~ /^Date(?:Time)?$/ ) {
             my $DateObj = RT::Date->new( $self->CurrentUser );
             $DateObj->Set(
                 Format => 'unknown',
