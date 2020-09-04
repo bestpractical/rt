@@ -85,12 +85,12 @@ if ( $groups_obj->Count ){
     # Confirm we got a group. Count can report available groups, but
     # if the current user doesn't have SeeGroup, it won't be loaded.
     if ( $group ){
-        $Query = "(( WatcherGroup = " . $group->Id . " )";
+        $Query = "(( Watcher = " . $group->Id . " )";
     }
 
     # Handle multiple groups
     while ( $group = $groups_obj->Next ){
-        $Query .= " OR ( WatcherGroup = " . $group->Id . " )";
+        $Query .= " OR ( Watcher = " . $group->Id . " )";
     }
 
     $Query .= ")" if $Query;
