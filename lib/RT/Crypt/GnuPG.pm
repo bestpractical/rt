@@ -333,8 +333,7 @@ sub CallGnuPG {
         %GnuPGOptions,
         %{ $args{Options} || {} },
     );
-    my $gnupg = GnuPG::Interface->new;
-    $gnupg->call( $self->GnuPGPath );
+    my $gnupg = GnuPG::Interface->new( call => $self->GnuPGPath );
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
     );
@@ -1848,7 +1847,6 @@ sub GnuPGPath {
 
 sub Probe {
     my $self = shift;
-    my $gnupg = GnuPG::Interface->new;
 
     my $bin = $self->GnuPGPath();
     unless ($bin) {
@@ -1878,7 +1876,7 @@ sub Probe {
         $self->GnuPGPath( $bin = $path );
     }
 
-    $gnupg->call( $bin );
+    my $gnupg = GnuPG::Interface->new( call => $bin );
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( RT->Config->Get('GnuPGOptions') )
     );
