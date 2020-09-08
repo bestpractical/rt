@@ -153,5 +153,38 @@ ok( $m->login(), 'logged in' );
     $m->text_contains( $_->Name ) for @groups[1..3];
 }
 
+{
+    diag "Delete group members" if $ENV{TEST_VERBOSE};
+    my $group = RT::Group->new( RT->SystemUser );
+    $group->LoadUserDefinedGroup('test group');
+
+    my $root = RT::User->new( RT->SystemUser );
+    $root->Load('root');
+    $m->get_ok( $url . '/Admin/Groups/Members.html?id=' . $group->Id );
+    $m->content_contains( 'Editing membership for group test group', 'Loaded group members page' );
+
+    $m->form_number(3);
+    $m->tick( 'DeleteMember-' . $root->Id, 1 );
+    $m->submit_form_ok( {}, 'Delete "root" from group' );
+    $m->content_contains( 'Member deleted', 'Deleted "root" from group' );
+    $m->content_lacks( 'DeleteMember-' . $root->Id );
+
+    $m->submit_form_ok(
+        {   form_number => 3,
+            fields      => { AddMembersGroups => 'test group2' },
+        },
+        'Add "test group2" to group',
+    );
+    $m->content_contains( 'Member added: test group2', 'Added "test group2" to group' );
+
+    my $group2 = RT::Group->new( RT->SystemUser );
+    $group2->LoadUserDefinedGroup('test group2');
+
+    $m->form_number(3);
+    $m->tick( 'DeleteMember-' . $group2->Id, 1 );
+    $m->submit_form_ok( {}, 'Delete "test group2" from group' );
+    $m->content_contains( 'Member deleted', 'Deleted "test group2" from group' );
+    $m->content_lacks( 'DeleteMember-' . $group2->Id );
+}
 
 done_testing;
