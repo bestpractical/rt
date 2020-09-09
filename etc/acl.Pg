@@ -10,41 +10,41 @@ sub acl {
         Attributes
         attributes_id_seq
         queues_id_seq
-        Queues 
+        Queues
         links_id_seq
-        Links 
+        Links
         principals_id_seq
-        Principals 
+        Principals
         groups_id_seq
-        Groups 
+        Groups
         scripconditions_id_seq
-        ScripConditions 
+        ScripConditions
         transactions_id_seq
-        Transactions 
+        Transactions
         scrips_id_seq
-        Scrips 
+        Scrips
         objectscrips_id_seq
         ObjectScrips
         acl_id_seq
-        ACL 
+        ACL
         groupmembers_id_seq
-        GroupMembers 
+        GroupMembers
         cachedgroupmembers_id_seq
-        CachedGroupMembers 
+        CachedGroupMembers
         users_id_seq
-        Users 
+        Users
         tickets_id_seq
-        Tickets 
+        Tickets
         scripactions_id_seq
-        ScripActions 
+        ScripActions
         templates_id_seq
-        Templates 
+        Templates
         objectcustomfieldvalues_id_s
-        ObjectCustomFieldValues 
+        ObjectCustomFieldValues
         customfields_id_seq
-        CustomFields 
+        CustomFields
         objectcustomfields_id_s
-        ObjectCustomFields 
+        ObjectCustomFields
         customfieldvalues_id_seq
         CustomFieldValues
         sessions
@@ -85,10 +85,10 @@ sub acl {
         if ( $table =~ /^[a-z]/ && $table ne 'sessions' ) {
             # Sequences; not all end with _seq because
             # objectcustomfieldvalues_id_s is too long
-            push @acls, "GRANT USAGE, SELECT, UPDATE ON $table TO \"$db_user\";"
+            push @acls, "GRANT USAGE, SELECT, UPDATE ON $table TO \"$db_user\";";
         }
         else {
-            push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO \"$db_user\";"
+            push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO \"$db_user\";";
         }
     }
     return (@acls);
