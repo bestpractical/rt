@@ -74,6 +74,40 @@ sub dispatch_rules {
     )
 }
 
+sub content_types_accepted { [ {'application/json' => 'from_json'}, { 'multipart/form-data' => 'from_multipart' } ] }
+
+sub from_multipart {
+    my $self = shift;
+    my $json_str = $self->request->parameters->{JSON};
+    return error_as_json(
+        $self->response,
+        \400, "JSON is a required field for multipart/form-data")
+            unless $json_str;
+
+    my $json = JSON::decode_json($json_str);
+
+    my @attachments = $self->request->upload('Attachments');
+    foreach my $attachment (@attachments) {
+        open my $filehandle, '<', $attachment->tempname;
+        if (defined $filehandle && length $filehandle) {
+            my ( @content, $buffer );
+            while ( my $bytesread = read( $filehandle, $buffer, 72*57 ) ) {
+                push @content, MIME::Base64::encode_base64($buffer);
+            }
+            close $filehandle;
+
+            push @{$json->{Attachments}},
+                {
+                    FileName    => $attachment->filename,
+                    FileType    => $attachment->headers->{'content-type'},
+                    FileContent => join("\n", @content),
+                };
+        }
+    }
+
+    return $self->from_json($json);
+}
+
 sub create_record {
     my $self = shift;
     my $data = shift;
@@ -99,6 +133,19 @@ sub create_record {
             Type      => delete $data->{ContentType} || 'text/plain',
         );
     }
+
+    foreach my $attachment (@{$data->{Attachments}}) {
+        foreach my $field ('FileName', 'FileType', 'FileContent') {
+            return (\400, "$field is a required field for each attachment in Attachments")
+            unless $attachment->{$field};
+        }
+        $data->{MIMEObj}->attach(
+            Type     => $attachment->{FileType},
+            Filename => $attachment->{FileName},
+            Data     => MIME::Base64::decode_base64($attachment->{FileContent}),
+        );
+    }
+    delete $data->{Attachments};
 
     my ($ok, $txn, $msg) = $self->_create_record($data);
     return ($ok, $msg);

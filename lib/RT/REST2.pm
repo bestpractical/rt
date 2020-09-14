@@ -167,14 +167,116 @@ Let's use the C<_url> from the C<create> hyperlink with type C<ticket>.
 To create a ticket is a bit more involved, since it requires providing a
 different HTTP verb (C<POST> instead of C<GET>), a C<Content-Type>
 header (to tell REST2 that your content is JSON instead of, say, XML),
+and the fields for your new ticket such as Subject.
+
+You can also provide an initial content message in your ticket by adding
+a C<Content> property to the JSON object. The value of this C<Content>
+property is a plain text string by default. You can also use a C<HTML>
+string, in which case you have also to add a C<ContentType> set to
+C<text/html> to the JSON object.
+
+Finally, you can attach any binary or text file to your ticket by
+specifying in the JSON object sent a C<AttachementsContents> property,
+which should be a JSON array where each item represents a file you want
+to attach. Each item is a JSON object with the following properties:
+
+=over 4
+
+=item C<FileName>
+
+The name of the file to attach to your response/comment, mandatory.
+
+=item C<FileType>
+
+The MIME type of the file to attach to your response/comment, mandatory.
+
+=item C<FileContent>
+
+The content, I<encoded in C<MIME Base64>> of the file to attach to your
+response/comment, mandatory.
+
+=back
+
+The reason why you should encode the content of any file to
+C<MIME Base64> is that a JSON string value should be a sequence of zero
+or more Unicode characters. C<MIME Base64> is a binary-to-text encoding
+scheme widely used (for eg. by web browser) to send binary data when text
+data is required. Most popular language have C<MIME Base64> libraries
+that you can use to encode the content of your attached files (see
+L<MIME::Base64> for C<Perl>). Note that even text files should be
+C<MIME Base64> encoded to be passed in the C<FileContent> property.
+
+Here is the curl invocation, wrapped to multiple lines for readability.
+
+
 and the fields for your new ticket such as Subject. Here is the curl
 invocation, wrapped to multiple lines for readability.
 
     curl -X POST
          -H "Content-Type: application/json"
-         -d '{ "Subject": "hello world" }'
+         -d '{
+                "Queue"      : "General",
+                "Subject"    : "hello world",
+                "Content"    : "That <em>damned</em> printer is out of order <b>again</b>!",
+                "ContentType": "text/html",
+            }'
          -H 'Authorization: token XX_TOKEN_XX'
             'XX_TICKET_CREATE_URL_XX'
+
+And here is a full example to create a ticket with an image attached.
+Since the C<MIME Base64> string encoding the image file might be too
+large for the shell's command line, we echo the JSON object and pipe the
+whole string to curl (wrapped to multiple lines for readability):
+
+    (echo -n '{
+                "Queue"      : "General",
+                "Subject"    : "hello world",
+                "Content"    : "That <em>damned</em> printer is out of order <b>again</b>!",
+                "ContentType": "text/html",
+                "Attachments": [
+                    {
+                        "FileName": "image.png",
+                        "FileType": "image/png",
+                        "FileContent": "';base64 /tmp/image.png;echo '"
+                    }
+                ]
+              }'
+    ) | curl -X POST
+             -H "Content-Type: application/json"
+             -d @-
+             -H 'Authorization: token XX_TOKEN_XX'
+                'XX_TICKET_CREATE_URL_XX'
+
+Encoding the content of attachments file in C<MIME Base64> has the
+drawback of adding some processing overhead and to increase the sent data
+size by around 33%. RT's REST2 API provides another way to attach any
+binary or text file to your ticket by C<POST>ing, instead of a JSON
+request, a C<multipart/form-data> request. This kind of request is
+similar to what the browser sends when you add attachments in RT's ticket
+creation form. As its name suggests, a C<multipart/form-data> request
+message contains a series of parts, each representing a form field. To
+create a ticket with attachments, the request has to include a field
+named C<JSON>, which, as previously, is a JSON object with C<Queue>,
+C<Subject>, C<Content>, C<ContentType>, etc. properties. Files can then
+be attached by specifying a field named C<Attachment> for each of them,
+with the content of the file as value and the appropriate MIME type.
+
+The curl invocation is quite straight forward:
+
+    curl -X POST
+         -H "Content-Type: multipart/form-data"
+         -F 'JSON={
+                    "Queue"      : "General",
+                    "Subject"    : "hello world",
+                    "Content"    : "That <em>damned</em> printer is out of order <b>again</b>!",
+                    "ContentType": "text/html",
+                    "TimeTaken"  : "1"
+                  };type=application/json'
+         -F 'Attachment=@/tmp/image.png;type=image/png'
+         -F 'Attachment=@/etc/cups/cupsd.conf;type=text/plain'
+         -H 'Authorization: token XX_TOKEN_XX'
+            'XX_TICKET_URL_XX'/comment
+
 
 If successful, that will provide output like so:
 

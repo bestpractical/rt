@@ -505,4 +505,136 @@ my ($ticket_url, $ticket_id);
     like($third_ticket->{_url}, qr{$rest_base_path/ticket/$ticket3_id$});
 }
 
+my $image_name = 'image.png';
+my $image_path = RT::Test::get_relocatable_file($image_name, 'data');
+my $image_content;
+open my $fh, '<', $image_path or die "Cannot read $image_path: $!\n";
+{
+    local $/;
+    $image_content = <$fh>;
+}
+close $fh;
+
+# Ticket Creation with Attachments through JSON Base64
+{
+    $image_content = MIME::Base64::encode_base64($image_content);
+    my $payload = {
+        Subject => 'Ticket creation with PNG image and text file',
+        From    => 'test@bestpractical.com',
+        To      => 'rt@localhost',
+        Queue   => 'General',
+        Content => 'Look at this!',
+        Attachments => [
+            {
+                FileName => $image_name,
+                FileType => 'image/png',
+                FileContent => $image_content,
+            },
+            {
+                FileName => 'password',
+                FileType => 'text/plain',
+                FileContent => MIME::Base64::encode_base64('Hey this is secret!'),
+            },
+        ],
+    };
+    my $res = $mech->post_json("$rest_base_path/ticket",
+        $payload,
+        'Authorization' => $auth,
+    );
+    is($res->code, 201);
+    ok($ticket_url = $res->header('location'));
+    ok(($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)]);
+    my $ticket = RT::Ticket->new($user);
+    $ticket->Load($ticket_id);
+    my $transaction_id = $ticket->Transactions->Last->id;
+    my $attachments = $ticket->Attachments->ItemsArrayRef;
+    # 3 attachments + 1 wrapper
+    is(scalar(@$attachments), 4);
+    is($attachments->[0]->Parent, 0);
+    is($attachments->[0]->Subject, 'Ticket creation with PNG image and text file');
+    ok(!$attachments->[0]->Filename);
+    is($attachments->[0]->ContentType, 'multipart/mixed');
+    # 2nd attachment is comment's content
+    is($attachments->[1]->Parent, $attachments->[0]->id);
+    is($attachments->[1]->TransactionId, $transaction_id);
+    is($attachments->[1]->ContentType, 'text/plain');
+    is($attachments->[1]->ContentEncoding, 'none');
+    is($attachments->[1]->Content, 'Look at this!');
+    ok(!$attachments->[1]->Subject);
+    # 3rd attachment is image
+    is($attachments->[2]->Parent, $attachments->[0]->id);
+    is($attachments->[2]->TransactionId, $transaction_id);
+    is($attachments->[2]->ContentType, 'image/png');
+    is($attachments->[2]->ContentEncoding, 'base64');
+    is($attachments->[2]->Filename, $image_name);
+    ok(!$attachments->[2]->Subject);
+    # 4th attachment is text file
+    is($attachments->[3]->Parent, $attachments->[0]->id);
+    is($attachments->[3]->TransactionId, $transaction_id);
+    is($attachments->[3]->ContentType, 'text/plain');
+    is($attachments->[3]->ContentEncoding, 'none');
+    is($attachments->[3]->Filename, 'password');
+    is($attachments->[3]->Content, 'Hey this is secret!');
+    ok(!$attachments->[3]->Subject);
+}
+
+# Ticket Creation with Attachments through multipart/form-data
+my $json = JSON->new->utf8;
+{
+    my $payload = {
+        Subject => 'Ticket creation with PNG image and text file',
+        From    => 'test@bestpractical.com',
+        To      => 'rt@localhost',
+        Queue   => 'General',
+        Content => 'Look at this!',
+    };
+    no warnings 'once';
+    $HTTP::Request::Common::DYNAMIC_FILE_UPLOAD = 1;
+    my $res = $mech->post("$rest_base_path/ticket",
+        'Authorization' => $auth,
+        'Content_Type'  => 'form-data',
+        'Content'       => [
+            'JSON'        => $json->encode($payload),
+            'Attachments' => [$image_path, $image_name, 'Content-Type' => 'image/png'],
+            'Attachments' => [undef, 'password', 'Content-Type' => 'text/plain', Content => 'Hey this is secret!' ],
+        ]);
+    is($res->code, 201);
+    ok($ticket_url = $res->header('location'));
+    ok(($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)]);
+    my $ticket = RT::Ticket->new($user);
+    $ticket->Load($ticket_id);
+    my $transaction_id = $ticket->Transactions->Last->id;
+    my @attachments = grep { $_->TransactionId == $transaction_id } @{$ticket->Attachments->ItemsArrayRef};
+    # 3 attachments + 1 wrapper
+    is(scalar(@attachments), 4);
+    # 1st attachment is wrapper
+    is($attachments[0]->TransactionId, $transaction_id);
+    is($attachments[0]->Parent, 0);
+    is($attachments[0]->Subject, 'Ticket creation with PNG image and text file');
+    ok(!$attachments[0]->Filename);
+    is($attachments[0]->ContentType, 'multipart/mixed');
+    # 2nd attachment is comment's content
+    is($attachments[1]->Parent, $attachments[0]->id);
+    is($attachments[1]->TransactionId, $transaction_id);
+    is($attachments[1]->ContentType, 'text/plain');
+    is($attachments[1]->ContentEncoding, 'none');
+    is($attachments[1]->Content, 'Look at this!');
+    ok(!$attachments[1]->Subject);
+    # 3rd attachment is image
+    is($attachments[2]->Parent, $attachments[0]->id);
+    is($attachments[2]->TransactionId, $transaction_id);
+    is($attachments[2]->ContentType, 'image/png');
+    is($attachments[2]->ContentEncoding, 'base64');
+    is($attachments[2]->Filename, $image_name);
+    ok(!$attachments[2]->Subject);
+    # 4th attachment is text file
+    is($attachments[3]->Parent, $attachments[0]->id);
+    is($attachments[3]->TransactionId, $transaction_id);
+    is($attachments[3]->ContentType, 'text/plain');
+    is($attachments[3]->ContentEncoding, 'none');
+    is($attachments[3]->Filename, 'password');
+    is($attachments[3]->Content, 'Hey this is secret!');
+    ok(!$attachments[3]->Subject);
+}
+
 done_testing;
