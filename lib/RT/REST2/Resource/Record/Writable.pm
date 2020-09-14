@@ -76,7 +76,7 @@ sub from_multipart {
     my $json_str = $self->request->parameters->{JSON};
     return error_as_json(
         $self->response,
-        \400, "Json is a required field for multipart/form-data")
+        \400, "JSON is a required field for multipart/form-data")
             unless $json_str;
 
     my $json = JSON::decode_json($json_str);
