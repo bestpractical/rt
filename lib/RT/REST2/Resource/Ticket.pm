@@ -76,7 +76,8 @@ sub dispatch_rules {
 
 sub content_types_accepted { [ {'application/json' => 'from_json'}, { 'multipart/form-data' => 'from_multipart' } ] }
 
-sub from_multipart {
+around 'from_multipart' => sub {
+    my $orig = shift;
     my $self = shift;
     my $json_str = $self->request->parameters->{JSON};
     return error_as_json(
@@ -105,8 +106,8 @@ sub from_multipart {
         }
     }
 
-    return $self->from_json($json);
-}
+    return $self->$orig($json);
+};
 
 sub create_record {
     my $self = shift;

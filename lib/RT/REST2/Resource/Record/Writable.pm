@@ -73,13 +73,17 @@ sub content_types_accepted { [ {'application/json' => 'from_json'}, { 'multipart
 
 sub from_multipart {
     my $self = shift;
-    my $json_str = $self->request->parameters->{JSON};
-    return error_as_json(
-        $self->response,
-        \400, "JSON is a required field for multipart/form-data")
-            unless $json_str;
+    my $json = shift;
 
-    my $json = JSON::decode_json($json_str);
+    if (! $json) {
+        my $json_str = $self->request->parameters->{JSON};
+        return error_as_json(
+            $self->response,
+            \400, "JSON is a required field for multipart/form-data")
+                unless $json_str;
+
+        $json = JSON::decode_json($json_str);
+    }
 
     my $cfs = delete $json->{CustomFields};
     if ($cfs) {
