@@ -4182,14 +4182,17 @@ sub ProcessAssetRoleMembers {
                 $is = $1;
             }
 
-            my ($ok, $msg) = $object->$method(
-                Type        => $role,
-                ($ARGS{$arg} =~ /\D/
-                    ? ($is => $ARGS{$arg})
-                    : (PrincipalId => $ARGS{$arg})
-                ),
-            );
-            push @results, $msg;
+            my @members = (ref($ARGS{$arg}) eq 'ARRAY' ) ? ( @{$ARGS{$arg}} ) : ( $ARGS{$arg} ) ;
+            foreach my $member (@members) {
+                my ($ok, $msg) = $object->$method(
+                    Type        => $role,
+                    ($member =~ /\D/
+                     ? ($is => $member)
+                     : (PrincipalId => $member)
+                 ),
+                );
+                push @results, $msg;
+            }
         }
         elsif ($arg =~ /^RemoveAllRoleMembers-(.+)$/) {
             my $role = $1;
