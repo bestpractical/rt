@@ -33,25 +33,6 @@ iframe.rt-portal {
     border: 0;
 }
 
-#rt-portal .titlebox {
-    position: absolute;
-    top: 1em;
-    right: 1em;
-    bottom: 3em;
-    width: 55%;
-    padding-bottom: 1em;
-}
-
-#rt-portal .titlebox-content {
-    height: 100%;
-    padding: 0;
-}
-
-#rt-portal .titlebox.rolled-up {
-    bottom: auto;
-    padding-bottom: 0;
-}
-
 iframe.rt-portlet {
     height: 200px;
     width: 100%;
