@@ -482,6 +482,12 @@ curl for SSL like --cacert.
     PUT /tickets/bulk
         update multiple tickets' metadata; provide JSON content(array of hashes)
 
+    PUT /ticket/:id/take
+    PUT /ticket/:id/untake
+    PUT /ticket/:id/steal
+        Take, untake or steal ownership of ticket
+
+
 =head3 Ticket Examples
 
 Below are some examples using the endpoints above.
@@ -519,6 +525,18 @@ Below are some examples using the endpoints above.
     curl -X POST -H "Content-Type: text/plain" -u 'root:password'
         -d '{ "Content": "Testing a comment", "ContentType": "text/plain", "CustomFields": {"Severity": "High"} }'
         'https://myrt.com/REST/2.0/ticket/6/comment'
+
+    # Take a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+    'https://myrt.com/REST/2.0/ticket/6/take'
+
+    # Untake a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+    'https://myrt.com/REST/2.0/ticket/6/untake'
+
+    # Steal a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+    'https://myrt.com/REST/2.0/ticket/6/steal'
 
     # Create an Asset
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
