@@ -113,7 +113,18 @@
 </div>
 
 <%INIT>
-$m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
+$m->callback(
+    ARGSRef          => \%ARGS,
+    Query            => \$Query,
+    Format           => \$Format,
+    Rows             => \$Rows,
+    OrderBy          => \$OrderBy,
+    Order            => \$Order,
+    Page             => \$Page,
+    HideResults      => \$HideResults,
+    ExtraQueryParams => \@ExtraQueryParams,
+    CallbackName     => 'Initial',
+);
 
 # Read from user preferences
 my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
