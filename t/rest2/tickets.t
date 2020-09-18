@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use RT::Test::REST2 tests => undef;
 use Test::Deep;
+use Test::Warn;
 
 # Test using integer priorities
 RT->Config->Set(EnablePriorityAsString => 0);
@@ -468,6 +469,80 @@ my ($ticket_url, $ticket_id);
     is($content->{Content}, '<i>(hello secret camera)</i>');
     is($content->{ContentType}, 'text/html');
 }
+
+
+# Steal, untake, take Ticket
+{
+    my $ticket_base_url = "$ticket_url/";
+
+    my $queue = RT::Test->load_or_create_queue(Name => 'TestOwnershipQueue');
+
+    my $other_user = RT::Test->load_or_create_user(
+        Name            => 'A N Other',
+        EmailAddress    => 'user_another@example.com',
+        Password        => 'password',
+    );
+    ok $other_user && $other_user->id, 'loaded or created user';
+
+    ok( RT::Test->add_rights(
+        { Principal => $other_user, Right => [qw(OwnTicket SeeQueue ShowTicket)] },
+        { Principal => $user,  Right => [qw(OwnTicket SeeQueue ShowTicket TakeTicket StealTicket) ] },
+    ), 'set rights');
+
+    my $ticket = RT::Test->create_ticket(Queue => $queue->Id,
+                                                 Subject => 'Test ownership',
+                                                 Content => 'Test test test',
+                                                 Requestor => $user->EmailAddress
+                                             );
+
+
+    # try to take a non-existant ticket
+    warning_like {
+        my $res = $mech->put_json("$rest_base_path/ticket/987654321/take",
+                                  { } , 'Authorization' => $auth );
+        like($res->code, qr/4\d\d/, 'attempt to take non-existant ticket gives 4xx error');
+    } qr/HasRight called with no valid object/;
+
+    # take Ticket
+    my $ticket_id = $ticket->Id;
+    my $res = $mech->put("$rest_base_path/ticket/$ticket_id/take",
+                         'Authorization' => $auth );
+    is($res->code, 200, 'request to take ticket gives 200 success');
+    is($mech->json_response->[0], 'Owner changed from Nobody to test', 'changed owner when taken') or diag $mech->json_response->[0];
+
+    # change ownership of ticket
+    $ticket->SetOwner($other_user);
+
+    # try to take from another user, check error
+    $res = $mech->put("$rest_base_path/ticket/$ticket_id/take",
+                      'Authorization' => $auth );
+    like($res->code, qr/4\d\d/, 'attempt to take ticket from another user gives 4xx error ' . $res->code);
+    is($mech->json_response->{message}, 'You can only take tickets that are unowned');
+
+    # Steal from other owner
+    $res = $mech->put("$rest_base_path/ticket/$ticket_id/steal",
+                      'Authorization' => $auth );
+    is($res->code, 200, 'request to take ticket gives 200 success');
+    is($mech->json_response->[0], 'Owner changed from A N Other to test', 'changed owner when taken') or diag $mech->json_response->[0];
+
+
+    # untake Ticket
+    RT::Test->add_rights({ Principal => $user,  Right => ['ModifyTicket'] });
+    $res = $mech->put("$rest_base_path/ticket/$ticket_id/untake",
+                         'Authorization' => $auth );
+    is($res->code, 200, 'request to untake ticket gives 200 success');
+    is($mech->json_response->[0], 'Owner changed from test to Nobody', 'changed owner when untaken')  or diag $mech->json_response->[0];
+
+    # try to untake Ticket, check error
+    $res = $mech->put("$rest_base_path/ticket/$ticket_id/untake",
+                      'Authorization' => $auth );
+    like($res->code, qr/4\d\d/, 'attempt to untake ticket again gives 4xx error ' . $res->code);
+    is($mech->json_response->{message}, 'That user already owns that ticket');
+
+    $ticket->Delete;
+}
+
+
 
 # Ticket Sorted Search
 {
