@@ -482,6 +482,10 @@ curl for SSL like --cacert.
     PUT /tickets/bulk
         update multiple tickets' metadata; provide JSON content(array of hashes)
 
+    PUT ticket/:id/merge
+        merge ticket into another ticket matching the id provided in
+         MergeIntoTicket form or json field.
+
 =head3 Ticket Examples
 
 Below are some examples using the endpoints above.
@@ -529,6 +533,12 @@ Below are some examples using the endpoints above.
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
     -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
     'https://myrt.com/REST/2.0/asset'
+
+    # Merge ticket into another
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        -d '{"MergeIntoTicket": 7 }'
+        'https://myrt.com/REST/2.0/ticket/6/merge'
+
 
 =head3 Transactions
 
