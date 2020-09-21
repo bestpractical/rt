@@ -469,6 +469,43 @@ my ($ticket_url, $ticket_id);
     is($content->{ContentType}, 'text/html');
 }
 
+# Merge into another ticket
+{
+
+    my $queue = RT::Test->load_or_create_queue(Name => 'TestMergeQueue');
+    ok( RT::Test->add_rights(
+        { Principal => $user,  Right => [qw(OwnTicket SeeQueue ModifyTicket ShowTicket)] }
+    ), 'set rights');
+
+    my $src_ticket = RT::Test->create_ticket(Queue => $queue->Id,
+                                             Subject => 'Test mergee',
+                                             Content => 'Test test test',
+                                             Requestor => $user->EmailAddress
+                                         );
+    my $src_ticket_id = $src_ticket->Id;
+
+    my $dest_ticket = RT::Test->create_ticket(Queue => $queue->Id,
+                                             Subject => 'Test merged into',
+                                             Content => 'Test test test merged into',
+                                             Requestor => $user->EmailAddress
+                                          );
+
+    # try to merge without destination ticket
+
+    my $res = $mech->put_json("$rest_base_path/ticket/$src_ticket_id/merge",
+                              { } , 'Authorization' => $auth );
+    like($res->code, qr/400/, 'attempt to take non-existant ticket gives 4xx error');
+    is($mech->json_response->{message}, 'MergeIntoTicket is a required field', 'correct error on missing ticket id');
+
+    # merge Ticket
+    $res = $mech->put_json("$rest_base_path/ticket/$src_ticket_id/merge",
+                              { MergeIntoTicket => $dest_ticket->Id }, 'Authorization' => $auth );
+    is($res->code, 200, 'request to take ticket gives 200 success');
+    is($mech->json_response->[0], 'Merge Successful', 'merged ok') or diag $mech->json_response->[0];
+
+    $dest_ticket->Delete;
+}
+
 # Ticket Sorted Search
 {
     my $ticket2 = RT::Ticket->new($RT::SystemUser);
