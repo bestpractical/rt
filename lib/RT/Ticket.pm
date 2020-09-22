@@ -67,6 +67,7 @@ package RT::Ticket;
 
 use strict;
 use warnings;
+use 5.10.1;
 use base 'RT::Record';
 
 use Role::Basic 'with';
@@ -2732,6 +2733,7 @@ sub _ApplyTransactionBatch {
 }
 
 sub DESTROY {
+    state $warned = 0;
     my $self = shift;
 
     # DESTROY methods need to localize $@, or it may unset it.  This
@@ -2745,12 +2747,16 @@ sub DESTROY {
     return if $self->{_Destroyed}++;
 
     if (in_global_destruction()) {
-       unless ($ENV{'HARNESS_ACTIVE'}) {
+       unless ($warned || $ENV{'HARNESS_ACTIVE'}) {
             warn "Too late to safely run transaction-batch scrips!"
                 ." This is typically caused by using ticket objects"
                 ." at the top-level of a script which uses the RT API."
                ." Be sure to explicitly undef such ticket objects,"
                 ." or put them inside of a lexical scope.";
+            # Do not suppress repeated warnings if we are in DevelMode
+            unless (RT->Config->Get('DevelMode')) {
+                $warned = 1;
+            }
         }
         return;
     }
