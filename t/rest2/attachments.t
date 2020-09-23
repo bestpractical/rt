@@ -256,4 +256,26 @@ my $json = JSON->new->utf8;
     ok(!$attachments[2]->Subject);
 }
 
+
+# Search attachments
+{
+    my $res = $mech->post_json("$rest_base_path/attachments",
+        [
+            { field => 'ContentType', operator => '=', value => 'image/png' },
+            { field => 'TicketId', value => $ticket_id },
+        ],
+        'Authorization' => $auth,
+    );
+
+    my $content = $mech->json_response;
+    is($content->{count}, 4);
+    is($content->{page}, 1);
+    is($content->{per_page}, 20);
+    is($content->{total}, 4);
+    is($content->{items}[0]{type}, 'attachment');
+    is(scalar @{$content->{items}}, 4);
+}
+
+
+
 done_testing;
