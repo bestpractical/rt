@@ -661,6 +661,9 @@ sub UserExists {
     } elsif ($config->{'type'} eq 'ldap') {
         $success = RT::Authen::ExternalAuth::LDAP::UserExists($username,$service);
     }
+    if ($success) {
+        $_[0] = $username;
+    }
 
     return $success;
 }

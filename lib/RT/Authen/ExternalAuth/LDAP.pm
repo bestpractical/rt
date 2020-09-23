@@ -537,14 +537,21 @@ sub UserExists {
     undef $filter if defined $filter and $filter eq "()";
 
     if (defined($config->{'attr_map'}->{'Name'})) {
+        my $attr_map        = $config->{'attr_map'};
         # Construct the complex filter
+        my $filter_addition = '(|';
+        foreach my $rt_attr (@{$config->{'attr_match_list'}}) {
+            $filter_addition .= '(' .
+                                $attr_map->{$rt_attr} .
+                                '=' .
+                                escape_filter_value($username) .
+                                ')';
+        }
+        $filter_addition  .= ')';
         $filter = Net::LDAP::Filter->new(           '(&' .
                                                     $filter .
-                                                    '(' .
-                                                    $config->{'attr_map'}->{'Name'} .
-                                                    '=' .
-                                                    escape_filter_value($username) .
-                                                    '))'
+                                                    $filter_addition  .
+                                                    ')'
                                         );
     }
 
@@ -583,6 +590,11 @@ sub UserExists {
                             "More than one user with that username!");
         return 0;
     }
+
+    my $entry = $user_found->first_entry();
+    my $key = $config->{'attr_map'}->{'Name'};
+    $_[0] = ($entry->get_value($key))[0];
+
     undef $user_found;
 
     # If we havent returned now, there must be a valid user.
