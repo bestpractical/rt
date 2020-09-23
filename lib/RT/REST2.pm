@@ -530,6 +530,11 @@ Below are some examples using the endpoints above.
     -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
     'https://myrt.com/REST/2.0/asset'
 
+    # Search Attachments by ticket
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+    -d '[{ "field": "ContentType", "operator": "=", "value": "image/png" }, { "field": "TicketId", "value": 6 } ]'
+    'https://myrt.com/REST/2.0/attachments'
+
 =head3 Transactions
 
     GET /transactions?query=<JSON>

@@ -72,6 +72,49 @@ sub dispatch_rules {
     )
 }
 
+around 'limit_collection' => sub {
+    my $orig = shift;
+    my $self = shift;
+
+    if (my $ticket_criteria = $self->_query_field('TicketId')) {
+        my $collection = $self->collection;
+        my $tx_alias = $collection->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => 'main',
+            FIELD1 => 'TransactionId',
+            TABLE2 => 'Transactions',
+            FIELD2 => 'id',
+        );
+
+        $collection->Limit(
+            ALIAS    => $tx_alias,
+            FIELD    => 'ObjectType',
+            OPERATOR => '=',
+            VALUE    => 'RT::Ticket'
+        );
+
+        $collection->Limit(
+            ALIAS    => $tx_alias,
+            FIELD    => 'ObjectId',
+            OPERATOR => $ticket_criteria->{operator} // '=',
+            VALUE    => $ticket_criteria->{value},
+        );
+    }
+
+    return $self->$orig;
+};
+
+sub _query_field {
+    my ($self, $field) = @_;
+    foreach my $condition( @{$self->query} ) {
+        if ($condition->{field} eq $field) {
+            return $condition;
+        }
+    }
+    return undef;
+}
+
+
 __PACKAGE__->meta->make_immutable;
 
 1;
