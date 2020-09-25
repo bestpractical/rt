@@ -22,6 +22,10 @@ to use L<Starman>, a high performance preforking server:
 
     /opt/rt5/sbin/rt-server --server Starman --port 8080
 
+A reverse proxy in front of the starman or other PSGI server can serve requests
+on the standard HTTP/HTTPS ports using virtual hosts or paths, as well as handle
+serving static content as shown in the nginx section below.
+
 =head2 Apache
 
 B<WARNING>: Both C<mod_speling> and C<mod_cache> are known to break RT.
@@ -166,6 +170,45 @@ With the nginx configuration:
         }
     }
 
+
+=head2 nginx as reverse-proxy
+
+A simple way to run RT with a psgi server through a webserver
+that supports SSL, etc.
+
+Assuming the RT psgi server is listening on port 8500.
+
+The static location can use nginx to serve static content if
+nginx has permission to read that path, but is not required.
+
+You need to ensure that the proxy buffer options are set to a
+large enough size to prevent "upstream sent too big header while
+ reading response header from upstream" errors. The examples
+ below are large enough for development and testing of RT but
+for large attachments and busier servers may need to be larger.
+
+server {
+        listen 80;
+        listen [::]:80;
+
+        server_name rt460.ajt.local;
+
+        access_log  /var/log/nginx/access.log;
+
+        location /static/ {
+                root /opt/rt5/share/;
+                autoindex off;
+                try_files $uri $uri =404;
+        }
+
+        location / {
+           proxy_pass http://localhost:8500/;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_buffer_size          128k;
+           proxy_buffers              4 256k;
+           proxy_busy_buffers_size    256k;
+        }
+}
 
 =head2 lighttpd
 
