@@ -27,6 +27,11 @@ use utf8;
 # after this file is loaded.
 
 Set( $rtname, 'example.com');
+Set( %DatabaseExtraDSN, mysql_ssl_optional => 1,
+     mysql_ssl => 1,
+     mysql_ssl_ca_file => '/etc/mysql/cacert.pem',
+     mysql_ssl_verify_server_cert => 0,
+    );
 
 # You must install Plugins on your own, this is only an example
 # of the correct syntax to use when activating them:
