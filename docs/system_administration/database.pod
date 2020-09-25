@@ -301,3 +301,94 @@ system should look exactly the same as before, but the backend is on an entirely
 new database.
 
 =back
+
+=head1 SSL-Encrypted Database Connections
+
+For extra security, you may wish to encrypt the connections between RT
+and the database server using SSL/TLS.  This section documents the
+configuration necessary for PostgreSQL and MySQL / MariaDB.
+
+=head2 Using SSL with PostgreSQL
+
+To configure SSL connections using PostgreSQL, follow these steps:
+
+=over
+
+=item Configure the PostgreSQL Server
+
+Edit C<postgresql.conf> and ensure that it contains the following:
+
+    ssl = on
+
+You may wish to adjust the other C<ssl_*> settings according to your
+organization's policy.
+
+When you have finished editing C<postgresql.conf>, restart PostgreSQL.
+
+
+=item Configure RT to Require SSL
+
+Edit C<RT_SiteConfig.pm> and add the following line:
+
+    Set( %DatabaseExtraDSN, sslmode => 'require' );
+
+Then restart RT.
+
+=item Verifying that RT is using SSL
+
+To verify that RT is using SSL, log in to the RT web interface.
+Then, connect using C<psql> to the C<template1> database; run the
+C<psql> command on the PostgreSQL server.  Run this query:
+
+    SELECT * FROM pg_stat_ssl;
+
+You should see at least one connection with C<t> in the C<ssl> column,
+Find the PID of the PostgreSQL process, and using C<ps>, verify that
+it corresponds to the RT database.  In fact, all of the processes that
+show connections to the RT database should have C<t> in the
+corresponding C<ssl> column corresponding to their PIDs.
+
+=back
+
+=head2 Using SSL with MySQL and MariaDB
+
+To configure SSL connections using MySQL or MariaDB, follow these steps:
+
+=over
+
+=item If your policy specifies that all database connections must
+be encrypted, set the MySQL system variable C<require_secure_transport>
+to C<ON>.  If you are running MariaDB, this system variable is available
+only for versions 10.5.2 and later.
+
+=item If you are running MariaDB older than 10.5.2, you can enforce encrypted
+connections on a per-user basis by running this SQL query:
+
+    ALTER USER 'username'@'%' REQUIRE SSL;
+
+=item Edit C<RT_SiteConfig.pm> and add this line:
+
+    Set( %DatabaseExtraDSN, mysql_ssl => 1, mysql_ssl_ca_file => '/etc/mysql/cacert.pem');
+
+Use the appropriate path for the CA certificate if it is not stored in
+C</etc/mysql/cacert.pem>.  Alternatively, you can use C<mysql_ssl_ca_path>
+to specify a directory containing all of your system's CA certificates.
+
+=item Verifying that RT is using SSL
+
+Unfortunately, MySQL does not have a convenient way to determine if a
+non-interactive connection is using SSL that is portable across all
+versions of MySQL and MariaDB.
+
+If your RT instance is running on Linux, find the process IDs of all the
+C<rt-server> or C<rt-server.fcgi> processes and trace them with C<strace>
+as follows:
+
+    strace -esendto,recvfrom `ps auxww|grep [r]t-server | awk '{print "-p", $2}'` 2>&1
+
+Then navigate the RT web interface.  If you see cleartext SQL queries such
+as the keywords C<SELECT> or C<INSERT> in the trace output, then the
+connection is not encrypted.  If all of the output appears to be random
+nonsense, then the connection is encrypted.
+
+=back
