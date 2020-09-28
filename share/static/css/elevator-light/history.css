@@ -213,6 +213,6 @@ border: none;
 .transaction.other .details { margin-top: 0.5em; }
 .transaction.other .details tr:not(:first-child) td.value { border-top: 1px solid #ccc; }
 .transaction.other .details td.label { min-width: 0; }
-.diff del { color: #a00; }
-.diff { color: #888; }
-.diff ins { color: #080; }
+.transaction .diff .value del { color: #a00; }
+.transaction .diff .value { color: #888; }
+.transaction .diff .value ins { color: #080; }
