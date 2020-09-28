@@ -78,6 +78,8 @@ my $Catalog = {
     history_scroll_error => "Could not load ticket history. Reason:", #loc
     unclip => "Show all", #loc
     clip => "Show less", #loc
+    show_details => "Show Details", #loc
+    hide_details => "Hide Details", #loc
 };
 $_ = loc($_) for values %$Catalog;
 

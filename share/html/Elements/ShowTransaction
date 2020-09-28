@@ -83,6 +83,48 @@ $m->comp(
 ) if $ShowBody;
 </%PERL>
   </div>
+% if ($Transaction->Type eq 'CustomField' && $Transaction->Field ) {
+%     my ($old, $new);
+%     my $cf = RT::CustomField->new( $session{CurrentUser} );
+%     $cf->SetContextObject( $Transaction->Object );
+%     $cf->Load( $Transaction->Field );
+%     if ($cf->Id && $cf->Type =~ /text/i) {
+%        $old = $Transaction->OldValue // loc('(no value)');
+%        $old = $m->comp('/Elements/ScrubHTML', Content => $old);
+%        $old =~ s|\n|<br />|g;
+%        $new = $Transaction->NewValue // loc('(no value)');
+%        $new = $m->comp('/Elements/ScrubHTML', Content => $new);
+%        $new =~ s|\n|<br />|g;
+<div class="details hidden" id="txn-<% $Transaction->Id %>-details">
+% if ( $old eq loc('(no value)')  ) {
+  <div class="form-row">
+    <div class="label col-2"><% loc('Added') %>:</div>
+    <div class="value col-10"><% $new |n %></div>
+  </div>
+% }
+% elsif ( $new eq loc('(no value)')  ) {
+  <div class="form-row">
+    <div class="label col-2"><% loc('Deleted') %>:</div>
+    <div class="value col-10"><% $old |n %></div>
+  </div>
+% }
+% else {
+  <div class="form-row">
+    <div class="label col-2"><% loc('From') %>:</div>
+    <div class="value col-10"><% $old |n %></div>
+  </div>
+  <div class="form-row">
+    <div class="label col-2"><% loc('To') %>:</div>
+    <div class="value col-10"><% $new |n %></div>
+  </div>
+  <div class="form-row diff">
+    <div class="label col-2"><% loc('Changes') %>:</div>
+    <div class="value col-10"><% loc('Loading...') %></div>
+  </div>
+% }
+</div>
+%     }
+% }
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterContent' );
 </div>
 
@@ -165,7 +207,14 @@ if ( $txn_type =~ /EmailRecord$/ ) {
 
     $ShowBody = 0;
 }
-
+elsif ($txn_type eq 'CustomField' && $Transaction->Field) {
+    my $cf = RT::CustomField->new( $session{CurrentUser} );
+    $cf->SetContextObject( $Transaction->Object );
+    $cf->Load( $Transaction->Field );
+    if ($cf->Id && $cf->Type =~ /text/i) {
+        push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
+    }
+}
 # If the transaction has anything attached to it at all
 elsif ( %$Attachments && $ShowActions ) {
     my %has_right = map {

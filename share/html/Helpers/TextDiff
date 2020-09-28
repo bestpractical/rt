@@ -45,33 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/ShowHistoryHeader, %ARGS &>
+<%INIT>
 
-% $m->callback( %ARGS, Object => $Object, CallbackName => 'BeforeTransactions' );
+my ( $old, $new );
 
-<& /Elements/ShowHistoryPage, %ARGS &>
+if ($TransactionId) {
+    my $txn = RT::Transaction->new( $session{'CurrentUser'} );
+    $txn->Load($TransactionId);
+    if ( $txn->Id ) {
+        $old = $txn->OldValue;
+        $new = $txn->NewValue;
+    }
+    else {
+        RT->Logger->error("Could not load transaction #$TransactionId");
+        $m->abort;
+    }
+}
+else {
+    $m->abort;
+}
 
-</div>
-% if ($ShowDisplayModes or $ShowTitle) {
-<& /Widgets/TitleBoxEnd &>
-% }
-</div>
-<script type="text/javascript">
-jQuery(function() {
-    jQuery('.toggle-txn-details').click(function () {
-        return toggleTransactionDetails.apply(this);
-    });
-});
-</script>
+use Text::WordDiff;
+my $diff = word_diff( \$old, \$new, { STYLE => 'HTML' } );
+$diff = $m->comp( '/Elements/ScrubHTML', Content => $diff );
+$diff =~ s|\n|<br />|g;
+
+</%INIT>
+<% $diff |n %>
+% $m->abort();
+
 <%ARGS>
-$Object
-$Transactions      => $Object->SortedTransactions
-$Attachments       => $Object->Attachments( WithHeaders => 1 )
-$AttachmentContent => $Object->TextAttachments
-
-$ShowHeaders       => 0
-$ShowTitle         => 1
-$ShowDisplayModes  => 1
-
-$PathPrefix        => ''
+$TransactionId => undef
 </%ARGS>
