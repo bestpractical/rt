@@ -91,7 +91,11 @@ foreach my $column (@Format) {
     my $class = $column->{class} ? $m->interp->apply_escapes($column->{class}, 'h') : 'collection-as-table';
 
     my %attrs;
-    foreach my $attr (qw(style align edit)) {
+    my @possible_attrs = qw(style align);
+    if ($InlineEdit && $record->isa('RT::Ticket') && $record->CurrentUserHasRight('ModifyTicket')) {
+        push(@possible_attrs, 'edit');
+    }
+    foreach my $attr (@possible_attrs) {
         if ( defined $column->{ $attr } ) {
             $attrs{ $attr } = $column->{ $attr };
             next;
@@ -115,13 +119,6 @@ foreach my $column (@Format) {
             Escape => 0,
         );
     }
-
-    delete $attrs{edit} if !$InlineEdit;
-
-    delete $attrs{edit} unless $record->isa('RT::Ticket');
-
-    delete $attrs{edit} if $record->isa('RT::Ticket')
-                        && !$record->CurrentUserHasRight('ModifyTicket');
 
     $attrs{colspan} = $column->{span};
     $item += ($attrs{'colspan'} || 1);
