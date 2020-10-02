@@ -257,12 +257,14 @@ class LifecycleModel {
         }
 
         let actions = [];
-        for ( let i = 0; i < self.config.actions.length; i += 2 ) {
-            let action = self.config.actions[i];
-            let info = self.config.actions[i+1];
-            let updated = action.replace(re_from, nodeUpdated.name + ' ->').replace(re_to, '-> ' + nodeUpdated.name);
-            actions.push(updated);
-            actions.push(info);
+        if ( self.config.actions ) {
+            for ( let i = 0; i < self.config.actions.length; i += 2 ) {
+                let action = self.config.actions[i];
+                let info = self.config.actions[i+1];
+                let updated = action.replace(re_from, nodeUpdated.name + ' ->').replace(re_to, '-> ' + nodeUpdated.name);
+                actions.push(updated);
+                actions.push(info);
+            }
         }
         self.config.actions = actions;
 
