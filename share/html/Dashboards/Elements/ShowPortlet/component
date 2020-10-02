@@ -56,7 +56,14 @@ $HasResults
 my $full_path = $Portlet->{path};
 (my $path = $full_path) =~ s{^/Elements/}{};
 
-my $allowed = grep { $_ eq $path } @{RT->Config->Get('HomepageComponents')};
+my $allowed;
+
+if ($m->request_path =~ m{/SelfService}) {
+    $allowed = grep { $_ eq $path } @{RT->Config->Get('SelfServicePageComponents') || RT->Config->Get('HomepageComponents')};
+} else {
+    $allowed = grep { $_ eq $path } @{RT->Config->Get('HomepageComponents')};
+}
+
 </%init>
 % if (!$allowed) {
 %     $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $path), "h" ) );

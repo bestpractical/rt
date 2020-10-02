@@ -1229,6 +1229,19 @@ sub _BuildAdminMenu {
         description => loc('Modify the default "RT at a glance" view'),
         path        => '/Admin/Global/MyRT.html',
     );
+
+    if (RT->Config->Get('SelfServiceUseDashboard')) {
+        if ($current_user->HasRight( Right => 'SeeDashboard', Object => RT->System ) ) {
+            my $self_service = $admin_global->child( selfservice_home =>
+                                                     title       => loc('Self-Service Home Page'),
+                                                     description => loc('Edit self-service home page dashboard'),
+                                                     path        => '/Admin/Global/SelfServiceHomePage.html');
+            if ( $request_path =~ m{^/Admin/Global/SelfServiceHomePage} ) {
+                $page->child(content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html');
+                $page->child(show    => title => loc('Show'), path => '/SelfService');
+            }
+        }
+    }
     $admin_global->child( 'dashboards-in-menu' =>
         title       => loc('Modify Reports menu'),
         description => loc('Customize dashboards in menu'),
@@ -1581,6 +1594,15 @@ sub BuildSelfServiceNav {
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
+    if (RT->Config->Get('SelfServiceUseDashboard') && $current_user->HasRight( Right => 'SeeDashboard', Object => RT->System ) ) {
+        if ($request_path =~ m{^/SelfService/index\.html$}) {
+            if ($current_user->HasRight( Right => 'ShowConfigTab',
+                                         Object => RT->System)) {
+                $page->child(content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html');
+                $page->child(show    => title => loc('Show'), path => '/SelfService');
+            }
+        }
+    }
     my $queues = RT::Queues->new( $current_user );
     $queues->UnLimit;
 
@@ -1600,8 +1622,13 @@ sub BuildSelfServiceNav {
     } elsif ( $queue_id ) {
         $top->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
     }
-    my $tickets = $top->child( tickets => title => loc('Tickets'), path => '/SelfService/' );
-    $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/' );
+
+    my $menu_label = loc('Tickets');
+    if (RT->Config->Get('SelfServiceUseDashboard')) {
+        $menu_label = loc('Self-Service');
+    }
+    my $tickets = $top->child( tickets => title => $menu_label, path => '/SelfService/' );
+    $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/Open.html' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
 
     $top->child( "assets", title => loc("Assets"), path => "/SelfService/Asset/" )

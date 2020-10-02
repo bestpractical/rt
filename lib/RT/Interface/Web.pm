@@ -4718,7 +4718,8 @@ sub UpdateDashboard {
             return ( $ok, $msg ) = $user->SetPreferences( 'HomepageSettings', $data->{panes} );
         }
     } else {
-        my $Dashboard = RT::Dashboard->new( $session{'CurrentUser'} );
+        my $class = $args->{self_service_dashboard} ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
+        my $Dashboard = $class->new( $session{'CurrentUser'} );
         ( $ok, $msg ) = $Dashboard->LoadById($id);
 
         # report error at the bottom

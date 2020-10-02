@@ -110,13 +110,20 @@
 my @results;
 my $skip_create = 0;
 
+# Don't permit someone to supply "self_service_dashboard=1" directly
+# on the URL line
+if ($m->request_path ne '/SelfService/index.html') {
+    $self_service_dashboard = 0;
+}
+
 $m->callback(ARGSRef => \%ARGS,
              results => \@results,
              CallbackName => 'Initial',
              skip_create => \$skip_create);
 
-use RT::Dashboard;
-my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+my $class = $self_service_dashboard ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
+$class->require;
+my $Dashboard = $class->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
 unless ($ok) {
     RT::Logger->error("Unable to load dashboard with $id: $msg");
@@ -146,7 +153,12 @@ unless (defined($rows)) {
     $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 50;
 }
 
-my $title = loc '[_1] Dashboard', $Dashboard->Name;
+my $title;
+if ($self_service_dashboard) {
+    $title = loc('Self-service Dashboard');
+} else {
+    $title = loc '[_1] Dashboard', $Dashboard->Name;
+}
 
 my $show_cb = sub {
     my $pane = shift;
@@ -171,5 +183,6 @@ my $Refresh = $Preview
 $id => undef
 $Preview => 1
 $HasResults => undef
+$self_service_dashboard => 0
 </%ARGS>
 

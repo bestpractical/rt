@@ -61,19 +61,38 @@
 <%INIT>
 my @results;
 
-use RT::Dashboard;
-my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+# Don't permit someone to supply "self_service_dashboard=1" on the URL line
+if ($m->request_path ne '/Admin/Global/SelfServiceHomePage.html') {
+    $self_service_dashboard = 0;
+}
+
+my $class = $self_service_dashboard ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
+$class->require;
+my $Dashboard = $class->new($session{'CurrentUser'});
 my ($ok, $msg) = $Dashboard->LoadById($id);
 unless ($ok) {
     RT::Logger->error("Unable to load dashboard with $id: $msg");
     Abort(loc("Could not load dashboard [_1]", $id), Code => HTTP::Status::HTTP_NOT_FOUND);
 }
-my $title = loc("Modify the content of dashboard [_1]", $Dashboard->Name);
+
+my $title;
+
+if ($self_service_dashboard) {
+    $title = loc("Modify the self-service home page");
+} else {
+    $title = loc("Modify the content of dashboard [_1]", $Dashboard->Name);
+}
 
 my @sections;
 my %item_for;
 
-my @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('HomepageComponents')};
+my @components;
+
+if ($self_service_dashboard) {
+    @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('SelfServicePageComponents') || RT->Config->Get('HomepageComponents')};
+} else {
+    @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('HomepageComponents')};
+}
 
 $item_for{ $_->{type} }{ $_->{name} } = $_ for @components;
 
@@ -214,17 +233,32 @@ $m->callback(
 
 if ( $ARGS{UpdateSearches} ) {
     $ARGS{dashboard_id} = $id;
+    $ARGS{self_service_dashboard} = $self_service_dashboard;
     my ($ok, $msg) = UpdateDashboard( \%ARGS, \%item_for );
-    push @results, $ok ? loc('Dashboard updated') : $msg;
+    if ($self_service_dashboard) {
+        push @results, $ok ? loc('Self-service home page updated') : $msg;
+    } else {
+        push @results, $ok ? loc('Dashboard updated') : $msg;
+    }
 
+    my $path;
+    my $args;
+    if ($self_service_dashboard) {
+        $path = '/Admin/Global/SelfServiceHomePage.html';
+        $args = { };
+    } else {
+        $path = '/Dashboards/Queries.html';
+        $args = { id => $id };
+    }
     MaybeRedirectForResults(
         Actions   => \@results,
-        Path      => "/Dashboards/Queries.html",
-        Arguments => { id => $id },
+        Path      => $path,
+        Arguments => $args,
     );
 }
 
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id
+$self_service_dashboard => 0
 </%ARGS>
