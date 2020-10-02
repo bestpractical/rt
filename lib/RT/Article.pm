@@ -777,7 +777,7 @@ sub _CoreAccessible {
         Summary => 
                 {read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
-                {read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0', is_numeric => 1},
         Class => 
                 {read => 1, write => 1, type => 'int(11)', default => '0'},
         Parent => 

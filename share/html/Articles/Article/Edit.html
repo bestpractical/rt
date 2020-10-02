@@ -122,6 +122,14 @@ if ( $ARGS{SetEnabled} ) {
     $ARGS{Disabled} = $ARGS{Enabled} ? 0 : 1;
 }
 
+my $sortorder_ok = 1;
+if ($ARGS{SortOrder}) {
+    if ($ARGS{SortOrder} !~ /^-?\d+$/) {
+        push @results, (0, loc('Sort Order must be an integer'));
+        $sortorder_ok = 0;
+    }
+}
+
 if ( !$id ) {
     $title = loc('Create a new article');
     foreach my $arg ( sort keys %ARGS ) {
@@ -148,25 +156,30 @@ elsif ( $id eq 'new' ) {
           split( /\s+/, $ARGS{'new-RefersTo'} );
     }
 
-    my %cfs = ProcessObjectCustomFieldUpdatesForCreate(
-        ARGSRef         => \%ARGS,
-        ContextObject   => $ClassObj,
-    );
+    my %cfs;
+    if ($sortorder_ok) {
+        %cfs = ProcessObjectCustomFieldUpdatesForCreate(
+            ARGSRef         => \%ARGS,
+            ContextObject   => $ClassObj,
+            );
 
-    my $msg;
-    ( $id, $msg ) = $ArticleObj->Create(
-        Summary => $ARGS{'Summary'},
-        Name    => $ARGS{'Name'},
-        Class   => $ARGS{'Class'},
-        Topics  => $ARGS{'Topics'},
-        Disabled => $ARGS{'Disabled'},
-        %create_args,
-        %cfs
-    );
-    push( @results, $msg );
+        my $msg;
+        ( $id, $msg ) = $ArticleObj->Create(
+            Summary => $ARGS{'Summary'},
+            SortOrder => $ARGS{'SortOrder'},
+            Name    => $ARGS{'Name'},
+            Class   => $ARGS{'Class'},
+            Topics  => $ARGS{'Topics'},
+            Disabled => $ARGS{'Disabled'},
+            %create_args,
+            %cfs
+            );
+        push( @results, $msg );
+    } else {
+        $id = 0;
+    }
+
     if ($id) {
-
-
         $ArticleObj->Load($id);
 
         $title = loc( 'Modify article #[_1]', $ArticleObj->Id );
@@ -197,13 +210,15 @@ else {
             Why => loc("Unable to load article") );
     }
 
-    my @attribs = qw(Name Summary Class Disabled);
+    my @attribs = qw(Name Summary Class Disabled SortOrder);
 
-    @results = UpdateRecordObject(
-        AttributesRef => \@attribs,
-        Object        => $ArticleObj,
-        ARGSRef       => \%ARGS
-    );
+    if ($sortorder_ok) {
+        @results = UpdateRecordObject(
+            AttributesRef => \@attribs,
+            Object        => $ArticleObj,
+            ARGSRef       => \%ARGS
+            );
+    }
 
     my @cf_results = ProcessObjectCustomFieldUpdates(
         Object  => $ArticleObj,
