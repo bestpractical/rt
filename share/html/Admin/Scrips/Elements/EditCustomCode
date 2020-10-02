@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('User Defined conditions and results'), content_class => 'mx-auto' &>
+<&| /Widgets/TitleBox, title => loc('User Defined conditions and results') &>
 
 <div class="form-row">
   <div class="col-12 comment">
