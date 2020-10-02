@@ -45,34 +45,30 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%INIT>
-use RT::Dashboard::SelfService;
-if (RT->Config->Get('SelfServiceUseDashboard')) {
-    # Check if we have a self-service dashboard
-    my $Dashboard = RT::Dashboard::SelfService->new($session{'CurrentUser'});
+<& /SelfService/Elements/Header, Title => loc('Open tickets') &>
+<& /Elements/PageLayout, show_menu => 0 &>
+% $m->callback(CallbackName => 'BeforeMyRequests', ARGSRef => \%ARGS, Page => $Page);
 
-    my $dashboard_id;
+<& /SelfService/Elements/MyRequests,
+    %ARGS,
+    status  => '__Active__',
+    title   => loc('My open tickets'),
+    BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
+    Page    => $Page, 
+&>
 
-    # The Self-Service Home Page dashboard is special; its attribute is
-    # named "selfservicedashboard" instead of "dashboard".  We just
-    # need to get an ID to reuse the rest of the dashboard code.
-    my $attr = RT::Attribute->new(RT->SystemUser);
-    my ($ok, $msg) = $attr->LoadByNameAndObject(Object => $RT::System,
-                                                Name => 'SelfServiceDashboard');
-    if ($ok && $attr->Id) {
-        # Try to load the dashboard
-        my ($ok, $msg) = $Dashboard->LoadById($attr->Id);
-        if ($ok) {
-            $m->comp('/Dashboards/Render.html', id => $attr->Id, self_service_dashboard => 1);
-            return;
-        }
-    }
-}
+% $m->callback(CallbackName => 'AfterMyRequests', ARGSRef => \%ARGS, Page => $Page);
 
-# Default to old-style "My Open Tickets"
-$m->comp('/SelfService/Open.html', Page => $Page);
+<& /SelfService/Elements/MyGroupRequests,
+    %ARGS,
+    status  => '__Active__',
+    title   => loc('My group\'s tickets'),
+    BaseURL => RT->Config->Get('WebPath') ."/SelfService/?",
+    Page    => $Page,
+&>
 
-</%INIT>
+% $m->callback(CallbackName => 'AfterMyGroupRequests', ARGSRef => \%ARGS, Page => $Page);
+
 <%ARGS>
 $Page => 1
 </%ARGS>

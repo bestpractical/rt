@@ -45,34 +45,51 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+%#<& /Elements/Header, Title => $title &>
+%#<& /Elements/Tabs &>
+%#<& /Elements/ListActions, actions => \@results &>
+
 <%INIT>
-use RT::Dashboard::SelfService;
-if (RT->Config->Get('SelfServiceUseDashboard')) {
-    # Check if we have a self-service dashboard
-    my $Dashboard = RT::Dashboard::SelfService->new($session{'CurrentUser'});
-
-    my $dashboard_id;
-
-    # The Self-Service Home Page dashboard is special; its attribute is
-    # named "selfservicedashboard" instead of "dashboard".  We just
-    # need to get an ID to reuse the rest of the dashboard code.
-    my $attr = RT::Attribute->new(RT->SystemUser);
-    my ($ok, $msg) = $attr->LoadByNameAndObject(Object => $RT::System,
-                                                Name => 'SelfServiceDashboard');
-    if ($ok && $attr->Id) {
-        # Try to load the dashboard
-        my ($ok, $msg) = $Dashboard->LoadById($attr->Id);
-        if ($ok) {
-            $m->comp('/Dashboards/Render.html', id => $attr->Id, self_service_dashboard => 1);
-            return;
-        }
-    }
+# If custom self-service page disabled, redirect to /Admin/Global
+if (!RT->Config->Get('SelfServiceUseDashboard')) {
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Admin/Global');
 }
 
-# Default to old-style "My Open Tickets"
-$m->comp('/SelfService/Open.html', Page => $Page);
+my $title = loc('Self-Service Home Page');
+my @results;
+
+use RT::Dashboard::SelfService;
+my $Dashboard = RT::Dashboard::SelfService->new($session{'CurrentUser'});
+
+my $dashboard_id;
+
+# The Self-Service Home Page dashboard is special; its attribute is
+# named "selfservicedashboard" instead of "dashboard".  We just
+# need to get an ID to reuse the rest of the dashboard code.
+my $attr = RT::Attribute->new(RT->SystemUser);
+my ($ok, $msg) = $attr->LoadByNameAndObject(Object => $RT::System,
+                                            Name => 'SelfServiceDashboard');
+if (!$ok) {
+    my $blank_dashboard = {
+        Panes => {
+            body    => [],
+            sidebar => [],
+        }
+    };
+    # Doesn't exist... try creating an empty one
+    ($ok, $msg) = $Dashboard->Save(
+        Privacy => $RT::System,
+        Description => 'Self-Service Home Page Dashboard',
+        Object => $RT::System,
+        Content => $blank_dashboard);
+    unless ($ok) {
+        RT::Logger->error("Unable to create self-service home page dashboard: $msg");
+        Abort(loc("Could not create self-service home page dashboard"));
+    }
+    $dashboard_id = $Dashboard->id;
+} else {
+    $dashboard_id = $attr->Id;
+}
+$m->comp('/Dashboards/Queries.html', id => $dashboard_id, self_service_dashboard => 1, %ARGS);
 
 </%INIT>
-<%ARGS>
-$Page => 1
-</%ARGS>

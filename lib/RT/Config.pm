@@ -1591,6 +1591,9 @@ our %META;
     SearchResultsAutoRedirect => {
         Widget => '/Widgets/Form/Boolean',
     },
+    SelfServiceUseDashboard => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     ShowBccHeader => {
         Widget => '/Widgets/Form/Boolean',
     },
