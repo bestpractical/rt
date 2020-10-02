@@ -46,54 +46,13 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-<&| /Widgets/TitleBox, title => $title &>
-
-% while (my $article = $articles->Next) {
-  <div class="form-row">
-    <span class="value col-auto">
-      <a href="<% RT->Config->Get('WebPath') %>/<% $display_path %>/Display.html?id=<%$article->Id%>"><%$article->Name || loc('(no name)')%>: <%$article->Summary%></a>
-    </span>
-  </div>
-% }
-</&>
-
-<%INIT>
-$title = loc('Top Articles') unless defined($title);
-# Figure out which class of articles applies, if a classname was given
-my $class;
-
-if ($classname) {
-    $class = RT::Class->new( $session{'CurrentUser'} );
-    my ($ok, $msg) = $class->LoadByCols( Name => RT->Config->Get('SelfServiceArticleClass') );
-    if (!$ok || !$class->Id) {
-        # Could not find the class... bail?
-        return;
-    }
-}
-
-# Get the articles
-my $articles = RT::Articles->new( $session{'CurrentUser'} );
-
-$articles->RowsPerPage($rows);
-
-if ($class) {
-    $articles->Search(Class   => $class->Id,
-                      OrderBy => $order_by,
-                      Order   => $order_direction);
-} else {
-    $articles->Search(OrderBy => $order_by, Order => $order_direction);
-}
-
-</%INIT>
+<& /Elements/TopArticles,
+   title => loc('Newest Articles'),
+   display_path => 'SelfService/Article',
+   order_by => ['Created'],
+   order_direction => ['Desc'],
+   classname => (RT->Config->Get('SelfServiceArticleClass') || 'SelfService') &>
 
 <%ARGS>
-$title => loc("Top Articles")
-$rows => 10
-# Unfortunately, the directory hierarchy under SelfService
-# is just "Article" instead of "Articles/Article", so we have
-# to make to path for displaying an article a parameter.
-$display_path => 'Articles/Article'
-$classname => undef
-$order_by => ['SortOrder', 'LastUpdated']
-$order_direction => ['ASC', 'DESC']
+$title => undef
 </%ARGS>
