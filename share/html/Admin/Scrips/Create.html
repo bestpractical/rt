@@ -49,11 +49,11 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Create.html" id="CreateScrip" name="CreateScrip" class="mx-auto max-width-lg">
+<form method="post" action="Create.html" id="CreateScrip" name="CreateScrip" class="mx-auto max-width-xl">
 <input type="hidden" class="hidden" name="Queue" value="<% $Queue %>" />
 <input type="hidden" class="hidden" name="Global" value="<% $Global || q{} %>" />
 
-<&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
+<&| /Widgets/TitleBox, title => loc('Basics') &>
 
 <& Elements/EditBasics, %ARGS, Scrip => $scrip, Queue => $queue_obj &>
 
