@@ -155,11 +155,6 @@ div.widget .hints {
     }
 }
 
-.value .TimeUnits{
-    margin-left: .5em;
-    width: 7em;
-}
-
 .cfinvalidfield {
     font-style: italic;
     color: red;
