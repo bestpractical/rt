@@ -95,7 +95,7 @@
 }
 
 .darkmode .dropdown-toggle:after {
-    border-color: #FFF;
+    margin-top: 0;
 }
 
 .darkmode .dropdown-menu {
