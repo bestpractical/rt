@@ -255,6 +255,15 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
 
+# Add a CustomFieldView column for custom fields, but with editing disabled
+$COLUMN_MAP->{'CustomFieldView'} = {};
+
+# We copy all keys from CF to CustomFieldView except for "edit"
+foreach my $key ( keys( %{ $COLUMN_MAP->{'CF'} } ) ) {
+    next if $key eq 'edit';
+    $COLUMN_MAP->{'CustomFieldView'}->{$key} = $COLUMN_MAP->{'CF'}->{$key};
+}
+
 Scalar::Util::weaken($WCOLUMN_MAP);
 
 my $ROLE_MAP = {};
