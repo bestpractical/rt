@@ -402,3 +402,13 @@ body.darkmode.IE11 .ui-icon-circle-triangle-w {
 body.darkmode.IE11 .ui-icon-circle-triangle-e {
     background-position: -48px -192px !important;
 }
+
+.darkmode .selectionbox-js .contents li,
+.darkmode .selectionbox-js .contents .placeholder {
+    background-color: #323D42 !important;
+    border-color: #717171 !important;
+}
+
+.darkmode .selectionbox-js .contents {
+    border-color: #515151 !important;
+}
