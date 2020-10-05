@@ -2948,6 +2948,32 @@ on self service pages.
 
 Set($SelfServiceShowGroupTickets, 0);
 
+=item C<$SelfServiceUseDashboard>
+
+C<$SelfServiceUseDashboard> is a flag indicating whether or not to use
+a dashboard for the Self Service home page.  If it is set to false,
+then the normal Open Tickets / Closed Tickets menu is shown rather
+than a dashboard.
+
+=cut
+
+Set($SelfServiceUseDashboard, 0);
+
+=item C<$SelfServicePageComponents>
+
+C<$SelfServicePageComponents> is an arrayref of allowed components on
+the SelfService page, if you have set $SelfServiceUseDashboard to true.
+If this is not set at all, then $HomepageComponents is used instead.
+
+=cut
+
+Set(
+    $SelfServicePageComponents,
+    [
+        qw(QuickCreate QueueList MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup) # loc_qw
+    ]
+);
+
 =back
 
 =head2 Articles
