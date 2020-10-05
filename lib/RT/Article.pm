@@ -96,6 +96,7 @@ sub Create {
     my %args = (
         Name         => '',
         Summary      => '',
+        SortOrder    => 0,
         Class        => '0',
         CustomFields => {},
         Links        => {},
@@ -122,6 +123,7 @@ sub Create {
         Name    => $args{'Name'},
         Class   => $class->Id,
         Summary => $args{'Summary'},
+        SortOrder => $args{'SortOrder'},
         Disabled => $args{'Disabled'},
     );
     unless ($id) {
@@ -777,7 +779,7 @@ sub _CoreAccessible {
         Summary => 
                 {read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
-                {read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0', is_numeric => 1},
         Class => 
                 {read => 1, write => 1, type => 'int(11)', default => '0'},
         Parent => 

@@ -63,6 +63,14 @@
 </div>
 <div class="form-row">
   <div class="label col-3">
+    <&|/l&>Sort Order</&>:
+  </div>
+  <div class="value col-9">
+    <input class="form-control" type="text" name="SortOrder" value="<%($ARGS{'id'} eq 'new' ? '0' : $ArticleObj->SortOrder) || $ARGS{'SortOrder'} || '0' %>" size="50" />
+  </div>
+</div>
+<div class="form-row">
+  <div class="label col-3">
     <&|/l&>Class</&>:
   </div>
   <div class="value col-9">
