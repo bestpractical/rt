@@ -412,3 +412,12 @@ body.darkmode.IE11 .ui-icon-circle-triangle-e {
 .darkmode .selectionbox-js .contents {
     border-color: #515151 !important;
 }
+
+/* fix tooltip colors */
+.darkmode .tooltip > .tooltip-inner {
+    background-color: #000 !important;
+}
+
+.darkmode .tooltip > .tooltip-arrow {
+    border-bottom-color: #000 !important;
+}
