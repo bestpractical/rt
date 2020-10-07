@@ -109,11 +109,8 @@
 
   <& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $Ticket &>
 
-<& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
-
-  <div class="form-row input-row">
-    <div class="label col-3"><&|/l&>Message</&>:</div>
-    <div class="value col-9 messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
+  <div class="form-group mt-2">
+    <div class="value messagebox-container action-<% $ARGS{UpdateType} || ($CanComment ? 'private' : 'response') %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 % if (defined $ARGS{UpdateContent} && length($ARGS{UpdateContent})) {
     <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0 &>
@@ -122,6 +119,8 @@
 % }
     </div>
   </div>
+<& /Ticket/Elements/AddAttachments, %ARGS, TicketObj => $Ticket &>
+
 </div>
 </&>
   
