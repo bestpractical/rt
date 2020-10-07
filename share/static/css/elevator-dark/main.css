@@ -151,16 +151,28 @@
 }
 
 .darkmode .nav-tabs {
-    background: #171A1F;
-    border-color: #3A3C43;
+    border-bottom: 1px solid #515151;
 }
 
-.darkmode .nav-tabs .nav-link:hover {
-    border-color: #3A3C43;
+.darkmode .nav-tabs .nav-link {
+    border: 1px solid transparent;
+    border-bottom-color: #515151;
 }
 
 .darkmode .nav-tabs .nav-link.active {
-    background: none;
+    border-color: #515151 #515151 transparent;
+}
+
+.darkmode .nav-tabs .nav-link:hover:not(.active) {
+    border-color: #515151;
+}
+
+.darkmode .nav-pills .nav-link.active {
+    background-color: #323D42 !important;
+}
+
+.darkmode .nav-pills .nav-link:hover:not(.active) {
+    text-decoration: underline;
 }
 
 .darkmode .table td {
