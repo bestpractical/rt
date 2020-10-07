@@ -1,0 +1,46 @@
+=head1 The Self-Service Interface
+
+Unprivileged users do not have access to the normal RT interface; instead,
+they are restricted to a subset of the interface under the SelfService
+directory tree.
+
+By default, the self-service interface simply presents a "Tickets"
+menu that allows the user to see his or her open or closed tickets.
+(Additional menus may be enabled by giving unprivileged users
+additional rights.)
+
+It is possible to configure RT to present a self-service-specific dashboard
+to unprivileged users instead of just the default menu interface.
+Setting this up will be described in the rest of this document.
+
+=head2 Configuration Items
+
+The following configuration items control the self-service dashboard interface.
+
+=over 4
+
+=item * L<RT_Config/SelfServiceUseDashboard> enables the self-service
+dashboard iterface if set to 1, or disables it (defaulting to the
+simple menu interface) if set to 0.
+
+=item * L<RT_Config/SelfServicePageComponents> is a list of components
+that are allowed to be placed into the self-service dashboard.
+
+=back
+
+=head2 Creating the Self-Service Dashboard
+
+To create the self-service dashboard, the configuration item
+C<$SelfServiceUseDashboard> must be set to 1.  This enables
+a menu item Admin > Global > Self-Service Home Page.  Select
+this item to edit the self-service dashboard.
+
+The self-service dashboard interface is just like any other
+dashboard editor; see L<dashboards> for more details.
+
+Once you have created the self-service dashboard, self-service users
+will see the components on the dashboard when they log in.  Please note
+that you I<also> need to give self-service users the appropriate
+rights to be able to use the components you place on the self-service
+dashboard; these rights are not automatically granted simply by virtue
+of the components being placed on the dashboard.
