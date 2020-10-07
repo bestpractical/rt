@@ -253,6 +253,10 @@
     background: #323D42 !important;
 }
 
+.darkmode table a:visited {
+    color: #a7a7a7 !important;
+}
+
 .darkmode tr.oddline td a {
     background: rgba(255, 255, 255, 0) !important;
 }
