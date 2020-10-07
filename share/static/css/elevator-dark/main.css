@@ -427,3 +427,13 @@ body.darkmode.IE11 .ui-icon-circle-triangle-e {
 .darkmode .dropzone, .darkmode .dropzone .dz-details {
     background: #323D42 !important;
 }
+
+.darkmode div.user-related-info i.label {
+    padding-top: 0;
+}
+
+.darkmode div.user-related-info a.button.btn.btn-primary {
+    background: #323D42 !important;
+    border-color: #717171;
+    margin-bottom: 1px;
+}
