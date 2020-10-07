@@ -59,7 +59,7 @@ my $full_path = $Portlet->{path};
 my $allowed;
 
 if ($m->request_path =~ m{/SelfService/}) {
-    $allowed = grep { $_ eq $path } @{RT->Config->Get('SelfServicePageComponents') || RT->Config->Get('HomepageComponents')};
+    $allowed = grep { $_ eq $path } @{RT->Config->Get('SelfServicePageComponents') || ()};
 } else {
     $allowed = grep { $_ eq $path } @{RT->Config->Get('HomepageComponents')};
 }
