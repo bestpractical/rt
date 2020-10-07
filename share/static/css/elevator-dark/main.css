@@ -421,3 +421,9 @@ body.darkmode.IE11 .ui-icon-circle-triangle-e {
 .darkmode .tooltip > .tooltip-arrow {
     border-bottom-color: #000 !important;
 }
+
+.darkmode .dropzone.dz-clickable .dz-message,
+.darkmode .dropzone.dz-clickable .dz-message *,
+.darkmode .dropzone, .darkmode .dropzone .dz-details {
+    background: #323D42 !important;
+}
