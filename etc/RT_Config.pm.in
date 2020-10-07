@@ -2963,7 +2963,6 @@ Set($SelfServiceUseDashboard, 0);
 
 C<$SelfServicePageComponents> is an arrayref of allowed components on
 the SelfService page, if you have set $SelfServiceUseDashboard to true.
-If this is not set at all, then $HomepageComponents is used instead.
 
 =cut
 
