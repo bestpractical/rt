@@ -727,7 +727,7 @@ jQuery(function() {
     if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
 
         // Add action type into iframe to customize default font color
-        jQuery(['action-response', 'action-comment']).each(function(index, class_name) {
+        jQuery(['action-response', 'action-private']).each(function(index, class_name) {
             jQuery('.' + class_name).on('DOMNodeInserted', 'iframe', function(e) {
                 setTimeout(function() {
                     jQuery(e.target).contents().find('.cke_editable').addClass(class_name);
