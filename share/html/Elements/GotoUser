@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <form name="UserSearch" method="post" action="<% RT->Config->Get('WebPath') %>/User/Search.html">
   <div class="form-row justify-content-center">
-    <div class="col-4">
+    <div class="col-<% $Cols %>">
       <input type="text" class="form-control" name="UserString" value="<% $Default %>" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
     </div>
     <div class="col-auto">
@@ -65,4 +65,5 @@ jQuery(function(){
 </form>
 <%ARGS>
 $Default => ''
+$Cols    => 4
 </%ARGS>
