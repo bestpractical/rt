@@ -287,8 +287,6 @@ my %supported_opt = map { $_ => 1 } qw(
        verbose
 );
 
-our $RE_FILE_EXTENSIONS = qr/pgp|asc/i;
-
 # DEV WARNING: always pass all STD* handles to GnuPG interface even if we don't
 # need them, just pass 'IO::Handle->new()' and then close it after safe_run_child.
 # we don't want to leak anything into FCGI/Apache/MP handles, this break things.
@@ -826,12 +824,13 @@ sub FindScatteredParts {
         }
     }
 
+    my $file_extension_regex = join '|', @{ RT->Config->Get('GnuPG')->{FileExtensions} };
     # attachments with inline encryption
     foreach my $part ( @parts ) {
         next if $args{'Skip'}{$part};
 
         my $fname = $part->head->recommended_filename || '';
-        next unless $fname =~ /\.${RE_FILE_EXTENSIONS}$/;
+        next unless $fname =~ /\.(?:$file_extension_regex)$/;
 
         $RT::Logger->debug("Found encrypted attachment '$fname'");
 
@@ -850,7 +849,7 @@ sub FindScatteredParts {
         my $type = $self->_CheckIfProtectedInline( $part );
         next unless $type;
 
-        my $file = ($part->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
+        my $file = ($part->head->recommended_filename||'') =~ /\.(?:$file_extension_regex)$/;
 
         $args{'Skip'}{$part} = 1;
         push @res, {
@@ -1237,7 +1236,8 @@ sub DecryptAttachment {
     }
 
     my $filename = $embedded_fn || $head->recommended_filename;
-    $filename =~ s/\.${RE_FILE_EXTENSIONS}$//i;
+    my $file_extension_regex = join '|', @{ RT->Config->Get('GnuPG')->{FileExtensions} };
+    $filename =~ s/\.(?:$file_extension_regex)$//i;
     $head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
 

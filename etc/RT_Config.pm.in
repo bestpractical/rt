@@ -3869,6 +3869,7 @@ Set(%GnuPG,
     GnuPG                  => 'gpg',
     Passphrase             => undef,
     OutgoingMessagesFormat => "RFC", # Inline
+    FileExtensions         => [ 'pgp', 'asc' ],
 );
 
 =item C<%GnuPGOptions>
