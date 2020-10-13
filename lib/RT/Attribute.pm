@@ -1185,6 +1185,17 @@ sub _SyncLinks {
     return $success // 1;
 }
 
+=head2 CurrentUserCanSee
+
+Shortcut of CurrentUserHasRight('display').
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('display');
+}
+
 RT::Base->_ImportOverlays();
 
 1;
