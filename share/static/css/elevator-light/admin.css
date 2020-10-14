@@ -49,6 +49,10 @@ ul.list-menu ul li {
     padding-bottom: 0;
 }
 
+#rt-portal .card-body {
+    height: 100%;
+}
+
 .admin-hint {
     font-style: italic;
 }
