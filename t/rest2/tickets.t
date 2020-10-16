@@ -338,6 +338,18 @@ my ($ticket_url, $ticket_id);
     $content = $mech->json_response;
     is($content->{Subject}, 'Ticket update using REST');
     is($content->{Priority}, 42);
+
+    $payload = {
+        Subject => 'Ticket creation using REST',
+        Queue   => 'General',
+    };
+    $res = $mech->post_json( "$rest_base_path/ticket", $payload, 'Authorization' => $auth, );
+    is( $res->code, 201 );
+
+    $payload = { MergeInto => $ticket_id };
+    $res     = $mech->put_json( $res->header('location'), $payload, 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    is_deeply( $mech->json_response, ['Merge Successful'] );
 }
 
 # Transactions
@@ -353,11 +365,11 @@ my ($ticket_url, $ticket_id);
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    is($content->{count}, 3);
+    is($content->{count}, 6);
     is($content->{page}, 1);
     is($content->{per_page}, 20);
-    is($content->{total}, 3);
-    is(scalar @{$content->{items}}, 3);
+    is($content->{total}, 6);
+    is(scalar @{$content->{items}}, 6);
 
     for my $txn (@{ $content->{items} }) {
         is($txn->{type}, 'transaction');
