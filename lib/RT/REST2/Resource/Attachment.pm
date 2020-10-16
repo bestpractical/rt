@@ -50,6 +50,9 @@ package RT::REST2::Resource::Attachment;
 use strict;
 use warnings;
 
+use MIME::Base64;
+use Encode;
+
 use Moose;
 use namespace::autoclean;
 
@@ -67,6 +70,24 @@ sub dispatch_rules {
         block => sub { { record_class => 'RT::Attachment', record_id => shift->pos(1) } },
     )
 }
+
+# Tweak serialize to base-64-encode Content
+around 'serialize' => sub {
+    my ($orig, $self) = @_;
+    my $data = $self->$orig(@_);
+    return $data unless defined $data->{Content};
+
+    # Encode as UTF-8 if it's an internal Perl Unicode string, or if it
+    # contains wide characters.  If the raw data does indeed contain
+    # wide characters, encode_base64 will die anyway, so encoding
+    # seems like a safer choice.
+    if (utf8::is_utf8($data->{Content}) || $data->{Content} =~ /[^\x00-\xFF]/) {
+        # Encode internal Perl string to UTF-8
+        $data->{Content} = encode('UTF-8', $data->{Content}, Encode::FB_PERLQQ);
+    }
+    $data->{Content} = encode_base64($data->{Content});
+    return $data;
+};
 
 __PACKAGE__->meta->make_immutable;
 
