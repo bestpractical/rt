@@ -60,7 +60,7 @@ with (
         => { -alias => { hypermedia_links => '_default_hypermedia_links' } },
     'RT::REST2::Resource::Record::Deletable',
     'RT::REST2::Resource::Record::Writable'
-        => { -alias => { create_record => '_create_record' } },
+        => { -alias => { create_record => '_create_record', update_record => '_update_record' } },
 );
 
 sub dispatch_rules {
@@ -102,6 +102,19 @@ sub create_record {
 
     my ($ok, $txn, $msg) = $self->_create_record($data);
     return ($ok, $msg);
+}
+
+sub update_record {
+    my $self = shift;
+    my $data = shift;
+
+    my @results;
+    push @results, $self->_update_record($data);
+    if ( my $ticket_id = delete $data->{MergeInto} ) {
+        my ( $ok, $msg ) = $self->record->MergeInto($ticket_id);
+        push @results, $msg;
+    }
+    return @results;
 }
 
 sub forbidden {

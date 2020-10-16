@@ -499,6 +499,11 @@ Below are some examples using the endpoints above.
         -d '{ "Subject": "Update test", "CustomFields": {"Severity": "High"}}'
         'https://myrt.com/REST/2.0/ticket/6'
 
+    # Merge a ticket into another
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        -d '{ "MergeInto": 3 }'
+        'https://myrt.com/REST/2.0/ticket/6'
+
     # Correspond a ticket
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
         -d '{ "Content": "Testing a correspondence", "ContentType": "text/plain" }'
