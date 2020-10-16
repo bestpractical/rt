@@ -69,7 +69,38 @@ sub dispatch_rules {
             $txn->Load($match->pos(1));
             return { collection => $txn->Attachments };
         },
-    )
+    ),
+    Path::Dispatcher::Rule::Regex->new(
+        regex => qr{^/ticket/(\d+)/attachments/?$},
+        block => sub {
+            my ($match, $req) = @_;
+            return _get_ticket_attachments($match, $req);
+        },
+    ),
+}
+
+# Get a collection of attachments associated with a ticket This code
+# was put into a subroutine as it was a little long to put inline
+# above and maintain readability.
+
+sub _get_ticket_attachments
+{
+    my ($match, $req) = @_;
+
+    my $ticket = RT::Ticket->new($req->env->{"rt.current_user"});
+    my $id = $ticket->Load($match->pos(1));
+    my $attachments = RT::Attachments->new($req->env->{"rt.current_user"});
+
+    # Return empty list if no such ticket
+    return { collection => $attachments } unless $id;
+
+    # Explicitly check for permission to see the ticket.
+    # If we do not do that, we leak the total number of attachments
+    # even though the actual attachments themselves are not shown.
+    return { collection => $attachments } unless $ticket->CurrentUserHasRight('ShowTicket');
+
+    $attachments->LimitByTicket($id);
+    return { collection => $attachments };
 }
 
 __PACKAGE__->meta->make_immutable;
