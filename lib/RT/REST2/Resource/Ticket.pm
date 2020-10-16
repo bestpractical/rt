@@ -63,6 +63,11 @@ with (
         => { -alias => { create_record => '_create_record', update_record => '_update_record' } },
 );
 
+has 'action' => (
+    is  => 'ro',
+    isa => 'Str',
+);
+
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
         regex => qr{^/ticket/?$},
@@ -71,7 +76,11 @@ sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
         regex => qr{^/ticket/(\d+)/?$},
         block => sub { { record_class => 'RT::Ticket', record_id => shift->pos(1) } },
-    )
+    ),
+    Path::Dispatcher::Rule::Regex->new(
+        regex => qr{^/ticket/(\d+)/(take|untake|steal)$},
+        block => sub { { record_class => 'RT::Ticket', record_id => $_[0]->pos(1), action => $_[0]->pos(2) } },
+    ),
 }
 
 sub create_record {
@@ -109,6 +118,13 @@ sub update_record {
     my $data = shift;
 
     my @results;
+
+    if ( my $action = $self->action ) {
+        my $method = ucfirst $action;
+        my ( $ok, $msg ) = $self->record->$method();
+        push @results, $msg;
+    }
+
     push @results, $self->_update_record($data);
     if ( my $ticket_id = delete $data->{MergeInto} ) {
         my ( $ok, $msg ) = $self->record->MergeInto($ticket_id);

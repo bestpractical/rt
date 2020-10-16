@@ -75,6 +75,7 @@ role {
         return 0 unless $request->method =~ /^(PUT|POST)$/;
         return 0 unless $request->header('Content-Type') =~ /^application\/json/;
 
+        return 0 unless $request->content; # allow empty content
         my $json = eval {
             JSON::from_json($request->content)
         };
