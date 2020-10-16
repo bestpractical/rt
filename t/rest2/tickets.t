@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use RT::Test::REST2 tests => undef;
 use Test::Deep;
+use MIME::Base64;
 
 # Test using integer priorities
 RT->Config->Set(EnablePriorityAsString => 0);
@@ -405,14 +406,14 @@ my ($ticket_url, $ticket_id);
     );
     is($res->code, 200);
     $content = $mech->json_response;
-    is($content->{Content}, 'Hello from hypermedia!');
+    is($content->{Content}, encode_base64('Hello from hypermedia!'));
     is($content->{ContentType}, 'text/plain');
 }
 
 # Ticket Comment
 {
     my $payload = {
-        Content     => '<i>(hello secret camera)</i>',
+        Content     => "<i>(hello secret camera \x{5e9}\x{5dc}\x{5d5}\x{5dd})</i>",
         ContentType => 'text/html',
         Subject     => 'shh',
         TimeTaken   => 129,
@@ -465,7 +466,9 @@ my ($ticket_url, $ticket_id);
     is($res->code, 200);
     $content = $mech->json_response;
     is($content->{Subject}, 'shh');
-    is($content->{Content}, '<i>(hello secret camera)</i>');
+
+    # Note below: D7 A9 is the UTF-8 encoding of U+5E9, etc.
+    is($content->{Content}, encode_base64("<i>(hello secret camera \xD7\xA9\xD7\x9C\xD7\x95\xD7\x9D)</i>"));
     is($content->{ContentType}, 'text/html');
 }
 
