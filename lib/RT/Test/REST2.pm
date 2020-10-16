@@ -154,7 +154,7 @@ sub mech { RT::Test::REST2::Mechanize->new }
         my ($self, $url, $payload, %headers) = @_;
         $self->put(
             $url,
-            Content => $json->encode($payload),
+            $payload ? ( Content => $json->encode($payload) ) : (),
             'Content-Type' => 'application/json; charset=utf-8',
             %headers,
         );

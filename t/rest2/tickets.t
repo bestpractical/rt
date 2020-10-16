@@ -339,6 +339,25 @@ my ($ticket_url, $ticket_id);
     is($content->{Subject}, 'Ticket update using REST');
     is($content->{Priority}, 42);
 
+    $payload = { 'Owner' => 'root' };
+    $res     = $mech->put_json( $ticket_url, $payload, 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    is_deeply( $mech->json_response, ["Ticket $ticket_id: Owner changed from Nobody to root"] );
+
+    $user->PrincipalObj->GrantRight( Right => 'OwnTicket' );
+
+    my %result = (
+        steal  => 'Owner changed from root to test',
+        untake => 'Owner changed from test to Nobody',
+        take   => 'Owner changed from Nobody to test',
+    );
+
+    for my $action (qw/steal untake take/) {
+        $res = $mech->put_json( "$ticket_url/$action", undef, 'Authorization' => $auth, );
+        is( $res->code, 200 );
+        is_deeply( $mech->json_response, [ $result{$action} ] );
+    }
+
     $payload = {
         Subject => 'Ticket creation using REST',
         Queue   => 'General',
@@ -365,11 +384,14 @@ my ($ticket_url, $ticket_id);
     is($res->code, 200);
 
     my $content = $mech->json_response;
-    is($content->{count}, 6);
+    is($content->{count}, 14);
     is($content->{page}, 1);
     is($content->{per_page}, 20);
-    is($content->{total}, 6);
-    is(scalar @{$content->{items}}, 6);
+
+    # TODO This 14 VS 15 inconsitency is because user lacks ShowOutgoingEmail.
+    # It'll be perfect if we can keep them in sync
+    is($content->{total}, 15);
+    is(scalar @{$content->{items}}, 14);
 
     for my $txn (@{ $content->{items} }) {
         is($txn->{type}, 'transaction');
