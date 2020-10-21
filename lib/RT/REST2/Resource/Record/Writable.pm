@@ -174,6 +174,7 @@ sub update_record {
 
     push @results, update_custom_fields($self->record, $data->{CustomFields});
     push @results, $self->_update_role_members($data);
+    push @results, $self->_update_links($data);
     push @results, $self->_update_disabled($data->{Disabled})
       unless grep { $_ eq 'Disabled' } $self->record->WritableAttributes;
     push @results, $self->_update_privileged($data->{Privileged})
@@ -301,6 +302,76 @@ sub _update_role_members {
 
     return @results;
 }
+
+sub _update_links {
+    my $self = shift;
+    my $data = shift;
+
+    my $record = $self->record;
+
+    return unless $record->DOES('RT::Record::Role::Links');
+
+    my @results;
+    for my $name ( grep { $_ ne 'MergedInto' } sort keys %RT::Link::TYPEMAP ) {
+        my $mode = $RT::Link::TYPEMAP{$name}{Mode};
+        my $type = $RT::Link::TYPEMAP{$name}{Type};
+        if ( $data->{$name} ) {
+            my $links = $record->Links( $mode eq 'Base' ? 'Target' : 'Base', $type );
+            my %current;
+            while ( my $link = $links->Next ) {
+                my $uri_method = $mode . 'URI';
+                my $uri        = $link->$uri_method;
+
+                if ( $uri->IsLocal ) {
+                    my $local_method = "Local$mode";
+                    $current{ $link->$local_method } = 1;
+                }
+                else {
+                    $current{ $link->$mode } = 1;
+                }
+            }
+
+            for my $value ( ref $data->{$name} eq 'ARRAY' ? @{ $data->{$name} } : $data->{$name} ) {
+                if ( $current{$value} ) {
+                    delete $current{$value};
+                }
+                else {
+                    my ( $ok, $msg ) = $record->AddLink(
+                        $mode => $value,
+                        Type  => $type,
+                    );
+                    push @results, $msg;
+                }
+            }
+
+            for my $value ( sort keys %current ) {
+                my ( $ok, $msg ) = $record->DeleteLink(
+                    $mode => $value,
+                    Type  => $type,
+                );
+                push @results, $msg;
+            }
+        }
+        else {
+            for my $action (qw/Add Delete/) {
+                my $arg = "$action$name";
+                next unless $data->{$arg};
+
+                for my $value ( ref $data->{$arg} eq 'ARRAY' ? @{ $data->{$arg} } : $data->{$arg} ) {
+                    my $method = $action . 'Link';
+                    my ( $ok, $msg ) = $record->$method(
+                        $mode => $value,
+                        Type  => $type,
+                    );
+                    push @results, $msg;
+                }
+            }
+        }
+    }
+
+    return @results;
+}
+
 
 sub _update_disabled {
     my $self = shift;
