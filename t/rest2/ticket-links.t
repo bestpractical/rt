@@ -90,6 +90,46 @@ $user->PrincipalObj->GrantRight( Right => 'ShowTicket' );
     }], 'one external refers-to link');
 }
 
+# Create/Modify ticket with links
+$user->PrincipalObj->GrantRight( Right => $_ ) for qw/CreateTicket ModifyTicket/;
+
+{
+    my $res = $mech->post_json(
+        "$rest_base_path/ticket",
+        { Queue => 'General', DependsOn => [ $parent_id, $child_id ], RefersTo => $child_id },
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, 'post response code' );
+    my $content = $mech->json_response;
+    my $id      = $content->{id};
+    ok( $id, "create another ticket with links" );
+
+    $res = $mech->put_json( "$rest_base_path/ticket/$id", { RefersTo => $parent_id }, 'Authorization' => $auth, );
+    is( $res->code, 200, 'put response code' );
+
+    $content = $mech->json_response;
+    is_deeply(
+        $content,
+        [ "Ticket $id refers to Ticket $parent_id.", "Ticket $id no longer refers to Ticket $child_id." ],
+        'update RefersTo'
+    );
+
+    $res = $mech->put_json(
+        "$rest_base_path/ticket/$id",
+        { DeleteDependsOn => $parent_id, AddMembers => [ $parent_id, $child_id ] },
+        'Authorization' => $auth
+    );
+    is( $res->code, 200, 'put response code' );
+    $content = $mech->json_response;
+    is_deeply(
+        $content,
+        [   "Ticket $id no longer depends on Ticket $parent_id.",
+            "Ticket $parent_id member of Ticket $id.",
+            "Ticket $child_id member of Ticket $id."
+        ],
+        'add Members and delete DependsOn'
+    );
+}
 
 done_testing;
 
