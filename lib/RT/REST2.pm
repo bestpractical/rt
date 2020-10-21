@@ -558,7 +558,8 @@ Below are some examples using the endpoints above.
         get attachments for transaction
 
     GET /attachment/:id
-        retrieve an attachment
+        retrieve an attachment.  Note that the C<Content> field contains
+        the base64-encoded representation of the raw content.
 
 =head3 Image and Binary Object Custom Field Values
 
