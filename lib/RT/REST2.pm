@@ -557,6 +557,9 @@ Below are some examples using the endpoints above.
     GET /transaction/:id/attachments
         get attachments for transaction
 
+    GET /ticket/:id/attachments
+        get attachments associated with a ticket
+
     GET /attachment/:id
         retrieve an attachment.  Note that the C<Content> field contains
         the base64-encoded representation of the raw content.

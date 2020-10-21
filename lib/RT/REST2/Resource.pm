@@ -110,7 +110,8 @@ sub expand_field {
 
             push @{ $result }, values %values if %values;
         }
-
+    } elsif ($field eq 'ContentLength' && $item->can('ContentLength')) {
+        $result = $item->ContentLength;
     } elsif ($item->can('_Accessible') && $item->_Accessible($field => 'read')) {
         # RT::Record derived object, so we can check access permissions.
 
