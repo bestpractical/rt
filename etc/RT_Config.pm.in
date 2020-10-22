@@ -3862,6 +3862,11 @@ function, or a hash (to look up by address).  If the hash is used, the
 Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 
+Plain (not encrypted) email sent to RT can have attached files that
+are encrypted. Set C<FileExtensions> to any file extensions on
+attachments that RT should treat as encrypted and attempt to
+decrypt with C<gpg>.
+
 =cut
 
 Set(%GnuPG,
