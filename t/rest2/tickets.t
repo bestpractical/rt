@@ -4,6 +4,8 @@ use RT::Test::REST2 tests => undef;
 use Test::Deep;
 use MIME::Base64;
 
+use Encode qw(decode encode);
+
 # Test using integer priorities
 RT->Config->Set(EnablePriorityAsString => 0);
 my $mech = RT::Test::REST2->mech;
@@ -506,6 +508,133 @@ my ($ticket_url, $ticket_id);
     is($third_ticket->{type}, 'ticket');
     is($third_ticket->{id}, $ticket3_id);
     like($third_ticket->{_url}, qr{$rest_base_path/ticket/$ticket3_id$});
+}
+
+# Ticket Creation - with attachments
+{
+    my $payload = {
+        Subject => 'Ticket creation using REST, with attachments.',
+        Queue   => 'General',
+        Content => 'Testing ticket creation with attachments using REST API.',
+        Attachments => [
+            {   FileName    => 'plain.txt',
+                FileType    => 'text/plain',
+                FileContent => MIME::Base64::encode_base64('Hello, World!')
+            },
+            {   FileName    => 'html.htm',
+                FileType    => 'text/html',
+                FileContent => MIME::Base64::encode_base64(
+                    encode( 'UTF-8', "<p><i>Easy</i> as \x{03c0}</p>" )
+                ),
+            },
+            {   FileName => 'moon.png',
+                FileType => 'image/png',
+                FileContent =>
+                    'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAGQAAABkABchkaRQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADfSURBVDiNndM9TsNAFATgzy5yjZSAE85JBygETgENUPF3iBCitHAFQkcIhZ/Ryn9gRlrZmp2Z3ef3TBOHOMULPrDBMrhpi/4HI5xjix2+4nmJRbx/Yh7ahvkpRPVV4QDXwT3UQy46zGkAZDgK/iytefvHgCrkJsqZUH6cLnNbABSxd5Jhhf1IbkMXv8Qux7hH1Ic1xvk/jBWy6gavumvtwx7ectwZXkKh7MA95XgObeOtpI2U4zl0kGbpxgiPvwQUcXLrKFchc82f6Ur0PK49azOnmOI4TBu84zm4SV38DeIVYkrYJyNbAAAAAElFTkSuQmCC'
+            },
+        ]
+    };
+
+    my $res = $mech->post_json( "$rest_base_path/ticket", $payload,
+        'Authorization' => $auth, );
+    is( $res->code, 201 );
+    ok( $ticket_url = $res->header('location') );
+    ok( ($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)] );
+}
+
+# We have the attachments added above
+{
+    my $ticket = RT::Ticket->new($user);
+    $ticket->Load($ticket_id);
+    my $transaction_id = $ticket->Transactions->Last->id;
+    my $attachments    = $ticket->Attachments->ItemsArrayRef;
+
+    # The 5 attachments are:
+    # 1) Top-level multipart
+    # 2) Top-level ticket content
+    # 3-5) The three attachments added in the Attachments array
+    is( scalar(@$attachments), 5 );
+
+    is( $attachments->[0]->ContentType, 'multipart/mixed' );
+
+    is( $attachments->[1]->ContentType, 'text/plain' );
+    is( $attachments->[1]->Content,
+        'Testing ticket creation with attachments using REST API.' );
+
+    is( $attachments->[2]->ContentType, 'text/plain' );
+    is( $attachments->[2]->Filename,    'plain.txt' );
+    is( $attachments->[2]->Content,     'Hello, World!' );
+
+    is( $attachments->[3]->ContentType, 'text/html' );
+    is( $attachments->[3]->Filename,    'html.htm' );
+    is( $attachments->[3]->Content,     "<p><i>Easy</i> as \x{03c0}</p>" );
+
+    is( $attachments->[4]->ContentType, 'image/png' );
+    is( $attachments->[4]->Filename,    'moon.png' );
+    like( $attachments->[4]->Content, qr/IHDR/, "Looks like a PNG image" );
+}
+
+# Ticket Creation - with attachments, using multipart/form-data
+my $json = JSON->new->utf8;
+{
+    my $plain_name = 'plain.txt';
+    my $plain_path = RT::Test::get_relocatable_file($plain_name, 'data');
+    my $html_name  = 'html.htm';
+    my $html_path  = RT::Test::get_relocatable_file($html_name, 'data');
+    my $img_name   = 'image.png';
+    my $img_path   = RT::Test::get_relocatable_file($img_name, 'data');
+
+    my $payload = {
+        Subject => 'Ticket creation using REST, multipart/form-data, with attachments.',
+        Queue   => 'General',
+        Content => 'Testing ticket creation, multipart/form-data, with attachments using REST API.',
+    };
+
+    my $res = $mech->post( "$rest_base_path/ticket", $payload,
+                           'Authorization' => $auth,
+                           'Content_Type' => 'form-data',
+                           'Content' => [
+                               'JSON' => $json->encode($payload),
+                               'Attachments' => [$plain_path, $plain_name, 'text/plain'],
+                               'Attachments' => [$html_path,  $html_name,  'text/html' ],
+                               'Attachments' => [$img_path,   $img_name,   'image/png' ]
+                           ]);
+    is( $res->code, 201 );
+    ok( $ticket_url = $res->header('location') );
+    ok( ($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)] );
+}
+
+# Validate that the ticket was created correctly
+
+{
+    my $ticket = RT::Ticket->new($user);
+    $ticket->Load($ticket_id);
+    my $transaction_id = $ticket->Transactions->Last->id;
+    my $attachments    = $ticket->Attachments->ItemsArrayRef;
+
+    # The 5 attachments are:
+    # 1) Top-level multipart
+    # 2) Top-level ticket content
+    # 3-5) The three attachments added in the Attachments array
+    is( scalar(@$attachments), 5 );
+
+    is( $attachments->[0]->ContentType, 'multipart/mixed' );
+
+    is( $attachments->[1]->ContentType, 'text/plain' );
+    is( $attachments->[1]->Content,
+        'Testing ticket creation, multipart/form-data, with attachments using REST API.' );
+
+    is( $attachments->[2]->ContentType, 'text/plain' );
+    is( $attachments->[2]->Filename,    'plain.txt' );
+    is( $attachments->[2]->Content,     "Hello, World!\n" );
+
+    is( $attachments->[3]->ContentType, 'text/html' );
+    is( $attachments->[3]->Filename,    'html.htm' );
+    is( $attachments->[3]->Content,     "<p><i>Easy</i> as \x{03c0}</p>\n" );
+
+    is( $attachments->[4]->ContentType, 'image/png' );
+    is( $attachments->[4]->Filename,    'image.png' );
+    like( $attachments->[4]->Content, qr/IHDR/, "Looks like a PNG image" );
 }
 
 done_testing;
