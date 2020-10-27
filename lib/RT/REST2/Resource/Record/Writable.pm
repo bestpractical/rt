@@ -112,6 +112,10 @@ sub from_multipart {
         $json->{CustomFields} = $cfs;
     }
 
+    if ( my @attachments = $self->request->upload('Attachments') ) {
+        $json->{Attachments} = [ process_uploads(@attachments) ];
+    }
+
     return $self->from_json($json);
 }
 

@@ -204,6 +204,10 @@ used for conflict avoidance
 (L<https://en.wikipedia.org/wiki/HTTP_ETag>). We'll first try updating this
 ticket with an I<invalid> C<ETag> to see what happens.
 
+You can add attachments when you create a ticket.  Simply add an "Attachments"
+entry in the JSON request content; the format of this entry is described
+in L<Add Attachments>
+
 =head3 Updating Tickets
 
 For updating tickets we use the C<PUT> verb, but otherwise it looks much

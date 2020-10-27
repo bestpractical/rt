@@ -91,13 +91,27 @@ sub create_record {
         Object => $queue,
     ) and $queue->Disabled != 1;
 
-    if ( defined $data->{Content} ) {
+    if ( defined $data->{Content} || defined $data->{Attachments} ) {
         $data->{MIMEObj} = HTML::Mason::Commands::MakeMIMEEntity(
             Interface => 'REST',
             Subject   => $data->{Subject},
             Body      => delete $data->{Content},
             Type      => delete $data->{ContentType} || 'text/plain',
         );
+        if ( defined $data->{Attachments} ) {
+            return (\400, "Attachments must be an array") unless ref($data->{Attachments}) eq 'ARRAY';
+            foreach my $attachment (@{$data->{Attachments}}) {
+                return (\400, "Each element of Attachments must be a hash") unless ref($attachment) eq 'HASH';
+                foreach my $field (qw(FileName FileType FileContent)) {
+                    return (\400, "Field $field is required for each attachment in Attachments") unless $attachment->{$field};
+                }
+                $data->{MIMEObj}->attach(
+                    Type     => $attachment->{FileType},
+                    Filename => $attachment->{FileName},
+                    Data     => MIME::Base64::decode_base64($attachment->{FileContent}));
+            }
+            delete $data->{Attachments};
+        }
     }
 
     my ($ok, $txn, $msg) = $self->_create_record($data);
