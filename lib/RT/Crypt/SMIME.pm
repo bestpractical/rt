@@ -468,6 +468,7 @@ sub Verify {
 
         $signer = $info{info}[0];
         last unless $signer and $signer->{User}[0]{String};
+        last if $signer->{User}[0]{String} =~ 'DN:';
 
         unless ( $info{info}[0]{TrustLevel} > 0 or RT->Config->Get('SMIME')->{AcceptUntrustedCAs}) {
             # We don't trust it; give it the finger
@@ -920,8 +921,18 @@ sub GetCertificateInfo {
             my $method = $type . "_" . $USER_MAP{$_};
             $data{$_} = $cert->$method if $cert->can($method);
         }
-        $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format
-            if $data{EmailAddress};
+        if ($type eq 'issuer') {
+            $data{String} = 'DN: ' . join(',',@{$cert->Issuer});
+        } elsif ($type eq 'subject') {
+            if ($cert->SubjectAltName && grep /rfc822name/i, @{$cert->SubjectAltName}) {
+                $data{String} = join( ',', map { s/rfc822name=//i; $_ } grep /rfc822name/i, @{$cert->SubjectAltName});
+            } elsif ($data{EmailAddress}) {
+                $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format;
+            } else {
+                $data{String} = 'DN: ' . join(',',@{$cert->Subject});
+            }
+        }
+
         return \%data;
     };
 
