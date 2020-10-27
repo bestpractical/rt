@@ -69,6 +69,7 @@ use Sub::Exporter -setup => {
         custom_fields_for
         format_datetime
         update_custom_fields
+        process_uploads
     ]]
 };
 
@@ -444,5 +445,27 @@ sub update_custom_fields {
     return @results;
 }
 
+sub process_uploads {
+    my @attachments = @_;
+    my @ret;
+    foreach my $attachment (@attachments) {
+        open my $filehandle, '<', $attachment->tempname;
+        if ( defined $filehandle && length $filehandle ) {
+            my ( @content, $buffer );
+            while ( read( $filehandle, $buffer, 72 * 57 ) ) {
+                push @content, MIME::Base64::encode_base64($buffer);
+            }
+            close $filehandle;
+
+            push @ret,
+                {
+                FileName    => $attachment->filename,
+                FileType    => $attachment->headers->{'content-type'},
+                FileContent => join( "\n", @content ),
+                };
+        }
+    }
+    return @ret;
+}
 
 1;

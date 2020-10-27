@@ -53,7 +53,7 @@ use warnings;
 use Moose::Role;
 use namespace::autoclean;
 use JSON ();
-use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields );
+use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields process_uploads );
 use List::MoreUtils 'uniq';
 
 with 'RT::REST2::Resource::Role::RequestBodyIsJSON'
@@ -90,22 +90,8 @@ sub from_multipart {
                 my @values;
                 foreach my $single_value (@$value) {
                     if ( ref $single_value eq 'HASH' && ( my $field_name = $single_value->{UploadField} ) ) {
-                        my $file = $self->request->upload($field_name);
-                        if ($file) {
-                            open my $filehandle, '<', $file->tempname;
-                            if (defined $filehandle && length $filehandle) {
-                                my ( @content, $buffer );
-                                while ( my $bytesread = read( $filehandle, $buffer, 72*57 ) ) {
-                                    push @content, MIME::Base64::encode_base64($buffer);
-                                }
-                                close $filehandle;
-
-                                push @values, {
-                                    FileName    => $file->filename,
-                                    FileType    => $file->headers->{'content-type'},
-                                    FileContent => join("\n", @content),
-                                };
-                            }
+                        if ( my $file = $self->request->upload($field_name) ) {
+                            push @values, process_uploads($file);
                         }
                     }
                     else {
@@ -115,22 +101,8 @@ sub from_multipart {
                 $cfs->{$id} = \@values;
             }
             elsif ( ref $value eq 'HASH' && ( my $field_name = $value->{UploadField} ) ) {
-                my $file = $self->request->upload($field_name);
-                if ($file) {
-                    open my $filehandle, '<', $file->tempname;
-                    if (defined $filehandle && length $filehandle) {
-                        my ( @content, $buffer );
-                        while ( my $bytesread = read( $filehandle, $buffer, 72*57 ) ) {
-                            push @content, MIME::Base64::encode_base64($buffer);
-                        }
-                        close $filehandle;
-
-                        $cfs->{$id} = {
-                            FileName    => $file->filename,
-                            FileType    => $file->headers->{'content-type'},
-                            FileContent => join("\n", @content),
-                        };
-                    }
+                if ( my $file = $self->request->upload($field_name) ) {
+                    ( $cfs->{$id} ) = process_uploads($file);
                 }
             }
             else {
