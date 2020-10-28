@@ -637,4 +637,45 @@ my $json = JSON->new->utf8;
     like( $attachments->[4]->Content, qr/IHDR/, "Looks like a PNG image" );
 }
 
+# Ticket Creation - with custom field uploads, using multipart/form-data
+{
+    my $image_cf = RT::Test->load_or_create_custom_field( Name => 'Image', Queue => 'General', Type => 'Image' );
+    $user->PrincipalObj->GrantRight( Right => $_ ) for qw/SeeCustomField ModifyCustomField/;
+
+    my $img_name = 'image.png';
+    my $img_path = RT::Test::get_relocatable_file( $img_name, 'data' );
+    my $img_content = do {
+        local $/;
+        open my $fh, '<', $img_path or die $!;
+        <$fh>;
+    };
+
+    my $payload  = {
+        Subject      => 'Ticket creation using REST, multipart/form-data, with custom field uploads',
+        Queue        => 'General',
+        Content      => 'Testing ticket creation, multipart/form-data, with custom field uploads using REST API.',
+        CustomFields => { Image => { UploadField => 'image' } },
+    };
+
+    my $res = $mech->post(
+        "$rest_base_path/ticket",
+        $payload,
+        'Authorization' => $auth,
+        'Content_Type'  => 'form-data',
+        'Content'       => [
+            'JSON'  => $json->encode($payload),
+            'image' => [ $img_path, $img_name, 'image/png' ],
+        ],
+    );
+    is( $res->code, 201 );
+    ok( $ticket_url = $res->header('location') );
+    ok( ($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)] );
+
+    my $ticket = RT::Ticket->new($user);
+    $ticket->Load($ticket_id);
+    my $value = $ticket->CustomFieldValues( $image_cf )->First;
+    is( $value->Content, 'image.png', 'image file name');
+    is( $value->LargeContent, $img_content, 'image file content');
+}
+
 done_testing;
