@@ -92,7 +92,7 @@ for my $group ( @Groupings ) {
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
-  <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+  <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $Object->id %>" />
     <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
     <div class="form-row">
