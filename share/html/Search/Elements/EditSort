@@ -120,7 +120,7 @@ elsif ( $Class eq 'RT::Assets' ) {
 }
 
 # Add all available CustomFields to the list of sortable columns.
-my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
+my @cfs = grep /^CustomField(?!View)/, @{$ARGS{AvailableColumns}};
 $fields{$_} = $_ for @cfs;
 
 # Add all available CustomRoles to the list of sortable columns.

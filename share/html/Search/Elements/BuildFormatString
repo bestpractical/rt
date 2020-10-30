@@ -106,6 +106,7 @@ if ( $Class eq 'RT::Transactions' ) {
 
     while ( my $CustomField = $CustomFields->Next ) {
         push @fields, "CustomField.{" . $CustomField->Name . "}";
+        push @fields, "CustomFieldView.{" . $CustomField->Name . "}";
     }
 }
 elsif ( $Class eq 'RT::Assets' ) {
@@ -140,6 +141,7 @@ elsif ( $Class eq 'RT::Assets' ) {
     $CustomFields->LimitToCatalog(0);
     while ( my $CustomField = $CustomFields->Next ) {
         push @fields, "CustomField.{" . $CustomField->Name . "}";
+        push @fields, "CustomFieldView.{" . $CustomField->Name . "}";
     }
 
 }
@@ -197,6 +199,7 @@ else {
 
     while ( my $CustomField = $CustomFields->Next ) {
         push @fields, "CustomField.{" . $CustomField->Name . "}";
+        push @fields, "CustomFieldView.{" . $CustomField->Name . "}";
     }
 
     my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'} );
