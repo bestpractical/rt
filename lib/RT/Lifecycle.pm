@@ -242,11 +242,11 @@ sub Valid {
     my $self = shift;
     my @types = @_;
     unless ( @types ) {
-        return @{ $self->{'data'}{''} || [] };
+        return map { lc $_ } @{ $self->{'data'}{''} || [] };
     }
 
     my @res;
-    push @res, @{ $self->{'data'}{ $_ } || [] } foreach @types;
+    push @res, map { lc $_ } @{ $self->{'data'}{ $_ } || [] } foreach @types;
     return @res;
 }
 
