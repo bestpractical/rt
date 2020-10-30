@@ -171,7 +171,7 @@ feature 'oracle' => sub {
 };
 
 feature 'pg' => sub {
-    requires 'DBD::Pg', '>= 1.43';
+    requires 'DBD::Pg', '>= 3.008';
 };
 
 feature 'sqlite' => sub {
