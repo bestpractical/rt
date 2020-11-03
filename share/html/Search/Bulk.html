@@ -331,6 +331,7 @@
 
   <div class="form-group">
     <div class="messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
+% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 %# Currently, bulk update always starts with Comment not Reply selected, so we check this unconditionally
 % my $IncludeSignature = RT->Config->Get('MessageBoxIncludeSignatureOnComment');
       <& /Elements/MessageBox, Name => "UpdateContent", 
@@ -339,7 +340,6 @@
       &>
     </div>
   </div>
-% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 
   <& /Ticket/Elements/AddAttachments, %ARGS &>
 </&>
