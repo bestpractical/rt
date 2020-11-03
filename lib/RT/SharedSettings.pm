@@ -138,6 +138,14 @@ sub GotoPage {
     $self->{idx} = shift;
 }
 
+=head2 ColumnMapClassName
+
+Equivalent to L<RT::SearchBuilder/ColumnMapClassName>
+
+=cut
+
+sub ColumnMapClassName { return shift->RecordClass->ColumnMapClassName }
+
 ### Internal methods
 
 # _GetObject: helper routine to load the correct object whose parameters
