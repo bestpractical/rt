@@ -533,7 +533,7 @@ sub Verify {
 
     $res{'status'} = $self->FormatStatus({
         Operation => "Verify", Status => "DONE",
-        Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", trust is ".$signer->{TrustTerse},
+        Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", assured by " . $signer->{Issuer}[0]{String} . ", trust is ".$signer->{TrustTerse},
         UserString => $signer->{User}[0]{String},
         Trust => uc($signer->{TrustTerse}),
     });
