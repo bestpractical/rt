@@ -460,6 +460,7 @@ to experiment.
                 'pending'    => 'new',
                 'processing' => 'open',
                 'delivered'  => 'resolved',
+                'delivery'   => 'open',
                 'returned'   => 'open', # closest matching we have in 'default'
                 'declined'   => 'rejected',
                 'deleted'    => 'deleted',
