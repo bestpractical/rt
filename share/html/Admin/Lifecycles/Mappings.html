@@ -74,7 +74,7 @@
           <% $OtherStatus %>:
         </div>
         <div class="col-8 value">
-          <& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{$OtherStatus}, Name => 'map-' . $Other->Name . '-' . $OtherStatus . '--' . $LifecycleObj->Name&>
+          <& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{$OtherStatus}, Name => 'map-' . $Other->Name . '--' . $OtherStatus . '--' . $LifecycleObj->Name&>
         </div>
       </div>
 % }
@@ -88,7 +88,7 @@
           <% $MyStatus %>:
         </div>
         <div class="col-8 value">
-          <& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{$MyStatus}, Name => 'map-' . $LifecycleObj->Name . '-' . $MyStatus . '--' . $Other->Name &>
+          <& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{$MyStatus}, Name => 'map-' . $LifecycleObj->Name . '--' . $MyStatus . '--' . $Other->Name &>
         </div>
       </div>
 % }

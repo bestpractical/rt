@@ -968,7 +968,7 @@ sub ParseMappingsInput {
 
     my %maps;
     for my $key (keys %{$args}) {
-        my ($from_lifecycle, $from_status, $to_lifecycle) = $key =~ /^map-($lifecycle_re)-(.*)--($lifecycle_re)$/ or next;
+        my ($from_lifecycle, $from_status, $to_lifecycle) = $key =~ /^map-($lifecycle_re)--(.*)--($lifecycle_re)$/;
         next unless $from_lifecycle && $from_status && $to_lifecycle;
 
         if (my $to_status = $args->{$key}) {
