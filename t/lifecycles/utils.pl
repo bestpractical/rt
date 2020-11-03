@@ -71,6 +71,42 @@ Set(\%Lifecycles,
         initial  => ['initial'],
         active   => ['active'],
         inactive => ['inactive'],
+    },
+    "sales"      => {
+        type     => 'ticket',
+        initial  => ['initial'],
+        active   => ['active'],
+        inactive => ['inactive'],
+    },
+    "sales-engineering" => {
+        "initial" => ["sales"],
+        "active"  => [
+            "engineering",
+            "stalled"
+        ],
+        "inactive" => [
+            "resolved",
+            "rejected",
+            "deleted"
+        ],
+    },
+    "__maps__" => {
+        "default -> sales-engineering" => {
+            "deleted"  => "deleted",
+            "new"      => "sales",
+            "open"     => "engineering",
+            "rejected" => "rejected",
+            "resolved" => "resolved",
+            "stalled"  => "stalled"
+        },
+        "sales-engineering -> default"  => {
+            "deleted"     => "deleted",
+            "sales"       => "new",
+            "engineering" => "open",
+            "rejected"    => "rejected",
+            "resolved"    => "resolved",
+            "stalled"     => "stalled"
+        },
     }
 );
 END

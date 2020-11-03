@@ -14,17 +14,17 @@ diag "Test updating mappings";
     my $form = $m->form_name('ModifyMappings');
     $m->submit_form(
         fields => {
-            "map-default-new--foo"      => "initial",
-            "map-default-open--foo"     => "active",
-            "map-default-resolved--foo" => "inactive",
-            "map-foo-initial--default"  => "new",
-            "map-foo-active--default"   => "open",
-            "map-foo-inactive--default" => "resolved",
-            "map-default-deleted--foo"  => "inactive",
-            "map-default-rejected--foo" => "inactive",
-            "map-default-stalled--foo"  => "active",
-            "Name"                      => "default",
-            "Type"                      => "ticket",
+            "map-default--new--foo"      => "initial",
+            "map-default--open--foo"     => "active",
+            "map-default--resolved--foo" => "inactive",
+            "map-foo--initial--default"  => "new",
+            "map-foo--active--default"   => "open",
+            "map-foo--inactive--default" => "resolved",
+            "map-default--deleted--foo"  => "inactive",
+            "map-default--rejected--foo" => "inactive",
+            "map-default--stalled--foo"  => "active",
+            "Name"                       => "default",
+            "Type"                       => "ticket",
         },
         button => 'Update'
     );
@@ -69,17 +69,17 @@ diag "Test updating mappings";
     $form = $m->form_name('ModifyMappings');
     $m->submit_form(
         fields => {
-            "map-default-new--foo"      => "active",
-            "map-default-open--foo"     => "active",
-            "map-default-resolved--foo" => "inactive",
-            "map-foo-initial--default"  => "new",
-            "map-foo-active--default"   => "open",
-            "map-foo-inactive--default" => "resolved",
-            "map-default-deleted--foo"  => "inactive",
-            "map-default-rejected--foo" => "inactive",
-            "map-default-stalled--foo"  => "active",
-            "Name"                      => "default",
-            "Type"                      => "ticket",
+            "map-default--new--foo"      => "active",
+            "map-default--open--foo"     => "active",
+            "map-default--resolved--foo" => "inactive",
+            "map-foo--initial--default"  => "new",
+            "map-foo--active--default"   => "open",
+            "map-foo--inactive--default" => "resolved",
+            "map-default--deleted--foo"  => "inactive",
+            "map-default--rejected--foo" => "inactive",
+            "map-default--stalled--foo"  => "active",
+            "Name"                       => "default",
+            "Type"                       => "ticket",
         },
         button => 'Update'
     );
@@ -117,8 +117,8 @@ diag "Confirm the web UI correctly displays mappings";
 
     my @inputs = $form->inputs;
     foreach my $input ( @inputs ) {
-        my ($default_from, $default_status, $default_to) = $input->name =~ /^map-(default)-(.*)--(foo)$/;
-        my ($foo_from, $foo_status, $foo_to) = $input->name =~ /^map-(default)-(.*)--(foo)$/;
+        my ($default_from, $default_status, $default_to) = $input->name =~ /^map-(default)--(.*)--(foo)$/;
+        my ($foo_from, $foo_status, $foo_to) = $input->name =~ /^map-(default)--(.*)--(foo)$/;
 
         if ( $default_from ) {
             is ($input->value, $from->{$default_status}, "Mapping set correctly for default -> foo for status: $default_status" );
@@ -127,6 +127,48 @@ diag "Confirm the web UI correctly displays mappings";
             is ( $input->value, $to->{$foo_status}, "Mapping set correctly for foo -> default for status: $foo_status" );
         }
     }
+}
+
+diag "Test updating sales-engineering mappings";
+{
+    ok( $m->login( 'root', 'password' ), 'logged in' );
+
+    $m->get_ok( $url . '/Admin/Lifecycles/Mappings.html?Type=ticket&Name=sales-engineering' );
+
+    my $form = $m->form_name('ModifyMappings');
+    $m->submit_form(
+        fields => {
+            "map-sales-engineering--sales--default"       => "new",
+            "map-sales-engineering--engineering--default" => "new", # Mapping we are changing
+            "map-sales-engineering--rejected--default"    => "rejected",
+            "map-sales-engineering--resolved--default"    => "resolved",
+            "map-sales-engineering--stalled--default"     => "stalled",
+            "Name"                                        => "sales-engineering",
+            "Type"                                        => "ticket",
+        },
+        button => 'Update'
+    );
+    $m->content_contains( 'Lifecycle mappings updated' );
+    $form = $m->form_name('ModifyMappings');
+
+    my $from = {
+        sales        => "new",
+        engineering  => "new", # Changed mapping
+        stalled      => "stalled",
+        rejected     => "rejected",
+        resolved     => "resolved",
+        deleted      => "deleted",
+    };
+
+    # Ensure that the UI correctly reflects the changes we made
+    my @inputs = $form->inputs;
+    foreach my $input ( @inputs ) {
+        my ($sales_engineering, $status, $to) = $input->name =~ /^map-(sales-engineering)--(.*)--(default)$/;
+        next unless $from && $status && $to;
+        is ($input->value, $from->{$status}, "Mapping set correctly for sales-engineering -> default for status: $status" );
+        delete $from->{$status};
+    }
+    ok scalar keys %{$from} eq 0, "Checked all sales-engineering -> default mappings.";
 }
 
 done_testing;
