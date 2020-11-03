@@ -66,6 +66,12 @@ Set(\%Lifecycles,
         active => ['on-your-mark', 'get-set', 'go'],
         inactive => ['first', 'second', 'third', 'no-place'],
     },
+    foo => {
+        type     => 'ticket',
+        initial  => ['initial'],
+        active   => ['active'],
+        inactive => ['inactive'],
+    }
 );
 END
 }
