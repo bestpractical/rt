@@ -32,7 +32,8 @@ my $new_lifecycle = {
           "initial" => ["sales"],
           "active"  => [
               "engineering",
-              "stalled"
+              "stalled",
+              "sales-engineering"
           ],
           "inactive" => [
               "resolved",
@@ -66,12 +67,13 @@ my $new_lifecycle = {
               "stalled"  => "stalled"
           },
         "sales-engineering -> default"  => {
-              "deleted"     => "deleted",
-              "sales"       => "new",
-              "engineering" => "new", # We want this to be different than the sales mapping
-              "rejected"    => "rejected",
-              "resolved"    => "resolved",
-              "stalled"     => "stalled"
+              "sales-engineering" => "open",
+              "deleted"           => "deleted",
+              "sales"             => "new",
+              "engineering"       => "new", # We want this to be different than the sales mapping
+              "rejected"          => "rejected",
+              "resolved"          => "resolved",
+              "stalled"           => "stalled"
           },
       }
 };
@@ -236,12 +238,13 @@ diag "Test RT::Lifecycle::ParseMappingsInput method";
           "deleted"   => "deleted",
       },
       'sales-engineering -> default' => {
-          "sales"       => "new",
-          "engineering" => "open",
-          "rejected"    => "rejected",
-          "resolved"    => "resolved",
-          "stalled"     => "stalled",
-          "deleted"     => "deleted",
+          "sales-engineering" => "open",
+          "sales"             => "new",
+          "engineering"       => "open",
+          "rejected"          => "rejected",
+          "resolved"          => "resolved",
+          "stalled"           => "stalled",
+          "deleted"           => "deleted",
       }
     );
 
