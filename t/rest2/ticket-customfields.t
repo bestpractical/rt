@@ -1174,5 +1174,34 @@ my $json = JSON->new->utf8;
     }
 }
 
+{
+    my $space_cf = RT::CustomField->new( RT->SystemUser );
+    my ( $ok, $msg ) = $space_cf->Create( Name => 'Single Text', Type => 'FreeformSingle', Queue => $queue->Id );
+    ok( $ok, $msg );
+
+    my $payload = {
+        Queue        => 'General',
+        Subject      => 'Ticket creation with custom field names containing spaces',
+        Content      => 'Testing ticket creation using REST API.',
+        CustomFields => { 'Single Text' => 'Hello world!', },
+    };
+
+    my $res = $mech->post_json( "$rest_base_path/ticket", $payload, 'Authorization' => $auth, );
+    is( $res->code, 201 );
+    ok( $ticket_url = $res->header('location') );
+    ok( ($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)] );
+
+    my $ticket = RT::Ticket->new($user);
+    $ticket->Load($ticket_id);
+    is( $ticket->FirstCustomFieldValue($space_cf), 'Hello world!', 'custom field value is set' );
+
+    $payload = { CustomFields => { 'Single Text' => 'Howdy world!', }, };
+
+    $res = $mech->put_json( $ticket_url, $payload, 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    is_deeply( $mech->json_response, ["Single Text Hello world! changed to Howdy world!"] );
+    is( $ticket->FirstCustomFieldValue($space_cf), 'Howdy world!', 'custom field value is updated' );
+}
+
 done_testing;
 
