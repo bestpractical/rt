@@ -953,6 +953,29 @@ sub UpdateMaps {
     return (1, $CurrentUser->loc("Lifecycle mappings updated"));
 }
 
+=head2 ParseMappingsInput
+
+Parse form submission from Mappings.html lifecycle UI page to fit the
+usual lifecycle __maps__ layout.
+
+=cut
+
+sub ParseMappingsInput {
+    my $args = shift;
+
+    my @lifecycle_names = grep { $_ ne 'approvals' } RT::Lifecycle->ListAll($args->{'Type'});
+
+    my %maps;
+    my $lifecycle_re = join '|', map { quotemeta($_) } @lifecycle_names;
+    for my $key (keys %{$args}) {
+        my ($from_lifecycle, $from_status, $to_lifecycle) = $key =~ /^map-($lifecycle_re)-(.*)--($lifecycle_re)$/ or next;
+        if (my $to_status = $args->{$key}) {
+            $maps{"$from_lifecycle -> $to_lifecycle"}{$from_status} = $to_status;
+        }
+    }
+    return %maps;
+}
+
 =head2 ValidateLifecycle( CurrentUser => undef, Lifecycle => undef, Name => undef )
 
 Validate passed Lifecycle data structure.
