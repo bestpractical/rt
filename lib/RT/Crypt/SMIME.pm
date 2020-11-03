@@ -496,6 +496,7 @@ sub Verify {
         }
 
         my ($address) = Email::Address->parse($signer->{User}[0]{String});
+        last unless $address;
         my $user = RT::User->new( $RT::SystemUser );
         $user->LoadOrCreateByEmail(
             EmailAddress => $address->address,
@@ -933,8 +934,11 @@ sub GetCertificateInfo {
             my $method = $type . "_" . $USER_MAP{$_};
             $data{$_} = $cert->$method if $cert->can($method);
         }
-        $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format
-            if $data{EmailAddress};
+        if ($data{EmailAddress}) {
+            $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format;
+        } else {
+            $data{String} = $data{Name};
+        }
         return \%data;
     };
 
