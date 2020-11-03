@@ -964,11 +964,13 @@ sub ParseMappingsInput {
     my $args = shift;
 
     my @lifecycle_names = grep { $_ ne 'approvals' } RT::Lifecycle->ListAll($args->{'Type'});
+    my $lifecycle_re = join '|', map { quotemeta($_) } @lifecycle_names;
 
     my %maps;
-    my $lifecycle_re = join '|', map { quotemeta($_) } @lifecycle_names;
     for my $key (keys %{$args}) {
         my ($from_lifecycle, $from_status, $to_lifecycle) = $key =~ /^map-($lifecycle_re)-(.*)--($lifecycle_re)$/ or next;
+        next unless $from_lifecycle && $from_status && $to_lifecycle;
+
         if (my $to_status = $args->{$key}) {
             $maps{"$from_lifecycle -> $to_lifecycle"}{$from_status} = $to_status;
         }
