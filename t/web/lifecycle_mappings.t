@@ -13,7 +13,7 @@ my $new_lifecycle = {
       foo => {
           type     => 'ticket',
           initial  => ['initial'],
-          active   => ['active'],
+          active   => ['active', 'case-Variant-Status'],
           inactive => ['inactive'],
       }
 };
@@ -42,7 +42,7 @@ diag "Test updating mappings from web UI";
         "map-foo-inactive--default" => "resolved",
         "map-default-deleted--foo"  => "inactive",
         "map-default-rejected--foo" => "inactive",
-        "map-default-stalled--foo"  => "active",
+        "map-default-stalled--foo"  => "case-Variant-Status",
         "Name"                      => "default",
         "Type"                      => "ticket",
       },
@@ -71,7 +71,7 @@ diag "Test updating mappings from web UI";
         open       => "active",
         rejected   => "inactive",
         resolved   => "inactive",
-        stalled    => "active"
+        stalled    => "case-variant-status"
     };
 
     my $to = {
@@ -97,7 +97,7 @@ diag "Test updating mappings from web UI";
         "map-foo-inactive--default" => "resolved",
         "map-default-deleted--foo"  => "inactive",
         "map-default-rejected--foo" => "inactive",
-        "map-default-stalled--foo"  => "active",
+        "map-default-stalled--foo"  => "case-variant-status",
         "Name"                      => "default",
         "Type"                      => "ticket",
       },
@@ -126,7 +126,7 @@ diag "Confirm the web UI correctly displays mappings";
         open       => "active",
         rejected   => "inactive",
         resolved   => "inactive",
-        stalled    => "active"
+        stalled    => "case-variant-status"
     };
 
     my $to = {
