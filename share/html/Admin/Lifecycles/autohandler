@@ -46,10 +46,9 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%init>
-return $m->call_next(%ARGS) if $session{'CurrentUser'}->UserObj->HasRight(
-    Right => 'SuperUser',
-    Object => $RT::System,
-);
+return $m->call_next(%ARGS)
+    if RT->Config->Get('ShowEditLifecycleConfig')
+    && $session{'CurrentUser'}->UserObj->HasRight( Right => 'SuperUser', Object => $RT::System, );
 
 $m->clear_and_abort(403);
 </%init>

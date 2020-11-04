@@ -1601,6 +1601,10 @@ our %META;
         Immutable => 1,
         Widget    => '/Widgets/Form/Boolean',
     },
+    ShowEditLifecycleConfig => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
+    },
     ShowMoreAboutPrivilegedUsers => {
         Widget => '/Widgets/Form/Boolean',
     },

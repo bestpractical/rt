@@ -1080,7 +1080,9 @@ sub _BuildAdminMenu {
         $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
     }
 
-    if ( $current_user->HasRight( Object => RT->System, Right => 'SuperUser' ) ) {
+    if ( RT->Config->Get('ShowEditLifecycleConfig')
+        && $current_user->HasRight( Object => RT->System, Right => 'SuperUser' ) )
+    {
         my $lifecycles = $admin->child(
             lifecycles => title => loc('Lifecycles'),
             path       => '/Admin/Lifecycles/',
