@@ -13,11 +13,11 @@ While modifying the dashboard, click on the Subscription link in the upper right
 hand corner, next to Content:
 
 =for html <img alt="Subscription"
-src="images/subscription.png">
+src="images/subscriptions.png">
 
-=for :text [Subscription F<docs/images/subscription.png>]
+=for :text [Subscription F<docs/images/subscriptions.png>]
 
-=for :man [Subscription F<docs/images/subscription.png>]
+=for :man [Subscription F<docs/images/subscriptions.png>]
 
 Now all you have to decide is what days and times the dashboard will show up in
 your boss' inbox. I've selected that my boss will see this dashboard every 4
