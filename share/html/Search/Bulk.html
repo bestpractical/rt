@@ -290,7 +290,7 @@
 </&>
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
   <div class="form-row">
-    <div class="label col-3">
+    <div class="form-group label col-2">
       <&|/l&>Update Type</&>:
     </div>
     <div class="value col-9">
@@ -302,7 +302,7 @@
   </div>
 
   <div class="form-row">
-    <div class="label col-3">
+    <div class="form-group label col-2">
       <&|/l&>Subject</&>:
     </div>
     <div class="value col-9">
@@ -314,23 +314,24 @@
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', CustomFields => $TxnCFs );
 % while (my $CF = $TxnCFs->Next()) {
   <div class="form-row">
-    <div class="label col-3">
-      <% $CF->Name %>:
+    <div class="form-group label col-2">
+      <span class="name"><% $CF->Name %>:</span>
+% if ( $CF->EntryHint ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+% }
     </div>
     <div class="value col-9">
       <& /Elements/EditCustomField,
         CustomField => $CF,
         Object => RT::Transaction->new( $session{'CurrentUser'} ),
-      &><em><% $CF->EntryHint // '' %></em>
+      &>
     </div>
   </div>
 % } # end if while
 
-  <div class="form-row">
-    <div class="label col-3">
-      <&|/l&>Message</&>:
-    </div>
-    <div class="value col-9 messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
+  <div class="form-group">
+    <div class="messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
+% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 %# Currently, bulk update always starts with Comment not Reply selected, so we check this unconditionally
 % my $IncludeSignature = RT->Config->Get('MessageBoxIncludeSignatureOnComment');
       <& /Elements/MessageBox, Name => "UpdateContent", 
@@ -339,15 +340,8 @@
       &>
     </div>
   </div>
-% $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 
-  <div class="form-row">
-    <div class="label col-3"></div>
-    <div class="col-9">
-      <& /Ticket/Elements/AddAttachments, %ARGS &>
-    </div>
-  </div>
-
+  <& /Ticket/Elements/AddAttachments, %ARGS &>
 </&>
 
 <%perl>
