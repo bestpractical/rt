@@ -930,6 +930,11 @@ our %META;
         Type => 'HASH',
         Immutable => 1,
         Invisible => 1,
+        Obfuscate => sub {
+            my ( $config, $value, $user ) = @_;
+            $value->{Passphrase} = $user->loc('Password not printed');
+            return $value;
+        },
         PostLoadCheck => sub {
             my $self = shift;
             my $opt = $self->Get('SMIME');
@@ -966,6 +971,11 @@ our %META;
         Type => 'HASH',
         Immutable => 1,
         Invisible => 1,
+        Obfuscate => sub {
+            my ( $config, $value, $user ) = @_;
+            $value->{Passphrase} = $user->loc('Password not printed');
+            return $value;
+        },
         PostLoadCheck => sub {
             my $self = shift;
             my $gpg = $self->Get('GnuPG');
@@ -998,6 +1008,11 @@ our %META;
         Type      => 'HASH',
         Immutable => 1,
         Invisible => 1,
+        Obfuscate => sub {
+            my ( $config, $value, $user ) = @_;
+            $value->{passphrase} = $user->loc('Password not printed');
+            return $value;
+        },
     },
     ReferrerWhitelist => { Type => 'ARRAY' },
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
