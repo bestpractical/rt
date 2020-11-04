@@ -60,8 +60,8 @@
   </div>
 % my $i = 0;
 % while (my $cf = $CustomFields->Next) {
-  <div class="form-row <% ++$i%2 ? 'oddline': 'evenline' %>">
-    <div class="label col-4 text-left">
+  <div class="form-row pb-2 pt-2 <% ++$i%2 ? 'oddline': 'evenline' %>">
+    <div class="label col-4 pl-2 text-left">
       <span class="name"><% $cf->Name %>:</span>
 % if ( $cf->EntryHint ) {
       <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $cf->EntryHint %>"></span>
