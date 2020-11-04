@@ -60,7 +60,7 @@
   </div>
 % my $i = 0;
 % while (my $cf = $CustomFields->Next) {
-  <div class="form-row <% ++$i%2 ? 'oddline': 'evenline' %>">
+  <div class="form-row py-2 <% ++$i%2 ? 'oddline': 'evenline' %>">
     <div class="label col-4 text-left">
       <span class="name"><% $cf->Name %>:</span>
 % if ( $cf->EntryHint ) {
