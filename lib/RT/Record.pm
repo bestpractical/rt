@@ -2587,7 +2587,9 @@ sub CustomDateRange {
         # Prefer the schedule/timezone specified in %ServiceAgreements for current object
         if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
             if ( my $config = RT->Config->Get('ServiceAgreements') ) {
-                $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+                if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
+                    $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+                }
 
                 # Each SLA could have its own schedule and timezone
                 if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
