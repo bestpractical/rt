@@ -387,6 +387,7 @@ sub gnupg_version {
 
 sub new_homedir {
     my $source = shift;
+    return if $ENV{'SKIP_GPG_TESTS'} || !RT::Test->find_executable('gpg') || !GnuPG::Interface->require;
     my $dir = tempdir();
 
     if ($source) {
@@ -405,7 +406,7 @@ sub new_homedir {
 }
 
 END {
-    if ( gnupg_version() >= 2 ) {
+    if ( RT::Test->builder()->has_plan && gnupg_version() >= 2 ) {
         system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
             && warn $!;
     }
