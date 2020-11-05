@@ -11,7 +11,7 @@ jobs:
   - stage: test
     name: Test against SQLite with default web handler
     env:
-      - RT_TEST_PARALLEL=1 RT_DBA_USER=root RT_DBA_PASSWORD=password DB_VERSION_TAG=10.3
+      - RT_TEST_PARALLEL=1 RT_DBA_USER=root RT_DBA_PASSWORD=password
 
     before_install:
       - docker build -t rt-base .
