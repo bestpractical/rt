@@ -50,14 +50,16 @@
 </div>
 % $m->callback( %ARGS );
 <div id="footer" title="Best Practical Solutions, LLC, copyright" class="row">
-% if ($m->{'rt_base_time'}) {
-  <p id="time"><span><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></span></p>
-%}
 % # display 3 columns on login page
 % # display 1 column center aligned once logged in, without the "For support and sales..." section
 % my $cols = ( $Menu ? '12' : '4' );
   <div class="col-<% $cols %>">
-    <p id="version" class="text-center <% $Menu ? 'pb-1' : 'text-md-left' %>"><span><&|/l_unsafe, $RT::VERSION, &>RT Version [_1]</&></span></p>
+    <p id="version" class="text-center <% $Menu ? 'pb-1' : 'text-md-left' %>">
+%     if ($m->{'rt_base_time'}) {
+        <span id="time"><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%> -</span>
+%     }
+      <span><&|/l_unsafe, $RT::VERSION, &>RT Version [_1]</&></span>
+    </p>
   </div>
   <div class="col-<% $cols %>">
     <p id="bpscredits" class="text-center"><span><&|/l_unsafe, '2020', '&#187;&#124;&#171;', '<a href="https://bestpractical.com/about">Best Practical Solutions, LLC</a>', &>Copyright 1996-[_1] [_2] [_3].</&></span></p>
