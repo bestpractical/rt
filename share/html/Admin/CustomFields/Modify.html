@@ -237,7 +237,7 @@ jQuery( function() {
 </&>
 
 
-<&| /Widgets/TitleBox, title => 'Integration', class => 'custom-field-info-integration', content_class => 'mx-auto width-md' &>
+<&| /Widgets/TitleBox, title => 'Integration', class => 'custom-field-info-integration', content_class => 'mx-auto width-lg' &>
 
 <div class="form-row">
   <div class="label col-2">
@@ -278,7 +278,7 @@ jQuery( function() {
 </&>
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
-<&| /Widgets/TitleBox, title => 'Values', class => 'custom-field-info-values', content_class => 'mx-auto width-md' &>
+<&| /Widgets/TitleBox, title => 'Values', class => 'custom-field-info-values', content_class => 'mx-auto width-lg' &>
 <div class="form-row">
   <div class="col-1"></div>
   <div class="edit_custom_field_values col-11">
@@ -298,7 +298,7 @@ jQuery( function() {
 
 % if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
 <div class="mx-auto max-width-lg">
-  <&| /Widgets/TitleBox, title => 'Add Values', class => 'custom-field-info-add-values', content_class => 'mx-auto width-md' &>
+  <&| /Widgets/TitleBox, title => 'Add Values', class => 'custom-field-info-add-values', content_class => 'mx-auto width-lg' &>
     <div class="add_custom_field_value">
       <& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
     </div>
