@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 13;
+use RT::Test tests => undef;
+use Test::Warn;
 
 my $lifecycles = RT->Config->Get('Lifecycles');
 RT->Config->Set( Lifecycles => %{$lifecycles},
@@ -47,3 +48,45 @@ $lifecycle_input = $form->find_input('Lifecycle');
 is( $lifecycle_input->value, 'default',
     'lifecycle is changed back to default' );
 
+RT::Test->stop_server;
+RT->Config->Set(
+    Lifecycles => %{$lifecycles},
+    foo        => {
+        initial  => ['initial'],
+        active   => ['open'],
+        inactive => ['resolved'],
+    },
+    bar => {
+        initial  => ['initial'],
+        active   => ['open'],
+        inactive => ['resolved'],
+    },
+);
+RT::Lifecycle->FillCache();
+
+( $url, $m ) = RT::Test->started_ok;
+ok( $m->login(), 'logged in' );
+$m->get_ok( $url . '/Admin/Queues/Modify.html?id=1' );
+$form = $m->form_name('ModifyQueue');
+$m->submit_form( fields => { Lifecycle => 'bar' }, );
+$m->text_contains(q{Lifecycle changed from "default" to "bar"});
+$lifecycle_input = $form->find_input('Lifecycle');
+is( $lifecycle_input->value, 'bar', 'lifecycle is changed to bar' );
+
+RT::Test->stop_server;
+RT->Config->Set( Lifecycles => %$lifecycles );
+warning_like {
+    RT::Lifecycle->FillCache();
+} qr/Lifecycle bar is missing in %Lifecycles config/;
+
+( $url, $m ) = RT::Test->started_ok;
+ok( $m->login(), 'logged in' );
+$m->get_ok( $url . '/Admin/Queues/Modify.html?id=1' );
+$m->warning_like(qr/Unable to load lifecycle for bar/, 'warning of missing lifecycle bar');
+$form = $m->form_name('ModifyQueue');
+$m->submit_form( fields => { Lifecycle => 'default' }, );
+$m->text_contains(q{Lifecycle changed from "bar" to "default"});
+$lifecycle_input = $form->find_input('Lifecycle');
+is( $lifecycle_input->value, 'default', 'lifecycle is changed to default' );
+
+done_testing;

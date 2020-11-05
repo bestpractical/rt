@@ -942,13 +942,16 @@ sub Update {
         # items. If it fails, we don't care
         do {
             no warnings "uninitialized";
-            local $@;
-            my $name = eval {
-                my $object = $attribute . "Obj";
-                $self->$object->Name;
-            };
-            unless ($@) {
-                next if $name eq $value || $name eq ($value || 0);
+
+            if ( $attribute ne 'Lifecycle' ) {
+                local $@;
+                my $name = eval {
+                    my $object = $attribute . "Obj";
+                    $self->$object->Name;
+                };
+                unless ($@) {
+                    next if $name eq $value || $name eq ( $value || 0 );
+                }
             }
 
             next if $truncated_value eq $self->$attribute();
