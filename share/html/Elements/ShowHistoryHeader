@@ -114,16 +114,19 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
                          qq{</a>} );
     }
 
-    # build the new link
-    my $alt = loc('Options');
-    my $titleright = qq{<div class="btn-group dropdown"><a id="history-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span></a><ul class="dropdown-menu dropdown-menu-right">};
+    my $titleright;
+    if ( @elements ) {
+        # build the new link
+        my $alt = loc('Options');
+        $titleright = qq{<div class="btn-group dropdown"><a id="history-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span></a><ul class="dropdown-menu dropdown-menu-right">};
 
-    # foreach of the elements, build a new <li>$element</li> and append to the output.
-    foreach my $element ( @elements ) {
-        $titleright .= qq{<li class="dropdown-item">$element</li>};
+        # foreach of the elements, build a new <li>$element</li> and append to the output.
+        foreach my $element ( @elements ) {
+            $titleright .= qq{<li class="dropdown-item">$element</li>};
+        }
+
+        $titleright .= q{</ul></div>};
     }
-
-    $titleright .= q{</ul></div>};
 
 </%perl>
 % $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright );
