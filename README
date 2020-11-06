@@ -254,7 +254,7 @@ GENERAL INSTALLATION
     docs/full_text_indexing.pod to enable FTS.
 
 12) Set up automatic backups for RT and its data as described in
-    the docs/backups.pod document.
+    the docs/system_administration/database.pod document.
 
 GETTING HELP
 ------------
