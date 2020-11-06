@@ -1,8 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
-my $test = 'RT::Test::SMIME';
+use RT::Test::Crypt SMIME=>1, tests => undef;
+my $test = 'RT::Test::Crypt';
 
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
@@ -10,7 +10,7 @@ use RT::Tickets;
 use Test::Warn;
 
 # configure key for General queue
-RT::Test::SMIME->import_key('sender@example.com');
+$test->smime_import_key('sender@example.com');
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'General',
     CorrespondAddress => 'sender@example.com',
@@ -22,7 +22,7 @@ my $user = RT::Test->load_or_create_user(
     Name => 'root@example.com',
     EmailAddress => 'root@example.com',
 );
-RT::Test::SMIME->import_key('root@example.com.crt', $user);
+$test->smime_import_key('root@example.com.crt', $user);
 RT::Test->add_rights( Principal => $user, Right => 'SuperUser', Object => RT->System );
 
 my $buf = '';
@@ -31,8 +31,8 @@ run3(
     shell_quote(
         RT->Config->Get('SMIME')->{'OpenSSL'},
         qw( smime -sign -passin pass:123456),
-        -signer => $test->key_path('root@example.com.crt'),
-        -inkey  => $test->key_path('root@example.com.key'),
+        -signer => $test->smime_key_path('root@example.com.crt'),
+        -inkey  => $test->smime_key_path('root@example.com.key'),
     ),
     \"Content-type: text/plain\n\nThis is the body",
     \$buf,
@@ -83,7 +83,7 @@ warning_like {
 
 # Test with the correct CA path; marked as signed, trusted
 {
-    my ($msg, $status) = $send_mail->( CAPath => $test->key_path . "/demoCA/cacert.pem" );
+    my ($msg, $status) = $send_mail->( CAPath => $test->smime_key_path . "/demoCA/cacert.pem" );
     is( $msg->GetHeader('X-RT-Incoming-Signature'),
         '"Enoch Root" <root@example.com>', "Message is signed" );
 
@@ -94,7 +94,7 @@ warning_like {
 
 # Test with the other CA
 warning_like {
-    my ($msg, $status) = $send_mail->( CAPath => $test->key_path . "/otherCA/cacert.pem" );
+    my ($msg, $status) = $send_mail->( CAPath => $test->smime_key_path . "/otherCA/cacert.pem" );
     is( $msg->GetHeader('X-RT-Incoming-Signature'),
         undef,
         "Message was not marked as signed"
@@ -108,7 +108,7 @@ warning_like {
 
 # Other CA, but allow all CAs
 {
-    my ($msg, $status) = $send_mail->( CAPath => $test->key_path . "/otherCA/cacert.pem", AcceptUntrustedCAs => 1 );
+    my ($msg, $status) = $send_mail->( CAPath => $test->smime_key_path . "/otherCA/cacert.pem", AcceptUntrustedCAs => 1 );
     is( $msg->GetHeader('X-RT-Incoming-Signature'),
         '"Enoch Root" <root@example.com>',
         "Message was marked as signed"

@@ -1,15 +1,15 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
-my $test = 'RT::Test::SMIME';
+use RT::Test::Crypt SMIME=>1, tests => undef;
+my $test = 'RT::Test::Crypt';
 
 use RT::Action::SendEmail;
 use File::Temp qw(tempdir);
 
 use_ok('RT::Crypt::SMIME');
 
-RT::Test::SMIME->import_key('sender@example.com');
+$test->smime_import_key('sender@example.com');
 
 my $user_email = 'root@example.com';
 {
@@ -17,7 +17,7 @@ my $user_email = 'root@example.com';
         Name => $user_email, EmailAddress => $user_email
     );
     ok $user && $user->id, 'loaded or created user';
-    RT::Test::SMIME->import_key($user_email, $user);
+    $test->smime_import_key($user_email, $user);
 }
 
 my $queue = RT::Test->load_or_create_queue(
@@ -53,7 +53,7 @@ my %mail = (
 diag "check in read-only mode that queue's props influence create/update ticket pages" if $ENV{TEST_VERBOSE};
 {
     foreach my $variant ( @variants ) {
-        set_queue_crypt_options( %$variant );
+        t_set_queue_crypt_options( %$variant );
         $m->goto_create_ticket( $queue );
         $m->form_name('TicketCreate');
         if ( $variant->{'Encrypt'} ) {
@@ -69,7 +69,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     }
 
     # to avoid encryption/signing during create
-    set_queue_crypt_options();
+    t_set_queue_crypt_options();
 
     my $ticket = RT::Ticket->new( $RT::SystemUser );
     my ($id) = $ticket->Create(
@@ -80,7 +80,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     ok $id, 'ticket created';
 
     foreach my $variant ( @variants ) {
-        set_queue_crypt_options( %$variant );
+        t_set_queue_crypt_options( %$variant );
         $m->goto_ticket( $id );
         $m->follow_link_ok({text => 'Reply'}, '-> reply');
         $m->form_number(3);
@@ -99,9 +99,9 @@ diag "check in read-only mode that queue's props influence create/update ticket 
 
 # create a ticket for each combination
 foreach my $queue_set ( @variants ) {
-    set_queue_crypt_options( %$queue_set );
+    t_set_queue_crypt_options( %$queue_set );
     foreach my $ticket_set ( @variants ) {
-        create_a_ticket( %$ticket_set );
+        t_create_a_ticket( %$ticket_set );
     }
 }
 
@@ -118,9 +118,9 @@ my $tid;
 
 # again for each combination add a reply message
 foreach my $queue_set ( @variants ) {
-    set_queue_crypt_options( %$queue_set );
+    t_set_queue_crypt_options( %$queue_set );
     foreach my $ticket_set ( @variants ) {
-        update_ticket( $tid, %$ticket_set );
+        t_update_ticket( $tid, %$ticket_set );
     }
 }
 
@@ -131,10 +131,10 @@ foreach my $queue_set ( @variants ) {
 # like we are on another side recieving emails
 # ------------------------------------------------------------------------------
 
-my $keyring = $test->keyring_path;
+my $keyring = $test->smime_keyring_path;
 unlink $_ foreach glob( $keyring ."/*" );
-RT::Test::SMIME->import_key('sender@example.com.crt');
-RT::Test::SMIME->import_key($user_email);
+$test->smime_import_key('sender@example.com.crt');
+$test->smime_import_key($user_email);
 
 $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -245,7 +245,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
         "RT's mail includes copy of ticket text";
 }
 
-sub create_a_ticket {
+sub t_create_a_ticket {
     my %args = (@_);
 
     RT::Test->clean_caught_mails;
@@ -274,10 +274,10 @@ sub create_a_ticket {
     $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;
-    check_text_emails( \%args, @mail );
+    t_check_text_emails( \%args, @mail );
 }
 
-sub update_ticket {
+sub t_update_ticket {
     my $tid = shift;
     my %args = (@_);
 
@@ -305,12 +305,12 @@ sub update_ticket {
     $m->get_ok('/'); # ensure that the mail has been processed
 
     my @mail = RT::Test->fetch_caught_mails;
-    check_text_emails( \%args, @mail );
+    t_check_text_emails( \%args, @mail );
 }
 
 done_testing;
 
-sub check_text_emails {
+sub t_check_text_emails {
     my %args = %{ shift @_ };
     my @mail = @_;
 
@@ -343,18 +343,7 @@ sub check_text_emails {
     }
 }
 
-sub cleanup_headers {
-    my $mail = shift;
-    # strip id from subject to create new ticket
-    $mail =~ s/^(Subject:)\s*\[.*?\s+#\d+\]\s*/$1 /m;
-    # strip several headers
-    foreach my $field ( qw(Message-ID RT-Originator RT-Ticket X-RT-Loop-Prevention) ) {
-        $mail =~ s/^$field:.*?\n(?! |\t)//gmsi;
-    }
-    return $mail;
-}
-
-sub set_queue_crypt_options {
+sub t_set_queue_crypt_options {
     my %args = @_;
 
     describe_options('setting queue options: ', %args);

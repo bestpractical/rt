@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -46,10 +46,11 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Test::GnuPG;
+package RT::Test::Crypt;
 use strict;
 use warnings;
 use Test::More;
+use RT::Crypt;
 use base qw(RT::Test);
 use File::Temp qw(tempdir);
 use IPC::Run3 'run3';
@@ -62,18 +63,26 @@ our @EXPORT =
           create_and_test_outgoing_emails
           );
 
+our $UsingGnuPG = 0;
 sub import {
     my $class = shift;
     my %args  = @_;
     my $t     = $class->builder;
 
-    RT::Test::plan( skip_all => 'ENV SKIP_GPG_TESTS is set to true.' )
-      if $ENV{'SKIP_GPG_TESTS'};
-    RT::Test::plan( skip_all => 'GnuPG required.' )
-      unless GnuPG::Interface->require;
-    RT::Test::plan( skip_all => 'gpg executable is required.' )
-      unless RT::Test->find_executable('gpg');
+    if ($args{GnuPG}) {
+        $UsingGnuPG = 1;
+        RT::Test::plan( skip_all => 'ENV SKIP_GPG_TESTS is set to true.' )
+            if $ENV{'SKIP_GPG_TESTS'};
+        RT::Test::plan( skip_all => 'GnuPG required.' )
+            unless GnuPG::Interface->require;
+        RT::Test::plan( skip_all => 'gpg executable is required.' )
+            unless RT::Test->find_executable('gpg');
+    }
 
+    if ($args{SMIME}) {
+        RT::Test::plan( skip_all => 'openssl executable is required.' )
+            unless RT::Test->find_executable('openssl');
+    }
     $class->SUPER::import(%args);
     return $class->export_to_level(1)
         if $^C;
@@ -95,34 +104,114 @@ sub bootstrap_more_config {
 
     $self->SUPER::bootstrap_more_config($handle, $args, @_);
 
-    my %gnupg_options = (
-        'no-permission-warning' => undef,
-        $args->{gnupg_options} ? %{ $args->{gnupg_options} } : (),
-    );
-    $gnupg_options{homedir} ||= new_homedir();
+    if ($args->{GnuPG}) {
+        my %gnupg_options = (
+            'no-permission-warning' => undef,
+            $args->{gnupg_options} ? %{ $args->{gnupg_options} } : (),
+            );
+        $gnupg_options{homedir} ||= new_homedir();
 
-    my $conf = File::Spec->catfile( $gnupg_options{homedir}, 'gpg.conf' );
-    if ( gnupg_version() >= 2 ) {
-        open my $fh, '>', $conf or die $!;
-        print $fh "pinentry-mode loopback\n";
-        close $fh;
-    }
-    else {
-        unlink $conf if -e $conf;
-    }
+        my $conf = File::Spec->catfile( $gnupg_options{homedir}, 'gpg.conf' );
+        if ( gnupg_version() >= 2 ) {
+            open my $fh, '>', $conf or die $!;
+            print $fh "pinentry-mode loopback\n";
+            close $fh;
+        }
+        else {
+            unlink $conf if -e $conf;
+        }
 
-    use Data::Dumper;
-    local $Data::Dumper::Terse = 1; # "{...}" instead of "$VAR1 = {...};"
-    my $dumped_gnupg_options = Dumper(\%gnupg_options);
+        use Data::Dumper;
+        local $Data::Dumper::Terse = 1; # "{...}" instead of "$VAR1 = {...};"
+        my $dumped_gnupg_options = Dumper(\%gnupg_options);
 
-    print $handle qq{
-Set(\%GnuPG, (
+        print $handle qq{
+        Set(\%GnuPG, (
     Enable                 => 1,
     OutgoingMessagesFormat => 'RFC',
-));
-Set(\%GnuPGOptions => \%{ $dumped_gnupg_options });
-};
+            ));
+        Set(\%GnuPGOptions => \%{ $dumped_gnupg_options });
+        };
+    }
 
+    if ($args->{SMIME}) {
+        my $openssl = $self->find_executable('openssl');
+
+        my $keyring = $self->smime_keyring_path;
+        mkdir($keyring);
+
+        my $ca = $self->smime_key_path("demoCA", "cacert.pem");
+
+        if (!$args->{GnuPG}) {
+            print $handle qq{ Set(\%GnuPG, Enable => 0); };
+        }
+        print $handle qq{
+        Set(\%SMIME =>
+            Enable => 1,
+            Passphrase => {
+        'root\@example.com' => '123456',
+            'sender\@example.com' => '123456',
+        },
+            OpenSSL => q{$openssl},
+            Keyring => q{$keyring},
+            CAPath  => q{$ca},
+            );
+        };
+
+    }
+}
+
+sub smime_keyring_path {
+    return File::Spec->catfile( RT::Test->temp_directory, "smime" );
+}
+
+sub smime_key_path {
+    my $self = shift;
+    my $keys = RT::Test::find_relocatable_path(
+        qw(data smime keys),
+    );
+    return File::Spec->catfile( $keys => @_ ),
+}
+
+sub smime_mail_set_path {
+    my $self = shift;
+    return RT::Test::find_relocatable_path(
+        qw(data smime mails),
+    );
+}
+
+sub smime_import_key {
+    my $self = shift;
+    my $key  = shift;
+    my $user = shift;
+
+    my $path = RT::Test::find_relocatable_path( 'data', 'smime', 'keys' );
+    die "can't find the dir where smime keys are stored"
+        unless $path;
+
+    my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
+    die "SMIME keyring '$keyring' doesn't exist"
+        unless $keyring && -e $keyring;
+
+    $key .= ".pem" unless $key =~ /\.(pem|crt|key)$/;
+
+    my $content = RT::Test->file_content( [ $path, $key ] );
+
+    if ( $user ) {
+        my ($status, $msg) = $user->SetSMIMECertificate( $content );
+        die "Couldn't set CF: $msg" unless $status;
+    } else {
+        my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
+        die "SMIME keyring '$keyring' doesn't exist"
+            unless $keyring && -e $keyring;
+
+        open my $fh, '>:raw', File::Spec->catfile($keyring, $key)
+            or die "can't open file: $!";
+        print $fh $content;
+        close $fh;
+    }
+
+    return;
 }
 
 sub create_a_ticket {
@@ -405,9 +494,11 @@ sub new_homedir {
 }
 
 END {
-    if ( gnupg_version() >= 2 ) {
-        system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
-            && warn $!;
+    if ($UsingGnuPG) {
+        if ( gnupg_version() >= 2 ) {
+            system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
+                && warn $!;
+        }
     }
 }
 
