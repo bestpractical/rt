@@ -516,7 +516,7 @@ Below are some examples using the endpoints above.
         'https://myrt.com/REST/2.0/ticket/6/comment'
 
     # Comment on a ticket with custom field update
-    curl -X POST -H "Content-Type: text/plain" -u 'root:password'
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
         -d '{ "Content": "Testing a comment", "ContentType": "text/plain", "CustomFields": {"Severity": "High"} }'
         'https://myrt.com/REST/2.0/ticket/6/comment'
 
