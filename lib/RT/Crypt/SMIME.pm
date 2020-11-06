@@ -62,6 +62,10 @@ use RT::Util 'safe_run_child';
 use Crypt::X509;
 use String::ShellQuote 'shell_quote';
 
+# This will be set to a true value by Probe
+# if "openssl verify" supports the -crl_download option
+our $OpenSSL_Supports_CRL_Download;
+
 =head1 NAME
 
 RT::Crypt::SMIME - encrypt/decrypt and sign/verify email messages with the SMIME
@@ -212,6 +216,14 @@ sub Probe {
                     " SMIME support has been disabled");
             return;
         } else {
+            ($buf, $err) = ('', '');
+            # Interrogate openssl verify command to see if it supports
+            # the -crl_download option.
+            safe_run_child { run3( [$bin, 'verify', '-help'],
+                                   \undef, \$buf, \$err) };
+            if ($err =~ /crl_download/) {
+                $OpenSSL_Supports_CRL_Download = 1;
+            }
             return 1;
         }
     }
@@ -933,8 +945,11 @@ sub GetCertificateInfo {
             my $method = $type . "_" . $USER_MAP{$_};
             $data{$_} = $cert->$method if $cert->can($method);
         }
-        $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format
-            if $data{EmailAddress};
+        if ($data{EmailAddress}) {
+            $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format;
+        } else {
+            $data{String} = $data{Name};
+        }
         return \%data;
     };
 
@@ -957,6 +972,33 @@ sub GetCertificateInfo {
         stderr => ''
     );
 
+    my $note_about_crl_download = '';
+    if ($OpenSSL_Supports_CRL_Download) {
+        $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-crl_download');
+        if ($res{stderr} !~ /unable to get certificate CRL/) {
+            return %res;
+        }
+        $note_about_crl_download = " (NOTE: Unable to download CRL)";
+    }
+
+    # Either we don't support -crl_download, or we do, but it failed
+    # due to a network problem.  Re-run without -crl_check -crl_download
+    $self->RunOpenSSLVerify($PEM, \%res);
+    if (($res{info}[0]{TrustTerse} // '') eq 'full') {
+        $res{info}[0]{Trust} .= $note_about_crl_download;
+    }
+    return %res;
+}
+
+sub RunOpenSSLVerify
+{
+    my $self = shift;
+    my $PEM = shift;
+    my $res = shift;
+    # Remaining args are extra arguments to "openssl verify"
+
+    $res->{stderr} = '';
+
     # Check the validity
     my $ca = RT->Config->Get('SMIME')->{'CAPath'};
     if ($ca) {
@@ -968,39 +1010,36 @@ sub GetCertificateInfo {
         }
 
         local $SIG{CHLD} = 'DEFAULT';
+
         my $cmd = [
             $self->OpenSSLPath,
-            'verify', @ca_verify,
-        ];
+            'verify', @ca_verify, @_,
+          ];
         my $buf = '';
-        safe_run_child { run3( $cmd, \$PEM, \$buf, \$res{stderr} ) };
+        safe_run_child { run3( $cmd, \$PEM, \$buf, \$res->{stderr} ) };
 
         if ($buf =~ /^stdin: OK$/) {
-            $res{info}[0]{Trust} = "Signed by trusted CA $res{info}[0]{Issuer}[0]{String}";
-            $res{info}[0]{TrustTerse} = "full";
-            $res{info}[0]{TrustLevel} = 2;
+            $res->{info}[0]{Trust} = "Signed by trusted CA $res->{info}[0]{Issuer}[0]{String}";
+            $res->{info}[0]{TrustTerse} = "full";
+            $res->{info}[0]{TrustLevel} = 2;
         } elsif ($? == 0 or ($? >> 8) == 2) {
-            $res{info}[0]{Trust} = "UNTRUSTED signing CA $res{info}[0]{Issuer}[0]{String}";
-            $res{info}[0]{TrustTerse} = "none";
-            $res{info}[0]{TrustLevel} = -1;
+            $res->{info}[0]{Trust} = "UNTRUSTED signing CA $res->{info}[0]{Issuer}[0]{String}";
+            $res->{info}[0]{TrustTerse} = "none";
+            $res->{info}[0]{TrustLevel} = -1;
         } else {
-            $res{exit_code} = $?;
-            $res{message} = "openssl exited with error code ". ($? >> 8)
+            $res->{exit_code} = $?;
+            $res->{message} = "openssl exited with error code ". ($? >> 8)
                 ." and stout: $buf";
-            $res{info}[0]{Trust} = "unknown (openssl failed)";
-            $res{info}[0]{TrustTerse} = "unknown";
-            $res{info}[0]{TrustLevel} = 0;
+            $res->{info}[0]{Trust} = "unknown (openssl failed)";
+            $res->{info}[0]{TrustTerse} = "unknown";
+            $res->{info}[0]{TrustLevel} = 0;
         }
     } else {
-        $res{info}[0]{Trust} = "unknown (no CAPath set)";
-        $res{info}[0]{TrustTerse} = "unknown";
-        $res{info}[0]{TrustLevel} = 0;
+        $res->{info}[0]{Trust} = "unknown (no CAPath set)";
+        $res->{info}[0]{TrustTerse} = "unknown";
+        $res->{info}[0]{TrustLevel} = 0;
     }
-
-    $res{info}[0]{Formatted} = $res{info}[0]{User}[0]{String}
-        . " (issued by $res{info}[0]{Issuer}[0]{String})";
-
-    return %res;
+    $res->{info}[0]{Formatted} = $res->{info}[0]{User}[0]{String} . " (issued by $res->{info}[0]{Issuer}[0]{String})";
 }
 
 1;
