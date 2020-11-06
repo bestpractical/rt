@@ -839,6 +839,13 @@ our %META;
                     delete $opt->{CAPath};
                 }
             }
+
+            if ($opt->{CheckCRL} && ! RT::Crypt::SMIME->SupportsCRLfile) {
+                $opt->{CheckCRL} = 0;
+                $RT::Logger->warn(
+                    "Your version of OpenSSL does not support the -CRLfile option; disabling \$SMIME{CheckCRL}"
+                );
+            }
         },
     },
     GnuPG        => {
