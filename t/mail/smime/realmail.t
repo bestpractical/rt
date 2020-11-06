@@ -1,16 +1,16 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::Crypt SMIME => 1, tests => undef;
 use Digest::MD5 qw(md5_hex);
 
-my $test = 'RT::Test::SMIME';
-my $mails = $test->mail_set_path;
+my $test = 'RT::Test::Crypt';
+my $mails = $test->smime_mail_set_path;
 
 RT->Config->Get('SMIME')->{AcceptUntrustedCAs} = 1;
 
-RT::Test::SMIME->import_key('root@example.com');
-RT::Test::SMIME->import_key('sender@example.com');
+$test->smime_import_key('root@example.com');
+$test->smime_import_key('sender@example.com');
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we did log in';

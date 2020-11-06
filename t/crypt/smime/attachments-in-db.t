@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::Crypt SMIME => 1, tests => undef;
 
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
@@ -9,7 +9,7 @@ use RT::Tickets;
 
 RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'} = 1;
 
-RT::Test::SMIME->import_key('sender@example.com');
+RT::Test::Crypt->smime_import_key('sender@example.com');
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'General',
     CorrespondAddress => 'sender@example.com',
