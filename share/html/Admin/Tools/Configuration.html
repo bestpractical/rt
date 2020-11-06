@@ -120,13 +120,7 @@ foreach my $key ( sort keys %{*RT::} ) {
 </%PERL>
       <div class="form-row collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
         <div class="value col-6 collection-as-table">RT::<% $key %></div>
-        <div class="value col-6 collection-as-table">
-% if ( $key =~ /Password(?!Length)/i ) { 
-<em><% loc('Password not printed' ) %></em>\
-% } else {
-<% ${'RT::'.$key} %>
-% }
-        </div>
+        <div class="value col-6 collection-as-table"><% ${'RT::'.$key} %></div>
       </div>
 % }
 % }
