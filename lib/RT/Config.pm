@@ -1295,9 +1295,7 @@ our %META;
         Obfuscate => sub {
             # Ensure passwords are obfuscated on the System Configuration page
             my ($config, $sources, $user) = @_;
-
-            my $msg = 'Password not printed';
-               $msg = $user->loc($msg) if $user and $user->Id;
+            my $msg = $user->loc('Password not printed');
 
             for my $source (values %$sources) {
                 $source->{pass} = $msg;
@@ -2304,7 +2302,7 @@ sub GetObfuscated {
     return $self->Get(@_) unless $obfuscate;
 
     my $res = Clone::clone( $self->Get( @_ ) );
-    $res = $obfuscate->( $self, $res, $user );
+    $res = $obfuscate->( $self, $res, $user && $user->Id ? $user : RT->SystemUser );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
 
