@@ -6,7 +6,71 @@ But there can be any number of workflows where these status values
 don't completely fit. RT allows you to add new custom status values and
 define their behavior with a feature called Lifecycles.
 
-=head1 Adding a New Status
+=head1 Using the lifecycle web editor
+
+As an RT admin you can go to Admin->Lifecycles to edit and create lifecycles via the
+web interface.
+
+The web interface allows for easy visualization and editing of lifecycles.
+
+=head2 Editing statuses, transitions and categories
+
+Instructions for interacting with the web UI lifecycle builder can be found on the main "modify" page.
+The modify page allows for create and deleting statuses, adding transistions between statuses with
+drag and drop arrows and changing the categories of a status (initial, active and inactive).
+
+=for html <img alt="Lifecycle UI Modify" src="../images/lifecycle-ui-modify.png">
+
+=for :text [Lifecycle UI Modify F<docs/images/lifecycle-ui-modify.png>]
+
+=for :man [Lifecycle UI Modify F<docs/images/lifecycle-ui-modify.png>]
+
+=head2 Actions
+
+The actions tab allows for the easy editing, creating and deleting of actions. Actions are the options
+in the "Actions" drop down on ticket pages.
+
+=for html <img alt="Lifecycle UI Actions" src="../images/lifecycle-ui-actions.png">
+
+=for :text [Lifecycle UI Actions F<docs/images/lifecycle-ui-actions.png>]
+
+=for :man [Lifecycle UI Actions F<docs/images/lifecycle-ui-actions.png>]
+
+=head2 Rights
+
+Create, edit and delete custom rights for status transitions using the Rights tab.
+
+=for html <img alt="Lifecycle UI Rights" src="../images/lifecycle-ui-rights.png">
+
+=for :text [Lifecycle UI Rights F<docs/images/lifecycle-ui-rights.png>]
+
+=for :man [Lifecycle UI Rights F<docs/images/lifecycle-ui-rights.png>]
+
+=head2 Mappings
+
+The mappings tab allows for the mapping between the current lifecycle and the other lifecycles to be
+defined. This is needed when moving tickets between queues with different lifecycles.
+
+=for html <img alt="Lifecycle UI Mappings" src="../images/lifecycle-ui-mappings.png">
+
+=for :text [Lifecycle UI Mappings F<docs/images/lifecycle-ui-mappings.png>]
+
+=for :man [Lifecycle UI Mappings F<docs/images/lifecycle-ui-mappings.png>]
+
+=head2 Advanced
+
+Edit the configuration as JSON. This allows for more advanced lifecycle features that are available via
+setting the config on file to be utilized.
+
+=for html <img alt="Lifecycle UI Advanced" src="../images/lifecycle-ui-advanced.png">
+
+=for :text [Lifecycle UI Advanced F<docs/images/lifecycle-ui-advanced.png>]
+
+=for :man [Lifecycle UI Advanced F<docs/images/lifecycle-ui-advanced.png>]
+
+=head1 Using the site config file
+
+=head2 Adding a New Status
 
 Because Statuses are controlled via lifecycles, you must manipulate the entire
 lifecycle configuration to add a status. In earlier versions of RT new statuses
@@ -14,19 +78,19 @@ could be added by adding a new element to an array in RT's config file. But
 because lifecyles are built around statuses, the entire lifecycle configuration
 must be modified even if you only need new statuses.
 
-=head2 Copy Lifecycle Config
+=head3 Copy Lifecycle Config
 
 First, copy the C<%Lifecycles> hash from C<RT_Config.pm> and paste it into
 C<RT_SiteConfig.pm>.
 
-=head2 Add Status Value
+=head3 Add Status Value
 
 Add the status to the set where your new status belongs. This example adds
 C<approved> to the active statuses:
 
     active => [ 'open', 'approved', 'stalled' ],
 
-=head2 Update Transitions
+=head3 Update Transitions
 
 Now the transitions section must be updated so that the new status can
 transition to the existing statuses and also so the existing statuses can
@@ -40,7 +104,7 @@ transition to the new status.
     rejected => [qw(new open approved stalled resolved          deleted)],
     deleted  => [qw(new open approved stalled rejected resolved        )],
 
-=head1 Order Processing Example
+=head2 Order Processing Example
 
 This guide demonstrates lifecycles using an order fulfillment
 system as a real-world example. You can find full lifecycles
@@ -100,7 +164,7 @@ The following sections walk through each part of the configuration.
 You can find the full configuration at the end in case you want to
 see the exact syntax or use it to experiment with.
 
-=head2 Defining Status Values
+=head3 Defining Status Values
 
 Every queue has a lifecycle assigned to it. Without changing any
 configuration, you are given two lifecycles to choose from: "default"
@@ -153,7 +217,7 @@ We still use the initial, active and inactive categories, but we are
 able to define status values that are appropriate for the workflow
 we want to create. This should make the system more intuitive for users.
 
-=head2 Transitions
+=head3 Transitions
 
 The typical lifecycle follows the path initial -> active -> inactive.
 Obviously the path of a ticket can get more complicated than this, which
@@ -191,7 +255,7 @@ a duplicate is created. Once deleted, a ticket will never show up in search
 results. As you can see, the system will allow you to
 transition to deleted from any status.
 
-=head2 Rights and Access Control
+=head3 Rights and Access Control
 
 Your workflow may have several people working on tickets at different
 steps, and for some you may want to make sure only certain users
@@ -233,7 +297,7 @@ After a status transition right is granted, users with the right will see
 the status in the drop-down, and possibly any related actions (see
 L</Actions>).
 
-=head2 Default Status
+=head3 Default Status
 
 There are interfaces to RT from which it isn't possible to define a status,
 like sending an email to create a ticket, but tickets
@@ -258,7 +322,7 @@ Only a small number of defaults are needed because in practice there are
 relatively few cases where a ticket will find itself without a status or
 in an ambiguous state.
 
-=head2 Actions
+=head3 Actions
 
 To customize how transitions are presented in RT, lifecycles have an
 C<actions> section where you can customize how an action (e.g. changing
@@ -317,7 +381,7 @@ make the Decline option available in more cases.
 
 =for :man [Action menu decline F<docs/images/action-decline.png>]
 
-=head2 Mapping Between Queues
+=head3 Mapping Between Queues
 
 As we've demonstrated, each queue can have its own custom lifecycle, but
 in RT you sometimes want to move a ticket from one queue to another.
@@ -359,7 +423,7 @@ In the example above, we first define mappings between the default queue and
 our new orders queue. The second block defines the reverse for tickets that
 might be moved from the orders queue to a queue that uses the default lifecycle.
 
-=head2 Full Configuration
+=head3 Full Configuration
 
 Here is the full configuration if you want to add it to your RT instance
 to experiment.
@@ -460,6 +524,7 @@ to experiment.
                 'pending'    => 'new',
                 'processing' => 'open',
                 'delivered'  => 'resolved',
+                'delivery'   => 'open',
                 'returned'   => 'open', # closest matching we have in 'default'
                 'declined'   => 'rejected',
                 'deleted'    => 'deleted',
