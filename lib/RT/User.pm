@@ -2060,7 +2060,7 @@ sub PreferredKey
     return $prefkey->Content if $prefkey;
 
     # we don't have a preferred key for this user, so now we must query GPG
-    my %res = RT::Crypt->GetKeysForEncryption($self->EmailAddress);
+    my %res = RT::Crypt->GetKeysForEncryption(Recipient => $self->EmailAddress, Protocol => 'GnuPG');
     return undef unless defined $res{'info'};
     my @keys = @{ $res{'info'} };
     return undef if @keys == 0;

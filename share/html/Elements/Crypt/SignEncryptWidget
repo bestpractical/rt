@@ -87,11 +87,15 @@ return { %$Arguments };
 <%METHOD ShowIssues>
 <%ARGS>
 $self => undef,
+$Protocol => undef
+$Queue => undef
 </%ARGS>
 <%INIT>
 return unless $self;
 
 return $m->comp( '/Elements/Crypt/KeyIssues',
+    Protocol => $Protocol,
+    Queue => $Queue,
     Issues => $self->{'GnuPGRecipientsKeyIssues'} || [],
     SignAddresses => $self->{'GnuPGCanNotSignAs'} || [],
 );
@@ -145,7 +149,7 @@ if ( $self->{'Sign'} ) {
     if ($address ne $private and $address ne $queue) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
-    } elsif ( not RT::Crypt->DrySign( Signer => $address ) ) {
+    } elsif ( not RT::Crypt->DrySign( Queue => $QueueObj, Signer => $address ) ) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
         $checks_failure = 1;
     } else {
@@ -183,7 +187,8 @@ if ( $self->{'Encrypt'} ) {
         keys %$self
     );
 
-    my ($status, @issues) = RT::Crypt->CheckRecipients( @recipients );
+    $QueueObj ||= $TicketObj->QueueObj if $TicketObj;
+    my ($status, @issues) = RT::Crypt->CheckRecipients( $QueueObj, @recipients );
     push @{ $self->{'GnuPGRecipientsKeyIssues'} ||= [] }, @issues;
     $checks_failure = 1 unless $status;
 }
