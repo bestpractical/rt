@@ -154,7 +154,7 @@ for my $file (<README* UPGRADING*>) {
     close $source;
 
     $str = "<pre>$str</pre>";
-    $str =~ s{\bdocs/([a-z_-]+)\.pod\b}{<a href="$1.html">docs/$1.pod</a>}ig;
+    $str =~ s{\bdocs/([a-z_/-]+)\.pod\b}{<a href="$1.html">docs/$1.pod</a>}ig;
     $str =~ s{\betc/(RT_Config)\.pm\b}{<a href="$1.html">etc/$1.pm</a>}g;
     $str =~ s{\betc/(UPRGADING\.mysql)\b}{<a href="$1.html">etc/$1</a>}g;
     $str =~ s{\b(https?://(?!rt\.example\.com)[.a-z0-9/_:-]+(?<!\.))}{<a href="$1">$1</a>}ig;
