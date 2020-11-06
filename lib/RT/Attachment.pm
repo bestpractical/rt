@@ -931,9 +931,9 @@ sub Encrypt {
         RT->Config->Get('CorrespondAddress'),
         RT->Config->Get('CommentAddress'),
     ) {
-        my %res = RT::Crypt->GetKeysInfo( Key => $address, Type => 'private' );
+        my %res = RT::Crypt->GetKeysInfo( Queue => $queue, Key => $address, Type => 'private' );
         next if $res{'exit_code'} || !$res{'info'};
-        %res = RT::Crypt->GetKeysForEncryption( $address );
+        %res = RT::Crypt->GetKeysForEncryption( Queue => $queue, Recipient => $address );
         next if $res{'exit_code'} || !$res{'info'};
         $encrypt_for = $address;
     }
@@ -943,6 +943,7 @@ sub Encrypt {
 
     my $content = $self->Content;
     my %res = RT::Crypt->SignEncryptContent(
+        Queue => $queue,
         Content => \$content,
         Sign => 0,
         Encrypt => 1,

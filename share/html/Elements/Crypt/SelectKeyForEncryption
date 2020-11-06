@@ -58,7 +58,9 @@
 <%INIT>
 my $d;
 
-my %res = RT::Crypt->GetKeysForEncryption($EmailAddress);
+my %res = RT::Crypt->GetKeysForEncryption(Queue => $Queue,
+                                          Protocol => $Protocol,
+                                          Recipient => $EmailAddress);
 # move the preferred key to the top of the list
 my @keys = map {
                $_->{'Fingerprint'} eq ( $Default || '' )
@@ -76,5 +78,7 @@ unshift @keys, $d if defined $d;
 $Name         => 'PreferredKey'
 $EmailAddress => undef
 $Default      => undef
+$Queue        => undef
+$Protocol     => undef
 </%ARGS>
 

@@ -98,15 +98,26 @@ to limit this to a subset, you may, via:
         ...
     );
 
-RT can currently only use one protocol to encrypt and sign outgoing
-email; this defaults to the first enabled protocol.  You many specify it
-explicitly via:
+RT can currently only use one protocol per queue to encrypt and sign
+outgoing email; this defaults to the first enabled protocol.  You may
+specify it explicitly via:
 
     Set( %Crypt,
         ...
         Outgoing => 'GnuPG',
         ...
     );
+
+which sets the protocol for all queues.  Alternatively, you can use:
+
+    Set( %Crypt,
+        ...
+        Outgoing => { Queue1 => 'GnuPG', Queue2 => 'SMIME', '' => 'GnuPG' },
+        ...
+    );
+
+which sets the outgoing protocol for Queue1 to GnuPG, for Queue2 to
+SMIME, and for all other queues to GnuPG (the '' key.)
 
 You can allow users to encrypt data in the database by setting the
 C<AllowEncryptDataInDB> key to a true value; by default, this is
@@ -226,15 +237,38 @@ sub EnabledProtocols {
     return grep RT->Config->Get($_)->{'Enable'}, $self->Protocols;
 }
 
-=head2 UseForOutgoing
+=head2 UseForOutgoing (Queue => QUEUE)
 
-Returns the configured outgoing encryption protocol; see
-L<RT_Config/Crypt>.
+Returns the configured outgoing encryption protocol for the given
+queue; see L<RT_Config/Crypt>.  The Queue argument can be either a
+queue name or an RT::Queue object.
 
 =cut
 
 sub UseForOutgoing {
-    return RT->Config->Get('Crypt')->{'Outgoing'};
+    my $self = shift;
+    my %args = (
+        Queue => undef,
+        @_
+    );
+    my $outgoing = RT->Config->Get('Crypt')->{'Outgoing'};
+
+    # Old-style config: Crypt->{'Outgoing'} is a scalar to use for all queues
+    if ( ( ref($outgoing) || '' ) ne 'HASH' ) {
+        return $outgoing;
+    }
+
+    # New-style config: Crypt->{'Outgoing'} is a hash keyed by queue name
+    my $qname = $args{Queue} || '';
+
+    # We accept either a queue name or an RT::Queue object;
+    # either way, boil it down to the name.
+    $qname = $qname->Name if ref($qname);
+
+    # Look for per-queue method; default to '' method in outgoing hash;
+    # the '' entry is guaranteed to exist because it's added if necessary
+    # by the PostLoadCheck routine in RT::Config.
+    return $outgoing->{$qname} || $outgoing->{''};
 }
 
 =head2 EnabledOnIncoming
@@ -270,18 +304,22 @@ sub LoadImplementation {
     }
 }
 
-=head2 SimpleImplementationCall Protocol => NAME, [...]
+=head2 SimpleImplementationCall Protocol => NAME, Queue => QUEUE, [...]
 
 Examines the caller of this method, and dispatches to the method of the
 same name on the correct L<RT::Crypt::Role> class based on the provided
 C<Protocol>.
+
+If C<Protocol> is not supplied, then C<Queue> will be used to figure out
+which outgoing protocol to use.  C<Queue> can be a queue name or an
+C<RT::Queue> object.
 
 =cut
 
 sub SimpleImplementationCall {
     my $self = shift;
     my %args = (@_);
-    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing(@_);
 
     my $method = (caller(1))[3];
     $method =~ s/.*:://;
@@ -387,7 +425,7 @@ sub FindProtectedParts {
 
 =head2 SignEncrypt Entity => ENTITY, [Sign => 1], [Encrypt => 1],
 [Recipients => ARRAYREF], [Signer => NAME], [Protocol => NAME],
-[Passphrase => VALUE]
+[Passphrase => VALUE], [Queue => QUEUE]
 
 Takes a L<MIME::Entity> object, and signs and/or encrypts it using the
 given C<Protocol>.  If not set, C<Recipients> for encryption will be set
@@ -418,6 +456,7 @@ sub SignEncrypt {
     my %args = (
         Sign => 1,
         Encrypt => 1,
+        Queue => undef,
         @_,
     );
 
@@ -468,7 +507,7 @@ sub SignEncryptContent {
     return $self->SimpleImplementationCall( %args );
 }
 
-=head2 DrySign Signer => KEY
+=head2 DrySign Queue => QUEUE, Signer => KEY
 
 Signs a small message with the key, to make sure the key exists and we
 have a useable passphrase. The Signer argument MUST be a key identifier
@@ -640,31 +679,42 @@ sub UseKeyForEncryption {
     return ();
 }
 
-=head2 GetKeysForEncryption Recipient => EMAIL, Protocol => NAME
+=head2 CheckRecipients Queue => QUEUE, Recipients => [ @RECIPIENTS ]
 
-Returns the list of keys which are suitable for encrypting mail to the
-given C<Recipient>.  Generally this is equivalent to L</GetKeysInfo>
-with a C<Type> of <private>, but encryption protocols may further limit
-which keys can be used for encryption, as opposed to signing.
+Check a list of recipients to make sure we have trustable public
+keys for all of them.  Returns (1, ()) if everything is OK, or
+(0, @list_of_problem_messages) if there are errors.
 
 =cut
 
 sub CheckRecipients {
     my $self = shift;
-    my @recipients = (@_);
+    my %args = (
+        Queue      => undef,
+        Recipients => undef,
+    );
+
+    if ( grep { $_ && $_ =~ /^(Queue|Recipients)$/ } @_ ) {
+        %args = ( %args, @_ );
+    }
+    else {
+        $args{Recipients} = \@_;
+    }
+    my @recipients = @{$args{Recipients} || []};
 
     my ($status, @issues) = (1, ());
 
     my $trust = sub { 1 };
-    if ( $self->UseForOutgoing eq 'SMIME' ) {
+    my $proto = $self->UseForOutgoing( Queue => $args{Queue} );
+    if ( $proto eq 'SMIME' ) {
         $trust = sub { $_[0]->{'TrustLevel'} > 0 or RT->Config->Get('SMIME')->{AcceptUntrustedCAs} };
-    } elsif ( $self->UseForOutgoing eq 'GnuPG' ) {
+    } elsif ( $proto eq 'GnuPG' ) {
         $trust = sub { $_[0]->{'TrustLevel'} > 0 };
     }
 
     my %seen;
     foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
-        my %res = $self->GetKeysForEncryption( Recipient => $address );
+        my %res = $self->GetKeysForEncryption( Queue => $args{Queue}, Recipient => $address );
         if ( $res{'info'} && @{ $res{'info'} } == 1 and $trust->($res{'info'}[0]) ) {
             # One key, which is trusted, or we can sign with an
             # untrusted key (aka SMIME with AcceptUntrustedCAs)
@@ -723,13 +773,23 @@ sub CheckRecipients {
     return ($status, @issues);
 }
 
+=head2 GetKeysForEncryption Recipient => EMAIL, Protocol => NAME, Queue => QUEUE
+
+Returns the list of keys which are suitable for encrypting mail to the
+given C<Recipient>.  Generally this is equivalent to L</GetKeysInfo>
+with a C<Type> of <private>, but encryption protocols may further limit
+which keys can be used for encryption, as opposed to signing.
+
+=cut
+
+
 sub GetKeysForEncryption {
     my $self = shift;
-    my %args = @_%2? (Recipient => @_) : (Protocol => undef, Recipient => undef, @_ );
+    my %args = @_%2? (Recipient => @_) : (Protocol => undef, Queue => undef, Recipient => undef, @_ );
     return $self->SimpleImplementationCall( %args );
 }
 
-=head2 GetKeysForSigning Signer => EMAIL, Protocol => NAME
+=head2 GetKeysForSigning Signer => EMAIL, Protocol => NAME, Queue => QUEUE
 
 Returns the list of keys which are suitable for signing mail from the
 given C<Signer>.  Generally this is equivalent to L</GetKeysInfo>
@@ -740,7 +800,7 @@ which keys can be used for signing, as opposed to encryption.
 
 sub GetKeysForSigning {
     my $self = shift;
-    my %args = @_%2? (Signer => @_) : (Protocol => undef, Signer => undef, @_);
+    my %args = @_%2? (Signer => @_) : (Protocol => undef, Queue => undef, Signer => undef, @_);
     return $self->SimpleImplementationCall( %args );
 }
 
@@ -778,7 +838,7 @@ sub GetKeyInfo {
     return %res;
 }
 
-=head2 GetKeysInfo Protocol => NAME, Type => ('public'|'private'), Key => EMAIL
+=head2 GetKeysInfo Protocol => NAME, Queue => QUEUE, Type => ('public'|'private'), Key => EMAIL
 
 Looks up information about the public or private keys (as determined by
 C<Type>) for the email address C<Key>.  As each protocol has its own key
@@ -795,6 +855,12 @@ protocol-dependent, but will at least contain:
 =item Protocol
 
 The name of the protocol of this key
+
+=item Queue
+
+An L<RT::Queue> or queue name. This is to infer the protocol to use from
+C<Outgoing> in L</%Crypt> configuration, only needed if Protocol is not
+provided.
 
 =item Created
 
@@ -825,7 +891,7 @@ C<Created> and C<Expire> keys, which are L<RT::Date> objects.
 
 sub GetKeysInfo {
     my $self = shift;
-    my %args = @_%2 ? (Key => @_) : ( Protocol => undef, Key => undef, @_ );
+    my %args = @_%2 ? (Key => @_) : ( Protocol => undef, Key => undef, Queue => undef, @_ );
     return $self->SimpleImplementationCall( %args );
 }
 
