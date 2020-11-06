@@ -90,13 +90,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 </%PERL>
   <div class="form-row <% $index_conf%2 ? 'oddline' : 'evenline'%>">
     <div class="value col-4 collection-as-table"><% $key %></div>
-    <div class="value col-4 collection-as-table">
-% if ( $key =~ /Password/i and $key !~ /MinimumPasswordLength/ ) {
-<em><% loc('Password not printed' ) %></em>\
-% } else {
-<% stringify($val) |n %>\
-% }
-    </div>
+    <div class="value col-4 collection-as-table"><% stringify($val) |n %></div>
     <div class="value col-4 collection-as-table">
 % if ( $meta->{'Source'}{'SiteConfig'} ) {
 <% $description %>

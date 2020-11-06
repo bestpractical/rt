@@ -733,6 +733,10 @@ our %META;
     DatabasePassword => {
         Immutable => 1,
         Widget    => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Password not printed');
+        },
     },
     DatabasePort => {
         Immutable => 1,
@@ -1786,6 +1790,10 @@ our %META;
     },
     LDAPPassword => {
         Widget => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Password not printed');
+        },
     },
     LDAPBase => {
         Widget => '/Widgets/Form/String',
