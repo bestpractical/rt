@@ -730,7 +730,8 @@ jQuery(function() {
         jQuery(['action-response', 'action-private']).each(function(index, class_name) {
             jQuery('.' + class_name).on('DOMNodeInserted', 'iframe', function(e) {
                 setTimeout(function() {
-                    jQuery(e.target).contents().find('.cke_editable').addClass(class_name);
+                    var frame = jQuery(e.target).contents();
+                    frame.find('.cke_editable').addClass(class_name);
                 }, 100);
             });
         });
