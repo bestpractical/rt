@@ -616,7 +616,7 @@ Below are some examples using the endpoints above.
     # Search Assets
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
     -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
-    'https://myrt.com/REST/2.0/asset'
+    'https://myrt.com/REST/2.0/assets'
 
 =head3 Catalogs
 
