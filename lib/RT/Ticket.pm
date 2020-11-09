@@ -1786,8 +1786,8 @@ sub Atomic {
     }
 
     if ($RT::Handle->TransactionDepth == $depth) {
-        $self->ApplyTransactionBatch;
         $RT::Handle->Commit;
+        $self->ApplyTransactionBatch if ( $depth == 0 );
     }
 
     return $context ? @ret : $ret[0];
