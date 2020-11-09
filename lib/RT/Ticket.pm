@@ -3760,6 +3760,21 @@ sub _PriorityAsString {
 
     return undef unless defined $priority && length $priority && RT->Config->Get('EnablePriorityAsString');
 
+    my $map_ref = $self->GetPriorityAsStringMapping($queue_name);
+    return undef unless $map_ref;
+
+    # Count from high down to low until we find one that our number is
+    # greater than or equal to.
+    foreach my $label ( sort { $map_ref->{$b} <=> $map_ref->{$a} } keys %$map_ref ) {
+        return $label if $priority >= $map_ref->{$label};
+    }
+    return "unknown";
+}
+
+sub GetPriorityAsStringMapping {
+    my $self = shift;
+    my $queue_name = shift || $self->QueueObj->__Value('Name');    # Skip ACL check
+
     my %config = RT->Config->Get('PriorityAsString');
     my $value = ( exists $config{$queue_name} ? $config{$queue_name} : $config{Default} ) or return undef;
     my %map;
@@ -3773,12 +3788,7 @@ sub _PriorityAsString {
         RT->Logger->warning("Invalid PriorityAsString value: $value");
     }
 
-    # Count from high down to low until we find one that our number is
-    # greater than or equal to.
-    foreach my $label ( sort { $map{$b} <=> $map{$a} } keys %map ) {
-        return $label if $priority >= $map{$label};
-    }
-    return "unknown";
+    return \%map;
 }
 
 RT::Base->_ImportOverlays();
