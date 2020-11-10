@@ -121,6 +121,9 @@ $GroupsSeen{ $Group->id } = 1; # can't be a member of ourself
 
 my (@results);
 
+$m->callback( CallbackName => 'BeforeProcessArguments', ARGSRef => \%ARGS, GroupObj => $Group,
+ResultsRef => \@results, UsersRef => \@AddMembersUsers, GroupsRef => \@AddMembersGroups);
+
 # XXX: safe member id in value instead of name
 foreach my $key (keys %ARGS) {
     next unless $key =~ /^DeleteMember-(\d+)$/;
