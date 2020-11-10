@@ -976,39 +976,47 @@ sub GetCertificateInfo {
     # Check if certificate has been revoked using OCSP if the cert has
     # an OCSP URL.  Unfortunately, Crypt::X509 doesn't let us query
     # for OCSP URLs, so we need to run OpenSSL.
-    if ($self->CheckRevocationUsingOCSP($PEM, \%res)) {
+    my $ocsp_result = $self->CheckRevocationUsingOCSP($PEM, \%res);
+    if ($ocsp_result) {
         return %res;
     }
 
     my $note_about_crl_download = '';
-    if ($OpenSSL_Supports_CRL_Download) {
-        $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-crl_download');
-        if ($res{stderr} !~ /unable to get certificate CRL/) {
-            return %res;
-        }
-        # If OpenSSL said: "Error loading CRL from URL", try to fetch
-        # the URL ourselves.  OpenSSL gives that misleading message if
-        # the CRL is in DER format rather than PEM.  So we download
-        # it ourselves, try to convert from DER to PEM, and then
-        # rerun with -CRLfile <crl.pem>
-        if ($res{stderr} =~ /Error loading CRL from (https?:.*)/i) {
-            my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
-            my $crl_file = $self->DownloadAndConvertCRLToPEM($tmpdir, $1);
-            if ($crl_file) {
-                $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-CRLfile', $crl_file);
+    if (!defined($ocsp_result)) {
+        if ($OpenSSL_Supports_CRL_Download) {
+            $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-crl_download');
+            if ($res{stderr} !~ /unable to get certificate CRL/) {
                 return %res;
             }
+            # If OpenSSL said: "Error loading CRL from URL", try to fetch
+            # the URL ourselves.  OpenSSL gives that misleading message if
+            # the CRL is in DER format rather than PEM.  So we download
+            # it ourselves, try to convert from DER to PEM, and then
+            # rerun with -CRLfile <crl.pem>
+            if ($res{stderr} =~ /Error loading CRL from (https?:.*)/i) {
+                my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+                my $crl_file = $self->DownloadAndConvertCRLToPEM($tmpdir, $1);
+                if ($crl_file) {
+                    $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-CRLfile', $crl_file);
+                    return %res;
+                }
+            }
+        }
+
+        # If we got here and we support -crl_download, then clearly
+        # the CRL download failed, so make a note of that
+        if ($OpenSSL_Supports_CRL_Download) {
+            $note_about_crl_download = " (NOTE: Unable to download CRL)";
         }
     }
 
-    # If we got here and we support -crl_download, then clearly
-    # the CRL download failed, so make a note of that
-    if ($OpenSSL_Supports_CRL_Download) {
-        $note_about_crl_download = " (NOTE: Unable to download CRL)";
-    }
+    # One of these cases has happened to get here:
+    # 1) We don't support -crl_download,
+    # 2) We do support -crl_download but it failed
+    # 3) OCSP told us that the certificate is still good
+    #
+    # Run without -crl_check -crl_download
 
-    # Either we don't support -crl_download, or we do, but it failed
-    # due to a network problem.  Re-run without -crl_check -crl_download
     $self->RunOpenSSLVerify($PEM, \%res);
     if (($res{info}[0]{TrustTerse} // '') eq 'full') {
         $res{info}[0]{Trust} .= $note_about_crl_download;
@@ -1095,6 +1103,8 @@ sub DownloadAndConvertCRLToPEM
     return undef;
 }
 
+# Returns: 1 if cert has been revoked, 0 if it has definitely NOT been revoked,
+# undef if OCSP check failed
 sub CheckRevocationUsingOCSP
 {
     my ($self, $PEM, $res) = @_;
@@ -1147,6 +1157,8 @@ sub CheckRevocationUsingOCSP
 
     safe_run_child { run3( [$self->OpenSSLPath(), 'ocsp', '-issuer', $issuer, '-cert', '-', @ca_verify, '-url', $ocsp_url],
                            \$PEM, \$out, \$err) };
+    return undef unless $? == 0;
+
     if ($out =~ /^-: revoked/) {
         $res->{info}[0]{Trust} = "REVOKED certificate checked against OCSP URI $ocsp_url";
         $res->{info}[0]{TrustTerse} = "none";
@@ -1154,6 +1166,11 @@ sub CheckRevocationUsingOCSP
         $res->{exit_code} = 0;
         return 1;
     }
+    if ($out =~ /^-: good/) {
+        # Definitely NOT revoked.  Return 0, but not undef
+        return 0;
+    }
+
     return undef;
 }
 
