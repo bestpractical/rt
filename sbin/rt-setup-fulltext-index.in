@@ -782,7 +782,7 @@ explicitly:
 
     rt-setup-fulltext-index --dba sysdba --dba-password 'secret'
 
-To test what will happen without running any DDL, pass the C<--dryrun>
+To test what will happen without running any DDL, pass the C<--dry-run>
 flag.
 
 The Oracle index determines which content-types it will index at
