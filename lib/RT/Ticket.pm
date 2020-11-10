@@ -3398,13 +3398,29 @@ Returns the current value of Priority.
 =head2 SetPriority VALUE
 
 
-Set Priority to VALUE.
+Set Priority to VALUE. Accepts numeric and string values for priority.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Priority will be stored as a int(11).)
 
 
 =cut
 
+sub SetPriority {
+    my $self = shift;
+    my $priority = shift;
+    my $number;
+
+    if ( $priority =~ /^\d+$/ ) {
+        # Already a digit
+        $number = $priority;
+    }
+    else {
+        # Try to load a digit from the string
+        $number = $self->_PriorityAsNumber($priority);
+    }
+
+    return $self->_Set( Field => 'Priority', Value => $number || 0 );
+}
 
 =head2 TimeEstimated
 
@@ -3760,6 +3776,35 @@ sub _PriorityAsString {
 
     return undef unless defined $priority && length $priority && RT->Config->Get('EnablePriorityAsString');
 
+    my $map_ref = $self->GetPriorityAsStringMapping($queue_name);
+    return undef unless $map_ref;
+
+    # Count from high down to low until we find one that our number is
+    # greater than or equal to.
+    foreach my $label ( sort { $map_ref->{$b} <=> $map_ref->{$a} } keys %$map_ref ) {
+        return $label if $priority >= $map_ref->{$label};
+    }
+    return "unknown";
+}
+
+sub _PriorityAsNumber {
+    my $self       = shift;
+    my $priority   = shift;
+    my $queue_name = shift || $self->QueueObj->__Value('Name');    # Skip ACL check
+
+    return undef unless defined $priority && length $priority && RT->Config->Get('EnablePriorityAsString');
+
+    my $map_ref = $self->GetPriorityAsStringMapping($queue_name);
+    return undef unless $map_ref;
+
+    return $map_ref->{$priority} if exists $map_ref->{$priority};
+    return undef;
+}
+
+sub GetPriorityAsStringMapping {
+    my $self = shift;
+    my $queue_name = shift || $self->QueueObj->__Value('Name');    # Skip ACL check
+
     my %config = RT->Config->Get('PriorityAsString');
     my $value = ( exists $config{$queue_name} ? $config{$queue_name} : $config{Default} ) or return undef;
     my %map;
@@ -3773,12 +3818,7 @@ sub _PriorityAsString {
         RT->Logger->warning("Invalid PriorityAsString value: $value");
     }
 
-    # Count from high down to low until we find one that our number is
-    # greater than or equal to.
-    foreach my $label ( sort { $map{$b} <=> $map{$a} } keys %map ) {
-        return $label if $priority >= $map{$label};
-    }
-    return "unknown";
+    return \%map;
 }
 
 RT::Base->_ImportOverlays();
