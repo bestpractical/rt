@@ -35,7 +35,14 @@ my $crt;
 
 my %res;
 %res = RT::Crypt::SMIME->GetCertificateInfo(Certificate => $crt);
+is ($res{info}[0]{Trust}, 'REVOKED certificate checked against OCSP URI http://ocsp.digicert.com', 'Trust info indicates revoked certificate using OCSP');
 
-is ($res{info}[0]{Trust}, 'REVOKED certificate from CA DigiCert SHA2 Secure Server CA', 'Trust info indicates revoked certificate');
+# Now pretend we couldn't use OCSP
+{
+    no warnings 'redefine';
+    *RT::Crypt::SMIME::CheckRevocationUsingOCSP = sub { return undef; };
+    %res = RT::Crypt::SMIME->GetCertificateInfo(Certificate => $crt);
+    is ($res{info}[0]{Trust}, 'REVOKED certificate from CA DigiCert SHA2 Secure Server CA', 'Trust info indicates revoked certificate using CRL');
+}
 
 done_testing;

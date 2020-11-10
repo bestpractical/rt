@@ -973,6 +973,13 @@ sub GetCertificateInfo {
         stderr => ''
     );
 
+    # Check if certificate has been revoked using OCSP if the cert has
+    # an OCSP URL.  Unfortunately, Crypt::X509 doesn't let us query
+    # for OCSP URLs, so we need to run OpenSSL.
+    if ($self->CheckRevocationUsingOCSP($PEM, \%res)) {
+        return %res;
+    }
+
     my $note_about_crl_download = '';
     if ($OpenSSL_Supports_CRL_Download) {
         $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-crl_download');
@@ -1085,6 +1092,68 @@ sub DownloadAndConvertCRLToPEM
         return $fname;
     }
     # Something failed and we could not convert CRL to PEM format.
+    return undef;
+}
+
+sub CheckRevocationUsingOCSP
+{
+    my ($self, $PEM, $res) = @_;
+
+    # Can't do anything without a CAPath
+    my $ca = RT->Config->Get('SMIME')->{'CAPath'};
+    return undef unless $ca;
+
+    my ($out, $err);
+    $out = '';
+    $err = '';
+    # We need to download the issuer certificate, so look for its URL and
+    # that of the OCSP
+    safe_run_child { run3( [$self->OpenSSLPath, 'x509', '-noout', '-text'],
+                           \$PEM, \$out, \$err ) };
+    return undef unless $out =~ /CA Issuers - URI:(https?:.*)/;
+    my $issuer_url = $1;
+
+    return undef unless $out =~ /OCSP - URI:(https?:.*)/;
+    my $ocsp_url = $1;
+
+    # We have the issuer certificate URL; make a temp dir and grab it
+    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    my $issuer = File::Spec->catfile($tmpdir, 'issuer.crt');
+    my $ua = LWP::UserAgent->new(env_proxy => 1);
+
+    my $resp = $ua->get($issuer_url);
+    return undef unless $resp->is_success;
+
+    open(my $fh, '>', $issuer) or return undef;
+    my $content = $resp->decoded_content;
+    if ($content !~ /BEGIN CERTIFICATE/) {
+        # Convert from DER to PEM
+        $content = "-----BEGIN CERTIFICATE-----\n" .
+            MIME::Base64::encode_base64($content) .
+            "-----END CERTIFICATE-----\n";
+    }
+    print $fh $content;
+    close($fh);
+
+    # Check for revocation
+    my @ca_verify;
+    if (-d $ca) {
+        @ca_verify = ('-CApath', $ca);
+    } elsif (-f $ca) {
+        @ca_verify = ('-CAfile', $ca);
+    }
+    $out = '';
+    $err = '';
+
+    safe_run_child { run3( [$self->OpenSSLPath(), 'ocsp', '-issuer', $issuer, '-cert', '-', @ca_verify, '-url', $ocsp_url],
+                           \$PEM, \$out, \$err) };
+    if ($out =~ /^-: revoked/) {
+        $res->{info}[0]{Trust} = "REVOKED certificate checked against OCSP URI $ocsp_url";
+        $res->{info}[0]{TrustTerse} = "none";
+        $res->{info}[0]{TrustLevel} = -1;
+        $res->{exit_code} = 0;
+        return 1;
+    }
     return undef;
 }
 
