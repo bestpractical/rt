@@ -1060,10 +1060,11 @@ sub RunOpenSSLVerify
         } elsif ($? == 0 or ($? >> 8) == 2) {
             if ($res->{stderr} =~ /certificate revoked/i) {
                 $res->{info}[0]{Trust} = "REVOKED certificate from CA $res->{info}[0]{Issuer}[0]{String}";
+                $res->{info}[0]{TrustTerse} = "none (revoked certificate)";
             } else {
                 $res->{info}[0]{Trust} = "UNTRUSTED signing CA $res->{info}[0]{Issuer}[0]{String}";
+                $res->{info}[0]{TrustTerse} = "none";
             }
-            $res->{info}[0]{TrustTerse} = "none";
             $res->{info}[0]{TrustLevel} = -1;
             $res->{exit_code} = $?;
         } else {
@@ -1161,7 +1162,7 @@ sub CheckRevocationUsingOCSP
 
     if ($out =~ /^-: revoked/) {
         $res->{info}[0]{Trust} = "REVOKED certificate checked against OCSP URI $ocsp_url";
-        $res->{info}[0]{TrustTerse} = "none";
+        $res->{info}[0]{TrustTerse} = "none (revoked certificate)";
         $res->{info}[0]{TrustLevel} = -1;
         $res->{exit_code} = 0;
         return 1;
