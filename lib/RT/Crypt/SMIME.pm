@@ -61,6 +61,7 @@ use IPC::Run3 0.036 'run3';
 use RT::Util 'safe_run_child';
 use Crypt::X509;
 use String::ShellQuote 'shell_quote';
+use LWP;
 
 # This will be set to a true value by Probe
 # if "openssl verify" supports the -crl_download option
@@ -978,6 +979,24 @@ sub GetCertificateInfo {
         if ($res{stderr} !~ /unable to get certificate CRL/) {
             return %res;
         }
+        # If OpenSSL said: "Error loading CRL from URL", try to fetch
+        # the URL ourselves.  OpenSSL gives that misleading message if
+        # the CRL is in DER format rather than PEM.  So we download
+        # it ourselves, try to convert from DER to PEM, and then
+        # rerun with -CRLfile <crl.pem>
+        if ($res{stderr} =~ /Error loading CRL from (https?:.*)/i) {
+            my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+            my $crl_file = $self->DownloadAndConvertCRLToPEM($tmpdir, $1);
+            if ($crl_file) {
+                $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-CRLfile', $crl_file);
+                return %res;
+            }
+        }
+    }
+
+    # If we got here and we support -crl_download, then clearly
+    # the CRL download failed, so make a note of that
+    if ($OpenSSL_Supports_CRL_Download) {
         $note_about_crl_download = " (NOTE: Unable to download CRL)";
     }
 
@@ -1022,10 +1041,16 @@ sub RunOpenSSLVerify
             $res->{info}[0]{Trust} = "Signed by trusted CA $res->{info}[0]{Issuer}[0]{String}";
             $res->{info}[0]{TrustTerse} = "full";
             $res->{info}[0]{TrustLevel} = 2;
+            $res->{exit_code} = 0;
         } elsif ($? == 0 or ($? >> 8) == 2) {
-            $res->{info}[0]{Trust} = "UNTRUSTED signing CA $res->{info}[0]{Issuer}[0]{String}";
+            if ($res->{stderr} =~ /certificate revoked/i) {
+                $res->{info}[0]{Trust} = "REVOKED certificate from CA $res->{info}[0]{Issuer}[0]{String}";
+            } else {
+                $res->{info}[0]{Trust} = "UNTRUSTED signing CA $res->{info}[0]{Issuer}[0]{String}";
+            }
             $res->{info}[0]{TrustTerse} = "none";
             $res->{info}[0]{TrustLevel} = -1;
+            $res->{exit_code} = $?;
         } else {
             $res->{exit_code} = $?;
             $res->{message} = "openssl exited with error code ". ($? >> 8)
@@ -1040,6 +1065,27 @@ sub RunOpenSSLVerify
         $res->{info}[0]{TrustLevel} = 0;
     }
     $res->{info}[0]{Formatted} = $res->{info}[0]{User}[0]{String} . " (issued by $res->{info}[0]{Issuer}[0]{String})";
+}
+
+sub DownloadAndConvertCRLToPEM
+{
+    my ($self, $tmpdir, $url) = @_;
+    my $ua = LWP::UserAgent->new(env_proxy => 1);
+    my $resp = $ua->get($url);
+    return undef unless $resp->is_success;
+
+    my $fname = File::Spec->catfile($tmpdir, 'crl.pem');
+    my $in = $resp->decoded_content;
+    my ($out, $err) = ('', '');
+
+    local $SIG{'CHLD'} = 'DEFAULT';
+
+    safe_run_child { run3( [$self->OpenSSLPath(), 'crl', '-inform', 'DER', '-outform', 'PEM', '-out', $fname], \$in, \$out, \$err) };
+    if ($? == 0) {
+        return $fname;
+    }
+    # Something failed and we could not convert CRL to PEM format.
+    return undef;
 }
 
 1;
