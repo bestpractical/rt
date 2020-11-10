@@ -54,7 +54,10 @@
 <&|/Widgets/TitleBox, title => loc( $section ) &>
 % foreach my $option( RT->Config->Options( Section => $section ) ) {
 % next if $option eq 'EmailFrequency' && !RT->Config->Get('RecordOutgoingEmail');
-% my $meta = RT->Config->Meta( $option );
+% my $SkipOption = 0;
+% $m->callback(CallbackName => 'BeforeOption', %ARGS, ARGSRef => \%ARGS, SectionRef => \$section, OptionRef => \$option, SkipRef => \$SkipOption );
+% unless ( $SkipOption ) {
+%   my $meta = RT->Config->Meta( $option );
 <& $meta->{'Widget'},
     Default      => 1,
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
@@ -63,6 +66,7 @@
     DefaultValue => scalar RT->Config->Get( $option ),
     CurrentValue => $preferences->{ $option },
 &>
+%   }
 % }
 </&>
 % }
