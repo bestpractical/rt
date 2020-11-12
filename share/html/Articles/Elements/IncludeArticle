@@ -78,8 +78,9 @@ if ( $ret && $article->Id ){
         return;
     }
 
+    # $Ticket below is used by RT::Extension::ArticleTemplates
     my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
-        Article => $article
+        Article => $article, Ticket => $Ticket
     );
 
     $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article, ARGSRef => \%ARGS );
