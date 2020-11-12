@@ -1490,6 +1490,15 @@ sub ParseStatus {
 
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
+                # Fingerprint = key fingerprint in hex
+                # CreationDate = key creation date (YYYY-MM-DD)
+                # Timestamp = signature creation time (seconds from UNIX epoch)
+                # ExpireTimestamp = signature expiration time (since epoch) or 0 for "never expires"
+                # Version = signature version straight from the packet
+                # PubkeyAlgo = Public key algorithm (https://tools.ietf.org/html/rfc4880#section-9.1)
+                # HashAlgo = Hash algorithm (https://tools.ietf.org/html/rfc4880#section-9.4)
+                # Class = Signature type (https://tools.ietf.org/html/rfc4880#section-5.2.1)
+                # PKFingerprint = Primary Key Fingerprint
                 @res{ qw(
                     Fingerprint
                     CreationDate
@@ -1503,6 +1512,8 @@ sub ParseStatus {
                     PKFingerprint
                     Other
                 ) } = split /\s+/, $1, 10;
+                $res{HashAlgoName} = $self->HashAlgorithmToName($res{HashAlgo}) if defined($res{HashAlgo});
+                $res{PubkeyAlgoName} = $self->PubkeyAlgorithmToName($res{PubkeyAlgo}) if defined($res{PubkeyAlgo});
                 last;
             }
             push @res, \%res;
@@ -1958,6 +1969,21 @@ sub _make_gpg_handles {
 
     my $handles = GnuPG::Handles->new(%handle_map);
     return ($handles, \%handle_map);
+}
+
+# Gigne a PGP hash algorithm number, return the algorithm name.
+# See https://tools.ietf.org/html/rfc4880#section-9.4
+sub HashAlgorithmToName {
+    my ( $self, $alg ) = @_;
+    return 'MD5'         if ( $alg == 1 );
+    return 'SHA-1'       if ( $alg == 2 );
+    return 'RIPE-MD/160' if ( $alg == 3 );
+    return 'Reserved'    if ( $alg >= 4 && $alg <= 7 );
+    return 'SHA256'      if ( $alg == 8 );
+    return 'SHA384'      if ( $alg == 9 );
+    return 'SHA512'      if ( $alg == 10 );
+    return 'SHA224'      if ( $alg == 11 );
+    return undef;
 }
 
 # Given a PGP public-key algorithm number, return the algorithm name.
