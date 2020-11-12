@@ -97,6 +97,18 @@ sub VerifyTooltip {
     return $tooltip;
 }
 
+# Generate a download link for the public key
+sub KeyDownloadLink {
+    my ($protocol, $line) = @_;
+    my $txt = '';
+    if ($protocol eq 'GnuPG') {
+        if ($line->{Fingerprint} && $line->{Fingerprint} !~ /[^0-9A-F]/i) {
+            $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetGPGPubkey.html?Fingerprint=' . $line->{Fingerprint} . '"> ' . loc('(Download Public Key)') . '</a>';
+        }
+    }
+    return $txt;
+}
+
 my $reverify_cb = sub {
     my $top = shift;
 
@@ -196,7 +208,7 @@ foreach my $run ( @runs ) {
             push @messages, {
                 Tag     => $protocol,
                 Classes => ['verify', lc $line->{Status}, 'trust-'.($line->{Trust} || 'UNKNOWN')],
-                Value   => '<span title="' . $m->interp->apply_escapes(VerifyTooltip($line), 'h') . '">' . $m->interp->apply_escapes(loc( $line->{'Message'} ), 'h') . '</span>',
+                Value   => '<span title="' . $m->interp->apply_escapes(VerifyTooltip($line), 'h') . '">' . $m->interp->apply_escapes(loc( $line->{'Message'} ), 'h') . '</span>' . KeyDownloadLink($protocol, $line),
             };
         }
         else {

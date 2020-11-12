@@ -2002,6 +2002,26 @@ sub PubkeyAlgorithmToName {
     return undef;
 }
 
+# Given a public-key fingerprint, return the public key (in PEM format)
+# if we have it, undef if we do not.
+sub GetPubkey {
+    my ( $self, $fingerprint ) = @_;
+
+    # Sanity-check the fingerprint, which must be a string of
+    # hex digits
+    if ( $fingerprint =~ /[^0-9a-fA-F]/ ) {
+        return undef;
+    }
+
+    my @pubkey;
+    my %res = $self->CallGnuPG(
+        Command     => 'export_keys',
+        CommandArgs => $fingerprint,
+        Output      => \@pubkey
+    );
+    return join( '', @pubkey );
+}
+
 RT::Base->_ImportOverlays();
 
 1;
