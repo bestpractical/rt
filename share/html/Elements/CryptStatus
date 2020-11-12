@@ -71,6 +71,44 @@ foreach ( $Message->SplitHeaders ) {
 
 return unless @runs or $needs_unsigned_warning;
 
+# Returns string representing a date in UNIX timestamp format
+sub DisplayDate {
+    my ($ts) = @_;
+    my $date = RT::Date->new($session{'CurrentUser'});
+    $date->Unix($ts);
+    return $date->AsString();
+}
+
+# Generate a little tooltip with additional info about a signature
+sub VerifyTooltip {
+    my ($line) = @_;
+    my $tooltip = '';
+    $tooltip .= "\n" . loc('Fingerprint:') . ' ' . $line->{Fingerprint} if $line->{Fingerprint};
+    $tooltip .= "\n" . loc('Signature Created:') . ' ' . DisplayDate($line->{Timestamp}) if $line->{Timestamp};
+    $tooltip .= "\n" . loc('Key Expires:') . ' ';
+    if ($line->{ExpireTimestamp}) {
+        $tooltip .= DisplayDate($line->{Timestamp});
+    } else {
+        $tooltip .= loc('Never');
+    }
+    $tooltip .= "\n" . loc('Public Key Algorithm:') . ' ' . $line->{PubkeyAlgoName} if $line->{PubkeyAlgoName};
+    $tooltip .= "\n" . loc('Hash Algorithm:') . ' ' . $line->{HashAlgoName} if $line->{HashAlgoName};
+    $tooltip =~ s/^\s+//;
+    return $tooltip;
+}
+
+# Generate a download link for the public key
+sub KeyDownloadLink {
+    my ($protocol, $line) = @_;
+    my $txt = '';
+    if ($protocol eq 'GnuPG') {
+        if ($line->{Fingerprint} && $line->{Fingerprint} !~ /[^0-9A-F]/i) {
+            $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetGPGPubkey.html?Fingerprint=' . $line->{Fingerprint} . '">' . loc(' (Download Public Key)') . '</a>';
+        }
+    }
+    return $txt;
+}
+
 my $reverify_cb = sub {
     my $top = shift;
 
@@ -170,7 +208,7 @@ foreach my $run ( @runs ) {
             push @messages, {
                 Tag     => $protocol,
                 Classes => ['verify', lc $line->{Status}, 'trust-'.($line->{Trust} || 'UNKNOWN')],
-                Value   => $m->interp->apply_escapes( loc( $line->{'Message'} ), 'h'),
+                Value   => '<span title="' . $m->interp->apply_escapes(VerifyTooltip($line)) . '">' . $m->interp->apply_escapes( loc( $line->{'Message'} ), 'h') . '</span>' . KeyDownloadLink($protocol, $line),
             };
         }
         else {
