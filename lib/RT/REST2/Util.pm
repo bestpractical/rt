@@ -164,6 +164,11 @@ sub serialize_record {
         for my $role ($record->Roles(ACLOnly => 0)) {
             my $members = $data{$role} = [];
             my $group = $record->RoleGroup($role);
+            if ( !$group->Id ) {
+                $data{$role} = expand_uid( RT->Nobody->UserObj->UID ) if $record->_ROLES->{$role}{Single};
+                next;
+            }
+
             my $gm = $group->MembersObj;
             while ($_ = $gm->Next) {
                 push @$members, expand_uid($_->MemberObj->Object->UID);
