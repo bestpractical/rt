@@ -103,7 +103,7 @@ sub KeyDownloadLink {
     my $txt = '';
     if ($protocol eq 'GnuPG') {
         if ($line->{Fingerprint} && $line->{Fingerprint} !~ /[^0-9A-F]/i) {
-            $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetGPGPubkey.html?Fingerprint=' . $line->{Fingerprint} . '">' . loc(' (Download Public Key)') . '</a>';
+            $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetGPGPubkey.html?Fingerprint=' . $line->{Fingerprint} . '"> ' . loc('(Download Public Key)') . '</a>';
         }
     }
     return $txt;

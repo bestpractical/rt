@@ -64,7 +64,7 @@ if (!$Fingerprint) {
 } else {
     my $key = RT::Crypt::GnuPG->GetPubkey($Fingerprint);
     if (!$key) {
-        push(@results, loc('Could not find GnuPG public key with fingerprint [_1].'));
+        push(@results, loc('Could not find GnuPG public key with fingerprint [_1].', $Fingerprint));
     } else {
         $r->content_type('application/pgp-keys');
         $r->header_out('Content-Disposition' => "attachment; filename=\"$Fingerprint.pub\"");
