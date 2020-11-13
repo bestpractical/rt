@@ -215,6 +215,11 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "got id of a newly created ticket - $id");
+    $m->get_ok("/Ticket/History.html?id=$id");
+
+    like($m->content, qr/The signature is good, signed by &#34;sender&#34; &lt;sender\@example.com&gt;, assured by &#34;CA Owner&#34; &lt;ca.owner\@example.com&gt;, trust is full/,
+         'Signature status correctly displayed');
+    like($m->content, qr{<span title="Signer: "sender" <sender\@example.com>\nIssuer: "CA Owner" <ca.owner\@example.com>\nCertificate Created: .* 2013\nCertificate Expires: .* 2023">}m, 'Tooltip correctly displayed');
 
     my $tick = RT::Ticket->new( $RT::SystemUser );
     $tick->Load( $id );
