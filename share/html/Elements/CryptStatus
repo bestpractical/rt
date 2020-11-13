@@ -81,18 +81,25 @@ sub DisplayDate {
 
 # Generate a little tooltip with additional info about a signature
 sub VerifyTooltip {
-    my ($line) = @_;
+    my ($protocol, $line) = @_;
     my $tooltip = '';
-    $tooltip .= "\n" . loc('Fingerprint') . ': ' . $line->{Fingerprint} if $line->{Fingerprint};
-    $tooltip .= "\n" . loc('Signature Created') . ': ' . DisplayDate($line->{Timestamp}) if $line->{Timestamp};
-    $tooltip .= "\n" . loc('Key Expires') . ': ';
+    $tooltip .= "\n" . loc('Fingerprint') . ': ' . $line->{Fingerprint} if $line->{Fingerprint};                                # GNUPG
+    $tooltip .= "\n" . loc('Signature Created') . ': ' . DisplayDate($line->{Timestamp}) if $line->{Timestamp};                 # GNUPG
+    $tooltip .= "\n" . loc('Signer') . ': ' . $line->{UserString} if $line->{UserString};                                       # SMIME
+    $tooltip .= "\n" . loc('Issuer') . ': ' . $line->{Issuer} if $line->{Issuer};                                               # SMIME
+    $tooltip .= "\n" . loc('Certificate Created') . ': ' . DisplayDate($line->{CreatedTimestamp}) if $line->{CreatedTimestamp}; # SMIME
+    if ($protocol eq 'SMIME') {
+        $tooltip .= "\n" . loc('Certificate Expires') . ': ';
+    } else {
+        $tooltip .= "\n" . loc('Key Expires') . ': ';
+    }
     if ($line->{ExpireTimestamp}) {
-        $tooltip .= DisplayDate($line->{Timestamp});
+        $tooltip .= DisplayDate($line->{ExpireTimestamp});
     } else {
         $tooltip .= loc('Never');
     }
-    $tooltip .= "\n" . loc('Public Key Algorithm') . ': ' . $line->{PubkeyAlgoName} if $line->{PubkeyAlgoName};
-    $tooltip .= "\n" . loc('Hash Algorithm') . ': ' . $line->{HashAlgoName} if $line->{HashAlgoName};
+    $tooltip .= "\n" . loc('Public Key Algorithm') . ': ' . $line->{PubkeyAlgoName} if $line->{PubkeyAlgoName};                 # GNUPG
+    $tooltip .= "\n" . loc('Hash Algorithm') . ': ' . $line->{HashAlgoName} if $line->{HashAlgoName};                           # GNUPG
     $tooltip =~ s/^\s+//;
     return $tooltip;
 }
@@ -106,6 +113,11 @@ sub KeyDownloadLink {
             $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetGPGPubkey.html?Fingerprint=' . $line->{Fingerprint} . '"> ' . loc('(Download Public Key)') . '</a>';
         }
     }
+
+    # There isn't really a feasible way to download the S/MIME
+    # certificate, unfortunately.  However, since RT makes the
+    # original message available, the S/MIME cert could be
+    # extracted from that if necessary.
     return $txt;
 }
 
@@ -208,7 +220,7 @@ foreach my $run ( @runs ) {
             push @messages, {
                 Tag     => $protocol,
                 Classes => ['verify', lc $line->{Status}, 'trust-'.($line->{Trust} || 'UNKNOWN')],
-                Value   => '<span title="' . $m->interp->apply_escapes(VerifyTooltip($line), 'h') . '">' . $m->interp->apply_escapes(loc( $line->{'Message'} ), 'h') . '</span>' . KeyDownloadLink($protocol, $line),
+                Value   => '<span title="' . $m->interp->apply_escapes(VerifyTooltip($protocol, $line), 'h') . '">' . $m->interp->apply_escapes(loc( $line->{'Message'} ), 'h') . '</span>' . KeyDownloadLink($protocol, $line),
             };
         }
         else {

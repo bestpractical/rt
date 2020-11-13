@@ -185,7 +185,7 @@ MAIL
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
     $m->get("$baseurl/Ticket/History.html?id=$id");
     $m->content_like(
-        qr/<span title="Fingerprint: EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FC2\nSignature Created: .*\nKey Expires: Never\nPublic Key Algorithm: DSA\nHash Algorithm: SHA-1">/m,
+        qr/<span title="Fingerprint: EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FC2\nSignature Created: .*\nSigner: general &lt;general\@example.com&gt;\nKey Expires: Never\nPublic Key Algorithm: DSA\nHash Algorithm: SHA-1">/m,
         "Tooltip was added"
     );
     $m->follow_link_ok( { text => '(Download Public Key)' }, 'Download link for public key was added' );
