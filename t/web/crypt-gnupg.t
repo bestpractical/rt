@@ -183,7 +183,29 @@ MAIL
 
     like($attachments[0]->Content, qr/Some other content/, "RT's mail includes copy of ticket text");
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    $m->get("$baseurl/Ticket/History.html?id=$id");
+    $m->content_like(
+        qr/<span title="Fingerprint: EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FC2\nSignature Created: .*\nKey Expires: Never\nPublic Key Algorithm: DSA\nHash Algorithm: SHA-1">/m,
+        "Tooltip was added"
+    );
+    $m->follow_link_ok( { text => '(Download Public Key)' }, 'Download link for public key was added' );
+    $m->text_like(qr/-----BEGIN PGP PUBLIC KEY BLOCK-----/, "Download link returned a public key");
 }
+
+# Try fetching a nonexistent pubic key
+$m->get_ok("$baseurl/Crypt/GetGPGPubkey.html?Fingerprint=EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FCEEEEEEE");
+$m->text_contains('Could not find GnuPG public key with fingerprint EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FCEEEEEEE', "Got correct error message");
+
+# Try fetching with invalid fingerprint
+$m->get_ok("$baseurl/Crypt/GetGPGPubkey.html?Fingerprint=wookie%3B%3C%3Erm%20/etc/passwd");
+$m->content_contains('Could not find GnuPG public key with fingerprint wookie;&lt;&gt;rm /etc/passwd', "Got correct error message (dangerous characters HTML-escaped)");
+
+# Try fetching with no fingerprint
+$m->get_ok("$baseurl/Crypt/GetGPGPubkey.html?Irrelevant=3");
+$m->text_contains(
+    'Fingerprint must be supplied to download a public key',
+    "Got correct error message when no fingerprint supplied"
+);
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
 $m->form_with_fields('Sign', 'Encrypt');
