@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="form-row">
-  <div class="label col-3">
+  <div class="label col-2">
     <&|/l&>Description</&>:
   </div>
   <div class="value col-9">
@@ -55,7 +55,7 @@
 </div>
 
 <div class="form-row">
-  <div class="label col-3">
+  <div class="label col-2">
     <&|/l&>Condition</&>:
   </div>
   <div class="value col-9">
@@ -64,7 +64,7 @@
 </div>
 
 <div class="form-row">
-  <div class="label col-3">
+  <div class="label col-2">
     <&|/l&>Action</&>:
   </div>
   <div class="value col-9">
@@ -73,7 +73,7 @@
 </div>
 
 <div class="form-row">
-  <div class="label col-3">
+  <div class="label col-2">
     <&|/l&>Template</&>:
   </div>
   <div class="value col-9">

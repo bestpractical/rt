@@ -55,7 +55,7 @@
 
 % while ( my ($method, $desc) = splice @list, 0, 2 ) {
 <div class="form-row">
-  <div class="label col-3 labeltop">
+  <div class="label col-2 labeltop">
     <% $desc %>:
   </div>
   <div class="value col-9">
