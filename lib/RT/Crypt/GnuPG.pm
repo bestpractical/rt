@@ -330,6 +330,7 @@ sub CallGnuPG {
     my %GnuPGOptions = RT->Config->Get('GnuPGOptions');
     my %opt = (
         'digest-algo' => 'SHA1',
+        'cert-digest-algo' => 'SHA256',
         %GnuPGOptions,
         %{ $args{Options} || {} },
     );
@@ -1343,7 +1344,7 @@ my %parse_keyword = map { $_ => 1 } qw(
     DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
     NO_SECKEY NO_PUBKEY
-    NO_RECP INV_RECP NODATA UNEXPECTED
+    NO_RECP INV_RECP NODATA UNEXPECTED FAILURE
 );
 
 # keywords we ignore without any messages as we parse them using other
@@ -1353,7 +1354,8 @@ my %ignore_keyword = map { $_ => 1 } qw(
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
     ENC_TO BEGIN_DECRYPTION END_DECRYPTION GOODMDC
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
-    DECRYPTION_INFO
+    DECRYPTION_INFO KEY_CONSIDERED DECRYPTION_KEY NEWSIG PINENTRY_LAUNCHED
+    IMPORT_OK DECRYPTION_COMPLIANCE_MODE PROGRESS INV_SGNR
 );
 
 sub ParseStatus {
@@ -1541,10 +1543,12 @@ sub ParseStatus {
                 Class          => $props[3],
                 Timestamp      => $props[4],
                 KeyFingerprint => $props[5],
-                User           => $user_hint{ $latest_user_main_key },
+                ( defined $latest_user_main_key ? ( User => $user_hint{$latest_user_main_key} ) : () )
             };
-            $res[-1]->{Message} .= ' by '. $user_hint{ $latest_user_main_key }->{'EmailAddress'}
-                if $user_hint{ $latest_user_main_key };
+            if ($latest_user_main_key) {
+                $res[-1]->{Message} .= ' by '. $user_hint{ $latest_user_main_key }->{'EmailAddress'}
+                    if $user_hint{ $latest_user_main_key };
+            }
         }
         elsif ( $keyword eq 'INV_RECP' ) {
             my ($rcode, $recipient) = split /\s+/, $args, 2;
@@ -1569,8 +1573,20 @@ sub ParseStatus {
                 Reason     => $reason,
             };
         }
+        elsif ( $keyword eq 'FAILURE' ) {
+            # FAILURE encrypt 167772218
+            my ($op, $rcode) = split /\s+/, $args;
+            my $reason = ReasonCodeToText( $keyword, $rcode );
+            push @res, {
+                Operation  => ucfirst($op),
+                Status     => 'ERROR',
+                Message    => "Failed to $op",
+                ReasonCode => $rcode,
+                Reason     => $reason,
+            };
+        }
         else {
-            $RT::Logger->warning("Keyword $keyword is unknown");
+            $RT::Logger->warning("Keyword $keyword is unknown : status line is $line");
             next;
         }
         $res[-1]{'Keyword'} = $keyword if @res && !$res[-1]{'Keyword'};
@@ -1738,7 +1754,7 @@ sub ParseKeysInfo {
             push @{ $res[-1]{'User'} ||= [] }, \%info;
         }
         elsif ( $tag eq 'fpr' ) {
-            $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
+            $res[-1]{'Fingerprint'} ||= (split /:/, $line, 10)[8];
         }
     }
     return @res;

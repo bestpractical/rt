@@ -28,6 +28,13 @@ ok( !$err, 'no errors' );
 chomp $cert;
 open my $fh, '<', RT::Test::SMIME->key_path( 'sender@example.com.crt' ) or die $!;
 my $sender_cert = do { local $/; <$fh> };
+
+# Variations in how different versions of OpenSSL print certificates
+# can lead to incorrect test falures.  So only compare the *actual*
+# certificate data between the BEGIN CERTIFICATE and END CERTIFICATE lines
+$cert =~ s/.*-----BEGIN CERTIFICATE-----/-----BEGIN CERTIFICATE-----/s;
+$sender_cert =~ s/.*-----BEGIN CERTIFICATE-----/-----BEGIN CERTIFICATE-----/s;
+
 is( $cert, $sender_cert, 'cert is the same one' );
 
 diag "Has OtherCertificatesToSend";
@@ -56,6 +63,14 @@ is( scalar @certs, 2, 'found 2 certs' );
 
 open $fh, '<', RT::Test::SMIME->key_path( 'demoCA', 'cacert.pem' ) or die $!;
 my $ca_cert = do { local $/; <$fh> };
+
+# Variations in how different versions of OpenSSL print certificates
+# can lead to incorrect test falures.  So only compare the *actual*
+# certificate data between the BEGIN CERTIFICATE and END CERTIFICATE lines
+$certs[0] =~ s/.*-----BEGIN CERTIFICATE-----/-----BEGIN CERTIFICATE-----/s;
+$certs[1] =~ s/.*-----BEGIN CERTIFICATE-----/-----BEGIN CERTIFICATE-----/s;
+$ca_cert =~ s/.*-----BEGIN CERTIFICATE-----/-----BEGIN CERTIFICATE-----/s;
+
 is( $certs[0], $ca_cert,     'got ca cert' );
 is( $certs[1], $sender_cert, 'got sender cert' );
 
