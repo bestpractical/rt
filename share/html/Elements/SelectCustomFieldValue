@@ -48,7 +48,7 @@
 % $m->callback( Name => $Name, CustomField => $CustomField, Default => \$Default );
 % $Default = "" unless defined $Default;
 % if ($CustomField->Type =~ /Select/i) {
-% my $values = $CustomField->Values;
+% my $values = CachedCustomFieldValues($CustomField);
 <select name="<%$Name%>" class="form-control selectpicker">
 <option value="" selected="selected">-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
@@ -62,7 +62,7 @@
 <input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" value="<% $Default %>" />
 <script type="text/javascript">
 % my @options;
-% my $values = $CustomField->Values;
+% my $values = CachedCustomFieldValues($CustomField);
 % while (my $value = $values->Next) {
 %   push @options, {
 %       value => $value->Name,

@@ -5059,6 +5059,28 @@ sub ProcessAuthToken {
     return @results;
 }
 
+=head3 CachedCustomFieldValues FIELD
+
+Similar to FIELD->Values, but caches the return value of FIELD->Values
+in $m->notes in anticipation of it being used again.
+
+=cut
+sub CachedCustomFieldValues {
+    my $cf = shift;
+
+    my $key = 'CF-' . $cf->Id . '-Values';
+
+    if ($m->notes($key)) {
+        # Reset the iterator so we always start from the beginning
+        $m->notes($key)->GotoFirstItem;
+        return $m->notes($key);
+    }
+
+    # Wasn't in the cache; grab it and cache it.
+    $m->notes($key, $cf->Values);
+    return $m->notes($key);
+}
+
 package RT::Interface::Web;
 RT::Base->_ImportOverlays();
 

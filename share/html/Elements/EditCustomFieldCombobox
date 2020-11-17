@@ -56,7 +56,7 @@
     Default => $Default,
     Rows    => $Rows,
     Class   => "CF-".$CustomField->id."-Edit",
-    Values  => [map {$_->Name} @{$CustomField->Values->ItemsArrayRef}],
+    Values  => [map {$_->Name} @{CachedCustomFieldValues($CustomField)->ItemsArrayRef}],
 &>
 
 <%INIT>
