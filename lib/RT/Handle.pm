@@ -918,6 +918,9 @@ sub InsertData {
     if ( !$format_handler and grep(/^perl$/, @$handlers) ) {
         # Use perl-style initialdata
         # Note: eval of perl initialdata should only be done once
+
+        # Get the full path since . is no longer in @INC after perl 5.24
+        $datafile = Cwd::abs_path($datafile);
         eval { require $datafile }
           or return (0, "Couldn't load data from '$datafile':\nERROR:" . $@ . "\n\nDo you have the correct initialdata handler in RT_Config for this type of file?");
     }
