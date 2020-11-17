@@ -67,7 +67,7 @@
   </div>
 % }
 %   }
-%   my $CFVs = $CustomField->Values;
+%   my $CFVs = CachedCustomFieldValues($CustomField);
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
@@ -153,7 +153,7 @@ else {
     }
 }
 
-my $use_chosen = $CustomField->Values->Count >= 10 ? 1 : 0;
+my $use_chosen = CachedCustomFieldValues($CustomField)->Count >= 10 ? 1 : 0;
 $m->callback( CallbackName => 'Chosen', UseChosen => \$use_chosen, CustomField => $CustomField );
 
 # it's weird to see "(no value) X" in the input when selecting multiple values
@@ -183,7 +183,7 @@ $MaxValues => 1
 % }
 % $_ = lc $_ foreach @Default;
 % my $selected;
-% my $CFVs = $CustomField->Values;
+% my $CFVs = CachedCustomFieldValues($CustomField);
 % my @levels;
 % while ( my $value = $CFVs->Next ) {
 %       my $name = $value->Name;
