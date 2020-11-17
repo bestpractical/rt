@@ -67,17 +67,18 @@ diag "Test updating mappings";
     $form = $m->form_name('ModifyMappings');
     $m->submit_form(
         fields => {
-            "map-default--new--sales"      => "active",
-            "map-default--open--sales"     => "active",
-            "map-default--resolved--sales" => "inactive",
-            "map-sales--initial--default"  => "new",
-            "map-sales--active--default"   => "open",
-            "map-sales--inactive--default" => "resolved",
-            "map-default--deleted--sales"  => "inactive",
-            "map-default--rejected--sales" => "inactive",
-            "map-default--stalled--sales"  => "active",
-            "Name"                         => "default",
-            "Type"                         => "ticket",
+            "map-default--new--sales"          => "active",
+            "map-default--open--sales"         => "active",
+            "map-default--resolved--sales"     => "inactive",
+            "map-sales--initial--default"      => "new",
+            "map-sales--active--default"       => "open",
+            "map-sales--inactive--default"     => "resolved",
+            "map-sales--case-variant--default" => "open",
+            "map-default--deleted--sales"      => "inactive",
+            "map-default--rejected--sales"     => "inactive",
+            "map-default--stalled--sales"      => "active",
+            "Name"                             => "default",
+            "Type"                             => "ticket",
         },
         button => 'Update'
     );
@@ -94,18 +95,19 @@ diag "Confirm the web UI correctly displays mappings";
     my $form = $m->form_name('ModifyMappings');
 
     my $from = {
-        deleted  => "inactive",
-        new      => "active",
-        open     => "active",
-        rejected => "inactive",
-        resolved => "inactive",
-        stalled  => "active",
+        deleted        => "inactive",
+        new            => "active",
+        open           => "active",
+        rejected       => "inactive",
+        resolved       => "inactive",
+        stalled        => "active",
     };
 
     my $to = {
-        active   => "open",
-        inactive => "resolved",
-        initial  => "new",
+        active         => "open",
+        inactive       => "resolved",
+        initial        => "new",
+        "case-variant" => "open"
     };
 
     my @inputs = $form->inputs;
@@ -118,12 +120,16 @@ diag "Confirm the web UI correctly displays mappings";
                 $from->{$default_status},
                 "Mapping set correctly for default -> sales for status: $default_status"
               );
+            delete $from->{$default_status};
         }
         elsif ($sales_from) {
             is( $input->value, $to->{$sales_status},
                 "Mapping set correctly for sales -> default for status: $sales_status" );
+            delete $to->{$sales_status};
         }
     }
+    is_deeply( $from, {}, "All expected default mappings found." );
+    is_deeply( $to, {}, "All expected sales mappings found." );
 }
 
 diag "Test updating sales-engineering mappings";
