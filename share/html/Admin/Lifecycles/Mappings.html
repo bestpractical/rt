@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <div class="form-row">
   <div class="col-12">
-    <p><&|/l&>If a ticket is moved from one queue or catalog to another, these mappings define how statuses should be updated.</&></p>
+    <p><&|/l&>If a ticket or asset is moved from one queue or catalog to another, these mappings define how statuses should be updated.</&></p>
   </div>
 </div>
 
@@ -74,7 +74,7 @@
           <% $OtherStatus %>:
         </div>
         <div class="col-8 value">
-          <& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{$OtherStatus}, Name => 'map-' . $Other->Name . '-' . $OtherStatus . '--' . $LifecycleObj->Name&>
+          <& /Elements/SelectStatus, Statuses => \@MyStatuses, Default => $FromMapping->{$OtherStatus}, Name => 'map-' . $Other->Name . '--' . $OtherStatus . '--' . $LifecycleObj->Name&>
         </div>
       </div>
 % }
@@ -88,7 +88,7 @@
           <% $MyStatus %>:
         </div>
         <div class="col-8 value">
-          <& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{$MyStatus}, Name => 'map-' . $LifecycleObj->Name . '-' . $MyStatus . '--' . $Other->Name &>
+          <& /Elements/SelectStatus, Statuses => \@OtherStatuses, Default => $ToMapping->{$MyStatus}, Name => 'map-' . $LifecycleObj->Name . '--' . $MyStatus . '--' . $Other->Name &>
         </div>
       </div>
 % }
@@ -128,7 +128,7 @@ if ($Update) {
     my %maps;
     my $lifecycle_re = join '|', map { quotemeta($_) } @lifecycle_names;
     for my $key (keys %ARGS) {
-        my ($from_lifecycle, $from_status, $to_lifecycle) = $key =~ /^map-($lifecycle_re)-(.*)--($lifecycle_re)$/ or next;
+        my ($from_lifecycle, $from_status, $to_lifecycle) = $key =~ /^map-($lifecycle_re)--(.*)--($lifecycle_re)$/ or next;
         if (my $to_status = $ARGS{$key}) {
             $maps{"$from_lifecycle -> $to_lifecycle"}{$from_status} = $to_status;
         }
