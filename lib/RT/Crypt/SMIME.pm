@@ -496,6 +496,7 @@ sub Verify {
         }
 
         my ($address) = Email::Address->parse($signer->{User}[0]{String});
+        last unless $address;
         my $user = RT::User->new( $RT::SystemUser );
         $user->LoadOrCreateByEmail(
             EmailAddress => $address->address,
@@ -533,7 +534,7 @@ sub Verify {
 
     $res{'status'} = $self->FormatStatus({
         Operation => "Verify", Status => "DONE",
-        Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", trust is ".$signer->{TrustTerse},
+        Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", assured by " . $signer->{Issuer}[0]{String} . ", trust is ".$signer->{TrustTerse},
         UserString => $signer->{User}[0]{String},
         Trust => uc($signer->{TrustTerse}),
     });
@@ -933,8 +934,11 @@ sub GetCertificateInfo {
             my $method = $type . "_" . $USER_MAP{$_};
             $data{$_} = $cert->$method if $cert->can($method);
         }
-        $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format
-            if $data{EmailAddress};
+        if ($data{EmailAddress}) {
+            $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format;
+        } else {
+            $data{String} = $data{Name};
+        }
         return \%data;
     };
 
