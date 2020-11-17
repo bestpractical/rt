@@ -69,7 +69,7 @@ Set(\%Lifecycles,
     "sales"      => {
         type     => 'ticket',
         initial  => ['initial'],
-        active   => ['active'],
+        active   => ['active', 'case-Variant'],
         inactive => ['inactive'],
     },
     "sales-engineering" => {

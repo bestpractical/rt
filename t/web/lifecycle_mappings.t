@@ -67,17 +67,18 @@ diag "Test updating mappings";
     $form = $m->form_name('ModifyMappings');
     $m->submit_form(
         fields => {
-            "map-default--new--sales"      => "active",
-            "map-default--open--sales"     => "active",
-            "map-default--resolved--sales" => "inactive",
-            "map-sales--initial--default"  => "new",
-            "map-sales--active--default"   => "open",
-            "map-sales--inactive--default" => "resolved",
-            "map-default--deleted--sales"  => "inactive",
-            "map-default--rejected--sales" => "inactive",
-            "map-default--stalled--sales"  => "active",
-            "Name"                         => "default",
-            "Type"                         => "ticket",
+            "map-default--new--sales"          => "active",
+            "map-default--open--sales"         => "active",
+            "map-default--resolved--sales"     => "inactive",
+            "map-sales--initial--default"      => "new",
+            "map-sales--active--default"       => "open",
+            "map-sales--inactive--default"     => "resolved",
+            "map-sales--case-Variant--default" => "open",
+            "map-default--deleted--sales"      => "inactive",
+            "map-default--rejected--sales"     => "inactive",
+            "map-default--stalled--sales"      => "active",
+            "Name"                             => "default",
+            "Type"                             => "ticket",
         },
         button => 'Update'
     );
@@ -103,9 +104,10 @@ diag "Confirm the web UI correctly displays mappings";
     };
 
     my $to = {
-        active   => "open",
-        inactive => "resolved",
-        initial  => "new",
+        active         => "open",
+        inactive       => "resolved",
+        initial        => "new",
+        "case-Variant" => "open",
     };
 
     my @inputs = $form->inputs;

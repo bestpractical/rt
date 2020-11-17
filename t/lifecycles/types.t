@@ -19,7 +19,7 @@ ok($tickets, "Got a generalized lifecycle for tickets");
 isa_ok( $tickets, "RT::Lifecycle::Ticket", "Is the right subclass" );
 is_deeply( [ sort $tickets->Valid ],
            [ sort qw(new open stalled resolved rejected deleted ordered),
-             'on way', 'delayed', 'delivered', 'sales', 'engineering', 'initial', 'active', 'inactive'],
+             'on way', 'delayed', 'delivered', 'sales', 'engineering', 'initial', 'active', 'inactive', 'case-Variant'],
            "Only gets ticket statuses" );
 
 
