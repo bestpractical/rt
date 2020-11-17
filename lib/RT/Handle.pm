@@ -838,6 +838,8 @@ sub InsertData {
            @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final);
 
     local $@;
+    # Get the full path since . is no longer in @INC after perl 5.24
+    $datafile = Cwd::abs_path($datafile);
     $RT::Logger->debug("Going to load '$datafile' data file");
     eval { require $datafile }
       or return (0, "Couldn't load data from '$datafile' for import:\n\nERROR:". $@);
