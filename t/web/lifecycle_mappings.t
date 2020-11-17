@@ -111,7 +111,7 @@ diag "Confirm the web UI correctly displays mappings";
     my @inputs = $form->inputs;
     foreach my $input (@inputs) {
         my ( $default_from, $default_status, $default_to ) = $input->name =~ /^map-(default)--(.*)--(sales)$/;
-        my ( $sales_from,   $sales_status,   $sales_to )   = $input->name =~ /^map-(default)--(.*)--(sales)$/;
+        my ( $sales_from,   $sales_status,   $sales_to )   = $input->name =~ /^map-(sales)--(.*)--(default)$/;
 
         if ($default_from) {
             is( $input->value,
