@@ -62,7 +62,7 @@
 % for my $Other (@lifecycles) {
 % my $FromMapping = $Other->MoveMap($LifecycleObj);
 % my $ToMapping = $LifecycleObj->MoveMap($Other);
-% my @OtherStatuses = $Other->Valid;
+% my @OtherStatuses = map { lc $_ } $Other->Valid;
 
 <&| /Widgets/TitleBox, title => $Other->Name &>
   <div class="form-row">
@@ -112,7 +112,7 @@ $LifecycleObj->Load(Name => $Name, Type => $Type);
 
 Abort( loc("Invalid lifecycle") ) unless $LifecycleObj->Name && $LifecycleObj->{data}{type} eq $Type;
 
-my @MyStatuses = $LifecycleObj->Valid;
+my @MyStatuses = map { lc $_ } $LifecycleObj->Valid;
 
 $title = loc("Lifecycle [_1] Mappings", $LifecycleObj->Name);
 
