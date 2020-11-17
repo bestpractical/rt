@@ -941,6 +941,13 @@ sub GetCertificateInfo {
             my $method = $type . "_" . $USER_MAP{$_};
             $data{$_} = $cert->$method if $cert->can($method);
         }
+
+        # Use the correct procedure as per
+        # https://tools.ietf.org/html/rfc5750#section-3
+        # to extract the subject's email address
+        if ($type eq 'subject') {
+            $data{EmailAddress} = $self->ExtractSubjectEmailAddress($cert);
+        }
         if ($data{EmailAddress}) {
             $data{String} = Email::Address->new( @data{'Name', 'EmailAddress'} )->format;
         } else {
@@ -1012,6 +1019,42 @@ sub GetCertificateInfo {
         . " (issued by $res{info}[0]{Issuer}[0]{String})";
 
     return %res;
+}
+
+# Extract the subject email address from an S/MIME certificate.
+# https://tools.ietf.org/html/rfc5750#section-3
+sub ExtractSubjectEmailAddress {
+    my $self = shift;
+    my $cert = shift;
+
+    # 1: Check SubjectAltName
+    # "The email address SHOULD be in the subjectAltName extension"
+
+    my $altnames = $cert->SubjectAltName;
+    if ( $altnames && ( ref($altnames) eq 'ARRAY' ) ) {
+
+        # Pick the first email address from the array.
+        foreach my $alt (@$altnames) {
+            if ( $alt =~ s/^rfc822name=//i ) {
+                return $alt;
+            }
+        }
+    }
+
+    # 2: Check subject_email
+    my $ret = $cert->subject_email;
+    return $ret if ( defined($ret) && ( $ret ne '' ) );
+
+    # 3: If the subject_cn looks like an email address,
+    # return that
+    my $email_address;
+    eval { ($email_address) = Email::Address->parse( $cert->subject_cn ); };
+    if ($email_address) {
+        return $email_address->address;
+    }
+
+    # No sensible email address found
+    return undef;
 }
 
 1;
