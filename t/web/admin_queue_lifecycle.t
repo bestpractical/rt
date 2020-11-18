@@ -82,7 +82,7 @@ warning_like {
 ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login(), 'logged in' );
 $m->get_ok( $url . '/Admin/Queues/Modify.html?id=1' );
-$m->warning_like(qr/Unable to load lifecycle for bar/, 'warning of missing lifecycle bar');
+$m->next_warning_like(qr/Unable to load lifecycle for bar/, 'warning of missing lifecycle bar');
 $form = $m->form_name('ModifyQueue');
 $m->submit_form( fields => { Lifecycle => 'default' }, );
 $m->text_contains(q{Lifecycle changed from "bar" to "default"});
