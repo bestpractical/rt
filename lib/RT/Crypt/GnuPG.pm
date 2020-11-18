@@ -1490,6 +1490,15 @@ sub ParseStatus {
 
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
+                # Fingerprint = key fingerprint in hex
+                # CreationDate = key creation date (YYYY-MM-DD)
+                # Timestamp = signature creation time (seconds from UNIX epoch)
+                # ExpireTimestamp = signature expiration time (since epoch) or 0 for "never expires"
+                # Version = signature version straight from the packet
+                # PubkeyAlgo = Public key algorithm (https://tools.ietf.org/html/rfc4880#section-9.1)
+                # HashAlgo = Hash algorithm (https://tools.ietf.org/html/rfc4880#section-9.4)
+                # Class = Signature type (https://tools.ietf.org/html/rfc4880#section-5.2.1)
+                # PKFingerprint = Primary Key Fingerprint
                 @res{ qw(
                     Fingerprint
                     CreationDate
@@ -1503,6 +1512,8 @@ sub ParseStatus {
                     PKFingerprint
                     Other
                 ) } = split /\s+/, $1, 10;
+                $res{HashAlgoName} = $self->HashAlgorithmToName($res{HashAlgo}) if defined($res{HashAlgo});
+                $res{PubkeyAlgoName} = $self->PubkeyAlgorithmToName($res{PubkeyAlgo}) if defined($res{PubkeyAlgo});
                 last;
             }
             push @res, \%res;
@@ -1712,6 +1723,7 @@ sub ParseKeysInfo {
                 Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
 
+            $info{AlgorithmName} = $self->PubkeyAlgorithmToName($info{Algorithm}) if defined($info{Algorithm});
             # workaround gnupg's wierd behaviour, --list-keys command report calculated trust levels
             # for any model except 'always', so you can change models and see changes, but not for 'always'
             # we try to handle it in a simple way - we set ultimate trust for any key with trust
@@ -1739,6 +1751,7 @@ sub ParseKeysInfo {
                 Created Expire Empty OwnerTrustChar
                 Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
+            $info{AlgorithmName} = $self->PubkeyAlgorithmToName($info{Algorithm}) if defined($info{Algorithm});
             @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
                 _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = $self->ParseDate( $info{ $_ } )
@@ -1956,6 +1969,57 @@ sub _make_gpg_handles {
 
     my $handles = GnuPG::Handles->new(%handle_map);
     return ($handles, \%handle_map);
+}
+
+# Gigne a PGP hash algorithm number, return the algorithm name.
+# See https://tools.ietf.org/html/rfc4880#section-9.4
+sub HashAlgorithmToName {
+    my ( $self, $alg ) = @_;
+    return 'MD5'         if ( $alg == 1 );
+    return 'SHA-1'       if ( $alg == 2 );
+    return 'RIPE-MD/160' if ( $alg == 3 );
+    return 'Reserved'    if ( $alg >= 4 && $alg <= 7 );
+    return 'SHA256'      if ( $alg == 8 );
+    return 'SHA384'      if ( $alg == 9 );
+    return 'SHA512'      if ( $alg == 10 );
+    return 'SHA224'      if ( $alg == 11 );
+    return undef;
+}
+
+# Given a PGP public-key algorithm number, return the algorithm name.
+# See https://tools.ietf.org/html/rfc4880#section-9.1
+sub PubkeyAlgorithmToName {
+    my ( $self, $alg ) = @_;
+    return 'RSA'                         if ( $alg == 1 );
+    return 'RSA Encrypt-Only'            if ( $alg == 2 );
+    return 'RSA Sign-Only'               if ( $alg == 3 );
+    return 'Elgamal Encrypt-Ony'         if ( $alg == 16 );
+    return 'DSA'                         if ( $alg == 17 );
+    return 'Reserved for EC'             if ( $alg == 18 );
+    return 'Reserved for ECDSA'          if ( $alg == 19 );
+    return 'Reserved (formerly Elgamal)' if ( $alg == 20 );
+    return 'Reserved (DH)'               if ( $alg == 21 );
+    return undef;
+}
+
+# Given a public-key fingerprint, return the public key (in PEM format)
+# if we have it, undef if we do not.
+sub GetPubkey {
+    my ( $self, $fingerprint ) = @_;
+
+    # Sanity-check the fingerprint, which must be a string of
+    # hex digits
+    if ( $fingerprint =~ /[^0-9a-fA-F]/ ) {
+        return undef;
+    }
+
+    my @pubkey;
+    my %res = $self->CallGnuPG(
+        Command     => 'export_keys',
+        CommandArgs => $fingerprint,
+        Output      => \@pubkey
+    );
+    return join( '', @pubkey );
 }
 
 RT::Base->_ImportOverlays();
