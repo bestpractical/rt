@@ -116,12 +116,6 @@ my @MyStatuses = $LifecycleObj->Valid;
 
 $title = loc("Lifecycle [_1] Mappings", $LifecycleObj->Name);
 
-# This code does automatic redirection if any updates happen.
-MaybeRedirectForResults(
-    Actions   => \@results,
-    Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
-);
-
 my @lifecycle_names = grep { $_ ne 'approvals' } RT::Lifecycle->ListAll($Type);
 
 if ($Update) {
@@ -139,6 +133,12 @@ if ($Update) {
         Maps         => \%maps,
     );
     push @results, $msg;
+
+    # This code does automatic redirection if any updates happen.
+    MaybeRedirectForResults(
+        Actions   => \@results,
+        Arguments => { Name => $LifecycleObj->Name, Type => $LifecycleObj->Type },
+    );
 }
 
 my @lifecycles = map { RT::Lifecycle->Load(Name => $_, Type => $Type) }
