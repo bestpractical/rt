@@ -796,12 +796,30 @@ our %META;
                 $opt->{'Incoming'} = \@enabled;
             }
             if ( $opt->{'Outgoing'} ) {
-                if (not $enabled{$opt->{'Outgoing'}}) {
-                    $RT::Logger->warning($opt->{'Outgoing'}.
+                if (ref($opt->{'Outgoing'}) eq 'HASH') {
+                    # Check each entry in the hash
+                    foreach my $q (keys(%{$opt->{'Outgoing'}})) {
+                        if (not $enabled{$opt->{'Outgoing'}->{$q}}) {
+                            if ($q ne '') {
+                                $RT::Logger->warning($opt->{'Outgoing'}->{$q}.
+                                                     " explicitly set as outgoing Crypt plugin for queue $q, but not marked Enabled; "
+                                                     . (@enabled ? "using $enabled[0]" : "removing"));
+                            } else {
+                                $RT::Logger->warning($opt->{'Outgoing'}->{$q}.
+                                                     " explicitly set as default outgoing Crypt plugin, but not marked Enabled; "
+                                                     . (@enabled ? "using $enabled[0]" : "removing"));
+                            }
+                            $opt->{'Outgoing'}->{$q} = $enabled[0];
+                        }
+                    }
+                } else {
+                    if (not $enabled{$opt->{'Outgoing'}}) {
+                        $RT::Logger->warning($opt->{'Outgoing'}.
                                              " explicitly set as outgoing Crypt plugin, but not marked Enabled; "
                                              . (@enabled ? "using $enabled[0]" : "removing"));
+                    }
+                    $opt->{'Outgoing'} = $enabled[0] unless $enabled{$opt->{'Outgoing'}};
                 }
-                $opt->{'Outgoing'} = $enabled[0] unless $enabled{$opt->{'Outgoing'}};
             } else {
                 $opt->{'Outgoing'} = $enabled[0];
             }
