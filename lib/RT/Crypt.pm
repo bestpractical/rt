@@ -253,6 +253,12 @@ sub UseForOutgoing {
     );
     my $outgoing = RT->Config->Get('Crypt')->{'Outgoing'};
 
+    # If we don't have a queue, issue a deprecation warning
+    if ( ! defined($args{Queue}) ) {
+        RT->Deprecated(Message => 'RT::Crypt->UseForOutgoing should be passed a Queue => QUEUE argument; calling it without a Queue argument will stop working in release 5.4.0');
+        $args{Queue} = '';
+    }
+
     # Old-style config: Crypt->{'Outgoing'} is a scalar to use for all queues
     if ( ( ref($outgoing) || '' ) ne 'HASH' ) {
         return $outgoing;
@@ -265,8 +271,10 @@ sub UseForOutgoing {
     # either way, boil it down to the name.
     $qname = $qname->Name if ref($qname);
 
-    # Look for per-queue method; default to '' method in outgoing hash
-    return $outgoing->{$qname} || $outgoing->{''};
+    # Look for per-queue method; default to '' method in outgoing hash;
+    # if that does not exist, default to first enabled method
+    my @enabled = RT::Crypt->EnabledProtocols;
+    return $outgoing->{$qname} || $outgoing->{''} || $enabled[0];
 }
 
 =head2 EnabledOnIncoming
@@ -319,9 +327,6 @@ sub SimpleImplementationCall {
     my %args = (@_);
     my $protocol = delete $args{'Protocol'};
     if (!$protocol) {
-        if (!$args{'Queue'}) {
-            Carp::croak('If Protocol is not supplied, Queue must be supplied');
-        }
         $protocol = $self->UseForOutgoing(@_);
     }
 
