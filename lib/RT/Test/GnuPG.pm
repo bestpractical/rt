@@ -1,3 +1,8 @@
+# NOTE: This file is deprecated.  Instead of:
+#    use RT::Test::GnuPG ARGS
+# please do:
+#    use RT::Test::Crypt GnuPG => 1, ARGS
+
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -409,6 +414,10 @@ END {
         system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
             && warn $!;
     }
+
+    # If we use RT->Deprecated here, it makes tests fail with:
+    # Failed test 'no warnings'
+    print STDERR "\n\nRT::Test::GnuPG is deprecated; please use RT::Test::Crypt GnuPG => 1 instead\n\n";
 }
 
 1;

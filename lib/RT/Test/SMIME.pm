@@ -1,3 +1,8 @@
+# NOTE: This file is deprecated.  Instead of:
+#    use RT::Test::SMIME ARGS
+# please do:
+#    use RT::Test::Crypt SMIME => 1, ARGS
+
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -158,6 +163,10 @@ sub import_key {
     }
 
     return;
+}
+
+END {
+    RT->Deprecated(Message => 'RT::Test::SMIME is deprecated; please use RT::Test::Crypt SMIME => 1 instead');
 }
 
 1;
