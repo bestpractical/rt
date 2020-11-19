@@ -812,6 +812,11 @@ our %META;
                             $opt->{'Outgoing'}->{$q} = $enabled[0];
                         }
                     }
+                    # If there's no entry for the default queue, set one
+                    if (!$opt->{'Outgoing'}->{''} && scalar(@enabled)) {
+                        $RT::Logger->warning("No default outgoing Crypt plugin set; using $enabled[0]");
+                        $opt->{'Outgoing'}->{''} = $enabled[0];
+                    }
                 } else {
                     if (not $enabled{$opt->{'Outgoing'}}) {
                         $RT::Logger->warning($opt->{'Outgoing'}.

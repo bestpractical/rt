@@ -272,9 +272,9 @@ sub UseForOutgoing {
     $qname = $qname->Name if ref($qname);
 
     # Look for per-queue method; default to '' method in outgoing hash;
-    # if that does not exist, default to first enabled method
-    my @enabled = RT::Crypt->EnabledProtocols;
-    return $outgoing->{$qname} || $outgoing->{''} || $enabled[0];
+    # the '' entry is guaranteed to exist because it's added if necessary
+    # by the PostLoadCheck routine in RT::Config.
+    return $outgoing->{$qname} || $outgoing->{''};
 }
 
 =head2 EnabledOnIncoming
