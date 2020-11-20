@@ -90,7 +90,7 @@ my @users = map {$_->[1]}
 % my $id= 'DeleteMember-' .  $member->MemberId;
       <li class="list-group-item">
         <div class="custom-control custom-checkbox">
-          <input type="checkbox" class="checkbox custom-control-input" id="<% $id%>" name="DeleteMember-<% $id%>" value="1" />
+          <input type="checkbox" class="checkbox custom-control-input" id="<% $id%>" name="<% $id %>" value="1" />
           <label class="custom-control-label" for="<% $id %>">
             <a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $member->MemberObj->Object->id %>"><% $member->MemberObj->Object->Name %></a>
           </label>
