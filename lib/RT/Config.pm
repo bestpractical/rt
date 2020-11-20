@@ -839,6 +839,19 @@ our %META;
                     delete $opt->{CAPath};
                 }
             }
+
+            if (!exists $opt->{DownloadCRL} ) {
+                $opt->{DownloadCRL} = 0;
+            }
+            if (!exists $opt->{DownloadCRLTimeout} ) {
+                $opt->{DownloadCRLTimeout} = 0;
+            }
+            if ($opt->{DownloadCRL} && ! RT::Crypt::SMIME->SupportsCRLfile) {
+                $opt->{DownloadCRL} = 0;
+                $RT::Logger->warn(
+                    "Your version of OpenSSL does not support the -CRLfile option; disabling \$SMIME{DownloadCRL}"
+                );
+            }
         },
     },
     GnuPG        => {

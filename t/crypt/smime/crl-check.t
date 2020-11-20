@@ -13,13 +13,17 @@ RT->Config->Set('SMIME', Enable => 1,
     OpenSSL => $openssl,
     Keyring => $keyring,
     CAPath  => $ca,
+    DownloadCRL => 1,
 );
 
 RT::Test::SMIME->import_key('sender-crl@example.com');
 
+if (!RT::Crypt::SMIME->SupportsCRLfile) {
+    RT::Test::plan( skip_all => 'This version of openssl does not support the -CRLfile option');
+}
 
-if (!$::RT::Crypt::SMIME::OpenSSL_Supports_CRL_Download) {
-    RT::Test::plan( skip_all => 'This version of openssl does not support the -crl_download option');
+if (!$ENV{RT_TEST_DOWNLOAD_CRL}) {
+    RT::Test::plan( skip_all => 'Skipping tests that would download a CRL because RT_TEST_DOWNLOAD_CRL environment variable not set to 1');
 }
 
 my $crt;

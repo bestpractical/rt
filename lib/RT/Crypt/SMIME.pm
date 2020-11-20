@@ -64,8 +64,8 @@ use String::ShellQuote 'shell_quote';
 use LWP;
 
 # This will be set to a true value by Probe
-# if "openssl verify" supports the -crl_download option
-our $OpenSSL_Supports_CRL_Download;
+# if "openssl verify" supports the -CRLfile option
+our $OpenSSL_Supports_CRLfile;
 
 =head1 NAME
 
@@ -87,6 +87,8 @@ You should start from reading L<RT::Crypt>.
             '' => 'fallback',
         },
         OtherCertificatesToSend => '/opt/rt4/var/data/smime/other-certs.pem',
+        DownloadCRL => 0,
+        DownloadCRLTimeout => 30,
     );
 
 =head3 OpenSSL
@@ -132,6 +134,19 @@ Certificates in the file will be include in outgoing signed emails.
 
 Depending on use cases, you might need to include a chain of certificates so
 receiving agents can verify. CA could also be included here.
+
+=head3 DownloadCRL
+
+A boolean option that determines whether or not we attempt to check if
+a certificate is revoked by downloading a CRL or checking against an
+OCSP URL.  The default value is false (do not check.)  Additionally,
+if AcceptUntrustedCAs is true, RT will I<never> download a CRL or
+check an OCSP URL for a certificate signed by an untrusted CA.
+
+=head3 DownloadCRLTimeout
+
+Timeout in seconds for downloading a CRL or issuer certificate for
+OCSP checking.  The default is 30 seconds.
 
 =head2 Keyring configuration
 
@@ -219,11 +234,11 @@ sub Probe {
         } else {
             ($buf, $err) = ('', '');
             # Interrogate openssl verify command to see if it supports
-            # the -crl_download option.
+            # the -CRLfile option.
             safe_run_child { run3( [$bin, 'verify', '-help'],
                                    \undef, \$buf, \$err) };
-            if ($err =~ /crl_download/) {
-                $OpenSSL_Supports_CRL_Download = 1;
+            if ($err =~ /-CRLfile/) {
+                $OpenSSL_Supports_CRLfile = 1;
             }
             return 1;
         }
@@ -973,54 +988,46 @@ sub GetCertificateInfo {
         stderr => ''
     );
 
+    # First, check if the certificate verifies without checking
+    # revocation status
+    $self->RunOpenSSLVerify($PEM, \%res);
+
+    if ($res{info}[0]{TrustLevel} != 2) {
+        # Not signed by trusted CA; return
+        return %res;
+    }
+
+    # If we're not configured to check CRLs, just return
+    # what we have.
+    return %res unless (RT::Config->Get('SMIME')->{'DownloadCRL'});
+
     # Check if certificate has been revoked using OCSP if the cert has
     # an OCSP URL.  Unfortunately, Crypt::X509 doesn't let us query
     # for OCSP URLs, so we need to run OpenSSL.
     my $ocsp_result = $self->CheckRevocationUsingOCSP($PEM, \%res);
     if ($ocsp_result) {
+        # We got a definitive result from OCSP; return
         return %res;
     }
 
+    # OCSP didn't give us a result.  Try downloading CRL
     my $note_about_crl_download = '';
-    if (!defined($ocsp_result)) {
-        if ($OpenSSL_Supports_CRL_Download) {
-            $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-crl_download');
-            if ($res{stderr} !~ /unable to get certificate CRL/) {
-                return %res;
+    if ($OpenSSL_Supports_CRLfile) {
+        # We fetch the CRL file ourselves using LWP rather than
+        # using OpenSSL's -crl_download option so we can
+        # control the timeout.
+        my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+        my ($url) = @{$cert->CRLDistributionPoints};
+        if ($url) {
+            my $crl_file = $self->DownloadAndConvertCRLToPEM($tmpdir, $url);
+            if ($crl_file) {
+                $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-CRLfile', $crl_file);
+            } else {
+                $res{info}[0]{Trust} .= " (NOTE: Unable to download CRL)";
             }
-            # If OpenSSL said: "Error loading CRL from URL", try to fetch
-            # the URL ourselves.  OpenSSL gives that misleading message if
-            # the CRL is in DER format rather than PEM.  So we download
-            # it ourselves, try to convert from DER to PEM, and then
-            # rerun with -CRLfile <crl.pem>
-            if ($res{stderr} =~ /Error loading CRL from (https?:.*)/i) {
-                my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
-                my $crl_file = $self->DownloadAndConvertCRLToPEM($tmpdir, $1);
-                if ($crl_file) {
-                    $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-CRLfile', $crl_file);
-                    return %res;
-                }
-            }
-        }
-
-        # If we got here and we support -crl_download, then clearly
-        # the CRL download failed, so make a note of that
-        if ($OpenSSL_Supports_CRL_Download) {
-            $note_about_crl_download = " (NOTE: Unable to download CRL)";
         }
     }
 
-    # One of these cases has happened to get here:
-    # 1) We don't support -crl_download,
-    # 2) We do support -crl_download but it failed
-    # 3) OCSP told us that the certificate is still good
-    #
-    # Run without -crl_check -crl_download
-
-    $self->RunOpenSSLVerify($PEM, \%res);
-    if (($res{info}[0]{TrustTerse} // '') eq 'full') {
-        $res{info}[0]{Trust} .= $note_about_crl_download;
-    }
     return %res;
 }
 
@@ -1087,6 +1094,8 @@ sub DownloadAndConvertCRLToPEM
 {
     my ($self, $tmpdir, $url) = @_;
     my $ua = LWP::UserAgent->new(env_proxy => 1);
+    $ua->timeout(RT::Config->Get('SMIME')->{DownloadCRLTimeout});
+
     my $resp = $ua->get($url);
     return undef unless $resp->is_success;
 
@@ -1131,6 +1140,7 @@ sub CheckRevocationUsingOCSP
     my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
     my $issuer = File::Spec->catfile($tmpdir, 'issuer.crt');
     my $ua = LWP::UserAgent->new(env_proxy => 1);
+    $ua->timeout(RT::Config->Get('SMIME')->{DownloadCRLTimeout});
 
     my $resp = $ua->get($issuer_url);
     return undef unless $resp->is_success;
@@ -1174,5 +1184,11 @@ sub CheckRevocationUsingOCSP
 
     return undef;
 }
+
+# Accessor function to query if OpenSSL supports -CRLfile
+# without having to know a package variable name.
+sub SupportsCRLfile {
+    return $OpenSSL_Supports_CRLfile;
+};
 
 1;
