@@ -61,6 +61,11 @@ use IPC::Run3 0.036 'run3';
 use RT::Util 'safe_run_child';
 use Crypt::X509;
 use String::ShellQuote 'shell_quote';
+use LWP;
+
+# This will be set to a true value by Probe
+# if "openssl verify" supports the -CRLfile option
+our $OpenSSL_Supports_CRLfile;
 
 =head1 NAME
 
@@ -82,6 +87,9 @@ You should start from reading L<RT::Crypt>.
             '' => 'fallback',
         },
         OtherCertificatesToSend => '/opt/rt4/var/data/smime/other-certs.pem',
+        CheckCRL => 0,
+        CheckOCSP => 0,
+        CheckRevocationDownloadTimeout => 30,
     );
 
 =head3 OpenSSL
@@ -127,6 +135,25 @@ Certificates in the file will be include in outgoing signed emails.
 
 Depending on use cases, you might need to include a chain of certificates so
 receiving agents can verify. CA could also be included here.
+
+=head3 CheckCRL
+
+A boolean option that determines whether or not we attempt to check if
+a certificate is revoked by downloading a CRL.  The default value is
+false (do not check).  Additionally, if AcceptUntrustedCAs is true, RT
+will I<never> download a CRL or check an OCSP URL for a certificate
+signed by an untrusted CA.
+
+=head3 CheckOCSP
+
+A boolean option that determines whether or not we check if a certificate
+is revoked by checking the OCSP URL (if any).  The default value is
+false.
+
+=head3 CheckRevocationDownloadTimeout
+
+Timeout in seconds for downloading a CRL or issuer certificate for
+OCSP checking.  The default is 30 seconds.
 
 =head2 Keyring configuration
 
@@ -212,6 +239,14 @@ sub Probe {
                     " SMIME support has been disabled");
             return;
         } else {
+            ($buf, $err) = ('', '');
+            # Interrogate openssl verify command to see if it supports
+            # the -CRLfile option.
+            safe_run_child { run3( [$bin, 'verify', '-help'],
+                                   \undef, \$buf, \$err) };
+            if ($err =~ /-CRLfile/) {
+                $OpenSSL_Supports_CRLfile = 1;
+            }
             return 1;
         }
     }
@@ -975,6 +1010,61 @@ sub GetCertificateInfo {
         stderr => ''
     );
 
+    # First, check if the certificate verifies without checking
+    # revocation status
+    $self->RunOpenSSLVerify($PEM, \%res);
+
+    if ($res{info}[0]{TrustLevel} != 2) {
+        # Not signed by trusted CA; return
+        return %res;
+    }
+
+    # If we're not configured to check CRLs or OCSP, just return
+    # what we have.
+    return %res unless (RT::Config->Get('SMIME')->{'CheckCRL'} ||
+                        RT::Config->Get('SMIME')->{'CheckOCSP'}   );
+
+    # Check if certificate has been revoked using OCSP if the cert has
+    # an OCSP URL.  Unfortunately, Crypt::X509 doesn't let us query
+    # for OCSP URLs, so we need to run OpenSSL.
+    if (RT::Config->Get('SMIME')->{'CheckOCSP'}) {
+        my $ocsp_result = $self->CheckRevocationUsingOCSP($PEM, \%res);
+        if ($ocsp_result) {
+            # We got a definitive result from OCSP; return
+            return %res;
+        }
+    }
+
+    # OCSP didn't give us a result, or was disabled  Try downloading CRL.
+    if (RT::Config->Get('SMIME')->{'CheckCRL'}) {
+        if ($OpenSSL_Supports_CRLfile) {
+            # We fetch the CRL file ourselves using LWP rather than
+            # using OpenSSL's -crl_download option so we can
+            # control the timeout.
+            my ($url) = @{$cert->CRLDistributionPoints};
+            if ($url) {
+                my $crl_file = $self->DownloadAndConvertCRLToPEM($url);
+                if ($crl_file) {
+                    $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-CRLfile', $crl_file);
+                } else {
+                    $res{info}[0]{Trust} .= " (NOTE: Unable to download CRL)";
+                }
+            }
+        }
+    }
+
+    return %res;
+}
+
+sub RunOpenSSLVerify
+{
+    my $self = shift;
+    my $PEM = shift;
+    my $res = shift;
+    # Remaining args are extra arguments to "openssl verify"
+
+    $res->{stderr} = '';
+
     # Check the validity
     my $ca = RT->Config->Get('SMIME')->{'CAPath'};
     if ($ca) {
@@ -986,39 +1076,43 @@ sub GetCertificateInfo {
         }
 
         local $SIG{CHLD} = 'DEFAULT';
+
         my $cmd = [
             $self->OpenSSLPath,
-            'verify', @ca_verify,
-        ];
+            'verify', @ca_verify, @_,
+          ];
         my $buf = '';
-        safe_run_child { run3( $cmd, \$PEM, \$buf, \$res{stderr} ) };
+        safe_run_child { run3( $cmd, \$PEM, \$buf, \$res->{stderr} ) };
 
         if ($buf =~ /^stdin: OK$/) {
-            $res{info}[0]{Trust} = "Signed by trusted CA $res{info}[0]{Issuer}[0]{String}";
-            $res{info}[0]{TrustTerse} = "full";
-            $res{info}[0]{TrustLevel} = 2;
+            $res->{info}[0]{Trust} = "Signed by trusted CA $res->{info}[0]{Issuer}[0]{String}";
+            $res->{info}[0]{TrustTerse} = "full";
+            $res->{info}[0]{TrustLevel} = 2;
+            $res->{exit_code} = 0;
         } elsif ($? == 0 or ($? >> 8) == 2) {
-            $res{info}[0]{Trust} = "UNTRUSTED signing CA $res{info}[0]{Issuer}[0]{String}";
-            $res{info}[0]{TrustTerse} = "none";
-            $res{info}[0]{TrustLevel} = -1;
+            if ($res->{stderr} =~ /certificate revoked/i) {
+                $res->{info}[0]{Trust} = "REVOKED certificate from CA $res->{info}[0]{Issuer}[0]{String}";
+                $res->{info}[0]{TrustTerse} = "none (revoked certificate)";
+            } else {
+                $res->{info}[0]{Trust} = "UNTRUSTED signing CA $res->{info}[0]{Issuer}[0]{String}";
+                $res->{info}[0]{TrustTerse} = "none";
+            }
+            $res->{info}[0]{TrustLevel} = -1;
+            $res->{exit_code} = $?;
         } else {
-            $res{exit_code} = $?;
-            $res{message} = "openssl exited with error code ". ($? >> 8)
+            $res->{exit_code} = $?;
+            $res->{message} = "openssl exited with error code ". ($? >> 8)
                 ." and stout: $buf";
-            $res{info}[0]{Trust} = "unknown (openssl failed)";
-            $res{info}[0]{TrustTerse} = "unknown";
-            $res{info}[0]{TrustLevel} = 0;
+            $res->{info}[0]{Trust} = "unknown (openssl failed)";
+            $res->{info}[0]{TrustTerse} = "unknown";
+            $res->{info}[0]{TrustLevel} = 0;
         }
     } else {
-        $res{info}[0]{Trust} = "unknown (no CAPath set)";
-        $res{info}[0]{TrustTerse} = "unknown";
-        $res{info}[0]{TrustLevel} = 0;
+        $res->{info}[0]{Trust} = "unknown (no CAPath set)";
+        $res->{info}[0]{TrustTerse} = "unknown";
+        $res->{info}[0]{TrustLevel} = 0;
     }
-
-    $res{info}[0]{Formatted} = $res{info}[0]{User}[0]{String}
-        . " (issued by $res{info}[0]{Issuer}[0]{String})";
-
-    return %res;
+    $res->{info}[0]{Formatted} = $res->{info}[0]{User}[0]{String} . " (issued by $res->{info}[0]{Issuer}[0]{String})";
 }
 
 # Extract the subject email address from an S/MIME certificate.
@@ -1056,5 +1150,106 @@ sub ExtractSubjectEmailAddress {
     # No sensible email address found
     return undef;
 }
+
+sub DownloadAndConvertCRLToPEM {
+    my ($self, $url) = @_;
+    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    my $ua = LWP::UserAgent->new(env_proxy => 1);
+    $ua->timeout(RT::Config->Get('SMIME')->{CheckRevocationDownloadTimeout});
+
+    my $resp = $ua->get($url);
+    return undef unless $resp->is_success;
+
+    my $fname = File::Spec->catfile($tmpdir, 'crl.pem');
+    my $in = $resp->decoded_content;
+    if ($in !~ /-----BEGIN X509 CRL-----/) {
+        $in =  "-----BEGIN X509 CRL-----\n" .
+                MIME::Base64::encode_base64($in) .
+               "-----END X509 CRL-----\n";
+    }
+    if ( open my $fh, '>', $fname ) {
+        print $fh $in;
+        close($fh);
+        return $fname;
+    }
+    return undef;
+}
+
+# Returns: 1 if cert has been revoked, 0 if it has definitely NOT been revoked,
+# undef if OCSP check failed
+sub CheckRevocationUsingOCSP {
+    my ($self, $PEM, $res) = @_;
+
+    # Can't do anything without a CAPath
+    my $ca = RT->Config->Get('SMIME')->{'CAPath'};
+    return undef unless $ca;
+
+    my ($out, $err);
+    $out = '';
+    $err = '';
+    # We need to download the issuer certificate, so look for its URL and
+    # that of the OCSP
+    safe_run_child { run3( [$self->OpenSSLPath, 'x509', '-noout', '-text'],
+                           \$PEM, \$out, \$err ) };
+    return undef unless $out =~ /CA Issuers - URI:(https?:.*)/;
+    my $issuer_url = $1;
+
+    return undef unless $out =~ /OCSP - URI:(https?:.*)/;
+    my $ocsp_url = $1;
+
+    # We have the issuer certificate URL; make a temp dir and grab it
+    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    my $issuer = File::Spec->catfile($tmpdir, 'issuer.crt');
+    my $ua = LWP::UserAgent->new(env_proxy => 1);
+    $ua->timeout(RT::Config->Get('SMIME')->{CheckRevocationDownloadTimeout});
+
+    my $resp = $ua->get($issuer_url);
+    return undef unless $resp->is_success;
+
+    open(my $fh, '>', $issuer) or return undef;
+    my $content = $resp->decoded_content;
+    if ($content !~ /BEGIN CERTIFICATE/) {
+        # Convert from DER to PEM
+        $content = "-----BEGIN CERTIFICATE-----\n" .
+            MIME::Base64::encode_base64($content) .
+            "-----END CERTIFICATE-----\n";
+    }
+    print $fh $content;
+    close($fh);
+
+    # Check for revocation
+    my @ca_verify;
+    if (-d $ca) {
+        @ca_verify = ('-CApath', $ca);
+    } elsif (-f $ca) {
+        @ca_verify = ('-CAfile', $ca);
+    }
+    $out = '';
+    $err = '';
+
+    safe_run_child { run3( [$self->OpenSSLPath(), 'ocsp', '-issuer', $issuer, '-cert', '-', @ca_verify, '-url', $ocsp_url],
+                           \$PEM, \$out, \$err) };
+    return undef unless $? == 0;
+
+    if ($out =~ /^-: revoked/) {
+        $res->{info}[0]{Trust} = "REVOKED certificate checked against OCSP URI $ocsp_url";
+        $res->{info}[0]{TrustTerse} = "none (revoked certificate)";
+        $res->{info}[0]{TrustLevel} = -1;
+        $res->{exit_code} = 0;
+        return 1;
+    }
+    if ($out =~ /^-: good/) {
+        # Definitely NOT revoked.  Return 0, but not undef
+        return 0;
+    }
+
+    return undef;
+}
+
+# Accessor function to query if OpenSSL supports -CRLfile
+# without having to know a package variable name.
+sub SupportsCRLfile {
+    return $OpenSSL_Supports_CRLfile;
+};
 
 1;
