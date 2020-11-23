@@ -68,6 +68,7 @@ jQuery(function(){
 });
 </script>
 </form>
+<br />
 
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" name="UsersAdmin">
 % foreach my $field( qw(Format Rows Page Order OrderBy) ) {
@@ -93,8 +94,9 @@ jQuery(function(){
                 UserString      => $UserString3,
             &></td></tr>
 </table>
-<input type="checkbox" class="checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
-<label for="FindDisabledUsers"><&|/l&>Include disabled users in search.</&></label>
+<p>Include all <input type="checkbox" class="checkbox" id="FindEnabledUsers" name="FindEnabledUsers" value="1" <% $FindEnabledUsers ? 'checked="checked"' : '' %> /><label for="FindEnabledUsers"><&|/l&> enabled users</&></label>
+<input type="checkbox" class="checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers ? 'checked="checked"' : '' %> /><label for="FindDisabledUsers"><&|/l&> disabled users</&></label>
+</p>
 <br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" name="Go" /></div>
 </form>
@@ -112,7 +114,7 @@ jQuery(function(){
     Format => $Format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers)],
+    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindEnabledUsers FindDisabledUsers)],
 &>
 
 % }
@@ -120,7 +122,15 @@ jQuery(function(){
 <%INIT>
 my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
-$users->FindAllRows if $FindDisabledUsers;
+if ( $FindEnabledUsers ) {
+    $FindDisabledUsers ? $users->FindAllRows : $users->LimitToEnabled;
+} else {
+    unless ( $FindDisabledUsers ) {
+        RT->Logger->warn("Including neither enabled nor disabled users would result in zero results. Assuming enabled instead");
+        $FindEnabledUsers = 1;
+    }
+    $FindDisabledUsers ? $users->LimitToDeleted : $users->LimitToEnabled;
+}
 
 $caption = loc("Users matching search criteria");
 my @users_queries = ();
@@ -206,5 +216,6 @@ $UserField3 => 'Name'
 $IdLike => undef
 $EmailLike => undef
 
-$FindDisabledUsers => 0
+$FindEnabledUsers => undef    # NB: the DWIM logic for 'include neither' makes this default = 1
+$FindDisabledUsers => undef
 </%ARGS>
