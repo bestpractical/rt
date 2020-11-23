@@ -14,6 +14,7 @@ RT->Config->Set('SMIME', Enable => 1,
     Keyring => $keyring,
     CAPath  => $ca,
     DownloadCRL => 1,
+    CheckOSCP => 1,
 );
 
 RT::Test::SMIME->import_key('sender-crl@example.com');

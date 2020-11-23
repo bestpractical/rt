@@ -3061,11 +3061,14 @@ Set C<OtherCertificatesToSend> to path to a PEM-formatted certificate file.
 Certificates in the file will be include in outgoing signed emails.
 
 Set C<DownloadCRL> to a true value to have RT check for revoked certificates
-using OCSP or downloading a CRL if no OCSP server is given.  By default,
-C<DownloadCRL> is disabled.
+by downloading a CRL. By default, C<DownloadCRL> is disabled.
 
-Set C<DownloadCRLTimeout> to the timeout in seconds for downloading a CRL.
-The default timeout is 30 seconds.
+Set C<CheckOCSP> to a true value to have RT check for revoked certificates
+against an OCSP server if possible.  By default, C<CheckOCSP> is disabled.
+
+Set C<CheckRevocationDownloadTimeout> to the timeout in seconds for
+downloading a CRL or an issuer certificate (the latter is used when
+checking against OCSP.)  The default timeout is 30 seconds.
 
 See L<RT::Crypt::SMIME> for details.
 
@@ -3082,7 +3085,8 @@ Set( %SMIME,
     Passphrase => undef,
     OtherCertificatesToSend => undef,
     DownloadCRL => 0,
-    DownloadCRLTimeout => 30,
+    CheckOCSP   => 0,
+    CheckRevocationDownloadTimeout => 30,
 );
 
 =head2 GnuPG configuration

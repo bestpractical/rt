@@ -14,6 +14,7 @@ RT->Config->Set('SMIME', Enable => 1,
     Keyring => $keyring,
     CAPath  => $ca,
     DownloadCRL => 1,
+    CheckOCSP => 1,
 );
 
 RT::Test::SMIME->import_key('revoked@example.com');
@@ -43,22 +44,28 @@ my %res;
 is ($res{info}[0]{Trust}, 'REVOKED certificate checked against OCSP URI http://ocsp.digicert.com', 'Trust info indicates revoked certificate using OCSP');
 is ($res{info}[0]{TrustTerse}, 'none (revoked certificate)', 'TrustTerse indicates revoked certificate');
 
-# Now pretend we couldn't use OCSP
-{
-    no warnings 'redefine';
-    *RT::Crypt::SMIME::CheckRevocationUsingOCSP = sub { return undef; };
-    %res = RT::Crypt::SMIME->GetCertificateInfo(Certificate => $crt);
-    is ($res{info}[0]{Trust}, 'REVOKED certificate from CA DigiCert SHA2 Secure Server CA', 'Trust info indicates revoked certificate using CRL');
-    is ($res{info}[0]{TrustTerse}, 'none (revoked certificate)', 'TrustTerse indicates revoked certificate');
-}
+# Now disable OCSP
+RT->Config->Set('SMIME', Enable => 1,
+    Passphrase => {'revoked\@example.com' => '123456'},
+    OpenSSL => $openssl,
+    Keyring => $keyring,
+    CAPath  => $ca,
+    DownloadCRL => 1,
+    CheckOCSP => 0,
+);
 
-# If we have not enabled CRL downloading, the cert should verify
+%res = RT::Crypt::SMIME->GetCertificateInfo(Certificate => $crt);
+is ($res{info}[0]{Trust}, 'REVOKED certificate from CA DigiCert SHA2 Secure Server CA', 'Trust info indicates revoked certificate using CRL');
+is ($res{info}[0]{TrustTerse}, 'none (revoked certificate)', 'TrustTerse indicates revoked certificate');
+
+# Disable both OCSP and CRL... cert should verify
 RT->Config->Set('SMIME', Enable => 1,
     Passphrase => {'revoked\@example.com' => '123456'},
     OpenSSL => $openssl,
     Keyring => $keyring,
     CAPath  => $ca,
     DownloadCRL => 0,
+    CheckOSCP => 0,
 );
 %res = RT::Crypt::SMIME->GetCertificateInfo(Certificate => $crt);
 is ($res{info}[0]{Trust}, 'Signed by trusted CA DigiCert SHA2 Secure Server CA');

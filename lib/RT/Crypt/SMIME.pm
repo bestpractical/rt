@@ -88,7 +88,8 @@ You should start from reading L<RT::Crypt>.
         },
         OtherCertificatesToSend => '/opt/rt4/var/data/smime/other-certs.pem',
         DownloadCRL => 0,
-        DownloadCRLTimeout => 30,
+        CheckOCSP   => 0,
+        CheckRevocationDownloadTimeout => 30,
     );
 
 =head3 OpenSSL
@@ -138,12 +139,18 @@ receiving agents can verify. CA could also be included here.
 =head3 DownloadCRL
 
 A boolean option that determines whether or not we attempt to check if
-a certificate is revoked by downloading a CRL or checking against an
-OCSP URL.  The default value is false (do not check.)  Additionally,
-if AcceptUntrustedCAs is true, RT will I<never> download a CRL or
-check an OCSP URL for a certificate signed by an untrusted CA.
+a certificate is revoked by downloading a CRL.  The default value is
+false (do not check.)  Additionally, if AcceptUntrustedCAs is true, RT
+will I<never> download a CRL or check an OCSP URL for a certificate
+signed by an untrusted CA.
 
-=head3 DownloadCRLTimeout
+=head3 CheckOCSP
+
+A boolean option that determines whether or not we check if a certificate
+is revoked by checking the OCSP URL (if any).  The default value is
+false.
+
+=head3 CheckRevocationDownloadTimeout
 
 Timeout in seconds for downloading a CRL or issuer certificate for
 OCSP checking.  The default is 30 seconds.
@@ -997,33 +1004,38 @@ sub GetCertificateInfo {
         return %res;
     }
 
-    # If we're not configured to check CRLs, just return
+    # If we're not configured to check CRLs or OCSP, just return
     # what we have.
-    return %res unless (RT::Config->Get('SMIME')->{'DownloadCRL'});
+    return %res unless (RT::Config->Get('SMIME')->{'DownloadCRL'} ||
+                        RT::Config->Get('SMIME')->{'CheckOCSP'  }   );
 
     # Check if certificate has been revoked using OCSP if the cert has
     # an OCSP URL.  Unfortunately, Crypt::X509 doesn't let us query
     # for OCSP URLs, so we need to run OpenSSL.
-    my $ocsp_result = $self->CheckRevocationUsingOCSP($PEM, \%res);
-    if ($ocsp_result) {
-        # We got a definitive result from OCSP; return
-        return %res;
+    if (RT::Config->Get('SMIME')->{'CheckOCSP'}) {
+        my $ocsp_result = $self->CheckRevocationUsingOCSP($PEM, \%res);
+        if ($ocsp_result) {
+            # We got a definitive result from OCSP; return
+            return %res;
+        }
     }
 
-    # OCSP didn't give us a result.  Try downloading CRL
-    my $note_about_crl_download = '';
-    if ($OpenSSL_Supports_CRLfile) {
-        # We fetch the CRL file ourselves using LWP rather than
-        # using OpenSSL's -crl_download option so we can
-        # control the timeout.
-        my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
-        my ($url) = @{$cert->CRLDistributionPoints};
-        if ($url) {
-            my $crl_file = $self->DownloadAndConvertCRLToPEM($tmpdir, $url);
-            if ($crl_file) {
-                $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-CRLfile', $crl_file);
-            } else {
-                $res{info}[0]{Trust} .= " (NOTE: Unable to download CRL)";
+    # OCSP didn't give us a result, or was disabled  Try downloading CRL.
+    if (RT::Config->Get('SMIME')->{'DownloadCRL'}) {
+        my $note_about_crl_download = '';
+        if ($OpenSSL_Supports_CRLfile) {
+            # We fetch the CRL file ourselves using LWP rather than
+            # using OpenSSL's -crl_download option so we can
+            # control the timeout.
+            my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+            my ($url) = @{$cert->CRLDistributionPoints};
+            if ($url) {
+                my $crl_file = $self->DownloadAndConvertCRLToPEM($tmpdir, $url);
+                if ($crl_file) {
+                    $self->RunOpenSSLVerify($PEM, \%res, '-crl_check', '-CRLfile', $crl_file);
+                } else {
+                    $res{info}[0]{Trust} .= " (NOTE: Unable to download CRL)";
+                }
             }
         }
     }
@@ -1094,22 +1106,23 @@ sub DownloadAndConvertCRLToPEM
 {
     my ($self, $tmpdir, $url) = @_;
     my $ua = LWP::UserAgent->new(env_proxy => 1);
-    $ua->timeout(RT::Config->Get('SMIME')->{DownloadCRLTimeout});
+    $ua->timeout(RT::Config->Get('SMIME')->{CheckRevocationDownloadTimeout});
 
     my $resp = $ua->get($url);
     return undef unless $resp->is_success;
 
     my $fname = File::Spec->catfile($tmpdir, 'crl.pem');
     my $in = $resp->decoded_content;
-    my ($out, $err) = ('', '');
-
-    local $SIG{'CHLD'} = 'DEFAULT';
-
-    safe_run_child { run3( [$self->OpenSSLPath(), 'crl', '-inform', 'DER', '-outform', 'PEM', '-out', $fname], \$in, \$out, \$err) };
-    if ($? == 0) {
+    if ($in !~ /-----BEGIN X509 CRL-----/) {
+        $in =  "-----BEGIN X509 CRL-----\n" .
+                MIME::Base64::encode_base64($in) .
+               "-----END X509 CRL-----\n";
+    }
+    if (open(my $fh, ">$fname")) {
+        print $fh $in;
+        close($fh);
         return $fname;
     }
-    # Something failed and we could not convert CRL to PEM format.
     return undef;
 }
 
@@ -1140,7 +1153,7 @@ sub CheckRevocationUsingOCSP
     my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
     my $issuer = File::Spec->catfile($tmpdir, 'issuer.crt');
     my $ua = LWP::UserAgent->new(env_proxy => 1);
-    $ua->timeout(RT::Config->Get('SMIME')->{DownloadCRLTimeout});
+    $ua->timeout(RT::Config->Get('SMIME')->{CheckRevocationDownloadTimeout});
 
     my $resp = $ua->get($issuer_url);
     return undef unless $resp->is_success;
