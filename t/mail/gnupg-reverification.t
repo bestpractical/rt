@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => undef, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::Crypt GnuPG => 1, tests => undef, gnupg_options => { passphrase => 'rt-test' };
 
 diag "load Everyone group";
 my $everyone;

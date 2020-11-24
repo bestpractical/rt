@@ -887,6 +887,9 @@ sub SendEmail {
             Attachment => $TransactionObj ? $TransactionObj->Attachments->First : undef,
             Ticket     => $TicketObj,
         );
+        if ($TicketObj) {
+            $args{'Queue'} = $TicketObj->QueueObj;
+        }
         my $res = SignEncrypt( %args );
         return $res unless $res > 0;
     }

@@ -60,7 +60,7 @@
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 % if ($gnupg_widget) {
-  <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+  <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $QueueObj &>
 % }
 
 <div id="Ticket-Create-basics">

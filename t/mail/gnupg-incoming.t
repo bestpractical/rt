@@ -3,12 +3,13 @@ use warnings;
 
 my $homedir;
 BEGIN {
-    require RT::Test::GnuPG;
-    $homedir = RT::Test::GnuPG::new_homedir(
+    require RT::Test::Crypt;
+    $homedir = RT::Test::Crypt::new_homedir(
         RT::Test::get_abs_relocatable_dir( File::Spec->updir(), qw/data gnupg keyrings/ ) ),
 }
 
-use RT::Test::GnuPG
+use RT::Test::Crypt
+  GnuPG         => 1,
   tests         => 53,
   actual_server => 1,
   gnupg_options => {

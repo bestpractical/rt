@@ -56,7 +56,7 @@
 <input type="hidden" class="hidden" name="id" value="<% $id %>" /><br />
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
 
-<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $TicketObj->QueueObj &>
 
 <table border="0">
 <tr><td align="right"><&|/l&>From</&>:</td>

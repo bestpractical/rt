@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::Crypt SMIME => 1, tests => undef;
 
 sub extract_email_address
 {

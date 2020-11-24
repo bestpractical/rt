@@ -1,10 +1,10 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::Crypt SMIME => 1, tests => undef;
 use IPC::Run3 'run3';
 
-RT::Test::SMIME->import_key( 'sender@example.com' );
+RT::Test::Crypt->smime_import_key( 'sender@example.com' );
 
 diag "No OtherCertificatesToSend";
 
@@ -26,7 +26,7 @@ ok( $cert, 'got cert' );
 ok( !$err, 'no errors' );
 
 chomp $cert;
-open my $fh, '<', RT::Test::SMIME->key_path( 'sender@example.com.crt' ) or die $!;
+open my $fh, '<', RT::Test::Crypt->smime_key_path( 'sender@example.com.crt' ) or die $!;
 my $sender_cert = do { local $/; <$fh> };
 
 # Variations in how different versions of OpenSSL print certificates
@@ -39,7 +39,7 @@ is( $cert, $sender_cert, 'cert is the same one' );
 
 diag "Has OtherCertificatesToSend";
 
-RT->Config->Get( 'SMIME' )->{OtherCertificatesToSend} = RT::Test::SMIME->key_path( 'demoCA', 'cacert.pem' );
+RT->Config->Get( 'SMIME' )->{OtherCertificatesToSend} = RT::Test::Crypt->smime_key_path( 'demoCA', 'cacert.pem' );
 
 $mime = MIME::Entity->build(
     From => 'sender@example.com',
@@ -61,7 +61,7 @@ chomp $cert;
 my @certs = split /\n(?=Certificate:)/, $cert;
 is( scalar @certs, 2, 'found 2 certs' );
 
-open $fh, '<', RT::Test::SMIME->key_path( 'demoCA', 'cacert.pem' ) or die $!;
+open $fh, '<', RT::Test::Crypt->smime_key_path( 'demoCA', 'cacert.pem' ) or die $!;
 my $ca_cert = do { local $/; <$fh> };
 
 # Variations in how different versions of OpenSSL print certificates

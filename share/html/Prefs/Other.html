@@ -69,7 +69,7 @@
 
 % if ( RT->Config->Get('Crypt')->{'Enable'} ) {
 <&|/Widgets/TitleBox, title => loc( 'Cryptography' ) &>
-<&|/l&>Preferred key</&>: <& /Elements/Crypt/SelectKeyForEncryption, EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey &>
+<&|/l&>Preferred GnuPG key</&>: <& /Elements/Crypt/SelectKeyForEncryption, Name => 'PreferredKey', EmailAddress => $UserObj->EmailAddress, Default => $UserObj->PreferredKey, Protocol => 'GnuPG' &>
 </&>
 % }
 

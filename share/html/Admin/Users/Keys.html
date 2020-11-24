@@ -59,7 +59,7 @@
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Users/Keys.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $UserObj->Id %>" />
 
-% if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
+% if (RT::Config->Get('GnuPG')->{Enable}) {
 <&|/Widgets/TitleBox, title => loc('GnuPG private key') &>
 <& /Widgets/Form/Select,
     Name         => 'PrivateKey',
@@ -71,7 +71,7 @@
 </&>
 % }
 
-% if (RT::Crypt->UseForOutgoing eq 'SMIME') {
+% if (RT::Config->Get('SMIME')->{Enable}) {
 <&|/Widgets/TitleBox, title => loc('SMIME Certificate') &>
 <textarea name="SMIMECertificate"><% $UserObj->SMIMECertificate || '' %></textarea>
 </&>
@@ -99,7 +99,7 @@ $id = $ARGS{'id'} = $UserObj->id;
 my @potential_keys;
 my $email = $UserObj->EmailAddress;
 
-if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
+if (RT::Config->Get('GnuPG')->{Enable}) {
     my %keys_meta = RT::Crypt->GetKeysForSigning( Signer => $email, Protocol => 'GnuPG' );
     @potential_keys = map $_->{'Key'}, @{ $keys_meta{'info'} || [] };
 
@@ -121,7 +121,7 @@ if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
     }
 }
 
-if (RT::Crypt->UseForOutgoing eq 'SMIME') {
+if (RT::Config->Get('SMIME')->{Enable}) {
     if ( $Update and ($ARGS{'SMIMECertificate'}||'') ne ($UserObj->SMIMECertificate||'') ) {
         my ($status, $msg) = $UserObj->SetSMIMECertificate( $ARGS{'SMIMECertificate'} );
         push @results, $msg;

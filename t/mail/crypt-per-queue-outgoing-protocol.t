@@ -1,7 +1,16 @@
 use strict;
 use warnings;
 
-use RT::Test::Crypt SMIME => 1, tests => undef;
+use RT::Test::Crypt
+    GnuPG      => 1,
+    SMIME      => 1,
+    tests      => undef,
+    gnupg_options => {
+        passphrase    => 'rt-test',
+        'trust-model' => 'always'
+    },
+    config => 'Set( %Crypt, Incoming => ["GnuPG", "SMIME"], Outgoing => {"" => "GnuPG", Special => "SMIME" } );';
+
 my $test = 'RT::Test::Crypt';
 
 use IPC::Run3 'run3';
@@ -11,7 +20,7 @@ my ($url, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
 
 my $queue = RT::Test->load_or_create_queue(
-    Name              => 'General',
+    Name              => 'Special',
     CorrespondAddress => 'sender@example.com',
     CommentAddress    => 'sender@example.com',
 );
@@ -19,7 +28,7 @@ ok $queue && $queue->id, 'loaded or created queue';
 
 {
     my ($status, $msg) = $queue->SetEncrypt(1);
-    ok $status, "turn on encyption by default"
+    ok $status, "turn on encryption by default"
         or diag "error: $msg";
 }
 
@@ -75,5 +84,19 @@ END
     diag "Error code: $?" if $?;
     like($buf, qr'This message has been automatically generated in response');
 }
+
+# non-"Special" queue should use GnuPG, not S/MIME.
+RT::Test->import_gnupg_key('rt-recipient@example.com');
+RT::Test->import_gnupg_key( 'rt-test@example.com' );
+
+$queue = RT::Test->load_or_create_queue(
+    Name              => 'Regression',
+    CorrespondAddress => 'rt-recipient@example.com',
+    CommentAddress    => 'rt-recipient@example.com',
+    Encrypt           => 1,
+);
+ok $queue && $queue->id, 'loaded or created queue';
+
+create_and_test_outgoing_emails( $queue, $m );
 
 done_testing;

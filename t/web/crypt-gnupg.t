@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG
+use RT::Test::Crypt
+  GnuPG         => 1,
   tests         => undef,
   gnupg_options => {
     passphrase    => 'recipient',
@@ -423,7 +424,7 @@ ok($user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 is($user->PreferredKey, $key1, "preferred key is set correctly");
 $m->get("$baseurl/Prefs/Other.html");
-like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
+like($m->content, qr/Preferred GnuPG key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
 like($m->content, qr/$key1/, "first key shows up in preferences");
@@ -439,7 +440,7 @@ ok($user->Load('root'), "Loaded user 'root'");
 is($user->PreferredKey, $key2, "preferred key is set correctly to the new value");
 
 $m->get("$baseurl/Prefs/Other.html");
-like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
+like($m->content, qr/Preferred GnuPG key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
 like($m->content, qr/$key2/, "second key shows up in preferences");

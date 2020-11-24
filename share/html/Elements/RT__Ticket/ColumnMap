@@ -82,8 +82,9 @@ my $LinkCallback = sub {
 };
 
 my $trustSub = sub {
+    my $queue = shift;
     my $user = shift;
-    my %key = RT::Crypt->GetKeyInfo( Key => $user->EmailAddress );
+    my %key = RT::Crypt->GetKeyInfo( Key => $user->EmailAddress, Queue => $queue );
     if (!defined $key{'info'}) {
         return $m->interp->apply_escapes(' ' . loc("(no pubkey!)"), "h");
     } elsif ($key{'info'}{'TrustLevel'} == 0) {
@@ -275,7 +276,7 @@ $COLUMN_MAP = {
     KeyRequestors => {
         title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->Requestor, PostUser => $trustSub ) ) }
+        value     => sub { my $ticket = $_[0]; return \($m->scomp("/Elements/ShowPrincipal", Object => $ticket->Requestor, PostUser => sub { my $user = shift; return $trustSub->($ticket->QueueObj, $user); }))}
     },
     KeyOwnerName => {
         title     => 'Owner', # loc
@@ -283,7 +284,7 @@ $COLUMN_MAP = {
         value     => sub {
             my $t = shift;
             my $name = $t->OwnerObj->Name;
-            my %key = RT::Crypt->GetKeyInfo( Key => $t->OwnerObj->EmailAddress );
+            my %key = RT::Crypt->GetKeyInfo( Key => $t->OwnerObj->EmailAddress, Queue => $t->QueueObj );
             if (!defined $key{'info'}) {
                 $name .= ' '. loc("(no pubkey!)");
             }
@@ -297,7 +298,8 @@ $COLUMN_MAP = {
     KeyOwner => {
         title     => 'Owner', # loc
         attribute => 'Owner',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->OwnerObj, PostUser => $trustSub ) ) }
+        value     => sub {
+            my $ticket = $_[0]; return \($m->scomp("/Elements/ShowPrincipal", Object => $ticket->OwnerObj, PostUser => sub { my $user = shift; return $trustSub->($ticket->QueueObj, $user); }))},
     },
 
     # Everything from LINKTYPEMAP
