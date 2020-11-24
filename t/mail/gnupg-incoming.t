@@ -10,12 +10,14 @@ BEGIN {
 
 use RT::Test::Crypt
   GnuPG         => 1,
-  tests         => 53,
+  tests         => undef,
   actual_server => 1,
   gnupg_options => {
     passphrase => 'rt-test',
     homedir    => $homedir,
   };
+
+use Test::Deep;
 
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
@@ -62,6 +64,9 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is not encrypted'
     );
     like( $txn->Attachments->First->Content, qr/Blah/);
+    my ($msg) = @{ $txn->Attachments->ItemsArrayRef };
+    my @status = $msg->GetCryptStatus;
+    cmp_deeply( \@status, [], 'Got empty array for unsigned/unencrypted attachment' );
 }
 
 # test for signed mail
@@ -105,6 +110,36 @@ RT::Test->close_mailgate_ok($mail);
     );
     # test for some kind of PGP-Signed-By: Header
     like( $attach->Content, qr/fnord/);
+
+    my @status = $msg->GetCryptStatus;
+    cmp_deeply(
+        \@status,
+        [   {   'Protocol'       => 'GnuPG',
+                'Reserved'       => re('^\d+$'),
+                'Version'        => '4',
+                'CreationDate'   => re('^\d{4}-\d{2}-\d{2}$'),
+                'Other'          => undef,
+                'HashAlgo'       => '2',
+                'HashAlgoName'   => 'SHA-1',
+                'PubkeyAlgo'     => '17',
+                'PubkeyAlgoName' => 'DSA',
+                'Fingerprint'    => '7232A3C60F796865796370A54855ED8893EB9DE7',
+                'Status'         => 'DONE',
+                'Key'            => '4855ED8893EB9DE7',
+                'UserString'     => 'Test User <recipient@example.com>',
+                'Operation'      => 'Verify',
+                'Message' =>
+                    'The signature is good, signed by Test User <recipient@example.com>, trust level is ultimate',
+                'ExpireTimestamp' => '0',
+                'Class'           => '00',
+                'Timestamp'       => re('^\d+$'),
+                'Trust'           => 'ULTIMATE',
+                'Keyword'         => 'GOODSIG',
+                'PKFingerprint'   => '7232A3C60F796865796370A54855ED8893EB9DE7'
+            }
+        ],
+        'Got expected crypt status'
+    );
 }
 
 # test for clear-signed mail
@@ -378,3 +413,5 @@ EOF
     my $content = $tick->Transactions->First->Content;
     like $content, qr/a{1024,}/, 'content is not lost';
 }
+
+done_testing;

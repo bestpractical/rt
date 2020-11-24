@@ -903,6 +903,47 @@ sub _SplitHeaders {
     return(@headers);
 }
 
+=head2 GetCryptStatus
+
+Returns the parsed status from the X-RT-GnuPG-Status or
+X-RT-SMIME-Status header.
+
+The return value is an array of hashrefs; each hashref is as described
+in L<RT::Crypt::ParseStatus>; however, each hashref has one additional
+entry 'Protocol' which is the name of the crypto protocol used and is
+one of 'SMIME' or 'GnuPG'.
+
+If no crypto header exists, returns an empty array
+
+=cut
+
+sub GetCryptStatus {
+    my $self = shift;
+    my @ret  = ();
+
+    foreach my $h ( $self->SplitHeaders ) {
+        next unless $h =~ /^X-RT-(GnuPG|SMIME)-Status:/i;
+        my $protocol = $1;
+        my ( $h_key, $h_val ) = split( /:\s*/, $h, 2 );
+        my @result = RT::Crypt->ParseStatus(
+            Protocol => $protocol,
+            Status   => $h_val
+        );
+
+        # Canonicalize protocol case so it's always SMIME or GnuPG
+        if ( uc($protocol) eq 'SMIME' ) {
+            $protocol = 'SMIME';
+        }
+        elsif ( uc($protocol) eq 'GNUPG' ) {
+            $protocol = 'GnuPG';
+        }
+        foreach my $hash (@result) {
+            $hash->{'Protocol'} = $protocol;
+            push( @ret, $hash );
+        }
+    }
+    return @ret;
+}
 
 sub Encrypt {
     my $self = shift;
