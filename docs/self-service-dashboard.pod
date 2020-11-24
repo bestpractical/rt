@@ -26,6 +26,11 @@ simple menu interface) if set to 0.
 =item * L<RT_Config/SelfServicePageComponents> is a list of components
 that are allowed to be placed into the self-service dashboard.
 
+=item * L<RT_Config/SelfServiceArticleClass> is an article class
+that should be shown to self-service users.  Note that you I<also>
+have to set permissions on the article class for unprivileged
+users to see articles in that class.
+
 =back
 
 =head2 Creating the Self-Service Dashboard
