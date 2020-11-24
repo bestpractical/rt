@@ -1,0 +1,36 @@
+=head1 Introduction
+
+RT has a default interface for unprivileged users that lets them
+view their own tickets; this interface is referred to as the Self-Service
+interface.
+
+=head1 Customizing the Self-Service Interface
+
+You can replace the default interface with a custom interface for unprivileged
+users.  To do this, follow these steps:
+
+=over
+
+=item Enable the Self-Service Dashboard
+
+In your RT_SiteConfig.pm file, set C<$SelfServiceUseDashboard> to a true
+value.
+
+=item Set Self-Service Dashboard Options
+
+In RT_SiteConfig.pm, set C<$SelfServicePageComponents> to a list of
+the components allowed on the dashboard (the default list is most
+likely appropriate.)
+
+Finally, if you are going to allow unprivileged users to see articles,
+set C<$SelfServiceArticleClass> to the class of articles they should
+see.  Note that you I<also> have to set permissions on the article
+class for unprivileged users to see articles in that class.
+
+=item Configure the Self-Service Dashboard from the RT Web Interface
+
+In RT, go to Admin > Global > Self-Service Home Page and set up the
+self-service dashboard just as you would any other dashboard.  Click
+"Show" to preview the dashboard and "Content" to continue editing it.
+
+=back
