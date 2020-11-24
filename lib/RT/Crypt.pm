@@ -694,6 +694,9 @@ sub CheckRecipients {
         Recipients => undef,
     );
 
+    # CheckRecipients used to be called with just a list of recipients
+    # rather than a hash of arguments; if we are given the old-style
+    # list of recipients, adjust %args for backward-compatibility.
     if ( grep { $_ && $_ =~ /^(Queue|Recipients)$/ } @_ ) {
         %args = ( %args, @_ );
     }
