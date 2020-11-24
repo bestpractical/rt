@@ -874,20 +874,20 @@ in L<RT::Crypt::ParseStatus>; however, each hashref has one additional
 entry 'Protocol' which is the name of the crypto protocol used
  and is one of 'SMIME' or 'GnuPG'.
 
-If no crypto header exists, returns the array: ( { Protocol => 'None' } )
+If no crypto header exists, returns an empty array
 
 =cut
 
 sub GetCryptStatus
 {
     my $self = shift;
-    my @result = ( {Protocol => 'None' } );
+    my @ret = ( );
 
     foreach my $h ($self->SplitHeaders) {
         next unless $h =~ /^X-RT-(GnuPG|SMIME)-Status:/i;
         my $protocol = $1;
         my ($h_key, $h_val) = split(/:\s*/, $h, 2);
-        @result = RT::Crypt->ParseStatus(Protocol => $protocol,
+        my @result = RT::Crypt->ParseStatus(Protocol => $protocol,
                                          Status => $h_val);
 
         # Canonicalize protocol case so it's always SMIME or GnuPG
@@ -898,10 +898,10 @@ sub GetCryptStatus
         }
         foreach my $hash (@result) {
             $hash->{'Protocol'} = $protocol;
+            push(@ret, $hash);
         }
-        last;
     }
-    return @result;
+    return @ret;
 }
 
 =head2 SplitHeaders

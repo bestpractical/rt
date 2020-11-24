@@ -55,7 +55,7 @@ RT::Test->close_mailgate_ok($mail);
     like( $txn->Attachments->First->Content, qr'Blah');
     my ($msg) = @{$txn->Attachments->ItemsArrayRef};
     my @status = $msg->GetCryptStatus;
-    cmp_deeply(\@status, [{Protocol => 'None'}], 'Got expected crypt status (Protocol => None)');
+    cmp_deeply(\@status, [], 'Got expected crypt status (Empty array)');
 }
 
 {
@@ -145,7 +145,19 @@ RT::Test->close_mailgate_ok($mail);
         Protocol    => 'SMIME',
         Message     => 'Decryption process succeeded',
         EncryptedTo => [{EmailAddress => 'sender@example.com'}],
-        Status      => 'DONE'}], 'Got expected encryption status');
+        Status      => 'DONE'},
+    {
+        Status => 'DONE',
+        UserString => '"Enoch Root" <root@example.com>',
+        Trust => 'FULL',
+        Issuer => '"CA Owner" <ca.owner@example.com>',
+        CreatedTimestamp => re('^\d+$'),
+        Message => 'The signature is good, signed by "Enoch Root" <root@example.com>, assured by "CA Owner" <ca.owner@example.com>, trust is full',
+        ExpireTimestamp => re('^\d+$'),
+        Operation => 'Verify',
+        Protocol => 'SMIME'
+    }
+    ], 'Got expected signing/encryption status');
 }
 
 {

@@ -65,7 +65,7 @@ RT::Test->close_mailgate_ok($mail);
     like( $txn->Attachments->First->Content, qr/Blah/);
     my ($msg) = @{$txn->Attachments->ItemsArrayRef};
     my @status = $msg->GetCryptStatus;
-    cmp_deeply(\@status, [{Protocol => 'None'}], 'Got expected crypt status (Protocol => None)');
+    cmp_deeply(\@status, [], 'Got empty array for unsigned/unencrypted attachment');
 }
 
 # test for signed mail
