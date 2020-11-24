@@ -8,6 +8,7 @@ use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Tickets;
 use Test::Warn;
+use Test::Deep;
 
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
@@ -52,6 +53,9 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is not encrypted'
     );
     like( $txn->Attachments->First->Content, qr'Blah');
+    my ($msg) = @{ $txn->Attachments->ItemsArrayRef };
+    my @status = $msg->GetCryptStatus;
+    cmp_deeply( \@status, [], 'Got expected crypt status (Empty array)' );
 }
 
 {
@@ -135,6 +139,29 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is encrypted'
     );
     like( $attach->Content, qr'orzzzz');
+    my @status = $msg->GetCryptStatus;
+    cmp_deeply(
+        \@status,
+        [   {   Operation   => 'Decrypt',
+                Protocol    => 'SMIME',
+                Message     => 'Decryption process succeeded',
+                EncryptedTo => [ { EmailAddress => 'sender@example.com' } ],
+                Status      => 'DONE'
+            },
+            {   Status           => 'DONE',
+                UserString       => '"Enoch Root" <root@example.com>',
+                Trust            => 'FULL',
+                Issuer           => '"CA Owner" <ca.owner@example.com>',
+                CreatedTimestamp => re('^\d+$'),
+                Message =>
+                    'The signature is good, signed by "Enoch Root" <root@example.com>, assured by "CA Owner" <ca.owner@example.com>, trust is full',
+                ExpireTimestamp => re('^\d+$'),
+                Operation       => 'Verify',
+                Protocol        => 'SMIME'
+            }
+        ],
+        'Got expected signing/encryption status'
+    );
 }
 
 {
@@ -172,6 +199,23 @@ RT::Test->close_mailgate_ok($mail);
             "Message was signed"
         );
         like( $attach->Content, qr/This is the body/ );
+        my @status = $msg->GetCryptStatus;
+        cmp_deeply(
+            \@status,
+            [   {   CreatedTimestamp => re('^\d+$'),
+                    ExpireTimestamp  => re('^\d+$'),
+                    Issuer           => '"CA Owner" <ca.owner@example.com>',
+                    Protocol         => 'SMIME',
+                    Operation        => 'Verify',
+                    Status           => 'DONE',
+                    Message =>
+                        'The signature is good, signed by "Enoch Root" <root@example.com>, assured by "CA Owner" <ca.owner@example.com>, trust is full',
+                    UserString => '"Enoch Root" <root@example.com>',
+                    Trust      => 'FULL'
+                }
+            ],
+            'Got expected crypt status for signed message'
+        );
     }
 
     # Make the signature not match
