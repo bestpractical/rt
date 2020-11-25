@@ -65,7 +65,7 @@ RT::Test->close_mailgate_ok($mail);
     );
     like( $txn->Attachments->First->Content, qr/Blah/);
     my ($msg) = @{ $txn->Attachments->ItemsArrayRef };
-    my @status = $msg->GetCryptStatus;
+    my @status = $msg->CryptStatus;
     cmp_deeply( \@status, [], 'Got empty array for unsigned/unencrypted attachment' );
 }
 
@@ -111,7 +111,7 @@ RT::Test->close_mailgate_ok($mail);
     # test for some kind of PGP-Signed-By: Header
     like( $attach->Content, qr/fnord/);
 
-    my @status = $msg->GetCryptStatus;
+    my @status = $msg->CryptStatus;
     cmp_deeply(
         \@status,
         [   {   'Protocol'       => 'GnuPG',

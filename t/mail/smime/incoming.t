@@ -54,7 +54,7 @@ RT::Test->close_mailgate_ok($mail);
     );
     like( $txn->Attachments->First->Content, qr'Blah');
     my ($msg) = @{ $txn->Attachments->ItemsArrayRef };
-    my @status = $msg->GetCryptStatus;
+    my @status = $msg->CryptStatus;
     cmp_deeply( \@status, [], 'Got expected crypt status (Empty array)' );
 }
 
@@ -139,7 +139,7 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is encrypted'
     );
     like( $attach->Content, qr'orzzzz');
-    my @status = $msg->GetCryptStatus;
+    my @status = $msg->CryptStatus;
     cmp_deeply(
         \@status,
         [   {   Operation   => 'Decrypt',
@@ -199,7 +199,7 @@ RT::Test->close_mailgate_ok($mail);
             "Message was signed"
         );
         like( $attach->Content, qr/This is the body/ );
-        my @status = $msg->GetCryptStatus;
+        my @status = $msg->CryptStatus;
         cmp_deeply(
             \@status,
             [   {   CreatedTimestamp => re('^\d+$'),
