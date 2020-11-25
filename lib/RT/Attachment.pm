@@ -903,7 +903,7 @@ sub _SplitHeaders {
     return(@headers);
 }
 
-=head2 GetCryptStatus
+=head2 CryptStatus
 
 Returns the parsed status from the X-RT-GnuPG-Status or
 X-RT-SMIME-Status header.
@@ -917,7 +917,7 @@ If no crypto header exists, returns an empty array
 
 =cut
 
-sub GetCryptStatus {
+sub CryptStatus {
     my $self = shift;
     my @ret  = ();
 
