@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('User Defined conditions and results'), content_class => 'mx-auto width-sm' &>
+<&| /Widgets/TitleBox, title => loc('User Defined conditions and results') &>
 
 <div class="form-row">
   <div class="col-12 comment">
@@ -55,7 +55,7 @@
 
 % while ( my ($method, $desc) = splice @list, 0, 2 ) {
 <div class="form-row">
-  <div class="label col-3 labeltop">
+  <div class="label col-2 labeltop">
     <% $desc %>:
   </div>
   <div class="value col-9">

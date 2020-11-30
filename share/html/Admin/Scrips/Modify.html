@@ -49,17 +49,17 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip" class="mx-auto max-width-lg">
+<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip" class="mx-auto max-width-xl">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="From" value="<% $From || q{} %>" />
 
-<&| /Widgets/TitleBox, title => loc('Basics'), content_class => 'mx-auto width-sm' &>
+<&| /Widgets/TitleBox, title => loc('Basics') &>
 
 <& Elements/EditBasics, %ARGS, Scrip => $scrip &>
 
 % if ( not $disabled ) {
   <div class="form-row">
-    <div class="label col-3">
+    <div class="label col-2">
       <a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:
     </div>
     <div class="value col-9">
@@ -85,7 +85,7 @@
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 
   <div class="form-row">
-    <div class="label col-3">
+    <div class="label col-2">
     </div>
     <div class="value col-9">
       <div class="custom-control custom-checkbox">
