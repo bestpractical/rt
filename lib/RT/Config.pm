@@ -2669,7 +2669,9 @@ sub LoadConfigFromDatabase {
         if ($meta->{'Source'}) {
             my %source = %{ $meta->{'Source'} };
             if ($source{'SiteConfig'} && $source{'File'} ne 'database') {
-                warn("Change of config option '$name' at $source{File} line $source{Line} has been overridden by the config setting from the database. Please remove it from $source{File} or from the database to avoid confusion.");
+                push @PreInitLoggerMessages,
+                    "Change of config option '$name' at $source{File} line $source{Line} has been overridden by the config setting from the database. "
+                    ."Please remove it from $source{File} or from the database to avoid confusion.";
             }
         }
 
