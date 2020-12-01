@@ -1828,7 +1828,7 @@ Extensions may provide their own portlets for this page.
 
 =cut
 
-Set(@UserSummaryPortlets, (qw/ExtraInfo CreateTicket ActiveTickets InactiveTickets UserAssets /));
+Set(@UserSummaryPortlets, (qw/ExtraInfo CreateTicket ActiveTickets RecentCorrespondence InactiveTickets UserAssets/));
 
 =item C<$UserSummaryExtraInfo>
 
