@@ -1,0 +1,117 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+
+<&| /Widgets/TitleBox,
+  title      => loc("Recent Correspondence by [_1]", $User->Name),
+  title_href => $url
+&>
+
+  <& /Elements/CollectionList,
+    %QueryProperties,
+
+    Class          => 'RT::Transactions',
+    Page           => 1,
+    AllowSorting   => 0,
+    ShowNavigation => 0,
+  &>
+
+</&>
+
+<%INIT>
+# Only load default format if one isn't provided
+unless ( $Format ) {
+    $Format = q{'<b><a href="__WebPath__/Transaction/Display.html?id=__id__">__id__</a></b>/TITLE:ID',}
+        .q{'<b><a href="__WebPath__/Ticket/Display.html?id=__ObjectId__">__ObjectId__</a></b>/TITLE:Ticket',}
+        .q{'__TicketSubject__',}
+        .q{'<small>__Content__</small>',}
+        .q{'<small>__CreatedRelative__</small>'};
+}
+
+my %QueryProperties = (
+    Query      => "Creator=".$User->Id." AND Type='Correspond'",
+    OrderBy    => 'Created',
+    Order      => 'DESC',
+    Rows       => $Rows,
+    Format     => $Format,
+);
+
+$m->callback(
+    CallbackName    => 'ModifyQueryProperties',
+    QueryProperties => \%QueryProperties,
+    %ARGS,
+);
+
+my $url  = RT->Config->Get('WebPath') . '/Search/Results.html?';
+$url .= $m->comp('/Elements/QueryString',
+    Query   => $QueryProperties{'Query'},
+    OrderBy => $QueryProperties{'OrderBy'},
+    Order   => $QueryProperties{'Order'},
+    Class   => 'RT::Transactions'
+);
+
+my $title_raw;
+if ( $ShowCount ) {
+    my $transactions = RT::Transactions->new( $session{'CurrentUser'} );
+    $transactions->FromSQL( $QueryProperties{Query} );
+    my $count = $transactions->CountAll();
+
+    $title_raw = '<span class="results-count">' . loc('(Found [quant,_1,transaction,transactions])', $count) . '</span>';
+
+    # don't repeat the search in CollectionList
+    $QueryProperties{Collection} = $transactions;
+    $QueryProperties{TotalFound} = $count;
+}
+</%INIT>
+
+<%ARGS>
+$User
+$Rows       => 10
+$Format     => ''
+$ShowHeader => 0
+$ShowCount  => RT->Config->Get('ShowSearchResultCount')
+</%ARGS>
