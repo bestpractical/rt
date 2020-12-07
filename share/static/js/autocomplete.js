@@ -7,7 +7,8 @@ window.RT.Autocomplete.Classes = {
     Groups: 'group',
     Tickets: 'tickets',
     Queues: 'queues',
-    Articles: 'articles'
+    Articles: 'articles',
+    Assets: 'assets'
 };
 
 Selectize.define('rt_drag_drop', function(options) {
