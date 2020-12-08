@@ -34,7 +34,7 @@ Description: <select> box enhancer
 Origin: https://github.com/harvesthq/chosen
 License: MIT
 
-* ckeditor-4
+* ckeditor-4.13.0
 Description: WYSIWYG text editor
 Origin: https://github.com/ckeditor/ckeditor4
 License: GPL 2
@@ -69,7 +69,7 @@ Description: sort tables without page refresh
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
 
-* jquery-ui-1.11.4.custom/
+* jquery-ui-1.12.1.custom/
 Description: JavaScript user interface enhancements
 Origin: http://jqueryui.com/download/
 License: MIT
