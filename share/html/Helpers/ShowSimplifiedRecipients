@@ -140,7 +140,7 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
 &>Uncheck boxes to disable notifications to the listed recipients <b>for this transaction only</b>; persistent squelching is managed on the <a href="[_1]">People page</a>.</&>
 </p>
 
-% unless ($TicketObj->CurrentUserHasRight('ShowOutgoingEmail')) {
+% if (!$TicketObj->CurrentUserHasRight('ShowOutgoingEmail') || $ARGS{'NeedTxnRecipientsHiddenInput'}) {
     <input type="hidden" name="TxnRecipients" value="<% join ",",sort keys %recips %>" />
 % }
 % $m->abort();
