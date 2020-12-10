@@ -46,9 +46,21 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+my $classes = RT::Classes->new($session{'CurrentUser'});
+$classes->UnLimit;
 
-if ( $session{'CurrentUser'}->HasRight( Right => 'ShowArticle',
-                   Object => $RT::System )) {
+my $right = 'ShowArticle';
+my $can_see_articles;
+
+# Check global access, then check class-level rights
+if ( $session{'CurrentUser'}->HasRight( Right => $right, Object => $RT::System ) ) {
+    $can_see_articles = 1;
+}
+elsif ( grep { $_->CurrentUserHasRight($right) } @{ $classes->ItemsArrayRef } ) {
+    $can_see_articles = 1;
+}
+
+if ( $can_see_articles ) {
     $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);    
 }
 else {
