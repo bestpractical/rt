@@ -57,11 +57,12 @@
 %# 'Me' or 'Nobody', and is_selected is true if this should be the
 %# currently-selected owner option.
 
-<%args>
-$queue_id
-$default_owner
-</%args>
+<%ARGS>
+$default_owner => -1
+$queue_id => -1
+</%ARGS>
 <%init>
+
 
 my @possibles;
 
