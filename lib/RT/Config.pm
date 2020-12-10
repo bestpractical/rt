@@ -1688,6 +1688,9 @@ our %META;
     SelfServiceShowGroupTickets => {
         Widget => '/Widgets/Form/Boolean',
     },
+    SelfServiceShowArticleSearch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     ShowSearchResultCount => {
         Widget => '/Widgets/Form/Boolean',
     },

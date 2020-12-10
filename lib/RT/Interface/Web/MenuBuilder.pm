@@ -1659,7 +1659,7 @@ sub BuildSelfServiceNav {
         $about_me->child( logout => title => loc('Logout'), path => $logout_url );
     }
 
-    if ($current_user->HasRight( Right => 'ShowArticle', Object => RT->System )) {
+    if ( RT->Config->Get('SelfServiceShowArticleSearch') ) {
         $widgets->child( 'goto-article' => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/SearchArticle') );
     }
 

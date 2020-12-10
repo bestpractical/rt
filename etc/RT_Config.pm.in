@@ -2974,6 +2974,17 @@ Set(
     ]
 );
 
+=item C<$SelfServiceShowArticleSearch>
+
+If enabled, C<$SelfServiceShowArticleSearch> displays a "Search Articles"
+box in the menu bar in the self service interface. This option controls
+only showing or hiding the search box. Users still need appropriate rights
+to see article search results and view articles.
+
+=cut
+
+Set($SelfServiceShowArticleSearch, 0);
+
 =back
 
 =head2 Articles
