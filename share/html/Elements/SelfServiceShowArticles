@@ -1,0 +1,101 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Widgets/TitleBoxStart, title => $title, bodyclass=> '' &>
+
+<div class="form-row article-headers">
+  <div class="label col-4 text-left">
+    <&|/l&>Name</&>
+  </div>
+</div>
+% while (my $Article = $MyArticles->Next) {
+% $i++;
+<div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row article-metadata">
+  <div class="value col-4 text-left">
+    <span class="current-value font-weight-bold"><a href="<% RT->Config->Get('WebPath') %>/SelfService/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></span>
+  </div>
+</div>
+<div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row article-summary">
+  <div class="col-11 col-offset-1">
+    <span class="current-value"><small><%$Article->Summary || loc('(no Summary)')%></small></span>
+  </div>
+</div>
+% }
+<& /Widgets/TitleBoxEnd &>
+<%INIT>
+my $i;
+
+# Get a list of classes for which current user has "ShowArticle" right.
+# We get the list of classes as RT->SystemUser; if we didn't do that,
+# we would have to grant the "SeeClass" right to self-service users
+# as well as the "ShowArticle" right.
+my $Classes = RT::Classes->new(RT->SystemUser);
+$Classes->LimitToEnabled;
+my @classes;
+while (my $c = $Classes->Next) {
+    push(@classes, $c->id) if $c->CurrentUserHasRight('ShowArticle');
+}
+
+# If the user does not have access to any article classes, then we need
+# to prohibit any articles from being shown.
+if (!scalar(@classes)) {
+    push(@classes, -1);  # -1 can never be the ID of a valid article class
+}
+
+my $MyArticles;
+$MyArticles = RT::Articles->new($session{'CurrentUser'});
+$MyArticles->Limit(FIELD => 'Class', OPERATOR => 'IN', VALUE => \@classes);
+$MyArticles->RowsPerPage($rows);
+$MyArticles->OrderBy(FIELD => $orderby_field, ORDER => $sortorder);
+
+</%INIT>
+<%ARGS>
+$orderby_field => 'LastUpdated'
+$sortorder     => 'Desc'
+$rows          => 10
+$title         => loc("[_1] Newest Articles", $rows)
+</%ARGS>
