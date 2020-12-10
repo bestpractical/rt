@@ -47,21 +47,63 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="quick-create">
 <&| /Widgets/TitleBox, title => loc('Quick ticket creation') &>
+
+<script type="text/javascript">
+%# This function is called whenever the Queue pulldown is
+%# changed.  It gets a list of possible owners for the ticket,
+%# which can at most include the current user and Nobody.
+%# The back-end helper returns an array of possible users;
+%# each element of the array is a three-element array
+%# [owner_id, owner_name, is_selected]
+function qc_update_owner_options (qselect, default_owner) {
+    var queue_id = qselect.children("option:selected").val();
+    jQuery.post(RT.Config.WebHomePath + '/Helpers/QuickCreatePossibleOwners',
+                {"queue_id": queue_id, "default_owner": default_owner },
+                function (data, status, jq) {
+                    html = '';
+                    data.forEach(function(item, index) {
+                        var val = item[0] + "";  // Convert to string
+                        var txt = item[1] + "";
+                        html = html + '<option value="' +
+                            val.replace(/&/g, '&amp;') .
+                            replace(/>/g, '&gt;')  .
+                            replace(/</g, '&lt;')  .
+                            replace(/"/g, '&quot;') + '"'; // Inside attribute, so escape quotes
+                        if (item[2]) {
+                            html = html + ' selected';
+                        }
+                        html = html + '>' +
+                            txt.replace(/&/g, '&amp;') .
+                            replace(/>/g, '&gt;')  .
+                            replace(/</g, '&lt;') + '</option>';
+                    });
+                    jQuery(qselect).closest("form").find('select[name="Owner"]').html(html);
+                },
+                'json');
+}
+</script>
 <form
     method="post"
     action="<%RT->Config->Get('WebPath')%><% $r->path_info %>"
 % $m->callback(CallbackName => 'InFormElement');
 >
+% my $default_owner = $args->{Owner} || $session{'CurrentUser'}->id;
+
+%# The default owner may not have OwnTicket permission in the default
+%# queue, so update once the DOM is ready
+<script type="text/javascript">
+jQuery(document).ready(function() { qc_update_owner_options(jQuery('select[name="Queue"]'), <% $default_owner %>); });
+</script>
+
 <input type="hidden" class="hidden" name="QuickCreate" value="1" />
 <table>
 <tr class="input-row"><td class="label"><&|/l&>Subject</&>:</td>
     <td colspan="3" class="value"><input type="text" size="50" name="Subject" value="<% $args->{Subject} || '' %>" /></td>
     </tr><tr class="input-row">
-<td class="label"><&|/l&>Queue</&>:</td><td class="value"><& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue} &>
+<td class="label"><&|/l&>Queue</&>:</td><td class="value"><& /Elements/SelectNewTicketQueue, Name => 'Queue', Default => $args->{Queue}, OnChange => "qc_update_owner_options(jQuery(this), $default_owner);" &>
 </td>
 <td class="label"><&|/l&>Owner</&>:</td><td class="value">
-<select type="select" name="Owner">  
-% my $default_owner = $args->{Owner} || $session{'CurrentUser'}->id;
+<select type="select" name="Owner">
 <option value="<%$session{'CurrentUser'}->id%>" <% $default_owner == $session{'CurrentUser'}->id ? 'selected="selected"' : '' |n %>><&|/l&>Me</&></option>
 <option value="<%RT->Nobody->id%>" <% $default_owner == RT->Nobody->id ? 'selected="selected"' : '' |n %>><%loc('Nobody')%></option>
 </select>
