@@ -2969,8 +2969,7 @@ If this is not set at all, then $HomepageComponents is used instead.
 
 Set(
     $SelfServicePageComponents,
-    [
-    ]
+    [qw(SelfServiceTopArticles SelfServiceNewestArticles)]
 );
 
 =back
