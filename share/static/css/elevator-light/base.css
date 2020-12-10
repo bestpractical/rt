@@ -5,3 +5,12 @@ a {
 a:visited {
     color: #666
 }
+
+dl {
+    font-size: 1.05rem;
+    margin-block-end: 0;
+}
+
+dd {
+    margin-bottom: .6rem;
+}

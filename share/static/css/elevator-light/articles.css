@@ -21,3 +21,8 @@
 #comp-Articles .form-row.article-summary {
     border-bottom: 1px solid #dee2e6;
 }
+
+/* Possibly remove or adjust if titlebox is updated */
+.article-listing-container {
+    margin-top: 10px;
+}
