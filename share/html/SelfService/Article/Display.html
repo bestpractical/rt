@@ -45,11 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => loc('Display Article [_1]', $id) &>
-<div class="label col-3"><%$article->Name || loc("(no name)")%></div><br />
-<em><div class="value col-9"><%$article->Summary%></div></em>
+<& /SelfService/Elements/Header, Title => $article->Name &>
+<div id="article-display-container" class="mx-auto max-width-md">
+<&| /Widgets/TitleBox, title => $article->Summary, class => 'article-display-simple', content_class => 'mx-auto width-md' &>
 <& /Elements/ShowCustomFields, Object => $article &>
-
+</&>
+</div>
 <%init>
 
 my $article = RT::Article->new( $session{'CurrentUser'} );
@@ -63,7 +64,6 @@ unless ( $article->Id ) {
 unless ( $article->CurrentUserHasRight('ShowArticle') ) {
     $m->comp( "/Elements/Error", Why => loc("Permission Denied") );
 }
-my $title = loc( "Article #[_1]: [_2]", $article->Id, $article->Name || loc("(no name)"));
 
 $id = $article->id;
 
