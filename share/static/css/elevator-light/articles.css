@@ -21,3 +21,13 @@
 #comp-Articles .form-row.article-summary {
     border-bottom: 1px solid #dee2e6;
 }
+
+/* Possibly remove or adjust if titlebox is updated */
+.article-listing-container {
+    margin-top: 10px;
+}
+
+/* Give it some space to resist the squeeze from parent's mx-auto */
+.article-listing-container dl {
+    min-width: 30em;
+}
