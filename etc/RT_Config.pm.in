@@ -2969,9 +2969,7 @@ If this is not set at all, then $HomepageComponents is used instead.
 
 Set(
     $SelfServicePageComponents,
-    [
-        qw(QuickCreate QueueList MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup) # loc_qw
-    ]
+    [qw(SelfServiceTopArticles SelfServiceNewestArticles)]
 );
 
 =back
