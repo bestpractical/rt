@@ -1041,7 +1041,7 @@ sub GetCertificateInfo {
             # We fetch the CRL file ourselves using LWP rather than
             # using OpenSSL's -crl_download option so we can
             # control the timeout.
-            my ($url) = @{$cert->CRLDistributionPoints};
+            my ($url) = @{$cert->CRLDistributionPoints || []};
             if ($url) {
                 my $crl_file = $self->DownloadAndConvertCRLToPEM($url);
                 if ($crl_file) {
