@@ -75,10 +75,13 @@ use Pod::Usage qw/pod2usage/;
 
 RT::Init();
 
-my $help;
+my ($help, $enable, $disable, $generate);
 
 GetOptions(
     "help|?" => \$help,
+    "enable|e" => \$enable,
+    "disable|d" => \$disable,
+    "generate" => \$generate,
 ) or Pod::Usage::pod2usage();
 
 Pod::Usage::pod2usage(-exitval=> 0, -verbose => 1) if $help;
@@ -88,24 +91,50 @@ my $uid = $ARGV[0];
 
 my $user = RT::User->new( RT->SystemUser );
 my ($ret, $msg) = $user->Load($uid);
-
 $ret || die "Can't load user: $msg\n";
 
 my $username = $user->Name;
+
+if ( $disable ) {
+    ($ret, $msg) = $user->PrincipalObj->SetDisabled( 1 );
+    print "\n";
+    die "Couldn't disable user $username: $msg\n" unless $ret;
+    print "Successfully set user $username to disabled.\n";
+    exit 0;  # no password change if disabling
+}
+
+my $password;
 print "Changing password for user $username.\n";
 print "Password: ";
-ReadMode('noecho');
-chomp(my $password = <STDIN>);
-ReadMode(0);
+if ( $generate ) {
+    # generate a 3-segment password of random, more or less pronouncable "words"
+    use Text::Password::Pronounceable;
+    for (my $i=0; $i<3; $i++) {
+        my $word = Text::Password::Pronounceable->generate( 4, 8 );
+        $password .= ( $i == 0 ? $word : "-$word" );
+    }
+    print "$password\n";
+} else {
+    ReadMode('noecho');
+    chomp($password = <STDIN>);
+    ReadMode(0);
+}
 
 ($ret, $msg) = $user->SetPassword($password);
 print "\n";
-
 die "Couldn't change password for user $username: $msg\n" unless $ret;
-
 print "Successfully changed password for user $username.\n";
 
+if ( $enable ) {
+    ($ret, $msg) = $user->PrincipalObj->SetDisabled( 0 );
+    print "\n";
+    die "Couldn't enable user $username: $msg\n" unless $ret;
+    print "Successfully enabled user $username.\n";
+}
+
 exit 1;
+
+__END__
 
 =head1 NAME
 
@@ -115,8 +144,11 @@ rt-passwd - Set an RT user's password
 
     rt-passwd username
     rt-passwd user_id
+    rt-passwd --generate --enable username
+    rt-passwd --generate --disable username
 
-rt-passwd will set the password of an RT user to the value the user enters at the prompt.
+rt-passwd will set the password of an RT user to the value the user enters at the prompt
+or a randomly generated value.
 
 =head2 OPTIONS
 
@@ -125,6 +157,26 @@ rt-passwd will set the password of an RT user to the value the user enters at th
 =item B<--help>
 
 Print this documentation and exit.
+
+=back
+
+=item B<--enable>
+
+Also set the user to 'enabled'
+
+=back
+
+=item B<--disable>
+
+Also set the user to 'disabled'. Note: no password is changed if the C<--disabled>
+option is passed.
+
+=back
+
+=item B<--generate>
+
+Randomly generate a password of three more-or-less pronounceable "words" using the
+Text::Password::Pronounceable module.
 
 =back
 
