@@ -1620,11 +1620,12 @@ sub BuildSelfServiceNav {
         last if ( $queue_count > 1 );
     }
 
+    my $home = $top->child( home => title => loc('Homepage'), path => '/' );
 
     if ( $queue_count > 1 ) {
-        $top->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
+        $home->child( new => title => loc('Create Ticket'), path => '/SelfService/CreateTicketInQueue.html' );
     } elsif ( $queue_id ) {
-        $top->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
+        $home->child( new => title => loc('Create Ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
     }
 
     my $menu_label = loc('Tickets');
