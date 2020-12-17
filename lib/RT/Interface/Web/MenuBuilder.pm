@@ -1629,10 +1629,11 @@ sub BuildSelfServiceNav {
     }
 
     my $menu_label = loc('Tickets');
-    if (RT->Config->Get('SelfServiceUseDashboard')) {
-        $menu_label = loc('Self-Service');
+    my $menu_path = '/SelfService/';
+    if ( RT->Config->Get('SelfServiceUseDashboard') ) {
+        $menu_path = '/SelfService/Open.html';
     }
-    my $tickets = $top->child( tickets => title => $menu_label, path => '/SelfService/' );
+    my $tickets = $top->child( tickets => title => $menu_label, path => $menu_path );
     $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/Open.html' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
 
