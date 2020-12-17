@@ -1233,8 +1233,8 @@ sub _BuildAdminMenu {
     if (RT->Config->Get('SelfServiceUseDashboard')) {
         if ($current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System ) ) {
             my $self_service = $admin_global->child( selfservice_home =>
-                                                     title       => loc('Self-Service Home Page'),
-                                                     description => loc('Edit self-service home page dashboard'),
+                                                     title       => loc('Self Service Home Page'),
+                                                     description => loc('Edit self service home page dashboard'),
                                                      path        => '/Admin/Global/SelfServiceHomePage.html');
             if ( $request_path =~ m{^/Admin/Global/SelfServiceHomePage} ) {
                 $page->child(content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html');
@@ -1620,18 +1620,20 @@ sub BuildSelfServiceNav {
         last if ( $queue_count > 1 );
     }
 
+    my $home = $top->child( home => title => loc('Homepage'), path => '/' );
 
     if ( $queue_count > 1 ) {
-        $top->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
+        $home->child( new => title => loc('Create Ticket'), path => '/SelfService/CreateTicketInQueue.html' );
     } elsif ( $queue_id ) {
-        $top->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
+        $home->child( new => title => loc('Create Ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
     }
 
     my $menu_label = loc('Tickets');
-    if (RT->Config->Get('SelfServiceUseDashboard')) {
-        $menu_label = loc('Self-Service');
+    my $menu_path = '/SelfService/';
+    if ( RT->Config->Get('SelfServiceUseDashboard') ) {
+        $menu_path = '/SelfService/Open.html';
     }
-    my $tickets = $top->child( tickets => title => $menu_label, path => '/SelfService/' );
+    my $tickets = $top->child( tickets => title => $menu_label, path => $menu_path );
     $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/Open.html' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
 
