@@ -3661,6 +3661,17 @@ to 0 to disable the web UI editing interface.
 
 Set($ShowEditSystemConfig, 1);
 
+=item C<$ShowEditLifecycleConfig>
+
+Starting in RT 5.0, SuperUsers can edit lifecycle configuration via the web UI.
+Options set in the web UI take precedence over those set in configuration files.
+
+Set C<$ShowEditLifecycleConfig> to 0 to disable the web UI editing interface.
+
+=cut
+
+Set($ShowEditLifecycleConfig, 1);
+
 =back
 
 
