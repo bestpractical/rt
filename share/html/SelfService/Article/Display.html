@@ -45,11 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => loc('Display Article [_1]', $id) &>
-<div class="label col-3"><%$article->Name || loc("(no name)")%></div><br />
-<em><div class="value col-9"><%$article->Summary%></div></em>
-<& /Elements/ShowCustomFields, Object => $article &>
-
+<& /SelfService/Elements/Header, Title => $article->Name &>
+<div id="article-display-container" class="mx-auto max-width-md">
+% my $title = "";
+% $title = $article->Summary if $include{Summary};
+<&| /Widgets/TitleBox, title => $title, class => 'article-display-simple', content_class => 'mx-auto width-md' &>
+<& /Elements/ShowArticleCustomFields, Object => $article, CustomFields => $custom_fields, HideFieldNames => \%hide_field_names &>
+</&>
+</div>
 <%init>
 
 my $article = RT::Article->new( $session{'CurrentUser'} );
@@ -63,9 +66,39 @@ unless ( $article->Id ) {
 unless ( $article->CurrentUserHasRight('ShowArticle') ) {
     $m->comp( "/Elements/Error", Why => loc("Permission Denied") );
 }
-my $title = loc( "Article #[_1]: [_2]", $article->Id, $article->Name || loc("(no name)"));
 
 $id = $article->id;
+my $class = $article->ClassObj;
+
+# Build up the hash of things to include/exclude, as well
+# as the array of custom field IDs to limit by
+my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
+my @exclude_cf_ids;
+my %hide_field_names;
+
+my $cfs = $article->CustomFields;
+while ( my $cf = $cfs->Next ) {
+    $include{"CF-Title-" . $cf->Id} = 1;
+    $include{"CF-Value-" . $cf->Id} = 1;
+}
+
+# Load show/hide settings from class configuration
+foreach my $key ( keys %include ) {
+    $include{$key} = not $class->FirstAttribute("Skip-$key");
+    if ($key =~ /^CF-Value-(\d+)$/ && !$include{$key}) {
+        push(@exclude_cf_ids, $1);
+    }
+    if ($key =~ /^CF-Title-(\d+)$/ && !$include{$key}) {
+        $hide_field_names{$1} = 1;
+    }
+}
+
+my $custom_fields = $article->CustomFields;
+if ( scalar(@exclude_cf_ids) ) {
+    $custom_fields->Limit( FIELD    => 'id',
+                           OPERATOR => 'NOT IN',
+                           VALUE    => \@exclude_cf_ids );
+}
 
 </%init>
 <%args>

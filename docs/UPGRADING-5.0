@@ -218,4 +218,18 @@ will migrate your existing tokens to the new core RT tables.
 
 =back
 
+=head1 UPGRADING FROM 5.0.0 AND EARLIER
+
+=over 4
+
+=item *
+
+In the self service interface, the "Search Articles" box in the menu bar previously
+was displayed to users who had the global right "ShowArticle". This is now
+controlled by a new configuration option C<$SelfServiceShowArticleSearch>. This new
+option defaults to off, so if you currently allow self service users to use article search,
+enable this option to keep the article search box available.
+
+=back
+
 =cut
