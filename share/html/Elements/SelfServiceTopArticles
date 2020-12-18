@@ -45,4 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/SelfServiceShowArticles, orderby_field => 'SortOrder', sortorder => 'Desc', title => loc('[_1] Top Articles', 5), rows => 5 &>
+<& /Elements/SelfServiceShowArticles, orderby_field => 'SortOrder', sortorder => 'ASC', title => loc('[_1] Top Articles', 5), rows => 5 &>
