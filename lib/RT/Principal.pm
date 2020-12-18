@@ -845,6 +845,15 @@ sub __DependsOn {
         push( @$list, $objs );
     }
 
+    # Ticket's special Set Owner txns
+    for my $column ( qw(OldValue NewValue) ) {
+        my $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => $column, VALUE => $self->Id );
+        $objs->Limit( FIELD => 'Type', VALUE => 'Set' );
+        $objs->Limit( FIELD => 'Field', VALUE => 'Owner' );
+        push( @$list, $objs );
+    }
+
     $deps->_PushDependencies(
         BaseObject => $self,
         Flags => RT::Shredder::Constants::DEPENDS_ON,
