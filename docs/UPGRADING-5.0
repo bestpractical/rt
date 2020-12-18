@@ -242,6 +242,13 @@ If you are still seeing that error after updating to RT 5.0.1, edit the page, re
 the saved search, save, then add it back again. After saving again, it should appear
 as expected.
 
+=item *
+
+The System Configuration editor (Admin > Tools > System Configuration > Edit)
+now uses JSON rather than Perl syntax to represent arrays and hashes.  Be
+sure to enter valid JSON if you wish to modify an array- or hash-valued
+configuration setting.
+
 =back
 
 =cut
