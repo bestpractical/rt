@@ -29,5 +29,5 @@
 
 /* Give it some space to resist the squeeze from parent's mx-auto */
 .article-listing-container dl {
-    min-width: 30em;
+    min-width: 10em;
 }
