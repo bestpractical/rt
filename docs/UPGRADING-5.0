@@ -230,6 +230,18 @@ controlled by a new configuration option C<$SelfServiceShowArticleSearch>. This 
 option defaults to off, so if you currently allow self service users to use article search,
 enable this option to keep the article search box available.
 
+=item *
+
+System-level saved searches can now be displayed on the RT at a glance page.
+Previously some users saw errors like:
+
+    Either you have no rights to view saved search system-SavedSearch-34
+    or identifier is incorrect
+
+If you are still seeing that error after updating to RT 5.0.1, edit the page, remove
+the saved search, save, then add it back again. After saving again, it should appear
+as expected.
+
 =back
 
 =cut
