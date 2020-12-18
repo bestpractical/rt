@@ -838,6 +838,12 @@ sub __DependsOn {
         $objs->Limit( FIELD => 'Type', VALUE => $type );
         push( @$list, $objs );
     }
+    for my $column ( qw(OldValue NewValue) ) {
+        my $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => $column, VALUE => $self->Id );
+        $objs->Limit( FIELD => 'Type', VALUE => 'SetWatcher' );
+        push( @$list, $objs );
+    }
 
     $deps->_PushDependencies(
         BaseObject => $self,
