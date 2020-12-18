@@ -66,8 +66,8 @@ $possibly_hidden => 0
 <%INIT>
 my $prefix;
 
-if ($type eq 'saved' || $type eq 'search') {
-    $prefix = loc(ucfirst($search_type || 'ticket'));
+if ($search_type) {
+    $prefix = loc(ucfirst($search_type));
 }
 elsif ($type eq 'dashboard') {
     $prefix = loc('Dashboard');
