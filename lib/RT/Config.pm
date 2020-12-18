@@ -1626,6 +1626,9 @@ our %META;
     SuppressInlineTextFiles => {
         Widget => '/Widgets/Form/Boolean',
     },
+    TreatAttachedEmailAsFiles => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     TruncateLongAttachments => {
         Widget => '/Widgets/Form/Boolean',
     },
