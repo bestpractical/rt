@@ -964,6 +964,11 @@ jQuery(function () {
             return;
         }
 
+        // Bypass radio/checkbox controls too
+        if (jQuery(e.target).closest('div.custom-radio, div.custom-checkbox').length) {
+            return;
+        }
+
         e.preventDefault();
         var container = jQuery(this).closest('.titlebox');
         if (container.hasClass('editing')) {
