@@ -50,6 +50,10 @@
 %    return;
 % }
 
+% # we need to allow for an extra col-2 if not combobox and categories are enabled
+% # if so, make the description cols -2 smaller to allow for categories
+% my $description_col_size = ( $CustomField->Type ne 'Combobox' && $Categories ? 4 : 6 );
+
 <div class="form-row">
   <div class="label col-auto">
     <div class="custom-control custom-checkbox">
@@ -63,7 +67,7 @@
   <div class="label col-3 text-left">
     <&|/l&>Name</&>
   </div>
-  <div class="label col-3 text-left">
+  <div class="label col-<% $description_col_size %> text-left">
     <&|/l&>Description</&>
   </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
@@ -88,7 +92,7 @@
   <div class="value col-3">
     <input class="form-control" type="text" size="25" name="<% $paramtag %>-Name" value="<% $value->Name %>" />
   </div>
-  <div class="value col-3">
+  <div class="value col-<% $description_col_size %>">
     <input class="form-control" type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description || '' %>" />
   </div>
 % if ( $CustomField->Type ne 'Combobox' && $Categories ) {
@@ -103,7 +107,7 @@
     </select>
   </div>
 % }
-  <div class="col-2">
+  <div class="col-1">
     <input type="button" class="delete_custom_field_value button btn btn-primary" data-cfv-id="<% $value->id %>" value="<&|/l&>Delete</&>" onclick="delete_custom_field_value(<% $value->id %>)" />
   </div>
 % $m->callback(CallbackName => 'AfterCustomFieldValueInput', CustomFieldObj => $CustomField, CustomFieldValueObj => $value, ARGSRef => \%ARGS );
