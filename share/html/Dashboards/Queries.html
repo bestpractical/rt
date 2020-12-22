@@ -89,7 +89,7 @@ my %item_for;
 my @components;
 
 if ($self_service_dashboard) {
-    @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('SelfServicePageComponents') || RT->Config->Get('HomepageComponents')};
+    @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('SelfServicePageComponents') || []};
 } else {
     @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('HomepageComponents')};
 }
