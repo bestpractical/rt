@@ -31,7 +31,11 @@ your RT Apache configuration to allow RT to access the Authorization header.
 
     SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
-You can find more information about tokens in L<RT::Authen::Token>.
+Since tokens grant access on behalf of a user, RT prompts for a password
+when a user is creating a token. However, if you have a mix of RT and
+federated authentication, RT can't authenticate users via the federated
+password system. For this case, you can explicitly disable the password
+check with the C<$DisablePasswordForAuthToken> configuration option.
 
 =head1 External Authentication
 

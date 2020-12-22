@@ -733,6 +733,10 @@ our %META;
     DatabasePassword => {
         Immutable => 1,
         Widget    => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Password not printed');
+        },
     },
     DatabasePort => {
         Immutable => 1,
@@ -1290,6 +1294,10 @@ our %META;
         Widget    => '/Widgets/Form/Boolean',
     },
 
+    DisablePasswordForAuthToken => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
     ExternalSettings => {
         Immutable     => 1,
         Obfuscate => sub {
@@ -1792,6 +1800,10 @@ our %META;
     },
     LDAPPassword => {
         Widget => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Password not printed');
+        },
     },
     LDAPBase => {
         Widget => '/Widgets/Form/String',
