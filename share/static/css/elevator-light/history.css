@@ -86,6 +86,7 @@ div.history-container {
 }
 
 .history .transaction.message div.content {
+  padding-top: 0.11em;
   padding-right: 0;
   padding-bottom: 3em;
   margin-left: 3em;
