@@ -86,6 +86,8 @@ div.history-container {
 }
 
 .history .transaction.message div.content {
+  /* Leave a bit more space for .actions so rows could align correctly */
+  padding-top: 0.11em;
   padding-right: 0;
   padding-bottom: 3em;
   margin-left: 3em;
