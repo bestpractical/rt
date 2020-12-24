@@ -5,17 +5,37 @@ notifications:
   slack:
     secure: ebb/6lbr1ob7wMh04C5PzM5/NNz6IstEUaUROA7BATuKKgPetl6qwmQNwvlwE5zYvJQBWQwKJ70JaCzJkXK6JVMVRRAWsXINJTzMfSqsoXEcJ59c5isf0bsnspVO7jxHTfXF/NZngR4EuPwH5v5lWp9m++j90t9nBKFFVi34WUE=
 
-env:
-  - RT_TEST_PARALLEL=1 RT_DBA_USER=root RT_DBA_PASSWORD=password DB_VERSION_TAG=10.3 RT_TEST_WEB_HANDLER=apache+fcgid HTTPD_ROOT=/etc/apache2 RT_TEST_APACHE=/usr/sbin/apache2 RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules
+jobs:
+  include:
+  - stage: test
+    name: Test SQLite with RT web server
+    env:
+      - RT_TEST_PARALLEL=1 RT_DBA_USER=root RT_DBA_PASSWORD=password
 
-# $TRAVIS_BUILD_DIR will have a clone of the current branch
-before_install:
-  - docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:$DB_VERSION_TAG
-  - docker build -t rt-base .
-  - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt --link mariadb:db rt-base
-  - docker ps -a
-  - docker exec -it rt bash -c "chown -R rt-user /rt; touch /etc/apache2/mime.types"
-  - docker exec -e USER=rt-user -u rt-user -it rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --with-web-handler=fcgid --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps && chmod a+rX /rt/sbin/*"
+    # $TRAVIS_BUILD_DIR will have a clone of the current branch
+    before_install:
+      - docker build -t rt-base .
+      - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt rt-base
+      - docker ps -a
+      - docker exec -it rt bash -c "chown -R rt-user /rt"
+      - docker exec -e USER=rt-user -u rt-user -it rt bash -c "cd /rt && ./configure.ac --with-db-type=SQLite --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
 
-script:
-    - docker exec -u rt-user -it rt bash -c "cd /rt && prove -lj8 t/*"
+    script:
+        - docker exec -u rt-user -it rt bash -c "cd /rt && prove -lj8 t/*"
+
+  - stage: test
+    name: Test MariaDB with Apache
+    env:
+      - RT_TEST_PARALLEL=1 RT_DBA_USER=root RT_DBA_PASSWORD=password DB_VERSION_TAG=10.3 RT_TEST_WEB_HANDLER=apache+fcgid HTTPD_ROOT=/etc/apache2 RT_TEST_APACHE=/usr/sbin/apache2 RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules
+
+    # $TRAVIS_BUILD_DIR will have a clone of the current branch
+    before_install:
+      - docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:$DB_VERSION_TAG
+      - docker build -t rt-base .
+      - docker run -d -v $TRAVIS_BUILD_DIR:/rt --name rt --link mariadb:db rt-base
+      - docker ps -a
+      - docker exec -it rt bash -c "chown -R rt-user /rt; touch /etc/apache2/mime.types"
+      - docker exec -e USER=rt-user -u rt-user -it rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --with-web-handler=fcgid --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps && chmod a+rX /rt/sbin/*"
+
+    script:
+        - docker exec -u rt-user -it rt bash -c "cd /rt && prove -lj8 t/*"
