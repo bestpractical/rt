@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %>/Articles/Article/PreCreate.html">
+<form action="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html">
   <div class="create-article-button">
-    <input type="submit" class="btn btn-primary article-create-modal" value="<&|/l&>Create new article</&>" />
+    <input type="submit" class="btn btn-primary" value="<&|/l&>Create new article</&>" />
   </div>
 </form>

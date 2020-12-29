@@ -52,6 +52,9 @@
 % if ($Multiple) {
 MULTIPLE
 % }
+% if ($OnChange) {
+onchange="<%$OnChange%>"
+% }
 % if ($Size) {
 SIZE=<%$Size%>
 % }
@@ -80,6 +83,7 @@ $Name => undef
 $Verbose => undef
 $Default => undef
 $Lite => 0
+$OnChange => undef
 </%ARGS>
 
 <%INIT>
