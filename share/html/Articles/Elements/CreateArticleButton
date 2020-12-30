@@ -46,7 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/Articles/Article/PreCreate.html">
-  <div class="create-article-button">
-    <input type="submit" class="btn btn-primary article-create-modal" value="<&|/l&>Create new article</&>" />
-  </div>
+
+% my $button_start = '<input type="submit" class="button btn btn-primary form-control article-create-modal" value="';
+% my $button_end = '" />';
+
+<div class="create-wide">
+<&|/l_unsafe, $button_start, $button_end &>[_1]Create new article[_2]</&>
+</div>
+<div class="create-medium">
+<&|/l_unsafe, $button_start, $button_end &>[_1]Create[_2]</&>
+</div>
+<div class="create-narrow">
+<&|/l_unsafe, $button_start, $button_end &>[_1]+[_2]</&>
+</div>
+
 </form>
