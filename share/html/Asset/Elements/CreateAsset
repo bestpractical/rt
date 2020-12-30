@@ -46,7 +46,18 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/Asset/Create.html">
-  <div class="create-asset-button">
-    <input type="submit" class="btn btn-primary" value="<&|/l&>Create new asset</&>" />
-  </div>
+
+% my $button_start = '<input type="submit" class="button btn btn-primary form-control" value="';
+% my $button_end = '" />';
+
+<div class="create-wide">
+<&|/l_unsafe, $button_start, $button_end &>[_1]Create new asset[_2]</&>
+</div>
+<div class="create-medium">
+<&|/l_unsafe, $button_start, $button_end &>[_1]Create[_2]</&>
+</div>
+<div class="create-narrow">
+<&|/l_unsafe, $button_start, $button_end &>[_1]+[_2]</&>
+</div>
+
 </form>
