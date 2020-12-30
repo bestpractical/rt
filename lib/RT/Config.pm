@@ -646,6 +646,7 @@ our %META;
 
     RTAddressRegexp => {
         Type    => 'SCALAR',
+        Immutable => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('RTAddressRegexp');
@@ -1793,9 +1794,6 @@ our %META;
     DefaultSearchResultOrderBy => {
         Widget => '/Widgets/Form/String',
     },
-    EmailSubjectTagRegex => {
-        Widget => '/Widgets/Form/String',
-    },
     EmailOutputEncoding => {
         Widget => '/Widgets/Form/String',
     },
@@ -1937,7 +1935,26 @@ our %META;
     },
     ShowMobileSite => {
         Widget => '/Widgets/Form/Boolean',
-    }
+    },
+    StaticRoots => {
+        Type      => 'ARRAY',
+        Immutable => 1,
+    },
+    EmailSubjectTagRegex => {
+        Immutable => 1,
+    },
+    ExtractSubjectTagMatch => {
+        Immutable => 1,
+    },
+    ExtractSubjectTagNoMatch => {
+        Immutable => 1,
+    },
+    WebNoAuthRegex => {
+        Immutable => 1,
+    },
+    SelfServiceRegex => {
+        Immutable => 1,
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
