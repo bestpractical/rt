@@ -57,7 +57,7 @@ while (my $link = $approving->Next()) {
     my $text = '<div id="txn-' . $link->BaseObj->Id . '">';
     my $head = '';
     my $type = $link->BaseObj->Type;
-    my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen);
+    my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen) // '';
 
     if ($type eq 'approval') {
         $head .= $m->scomp('/Widgets/TitleBoxStart', title => loc("Approval #[_1]: [_2]", $link->BaseObj->Id, $link->BaseObj->Subject));
