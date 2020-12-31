@@ -339,6 +339,10 @@
     padding-bottom: inherit;
 }
 
+.darkmode .titlebox .titlebox-title .left {
+    background-color: transparent !important;
+}
+
 .darkmode .dropzone,
 .darkmode .dropzone .dz-details {
     border: 1px solid #717171 !important;
