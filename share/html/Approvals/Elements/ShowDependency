@@ -54,7 +54,7 @@
 my %show;
 while (my $link = $approving->Next()) {
     next unless ($link->BaseURI->IsLocal());
-    my $text = '<a name="' . $link->BaseObj->Id . '">';
+    my $text = '<div id="txn-' . $link->BaseObj->Id . '">';
     my $head = '';
     my $type = $link->BaseObj->Type;
     my $dep  = $m->scomp('ShowDependency', Ticket => $link->BaseObj, _seen => $_seen);
@@ -77,7 +77,7 @@ while (my $link = $approving->Next()) {
     $head .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $dep;
-    $text .= '</a>';
+    $text .= '</div>';
     $show{$link->BaseObj->Id} = {
         text => $text,
         head => $head,
