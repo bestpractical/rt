@@ -49,6 +49,14 @@
 
 foreach my $queues ( @{ $portlet_config{ $queue } } ) {
     foreach my $queue_name ( keys %{ $queues } ) {
+        my $skip = 0;
+        $m->callback( CallbackName => 'SkipLinkedQueue',
+            Queue    => $queue_name,
+            Skip     => \$skip,
+            ARGSRef  => \%ARGS,
+        );
+        next if $skip;
+
         my $queue_obj = RT::Queue->new( $session{ CurrentUser } );
         my ( $ret ) = $queue_obj->Load( $queue_name );
         unless ( $ret ) {
