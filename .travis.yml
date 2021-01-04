@@ -26,7 +26,7 @@ jobs:
   - stage: test
     name: Test MariaDB with Apache and mod_fcgid
     env:
-      - RT_TEST_PARALLEL=1 RT_DBA_USER=root RT_DBA_PASSWORD=password DB_VERSION_TAG=10.3 RT_TEST_WEB_HANDLER=apache+fcgid HTTPD_ROOT=/etc/apache2 RT_TEST_APACHE=/usr/sbin/apache2 RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules
+      - RT_TEST_PARALLEL=1 DB_VERSION_TAG=10.3 RT_TEST_WEB_HANDLER=apache+fcgid HTTPD_ROOT=/etc/apache2 RT_TEST_APACHE=/usr/sbin/apache2 RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules
 
     # $TRAVIS_BUILD_DIR will have a clone of the current branch
     before_install:
@@ -38,12 +38,13 @@ jobs:
       - docker exec -e USER=rt-user -u rt-user -it rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --with-web-handler=fcgid --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps && chmod a+rX /rt/sbin/*"
 
     script:
-        - docker exec -u rt-user -it rt bash -c "cd /rt && prove -lj8 t/*"
+        # Travis needs the RT_DBA values set in the docker exec call
+        - docker exec -e RT_DBA_USER=root -e RT_DBA_PASSWORD=password -u rt-user -it rt bash -c "cd /rt && prove -lj8 t/*"
 
   - stage: test
     name: Test PostgreSQL with Apache and mod_fcgid
     env:
-      - RT_TEST_PARALLEL=1 RT_DBA_USER=postgres RT_DBA_PASSWORD=password DB_VERSION_TAG=9.6 RT_TEST_WEB_HANDLER=apache+fcgid HTTPD_ROOT=/etc/apache2 RT_TEST_APACHE=/usr/sbin/apache2 RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules
+      - RT_TEST_PARALLEL=1 DB_VERSION_TAG=9.6 RT_TEST_WEB_HANDLER=apache+fcgid HTTPD_ROOT=/etc/apache2 RT_TEST_APACHE=/usr/sbin/apache2 RT_TEST_APACHE_MODULES=/usr/lib/apache2/modules
 
     before_install:
       - docker run --name postgresql --mount type=tmpfs,destination=/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d postgres:$DB_VERSION_TAG
@@ -54,4 +55,5 @@ jobs:
       - docker exec -e USER=rt-user -u rt-user -it rt bash -c "cd /rt && ./configure.ac --with-db-type=Pg --with-my-user-group --enable-layout=inplace --with-web-handler=fcgid --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps && chmod a+rX /rt/sbin/*"
 
     script:
-        - docker exec -u rt-user -it rt bash -c "cd /rt && prove -lj8 t/*"
+        # Travis needs the RT_DBA values set in the docker exec call
+        - docker exec -e RT_DBA_USER=postgres -e RT_DBA_PASSWORD=password -u rt-user -it rt bash -c "cd /rt && prove -lj8 t/*"
