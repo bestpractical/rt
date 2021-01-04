@@ -105,8 +105,7 @@ $m->callback( CallbackName => 'MassageTitleBox',
 
 <%PERL>
 my @queries = map { "$query AND $_" } q{Status = '__Active__'}, q{Status = '__Inactive__'};
-my @empty_messages
-    = ( loc( '(No active tickets)', $queue_name ), loc( '(No inactive tickets)', $queue_name ) );
+my @empty_messages = ( loc( '(No active tickets)' ), loc( '(No inactive tickets)' ) );
 
 $m->callback( CallbackName => 'MassageQueries',
     ARGSRef         => \%ARGS,
