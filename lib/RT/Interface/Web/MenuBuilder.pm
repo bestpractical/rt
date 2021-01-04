@@ -1041,6 +1041,7 @@ sub _BuildAdminMenu {
     );
     $groups->child( select => title => loc('Select'), path => "/Admin/Groups/" );
     $groups->child( create => title => loc('Create'), path => "/Admin/Groups/Modify.html?Create=1" );
+    $groups->child( 'default-values' => title => loc('Default Values'), path => "/Admin/Groups/DefaultValues.html" );
 
     my $queues = $admin->child( queues =>
         title       => loc('Queues'),
@@ -1315,6 +1316,10 @@ sub _BuildAdminMenu {
 
         $section->child( select => title => loc('Select'), path => "/Admin/$type/" );
         $section->child( create => title => loc('Create'), path => "/Admin/$type/Modify.html?Create=1" );
+
+        if ( $type eq 'Groups' ) {
+            $section->child( 'default-values' => title => loc('Default Values'), path => "/Admin/Groups/DefaultValues.html" );
+        }
     }
 
     if ( $request_path =~ m{^/Admin/Queues} ) {

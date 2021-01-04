@@ -1,0 +1,142 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues" class="mx-auto max-width-lg">
+
+% if ( RT->Config->ObjectHasCustomFieldGrouping( Object => $GroupObject, Grouping => 'Dates' ) ) {
+  <&|/Widgets/TitleBox, title => loc("Dates"), content_class => 'mx-auto width-sm' &>
+    <& /Elements/EditCustomFields,
+        Object       => $GroupObject,
+        CustomFields => RT::Group->GroupCustomFields->LimitToDefaultValuesSupportedTypes,
+        Grouping     => 'Dates',
+    &>
+  </&>
+% }
+
+% if ( RT->Config->ObjectHasCustomFieldGrouping( Object => $GroupObject, Grouping => 'People' ) ) {
+  <&|/Widgets/TitleBox, title => loc("People"), content_class => 'mx-auto width-sm' &>
+    <& /Elements/EditCustomFields,
+        Object       => $GroupObject,
+        CustomFields => RT::Group->GroupCustomFields->LimitToDefaultValuesSupportedTypes,
+        Grouping     => 'People',
+    &>
+  </&>
+% }
+
+% if ( RT->Config->ObjectHasCustomFieldGrouping( Object => $GroupObject, Grouping => 'Links' ) ) {
+  <&|/Widgets/TitleBox, title => loc("Links"), content_class => 'mx-auto width-sm' &>
+    <& /Elements/EditCustomFields,
+        Object       => $GroupObject,
+        CustomFields => RT::Group->GroupCustomFields->LimitToDefaultValuesSupportedTypes,
+        Grouping     => 'Links',
+    &>
+  </&>
+% }
+
+<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $GroupObject->GroupCustomFields->LimitToDefaultValuesSupportedTypes }, Object => $GroupObject, Groupings => \@groupings &>
+
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+  </div>
+</div>
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit, Name => 'Reset', Label => loc('Reset Group Values to Default') &>
+  </div>
+</div>
+</form>
+
+<%INIT>
+my $GroupObject = RT::Group->new( $session{'CurrentUser'} );
+
+my $title = loc( 'Default Values For Groups' );
+my @groupings = ( RT::CustomField->CustomGroupings( 'RT::Group' ), '' );
+
+$m->callback( CallbackName => 'Init', ARGSRef => \%ARGS, Title => \$title, Groupings => \@groupings );
+
+my @results;
+if ( $ARGS{Reset} ) {
+    my $cfs = $GroupObject->GroupCustomFields->LimitToDefaultValuesSupportedTypes;
+    while ( my $cf = $cfs->Next ) {
+      my ($ret, $msg) = $GroupObject->SetDefaultValue(
+            Field  => $cf,
+            Value  => undef,
+        );
+    }
+    push @results, "Group default values are reset";
+}
+elsif ( $ARGS{Update} ) {
+    my $cfs = _ParseObjectCustomFieldArgs( \%ARGS )->{'RT::Group'}{0};
+    for my $cf_id ( keys %$cfs ) {
+        # In the case of inconsistent CFV submission,
+        # we'll get the 1st grouping in the hash, alphabetically
+        my ($ret, $grouping_name) = _ValidateConsistentCustomFieldValues( $cf_id, $cfs->{$cf_id} );
+
+        my $grouping = $cfs->{$cf_id}{$grouping_name};
+        my $value = $grouping->{Value} // $grouping->{Values};
+
+        my $cf = RT::CustomField->new( $session{CurrentUser} );
+        $cf->Load( $cf_id );
+        if ( $cf->id && $cf->SupportDefaultValues ) {
+            my ($ret, $msg) = $GroupObject->SetDefaultValue (
+                Field  => $cf,
+                Value  => $value,
+            );
+            push @results, $msg;
+        }
+    }
+}
+
+MaybeRedirectForResults(
+    Actions   => \@results,
+);
+</%INIT>
