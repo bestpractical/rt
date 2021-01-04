@@ -539,6 +539,28 @@ Below are some examples using the endpoints above.
     -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
     'https://myrt.com/REST/2.0/asset'
 
+=head3 Ticket Fields
+
+The following describes some of the values you can send when creating and updating
+tickets as shown in the examples above.
+
+=over 4
+
+=item Ticket Links
+
+As shown above, you can update links on a ticket with a C<PUT> and passing the link
+relationship you want to create. The available keys are Parent, Child, RefersTo,
+ReferredToBy, DependsOn, and DependedOnBy. These correspond with the standard link
+types on a ticket. The value can be a single ticket id or an array of ticket ids.
+The indicated link relationship will be set to the value passed, adding or removing
+as needed.
+
+You can specifically add or remove a link by prepending C<Add> or C<Delete> to
+the link type, like C<AddParent> or C<DeleteParent>. These versions also accept
+a single ticket id or an array.
+
+=back
+
 =head3 Transactions
 
     GET /transactions?query=<JSON>
