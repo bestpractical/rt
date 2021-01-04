@@ -204,6 +204,7 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
         TotalFound  => $TotalFound,
         CurrentPage => $Page,
         Pages       => $pages,
+        PageParam   => $PageParam,
         URLParams   => \%query_args
     );
 
@@ -221,6 +222,7 @@ $DisplayFormat => undef
 $GenericQueryArgs => undef
 $Rows          => undef
 $Page          => 1
+$PageParam     => 'Page'
 $Title         => loc('Ticket Search')
 $BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
 @PassArguments => qw( Query Format Rows Page Order OrderBy Class ObjectType )

@@ -119,7 +119,9 @@ my $format = ( exists RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name
     ? RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name}
     : RT->Config->Get('LinkedQueuePortletFormats')->{'Default'} );
 
+my $i = 0;
 for my $query ( @queries ) {
+    $i++;
     my $empty_message = shift @empty_messages;
     my $order_by = $OrderBy;
     my $rows = $Rows;
@@ -137,12 +139,16 @@ $m->callback( CallbackName => 'MassageSearchArgs',
     if ( $tickets->Count ) {
 </%PERL>
 <& /Elements/CollectionList, %ARGS,
+    %$DECODED_ARGS,
     Class            => 'RT::Tickets',
     Query            => $query,
     Format           => $format,
     OrderBy          => $order_by,
     Rows             => $rows,
     ShowHeader       => 0,
+    Page             => $DECODED_ARGS->{"Page-$queue_name-$i"} || 1,
+    PageParam        => "Page-$queue_name-$i",
+    PassArguments    => [ keys %$DECODED_ARGS ],
 &>
 
 % } else {
