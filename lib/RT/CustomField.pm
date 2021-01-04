@@ -2175,7 +2175,7 @@ sub BasedOnObj {
 sub SupportDefaultValues {
     my $self = shift;
     return 0 unless $self->id;
-    return 0 unless $self->LookupType =~ /RT::(?:Ticket|Transaction|Asset)$/;
+    return 0 unless $self->LookupType =~ /RT::(?:Ticket|Transaction|Asset|Group)$/;
     return $self->Type !~ /^(?:Image|Binary)$/;
 }
 
@@ -2185,7 +2185,15 @@ sub DefaultValues {
         Object => RT->System,
         @_,
     );
-    my $attr = $args{Object}->FirstAttribute('CustomFieldDefaultValues');
+
+    my $attr;
+    if ( ref $args{'Object'} eq 'RT::Group' ) {
+        $attr = $self->FirstAttribute('GroupsDefaultValue');
+    }
+    else {
+        $attr = $args{Object}->FirstAttribute('CustomFieldDefaultValues');
+    }
+
     my $values;
     $values = $attr->Content->{$self->id} if $attr && $attr->Content;
     return $values if defined $values;

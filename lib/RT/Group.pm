@@ -1722,6 +1722,91 @@ sub PostInflate {
     );
 }
 
+sub DefaultValue {
+    my $self  = shift;
+    my $field = shift;
+
+    my $attr = $field->FirstAttribute( 'GroupsDefaultValue' );
+
+    return undef unless $attr && $attr->Content;
+    return $attr->Content->{$field};
+}
+
+sub SetDefaultValue {
+    my $self = shift;
+    my %args = (
+        Value => undef,
+        Field => undef,
+        @_
+    );
+    unless ( $args{'Field'} ) {
+        RT::Logger->error( "Custom field object required to set group default value" );
+        return ( 0, $self->loc( 'An internal RT error has occurred. Your administrator can find more details in RT\'s log files.' ) );
+    }
+    my $attr = $args{'Field'}->FirstAttribute( 'GroupsDefaultValue' );
+
+    my ($old_value, $old_content, $new_value);
+    if ( $attr && $attr->Content ) {
+        $old_content = $attr->Content;
+        $old_value   = $old_content->{ $args{'Field'}->id };
+    }
+
+    if ( defined $old_value && length $old_value ) {
+        $old_value = join ', ', @$old_value if ref $old_value eq 'ARRAY';
+    }
+    else {
+        $old_value = $self->loc('(no value)');
+    }
+
+    $new_value = $args{'Value'};
+    if ( defined $new_value && length $new_value ) {
+        $new_value = join ', ', @$new_value if ref $new_value eq 'ARRAY';
+    }
+    else {
+        $new_value = $self->loc( '(no value)' );
+    }
+
+    return 1 if $new_value eq $old_value;
+
+    my ($ret, $msg);
+    if ( $attr) {
+        ($ret, $msg) = $args{'Field'}->SetAttribute(
+            Name       => 'GroupsDefaultValue',
+            Content    => { %{ $old_content || {} }, $args{'Field'}->Id => $args{'Value'} },
+            Object     => $args{'Field'},
+       );
+    }
+    else {
+      $attr = RT::Attribute->new( $self->CurrentUser );
+      ($ret, $msg) = $attr->Create(
+          Name       => 'GroupsDefaultValue',
+          Content    => { %{ $old_content || {} }, $args{'Field'}->Id => $args{'Value'} },
+          Object     => $args{'Field'},
+          ObjectType => 'RT::Group'
+      );
+    }
+
+    if ( $ret ) {
+        return ( $ret, $self->loc( 'Default value of [_1] changed from [_2] to [_3]', $args{'Field'}->Name, $old_value, $new_value ) );
+    }
+    else {
+        return ( $ret, $self->loc( "Can't change default value of [_1] from [_2] to [_3]: [_4]", $args{'Field'}->Name, $old_value, $new_value, $msg ) );
+    }
+}
+
+sub GroupCustomFields {
+    my $self = shift;
+
+    my $cfs = RT::CustomFields->new( $self->CurrentUser );
+    if ( $self->CurrentUserHasRight('SeeGroup') ) {
+        $cfs->SetContextObject( $self );
+        $cfs->LimitToGlobalOrObjectId( $self->Id );
+        $cfs->LimitToLookupType( 'RT::Group' );
+        $cfs->ApplySortOrder;
+    }
+    return ($cfs);
+}
+
 # If this group represents the members of a custom role, then return
 # the RT::CustomRole object. Otherwise, return undef
 sub _CustomRoleObj {
