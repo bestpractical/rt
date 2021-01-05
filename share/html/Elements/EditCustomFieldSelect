@@ -71,7 +71,7 @@
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
-<div data-name="<% $value->Category || '' %>" class="custom-control custom-radio">
+<div data-name="<% $value->Category || '' %>" class="custom-control custom-<% ( $MaxValues == 1 && $RenderType eq 'List' ) ? 'radio' : 'checkbox' %>">
   <input class="custom-control-input"  type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
   <label class="custom-control-label" for="<% $labelid %>"><% $content %></label><br />
 </div>
