@@ -9,6 +9,7 @@ runs:
 
 jobs:
   setup:
+    runs-on: ubuntu-latest
     steps:
       - name: Build RT
         env:
@@ -25,6 +26,7 @@ jobs:
           docker exec -it rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
 
   build:
+    runs-on: ubuntu-latest
     needs: setup
     steps:
       - name: Run RT tests
