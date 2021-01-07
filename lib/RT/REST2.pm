@@ -466,6 +466,11 @@ curl for SSL like --cacert.
     PUT /ticket/:id
         update a ticket's metadata; provide JSON content
 
+    PUT /ticket/:id/take
+    PUT /ticket/:id/untake
+    PUT /ticket/:id/steal
+        take, untake, or steal the ticket
+
     DELETE /ticket/:id
         set status to deleted
 
