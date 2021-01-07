@@ -52,6 +52,7 @@ $TotalFound => undef
 $CurrentPage => undef
 $Pages => undef
 $URLParams => undef
+$PageParam => 'Page'
 </%ARGS>
 
 <%INIT>
@@ -81,7 +82,7 @@ else{
               my $qs = $m->interp->apply_escapes(
                 $m->comp('/Elements/QueryString',
                   %$URLParams,
-                  Page => $number
+                  $PageParam => $number
                 ),
                 'h',
               );
@@ -92,7 +93,7 @@ else{
       my $qs = $m->interp->apply_escapes(
         $m->comp('/Elements/QueryString',
           %$URLParams,
-          Page => $chunk->first,
+          $PageParam => $chunk->first,
         ),
         'h',
       );
