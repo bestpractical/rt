@@ -145,7 +145,16 @@ sub from_multipart {
 
 sub from_json {
     my $self = shift;
-    my $params = shift || JSON::decode_json( $self->request->content );
+    my $params = shift;
+
+    if ( !$params ) {
+        if ( my $content = $self->request->content ) {
+            $params = JSON::decode_json($content);
+        }
+        else {
+            $params = {};
+        }
+    }
 
     %$params = (
         %$params,

@@ -466,6 +466,11 @@ curl for SSL like --cacert.
     PUT /ticket/:id
         update a ticket's metadata; provide JSON content
 
+    PUT /ticket/:id/take
+    PUT /ticket/:id/untake
+    PUT /ticket/:id/steal
+        take, untake, or steal the ticket
+
     DELETE /ticket/:id
         set status to deleted
 
@@ -507,6 +512,23 @@ Below are some examples using the endpoints above.
     curl -X PUT -H "Content-Type: application/json" -u 'root:password'
         -d '{ "AddDependsOn": [4, 5], "DeleteReferredToBy": 1 }'
         'https://myrt.com/REST/2.0/ticket/6'
+
+    # Merge a ticket into another
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        -d '{ "MergeInto": 3 }'
+        'https://myrt.com/REST/2.0/ticket/6'
+
+    # Take a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        'https://myrt.com/REST/2.0/ticket/6/take'
+
+    # Untake a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        'https://myrt.com/REST/2.0/ticket/6/untake'
+
+    # Steal a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        'https://myrt.com/REST/2.0/ticket/6/steal'
 
     # Correspond a ticket
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
