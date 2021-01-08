@@ -614,7 +614,7 @@ sub BuildMainNav {
                 map {
                     my $p = $_;
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
-                } qw(Query Format OrderBy Order Page Class ObjectType ResultPage)
+                } qw(Query Format OrderBy Order Page Class ObjectType ResultPage ExtraQueryParams),
             ),
             RowsPerPage => (
                 defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
@@ -622,6 +622,14 @@ sub BuildMainNav {
                 : $current_search->{'RowsPerPage'}
             ),
         );
+
+        if ( my $extra_params = $fallback_query_args{ExtraQueryParams} ) {
+            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                $fallback_query_args{$param}
+                    = $HTML::Mason::Commands::DECODED_ARGS->{$param} || $current_search->{$param};
+            }
+        }
+
         $fallback_query_args{Class} ||= $class;
         $fallback_query_args{ObjectType} ||= 'RT::Ticket' if $class eq 'RT::Transactions';
 
