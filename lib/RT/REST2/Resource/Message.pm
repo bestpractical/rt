@@ -55,7 +55,7 @@ use namespace::autoclean;
 use MIME::Base64;
 
 extends 'RT::REST2::Resource';
-use RT::REST2::Util qw( error_as_json update_custom_fields );
+use RT::REST2::Util qw( error_as_json update_custom_fields process_uploads );
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
@@ -104,23 +104,8 @@ sub from_multipart {
 
     my $json = JSON::decode_json($json_str);
 
-    my @attachments = $self->request->upload('Attachments');
-    foreach my $attachment (@attachments) {
-        open my $filehandle, '<', $attachment->tempname;
-        if (defined $filehandle && length $filehandle) {
-            my ( @content, $buffer );
-            while ( my $bytesread = read( $filehandle, $buffer, 72*57 ) ) {
-                push @content, MIME::Base64::encode_base64($buffer);
-            }
-            close $filehandle;
-
-            push @{$json->{Attachments}},
-                {
-                    FileName    => $attachment->filename,
-                    FileType    => $attachment->headers->{'content-type'},
-                    FileContent => join("\n", @content),
-                };
-        }
+    if ( my @attachments = $self->request->upload('Attachments') ) {
+        $json->{Attachments} = [ process_uploads(@attachments) ];
     }
 
     return $self->from_json($json);

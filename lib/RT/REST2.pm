@@ -294,10 +294,10 @@ The time, in minutes, you've taken to work on your response/comment, optional.
 
 =head3 Add Attachments
 
-You can attach any binary or text file to your response or comment by
-specifying C<Attachements> property in the JSON object, which should be a
-JSON array where each item represents a file you want to attach. Each item
-is a JSON object with the following properties:
+You can attach any binary or text file to a ticket via create, correspond, or
+comment by adding an C<Attachments> property in the JSON object. The value
+should be a JSON array where each item represents a file you want to attach.
+Each item is a JSON object with the following properties:
 
 =over 4
 
