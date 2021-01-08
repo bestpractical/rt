@@ -307,6 +307,7 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
 span.current-value.form-control {
   border: none;
   padding-left: 0;
+  height: auto;
 }
 
 .list-group-item label {
