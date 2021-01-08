@@ -468,6 +468,9 @@ sub InsertACL {
         $path = $base_path;
     }
 
+    # Get the full path since . is no longer in @INC after perl 5.24
+    $path = Cwd::abs_path($path);
+
     local *acl;
     do $path || return (0, "Couldn't load ACLs: " . $@);
     my @acl = acl($dbh);
