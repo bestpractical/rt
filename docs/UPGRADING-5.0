@@ -224,6 +224,24 @@ will migrate your existing tokens to the new core RT tables.
 
 =item *
 
+The extension RT::Extension::FormattedTransaction was added to core. This adds
+a new RT dependency on the perl module C<Text::WordDiff>, so you will be
+prompted to install this new module if your system doesn't have it.
+
+=item *
+
+Similar to the note above regarding the Owner field in search results,
+custom fields in search results also now have inline edit enabled by default,
+allowing you to change values directly in search results.
+
+For heavy search result pages with many columns display or many rows,
+page loads may be slower with this inline edit mode enabled. If you don't
+need to edit custom field values, you can change search result columns
+from C<CustomField.{Foo}> to C<CustomFieldView.{Foo}>. That column will
+then load a view-only field which may improve page load speed.
+
+=item *
+
 In the self service interface, the "Search Articles" box in the menu bar previously
 was displayed to users who had the global right "ShowArticle". This is now
 controlled by a new configuration option C<$SelfServiceShowArticleSearch>. This new
