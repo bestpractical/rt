@@ -202,12 +202,21 @@ if ( $NewQuery ) {
         RowsPerPage => 50
     };
 
-    for( qw(Query Format OrderBy Order RowsPerPage ObjectType) ) {
+    for( qw(Query OrderBy Order RowsPerPage ObjectType) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};
         $query{$_} = $prefs->{$_} unless defined $query{$_};
         $query{$_} = $default->{$_} unless defined $query{$_};
     }
 
+    # Only use $prefs->{Format} for Ticket searches
+    if ( $Class eq 'RT::Tickets' ) {
+        $query{Format} = $current->{Format} unless defined $query{Format};
+        $query{Format} = $prefs->{Format} unless defined $query{Format};
+        $query{Format} = $default->{Format} unless defined $query{Format};
+    } else {
+        $query{Format} = $current->{Format} unless defined $query{Format};
+        $query{Format} = $default->{Format} unless defined $query{Format};
+    }
     for( qw(Order OrderBy) ) {
         if (ref $query{$_} eq "ARRAY") {
             $query{$_} = join( '|', @{ $query{$_} } );
