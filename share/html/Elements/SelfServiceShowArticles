@@ -61,8 +61,24 @@
 </&>
 <%INIT>
 
-my $articles = RT::Articles->new($session{'CurrentUser'});
-$articles->UnLimit;
+my $articles = RT::Articles->new( $session{'CurrentUser'} );
+
+# By default article right check is not at SQL level, which could lead
+# to empty or wrong article counts. Here we check right beforehand to
+# get rid of it.
+my $right = 'ShowArticle';
+if ( $session{'CurrentUser'}->HasRight( Right => $right, Object => $RT::System ) ) {
+    $articles->UnLimit;
+}
+else {
+    my $classes = RT::Classes->new( $session{'CurrentUser'} );
+    $classes->UnLimit;
+    $articles->Limit(
+        FIELD    => 'Class',
+        VALUE    => [ map { $_->Id } grep { $_->CurrentUserHasRight($right) } @{ $classes->ItemsArrayRef } ],
+        OPERATOR => 'IN',
+    );
+}
 $articles->OrderBy(FIELD => $orderby_field, ORDER => $sortorder);
 $articles->RowsPerPage($rows);
 
