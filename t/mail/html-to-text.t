@@ -84,6 +84,13 @@ sub test_conversion
           skip "Skipping $converter: Not installed", 1;
           return;
       }
+      elsif ( $converter eq 'links' ) {
+          my $links = RT::Test->find_executable($converter);
+          if ( `$links -version` =~ /ELinks/ ) {
+              skip "Skipping $converter: it's not links but elinks", 1;
+              return;
+          }
+      }
       RT->Config->Set(HTMLFormatter => $converter);
       my $text = RT::Interface::Email::ConvertHTMLToText($html);
       is($text, $expected, "Got expected HTML->text conversion using $converter");
