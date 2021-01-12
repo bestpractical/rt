@@ -3987,7 +3987,11 @@ sub ProcessColumnMapValue {
 
     if ( ref $value ) {
         if ( UNIVERSAL::isa( $value, 'CODE' ) ) {
-            my @tmp = $value->( @{ $args{'Arguments'} } );
+            my @tmp;
+            eval { @tmp = $value->( @{ $args{'Arguments'} } ); };
+            if ($@) {
+                return ProcessColumnMapValue( loc("Invalid column") );
+            }
             return ProcessColumnMapValue( ( @tmp > 1 ? \@tmp : $tmp[0] ), %args );
         } elsif ( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
             return join '', map ProcessColumnMapValue( $_, %args ), @$value;
