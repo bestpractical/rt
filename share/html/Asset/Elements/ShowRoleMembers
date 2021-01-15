@@ -53,6 +53,7 @@
 <h3><& /Elements/ShowUser, User => $user, Link => 1 &></h3>
 %      next if $user->id == RT->Nobody->id;
 % } else {
+%      next if $user->id == RT->Nobody->id;
 <h3><a href="#"><& /Elements/ShowUser, User => $user, Link => 0 &>
 %     if ($Note) {
  <span class="note"><% $Note %></span>
