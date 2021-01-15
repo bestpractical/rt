@@ -1237,15 +1237,18 @@ sub IsPassword {
     }
 
    if ( $self->PrincipalObj->Disabled ) {
+        # Run the bcrypt generator to avoid timing side-channel attacks
+        RT::Util::constant_time_eq($self->_GeneratePassword_bcrypt($value), '0' x 64);
         $RT::Logger->info(
             "Disabled user " . $self->Name . " tried to log in" );
         return (undef);
     }
 
     unless ($self->HasPassword) {
-        return(undef);
-     }
-
+        # Run the bcrypt generator to avoid timing side-channel attacks
+        RT::Util::constant_time_eq($self->_GeneratePassword_bcrypt($value), '0' x 64);
+        return undef;
+    }
     my $stored = $self->__Value('Password');
     if ($stored =~ /^!/) {
         # If it's a new-style (>= RT 4.0) password, it starts with a '!'
