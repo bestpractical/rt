@@ -672,6 +672,38 @@ sub DeleteValue {
     return ($retval, $self->loc("Custom field value deleted"));
 }
 
+=head2 ValidateValue Value
+
+Make sure that the supplied value is valid
+
+=cut
+
+sub ValidateValue {
+    my $self = shift;
+    my $value = shift;
+
+    # NB: ensuring that the value (including possibly an empty one)
+    #     matches any validation pattern defined is already checked in
+    #     AddValueForObject and DeleteValueForObject
+
+    # For Select type custom fields, make sure the supplied value is
+    # in the list of defined values.
+    # Skip for external CFs since they could be more dynamic,
+    # depending on the external source.
+
+    if ( $self->Type eq "Select" && !$self->IsExternalValues() ) {
+        if ( $value ) {
+            my $cfvs = $self->Values;
+            while (my $cfv = $cfvs->Next) {
+                my $name = $cfv->Name;
+                return 1 if $name eq $value;
+            }
+            return 0;
+        }
+    }
+
+    return 1;
+}
 
 =head2 ValidateQueue Queue
 
