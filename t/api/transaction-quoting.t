@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 19;
+use RT::Test tests => 28;
 
 use_ok('RT::Transaction');
 
@@ -248,3 +248,121 @@ EXPECTED
 
     is( $result, $expected, 'Text quoted properly after five quotings');
 }
+
+diag "Test cleanup of MS Outlook mail";
+{
+    my $mail = <<'.';
+From: root@localhost
+Subject: Testing spurious newline removal
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Mailer: Microsoft Office Outlook 12.0
+
+Hello.
+
+
+
+This email has spurious newlines.  Every
+
+newline is doubled, leading to excessive spacing.
+
+
+
+Will it be cleaned up?
+
+.
+
+    my $expected = <<'QUOTED';
+> Hello.
+> 
+> This email has spurious newlines.  Every
+> newline is doubled, leading to excessive spacing.
+> 
+> Will it be cleaned up?
+QUOTED
+
+    my ( $status, $id ) = RT::Test->send_via_mailgate($mail);
+    is( $status >> 8, 0, "The mail gateway exited normally" );
+    ok( $id, "Created ticket $id" );
+    my $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load( $id );
+    my $txns = $ticket->Transactions;
+    my $txn = $txns->Next;
+    my $content = $txn->Content(Quote => 1);
+    like($content, qr/\Q$expected/, 'Spurious newlines were removed');
+
+    # Try an email that has *already* been cleaned up
+    $mail = <<'.';
+From: root@localhost
+Subject: Testing spurious newline removal
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Mailer: Microsoft Office Outlook 12.0
+
+Hello.
+
+This email has spurious newlines.  Every
+newline is doubled, leading to excessive spacing.
+
+Will it be cleaned up?
+.
+
+    ( $status, $id ) = RT::Test->send_via_mailgate($mail);
+    is( $status >> 8, 0, "The mail gateway exited normally" );
+    ok( $id, "Created ticket $id" );
+    $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load( $id );
+    $txns = $ticket->Transactions;
+    $txn = $txns->Next;
+    $content = $txn->Content(Quote => 1);
+    like($content, qr/\Q$expected/, 'Spurious newlines were not removed twice');
+
+    # Try an email that has isn't marked as being from Outlook
+    $mail = <<'.';
+From: root@localhost
+Subject: Testing spurious newline removal
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Hello.
+
+
+
+This email has spurious newlines.  Every
+
+newline is doubled, leading to excessive spacing.
+
+
+
+Will it be cleaned up?
+
+.
+
+    $expected = <<'QUOTED';
+> Hello.
+> 
+> 
+> 
+> This email has spurious newlines.  Every
+> 
+> newline is doubled, leading to excessive spacing.
+> 
+> 
+> 
+> Will it be cleaned up?
+> 
+QUOTED
+
+    ( $status, $id ) = RT::Test->send_via_mailgate($mail);
+    is( $status >> 8, 0, "The mail gateway exited normally" );
+    ok( $id, "Created ticket $id" );
+    $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load( $id );
+    $txns = $ticket->Transactions;
+    $txn = $txns->Next;
+    $content = $txn->Content(Quote => 1);
+    like($content, qr/\Q$expected/, 'Spurious newlines were not removed from non-Outlook email');
+
+
+}
+
