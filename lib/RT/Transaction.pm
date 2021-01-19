@@ -360,7 +360,10 @@ sub Content {
         $content = $content_obj->Content ||'';
 
         if ( lc $content_obj->ContentType eq 'text/html' ) {
-            $content =~ s/(?:(<\/div>)|<p>|<br\s*\/?>|<div(\s+class="[^"]+")?>)\s*--\s+<br\s*\/?>.*?$/$1/s if $args{'Quote'};
+            if ($args{Quote}) {
+                $content = $self->CleanupContentForReply($content_obj, $content);
+                $content =~ s/(?:(<\/div>)|<p>|<br\s*\/?>|<div(\s+class="[^"]+")?>)\s*--\s+<br\s*\/?>.*?$/$1/s;
+            }
 
             if ($args{Type} ne 'text/html') {
                 $content = RT::Interface::Email::ConvertHTMLToText($content);
@@ -379,7 +382,10 @@ sub Content {
             }
         }
         else {
-            $content =~ s/\n-- \n.*?$//s if $args{'Quote'};
+            if ($args{Quote}) {
+                $content = $self->CleanupContentForReply($content_obj, $content);
+                $content =~ s/\n-- \n.*?$//s;
+            }
             if ($args{Type} eq 'text/html') {
                 # Extremely simple text->html converter
                 $content =~ s/&/&#38;/g;
@@ -411,6 +417,84 @@ sub Content {
     }
 
     return ($content);
+}
+
+=head2 _LooksLikeMSEmail
+
+Similar to RT::EmailParser->LooksLikeMSEmail, but works on RT::Attachment
+rather than MIME::Entity.
+
+=cut
+sub _LooksLikeMSEmail
+{
+    my ($self) = @_;
+    my $attachment = $self->Attachments->First;
+    return undef unless $attachment;
+
+    my $mailer = $attachment->GetHeader('X-Mailer');
+    # 12.0 is outlook 2007, 14.0 is 2010
+    return 1 if ( $mailer && $mailer =~ /Microsoft(?:.*?)Outlook 1[2-4]\./ );
+
+    if ( RT->Config->Get('CheckMoreMSMailHeaders') ) {
+        # Check for additional headers that might
+        # indicate this came from Outlook or through Exchange.
+        # A sample we received had the headers X-MS-Has-Attach: and
+        # X-MS-Tnef-Correlator: and both had no value.
+
+        return 1 if $attachment->Headers =~ /\bX-MS-.{0,50}:/;
+    }
+
+    return 0;    # Doesn't look like MS email.
+}
+
+=head2 CleanupContentForReply $ENTITY, $CONTENT
+
+Various email clients do silly things with content that
+can result in messy-looking replies.  This subroutine
+cleans up the known silly things that email clients
+do.
+
+$ENTITY is the MIME::Entity whose content is to be
+cleaned, and $CONTENT is the raw content (a string).
+
+Returns a cleaned-up version of $CONTENT
+
+=cut
+sub CleanupContentForReply
+{
+    my ($self, $attachment, $content) = @_;
+
+    # Right now, we only clean up mail that looks like MS Outlook or
+    # MS Exchange email.  Bail out if that's not the case
+    return $content unless $self->_LooksLikeMSEmail;
+
+    if (lc($attachment->ContentType) eq 'text/html') {
+        # Remove extra newlines from HTML content.
+        $content =~ s{
+        (<p(\s+style="[^"]*")?>(<br>)?\n?</p>)|
+                (<div><br>\n?</div>)|
+                (<p(\s+[^>]+)?><span(\s+[^>]+)?><o:p>&nbsp;</o:p></span></p>)
+        } {}xmg;
+        return $content;
+    } else {
+        # Assume text/plain.
+
+        # Remove spaces at end of lines
+        $content =~ s/\ +$//mg;
+
+        # If there are an odd number of newlines anywhere in the
+        # content, assume it has already been cleaned up by
+        # RescueOutlook in RT::EmailParser and do not touch it.
+        # Otherwise, replace double-newlines with single-newlines
+        if ($content =~ /(^|[^\n])\n(\n\n)*[^\n]/) {
+            # Odd number of newlines found... don't touch
+            return $content;
+        }
+
+        # Replace double-newlines with single-newlines
+        $content =~ s/\n\n/\n/g;
+    }
+    return $content;
 }
 
 =head2 QuoteHeader
