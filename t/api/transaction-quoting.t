@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 28;
+use RT::Test tests => 31;
 
 use_ok('RT::Transaction');
 
@@ -363,6 +363,30 @@ QUOTED
     $content = $txn->Content(Quote => 1);
     like($content, qr/\Q$expected/, 'Spurious newlines were not removed from non-Outlook email');
 
+    # HTML mail
+    {
+        local $/;
+        open(my $fh, '<t/data/emails/ms-outlook/input-msg-1') or die("Cannot read t/data/emails/ms-outlook/input-msg-1: $!");
+        $mail = <$fh>;
+        close($fh);
+    }
+    {
+        local $/;
+        open(my $fh, '<t/data/emails/ms-outlook/expected-output-1') or die("Cannot read t/data/emails/ms-outlook/expected-output-1: $!");
+        $expected = <$fh>;
+        close($fh);
+    }
 
+    ( $status, $id ) = RT::Test->send_via_mailgate($mail);
+    is( $status >> 8, 0, "The mail gateway exited normally" );
+    ok( $id, "Created ticket $id" );
+    $ticket = RT::Ticket->new( RT->SystemUser );
+    $ticket->Load( $id );
+    $txns = $ticket->Transactions;
+    $txn = $txns->Next;
+    $content = $txn->Content(Quote => 1, Type => 'text/html');
+    like($content, qr/\Q$expected/, 'HTML mail was cleaned as expected');
 }
+
+
 
