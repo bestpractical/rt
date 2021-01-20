@@ -481,6 +481,7 @@ sub Create {
     }
 
     # Add all the custom fields
+    my @added_watchers; # roles that need to be removed when unmerging
     foreach my $arg ( keys %args ) {
         next unless $arg =~ /^CustomField-(\d+)$/i;
         my $cfid = $1;
@@ -1931,6 +1932,9 @@ sub _MergeInto {
     my $self      = shift;
     my $MergeInto = shift;
 
+    # Store original link info before any merge action, so it can be
+    # restored on unmerge if needed
+    my @saved_links= $self->_MergeLinksInfo( $MergeInto);
 
     # We use EffectiveId here even though it duplicates information from
     # the links table becasue of the massive performance hit we'd take
@@ -1987,7 +1991,7 @@ sub _MergeInto {
         if (exists $old_seen{$link->Type."-".$link->Target}) {
             $link->Delete;
         }   
-        if ($link->Target eq $MergeInto->URI) {
+        elsif ($link->Target eq $MergeInto->URI) {
             $link->Delete;
         } else {
             # First, make sure the link doesn't already exist. then move it over.
@@ -2014,6 +2018,7 @@ sub _MergeInto {
     }
 
     # add all of this ticket's watchers to that ticket.
+    my @added_watchers; # roles that would need to be removed when unmerging
     for my $role ($self->Roles) {
         my $group = $self->RoleGroup($role);
         next unless $group->Id; # e.g. lazily-created custom role groups
@@ -2026,7 +2031,12 @@ sub _MergeInto {
                 PrincipalId       => $watcher->MemberId,
                 InsideTransaction => 1,
             );
-            unless ($val) {
+            if( $val ) {
+                # added so it can be removed on unmerge
+                push @added_watchers, { id => $watcher->MemberId, type => $role };
+            }
+            else {
+                # watcher was already set on the ticket, so it won't have to be removed on unmerge
                 $RT::Logger->debug($msg);
             }
         }
@@ -2041,11 +2051,35 @@ sub _MergeInto {
     );
 
     #   update their EffectiveId fields to the new ticket's id
+    my @previous_merges;
     while ( my $ticket = $old_mergees->Next() ) {
         my ( $val, $msg ) = $ticket->__Set(
             Field => 'EffectiveId',
             Value => $MergeInto->Id()
         );
+
+        if ( $val ) {
+            push @previous_merges, $ticket->Id unless $ticket->Id == $self->Id;
+        }
+    }
+
+    my $saved_info = {
+      merged_tickets => \@previous_merges,
+      links          => \@saved_links,
+      added_watchers => \@added_watchers,
+      merged         => $self->Id,
+      merged_into    => $MergeInto->Id,
+    };
+
+    my ( $ret, $msg ) = $MergeInto->AddAttribute(
+                           Name        => 'MergeInfo-' . $self->Id,
+                           Description => "Merged " .  $self->Id . " into " . $MergeInto->Id,
+                           Content     => $saved_info,
+                       );
+
+    unless ( $ret ) {
+        RT->Logger->error("Unable to save merge data. Will not be able to fully unmerge ticket "
+            . $self->Id . " $msg");
     }
 
     #make a new link: this ticket is merged into that other ticket.
@@ -2055,6 +2089,311 @@ sub _MergeInto {
 
     return ( 1, $self->loc("Merge Successful") );
 }
+
+# nearly duplicates what's in _MergeInto, but gathers the info
+# and save it instead of updating it
+
+sub _MergeLinksInfo {
+    my $self = shift; # $self is the merged ticket
+    my $MergeInto = shift;
+
+    my @saved_links;
+
+    # get all the links that point to that old ticket
+    my $old_links_to = RT::Links->new($self->CurrentUser);
+    $old_links_to->Limit(FIELD => 'Target', VALUE => $self->URI);
+
+    my %old_seen;
+    while ( my $link = $old_links_to->Next ) {
+
+        my $direction = 'Target';
+
+        if ( exists $old_seen{$link->Base."-".$link->Type} ) {
+            next;
+        }
+        elsif ( $link->Base eq $MergeInto->URI ) {
+            push @saved_links, $self->_SerializeLinkData(
+                Action => 'deleted', Direction => $direction, Link => $link);
+        }
+        else {
+            # First, make sure the link doesn't already exist. If not, save it.
+            my $tmp = RT::Link->new(RT->SystemUser);
+            $tmp->LoadByCols(Base => $link->Base, Type => $link->Type, LocalTarget => $MergeInto->id);
+            if ($tmp->id)   {
+                push @saved_links, $self->_SerializeLinkData(
+                    Action => 'deleted', Direction => $direction, Link => $link);
+            }
+            else {
+                push @saved_links, $self->_SerializeLinkData(
+                    Action => 'moved', Direction => $direction, Link => $link);
+            }
+            $old_seen{$link->Base."-".$link->Type} = 1;
+        }
+
+    }
+
+    my $old_links_from = RT::Links->new($self->CurrentUser);
+    $old_links_from->Limit(FIELD => 'Base', VALUE => $self->URI);
+
+    while ( my $link = $old_links_from->Next ) {
+
+        my $direction = 'Base';
+
+        if ( exists $old_seen{$link->Type."-".$link->Target} ) {
+            next;
+        }
+        elsif ($link->Target eq $MergeInto->URI) {
+            push @saved_links, $self->_SerializeLinkData(
+                Action => 'deleted', Direction => $direction, Link => $link);
+        }
+        else {
+            # First, make sure the link doesn't already exist. then move it over.
+            my $tmp = RT::Link->new(RT->SystemUser);
+            $tmp->LoadByCols(Target => $link->Target, Type => $link->Type, LocalBase => $MergeInto->id);
+            if ($tmp->id)   {
+                push @saved_links, $self->_SerializeLinkData(
+                    Action => 'deleted', Direction => $direction, Link => $link);
+            }
+            else {
+                push @saved_links, $self->_SerializeLinkData(
+                    Action => 'moved', Direction => $direction, Link => $link);
+            }
+            $old_seen{$link->Type."-".$link->Target} = 1;
+        }
+    }
+
+    return @saved_links;
+}
+
+# Note: When using UnmergeFrom in new code, mind the cache!
+#
+# ie after unmerging, if you hold an object for the unmerged ticket
+# or for tickets linked to any of the tickets, it is possible that
+# their links (and potentially other info) are cached and are not updated
+# after the unmerge. In fact the DB is updated, but some methods return
+# cached values that are stale.
+# The safest is to create a new object and reload it, like this:
+#    my $id    = $ticket->id;
+#    $ticket   = RT::Ticket->new( $CurrentUser );
+#    $ticket->Load( $id);
+#
+# this occurs mostly in tests,
+
+sub UnmergeFrom {
+    my $self = shift;
+    my $merged_into = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyTicket') && $merged_into->CurrentUserHasRight('ModifyTicket')) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    my $id = $self->Id;
+    my $merged_into_id = $merged_into->Id;
+
+    if( $id == $self->EffectiveId || ! $self->IsMerged) {
+        return ( 0, $self->loc( "Trying to unmerge a ticket that is not merged: ") . $id );
+    }
+
+    if( $self->EffectiveId != $merged_into_id ) {
+        return ( 0, $self->loc( "Unmerge error, tickets are not merged: ") . $id . ', ' . $merged_into_id);
+    }
+
+    # Completely clear the merge cache
+    %MERGE_CACHE = (
+        effective => {},
+        merged => {},
+    );
+
+    $RT::Handle->BeginTransaction();
+
+    my ($ok, $msg) = $self->_UnmergeFrom( $merged_into );
+
+    if( $ok) {
+        $RT::Handle->Commit();
+    } else {
+        $RT::Handle->Rollback();
+        return ( 0, $self->loc("Unmerge failed") );
+    }
+
+    return ($ok, $msg);
+}
+
+
+sub _UnmergeFrom {
+    my $self = shift;
+    my $merged_into = shift;
+
+    my $id = $self->Id;
+    my $merged_into_id = $merged_into->Id;
+
+    my( $ok, $msg);
+
+    ($ok, $msg)= $self->__Set( Field => 'IsMerged', Value => undef );
+    if( ! $ok) {
+        return (0, $self->loc("Unable to update IsMerged property") . ": $msg");
+    }
+
+    ($ok, $msg)= $self->__Set( Field => 'EffectiveId', Value => $id );
+    if( ! $ok) {
+        return (0, $self->loc("Unable to update EffectiveId for") . " $id: $msg");
+    }
+
+    ($ok, $msg)= $merged_into->DeleteLink( Type => 'MergedInto', Base => $self->URI, Silent => 1 );
+    if( ! $ok ) {
+        return ( 0, $self->loc("Unable to delete MergedInto link from [_1] to [_2]", $id, $merged_into_id) );
+    }
+
+    foreach my $type (qw(TimeEstimated TimeWorked TimeLeft)) {
+        if( $merged_into->$type() ) {
+            ($ok, $msg)= $merged_into->_Set(
+                Field => $type,
+                Value => ( $merged_into->$type() || 0 ) - ( $self->$type() || 0 ),
+                RecordTransaction => 0,
+            );
+            if( ! $ok ) {
+                RT::Logger->error( "cannot restore time field $type: $msg");
+                return ( 0, $self->loc("cannot restore time field"));
+            }
+        }
+    }
+
+    ($ok, $msg)= $self->RestoreMergeInfo( $merged_into);
+    if( ! $ok) {
+        return (0, $msg);
+    }
+
+    # record the transaction, since all others have been silenced
+    my $trans;
+    ( $ok, $msg, $trans ) = $self->_NewTransaction(
+        Type      => 'DeleteLink',
+        Field     => 'Unmerge',
+        Data      => "Unmerged ticket #$id from ticket #$merged_into_id",
+        TimeTaken => 0,
+    );
+    if( ! $ok) {
+        return (0, $msg);
+    }
+
+    return ( 1, $self->loc("Unmerge Successful") );
+}
+
+
+sub RestoreMergeInfo {
+    my( $self, $merged_into ) = @_;
+
+    my ( $ret, $msg );
+
+    my $saved_info_attribute = $merged_into->FirstAttribute(  'MergeInfo-' . $self->Id);
+    if( ! $saved_info_attribute) {
+        RT::Logger->error( "Unable to load merge data for " . $self->Id );
+        return ( 0, $self->loc( "Unable to load merge data") );
+    }
+
+    my $saved_info = $saved_info_attribute->Content;
+    if( $saved_info->{merged_into} != $merged_into->Id) {
+        RT::Logger->error( "Incorrect ticket id found in loaded merge data. Found "
+            . $saved_info->{merged_into} . " expected " . $merged_into->Id);
+        return( 0, $self->loc( "Incorrect ticket id in merge data"));
+    }
+
+    # Restore tickets previously merged into the now un-merged ticket
+    foreach my $old_merged_id (@{$saved_info->{merged_tickets}}) {
+        my $old_merged = RT::Ticket->new( $self->CurrentUser );
+        my( $ret, $msg ) = $old_merged->LoadById( $old_merged_id );
+        if( !$ret ) {
+            return ( 0, $self->loc( "Unable to load previously merged ticket ") . $old_merged_id);
+        }
+        if( $old_merged->EffectiveId != $merged_into->Id ) {
+            RT::Logger->error( 0, "Previously merged ticket has an incorrect effective id. Found "
+                . $old_merged->EffectiveId . " expected " . $merged_into->Id );
+            return ( 0, $self->loc( "Previously merged ticket has an incorrect effective id"));
+        }
+        ( $ret, $msg ) = $old_merged->__Set(
+            Field => 'EffectiveId',
+            Value => $self->Id,
+            RecordTransaction => 0,
+        );
+        if( !$ret ) {
+             return( 0, $self->loc("Unable to restore EffectiveId ") . $self->Id);
+        }
+    }
+
+    # restore links
+    foreach my $saved_link (@{$saved_info->{links}}) {
+
+        if( $saved_link->{action} eq 'moved') {
+            my $link = RT::Link->new(RT->SystemUser);
+            my( $id, $msg)= $link->Load( $saved_link->{Id});
+            if( ! $id) {
+                # the link has been removed, recreate it
+                $self->RestoreLink( $saved_link );
+            } else {
+                $RT::Logger->debug( "moving back link $saved_link->{direction}: " . $self->URI . " [" . $self->id . "] (link id is: " . $id . ")");
+                if( $saved_link->{direction} eq 'Target') {
+                    ($ret, $msg)= $link->SetTarget($self->URI);
+                    if( ! $ret) {
+                        $RT::Logger->debug( "could not update target: $msg");
+                    }
+                    $link->SetLocalTarget($self->Id);
+                } elsif( $saved_link->{direction} eq 'Base') {
+                    ( $ret, $msg) = $link->SetBase($self->URI);
+                    if( ! $ret) { return( 0, $msg); }
+                    ( $ret, $msg) = $link->SetLocalBase($self->Id);
+                    if( ! $ret) { return( 0, $msg); }
+                } else {
+                    # the link points/comes from somewhere else, bail
+                    return( 0, $self->loc( "cannot restore link ") . $saved_link->{Id});
+                }
+            }
+        } elsif( $saved_link->{action} eq 'deleted') {
+            # link was deleted (because it was between the 2 merged tickets, or there was already one with merged_into)
+            ( $ret, $msg )= $self->RestoreLink( $saved_link );
+            if( ! $ret) { return( 0, $msg); }
+        }
+    }
+
+    # remove added watchers
+    foreach my $added_watcher (@{$saved_info->{added_watchers}}) {
+        my ( $ret, $msg ) = $merged_into->DeleteRoleMember( PrincipalId => $added_watcher->{id}, Type => $added_watcher->{type});
+        if ( !$ret ) {
+            return( 0, $self->loc( "Unable to remove watcher ") . $added_watcher->{id})
+        }
+    }
+
+    ( $ret, $msg) = $merged_into->DeleteAttribute(  'MergeInfo-' . $self->Id);
+    if( !$ret ) { return( 0, $msg); }
+
+    return ( 1, $self->loc( "Restored saved merge info"));
+}
+
+sub RestoreLink {
+    my( $self, $link)= @_;
+
+    my $end_point = $link->{direction} eq 'Target' ? $link->{Base} : $link->{Target};
+    my( $ret, $msg ) = $self->AddLink( $link->{direction} => $end_point, Type => $link->{Type}, Silent => 1);
+    if( !$ret ) {
+      return( 0, $self->loc( "Unable to restore link: ") . $msg );
+    }
+    $RT::Logger->debug( "Restored link $link->{direction}: " . $self->URI . "/" . $self->id . " (link id is: " . $ret . ")");
+    return( $ret, "Restored link");
+}
+
+sub _SerializeLinkData {
+    my $self = shift;
+    my %args = (
+        Action => '',
+        Direction => '',
+        Link => undef,
+        @_);
+
+    return { action => $args{'Action'}, direction => $args{'Direction'},
+        map { $_ => $args{'Link'}->$_ } ( qw( Id Base Target Type)) };
+}
+
+# TODO:
+#
+# Additional testing with link scenarios, specifically when a 3rd ticket
+# is linked to both tickets, then one is merged/unmerged with the other.
 
 =head2 Merged
 
