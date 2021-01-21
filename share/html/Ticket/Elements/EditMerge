@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class='ticket-merge-text <% $MergeTextClass %>'>
-<&|/l&>Warning: merging is a non-reversible action! Enter a single ticket number to be merged into.</&>
+<&|/l&>Enter a single ticket number to be merged into.</&>
 </div>
 <div>
   <div class="form-row">
