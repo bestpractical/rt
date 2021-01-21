@@ -166,3 +166,17 @@ ul.select-queue li a:visited {
 .TicketFinalPriority {
     display: none;
 }
+
+/* Unmerge Tickets */
+.merged-tickets {
+    border-spacing: 5px;
+}
+
+.merge-header {
+    font-weight: bold;
+}
+
+.merge-link {
+    font-weight: bold;
+    padding-left: 10px;
+}
