@@ -1181,6 +1181,45 @@ sub SetDisabled {
         return ($status, $msg);
     }
 
+    # Set to the end of the sort list when re-enabling to prevent duplicate
+    # sort order values.
+    if ( $val == 0 ) {
+        my $ocfs = RT::ObjectCustomFields->new( $self->CurrentUser );
+        $ocfs->LimitToCustomField( $self->id );
+
+        while ( my $ocf = $ocfs->Next ) {
+            my $last_object = $ocf->LastSibling || $ocf;
+
+            # no need to update if it's already the last one.
+            my $need_update;
+            if ( $ocf->id != $last_object->id ) {
+                $need_update = 1;
+            }
+            else {
+
+                # can't use IsSortOrderShared because it always returns 0 for
+                # global cfs no matter if SortOrder is shared or not
+
+                my $neighbors = $last_object->Neighbors;
+                $neighbors->Limit( FIELD => 'id', OPERATOR => '!=', VALUE => $last_object->id );
+                $neighbors->Limit( FIELD => 'SortOrder', VALUE => $last_object->SortOrder );
+                $need_update = 1 if $neighbors->Count;
+            }
+
+            if ( $need_update ) {
+                my $sort = $last_object->SortOrder + 1;
+                my ( $status, $msg ) = $ocf->SetSortOrder( $sort );
+                if ( $status ) {
+                    RT::Logger->debug( "Set Sort Order to $sort for Object Custom Field " . $ocf->Id );
+                }
+                else {
+                    RT->Logger->error(
+                        "Failed to set Sort Order to $sort for ObjectCustomField " . $ocf->id . ": $msg" );
+                }
+            }
+        }
+    }
+
     if ( $val == 1 ) {
         return (1, $self->loc("Disabled"));
     } else {
