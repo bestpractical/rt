@@ -207,6 +207,7 @@ sub GetAuth {
     my $group_scope     = $config->{'group_scope'} || 'base';
     my $attr_map        = $config->{'attr_map'};
     my @attrs           = ('dn');
+    my $attr_match_list = $config->{'attr_match_list'};
 
     # Make sure we fetch the user attribute we'll need for the group check
     push @attrs, $group_attr_val
@@ -221,45 +222,62 @@ sub GetAuth {
     my $ldap = _GetBoundLdapObj($config);
     return 0 unless ($ldap);
 
-    $filter = Net::LDAP::Filter->new(   '(&(' .
-                                        $attr_map->{'Name'} .
-                                        '=' .
-                                        escape_filter_value($username) .
-                                        ')' .
-                                        $filter .
-                                        ')'
-                                    );
+    # loop over each of the attr_match_list members for LDAP search
+    my $ldap_msg;
+    foreach my $attr_match ( @{$attr_match_list} ) {
+        unless ( defined $attr_map->{$attr_match} ) {
+            $RT::Logger->error( "Invalid LDAP mapping for $attr_match, no defined fields in attr_map" );
+            next;
+        }
 
-    $RT::Logger->debug( "LDAP Search === ",
-                        "Base:",
-                        $base,
-                        "== Filter:",
-                        $filter->as_string,
-                        "== Attrs:",
-                        join(',',@attrs));
+        my $search_filter = Net::LDAP::Filter->new(
+            '(&' .
+            $filter .
+            '(' .
+            $attr_map->{$attr_match} .
+            '=' .
+            escape_filter_value($username) .
+            '))'
+        );
 
-    my $ldap_msg = $ldap->search(   base   => $base,
-                                    filter => $filter,
-                                    attrs  => \@attrs);
+        $RT::Logger->debug( "LDAP Search === ",
+                            "Base:",
+                            $base,
+                            "== Filter:",
+                            $search_filter->as_string,
+                            "== Attrs:",
+                            join(',',@attrs) );
 
-    unless ($ldap_msg->code == LDAP_SUCCESS || $ldap_msg->code == LDAP_PARTIAL_RESULTS) {
-        $RT::Logger->debug( "search for",
-                            $filter->as_string,
-                            "failed:",
-                            ldap_error_name($ldap_msg->code),
-                            $ldap_msg->code);
-        # Didn't even get a partial result - jump straight to the next external auth service
-        return 0;
+        $ldap_msg = $ldap->search( base   => $base,
+                                   filter => $search_filter,
+                                   attrs  => \@attrs );
+
+        unless ( $ldap_msg->code == LDAP_SUCCESS || $ldap_msg->code == LDAP_PARTIAL_RESULTS ) {
+            $RT::Logger->critical( "search for",
+                                   $search_filter->as_string,
+                                   "failed:",
+                                   ldap_error_name($ldap_msg->code),
+                                   $ldap_msg->code );
+            # Didn't even get a partial result - jump straight to the next external auth service
+            return 0;
+        }
+
+        if ( $ldap_msg->count != 1 ) {
+            $RT::Logger->info( $service,
+                               "AUTH FAILED:",
+                               $username,
+                               "User not found or more than one user found" );
+            # We got no user, or too many users.. try the next attr_match_list field.
+            next;
+        }
+        else {
+            # User was found
+            last;
+        }
     }
 
-    unless ($ldap_msg->count == 1) {
-        $RT::Logger->info(  $service,
-                            "AUTH FAILED:",
-                            $username,
-                            "User not found or more than one user found");
-        # We got no user, or too many users.. jump straight to the next external auth service
-        return 0;
-    }
+    # if we didn't match anything, go to the next external auth service
+    return 0 unless $ldap_msg->first_entry;
 
     my $ldap_entry = $ldap_msg->first_entry;
     my $ldap_dn    = $ldap_entry->dn;
@@ -298,7 +316,7 @@ sub GetAuth {
 
         # We only need the dn for the actual group since all we care about is existence
         @attrs  = qw(dn);
-        $filter = Net::LDAP::Filter->new("(${group_attr}=" . escape_filter_value($group_val) . ")");
+        my $search_filter = Net::LDAP::Filter->new("(${group_attr}=" . escape_filter_value($group_val) . ")");
 
         $RT::Logger->debug( "LDAP Search === ",
                             "Base:",
@@ -306,12 +324,12 @@ sub GetAuth {
                             "== Scope:",
                             $group_scope,
                             "== Filter:",
-                            $filter->as_string,
+                            $search_filter->as_string,
                             "== Attrs:",
                             join(',',@attrs));
 
         $ldap_msg = $ldap->search(  base   => $group,
-                                    filter => $filter,
+                                    filter => $search_filter,
                                     attrs  => \@attrs,
                                     scope  => $group_scope);
 
@@ -319,7 +337,7 @@ sub GetAuth {
         unless ($ldap_msg->code == LDAP_SUCCESS ||
                 $ldap_msg->code == LDAP_PARTIAL_RESULTS) {
             $RT::Logger->critical(  "Search for",
-                                    $filter->as_string,
+                                    $search_filter->as_string,
                                     "failed:",
                                     ldap_error_name($ldap_msg->code),
                                     $ldap_msg->code);
@@ -536,57 +554,88 @@ sub UserExists {
     # but there's no harm in doing this to be sure
     undef $filter if defined $filter and $filter eq "()";
 
-    if (defined($config->{'attr_map'}->{'Name'})) {
-        # Construct the complex filter
-        $filter = Net::LDAP::Filter->new(           '(&' .
-                                                    $filter .
-                                                    '(' .
-                                                    $config->{'attr_map'}->{'Name'} .
-                                                    '=' .
-                                                    escape_filter_value($username) .
-                                                    '))'
-                                        );
+    my $attr_map        = $config->{'attr_map'};
+    my $attr_match_list = $config->{'attr_match_list'};
+
+    my @attrs;
+    foreach my $attr_match (@{$attr_match_list}) {
+        push @attrs, $attr_map->{$attr_match}
+            if defined $attr_map->{$attr_match};
     }
+
+    # Ensure we try to get back a Name value from LDAP on the initial LDAP search.
+    push @attrs, $attr_map->{'Name'};
 
     my $ldap = _GetBoundLdapObj($config);
     return unless $ldap;
 
-    my @attrs = values(%{$config->{'attr_map'}});
+    # loop over each of the attr_match_list members for the initial lookup
+    foreach my $attr_match ( @{$attr_match_list} ) {
+        unless ( defined $attr_map->{$attr_match} ) {
+            $RT::Logger->error( "Invalid LDAP mapping for $attr_match, no defined fields in attr_map" );
+            next;
+        }
 
-    # Check that the user exists in the LDAP service
-    $RT::Logger->debug( "LDAP Search === ",
-                        "Base:",
-                        $base,
-                        "== Filter:",
-                        ($filter ? $filter->as_string : ''),
-                        "== Attrs:",
-                        join(',',@attrs));
+        my $search_filter = Net::LDAP::Filter->new(
+            '(&' .
+            $filter .
+            '(' .
+            $attr_map->{$attr_match} .
+            '=' .
+            escape_filter_value($username) .
+            '))'
+        );
 
-    my $user_found = $ldap->search( base    => $base,
-                                    filter  => $filter,
-                                    attrs   => \@attrs);
+        # Check that the user exists in the LDAP service
+        $RT::Logger->debug( "LDAP Search === ",
+                            "Base:",
+                            $base,
+                            "== Filter:",
+                            ($search_filter ? $search_filter->as_string : ''),
+                            "== Attrs:",
+                            join(',',@attrs) );
 
-    if($user_found->count < 1) {
-        # If 0 or negative integer, no user found or major failure
-        $RT::Logger->debug( "User Check Failed :: (",
-                            $service,
-                            ")",
-                            $username,
-                            "User not found");
-        return 0;
-    } elsif ($user_found->count > 1) {
-        # If more than one result returned, die because we the username field should be unique!
-        $RT::Logger->debug( "User Check Failed :: (",
-                            $service,
-                            ")",
-                            $username,
-                            "More than one user with that username!");
-        return 0;
+        my $user_found = $ldap->search( base   => $base,
+                                        filter => $search_filter,
+                                        attrs  => \@attrs );
+
+        unless ( $user_found->code == LDAP_SUCCESS || $user_found->code == LDAP_PARTIAL_RESULTS ) {
+            $RT::Logger->debug( "search for",
+                                $filter->as_string,
+                                "failed:",
+                                ldap_error_name($user_found->code),
+                                $user_found->code );
+            # Didn't even get a partial result - jump straight to the next external auth service
+            return 0;
+        }
+
+        if ( $user_found->count < 1 ) {
+            # If 0 or negative integer, no user found or major failure
+            $RT::Logger->debug( "User Check Failed :: (",
+                                $service,
+                                ")",
+                                $username,
+                                "User not found" );
+            next;
+        }
+        elsif ( $user_found->count > 1 ) {
+            # If more than one result returned, jump to the next attr because the username field should be unique!
+            $RT::Logger->debug( "User Check Failed :: (",
+                                $service,
+                                ")",
+                                $username,
+                                "More than one user with that username!" );
+            next;
+        }
+        else {
+            # User was found in LDAP
+            return $attr_match;
+        }
     }
-    undef $user_found;
 
-    # If we havent returned now, there must be a valid user.
-    return 1;
+    # No valid user was found using each of the search filters.
+    # go to the next external auth service.
+    return 0;
 }
 
 sub UserDisabled {
@@ -594,7 +643,9 @@ sub UserDisabled {
     my ($username,$service) = @_;
 
     # FIRST, check that the user exists in the LDAP service
-    unless(UserExists($username,$service)) {
+    my $field = UserExists( $username, $service );
+
+    unless($field) {
         $RT::Logger->debug("User (",$username,") doesn't exist! - Assuming not disabled for the purposes of disable checking");
         return 0;
     }
@@ -620,19 +671,19 @@ sub UserDisabled {
         return 0;
     }
 
-    if (defined($config->{'attr_map'}->{'Name'})) {
+    if (defined($config->{'attr_map'}->{$field})) {
         # Construct the complex filter
         $search_filter = Net::LDAP::Filter->new(   '(&' .
                                                     $filter .
                                                     $d_filter .
                                                     '(' .
-                                                    $config->{'attr_map'}->{'Name'} .
+                                                    $config->{'attr_map'}->{$field} .
                                                     '=' .
                                                     escape_filter_value($username) .
                                                     '))'
                                                 );
     } else {
-        $RT::Logger->debug("You haven't specified an LDAP attribute to match the RT \"Name\" attribute for this service (",
+        $RT::Logger->debug("You haven't specified an LDAP attribute to match the RT \"$field\" attribute for this service (",
                             $service,
                             "), so it's impossible look up the disabled status of this user (",
                             $username,
