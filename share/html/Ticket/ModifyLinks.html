@@ -65,6 +65,12 @@
 <& Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
 
+% if ( @merged ) {
+<&| /Widgets/TitleBox, title => loc('Unmerge'), class => 'ticket-info-merge' &>
+<& Elements/UnMerge, Ticket => $Ticket, mergeref => \@merged, %ARGS &>
+</&>
+% }
+
   <div class="form-row">
     <div class="col-12">
       <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
@@ -80,6 +86,7 @@ my $Ticket = LoadTicket($id);
 my @results;
 $Ticket->Atomic(sub{
     $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
+    push @results, ProcessTicketUnmerge( TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS );
 });
@@ -90,6 +97,42 @@ MaybeRedirectForResults(
 );
 
 $Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
+
+# For merged tickets, prepare data for potential un-merging
+my @merged_ids = $Ticket->Merged;
+my @merged;
+
+foreach my $id (@merged_ids) {
+    my $merged_ticket = RT::Ticket->new( $session{'CurrentUser'} );
+
+    # Call LoadById to avoid the redirection to the merged ticket
+    my ($ret, $msg) = $merged_ticket->LoadById( $id );
+    unless ( $ret ) {
+        RT->Logger->error("Unable to load ticket with id $id : $msg");
+        next;
+    }
+
+    my $merge_transactions = RT::Transactions->new( $session{'CurrentUser'} );
+    $merge_transactions->Limit( FIELD => 'ObjectId', VALUE => $id);
+    $merge_transactions->Limit( FIELD => 'Type', VALUE => 'AddLink');
+    $merge_transactions->Limit( FIELD => 'Field', VALUE => 'MergedInto');
+    $merge_transactions->OrderBy( FIELD => 'Created', ORDER => 'DESC');
+    my $merge_transaction = $merge_transactions->First;
+
+    my $date = '';
+    if( $merge_transaction ) {
+        $date =  $merge_transaction->Created;
+    }
+    else {
+        RT->Logger->error("Unable to load merge transaction for ticket $id");
+    }
+
+    push @merged, {
+        id => $id,
+        subject => $merged_ticket->Subject,
+        date => $date
+    };
+}
 
 </%INIT>
       

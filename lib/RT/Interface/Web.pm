@@ -3680,7 +3680,41 @@ sub ProcessTicketDates {
     return (@results);
 }
 
+=head2 ProcessTicketUnmerge ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
+Processes a ticket un-merge request and returns an array of results messages.
+
+=cut
+sub ProcessTicketUnmerge
+{
+    my %args = (
+        TicketObj => undef,
+        ARGSRef   => undef,
+        @_
+    );
+    my $TicketObj = $args{'TicketObj'};
+    my $ARGSRef = $args{'ARGSRef'};
+    my @results;
+
+    return @results unless $ARGSRef;
+    return @results unless $ARGSRef->{Action} && $ARGSRef->{Action} eq 'Unmerge';
+    return @results unless $ARGSRef->{Unmerge};
+
+    # $TicketObj is the current ticket (the active one)
+    # $merged is the merged one
+    my $merged = RT::Ticket->new($session{CurrentUser});
+    my( $ret, $msg ) = $merged->LoadById( $ARGSRef->{Unmerge} );
+
+    unless( $ret ) {
+        push @results, "Unable to load ticket " . $ARGSRef->{Unmerge} . " to unmerge";
+        RT->Logger->error("Unable to load ticket " . $ARGSRef->{Unmerge} . " to unmerge: $msg");
+        return;
+    }
+
+    ( $ret, $msg ) = $merged->UnmergeFrom( $TicketObj );
+    push @results, $msg;
+    return @results;
+}
 
 =head2 ProcessTicketLinks ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
