@@ -2257,9 +2257,14 @@ sub _UnmergeFrom {
         }
     }
 
-    ($ok, $msg)= $self->RestoreMergeInfo( $merged_into);
-    if( ! $ok) {
-        return (0, $msg);
+    my $missing_info = 0;
+    if (! $merged_into->FirstAttribute('MergeInfo-' . $self->Id) ) {
+        $missing_info = 1;
+    } else {
+        ($ok, $msg)= $self->RestoreMergeInfo( $merged_into);
+        if( ! $ok) {
+            return (0, $msg);
+        }
     }
 
     # record the transaction, since all others have been silenced
@@ -2274,6 +2279,9 @@ sub _UnmergeFrom {
         return (0, $msg);
     }
 
+    if ($missing_info) {
+        return ( 1, $self->loc("Unmerge Successful, but some information may have been lost because Merge took place under an older version of RT") );
+    }
     return ( 1, $self->loc("Unmerge Successful") );
 }
 
