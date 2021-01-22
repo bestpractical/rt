@@ -89,6 +89,8 @@ sub Run
     my $query = $args{'Object'}->_AsInsertQuery;
     $query .= "\n" unless $query =~ /\n$/;
 
+    utf8::encode($query) if utf8::is_utf8($query);
+
     return 1 if print $fh $query;
     return (0, "Couldn't write to filehandle");
 }
