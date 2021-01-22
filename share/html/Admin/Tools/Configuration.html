@@ -223,6 +223,7 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 <th class="collection-as-table"><&|/l&>Value</&></th>
 </tr>
 % my $attrs = $RT::System->Attributes;
+% $m->callback( CallbackName => 'ModifySystemAttributes', Attributes => $attrs );
 % my $index_size = 0;
 % while ( my $attr = $attrs->Next ) {
 % next if $attr->Name eq 'UpgradeHistory';
