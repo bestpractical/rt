@@ -91,6 +91,12 @@ $m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef =>
         push @results, @msg;
         $skip_update = 1;
     }
+
+    ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
+    unless ( $status ) {
+        push @results, @msg;
+        $skip_update = 1;
+    }
 }
 
 unless ($skip_update) {
