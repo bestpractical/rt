@@ -50,6 +50,7 @@ $Name => 'GroupBy'
 $Default => 'Status'
 $Query   => ''
 $ShowEmpty => 0
+$Stacked => 0
 </%args>
 <select name="<% $Name %>" class="cascade-by-optgroup">
 % if ( $ShowEmpty ) {
@@ -74,6 +75,11 @@ while ( my ($label, $value) = splice @options, 0, 2 ) {
   </optgroup>
 % }
 </select>
+
+<span class="stacked-group">
+    &nbsp;<% loc('Stacked?') %> <input name="Stacked<% $Name %>" type="checkbox" class="stacked-group-checkbox" <% $Stacked ? 'checked="checked"' : '' |n %>/>
+</span>
+
 <%init>
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
