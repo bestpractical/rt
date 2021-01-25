@@ -130,6 +130,7 @@
       <input type="email" class="form-control" name="CommentAddress" value="<% $Create ? "" : $QueueObj->CommentAddress || $CommentAddress || '' %>" />
       <span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span>
     </div>
+% $m->callback( CallbackName => 'AfterQueueAddresses', %ARGS, QueueObj => $QueueObj, results => \@results );
   </div>
 
   <div class="form-row">
