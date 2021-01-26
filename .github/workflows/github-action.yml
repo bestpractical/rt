@@ -15,6 +15,8 @@ jobs:
           DB_VERSION_TAG: 10.3
         shell: bash
         run: |
+          pwd
+          ls -l
           docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:$DB_VERSION_TAG
           docker build -t rt-base .
           docker run -d -v $GITHUB_WORKSPACE:/rt --name rt --link mariadb:db rt-base
