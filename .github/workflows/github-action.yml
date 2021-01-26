@@ -7,6 +7,8 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout RT
+        uses: actions/checkout@v2
       - name: Build RT
         env:
           RT_TEST_PARALLEL: 1
@@ -14,7 +16,6 @@ jobs:
           RT_DBA_PASSWORD: password
           DB_VERSION_TAG: 10.3
         shell: bash
-        uses: actions/checkout@v2
         run: |
           docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:$DB_VERSION_TAG
           docker build -t rt-base .
