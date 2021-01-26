@@ -29,4 +29,4 @@ jobs:
           RT_DBA_PASSWORD: password
           DB_VERSION_TAG: 10.3
         shell: bash
-        run: docker exec rt bash -c "cd /rt && prove -lj9 t/*"
+        run: docker exec -e RT_TEST_PARALLEL=1 -e RT_DBA_USER=root -e RT_DBA_PASSWORD=password rt bash -c "cd /rt && prove -lj9 t/*"
