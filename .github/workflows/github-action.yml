@@ -21,7 +21,7 @@ jobs:
           docker build -t rt-base .
           docker run -d -v $GITHUB_WORKSPACE:/rt --name rt --link mariadb:db rt-base
           docker ps -a
-          docker exec -it rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
+          docker exec rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
 
   build:
     runs-on: ubuntu-latest
@@ -34,4 +34,4 @@ jobs:
           RT_DBA_PASSWORD: password
           DB_VERSION_TAG: 10.3
         shell: bash
-        run: docker exec -it rt bash -c "cd /rt && prove -lj9 t/*"
+        run: docker exec rt bash -c "cd /rt && prove -lj9 t/*"
