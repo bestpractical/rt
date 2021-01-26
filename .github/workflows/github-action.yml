@@ -4,7 +4,7 @@
 on: push
 
 jobs:
-  setup:
+  rt_test_mariadb:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout RT
@@ -22,11 +22,6 @@ jobs:
           docker run -d -v $GITHUB_WORKSPACE:/rt --name rt --link mariadb:db rt-base
           docker ps -a
           docker exec rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
-
-  build:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
       - name: Run RT tests
         env:
           RT_TEST_PARALLEL: 1
