@@ -67,16 +67,22 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 }
 
 use Getopt::Long;
+use Pod::Usage ();
 my %opt;
-GetOptions( \%opt, "older=s", "debug", "help|h", "skip-user" );
+GetOptions( \%opt, "older=s", "debug", "help|h", "skip-user", "clear-user=s" )
+    or Pod::Usage::pod2usage( -exitval => 1, -verbose => 0 );
 
 
 if ( $opt{help} ) {
-    require Pod::Usage;
     Pod::Usage::pod2usage({ verbose => 2 });
     exit;    
 }
 
+if ( $opt{'clear-user'} && ( $opt{'older'} || $opt{'skip-user'} ) ) {
+    print STDERR "the --clear-user option is not compatible with other options\n";
+    Pod::Usage::pod2usage({ verbose => 0 });
+    exit(1);
+}
 
 if( $opt{'older'} ) {
     unless( $opt{'older'} =~ /^\s*([0-9]+)\s*(H|D|M|Y)?$/i ) {
@@ -104,6 +110,17 @@ RT::ConnectToDatabase();
 RT::InitLogging();
 
 require RT::Interface::Web::Session;
+
+if ( $opt{'clear-user'} ) {
+    require RT::User;
+    my $user = RT::User->new( RT->SystemUser );
+    my ( $ret, $msg ) = $user->Load( $opt{'clear-user'} );
+    die "Couldn't load user '" . $opt{'clear-user'} . "': $msg\n"
+        unless $ret;
+
+    RT::Interface::Web::Session->ClearAllUser( $user->id );
+    exit(0);
+}
 
 my $alogoff = int RT->Config->Get('AutoLogoff');
 if ( $opt{'older'} or $alogoff ) {
@@ -138,11 +155,15 @@ rt-clean-sessions - clean old and duplicate RT sessions
      rt-clean-sessions --debug --older 1M
      rt-clean-sessions --older 10D --skip-user
 
+     rt-clean-sessions --clear-user <username>
+
 =head1 DESCRIPTION
 
 Script cleans RT sessions from DB or dir with sessions data.
 Leaves in DB only one session per RT user and sessions that aren't older
 than specified(see options).
+
+Can optionally clear out all sessions for a single user(see options).
 
 Script is safe because data in the sessions is temporary and can be deleted.
 
@@ -163,6 +184,13 @@ older than 1 month.
 By default only one session per user left in the DB, so users that have
 sessions on multiple computers or in different browsers will be logged out.
 Use this option to avoid this.
+
+=item clear-user
+
+Clear out all sessions for a single user, defined by username.
+
+The C<--clear-user> functionality is not compatible with other options
+and will error if run with C<--older> or C<--skip-user>.
 
 =item debug
 

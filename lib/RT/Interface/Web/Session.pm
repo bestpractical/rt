@@ -316,6 +316,41 @@ sub ClearByUser {
     $self->ClearOrphanLockFiles if $deleted;
 }
 
+=head3 ClearAllUser
+
+Delete all sessions for a given user id.
+
+=cut
+
+sub ClearAllUser {
+    my $self  = shift || __PACKAGE__;
+    my $class = $self->Class;
+    my $attrs = $self->Attributes;
+    my $user_id = shift;
+
+    die "user id is required\n"
+        unless $user_id;
+
+    my $deleted;
+    foreach my $id ( @{ $self->Ids } ) {
+        my %session;
+        local $@;
+        eval { tie %session, $class, $id, $attrs };
+        if ( $@ ) {
+            $RT::Logger->debug("skipped session '$id', couldn't load: $@");
+            next;
+        }
+
+        next if $session{'CurrentUser'} && $session{'CurrentUser'}->id
+                && $session{'CurrentUser'}->id != $user_id;
+
+        tied(%session)->delete;
+        $RT::Logger->info("successfully deleted session '$id'");
+        $deleted++;
+    }
+    $self->ClearOrphanLockFiles if $deleted;
+}
+
 sub TIEHASH {
     my $self = shift;
     my $id = shift;
