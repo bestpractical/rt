@@ -61,7 +61,9 @@
 
 % $m->callback( %ARGS );
 
-</div></div>
+</div>
+% # Omit closing div for login-body because Footer adds a closing div,
+% # normally for the PageLayout template
 <& /Elements/Footer, Menu => 0 &>
 
 % $m->abort();
