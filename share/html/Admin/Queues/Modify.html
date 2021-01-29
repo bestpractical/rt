@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -131,6 +131,7 @@
       <span><em><&|/l , RT->Config->Get('CommentAddress')&>(If left blank, will default to [_1])</&></em></span>
     </div>
   </div>
+% $m->callback( CallbackName => 'AfterQueueAddresses', %ARGS, QueueObj => $QueueObj, results => \@results );
 
   <div class="form-row">
     <div class="label col-3"></div>

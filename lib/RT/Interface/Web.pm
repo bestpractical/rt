@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -4718,7 +4718,8 @@ sub UpdateDashboard {
             return ( $ok, $msg ) = $user->SetPreferences( 'HomepageSettings', $data->{panes} );
         }
     } else {
-        my $Dashboard = RT::Dashboard->new( $session{'CurrentUser'} );
+        my $class = $args->{self_service_dashboard} ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
+        my $Dashboard = $class->new( $session{'CurrentUser'} );
         ( $ok, $msg ) = $Dashboard->LoadById($id);
 
         # report error at the bottom
@@ -4744,7 +4745,7 @@ sub UpdateDashboard {
                     $path = "/Elements/$path" if substr( $path, 0, 1 ) ne '/';
 
                     $saved{path} = $path;
-                } elsif ( $item->{type} eq 'system' || $item->{type} eq 'saved' ) {
+                } elsif ( $item->{type} eq 'saved' ) {
                     $saved{portlet_type} = 'search';
 
                     $item->{searchType} = $available_items->{ $item->{type} }{ $item->{name} }{search_type}
@@ -4757,14 +4758,9 @@ sub UpdateDashboard {
                     $item->{searchId} = $available_items->{ $item->{type} }{ $item->{name} }{search_id}
                                         if exists $available_items->{ $item->{type} }{ $item->{name} }{search_id};
 
-                    if ( $item->{type} eq 'system' ) {
-                        $saved{privacy} = 'RT::System-1';
-                        $saved{id}      = $item->{searchId};
-                    } else {
-                        my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
-                        $saved{privacy} = "$obj_type-$obj_id";
-                        $saved{id}      = $search_id;
-                    }
+                    my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
+                    $saved{privacy} = "$obj_type-$obj_id";
+                    $saved{id}      = $search_id;
                 } elsif ( $item->{type} eq 'dashboard' ) {
                     my ( undef, $dashboard_id, $obj_type, $obj_id ) = split '-', $item->{name};
                     $saved{privacy}     = "$obj_type-$obj_id";
@@ -5001,15 +4997,20 @@ sub ProcessAuthToken {
     if ( $args_ref->{Create} ) {
 
         # Don't require password for systems with some form of federated auth
+        # or if configured to not require a password
         my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+        my $require_password = 1;
+        if ( RT->Config->Get('DisablePasswordForAuthToken') or not $res{'CanSet'}) {
+            $require_password = 0;
+        }
 
         if ( !length( $args_ref->{Description} ) ) {
             push @results, loc("Description cannot be blank.");
         }
-        elsif ( $res{'CanSet'} && !length( $args_ref->{Password} ) ) {
+        elsif ( $require_password && !length( $args_ref->{Password} ) ) {
             push @results, loc("Please enter your current password.");
         }
-        elsif ( $res{'CanSet'} && !$session{CurrentUser}->IsPassword( $args_ref->{Password} ) ) {
+        elsif ( $require_password && !$session{CurrentUser}->IsPassword( $args_ref->{Password} ) ) {
             push @results, loc("Please enter your current password correctly.");
         }
         else {
@@ -5056,6 +5057,29 @@ sub ProcessAuthToken {
         }
     }
     return @results;
+}
+
+=head3 CachedCustomFieldValues FIELD
+
+Similar to FIELD->Values, but caches the return value of FIELD->Values
+in $m->notes in anticipation of it being used again.
+
+=cut
+
+sub CachedCustomFieldValues {
+    my $cf = shift;
+
+    my $key = 'CF-' . $cf->Id . '-Values';
+
+    if ($m->notes($key)) {
+        # Reset the iterator so we always start from the beginning
+        $m->notes($key)->GotoFirstItem;
+        return $m->notes($key);
+    }
+
+    # Wasn't in the cache; grab it and cache it.
+    $m->notes($key, $cf->Values);
+    return $m->notes($key);
 }
 
 package RT::Interface::Web;

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -294,10 +294,10 @@ The time, in minutes, you've taken to work on your response/comment, optional.
 
 =head3 Add Attachments
 
-You can attach any binary or text file to your response or comment by
-specifying C<Attachements> property in the JSON object, which should be a
-JSON array where each item represents a file you want to attach. Each item
-is a JSON object with the following properties:
+You can attach any binary or text file to a ticket via create, correspond, or
+comment by adding an C<Attachments> property in the JSON object. The value
+should be a JSON array where each item represents a file you want to attach.
+Each item is a JSON object with the following properties:
 
 =over 4
 
@@ -466,6 +466,11 @@ curl for SSL like --cacert.
     PUT /ticket/:id
         update a ticket's metadata; provide JSON content
 
+    PUT /ticket/:id/take
+    PUT /ticket/:id/untake
+    PUT /ticket/:id/steal
+        take, untake, or steal the ticket
+
     DELETE /ticket/:id
         set status to deleted
 
@@ -499,6 +504,32 @@ Below are some examples using the endpoints above.
         -d '{ "Subject": "Update test", "CustomFields": {"Severity": "High"}}'
         'https://myrt.com/REST/2.0/ticket/6'
 
+    # Update a ticket, with links update
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        -d '{ "DependsOn": [2, 3], "ReferredToBy": 1 }'
+        'https://myrt.com/REST/2.0/ticket/6'
+
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        -d '{ "AddDependsOn": [4, 5], "DeleteReferredToBy": 1 }'
+        'https://myrt.com/REST/2.0/ticket/6'
+
+    # Merge a ticket into another
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        -d '{ "MergeInto": 3 }'
+        'https://myrt.com/REST/2.0/ticket/6'
+
+    # Take a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        'https://myrt.com/REST/2.0/ticket/6/take'
+
+    # Untake a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        'https://myrt.com/REST/2.0/ticket/6/untake'
+
+    # Steal a ticket
+    curl -X PUT -H "Content-Type: application/json" -u 'root:password'
+        'https://myrt.com/REST/2.0/ticket/6/steal'
+
     # Correspond a ticket
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
         -d '{ "Content": "Testing a correspondence", "ContentType": "text/plain" }'
@@ -516,19 +547,31 @@ Below are some examples using the endpoints above.
         'https://myrt.com/REST/2.0/ticket/6/comment'
 
     # Comment on a ticket with custom field update
-    curl -X POST -H "Content-Type: text/plain" -u 'root:password'
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
         -d '{ "Content": "Testing a comment", "ContentType": "text/plain", "CustomFields": {"Severity": "High"} }'
         'https://myrt.com/REST/2.0/ticket/6/comment'
 
-    # Create an Asset
-    curl -X POST -H "Content-Type: application/json" -u 'root:password'
-        -d '{"Name" : "Asset From Rest", "Catalog" : "General assets", "Content" : "Some content"}'
-        'https://myrt.com/REST/2.0/asset'
+=head3 Ticket Fields
 
-    # Search Assets
-    curl -X POST -H "Content-Type: application/json" -u 'root:password'
-    -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
-    'https://myrt.com/REST/2.0/asset'
+The following describes some of the values you can send when creating and updating
+tickets as shown in the examples above.
+
+=over 4
+
+=item Ticket Links
+
+As shown above, you can update links on a ticket with a C<PUT> and passing the link
+relationship you want to create. The available keys are Parent, Child, RefersTo,
+ReferredToBy, DependsOn, and DependedOnBy. These correspond with the standard link
+types on a ticket. The value can be a single ticket id or an array of ticket ids.
+The indicated link relationship will be set to the value passed, adding or removing
+as needed.
+
+You can specifically add or remove a link by prepending C<Add> or C<Delete> to
+the link type, like C<AddParent> or C<DeleteParent>. These versions also accept
+a single ticket id or an array.
+
+=back
 
 =head3 Transactions
 
@@ -557,8 +600,12 @@ Below are some examples using the endpoints above.
     GET /transaction/:id/attachments
         get attachments for transaction
 
+    GET /ticket/:id/attachments
+        get attachments associated with a ticket
+
     GET /attachment/:id
-        retrieve an attachment
+        retrieve an attachment.  Note that the C<Content> field contains
+        the base64-encoded representation of the raw content.
 
 =head3 Image and Binary Object Custom Field Values
 
@@ -614,6 +661,20 @@ Below are some examples using the endpoints above.
     GET /asset/:id/history
         retrieve list of transactions for asset
 
+=head3 Assets Examples
+
+Below are some examples using the endpoints above.
+
+    # Create an Asset
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+        -d '{"Name" : "Asset From Rest", "Catalog" : "General assets", "Content" : "Some content"}'
+        'https://myrt.com/REST/2.0/asset'
+
+    # Search Assets
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+    -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
+    'https://myrt.com/REST/2.0/assets'
+
 =head3 Catalogs
 
     GET /catalogs/all
@@ -637,6 +698,51 @@ Below are some examples using the endpoints above.
     DELETE /catalog/:id
     DELETE /catalog/:name
         disable catalog
+
+=head3 Articles
+
+    GET /articles?query=<JSON>
+    POST /articles
+        search for articles using L</JSON searches> syntax
+
+    POST /article
+        create an article; provide JSON content
+
+    GET /article/:id
+        retrieve an article
+
+    PUT /article/:id
+        update an article's metadata; provide JSON content
+
+    DELETE /article/:id
+        set status to deleted
+
+    GET /article/:id/history
+        retrieve list of transactions for article
+
+=head3 Classes
+
+    GET /classes/all
+        retrieve list of all classes you can see
+
+    GET /classes?query=<JSON>
+    POST /classes
+        search for classes using L</JSON searches> syntax
+
+    POST /class
+        create a class; provide JSON content
+
+    GET /class/:id
+    GET /class/:name
+        retrieve a class by numeric id or name
+
+    PUT /class/:id
+    PUT /class/:name
+        update a class's metadata; provide JSON content
+
+    DELETE /class/:id
+    DELETE /class/:name
+        disable class
 
 =head3 Users
 

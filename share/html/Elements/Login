@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -112,7 +112,8 @@ jQuery(function(){
 <& /Elements/LoginHelp &>
 </div><!-- #login-box -->
 % $m->callback( %ARGS, CallbackName => 'AfterForm' );
-</div><!-- #login-body -->
+% # Omit closing div for login-body because Footer adds a closing div,
+% # normally for the PageLayout template
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $next => ''

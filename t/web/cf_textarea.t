@@ -82,4 +82,51 @@ $m->content_lacks("<li>TheTextarea $content changed to $content</li>", 'textarea
 # #32440: Spurious "CF changed from 0 to 0"
 $m->content_lacks("<li>Zero 0 changed to 0</li>", "Zero wasn't updated");
 
+my $new_content = 'The quick brown fox jumps over the lazy dog.';
+
+$m->submit_form_ok({
+    with_fields => {
+        $cfs->{area}{input}            => $new_content,
+        $cfs->{area}{input} . '-Magic' => "1",
+    },
+}, 'submitted form to update textarea CF');
+
+$m->content_contains( "<li>TheTextarea $content changed to $new_content</li>", 'textarea was updated' );
+
+my $newer_content = 'The quick yellow fox jumps over the lazy dog.';
+
+$m->submit_form_ok({
+    with_fields => {
+        $cfs->{area}{input}            => $newer_content,
+        $cfs->{area}{input} . '-Magic' => "1",
+    },
+}, 'submitted form to update textarea CF');
+
+$m->content_contains( "<li>TheTextarea $new_content changed to $newer_content</li>", 'textarea was updated' );
+
+my $txn = $ticket->Transactions->Last;
+$m->get_ok( '/Helpers/TextDiff?TransactionId=' . $txn->id );
+$m->content_like( qr{<del>brown\s*</del><ins>yellow\s*</ins>}, 'text diff has the brown => yellow change' );
+
+$m->back;
+$m->submit_form_ok({
+    with_fields => {
+        $cfs->{area}{input}            => '',
+        $cfs->{area}{input} . '-Magic' => "1",
+    },
+}, 'submitted form to update textarea CF');
+
+$m->content_contains( "<li>$newer_content is no longer a value for custom field TheTextarea</li>",
+    'textarea was deleted' );
+
+$m->follow_link_ok( { text => 'Display' } );
+$content =~ s!\n+!!g;
+$m->text_like(
+    qr/TheTextarea\sadded.+\Q$content\E.+
+       TheTextarea\schanged.+From:\Q$content\ETo:\Q$new_content\E.+
+       TheTextarea\schanged.+From:\Q$new_content\ETo:\Q$newer_content\E.+
+       TheTextarea\sdeleted.+\Q$newer_content\E/xs,
+    'textarea change details'
+);
+
 done_testing;

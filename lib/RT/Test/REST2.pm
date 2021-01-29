@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -154,7 +154,7 @@ sub mech { RT::Test::REST2::Mechanize->new }
         my ($self, $url, $payload, %headers) = @_;
         $self->put(
             $url,
-            Content => $json->encode($payload),
+            $payload ? ( Content => $json->encode($payload) ) : (),
             'Content-Type' => 'application/json; charset=utf-8',
             %headers,
         );

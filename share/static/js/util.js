@@ -727,7 +727,7 @@ jQuery(function() {
     if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
 
         // Add action type into iframe to customize default font color
-        jQuery(['action-response', 'action-comment']).each(function(index, class_name) {
+        jQuery(['action-response', 'action-private']).each(function(index, class_name) {
             jQuery('.' + class_name).on('DOMNodeInserted', 'iframe', function(e) {
                 setTimeout(function() {
                     jQuery(e.target).contents().find('.cke_editable').addClass(class_name);
@@ -964,6 +964,11 @@ jQuery(function () {
             return;
         }
 
+        // Bypass radio/checkbox controls too
+        if (jQuery(e.target).closest('div.custom-radio, div.custom-checkbox').length) {
+            return;
+        }
+
         e.preventDefault();
         var container = jQuery(this).closest('.titlebox');
         if (container.hasClass('editing')) {
@@ -1078,3 +1083,27 @@ jQuery(function() {
         }
     }
 });
+
+function toggleTransactionDetails () {
+
+    var txn_div = jQuery(this).closest('div.transaction[data-transaction-id]');
+    var details_div = txn_div.find('div.details');
+
+    if (details_div.hasClass('hidden')) {
+        details_div.removeClass('hidden');
+        jQuery(this).text(RT.I18N.Catalog['hide_details']);
+    }
+    else {
+        details_div.addClass('hidden');
+        jQuery(this).text(RT.I18N.Catalog['show_details']);
+    }
+
+    var diff = details_div.find('.diff div.value');
+    if (!diff.children().length) {
+        diff.load(RT.Config.WebHomePath + '/Helpers/TextDiff', {
+            TransactionId: txn_div.attr('data-transaction-id')
+        });
+    }
+
+    return false;
+}

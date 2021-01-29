@@ -98,6 +98,60 @@ $image_content = MIME::Base64::encode_base64($image_content);
     ok(!$attachments->[3]->Subject);
 }
 
+# Check the GET /ticket/:id/attachments endpoint
+{
+    my $res = $mech->get(
+        "$rest_base_path/ticket/$ticket_id/attachments?fields=Subject,Filename,ContentType,ContentLength",
+        'Authorization' => $auth
+    );
+    is( $res->code, 200 );
+
+    cmp_deeply(
+        $mech->json_response,
+        {   per_page => 20,
+            pages    => 1,
+            total    => 4,
+            page     => 1,
+            count    => 4,
+            items    => [
+                {   type    => 'attachment',
+                    Subject => 'HTML comment with PNG image and text file',
+                    _url    => re(qr/^https?:/),
+                    ContentType   => 'multipart/mixed',
+                    ContentLength => 0,
+                    Filename      => '',
+                    id            => re(qr/^\d+$/)
+                },
+                {   type          => 'attachment',
+                    Subject       => '',
+                    _url          => re(qr/^https?:/),
+                    ContentType   => 'text/html',
+                    ContentLength => 31,
+                    Filename      => '',
+                    id            => re(qr/^\d+$/)
+                },
+                {   type          => 'attachment',
+                    Subject       => '',
+                    _url          => re(qr/^https?:/),
+                    ContentType   => 'image/png',
+                    ContentLength => 3929,
+                    Filename      => 'image.png',
+                    id            => re(qr/^\d+$/)
+                },
+                {   type          => 'attachment',
+                    Subject       => '',
+                    _url          => re(qr/^https?:/),
+                    ContentType   => 'text/plain',
+                    ContentLength => 19,
+                    Filename      => 'password',
+                    id            => re(qr/^\d+$/)
+                },
+            ]
+        },
+        'Got expected attachment list'
+    );
+}
+
 # Comment ticket with image attachment and no content through JSON Base64
 {
     my $payload = {

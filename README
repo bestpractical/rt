@@ -254,7 +254,7 @@ GENERAL INSTALLATION
     docs/full_text_indexing.pod to enable FTS.
 
 12) Set up automatic backups for RT and its data as described in
-    the docs/backups.pod document.
+    the docs/system_administration/database.pod document.
 
 GETTING HELP
 ------------
@@ -316,7 +316,7 @@ contact information in your email signature.
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)

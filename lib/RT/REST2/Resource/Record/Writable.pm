@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -53,7 +53,7 @@ use warnings;
 use Moose::Role;
 use namespace::autoclean;
 use JSON ();
-use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields );
+use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields process_uploads );
 use List::MoreUtils 'uniq';
 
 with 'RT::REST2::Resource::Role::RequestBodyIsJSON'
@@ -90,22 +90,8 @@ sub from_multipart {
                 my @values;
                 foreach my $single_value (@$value) {
                     if ( ref $single_value eq 'HASH' && ( my $field_name = $single_value->{UploadField} ) ) {
-                        my $file = $self->request->upload($field_name);
-                        if ($file) {
-                            open my $filehandle, '<', $file->tempname;
-                            if (defined $filehandle && length $filehandle) {
-                                my ( @content, $buffer );
-                                while ( my $bytesread = read( $filehandle, $buffer, 72*57 ) ) {
-                                    push @content, MIME::Base64::encode_base64($buffer);
-                                }
-                                close $filehandle;
-
-                                push @values, {
-                                    FileName    => $file->filename,
-                                    FileType    => $file->headers->{'content-type'},
-                                    FileContent => join("\n", @content),
-                                };
-                            }
+                        if ( my $file = $self->request->upload($field_name) ) {
+                            push @values, process_uploads($file);
                         }
                     }
                     else {
@@ -115,22 +101,8 @@ sub from_multipart {
                 $cfs->{$id} = \@values;
             }
             elsif ( ref $value eq 'HASH' && ( my $field_name = $value->{UploadField} ) ) {
-                my $file = $self->request->upload($field_name);
-                if ($file) {
-                    open my $filehandle, '<', $file->tempname;
-                    if (defined $filehandle && length $filehandle) {
-                        my ( @content, $buffer );
-                        while ( my $bytesread = read( $filehandle, $buffer, 72*57 ) ) {
-                            push @content, MIME::Base64::encode_base64($buffer);
-                        }
-                        close $filehandle;
-
-                        $cfs->{$id} = {
-                            FileName    => $file->filename,
-                            FileType    => $file->headers->{'content-type'},
-                            FileContent => join("\n", @content),
-                        };
-                    }
+                if ( my $file = $self->request->upload($field_name) ) {
+                    ( $cfs->{$id} ) = process_uploads($file);
                 }
             }
             else {
@@ -140,12 +112,25 @@ sub from_multipart {
         $json->{CustomFields} = $cfs;
     }
 
+    if ( my @attachments = $self->request->upload('Attachments') ) {
+        $json->{Attachments} = [ process_uploads(@attachments) ];
+    }
+
     return $self->from_json($json);
 }
 
 sub from_json {
     my $self = shift;
-    my $params = shift || JSON::decode_json( $self->request->content );
+    my $params = shift;
+
+    if ( !$params ) {
+        if ( my $content = $self->request->content ) {
+            $params = JSON::decode_json($content);
+        }
+        else {
+            $params = {};
+        }
+    }
 
     %$params = (
         %$params,
@@ -174,6 +159,7 @@ sub update_record {
 
     push @results, update_custom_fields($self->record, $data->{CustomFields});
     push @results, $self->_update_role_members($data);
+    push @results, $self->_update_links($data);
     push @results, $self->_update_disabled($data->{Disabled})
       unless grep { $_ eq 'Disabled' } $self->record->WritableAttributes;
     push @results, $self->_update_privileged($data->{Privileged})
@@ -302,6 +288,76 @@ sub _update_role_members {
     return @results;
 }
 
+sub _update_links {
+    my $self = shift;
+    my $data = shift;
+
+    my $record = $self->record;
+
+    return unless $record->DOES('RT::Record::Role::Links');
+
+    my @results;
+    for my $name ( grep { $_ ne 'MergedInto' } sort keys %RT::Link::TYPEMAP ) {
+        my $mode = $RT::Link::TYPEMAP{$name}{Mode};
+        my $type = $RT::Link::TYPEMAP{$name}{Type};
+        if ( $data->{$name} ) {
+            my $links = $record->Links( $mode eq 'Base' ? 'Target' : 'Base', $type );
+            my %current;
+            while ( my $link = $links->Next ) {
+                my $uri_method = $mode . 'URI';
+                my $uri        = $link->$uri_method;
+
+                if ( $uri->IsLocal ) {
+                    my $local_method = "Local$mode";
+                    $current{ $link->$local_method } = 1;
+                }
+                else {
+                    $current{ $link->$mode } = 1;
+                }
+            }
+
+            for my $value ( ref $data->{$name} eq 'ARRAY' ? @{ $data->{$name} } : $data->{$name} ) {
+                if ( $current{$value} ) {
+                    delete $current{$value};
+                }
+                else {
+                    my ( $ok, $msg ) = $record->AddLink(
+                        $mode => $value,
+                        Type  => $type,
+                    );
+                    push @results, $msg;
+                }
+            }
+
+            for my $value ( sort keys %current ) {
+                my ( $ok, $msg ) = $record->DeleteLink(
+                    $mode => $value,
+                    Type  => $type,
+                );
+                push @results, $msg;
+            }
+        }
+        else {
+            for my $action (qw/Add Delete/) {
+                my $arg = "$action$name";
+                next unless $data->{$arg};
+
+                for my $value ( ref $data->{$arg} eq 'ARRAY' ? @{ $data->{$arg} } : $data->{$arg} ) {
+                    my $method = $action . 'Link';
+                    my ( $ok, $msg ) = $record->$method(
+                        $mode => $value,
+                        Type  => $type,
+                    );
+                    push @results, $msg;
+                }
+            }
+        }
+    }
+
+    return @results;
+}
+
+
 sub _update_disabled {
     my $self = shift;
     my $data = shift;
@@ -410,7 +466,7 @@ sub create_record {
     # if a record class handles CFs in ->Create, use it (so it doesn't generate
     # spurious transactions and interfere with default values, etc). Otherwise,
     # add OCFVs after ->Create
-    if ($record->isa('RT::Ticket') || $record->isa('RT::Asset')) {
+    if ($record->isa('RT::Ticket') || $record->isa('RT::Asset') || $record->isa('RT::Article') ) {
         if ($cfs) {
             while (my ($id, $value) = each(%$cfs)) {
                 delete $cfs->{$id};

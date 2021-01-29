@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -95,7 +95,7 @@ Passed to L<HTML::Scrubber/rules>.
 
 our @ALLOWED_TAGS = qw(
     A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP S DEL STRIKE H1 H2 H3 H4 H5
-    H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO TABLE THEAD TBODY TFOOT TR TD TH
+    H6 INS DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO TABLE THEAD TBODY TFOOT TR TD TH
 );
 
 our %ALLOWED_ATTRIBUTES = (

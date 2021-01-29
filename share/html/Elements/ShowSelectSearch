@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,8 +66,8 @@ $possibly_hidden => 0
 <%INIT>
 my $prefix;
 
-if ($type eq 'saved' || $type eq 'search') {
-    $prefix = loc(ucfirst($search_type || 'ticket'));
+if ($search_type) {
+    $prefix = loc(ucfirst($search_type));
 }
 elsif ($type eq 'dashboard') {
     $prefix = loc('Dashboard');

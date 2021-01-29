@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -118,10 +118,6 @@ sub SortDashboards {
     my @sorted = sort { lcfirst($a->Name) cmp lcfirst($b->Name) } @{$self->{'objects'}};
     @{$self->{'objects'}} = @sorted;
     return;
-}
-
-sub ColumnMapClassName {
-    return 'RT__Dashboard';
 }
 
 RT::Base->_ImportOverlays();

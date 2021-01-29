@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -105,8 +105,7 @@ $m->callback( CallbackName => 'MassageTitleBox',
 
 <%PERL>
 my @queries = map { "$query AND $_" } q{Status = '__Active__'}, q{Status = '__Inactive__'};
-my @empty_messages
-    = ( loc( '(No active tickets)', $queue_name ), loc( '(No inactive tickets)', $queue_name ) );
+my @empty_messages = ( loc( '(No active tickets)' ), loc( '(No inactive tickets)' ) );
 
 $m->callback( CallbackName => 'MassageQueries',
     ARGSRef         => \%ARGS,
@@ -119,7 +118,9 @@ my $format = ( exists RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name
     ? RT->Config->Get('LinkedQueuePortletFormats')->{$queue_name}
     : RT->Config->Get('LinkedQueuePortletFormats')->{'Default'} );
 
+my $i = 0;
 for my $query ( @queries ) {
+    $i++;
     my $empty_message = shift @empty_messages;
     my $order_by = $OrderBy;
     my $rows = $Rows;
@@ -137,12 +138,16 @@ $m->callback( CallbackName => 'MassageSearchArgs',
     if ( $tickets->Count ) {
 </%PERL>
 <& /Elements/CollectionList, %ARGS,
+    %$DECODED_ARGS,
     Class            => 'RT::Tickets',
     Query            => $query,
     Format           => $format,
     OrderBy          => $order_by,
     Rows             => $rows,
     ShowHeader       => 0,
+    Page             => $DECODED_ARGS->{"Page-$queue_name-$i"} || 1,
+    PageParam        => "Page-$queue_name-$i",
+    PassArguments    => [ keys %$DECODED_ARGS ],
 &>
 
 % } else {

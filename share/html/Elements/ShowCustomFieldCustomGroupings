@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -92,7 +92,7 @@ for my $group ( @Groupings ) {
   </div>
 % }
 % if ($modify_behavior ne 'hide') {
-  <form class="inline-edit" action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
+  <form class="inline-edit" action="<% $ActionURL %>" method="post" enctype="multipart/form-data">
     <input type="hidden" class="hidden" name="id" value="<% $Object->id %>" />
     <& /Elements/EditCustomFields, Object => $Object, Grouping => $group, InTable => 0 &>
     <div class="form-row">
@@ -108,7 +108,8 @@ for my $group ( @Groupings ) {
 $Object
 $title_href => ""
 $InlineEdit => 0
-@Groupings => ()
+@Groupings  => ()
+$ActionURL  => RT->Config->Get('WebPath')."/Ticket/Display.html"
 </%ARGS>
 <%INIT>
 my $css_class = lc(ref($Object)||$Object);
@@ -121,8 +122,8 @@ my $TitleBoxARGS = delete $ARGS{TitleBoxARGS} || {};
 
 $InlineEdit = 0 unless $Object->isa('RT::Ticket');
 my %inline_edit_behavior;
-if (RT->Config->Get('InlineEditPanelBehavior')) {
-    %inline_edit_behavior = %{ RT->Config->Get('InlineEditPanelBehavior')->{RT::CustomField->_GroupingClass($Object)} || {} };
+if ( my $config = RT->Config->Get('InlineEditPanelBehavior') ) {
+    %inline_edit_behavior = %{ $config->{ RT::CustomField->_GroupingClass($Object) } || $config->{'RT::Ticket'} || {} };
 }
 
 my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );

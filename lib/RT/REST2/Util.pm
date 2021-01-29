@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,6 +69,7 @@ use Sub::Exporter -setup => {
         custom_fields_for
         format_datetime
         update_custom_fields
+        process_uploads
     ]]
 };
 
@@ -164,6 +165,11 @@ sub serialize_record {
         for my $role ($record->Roles(ACLOnly => 0)) {
             my $members = $data{$role} = [];
             my $group = $record->RoleGroup($role);
+            if ( !$group->Id ) {
+                $data{$role} = expand_uid( RT->Nobody->UserObj->UID ) if $record->_ROLES->{$role}{Single};
+                next;
+            }
+
             my $gm = $group->MembersObj;
             while ($_ = $gm->Next) {
                 push @$members, expand_uid($_->MemberObj->Object->UID);
@@ -216,7 +222,9 @@ sub deserialize_record {
 
     # Sanitize input for the Perl API
     for my $field (sort keys %$data) {
-        next if $field eq 'CustomFields';
+        my $skip_regex = join '|', 'CustomFields', 'Attachments',
+            $record->DOES("RT::Record::Role::Links") ? ( sort keys %RT::Link::TYPEMAP ) : ();
+        next if $field =~ /$skip_regex/;
 
         my $value = $data->{$field};
         next unless ref $value;
@@ -444,5 +452,27 @@ sub update_custom_fields {
     return @results;
 }
 
+sub process_uploads {
+    my @attachments = @_;
+    my @ret;
+    foreach my $attachment (@attachments) {
+        open my $filehandle, '<', $attachment->tempname;
+        if ( defined $filehandle && length $filehandle ) {
+            my ( @content, $buffer );
+            while ( read( $filehandle, $buffer, 72 * 57 ) ) {
+                push @content, MIME::Base64::encode_base64($buffer);
+            }
+            close $filehandle;
+
+            push @ret,
+                {
+                FileName    => $attachment->filename,
+                FileType    => $attachment->headers->{'content-type'},
+                FileContent => join( "\n", @content ),
+                };
+        }
+    }
+    return @ret;
+}
 
 1;

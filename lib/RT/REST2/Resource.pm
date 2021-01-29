@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -110,7 +110,8 @@ sub expand_field {
 
             push @{ $result }, values %values if %values;
         }
-
+    } elsif ($field eq 'ContentLength' && $item->can('ContentLength')) {
+        $result = $item->ContentLength;
     } elsif ($item->can('_Accessible') && $item->_Accessible($field => 'read')) {
         # RT::Record derived object, so we can check access permissions.
 

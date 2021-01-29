@@ -218,4 +218,55 @@ will migrate your existing tokens to the new core RT tables.
 
 =back
 
+=head1 UPGRADING FROM 5.0.0 AND EARLIER
+
+=over 4
+
+=item *
+
+The extension C<RT::Extension::FormattedTransaction> was added to core. This
+adds a new RT dependency on the perl module L<Text::WordDiff>, so you will be
+prompted to install this new module if your system doesn't have it.
+
+=item *
+
+Similar to the note above regarding the Owner field in search results,
+custom fields in search results also now have inline edit enabled by default,
+allowing you to change values directly in search results.
+
+For heavy search result pages with many columns display or many rows,
+page loads may be slower with this inline edit mode enabled. If you don't
+need to edit custom field values, you can change search result columns
+from C<CustomField.{Foo}> to C<CustomFieldView.{Foo}>. That column will
+then load a view-only field which may improve page load speed.
+
+=item *
+
+In the self service interface, the "Search Articles" box in the menu bar previously
+was displayed to users who had the global right "ShowArticle". This is now
+controlled by a new configuration option C<$SelfServiceShowArticleSearch>. This new
+option defaults to off, so if you currently allow self service users to use article search,
+enable this option to keep the article search box available.
+
+=item *
+
+System-level saved searches can now be displayed on the RT at a glance page.
+Previously some users saw errors like:
+
+    Either you have no rights to view saved search system-SavedSearch-34
+    or identifier is incorrect
+
+If you are still seeing that error after updating to RT 5.0.1, edit the page, remove
+the saved search, save, then add it back again. After saving again, it should appear
+as expected.
+
+=item *
+
+The System Configuration editor (Admin > Tools > System Configuration > Edit)
+now uses JSON rather than Perl syntax to represent arrays and hashes.  Be
+sure to enter valid JSON if you wish to modify an array- or hash-valued
+configuration setting.
+
+=back
+
 =cut

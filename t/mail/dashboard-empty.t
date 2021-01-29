@@ -28,7 +28,7 @@ sub create_dashboard {
         my $arg;
 
         if ( $component_name eq 'My Tickets' ) {
-            $arg = 'system-My Tickets';
+            $arg = 'saved-' . $m->dom->find('[data-description="My Tickets"]')->first->attr('data-name'),
         }
         else {  # component_name is 'My Assets'
             $arg = 'component-MyAssets';

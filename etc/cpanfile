@@ -82,6 +82,7 @@ requires 'Text::Password::Pronounceable';
 requires 'Text::Quoted', '>= 2.07';
 requires 'Text::Template', '>= 1.44';
 requires 'Text::WikiFormat', '>= 0.76';
+requires 'Text::WordDiff';
 requires 'Text::Wrapper';
 requires 'Time::HiRes';
 requires 'Time::ParseDate';
@@ -170,7 +171,7 @@ feature 'oracle' => sub {
 };
 
 feature 'pg' => sub {
-    requires 'DBD::Pg', '>= 1.43';
+    requires 'DBD::Pg', '>= 3.008';
 };
 
 feature 'sqlite' => sub {

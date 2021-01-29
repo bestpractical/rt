@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -776,6 +776,7 @@ our %CORED_PLUGINS = (
     'RT::Extension::REST2' => '5.0',
     'RT::Authen::Token' => '5.0',
     'RT::Extension::QuoteSelection' => 5.0,
+    'RT::Extension::FormattedTransactions' => '5.0.1',
 );
 
 sub InitPlugins {

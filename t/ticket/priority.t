@@ -50,6 +50,16 @@ my ( $ret, $msg ) = $ticket->SetPriority(50);
 ok( $ret, "Priority is updated" );
 is( $msg, "Priority changed from 'VeryLow' to 'Medium'", 'Priority updated message' );
 
+( $ret, $msg ) = $ticket->SetPriority('Low');
+ok( $ret, "Priority is updated" );
+is( $msg, "Priority changed from 'Medium' to 'Low'", 'Priority updated message' );
+is( $ticket->Priority, 20, 'Priority is 20');
+
+( $ret, $msg ) = $ticket->SetPriority('Medium');
+ok( $ret, "Priority is updated" );
+is( $msg, "Priority changed from 'Low' to 'Medium'", 'Priority updated message' );
+is( $ticket->Priority, 50, 'Priority is 50');
+
 ( $ret, $msg ) = $ticket->SetFinalPriority(100);
 ok( $ret, "FinalPriority is updated" );
 is( $msg, "FinalPriority changed from 'VeryLow' to 'High'", 'FinalPriority updated message' );
@@ -97,7 +107,7 @@ while ( my $ticket = $tickets->Next ) {
 
 my $txns = RT::Transactions->new( RT->SystemUser );
 $txns->FromSQL("TicketQueue = 'General' AND TicketPriority = 'Medium' AND Field = 'Priority'");
-is( $txns->Count, 1, 'Found 1 txn' );
+is( $txns->Count, 3, 'Found 3 txn' );
 my $txn = $txns->First;
 is( $txn->OldValue, 0,  'OldValue is correct' );
 is( $txn->NewValue, 50, 'NewValue is correct' );

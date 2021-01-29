@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -85,12 +85,12 @@ if ( $groups_obj->Count ){
     # Confirm we got a group. Count can report available groups, but
     # if the current user doesn't have SeeGroup, it won't be loaded.
     if ( $group ){
-        $Query = "(( WatcherGroup = " . $group->Id . " )";
+        $Query = "(( Watcher = " . $group->Id . " )";
     }
 
     # Handle multiple groups
     while ( $group = $groups_obj->Next ){
-        $Query .= " OR ( WatcherGroup = " . $group->Id . " )";
+        $Query .= " OR ( Watcher = " . $group->Id . " )";
     }
 
     $Query .= ")" if $Query;
@@ -107,6 +107,10 @@ if ($status) {
 }
 
 my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
+
+$m->callback( CallbackName => 'ModifyQuery', ARGSRef => \%ARGS, Query => \$Query, Page => \$Page,
+    Rows => \$Rows, Order => \@Order, OrderBy => \@OrderBy, Format => \$Format );
+
 </%INIT>
 <%ARGS>
 $title => undef

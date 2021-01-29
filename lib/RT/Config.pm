@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -646,6 +646,7 @@ our %META;
 
     RTAddressRegexp => {
         Type    => 'SCALAR',
+        Immutable => 1,
         PostLoadCheck => sub {
             my $self = shift;
             my $value = $self->Get('RTAddressRegexp');
@@ -733,6 +734,10 @@ our %META;
     DatabasePassword => {
         Immutable => 1,
         Widget    => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Password not printed');
+        },
     },
     DatabasePort => {
         Immutable => 1,
@@ -930,6 +935,11 @@ our %META;
         Type => 'HASH',
         Immutable => 1,
         Invisible => 1,
+        Obfuscate => sub {
+            my ( $config, $value, $user ) = @_;
+            $value->{Passphrase} = $user->loc('Password not printed');
+            return $value;
+        },
         PostLoadCheck => sub {
             my $self = shift;
             my $opt = $self->Get('SMIME');
@@ -966,6 +976,11 @@ our %META;
         Type => 'HASH',
         Immutable => 1,
         Invisible => 1,
+        Obfuscate => sub {
+            my ( $config, $value, $user ) = @_;
+            $value->{Passphrase} = $user->loc('Password not printed');
+            return $value;
+        },
         PostLoadCheck => sub {
             my $self = shift;
             my $gpg = $self->Get('GnuPG');
@@ -998,6 +1013,11 @@ our %META;
         Type      => 'HASH',
         Immutable => 1,
         Invisible => 1,
+        Obfuscate => sub {
+            my ( $config, $value, $user ) = @_;
+            $value->{passphrase} = $user->loc('Password not printed');
+            return $value;
+        },
     },
     ReferrerWhitelist => { Type => 'ARRAY' },
     EmailDashboardLanguageOrder  => { Type => 'ARRAY' },
@@ -1290,14 +1310,16 @@ our %META;
         Widget    => '/Widgets/Form/Boolean',
     },
 
+    DisablePasswordForAuthToken => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+
     ExternalSettings => {
         Immutable     => 1,
         Obfuscate => sub {
             # Ensure passwords are obfuscated on the System Configuration page
             my ($config, $sources, $user) = @_;
-
-            my $msg = 'Password not printed';
-               $msg = $user->loc($msg) if $user and $user->Id;
+            my $msg = $user->loc('Password not printed');
 
             for my $source (values %$sources) {
                 $source->{pass} = $msg;
@@ -1591,10 +1613,17 @@ our %META;
     SearchResultsAutoRedirect => {
         Widget => '/Widgets/Form/Boolean',
     },
+    SelfServiceUseDashboard => {
+        Widget => '/Widgets/Form/Boolean',
+    },
     ShowBccHeader => {
         Widget => '/Widgets/Form/Boolean',
     },
     ShowEditSystemConfig => {
+        Immutable => 1,
+        Widget    => '/Widgets/Form/Boolean',
+    },
+    ShowEditLifecycleConfig => {
         Immutable => 1,
         Widget    => '/Widgets/Form/Boolean',
     },
@@ -1617,6 +1646,9 @@ our %META;
         Widget => '/Widgets/Form/Boolean',
     },
     SuppressInlineTextFiles => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    TreatAttachedEmailAsFiles => {
         Widget => '/Widgets/Form/Boolean',
     },
     TruncateLongAttachments => {
@@ -1683,6 +1715,9 @@ our %META;
         Widget => '/Widgets/Form/Boolean',
     },
     SelfServiceShowGroupTickets => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    SelfServiceShowArticleSearch => {
         Widget => '/Widgets/Form/Boolean',
     },
     ShowSearchResultCount => {
@@ -1759,9 +1794,6 @@ our %META;
     DefaultSearchResultOrderBy => {
         Widget => '/Widgets/Form/String',
     },
-    EmailSubjectTagRegex => {
-        Widget => '/Widgets/Form/String',
-    },
     EmailOutputEncoding => {
         Widget => '/Widgets/Form/String',
     },
@@ -1779,6 +1811,10 @@ our %META;
     },
     LDAPPassword => {
         Widget => '/Widgets/Form/String',
+        Obfuscate => sub {
+            my ($config, $sources, $user) = @_;
+            return $user->loc('Password not printed');
+        },
     },
     LDAPBase => {
         Widget => '/Widgets/Form/String',
@@ -1899,7 +1935,26 @@ our %META;
     },
     ShowMobileSite => {
         Widget => '/Widgets/Form/Boolean',
-    }
+    },
+    StaticRoots => {
+        Type      => 'ARRAY',
+        Immutable => 1,
+    },
+    EmailSubjectTagRegex => {
+        Immutable => 1,
+    },
+    ExtractSubjectTagMatch => {
+        Immutable => 1,
+    },
+    ExtractSubjectTagNoMatch => {
+        Immutable => 1,
+    },
+    WebNoAuthRegex => {
+        Immutable => 1,
+    },
+    SelfServiceRegex => {
+        Immutable => 1,
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
@@ -2301,7 +2356,7 @@ sub GetObfuscated {
     return $self->Get(@_) unless $obfuscate;
 
     my $res = Clone::clone( $self->Get( @_ ) );
-    $res = $obfuscate->( $self, $res, $user );
+    $res = $obfuscate->( $self, $res, $user && $user->Id ? $user : RT->SystemUser );
     return $self->_ReturnValue( $res, $META{$name}->{'Type'} || 'SCALAR' );
 }
 

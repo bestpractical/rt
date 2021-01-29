@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -614,7 +614,7 @@ sub BuildMainNav {
                 map {
                     my $p = $_;
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
-                } qw(Query Format OrderBy Order Page Class ObjectType ResultPage)
+                } qw(Query Format OrderBy Order Page Class ObjectType ResultPage ExtraQueryParams),
             ),
             RowsPerPage => (
                 defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
@@ -622,6 +622,14 @@ sub BuildMainNav {
                 : $current_search->{'RowsPerPage'}
             ),
         );
+
+        if ( my $extra_params = $fallback_query_args{ExtraQueryParams} ) {
+            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                $fallback_query_args{$param}
+                    = $HTML::Mason::Commands::DECODED_ARGS->{$param} || $current_search->{$param};
+            }
+        }
+
         $fallback_query_args{Class} ||= $class;
         $fallback_query_args{ObjectType} ||= 'RT::Ticket' if $class eq 'RT::Transactions';
 
@@ -1080,7 +1088,9 @@ sub _BuildAdminMenu {
         $scrips->child( create => title => loc('Create'), path => "/Admin/Scrips/Create.html" );
     }
 
-    if ( $current_user->HasRight( Object => RT->System, Right => 'SuperUser' ) ) {
+    if ( RT->Config->Get('ShowEditLifecycleConfig')
+        && $current_user->HasRight( Object => RT->System, Right => 'SuperUser' ) )
+    {
         my $lifecycles = $admin->child(
             lifecycles => title => loc('Lifecycles'),
             path       => '/Admin/Lifecycles/',
@@ -1229,6 +1239,19 @@ sub _BuildAdminMenu {
         description => loc('Modify the default "RT at a glance" view'),
         path        => '/Admin/Global/MyRT.html',
     );
+
+    if (RT->Config->Get('SelfServiceUseDashboard')) {
+        if ($current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System ) ) {
+            my $self_service = $admin_global->child( selfservice_home =>
+                                                     title       => loc('Self Service Home Page'),
+                                                     description => loc('Edit self service home page dashboard'),
+                                                     path        => '/Admin/Global/SelfServiceHomePage.html');
+            if ( $request_path =~ m{^/Admin/Global/SelfServiceHomePage} ) {
+                $page->child(content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html');
+                $page->child(show    => title => loc('Show'), path => '/SelfService');
+            }
+        }
+    }
     $admin_global->child( 'dashboards-in-menu' =>
         title       => loc('Modify Reports menu'),
         description => loc('Customize dashboards in menu'),
@@ -1581,6 +1604,19 @@ sub BuildSelfServiceNav {
 
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
+    if (   RT->Config->Get('SelfServiceUseDashboard')
+        && $request_path =~ m{^/SelfService/(?:index\.html)?$}
+        && $current_user->HasRight(
+            Right  => 'ShowConfigTab',
+            Object => RT->System
+        )
+        && $current_user->HasRight( Right => 'ModifyDashboard', Object => RT->System )
+       )
+    {
+        $page->child( content => title => loc('Content'), path => '/Admin/Global/SelfServiceHomePage.html' );
+        $page->child( show    => title => loc('Show'),    path => '/SelfService/' );
+    }
+
     my $queues = RT::Queues->new( $current_user );
     $queues->UnLimit;
 
@@ -1594,14 +1630,21 @@ sub BuildSelfServiceNav {
         last if ( $queue_count > 1 );
     }
 
+    my $home = $top->child( home => title => loc('Homepage'), path => '/' );
 
     if ( $queue_count > 1 ) {
-        $top->child( new => title => loc('New ticket'), path => '/SelfService/CreateTicketInQueue.html' );
+        $home->child( new => title => loc('Create Ticket'), path => '/SelfService/CreateTicketInQueue.html' );
     } elsif ( $queue_id ) {
-        $top->child( new => title => loc('New ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
+        $home->child( new => title => loc('Create Ticket'), path => '/SelfService/Create.html?Queue=' . $queue_id );
     }
-    my $tickets = $top->child( tickets => title => loc('Tickets'), path => '/SelfService/' );
-    $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/' );
+
+    my $menu_label = loc('Tickets');
+    my $menu_path = '/SelfService/';
+    if ( RT->Config->Get('SelfServiceUseDashboard') ) {
+        $menu_path = '/SelfService/Open.html';
+    }
+    my $tickets = $top->child( tickets => title => $menu_label, path => $menu_path );
+    $tickets->child( open   => title => loc('Open tickets'),   path => '/SelfService/Open.html' );
     $tickets->child( closed => title => loc('Closed tickets'), path => '/SelfService/Closed.html' );
 
     $top->child( "assets", title => loc("Assets"), path => "/SelfService/Asset/" )
@@ -1628,7 +1671,7 @@ sub BuildSelfServiceNav {
         $about_me->child( logout => title => loc('Logout'), path => $logout_url );
     }
 
-    if ($current_user->HasRight( Right => 'ShowArticle', Object => RT->System )) {
+    if ( RT->Config->Get('SelfServiceShowArticleSearch') ) {
         $widgets->child( 'goto-article' => raw_html => $HTML::Mason::Commands::m->scomp('/SelfService/Elements/SearchArticle') );
     }
 

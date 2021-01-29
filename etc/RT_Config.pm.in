@@ -1476,8 +1476,18 @@ fail to exist in an external service; this is so requestors who
 are not in LDAP can still be created when they email in.
 See L<RT::Authen::ExternalAuth> for details.
 
+=item C<$DisablePasswordForAuthToken>
+
+If you have a mix of RT and federated authentication, RT can't directly
+verify a user's password against the federated IdP. You can explicitly
+disable the password prompt when creating a token by setting this option
+to true (1).
+
 =back
 
+=cut
+
+Set($DisablePasswordForAuthToken, 0);
 
 =head2 Initialdata Formats
 
@@ -2948,6 +2958,40 @@ on self service pages.
 
 Set($SelfServiceShowGroupTickets, 0);
 
+=item C<$SelfServiceUseDashboard>
+
+C<$SelfServiceUseDashboard> is a flag indicating whether or not to use
+a dashboard for the Self Service home page.  If it is set to false,
+then the normal Open Tickets / Closed Tickets menu is shown rather
+than a dashboard.
+
+=cut
+
+Set($SelfServiceUseDashboard, 0);
+
+=item C<$SelfServicePageComponents>
+
+C<$SelfServicePageComponents> is an arrayref of allowed components on
+the SelfService page, if you have set $SelfServiceUseDashboard to true.
+
+=cut
+
+Set(
+    $SelfServicePageComponents,
+    [qw(SelfServiceTopArticles SelfServiceNewestArticles)]
+);
+
+=item C<$SelfServiceShowArticleSearch>
+
+If enabled, C<$SelfServiceShowArticleSearch> displays a "Search Articles"
+box in the menu bar in the self service interface. This option controls
+only showing or hiding the search box. Users still need appropriate rights
+to see article search results and view articles.
+
+=cut
+
+Set($SelfServiceShowArticleSearch, 0);
+
 =back
 
 =head2 Articles
@@ -3626,6 +3670,17 @@ to 0 to disable the web UI editing interface.
 
 Set($ShowEditSystemConfig, 1);
 
+=item C<$ShowEditLifecycleConfig>
+
+Starting in RT 5.0, SuperUsers can edit lifecycle configuration via the web UI.
+Options set in the web UI take precedence over those set in configuration files.
+
+Set C<$ShowEditLifecycleConfig> to 0 to disable the web UI editing interface.
+
+=cut
+
+Set($ShowEditLifecycleConfig, 1);
+
 =back
 
 
@@ -3836,6 +3891,11 @@ function, or a hash (to look up by address).  If the hash is used, the
 Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 
+Plain (not encrypted) email sent to RT can have attached files that
+are encrypted. Set C<FileExtensions> to any file extensions on
+attachments that RT should treat as encrypted and attempt to
+decrypt with C<gpg>.
+
 =cut
 
 Set(%GnuPG,
@@ -3843,6 +3903,7 @@ Set(%GnuPG,
     GnuPG                  => 'gpg',
     Passphrase             => undef,
     OutgoingMessagesFormat => "RFC", # Inline
+    FileExtensions         => [ 'pgp', 'gpg', 'asc' ],
 );
 
 =item C<%GnuPGOptions>

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1043,6 +1043,16 @@ sub _CanonicalizeRoleName {
                         Timezone => 'UTC',
                     );
                     $new = $date->AsString( Time => 0, Timezone => 'UTC' );
+                }
+            }
+            elsif ( $cf->Type =~ /text/i) {
+                if (!defined($old) || ($old eq '')) {
+                    return ( "[_1] added", $field);   #loc()
+                }
+                if (!defined($new) || ($new eq '')) {
+                    return ( "[_1] deleted", $field);   #loc()
+                } else {
+                    return ( "[_1] changed", $field);   #loc()
                 }
             }
         }

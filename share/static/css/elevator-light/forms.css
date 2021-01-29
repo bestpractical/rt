@@ -79,18 +79,9 @@ div.results .titlebox-content {
     margin-bottom: 0;
 }
 
-div.error-titlebox .titlebox-title span.left {
-  border: none;
-  border-right: 2px solid #b00;
-  margin-left: 0;
-  padding-left: 2.3em;
-  background-color: #f00;
-  color: #fff;
-}
-
-div.error-titlebox .titlebox-content {
+div.error-titlebox .titlebox-content .card-body {
     background-color: #fcc;
-    padding: 1em;
+    padding: 15px;
 }
 
 div.error .titlebox-content {
@@ -153,11 +144,6 @@ div.widget .hints {
         padding-left: 0;
         margin-left: 1em;
     }
-}
-
-.value .TimeUnits{
-    margin-left: .5em;
-    width: 7em;
 }
 
 .cfinvalidfield {
@@ -321,6 +307,7 @@ div[id^="TitleBox--_Ticket_ModifyPeople_html"] .list-group-item {
 span.current-value.form-control {
   border: none;
   padding-left: 0;
+  height: auto;
 }
 
 .list-group-item label {

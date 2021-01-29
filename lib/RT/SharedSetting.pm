@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2020 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -384,6 +384,14 @@ sub CurrentUserCanSee    { 1 }
 sub CurrentUserCanCreate { 1 }
 sub CurrentUserCanModify { 1 }
 sub CurrentUserCanDelete { 1 }
+
+=head2 ColumnMapClassName
+
+Equivalent to L<RT::Record/ColumnMapClassName>
+
+=cut
+
+sub ColumnMapClassName { return RT::Record::ColumnMapClassName(shift) }
 
 ### Internal methods
 
