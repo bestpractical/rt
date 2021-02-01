@@ -229,6 +229,7 @@ sub Gateway {
         RawMessageRef => \$args{message},
         Ticket        => $SystemTicket,
         Queue         => $SystemQueueObj,
+        RawAction     => $args{action},
     );
 
     # We only care about ACLs on the _first_ action, as later actions
@@ -334,6 +335,7 @@ sub GetCurrentUser {
         RawMessageRef => undef,
         Ticket        => undef,
         Queue         => undef,
+        RawAction     => undef,
         @_,
     );
 
@@ -344,6 +346,7 @@ sub GetCurrentUser {
             RawMessageRef => $args{RawMessageRef},
             Ticket        => $args{Ticket},
             Queue         => $args{Queue},
+            RawAction     => $args{RawAction},
         );
         return $CurrentUser if $CurrentUser and $CurrentUser->id;
     }
