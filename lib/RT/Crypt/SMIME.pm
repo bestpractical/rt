@@ -524,6 +524,7 @@ sub Verify {
             $res{'status'} = $self->FormatStatus({
                 Operation => "Verify", Status => "BAD",
                 Message => "The signing CA was not trusted",
+                Serial => $signer->{'Serial Number'} || 'unknown',
                 UserString => $signer->{User}[0]{String},
                 ExpireTimestamp => $signer->{Expire}->Unix(),
                 CreatedTimestamp => $signer->{Created}->Unix(),
@@ -560,6 +561,7 @@ sub Verify {
             Message => "The signature is good, unknown signer",
             ExpireTimestamp => $signer->{Expire}->Unix(),
             CreatedTimestamp => $signer->{Created}->Unix(),
+            Serial => $signer->{'Serial Number'} || 'unknown',
             Trust => "UNKNOWN",
         });
         return %res;
@@ -574,6 +576,7 @@ sub Verify {
     $res{'status'} = $self->FormatStatus({
         Operation => "Verify", Status => "DONE",
         Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", assured by " . $signer->{Issuer}[0]{String} . ", trust is ".$signer->{TrustTerse},
+        Serial => $signer->{'Serial Number'} || 'unknown',
         UserString => $signer->{User}[0]{String},
         Trust => uc($signer->{TrustTerse}),
         Issuer => $signer->{Issuer}[0]{String},

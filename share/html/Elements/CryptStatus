@@ -90,6 +90,7 @@ sub VerifyTooltip {
     $tooltip .= "\n" . loc('Signature Created') . ': ' . DisplayDate($line->{Timestamp}) if $line->{Timestamp};                 # GNUPG
     $tooltip .= "\n" . loc('Signer') . ': ' . $line->{UserString} if $line->{UserString};                                       # SMIME
     $tooltip .= "\n" . loc('Issuer') . ': ' . $line->{Issuer} if $line->{Issuer};                                               # SMIME
+    $tooltip .= "\n" . loc('Serial Number') . ': ' . $line->{Serial} if $line->{Serial};                                        # SMIME
     $tooltip .= "\n" . loc('Certificate Created') . ': ' . DisplayDate($line->{CreatedTimestamp}) if $line->{CreatedTimestamp}; # SMIME
     if ($protocol eq 'SMIME') {
         $tooltip .= "\n" . loc('Certificate Expires') . ': ';
