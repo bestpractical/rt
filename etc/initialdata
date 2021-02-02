@@ -262,6 +262,12 @@
        ApplicableTransTypes => 'Any',
        ExecModule           => 'TimeWorkedChange',
     },
+    {
+      Name                 => 'On Comment Or Reply',                                # loc
+      Description          => 'When a ticket is commented on or replied to',        # loc
+      ApplicableTransTypes => 'Comment,Correspond',
+      ExecModule           => 'AnyTransaction',
+    },
 
 );
 
