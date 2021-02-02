@@ -125,6 +125,12 @@
        Description => 'Set the due date according to an agreement' , # loc
        ExecModule  => 'SLA_SetDue',
     },
+    {
+      Name        => 'Add 15 Minutes To Time Worked',              # loc
+      Description => 'Add 15 Minutes To Ticket Time Worked Value', # loc
+      ExecModule  => 'SetTimeWorked',
+      Argument    => '15'
+    },
 );
 
 @ScripConditions = (
