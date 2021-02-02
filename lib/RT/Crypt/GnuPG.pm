@@ -1698,7 +1698,7 @@ sub GetKeysInfo {
     for my $key (@{$res{info}}) {
         $key->{Formatted} =
             join("; ", map {$_->{String}} @{$key->{User}})
-                . " (".substr($key->{Fingerprint}, -8) . ")";
+                . " (" . $key->{Fingerprint} . ")";
     }
 
     return %res;
