@@ -151,6 +151,7 @@ RT::Test->close_mailgate_ok($mail);
             {   Status           => 'DONE',
                 UserString       => '"Enoch Root" <root@example.com>',
                 Trust            => 'FULL',
+                Serial           => '9974010075738841110',
                 Issuer           => '"CA Owner" <ca.owner@example.com>',
                 CreatedTimestamp => re('^\d+$'),
                 Message =>
@@ -208,6 +209,7 @@ RT::Test->close_mailgate_ok($mail);
                     Protocol         => 'SMIME',
                     Operation        => 'Verify',
                     Status           => 'DONE',
+                    Serial           => '9974010075738841110',
                     Message =>
                         'The signature is good, signed by "Enoch Root" <root@example.com>, assured by "CA Owner" <ca.owner@example.com>, trust is full',
                     UserString => '"Enoch Root" <root@example.com>',
