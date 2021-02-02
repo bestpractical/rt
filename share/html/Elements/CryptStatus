@@ -122,11 +122,6 @@ sub KeyDownloadLink {
         }
     }
 
-
-    # There isn't really a feasible way to download the S/MIME
-    # certificate, unfortunately.  However, since RT makes the
-    # original message available, the S/MIME cert could be
-    # extracted from that if necessary.
     return $txt;
 }
 
