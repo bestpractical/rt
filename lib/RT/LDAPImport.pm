@@ -462,6 +462,7 @@ sub _run_search {
         base    => $args{base},
         filter  => $args{filter},
         scope   => ($args{scope} || 'sub'),
+        attrs   => ($args{attrs} || []),
     );
     my (@results, $page, $cookie);
 
@@ -1385,6 +1386,7 @@ sub add_group_members {
     my $group = $args{group};
     my $groupname = $args{name};
     my $ldap_entry = $args{ldap_entry};
+    my $attr;
 
     $RT::Logger->debug("Processing group membership for $groupname");
 
@@ -1392,6 +1394,26 @@ sub add_group_members {
     unless (defined $members) {
         $RT::Logger->warn("No members found for $groupname in Member_Attr");
         return;
+    }
+
+    if (scalar(@$members) == 0 and ($attr) = grep(/^member;range=/, $ldap_entry->attributes)) {
+        $RT::Logger->debug("Found a large group: ".$ldap_entry->dn);
+        my $index = 0;
+        while ($index ne '*') {
+            my @results = $self->_run_search(
+                base   => $ldap_entry->dn,
+                filter => '(objectclass=group)',
+                scope  => 'base',
+                attrs  => [ "member;range=$index-*" ]
+            );
+            if (($attr) = grep(/^member;range=/, $results[0]->attributes)) {
+                push(@$members, $results[0]->get_value($attr));
+                if ($attr =~ /^member;range=\d+-(.*)$/) {
+                    $index = $1;
+                    $index++  if ($index ne '*');
+                }
+            }
+        }
     }
 
     if ($RT::LDAPImportGroupMembers) {
