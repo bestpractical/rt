@@ -79,7 +79,7 @@ if ( $ret && $article->Id ){
     }
 
     my $formatted_article = $m->scomp('/Articles/Article/Elements/Preformatted',
-        Article => $article
+        Article => $article, Ticket => $Ticket, QueueObj => $QueueObj
     );
 
     $m->callback( Article => $article, Ticket => $Ticket, formatted_article => \$formatted_article, ARGSRef => \%ARGS );
@@ -99,4 +99,5 @@ else {
 <%ARGS>
 $IncludeArticleId => undef
 $QueueObj => undef
+$Ticket => undef
 </%ARGS>

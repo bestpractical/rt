@@ -90,4 +90,5 @@ $Name           => 'IncludeArticleId'
 $Default        => ''
 $AutoSubmit     => 0
 $IncludeSummary => 1
+$Ticket
 </%ARGS>

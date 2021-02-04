@@ -53,7 +53,7 @@
 % unless (RT->Config->Get('HideArticleSearchOnReplyCreate')) {
   <div class="form-row">
     <div class="form-group label col-2"><&|/l&>Include Article:</&></div>
-    <div class="value col-9"><& /Elements/SelectArticle, QueueObj => $QueueObj, AutoSubmit => 1 &></div>
+    <div class="value col-9"><& /Elements/SelectArticle, Ticket => $ticket, QueueObj => $QueueObj, AutoSubmit => 1 &></div>
   </div>
 % }
 % if ( @$topics ) {
@@ -100,8 +100,9 @@
 
 <%init>
 my $QueueObj = $ARGS{QueueObj};
-if ( $ARGS{id} && $ARGS{id} ne 'new' && !$QueueObj ) {
-    my $ticket = RT::Ticket->new( $session{CurrentUser} );
+my $ticket;
+if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
+    $ticket = RT::Ticket->new( $session{CurrentUser} );
     $ticket->Load( $ARGS{id} );
     $QueueObj = $ticket->QueueObj;
 }
