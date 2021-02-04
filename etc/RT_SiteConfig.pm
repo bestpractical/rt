@@ -27,6 +27,7 @@ use utf8;
 # after this file is loaded.
 
 Set( $rtname, 'example.com');
+Plugin('RT::Extension::ArticleTemplates');
 
 # You must install Plugins on your own, this is only an example
 # of the correct syntax to use when activating them:
