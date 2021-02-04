@@ -30,13 +30,22 @@ jobs:
           DB_VERSION_TAG: 10.3
         shell: bash
         run: docker exec -e RT_TEST_PARALLEL=1 -e RT_DBA_USER=root -e RT_DBA_PASSWORD=password rt bash -c "cd /rt && prove -lj9 t/*"
-      - name: Post test results to Slack
-        if: always()
-        uses: kpritam/slack-job-status-action@v1
-        with:
-          job-status: ${{ job.status }}
-          slack-bot-token: ${{ secrets.SLACK_NOTIFICATIONS }}
-          channel: github
+      - name: Post success to Slack
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: github
+          SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFICATIONS }}
+          SLACK_TITLE: rt_test_mariadb ${{ job.status }}
+          SLACK_COLOR: good
+      - name: Post failure to Slack
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: github
+          SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFICATIONS }}
+          SLACK_TITLE: rt_test_mariadb ${{ job.status }}
+          SLACK_COLOR: danger
   rt_test_sqlite:
     runs-on: ubuntu-latest
     steps:
@@ -56,13 +65,22 @@ jobs:
           RT_TEST_PARALLEL: 1
         shell: bash
         run: docker exec -e RT_TEST_PARALLEL=1 rt bash -c "cd /rt && prove -lj9 t/*"
-      - name: Post test results to Slack
-        if: always()
-        uses: kpritam/slack-job-status-action@v1
-        with:
-          job-status: ${{ job.status }}
-          slack-bot-token: ${{ secrets.SLACK_NOTIFICATIONS }}
-          channel: github
+      - name: Post success to Slack
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: github
+          SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFICATIONS }}
+          SLACK_TITLE: rt_test_sqlite ${{ job.status }}
+          SLACK_COLOR: good
+      - name: Post failure to Slack
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: github
+          SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFICATIONS }}
+          SLACK_TITLE: rt_test_sqlite ${{ job.status }}
+          SLACK_COLOR: danger
   rt_test_postgresql_apache_mod_fcgid:
     runs-on: ubuntu-latest
     steps:
@@ -82,10 +100,19 @@ jobs:
       - name: Run RT tests
         shell: bash
         run: docker exec -e RT_TEST_PARALLEL=1 -e RT_DBA_USER=postgres -e RT_DBA_PASSWORD=password -u rt-user rt bash -c "cd /rt && prove -lj9 t/*"
-      - name: Post test results to Slack
-        if: always()
-        uses: kpritam/slack-job-status-action@v1
-        with:
-          job-status: ${{ job.status }}
-          slack-bot-token: ${{ secrets.SLACK_NOTIFICATIONS }}
-          channel: github
+      - name: Post success to Slack
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: github
+          SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFICATIONS }}
+          SLACK_TITLE: rt_test_postgresql_apache_mod_fcgid ${{ job.status }}
+          SLACK_COLOR: good
+      - name: Post failure to Slack
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_USERNAME: github
+          SLACK_WEBHOOK: ${{ secrets.SLACK_NOTIFICATIONS }}
+          SLACK_TITLE: rt_test_postgresql_apache_mod_fcgid ${{ job.status }}
+          SLACK_COLOR: danger
