@@ -118,7 +118,7 @@ sub KeyDownloadLink {
         }
     } elsif ($protocol eq 'SMIME') {
         if ($Message && $Message->TransactionObj && $Message->TransactionObj->Creator) {
-            $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetSMIMECert.html?User=' . $Message->TransactionObj->Creator . '"> ' . loc('(Download S/MIME Certificate)') . '</a>';
+            $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetSMIMECert.html?TxnId=' . $Message->TransactionObj->Id . '"> ' . loc('(Download S/MIME Certificate)') . '</a>';
         }
     }
 
