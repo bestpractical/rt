@@ -44,7 +44,7 @@ jobs:
           fields: |
             [{ "title": "Repository", "value": "${env.GITHUB_REPOSITORY}", "short": true },
             { "title": "Branch", "value": "${GITHUB_REF##*/}", "short": true },
-            { "title" "Test", "value": "rt_test_mariadb", "short": true }]
+            { "title": "Test", "value": "rt_test_mariadb", "short": true }]
   rt_test_sqlite:
     runs-on: ubuntu-latest
     steps:
@@ -78,7 +78,7 @@ jobs:
           fields: |
             [{ "title": "Repository", "value": "${env.GITHUB_REPOSITORY}", "short": true },
             { "title": "Branch", "value": "${GITHUB_REF##*/}", "short": true },
-            { "title" "Test", "value": "rt_test_sqlite", "short": true }]
+            { "title": "Test", "value": "rt_test_sqlite", "short": true }]
   rt_test_postgresql_apache_mod_fcgid:
     runs-on: ubuntu-latest
     steps:
@@ -112,4 +112,4 @@ jobs:
           fields: |
             [{ "title": "Repository", "value": "${env.GITHUB_REPOSITORY}", "short": true },
             { "title": "Branch", "value": "${GITHUB_REF##*/}", "short": true },
-            { "title" "Test", "value": "rt_test_postgresql_apache_mod_fcgid", "short": true}]
+            { "title": "Test", "value": "rt_test_postgresql_apache_mod_fcgid", "short": true}]
