@@ -72,8 +72,7 @@ $m->submit_form_ok(
     },
     'submit PrivateKey form'
 );
-is( $form->find_input('PrivateKey')->value,
-    'C798591AA831DBFB', 'set private key' );
+$m->text_contains(q{Invalid key C798591AA831DBFB for address 'rt-test@example.com'});
 
 
 diag "Test user searches";
