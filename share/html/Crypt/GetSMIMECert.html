@@ -67,15 +67,26 @@ if (!$TxnId || $TxnId !~ /^\d+$/) {
     if (!$status) {
         push(@results, $msg);
     } else {
-        my $u = RT::User->new(RT->SystemUser);
-        $u->Load($txn->Creator);
-        if (!$u->id || !$u->SMIMECertificate) {
-            push(@results, loc('Could not find S/MIME certificate for specified user'));
+        my $cert = RT::Crypt::SMIME->GetCertificateForTransaction($txn);
+        if (!$cert) {
+            push(@results, loc('Could not find S/MIME certificate for specified transaction'));
         } else {
-            my $name = $u->EmailAddress || $u->Name || $u->id;
+            # We don't really need the user, but we try to get it
+            # anyway just to give the certificate a sensible filename
+            # when it is downloaded.  If we can't get the user, or the
+            # user lacks and email address and name, we just default
+            # to "smime.crt" for the download filename.
+            my $u = RT::User->new(RT->SystemUser);
+            my $name;
+            if ($txn->Creator) {
+                $u->Load($txn->Creator);
+                $name = $u->EmailAddress || $u->Name || "smime";
+            } else {
+                $name = "smime";
+            }
             $r->content_type('application/x-x509-user-cert');
             $r->header_out('Content-Disposition' => "attachment; filename=\"$name.crt\"");
-            $m->out($u->SMIMECertificate);
+            $m->out($cert);
             $m->flush_buffer;
             $m->abort();
         }
