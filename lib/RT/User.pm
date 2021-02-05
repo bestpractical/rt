@@ -2091,7 +2091,23 @@ sub PrivateKey {
     }
 
     my $key = $self->FirstAttribute('PrivateKey') or return undef;
-    return $key->Content;
+    my $content = $key->Content;
+
+    if ( length $content < 40 ) {
+        # not fingerprint, try to update it
+        my %tmp = RT::Crypt->GetKeysForSigning( Signer => $content, Protocol => 'GnuPG' );
+        if ( !$tmp{exit_code} && $tmp{info} && $tmp{info}[0] ) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load( $self->Id );
+            $user->SetPrivateKey( $tmp{info}[0]{Fingerprint} );
+            return $tmp{info}[0]{Fingerprint};
+        }
+        else {
+            RT->Logger->warning("Couldn't find private key for $content");
+        }
+    }
+
+    return $content;
 }
 
 sub SetPrivateKey {
@@ -2117,6 +2133,8 @@ sub SetPrivateKey {
         my %tmp = RT::Crypt->GetKeysForSigning( Signer => $key, Protocol => 'GnuPG' );
         return (0, $self->loc("No such key or it's not suitable for signing"))
             if $tmp{'exit_code'} || !$tmp{'info'};
+        # In case $key is key id instead of fingerprint
+        $key = $tmp{'info'}[0]{Fingerprint};
     }
 
     my ($status, $msg) = $self->SetAttribute(
