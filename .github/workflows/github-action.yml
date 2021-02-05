@@ -45,7 +45,7 @@ jobs:
             [{ "title": "Repository", "value": "${env.GITHUB_REPOSITORY}", "short": true },
             { "title": "Branch", "value": "${env.GITHUB_REF}", "short": true },
             { "title": "Test", "value": "rt_test_mariadb", "short": true },
-            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
+            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
   rt_test_sqlite:
     runs-on: ubuntu-latest
     steps:
@@ -80,7 +80,7 @@ jobs:
             [{ "title": "Repository", "value": "${env.GITHUB_REPOSITORY}", "short": true },
             { "title": "Branch", "value": "${env.GITHUB_REF}", "short": true },
             { "title": "Test", "value": "rt_test_sqlite", "short": true },
-            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
+            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
   rt_test_postgresql_apache_mod_fcgid:
     runs-on: ubuntu-latest
     steps:
@@ -115,4 +115,4 @@ jobs:
             [{ "title": "Repository", "value": "${env.GITHUB_REPOSITORY}", "short": true },
             { "title": "Branch", "value": "${env.GITHUB_REF}", "short": true },
             { "title": "Test", "value": "rt_test_postgresql_apache_mod_fcgid", "short": true},
-            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
+            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
