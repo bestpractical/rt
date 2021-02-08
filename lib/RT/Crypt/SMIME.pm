@@ -524,6 +524,7 @@ sub Verify {
             $res{'status'} = $self->FormatStatus({
                 Operation => "Verify", Status => "BAD",
                 Message => "The signing CA was not trusted",
+                Serial => $signer->{'Serial Number'} || 'unknown',
                 UserString => $signer->{User}[0]{String},
                 ExpireTimestamp => $signer->{Expire}->Unix(),
                 CreatedTimestamp => $signer->{Created}->Unix(),
@@ -560,6 +561,7 @@ sub Verify {
             Message => "The signature is good, unknown signer",
             ExpireTimestamp => $signer->{Expire}->Unix(),
             CreatedTimestamp => $signer->{Created}->Unix(),
+            Serial => $signer->{'Serial Number'} || 'unknown',
             Trust => "UNKNOWN",
         });
         return %res;
@@ -574,6 +576,7 @@ sub Verify {
     $res{'status'} = $self->FormatStatus({
         Operation => "Verify", Status => "DONE",
         Message => "The signature is good, signed by ".$signer->{User}[0]{String}.", assured by " . $signer->{Issuer}[0]{String} . ", trust is ".$signer->{TrustTerse},
+        Serial => $signer->{'Serial Number'} || 'unknown',
         UserString => $signer->{User}[0]{String},
         Trust => uc($signer->{TrustTerse}),
         Issuer => $signer->{Issuer}[0]{String},
@@ -1251,5 +1254,55 @@ sub CheckRevocationUsingOCSP {
 sub SupportsCRLfile {
     return $OpenSSL_Supports_CRLfile;
 };
+
+# Given a Transaction object, find the application/x-rt-original-message
+# (if any).  If found, try to find the S/MIME signature.  Return
+# the certificate found in that signature.
+# Returns: undef if we could not find a certificate; otherwise, an
+# S/MIME certificate in PEM format.
+sub GetCertificateForTransaction {
+    my ($self, $txn) = @_;
+
+    my $attachments = $txn->Attachments;
+    my $found;
+
+    # Look for the application/x-rt-original-message attachment
+    while (my $a = $attachments->Next) {
+        if (lc($a->ContentType) eq 'application/x-rt-original-message') {
+            $found = $a;
+            last;
+        }
+    }
+    return undef unless $found;
+
+    my $str = $found->Content;
+    return undef unless $str;
+
+    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    my $p = MIME::Parser->new();
+    $p->output_dir($tmpdir);
+    my $entity = $p->parse_data($str);
+    return undef unless $entity;
+
+    # Now look for application/pkcs7-signature
+    $found = undef;
+    foreach my $part ($entity->parts_DFS) {
+        if (lc($part->mime_type) eq 'application/pkcs7-signature') {
+            $found = $part;
+            last;
+        }
+    }
+    return undef unless $found;
+    return undef unless $found->bodyhandle;
+
+    # Feed to openssl and extract the certificate
+    my $pkcs7 = $found->bodyhandle->as_string;
+    my $out = '';
+    my $err = '';
+    safe_run_child { run3( [$self->OpenSSLPath, 'pkcs7', '-inform', 'DER', '-print_certs' ],
+                           \$pkcs7, \$out, \$err ) };
+    return undef unless $out =~ /-----BEGIN CERTIFICATE-----/;
+    return $out;
+}
 
 1;

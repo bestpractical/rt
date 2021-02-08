@@ -43,7 +43,7 @@ is( $form->find_input('PrivateKey')->value,
     '__empty_value__', 'default no private key' );
 $m->submit_form_ok(
     {
-        fields => { PrivateKey => 'D328035D84881F1B' },
+        fields => { PrivateKey => 'F0CB3B482CFA485680A4A0BDD328035D84881F1B' },
         button => 'Update',
     },
     'submit PrivateKey form'
@@ -52,7 +52,7 @@ $m->submit_form_ok(
 $m->content_contains('Set private key');
 $form = $m->form_with_fields('PrivateKey');
 is( $form->find_input('PrivateKey')->value,
-    'D328035D84881F1B', 'set private key' );
+    'F0CB3B482CFA485680A4A0BDD328035D84881F1B', 'set private key' );
 $m->submit_form_ok(
     {
         fields => { PrivateKey => '__empty_value__' },
@@ -72,8 +72,7 @@ $m->submit_form_ok(
     },
     'submit PrivateKey form'
 );
-is( $form->find_input('PrivateKey')->value,
-    'C798591AA831DBFB', 'set private key' );
+$m->text_contains(q{Invalid key C798591AA831DBFB for address 'rt-test@example.com'});
 
 
 diag "Test user searches";

@@ -90,6 +90,7 @@ sub VerifyTooltip {
     $tooltip .= "\n" . loc('Signature Created') . ': ' . DisplayDate($line->{Timestamp}) if $line->{Timestamp};                 # GNUPG
     $tooltip .= "\n" . loc('Signer') . ': ' . $line->{UserString} if $line->{UserString};                                       # SMIME
     $tooltip .= "\n" . loc('Issuer') . ': ' . $line->{Issuer} if $line->{Issuer};                                               # SMIME
+    $tooltip .= "\n" . loc('Serial Number') . ': ' . $line->{Serial} if $line->{Serial};                                        # SMIME
     $tooltip .= "\n" . loc('Certificate Created') . ': ' . DisplayDate($line->{CreatedTimestamp}) if $line->{CreatedTimestamp}; # SMIME
     if ($protocol eq 'SMIME') {
         $tooltip .= "\n" . loc('Certificate Expires') . ': ';
@@ -109,18 +110,18 @@ sub VerifyTooltip {
 
 # Generate a download link for the public key
 sub KeyDownloadLink {
-    my ($protocol, $line) = @_;
+    my ($Message, $protocol, $line) = @_;
     my $txt = '';
     if ($protocol eq 'GnuPG') {
         if ($line->{Fingerprint} && $line->{Fingerprint} !~ /[^0-9A-F]/i) {
             $txt = '<a href="' . RT->Config->Get('WebPath') . '/Crypt/GetGPGPubkey.html?Fingerprint=' . $line->{Fingerprint} . '"> ' . loc('(Download Public Key)') . '</a>';
         }
+    } elsif ($protocol eq 'SMIME') {
+        if ($Message && $Message->TransactionObj && $Message->TransactionObj->Creator) {
+            $txt = '<a href="' . RT->Config->Get('WebPath') .  '/Crypt/GetSMIMECert.html?Transaction=' . $Message->TransactionObj->Id . '"> ' . loc('(Download S/MIME Certificate)') . '</a>';
+        }
     }
 
-    # There isn't really a feasible way to download the S/MIME
-    # certificate, unfortunately.  However, since RT makes the
-    # original message available, the S/MIME cert could be
-    # extracted from that if necessary.
     return $txt;
 }
 
@@ -223,7 +224,7 @@ foreach my $run ( @runs ) {
             push @messages, {
                 Tag     => $protocol,
                 Classes => ['verify', lc $line->{Status}, 'trust-'.($line->{Trust} || 'UNKNOWN')],
-                Value   => '<span title="' . $m->interp->apply_escapes(VerifyTooltip($protocol, $line), 'h') . '">' . $m->interp->apply_escapes(loc( $line->{'Message'} ), 'h') . '</span>' . KeyDownloadLink($protocol, $line),
+                Value   => '<span title="' . $m->interp->apply_escapes(VerifyTooltip($protocol, $line), 'h') . '">' . $m->interp->apply_escapes(loc( $line->{'Message'} ), 'h') . '</span>' . KeyDownloadLink($Message, $protocol, $line),
             };
         }
         else {

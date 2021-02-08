@@ -101,7 +101,7 @@ my $email = $UserObj->EmailAddress;
 
 if (RT::Config->Get('GnuPG')->{Enable}) {
     my %keys_meta = RT::Crypt->GetKeysForSigning( Signer => $email, Protocol => 'GnuPG' );
-    @potential_keys = map $_->{'Key'}, @{ $keys_meta{'info'} || [] };
+    @potential_keys = map $_->{'Fingerprint'}, @{ $keys_meta{'info'} || [] };
 
     $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
         Name      => 'PrivateKey',
