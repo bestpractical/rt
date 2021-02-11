@@ -427,7 +427,9 @@ sub CurrentUserCanCreateAny {
         Right             => 'CreateGroupDashboard',
         IncludeSuperusers => 1,
     );
-    return 1 if $groups->Count;
+
+    # If we got even one group back, that's enough
+    return 1 if $groups->First;
 
     return 1
         if $CurrentUser->HasRight(Object => $RT::System, Right => 'CreateDashboard');
