@@ -167,7 +167,9 @@ Be sure to specify an absolute path.
 =head1 Database Indexes
 
 We have found that the following indexes significantly speed up
-shredding on most databases.
+shredding on most databases. However they are intended to be deployed
+only for the duration of your shredding, as they may have an adverse
+effect on the performance of ordinary RT operations.
 
     CREATE INDEX SHREDDER_CGM1 ON CachedGroupMembers(MemberId, GroupId, Disabled);
     CREATE INDEX SHREDDER_CGM2 ON CachedGroupMembers(ImmediateParentId,MemberId);
@@ -181,6 +183,12 @@ shredding on most databases.
     CREATE INDEX SHREDDER_TXN4 ON Transactions(Type, NewValue);
 
     CREATE INDEX SHREDDER_ATTACHMENTS1 ON Attachments(Creator);
+
+    CREATE INDEX SHREDDER_LINKS1 ON Links(Target);
+
+    CREATE INDEX SHREDDER_ACL1 ON ACL(ObjectType, ObjectId);
+
+    CREATE INDEX SHREDDER_OCFV1 ON ObjectCustomFieldValues(ObjectType, ObjectId);
 
 =head1 INFORMATION FOR DEVELOPERS
 
