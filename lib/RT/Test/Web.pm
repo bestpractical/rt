@@ -127,6 +127,14 @@ sub logged_in_as {
     my $self = shift;
     my $user = shift || '';
 
+    if ( $user =~ /\@/ ) {
+        my $user_object = RT::User->new( RT->SystemUser );
+        $user_object->LoadByEmail($user);
+        if ( $user_object->Id ) {
+            $user = $user_object->Name;
+        }
+    }
+
     unless ( $self->status == HTTP::Status::HTTP_OK ) {
         Test::More::diag( "error: status is ". $self->status );
         return 0;
