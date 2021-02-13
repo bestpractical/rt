@@ -162,11 +162,19 @@ jQuery( function() {
 });
 </script>
         <div class="hidden old-attach">
-          <div class="custom-file">
-            <input type="file" id="Attach" name="Attach" class="custom-file-input" />
-            <label class="custom-file-label" for="Attach">
-              <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
-            </label>
+          <div class="form-row">
+            <div class="col-12">
+              <div class="custom-file">
+                <input type="file" id="Attach" name="Attach" class="custom-file-input" />
+                <label class="custom-file-label" for="Attach"></label>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-12">
+              <input type="submit" class="button btn btn-primary form-control" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
+              <input type="hidden" class="hidden" name="UpdateAttach" value="1" />
+            </div>
           </div>
         </div>
 </div>
