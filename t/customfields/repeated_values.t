@@ -82,12 +82,16 @@ my ( $ret, $msg );
     is( $ret, $ocfv->id, "got the same previous object" );
     is( $ticket->FirstCustomFieldValue($select_single), 'foo', 'value is still foo' );
 
-    diag "select values are case insensitive";
+    diag "HasEntry for select values is case insensitive";
 
     ( $ret, $msg ) =
       $ticket->AddCustomFieldValue( Field => $select_single, Value => 'FOO' );
-    is( $ret, $ocfv->id, "got the same previous object" );
+    is( $ret, 0, "Adding a new value is not case-insensitive" );
     is( $ticket->FirstCustomFieldValue($select_single), 'foo', 'value is still foo' );
+
+    my $select_values = $select_single->ValuesForObject($ticket);
+    my $entry = $select_values->HasEntry('FOO');
+    is( $entry->id, $ocfv->id, 'HasEntry is case insensitive' );
 
     ($ret, $msg) = $ticket->AddCustomFieldValue( Field => $select_single, Value => 'bar' );
     ok($ret, $msg);
