@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test tests => 54;
+use RT::Test tests => undef;
 
 
 {
@@ -25,6 +25,8 @@ my ($id, $msg)=  $global_cf->Create( Name => 'GlobalCF',
                                  Type=> 'SelectSingle');
 ok($id, 'Global custom field correctly created');
 
+($id,$msg) = $global_cf->AddValue(Name => 'A Value');
+ok($id,$msg);
 
 my $approvalsq = RT::Queue->new(RT->SystemUser);
 $approvalsq->Create(Name => 'Approvals');
@@ -40,7 +42,8 @@ my $queue_cf = RT::CustomField->new($RT::SystemUser);
 );
 ok($id, 'Queue-specific custom field correctly created');
 
-
+($id,$msg) = $queue_cf->AddValue(Name => 'Another Value');
+ok($id,$msg);
 
 my $approvals = 
 '===Create-Ticket: approval
@@ -266,3 +269,4 @@ foreach my $id ( sort keys %expected ) {
 
 }
 
+done_testing();
