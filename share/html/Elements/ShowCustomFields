@@ -66,10 +66,16 @@ my @classes = (
 push @classes, 'unset-field' if not $count;
 $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
                Object => $Object, Classes => \@classes, Grouping => $Grouping );
+
+my ($labelCols, $valueCols) = (3, 9);
+# If we a have transaction custom field we want smaller label section:
+if ( $CustomField->LookupType eq 'RT::Queue-RT::Ticket-RT::Transaction' ) {
+    ($labelCols, $valueCols) = (2, 10);
+}
 </%perl>
   <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
-    <div class="label col-2"><% $CustomField->Name %>:</div>
-    <div class="value col-10 <% $count ? '' : ' no-value' %>">
+    <div class="label col-<% $labelCols %>"><% $CustomField->Name %>:</div>
+    <div class="value col-<% $valueCols %> <% $count ? '' : ' no-value' %>">
       <span class="current-value">
 % unless ( $count ) {
 <&|/l&>(no value)</&>
