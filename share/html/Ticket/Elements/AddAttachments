@@ -166,7 +166,7 @@ jQuery( function() {
             <div class="col-12">
               <div class="custom-file">
                 <input type="file" id="Attach" name="Attach" class="custom-file-input" />
-                <label class="custom-file-label" for="Attach"></label>
+                <label class="custom-file-label" for="Attach">Choose file</label>
               </div>
             </div>
           </div>
