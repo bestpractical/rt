@@ -63,19 +63,20 @@ with (
 
 requires 'collection';
 
-has 'query' => (
+has 'query_json' => (
     is          => 'ro',
     isa         => 'ArrayRef[HashRef]',
     required    => 1,
     lazy_build  => 1,
 );
 
-sub _build_query {
+sub _build_query_json {
     my $self = shift;
     my $content = $self->request->method eq 'GET'
                 ? $self->request->param('query')
                 : $self->request->content;
-    return $content ? JSON::decode_json($content) : [];
+    return [] unless $content && $content =~ /\s*\[/;
+    return JSON::decode_json($content);
 }
 
 sub allowed_methods {
@@ -86,15 +87,15 @@ sub searchable_fields {
     $_[0]->collection->RecordClass->ReadableAttributes
 }
 
-sub limit_collection {
+sub limit_collection_from_json {
     my $self        = shift;
     my $collection  = $self->collection;
-    my $query       = $self->query;
+    my $query       = $self->query_json;
+
+    return 1 unless ref $query eq 'ARRAY' && scalar @{$query};
+
     my @fields      = $self->searchable_fields;
     my %searchable  = map {; $_ => 1 } @fields;
-
-    $collection->{'find_disabled_rows'} = 1
-        if $self->request->param('find_disabled_rows');
 
     for my $limit (@$query) {
         next unless $limit->{field}
@@ -113,17 +114,6 @@ sub limit_collection {
                 : () ),
         );
     }
-
-    my @orderby_cols;
-    my @orders = $self->request->param('order');
-    foreach my $orderby ($self->request->param('orderby')) {
-        my $order = shift @orders || 'ASC';
-        $order = uc($order);
-        $order = 'ASC' unless $order eq 'DESC';
-        push @orderby_cols, {FIELD => $orderby, ORDER => $order};
-    }
-    $self->collection->OrderByCols(@orderby_cols)
-        if @orderby_cols;
 
     return 1;
 }
