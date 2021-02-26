@@ -896,6 +896,45 @@ sub _parser {
     );
     die join "; ", map { ref $_ eq 'ARRAY' ? $_->[ 0 ] : $_ } @results if @results;
 
+    if ( RT->Config->Get('EnablePriorityAsString') ) {
+        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
+        my %config = RT->Config->Get('PriorityAsString');
+        my @names;
+        if (%$queues) {
+            for my $id ( keys %$queues ) {
+                my $queue = RT::Queue->new( $self->CurrentUser );
+                $queue->Load($id);
+                if ( $queue->Id ) {
+                    push @names, $queue->__Value('Name');    # Skip ACL check
+                }
+            }
+        }
+        else {
+            @names = keys %config;
+        }
+
+        my %map;
+        for my $name (@names) {
+            if ( my $value = exists $config{$name} ? $config{$name} : $config{Default} ) {
+                my %hash = ref $value eq 'ARRAY' ? @$value : %$value;
+                for my $label ( keys %hash ) {
+                    $map{lc $label} //= $hash{$label};
+                }
+            }
+        }
+
+        $tree->traverse(
+            sub {
+                my $node = shift;
+                return unless $node->isLeaf;
+                my $value = $node->getNodeValue;
+                if ( $value->{Key} =~ /^Ticket(?:Initial|Final)?Priority$/i ) {
+                    $value->{Value} = $map{ lc $value->{Value} } if defined $map{ lc $value->{Value} };
+                }
+            }
+        );
+    }
+
 
     # To handle __Active__ and __InActive__ statuses, copied from
     # RT::Tickets::_parser with field name updates, i.e.
@@ -1000,45 +1039,6 @@ sub _parser {
             }
         }
     );
-
-    if ( RT->Config->Get('EnablePriorityAsString') ) {
-        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
-        my %config = RT->Config->Get('PriorityAsString');
-        my @names;
-        if (%$queues) {
-            for my $id ( keys %$queues ) {
-                my $queue = RT::Queue->new( $self->CurrentUser );
-                $queue->Load($id);
-                if ( $queue->Id ) {
-                    push @names, $queue->__Value('Name');    # Skip ACL check
-                }
-            }
-        }
-        else {
-            @names = keys %config;
-        }
-
-        my %map;
-        for my $name (@names) {
-            if ( my $value = exists $config{$name} ? $config{$name} : $config{Default} ) {
-                my %hash = ref $value eq 'ARRAY' ? @$value : %$value;
-                for my $label ( keys %hash ) {
-                    $map{lc $label} //= $hash{$label};
-                }
-            }
-        }
-
-        $tree->traverse(
-            sub {
-                my $node = shift;
-                return unless $node->isLeaf;
-                my $value = $node->getNodeValue;
-                if ( $value->{Key} =~ /^Ticket(?:Initial|Final)?Priority$/i ) {
-                    $value->{Value} = $map{ lc $value->{Value} } if defined $map{ lc $value->{Value} };
-                }
-            }
-        );
-    }
 
     my $ea = '';
     $tree->traverse(
