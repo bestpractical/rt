@@ -1080,8 +1080,12 @@ sub _parser {
 sub FromSQL {
     my ($self,$query) = @_;
 
-    $self->CleanSlate;
-    $self->_InitSQL;
+    {
+        # preserve first_row and show_rows across the CleanSlate
+        local ($self->{'first_row'}, $self->{'show_rows'}, $self->{_sql_looking_at});
+        $self->CleanSlate;
+        $self->_InitSQL();
+    }
 
     return (1, $self->loc("No Query")) unless $query;
 
