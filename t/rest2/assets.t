@@ -142,6 +142,23 @@ my ($asset_url, $asset_id);
     is($asset->{type}, 'asset');
     is($asset->{id}, 1);
     like($asset->{_url}, qr{$rest_base_path/asset/1$});
+
+    # Ensure our JSON search matches the assetSQL search
+    $res = $mech->get("$rest_base_path/assets?query=id>0",
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{count}, 1);
+    is($content->{page}, 1);
+    is($content->{per_page}, 20);
+    is($content->{total}, 1);
+    is(scalar @{$content->{items}}, 1);
+
+    $asset = $content->{items}->[0];
+    is($asset->{type}, 'asset');
+    is($asset->{id}, 1);
+    like($asset->{_url}, qr{$rest_base_path/asset/1$});
 }
 
 # Asset Update
