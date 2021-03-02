@@ -1229,7 +1229,7 @@ example):
                  "name" : "My Custom Field",
                  "values" : [
                      "CustomField value"
-                 },
+                 ]
              }
          ]
       }
