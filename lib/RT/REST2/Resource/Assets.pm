@@ -63,6 +63,28 @@ sub dispatch_rules {
     )
 }
 
+use RT::REST2::Util qw( expand_uid );
+
+sub expand_field {
+    my $self         = shift;
+    my $item         = shift;
+    my $field        = shift;
+    my $param_prefix = shift;
+    if ( $field =~ /^(Owner|HeldBy|Contact)/ ) {
+        my $role    = $1;
+        my $members = [];
+        if ( my $group = $item->RoleGroup($role) ) {
+            my $gms = $group->MembersObj;
+            while ( my $gm = $gms->Next ) {
+                push @$members, expand_uid( $gm->MemberObj->Object->UID );
+            }
+            $members = shift @$members if $group->SingleMemberRoleGroup;
+        }
+        return $members;
+    }
+    return $self->SUPER::expand_field( $item, $field, $param_prefix );
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
