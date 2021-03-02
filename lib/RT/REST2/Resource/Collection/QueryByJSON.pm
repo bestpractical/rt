@@ -97,22 +97,49 @@ sub limit_collection_from_json {
     my @fields      = $self->searchable_fields;
     my %searchable  = map {; $_ => 1 } @fields;
 
-    for my $limit (@$query) {
-        next unless $limit->{field}
-                and $searchable{$limit->{field}}
-                and defined $limit->{value};
+    my $custom_field_object = RT::CustomField->new( $self->request->env->{"rt.current_user"} );
 
-        $collection->Limit(
-            FIELD       => $limit->{field},
-            VALUE       => $limit->{value},
-            ( $limit->{operator}
+    for my $limit (@$query) {
+        next unless $limit->{field} && defined $limit->{value};
+
+        if ( $limit->{field} =~ /(?:CF|CustomField)\.\{(.*)\}/i ) {
+            my $cf_name = $1;
+            next unless $cf_name;
+
+            my ($ret, $msg) = $custom_field_object->LoadByName(
+                Name          => $cf_name,
+                LookupType    => $collection->RecordClass->CustomFieldLookupType,
+                IncludeGlobal => 1
+            );
+
+            unless ( $ret && $custom_field_object->Id ) {
+                RT::Logger->error( "Could not load custom field: $limit->{'field'}: $msg" );
+                next;
+            }
+
+            $collection->LimitCustomField(
+              VALUE       => $limit->{'value'},
+              CUSTOMFIELD => $custom_field_object->Id,
+              ( $limit->{operator}
                 ? (OPERATOR => $limit->{operator})
                 : () ),
-            CASESENSITIVE => ($limit->{case_sensitive} || 0),
-            ( $limit->{entry_aggregator}
-                ? (ENTRYAGGREGATOR => $limit->{entry_aggregator})
-                : () ),
-        );
+            );
+        }
+        else {
+            next unless $searchable{$limit->{field}};
+
+            $collection->Limit(
+                FIELD       => $limit->{field},
+                VALUE       => $limit->{value},
+                ( $limit->{operator}
+                    ? (OPERATOR => $limit->{operator})
+                    : () ),
+                CASESENSITIVE => ($limit->{case_sensitive} || 0),
+                ( $limit->{entry_aggregator}
+                    ? (ENTRYAGGREGATOR => $limit->{entry_aggregator})
+                    : () ),
+            );
+        }
     }
 
     return 1;
