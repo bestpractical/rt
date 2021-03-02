@@ -1192,14 +1192,14 @@ You can use additional fields parameters to expand child blocks, for
 example (line wrapping inserted for readability):
 
     XX_RT_URL_XX/REST/2.0/tickets
-      ?fields=Owner,Status,Created,Subject,Queue,CustomFields
+      ?fields=Owner,Status,Created,Subject,Queue,CustomFields,Requestor,Cc,AdminCc,CustomRoles
       &fields[Queue]=Name,Description
 
 Says that in the result set for tickets, the extra fields for Owner, Status,
-Created, Subject, Queue and CustomFields should be included. But in
-addition, for the Queue block, also include Name and Description. The
-results would be similar to this (only one ticket is displayed in this
-example):
+Created, Subject, Queue, CustomFields, Requestor, Cc, AdminCc and
+CustomRoles should be included. But in addition, for the Queue block, also
+include Name and Description. The results would be similar to this (only one
+ticket is displayed in this example):
 
    "items" : [
       {
@@ -1231,7 +1231,31 @@ example):
                      "CustomField value"
                  ]
              }
-         ]
+         ],
+         "Requestor" : [
+            {
+               "id" : "root",
+               "type" : "user",
+               "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+            }
+         ],
+         "Cc" : [
+            {
+               "id" : "root",
+               "type" : "user",
+               "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+            }
+         ],
+         "AdminCc" : [],
+         "CustomRoles" : {
+            "RT::CustomRole-1" : [
+               {
+                  "_url" : "XX_RT_URL_XX/REST/2.0/user/foo@example.com",
+                  "type" : "user",
+                  "id" : "foo@example.com"
+               }
+            ]
+         }
       }
       { … },
       …
