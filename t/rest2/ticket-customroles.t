@@ -563,5 +563,32 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     }, 'Later Single Member is Nobody');
 }
 
+# Ticket Search
+{
+
+    my $payload = {
+        Subject            => 'Ticket creation using REST',
+        Queue              => 'General',
+        Content            => 'Testing ticket creation using REST API.',
+        $single->GroupType => 'single2@example.com',
+        $multi->GroupType  => 'multi@example.com, multi2@example.com',
+    };
+
+    my $res = $mech->post_json( "$rest_base_path/ticket", $payload, 'Authorization' => $auth, );
+    is( $res->code, 201 );
+    ok( my $ticket_url = $res->header('location') );
+    ok( my ($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)] );
+
+    $res = $mech->get( "$rest_base_path/tickets?query=id=$ticket_id&fields=CustomRoles", 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+    is( scalar @{ $content->{items} }, 1 );
+
+    my $ticket = $content->{items}->[0];
+    is( $ticket->{CustomRoles}{ $single->GroupType }{id}, 'single2@example.com',  'Single Member id in search result' );
+    is( $ticket->{CustomRoles}{ $multi->GroupType }[0]{id}, 'multi@example.com',  'Multi Member id in search result' );
+    is( $ticket->{CustomRoles}{ $multi->GroupType }[1]{id}, 'multi2@example.com', 'Multi Member id in search result' );
+}
+
 done_testing;
 
