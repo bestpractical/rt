@@ -161,7 +161,44 @@ $test_user->PrincipalObj->GrantRight(Right => 'AdminGroupMembership');
     );
 }
 
-$test_user->PrincipalObj->RevokeRight(Right => 'ShowUserHistory');
-$test_user->PrincipalObj->RevokeRight(Right => 'AdminUsers');
+diag "Test searching users based on custom field value";
+{
+  my $cf = RT::CustomField->new(RT->SystemUser);
+  ok($cf, "Have a CustomField object");
+
+  my ($id, $msg) =  $cf->Create(
+      Name        => 'Department',
+      Description => 'A Testing custom field',
+      Type        => 'Freeform',
+      MaxValues   => 1,
+      LookupType  => RT::User->CustomFieldLookupType,
+  );
+  ok($id, 'User custom field correctly created');
+  ok($cf->AddToObject( RT::User->new( RT->SystemUser ) ), 'applied Testing CF globally');
+
+  $test_user->PrincipalObj->GrantRight( Right => $_ ) for qw/SeeCustomField ModifyCustomField/;
+
+  (my $ret, $msg) = $user_foo->AddCustomFieldValue( Field => 'Department', Value => 'HR' );
+  ok ($ret, "Added Dapartment custom field value to user_foo");
+
+  my $payload = [
+    {
+        "field"    => "CustomField.{Department}",
+        "value"          => "HR",
+        "operator"       => "="
+    }
+  ];
+
+  my $res = $mech->post_json("$rest_base_path/users/",
+      $payload,
+      'Authorization' => $auth,
+  );
+  is($res->code, 200);
+  my $content = $mech->json_response;
+  ok( $content->{'count'} eq 1, "Found one user" );
+  ok( $content->{'items'}[0]->{'id'} eq 'foo', "Found foo user" );
+}
+
+$test_user->PrincipalObj->RevokeRight( Right => $_ ) for qw/SeeCustomField ModifyCustomField ShowUserHistory AdminUsers/;
 
 done_testing;
