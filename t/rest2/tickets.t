@@ -712,4 +712,34 @@ my $json = JSON->new->utf8;
     is( $value->LargeContent, $img_content, 'image file content');
 }
 
+# Ticket Search - Role Fields
+{
+
+    my $payload = {
+        Subject   => 'Ticket creation using REST',
+        Queue     => 'General',
+        Content   => 'Testing ticket creation using REST API.',
+        Requestor => 'alice@example.com',
+        Cc        => 'alice@example.com, bob@example.com',
+        AdminCc   => 'root@example.com',
+    };
+
+    my $res = $mech->post_json( "$rest_base_path/ticket", $payload, 'Authorization' => $auth, );
+    is( $res->code, 201 );
+    ok( my $ticket_url = $res->header('location') );
+    ok( my ($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)] );
+
+    $res = $mech->get( "$rest_base_path/tickets?query=id=$ticket_id&fields=Requestor,Cc,AdminCc",
+        'Authorization' => $auth, );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+    is( scalar @{ $content->{items} }, 1 );
+
+    my $ticket = $content->{items}->[0];
+    is( $ticket->{Requestor}[0]{id}, 'alice@example.com', 'Requestor id in search result' );
+    is( $ticket->{Cc}[0]{id},        'alice@example.com', 'Cc id in search result' );
+    is( $ticket->{Cc}[1]{id},        'bob@example.com',   'Cc id in search result' );
+    is( $ticket->{AdminCc}[0]{id},   'root@example.com',  'AdminCc id in search result' );
+}
+
 done_testing;
