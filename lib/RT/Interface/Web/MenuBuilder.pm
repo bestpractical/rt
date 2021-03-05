@@ -700,11 +700,15 @@ sub BuildMainNav {
         }
         if ($has_query) {
             my $result_page = $HTML::Mason::Commands::DECODED_ARGS->{ResultPage};
-            if ( my $web_path = RT->Config->Get('WebPath') ) {
-                $result_page =~ s!^$web_path!!;
+            if ( $result_page ) {
+                if ( my $web_path = RT->Config->Get('WebPath') ) {
+                    $result_page =~ s!^$web_path!!;
+                }
+            }
+            else {
+                $result_page = '/Search/Results.html';
             }
 
-            $result_page ||= '/Search/Results.html';
             $current_search_menu->child( results => title => loc('Show Results'), path => "$result_page$args" );
         }
 
