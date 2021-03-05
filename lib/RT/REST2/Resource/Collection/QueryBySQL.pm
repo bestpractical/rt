@@ -46,24 +46,43 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::REST2::Resource::Assets;
+package RT::REST2::Resource::Collection::QueryBySQL;
 use strict;
 use warnings;
 
-use Moose;
+use Moose::Role;
 use namespace::autoclean;
 
-extends 'RT::REST2::Resource::Collection';
-with 'RT::REST2::Resource::Collection::QueryByJSON';
-with 'RT::REST2::Resource::Collection::QueryBySQL';
+use Encode qw( decode_utf8 );
 
-sub dispatch_rules {
-    Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/assets/?$},
-        block => sub { { collection_class => 'RT::Assets' } },
-    )
+requires 'collection';
+
+has 'query_sql' => (
+    is          => 'ro',
+    isa         => 'Str',
+    required    => 1,
+    lazy_build  => 1,
+);
+
+sub _build_query_sql {
+    my $self  = shift;
+
+    my $query_sql = "";
+    if ( my $query = $self->request->param('query') ) {
+        $query_sql = decode_utf8($query) unless $query =~ /^\s*\[/;
+    }
+
+    return $query_sql;
 }
 
-__PACKAGE__->meta->make_immutable;
+sub limit_collection_from_sql {
+    my $self = shift;
+    return 1 unless $self->query_sql;
+
+    my ($ok, $msg) = $self->collection->FromSQL( $self->query_sql );
+    return ( 0, $msg ) unless $ok;
+
+    return 1;
+};
 
 1;

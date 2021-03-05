@@ -58,7 +58,7 @@ extends 'RT::REST2::Resource';
 use Scalar::Util qw( blessed );
 use Web::Machine::FSM::States qw( is_status_code );
 use Module::Runtime qw( require_module );
-use RT::REST2::Util qw( serialize_record expand_uid format_datetime );
+use RT::REST2::Util qw( serialize_record expand_uid format_datetime error_as_json );
 use POSIX qw( ceil );
 
 has 'collection_class' => (
@@ -98,6 +98,25 @@ sub limit_collection {
     my $collection  = $self->collection;
     $collection->{'find_disabled_rows'} = 1
         if $self->request->param('find_disabled_rows');
+
+    if ( $self->can('limit_collection_from_json') ) {
+        $self->limit_collection_from_json();
+    }
+    if ( $self->can('limit_collection_from_sql') ) {
+        my ($ret, $msg) = $self->limit_collection_from_sql();
+        return error_as_json( $self->response, $ret, $msg ) unless $ret;
+    }
+
+    my @orderby_cols;
+    my @orders = $self->request->param('order');
+    foreach my $orderby ($self->request->param('orderby')) {
+        my $order = shift @orders || 'ASC';
+        $order = uc($order);
+        $order = 'ASC' unless $order eq 'DESC';
+        push @orderby_cols, {FIELD => $orderby, ORDER => $order};
+    }
+    $self->collection->OrderByCols(@orderby_cols)
+        if @orderby_cols;
 
     return 1;
 }
