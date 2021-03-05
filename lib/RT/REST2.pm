@@ -689,6 +689,11 @@ Below are some examples using the endpoints above.
     -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
     'https://myrt.com/REST/2.0/assets'
 
+    # Search Assets Based On Custom Field Values using L</JSON searches>
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+        -d '[{ "field" : "CustomField.{Department}", "value" : "Engineering" }]'
+        'https://myrt.com/REST/2.0/assets'
+
     # Search assets using AssetSQL
     curl -X POST -u 'root:password' -d "query=Catalog='General assets' AND 'CF.{Asset Type}' LIKE 'Computer'"
         'https://myrt.com/REST/2.0/assets'
@@ -936,7 +941,11 @@ values).  An example:
               "value":    "Engineering" },
 
             { "field":    "Lifecycle",
-              "value":    "helpdesk" }
+              "value":    "helpdesk" },
+
+            { "field"    : "CustomField.{Department}",
+              "operator" : "=",
+              "value"    : "Human Resources" }
         ]
     '
 
