@@ -575,7 +575,9 @@ a single ticket id or an array.
 
 =head3 Transactions
 
-    GET /transactions?query=<JSON>
+    GET /transactions?query=<TransactionSQL>
+        search for transactions using TransactionSQL
+
     POST /transactions
         search for transactions using L</JSON searches> syntax
 
@@ -590,6 +592,12 @@ a single ticket id or an array.
 
     GET /transaction/:id
         retrieve a transaction
+
+=head3 Transactions Examples
+
+    # Search transactions using C<TransactionSQL>
+    curl --request GET -u 'root:password'
+      "https://myrt.com/REST/2.0/transactions?query=Creator='Dave' AND Type='Correspond'"
 
 =head3 Attachments and Messages
 
@@ -642,7 +650,9 @@ a single ticket id or an array.
 
 =head3 Assets
 
-    GET /assets?query=<JSON>
+    GET /assets?query=<AssetSQL>
+        search for assets using AssetSQL
+
     POST /assets
         search for assets using L</JSON searches> syntax
 
@@ -674,6 +684,10 @@ Below are some examples using the endpoints above.
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
     -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
     'https://myrt.com/REST/2.0/assets'
+
+    # Search assets using AssetSQL
+     curl --request GET -u 'root:password'
+      "https://myrt.com/REST/2.0/assets?query=Catalog='General assets' AND 'CF.{Asset Type}' LIKE 'Computer'"
 
 =head3 Catalogs
 
