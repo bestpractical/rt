@@ -675,6 +675,11 @@ Below are some examples using the endpoints above.
     -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
     'https://myrt.com/REST/2.0/assets'
 
+    # Search Assets Based On Custom Field Values using L</JSON searches>
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+    -d '[{ "field" : "CustomField.{Department}", "value" : "Engineering" }]'
+    'https://myrt.com/REST/2.0/assets'
+
 =head3 Catalogs
 
     GET /catalogs/all
@@ -924,6 +929,18 @@ values).  An example:
 
 The JSON payload must be an array of hashes with the keys C<field> and C<value>
 and optionally C<operator>.
+
+
+If the field you're searching against is a Custom Field and not a core field for
+the objects you're searching on, then you use the C<CustomField.{some CF}> syntax:
+
+    curl -si -u user:pass https://rt.example.com/REST/2.0/users -XPOST --data-binary '
+        [
+            { "field"    : "CustomField.{Department}",
+              "operator" : "=",
+              "value"    : "Human Resources" },
+        ]
+    '
 
 Results can be sorted by using multiple query parameter arguments
 C<orderby> and C<order>. Each C<orderby> query parameter specify a field
