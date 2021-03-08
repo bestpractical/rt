@@ -213,7 +213,7 @@ if ($ShowRelatedTickets) {
     <label><&|/l&>Add an asset to this ticket:</&></label>
     <div class="form-row">
       <div class="form-group mx-sm-3 mb-2">
-        <input class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
+        <input data-autocomplete="Assets" class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
       </div>
       <button type="submit" name="AddAsset" value="Add" class="button btn btn-primary form-control mb-2">Add</button>
     </div>
