@@ -53,15 +53,15 @@
 <div>
 <div id="download-my-data" class="inline-row">
     <div class="inline-cell">
-        <a href="/SelfService/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="button"><% $UserDataButton %></a>
+        <a href="<%RT->Config->Get('WebPath')%>/SelfService/User/RelatedData.tsv?Type=User&id=<% $UserObj->id %>" class="button"><% $UserDataButton %></a>
         <i class="label"><&|/l&>Base user data</&></i>
     </div>
     <div class="inline-cell">
-        <a href="/SelfService/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="button"><% $UserTicketsButton %></a>
+        <a href="<%RT->Config->Get('WebPath')%>/SelfService/Search/Results.tsv?UserData=1&Query=Requestor.id=<% $UserObj->id %>&Format=<% $Format | un %>" class="button"><% $UserTicketsButton %></a>
         <i class="label"><&|/l&>Tickets with you as a requestor</&></i>
     </div>
     <div class="inline-cell">
-        <a href="/SelfService/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>" class="button"><% $UserTxnButton %></a>
+        <a href="<%RT->Config->Get('WebPath')%>/SelfService/User/RelatedData.tsv?Type=Transaction&id=<% $UserObj->id %>" class="button"><% $UserTxnButton %></a>
         <i class="label"><&|/l&>Replies you sent</&></i>
     </div>
 </div>
