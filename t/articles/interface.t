@@ -198,7 +198,7 @@ $m->form_number(3);
 $m->set_visible([option => $answerCF->Name]);
 $m->click();
 $m->title_like(qr/Create a new article/, "got edit page from extraction");
-$m->submit_form(form_name => 'EditArticle');
+$m->submit_form(form_name => 'EditArticle', fields => { Name => 'more testing' });
 $m->title_like(qr/Modify article/);
 $m->follow_link_ok( { text => 'Display' }, '-> Display' );
 $m->content_like(qr/Africa/, "Article content exist");

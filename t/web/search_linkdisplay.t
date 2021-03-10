@@ -31,7 +31,7 @@ my $class = RT::Class->new( RT->SystemUser );
 ok ($id, $msg);
 
 my $article = RT::Article->new( RT->SystemUser );
-($id, $msg) = $article->Create( Class => $class->Name, Summary => 'Test Article' );
+($id, $msg) = $article->Create( Class => $class->Name, Summary => 'Test Article', Name => 'Test' );
 ok ($id, $msg);
 $article->Load($id);
 

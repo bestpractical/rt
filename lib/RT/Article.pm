@@ -115,6 +115,8 @@ sub Create {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    return ( undef, $self->loc('Name is required') ) unless $args{Name};
+
     return ( undef, $self->loc('Name in use') )
       unless $self->ValidateName( $args{'Name'} );
 
@@ -233,7 +235,7 @@ sub Create {
 
 Takes a string name. Returns true if that name isn't in use by another article
 
-Empty names are permitted.
+Empty names are not permitted.
 
 
 =cut
@@ -243,7 +245,7 @@ sub ValidateName {
     my $name = shift;
 
     if ( !$name ) {
-        return (1);
+        return (0);
     }
 
     my $temp = RT::Article->new($RT::SystemUser);
