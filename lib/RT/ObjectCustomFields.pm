@@ -46,6 +46,21 @@
 #
 # END BPS TAGGED BLOCK }}}
 
+=head1 NAME
+
+  RT::ObjectCustomFields - a collection of RT ObjectCustomField objects
+
+=head1 SYNOPSIS
+
+  use RT::ObjectCustomFields;
+
+=head1 DESCRIPTION
+
+
+=head1 METHODS
+
+=cut
+
 use strict;
 use warnings;
 
@@ -57,11 +72,23 @@ use RT::ObjectCustomField;
 
 sub Table { 'ObjectCustomFields'}
 
+=head2 LimitToCustomField CUSTOM_FIELD
+
+Limit by CustomField id.
+
+=cut
+
 sub LimitToCustomField {
     my $self = shift;
     my $id = shift;
     $self->Limit( FIELD => 'CustomField', VALUE => $id );
 }
+
+=head2 LimitToLookupType LOOKUP_TYPE
+
+Limit by CustomField LookupType.
+
+=cut
 
 sub LimitToLookupType {
     my $self = shift;
