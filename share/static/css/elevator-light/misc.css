@@ -141,3 +141,9 @@ h1#transaction-extra-info {
     font-size: 1.4rem;
     padding-top: 0.4rem;
 }
+
+/* Do not change background color on click of dropdown items like "Show
+ * full headers" in ticket history */
+.btn-group.dropdown .dropdown-item:active {
+    background-color: transparent;
+}
