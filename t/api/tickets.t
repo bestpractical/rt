@@ -199,6 +199,11 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
     $count = $tickets->Count();
     is( $count, 1, 'Found 1 ticket' );
 
+    ( $ret, $msg ) = $tickets->FromSQL('CF.foo = "CF.{bar}"');
+    ok( $ret, 'Ran query with CF.foo = "CF.bar"' );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
+
     ( $ret, $msg ) = $tickets->FromSQL('CF.foo = Owner');
     ok( $ret, 'Ran query with CF.foo = Owner' );
     $count = $tickets->Count();
@@ -255,6 +260,11 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
 
     ( $ret, $msg ) = $tickets->FromSQL('CF.{IPRange 1}.Content = CF.{IPRange 2}.Content');
     ok( $ret, 'Ran query with CF.{IPRange 1}.Content = CF.{IPRange 2}.Content' );
+    $count = $tickets->Count();
+    is( $count, 1, 'Found 1 ticket' );
+
+    ( $ret, $msg ) = $tickets->FromSQL('CF.{IPRange 1}.Content = "CF.{IPRange 2}.Content"');
+    ok( $ret, 'Ran query with CF.{IPRange 1}.Content = "CF.{IPRange 2}.Content"' );
     $count = $tickets->Count();
     is( $count, 1, 'Found 1 ticket' );
 
