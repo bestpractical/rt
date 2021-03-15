@@ -3223,6 +3223,9 @@ sub _parser {
 
                 die $self->loc( "Wrong query, no such column '[_1]' in '[_2]'", $value, $string ) unless $valid;
 
+                # In case the column(e.g. LastUpdated) is defined in multiple tables
+                $value = "main.$value" if $class eq 'RT::Tickets' && $value =~ /^\w+$/;
+
                 if ( $class eq 'RT::ObjectCustomFieldValues' ) {
                     if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
                         my $cast_to;
