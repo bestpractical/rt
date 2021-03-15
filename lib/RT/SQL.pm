@@ -180,6 +180,13 @@ sub Parse {
             my $quote_value;
             if ( $match =~ /$re_delim/o ) {
                 $quote_value = 1;
+
+                # It's really rare to search strings like "CF.foo", to DWIM,
+                # automatically convert to columns
+                if ( $value =~ /^CF\.(?:\{(.*)\}|(.*?))(?:\.(Content|LargeContent))?$/i ) {
+                    RT->Logger->debug("Unquote value($match) to search custom field instead");
+                    $quote_value = 0;
+                }
             }
             elsif ( $match =~ /^[a-z]/i ) {
                 # Value is a column
