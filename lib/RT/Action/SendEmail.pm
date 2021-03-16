@@ -190,6 +190,14 @@ sub Prepare {
         # utf-8 here is for _FindOrGuessCharset in I18N.pm
         # it's not the final charset/encoding sent
         $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
+
+        # Set proper transfer encoding to prevent long lines in
+        # body(1000+ chars) that are not allowed according to RFC821.
+        # Some mail servers automatically insert "!" into long lines to
+        # indicate this incompatibility.
+        if ( !$part->head->mime_attr('Content-Transfer-Encoding') ) {
+            $part->head->mime_attr( 'Content-Transfer-Encoding' => $part->suggest_encoding );
+        }
     }
 
     RT::I18N::SetMIMEEntityToEncoding(
