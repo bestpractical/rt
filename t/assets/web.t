@@ -107,6 +107,22 @@ diag "Create with CFs in other groups";
     $m->content_unlike(qr/Purchased.*?must match .*?Year/, "Lacks validation error for Purchased");
 }
 
+diag "Bulk update";
+{
+    $m->follow_link_ok( { id => 'assets-search' }, "Asset search page" );
+    $m->submit_form_ok( { form_id => 'AssetSearch' }, "Search assets" );
+    $m->follow_link_ok( { text => 'Bulk Update' }, "Asset bulk update page" );
+
+    my $form = $m->form_id('BulkUpdate');
+    my $status_input = $form->find_input('UpdateStatus');
+    is_deeply(
+        [ sort $status_input->possible_values ],
+        [ '', 'allocated', 'deleted', 'in-use', 'new', 'recycled', 'stolen' ],
+        'Status options'
+    );
+    # TODO: test more bulk update actions
+}
+
 # XXX TODO: test other modify pages
 
 done_testing;

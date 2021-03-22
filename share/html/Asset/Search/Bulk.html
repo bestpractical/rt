@@ -95,7 +95,7 @@
   </tr>
   <tr class="asset-status">
     <td class="label"><label for="UpdateStatus"><&|/l&>Status</&></label></td>
-    <td><& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1, CatalogObj => $catalog_obj &></td>
+    <td><& /Asset/Elements/SelectStatus, Name => 'UpdateStatus', DefaultValue => 1, Catalogs => { $catalog_obj->id => $catalog_obj } &></td>
   </tr>
 </table>
 %   my $cfs = $catalog_obj->AssetCustomFields;
