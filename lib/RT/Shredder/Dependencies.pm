@@ -117,6 +117,7 @@ sub _PushDependency
         );
 
     if( scalar @{ $self->{'list'} } > ( $RT::DependenciesLimit || 1000 ) ) {
+        RT->Logger->error( $self->{'list'}[0]{BaseObject}->UID . ' has too many dependencies' );
         RT::Shredder::Exception::Info->throw( 'DependenciesLimit' );
     }
     return;
