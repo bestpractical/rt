@@ -219,6 +219,7 @@ else {
                 goto DONE;
             }
             $v{MIMEObj}->make_singlepart;
+            RT::I18N::SetMIMEEntityToUTF8( $v{MIMEObj} );
         }
 
         my($tid,$trid,$terr) = $ticket->Create(%v);    
