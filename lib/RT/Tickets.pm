@@ -802,7 +802,7 @@ sub _TransDateLimit {
         $sb->Limit(
             ALIAS         => $txn_alias,
             FIELD         => 'Created',
-            OPERATOR      => "<=",
+            OPERATOR      => "<",
             VALUE         => $dayend,
             @rest,
             ENTRYAGGREGATOR => 'AND',
