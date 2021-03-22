@@ -863,7 +863,8 @@ my $build_main_nav = sub {
 
                 if ( defined $session{"tickets"} ) {
                     # we have to update session data if we get new ItemMap
-                    my $updatesession = 1 unless ( $session{"tickets"}->{'item_map'} );
+                    my $updatesession;
+                    $updatesession = 1 unless ( $session{"tickets"}->{'item_map'} );
 
                     my $item_map = $session{"tickets"}->ItemMap;
 
