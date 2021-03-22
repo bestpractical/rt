@@ -367,7 +367,7 @@ sub process_attachments {
         my $new_entity = $entity->attach(
             Path => $tmp_fn,
             Type => $info->{'Content-Type'} || guess_media_type($tmp_fn),
-            Filename => $file,
+            Filename => Encode::encode('UTF-8', $file),
             Disposition => $info->{'Content-Disposition'} || "attachment",
             'Content-ID' => $info->{'Content-ID'},
         );
