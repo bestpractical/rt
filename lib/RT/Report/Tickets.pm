@@ -184,7 +184,7 @@ our %GROUPINGS_META = (
                 my $queue = RT::Queue->new( $self->CurrentUser );
                 $queue->Load($id);
                 next unless $queue->id;
-
+                $CustomFields->SetContextObject( $queue ) if keys %$queues == 1;
                 $CustomFields->LimitToQueue($queue->id);
             }
             $CustomFields->LimitToGlobal;
@@ -200,7 +200,15 @@ our %GROUPINGS_META = (
 
             my ($cf) = ( $args{'SUBKEY'} =~ /^\{(.*)\}$/ );
             if ( $cf =~ /^\d+$/ ) {
-                my $obj = RT::CustomField->new( $self->CurrentUser );
+
+                # When we render label in charts, the cf could surely be
+                # seen by current user(SubFields above checks rights), but
+                # we can't use current user to load cf here because the
+                # right might be granted at queue level and it's not
+                # straightforward to add a related queue as context object
+                # here. That's why we use RT->SystemUser here instead.
+
+                my $obj = RT::CustomField->new( RT->SystemUser );
                 $obj->Load( $cf );
                 $cf = $obj->Name;
             }
