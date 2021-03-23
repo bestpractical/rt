@@ -32,6 +32,11 @@ is($txnobj->CreatedObj->ISO,'2005-08-05 20:00:56');
 $tix->FromSQL(qq{Updated = "2005-08-05" AND Subject = "$SUBJECT"});
 is( $tix->Count, 1);
 
+$tix->FromSQL( qq{TransactionCreated = "2005-08-05" AND TransactionCreator = }
+        . RT->SystemUser->Id
+        . qq{ AND Subject = "$SUBJECT"} );
+is( $tix->Count, 1, 'Found ticket with Transaction Created/Creator' );
+
 $tix->FromSQL(qq{TransactionType = 'Comment' AND Subject = "$SUBJECT"});
 is( $tix->Count, 1);
 
