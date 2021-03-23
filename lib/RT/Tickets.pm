@@ -167,6 +167,10 @@ our %FIELD_METADATA = (
     WatcherGroup     => [ 'MEMBERSHIPFIELD', ], #loc_left_pair
     HasAttribute     => [ 'HASATTRIBUTE', 1 ],
     HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
+    TransactionType      => [ 'TRANSSTRING', 'Type' ], #loc_left_pair
+    TransactionField     => [ 'TRANSSTRING', 'Field' ], #loc_left_pair
+    TransactionOldValue  => [ 'TRANSSTRING', 'OldValue' ], #loc_left_pair
+    TransactionNewValue  => [ 'TRANSSTRING', 'NewValue' ], #loc_left_pair
 );
 
 # Lower Case version of FIELDS, for case insensitivity
@@ -197,6 +201,7 @@ our %dispatch = (
     CUSTOMFIELD     => \&_CustomFieldLimit,
     HASATTRIBUTE    => \&_HasAttributeLimit,
     LIFECYCLE       => \&_LifecycleLimit,
+    TRANSSTRING     => \&_TransStringLimit,
 );
 
 # Default EntryAggregator per type
@@ -839,6 +844,43 @@ sub _TransCreatorLimit {
         $value = $u->id || 0;
     }
     $sb->Limit( ALIAS => $txn_alias, FIELD => 'Creator', OPERATOR => $op, VALUE => $value, @rest );
+}
+
+=head2 _TransStringLimit
+
+Handle transaction string fields. e.g. (Type, Field, OldValue, NewValue)
+
+=cut
+
+sub _TransStringLimit {
+    my ( $sb, $field, $op, $value, @rest ) = @_;
+
+    my $meta = $RT::Tickets::FIELD_METADATA{$field};
+    die "Incorrect Meta Data for $field" unless defined $meta->[1];
+
+    if (   RT->Config->Get('DatabaseType') eq 'Oracle'
+        && ( !defined $value || !length $value )
+        && lc($op) ne 'is'
+        && lc($op) ne 'is not' )
+    {
+        if ( $op eq '!=' || $op =~ /^NOT\s/i ) {
+            $op = 'IS NOT';
+        }
+        else {
+            $op = 'IS';
+        }
+        $value = 'NULL';
+    }
+
+    my $txn_alias = $sb->JoinTransactions;
+    $sb->Limit(
+        ALIAS         => $txn_alias,
+        FIELD         => $meta->[1],
+        OPERATOR      => $op,
+        VALUE         => $value,
+        CASESENSITIVE => 0,
+        @rest,
+    );
 }
 
 =head2 _TransLimit
