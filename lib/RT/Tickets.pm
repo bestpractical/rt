@@ -159,7 +159,9 @@ our %FIELD_METADATA = (
     QueueCF          => [ 'CUSTOMFIELD' => 'Queue' ], #loc_left_pair
     Lifecycle        => [ 'LIFECYCLE' ], #loc_left_pair
     Updated          => [ 'TRANSDATE', ], #loc_left_pair
+    TransactionCreated => [ 'TRANSDATE', ], #loc_left_pair
     UpdatedBy        => [ 'TRANSCREATOR', ], #loc_left_pair
+    TransactionCreator => [ 'TRANSCREATOR', ], #loc_left_pair
     OwnerGroup       => [ 'MEMBERSHIPFIELD' => 'Owner', ], #loc_left_pair
     RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ], #loc_left_pair
