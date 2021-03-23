@@ -5,7 +5,7 @@ use strict;
 
 BEGIN{ $ENV{'TZ'} = 'GMT'};
 
-use RT::Test tests => 10;
+use RT::Test tests => undef;
 
 my $SUBJECT = "Search test - ".$$;
 
@@ -32,3 +32,14 @@ is($txnobj->CreatedObj->ISO,'2005-08-05 20:00:56');
 $tix->FromSQL(qq{Updated = "2005-08-05" AND Subject = "$SUBJECT"});
 is( $tix->Count, 1);
 
+$tix->FromSQL(qq{TransactionType = 'Comment' AND Subject = "$SUBJECT"});
+is( $tix->Count, 1);
+
+ok( $ticket->SetStatus('open') );
+
+$tix->FromSQL(
+    qq{TransactionType = 'Status' AND TransactionField = 'Status' AND TransactionOldValue = 'new' AND TransactionNewValue = 'open' AND Subject = "$SUBJECT"}
+);
+is( $tix->Count, 1, 'Found ticket with Transaction Type/Field/OldValue/NewValue' );
+
+done_testing;
