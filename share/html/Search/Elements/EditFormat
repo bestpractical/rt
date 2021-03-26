@@ -61,7 +61,9 @@ jQuery( function() {
         var name = jQuery(this).attr('name');
         var form = jQuery(this).closest('form');
         jQuery.ajax({
-            url: '<% RT->Config->Get('WebPath') %>/Helpers/BuildFormatString?' + name + '=1&' + form.serialize(),
+            url: '<% RT->Config->Get('WebPath') %>/Helpers/BuildFormatString?' + name + '=1',
+            method: 'POST',
+            data: form.serialize(),
             success: function (data) {
                 if ( data.status == 'success' ) {
                     form.find('input[name=Format]').val(data.Format);
