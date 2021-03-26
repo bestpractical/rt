@@ -615,4 +615,20 @@ now contains the reference to the message content as the name implies.
 
 =back
 
+=head1 UPGRADING FROM 4.4.4 AND EARLIER
+
+=over 4
+
+=item *
+
+This releases fixes an issue with how "=" in time comparisons in ticket
+searches applied timezone settings. Previously, dates would be adjusted
+based on the global RT timezone even if the user had a different timezone.
+This has been fixed to correctly use the user's timezone.
+
+Note that this change may modify results for some saved searches for users
+with a different timezone than RT's global setting.
+
+=back
+
 =cut
