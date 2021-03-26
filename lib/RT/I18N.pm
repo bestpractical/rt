@@ -437,7 +437,7 @@ sub _DecodeMIMEWordsToEncoding {
     # string in array this happen when we have 'key="=?encoded?="; key="plain"'
     $list[-1] .= substr($str, pos $str);
 
-    $str = '';
+    my @parts;
     while (@list) {
         my ($prefix, $charset, $encoding, $enc_str, $trailing) =
                 splice @list, 0, 5;
@@ -456,18 +456,46 @@ sub _DecodeMIMEWordsToEncoding {
                 ."only Q(uoted-printable) and B(ase64) are supported");
         }
 
-        # now we have got a decoded subject, try to convert into the encoding
-        if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
-            if ( Encode::find_encoding($charset) ) {
-                Encode::from_to( $enc_str, $charset, $to_charset );
-            } else {
-                $RT::Logger->warning("Charset '$charset' is not supported");
-                $enc_str =~ s/[^[:print:]]/\357\277\275/g;
-                Encode::from_to( $enc_str, 'UTF-8', $to_charset )
-                    unless $to_charset eq 'utf-8';
-            }
+        push @parts, grep { defined && length } $prefix, { charset => $charset, value => $enc_str }, $trailing;
+    }
+
+    # Concatenate strings first in case a wide character is split into
+    # succssive parts like "=?UTF-8?B?5L2g5Q==?=" and "=?UTF-8?B?pb0=?="
+    my @merged;
+    for my $part (@parts) {
+        if (   $merged[-1]
+            && ref $merged[-1] eq 'HASH'
+            && ref $part eq 'HASH'
+            && $merged[-1]->{charset} eq $part->{charset} )
+        {
+            $merged[-1]{value} .= $part->{value};
         }
-        $str .= $prefix . $enc_str . $trailing;
+        else {
+            push @merged, $part;
+        }
+    }
+
+    $str = '';
+    for my $part (@merged) {
+        if ( ref $part eq 'HASH' ) {
+            my $charset = $part->{charset};
+            my $enc_str = $part->{value};
+            if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
+                if ( Encode::find_encoding($charset) ) {
+                    Encode::from_to( $enc_str, $charset, $to_charset );
+                }
+                else {
+                    $RT::Logger->warning("Charset '$charset' is not supported");
+                    $enc_str =~ s/[^[:print:]]/\357\277\275/g;
+                    Encode::from_to( $enc_str, 'UTF-8', $to_charset )
+                        unless $to_charset eq 'utf-8';
+                }
+            }
+            $str .= $enc_str;
+        }
+        else {
+            $str .= $part;
+        }
     }
 
     return ($str)
