@@ -173,6 +173,26 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 <td valign="top" class="boxcontainer">
 
 <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
+
+% if ( $m->{rt_mason_cache_created} ) {
+% my $mason_obj_date = RT::Date->new( $session{CurrentUser} );
+% $mason_obj_date->Set( Format => 'Unix', Value => $m->{rt_mason_cache_created} );
+
+<div class="mason-cache">
+    <div class="mason-cache-info"><&|/l&>Cache created</&>: <% $mason_obj_date->AsString %></div>
+    <a class="button clear-mason-cache" href="javascript:;"><&|/l&>Clear Mason Cache</&></a>
+</div>
+<script type="text/javascript">
+jQuery('a.clear-mason-cache').click( function() {
+    jQuery.post(RT.Config.WebHomePath + '/Admin/Helpers/ClearMasonCache', function(data) {
+        jQuery('div.mason-cache div.mason-cache-info').text(data.message);
+    }, 'json');
+    return false;
+});
+</script>
+
+% }
+
 <ol>
 % foreach my $path ( RT::Interface::Web->ComponentRoots ) {
 <li><% $path %></li>
