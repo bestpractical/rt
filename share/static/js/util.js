@@ -200,20 +200,48 @@ function checkAllObjects()
 function checkboxToInput(target,checkbox,val){    
     var tar = jQuery('#' + escapeCssSelector(target));
     var box = jQuery('#' + escapeCssSelector(checkbox));
+
+    var emails = jQuery.grep(tar.val().split(/,\s*/), function(email) {
+        return email.match(/\S/) ? true : false;
+    });
+
     if(box.prop('checked')){
-        if (tar.val()==''){
-            tar.val(val);
-        }
-        else{
-            tar.val( val+', '+ tar.val() );        
+        if ( emails.indexOf(val) == -1 ) {
+            emails.unshift(val);
         }
     }
     else{
-        tar.val(tar.val().replace(val+', ',''));
-        tar.val(tar.val().replace(val,''));
+        emails = jQuery.grep(emails, function(email) {
+            return email != val;
+        });
     }
     jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
-    tar.change();
+    tar.val(emails.join(', ')).change();
+}
+
+function checkboxesToInput(target,checkboxes) {
+    var tar = jQuery('#' + escapeCssSelector(target));
+
+    var emails = jQuery.grep(tar.val().split(/,\s*/), function(email) {
+        return email.match(/\S/) ? true : false;
+    });
+
+    jQuery(checkboxes).each(function(index, checkbox) {
+        var val = jQuery(checkbox).attr('data-address');
+        if(jQuery(checkbox).prop('checked')){
+            if ( emails.indexOf(val) == -1 ) {
+                emails.unshift(val);
+            }
+        }
+        else{
+            emails = jQuery.grep(emails, function(email) {
+                return email != val;
+            });
+        }
+    });
+
+    jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
+    tar.val(emails.join(', ')).change();
 }
 
 // ahah for back compatibility as plugins may still use it

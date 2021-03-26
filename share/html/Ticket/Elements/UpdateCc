@@ -59,7 +59,7 @@
         <div class="OneTimeCcs hidden">
 %   }
 <i class="label">(<&|/l&>check to add</&>)</i>
-<input type="checkbox" class="checkbox" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
+<input type="checkbox" class="checkbox" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/); checkboxesToInput('UpdateCc', 'input[name^=UpdateCc-]:checkbox');">
 <label for="AllSuggestedCc"><% loc('All recipients') %></label>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
@@ -71,6 +71,7 @@
     type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
     onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
+    data-address="<% $clean_addr %>"
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
       <label for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
 </span>
@@ -88,7 +89,7 @@
         <div class="OneTimeCcs hidden">
 %   }
 <i class="label">(<&|/l&>check to add</&>)</i>
-<input type="checkbox" class="checkbox" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
+<input type="checkbox" class="checkbox" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/); checkboxesToInput('UpdateBcc', 'input[name^=UpdateBcc-]:checkbox');">
 <label for="AllSuggestedBcc"><% loc('All recipients') %></label>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
@@ -100,6 +101,7 @@
     type="checkbox"
 % my $clean_addr = $txn_addresses{$addr}->format;
     onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
+    data-address="<% $clean_addr %>"
     <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
       <label for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
 </span>
