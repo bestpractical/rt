@@ -54,6 +54,7 @@ $ChartStyle => 'bar+table+sql'
 $Width  => undef
 $Height => undef
 $SavedSearchId => ''
+$StackedGroupBy => undef
 </%args>
 
 % my $id = join '-', 'search-chart', $SavedSearchId || ();
@@ -118,6 +119,7 @@ var searchChart = new Chart(ctx, {
         },
         scales: {
             xAxes: [{
+                stacked: <% $stacked ? 'true' : 'false' %>,
                 scaleLabel: {
                     display: true,
                     labelString: <% join(' - ', map $report->Label( $_), @{ $columns{'Groups'} }) |n,j %>
@@ -127,6 +129,7 @@ var searchChart = new Chart(ctx, {
                 }
             }],
             yAxes: [{
+                stacked: <% $stacked ? 'true' : 'false' %>,
                 scaleLabel: {
                     display: true,
                     labelString: <% $report->Label( $columns{'Functions'}[0] ) |n,j %>
@@ -162,8 +165,18 @@ jQuery('#search-chart').click(function(e) {
     if ( !slice[0] ) return;
 
     var query = <% $Query =~ /^\s*\(.*\)$/ ? $Query : "( $Query )" |n,j %>;
-    if ( data_queries[slice[0]._index] ) {
-        query += ' AND ( ' + data_queries[slice[0]._index] + ')';
+    var extra_query;
+%   if ( $stacked ) { # data_queries is array of array for stacked charts
+        if ( data_queries[slice[0]._datasetIndex][slice[0]._index] ) {
+            extra_query = data_queries[slice[0]._datasetIndex][slice[0]._index];
+        }
+%   } else {
+        if ( data_queries[slice[0]._index] ) {
+            extra_query = data_queries[slice[0]._index];
+        }
+%   }
+    if ( extra_query ) {
+        query += ' AND ( ' + extra_query + ')';
     }
     window.open(RT.Config.WebPath + '/Search/Results.html?Query=' + encodeURIComponent(query)
         + '&' + <% $m->comp('/Elements/QueryString', map { $_ => $DECODED_ARGS->{$_} } grep { $_ ne 'Query' } keys %$DECODED_ARGS) |n,j%>);
@@ -242,6 +255,60 @@ if ( $ChartStyle =~ /\b(?:bar|line)\b/ ) {
         }
         else {
             push @labels, $report->Label($column);
+        }
+    }
+}
+
+my $stacked;
+if ( $StackedGroupBy && $ChartStyle =~ /\bbar\b/ ) {
+    if ( scalar @data > 2 ) {
+        RT->Logger->warning("Invalid stack option: it can't apply to multiple data rows");
+    }
+    else {
+
+        my $labels = $data[0];
+
+        # find the stacked group index
+        require List::MoreUtils;
+        my $stacked_index = List::MoreUtils::first_index { $_ eq $StackedGroupBy } @GroupBy;
+        if ( $stacked_index >= 0 ) {
+            my %rows;
+            my $i = 0;
+            my %new_label;
+
+            for my $label (@$labels) {
+                my @new_label = @$label;
+                splice @new_label, $stacked_index, 1;    # remove the stacked group
+                my $key = join ';;;', @new_label;
+                $new_label{$key}                               = \@new_label;
+                $rows{ $label->[$stacked_index] }{$key}{value} = $data[1][$i];
+                $rows{ $label->[$stacked_index] }{$key}{label} = $data_labels[0][$i];
+                $rows{ $label->[$stacked_index] }{$key}{query} = $data_queries[$i];
+                $i++;
+            }
+
+            @data = [ map { $new_label{$_} } sort { lc $a cmp lc $b } keys %new_label ];
+
+            my @dataset_labels;
+            @data_queries = ();
+            @data_labels  = ();
+            for my $stacked_field ( sort { lc $a cmp lc $b } keys %rows ) {
+                push @dataset_labels, join ' - ', $labels[0], $stacked_field;
+                my ( @new_values, @new_labels, @new_queries );
+                for my $key ( sort { lc $a cmp lc $b } keys %new_label ) {
+                    push @new_values,  $rows{$stacked_field}->{$key}{value} || 0;
+                    push @new_labels,  $rows{$stacked_field}->{$key}{label};
+                    push @new_queries, $rows{$stacked_field}->{$key}{query};
+                }
+                push @data,         \@new_values;
+                push @data_labels,  \@new_labels;
+                push @data_queries, \@new_queries;
+            }
+            @labels  = @dataset_labels;
+            $stacked = 1;
+        }
+        else {
+            RT->Logger->warning("Invalid StackedGroupBy: $StackedGroupBy");
         }
     }
 }

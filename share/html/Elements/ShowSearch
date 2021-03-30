@@ -98,6 +98,10 @@ if ($SavedSearch) {
     }
     elsif ( $SearchArg->{SearchType} ne 'Ticket' ) {
 
+        if ( $SearchArg->{'SearchType'} eq 'Chart' ) {
+            $SearchArg->{'SavedChartSearchId'} ||= $SavedSearch;
+        }
+
         # XXX: dispatch to different handler here
         $query_display_component
             = '/Search/Elements/' . $SearchArg->{SearchType};

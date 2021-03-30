@@ -1,8 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
-my $test = 'RT::Test::SMIME';
+use RT::Test::Crypt SMIME => 1, tests => undef;
+my $test = 'RT::Test::Crypt';
 
 use IPC::Run3 'run3';
 use RT::Interface::Email;
@@ -30,7 +30,7 @@ my $user;
     ok($user->Load('root'), "Loaded user 'root'");
     is($user->EmailAddress, 'root@localhost');
 
-    RT::Test::SMIME->import_key( 'root@example.com.crt' => $user );
+    $test->smime_import_key( 'root@example.com.crt' => $user );
 }
 
 RT::Test->clean_caught_mails;
@@ -65,8 +65,8 @@ END
     ok(eval {
         run3([
             qw(openssl smime -decrypt -passin pass:123456),
-            '-inkey', $test->key_path('root@example.com.key'),
-            '-recip', $test->key_path('root@example.com.crt')
+            '-inkey', $test->smime_key_path('root@example.com.key'),
+            '-recip', $test->smime_key_path('root@example.com.crt')
         ], \$mails[0], \$buf, \$err )
         }, 'can decrypt'
     );

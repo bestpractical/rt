@@ -75,6 +75,7 @@ use List::MoreUtils qw();
 use JSON qw();
 use Plack::Util;
 use HTTP::Status qw();
+use Regexp::Common;
 
 =head2 SquishedCSS $style
 
@@ -272,6 +273,14 @@ sub HandleRequest {
     if (RT->Config->Get('DevelMode')) {
         require Module::Refresh;
         Module::Refresh->refresh;
+    }
+    else {
+        require File::Spec;
+        my $mason_cache_created = ( stat File::Spec->catdir( $RT::MasonDataDir, 'obj' ) )[ 9 ] // '';
+        if ( ( $HTML::Mason::Commands::m->{rt_mason_cache_created} // '' ) ne $mason_cache_created ) {
+            $HTML::Mason::Commands::m->interp->flush_code_cache;
+            $HTML::Mason::Commands::m->{rt_mason_cache_created} = $mason_cache_created;
+        }
     }
 
     RT->Config->RefreshConfigFromDatabase();
@@ -1289,18 +1298,35 @@ sub DecodeARGS {
 sub PreprocessTimeUpdates {
     my $ARGS = shift;
 
-    # This code canonicalizes time inputs in hours into minutes
+    my @msg;
+
+    # This code validates and canonicalizes time inputs(including hours into minutes)
     foreach my $field ( keys %$ARGS ) {
         next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS->{$1};
         my $local = $1;
         $ARGS->{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
                       {($1 || 0) + $3 ? $2 / $3 : 0}xe;
+
+        $ARGS->{$local} =~ s!^\s+!!;
+        $ARGS->{$local} =~ s!\s+$!!;
+        $ARGS->{$local} =~ s!,!!g;
+
+        if ( $ARGS->{$local} && $ARGS->{$local} !~ /^$RE{num}{real}$/ ) {
+            push @msg, HTML::Mason::Commands::loc( 'Invalid [_1]: it should be a number', HTML::Mason::Commands::loc( $local ) );
+            next;
+        }
         if ( $ARGS->{$field} && $ARGS->{$field} =~ /hours/i ) {
             $ARGS->{$local} *= 60;
         }
+
+        # keep decimal part as the column in db is int
+        $ARGS->{$local} = sprintf( '%.0f', $ARGS->{$local} );
+
         delete $ARGS->{$field};
     }
 
+    return 1 unless @msg;
+    return wantarray ? ( 0, @msg ) : 0;
 }
 
 sub MaybeEnableSQLStatementLog {
@@ -1350,7 +1376,9 @@ sub LogRecordedSQLStatements {
         }
         $RT::Logger->log(
             level   => $log_sql_statements,
-            message => "SQL("
+            message => ($HTML::Mason::Commands::session{'CurrentUser'}->Name // '')
+                . " - "
+                . "SQL("
                 . sprintf( "%.6f", $duration )
                 . "s): $sql;"
                 . ( @bind ? "  [ bound values: @{[map{ defined $_ ? qq|'$_'| : 'undef'} @bind]} ]" : "" )
@@ -1923,6 +1951,41 @@ sub RequestENV {
 sub ClientIsIE {
     # IE 11.0 dropped "MSIE", so we can't use that alone
     return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
+}
+
+=head2 ClearMasonCache
+
+Delete current mason cache.
+
+=cut
+
+sub ClearMasonCache {
+    require File::Path;
+    require File::Spec;
+    my $mason_obj_dir = File::Spec->catdir( $RT::MasonDataDir, 'obj' );
+
+    my $error;
+
+    # There is a race condition that other processes add new cache items while
+    # remove_tree is running, which could prevent it from deleting the whole "obj"
+    # directory with errors like "Directory not empty". Let's try for a few times
+    # here to get around it.
+
+    for ( 1 .. 10 ) {
+        last unless -e $mason_obj_dir;
+        File::Path::remove_tree( $mason_obj_dir, { safe => 1, error => \$error } );
+    }
+
+    if ( $error && @$error ) {
+
+        # Only one dir is specified, so there will be only one error if any
+        my ( $file, $message ) = %{ $error->[0] };
+        RT->Logger->error("Failed to clear mason cache: $file => $message");
+        return ( 0, HTML::Mason::Commands::loc( "Failed to clear mason cache: [_1] => [_2]", $file, $message ) );
+    }
+    else {
+        return ( 1, HTML::Mason::Commands::loc('Cache cleared') );
+    }
 }
 
 package HTML::Mason::Commands;
@@ -3836,12 +3899,6 @@ sub ProcessTransactionSquelching {
         (    ref $args->{'TxnSendMailTo'} eq "ARRAY"  ? @{$args->{'TxnSendMailTo'}} :
          defined $args->{'TxnSendMailTo'}             ?  ($args->{'TxnSendMailTo'}) :
                                                                              () );
-    for my $type ( qw/Cc Bcc/ ) {
-        next unless $args->{"Update$type"};
-        for my $addr ( Email::Address->parse( $args->{"Update$type"} ) ) {
-            $checked{$addr->address} ||= 1;
-        }
-    }
     my %squelched = map { $_ => 1 } grep { not $checked{$_} } split /,/, ($args->{'TxnRecipients'}||'');
     return %squelched;
 }
@@ -4250,14 +4307,17 @@ sub ProcessAssetRoleMembers {
                 $is = $1;
             }
 
-            my ($ok, $msg) = $object->$method(
-                Type        => $role,
-                ($ARGS{$arg} =~ /\D/
-                    ? ($is => $ARGS{$arg})
-                    : (PrincipalId => $ARGS{$arg})
-                ),
-            );
-            push @results, $msg;
+            my @members = ( ref( $ARGS{$arg} ) eq 'ARRAY' ) ? ( @{ $ARGS{$arg} } ) : ( $ARGS{$arg} );
+            foreach my $member (@members) {
+                my ( $ok, $msg ) = $object->$method(
+                    Type => $role,
+                    (   $member =~ /\D/
+                        ? ( $is => $member )
+                        : ( PrincipalId => $member )
+                    ),
+                );
+                push @results, $msg;
+            }
         }
         elsif ($arg =~ /^RemoveAllRoleMembers-(.+)$/) {
             my $role = $1;
@@ -5080,6 +5140,10 @@ sub CachedCustomFieldValues {
     # Wasn't in the cache; grab it and cache it.
     $m->notes($key, $cf->Values);
     return $m->notes($key);
+}
+
+sub PreprocessTimeUpdates {
+    RT::Interface::Web::PreprocessTimeUpdates(@_);
 }
 
 package RT::Interface::Web;

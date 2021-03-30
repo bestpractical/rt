@@ -327,6 +327,16 @@ sub HasRight {
         };
         return $cached->{'SuperUser'} || $cached->{ $args{'Right'} }
             if $cached;
+
+        if ( ref $args{Object} ne 'RT::System' ) {
+            my $cached =
+              $_ACL_CACHE->{ $self->id . ';:;'
+                  . 'RT::System' . '-'
+                  . $RT::System->id };
+            return 1
+              if $cached
+              && ( $cached->{'SuperUser'} || $cached->{ $args{'Right'} } );
+        }
     }
 
     unshift @{ $args{'EquivObjects'} },
@@ -836,6 +846,12 @@ sub __DependsOn {
         my $objs = RT::Transactions->new( $self->CurrentUser );
         $objs->Limit( FIELD => $type =~ /Add/? 'NewValue': 'OldValue', VALUE => $self->Id );
         $objs->Limit( FIELD => 'Type', VALUE => $type );
+        push( @$list, $objs );
+    }
+    for my $column ( qw(OldValue NewValue) ) {
+        my $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => $column, VALUE => $self->Id );
+        $objs->Limit( FIELD => 'Type', VALUE => 'SetWatcher' );
         push( @$list, $objs );
     }
 

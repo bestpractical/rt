@@ -164,6 +164,28 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
   <div class="col-4">
 
     <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
+
+% if ( $m->{rt_mason_cache_created} ) {
+% my $mason_obj_date = RT::Date->new( $session{CurrentUser} );
+% $mason_obj_date->Set( Format => 'Unix', Value => $m->{rt_mason_cache_created} );
+
+<div class="mason-cache">
+  <div class="mason-cache-info py-1 d-inline-block">
+    <&|/l&>Cache created</&>: <% $mason_obj_date->AsString %>
+  </div>
+  <a class="button btn btn-primary btn-sm clear-mason-cache float-right" href="javascript:;"><&|/l&>Clear Mason Cache</&></a>
+</div>
+<script type="text/javascript">
+jQuery('a.clear-mason-cache').click( function() {
+    jQuery.post(RT.Config.WebHomePath + '/Admin/Helpers/ClearMasonCache', function(data) {
+        jQuery('div.mason-cache div.mason-cache-info').text(data.message);
+    }, 'json');
+    return false;
+});
+</script>
+
+% }
+
       <ol class="list-group-compact list-group">
 % foreach my $path ( RT::Interface::Web->ComponentRoots ) {
         <li class="list-group-item"><% $path %></li>
@@ -214,6 +236,7 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
     <div class="collection-as-table label col-6 text-left"><&|/l&>Value</&></div>
   </div>
 % my $attrs = $RT::System->Attributes;
+% $m->callback( CallbackName => 'ModifySystemAttributes', Attributes => $attrs );
 % my $index_size = 0;
 % while ( my $attr = $attrs->Next ) {
 % next if $attr->Name eq 'UpgradeHistory';

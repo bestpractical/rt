@@ -1314,9 +1314,9 @@ sub CurrentUserRequireToSetPassword {
         RequireCurrent => 1,
     );
 
-    if ( RT->Config->Get('WebRemoteUserAuth')
-        && !RT->Config->Get('WebFallbackToRTLogin')
-    ) {
+    if (   ( RT->Config->Get('WebRemoteUserAuth') && !RT->Config->Get('WebFallbackToRTLogin') )
+        || ( RT->Config->Get('ExternalAuth') && !$self->CurrentUser->HasPassword ) )
+    {
         $res{'CanSet'} = 0;
         $res{'Reason'} = $self->loc("External authentication enabled.");
     } elsif ( !$self->CurrentUser->HasPassword ) {
@@ -2060,7 +2060,7 @@ sub PreferredKey
     return $prefkey->Content if $prefkey;
 
     # we don't have a preferred key for this user, so now we must query GPG
-    my %res = RT::Crypt->GetKeysForEncryption($self->EmailAddress);
+    my %res = RT::Crypt->GetKeysForEncryption(Recipient => $self->EmailAddress, Protocol => 'GnuPG');
     return undef unless defined $res{'info'};
     my @keys = @{ $res{'info'} };
     return undef if @keys == 0;
@@ -2091,7 +2091,26 @@ sub PrivateKey {
     }
 
     my $key = $self->FirstAttribute('PrivateKey') or return undef;
-    return $key->Content;
+    my $content = $key->Content;
+
+    # RT used to identify keys using the key ID, but now identifies them
+    # using the key fingerprint, which is 160 bits long and avoids a
+    # collision attack against keys with short IDs.
+    if ( length $content < 40 ) {
+        # not fingerprint, try to update it
+        my %tmp = RT::Crypt->GetKeysForSigning( Signer => $content, Protocol => 'GnuPG' );
+        if ( !$tmp{exit_code} && $tmp{info} && $tmp{info}[0] ) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load( $self->Id );
+            $user->SetPrivateKey( $tmp{info}[0]{Fingerprint} );
+            return $tmp{info}[0]{Fingerprint};
+        }
+        else {
+            RT->Logger->warning("Couldn't find private key for $content");
+        }
+    }
+
+    return $content;
 }
 
 sub SetPrivateKey {
@@ -2117,6 +2136,8 @@ sub SetPrivateKey {
         my %tmp = RT::Crypt->GetKeysForSigning( Signer => $key, Protocol => 'GnuPG' );
         return (0, $self->loc("No such key or it's not suitable for signing"))
             if $tmp{'exit_code'} || !$tmp{'info'};
+        # In case $key is key id instead of fingerprint
+        $key = $tmp{'info'}[0]{Fingerprint};
     }
 
     my ($status, $msg) = $self->SetAttribute(

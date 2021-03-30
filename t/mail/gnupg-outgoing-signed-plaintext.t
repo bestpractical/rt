@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG
+use RT::Test::Crypt
+  GnuPG          => 1,
   tests          => undef,
   text_templates => 1,
   gnupg_options  => {

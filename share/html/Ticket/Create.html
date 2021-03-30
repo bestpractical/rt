@@ -64,7 +64,7 @@
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 % if ($gnupg_widget) {
-  <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+  <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $QueueObj &>
 % }
 
 <div id="Ticket-Create-basics">
@@ -465,6 +465,12 @@ my $checks_failure = 0;
     unless ($status) {
         $checks_failure = 1;
         push @results, @msg;
+    }
+
+    ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
+    unless ( $status ) {
+        push @results, @msg;
+        $checks_failure = 1;
     }
 }
 

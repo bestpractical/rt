@@ -920,12 +920,35 @@ our %META;
                 $opt->{'Incoming'} = \@enabled;
             }
             if ( $opt->{'Outgoing'} ) {
-                if (not $enabled{$opt->{'Outgoing'}}) {
-                    $RT::Logger->warning($opt->{'Outgoing'}.
+                if (ref($opt->{'Outgoing'}) eq 'HASH') {
+                    # Check each entry in the hash
+                    foreach my $q (keys(%{$opt->{'Outgoing'}})) {
+                        if (not $enabled{$opt->{'Outgoing'}->{$q}}) {
+                            if ($q ne '') {
+                                $RT::Logger->warning($opt->{'Outgoing'}->{$q}.
+                                                     " explicitly set as outgoing Crypt plugin for queue $q, but not marked Enabled; "
+                                                     . (@enabled ? "using $enabled[0]" : "removing"));
+                            } else {
+                                $RT::Logger->warning($opt->{'Outgoing'}->{$q}.
+                                                     " explicitly set as default outgoing Crypt plugin, but not marked Enabled; "
+                                                     . (@enabled ? "using $enabled[0]" : "removing"));
+                            }
+                            $opt->{'Outgoing'}->{$q} = $enabled[0];
+                        }
+                    }
+                    # If there's no entry for the default queue, set one
+                    if (!$opt->{'Outgoing'}->{''} && scalar(@enabled)) {
+                        $RT::Logger->warning("No default outgoing Crypt plugin set; using $enabled[0]");
+                        $opt->{'Outgoing'}->{''} = $enabled[0];
+                    }
+                } else {
+                    if (not $enabled{$opt->{'Outgoing'}}) {
+                        $RT::Logger->warning($opt->{'Outgoing'}.
                                              " explicitly set as outgoing Crypt plugin, but not marked Enabled; "
                                              . (@enabled ? "using $enabled[0]" : "removing"));
+                    }
+                    $opt->{'Outgoing'} = $enabled[0] unless $enabled{$opt->{'Outgoing'}};
                 }
-                $opt->{'Outgoing'} = $enabled[0] unless $enabled{$opt->{'Outgoing'}};
             } else {
                 $opt->{'Outgoing'} = $enabled[0];
             }
@@ -969,6 +992,13 @@ our %META;
                     );
                     delete $opt->{CAPath};
                 }
+            }
+
+            if ($opt->{CheckCRL} && ! RT::Crypt::SMIME->SupportsCRLfile) {
+                $opt->{CheckCRL} = 0;
+                $RT::Logger->warn(
+                    "Your version of OpenSSL does not support the -CRLfile option; disabling \$SMIME{CheckCRL}"
+                );
             }
         },
     },
@@ -1497,6 +1527,9 @@ our %META;
         Type => 'HASH',
     },
     AssetHideSimpleSearch => {
+        Widget => '/Widgets/Form/Boolean',
+    },
+    AssetMultipleOwner => {
         Widget => '/Widgets/Form/Boolean',
     },
     AssetShowSearchResultCount => {
@@ -2094,7 +2127,15 @@ sub _LoadConfig {
         }
     };
     if ($@) {
-        return 1 if $is_site && $@ =~ /^Can't locate \Q$args{File}/;
+
+        if ( $is_site && $@ =~ /^Can't locate \Q$args{File}/ ) {
+
+            # Since perl 5.18, the "Can't locate ..." error message contains
+            # more details. warn to help debug if there is a permission issue.
+            warn qq{Couldn't load RT config file $args{'File'}:\n\n$@} if $@ =~ /Permission denied at/;
+            return 1;
+        }
+
         if ( $is_site || $@ !~ /^Can't locate \Q$args{File}/ ) {
             die qq{Couldn't load RT config file $args{'File'}:\n\n$@};
         }

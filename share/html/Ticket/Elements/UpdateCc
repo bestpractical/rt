@@ -53,7 +53,7 @@
   </div>
   <div class="value col-9">
     <& /Elements/EmailInput, Name => 'UpdateCc', Size => undef, Default => $ARGS{UpdateCc}, AutocompleteMultiple => 1, Options => \@one_time_Ccs &>
-    <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
+    <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="<% $ARGS{UpdateIgnoreAddressCheckboxes} || 0 %>">
   </div>
 </div>
 
@@ -71,7 +71,7 @@
 
       <div class="col-auto"><span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>check to add</&>"></span></div>
       <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/, null, true)">
+        <input type="checkbox" class="custom-control-input" id="AllSuggestedCc" name="AllSuggestedCc" value="1" onclick="setCheckbox(this, /^UpdateCc-/); checkboxesToInput('UpdateCc', 'input[name^=UpdateCc-]:checkbox');">
         <label class="custom-control-label" for="AllSuggestedCc"><% loc('All recipients') %></label>
       </div>
 %}
@@ -86,6 +86,7 @@
               type="checkbox"
               autocomplete="off"
 % my $clean_addr = $txn_addresses{$addr}->format;
+              data-address="<% $clean_addr %>"
               onClick="checkboxToInput('UpdateCc', <% "UpdateCc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
               <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> >
             <label class="custom-control-label" for="UpdateCc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>
@@ -123,7 +124,7 @@
 
       <div class="col-auto"><span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>check to add</&>"></span></div>
       <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="checkbox custom-control-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/, null, true)">
+        <input type="checkbox" class="checkbox custom-control-input" id="AllSuggestedBcc" name="AllSuggestedBcc" value="1" onclick="setCheckbox(this, /^UpdateBcc-/); checkboxesToInput('UpdateBcc', 'input[name^=UpdateBcc-]:checkbox');">
         <label class="custom-control-label" for="AllSuggestedBcc"><% loc('All recipients') %></label>
       </div>
 %}
@@ -138,6 +139,7 @@
               type="checkbox"
               autocomplete="off"
 % my $clean_addr = $txn_addresses{$addr}->format;
+              data-address="<% $clean_addr %>"
               onClick="checkboxToInput('UpdateBcc', <% "UpdateBcc-$addr" |n,j%>, <%$clean_addr|n,j%> );"
               <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%> >
             <label class="custom-control-label" for="UpdateBcc-<%$addr%>"><& /Elements/ShowUser, Address => $txn_addresses{$addr}&></label>

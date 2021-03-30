@@ -4,15 +4,15 @@ use warnings;
 
 my $homedir;
 BEGIN {
-    require RT::Test::GnuPG;
-    $homedir = RT::Test::GnuPG::new_homedir(
+    require RT::Test::Crypt;
+    $homedir = RT::Test::Crypt::new_homedir(
         RT::Test::get_abs_relocatable_dir( File::Spec->updir(), qw/data gnupg keyrings/ ) );
 }
 
-use RT::Test::GnuPG tests => undef, gnupg_options => { homedir => $homedir, quiet => 1 };
+use RT::Test::Crypt GnuPG => 1, tests => undef, gnupg_options => { homedir => $homedir, quiet => 1 };
 use Test::Warn;
 
-my $gnupg_version = RT::Test::GnuPG::gnupg_version;
+my $gnupg_version = RT::Test::Crypt::gnupg_version;
 
 use_ok('RT::Crypt');
 use_ok('MIME::Entity');
@@ -24,7 +24,7 @@ diag 'only signing. correct passphrase';
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );
+    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test', Protocol => 'GnuPG' );
     ok( $entity, 'signed entity');
     ok( !$res{'logger'}, "log is here as well" ) or diag $res{'logger'};
     my @status = RT::Crypt->ParseStatus(
@@ -81,6 +81,7 @@ SKIP: {
     my %res;
     warning_like {
         %res = RT::Crypt->SignEncrypt(
+            Protocol   => 'GnuPG',
             Entity     => $entity,
             Encrypt    => 0,
             Passphrase => ''
@@ -108,6 +109,7 @@ diag 'only signing. wrong passphrase';
     my %res;
     warning_like {
         %res = RT::Crypt->SignEncrypt(
+            Protocol   => 'GnuPG',
             Entity     => $entity,
             Encrypt    => 0,
             Passphrase => 'wrong',
@@ -133,7 +135,7 @@ diag 'encryption only';
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Sign => 0 );
+    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Sign => 0, Protocol => 'GnuPG' );
     ok( !$res{'exit_code'}, "successful encryption" );
     ok( !$res{'logger'}, "no records in logger" );
 
@@ -165,6 +167,7 @@ diag 'encryption only, bad recipient';
     my %res;
     warning_like {
         %res = RT::Crypt->SignEncrypt(
+            Protocol   => 'GnuPG',
             Entity => $entity,
             Sign   => 0,
         );
@@ -195,7 +198,7 @@ diag 'encryption and signing with combined method';
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Passphrase => 'test' );
+    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Passphrase => 'test', Protocol => 'GnuPG' );
     ok( !$res{'exit_code'}, "successful encryption with signing" );
     ok( !$res{'logger'}, "log is here as well" ) or diag $res{'logger'};
 
@@ -236,10 +239,10 @@ diag 'encryption and signing with cascading, sign on encrypted';
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Sign => 0 );
+    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Sign => 0, Protocol => 'GnuPG' );
     ok( !$res{'exit_code'}, 'successful encryption' );
     ok( !$res{'logger'}, "no records in logger" );
-    %res = RT::Crypt->SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );
+    %res = RT::Crypt->SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test', Protocol => 'GnuPG' );
     ok( !$res{'exit_code'}, 'successful signing' );
     ok( !$res{'logger'}, "no records in logger" );
 
@@ -258,7 +261,7 @@ diag 'find signed/encrypted part deep inside';
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Sign => 0 );
+    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Sign => 0, Protocol => 'GnuPG' );
     ok( !$res{'exit_code'}, "success" );
     $entity->make_multipart( 'mixed', Force => 1 );
     $entity->attach(
@@ -283,6 +286,7 @@ diag 'wrong signed/encrypted parts: no protocol';
     );
 
     my %res = RT::Crypt->SignEncrypt(
+        Protocol   => 'GnuPG',
         Entity => $entity,
         Sign   => 0,
     );
@@ -309,6 +313,7 @@ diag 'wrong signed/encrypted parts: not enought parts';
     );
 
     my %res = RT::Crypt->SignEncrypt(
+        Protocol   => 'GnuPG',
         Entity => $entity,
         Sign   => 0,
     );
@@ -331,7 +336,7 @@ diag 'wrong signed/encrypted parts: wrong proto';
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Sign => 0 );
+    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Sign => 0, Protocol => 'GnuPG' );
     ok( !$res{'exit_code'}, 'success' );
     $entity->head->mime_attr( 'Content-Type.protocol' => 'application/bad-proto' );
 
@@ -347,7 +352,7 @@ diag 'wrong signed/encrypted parts: wrong proto';
         Subject => 'test',
         Data    => ['test'],
     );
-    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test' );
+    my %res = RT::Crypt->SignEncrypt( Entity => $entity, Encrypt => 0, Passphrase => 'test', Protocol => 'GnuPG' );
     ok( !$res{'exit_code'}, 'success' );
     $entity->head->mime_attr( 'Content-Type.protocol' => 'application/bad-proto' );
 

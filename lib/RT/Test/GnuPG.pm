@@ -1,3 +1,8 @@
+# NOTE: This file is deprecated.  Instead of:
+#    use RT::Test::GnuPG ARGS
+# please do:
+#    use RT::Test::Crypt GnuPG => 1, ARGS
+
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
@@ -410,6 +415,8 @@ END {
         system( 'gpgconf', '--homedir', RT->Config->Get('GnuPGOptions')->{homedir}, '--quiet', '--kill', 'gpg-agent' )
             && warn $!;
     }
+
+    diag "RT::Test::GnuPG is deprecated; please use RT::Test::Crypt GnuPG => 1 instead";
 }
 
 1;

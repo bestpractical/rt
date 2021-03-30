@@ -76,6 +76,8 @@ There is a problem with key/certificate(s) for address <% $issue->{'EmailAddress
 <br />
 Select a key/certificate you want to use for encryption:
 <& /Elements/Crypt/SelectKeyForEncryption,
+    Protocol     => $Protocol,
+    Queue        => $Queue,
     Name         => 'UseKey-'. $issue->{'EmailAddress'},
     EmailAddress => $issue->{'EmailAddress'},
     Default      => ( $issue->{'User'}? $issue->{'User'}->PreferredKey : undef ),
@@ -90,5 +92,7 @@ Select a key/certificate you want to use for encryption:
 <%ARGS>
 $Issues => []
 $SignAddresses => []
+$Protocol => undef
+$Queue => undef
 </%ARGS>
 

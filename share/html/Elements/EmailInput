@@ -89,6 +89,10 @@
     data-items="<% JSON(\@items) %>"
 % }
 
+% if ($AutocompleteExclude) {
+    data-autocomplete-exclude="<% $AutocompleteExclude %>"
+% }
+
 />
 % if ($EntryHint) {
 <br>
@@ -147,4 +151,5 @@ $AutocompleteSystem => 0
 $EntryHint => ''
 $Placeholder => ''
 $Options => []
+$AutocompleteExclude => undef
 </%ARGS>

@@ -3206,6 +3206,17 @@ giving quick access back to a search after clicking on an asset.
 
 Set($AssetHideSimpleSearch, 0);
 
+=item C<$AssetMultipleOwner>
+
+By default an asset is limited to a single user as an owner. By setting
+this to a true value, you can allow multiple users and groups as owner.
+If you change this back to a false value while having multiple owners
+set on any assets, RT's behavior may be inconsistent.
+
+=cut
+
+Set($AssetMultipleOwner, 0);
+
 =back
 
 =head2 Message box properties
@@ -3854,6 +3865,19 @@ Set C<Passphrase> to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
 '' key is used as a default.
 
+Set C<OtherCertificatesToSend> to path to a PEM-formatted certificate file.
+Certificates in the file will be include in outgoing signed emails.
+
+Set C<CheckCRL> to a true value to have RT check for revoked certificates
+by downloading a CRL. By default, C<CheckCRL> is disabled.
+
+Set C<CheckOCSP> to a true value to have RT check for revoked certificates
+against an OCSP server if possible.  By default, C<CheckOCSP> is disabled.
+
+Set C<CheckRevocationDownloadTimeout> to the timeout in seconds for
+downloading a CRL or an issuer certificate (the latter is used when
+checking against OCSP).  The default timeout is 30 seconds.
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -3867,6 +3891,10 @@ Set( %SMIME,
     CAPath => undef,
     AcceptUntrustedCAs => undef,
     Passphrase => undef,
+    OtherCertificatesToSend => undef,
+    CheckCRL => 0,
+    CheckOCSP => 0,
+    CheckRevocationDownloadTimeout => 30,
 );
 
 =head3 GnuPG configuration
