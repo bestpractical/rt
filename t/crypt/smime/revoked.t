@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::Crypt SMIME => 1, tests => undef;
 
 my $openssl = RT::Test->find_executable('openssl');
 my $keyring = File::Spec->catfile(RT::Test->temp_directory, "smime" );
@@ -17,7 +17,7 @@ RT->Config->Set('SMIME', Enable => 1,
     CheckOCSP => 1,
 );
 
-RT::Test::SMIME->import_key('revoked@example.com');
+RT::Test::Crypt->smime_import_key('revoked@example.com');
 
 
 if (!RT::Crypt::SMIME->SupportsCRLfile) {
