@@ -175,5 +175,28 @@ diag "Custom Field handling";
 
 }
 
+note "Create/update with Roles using names";
+{
+    my $root = RT::User->new( RT->SystemUser );
+    $root->Load("root");
+    ok $root->id, "Found root";
+
+    my $bps = RT::Test->load_or_create_user( Name => "BPS" );
+    ok $bps->id, "Created BPS user";
+
+    my $asset = RT::Asset->new( RT->SystemUser );
+    my ($id, $msg) = $asset->Create(
+        Name    => 'RT server 2',
+        HeldBy  => 'root',
+        Owner   => 'BPS',
+        Contact => 'BPS',
+        Catalog => $catalog->id,
+    );
+    ok $id, "Created: $msg";
+    is $asset->HeldBy->UserMembersObj->First->Name, "root", "root is Holder";
+    is $asset->Owner->Name, "BPS", "BPS is Owner";
+    is $asset->Contacts->UserMembersObj->First->Name, "BPS", "BPS is Contact";
+}
+
 
 done_testing;
