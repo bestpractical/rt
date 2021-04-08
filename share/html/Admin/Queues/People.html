@@ -187,7 +187,8 @@ if ( $ARGS{'GroupString'} ) {
     $Groups->LimitToUserDefinedGroups;
     $Groups->Limit( FIELD    => $ARGS{'GroupField'},
                     VALUE    => $ARGS{'GroupString'},
-                    OPERATOR => $ARGS{'GroupOp'}
+                    OPERATOR => $ARGS{'GroupOp'},
+                    CASESENSITIVE => 0,
                   );
 } else {
     $group_msg = loc("No principals selected.");
