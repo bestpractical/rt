@@ -443,13 +443,37 @@ sub HasRights {
             return ();
         }
     }
-    if ( @$roles ) {
+
+    my @enabled_roles;
+    for my $role ( @$roles ) {
+        if ( $role =~ /^RT::CustomRole-(\d+)$/ ) {
+            my $custom_role = RT::CustomRole->new( RT->SystemUser );
+            $custom_role->Load( $1 );
+            if ( $custom_role->id && !$custom_role->Disabled ) {
+                my $added;
+                for my $object ( @{ $args{'EquivObjects'} } ) {
+                    next unless $object->isa('RT::Queue');
+                    if ( $custom_role->IsAdded( $object->id ) ) {
+                        $added = 1;
+                        last;
+                    }
+                }
+                push @enabled_roles, $role if $added;
+            }
+        }
+        else {
+            push @enabled_roles, $role;
+        }
+    }
+
+    if ( @enabled_roles ) {
+
         my $query
             = "SELECT DISTINCT ACL.RightName "
             . $self->_RolesWithRightQuery(
                 EquivObjects => $args{'EquivObjects'}
             )
-            . ' AND ('. join( ' OR ', map "PrincipalType = '$_'", @$roles ) .')'
+            . ' AND ('. join( ' OR ', map "PrincipalType = '$_'", @enabled_roles ) .')'
         ;
         my $rights = $RT::Handle->dbh->selectcol_arrayref($query);
         unless ($rights) {
@@ -649,7 +673,30 @@ sub RolesWithRight {
         $RT::Logger->warning( $RT::Handle->dbh->errstr );
         return ();
     }
-    return @$roles;
+
+    my @enabled_roles;
+    for my $role ( @$roles ) {
+        if ( $role =~ /^RT::CustomRole-(\d+)$/ ) {
+            my $custom_role = RT::CustomRole->new( RT->SystemUser );
+            $custom_role->Load( $1 );
+            if ( $custom_role->id && !$custom_role->Disabled ) {
+                my $added;
+                for my $object ( @{ $args{'EquivObjects'} } ) {
+                    next unless $object->isa('RT::Queue');
+                    if ( $custom_role->IsAdded( $object->id ) ) {
+                        $added = 1;
+                        last;
+                    }
+                }
+                push @enabled_roles, $role if $added;
+            }
+        }
+        else {
+            push @enabled_roles, $role;
+        }
+    }
+
+    return @enabled_roles;
 }
 
 sub _RolesWithRightQuery {

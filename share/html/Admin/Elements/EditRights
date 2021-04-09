@@ -183,6 +183,11 @@ for my $category (@$Principals) {
 <li class="category"><% loc($name) %></li>
 <%perl>
     while ( my $obj = $collection->Next ) {
+        next
+          if $obj->isa( 'RT::Group' )
+          && $obj->_CustomRoleObj
+          && ( $obj->_CustomRoleObj->Disabled
+            || ( $Context->isa( 'RT::Queue' ) && !$obj->_CustomRoleObj->IsAdded( $Context->id ) ) );
         my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
         my $id = "acl-" . $obj->PrincipalId;
 </%perl>
@@ -227,6 +232,11 @@ for my $category (@$Principals) {
 for my $category (@$Principals) {
     my ($name, $collection, $col, $loc) = @$category;
     while ( my $obj = $collection->Next ) {
+        next
+          if $obj->isa( 'RT::Group' )
+          && $obj->_CustomRoleObj
+          && ( $obj->_CustomRoleObj->Disabled
+            || ( $Context->isa( 'RT::Queue' ) && !$obj->_CustomRoleObj->IsAdded( $Context->id ) ) );
         my $display = ref $col eq 'CODE' ? $col->($obj) : $obj->$col;
         my $id = "acl-" . $obj->PrincipalId;
 </%perl>
