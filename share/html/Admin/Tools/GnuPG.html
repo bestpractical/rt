@@ -1,0 +1,265 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Header, Title => $title &>
+<& /Elements/Tabs &>
+
+<& /Elements/ListActions &>
+
+<&|/Widgets/TitleBox, title => loc('Import Keys') &>
+
+<form action="<% RT->Config->Get('WebPath')%>/Admin/Tools/GnuPG.html" name="ImportKeys" method="POST" enctype="multipart/form-data">
+    <table>
+% my %options = RT->Config->Get('GnuPGOptions');
+% if ( $options{'keyserver'} ) {
+        <tr>
+            <td align="right"></td>
+            <td>
+                <input name="Query" value="<% $ARGS{Query} // '' %>" size="40" />
+                <input name="Search" type="submit" class="button" value="<&|/l&>Search</&>" />
+            </td>
+        </tr>
+% if ( @search_results ) {
+        <tr>
+            <td></td>
+            <td>
+                <input type="checkbox" name="KeyAll" value="1" onclick="setCheckbox(this, 'Key')"></th>
+                <span><&|/l&>Check All</&></span>
+            </td>
+        </tr>
+% for my $item ( @search_results ) {
+        <tr>
+            <td align="right"><&|/l&>Key</&>:</td>
+            <td>
+                <input type="checkbox" name="Key" value="<% $item->{Key} %>" />
+                <span><% $item->{Summary} %></span>
+            </td>
+        </tr>
+% }
+% }
+
+% }
+        <tr>
+            <td align="right"><&|/l&>Content</&>:</td>
+            <td><textarea name="Content" rows="8" cols="72"><% $ARGS{Content} // '' %></textarea></td>
+        </tr>
+    </table>
+    <& /Elements/Submit, Name => 'Import', Label => loc('Import') &>
+</form>
+
+</&>
+
+<&|/Widgets/TitleBox, title => loc('GnuPG Public Keys') &>
+
+% if ( $public{info} && @{$public{info}} ) {
+<form action="<% RT->Config->Get('WebPath')%>/Admin/Tools/GnuPG.html" name="PublicKeys" method="POST" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <th><input type="checkbox" name="PublicKeyAll" value="1" onclick="setCheckbox(this, 'PublicKey')"></th>
+            <th><% loc('Summary') %></th>
+            <th><% loc('Trust Level') %></th>
+        </tr>
+% for my $item ( @{$public{info}} ) {
+        <tr>
+            <td><input type="checkbox" name="PublicKey" value="<% $item->{Fingerprint} %>" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> /></td>
+            <td><% $item->{Formatted} %></td>
+            <td><% $owner_trust_level{$item->{OwnerTrustChar}} || loc('Not set') %></td>
+        </tr>
+% }
+    </table>
+
+    <hr />
+    <table>
+        <tr>
+            <td class="label"><% loc('Trust Level' ) %></td>
+            <td class="value">
+                <select name="OwnerTrustLevel">
+                    <option value=""  <% $OwnerTrustLevel eq '' ? 'selected="selected"' : '' |n %> >-</option>
+                    <option value="1" <% $OwnerTrustLevel eq 1 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{1} %></option>
+                    <option value="2" <% $OwnerTrustLevel eq 2 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{2} %></option>
+                    <option value="3" <% $OwnerTrustLevel eq 3 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{3} %></option>
+                    <option value="4" <% $OwnerTrustLevel eq 4 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{4} %></option>
+                    <option value="5" <% $OwnerTrustLevel eq 5 ? 'selected="selected"' : '' |n %> ><% $owner_trust_level{5} %></option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <& /Elements/Submit, Label => loc('Delete'), Name => 'DeletePublic', CheckboxNameRegex => '/^PublicKey(All)?$/', CheckAll => 1, ClearAll => 1 &>
+    <& /Elements/Submit, Label => loc('Save Changes'), Name => 'TrustPublic' &>
+</form>
+% } else {
+<p><&|/l&>No public keys found.</&></p>
+% }
+
+</&>
+
+<&|/Widgets/TitleBox, title => loc('GnuPG Private Keys') &>
+
+% if ( $private{info} && @{$private{info}} ) {
+<form action="<% RT->Config->Get('WebPath')%>/Admin/Tools/GnuPG.html" name="PrivateKeys" method="POST" enctype="multipart/form-data">
+    <table>
+        <tr>
+            <th><input type="checkbox" name="PrivateKeyAll" value="1" onclick="setCheckbox(this, 'DeletePrivateKey')"></th>
+            <th><% loc('Summary') %></th>
+        </tr>
+% for my $item ( @{$private{info}} ) {
+        <tr>
+            <td><input type="checkbox" name="PrivateKey" value="<% $item->{Fingerprint} %>" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> /></td>
+            <td><% $item->{Formatted} %></td>
+        </tr>
+% }
+    </table>
+    <hr />
+    <& /Elements/Submit, Label => loc('Delete'), Name => 'DeletePrivate', CheckboxNameRegex => '/^PrivateKey(All)?$/', CheckAll => 1, ClearAll => 1 &>
+</form>
+% } else {
+<p><&|/l&>No private keys found.</&></p>
+% }
+
+</&>
+<%INIT>
+
+my $title = loc('Manage GnuPG Keys');
+unless ( $session{'CurrentUser'}->HasRight( Object => $RT::System, Right => 'SuperUser' ) ) {
+    Abort( loc('This feature is only available to system administrators.') );
+}
+
+my @results;
+my %delete;
+
+my %owner_trust_level = (
+    1 => loc("I don't know or won't say"),
+    2 => loc("I do NOT trust"),
+    3 => loc("I trust marginally"),
+    4 => loc("I trust fully"),
+    5 => loc("I trust ultimately"),
+
+    q => loc("I don't know or won't say"),
+    n => loc("I do NOT trust"),
+    m => loc("I trust marginally"),
+    f => loc("I trust fully"),
+    u => loc("I trust ultimately"),
+);
+
+require RT::Crypt::GnuPG;
+
+my @search_results;
+if ( $ARGS{Search} ) {
+    if ( $ARGS{Query} ) {
+        my %ret = RT::Crypt::GnuPG->SearchKey( $ARGS{Query} );
+        @search_results = @{$ret{results}};
+        push @results, split /\n+/, $ret{logger} unless @search_results;
+    }
+}
+elsif ( $ARGS{Import} ) {
+
+    # show admin detailed imported messages
+    if ( $ARGS{Key} ) {
+        for my $key ( ref $ARGS{Key} ? @{ $ARGS{Key} } : $ARGS{Key} ) {
+            my %ret = RT::Crypt::GnuPG->ReceiveKey( $key );
+            push @results, split /\n+/, $ret{logger};
+        }
+    }
+
+    if ( $ARGS{Content} ) {
+        my %ret = RT::Crypt::GnuPG->ImportKey( $ARGS{Content} );
+        push @results, split /\n+/, $ret{logger};
+    }
+}
+elsif ( $ARGS{TrustPublic} ) {
+    if ( length $ARGS{OwnerTrustLevel} && $ARGS{PublicKey} ) {
+        for my $key ( ref $ARGS{PublicKey} ? @{ $ARGS{PublicKey} } : $ARGS{PublicKey} ) {
+            my %ret = RT::Crypt::GnuPG->TrustKey( $key, $ARGS{OwnerTrustLevel} );
+            if ( $ret{exit_code} == 0 ) {
+                if ( $ret{logger} ) {
+
+                    # success messages are like "changing ownertrust
+                    # from 6 to 4", which is useless and misleading to
+                    # end users, so we hide them here.
+
+                    RT->Logger->debug( $ret{logger} );
+                    push @results, loc( "Key [_1] trust level is updated", substr( $key, -8 ) );
+                }
+            }
+            elsif ( $ret{logger} ) {
+                push @results, split /\n+/, $ret{logger};
+            }
+        }
+    }
+}
+else {
+    for my $type (qw/Public Private/) {
+        next unless $ARGS{"Delete$type"};
+        my $value = $ARGS{"${type}Key"};
+        for my $key ( ref $value ? @$value : $value ) {
+            $delete{$key} ||= 1;
+            my %ret = RT::Crypt::GnuPG->DeleteKey($key);
+
+            if ( $ret{exit_code} == 0 ) {
+                # delete is silent, no extra debug messages
+                push @results, loc( "Key [_1] is deleted", substr( $key, -8 ) );
+            }
+            elsif ( $ret{logger} ) {
+                push @results, split /\n+/, $ret{logger};
+            }
+        }
+    }
+}
+
+MaybeRedirectForResults(
+    Actions => \@results,
+    Path    => '/Admin/Tools/GnuPG.html',
+);
+
+my %public = RT::Crypt::GnuPG->GetKeysInfo( Force => 1 );
+my %private = RT::Crypt::GnuPG->GetKeysInfo( Force => 1, Type => 'private' );
+
+</%INIT>
+
+<%ARGS>
+$OwnerTrustLevel => ''
+</%ARGS>
