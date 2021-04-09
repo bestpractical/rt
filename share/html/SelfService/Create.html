@@ -71,7 +71,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
+<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &>
 </td>
 </tr>
 <tr>
@@ -79,7 +79,7 @@
 <&|/l&>Cc</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => 1 &>
+<& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '', AutocompleteMultiple => 1, AutocompleteType => 'Principals' &>
 </td>
 </tr>
 <tr>

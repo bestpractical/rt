@@ -69,7 +69,7 @@
 </tr>
 <tr class="input-row">
     <td class="label"><&|/l&>Requestors</&>:</td>
-    <td colspan="3" class="value"><& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &></td>
+    <td colspan="3" class="value"><& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &></td>
 </tr>
 <tr class="input-row">
 <td class="labeltop"><&|/l&>Content</&>:</td>

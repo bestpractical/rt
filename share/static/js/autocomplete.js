@@ -5,7 +5,8 @@ window.RT.Autocomplete.Classes = {
     Users: 'user',
     Groups: 'group',
     Tickets: 'tickets',
-    Queues: 'queues'
+    Queues: 'queues',
+    Principals: 'principals'
 };
 
 window.RT.Autocomplete.bind = function(from) {
