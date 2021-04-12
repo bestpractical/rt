@@ -83,6 +83,24 @@ jQuery(function(){
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
+
+    <div class="form-row">
+      <div class="label col-3 text-left">
+        <&|/l&>Include</&>
+      </div>
+      <div class="col-3">
+        <select name="IncludeSystemGroups" class="selectpicker form-control">
+% my $group_selected;
+% for my $group_value ( qw(Privileged Unprivileged All) ) {
+%   $group_selected = '';
+%   if ( $group_value eq $IncludeSystemGroups ) {
+%     $group_selected = 'selected="selected"';
+%   }
+          <option value="<% $group_value %>" <% $group_selected |n %>><% loc($group_value) %></option>
+% }
+        </select>
+      </div>
+    </div>
     <div class="form-row">
       <div class="label col-3 text-left">
         <&|/l&>Find all users whose</&>
@@ -196,9 +214,18 @@ if ( scalar @users_queries ) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Users/Modify.html?id=".$users->First->id)
           if $users->Count == 1;
 }
-else {
+
+if ( $IncludeSystemGroups eq 'Privileged' ) {
     $caption = loc("Privileged users");
     $users->LimitToPrivileged;
+}
+elsif ( $IncludeSystemGroups eq 'Unprivileged' ) {
+    $caption = loc("Unprivileged users");
+    $users->LimitToUnprivileged;
+}
+else {
+    # Must be all
+    $caption = loc("All users");
 }
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Users'};
@@ -244,4 +271,5 @@ $IdLike => undef
 $EmailLike => undef
 
 $FindDisabledUsers => 0
+$IncludeSystemGroups => 'Privileged'
 </%ARGS>
