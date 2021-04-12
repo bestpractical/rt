@@ -129,6 +129,8 @@ jQuery(function(){
     </div>
   </div>
 
+% $m->callback( %ARGS, UsersObj => $users, CallbackName => 'InUsersAdminForm' );
+
   <div class="form-row">
     <div class="col-12 text-right">
       <input type="submit" class="button btn btn-primary" value="<&|/l&>Go!</&>" name="Go" />
@@ -158,6 +160,8 @@ jQuery(function(){
 my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
 $users->FindAllRows if $FindDisabledUsers;
+
+$m->callback( UsersObj => $users, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 $caption = loc("Users matching search criteria");
 my @users_queries = ();
