@@ -4030,7 +4030,7 @@ Set(%AdminSearchResultFormat,
     Users =>
         q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__RealName__, __EmailAddress__,__Disabled__},
+        .q{,__RealName__, __EmailAddress__,__SystemGroup__,__Disabled__},
 
     CustomFields =>
         q{'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__id__</a>/TITLE:#'}

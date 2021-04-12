@@ -151,6 +151,10 @@ my $COLUMN_MAP = {
         attribute => 'Timezone',
         value     => sub { return $_[0]->Timezone },
     },
+    SystemGroup => {
+        title     => 'System Group', # loc
+        value     => sub { return $_[0]->Privileged ? $_[0]->loc('Privileged'): $_[0]->loc('Unprivileged') },
+    },
 };
 
 </%ONCE>
