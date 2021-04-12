@@ -95,6 +95,8 @@ jQuery(function(){
 </table>
 <input type="checkbox" class="checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
 <label for="FindDisabledUsers"><&|/l&>Include disabled users in search.</&></label>
+% $m->callback( %ARGS, UsersObj => $users, CallbackName => 'InUsersAdminForm' );
+
 <br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" name="Go" /></div>
 </form>
@@ -126,6 +128,8 @@ my %collection_list_args = (
 my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
 $users->FindAllRows if $FindDisabledUsers;
+
+$m->callback( UsersObj => $users, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 $caption = loc("Users matching search criteria");
 my @users_queries = ();
