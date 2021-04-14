@@ -47,27 +47,24 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('Select a user') &>
 <& /Elements/Tabs &>
-    
-<h1><% $caption %></h1>
-
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
+<div class="container">
+<&| /Widgets/TitleBox, hideable => 0, class => 'admin-select-user', content_class => 'mx-auto width-md' &>
+  <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" class="mx-auto">
 % foreach my $field( qw(Format Rows Page Order OrderBy) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
-<input type="hidden" name="UserField" value="Name" />
-<input type="hidden" name="UserOp" value="LIKE" />
+  <input type="hidden" name="UserField" value="Name" />
+  <input type="hidden" name="UserOp" value="LIKE" />
 
-<div class="row">
-  <div class="col-xl-6">
-    <div class="form-row">
-      <div class="label col-3 text-left">
-        <&|/l&>Go to user</&>
-      </div>
-      <div class="col-3">
-        <input type="text" class="form-control" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
-      </div>
+  <div class="form-row">
+    <div class="label col-4 text-left">
+      <&|/l&>Go to user</&>
     </div>
+    <div class="col-8">
+      <input type="text" class="form-control" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+    </div>
+  </div>
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a user is chosen
@@ -76,20 +73,22 @@ jQuery(function(){
     });
 });
 </script>
-</form>
+  </form>
+  <hr />
+  <p class="font-weight-bold">Additional search options</p>
+  <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" name="UsersAdmin" class="mx-auto max-width-md">
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" name="UsersAdmin">
 % foreach my $field( qw(Format Rows Page Order OrderBy) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 
-    <div class="form-row">
-      <div class="label col-3 text-left">
-        <&|/l&>Include</&>
-      </div>
-      <div class="col-3">
-        <select name="IncludeSystemGroups" class="selectpicker form-control">
+  <div class="form-row">
+    <div class="label col-3 text-left">
+      <&|/l&>Include</&>
+    </div>
+    <div class="col-3">
+      <select name="IncludeSystemGroups" class="selectpicker form-control">
 % my $group_selected;
 % for my $group_value ( qw(Privileged Unprivileged All) ) {
 %   $group_selected = '';
@@ -98,45 +97,43 @@ jQuery(function(){
 %   }
           <option value="<% $group_value %>" <% $group_selected |n %>><% loc($group_value) %></option>
 % }
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="label col-3 text-left">
-        <&|/l&>Find all users whose</&>
-      </div>
-      <& /Elements/SelectUsers, %ARGS, Fields => \@fields &>
-    </div>
-
-    <div class="form-row">
-      <div class="label col-3 text-left">
-        <&|/l&>And all users whose</&>
-      </div>
-      <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
-          SelectFieldName => 'UserField2',
-          SelectOpName    => 'UserOp2',
-          InputStringName => 'UserString2',
-          UserField       => $UserField2,
-          UserOp          => $UserOp2,
-          UserString      => $UserString2,
-      &>
-    </div>
-
-    <div class="form-row">
-      <div class="label col-3 text-left">
-        <&|/l&>And all users whose</&>
-      </div>
-      <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
-          SelectFieldName => 'UserField3',
-          SelectOpName    => 'UserOp3',
-          InputStringName => 'UserString3',
-          UserField       => $UserField3,
-          UserOp          => $UserOp3,
-          UserString      => $UserString3,
-      &>
+      </select>
     </div>
   </div>
-</div>
+  <div class="form-row">
+    <div class="label col-3 text-left">
+      <&|/l&>Find all users whose</&>
+    </div>
+      <& /Elements/SelectUsers, %ARGS, Fields => \@fields &>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3 text-left">
+      <&|/l&>And all users whose</&>
+    </div>
+    <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
+        SelectFieldName => 'UserField2',
+        SelectOpName    => 'UserOp2',
+        InputStringName => 'UserString2',
+        UserField       => $UserField2,
+        UserOp          => $UserOp2,
+        UserString      => $UserString2,
+    &>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3 text-left">
+      <&|/l&>And all users whose</&>
+    </div>
+    <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
+        SelectFieldName => 'UserField3',
+        SelectOpName    => 'UserOp3',
+        InputStringName => 'UserString3',
+        UserField       => $UserField3,
+        UserOp          => $UserOp3,
+        UserString      => $UserString3,
+    &>
+  </div>
 
   <div class="form-row">
     <div class="col-12">
@@ -154,10 +151,12 @@ jQuery(function(){
       <input type="submit" class="button btn btn-primary" value="<&|/l&>Go!</&>" name="Go" />
     </div>
   </div>
-</form>
-
+  </form>
+</&>
+</div>
+<br />
 % unless ( $users->Count ) {
-<em><&|/l&>No users matching search criteria found.</&></em>
+<p class="font-weight-bold"><&|/l&>No users matching search criteria found.</&></p>
 % } else {
 <p><&|/l&>Select a user</&>:</p>
 
