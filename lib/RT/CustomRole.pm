@@ -172,9 +172,9 @@ sub _RegisterAsRole {
             $role->Load($id);
 
             if ($object->isa('RT::Queue')) {
-                # there's no way to apply the custom
-                # role to a queue before that queue is created
-                return 0;
+                # In case queue level custom role groups got deleted
+                # somehow.  Allow to re-create them like default ones.
+                return $role->IsAdded($object->id);
             }
             elsif ($object->isa('RT::Ticket')) {
                 # see if the role has been applied to the ticket's queue
