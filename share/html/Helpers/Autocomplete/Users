@@ -64,6 +64,9 @@ $include_system => 0
 $return = 'EmailAddress'
     unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
 
+$m->callback( CallbackName => 'Initial', ReturnRef => \$return, TermRef => \$term,
+              DelimRef => \$delim, ExcludeRef => \$exclude);
+
 $m->abort unless defined $return
              and defined $term
              and length $term;
