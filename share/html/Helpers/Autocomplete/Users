@@ -104,6 +104,7 @@ $users->SimpleSearch( Privileged => $privileged,
                       # the returned field using that operator
                       $op ? ( Fields => { $return => $op } ) : (),
                     );
+$m->callback( CallbackName => "ModifyUsersLimit", Users => $users );
 
 my @suggestions;
 while ( my $user = $users->Next ) {
