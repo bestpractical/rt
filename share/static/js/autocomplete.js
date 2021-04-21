@@ -94,7 +94,7 @@ window.RT.Autocomplete.bind = function(from) {
                 load: function(input, callback) {
                     if (!input.length) return callback();
                     jQuery.ajax({
-                        url: RT.Config.WebPath + '/Helpers/Autocomplete/Users',
+                        url: RT.Config.WebHomePath + '/Helpers/Autocomplete/Users',
                         type: 'GET',
                         dataType: 'json',
                         data: {
