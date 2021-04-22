@@ -187,6 +187,20 @@ If you previously used numbers for priority and would like to continue
 to do so, you can set the new C<$EnablePriorityAsString> option to false.
 That will disable the new string-based display.
 
+We also now hide Final Priority by default, but if you previously used it
+and would like to continue to do so, you can add this to the Custom CSS
+section on the Theme editor:
+
+    .FinalPriority, .TicketFinalPriority {
+        display: flex;
+    }
+    .priority div.value .current-value {
+        visibility: visible;
+    }
+    .priority div.value .current-value .FinalPriority {
+        display: inline;
+    }
+
 If you would like to now use strings for priority like Low, Medium, High,
 check the new C<%PriorityAsString> configuration option. RT provides a simple
 default setting that may be sufficient. Set new values if you would like
