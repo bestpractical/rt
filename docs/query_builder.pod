@@ -139,6 +139,42 @@ The same pieces of information are now spread across the display next to one
 another, which can be harder to read. So when you tell RT to display a lot of
 columns, it's usually worth adding a well-placed NEWLINE.
 
+=head1 Searching for Users on Tickets
+
+The Query Builder provides ways to search for tickets based on how a
+given user is related to the ticket. This works for all ticket roles,
+so you can find all active tickets where a given user is the Requestor,
+meaning they opened the ticket. You can also search for all tickets
+with a given user as the owner, meaning that's what they are working on.
+
+=head2 Groups on Roles
+
+Ticket roles, except for Owner, can also accept a group as a value.
+When you search for a user, by default the Query Builder does a
+recursive or "deep" search, meaning it searches the role and it checks
+the membership of any groups it finds in the role as well.
+
+For example, assume you have a group "Helpdesk", the staff1 user is a
+member, and Helpdesk is set as an AdminCc on a ticket. If you perform
+this search:
+
+    AdminCc.Name = 'staff1'
+
+the results will contain that ticket.
+
+=head2 Shallow Searches
+
+In some cases you may want to see tickets only when the user you are
+searching for is a direct member of a role and not if they are in
+any groups. For that case, use the "shallow" options, like "shallow is"
+to generate a search like this:
+
+    AdminCc.Name SHALLOW = 'staff1'
+
+That will show tickets where 'staff1' is directly in the AdminCc role,
+but not the ticket from the previous example where staff1 is in the
+Helpdesk group on the AdminCc role.
+
 =head1 Searching Custom Fields on Tickets
 
 If you use custom fields on your tickets, you might initially load the Query
