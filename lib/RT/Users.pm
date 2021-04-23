@@ -337,20 +337,30 @@ sub _JoinACL
     }
 
     my $acl = $self->NewAlias('ACL');
-    $self->Limit(
-        ALIAS    => $acl,
-        FIELD    => 'RightName',
-        OPERATOR => ( $args{Right} ? '=' : 'IS NOT' ),
-        VALUE => $args{Right} || 'NULL',
-        ENTRYAGGREGATOR => 'OR'
-    );
-    if ( $args{'IncludeSuperusers'} and $args{'Right'} ) {
+    if ( $args{Right} ) {
+        if ( $args{'IncludeSuperusers'} && $args{Right} ne 'SuperUser' ) {
+            $self->Limit(
+                ALIAS    => $acl,
+                FIELD    => 'RightName',
+                OPERATOR => 'IN',
+                VALUE    => [ 'SuperUser', $args{Right} ],
+            );
+        }
+        else {
+            $self->Limit(
+                ALIAS    => $acl,
+                FIELD    => 'RightName',
+                OPERATOR => '=',
+                VALUE    => $args{Right},
+            );
+        }
+    }
+    else {
         $self->Limit(
-            ALIAS           => $acl,
-            FIELD           => 'RightName',
-            OPERATOR        => '=',
-            VALUE           => 'SuperUser',
-            ENTRYAGGREGATOR => 'OR'
+            ALIAS    => $acl,
+            FIELD    => 'RightName',
+            OPERATOR => 'IS NOT',
+            VALUE    => 'NULL',
         );
     }
     return $acl;

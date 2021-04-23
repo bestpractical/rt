@@ -2614,8 +2614,7 @@ sub SeenUpTo {
     return if $attr && $attr->Content gt $self->LastUpdated;
 
     my $txns = $self->Transactions;
-    $txns->Limit( FIELD => 'Type', VALUE => 'Comment' );
-    $txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
+    $txns->Limit( FIELD => 'Type', VALUE => [ 'Comment', 'Correspond' ], OPERATOR => 'IN' );
     $txns->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $uid );
     $txns->Limit(
         FIELD => 'Created',
