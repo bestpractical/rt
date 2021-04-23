@@ -65,6 +65,11 @@ with "RT::Record::Role::Rights";
 
 sub Table {'Classes'}
 
+# this object can take custom fields
+
+use RT::CustomField;
+RT::CustomField->RegisterLookupType( CustomFieldLookupType() => 'Classes' );    #loc
+
 =head2 Load IDENTIFIER
 
 Loads a class, either by name or by id
@@ -585,6 +590,10 @@ sub PreInflate {
     return if $importer->MergeBy( "Name", $class, $uid, $data );
 
     return 1;
+}
+
+sub CustomFieldLookupType {
+    "RT::Class";
 }
 
 RT::Base->_ImportOverlays();
