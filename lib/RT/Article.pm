@@ -63,7 +63,6 @@ use RT::CustomFields;
 use RT::URI::fsck_com_article;
 use RT::Transactions;
 
-
 sub Table {'Articles'}
 
 # This object takes custom fields
@@ -111,12 +110,14 @@ sub Create {
         return ( 0, $self->loc('Invalid Class') );
     }
 
+    $self->{->'_creating_class'} = $class->id;
+
     unless ( $class->CurrentUserHasRight('CreateArticle') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
 
     return ( undef, $self->loc('Name in use') )
-      unless $self->ValidateName( $args{'Name'} );
+      unless $self->ValidateName( $args{'Name'}, $class->id );
 
     $RT::Handle->BeginTransaction();
     my ( $id, $msg ) = $self->SUPER::Create(
@@ -231,7 +232,9 @@ sub Create {
 
 =head2 ValidateName NAME
 
-Takes a string name. Returns true if that name isn't in use by another article
+Takes a string name and a class object. Returns true if that name isn't in use by another article of that class.
+
+If no class is supplied, returns true if that name isn't used by any other article at all.
 
 Empty names are permitted.
 
@@ -241,16 +244,28 @@ Empty names are permitted.
 sub ValidateName {
     my $self = shift;
     my $name = shift;
+    my $class = shift || ($self->ClassObj && $self->ClassObj->id) || $self->{'_creating_class'};
 
     if ( !$name ) {
         return (1);
     }
 
-    my $temp = RT::Article->new($RT::SystemUser);
-    $temp->LoadByCols( Name => $name );
-    if ( $temp->id && 
-         (!$self->id || ($temp->id != $self->id ))) {
-        return (undef);
+    if ( $class ) {
+        my $articles = RT::Articles->new($RT::SystemUser);
+        $articles->Limit( FIELD => 'Name', OPERATOR => '=', VALUE => $name );  # cannot use LimitName() as it hardcodes 'LIKE'
+        $articles->Limit( FIELD => 'Class', OPERATOR => '=', VALUE => $class );
+        while ( my $article = $articles->Next ) {
+            if ( $article->id && ( !$self->id || ($article->id))) {
+                return (undef);
+            }
+        }
+    } else {
+        my $temp = RT::Article->new($RT::SystemUser);
+        $temp->LoadByCols( Name => $name );
+        if ( $temp->id &&
+             (!$self->id || ($temp->id != $self->id ))) {
+            return (undef);
+        }
     }
 
     return (1);
