@@ -97,7 +97,7 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     }
 
 </%perl>
-% $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright );
+% $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright, ARGSRef => \%ARGS );
 <& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
 % }
 
