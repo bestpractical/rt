@@ -96,6 +96,8 @@
 
 <& /Elements/Framekiller &>
 
+% $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
+
 </head>
   <body class="<% join( ' ',@{$ARGS{'BodyClass'}}) %>" <% $id && qq[id="comp-$id"] |n %>>
 
