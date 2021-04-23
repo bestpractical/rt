@@ -160,7 +160,8 @@ jQuery(function(){
 % } else {
 <p><&|/l&>Select a user</&>:</p>
 
-<& /Elements/CollectionList,
+<%perl>
+my %collection_list_args = (
     OrderBy => 'Name',
     Order => 'ASC',
     Rows  => $Rows,
@@ -169,7 +170,11 @@ jQuery(function(){
     Collection => $users,
     AllowSorting => 1,
     PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers)],
-&>
+);
+</%perl>
+
+% $m->callback( %ARGS, UsersObj => $users, CallbackName => 'ModifyCollectionListArgs', CollectionListArgs => \%collection_list_args );
+<& /Elements/CollectionList, %collection_list_args &>
 
 % }
 
