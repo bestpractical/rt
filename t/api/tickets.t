@@ -161,4 +161,83 @@ ok( $unlimittickets->Count > 0, "UnLimited tickets object should return tickets"
     );
 }
 
+diag "Ticket role group members";
+{
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'test ticket role group' );
+    my $admincc = $ticket->RoleGroup('AdminCc');
+
+    my $delegates = RT::Test->load_or_create_group('delegates');
+    my $core      = RT::Test->load_or_create_group('core team');
+    my $alice     = RT::Test->load_or_create_user( Name => 'alice' );
+    my $bob       = RT::Test->load_or_create_user( Name => 'bob' );
+    ok( $delegates->AddMember( $core->PrincipalId ), 'Add core team to delegates' );
+    ok( $delegates->AddMember( $bob->PrincipalId ),  'Add bob to delegates' );
+    ok( $core->AddMember( $alice->PrincipalId ),     'Add alice to core team' );
+
+    for my $name ( 'alice', 'bob' ) {
+        my $tickets = RT::Tickets->new( RT->SystemUser );
+        $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name = '$name'");
+        ok( !$tickets->Count, 'No tickets found' );
+
+        $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name != '$name'");
+        is( $tickets->Count,     1,           'Found 1 ticket' );
+        is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+        $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name LIKE '$name'");
+        ok( !$tickets->Count, 'No tickets found' );
+
+        $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name NOT LIKE '$name'");
+        is( $tickets->Count,     1,           'Found 1 ticket' );
+        is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+    }
+
+    ok( $admincc->AddMember( $delegates->PrincipalId ), 'Add delegates to AdminCc' );
+
+    for my $name ( 'alice', 'bob' ) {
+        my $tickets = RT::Tickets->new( RT->SystemUser );
+        $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name = '$name'");
+        is( $tickets->Count,     1,           'Found 1 ticket' );
+        is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+        $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name != '$name'");
+        ok( !$tickets->Count, 'No tickets found' );
+
+        $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name LIKE '$name'");
+        is( $tickets->Count,     1,           'Found 1 ticket' );
+        is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+        $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name NOT LIKE '$name'");
+        ok( !$tickets->Count, 'No tickets found' );
+    }
+
+    my $abc = RT::Test->load_or_create_user( Name => 'abc' ); # so there are multiple users to search
+    my $abc_ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'test ticket role group' );
+    ok( $abc_ticket->RoleGroup('AdminCc')->AddMember( $abc->PrincipalId ), 'Add abc to AdminCc' );
+
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+    $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name LIKE 'a'");
+    is( $tickets->Count,     2,           'Found 2 ticket' );
+
+    $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCc.Name NOT LIKE 'a'");
+    TODO: {
+        local $TODO = <<EOF;
+Searching NOT LIKE with multiple users is not the opposite of "LIKE", e.g.
+
+    "alice", "bob" are AdminCcs of ticket 1, abc is AdminCc of ticket 2:
+    "AdminCc.Name LIKE 'a'" returns tickets 1 and 2.
+    "AdminCc.Name NOT LIKE 'a'" returns ticket 1 because it has AdminCc "bob" which doesn't match "a".
+
+EOF
+        ok( !$tickets->Count, 'No tickets found' );
+    }
+    if ( $tickets->Count ) {
+        is( $tickets->Count,     1,           'Found 1 ticket' );
+        is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+    }
+
+    $tickets->FromSQL("Subject = 'test ticket role group' AND AdminCcGroup = 'delegates'");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+}
+
 done_testing;

@@ -46,10 +46,16 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
-<option value="LIKE" <%$LikeDefault|n%>><%$Like%></option>
-<option value="NOT LIKE" <%$NotLikeDefault|n%>><%$NotLike%></option>
-<option value="=" <%$TrueDefault|n%>><%$True%></option>
-<option value="!=" <%$FalseDefault|n%>><%$False%></option>
+<option value="LIKE" <% $default_is_shallow ? '' : $LikeDefault |n%>><%$Like%></option>
+<option value="NOT LIKE" <% $default_is_shallow ? '' : $NotLikeDefault |n%>><%$NotLike%></option>
+<option value="=" <% $default_is_shallow ? '' : $TrueDefault |n%>><%$True%></option>
+<option value="!=" <% $default_is_shallow ? '' : $FalseDefault |n%>><%$False%></option>
+% if ( $IncludeShallow ) {
+<option value="SHALLOW LIKE" <% $default_is_shallow ? $LikeDefault : '' |n%>><%$ShallowLike%></option>
+<option value="SHALLOW NOT LIKE" <% $default_is_shallow ? $NotLikeDefault : '' |n%>><%$ShallowNotLike%></option>
+<option value="SHALLOW =" <% $default_is_shallow ? $TrueDefault : '' |n%>><%$ShallowTrue%></option>
+<option value="SHALLOW !=" <% $default_is_shallow ? $FalseDefault : '' |n%>><%$ShallowFalse%></option>
+% }
 </select>
 
 <%ARGS>
@@ -59,6 +65,11 @@ $NotLike => loc("doesn't match")
 $True => loc('is')
 $False => loc("isn't")
 $Default => undef
+$IncludeShallow => undef
+$ShallowLike => loc('shallow matches')
+$ShallowNotLike => loc("shallow doesn't match")
+$ShallowTrue => loc('shallow is')
+$ShallowFalse => loc("shallow isn't")
 </%ARGS>
 <%INIT>
 
@@ -79,4 +90,6 @@ elsif ($Default && $Default =~ /notlike|NOT LIKE/i) {
 else {
     $LikeDefault = qq[ selected="selected"];
 }
+
+my $default_is_shallow = ( $Default // '' ) =~ /shallow/i ? 1 : 0;
 </%INIT>
