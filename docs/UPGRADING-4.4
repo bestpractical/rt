@@ -649,6 +649,24 @@ This has been fixed to correctly use the user's timezone.
 Note that this change may modify results for some saved searches for users
 with a different timezone than RT's global setting.
 
+=item * Script to reduce records in CachedGroupMembers
+
+When adding groups to roles on tickets, we have found that caching the
+members of these added groups in the CachedGroupMembers table makes
+performance worse rather than improving it. This release includes updates
+to no longer add these members recursively.
+
+If you use groups in ticket roles, it's likely your CachedGroupMembers table
+has a large number of now unnecessary records and these can hurt performance.
+To delete these extra records run the following script:
+
+    /opt/rt4/etc/upgrade/shrink-cgm-table
+
+Depending on how many records your system has, this may take a while to run.
+After you run this, you may have significantly reduced the number of records
+in your CachedGroupMembers table, and may need to tell your database to
+refresh indexes/statistics.
+
 =back
 
 =cut
