@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2018 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,31 +45,21 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% $r->content_type('application/json; charset=utf-8') if $abort;
+% $r->content_type('application/json; charset=utf-8');
 <% JSON( \@suggestions ) |n %>
-% $m->abort if $abort;
+% $m->abort;
 <%ARGS>
-$return => ''
 $term => undef
 $delim => undef
 $max => undef
 $privileged => undef
 $exclude => ''
-$op => undef
 $include_nobody => 0
 $include_system => 0
-$abort => 1
 </%ARGS>
 <%INIT>
-# Only allow certain return fields
-$return = 'EmailAddress'
-    unless $return =~ /^(?:EmailAddress|Name|RealName)$/;
 
-$m->callback( CallbackName => 'Initial', ReturnRef => \$return, TermRef => \$term,
-              DelimRef => \$delim, ExcludeRef => \$exclude);
-
-$m->abort unless defined $return
-             and defined $term
+$m->abort unless defined $term
              and length $term;
 
 # Use our delimeter if we have one
@@ -100,32 +90,47 @@ $max //= 10;
 
 my $users = RT::Users->new($CurrentUser);
 $users->SimpleSearch( Privileged => $privileged,
-                      Return     => $return,
+                      Return     => 'Name',
                       Term       => $term,
                       Max        => $max,
                       Exclude    => \@exclude,
-                      # If an operator is provided, check against only
-                      # the returned field using that operator
-                      $op ? ( Fields => { $return => $op } ) : (),
                     );
-$m->callback( CallbackName => "ModifyUsersLimit", Users => $users );
+
+(my $group_term = $term) =~ s/^\s*group\s*:\s*//i;
+my $groups = RT::Groups->new( $CurrentUser );
+$groups->RowsPerPage( $max );
+$groups->LimitToUserDefinedGroups();
+$groups->Limit(
+    FIELD           => 'Name',
+    OPERATOR        => 'STARTSWITH',
+    VALUE           => $group_term,
+    CASESENSITIVE   => 0,
+);
+
+# Exclude groups we don't want
+foreach (@exclude) {
+    $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
+}
 
 my @suggestions;
-while ( my $user = $users->Next ) {
-    my @searched_values;
-    for my $field ( sort keys %{ RT->Config->Get('UserSearchFields') } ) {
-        if ( $field =~ /^CF\.(?:\{(.*)}|(.*))$/ ) {
-            push @searched_values, $user->CustomFieldValuesAsString( $1 || $2 );
-        }
-        else {
-            push @searched_values, $user->$field;
-        }
-    }
-    my $text = join "\n", grep defined $_, @searched_values;
 
-    my $suggestion = { id => $user->id, label => $user->Format, value => $user->$return, text => $text };
+while ( my $user = $users->Next ) {
+    my $suggestion = { id => $user->id, label => $user->Format, value => $user->EmailAddress || $user->Name };
     $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, user => $user );
     push @suggestions, $suggestion;
 }
 
+while ( my $group = $groups->Next ) {
+    my $label = 'group:' . $group->Name;
+
+    # if group name contains, say, a comma, then use its id instead to avoid
+    # parsing problems
+    my $value = $delim && $label =~ $delim ? 'group:' . $group->id : $label;
+
+    my $suggestion = { id => $group->id, label => $label, value => $value };
+    $m->callback( CallbackName => "ModifySuggestion", suggestion => $suggestion, group => $group );
+    push @suggestions, $suggestion;
+
+    last if @suggestions >= $max;
+}
 </%INIT>

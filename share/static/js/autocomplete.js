@@ -8,7 +8,8 @@ window.RT.Autocomplete.Classes = {
     Tickets: 'tickets',
     Queues: 'queues',
     Articles: 'articles',
-    Assets: 'assets'
+    Assets: 'assets',
+    Principals: 'principals'
 };
 
 Selectize.define('rt_drag_drop', function(options) {
@@ -50,7 +51,7 @@ window.RT.Autocomplete.bind = function(from) {
         if (!what || !window.RT.Autocomplete.Classes[what])
             return;
 
-        if (what === 'Users' && input.is('[data-autocomplete-multiple]')) {
+        if ( (what === 'Users' || what === 'Principals') && input.is('[data-autocomplete-multiple]')) {
             var options = input.attr('data-options');
             var items = input.attr('data-items');
             input.selectize({
@@ -94,7 +95,7 @@ window.RT.Autocomplete.bind = function(from) {
                 load: function(input, callback) {
                     if (!input.length) return callback();
                     jQuery.ajax({
-                        url: RT.Config.WebHomePath + '/Helpers/Autocomplete/Users',
+                        url: RT.Config.WebHomePath + '/Helpers/Autocomplete/' + what,
                         type: 'GET',
                         dataType: 'json',
                         data: {

@@ -1302,6 +1302,16 @@ sub _BuildAdminMenu {
         path        => '/Admin/Tools/Shredder',
     );
 
+    if ( RT->Config->Get('GnuPG')->{'Enable'}
+        && $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) )
+    {
+        $admin_tools->child(
+            'gnupg'     => title => loc('Manage GnuPG Keys'),
+            description => loc('Manage GnuPG keys'),
+            path        => '/Admin/Tools/GnuPG.html',
+        );
+    }
+
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;
 

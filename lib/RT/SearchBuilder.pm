@@ -914,14 +914,14 @@ sub Limit {
     }
 
     if (($ARGS{FIELD}||'') =~ /\W/
-          or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
+          or $ARGS{OPERATOR} !~ /^((?:SHALLOW\s*)?(?:=|<|>|!=|<>|<=|>=
                                   |(NOT\s*)?LIKE
                                   |(NOT\s*)?(STARTS|ENDS)WITH
                                   |(NOT\s*)?MATCHES
                                   |IS(\s*NOT)?
                                   |(NOT\s*)?IN
                                   |\@\@
-                                  |AGAINST)$/ix) {
+                                  |AGAINST))$/ix) {
         $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
         %ARGS = (
             %ARGS,

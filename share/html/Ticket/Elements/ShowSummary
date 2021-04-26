@@ -236,6 +236,10 @@ my ($can_modify_owner) = $Ticket->CurrentUserCanSetOwner();
 my $can_modify_people = $Ticket->CurrentUserHasRight('Watch')
                      || $Ticket->CurrentUserHasRight('WatchAsAdminCc');
 
+$m->callback( CallbackName => 'ModifyRights', %ARGS, TicketObj => $Ticket, ARGSRef => \%ARGS,
+    CanModify => \$can_modify, CanModifyCF => \$can_modify_cf,
+    CanModifyOwner => \$can_modify_owner, CanModifyPeople => \$can_modify_people );
+
 my $edit_label = $m->interp->apply_escapes( loc("Edit"), 'h' );
 my $cancel_label = $m->interp->apply_escapes( loc("Cancel"), 'h' );
 

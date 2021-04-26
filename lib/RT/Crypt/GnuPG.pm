@@ -1868,6 +1868,68 @@ sub ImportKey {
     );
 }
 
+sub ReceiveKey {
+    my $self = shift;
+    my $key  = shift;
+
+    return $self->CallGnuPG(
+        Command     => "recv_keys",
+        CommandArgs => [ '--', $key ],
+    );
+}
+
+sub TrustKey {
+    my $self  = shift;
+    my $key   = shift;
+    my $level = shift;
+
+    $level++; # the level format in --import-ownertrust input is +1
+
+    return $self->CallGnuPG(
+        Command => "--import-ownertrust",
+        Content => "$key:$level:\n",
+    );
+}
+
+sub SearchKey {
+    my $self = shift;
+    my $key  = shift;
+
+    my @output;
+    my %ret = $self->CallGnuPG(
+        Command     => "search_keys",
+        CommandArgs => [ '--', $key ],
+        Output      => \@output,
+        # gpg hangs if command handle is supplied :/
+        Handles     => { command => 0 },
+    );
+
+    my @results;
+    my $result;
+    for my $line ( @output ) {
+        if ( $line =~ /^\(\d+\)/ ) {
+            push @results, { Summary => $result } if $result;
+            $result = $line;
+        }
+        else {
+            $result .= $line;
+        }
+    }
+    push @results, { Summary => $result } if $result;
+
+    for my $item ( @results ) {
+        if ( $item->{Summary} =~ /^\s*\d+ bit \w+ key (\w{8,})/mi ) {
+            $item->{Key} = $1;
+        }
+        else {
+            RT->Logger->warning("Couldn't find key from gpg search result: $item->{Summary}");
+        }
+    }
+    @results = grep { $_->{Key} } @results;
+
+    return ( %ret, results => \@results );
+}
+
 sub GnuPGPath {
     state $cache = RT->Config->Get('GnuPG')->{'GnuPG'};
     $cache = $_[1] if @_ > 1;
@@ -1966,6 +2028,10 @@ sub _make_gpg_handles {
     $handle_map{$_} = IO::Handle->new
         foreach grep !defined $handle_map{$_}, 
         qw(stdin stdout stderr logger status command);
+
+    for my $type ( keys %handle_map ) {
+        delete $handle_map{$type} if !$handle_map{$type};
+    }
 
     my $handles = GnuPG::Handles->new(%handle_map);
     return ($handles, \%handle_map);

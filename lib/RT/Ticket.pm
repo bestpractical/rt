@@ -1689,10 +1689,12 @@ sub _RecordNote {
 
     foreach my $type (qw/Cc Bcc/) {
         if ( defined $args{ $type . 'MessageTo' } ) {
-
-            my $addresses = join ', ', (
-                map { RT::User->CanonicalizeEmailAddress( $_->address ) }
-                    Email::Address->parse( $args{ $type . 'MessageTo' } ) );
+            my ( $users ) = $self->ParseInputPrincipals( $args{ $type . 'MessageTo' } );
+            my $addresses = join ', ',
+              (
+                map { RT::User->CanonicalizeEmailAddress( $_ ) }
+                map { $_->EmailAddress || () } @$users
+              );
             $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode( "UTF-8", $addresses ) );
         }
     }
@@ -2619,8 +2621,7 @@ sub SeenUpTo {
     }
 
     my $txns = $self->Transactions;
-    $txns->Limit( FIELD => 'Type', VALUE => 'Comment' );
-    $txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
+    $txns->Limit( FIELD => 'Type', VALUE => [ 'Comment', 'Correspond' ], OPERATOR => 'IN' );
     $txns->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $uid );
     $txns->Limit(
         FIELD => 'Created',

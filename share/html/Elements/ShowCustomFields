@@ -66,7 +66,11 @@
 % $m->callback( CallbackName => 'ModifyFieldClasses', CustomField => $CustomField,
 %               Object => $Object, Classes => \@classes, Grouping => $Grouping );
   <div class="form-row <% join(' ', @classes) %>" id="CF-<%$CustomField->id%>-ShowRow">
-    <div class="label col-2"><% $CustomField->Name %>:</div>
+    <div class="label col-2"><% $CustomField->Name %>:
+%   if ( $CustomField->EntryHint ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CustomField->EntryHint %>"></span>
+%   }
+    </div>
     <div class="value col-10 <% $count ? '' : ' no-value' %>">
       <span class="current-value">
 % unless ( $count ) {

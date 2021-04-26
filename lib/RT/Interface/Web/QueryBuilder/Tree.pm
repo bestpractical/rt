@@ -333,6 +333,10 @@ sub ParseSQL {
         }
         $main_key = $lcfield{ lc $main_key };
 
+        if ( $op =~ /^SHALLOW\s+/i && ($main_key !~ /(?:Requestor|Owner|AdminCc|Cc|CustomRole)/) ) {
+            push @results, [ $args{'CurrentUser'}->loc("Unsupported operator: [_1]", $op), -1 ];
+        }
+
         # Hardcode value for IS / IS NOT
         $value = 'NULL' if $op =~ /^IS( NOT)?$/i;
 

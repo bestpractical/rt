@@ -156,7 +156,7 @@ sub Create {
 
     return $id if $args{'Member'}->id == $args{'Group'}->id;
 
-    if ( $args{'Member'}->IsGroup() ) {
+    if ( $args{'Group'}->Object->Domain ne 'RT::Ticket-Role' && $args{'Member'}->IsGroup() ) {
         my $GroupMembers = $args{'Member'}->Object->MembersObj();
         while ( my $member = $GroupMembers->Next() ) {
             my $cached_member =

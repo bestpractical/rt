@@ -292,6 +292,12 @@ my $year = (localtime(time))[5] + 1900;
     $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00');
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
+    $date->Set(Format => 'ISO', Value => '2005-11-28T15:10:00');
+    is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MMThh:mm:ss");
+
+    $date->Set(Format => 'ISO', Value => '2005-11-28T15:10:00Z');
+    is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MMThh:mm:ssZ");
+
     $date->Set(Format => 'ISO', Value => '2005-11-28 15:10:00+00');
     is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss+00");
 
@@ -303,6 +309,12 @@ my $year = (localtime(time))[5] + 1900;
 
     $date->Set(Format => 'ISO', Value => '20051128151000');
     is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMhhmmss");
+
+    $date->Set(Format => 'ISO', Value => '20051128T151000');
+    is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMThhmmss");
+
+    $date->Set(Format => 'ISO', Value => '20051128T151000Z');
+    is($date->ISO, '2005-11-28 15:10:00', "YYYYDDMMThhmmssZ");
 
     $date->Set(Format => 'ISO', Value => '1128151000');
     is($date->ISO, $year .'-11-28 15:10:00', "DDMMhhmmss");

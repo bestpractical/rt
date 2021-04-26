@@ -392,6 +392,11 @@ sub CanonicalizePrincipal {
                 if RT::EmailParser->IsRTAddress( $email );
         }
     } else {
+        if ( ( $args{User} || '' ) =~ /^\s*group\s*:\s*(\S.*?)\s*$/i ) {
+            $args{Group} = $1;
+            delete $args{User};
+        }
+
         if ($args{User}) {
             my $name = delete $args{User};
             # Sanity check the address
@@ -510,14 +515,9 @@ Takes a set of key-value pairs:
 
 =over 4
 
-=item PrincipalId
+=item Principal, PrincipalId, User, or Group
 
-Optional.  The ID of the L<RT::Principal> object to remove.
-
-=item User
-
-Optional.  The Name or EmailAddress of an L<RT::User> to use as the
-principal
+Required. Canonicalized through L</CanonicalizePrincipal>.
 
 =item Type
 
@@ -531,8 +531,6 @@ status of "Permission denied".
 
 =back
 
-One, and only one, of I<PrincipalId> or I<User> is required.
-
 Returns a tuple of (principal object that was removed, message).
 
 =cut
@@ -544,20 +542,8 @@ sub DeleteRoleMember {
     return (0, $self->loc("That role is invalid for this object"))
         unless $args{Type} and $self->HasRole($args{Type});
 
-    if ($args{User}) {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( $args{User} );
-        $user->Load( $args{User} ) unless $user->id;
-        return (0, $self->loc("Could not load user '[_1]'", $args{User}) )
-            unless $user->id;
-        $args{PrincipalId} = $user->PrincipalId;
-    }
-
-    return (0, $self->loc("No valid PrincipalId"))
-        unless $args{PrincipalId};
-
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    $principal->Load( $args{PrincipalId} );
+    my ($principal, $msg) = $self->CanonicalizePrincipal(%args);
+    return (0, $msg) if !$principal;
 
     my $acl = delete $args{ACL};
     return (0, $self->loc("Permission denied"))
@@ -571,12 +557,12 @@ sub DeleteRoleMember {
                             $principal->Object->Name, $self->loc($args{Type}) ) )
         unless $group->HasMember($principal);
 
-    my ($ok, $msg) = $group->_DeleteMember($args{PrincipalId}, RecordTransaction => !$args{Silent});
+    ((my $ok), $msg) = $group->_DeleteMember($principal->Id, RecordTransaction => !$args{Silent});
     unless ($ok) {
-        $RT::Logger->error("Failed to remove $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
+        $RT::Logger->error("Failed to remove ".$principal->Id." as a member of group ".$group->Id.": ".$msg);
 
         return ( 0, $self->loc('Could not remove [_1] as a [_2]',
-                    $principal->Object->Name, $self->loc($args{Type})) );
+                    $principal->Object->Name, $group->Label) );
     }
 
     return ($principal, $msg);
@@ -624,26 +610,87 @@ sub _ResolveRoles {
                             $self->loc("Couldn't load principal: [_1]", $msg);
                     }
                 } else {
-                    my @addresses = RT::EmailParser->ParseEmailAddress( $value );
-                    for my $address ( @addresses ) {
-                        my $user = RT::User->new( RT->SystemUser );
-                        my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
-                        if ( $id ) {
-                            # Load it back as us, not as the system
-                            # user, to be completely safe.
-                            $user = RT::User->new( $self->CurrentUser );
-                            $user->Load( $id );
-                            push @{ $roles->{$role} }, $user->PrincipalObj;
-                        } else {
-                            push @errors,
-                                $self->loc("Couldn't load or create user: [_1]", $msg);
-                        }
-                    }
+                    my ($users, $errors) = $self->ParseInputPrincipals( $value );
+
+                    push @{ $roles->{$role} }, map { $_->PrincipalObj } @{$users};
+                    push @errors, @$errors if @$errors;
                 }
             }
         }
     }
     return (@errors);
+}
+
+=head2 ParseInputPrincipals
+
+In the RT web UI, some watcher input fields can accept RT users
+identified by email address or RT username. On the ticket Create
+and Update pages, these fields can have multiple values submitted
+as a comma-separated list. This method parses such lists and returns
+an array of user objects found or created for each parsed value.
+
+C<ParseEmailAddress> in L<RT::EmailParser> provides a similar
+function, but only handles email addresses, filtering out
+usernames. It also returns a list of L<Email::Address> objects
+rather than RT objects.
+
+Accepts: a string with usernames and email addresses
+
+Returns: arrayref of RT::User objects, arrayref of any error strings
+
+=cut
+
+sub ParseInputPrincipals {
+    my $self = shift;
+    my @list = RT::EmailParser->_ParseEmailAddress( @_ );
+
+    my @principals;    # Collect user or group objects
+    my @errors;
+
+    foreach my $e ( @list ) {
+        if ( $e->{'type'} eq 'mailbox' ) {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $id, $msg ) = $user->LoadOrCreateByEmail( $e->{'value'} );
+            if ( $id ) {
+                push @principals, $user;
+            }
+            else {
+                push @errors, $self->loc( "Couldn't load or create user: [_1]", $msg );
+                RT::Logger->error( "Couldn't load or create user from email address " . $e->{'value'} . ", " . $msg );
+            }
+        }
+        elsif ( $e->{'value'} =~ /^(group:)?(.+)$/ ) {
+
+            my ( $is_group, $name ) = ( $1, $2 );
+            if ( $is_group ) {
+                my $group = RT::Group->new( RT->SystemUser );
+                my ( $id, $msg ) = $group->LoadUserDefinedGroup( $name );
+                if ( $id ) {
+                    push @principals, $group;
+                }
+                else {
+                    push @errors, $self->loc( "Couldn't load group: [_1]", $msg );
+                    RT::Logger->error( "Couldn't load group from value " . $e->{'value'} . ", " . $msg );
+                }
+            }
+            else {
+                my $user = RT::User->new( RT->SystemUser );
+                my ( $id, $msg ) = $user->Load( $name );
+                if ( $id ) {
+                    push @principals, $user;
+                }
+                else {
+                    push @errors, $self->loc( "Couldn't load user: [_1]", $msg );
+                    RT::Logger->error( "Couldn't load user from value " . $e->{'value'} . ", " . $msg );
+                }
+            }
+        }
+        else {
+            # should never reach here.
+        }
+    }
+
+    return ( \@principals, \@errors );
 }
 
 sub _CreateRoleGroup {

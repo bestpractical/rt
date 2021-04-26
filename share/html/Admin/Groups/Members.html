@@ -47,10 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
+
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Group => $Group);
+
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<% RT->Config->Get('WebPath') %>/Admin/Groups/Members.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+
+% $m->callback(CallbackName => 'BeforeEditMembership', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Group => $Group);
 
 <&| /Widgets/TitleBox, title => loc('Editing membership for group [_1]', $Group->Label) &>
 

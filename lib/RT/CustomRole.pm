@@ -172,9 +172,9 @@ sub _RegisterAsRole {
             $role->Load($id);
 
             if ($object->isa('RT::Queue')) {
-                # there's no way to apply the custom
-                # role to a queue before that queue is created
-                return 0;
+                # In case queue level custom role groups got deleted
+                # somehow.  Allow to re-create them like default ones.
+                return $role->IsAdded($object->id);
             }
             elsif ($object->isa('RT::Ticket')) {
                 # see if the role has been applied to the ticket's queue
@@ -681,25 +681,13 @@ sub SetDisabled {
     my $self = shift;
     my $value = shift;
 
-    $RT::Handle->BeginTransaction();
-
     my ($ok, $msg) = $self->_Set( Field => 'Disabled', Value => $value );
     unless ($ok) {
-        $RT::Handle->Rollback();
         $RT::Logger->warning("Couldn't ".(($value == 0) ? "enable" : "disable")." custom role ".$self->Name.": $msg");
         return ($ok, $msg);
     }
 
-    # we can't unconditionally re-enable all role groups because
-    # if you add a role to queues A and B, add users and privileges and
-    # tickets on both, remove the role from B, disable the role, then re-enable
-    # the role, we shouldn't re-enable B because it's still removed
-    my $queues = $self->AddedTo;
-    while (my $queue = $queues->Next) {
-        $self->_SetGroupsDisabledForQueue($value, $queue);
-    }
-
-    $RT::Handle->Commit();
+    RT::Principal->InvalidateACLCache();
 
     if ( $value == 0 ) {
         return (1, $self->loc("Custom role enabled"));

@@ -1,0 +1,12 @@
+Locale and sorting behavior (order by)
+--------------------------------------
+
+The sorting behavior in the PostgreSQL database, and therefore in RT,
+can change depending on the locale settings. RT is commonly run with
+locales like en_US.UTF-8, en_GB.UTF-8, etc., which will process sort
+order in a case-insensitive way. Other locales, like C.UTF-8, are
+case sensitive. If you see unexpected sort order in RT, either after
+an initial installation or after an upgrade, confirm that the locale
+is set correctly.
+
+More information: https://www.postgresql.org/docs/12/locale.html
