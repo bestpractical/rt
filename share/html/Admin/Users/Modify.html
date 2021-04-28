@@ -282,6 +282,7 @@ if ($Create) {
 
     if ($val) {
         push @results, $msg;
+        _FilterUserCFValuesOnCreate( ARGSRef => \%ARGS, UserObj => $UserObj );
         push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
         $title = loc("Modify the user [_1]", $UserObj->Name);
     } else {
