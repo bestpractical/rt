@@ -57,7 +57,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head1 NAME
 
-  RT::Interface::CLI - helper functions for creating a commandline RT interface
+RT::Interface::CLI - helper functions for creating a commandline RT interface
 
 =head1 SYNOPSIS
 
@@ -65,9 +65,19 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
   use RT::Interface::CLI  qw(GetCurrentUser Init loc);
 
+  # Create a hash to hold parsed values
+  my %OPT = (
+      "id" => 1,
+  );
+
   # Process command-line arguments, load the configuration, and connect
-  # to the database
-  Init();
+  # to the database. See below for options provided by default.
+  Init(
+      \%OPT,
+      "id=i",  # Getopt::Long options
+  );
+
+  print "Got an id: " . $OPT{'id'};
 
   # Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
@@ -76,6 +86,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head1 DESCRIPTION
 
+The following methods can be loaded in your RT CLI script.
 
 =head1 METHODS
 
@@ -89,7 +100,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head2 GetCurrentUser
 
-  Figures out the uid of the current user and returns an RT::CurrentUser object
+Figures out the uid of the current user and returns an RT::CurrentUser object
 loaded with that user.  if the current user isn't found, returns a copy of RT::Nobody.
 
 =cut
@@ -157,6 +168,13 @@ or C<debug>, respectively.
 If C<debug> is provided as a parameter, it added as an alias for
 C<--verbose>.
 
+C<statement-log> provides a command-line version of the C<$StatementLog>
+option in the main RT config file. This allows users to log SQL
+for queries run in a CLI script in the same manner as the web UI.
+It accepts log levels like C<$StatementLog>:
+
+    --statement-log=debug
+
 =cut
 
 sub Init {
@@ -195,6 +213,9 @@ sub Init {
     push @args, "quiet|q!" => \($hash->{quiet})
         unless $exists{quiet};
 
+    push @args, "statement-log=s" => \($hash->{'statement-log'})
+        unless $exists{'statement-log'};
+
     my $ok = Getopt::Long::GetOptions( @args );
     Pod::Usage::pod2usage(1) if not $ok and not defined wantarray;
 
@@ -214,7 +235,9 @@ sub Init {
         RT->Config->Set(LogToSTDERR => "warning");
     }
 
+    RT->Config->Set( 'StatementLog', $hash->{'statement-log'} ) if defined $hash->{'statement-log'};
     RT::Init();
+    $RT::Handle->LogSQLStatements(1) if RT->Config->Get('StatementLog');
 
     $| = 1;
 
@@ -222,5 +245,13 @@ sub Init {
 }
 
 RT::Base->_ImportOverlays();
+
+END {
+
+    # When pod2usage is called (e.g. with --help), RT.pm won't be
+    # required and directly calling RT->Config will error out.
+    RT::Interface::Web::LogRecordedSQLStatements( RequestData => { Path => '/' } )
+        if RT->can('Config') && RT->Config->Get('StatementLog');
+}
 
 1;
