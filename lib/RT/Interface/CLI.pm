@@ -57,7 +57,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head1 NAME
 
-  RT::Interface::CLI - helper functions for creating a commandline RT interface
+RT::Interface::CLI - helper functions for creating a commandline RT interface
 
 =head1 SYNOPSIS
 
@@ -65,9 +65,19 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
   use RT::Interface::CLI  qw(GetCurrentUser Init loc);
 
+  # Create a hash to hold parsed values
+  my %OPT = (
+      "id" => 1,
+  );
+
   # Process command-line arguments, load the configuration, and connect
-  # to the database
-  Init();
+  # to the database. See below for options provided by default.
+  Init(
+      \%OPT,
+      "id=i",  # Getopt::Long options
+  );
+
+  print "Got an id: " . $OPT{'id'};
 
   # Get the current user all loaded
   my $CurrentUser = GetCurrentUser();
@@ -76,6 +86,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head1 DESCRIPTION
 
+The following methods can be loaded in your RT CLI script.
 
 =head1 METHODS
 
@@ -89,7 +100,7 @@ our @EXPORT_OK = qw(CleanEnv GetCurrentUser debug loc Init);
 
 =head2 GetCurrentUser
 
-  Figures out the uid of the current user and returns an RT::CurrentUser object
+Figures out the uid of the current user and returns an RT::CurrentUser object
 loaded with that user.  if the current user isn't found, returns a copy of RT::Nobody.
 
 =cut
