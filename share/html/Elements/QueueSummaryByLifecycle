@@ -123,7 +123,7 @@ for my $queue (@$queues) {
 
 my @statuses;
 my %seen;
-foreach my $set ( 'initial', 'active' ) {
+foreach my $set ( @Statuses ) {
     foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
         push @statuses, grep !$seen{ lc $_ }++, $lifecycle->Valid($set);
     }
@@ -149,4 +149,5 @@ while ( my $entry = $report->Next ) {
 </%INIT>
 <%ARGS>
 $queues => undef  # Arrayref of hashes with cached queue info
+@Statuses => qw/initial active/
 </%ARGS>

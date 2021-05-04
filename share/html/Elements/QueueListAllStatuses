@@ -45,36 +45,4 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-% my $alt = loc('Edit');
-
-<div class="ticket-overview">
-<&|/Widgets/TitleBox,
-    title => $Title,
-    class => "fullwidth",
-    bodyclass => "",
-    titleright_raw => qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
-    titleright_href => RT->Config->Get('WebPath').'/Prefs/QueueList.html',
-&>
-<& $comp,
-   queues => $session{$cache_key}{objects},
-   Statuses => \@Statuses
-&>
-</&>
-</div>
-<%INIT>
-my $unwanted = $session{'CurrentUser'}->UserObj->Preferences('QueueList', {});
-my $comp = $SplitByLifecycle? '/Elements/QueueSummaryByLifecycle' : '/Elements/QueueSummaryByStatus';
-my $cache_key = SetObjectSessionCache(
-    ObjectType => 'RT::Queue',
-    CheckRight => 'ShowTicket',
-    ShowAll => 0,
-    CacheNeedsUpdate => RT->System->QueueCacheNeedsUpdate,
-    Exclude => $unwanted,
-);
-
-</%INIT>
-<%ARGS>
-$SplitByLifecycle => 1
-@Statuses => qw/initial active/
-$Title => loc('Queue list')
-</%ARGS>
+<& QueueList, Title => 'Queue list all statuses', Statuses => [qw/initial active inactive/] &>
