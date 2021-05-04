@@ -122,7 +122,7 @@ for my $queue (@$queues) {
 }
 
 my @statuses;
-my %seen;
+my %seen = ( deleted => 1 ); # Always exclude "deleted"
 foreach my $set ( @Statuses ) {
     foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
         push @statuses, grep !$seen{ lc $_ }++, $lifecycle->Valid($set);
