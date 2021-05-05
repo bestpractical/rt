@@ -57,6 +57,7 @@ sub Table {'Attributes'}
 
 use Storable qw/nfreeze thaw/;
 use MIME::Base64;
+use RT::URI::attribute;
 
 
 =head1 NAME
@@ -145,6 +146,7 @@ sub Create {
                 Content => '',
                 ContentType => '',
                 Object => undef,
+                RecordTransaction => undef,
                 @_);
 
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
@@ -181,15 +183,42 @@ sub Create {
         $args{'ContentType'} = 'storable';
     }
 
-    $self->SUPER::Create(
-                         Name => $args{'Name'},
-                         Content => $args{'Content'},
-                         ContentType => $args{'ContentType'},
-                         Description => $args{'Description'},
-                         ObjectType => $args{'ObjectType'},
-                         ObjectId => $args{'ObjectId'},
-);
+    $args{'RecordTransaction'} //= 1 if $args{'Name'} =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
 
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+    my @return = $self->SUPER::Create(
+        Name        => $args{'Name'},
+        Content     => $args{'Content'},
+        ContentType => $args{'ContentType'},
+        Description => $args{'Description'},
+        ObjectType  => $args{'ObjectType'},
+        ObjectId    => $args{'ObjectId'},
+    );
+
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my ( $ret, $msg ) = $self->_NewTransaction( Type => 'Create' );
+            if ($ret) {
+                ( $ret, $msg ) = $self->AddAttribute(
+                    Name    => 'ContentHistory',
+                    Content => $self->_DeserializeContent( $args{'Content'} ) || {},
+                );
+            }
+
+            @return = ( $ret, $msg ) unless $ret;
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    $self->_SyncLinks if $return[0];
+    return wantarray ? @return : $return[0];
 }
 
 
@@ -267,7 +296,8 @@ sub Content {
 sub _SerializeContent {
     my $self = shift;
     my $content = shift;
-        return( encode_base64(nfreeze($content))); 
+    local $Storable::canonical = 1;
+    return( encode_base64(nfreeze($content)));
 }
 
 
@@ -285,7 +315,10 @@ sub SetContent {
         }
     }
     my ($ok, $msg) = $self->_Set( Field => 'Content', Value => $content );
-    return ($ok, $self->loc("Attribute updated")) if $ok;
+    if ($ok) {
+        $self->_SyncLinks;
+        return ( $ok, $self->loc("Attribute updated") );
+    }
     return ($ok, $msg);
 }
 
@@ -373,11 +406,59 @@ sub Object {
 
 sub Delete {
     my $self = shift;
-    unless ($self->CurrentUserHasRight('delete')) {
-        return (0,$self->loc('Permission Denied'));
+    my %args = (
+        RecordTransaction => undef,
+        @_,
+    );
+
+    unless ( $self->CurrentUserHasRight('delete') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
 
-    return($self->SUPER::Delete(@_));
+    # Get values even if current user doesn't have right to see
+    my $name = $self->__Value('Name');
+    my @links;
+    if ( $name =~ /^(Dashboard|(?:Pref-)?HomepageSettings)$/ ) {
+        push @links, @{ $self->DependsOn->ItemsArrayRef };
+    }
+    elsif ( $name eq 'SavedSearch' ) {
+        push @links, @{ $self->DependedOnBy->ItemsArrayRef };
+    }
+
+    $args{'RecordTransaction'} //= 1 if $name =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+
+    my @return = $self->SUPER::Delete(@_);
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my $txn = RT::Transaction->new( $self->CurrentUser );
+            my ( $ret, $msg ) = $txn->Create(
+                ObjectId   => $self->Id,
+                ObjectType => ref($self),
+                Type       => 'Delete',
+            );
+            @return = ( $ret, $msg ) unless $ret;
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    if ( $return[0] ) {
+        for my $link (@links) {
+            my ( $ret, $msg ) = $link->Delete;
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+            }
+        }
+    }
+
+    return @return;
 }
 
 
@@ -395,12 +476,101 @@ sub _Value {
 
 sub _Set {
     my $self = shift;
-    unless ($self->CurrentUserHasRight('update')) {
+    my %args = (
+        Field             => undef,
+        Value             => undef,
+        RecordTransaction => undef,
+        TransactionType   => 'Set',
+        @_
+    );
 
-        return (0,$self->loc('Permission Denied'));
+    unless ( $self->CurrentUserHasRight('update') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
-    return($self->SUPER::_Set(@_));
 
+    # Get values even if current user doesn't have right to see
+    $args{'RecordTransaction'} //= 1 if $self->__Value('Name') =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
+    my $old_value = $self->__Value( $args{'Field'} ) if $args{'RecordTransaction'};
+
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+
+    # Set the new value
+    my @return = $self->SUPER::_Set(
+        Field => $args{'Field'},
+        Value => $args{'Value'},
+    );
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my ( $new_ref, $old_ref );
+
+            my %opt = (
+                Type  => $args{'TransactionType'},
+                Field => $args{'Field'},
+            );
+            if ( $args{'Field'} eq 'Content' ) {
+
+                $opt{ReferenceType} = 'RT::Attribute';
+
+                my $attrs = $self->Attributes;
+                $attrs->Limit( FIELD => 'Name', VALUE => 'ContentHistory' );
+                $attrs->OrderByCols( { FIELD => 'id', ORDER => 'DESC' } );
+                if ( my $old_content = $attrs->First ) {
+                    $opt{OldReference} = $old_content->id;
+                }
+                else {
+                    RT->Logger->debug("Couldn't find ContentHistory, creating one from old value");
+                    my ( $ret, $msg ) = $self->AddAttribute(
+                        Name    => 'ContentHistory',
+                        Content => $self->__Value('ContentType') eq 'storable'
+                        ? $self->_DeserializeContent($old_value)
+                        : $old_value,
+                    );
+                    if ($ret) {
+                        $opt{OldReference} = $ret;
+                    }
+                    else {
+                        @return = ( $ret, $msg );
+                    }
+                }
+
+                if ( $return[0] ) {
+                    my ( $ret, $msg ) = $self->AddAttribute(
+                        Name    => 'ContentHistory',
+                        Content => $self->_DeserializeContent( $args{'Value'} ),
+                        Content => $self->__Value('ContentType') eq 'storable'
+                        ? $self->_DeserializeContent( $args{'Value'} )
+                        : $args{'Value'},
+                    );
+
+                    if ($ret) {
+                        $opt{NewReference} = $ret;
+                    }
+                    else {
+                        @return = ( $ret, $msg );
+                    }
+                }
+            }
+            else {
+                $opt{'OldValue'} = $old_value;
+                $opt{'NewValue'} = $args{'Value'};
+            }
+
+            if ( $return[0] ) {
+                my ( $ret, $msg ) = $self->_NewTransaction(%opt);
+                @return = ( $ret, $msg ) unless $ret;
+            }
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    return wantarray ? @return : $return[0];
 }
 
 
@@ -691,6 +861,17 @@ sub FindDependencies {
         $attr->LoadById($content->{DashboardId});
         $deps->Add( out => $attr );
     }
+
+    # Links
+    my $links = RT::Links->new( $self->CurrentUser );
+    $links->Limit(
+        SUBCLAUSE       => "either",
+        FIELD           => $_,
+        VALUE           => $self->URI,
+        ENTRYAGGREGATOR => 'OR',
+        )
+        for qw/Base Target/;
+    $deps->Add( in => $links );
 }
 
 sub PreInflate {
@@ -911,6 +1092,108 @@ sub Serialize {
     }
 
     return %store;
+}
+
+=head2 URI
+
+Returns this attribute's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+    my $uri  = RT::URI::attribute->new( $self->CurrentUser );
+    return $uri->URIForObject($self);
+}
+
+
+=head2 _SyncLinks
+
+For dashboard and homepage attributes, keep links to saved searches they
+include up to date. It does nothing for other attributes.
+
+Returns 1 on success and 0 on failure.
+
+=cut
+
+sub _SyncLinks {
+    my $self = shift;
+    my $name = $self->__Value('Name');
+
+    my $success;
+
+    if ( $name =~ /^(Dashboard|(?:Pref-)?HomepageSettings)$/ ) {
+        my $type    = $1;
+        my $content = $self->_DeserializeContent( $self->__Value('Content') );
+
+        my %searches;
+        if ( $type eq 'Dashboard' ) {
+            %searches
+                = map { $_->{id} => 1 } grep { $_->{portlet_type} eq 'search' } @{ $content->{Panes}{body} },
+                @{ $content->{Panes}{sidebar} };
+        }
+        else {
+            for my $item ( @{ $content->{body} }, @{ $content->{sidebar} } ) {
+                if ( $item->{type} eq 'saved' ) {
+                    if ( $item->{name} =~ /SavedSearch-(\d+)/ ) {
+                        $searches{$1} ||= 1;
+                    }
+                }
+                elsif ( $item->{type} eq 'system' ) {
+                    if ( my $attr
+                        = RT::System->new( $self->CurrentUser )->FirstAttribute( 'Search - ' . $item->{name} ) )
+                    {
+                        $searches{ $attr->id } ||= 1;
+                    }
+                    else {
+                        my $attrs = RT::System->new( $self->CurrentUser )->Attributes;
+                        $attrs->Limit( FIELD => 'Name',        VALUE => 'SavedSearch' );
+                        $attrs->Limit( FIELD => 'Description', VALUE => $item->{name} );
+                        if ( my $attr = $attrs->First ) {
+                            $searches{ $attr->id } ||= 1;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        my $links = $self->DependsOn;
+        while ( my $link = $links->Next ) {
+            next if delete $searches{ $link->TargetObj->id };
+            my ( $ret, $msg ) = $link->Delete;
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+                $success //= 0;
+            }
+        }
+
+        for my $id ( keys %searches ) {
+            my $link = RT::Link->new( $self->CurrentUser );
+            my $attribute = RT::Attribute->new( $self->CurrentUser );
+            $attribute->Load($id);
+            if ( $attribute->id ) {
+                my ( $ret, $msg )
+                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+    }
+    return $success // 1;
+}
+
+=head2 CurrentUserCanSee
+
+Shortcut of CurrentUserHasRight('display').
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('display');
 }
 
 RT::Base->_ImportOverlays();
