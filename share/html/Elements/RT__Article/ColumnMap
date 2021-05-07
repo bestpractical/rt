@@ -71,6 +71,11 @@ $COLUMN_MAP = {
         title     => 'Class id',                   # loc
         value     => sub { $_[0]->Class },
     },
+    URI => {
+        attribute => 'URI',
+        title     => 'URI',                   # loc
+        value     => sub { $_[0]->URI },
+    },
     ClassName => {
         attribute => 'Class',
         title     => 'Class',                               # loc
@@ -88,7 +93,12 @@ $COLUMN_MAP = {
             }
             return \$topics;
         },
-    }
+    },
+    Disabled => {
+        title     => 'Status', # loc
+        attribute => 'Disabled',
+        value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+    },
 };
 
 </%ONCE>

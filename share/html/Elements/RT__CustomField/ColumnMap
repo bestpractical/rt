@@ -63,7 +63,7 @@ my $COLUMN_MAP = {
             title     => $c, attribute => $c,
             value     => sub { return $_[0]->$c() },
         } }
-        qw(Name Description Type LookupType Pattern EntryHint)
+        qw(Name Description Type LookupType Pattern EntryHint RenderType ValuesClass CanonicalizeClass)
     ),
     map(
         { my $c = $_; my $short = $c; $short =~ s/^Friendly//;
@@ -73,6 +73,11 @@ my $COLUMN_MAP = {
         } }
         qw(FriendlyLookupType FriendlyType FriendlyPattern)
     ),
+    BasedOn => {
+        title     => 'Based On',
+        attribute => 'BasedOn',
+        value     => sub { return $_[0]->BasedOnObj->Name },
+    },
     MaxValues => {
         title     => 'MaxValues', # loc
         attribute => 'MaxValues',
@@ -80,6 +85,11 @@ my $COLUMN_MAP = {
             my $v = $_[0]->MaxValues;
             return !$v ? $_[0]->loc('unlimited') : $v == 0 ? $_[0]->loc('one') : $v;
         },
+    },
+    UniqueValues => {
+        title     => 'UniqueValues', # loc
+        attribute => 'UniqueValues',
+        value     => sub { return $_[0]->UniqueValues ? $_[0]->loc('Unique values') : '' },
     },
     AddedTo => {
         title     => 'Added', # loc
