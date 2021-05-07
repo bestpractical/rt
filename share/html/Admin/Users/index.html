@@ -198,6 +198,8 @@ else {
     $caption = loc("All users");
 }
 
+$users->LimitToEndUsers;
+
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Users'};
 my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Users'} || 50;
 
