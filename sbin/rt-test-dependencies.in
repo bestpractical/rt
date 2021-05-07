@@ -171,6 +171,7 @@ Module::Refresh 0.03
 Module::Versions::Report 1.05
 Net::CIDR
 Net::IP
+Parallel::ForkManager
 Plack 1.0002
 Plack::Handler::Starlet
 Pod::Select
