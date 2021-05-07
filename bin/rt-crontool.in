@@ -71,12 +71,13 @@ use RT;
 
 use Getopt::Long;
 
-use RT::Interface::CLI qw(GetCurrentUser loc);
+use RT::Interface::CLI qw(GetCurrentUser Init loc);
 
 my ( $search, $condition, $actions, $search_arg, $condition_arg, $actions_arg,
      $template, $template_id, $transaction, $transaction_type, $reload_ticket, $help, $log, $verbose,
      $max_processes, $max_tickets_per_process );
-GetOptions(
+
+my %OPT = (
     "search=s"           => \$search,
     "search-arg=s"       => \$search_arg,
     "condition=s"        => \$condition,
@@ -92,17 +93,13 @@ GetOptions(
     "max-tickets-per-process=i" => \$max_tickets_per_process,
     "log=s"              => \$log,
     "verbose|v"          => \$verbose,
-    "help"               => \$help,
+    "verbose"            => 1,  # tell Init we have a verbose
 );
 
-# Load the config file
-RT::LoadConfig();
+Init( %OPT );
 
 # adjust logging to the screen according to options
 RT->Config->Set( LogToSTDERR => $log ) if $log;
-
-#Connect to the database and get RT::SystemUser and RT::Nobody loaded
-RT::Init();
 
 require RT::Tickets;
 require RT::Template;
@@ -110,15 +107,15 @@ require RT::Template;
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 
-# show help even if there is no current user
-help() if $help;
-
 unless ( $CurrentUser->Id ) {
     print loc("No RT user found. Please consult your RT administrator.") . "\n";
     exit(1);
 }
 
-help() unless $search && $actions;
+unless ( $search && $actions ) {
+    Pod::Usage::pod2usage({ verbose => 2});
+    exit(0);
+}
 
 $transaction = lc( $transaction||'' );
 if ( $transaction && $transaction !~ /^(first|all|last)$/i ) {
@@ -348,75 +345,6 @@ sub load_module {
         die loc( "Failed to load module [_1]. ([_2])", $modname, $error );
     }
 
-}
-
-
-sub help {
-
-    print loc( "[_1] is a tool to act on tickets from an external scheduling tool, such as cron.", $0 )
-      . "\n";
-    print loc("It takes several arguments:") . "\n\n";
-
-    print "        "
-      . loc( "[_1] - Specify the search module you want to use", "--search" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - An argument to pass to [_2]", "--search-arg", "--search" )
-      . "\n";
-
-    print "        "
-      . loc( "[_1] - Specify the condition module you want to use", "--condition" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - An argument to pass to [_2]", "--condition-arg", "--condition" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Specify the action module you want to use. This option may be repeated to apply multiple actions to found tickets.", "--action" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - An argument to pass to [_2]. This option may be repeated to pass corresponding arguments to multiple calls of [_2].", "--action-arg", "--action" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Specify name or id of template(s) you want to use", "--template" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Specify if you want to use either 'first', 'last' or 'all' transactions", "--transaction" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Specify the comma separated list of transactions' types you want to use", "--transaction-type" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Adjust LogToSTDERR config option", "--log" ) . "\n";
-    print "        "
-      . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";
-    print "\n";
-    print "\n";
-    print loc("Security:")."\n";
-    print loc("This tool allows the user to run arbitrary perl modules from within RT.")." ". 
-        loc("If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT.")." ".
-        loc("It is incredibly important that nonprivileged users not be allowed to run this tool."). " " . 
-        loc("It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool.")."\n";
-    print "\n";
-    print loc("Example:");
-    print "\n";
-    print " "
-      . loc( "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
-      )
-      . "\n\n";
-
-    print " bin/rt-crontool \\\n";
-    print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print "  --condition RT::Condition::Overdue \\\n";
-    print "  --action RT::Action::SetPriority --action-arg 99 \\\n";
-    print "  --verbose\n";
-
-    print "\n";
-    print loc("Escalate tickets"). "\n";
-    print " bin/rt-crontool \\\n";
-    print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print"  --action RT::Action::EscalatePriority\n";
-
-    exit(0);
 }
 
 __END__
