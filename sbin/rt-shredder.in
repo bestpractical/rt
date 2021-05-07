@@ -48,7 +48,7 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-rt-shredder - Script which wipe out tickets from RT DB
+rt-shredder - Utility to wipe out data from your RT database
 
 =head1 SYNOPSIS
 
@@ -61,24 +61,26 @@ rt-shredder - Script which wipe out tickets from RT DB
 
 =head1 DESCRIPTION
 
-rt-shredder - is script that allow you to wipe out objects
-from RT DB. This script uses API that L<RT::Shredder> module adds to RT.
-Script can be used as example of usage of the shredder API.
+rt-shredder wipes out objects from your RT database. This script uses
+an API that the L<RT::Shredder> module adds to RT.
+This script can also be used as example of usage of the shredder API.
 
 =head1 USAGE
 
-You can use several options to control which objects script
-should wipeout.
+You can use several options to control which objects rt-shredder
+should wipe out.
+
+When using other options, the --plugin option must be provided last.
 
 =head1 OPTIONS
 
 =head2 --sqldump <filename>
 
-Outputs INSERT queries into file. This dump can be used to restore data
-after wiping out.
+Outputs INSERT queries into a file for all shredded records.
+This dump can be used to restore data after wiping out.
 
-By default creates files named F<< <ISO_date>-XXXX.sql >> in the current
-directory.
+By default rt-shredder creates files named F<< <ISO_date>-XXXX.sql >>
+in the current directory.
 
 =head2 --no-sqldump
 
@@ -108,7 +110,7 @@ Outputs help for specified plugin.
 
 =head2 --force
 
-Script doesn't ask any questions.
+Don't prompt with questions before shredding objects.
 
 =head1 SEE ALSO
 
