@@ -74,7 +74,7 @@ use Getopt::Long;
 use RT::Interface::CLI qw(GetCurrentUser Init loc);
 
 my ( $search, $condition, $actions, $search_arg, $condition_arg, $actions_arg,
-     $template, $template_id, $transaction, $transaction_type, $reload_ticket, $help, $log, $verbose,
+     $template, $template_id, $transaction, $transaction_type, $reload_ticket, $log, $verbose,
      $max_processes, $max_tickets_per_process, $dryrun );
 
 my %OPT = (
