@@ -411,7 +411,8 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
 
         my $escaped     = $m->interp->apply_escapes( $string,      'h' );
         my $loc_escaped = $m->interp->apply_escapes( loc($string), 'h' );
-        return \( qq{<span class="ticket-info-$class-} . lc($escaped) . qq{">$loc_escaped</span>} );
+
+        return \( qq{<span class="ticket-info-$class-} . CSSClass(lc($escaped)) . qq{">$loc_escaped</span>} );
 
     };
     foreach my $field (qw(Priority InitialPriority FinalPriority)) {
