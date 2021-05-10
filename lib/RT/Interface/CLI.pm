@@ -205,7 +205,7 @@ sub Init {
         unless $exists{help};
 
     push @args, "verbose|v!" => \($hash->{verbose})
-        unless $exists{verbose};
+        unless ( $exists{verbose} || $exists{'verbose|v'} );
 
     push @args, "debug!" => \($hash->{verbose})
         if $exists{debug};

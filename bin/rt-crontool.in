@@ -93,7 +93,6 @@ my %OPT = (
     "max-tickets-per-process=i" => \$max_tickets_per_process,
     "log=s"              => \$log,
     "verbose|v"          => \$verbose,
-    "verbose"            => 1,  # tell Init we have a verbose
     "dry-run"            => \$dryrun,
 );
 
