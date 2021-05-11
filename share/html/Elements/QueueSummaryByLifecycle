@@ -91,12 +91,25 @@ my $build_search_link = sub {
 
     return RT->Config->Get('WebPath')
          . "/Search/Results.html?Query="
-         . $m->interp->apply_escapes("Queue = '$queue_name' AND $extra_query", 'u');
+         . $m->interp->apply_escapes("Queue = '$queue_name' " . ( $extra_query ? "AND $extra_query" : '' ), 'u');
 };
+
+my $has_active   = grep { $_ eq 'active' } @Statuses;
+my $has_inactive = grep { $_ eq 'inactive' } @Statuses;
+my $all_query;
+if ( $has_active && $has_inactive ) {
+    $all_query = '';
+}
+elsif ($has_active) {
+    $all_query = "Status = '__Active__'";
+}
+elsif ($has_inactive) {
+    $all_query = "Status = '__Inactive__'";
+}
 
 my $link_all = sub {
     my ($queue) = @_;
-    return $build_search_link->($queue->{Name}, "Status = '__Active__'");
+    return $build_search_link->($queue->{Name}, $all_query);
 };
 
 my $link_status = sub {
@@ -135,7 +148,7 @@ my $statuses = {};
 use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new( RT->SystemUser );
 my $query =
-    "(Status = '__Active__') AND (".
+    ( $all_query ? "( $all_query ) AND " : '' ) . "(".
     join(' OR ', map "Queue = ".$_->{Id}, @$queues)
     .")";
 $query = 'id < 0' unless @$queues;
