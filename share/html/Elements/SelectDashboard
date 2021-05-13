@@ -45,37 +45,47 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
-<& /Elements/Tabs &>
-<& /Elements/ListActions, actions => \@results &>
 
-<&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-lg" &>
-<form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-lg">
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/SelectDashboard, Dashboards => GetDashboards( Objects => [ RT->System ] ), Default => $default_dashboard_id, ShowEmpty => 0 &>
-    </div>
-  </div>
-</form>
-</&>
+% for my $section ( sort keys %Dashboards ) {
+<table class="table table-striped table-hover collection-as-table">
+  <thead>
+    <th class="w-50 collection-as-table"><% $section %></th>
+    <th class="collection-as-table"></th>
+    <th class="collection-as-table"></th>
+    <th class="collection-as-table"></th>
+  </thead>
+  <tbody>
+%   for my $dashboard ( @{$Dashboards{$section}} ) {
+%     next if !$ShowEmpty && !$dashboard->{id};
+    <tr>
+      <td class="collection-as-table"><% $dashboard->{name} %></td>
+      <td class="collection-as-table">
+%     if ( $dashboard->{view_link} ) {
+        <a href="<% $dashboard->{view_link} %>" target="_blank"><&|/l&>View Dashboard</&></a>
+%     }
+      </td>
+      <td class="collection-as-table">
+%     if ( $dashboard->{edit_link} ) {
+        <a href="<% $dashboard->{edit_link} %>" target="_blank"><&|/l&>Edit Dashboard</&></a>
+%     }
+      </td>
+      <td class="collection-as-table">
+%     if ( $dashboard->{id} == $Default ) {
+        <&|/l&>Current Homepage</&>
+%     } else {
+        <input name="DefaultDashboard-<% $dashboard->{id} %>" class="button btn btn-primary form-control" type="submit" value="<&|/l&>Set as Homepage</&>" />
+%     }
+      </td>
+    </tr>
+%   }
+  </tbody>
+</table>
+% }
 
-<%INIT>
-Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
 
-my @results;
-my $title = loc("Customize").' '.loc("Global RT at a glance");
-
-my ($system_default) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
-my $default_dashboard_id = $system_default ? $system_default->Content : 0;
-
-my ($default) = map { /^DefaultDashboard-(\d+)/ ? $1 : () } keys %ARGS;
-if ( $default ) {
-    my ( $ret, $msg ) = RT->System->SetAttribute( Name => 'DefaultDashboard', Description => 'Default Dashboard', Content => $default );
-    push @results, $ret ? loc('Preferences saved.') : $msg;
-    MaybeRedirectForResults(
-        Actions => \@results,
-        Path    => "/Admin/Global/MyRT.html",
-    );
-}
-
-</%INIT>
+<%ARGS>
+$Name => 'DefaultDashboard'
+%Dashboards => ()
+$Default => 0
+$ShowEmpty => 1
+</%ARGS>

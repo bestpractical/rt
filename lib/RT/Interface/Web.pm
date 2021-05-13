@@ -4761,81 +4761,63 @@ sub UpdateDashboard {
     }
 
     my ( $ok, $msg );
-    if ( $id eq 'MyRT' ) {
-        my $user = $session{CurrentUser};
+    my $class = $args->{self_service_dashboard} ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
+    my $Dashboard = $class->new( $session{'CurrentUser'} );
+    ( $ok, $msg ) = $Dashboard->LoadById($id);
 
-        if ( my $user_id = $args->{user_id} ) {
-            my $UserObj = RT::User->new( $session{'CurrentUser'} );
-            ( $ok, $msg ) = $UserObj->Load($user_id);
-            return ( $ok, $msg ) unless $ok;
+    # report error at the bottom
+    return ( $ok, $msg ) unless $ok && $Dashboard->Id;
 
-            return ( $ok, $msg ) = $UserObj->SetPreferences( 'HomepageSettings', $data->{panes} );
-        } elsif ( $args->{is_global} ) {
-            my $sys = RT::System->new( $session{'CurrentUser'} );
-            my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
-            return ( $ok, $msg ) = $default_portlets->SetContent( $data->{panes} );
-        } else {
-            return ( $ok, $msg ) = $user->SetPreferences( 'HomepageSettings', $data->{panes} );
-        }
-    } else {
-        my $class = $args->{self_service_dashboard} ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
-        my $Dashboard = $class->new( $session{'CurrentUser'} );
-        ( $ok, $msg ) = $Dashboard->LoadById($id);
+    my $content;
+    for my $pane_name ( keys %{ $data->{panes} } ) {
+        my @pane;
 
-        # report error at the bottom
-        return ( $ok, $msg ) unless $ok && $Dashboard->Id;
+        for my $item ( @{ $data->{panes}{$pane_name} } ) {
+            my %saved;
+            $saved{pane}         = $pane_name;
+            $saved{portlet_type} = $item->{type};
 
-        my $content;
-        for my $pane_name ( keys %{ $data->{panes} } ) {
-            my @pane;
+            $saved{description} = $available_items->{ $item->{type} }{ $item->{name} }{label};
 
-            for my $item ( @{ $data->{panes}{$pane_name} } ) {
-                my %saved;
-                $saved{pane}         = $pane_name;
-                $saved{portlet_type} = $item->{type};
+            if ( $item->{type} eq 'component' ) {
+                $saved{component} = $item->{name};
 
-                $saved{description} = $available_items->{ $item->{type} }{ $item->{name} }{label};
+                # Absolute paths stay absolute, relative paths go into
+                # /Elements. This way, extensions that add portlets work.
+                my $path = $item->{name};
+                $path = "/Elements/$path" if substr( $path, 0, 1 ) ne '/';
 
-                if ( $item->{type} eq 'component' ) {
-                    $saved{component} = $item->{name};
+                $saved{path} = $path;
+            } elsif ( $item->{type} eq 'saved' ) {
+                $saved{portlet_type} = 'search';
 
-                    # Absolute paths stay absolute, relative paths go into
-                    # /Elements. This way, extensions that add portlets work.
-                    my $path = $item->{name};
-                    $path = "/Elements/$path" if substr( $path, 0, 1 ) ne '/';
+                $item->{searchType} = $available_items->{ $item->{type} }{ $item->{name} }{search_type}
+                                      if exists $available_items->{ $item->{type} }{ $item->{name} }{search_type};
 
-                    $saved{path} = $path;
-                } elsif ( $item->{type} eq 'saved' ) {
-                    $saved{portlet_type} = 'search';
+                my $type = $item->{searchType};
+                $type = 'Saved Search' if !$type || $type eq 'Ticket';
+                $saved{description} = loc($type) . ': ' . $saved{description};
 
-                    $item->{searchType} = $available_items->{ $item->{type} }{ $item->{name} }{search_type}
-                                          if exists $available_items->{ $item->{type} }{ $item->{name} }{search_type};
+                $item->{searchId} = $available_items->{ $item->{type} }{ $item->{name} }{search_id}
+                                    if exists $available_items->{ $item->{type} }{ $item->{name} }{search_id};
 
-                    my $type = $item->{searchType};
-                    $type = 'Saved Search' if !$type || $type eq 'Ticket';
-                    $saved{description} = loc($type) . ': ' . $saved{description};
-
-                    $item->{searchId} = $available_items->{ $item->{type} }{ $item->{name} }{search_id}
-                                        if exists $available_items->{ $item->{type} }{ $item->{name} }{search_id};
-
-                    my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
-                    $saved{privacy} = "$obj_type-$obj_id";
-                    $saved{id}      = $search_id;
-                } elsif ( $item->{type} eq 'dashboard' ) {
-                    my ( undef, $dashboard_id, $obj_type, $obj_id ) = split '-', $item->{name};
-                    $saved{privacy}     = "$obj_type-$obj_id";
-                    $saved{id}          = $dashboard_id;
-                    $saved{description} = loc('Dashboard') . ': ' . $saved{description};
-                }
-
-                push @pane, \%saved;
+                my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
+                $saved{privacy} = "$obj_type-$obj_id";
+                $saved{id}      = $search_id;
+            } elsif ( $item->{type} eq 'dashboard' ) {
+                my ( undef, $dashboard_id, $obj_type, $obj_id ) = split '-', $item->{name};
+                $saved{privacy}     = "$obj_type-$obj_id";
+                $saved{id}          = $dashboard_id;
+                $saved{description} = loc('Dashboard') . ': ' . $saved{description};
             }
 
-            $content->{$pane_name} = \@pane;
+            push @pane, \%saved;
         }
 
-        return ( $ok, $msg ) = $Dashboard->Update( Panes => $content );
+        $content->{$pane_name} = \@pane;
     }
+
+    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content );
 }
 
 =head2 ListOfReports
@@ -5144,6 +5126,85 @@ sub CachedCustomFieldValues {
 
 sub PreprocessTimeUpdates {
     RT::Interface::Web::PreprocessTimeUpdates(@_);
+}
+
+
+=head2 GetDashboards Objects => ARRAY, CurrentUser => CURRENT_USER
+
+Return available dashboards that are saved in the name of objects for
+specified user.
+
+=cut
+
+sub GetDashboards {
+    my %args = (
+        Objects     => undef,
+        CurrentUser => $session{CurrentUser},
+        @_,
+    );
+
+    return unless $args{CurrentUser};
+
+    $args{Objects} ||= [ RT::Dashboard->new( $args{CurrentUser} )->ObjectsForLoading( IncludeSuperuserGroups => 1 ) ];
+
+    my ($system_default) = RT::System->new( $args{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
+    my $default_dashboard_id = $system_default ? $system_default->Content : 0;
+
+    my $found_system_default;
+
+    require RT::Dashboards;
+    my %dashboards;
+    my %system_default;
+    foreach my $object ( @{ $args{Objects} } ) {
+        my $list = RT::Dashboards->new( $args{CurrentUser} );
+        $list->LimitToPrivacy( join( '-', ref($object), $object->Id ) );
+        my $section;
+        if ( ref $object eq 'RT::User' && $object->Id == $session{CurrentUser}->Id ) {
+            $section = loc("My dashboards");
+        }
+        else {
+            $section = loc( "[_1]'s dashboards", $object->Name );
+        }
+
+        while ( my $dashboard = $list->Next ) {
+            # Use current logged in user to determine if to return link or not
+            $dashboard->CurrentUser( $session{CurrentUser} );
+            push @{ $dashboards{$section} },
+                {   id        => $dashboard->Id,
+                    name      => $dashboard->Name,
+                    view_link => $dashboard->CurrentUserCanSee()
+                    ? join( '/', RT->Config->Get('WebPath'), 'Dashboards', $dashboard->Id, $dashboard->Name )
+                    : '',
+                    edit_link => $dashboard->CurrentUserCanModify()
+                    ? join( '/', RT->Config->Get('WebPath'), 'Dashboards', 'Queries.html?id=' . $dashboard->Id )
+                    : '',
+                };
+
+            if ( $dashboard->Id == $default_dashboard_id ) {
+                %system_default = ( section => $section, %{ $dashboards{$section}[-1] } );
+            }
+        }
+    }
+
+    if (%system_default) {
+        push @{ $dashboards{ $system_default{section} } },
+            {   id        => 0,
+                name      => loc('System Default') . " ($system_default{name})",
+                view_link => $system_default{view_link},
+                edit_link => $system_default{edit_link},
+            };
+    }
+    else {
+        push @{$dashboards{"System's dashboards"}}, {
+            id   => 0,
+            name => loc('System Default'),
+        };
+    }
+
+    for my $section ( keys %dashboards ) {
+        @{ $dashboards{$section} } = sort { lc $a->{name} cmp lc $b->{name} } @{ $dashboards{$section} };
+    }
+    return \%dashboards;
 }
 
 package RT::Interface::Web;

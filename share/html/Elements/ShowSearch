@@ -78,6 +78,11 @@ if ($SavedSearch) {
         $m->out(loc("Saved search [_1] not found", $m->interp->apply_escapes($SavedSearch, 'h'))) unless $IgnoreMissing;
         return;
     }
+
+    if ( $search->Object->isa('RT::System') ) {
+        $SearchArg = $user->Preferences( $search, $search->Content );
+    }
+
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} ||= 'Ticket';
     if ( $SearchArg->{SearchType} eq 'Transaction' ) {
@@ -108,11 +113,19 @@ if ($SavedSearch) {
         $query_link_url = RT->Config->Get('WebPath') . "/Search/$SearchArg->{SearchType}.html";
         $ShowCount = 0;
     } elsif ($ShowCustomize) {
-        $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
-            . $m->comp( '/Elements/QueryString',
-            SavedSearchLoad => $SavedSearch );
+        if ( $search->Object->isa('RT::System') ) {
+            $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
+                . $m->comp( '/Elements/QueryString',
+                    name => ref($search) . '-' . $search->Id );
+        }
+        else {
+            $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
+                . $m->comp( '/Elements/QueryString',
+                SavedSearchLoad => $SavedSearch );
+        }
     }
 } else {
+    RT->Deprecated( Message => 'Passing bare $Name is deprecated', Instead => '$SavedSearch', Remove => '5.2' );
     ($search) = RT::System->new( $session{'CurrentUser'} ) ->Attributes->Named( 'Search - ' . $Name );
     unless ( $search && $search->Id ) {
         my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('SavedSearch');

@@ -49,138 +49,41 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@actions &>
 
+<&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-lg" &>
 <form method="post" action="MyRT.html" name="UpdateSearches" class="mx-auto max-width-lg">
-  <& /Widgets/SearchSelection,
-                    pane_name => \%pane_name,
-                    sections  => \@sections,
-                    selected  => \%selected,
-                    filters   => \@filters,
-    &>
-<input type="hidden" name="id" value="<% $id %>"/>
-<input type="hidden" name="dashboard_id" value="MyRT">
-<& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+  <input type="hidden" name="id" value="<% $id %>" />
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/SelectDashboard, Dashboards => GetDashboards( CurrentUser => $UserObj ), Default => $default_dashboard_id &>
+    </div>
+  </div>
 </form>
-<form method="post" action="MyRT.html?id=<% $id %>" class="mx-auto max-width-lg">
-  <input type="hidden" name="Reset" value="1" />
-  <& /Elements/Submit, Label => loc('Reset to default') &>
-</form>
+</&>
 
 <%init>
 my @actions;
 my $UserObj = RT::User->new($session{'CurrentUser'});
 $UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
-my $user = RT::User->new($session{'CurrentUser'});
 my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
 
-if ($ARGS{Reset}) {
-    for my $pref_name ('HomepageSettings', 'SummaryRows') {
-        next unless $UserObj->Preferences($pref_name);
-        my ($ok, $msg) = $UserObj->DeletePreferences($pref_name);
-        push @actions, $msg unless $ok;
+my $default_dashboard_id = $UserObj->Preferences( DefaultDashboard => 0 );
+
+my ($default) = map { /^DefaultDashboard-(\d+)/ ? $1 : () } keys %ARGS;
+if ( defined $default ) {
+    my ( $ret, $msg );
+    if ( $default ) {
+        ( $ret, $msg ) = $UserObj->SetPreferences( 'DefaultDashboard', $default );
     }
-    push @actions, loc('Preferences saved for user [_1].', $UserObj->Name) unless @actions;
-}
-
-my $portlets = $UserObj->Preferences('HomepageSettings');
-unless ($portlets) {
-    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    $portlets = $defaults ? $defaults->Content : {};
-}
-
-my @sections;
-my %item_for;
-
-my @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('HomepageComponents')};
-$item_for{ $_->{type} }{ $_->{name} } = $_ for @components;
-
-push @sections, {
-      id    => 'components',
-      label => loc("Components"),
-      items => \@components,
-    };
-my $sys = RT::System->new($session{'CurrentUser'});
-$sys->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
-my @objs = ($sys);
-push @objs, RT::SavedSearch->new ($session{'CurrentUser'})->ObjectsForLoading
-    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
-                                          Object => $RT::System );
-for my $object (@objs) {
-     my @items;
-     my $object_id = ref($object) . '-' . $object->Id;
-     $object_id = 'system' if $object eq $sys;
-
-     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-         my ($desc, $loc_desc, $search) = @$_;
-
-         my $SearchType = 'Ticket';
-         if ((ref($search->Content)||'') eq 'HASH') {
-             $SearchType = $search->Content->{'SearchType'}
-                 if $search->Content->{'SearchType'};
-         }
-         else {
-           $RT::Logger->debug("Search ".$search->id." ($desc) appears to have  no Content");
-           }
-
-         my $item;
-         if ($object eq $sys && $SearchType eq 'Ticket') {
-             $item = { type => 'system', name => $desc, label => $loc_desc };
-         }
-         else {
-             my $oid = $object_id.'-SavedSearch-'.$search->Id;
-             $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
-           }
-           $item_for{ $item->{type} }{ $item->{name} } = $item;
-           push @items, $item;
-     }
-
-     my $label = $object eq $sys           ? loc('System')
-               : $object->isa('RT::Group') ? $object->Label
-                                           : $object->Name;
-     push @sections, {
-         id    => $object_id,
-         label => $label,
-         items => [ sort { lc($a->{label}) cmp lc($b->{label}) } @items ],
-     };
- }
-
-my %selected;
-for my $pane (keys %$portlets) {
-    my @items;
-
-    for my $saved (@{ $portlets->{$pane} }) {
-        my $item = $item_for{ $saved->{type} }{ $saved->{name} };
-        if ($item) {
-            push @items, $item;
+    else {
+        if ( $default_dashboard_id ) {
+            ( $ret, $msg ) = $UserObj->DeletePreferences( 'DefaultDashboard' );
         }
         else {
-            push @actions, loc('Unable to find [_1] [_2]', $saved->{type}, $saved->{name});
+            $ret = 1;
         }
     }
-    $selected{$pane} = \@items;
-    }
 
-my %pane_name = (
-  'body'    => loc('Body'),
-  'sidebar' => loc('Sidebar'),
-);
-
-my @filters = (
-  [ 'component' => loc('Components') ],
-  [ 'ticket'    => loc('Tickets') ],
-  [ 'chart'     => loc('Charts') ],
-);
-$m->callback(
-    CallbackName => 'Default',
-    pane_name    => \%pane_name,
-    sections     => \@sections,
-    selected     => \%selected,
-    filters      => \@filters,
-);
-
-if ( $ARGS{UpdateSearches} ) {
-    $ARGS{user_id} = $ARGS{id};
-    my ($ok, $msg) = UpdateDashboard( \%ARGS, \%item_for );
-    push @actions, $ok ? loc('Preferences saved for user [_1].', $UserObj->Name) : $msg;
+    push @actions, $ret ? loc('Preferences saved for user [_1].', $UserObj->Name) : $msg;
 
     MaybeRedirectForResults(
         Actions   => \@actions,
