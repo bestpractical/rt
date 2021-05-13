@@ -66,10 +66,32 @@ my %allowed_components = map {$_ => 1} @{RT->Config->Get('HomepageComponents')};
 
 my $user = $session{'CurrentUser'}->UserObj;
 unless ( $Portlets ) {
-    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    $Portlets = $user->Preferences(
-        HomepageSettings => $defaults ? $defaults->Content : {}
-    );
+    my ($system_default) = RT::System->new($session{'CurrentUser'})->Attributes->Named('DefaultDashboard');
+    my $system_default_id = $system_default ? $system_default->Content : 0;
+    my $dashboard_id = $user->Preferences( DefaultDashboard => $system_default_id ) or return;
+
+    # Allow any user to read system default dashboard
+    my $dashboard = RT::Dashboard->new($system_default_id == $dashboard_id ? RT->SystemUser : $session{'CurrentUser'});
+    my ( $ok, $msg ) = $dashboard->LoadById( $dashboard_id );
+    if ( !$ok ) {
+        if ( $dashboard_id == $system_default_id ) {
+            $m->out($m->scomp('/Elements/ListActions', actions => $msg));
+            return;
+        }
+        else {
+            my ( $ok, $sys_msg ) = $dashboard->LoadById( $system_default_id );
+            if ( $ok ) {
+                $m->out($m->scomp('/Elements/ListActions', actions => [$msg, loc('Fallback to system default homepage')]));
+                my ( $ok, $msg ) = $user->DeletePreferences( 'DefaultDashboard' );
+                RT->Logger->error( "Couldn't delete DefaultDashboard of user " . $user->Name . ": $msg" ) unless $ok;
+            }
+            else {
+                $m->out($m->scomp('/Elements/ListActions', actions => [$msg, $sys_msg]));
+                return;
+            }
+        }
+    }
+    $Portlets = $dashboard->Panes;
 }
 
 $m->callback( CallbackName => 'MassagePortlets', Portlets => $Portlets );
@@ -83,10 +105,14 @@ $sidebar = undef unless $sidebar && @$sidebar;
 
 my $Rows = $user->Preferences( 'SummaryRows', ( RT->Config->Get('DefaultSummaryRows') || 10 ) );
 
-my $show_cb = sub {
+my $show_cb;
+$show_cb = sub {
     my $entry = shift;
-    my $type  = $entry->{type};
-    my $name = $entry->{'name'};
+    my $depth = shift || 0;
+    Abort("Possible recursive dashboard detected.", SuppressHeader => 1) if $depth > 8;
+
+    my $type  = $entry->{portlet_type};
+    my $name = $entry->{component};
     if ( $type eq 'component' ) {
         if (!$allowed_components{$name}) {
             $m->out( $m->interp->apply_escapes( loc("Invalid portlet [_1]", $name), "h" ) );
@@ -98,10 +124,19 @@ my $show_cb = sub {
         else {
             $m->comp( $name, %{ $entry->{arguments} || {} } );
         }
-    } elsif ( $type eq 'system' ) {
-        $m->comp( '/Elements/ShowSearch', Name => $name, Override => { Rows => $Rows } );
-    } elsif ( $type eq 'saved' ) {
-        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows } );
+    } elsif ( $type eq 'search' ) {
+        $m->comp( '/Elements/ShowSearch', RT::Dashboard->ShowSearchName($entry), Override => { Rows => $Rows } );
+    } elsif ( $type eq 'dashboard' ) {
+        my $current_dashboard = RT::Dashboard->new($session{CurrentUser});
+        my ($ok, $msg) = $current_dashboard->LoadById($entry->{id});
+        if (!$ok) {
+            $m->out($msg);
+            return;
+        }
+        my @panes = @{ $current_dashboard->Panes->{$entry->{pane}} || [] };
+        for my $portlet (@panes) {
+            $show_cb->($portlet, $depth + 1);
+        }
     } else {
         $RT::Logger->error("unknown portlet type '$type'");
     }

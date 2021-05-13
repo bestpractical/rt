@@ -418,10 +418,11 @@ sub Delete {
     # Get values even if current user doesn't have right to see
     my $name = $self->__Value('Name');
     my @links;
-    if ( $name =~ /^(Dashboard|(?:Pref-)?HomepageSettings)$/ ) {
+    if ( $name =~ /^(?:Dashboard|(?:Pref-)?DefaultDashboard)$/ ) {
         push @links, @{ $self->DependsOn->ItemsArrayRef };
     }
-    elsif ( $name eq 'SavedSearch' ) {
+
+    if ( $name =~ /^(?:Dashboard|SavedSearch)$/ ) {
         push @links, @{ $self->DependedOnBy->ItemsArrayRef };
     }
 
@@ -814,32 +815,11 @@ sub FindDependencies {
             }
         }
     }
-    # homepage settings attribute has dependencies on each of the searches in it
-    elsif ($self->Name eq RT::User::_PrefName("HomepageSettings")) {
-        my $content = $self->Content;
-        for my $pane (values %{ $content || {} }) {
-            for my $component (@$pane) {
-                # this hairy code mirrors what's in the saved search loader
-                # in /Elements/ShowSearch
-                if ($component->{type} eq 'saved') {
-                    if ($component->{name} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/) {
-                        my $attr = RT::Attribute->new($self->CurrentUser);
-                        $attr->LoadById($3);
-                        $deps->Add( out => $attr );
-                    }
-                }
-                elsif ($component->{type} eq 'system') {
-                    my ($search) = RT::System->new($self->CurrentUser)->Attributes->Named( 'Search - ' . $component->{name} );
-                    unless ( $search && $search->Id ) {
-                        my (@custom_searches) = RT::System->new($self->CurrentUser)->Attributes->Named('SavedSearch');
-                        foreach my $custom (@custom_searches) {
-                            if ($custom->Description eq $component->{name}) { $search = $custom; last }
-                        }
-                    }
-                    $deps->Add( out => $search ) if $search;
-                }
-            }
-        }
+    # DefaultDashboard has id of dashboard it uses
+    elsif ($self->Name =~ /^(?:Pref-)?DefaultDashboard$/) {
+        my $attr = RT::Attribute->new( $self->CurrentUser );
+        $attr->LoadById($self->Content);
+        $deps->Add( out => $attr ) if $attr->Id;
     }
     # dashboards have dependencies on all the searches and dashboards they use
     elsif ($self->Name eq 'Dashboard' || $self->Name eq 'SelfServiceDashboard') {
@@ -930,36 +910,23 @@ sub PostInflateFixup {
         }
         $self->SetContent($content);
     }
-    # decode UIDs to be saved searches
-    elsif ($self->Name eq RT::User::_PrefName("HomepageSettings")) {
+    elsif ( $self->Name =~ /^(?:Pref-)?DefaultDashboard$/ ) {
         my $content = $self->Content;
-
-        for my $pane (values %{ $content || {} }) {
-            for (@$pane) {
-                if (ref($_->{uid}) eq 'SCALAR') {
-                    my $uid = $_->{uid};
-                    my $attr = $importer->LookupObj($$uid);
-
-                    if ($attr) {
-                        if ($_->{type} eq 'saved') {
-                            $_->{name} = join '-', $attr->ObjectType, $attr->ObjectId, 'SavedSearch', $attr->id;
-                        }
-                        # if type is system, name doesn't need to change
-                        # if type is anything else, pass it through as is
-                        delete $_->{uid};
-                    }
-                    else {
-                        $importer->Postpone(
-                            for    => $$uid,
-                            uid    => $spec->{uid},
-                            method => 'PostInflateFixup',
-                        );
-                    }
-                }
+        if ( ref($content) eq 'SCALAR' ) {
+            my $attr = $importer->LookupObj($$_);
+            if ($attr) {
+                $content = $attr->Id;
+            }
+            else {
+                $importer->Postpone(
+                    for    => $$content,
+                    uid    => $spec->{uid},
+                    method => 'PostInflateFixup',
+                );
             }
         }
-        $self->SetContent($content);
     }
+    # decode UIDs to be saved searches
     elsif ($self->Name eq 'Dashboard') {
         my $content = $self->Content;
 
@@ -1034,38 +1001,11 @@ sub Serialize {
         }
         $store{Content} = $self->_SerializeContent($content);
     }
-    # encode saved searches to be UIDs
-    elsif ($store{Name} eq RT::User::_PrefName("HomepageSettings")) {
-        my $content = $self->_DeserializeContent($store{Content});
-        for my $pane (values %{ $content || {} }) {
-            for (@$pane) {
-                # this hairy code mirrors what's in the saved search loader
-                # in /Elements/ShowSearch
-                if ($_->{type} eq 'saved') {
-                    if ($_->{name} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/) {
-                        my $attr = RT::Attribute->new($self->CurrentUser);
-                        $attr->LoadById($3);
-                        $_->{uid} = \($attr->UID);
-                    }
-                    # if we can't parse the name, just pass it through
-                }
-                elsif ($_->{type} eq 'system') {
-                    my ($search) = RT::System->new($self->CurrentUser)->Attributes->Named( 'Search - ' . $_->{name} );
-                    unless ( $search && $search->Id ) {
-                        my (@custom_searches) = RT::System->new($self->CurrentUser)->Attributes->Named('SavedSearch');
-                        foreach my $custom (@custom_searches) {
-                            if ($custom->Description eq $_->{name}) { $search = $custom; last }
-                        }
-                    }
-                    # if we can't load the search, just pass it through
-                    if ($search) {
-                        $_->{uid} = \($search->UID);
-                    }
-                }
-                # pass through everything else (e.g. component)
-            }
-        }
-        $store{Content} = $self->_SerializeContent($content);
+    elsif ( $store{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+        my $content = $store{Content};
+        my $attr    = RT::Attribute->new( $self->CurrentUser );
+        $attr->LoadById($content);
+        $store{Content} = \$attr->UID;
     }
     # encode saved searches and dashboards to be UIDs
     elsif ($store{Name} eq 'Dashboard') {
@@ -1122,41 +1062,11 @@ sub _SyncLinks {
 
     my $success;
 
-    if ( $name =~ /^(Dashboard|(?:Pref-)?HomepageSettings)$/ ) {
-        my $type    = $1;
+    if ( $name eq 'Dashboard' ) {
         my $content = $self->_DeserializeContent( $self->__Value('Content') );
 
-        my %searches;
-        if ( $type eq 'Dashboard' ) {
-            %searches
-                = map { $_->{id} => 1 } grep { $_->{portlet_type} eq 'search' } @{ $content->{Panes}{body} },
-                @{ $content->{Panes}{sidebar} };
-        }
-        else {
-            for my $item ( @{ $content->{body} }, @{ $content->{sidebar} } ) {
-                if ( $item->{type} eq 'saved' ) {
-                    if ( $item->{name} =~ /SavedSearch-(\d+)/ ) {
-                        $searches{$1} ||= 1;
-                    }
-                }
-                elsif ( $item->{type} eq 'system' ) {
-                    if ( my $attr
-                        = RT::System->new( $self->CurrentUser )->FirstAttribute( 'Search - ' . $item->{name} ) )
-                    {
-                        $searches{ $attr->id } ||= 1;
-                    }
-                    else {
-                        my $attrs = RT::System->new( $self->CurrentUser )->Attributes;
-                        $attrs->Limit( FIELD => 'Name',        VALUE => 'SavedSearch' );
-                        $attrs->Limit( FIELD => 'Description', VALUE => $item->{name} );
-                        if ( my $attr = $attrs->First ) {
-                            $searches{ $attr->id } ||= 1;
-                        }
-
-                    }
-                }
-            }
-        }
+        my %searches = map { $_->{id} => 1 } grep { $_->{portlet_type} eq 'search' } @{ $content->{Panes}{body} },
+            @{ $content->{Panes}{sidebar} };
 
         my $links = $self->DependsOn;
         while ( my $link = $links->Next ) {
@@ -1182,6 +1092,39 @@ sub _SyncLinks {
             }
         }
     }
+    elsif ( $name =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+        my $id    = $self->__Value('Content');
+        my $links = $self->DependsOn;
+        my $found;
+        while ( my $link = $links->Next ) {
+            if ( $link->TargetObj->id == $id ) {
+                $found = 1;
+            }
+            else {
+
+                my ( $ret, $msg ) = $link->Delete;
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+
+        if ( !$found ) {
+            my $link      = RT::Link->new( $self->CurrentUser );
+            my $attribute = RT::Attribute->new( $self->CurrentUser );
+            $attribute->Load($id);
+            if ( $attribute->id ) {
+                my ( $ret, $msg )
+                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+    }
+
     return $success // 1;
 }
 
