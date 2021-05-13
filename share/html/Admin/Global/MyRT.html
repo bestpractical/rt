@@ -49,129 +49,36 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" name="UpdateSearches" class="mx-auto max-width-lg">
-  <& /Widgets/SearchSelection,
-    pane_name => \%pane_name,
-    sections  => \@sections,
-    selected  => \%selected,
-    filters   => \@filters,
-  &>
-  <input type="hidden" name="dashboard_id" value="MyRT">
-  <input type="hidden" name="is_global" value="1">
-  <& /Elements/Submit, Name => "UpdateSearches", Label => loc('Save') &>
+<&|/Widgets/TitleBox, title => loc('Defaut Dashboard'), bodyclass => "", class => "mx-auto max-width-lg" &>
+<form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-lg">
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/SelectDashboard, Dashboards => [ GetDashboards( Objects => [ RT->System ] ) ], Default => $default_dashboard_id, ShowEmpty => 0 &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => "UpdateDefaultDashboard", Label => loc('Save') &>
+    </div>
+  </div>
 </form>
+</&>
 
 <%INIT>
+Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
+
 my @results;
 my $title = loc("Customize").' '.loc("Global RT at a glance");
 
-my $portlets;
-my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-$portlets = $defaults ? $defaults->Content : {};
+my ($system_default) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
+my $default_dashboard_id = $system_default ? $system_default->Content : 0;
 
-my @sections;
-my %item_for;
-
-my @components = map { type => "component", name => $_, label => loc($_) }, @{RT->Config->Get('HomepageComponents')};
-
-$item_for{ $_->{type} }{ $_->{name} } = $_ for @components;
-
-push @sections, {
-    id    => 'components',
-    label => loc("Components"),
-    items => \@components,
-};
-
-my $sys = RT::System->new($session{'CurrentUser'});
-my @objs = ($sys);
-
-push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
-    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
-                                          Object => $RT::System );
-
-for my $object (@objs) {
-    my @items;
-    my $object_id = ref($object) . '-' . $object->Id;
-
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-        my ($desc, $loc_desc, $search) = @$_;
-
-        my $SearchType = 'Ticket';
-        if ((ref($search->Content)||'') eq 'HASH') {
-            $SearchType = $search->Content->{'SearchType'}
-                if $search->Content->{'SearchType'};
-        }
-        else {
-            $RT::Logger->debug("Search ".$search->id." ($desc) appears to have no Content");
-        }
-
-        my $item;
-        if ($object eq $sys && $SearchType eq 'Ticket') {
-            $item = { type => 'system', name => $desc, label => $loc_desc };
-        }
-        else {
-            my $oid = $object_id.'-SavedSearch-'.$search->Id;
-            $item = { type => 'saved', name => $oid, search_type => $SearchType, label => $loc_desc };
-        }
-
-        $item_for{ $item->{type} }{ $item->{name} } = $item;
-        push @items, $item;
-    }
-
-    my $label = $object eq $sys           ? loc('System')
-              : $object->isa('RT::Group') ? $object->Label
-                                          : $object->Name;
-
-    push @sections, {
-        id    => $object_id,
-        label => $label,
-        items => [ sort { lc($a->{label}) cmp lc($b->{label}) } @items ],
-    };
-}
-
-my %selected;
-for my $pane (keys %$portlets) {
-    my @items;
-
-    for my $saved (@{ $portlets->{$pane} }) {
-        my $item = $item_for{ $saved->{type} }{ $saved->{name} };
-        if ($item) {
-            push @items, $item;
-        }
-        else {
-            push @results, loc('Unable to find [_1] [_2]', $saved->{type}, $saved->{name});
-        }
-    }
-
-    $selected{$pane} = \@items;
-}
-
-my %pane_name = (
-    'body'    => loc('Body'),
-    'sidebar' => loc('Sidebar'),
-);
-
-my @filters = (
-    [ 'component' => loc('Components') ],
-    [ 'ticket'    => loc('Tickets') ],
-    [ 'chart'     => loc('Charts') ],
-);
-
-$m->callback(
-    CallbackName => 'Default',
-    pane_name    => \%pane_name,
-    sections     => \@sections,
-    selected     => \%selected,
-    filters      => \@filters,
-);
-
-if ($ARGS{UpdateSearches}) {
-    my ($ok, $msg) = UpdateDashboard( \%ARGS, \%item_for );
-    push @results, $ok ? loc('Preferences saved.') : $msg;
-
+if ( $ARGS{UpdateDefaultDashboard} && $ARGS{DefaultDashboard} ) {
+    my ( $ret, $msg ) = RT->System->SetAttribute( Name => 'DefaultDashboard', Description => 'Default Dashboard', Content => $ARGS{DefaultDashboard} );
+    push @results, $ret ? loc('Preferences saved.') : $msg;
     MaybeRedirectForResults(
-        Actions   => \@results,
-        Path      => "/Admin/Global/MyRT.html",
+        Actions => \@results,
+        Path    => "/Admin/Global/MyRT.html",
     );
 }
 
