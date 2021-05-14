@@ -283,4 +283,18 @@ configuration setting.
 
 =back
 
+=head1 UPGRADING FROM 5.0.1 AND EARLIER
+
+=over 4
+
+=item *
+
+"RT at a glance" now uses dashboard as backend, thus users can switch
+different homepages very easily. Users who want to customize homepage need
+"ModifySelf", "SeeOwnDashboard", "ModifyOwnDashboard" and
+"DeleteOwnDashboard" rights granted. "SeeDashboard" is optional but required
+if they want to check out system dashboards too.
+
+=back
+
 =cut
