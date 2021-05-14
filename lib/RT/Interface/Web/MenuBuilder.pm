@@ -933,6 +933,20 @@ sub BuildMainNav {
         }
     }
 
+    # Top menu already has the create link, adding it to page menu is just
+    # for convenience. As user admin page already has quite a few items in
+    # page menu and it's unlikely that admins want to create new dashboard
+    # when editing a user's preference, here we don't touch admin user page.
+    if ( $request_path =~ m{^/(Prefs|Admin/Global)/MyRT\.html} ) {
+        if ( RT::Dashboard->new($current_user)->CurrentUserCanCreateAny ) {
+            $page->child(
+                'dashboard_create' => title => loc('New Dashboard'),
+                path               => "/Dashboards/Modify.html?Create=1"
+            );
+        }
+    }
+
+
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         my $alt = loc('Edit');
         $page->child( edit => raw_html => q[<a id="page-edit" class="menu-item" href="] . RT->Config->Get('WebPath') . qq[/Prefs/MyRT.html"><span class="fas fa-cog" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span></a>] );
