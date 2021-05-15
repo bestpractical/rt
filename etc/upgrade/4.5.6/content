@@ -1,0 +1,13 @@
+use strict;
+use warnings;
+
+our @ACL = (
+    {   GroupDomain => 'SystemInternal',
+        GroupType   => 'Privileged',
+        Right       => 'ShowSearchAdvanced',
+    },
+    {   GroupDomain => 'SystemInternal',
+        GroupType   => 'Privileged',
+        Right       => 'ShowSearchBulkUpdate',
+    },
+);

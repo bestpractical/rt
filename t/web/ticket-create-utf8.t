@@ -29,7 +29,7 @@ foreach my $test_str ( $ru_test, $l1_test ) {
     ok $m->goto_create_ticket( $q ), "go to create ticket";
     $m->form_name('TicketCreate');
     $m->field( Subject => $test_str );
-    $m->submit;
+    $m->click('SubmitTicket');
 
     $m->content_like( 
         qr{<td\s+class="message-header-value\s*"[^>]*>\s*\Q$test_str\E\s*</td>}i,
@@ -47,7 +47,7 @@ foreach my $test_str ( $ru_test, $l1_test ) {
         $m->form_name('TicketCreate');
         $m->field( Subject => $test_str );
         $m->field( Content => $support_str );
-        $m->submit;
+        $m->click('SubmitTicket');
 
         $m->content_like( 
             qr{<td\s+class="message-header-value\s*"[^>]*>\s*\Q$test_str\E\s*</td>}i,
@@ -70,7 +70,7 @@ foreach my $test_str ( $ru_test, $l1_test ) {
         $m->form_name('TicketCreate');
         $m->field( Subject => $test_str );
         $m->field( Content => $support_str );
-        $m->submit;
+        $m->click('SubmitTicket');
 
         $m->content_like( 
             qr{<td\s+class="message-header-value\s*"[^>]*>\s*\Q$test_str\E\s*</td>}i,

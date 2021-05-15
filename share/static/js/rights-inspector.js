@@ -142,7 +142,7 @@ jQuery(function() {
                 }
                 else {
                     button.closest('.revoke').siblings('.unused').remove();
-                    button.closest('.revoke').removeClass('col-md-1').addClass('col-md-3').text(response.msg);
+                    button.closest('.revoke').removeClass('col-1').addClass('col-3').text(response.msg);
                 }
                 delete revoking[action];
             },
@@ -200,13 +200,13 @@ function link_or_text (text, url) {
 
 function render_inspector_result (item) {
     return '<div class="result form-row">'
-        +  '  <div class="principal cell col-md-3 my-auto">' + render_inspector_record(item.principal) + '</div>'
-        +  '  <div class="object cell col-md-3 my-auto">' + render_inspector_record(item.object) + '</div>'
-        +  '  <div class="right cell col-md-3 my-auto">' + item.right_highlighted + '</div>'
-        +  '  <div class="revoke cell col-md-1 my-auto">'
+        +  '  <div class="principal cell col-3 my-auto">' + render_inspector_record(item.principal) + '</div>'
+        +  '  <div class="object cell col-3 my-auto">' + render_inspector_record(item.object) + '</div>'
+        +  '  <div class="right cell col-3 my-auto">' + item.right_highlighted + '</div>'
+        +  '  <div class="revoke cell col-1 my-auto">'
         +       revoke_button(item)
         + '  </div>'
-        +  '  <div class="unused cell col-md-2" />'
+        +  '  <div class="unused cell col-2" />'
         + '</div>'
     ;
 }

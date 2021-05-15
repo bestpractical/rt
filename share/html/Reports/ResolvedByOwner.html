@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,6 +54,10 @@ my $QueueObj = RT::Queue->new($session{'CurrentUser'});
 $QueueObj->Load($Queue) if $Queue;
 
 my $query = $Queue ? "Status = 'resolved' AND Queue = '$Queue'" : "";
+
+$m->callback( CallbackName => 'MassageQuery', %ARGS, ARGSRef => \%ARGS,
+              TitleRef => \$title, QueryRef => \$query, QueueObj => $QueueObj );
+
 </%INIT>
 <& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
@@ -62,7 +66,7 @@ my $query = $Queue ? "Status = 'resolved' AND Queue = '$Queue'" : "";
 
 % if ($query) {
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Search/Elements/Chart, Query => $query, GroupBy => 'Owner.Name' &>
     </div>
   </div>
@@ -71,16 +75,16 @@ my $query = $Queue ? "Status = 'resolved' AND Queue = '$Queue'" : "";
 <hr />
 
   <div class="form-row">
-    <div class="col-md-3 label">
+    <div class="label col-3">
       <&|/l&>Queue</&>:
     </div>
-    <div class="col-md-9 value">
+    <div class="value col-9">
       <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $QueueObj->id &>
     </div>
   </div>
 
   <div class="form-row">
-    <div class="col-md-12">
+    <div class="col-12">
       <& /Elements/Submit &>
     </div>
   </div>

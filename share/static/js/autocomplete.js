@@ -3,10 +3,13 @@ if (!window.RT.Autocomplete) window.RT.Autocomplete = {}
 
 window.RT.Autocomplete.Classes = {
     Users: 'user',
+    Owners: 'owner',
     Groups: 'group',
     Tickets: 'tickets',
     Queues: 'queues',
-    Articles: 'articles'
+    Articles: 'articles',
+    Assets: 'assets',
+    Principals: 'principals'
 };
 
 Selectize.define('rt_drag_drop', function(options) {
@@ -48,7 +51,7 @@ window.RT.Autocomplete.bind = function(from) {
         if (!what || !window.RT.Autocomplete.Classes[what])
             return;
 
-        if (what === 'Users' && input.is('[data-autocomplete-multiple]')) {
+        if ( (what === 'Users' || what === 'Principals') && input.is('[data-autocomplete-multiple]')) {
             var options = input.attr('data-options');
             var items = input.attr('data-items');
             input.selectize({
@@ -92,7 +95,7 @@ window.RT.Autocomplete.bind = function(from) {
                 load: function(input, callback) {
                     if (!input.length) return callback();
                     jQuery.ajax({
-                        url: RT.Config.WebPath + '/Helpers/Autocomplete/Users',
+                        url: RT.Config.WebHomePath + '/Helpers/Autocomplete/' + what,
                         type: 'GET',
                         dataType: 'json',
                         data: {
@@ -128,6 +131,9 @@ window.RT.Autocomplete.bind = function(from) {
         if (what == 'Queues') {
             options.minLength = 2;
             options.delay = 2;
+        }
+        else if (what == 'Owners') {
+            options.minLength = 2;
         }
 
         if (input.is('[data-autocomplete-privileged]')) {
@@ -195,6 +201,11 @@ window.RT.Autocomplete.bind = function(from) {
         var exclude = input.attr('data-autocomplete-exclude');
         if (exclude) {
             queryargs.push("exclude="+exclude);
+        }
+
+        var limit = input.attr("data-autocomplete-limit");
+        if (limit) {
+            queryargs.push("limit="+limit);
         }
 
         if (queryargs.length)

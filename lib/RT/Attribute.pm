@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -672,7 +672,7 @@ sub FindDependencies {
         }
     }
     # dashboards have dependencies on all the searches and dashboards they use
-    elsif ($self->Name eq 'Dashboard') {
+    elsif ($self->Name eq 'Dashboard' || $self->Name eq 'SelfServiceDashboard') {
         my $content = $self->Content;
         for my $pane (values %{ $content->{Panes} || {} }) {
             for my $component (@$pane) {

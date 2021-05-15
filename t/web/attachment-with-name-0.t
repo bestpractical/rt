@@ -17,6 +17,7 @@ $m->get_ok( '/Ticket/Create.html?Queue=1' );
 $m->submit_form(
     form_number => 3,
     fields => { Subject => 'test att 0', Content => 'test', Attach => $file },
+    button => 'SubmitTicket',
 );
 $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
 $m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/0/ } );

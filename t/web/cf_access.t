@@ -136,6 +136,7 @@ diag "check that we have no the CF on the create"
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
+        button => 'SubmitTicket',
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
 
@@ -163,6 +164,7 @@ diag "check that we have no the CF on the create"
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
+        button => 'SubmitTicket',
     );
     $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
     ok $tid, "a ticket is created succesfully";
@@ -195,6 +197,7 @@ diag "create a ticket with an image";
             $upload_field => ImageFile,
             Subject => 'testing img cf creation',
         },
+        button => 'SubmitTicket',
     );
 
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");

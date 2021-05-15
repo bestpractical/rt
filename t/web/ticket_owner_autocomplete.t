@@ -35,7 +35,7 @@ diag "current user has no right to own, nobody selected as owner on create";
     my $form = $agent_a->form_name('TicketCreate');
     is $form->value('Owner'), RT->Nobody->Name, 'correct owner selected';
     autocomplete_lacks( 'RT::Queue-'.$queue->id, 'user_a' );
-    $agent_a->submit;
+    $agent_a->click('SubmitTicket');
 
     $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
@@ -56,7 +56,7 @@ diag "user can chose owner of a new ticket";
 
     autocomplete_contains( 'RT::Queue-'.$queue->id, 'user_b' );
     $form->value('Owner', $user_b->Name);
-    $agent_a->submit;
+    $agent_a->click('SubmitTicket');
 
     $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
     my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);

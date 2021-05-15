@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -198,8 +198,16 @@ sub form_compose {
         my $text = "";
 
         if ($c) {
-            $c =~ s/\n*$/\n/;
-            $text = "$c\n";
+
+            # $c means comments, but we also use it to render attachment
+            # contents, in which case massaging newlines is not a good idea.
+            if ( $HTML::Mason::Commands::m->notes('raw-content') ) {
+                $text = $c;
+            }
+            else {
+                $c =~ s/\n*$/\n/;
+                $text = "$c\n";
+            }
         }
         if ($e) {
             $text .= $e;
@@ -367,7 +375,7 @@ sub process_attachments {
         my $new_entity = $entity->attach(
             Path => $tmp_fn,
             Type => $info->{'Content-Type'} || guess_media_type($tmp_fn),
-            Filename => $file,
+            Filename => Encode::encode('UTF-8', $file),
             Disposition => $info->{'Content-Disposition'} || "attachment",
             'Content-ID' => $info->{'Content-ID'},
         );

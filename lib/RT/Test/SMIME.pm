@@ -1,8 +1,13 @@
+# NOTE: This file is deprecated.  Instead of:
+#    use RT::Test::SMIME ARGS
+# please do:
+#    use RT::Test::Crypt SMIME => 1, ARGS
+
 # BEGIN BPS TAGGED BLOCK {{{
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -158,6 +163,10 @@ sub import_key {
     }
 
     return;
+}
+
+END {
+    diag('RT::Test::SMIME is deprecated; please use RT::Test::Crypt SMIME => 1 instead');
 }
 
 1;

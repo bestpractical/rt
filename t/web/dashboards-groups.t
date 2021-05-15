@@ -54,14 +54,14 @@ ok($inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner has user r
 ok $m->login(customer => 'customer'), "logged in";
 
 
-$m->follow_link_ok({ id => 'home-dashboard_create'});
+$m->follow_link_ok({ id => 'reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateGroupDashboard', Object => $inner_group);
 
-$m->follow_link_ok({ id => 'home-dashboard_create'});
+$m->follow_link_ok({ id => 'reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id, "RT::Group-" . $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
 $m->field("Name" => 'broken dashboard');
@@ -74,7 +74,7 @@ $user_obj->PrincipalObj->GrantRight(
     Right  => 'SeeGroupDashboard',
     Object => $inner_group,
 );
-$m->follow_link_ok({ id => 'home-dashboard_create'});
+$m->follow_link_ok({ id => 'reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'inner dashboard');
 $m->field("Privacy" => "RT::Group-" . $inner_group->Id);

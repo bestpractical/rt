@@ -1,11 +1,11 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::Crypt SMIME => 1, tests => undef;
 
 use RT::Tickets;
 
-RT::Test::SMIME->import_key('sender@example.com');
+RT::Test::Crypt->smime_import_key('sender@example.com');
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'General',
     CorrespondAddress => 'sender@example.com',
@@ -25,7 +25,7 @@ my $root;
     ok($root->Load('root'), "Loaded user 'root'");
     is($root->EmailAddress, 'root@localhost');
 
-    RT::Test::SMIME->import_key( 'root@example.com.crt' => $root );
+    RT::Test::Crypt->smime_import_key( 'root@example.com.crt' => $root );
 }
 
 my $bad_user;

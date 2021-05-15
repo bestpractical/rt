@@ -65,6 +65,7 @@ diag "create ticket in General" if $ENV{TEST_VERBOSE};
     $m->submit_form(
         form_number => 3,
         fields => { 'Subject' => 'test article', Content => 'test article' },
+        button => 'SubmitTicket',
     );
     ($ticket_id) = ( $m->content =~ /Ticket \d+ created/ );
     ok( $ticket_id, "id of ticket: $ticket_id" );

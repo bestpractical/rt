@@ -33,10 +33,10 @@ ok $m->login, "Logged in agent";
 diag "Create basic asset (no CFs)";
 {
     $m->follow_link_ok({ id => "assets-create" }, "Asset create link");
-    $m->submit_form_ok({ with_fields => { Catalog => $catalog->id } }, "Picked a catalog");
     $m->submit_form_ok({
         with_fields => {
             id          => 'new',
+            Catalog     => $catalog->id,
             Name        => 'Thinkpad T420s',
             Description => 'A laptop',
         },
@@ -105,6 +105,22 @@ diag "Create with CFs in other groups";
 
     $m->content_like(qr/Asset .* created/, "Found created message");
     $m->content_unlike(qr/Purchased.*?must match .*?Year/, "Lacks validation error for Purchased");
+}
+
+diag "Bulk update";
+{
+    $m->follow_link_ok( { id => 'assets-simple_search' }, "Asset search page" );
+    $m->submit_form_ok( { form_id => 'AssetSearch' }, "Search assets" );
+    $m->follow_link_ok( { text => 'Bulk Update' }, "Asset bulk update page" );
+
+    my $form = $m->form_id('BulkUpdate');
+    my $status_input = $form->find_input('UpdateStatus');
+    is_deeply(
+        [ sort $status_input->possible_values ],
+        [ '', 'allocated', 'deleted', 'in-use', 'new', 'recycled', 'stolen' ],
+        'Status options'
+    );
+    # TODO: test more bulk update actions
 }
 
 # XXX TODO: test other modify pages

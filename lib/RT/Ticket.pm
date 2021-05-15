@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1689,10 +1689,12 @@ sub _RecordNote {
 
     foreach my $type (qw/Cc Bcc/) {
         if ( defined $args{ $type . 'MessageTo' } ) {
-
-            my $addresses = join ', ', (
-                map { RT::User->CanonicalizeEmailAddress( $_->address ) }
-                    Email::Address->parse( $args{ $type . 'MessageTo' } ) );
+            my ( $users ) = $self->ParseInputPrincipals( $args{ $type . 'MessageTo' } );
+            my $addresses = join ', ',
+              (
+                map { RT::User->CanonicalizeEmailAddress( $_ ) }
+                map { $_->EmailAddress || () } @$users
+              );
             $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode( "UTF-8", $addresses ) );
         }
     }
@@ -2603,6 +2605,10 @@ sub _SetTold {
 
 =head2 SeenUpTo
 
+Returns the first comment/correspond transaction not seen by current user.
+
+In list context returns the first not-seen comment/correspond transaction
+and also the total number of such not-seen transactions.
 
 =cut
 
@@ -2610,19 +2616,21 @@ sub SeenUpTo {
     my $self = shift;
     my $uid = $self->CurrentUser->id;
     my $attr = $self->FirstAttribute( "User-". $uid ."-SeenUpTo" );
-    return if $attr && $attr->Content gt $self->LastUpdated;
+    if ( $attr && $attr->Content gt $self->LastUpdated ) {
+        return wantarray ? ( undef, 0 ) : undef;
+    }
 
     my $txns = $self->Transactions;
-    $txns->Limit( FIELD => 'Type', VALUE => 'Comment' );
-    $txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
+    $txns->Limit( FIELD => 'Type', VALUE => [ 'Comment', 'Correspond' ], OPERATOR => 'IN' );
     $txns->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $uid );
     $txns->Limit(
         FIELD => 'Created',
         OPERATOR => '>',
         VALUE => $attr->Content
     ) if $attr;
-    $txns->RowsPerPage(1);
-    return $txns->First;
+
+    my $next_unread_txn = $txns->First;
+    return wantarray ? ( $next_unread_txn, $txns->Count ) : $next_unread_txn;
 }
 
 =head2 RanTransactionBatch
@@ -3391,13 +3399,29 @@ Returns the current value of Priority.
 =head2 SetPriority VALUE
 
 
-Set Priority to VALUE.
+Set Priority to VALUE. Accepts numeric and string values for priority.
 Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 (In the database, Priority will be stored as a int(11).)
 
 
 =cut
 
+sub SetPriority {
+    my $self = shift;
+    my $priority = shift;
+    my $number;
+
+    if ( $priority =~ /^\d+$/ ) {
+        # Already a digit
+        $number = $priority;
+    }
+    else {
+        # Try to load a digit from the string
+        $number = $self->_PriorityAsNumber($priority);
+    }
+
+    return $self->_Set( Field => 'Priority', Value => $number || 0 );
+}
 
 =head2 TimeEstimated
 
@@ -3729,6 +3753,73 @@ sub Serialize {
     $store{EffectiveId} = \($obj->UID);
 
     return %store;
+}
+
+sub PriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->Priority );
+}
+
+sub InitialPriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->InitialPriority );
+}
+
+sub FinalPriorityAsString {
+    my $self = shift;
+    return $self->_PriorityAsString( $self->FinalPriority );
+}
+
+sub _PriorityAsString {
+    my $self       = shift;
+    my $priority   = shift;
+    my $queue_name = shift || $self->QueueObj->__Value('Name');    # Skip ACL check
+
+    return undef unless defined $priority && length $priority && RT->Config->Get('EnablePriorityAsString');
+
+    my $map_ref = $self->GetPriorityAsStringMapping($queue_name);
+    return undef unless $map_ref;
+
+    # Count from high down to low until we find one that our number is
+    # greater than or equal to.
+    foreach my $label ( sort { $map_ref->{$b} <=> $map_ref->{$a} } keys %$map_ref ) {
+        return $label if $priority >= $map_ref->{$label};
+    }
+    return "unknown";
+}
+
+sub _PriorityAsNumber {
+    my $self       = shift;
+    my $priority   = shift;
+    my $queue_name = shift || $self->QueueObj->__Value('Name');    # Skip ACL check
+
+    return undef unless defined $priority && length $priority && RT->Config->Get('EnablePriorityAsString');
+
+    my $map_ref = $self->GetPriorityAsStringMapping($queue_name);
+    return undef unless $map_ref;
+
+    return $map_ref->{$priority} if exists $map_ref->{$priority};
+    return undef;
+}
+
+sub GetPriorityAsStringMapping {
+    my $self = shift;
+    my $queue_name = shift || $self->QueueObj->__Value('Name');    # Skip ACL check
+
+    my %config = RT->Config->Get('PriorityAsString');
+    my $value = ( exists $config{$queue_name} ? $config{$queue_name} : $config{Default} ) or return undef;
+    my %map;
+    if ( ref $value eq 'ARRAY' ) {
+        %map = @$value;
+    }
+    elsif ( ref $value eq 'HASH' ) {
+        %map = %$value;
+    }
+    else {
+        RT->Logger->warning("Invalid PriorityAsString value: $value");
+    }
+
+    return \%map;
 }
 
 RT::Base->_ImportOverlays();

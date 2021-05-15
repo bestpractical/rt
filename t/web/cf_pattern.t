@@ -47,6 +47,7 @@ for my $page ("/Ticket/Create.html?Queue=1", "/Ticket/Modify.html?id=".$ticket->
             $cfinput            => "42",
             "${cfinput}-Magic" => "1",
         },
+        button => 'SubmitTicket',
     });
 
     if ($page =~ /Create/) {

@@ -44,6 +44,7 @@ diag "check that we have no CFs on the create"
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
+        button => 'SubmitTicket',
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
 
@@ -80,6 +81,7 @@ diag "check that we have the CF on the create"
             $multi_field => 'hiro',
             Subject => 'test 2',
         },
+        button => 'SubmitTicket',
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
     if (my ($id) = $m->content =~ /Ticket (\d+) created/) {

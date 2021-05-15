@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -94,4 +94,12 @@ if ($focusTransactionId) { # make sure we load enough if we need to focus a tran
     Transactions => $transactions,
     %extra_args,
     &>
+
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('.transaction .toggle-txn-details').click(function () {
+        return toggleTransactionDetails.apply(this);
+    });
+});
+</script>
 % $m->abort();

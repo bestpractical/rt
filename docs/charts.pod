@@ -7,19 +7,35 @@ last year?) to regular status reports that you then include in
 shared dashboards that everyone can see.
 
 RT has had charts for a long time, but many significant improvements
-came in RT 4.2. If you're running a version of RT earlier than
-4.2 some options and features described here may not be available.
+were made in RT 4.2. Another significant change was made in RT 5.0
+when we converted the web chart library to Chart.js.
 
 =head1 Enabling Charts
 
+=head2 C<$EnableJSChart>
+
+Starting in RT 5.0, by default charts are rendered by Chart.js,
+a javascript charting library. If you'd like to disable javascript
+rendered charts, you can set this configuration value to false. To use
+GD charts instead of JS charts, set the C<--enable-gd> option
+when running the configure script to install RT.
+
+If you send charts in dashboards via email, GD is still used to
+generate embedded chart images for email. If GD isn't available,
+users can click on the link in email and view charts in RT.
+However, the chart in RT will then show data based on the time
+you click rather than capturing ticket data at the time the email
+was generated.
+
 =head2 Installing GD
 
-While charts is a core part of RT, you do need to enable it using
-the C<--enable-gd> option and install the required dependencies when
-you install RT. If you didn't originally install with this flag, you can
-enable it by re-running the L<< C<configure> >> script from the RT
-distribution (including all previous options passed to it originally)
-or doing the following in your current install:
+While charts is a core part of RT, if you want to use GD charting in place
+of JS charting then you do need to enable GD it using the C<--enable-gd>
+option and install the required dependencies when you install RT.
+If you didn't originally install with this flag, you can enable it by
+re-running the L<< C<configure> >> script from the RT distribution
+(including all previous options passed to it originally) or doing the
+following in your current install:
 
 =over
 

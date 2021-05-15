@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => undef;
+use RT::Test tests => undef;
 use Test::Warn;
 
 ok(

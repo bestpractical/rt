@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -342,6 +342,9 @@ part. If $args{'Type'} is missing, it defaults to the value of
 C<$RT::Transaction::PreferredContentType>, if that's missing too, 
 defaults to textual.
 
+All the MIME attachments are excluded here, because it doesn't make much sense
+to use them as transaction content.
+
 =cut
 
 sub Content {
@@ -559,8 +562,10 @@ sub ContentObj {
     # displayable".  For now, this maintains backcompat
     my $all_parts = $self->Attachments;
     while ( my $part = $all_parts->Next ) {
-        next unless _IsDisplayableTextualContentType($part->ContentType)
-        && $part->Content;
+        next unless _IsDisplayableTextualContentType( $part->ContentType )
+          && !$part->Filename
+          && !$part->IsAttachmentContentDisposition
+          && $part->Content;
         return $part;
     }
 
@@ -574,6 +579,10 @@ sub _FindPreferredContentObj {
 
     # If we don't have any content, return undef now.
     return undef unless $Attachment;
+
+    # If it's a MIME attachment, return undef.
+    return undef if $Attachment->Filename;
+    return undef if $Attachment->IsAttachmentContentDisposition;
 
     # If it's a textual part, just return the body.
     if ( _IsDisplayableTextualContentType($Attachment->ContentType) ) {
@@ -1045,6 +1054,16 @@ sub _CanonicalizeRoleName {
                     $new = $date->AsString( Time => 0, Timezone => 'UTC' );
                 }
             }
+            elsif ( $cf->Type =~ /text/i) {
+                if (!defined($old) || ($old eq '')) {
+                    return ( "[_1] added", $field);   #loc()
+                }
+                if (!defined($new) || ($new eq '')) {
+                    return ( "[_1] deleted", $field);   #loc()
+                } else {
+                    return ( "[_1] changed", $field);   #loc()
+                }
+            }
         }
 
         if ( !defined($old) || $old eq '' ) {
@@ -1261,6 +1280,20 @@ sub _CanonicalizeRoleName {
                 }
             }
         }
+        elsif ( $self->Field =~ /Priority/ && RT->Config->Get('EnablePriorityAsString') ) {
+            my $object = $self->Object;
+            my ( $old_value, $new_value );
+            if ( $object->isa('RT::Ticket') ) {
+                $old_value = $object->_PriorityAsString( $self->OldValue );
+                $new_value = $object->_PriorityAsString( $self->NewValue );
+                $old_value = $self->loc($old_value) if $old_value;
+                $new_value = $self->loc($new_value) if $new_value;
+            }
+            $old_value //= $self->OldValue;
+            $new_value //= $self->NewValue;
+
+            return ( "[_1] changed from [_2] to [_3]", $self->loc( $self->Field ), "'$old_value'", "'$new_value'" );    #loc()
+        }
         else {
             return ( "[_1] changed from [_2] to [_3]",
                     $self->loc($self->Field),
@@ -1380,6 +1413,32 @@ sub _CanonicalizeRoleName {
         my $self = shift;
         return "Attachment content modified";
     },
+    SetConfig => sub  {
+        my $self = shift;
+        my ($new_value, $old_value);
+
+        # pull in new value from reference if exists
+        if ( $self->NewReference ) {
+            my $newobj = RT::Configuration->new($self->CurrentUser);
+            $newobj->Load($self->NewReference);
+            $new_value = $newobj->Content;
+        }
+
+        # pull in old value from reference if exists
+        if ( $self->OldReference ) {
+            my $oldobj = RT::Configuration->new($self->CurrentUser);
+            $oldobj->Load($self->OldReference);
+            $old_value = $oldobj->Content;
+            return ('[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value // '', $new_value // ''); #loc()
+        }
+        else {
+            return ('[_1] changed to "[_2]"', $self->Field, $new_value // ''); #loc()
+        }
+    },
+    DeleteConfig => sub  {
+        my $self = shift;
+        return ('[_1] deleted"', $self->Field); #loc()
+    }
 );
 
 
@@ -1762,7 +1821,7 @@ sub ACLEquivalenceObjects {
 =head2 id
 
 Returns the current value of id.
-(In the database, id is stored as int(11).)
+(In the database, id is stored as int(19).)
 
 
 =cut
@@ -1989,7 +2048,7 @@ sub _CoreAccessible {
     {
 
         id =>
-                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(11)', default => ''},
+                {read => 1, sql_type => 4, length => 11,  is_blob => 0,  is_numeric => 1,  type => 'int(19)', default => ''},
         ObjectType =>
                 {read => 1, write => 1, sql_type => 12, length => 64,  is_blob => 0,  is_numeric => 0,  type => 'varchar(64)', default => ''},
         ObjectId =>
@@ -1999,7 +2058,7 @@ sub _CoreAccessible {
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
         Field =>
-                {read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varchar(40)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         OldValue =>
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         NewValue =>

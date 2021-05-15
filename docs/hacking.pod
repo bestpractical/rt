@@ -168,9 +168,15 @@ line) is to be loc'd.  This is useful for inline hashes:
 
 =head2 Test suite
 
-RT also comes with a fairly complete test suite.  To run it, you will
-need to set environment variables to a database user and password which
-can create and drop databases:
+RT also comes with a fairly complete test suite. The C<*-trunk> and
+C<master> branches are expected to always be passing all tests.  While
+it is acceptable to break tests in an intermediate commit, a branch
+which does not pass tests will not be merged.  Ideally, commits which
+fix a bug should also include a test case which fails before the fix
+and succeeds after.
+
+To run RT's test suite, first set environment variables to a database
+user and password which can create and drop databases:
 
     export RT_DBA_USER=root
     export RT_DBA_PASSWORD=
@@ -189,15 +195,17 @@ To run the test suite:
 
     make test
 
-If you have multiple processors, you can run the test suite in parallel,
-which will be significantly faster:
-
-    make test-parallel
-
 If you want to run only a subset of the tests, you can use Perl's standard
 C<prove> utility.
 
     prove -l t/api/ticket.t t/web/ticket_display.t
+
+=head2 Parallel Tests
+
+If you have multiple processors, you can run the test suite in parallel,
+which will be significantly faster:
+
+    make test-parallel
 
 If you want to run a subset of the tests in parallel, you can pass the C<-j>
 flag to C<prove> with the number of processes to use. Make sure to also set the
@@ -206,13 +214,21 @@ running the tests in parallel.
 
     RT_TEST_PARALLEL=1 prove -l -j4 t/customfields/*.t
 
-The C<*-trunk> and C<master> branches are expected to always be passing
-all tests.  While it is acceptable to break tests in an intermediate
-commit, a branch which does not pass tests will not be merged.  Ideally,
-commits which fix a bug should also include a testcase which fails
-before the fix and succeeds after.
+=head2 Tests with Docker
 
+RT has a Dockerfile that can be used to run the test suite for some configurations.
+To run it you need a system that can run docker natively or run the docker desktop
+client. Once installed, you can look in the .travis.yml file for the set of commands
+to run to kick off the tests inside docker containers. Run all commands in the
+before_install and script sections, replacing any variables with appropriate
+values for your system.
 
+You can replace $TRAVIS_BUILD_DIR with you current working directory if you are
+in a branch. Note that the docker commands in the Travis configuration mount
+your directory inside the docker container. This means any stray files you have
+in your working directory will also be visible to the processes inside the
+docker container. This can cause test failures if unexpected files are
+there.
 
 =head1 git quickstart
 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -83,6 +83,8 @@ RT::CustomField->RegisterBuiltInGroupings(
     'RT::Asset' => [qw( Basics Dates People Links )]
 );
 
+my $multiple_owner = RT->Config->Get('AssetMultipleOwner');
+
 # loc('Owner')
 # loc('HeldBy')
 # loc('Contact')
@@ -93,7 +95,7 @@ for my $role ('Owner', 'HeldBy', 'Contact') {
         EquivClasses    => ["RT::Catalog"],
         SortOrder       => $i++,
         ( $role eq "Owner"
-            ? ( Single         => 1,
+            ? ( Single         => ($multiple_owner ? 0 : 1),
                 ACLOnlyInEquiv => 1, )
             : () ),
     );

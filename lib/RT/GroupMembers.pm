@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -147,7 +147,7 @@ sub LimitToMembersOfGroup {
     my $group = shift;
 
     return ($self->Limit( 
-                         VALUE => $group,
+                         VALUE => $group || 0,
                          FIELD => 'GroupId',
                          ENTRYAGGREGATOR => 'OR',
                          QUOTEVALUE => 0

@@ -1476,8 +1476,18 @@ fail to exist in an external service; this is so requestors who
 are not in LDAP can still be created when they email in.
 See L<RT::Authen::ExternalAuth> for details.
 
+=item C<$DisablePasswordForAuthToken>
+
+If you have a mix of RT and federated authentication, RT can't directly
+verify a user's password against the federated IdP. You can explicitly
+disable the password prompt when creating a token by setting this option
+to true (1).
+
 =back
 
+=cut
+
+Set($DisablePasswordForAuthToken, 0);
 
 =head2 Initialdata Formats
 
@@ -1495,9 +1505,13 @@ Set the C<$InitialdataFormatHandlers> to an arrayref containing a list of
 format handler modules. The 'perl' entry is the system default, and handles
 perl-style intialdata files.
 
+The JSON format handler is also available in RT, but it is not loaded by
+default. Add it to your configuration as shown below to enable it.
+
     Set( $InitialdataFormatHandlers,
          [
             'perl',
+            'RT::Initialdata::JSON',
             'RT::Extension::Initialdata::Foo',
             ...
          [
@@ -1598,21 +1612,6 @@ Admin -> Tools menu for SuperUsers.
 
 Set($StatementLog, undef);
 
-=item C<$HideOneTimeSuggestions>
-
-On ticket comment and correspond there are "One-time Cc" and "One-time Bcc"
-fields. As part of this section, RT includes a list of suggested email
-addresses based on the correspondence history for that ticket. This list may
-grow quite large over time.
-
-Enabling this option will hide the list behind a "(show suggestions)" link to
-cut down on page clutter. Once this option is clicked the link will change to
-"(hide suggestions)" and the full list of email addresses will be shown.
-
-=cut
-
-Set($HideOneTimeSuggestions, 0);
-
 =back
 
 
@@ -1639,6 +1638,18 @@ be overridden by users in their preferences.
 =cut
 
 Set($WebDefaultStylesheet, "elevator-light");
+
+=item C<$ShowMobileSite>
+
+Starting with RT 5.0, RT's web interface is fully responsive and
+will render correctly on most mobile devices. However, RT also has
+a mobile-optimized mode that shows a limited feature set
+focused on ticket updates. To default to this site when RT is accessed
+from a mobile device, enable this option (set to 1).
+
+=cut
+
+Set($ShowMobileSite, 0);
 
 =item C<$DefaultQueue>
 
@@ -1746,119 +1757,6 @@ For C<RT::Asset>: C<Basics>, C<Dates>, C<People>, C<Links>
 
 Extensions may also add their own built-in groupings, refer to the individual
 extension documentation for those.
-
-=item C<%CustomDateRanges>
-
-This option lets you declare additional date ranges to be calculated
-and displayed in search results. Durations between any two core fields,
-as well as custom fields, are supported. Each custom date range is
-added as an additional display column in the search builder.
-
-Set C<%CustomDateRanges> to a nested structure similar to the following:
-
-    Set(%CustomDateRanges,
-        'RT::Ticket' => {
-            'Resolution Time' => 'Resolved - Created',
-
-            'Downtime' => {
-                value => 'CF.Recovered - CF.{First Alert}',
-                business_time => 1,
-            },
-
-            'Time To Beta' => {
-                value => 'CF.Beta - now',
-
-                format => sub {
-                    my ($duration, $beta, $now, $ticket) = @_;
-                    my $days = int($duration / (24*60*60));
-                    if ($days < 0) {
-                        $ticket->loc('[quant,_1,day,days] ago', -$days);
-                    }
-                    else {
-                        $ticket->loc('in [quant,_1,day,days]', $days);
-                    }
-                },
-            },
-        },
-    );
-
-The first level keys are record types. Each record type's value must be a
-hash reference. Each pair in the second-level hash defines a new range. The
-key is the range's name (which is displayed to users in the UI), and its
-value describes the range and must be either a string or a hashref.
-
-Values that are plain strings simply describe the calculation to be made.
-
-Values that are hashrefs that could include:
-
-=over 4
-
-=item value
-
-A string that describes the calculation to be made.
-
-The calculation is expected to be of the format C<"field - field"> where each
-field may be:
-
-=over 4
-
-=item * a core field
-
-For example, L<RT::Ticket> supports: Created, Starts, Started, LastUpdated,
-Told or LastContact, Due and Resolved.
-
-=item * a custom field
-
-You may use either C<CF.Name> or C<CF.{Longer Name}> syntax.
-
-=item * the word C<now>
-
-=back
-
-Custom date range calculations are defined using typical math operators with
-a space before and after. Subtraction (-) is currently supported.
-
-If either field and its corresponding fallback field(see blow) are both unset,
-then nothing will be displayed for that record (and the C<format> code
-reference will not be called).  If you need additional control over how
-results are calculated, see L<docs/customizing/search_result_columns.pod>.
-
-=item from and to
-
-When value is not set, C<from/to> will be used to calculate instead.
-Technically, C<Resolved - Created"> is equal to:
-
-    { from => 'Created', to => 'Resolved' }
-
-=item from_fallback and to_fallback
-
-Fallback fields when the main fields are unset, e.g.
-
-    {   from        => 'CF.{First Alert}',
-        to          => 'CF.Recovered',
-        to_fallback => 'now',
-    }
-
-When C<CF.Recovered> is unset, "now" will be used in the calculation.
-
-=item business_time
-
-A boolean value to indicate if it's a business time or not.
-
-When the schedule can't be deducted from corresponding object, the
-C<Default> one defined in C<%ServiceBusinessHours> will be used instead.
-
-=item format
-
-A code reference that allows customization of how the duration is displayed
-to users.  This code reference receives four parameters: the duration (a
-number of seconds), the end time (an L<RT::Date> object), the start time
-(another L<RT::Date>), and the record itself (which corresponds to the
-first-level key; in the example config above, it would be the L<RT::Ticket>
-object). The code reference should return the string to be displayed to the
-user.
-
-=back
 
 =item C<$CanonicalizeRedirectURLs>
 
@@ -2019,7 +1917,7 @@ This can also be configured via the web UI.
 
 =cut
 
-Set($LogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-logo.png");
+Set($LogoURL, RT->Config->Get('WebImagesURL') . "request-tracker-logo.svg");
 
 =item C<$LogoLinkURL>
 
@@ -2175,7 +2073,7 @@ user's customized homepage ("RT at a glance").
 Set(
     $HomepageComponents,
     [
-        qw(QuickCreate QueueList MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup) # loc_qw
+        qw(QuickCreate QueueList QueueListAllStatuses MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards SavedSearches FindUser MyAssets FindAsset FindGroup) # loc_qw
     ]
 );
 
@@ -2436,7 +2334,7 @@ Grouping" are created by the L</%CustomFieldGroupings> setting.
 
 =back
 
-=head2 Ticket display
+=head2 Ticket options
 
 =over 4
 
@@ -2657,6 +2555,59 @@ to the Article with that name.
 
 Set($WikiImplicitLinks, 0);
 
+=item C<%LinkedQueuePortlets>
+
+C<%LinkedQueuePortlets> allows you to display links to tickets in
+another queue in a stand-alone portlet on the ticket display page.
+This makes it easier to highlight specific ticket links separate from
+the standard Links portlet.
+
+For example, you might have a Sales queue that tracks incoming product
+requests, and for each ticket you create a linked ticket in the Shipping
+queue for each outgoing shipment. You could add the configuration below
+to create a stand-alone Shipping portlet on tickets in the Sales queue,
+making it easier to see those linked tickets. You might have a Returns
+queue to show as well.
+
+    Set( %LinkedQueuePortlets, (
+        'Sales' => [
+            { 'Shipping'   => [ 'All' ] },
+            { 'Returns'   => [ 'RefersTo' ] },
+        ],
+        'Shipping'   => [
+            { 'Postage' => [ 'DependsOn', 'HasMember' ] },
+        ],
+    ));
+
+You can include multiple linked queues in each ticket and they are
+displayed in the order you define them in the configuration. The values
+are RT link types: 'DependsOn', 'DependedOnBy', 'HasMember'
+(children), 'MemberOf' (parents), 'RefersTo', and 'ReferredToBy'.
+'All' lists all linked tickets. You can include multiple link types for
+each as shown above.
+
+=cut
+
+Set( %LinkedQueuePortlets, () );
+
+=item C<%LinkedQueuePortletFormats>
+
+C<%LinkedQueuePortletFormats> defines the format for displaying
+linked tickets in each linked queue portlet defined by C<%LinkedQueuePortlets>.
+
+To change just the General list you would do:
+
+    Set(%LinkedQueuePortletFormats, General => 'modified configuration');
+
+=cut
+
+Set( %LinkedQueuePortletFormats,
+    Default =>
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></b>/TITLE:#',}.
+        q{'<b><a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></b>/TITLE:Subject',}.
+        q{Status},
+);
+
 =item C<$PreviewScripMessages>
 
 Set C<$PreviewScripMessages> to 1 if the scrips preview on the ticket
@@ -2708,6 +2659,77 @@ Set this to 1 to hide unset fields.
 =cut
 
 Set($HideUnsetFieldsOnDisplay, 0);
+
+=item C<$HideOneTimeSuggestions>
+
+On ticket comment and correspond there are "One-time Cc" and "One-time Bcc"
+fields. As part of this section, RT includes a list of suggested email
+addresses based on the correspondence history for that ticket. This list may
+grow quite large over time.
+
+Enabling this option will hide the list behind a "(show suggestions)" link to
+cut down on page clutter. Once this option is clicked the link will change to
+"(hide suggestions)" and the full list of email addresses will be shown.
+
+=cut
+
+Set($HideOneTimeSuggestions, 0);
+
+=item C<$EnablePriorityAsString>
+
+Priority is stored as a number internally. This determines whether
+Priority is displayed to users as a number or using configured
+labels like Low, Medium, High. See L<%PriorityAsString> for details
+on this configuration.
+
+The default is enabled, so strings are shown. Set to C<0> to display
+numbers, which was the previous default for RT.
+
+=cut
+
+Set($EnablePriorityAsString, 1);
+
+=item C<%PriorityAsString>
+
+This setting allows you to define labels for priority values
+available on tickets. RT stores these values internally as a number,
+but this number will be hidden if C<$EnablePriorityAsString> is true.
+For the configuration, link the labels to numbers as shown below. If
+you have more or less priority settings, you can adjust the numbers,
+giving a unique number to each.
+
+    Set(%PriorityAsString,
+        Default => { Low => 0, Medium => 50, High => 100 },
+        General => [ Medium => 50, Low => 0, High => 80, 'On Fire' => 100],
+        Support => 0,
+    );
+
+The key is queue name or "Default", which is the fallback for unspecified
+queues. Values can be an ArrayRef, HashRef, or C<0>.
+
+=over
+
+=item ArrayRef
+
+This is the ordered String => Number map list. Pririty options will be
+rendered in the order they are listed in the list.
+
+=item HashRef
+
+This is the unordered String => Number map list. Priority options will be
+rendered in numerical ascending order.
+
+=item C<0>
+
+Priority is rendered as a number.
+
+=back
+
+=cut
+
+Set(%PriorityAsString,
+    Default => { Low => 0, Medium => 50, High => 100 },
+);
 
 =back
 
@@ -2936,6 +2958,40 @@ on self service pages.
 
 Set($SelfServiceShowGroupTickets, 0);
 
+=item C<$SelfServiceUseDashboard>
+
+C<$SelfServiceUseDashboard> is a flag indicating whether or not to use
+a dashboard for the Self Service home page.  If it is set to false,
+then the normal Open Tickets / Closed Tickets menu is shown rather
+than a dashboard.
+
+=cut
+
+Set($SelfServiceUseDashboard, 0);
+
+=item C<$SelfServicePageComponents>
+
+C<$SelfServicePageComponents> is an arrayref of allowed components on
+the SelfService page, if you have set $SelfServiceUseDashboard to true.
+
+=cut
+
+Set(
+    $SelfServicePageComponents,
+    [qw(SelfServiceTopArticles SelfServiceNewestArticles)]
+);
+
+=item C<$SelfServiceShowArticleSearch>
+
+If enabled, C<$SelfServiceShowArticleSearch> displays a "Search Articles"
+box in the menu bar in the self service interface. This option controls
+only showing or hiding the search box. Users still need appropriate rights
+to see article search results and view articles.
+
+=cut
+
+Set($SelfServiceShowArticleSearch, 0);
+
 =back
 
 =head2 Articles
@@ -3011,17 +3067,64 @@ Set($AssetSearchFields, {
     Description => 'LIKE',
 });
 
-=item C<$AssetSearchFormat>
+=item C<$AssetDefaultSearchResultFormat>
 
-The format that results of the asset search are displayed with.  This is
-either a string, which will be used for all catalogs, or a hash
-reference, keyed by catalog's name/id.  If a hashref and neither name or
-id is found therein, falls back to the key ''.
+The format that results of the asset search are displayed with.
+
+=cut
+
+# loc('Related tickets')
+Set($AssetDefaultSearchResultFormat, q[
+    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
+    '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
+    Status,
+    Catalog,
+    Owner,
+    '__ActiveTickets__ __InactiveTickets__/TITLE:Related tickets',
+    '__NEWLINE__',
+    '__NBSP__',
+    '<small>__Description__</small>',
+    '<small>__CreatedRelative__</small>',
+    '<small>__LastUpdatedRelative__</small>',
+    '<small>__Contacts__</small>',
+]);
+
+=item C<$AssetDefaultSearchResultOrderBy>
+
+What column should we order by for RT asset search results.
+
+=cut
+
+Set($AssetDefaultSearchResultOrderBy, 'Name');
+
+=item C<$AssetDefaultSearchResultOrder>
+
+When ordering asset search results by C<$AssetDefaultSearchResultOrderBy>,
+should the sort be ascending (ASC) or descending (DESC).
+
+=cut
+
+Set($AssetDefaultSearchResultOrder, 'ASC');
+
+=item C<$AssetShowSearchResultCount>
+
+Display search result count on asset lists. Defaults to 1 (show them).
+
+=cut
+
+Set($AssetShowSearchResultCount, 1);
+
+=item C<$AssetSimpleSearchFormat>
+
+The format that results of the asset simple search are displayed with.  This
+is either a string, which will be used for all catalogs, or a hash
+reference, keyed by catalog's name/id.  If a hashref and neither name or id
+is found therein, falls back to the key ''.
 
 If you wish to use the multiple catalog format, your configuration would look
 something like:
 
-    Set($AssetSearchFormat, {
+    Set($AssetSimpleSearchFormat, {
         'General assets' => q[Format String for the General Assets Catalog],
         8                => q[Format String for Catalog 8],
         ''               => q[Format String for any catalogs not listed explicitly],
@@ -3030,14 +3133,19 @@ something like:
 =cut
 
 # loc('Related tickets')
-Set($AssetSearchFormat, q[
+Set($AssetSimpleSearchFormat, q[
+    '<a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a>/TITLE:#',
     '<a href="__WebHomePath__/Asset/Display.html?id=__id__">__Name__</a>/TITLE:Name',
-    Description,
-    '__Status__ (__Catalog__)/TITLE:Status',
+    Status,
+    Catalog,
     Owner,
-    HeldBy,
-    Contacts,
     '__ActiveTickets__ __InactiveTickets__/TITLE:Related tickets',
+    '__NEWLINE__',
+    '__NBSP__',
+    '<small>__Description__</small>',
+    '<small>__CreatedRelative__</small>',
+    '<small>__LastUpdatedRelative__</small>',
+    '<small>__Contacts__</small>',
 ]);
 
 =item C<$AssetSummaryFormat>
@@ -3085,6 +3193,29 @@ Set( $AssetBasicCustomFieldsOnCreate, [ 'foo', 'bar' ] );
 =cut
 
 # Set($AssetBasicCustomFieldsOnCreate, undef );
+
+=item C<$AssetHideSimpleSearch>
+
+Set to a true value to hide the legacy Asset Simple Search in favor of AssetSQL
+added in RT 5.0.
+
+When hidden, the Asset search menu shows the Current Search menu like tickets,
+giving quick access back to a search after clicking on an asset.
+
+=cut
+
+Set($AssetHideSimpleSearch, 0);
+
+=item C<$AssetMultipleOwner>
+
+By default an asset is limited to a single user as an owner. By setting
+this to a true value, you can allow multiple users and groups as owner.
+If you change this back to a false value while having multiple owners
+set on any assets, RT's behavior may be inconsistent.
+
+=cut
+
+Set($AssetMultipleOwner, 0);
 
 =back
 
@@ -3486,7 +3617,7 @@ Set(%AdminSearchResultFormat,
     Users =>
         q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-        .q{,__RealName__, __EmailAddress__,__Disabled__},
+        .q{,__RealName__, __EmailAddress__,__SystemGroup__,__Disabled__},
 
     CustomFields =>
         q{'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__id__</a>/TITLE:#'}
@@ -3538,6 +3669,29 @@ Set(%AdminSearchResultRows,
     Assets       => 50,
 );
 
+=item C<$ShowEditSystemConfig>
+
+Starting in RT 5.0, SuperUsers can edit RT system configuration via the web UI.
+Options set in the web UI take precedence over those set in configuration files.
+
+If you prefer to set configuration only via files, set C<$ShowEditSystemConfig>
+to 0 to disable the web UI editing interface.
+
+=cut
+
+Set($ShowEditSystemConfig, 1);
+
+=item C<$ShowEditLifecycleConfig>
+
+Starting in RT 5.0, SuperUsers can edit lifecycle configuration via the web UI.
+Options set in the web UI take precedence over those set in configuration files.
+
+Set C<$ShowEditLifecycleConfig> to 0 to disable the web UI editing interface.
+
+=cut
+
+Set($ShowEditLifecycleConfig, 1);
+
 =back
 
 
@@ -3575,6 +3729,14 @@ Example:
 =item C<$LDAPPassword>
 
 Password for LDAPUser.
+
+=item C<$LDAPBase>
+
+The LDAP search base.
+
+Example:
+
+    Set($LDAPBase, 'ou=Organisational Unit,dc=domain,dc=TLD');
 
 =item C<$LDAPFilter>
 
@@ -3637,6 +3799,10 @@ Set C<Dashboards> to a hash with Encrypt and Sign keys to control
 whether dashboards should be encrypted and/or signed correspondingly.
 By default they are not encrypted or signed.
 
+Similarly, set C<DigestEmail> to a hash with Encrypt and Sign keys
+to control whether digest email should be encrypted and/or signed.
+By default they are not encrypted or signed.
+
 =back
 
 =cut
@@ -3651,6 +3817,10 @@ Set( %Crypt,
     AllowEncryptDataInDB      => 0,
 
     Dashboards => {
+        Encrypt => 0,
+        Sign    => 0,
+    },
+    DigestEmail => {
         Encrypt => 0,
         Sign    => 0,
     },
@@ -3695,6 +3865,19 @@ Set C<Passphrase> to a scalar (to use for all keys), an anonymous
 function, or a hash (to look up by address).  If the hash is used, the
 '' key is used as a default.
 
+Set C<OtherCertificatesToSend> to path to a PEM-formatted certificate file.
+Certificates in the file will be include in outgoing signed emails.
+
+Set C<CheckCRL> to a true value to have RT check for revoked certificates
+by downloading a CRL. By default, C<CheckCRL> is disabled.
+
+Set C<CheckOCSP> to a true value to have RT check for revoked certificates
+against an OCSP server if possible.  By default, C<CheckOCSP> is disabled.
+
+Set C<CheckRevocationDownloadTimeout> to the timeout in seconds for
+downloading a CRL or an issuer certificate (the latter is used when
+checking against OCSP).  The default timeout is 30 seconds.
+
 See L<RT::Crypt::SMIME> for details.
 
 =back
@@ -3708,6 +3891,10 @@ Set( %SMIME,
     CAPath => undef,
     AcceptUntrustedCAs => undef,
     Passphrase => undef,
+    OtherCertificatesToSend => undef,
+    CheckCRL => 0,
+    CheckOCSP => 0,
+    CheckRevocationDownloadTimeout => 30,
 );
 
 =head3 GnuPG configuration
@@ -3732,6 +3919,11 @@ function, or a hash (to look up by address).  If the hash is used, the
 Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 
+Plain (not encrypted) email sent to RT can have attached files that
+are encrypted. Set C<FileExtensions> to any file extensions on
+attachments that RT should treat as encrypted and attempt to
+decrypt with C<gpg>.
+
 =cut
 
 Set(%GnuPG,
@@ -3739,6 +3931,7 @@ Set(%GnuPG,
     GnuPG                  => 'gpg',
     Passphrase             => undef,
     OutgoingMessagesFormat => "RFC", # Inline
+    FileExtensions         => [ 'pgp', 'gpg', 'asc' ],
 );
 
 =item C<%GnuPGOptions>
@@ -4565,6 +4758,134 @@ Set( %ServiceBusinessHours, );
 
 =back
 
+=head2 Custom Date Ranges
+
+=over 4
+
+=item C<%CustomDateRanges>
+
+This option lets you declare additional date ranges to be calculated
+and displayed in search results. Durations between any two core date
+fields, as well as date custom fields, are supported. Each custom
+date range is added as an additional display column in the query builder.
+
+You can create basic date calculations via the web UI. SuperUsers can
+create them in the main System Configuration section. Individual users
+can also create date ranges in the Search options section of user
+preferences. More complicated configurations, such as those with
+custom code, can be added in your C<RT_SiteConfig.pm> file as described
+below.
+
+Business hours are also supported in calculations if you have
+L<%ServiceBusinessHours> configured.
+
+Set C<%CustomDateRanges> to a nested structure similar to the following:
+
+    Set(%CustomDateRanges,
+        'RT::Ticket' => {
+            'Resolution Time' => 'Resolved - Created',
+
+            'Downtime' => {
+                value => 'CF.Recovered - CF.{First Alert}',
+                business_time => 1,
+            },
+
+            'Time To Beta' => {
+                value => 'CF.Beta - now',
+
+                format => sub {
+                    my ($duration, $beta, $now, $ticket) = @_;
+                    my $days = int($duration / (24*60*60));
+                    if ($days < 0) {
+                        $ticket->loc('[quant,_1,day,days] ago', -$days);
+                    }
+                    else {
+                        $ticket->loc('in [quant,_1,day,days]', $days);
+                    }
+                },
+            },
+        },
+    );
+
+The first level keys are record types. Each record type's value must be a
+hash reference. Each pair in the second-level hash defines a new range. The
+key is the range's name (which is displayed to users in the UI), and its
+value describes the range and must be either a string or a hashref.
+
+Values that are plain strings simply describe the calculation to be made.
+
+Values that are hashrefs that could include:
+
+=over 4
+
+=item value
+
+A string that describes the calculation to be made.
+
+The calculation is expected to be of the format C<"field - field"> where each
+field may be:
+
+=over 4
+
+=item * a core field
+
+For example, L<RT::Ticket> supports: Created, Starts, Started, LastUpdated,
+Told or LastContact, Due and Resolved.
+
+=item * a custom field
+
+You may use either C<CF.Name> or C<CF.{Longer Name}> syntax.
+
+=item * the word C<now>
+
+=back
+
+Custom date range calculations are defined using typical math operators with
+a space before and after. Subtraction (-) is currently supported.
+
+If either field and its corresponding fallback field(see blow) are both unset,
+then nothing will be displayed for that record (and the C<format> code
+reference will not be called).  If you need additional control over how
+results are calculated, see L<docs/customizing/search_result_columns.pod>.
+
+=item from and to
+
+When value is not set, C<from/to> will be used to calculate instead.
+Technically, C<Resolved - Created"> is equal to:
+
+    { from => 'Created', to => 'Resolved' }
+
+=item from_fallback and to_fallback
+
+Fallback fields when the main fields are unset, e.g.
+
+    {   from        => 'CF.{First Alert}',
+        to          => 'CF.Recovered',
+        to_fallback => 'now',
+    }
+
+When C<CF.Recovered> is unset, "now" will be used in the calculation.
+
+=item business_time
+
+A boolean value to indicate if it's a business time or not.
+
+When the schedule can't be deducted from corresponding object, the
+C<Default> one defined in C<%ServiceBusinessHours> will be used instead.
+
+=item format
+
+A code reference that allows customization of how the duration is displayed
+to users.  This code reference receives four parameters: the duration (a
+number of seconds), the end time (an L<RT::Date> object), the start time
+(another L<RT::Date>), and the record itself (which corresponds to the
+first-level key; in the example config above, it would be the L<RT::Ticket>
+object). The code reference should return the string to be displayed to the
+user.
+
+=back
+
+=back
 
 =cut
 

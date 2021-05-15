@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -55,6 +55,10 @@ if (!$Collection) {
         }
         $Query = join ' AND ', @limits;
     }
+    $Collection->FromSQL($Query);
+}
+elsif (!$Collection && $Class eq 'RT::Assets') {
+    $Collection = RT::Assets->new( $session{'CurrentUser'} );
     $Collection->FromSQL($Query);
 }
 
@@ -200,6 +204,7 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
         TotalFound  => $TotalFound,
         CurrentPage => $Page,
         Pages       => $pages,
+        PageParam   => $PageParam,
         URLParams   => \%query_args
     );
 
@@ -217,6 +222,7 @@ $DisplayFormat => undef
 $GenericQueryArgs => undef
 $Rows          => undef
 $Page          => 1
+$PageParam     => 'Page'
 $Title         => loc('Ticket Search')
 $BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
 @PassArguments => qw( Query Format Rows Page Order OrderBy Class ObjectType )
@@ -230,5 +236,5 @@ $ShowEmpty      => 0
 $InlineEdit     => RT->Config->Get('InlineEdit', $session{CurrentUser})
 $Query => 0
 $HasResults     => undef
-$ObjectType     => 'RT::Ticket'
+$ObjectType     => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

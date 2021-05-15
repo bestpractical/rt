@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,11 +58,17 @@ my $url = RT->Config->Get('WebPath') . "/Helpers/TicketHistoryPage?" .
 
 my %extra_args = map { $_ => $ARGS{$_} // 1 } qw/ShowDisplayModes ShowTitle ScrollShowHistory/;
 $extra_args{ShowHeaders} = $ARGS{ShowHeaders};
+$extra_args{ReverseTxns} = $ARGS{ReverseTxns};
 
 $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $Ticket, ExtraArgs => \%extra_args );
 
-
-my $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
+my $oldestTransactionsFirst;
+if ( $ARGS{ReverseTxns} ) {
+    $oldestTransactionsFirst = $ARGS{ReverseTxns} eq 'ASC' ? 1 : 0;
+}
+else {
+    $oldestTransactionsFirst = RT->Config->Get("OldestTransactionsFirst", $session{CurrentUser});
+}
 </%INIT>
 
 <& /Elements/ShowHistoryHeader,
@@ -144,6 +150,13 @@ jQuery(function(){
                     jQuery(".history-container").append(html);
                     if ( transactions.filter(':not(.hidden.end-of-history-list)').length == 0 ) {
                         // if none is visible, automatically load more
+                        isLoading = false;
+                        loadHistoryPage();
+                        return;
+                    }
+
+                    if( jQuery(document).height() <= jQuery(window).height() + loadDistanceFromBottom ) {
+                        // if there are still space left, automatically load more
                         isLoading = false;
                         loadHistoryPage();
                         return;

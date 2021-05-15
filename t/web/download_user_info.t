@@ -76,7 +76,7 @@ EOF
 
     my $ticket_info_tsv = <<EOF;
 id\tSubject\tStatus\tQueueName\tOwner\tPriority\tRequestors
-1\tTest\topen\tGeneral\tNobody in particular\t0\troot (Enoch Root)
+1\tTest\topen\tGeneral\tNobody in particular\tLow\troot (Enoch Root)
 EOF
 
     is $agent->content, $ticket_info_tsv, "User tickets downloaded correctly";

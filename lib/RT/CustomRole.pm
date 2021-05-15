@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -172,9 +172,9 @@ sub _RegisterAsRole {
             $role->Load($id);
 
             if ($object->isa('RT::Queue')) {
-                # there's no way to apply the custom
-                # role to a queue before that queue is created
-                return 0;
+                # In case queue level custom role groups got deleted
+                # somehow.  Allow to re-create them like default ones.
+                return $role->IsAdded($object->id);
             }
             elsif ($object->isa('RT::Ticket')) {
                 # see if the role has been applied to the ticket's queue
@@ -207,14 +207,16 @@ sub _RegisterAsRole {
                 return 1;
             }
 
-            # custom roles apply to queues, so canonicalize a ticket
-            # into its queue
-            if ($object->isa('RT::Ticket')) {
-                $object = $object->QueueObj;
-            }
+            if ( $object->isa('RT::Ticket') || $object->isa('RT::Queue') ) {
+                return 0 unless $object->CurrentUserHasRight('SeeQueue');
 
-            if ($object->isa('RT::Queue')) {
-                return $role->IsAdded($object->Id);
+                # custom roles apply to queues, so canonicalize a ticket
+                # into its queue
+                if ( $object->isa('RT::Ticket') ) {
+                    $object = $object->QueueObj;
+                }
+
+                return $role->IsAdded( $object->Id );
             }
 
             return 0;
@@ -411,7 +413,8 @@ sub AddToObject {
         unless $queue->CurrentUserHasRight('AdminCustomRoles');
     my $rec = RT::ObjectCustomRole->new( $self->CurrentUser );
     my ( $status, $add ) = $rec->Add( %args, CustomRole => $self );
-    my $msg = $self->loc("[_1] added to queue [_2]", $self->Name, $queue->Name) if $status;
+    my $msg;
+    $msg = $self->loc("[_1] added to queue [_2]", $self->Name, $queue->Name) if $status;
 
     return ( $add, $msg );
 }
@@ -450,7 +453,8 @@ sub RemoveFromObject {
     $rec->LoadByCols( CustomRole => $self->id, ObjectId => $args{'ObjectId'} );
     return (0, $self->loc('Custom role is not added') ) unless $rec->id;
     my ( $status, $delete ) = $rec->Delete;
-    my $msg = $self->loc("[_1] removed from queue [_2]", $self->Name, $queue->Name) if $status;
+    my $msg;
+    $msg = $self->loc("[_1] removed from queue [_2]", $self->Name, $queue->Name) if $status;
 
     return ( $delete, $msg );
 }
@@ -677,31 +681,62 @@ sub SetDisabled {
     my $self = shift;
     my $value = shift;
 
-    $RT::Handle->BeginTransaction();
-
     my ($ok, $msg) = $self->_Set( Field => 'Disabled', Value => $value );
     unless ($ok) {
-        $RT::Handle->Rollback();
         $RT::Logger->warning("Couldn't ".(($value == 0) ? "enable" : "disable")." custom role ".$self->Name.": $msg");
         return ($ok, $msg);
     }
 
-    # we can't unconditionally re-enable all role groups because
-    # if you add a role to queues A and B, add users and privileges and
-    # tickets on both, remove the role from B, disable the role, then re-enable
-    # the role, we shouldn't re-enable B because it's still removed
-    my $queues = $self->AddedTo;
-    while (my $queue = $queues->Next) {
-        $self->_SetGroupsDisabledForQueue($value, $queue);
-    }
-
-    $RT::Handle->Commit();
+    RT::Principal->InvalidateACLCache();
 
     if ( $value == 0 ) {
         return (1, $self->loc("Custom role enabled"));
     } else {
         return (1, $self->loc("Custom role disabled"));
     }
+}
+
+sub HiddenForURLs {
+    my $self = shift;
+    my $attr = $self->FirstAttribute('HiddenForURLs');
+    return {} if !$attr;
+    return $attr->Content;
+}
+
+sub SetHiddenForURLs {
+    my $self   = shift;
+    my $hidden = shift;
+
+    unless ( $self->CurrentUser->HasRight(Object => $RT::System, Right => 'AdminCustomRoles') ) {
+        return (0, $self->loc('Permission Denied'));
+    }
+
+    return $self->SetAttribute(
+        Name    => 'HiddenForURLs',
+        Content => $hidden,
+    );
+}
+
+sub IsHiddenForURL {
+    my $self = shift;
+    my $url  = shift;
+
+    my $current_url = $HTML::Mason::Commands::r->path_info;
+    $current_url =~ s!/{2,}!/!g;
+
+    $url //= $current_url;
+    return $self->HiddenForURLs->{$url};
+}
+
+
+sub _Set {
+    my $self = shift;
+
+    unless ( $self->CurrentUser->HasRight( Object => $RT::System, Right => 'AdminCustomRoles' ) ) {
+        return ( 0, $self->loc('Permission Denied') );
+    }
+
+    return $self->SUPER::_Set(@_);
 }
 
 sub _CoreAccessible {

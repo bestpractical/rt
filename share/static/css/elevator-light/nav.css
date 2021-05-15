@@ -78,11 +78,11 @@ ul.sf-menu li {
     position: absolute;
     top: 1px;
     left: 0;
-    z-index: 9999;
+    z-index: 1000;
     text-color: #000;
 }
 
-#page-menu.sf-menu a,
+.page-menu.sf-menu a,
 #main-navigation .sf-menu a,
 #main-navigation .sf-menu a:hover {
     padding-top: 0.5em;
@@ -117,7 +117,7 @@ ul.sf-menu li {
     border-bottom: none;
 }
 
-#page-navigation #page-menu {
+#page-navigation .page-menu {
     float: right;
     width: auto;
 }
@@ -133,7 +133,7 @@ ul.sf-menu li {
 
 /* Pin page menu to top left corner once you scroll past it */
 
-#page-navigation #page-menu.pinned {
+.page-menu.pinned {
     position: fixed;
     top: 0;
     right: 0;
@@ -152,8 +152,15 @@ ul.sf-menu li {
     -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.4);
 }
 
-#page-menu.pinned li:hover ul,
-#page-menu.pinned li.sfHover ul {
+.search-results-page-menu-container .page-menu.pinned {
+    float: right;
+    width: auto;
+    top: 2em;
+    z-index: 94;
+}
+
+.page-menu.pinned li:hover ul,
+.page-menu.pinned li.sfHover ul {
     border-left: 1px #aaa solid;
     border-right: 1px #aaa solid;
     z-index: -1 !important; /* relative to current stacking context */
@@ -164,8 +171,8 @@ ul.sf-menu li {
 
 /* round off the corner of the first menu item so it matches the container */
 
-#page-menu.pinned > li:first-of-type,
-#page-menu.pinned > li:first-of-type > a {
+.page-menu.pinned > li:first-of-type,
+.page-menu.pinned > li:first-of-type > a {
     border-radius: 0 0 0 5px;
     -moz-border-radius: 0 0 0 5px;
     -webkit-border-radius: 0 0 0 5px;
@@ -296,45 +303,45 @@ ul.sf-menu li {
     display: block
 }
 
-#page-menu.toplevel {
+.page-menu.toplevel {
     display: none
 }
 
-#page-menu.toplevel.sf-menu {
+.page-menu.toplevel.sf-menu {
     display: block
 }
 
 /* be overly specific to defeat specificity */
 #app-nav.sf-menu > li#li-overflow,
-#page-menu.sf-menu > li#li-page-overflow {
+.page-menu.sf-menu > li#li-page-overflow {
     display: none;
 }
 #app-nav.sf-menu > li#li-overflow.has-overflow,
-#page-menu.sf-menu > li#li-page-overflow.has-overflow {
+.page-menu.sf-menu > li#li-page-overflow.has-overflow {
     display: inline-block;
 }
 
 /* these two rules prevent the menus from wrapping, so that our overflow
    calculations can work */
 #app-nav.sf-menu > li,
-#page-menu.sf-menu > li {
+.page-menu.sf-menu > li {
     float: none;
     display: inline-block;
 }
 #app-nav.sf-menu,
-#page-menu.sf-menu {
+.page-menu.sf-menu {
     white-space: nowrap;
     margin-bottom: 0;
 }
 
-#page-menu.sf-menu > li > span > a,
-#page-menu.sf-menu > li > a {
+.page-menu.sf-menu > li > span > a,
+.page-menu.sf-menu > li > a {
     padding-top: .3em;
     padding-bottom: .25em;
     border-radius: 0;
 }
 
-#page-menu.sf-menu > li {
+.page-menu.sf-menu > li {
     float: left;
     border-color: #E0E6EC;
     border-right-style: solid;
@@ -371,6 +378,19 @@ ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
     right: 5px;
 }
 
+/* IE11 only, top and child nav down and right arrows.
+   IE11 is a lot more specific about what it allows for svg url background definitions.
+   We know png works for IE11, so rather than change what works for every other browser, just use png where it's needed.
+   Both the pngs and specific definitions for the chevrons can be removed once IE11 is EOL.
+*/
+body.IE11 ul.toplevel.sf-menu > li > a.sf-with-ul:after {
+    background: url("../../../static/images/chevron-down.png") no-repeat center center;
+}
+
+body.IE11 ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
+    background: url("../../../static/images/chevron-right.png") no-repeat center center;
+}
+
 @media (max-width: 900px) {
     #topactions .create-wide   { display: none; }
     #topactions .create-medium { display: block; }
@@ -389,4 +409,13 @@ ul.toplevel.sf-menu > li > ul > li a.sf-with-ul:after {
     #topactions input[type="submit"], #topactions input.button {
         min-width: 2em;
     }
+}
+
+.search-results-page-menu-container {
+    padding-right: 5px;
+}
+
+/* to override rules of ".titlebox .titlebox-title a:hover" in boxes.css */
+.search-results-page-menu-container .sf-menu .menu-item:hover {
+    text-decoration: none;
 }

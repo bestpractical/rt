@@ -121,7 +121,7 @@ CREATE TABLE Transactions (
   ObjectId integer NULL DEFAULT 0 ,
   TimeTaken integer NULL DEFAULT 0 ,
   Type varchar(20) collate NOCASE NULL  ,
-  Field varchar(40) collate NOCASE NULL  ,
+  Field varchar(255) collate NOCASE NULL  ,
   OldValue varchar(255) collate NOCASE NULL  ,
   NewValue varchar(255) collate NOCASE NULL  ,
   ReferenceType varchar(255) collate NOCASE NULL  ,
@@ -582,6 +582,19 @@ CREATE TABLE Configurations (
     LastUpdated       timestamp                DEFAULT NULL
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
+CREATE INDEX Configurations1 ON Configurations (Name, Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
 
+CREATE TABLE AuthTokens (
+    id                INTEGER PRIMARY KEY,
+    Owner             int(11)         NOT NULL DEFAULT 0,
+    Token             varchar(256)    collate NOCASE NULL  ,
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    LastUsed          timestamp                DEFAULT NULL,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL
+);
+
+CREATE INDEX AuthTokensOwner on AuthTokens (Owner);

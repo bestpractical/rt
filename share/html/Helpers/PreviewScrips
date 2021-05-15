@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -111,21 +111,25 @@ $submitted{$_} = 1 for split /,/, $ARGS{TxnRecipients};
                   <li class="list-group-item">
 %                 my $checked = $submitted{$addr->address} ? not $squelched{$addr->address} : $squelched_config;
 %                 $m->callback(CallbackName => 'BeforeAddress', Ticket => $TicketObj, Address => $addr, Type => $type, Checked => \$checked);
-%                 $recips{$addr->address}++;
                     <div class="form-row">
-                      <div class="col-md-auto">
+                      <div class="col-auto">
                         <b><%loc($type)%></b>:
                       </div>
-                      <div class="col-md-auto">
+                      <div class="col-auto">
 %                 my $show_checkbox = 1;
 %                 if ( grep {$_ eq $addr->address} @{$action->{NoSquelch}{$type}} ) {
 %                     $show_checkbox = 0;
 %                 }
                         <div class="custom-control custom-checkbox">
 %                 if ( $show_checkbox ) {
+%                     $recips{$addr->address}++;
                           <input type="checkbox" class="custom-control-input" name="TxnSendMailTo" <% $checked ? 'checked="checked"' : '' |n%> value="<%$addr->address%>" id="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>" />
 %                 }
-                          <label <% $show_checkbox ? 'class="custom-control-label"' : '' |n%> for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"><& /Elements/ShowUser, Address => $addr &></label>
+                          <label <% $show_checkbox ? 'class="custom-control-label"' : '' |n%>
+%                         if ( $show_checkbox ) {
+                            for="TxnSendMailTo-<% $addr->address %>-<% $recips{$addr->address} %>"
+%                         }
+                          ><& /Elements/ShowUser, Address => $addr &></label>
 %                 $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
 %                 unless ( $show_checkbox ) {
 %                     if ( $type eq 'Cc' ) {

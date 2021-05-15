@@ -61,4 +61,17 @@ SetDefaultDueIn, DefaultDueIn.
 
 =back
 
+=head1 UPGRADING FROM 5.0.0 AND EARLIER
+
+=over 4
+
+=item *
+
+C<RT::Crypt::GnuPG> previously had a package variable C<$RE_FILE_EXTENSIONS>
+that could be modified to control file types RT should try to
+decrypt. This has been moved to a configuration option in the C<%GnuPG>
+setting in C<RT_Config.pm>.
+
+=back
+
 =cut

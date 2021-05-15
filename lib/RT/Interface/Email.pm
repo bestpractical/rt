@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -129,6 +129,9 @@ sub Gateway {
         message => undef,
         %$argsref
     );
+
+    RT->Config->RefreshConfigFromDatabase();
+    RT->System->MaybeRebuildLifecycleCache();
 
     # Set the scope to return from with TMPFAIL/FAILURE/SUCCESS
     $SCOPE = HERE;
@@ -887,6 +890,9 @@ sub SendEmail {
             Attachment => $TransactionObj ? $TransactionObj->Attachments->First : undef,
             Ticket     => $TicketObj,
         );
+        if ($TicketObj) {
+            $args{'Queue'} = $TicketObj->QueueObj;
+        }
         my $res = SignEncrypt( %args );
         return $res unless $res > 0;
     }
@@ -1449,6 +1455,37 @@ sub _RecordSendEmailFailure {
     }
 }
 
+# Hash describing how various formatters format <blockquote>...</blockquote>
+# regions.
+our $BlockquoteDescriptor = {
+    w3m       => { indent => 4 },
+    elinks    => { indent => 2 },
+    links     => { indent => 2 },
+    html2text => { indent => 5 },
+    lynx      => { indent => 2 },
+    core      => { indent => 2 },
+};
+
+=head3 ConvertBlockquoteIndentsToQuotemarks
+
+Given plain text that has been converted from HTML to text, adjust
+it to quote blockquote regions with ">".
+
+=cut
+
+sub ConvertBlockquoteIndentsToQuotemarks {
+    my ($text, $converter) = @_;
+
+    return $text unless exists($BlockquoteDescriptor->{$converter});
+    my $n = $BlockquoteDescriptor->{$converter}{indent};
+    my $spaces = ' ' x $n;
+
+    # Convert each level of indentation to a ">"; add a space aferwards
+    # for readability
+    $text =~ s|^(($spaces)+)|">" x (length($1)/$n) . " "|gem;
+    return $text;
+}
+
 =head3 ConvertHTMLToText HTML
 
 Takes HTML characters and converts it to plain text characters.
@@ -1463,20 +1500,27 @@ sub ConvertHTMLToText {
 
 sub _HTMLFormatter {
     state $formatter;
-    return $formatter if defined $formatter;
+
+    # If we are running under the test harness, we want to create
+    # a new $formatter each time rather than once and caching.
+    return $formatter if defined $formatter && !$ENV{HARNESS_ACTIVE};
 
     my $wanted = RT->Config->Get("HTMLFormatter");
+    my @options = ("w3m", "elinks", "links", "html2text", "lynx", "core");
 
     my @order;
     if ($wanted) {
         @order = ($wanted, "core");
     } else {
-        @order = ("w3m", "elinks", "links", "html2text", "lynx", "core");
+        @order = @options;
     }
     # Always fall back to core, even if it is not listed
     for my $prog (@order) {
         if ($prog eq "core") {
             RT->Logger->debug("Using internal Perl HTML -> text conversion");
+            if ( !$ENV{HARNESS_ACTIVE} ) {
+                RT->Logger->warn("Running with the internal HTML converter can result in performance issues with some HTML. Install one of the following utilities with your package manager to improve performance with an external tool: " . join (', ', grep { $_ ne 'core' } @options));
+            }
             require HTML::FormatText::WithLinks::AndTables;
             $formatter = \&_HTMLFormatText;
         } else {
@@ -1522,7 +1566,7 @@ sub _HTMLFormatter {
                     );
                 };
                 $text = Encode::decode( "UTF-8", $text );
-                return $text;
+                return ConvertBlockquoteIndentsToQuotemarks($text, $prog);
             };
         }
         RT->Config->Set( HTMLFormatter => $prog );
@@ -1551,7 +1595,7 @@ sub _HTMLFormatText {
         $text //= '';
     };
     $RT::Logger->error("Failed to downgrade HTML to plain text: $@") if $@;
-    return $text;
+    return ConvertBlockquoteIndentsToQuotemarks($text, 'core');
 }
 
 

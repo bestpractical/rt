@@ -49,12 +49,6 @@ div.history-container {
  display: block;
 }
 
-
-.history .transaction span.date {
- width: 15em;
-}
-
-
 .history .transaction span.description {
  margin-left: 1em;
  font-weight: bold;
@@ -92,6 +86,8 @@ div.history-container {
 }
 
 .history .transaction.message div.content {
+  /* Leave a bit more space for .actions so rows could align correctly */
+  padding-top: 0.11em;
   padding-right: 0;
   padding-bottom: 3em;
   margin-left: 3em;
@@ -171,13 +167,10 @@ border: none;
   vertical-align: top;
 }
 
-.transaction div.downloadattachment .downloadcontenttype{
-  color: #ccc;
-  display: block;
-  margin-top: 0.25rem;
-padding-right:0.25em;
+.transaction div.downloadattachment .downloadfilename {
+  font-size: 0.9rem;
+  padding-left: 0.1em;
 }
-
 
 .transaction .message-header-key {
   width: 7em;
@@ -219,3 +212,9 @@ padding-right:0.25em;
 .transaction .message-header-value.verify.done.trust-FULL      { color: #060; }
 .transaction .message-header-value.verify.done.trust-FULLY     { color: #060; }
 .transaction .message-header-value.verify.done.trust-ULTIMATE  { color: #060; }
+.transaction.other .details { margin-top: 0.5em; }
+.transaction.other .details tr:not(:first-child) td.value { border-top: 1px solid #ccc; }
+.transaction.other .details td.label { min-width: 0; }
+.transaction .diff .value del { color: #a00; }
+.transaction .diff .value { color: #888; }
+.transaction .diff .value ins { color: #080; }

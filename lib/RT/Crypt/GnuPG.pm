@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -287,8 +287,6 @@ my %supported_opt = map { $_ => 1 } qw(
        verbose
 );
 
-our $RE_FILE_EXTENSIONS = qr/pgp|asc/i;
-
 # DEV WARNING: always pass all STD* handles to GnuPG interface even if we don't
 # need them, just pass 'IO::Handle->new()' and then close it after safe_run_child.
 # we don't want to leak anything into FCGI/Apache/MP handles, this break things.
@@ -330,11 +328,11 @@ sub CallGnuPG {
     my %GnuPGOptions = RT->Config->Get('GnuPGOptions');
     my %opt = (
         'digest-algo' => 'SHA1',
+        'cert-digest-algo' => 'SHA256',
         %GnuPGOptions,
         %{ $args{Options} || {} },
     );
-    my $gnupg = GnuPG::Interface->new;
-    $gnupg->call( $self->GnuPGPath );
+    my $gnupg = GnuPG::Interface->new( call => $self->GnuPGPath );
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),
     );
@@ -825,12 +823,13 @@ sub FindScatteredParts {
         }
     }
 
+    my $file_extension_regex = join '|', @{ RT->Config->Get('GnuPG')->{FileExtensions} };
     # attachments with inline encryption
     foreach my $part ( @parts ) {
         next if $args{'Skip'}{$part};
 
         my $fname = $part->head->recommended_filename || '';
-        next unless $fname =~ /\.${RE_FILE_EXTENSIONS}$/;
+        next unless $fname =~ /\.(?:$file_extension_regex)$/;
 
         $RT::Logger->debug("Found encrypted attachment '$fname'");
 
@@ -849,7 +848,7 @@ sub FindScatteredParts {
         my $type = $self->_CheckIfProtectedInline( $part );
         next unless $type;
 
-        my $file = ($part->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
+        my $file = ($part->head->recommended_filename||'') =~ /\.(?:$file_extension_regex)$/;
 
         $args{'Skip'}{$part} = 1;
         push @res, {
@@ -1236,7 +1235,8 @@ sub DecryptAttachment {
     }
 
     my $filename = $embedded_fn || $head->recommended_filename;
-    $filename =~ s/\.${RE_FILE_EXTENSIONS}$//i;
+    my $file_extension_regex = join '|', @{ RT->Config->Get('GnuPG')->{FileExtensions} };
+    $filename =~ s/\.(?:$file_extension_regex)$//i;
     $head->mime_attr( $_ => $filename )
         foreach (qw(Content-Type.name Content-Disposition.filename));
 
@@ -1344,7 +1344,7 @@ my %parse_keyword = map { $_ => 1 } qw(
     DECRYPTION_FAILED DECRYPTION_OKAY
     BAD_PASSPHRASE GOOD_PASSPHRASE
     NO_SECKEY NO_PUBKEY
-    NO_RECP INV_RECP NODATA UNEXPECTED
+    NO_RECP INV_RECP NODATA UNEXPECTED FAILURE
 );
 
 # keywords we ignore without any messages as we parse them using other
@@ -1354,7 +1354,8 @@ my %ignore_keyword = map { $_ => 1 } qw(
     BEGIN_ENCRYPTION SIG_ID VALIDSIG
     ENC_TO BEGIN_DECRYPTION END_DECRYPTION GOODMDC
     TRUST_UNDEFINED TRUST_NEVER TRUST_MARGINAL TRUST_FULLY TRUST_ULTIMATE
-    DECRYPTION_INFO
+    DECRYPTION_INFO KEY_CONSIDERED DECRYPTION_KEY NEWSIG PINENTRY_LAUNCHED
+    IMPORT_OK DECRYPTION_COMPLIANCE_MODE PROGRESS INV_SGNR
 );
 
 sub ParseStatus {
@@ -1489,6 +1490,15 @@ sub ParseStatus {
 
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
+                # Fingerprint = key fingerprint in hex
+                # CreationDate = key creation date (YYYY-MM-DD)
+                # Timestamp = signature creation time (seconds from UNIX epoch)
+                # ExpireTimestamp = signature expiration time (since epoch) or 0 for "never expires"
+                # Version = signature version straight from the packet
+                # PubkeyAlgo = Public key algorithm (https://tools.ietf.org/html/rfc4880#section-9.1)
+                # HashAlgo = Hash algorithm (https://tools.ietf.org/html/rfc4880#section-9.4)
+                # Class = Signature type (https://tools.ietf.org/html/rfc4880#section-5.2.1)
+                # PKFingerprint = Primary Key Fingerprint
                 @res{ qw(
                     Fingerprint
                     CreationDate
@@ -1502,6 +1512,8 @@ sub ParseStatus {
                     PKFingerprint
                     Other
                 ) } = split /\s+/, $1, 10;
+                $res{HashAlgoName} = $self->HashAlgorithmToName($res{HashAlgo}) if defined($res{HashAlgo});
+                $res{PubkeyAlgoName} = $self->PubkeyAlgorithmToName($res{PubkeyAlgo}) if defined($res{PubkeyAlgo});
                 last;
             }
             push @res, \%res;
@@ -1542,10 +1554,12 @@ sub ParseStatus {
                 Class          => $props[3],
                 Timestamp      => $props[4],
                 KeyFingerprint => $props[5],
-                User           => $user_hint{ $latest_user_main_key },
+                ( defined $latest_user_main_key ? ( User => $user_hint{$latest_user_main_key} ) : () )
             };
-            $res[-1]->{Message} .= ' by '. $user_hint{ $latest_user_main_key }->{'EmailAddress'}
-                if $user_hint{ $latest_user_main_key };
+            if ($latest_user_main_key) {
+                $res[-1]->{Message} .= ' by '. $user_hint{ $latest_user_main_key }->{'EmailAddress'}
+                    if $user_hint{ $latest_user_main_key };
+            }
         }
         elsif ( $keyword eq 'INV_RECP' ) {
             my ($rcode, $recipient) = split /\s+/, $args, 2;
@@ -1570,8 +1584,20 @@ sub ParseStatus {
                 Reason     => $reason,
             };
         }
+        elsif ( $keyword eq 'FAILURE' ) {
+            # FAILURE encrypt 167772218
+            my ($op, $rcode) = split /\s+/, $args;
+            my $reason = ReasonCodeToText( $keyword, $rcode );
+            push @res, {
+                Operation  => ucfirst($op),
+                Status     => 'ERROR',
+                Message    => "Failed to $op",
+                ReasonCode => $rcode,
+                Reason     => $reason,
+            };
+        }
         else {
-            $RT::Logger->warning("Keyword $keyword is unknown");
+            $RT::Logger->warning("Keyword $keyword is unknown : status line is $line");
             next;
         }
         $res[-1]{'Keyword'} = $keyword if @res && !$res[-1]{'Keyword'};
@@ -1672,7 +1698,7 @@ sub GetKeysInfo {
     for my $key (@{$res{info}}) {
         $key->{Formatted} =
             join("; ", map {$_->{String}} @{$key->{User}})
-                . " (".substr($key->{Fingerprint}, -8) . ")";
+                . " (" . $key->{Fingerprint} . ")";
     }
 
     return %res;
@@ -1697,6 +1723,7 @@ sub ParseKeysInfo {
                 Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
 
+            $info{AlgorithmName} = $self->PubkeyAlgorithmToName($info{Algorithm}) if defined($info{Algorithm});
             # workaround gnupg's wierd behaviour, --list-keys command report calculated trust levels
             # for any model except 'always', so you can change models and see changes, but not for 'always'
             # we try to handle it in a simple way - we set ultimate trust for any key with trust
@@ -1724,6 +1751,7 @@ sub ParseKeysInfo {
                 Created Expire Empty OwnerTrustChar
                 Empty Empty Capabilities Other
             ) } = split /:/, $line, 12;
+            $info{AlgorithmName} = $self->PubkeyAlgorithmToName($info{Algorithm}) if defined($info{Algorithm});
             @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
                 _ConvertTrustChar( $info{'OwnerTrustChar'} );
             $info{ $_ } = $self->ParseDate( $info{ $_ } )
@@ -1739,7 +1767,7 @@ sub ParseKeysInfo {
             push @{ $res[-1]{'User'} ||= [] }, \%info;
         }
         elsif ( $tag eq 'fpr' ) {
-            $res[-1]{'Fingerprint'} = (split /:/, $line, 10)[8];
+            $res[-1]{'Fingerprint'} ||= (split /:/, $line, 10)[8];
         }
     }
     return @res;
@@ -1840,6 +1868,68 @@ sub ImportKey {
     );
 }
 
+sub ReceiveKey {
+    my $self = shift;
+    my $key  = shift;
+
+    return $self->CallGnuPG(
+        Command     => "recv_keys",
+        CommandArgs => [ '--', $key ],
+    );
+}
+
+sub TrustKey {
+    my $self  = shift;
+    my $key   = shift;
+    my $level = shift;
+
+    $level++; # the level format in --import-ownertrust input is +1
+
+    return $self->CallGnuPG(
+        Command => "--import-ownertrust",
+        Content => "$key:$level:\n",
+    );
+}
+
+sub SearchKey {
+    my $self = shift;
+    my $key  = shift;
+
+    my @output;
+    my %ret = $self->CallGnuPG(
+        Command     => "search_keys",
+        CommandArgs => [ '--', $key ],
+        Output      => \@output,
+        # gpg hangs if command handle is supplied :/
+        Handles     => { command => 0 },
+    );
+
+    my @results;
+    my $result;
+    for my $line ( @output ) {
+        if ( $line =~ /^\(\d+\)/ ) {
+            push @results, { Summary => $result } if $result;
+            $result = $line;
+        }
+        else {
+            $result .= $line;
+        }
+    }
+    push @results, { Summary => $result } if $result;
+
+    for my $item ( @results ) {
+        if ( $item->{Summary} =~ /^\s*\d+ bit \w+ key (\w{8,})/mi ) {
+            $item->{Key} = $1;
+        }
+        else {
+            RT->Logger->warning("Couldn't find key from gpg search result: $item->{Summary}");
+        }
+    }
+    @results = grep { $_->{Key} } @results;
+
+    return ( %ret, results => \@results );
+}
+
 sub GnuPGPath {
     state $cache = RT->Config->Get('GnuPG')->{'GnuPG'};
     $cache = $_[1] if @_ > 1;
@@ -1848,7 +1938,6 @@ sub GnuPGPath {
 
 sub Probe {
     my $self = shift;
-    my $gnupg = GnuPG::Interface->new;
 
     my $bin = $self->GnuPGPath();
     unless ($bin) {
@@ -1878,7 +1967,7 @@ sub Probe {
         $self->GnuPGPath( $bin = $path );
     }
 
-    $gnupg->call( $bin );
+    my $gnupg = GnuPG::Interface->new( call => $bin );
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( RT->Config->Get('GnuPGOptions') )
     );
@@ -1940,8 +2029,63 @@ sub _make_gpg_handles {
         foreach grep !defined $handle_map{$_}, 
         qw(stdin stdout stderr logger status command);
 
+    for my $type ( keys %handle_map ) {
+        delete $handle_map{$type} if !$handle_map{$type};
+    }
+
     my $handles = GnuPG::Handles->new(%handle_map);
     return ($handles, \%handle_map);
+}
+
+# Gigne a PGP hash algorithm number, return the algorithm name.
+# See https://tools.ietf.org/html/rfc4880#section-9.4
+sub HashAlgorithmToName {
+    my ( $self, $alg ) = @_;
+    return 'MD5'         if ( $alg == 1 );
+    return 'SHA-1'       if ( $alg == 2 );
+    return 'RIPE-MD/160' if ( $alg == 3 );
+    return 'Reserved'    if ( $alg >= 4 && $alg <= 7 );
+    return 'SHA256'      if ( $alg == 8 );
+    return 'SHA384'      if ( $alg == 9 );
+    return 'SHA512'      if ( $alg == 10 );
+    return 'SHA224'      if ( $alg == 11 );
+    return undef;
+}
+
+# Given a PGP public-key algorithm number, return the algorithm name.
+# See https://tools.ietf.org/html/rfc4880#section-9.1
+sub PubkeyAlgorithmToName {
+    my ( $self, $alg ) = @_;
+    return 'RSA'                         if ( $alg == 1 );
+    return 'RSA Encrypt-Only'            if ( $alg == 2 );
+    return 'RSA Sign-Only'               if ( $alg == 3 );
+    return 'Elgamal Encrypt-Ony'         if ( $alg == 16 );
+    return 'DSA'                         if ( $alg == 17 );
+    return 'Reserved for EC'             if ( $alg == 18 );
+    return 'Reserved for ECDSA'          if ( $alg == 19 );
+    return 'Reserved (formerly Elgamal)' if ( $alg == 20 );
+    return 'Reserved (DH)'               if ( $alg == 21 );
+    return undef;
+}
+
+# Given a public-key fingerprint, return the public key (in PEM format)
+# if we have it, undef if we do not.
+sub GetPubkey {
+    my ( $self, $fingerprint ) = @_;
+
+    # Sanity-check the fingerprint, which must be a string of
+    # hex digits
+    if ( $fingerprint =~ /[^0-9a-fA-F]/ ) {
+        return undef;
+    }
+
+    my @pubkey;
+    my %res = $self->CallGnuPG(
+        Command     => 'export_keys',
+        CommandArgs => $fingerprint,
+        Output      => \@pubkey
+    );
+    return join( '', @pubkey );
 }
 
 RT::Base->_ImportOverlays();

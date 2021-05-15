@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -255,6 +255,15 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
 
+# Add a CustomFieldView column for custom fields, but with editing disabled
+$COLUMN_MAP->{'CustomFieldView'} = {};
+
+# We copy all keys from CF to CustomFieldView except for "edit"
+foreach my $key ( keys( %{ $COLUMN_MAP->{'CF'} } ) ) {
+    next if $key eq 'edit';
+    $COLUMN_MAP->{'CustomFieldView'}->{$key} = $COLUMN_MAP->{'CF'}->{$key};
+}
+
 Scalar::Util::weaken($WCOLUMN_MAP);
 
 my $ROLE_MAP = {};
@@ -278,12 +287,6 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
                 attribute => $attrs->{Column} || "$role.EmailAddress",
                 value => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role) ) ) },
             };
-
-            if ( $RecordClass eq 'RT::Ticket' && $role eq 'Owner' ) {
-                $ROLE_MAP->{$RecordClass}{$role}{edit} = sub {
-                    return \($m->scomp('/Elements/SelectOwner', TicketObj => $_[0], Name => 'Owner', Default => $_[0]->OwnerObj->Id, DefaultValue => 0));
-                };
-            }
 
             $ROLE_MAP->{$RecordClass}{$role . "s"} = $ROLE_MAP->{$RecordClass}{$role}
                 unless $attrs->{Single};

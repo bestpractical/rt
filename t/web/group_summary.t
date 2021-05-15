@@ -38,6 +38,7 @@ diag( 'Group Summary access and ticket creation' );
         fields => {
             Subject => $subject,
         },
+        button => 'SubmitTicket'
     }, 'Submitted form to create ticket with group cc');
     like( $m->uri, qr{/Ticket/Display\.html\?id}, "now on /Ticket/Display\.html" );
 

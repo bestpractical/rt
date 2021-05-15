@@ -35,4 +35,7 @@ CKEDITOR.editorConfig = function( config ) {
 
 	// Simplify the dialog windows.
 	config.removeDialogTabs = 'image:advanced;link:advanced';
+    if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
+        config.contentsCss = [ RT.Config.WebPath + '/static/RichText/contents.css', RT.Config.WebPath + '/static/RichText/contents-dark.css' ];
+    }
 };

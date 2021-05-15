@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -61,7 +61,7 @@
 % }
 
 % if ($Autocomplete) {
-    data-autocomplete="Users"
+    data-autocomplete="<% $AutocompleteType %>"
 % }
 
 % if ($AutocompleteMultiple) {
@@ -87,6 +87,10 @@
 
 % if (@items) {
     data-items="<% JSON(\@items) %>"
+% }
+
+% if ($AutocompleteExclude) {
+    data-autocomplete-exclude="<% $AutocompleteExclude %>"
 % }
 
 />
@@ -140,6 +144,7 @@ $Name
 $Size    => 40
 $Default => ''
 $Autocomplete => 1
+$AutocompleteType => 'Users'
 $AutocompleteMultiple => 0
 $AutocompleteReturn => ''
 $AutocompleteNobody => 0
@@ -147,4 +152,5 @@ $AutocompleteSystem => 0
 $EntryHint => ''
 $Placeholder => ''
 $Options => []
+$AutocompleteExclude => undef
 </%ARGS>

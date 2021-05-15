@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -82,8 +82,9 @@ my $LinkCallback = sub {
 };
 
 my $trustSub = sub {
+    my $queue = shift;
     my $user = shift;
-    my %key = RT::Crypt->GetKeyInfo( Key => $user->EmailAddress );
+    my %key = RT::Crypt->GetKeyInfo( Key => $user->EmailAddress, Queue => $queue );
     if (!defined $key{'info'}) {
         return $m->interp->apply_escapes(' ' . loc("(no pubkey!)"), "h");
     } elsif ($key{'info'}{'TrustLevel'} == 0) {
@@ -104,7 +105,12 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->QueueObj->Name },
         edit      => sub { return \($m->scomp('/Elements/SelectQueue', Default => $_[0]->Queue, Name => 'Queue', ShowNullOption => 0)) },
     },
-    OwnerName => {
+    OwnerName =>  {
+        title     => 'Owner', # loc
+        attribute => 'Owner',
+        value     => sub { return \($m->scomp("/Elements/ShowUser", User => $_[0]->OwnerObj)) },
+    },
+    OwnerNameEdit => {
         title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name },
@@ -160,21 +166,21 @@ $COLUMN_MAP = {
         title     => 'Priority', # loc
         attribute => 'Priority',
         value     => sub { return $_[0]->Priority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'Priority', Default => $_[0]->Priority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'Priority', Default => $_[0]->Priority, QueueObj => $_[0]->QueueObj )) },
     },
     InitialPriority => {
         title     => 'InitialPriority', # loc
         attribute => 'InitialPriority',
         name      => 'Initial Priority',
         value     => sub { return $_[0]->InitialPriority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'InitialPriority', Default => $_[0]->InitialPriority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'InitialPriority', Default => $_[0]->InitialPriority, QueueObj => $_[0]->QueueObj)) },
     },
     FinalPriority => {
         title     => 'FinalPriority', # loc
         attribute => 'FinalPriority',
         name      => 'Final Priority',
         value     => sub { return $_[0]->FinalPriority },
-        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'FinalPriority', Default => $_[0]->FinalPriority)) },
+        edit      => sub { return \($m->scomp('/Elements/SelectPriority', Name => 'FinalPriority', Default => $_[0]->FinalPriority, QueueObj => $_[0]->QueueObj)) },
     },
     EffectiveId => {
         title     => 'EffectiveId', # loc
@@ -296,7 +302,7 @@ $COLUMN_MAP = {
     KeyRequestors => {
         title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->Requestor, PostUser => $trustSub ) ) }
+        value     => sub { my $ticket = $_[0]; return \($m->scomp("/Elements/ShowPrincipal", Object => $ticket->Requestor, PostUser => sub { my $user = shift; return $trustSub->($ticket->QueueObj, $user); }))}
     },
     KeyOwnerName => {
         title     => 'Owner', # loc
@@ -304,7 +310,7 @@ $COLUMN_MAP = {
         value     => sub {
             my $t = shift;
             my $name = $t->OwnerObj->Name;
-            my %key = RT::Crypt->GetKeyInfo( Key => $t->OwnerObj->EmailAddress );
+            my %key = RT::Crypt->GetKeyInfo( Key => $t->OwnerObj->EmailAddress, Queue => $t->QueueObj );
             if (!defined $key{'info'}) {
                 $name .= ' '. loc("(no pubkey!)");
             }
@@ -318,7 +324,8 @@ $COLUMN_MAP = {
     KeyOwner => {
         title     => 'Owner', # loc
         attribute => 'Owner',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->OwnerObj, PostUser => $trustSub ) ) }
+        value     => sub {
+            my $ticket = $_[0]; return \($m->scomp("/Elements/ShowPrincipal", Object => $ticket->OwnerObj, PostUser => sub { my $user = shift; return $trustSub->($ticket->QueueObj, $user); }))},
     },
 
     # Everything from LINKTYPEMAP
@@ -353,17 +360,25 @@ $COLUMN_MAP = {
             return \($m->scomp("/Ticket/Elements/PopupTimerLink", id => $_[0]->id ) );
         },
     },
-};
+    UnreadMessages => {
+       title     => 'Unread Messages', # loc
+       value     => sub {
+            my $self = shift;
 
-my %ranges = RT::Ticket->CustomDateRanges;
-for my $name (keys %ranges) {
-    $COLUMN_MAP->{$name} = {
-        title => $name,
-        value => sub {
-            $_[0]->CustomDateRange($name, $ranges{$name});
-        },
-    };
-}
+            my ( $first_unread, $count ) = $self->SeenUpTo;
+
+            return '0' if !$count;
+
+            my $link = RT->Config->Get('WebPath');
+            $link .= $session{'CurrentUser'}->Privileged ? '/Ticket/Display.html?id=' : '/SelfService/Display.html?id=';
+            $link .= $self->id . '&MarkAsSeen=1&Anchor=txn-' . $first_unread->id;
+
+            my $title = loc("Jump to Unread &amp; Mark as Seen");
+            return \( '<a data-toggle="tooltip" data-original-title="' . $title . '" href="' . $link . '"><b>' ),
+                $count, \'</b></a>';
+        }
+   }
+};
 
 </%ONCE>
 <%init>
@@ -382,6 +397,46 @@ if(RT->Config->Get('DisplayTotalTimeWorked')) {
             return $_[0]->TotalTimeWorkedAsString;
         },
     }
+}
+
+if ( RT->Config->Get('EnablePriorityAsString') ) {
+    my $printer = sub {
+        my ( $class, $string ) = @_;
+        return '' unless defined $string && length $string;
+
+        my $request_path = $HTML::Mason::Commands::r->path_info // '';
+        if ( $request_path =~ /Results\.tsv/ ) {
+            return loc($string);
+        }
+
+        my $escaped     = $m->interp->apply_escapes( $string,      'h' );
+        my $loc_escaped = $m->interp->apply_escapes( loc($string), 'h' );
+        return \( qq{<span class="ticket-info-$class-} . lc($escaped) . qq{">$loc_escaped</span>} );
+
+    };
+    foreach my $field (qw(Priority InitialPriority FinalPriority)) {
+        $COLUMN_MAP->{ $field . 'Number' } ||= $COLUMN_MAP->{$field};
+
+        my $class = lc($field);
+        $class =~ s/(?=<.)(?=priority)/-/;
+
+        my $method = $field . 'AsString';
+
+        $COLUMN_MAP->{$field}{'value'} = sub {
+            # Fallback to numbers when the queue disables PriorityAsString
+            return $printer->( $class, $_[0]->$method() ) || $_[0]->$field;
+        };
+    }
+}
+
+my %ranges = RT::Ticket->CustomDateRanges;
+for my $name (keys %ranges) {
+    $COLUMN_MAP->{$name} = {
+        title => $name,
+        value => sub {
+            $_[0]->CustomDateRange($name, $ranges{$name});
+        },
+    };
 }
 
 $m->callback( GenericMap => $GenericMap, COLUMN_MAP => $COLUMN_MAP, CallbackName => 'Once', CallbackOnce => 1 );

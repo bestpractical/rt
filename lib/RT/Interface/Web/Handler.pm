@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -59,6 +59,7 @@ use HTML::Scrubber;
 use RT::Interface::Web;
 use RT::Interface::Web::Request;
 use RT::ObjectCustomFieldValues;
+use RT::REST2;
 use File::Path qw( rmtree );
 use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
@@ -306,6 +307,10 @@ sub PSGIApp {
     };
 
     my $app = $self->StaticWrap($mason);
+
+    # Add REST2
+    $app = RT::REST2::PSGIWrap('RT::REST2', $app);
+
     for my $plugin (RT->Config->Get("Plugins")) {
         my $wrap = $plugin->can("PSGIWrap")
             or next;

@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -305,10 +305,18 @@ sub _Create {
         @_
     );
 
-    # Enforce uniqueness on user defined group names
-    if ($args{'Domain'} and $args{'Domain'} eq 'UserDefined') {
-        my ($ok, $msg) = $self->_ValidateUserDefinedName($args{'Name'});
-        return ($ok, $msg) if not $ok;
+    if ($args{'Domain'}) {
+        # Enforce uniqueness on user defined group names
+        if ($args{'Domain'} eq 'UserDefined') {
+            my ($ok, $msg) = $self->_ValidateUserDefinedName($args{'Name'});
+            return ($ok, $msg) if not $ok;
+        }
+
+        # Enforce uniqueness on SystemInternal and system role groups
+        if ($args{'Domain'} eq 'SystemInternal' || $args{'Domain'} eq 'RT::System-Role') {
+            my ($ok, $msg) = $self->_ValidateNameForDomain($args{'Name'}, $args{'Domain'});
+            return ($ok, $msg) if not $ok;
+        }
     }
 
     $RT::Handle->BeginTransaction() unless ($args{'InsideTransaction'});
@@ -398,6 +406,30 @@ sub ValidateName {
     return $self->SUPER::ValidateName($value);
 }
 
+=head2 _ValidateNameForDomain VALUE DOMAIN
+
+Returns true if the group name isn't in use in the same domain, false otherwise.
+
+=cut
+
+sub _ValidateNameForDomain {
+    my ($self, $value, $domain) = @_;
+
+    return (0, 'Name is required') unless length $value;
+
+    my $dupcheck = RT::Group->new(RT->SystemUser);
+    if ($domain eq 'UserDefined') {
+        $dupcheck->LoadUserDefinedGroup($value);
+    }
+    else {
+        $dupcheck->LoadByCols(Domain => $domain, Name => $value);
+    }
+    if ( $dupcheck->id && ( !$self->id || $self->id != $dupcheck->id ) ) {
+        return ( 0, $self->loc( "Group name '[_1]' is already in use", $value ) );
+    }
+    return 1;
+}
+
 =head2 _ValidateUserDefinedName VALUE
 
 Returns true if the user defined group name isn't in use, false otherwise.
@@ -407,14 +439,7 @@ Returns true if the user defined group name isn't in use, false otherwise.
 sub _ValidateUserDefinedName {
     my ($self, $value) = @_;
 
-    return (0, 'Name is required') unless length $value;
-
-    my $dupcheck = RT::Group->new(RT->SystemUser);
-    $dupcheck->LoadUserDefinedGroup($value);
-    if ( $dupcheck->id && ( !$self->id || $self->id != $dupcheck->id ) ) {
-        return ( 0, $self->loc( "Group name '[_1]' is already in use", $value ) );
-    }
-    return 1;
+    return $self->_ValidateNameForDomain($value, 'UserDefined');
 }
 
 =head2 _CreateACLEquivalenceGroup { Principal }
@@ -738,6 +763,12 @@ sub DeepMembersObj {
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
     $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+    if ( ( $self->Domain // '' ) eq 'RT::Ticket-Role' ) {
+        my $groups = $self->GroupMembersObj( Recursively => 0 );
+        while ( my $group = $groups->Next ) {
+            $members_obj->LimitToMembersOfGroup( $group->PrincipalId );
+        }
+    }
 
     return ( $members_obj );
 
@@ -790,9 +821,16 @@ sub GroupMembersObj {
         ALIAS2 => $groups->PrincipalsAlias, FIELD2 => 'id',
     );
     $groups->Limit(
-        ALIAS    => $members_alias,
-        FIELD    => 'GroupId',
-        VALUE    => $self->PrincipalId,
+        ALIAS => $members_alias,
+        FIELD => 'GroupId',
+        $args{Recursively} && ( $self->Domain // '' ) eq 'RT::Ticket-Role'
+        ? ( OPERATOR => 'IN',
+            VALUE    => [
+                $self->PrincipalId,
+                map { $_->PrincipalId } @{ $self->GroupMembersObj( Recursively => 0 )->ItemsArrayRef }
+            ]
+          )
+        : ( VALUE => $self->PrincipalId, )
     );
     $groups->Limit(
         ALIAS => $members_alias,
@@ -832,7 +870,14 @@ sub UserMembersObj {
     $users->Limit(
         ALIAS => $members_alias,
         FIELD => 'GroupId',
-        VALUE => $self->PrincipalId,
+        $args{Recursively} && ( $self->Domain // '' ) eq 'RT::Ticket-Role'
+        ? ( OPERATOR => 'IN',
+            VALUE    => [
+                $self->PrincipalId,
+                map { $_->PrincipalId } @{ $self->GroupMembersObj( Recursively => 0 )->ItemsArrayRef }
+            ]
+          )
+        : ( VALUE => $self->PrincipalId, )
     );
     $users->Limit(
         ALIAS => $members_alias,
@@ -1109,9 +1154,14 @@ sub HasMemberRecursively {
     if ( my $member_id = $member_obj->id ) {
         return $member_id;
     }
-    else {
-        return (undef);
+    elsif ( ( $self->Domain // '' ) eq 'RT::Ticket-Role' ) {
+        my $groups = $self->GroupMembersObj( Recursively => 0 );
+        while ( my $group = $groups->Next ) {
+            my $ret = $group->HasMemberRecursively($principal);
+            return $ret if $ret;
+        }
     }
+    return (undef);
 }
 
 
@@ -1564,7 +1614,19 @@ sub __DependsOn {
     push( @$list, $objs );
 
 # Cached group members records
-    push( @$list, $self->DeepMembersObj );
+
+    if ( ( $self->Domain // '' ) eq 'RT::Ticket-Role' ) {
+
+        # For ticket role groups, do not delete subgroups' member
+        # relationships, as they are irrelevant here.
+
+        my $members_obj = RT::CachedGroupMembers->new( $self->CurrentUser );
+        $members_obj->LimitToMembersOfGroup( $self->PrincipalId );
+        push( @$list, $members_obj );
+    }
+    else {
+        push( @$list, $self->DeepMembersObj );
+    }
 
 # Cached group member records group belongs to
     $objs = RT::GroupMembers->new( $self->CurrentUser );

@@ -35,6 +35,10 @@
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff284691', endColorstr='#ff284691', GradientType=0);
 }
 
+.selectize-dropdown-content.selectize-max-height {
+    max-height: 200px;
+}
+
 .selectize-dropdown-content {
   max-height: none;
 }

@@ -15,10 +15,10 @@ diag "single select";
 );
 ok( $id, $msg );
 
-is( $cf->RenderType, 'Select box', 'default render type is Select box' );
-( $ret, $msg ) = $cf->SetRenderType('Dropdown');
-ok( $ret, 'changed to Dropdown' );
-is( $cf->RenderType, 'Dropdown', 'render type is indeed updated' );
+is( $cf->RenderType, 'Dropdown', 'default render type is Dropdown' );
+( $ret, $msg ) = $cf->SetRenderType('Select box');
+ok( $ret, 'changed to Select box' );
+is( $cf->RenderType, 'Select box', 'render type is indeed updated' );
 
 ( $ret, $msg ) = $cf->SetRenderType('List');
 ok( $ret, 'changed to List' );

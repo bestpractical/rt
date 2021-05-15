@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -357,6 +357,7 @@ sub DoAuth {
     return (0, "User already logged in!") if ($session->{'CurrentUser'} && $session->{'CurrentUser'}->Id);
 
     # For each of those services..
+    my ( $matched_field, $matched_username );
     foreach my $service (@auth_services) {
 
         # Get the full configuration for that service as a hashref
@@ -381,6 +382,7 @@ sub DoAuth {
         # safely bypass the password checking later on; primarily because
         # it's VERY unlikely we even have a password to check if an SSO succeeded.
         my $pass_bypass = 0;
+        my $field;
         if(defined($username)) {
             $RT::Logger->debug("Pass not going to be checked, attempting SSO");
             $pass_bypass = 1;
@@ -403,7 +405,9 @@ sub DoAuth {
             # Don't continue unless the $username exists in the external service
 
             $RT::Logger->debug("Calling UserExists with \$username ($username) and \$service ($service)");
-            next unless RT::Authen::ExternalAuth::UserExists($username, $service);
+            $field = RT::Authen::ExternalAuth::UserExists( $username, $service ) or next;
+            # 1 means no field info, which will fall back to Name
+            undef $field if $field && $field eq '1';
         }
 
         ####################################################################
@@ -415,18 +419,16 @@ sub DoAuth {
 
         # Does user already exist internally to RT?
         $session->{'CurrentUser'} = RT::CurrentUser->new();
-        $session->{'CurrentUser'}->Load($username);
+        $session->{CurrentUser}->LoadByCols( $field || 'Name', $username );
 
         # Unless we have loaded a valid user with a UserID create one.
         unless ($session->{'CurrentUser'}->Id) {
             my $UserObj = RT::User->new($RT::SystemUser);
             my $create = RT->Config->Get('UserAutocreateDefaultsOnLogin')
                 || RT->Config->Get('AutoCreate');
-            my ($val, $msg) =
-                $UserObj->Create(%{ref($create) ? $create : {}},
-                                 Name   => $username,
-                                 Gecos  => $username,
-                             );
+
+            my ( $val, $msg ) = $UserObj->Create( %{ ref($create) ? $create : {} },
+                $field ? ( $field => $username ) : ( 'Name' => $username, Gecos => $username, ) );
             unless ($val) {
                 $RT::Logger->error( "Couldn't create user $username: $msg" );
                 next;
@@ -440,7 +442,7 @@ sub DoAuth {
             $RT::Logger->debug("Loading new user (",
                                                 $username,
                                                 ") into current session");
-            $session->{'CurrentUser'}->Load($username);
+            $session->{'CurrentUser'}->Load($UserObj->Id);
         }
 
         ####################################################################
@@ -462,7 +464,11 @@ sub DoAuth {
 
         # If the password check succeeded then this is our authoritative service
         # and we proceed to user information update and login.
-        last if $success;
+        if ( $success ) {
+            $matched_field = $field if $field;
+            $matched_username = $username;
+            last;
+        }
     }
 
     # If we got here and don't have a user loaded we must have failed to
@@ -502,7 +508,7 @@ sub DoAuth {
         if ( @{ RT->Config->Get('ExternalInfoPriority') } ) {
             # Note that UpdateUserInfo does not care how we authenticated the user
             # It will look up user info from whatever is specified in $RT::ExternalInfoPriority
-            ($info_updated,$info_updated_msg) = RT::Authen::ExternalAuth::UpdateUserInfo($session->{'CurrentUser'}->Name);
+            ($info_updated,$info_updated_msg) = RT::Authen::ExternalAuth::UpdateUserInfo($matched_username, $matched_field || 'Name');
         }
 
         # Now that we definitely have up-to-date user information,
@@ -540,7 +546,8 @@ sub DoAuth {
 }
 
 sub UpdateUserInfo {
-    my $username        = shift;
+    my $username = shift;
+    my $field    = shift || 'Name';
 
     # Prepare for the worst...
     my $found           = 0;
@@ -550,7 +557,7 @@ sub UpdateUserInfo {
     my $user_disabled   = RT::Authen::ExternalAuth::UserDisabled($username);
 
     my $UserObj = RT::User->new(RT->SystemUser);
-    $UserObj->Load($username);
+    $UserObj->LoadByCols($field => $username);
 
     # If user is disabled, set the RT::Principal to disabled and return out of the function.
     # I think it's a waste of time and energy to update a user's information if they are disabled
@@ -592,7 +599,7 @@ sub UpdateUserInfo {
     # Update their info from external service using the username as the lookup key
     # CanonicalizeUserInfo will work out for itself which service to use
     # Passing it a service instead could break other RT code
-    my %args = (Name => $username);
+    my %args = ($field => $username);
     $UserObj->CanonicalizeUserInfo(\%args);
 
     # For each piece of information returned by CanonicalizeUserInfo,

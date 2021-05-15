@@ -15,6 +15,28 @@ may be all you need.  The administration pages under Admin → Users
 provide new user creation as well as password setting and control of RT's
 privileged flag for existing users.
 
+=head1 Token Authentication
+
+Authentication tokens are typically used for accessing RT's REST APIs,
+often L<RT::REST2>. To set up token access, first select an RT user
+account you will use when accessing APIs and give that user account
+appropriate rights to operate on tickets based on what you plan to do
+(read ticket information, create tickets, update tickets, etc.).
+
+You can then give that user the right ManageAuthTokens which will
+add a new option in the menu Logged in as > Settings > AuthTokens.
+
+When setting up token authentication, add the following directive to
+your RT Apache configuration to allow RT to access the Authorization header.
+
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+Since tokens grant access on behalf of a user, RT prompts for a password
+when a user is creating a token. However, if you have a mix of RT and
+federated authentication, RT can't authenticate users via the federated
+password system. For this case, you can explicitly disable the password
+check with the C<$DisablePasswordForAuthToken> configuration option.
+
 =head1 External Authentication
 
 There are two primary types of external authentication: in one you type your
@@ -45,6 +67,13 @@ L<RT::LDAPImport>.  It uses an external LDAP source, such an
 OpenLDAP or Active Directory server, as the authoritative repository and keeps
 RT up to date accordingly.  This can be used in tandem with any of the external
 authentication options as it does not provide any authentication itself.
+
+Note that if you start with L<Internal Authentication> and then switch to
+L<External Authentication>, your original users will still have passwords in
+the RT database. RT ignores these passwords when handling logins, but in some
+cases RT may show a password box that would normally be hidden for external
+authentication because it detects an existing password. To avoid this, you can
+clear passwords in the Users table when you switch to external authentication.
 
 =head2 Via your web server, aka C<$WebRemoteUserAuth>, aka C<REMOTE_USER>
 
@@ -82,19 +111,8 @@ An example of using LDAP authentication and HTTP Basic auth:
             "ldap://ldap.example.com/dc=example,dc=com"
     </Location>
     <Location /REST/1.0/NoAuth/mail-gateway>
-        # For Apache 2.4
-        <IfVersion >= 2.4>
-            Require local
-        </IfVersion>
-        # For Apache 2.2
-        <IfVersion < 2.4>
-            Order deny,allow
-            Deny from all
-            Allow from localhost
-            Satisfy any
-        </IfVersion>
+        Require local
     </Location>
-
 
 =head3 RT Configuration Options
 

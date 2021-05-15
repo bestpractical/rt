@@ -133,6 +133,19 @@
       ApplicableTransTypes => 'Create',
       ExecModule           => 'AnyTransaction', },
 
+    {
+        Name                 => 'On Create Via Email',
+        Description          => 'When a ticket is created via Email',
+        ApplicableTransTypes => 'Create',
+        Argument             => 'Email',
+        ExecModule           => 'ViaInterface', },
+    {
+        Name                 => 'On Create Via Web',
+        Description          => 'When a ticket is created via Web',
+        ApplicableTransTypes => 'Create',
+        Argument             => 'Web,Mobile',
+        ExecModule           => 'ViaInterface', },
+
     { Name                 => 'On Transaction',                           # loc
       Description          => 'When anything happens',                    # loc
       ApplicableTransTypes => 'Any',
@@ -840,6 +853,14 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
       GroupType => 'privileged',
       Right  => 'ShowApprovalsTab', },
 
+    {   GroupDomain => 'SystemInternal',
+        GroupType   => 'Privileged',
+        Right       => 'ShowSearchAdvanced',
+    },
+    {   GroupDomain => 'SystemInternal',
+        GroupType   => 'Privileged',
+        Right       => 'ShowSearchBulkUpdate',
+    },
 );
 
 # Predefined searches
@@ -922,6 +943,27 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
                 },
               ],
         },
+    },
+# initial reports
+    { Name => 'ReportsInMenu',
+      Description => 'Content of the Reports menu', #loc
+      Content     => [
+          {
+              id          => 'resolvedbyowner',
+              title       => 'Resolved by owner', # loc
+              path        => '/Reports/ResolvedByOwner.html',
+          },
+          {
+              id          => 'resolvedindaterange',
+              title       => 'Resolved in date range', # loc
+              path        => '/Reports/ResolvedByDates.html',
+          },
+          {
+              id          => 'createdindaterange',
+              title       => 'Created in a date range', # loc
+              path        => '/Reports/CreatedByDates.html',
+          },
+      ],
     },
 );
 

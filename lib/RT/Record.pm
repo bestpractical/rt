@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -942,13 +942,16 @@ sub Update {
         # items. If it fails, we don't care
         do {
             no warnings "uninitialized";
-            local $@;
-            my $name = eval {
-                my $object = $attribute . "Obj";
-                $self->$object->Name;
-            };
-            unless ($@) {
-                next if $name eq $value || $name eq ($value || 0);
+
+            if ( $attribute ne 'Lifecycle' ) {
+                local $@;
+                my $name = eval {
+                    my $object = $attribute . "Obj";
+                    $self->$object->Name;
+                };
+                unless ($@) {
+                    next if $name eq $value || $name eq ( $value || 0 );
+                }
             }
 
             next if $truncated_value eq $self->$attribute();
@@ -1729,13 +1732,24 @@ sub Transactions {
 Returns the result of L</Transactions> ordered per the
 I<OldestTransactionsFirst> preference/option.
 
+Pass an optional value 'ASC' or 'DESC' to force a specific
+order.
+
 =cut
 
 sub SortedTransactions {
     my $self  = shift;
+    my $order = shift || 0;
     my $txns  = $self->Transactions;
-    my $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
-        ? 'ASC' : 'DESC';
+
+    if ( $order && ( $order eq 'ASC' || $order eq 'DESC' ) ) {
+        # Use provided value
+    }
+    else {
+        $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
+            ? 'ASC' : 'DESC';
+    }
+
     $txns->OrderByCols(
         { FIELD => 'Created',   ORDER => $order },
         { FIELD => 'id',        ORDER => $order },
@@ -2112,19 +2126,23 @@ Add default values to object's empty custom fields.
 
 sub AddCustomFieldDefaultValues {
     my $self = shift;
-    my $cfs  = $self->CustomFields;
+
+    my $object = ( ref $self )->new( RT->SystemUser );
+    $object->Load( $self->id );
+
+    my $cfs  = $object->CustomFields;
     my @msgs;
     while ( my $cf = $cfs->Next ) {
-        next if $self->CustomFieldValues($cf->id)->Count || !$cf->SupportDefaultValues;
+        next if $object->CustomFieldValues($cf->id)->Count || !$cf->SupportDefaultValues;
         my ( $on ) = grep { $_->isa( $cf->RecordClassFromLookupType ) } $cf->ACLEquivalenceObjects;
         my $values = $cf->DefaultValues( Object => $on || RT->System );
         foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
-            next if $self->CustomFieldValueIsEmpty(
+            next if $object->CustomFieldValueIsEmpty(
                 Field => $cf,
                 Value => $value,
             );
 
-            my ( $status, $msg ) = $self->_AddCustomFieldValue(
+            my ( $status, $msg ) = $object->_AddCustomFieldValue(
                 Field             => $cf->id,
                 Value             => $value,
                 RecordTransaction => 0,
@@ -2162,7 +2180,7 @@ sub CustomFieldValueIsEmpty {
            : $self->LoadCustomFieldByIdentifier( $args{'Field'} );
 
     if ($cf) {
-        if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
+        if ( $cf->__Value('Type') =~ /^Date(?:Time)?$/ ) {
             my $DateObj = RT::Date->new( $self->CurrentUser );
             $DateObj->Set(
                 Format => 'unknown',
@@ -2573,7 +2591,9 @@ sub CustomDateRange {
         # Prefer the schedule/timezone specified in %ServiceAgreements for current object
         if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
             if ( my $config = RT->Config->Get('ServiceAgreements') ) {
-                $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+                if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
+                    $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+                }
 
                 # Each SLA could have its own schedule and timezone
                 if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
@@ -2637,18 +2657,45 @@ Return all of the custom date ranges of current class.
 
 sub CustomDateRanges {
     my $self = shift;
-    my $type = ref $self || $self;
+    my %args = (
+        Type          => undef,
+        ExcludeSystem => undef,
+        ExcludeUsers  => undef,
+        ExcludeUser   => undef,
+        @_,
+    );
 
+    my $type = $args{Type} || ref $self || $self,;
     my %ranges;
 
-    if ( my $config = RT->Config->Get('CustomDateRanges') ) {
-        %ranges = %{ $config->{$type} } if $config->{$type};
+    if ( !$args{ExcludeSystem} ) {
+        if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+            for my $name ( keys %{ $config->{$type} || {} } ) {
+                $ranges{$name} ||= $config->{$type}{$name};
+            }
+        }
+
+        if ( my $db_config = RT->Config->Get('CustomDateRangesUI') ) {
+            for my $name ( keys %{ $db_config->{$type} || {} } ) {
+                $ranges{$name} ||= $db_config->{$type}{$name};
+            }
+        }
     }
 
-    if ( my $attribute = RT->System->FirstAttribute('CustomDateRanges') ) {
-        if ( my $content = $attribute->Content ) {
-            for my $name ( keys %{ $content->{$type} || {} } ) {
-                $ranges{$name} ||= $content->{$type}{$name};
+    if ( !$args{ExcludeUsers} ) {
+        my $attributes = RT::Attributes->new( RT->SystemUser );
+        $attributes->Limit( FIELD => 'Name',       VALUE => 'Pref-CustomDateRanges' );
+        $attributes->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+        if ( $args{ExcludeUser} ) {
+            $attributes->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $args{ExcludeUser} );
+        }
+        $attributes->OrderBy( FIELD => 'id' );
+
+        while ( my $attribute = $attributes->Next ) {
+            if ( my $content = $attribute->Content ) {
+                for my $name ( keys %{ $content->{$type} || {} } ) {
+                    $ranges{$name} ||= $content->{$type}{$name};
+                }
             }
         }
     }
@@ -2879,7 +2926,7 @@ sub _AsInsertQuery
 
     my $dbh = $RT::Handle->dbh;
 
-    my $res = "INSERT INTO ". $dbh->quote_identifier( $self->Table );
+    my $res = "INSERT INTO ". $self->Table;
     my $values = $self->{'values'};
     $res .= "(". join( ",", map { $dbh->quote_identifier( $_ ) } sort keys %$values ) .")";
     $res .= " VALUES";

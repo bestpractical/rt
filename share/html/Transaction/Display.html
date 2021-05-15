@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,10 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc('Transaction #[_1]', $id) &>
+<& /Elements/Header, Title => loc('Ticket #[_1] Transaction #[_2]', $txn->TicketObj->id, $id) &>
 <& /Elements/Tabs &>
 
-<& /Elements/ShowHistoryHeader, Object => $txn, %ARGS &>
+<h1 id="transaction-extra-info"><&|/l&>Ticket Subject</&>: <% $txn->TicketObj->Subject %></h1>
+
+<& /Elements/ShowHistoryHeader, Object => $txn, SingleTransaction => 1, %ARGS &>
 
 <& /Elements/ShowTransaction, Transaction => $txn,
     DisplayPath     => RT->Config->Get('WebPath') . '/Ticket/Display.html',

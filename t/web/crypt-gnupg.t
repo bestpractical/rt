@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG
+use RT::Test::Crypt
+  GnuPG         => 1,
   tests         => undef,
   gnupg_options => {
     passphrase    => 'recipient',
@@ -59,7 +60,7 @@ $m->field('Subject', 'Encryption test');
 $m->field('Content', 'Some content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok(!$m->value('Sign', 2), "sign tick box is unchecked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -128,7 +129,7 @@ $m->field('Subject', 'Signing test');
 $m->field('Content', 'Some other content');
 ok(!$m->value('Encrypt', 2), "encrypt tick box is unchecked");
 ok($m->value('Sign', 2), "sign tick box is checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -183,7 +184,29 @@ MAIL
 
     like($attachments[0]->Content, qr/Some other content/, "RT's mail includes copy of ticket text");
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    $m->get("$baseurl/Ticket/History.html?id=$id");
+    $m->content_like(
+        qr/<span title="Fingerprint: EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FC2\nSignature Created: .*\nSigner: general &lt;general\@example.com&gt;\nKey Expires: Never\nPublic Key Algorithm: DSA\nHash Algorithm: SHA-1">/m,
+        "Tooltip was added"
+    );
+    $m->follow_link_ok( { text => '(Download Public Key)' }, 'Download link for public key was added' );
+    $m->text_like(qr/-----BEGIN PGP PUBLIC KEY BLOCK-----/, "Download link returned a public key");
 }
+
+# Try fetching a nonexistent pubic key
+$m->get_ok("$baseurl/Crypt/GetGPGPubkey.html?Fingerprint=EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FCEEEEEEE");
+$m->text_contains('Could not find GnuPG public key with fingerprint EC1E81E7DC3DB42788FB0E4E9FA662C06DE22FCEEEEEEE', "Got correct error message");
+
+# Try fetching with invalid fingerprint
+$m->get_ok("$baseurl/Crypt/GetGPGPubkey.html?Fingerprint=wookie%3B%3C%3Erm%20/etc/passwd");
+$m->content_contains('Could not find GnuPG public key with fingerprint wookie;&lt;&gt;rm /etc/passwd', "Got correct error message (dangerous characters HTML-escaped)");
+
+# Try fetching with no fingerprint
+$m->get_ok("$baseurl/Crypt/GetGPGPubkey.html?Irrelevant=3");
+$m->text_contains(
+    'Fingerprint must be supplied to download a public key',
+    "Got correct error message when no fingerprint supplied"
+);
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
 $m->form_with_fields('Sign', 'Encrypt');
@@ -201,7 +224,7 @@ $m->field('Subject', 'Crypt+Sign test');
 $m->field('Content', 'Some final? content');
 ok($m->value('Encrypt', 2), "encrypt tick box is checked");
 ok($m->value('Sign', 2), "sign tick box is checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -267,7 +290,7 @@ $m->field('Content', 'Thought you had me figured out didya');
 $m->field(Encrypt => undef, 2); # turn off encryption
 ok(!$m->value('Encrypt', 2), "encrypt tick box is now unchecked");
 ok($m->value('Sign', 2), "sign tick box is still checked");
-$m->submit;
+$m->click('SubmitTicket');
 is($m->status, 200, "request successful");
 
 $m->get($baseurl); # ensure that the mail has been processed
@@ -355,7 +378,7 @@ warning_like {
     $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
                   Owner => $nokey);
 } [
-    qr/nokey\@example.com: skipped: public key not found/,
+    qr/nokey\@example.com: skipped: public key not found|error retrieving 'nokey\@example.com' via WKD: No data/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
@@ -377,7 +400,7 @@ my $status;
 warning_like {
     ($status, $id) = RT::Test->send_via_mailgate($mail);
 } [
-    qr/nokey\@example.com: skipped: public key not found/,
+    qr/nokey\@example.com: skipped: public key not found|error retrieving 'nokey\@example.com' via WKD: No data/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 
@@ -401,7 +424,7 @@ ok($user = RT::User->new(RT->SystemUser));
 ok($user->Load('root'), "Loaded user 'root'");
 is($user->PreferredKey, $key1, "preferred key is set correctly");
 $m->get("$baseurl/Prefs/Other.html");
-like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
+like($m->content, qr/Preferred GnuPG key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
 like($m->content, qr/$key1/, "first key shows up in preferences");
@@ -417,7 +440,7 @@ ok($user->Load('root'), "Loaded user 'root'");
 is($user->PreferredKey, $key2, "preferred key is set correctly to the new value");
 
 $m->get("$baseurl/Prefs/Other.html");
-like($m->content, qr/Preferred key/, "preferred key option shows up in preference");
+like($m->content, qr/Preferred GnuPG key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
 like($m->content, qr/$key2/, "second key shows up in preferences");
@@ -458,8 +481,8 @@ like($content, qr/KR-<recipient\@example\.com>-K/,
 like($content, qr/KR-nokey \(no pubkey!\)-K/,
      "KeyRequestors DOES issue no-pubkey warning for nokey\@example.com");
 
-$m->next_warning_like(qr/public key not found/);
-$m->next_warning_like(qr/public key not found/);
+$m->next_warning_like(qr/public key not found|No public key/);
+$m->next_warning_like(qr/public key not found|No public key/);
 $m->no_leftover_warnings_ok;
 
 done_testing;

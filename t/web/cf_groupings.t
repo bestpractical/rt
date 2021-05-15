@@ -52,7 +52,7 @@ my %location = (
         ok $dom->at(qq{$location{$grouping} input[name="$input_name"]}), "CF is in the right place";
         $m->field( $input_name, "Test" . $grouping . "Value" );
     }
-    $m->submit;
+    $m->click('SubmitTicket');
 }
 
 my $id = $m->get_ticket_id;
@@ -168,7 +168,7 @@ my $id = $m->get_ticket_id;
         ok $dom->at(qq{$location{$grouping} input[name="$input_name"]}), "CF is in the right place";
         $m->field( $input_name, "TestMoreValue" );
     }
-    $m->submit;
+    $m->click('SubmitTicket');
     $m->no_warnings_ok( "Submitting CF with two (identical) values had no warnings" );
 }
 

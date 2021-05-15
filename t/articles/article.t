@@ -27,7 +27,7 @@ ok (UNIVERSAL::isa($article, 'RT::Record'));
 ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record') , "It's a searchbuilder record!");
 
 
-($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS);
+($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS, Name => 'test 1');
 ok ($id, $msg);
 $article->Load($id);
 is ($article->Summary, $CLASS, "The summary is set correct");
@@ -86,11 +86,11 @@ ok ($a2->Disabled, "the article is disabled");
 #$RT::Handle->SimpleQuery("DELETE FROM Links");
 
 my $article_a = RT::Article->new($RT::SystemUser);
-($id, $msg) = $article_a->Create( Class => $CLASS, Summary => "ArticleTestlink1".$$);
+($id, $msg) = $article_a->Create( Class => $CLASS, Summary => "ArticleTestlink1".$$, Name => 'test 2');
 ok($id,$msg);
 
 my $article_b = RT::Article->new($RT::SystemUser);
-($id, $msg) = $article_b->Create( Class => $CLASS, Summary => "ArticleTestlink2".$$);
+($id, $msg) = $article_b->Create( Class => $CLASS, Summary => "ArticleTestlink2".$$, Name => 'test 3');
 ok($id,$msg);
 
 # Create a link between two articles
@@ -195,7 +195,7 @@ ok ($id, $msg);
 
 
 my $art = RT::Article->new($RT::SystemUser);
-($id, $msg) = $art->Create (Class => $CLASS);
+($id, $msg) = $art->Create (Class => $CLASS, Name => 'test 4');
 ok ($id,$msg);
 
 ok($art->URI);
@@ -205,7 +205,7 @@ ok($art->__Value('URI') eq $art->URI, "The uri in the db is set correctly");
 
 
  $art = RT::Article->new($RT::SystemUser);
-($id, $msg) = $art->Create (Class => $CLASS);
+($id, $msg) = $art->Create (Class => $CLASS, Name => 'test 5');
 ok ($id,$msg);
 
 ok($art->URIObj);

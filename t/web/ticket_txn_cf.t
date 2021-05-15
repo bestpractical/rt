@@ -62,6 +62,7 @@ diag 'submit value on ticket create page';
             Content                                            => 'test',
             "Object-RT::Transaction--CustomField-$cfid-Values" => 'hello from create',
         },
+        button => 'SubmitTicket'
     );
     ok( ($id) = $m->content =~ /Ticket (\d+) created/, "created ticket $id" );
 

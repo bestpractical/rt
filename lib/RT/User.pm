@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -1314,9 +1314,9 @@ sub CurrentUserRequireToSetPassword {
         RequireCurrent => 1,
     );
 
-    if ( RT->Config->Get('WebRemoteUserAuth')
-        && !RT->Config->Get('WebFallbackToRTLogin')
-    ) {
+    if (   ( RT->Config->Get('WebRemoteUserAuth') && !RT->Config->Get('WebFallbackToRTLogin') )
+        || ( RT->Config->Get('ExternalAuth') && !$self->CurrentUser->HasPassword ) )
+    {
         $res{'CanSet'} = 0;
         $res{'Reason'} = $self->loc("External authentication enabled.");
     } elsif ( !$self->CurrentUser->HasPassword ) {
@@ -2060,7 +2060,7 @@ sub PreferredKey
     return $prefkey->Content if $prefkey;
 
     # we don't have a preferred key for this user, so now we must query GPG
-    my %res = RT::Crypt->GetKeysForEncryption($self->EmailAddress);
+    my %res = RT::Crypt->GetKeysForEncryption(Recipient => $self->EmailAddress, Protocol => 'GnuPG');
     return undef unless defined $res{'info'};
     my @keys = @{ $res{'info'} };
     return undef if @keys == 0;
@@ -2091,7 +2091,26 @@ sub PrivateKey {
     }
 
     my $key = $self->FirstAttribute('PrivateKey') or return undef;
-    return $key->Content;
+    my $content = $key->Content;
+
+    # RT used to identify keys using the key ID, but now identifies them
+    # using the key fingerprint, which is 160 bits long and avoids a
+    # collision attack against keys with short IDs.
+    if ( length $content < 40 ) {
+        # not fingerprint, try to update it
+        my %tmp = RT::Crypt->GetKeysForSigning( Signer => $content, Protocol => 'GnuPG' );
+        if ( !$tmp{exit_code} && $tmp{info} && $tmp{info}[0] ) {
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load( $self->Id );
+            $user->SetPrivateKey( $tmp{info}[0]{Fingerprint} );
+            return $tmp{info}[0]{Fingerprint};
+        }
+        else {
+            RT->Logger->warning("Couldn't find private key for $content");
+        }
+    }
+
+    return $content;
 }
 
 sub SetPrivateKey {
@@ -2117,6 +2136,8 @@ sub SetPrivateKey {
         my %tmp = RT::Crypt->GetKeysForSigning( Signer => $key, Protocol => 'GnuPG' );
         return (0, $self->loc("No such key or it's not suitable for signing"))
             if $tmp{'exit_code'} || !$tmp{'info'};
+        # In case $key is key id instead of fingerprint
+        $key = $tmp{'info'}[0]{Fingerprint};
     }
 
     my ($status, $msg) = $self->SetAttribute(
@@ -2227,15 +2248,51 @@ sub ToggleBookmark {
 
 =head2 RecentlyViewedTickets TICKET
 
-Returns a list of two-element (ticket id, timestamp) array references ordered by recently viewed first.
+Returns a list of hashrefs { id => <ticket_id>, subject => <ticket_subject> } )
+ordered by recently viewed first.
+
+If a ticket cannot be loaded (eg because it has been shredded) or is duplicated
+(eg because 2 tickets on the list have been merged), it is not returned and the
+user's RecentlyViewedTickets list is updated
 
 =cut
 
 sub RecentlyViewedTickets {
     my $self = shift;
-    my $content = $self->FirstAttribute('RecentlyViewedTickets');
-    return $content ? @{$content->Content} : ();
+    my $recentlyViewedTickets = $self->FirstAttribute( 'RecentlyViewedTickets' );
+    my $content    = $recentlyViewedTickets ? $recentlyViewedTickets->Content : undef;
+    my @storedList = $content ? @$content : ();  # [ [ <id>, <timestamp>], ...]
+    my @toDisplay  = ();                         # [ { id => <id>, title => <title> }, ... ]
+    if ( @storedList ) {
+        my @currentList;       # same as @storedList, without deleted tickets
+        my $updateStoredList;  # set to 1 if a ticket does not load
+        my %seen;              # used to check that we don't have duplicates (in case of merges)
+
+        foreach my $ticketRef ( @storedList ) {
+            my ($ticketId, $timestamp) = @$ticketRef;
+            my $ticket = RT::Ticket->new( $self->CurrentUser );
+            $ticket->Load( $ticketId );
+            my $realId= $ticket->Id; # can be undef or changed in case of merge
+            if ( $ticket->Id && ! $seen{$realId} ) {
+                push @toDisplay, { id => $ticket->Id, subject => $ticket->Subject };
+                push @currentList, [ $ticketId, $timestamp ];
+                $seen{$realId}++;
+            } else {
+                # non existent ticket, do not add to @currentList, list needs to be updated
+                $updateStoredList = 1;
+            }
+        }
+
+        if ( $updateStoredList ) {
+            $self->SetAttribute(
+                Name    => 'RecentlyViewedTickets',
+                Content => \@currentList,
+            );
+        }
+    }
+    return @toDisplay;
 }
+
 
 =head2 AddRecentlyViewedTicket TICKET
 
@@ -2260,18 +2317,15 @@ sub AddRecentlyViewedTicket {
     }
 
     my @tickets;
-    my $i = 0;
     for (@recentTickets) {
         my ($ticketId, $timestamp) = @$_;
         
         #Skip the ticket if it exists in recents already
         if ($ticketId != $ticket->Id) {
             push @tickets, $_;
-            if ($i >= $maxCount - 1) {
-                last;
-            }
+            # -1 is for the new ticket that will be added
+            last if @tickets >= $maxCount - 1;
         }
-        $i++;
     }
 
     #Add the new ticket

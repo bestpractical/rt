@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -96,6 +96,8 @@
 
 <& /Elements/Framekiller &>
 
+% $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
+
 </head>
   <body class="<% join( ' ',@{$ARGS{'BodyClass'}}, RT->Config->Get('WebDefaultStylesheet', $session{CurrentUser}) =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
     <div class="main-container">
@@ -145,6 +147,7 @@ else {
       RT::Interface::Web::SquishedCSS( $style )->Key;
     @css_files = "/NoAuth/css/$style/squished-$key.css";
 }
+$m->callback( CallbackName => "MassageCSSFiles", CSSFiles => \@css_files, ARGSRef => \%ARGS );
 
 # We use BodyClass in its $ARGS form so that callbacks have a chance to
 # massage it

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -110,9 +110,9 @@ $m->callback(
     CallbackName => "Init",
     ARGSRef      => \%ARGS,
     Object       => $Object,
-    $Type        => $Type,
-    $Recurse     => \$Recurse,
-    $MaxDepth    => \$MaxDepth,
+    Type         => $Type,
+    Recurse      => \$Recurse,
+    MaxDepth     => \$MaxDepth,
     active       => \@active,
     inactive     => \@inactive,
     not_tickets  => \@not_tickets,

@@ -12,7 +12,7 @@ If you are upgrading, you will likely want to specify that your database is
 still named rt3 (or import a backup of your database as rt5 so that you can
 feel more confident making the upgrade).
 
-You really shouldn't install RT5 into your RT3 source tree (/opt/rt3) and
+You really shouldn't install RT 5 into your RT 3 source tree (/opt/rt3) and
 instead should be using make install to set up a clean environment.  This will
 allow you to evaluate your local modifications and configuration changes as
 you migrate to 4.0 or 5.0.
@@ -62,17 +62,18 @@ the new schema.
 
 =head2 Upgrading from installs with RTFM
 
-RT5 now includes an Articles functionality, merged from RTFM.  You should not
-install and enable the RT::FM plugin separately on RT 4.  If you have existing
-data in RTFM, you can use the /opt/rt5/etc/upgrade/upgrade-articles script to upgrade
+Starting with version 4, RT includes Articles functionality, merged from RTFM.
+You should not install and enable the RT::FM plugin separately on RT 4.
+If you have existing data in RTFM, you can use the
+C</opt/rt5/etc/upgrade/upgrade-articles> script to upgrade
 that data.
 
 When running normal upgrade scripts, RT will warn if it finds existing RTFM
 tables that contain data and point you to the upgrade-articles script.
 
 This script should be run from your RT tarball.  It will immediately begin
-populating your new RT5 tables with data from RTFM.  If you have browsed in
-the RT5 UI and created new classes and articles, this script will fail
+populating your new RT 5 tables with data from RTFM.  If you have browsed in
+the RT 5 UI and created new classes and articles, this script will fail
 spectacularly.  Do *not* run this except on a fresh upgrade of RT.
 
 You can run this as

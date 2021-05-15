@@ -28,7 +28,7 @@ $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
 ok $m->login(customer => 'customer'), "logged in";
 
 
-$m->follow_link_ok( {id => 'home-dashboard_create'});
+$m->follow_link_ok( {id => 'reports-dashboard_create'});
 $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");

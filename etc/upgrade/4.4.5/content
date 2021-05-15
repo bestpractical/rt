@@ -1,0 +1,34 @@
+use warnings;
+use strict;
+
+our @ScripConditions = (
+    {
+        Name                 => 'On Create Via Email',
+        Description          => 'When a ticket is created via Email',
+        ApplicableTransTypes => 'Create',
+        Argument             => 'Email',
+        ExecModule           => 'ViaInterface',
+    },
+    {
+        Name                 => 'On Create Via Web',
+        Description          => 'When a ticket is created via Web',
+        ApplicableTransTypes => 'Create',
+        Argument             => 'Web,Mobile',
+        ExecModule           => 'ViaInterface',
+    },
+);
+
+our @Final = (
+    sub {
+        my $role_groups = RT::Groups->new( RT->SystemUser );
+        $role_groups->{'find_disabled_rows'} = 1;
+        $role_groups->Limit( FIELD => 'Name',   VALUE => 'RT::CustomRole-', OPERATOR => 'LIKE', CASESENSITIVE => 0 );
+        $role_groups->Limit( FIELD => 'Domain', VALUE => '-Role',           OPERATOR => 'LIKE', CASESENSITIVE => 0 );
+        $role_groups->LimitToDeleted;
+
+        while ( my $role_group = $role_groups->Next ) {
+            my ( $ret, $msg ) = $role_group->SetDisabled( 0 );
+            RT->Logger->error( "Couldn't enable role group #" . $role_group->id . ": $msg" ) unless $ret;
+        }
+    },
+);

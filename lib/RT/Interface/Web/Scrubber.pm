@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -45,6 +45,7 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+
 package RT::Interface::Web::Scrubber;
 use strict;
 use warnings;
@@ -94,7 +95,7 @@ Passed to L<HTML::Scrubber/rules>.
 
 our @ALLOWED_TAGS = qw(
     A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP S DEL STRIKE H1 H2 H3 H4 H5
-    H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO TABLE THEAD TBODY TFOOT TR TD TH
+    H6 INS DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO TABLE THEAD TBODY TFOOT TR TD TH
 );
 
 our %ALLOWED_ATTRIBUTES = (

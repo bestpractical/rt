@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -96,6 +96,7 @@ sub Create {
     my %args = (
         Name         => '',
         Summary      => '',
+        SortOrder    => 0,
         Class        => '0',
         CustomFields => {},
         Links        => {},
@@ -114,6 +115,8 @@ sub Create {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    return ( undef, $self->loc('Name is required') ) unless $args{Name};
+
     return ( undef, $self->loc('Name in use') )
       unless $self->ValidateName( $args{'Name'} );
 
@@ -122,6 +125,7 @@ sub Create {
         Name    => $args{'Name'},
         Class   => $class->Id,
         Summary => $args{'Summary'},
+        SortOrder => $args{'SortOrder'},
         Disabled => $args{'Disabled'},
     );
     unless ($id) {
@@ -231,7 +235,7 @@ sub Create {
 
 Takes a string name. Returns true if that name isn't in use by another article
 
-Empty names are permitted.
+Empty names are not permitted.
 
 
 =cut
@@ -241,7 +245,7 @@ sub ValidateName {
     my $name = shift;
 
     if ( !$name ) {
-        return (1);
+        return (0);
     }
 
     my $temp = RT::Article->new($RT::SystemUser);
@@ -777,7 +781,7 @@ sub _CoreAccessible {
         Summary => 
                 {read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
-                {read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0', is_numeric => 1},
         Class => 
                 {read => 1, write => 1, type => 'int(11)', default => '0'},
         Parent => 

@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -315,20 +315,17 @@ sub _DetectAttachedEmailFiles {
         # Fixup message
         # TODO: Investigate proposing an option upstream in MIME::Parser to avoid the initial parse
         if ( $entity->parts(0) ){
-            my $bodyhandle = $entity->parts(0)->bodyhandle;
-
             # Get the headers from the part and write them back to the body.
             # This will create a file attachment that looks like the file you get if
             # you "Save As" and email message in your email client.
             # If we don't save them here, the headers from the attached email will be lost.
 
-            my $headers = $entity->parts(0)->head->as_string;
-            my $body = $bodyhandle->as_string;
+            ( undef, my $filename ) = File::Temp::tempfile( UNLINK => 1 );
+            my $bodyhandle = MIME::Body::File->new($filename);
 
             my $IO = $bodyhandle->open("w")
                 || RT::Logger->error("Unable to open email body: $!");
-            $IO->print($headers . "\n");
-            $IO->print($body);
+            $IO->print( $entity->parts(0)->as_string );
             $IO->close
                 || RT::Logger->error("Unable to close email body: $!");
 
@@ -560,6 +557,43 @@ use Email::Address::List;
 
 sub ParseEmailAddress {
     my $self = shift;
+
+    my @list = $self->_ParseEmailAddress( @_ );
+
+    my @addresses;
+    foreach my $e ( @list ) {
+        if ( $e->{'type'} eq 'mailbox' ) {
+            push @addresses, $e->{'value'};
+        }
+        elsif ( $e->{'value'} =~ /^(group:)?(.+)$/ ) {
+            my ( $is_group, $name ) = ( $1, $2 );
+            if ( $is_group ) {
+                RT->Logger->warning( $e->{'value'} . " is a group, skipping" );
+                next;
+            }
+
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load( $name );
+            if ( $user->id ) {
+                push @addresses, Email::Address->new( $user->Name, $user->EmailAddress );
+            }
+            else {
+                RT->Logger->error( $e->{'value'} . " is not a valid email address and is not user name" );
+            }
+        }
+        else {
+            # should never reach here.
+        }
+    }
+
+    $self->CleanupAddresses( @addresses );
+
+    return @addresses;
+}
+
+# Returns a list of hashes, like what C<Email::Address::List::parse> returns
+sub _ParseEmailAddress {
+    my $self           = shift;
     my $address_string = shift;
 
     # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
@@ -568,36 +602,43 @@ sub ParseEmailAddress {
     my @list = Email::Address::List->parse(
         $address_string,
         skip_comments => 1,
-        skip_groups => 1,
     );
     my $logger = sub { RT->Logger->error(
         "Unable to parse an email address from $address_string: ". shift
     ) };
 
-    my @addresses;
-    foreach my $e ( @list ) {
+    my @entries;
+
+    # If the string begins with group, e.g. "group:foo", then the first 2
+    # items returned from Email::Address::List are:
+    # { 'value' => 'group', 'type' => 'group start' },
+    # { 'value' => 'foo', 'type' => 'unknown' }
+    my $in_group;
+
+    foreach my $e (@list) {
         if ($e->{'type'} eq 'mailbox') {
             if ($e->{'not_ascii'}) {
                 $logger->($e->{'value'} ." contains not ASCII values");
                 next;
             }
-            push @addresses, $e->{'value'}
-        } elsif ( $e->{'value'} =~ /^\s*(\w+)\s*$/ ) {
-            my $user = RT::User->new( RT->SystemUser );
-            $user->Load( $1 );
-            if ($user->id) {
-                push @addresses, Email::Address->new($user->Name, $user->EmailAddress);
-            } else {
-                $logger->($e->{'value'} ." is not a valid email address and is not user name");
-            }
+            push @entries, $e;
+        } elsif ($e->{'type'} eq 'group start') {
+            $in_group = 1;
+            next;
+        } elsif ($e->{'type'} eq 'group end') {
+            undef $in_group;
+            next;
+        } elsif ($e->{'value'} =~ /^\s*(group\s*:)?\s*(\S.*?)\s*$/i) {
+            my ( $is_group, $name ) = ( $1, $2 );
+            $e->{'value'} = $in_group || $is_group ? "group:$name" : $name;
+            push @entries, $e;
         } else {
             $logger->($e->{'value'} ." is not a valid email address");
         }
+        undef $in_group;
     }
 
-    $self->CleanupAddresses(@addresses);
-
-    return @addresses;
+    return @entries;
 }
 
 =head2 CleanupAddresses ARRAY

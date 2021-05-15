@@ -140,31 +140,103 @@ The same pieces of information are now spread across the display next to one
 another, which can be harder to read. So when you tell RT to display a lot of
 columns, it's usually worth adding a well-placed NEWLINE.
 
-=head1 Custom Field Searches
+=head1 Searching for Users on Tickets
 
-Users often add custom fields to tickets to capture additional important information.
-All of these fields can be searched in the Query Builder as well. Global custom fields
-will show up by default when you start a search. To see custom fields that are applied
-to individual queues, first add the queue to your search and you'll then see the
-custom fields appear in the bottom of the Add Criteria section.
+The Query Builder provides ways to search for tickets based on how a
+given user is related to the ticket. This works for all ticket roles,
+so you can find all active tickets where a given user is the Requestor,
+meaning they opened the ticket. You can also search for all tickets
+with a given user as the owner, meaning that's what they are working on.
 
-For example, you might have a custom field named "Transport Type" with values
-like "Car", "Bus" or "Train". You can easily build a search to show just tickets
-with a Transport Type of Train for some time period by selecting those options
-in the custom field entry.
+=head2 Groups on Roles
 
-=head2 Custom Field Searches and Null Values
+Ticket roles, except for Owner, can also accept a group as a value.
+When you search for a user, by default the Query Builder does a
+recursive or "deep" search, meaning it searches the role and it checks
+the membership of any groups it finds in the role as well.
 
-There is a special case if you want to search for tickets with no value, called
-a "Null" value, for a custom field. If you search for all tickets that
-do not have Transport Type set to "Car", this results in a list of tickets
-with Transport Type values of 'Bus', 'Train', and '(no value)'.
+For example, assume you have a group "Helpdesk", the staff1 user is a
+member, and Helpdesk is set as an AdminCc on a ticket. If you perform
+this search:
 
-If what you intended was to show all tickets that have a value and that value
-is not "Car", you can clarify your query to get the correct results. To filter
-out the empty values, add the following to your search query:
+    AdminCc.Name = 'staff1'
 
-    AND CF.{'Transport Type'} IS NOT NULL
+the results will contain that ticket.
+
+=head2 Shallow Searches
+
+In some cases you may want to see tickets only when the user you are
+searching for is a direct member of a role and not if they are in
+any groups. For that case, use the "shallow" options, like "shallow is"
+to generate a search like this:
+
+    AdminCc.Name SHALLOW = 'staff1'
+
+That will show tickets where 'staff1' is directly in the AdminCc role,
+but not the ticket from the previous example where staff1 is in the
+Helpdesk group on the AdminCc role.
+
+=head1 Searching Custom Fields on Tickets
+
+If you use custom fields on your tickets, you might initially load the Query
+Builder and not see them listed. If your custom fields are applied to
+individual queues and not globally, they won't show up as options on a
+new search. However, once you add a queue to your search, as shown above, the
+custom fields applied to the queue or queues in your search will be displayed.
+You can then add custom field values to your search just like other fields.
+
+In addition to exact queue name searches like "Queue = 'RT'", the query builder
+also allows 'LIKE' searches. This can be useful if you have several queues that
+follow some naming pattern, like "IT Support", "Printer Support", and "Email Support".
+To include all of these, you can use "Queue LIKE 'Support'".
+
+Using the Advanced tab, you can also type one other criteria to search for queues
+by their lifecycle. TicketSQL supports "Lifecycle = 'support'" if you type it
+directly into the Advanced search box.
+
+=head2 Basic Custom Field Searches
+
+Once you add a queue to your search using one of the options above, you'll see
+any custom fields applied to those queues at the bottom of the list of values in
+the Add Criteria section. To search for all tickets with a custom field that
+has some value, pick the comparision ("matches", "is", etc.), add a value,
+and click "Add these terms" to build the search.
+
+If you have a custom field named "Transport Type", for example, that has
+the values, "Car", "Bus" or "Train", you can search for all tickets that
+reference cars by picking "is" next to "Transport Type", typing "Car"
+and clicking Add these terms. You should then see a search term like:
+
+    'CF.{Transport Type}' = 'Car'
+
+For custom fields that have a dropdown with values to pick from a list,
+the Query Builder will show the available values as a dropdown and
+you can pick from the options without typing a value.
+
+When searching for custom fields, you can also add them as a column in
+your search results as described above.
+
+=head2 Searching for Empty Custom Fields
+
+Sometimes you want to search for all tickets where a given custom
+field doesn't have a particular value. For example, you might search
+for all tickets where "Transport Type" is not set to "Car" using the
+"isn't" option, and that would create:
+
+    'CF.{Transport Type}' != 'Car'
+
+The search would contain all tickets in that queue with "Transport Type"
+values of "Bus", "Train", and no value.
+
+To remove tickets where Transport Type has no set value, add the
+following to your query:
+
+    AND 'CF.{Transport Type}' IS NOT NULL
+
+Similarly, to see all tickets where "Transport Type" hasn't be set,
+you can search for :
+
+    'CF.{Transport Type}' IS NULL
 
 =head1 Transaction Query Builder
 
@@ -210,9 +282,8 @@ Status "is" and "Active". This will then filter out inactive statuses.
 
 =head1 Learn More
 
-To use the query builder to to build and save reports, see
+To use the query builder to build and save reports, see
 L<Dashboard and Reports|docs/dashboards_reporting.pod>. For definitions of
 RT metadata, see L<Ticket Metadata|docs/ticket_metadata.pod>.
 
 =cut
-

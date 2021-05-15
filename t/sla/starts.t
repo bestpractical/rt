@@ -78,4 +78,39 @@ diag 'check Starts date with StartImmediately enabled' if $ENV{'TEST_VERBOSE'};
     is $starts, $ticket->CreatedObj->Unix, 'Starts is correct';
 }
 
+
+diag 'check changing start time' if $ENV{'TEST_VERBOSE'};
+{
+    RT->Config->Set(ServiceAgreements => (
+        Default => 'standard',
+        Levels  => {
+            'standard' => {
+                Starts => 60,
+                Response => 2 * 60,
+                Resolve  => 7 * 60 * 24,
+            },
+            'nonstandard' => {
+                Starts => 2 * 60,
+                Response => 3 * 60,
+                Resolve => 4 * 60
+            }
+        },
+    ));
+
+    my $ticket = RT::Ticket->new($RT::SystemUser);
+    my ($id) = $ticket->Create( Queue => 'General', Subject => 'test sla start time change');
+    ok $id, "Created ticket $id";
+
+    my $starts = $ticket->StartsObj->Unix;
+    ok $starts > 0, 'Starts date is set';
+
+    $ticket->SetSLA('nonstandard');
+    my $new_starts = $ticket->StartsObj->Unix;
+    is $new_starts - $starts, 3600, 'Starts time changed on SLA update';
+
+    $ticket->SetSLA('standard');
+    my $reset_starts = $ticket->StartsObj->Unix;
+    is $reset_starts, $starts, 'Start date reset';
+}
+
 done_testing;

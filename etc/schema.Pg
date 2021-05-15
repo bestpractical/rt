@@ -14,9 +14,9 @@ CREATE SEQUENCE attachments_id_seq;
 
 
 CREATE TABLE Attachments (
-  id INTEGER DEFAULT nextval('attachments_id_seq'),
-  TransactionId integer NOT NULL  ,
-  Parent integer NOT NULL DEFAULT 0  ,
+  id BIGINT DEFAULT nextval('attachments_id_seq'),
+  TransactionId bigint NOT NULL  ,
+  Parent bigint NOT NULL DEFAULT 0  ,
   MessageId varchar(160) NULL  ,
   Subject varchar(255) NULL  ,
   Filename varchar(255) NULL  ,
@@ -184,12 +184,12 @@ CREATE TABLE ScripConditions (
 CREATE SEQUENCE transactions_id_seq;
 
 CREATE TABLE Transactions (
-  id INTEGER DEFAULT nextval('transactions_id_seq'),
+  id BIGINT DEFAULT nextval('transactions_id_seq'),
   ObjectType varchar(255) NOT NULL  ,
   ObjectId integer NOT NULL DEFAULT 0  ,
   TimeTaken integer NOT NULL DEFAULT 0  ,
   Type varchar(20) NULL  ,
-  Field varchar(40) NULL  ,
+  Field varchar(255) NULL  ,
   OldValue varchar(255) NULL  ,
   NewValue varchar(255) NULL  ,
   ReferenceType varchar(255) NULL,
@@ -497,7 +497,7 @@ CREATE TABLE ObjectCustomFieldValues (
   id INTEGER DEFAULT nextval('objectcustomfieldvalues_id_s'),
   CustomField int NOT NULL  ,
   ObjectType varchar(255) NULL  ,
-  ObjectId int NOT NULL  ,
+  ObjectId bigint NOT NULL  ,
   SortOrder integer NOT NULL DEFAULT 0  ,
 
   Content varchar(255) NULL  ,
@@ -793,6 +793,21 @@ CREATE TABLE Configurations (
     PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (LOWER(Name));
+CREATE INDEX Configurations1 ON Configurations (LOWER(Name), Disabled);
 CREATE INDEX Configurations2 ON Configurations (Disabled);
 
+CREATE SEQUENCE authtokens_id_seq;
+CREATE TABLE AuthTokens (
+    id                integer                  DEFAULT nextval('authtokens_id_seq'),
+    Owner             integer         NOT NULL DEFAULT 0,
+    Token             varchar(256)    NULL,
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    LastUsed          timestamp                DEFAULT NULL,
+    Creator           integer         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     integer         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE INDEX AuthTokensOwner ON AuthTokens (Owner);

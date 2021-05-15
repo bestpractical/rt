@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,7 @@ $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
 
-my @search_fields = qw(Query GroupBy ChartStyle ChartFunction Width Height);
+my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height ExtraQueryParams), @ExtraQueryParams );
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
     SearchFields => [@search_fields],
@@ -75,6 +75,14 @@ my %query;
     if ($saved_search->{'CurrentSearch'}->{'Object'}) {
         foreach my $search_field (@{ $saved_search->{'SearchFields'} }) {
             $query{$search_field} = $saved_search->{'CurrentSearch'}->{'Object'}->Content->{$search_field};
+        }
+
+        my $content = $saved_search->{'CurrentSearch'}->{'Object'}->Content;
+        if ( my $extra_params = $content->{ExtraQueryParams} ) {
+            $query{ExtraQueryParams} = $extra_params;
+            for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
+                $query{$param} = $content->{$param};
+            }
         }
     }
 
@@ -140,12 +148,23 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <input type="hidden" class="hidden" name="Query" value="<% $query{Query} %>" />
 <input type="hidden" class="hidden" name="SavedChartSearchId" value="<% $saved_search->{SearchId} || 'new' %>" />
 
+% if ( $query{ExtraQueryParams} ) {
+%   for my $input ( ref $query{ExtraQueryParams} eq 'ARRAY' ?  @{$query{ExtraQueryParams}} : $query{ExtraQueryParams} ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%       if ( defined $query{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $query{$input} %>" />
+%       }
+%   }
+% }
+
     <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
       <fieldset><legend><% loc('Group tickets by') %></legend>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
           Default => $query{'GroupBy'}[0],
+          Stacked => $query{'GroupBy'}[0] eq ($query{StackedGroupBy} // '') ? 1 : 0,
+          StackedId => 'StackedGroupBy-1',
         &>
         </fieldset>
         <fieldset><legend><% loc('and then') %></legend>
@@ -154,6 +173,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Query => $query{Query},
           Default => $query{'GroupBy'}[1] // q{},
           ShowEmpty => 1,
+          Stacked => $query{'GroupBy'}[1] && ($query{'GroupBy'}[1] eq ($query{StackedGroupBy} // '')) ? 1 : 0,
+          StackedId => 'StackedGroupBy-2',
         &>
       </fieldset>
       <fieldset><legend><% loc('and then') %></legend>
@@ -162,6 +183,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Query => $query{Query},
           Default => $query{'GroupBy'}[2] // q{},
           ShowEmpty => 1,
+          Stacked => $query{'GroupBy'}[2] && ($query{'GroupBy'}[2] eq ($query{StackedGroupBy} // '')) ? 1 : 0,
+          StackedId => 'StackedGroupBy-3',
         &>
       </fieldset>
     </&>
@@ -181,16 +204,16 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
     <&| /Widgets/TitleBox, title => loc('Picture'), class => "chart-picture" &>
       <input name="ChartStyle" type="hidden" value="<% $query{ChartStyle} %>" />
       <div class="form-row">
-        <div class="col-md-auto label">
+        <div class="label col-auto">
           <label><% loc('Style') %>:</label>
         </div>
-        <div class="col-md-auto value">
+        <div class="value col-auto">
           <& Elements/SelectChartType, Default => $query{ChartStyle} =~ /^(pie|bar(?:-stacked)?|line(?:-stacked)?|table)\b/ ? $1 : undef &>
         </div>
-        <div class="col-md-auto label">
+        <div class="label col-auto">
           <label><% loc("Width") %>:</label>
         </div>
-        <div class="col-md-auto value">
+        <div class="value col-auto">
           <div class="input-group mb-3">
             <input class="form-control" type="text" name="Width" value="<% $query{'Width'} || q{} %>">
             <div class="input-group-append">
@@ -198,11 +221,11 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
             </div>
           </div>
         </div>
-        <div class="col-md-auto label">
+        <div class="label col-auto">
           &#x00d7;
           <label><% loc("Height") %>:</label>
         </div>
-        <div class="col-md-auto value">
+        <div class="value col-auto">
           <div class="input-group mb-3">
             <input class="form-control" type="text" name="Height" value="<% $query{'Height'} || q{} %>">
             <div class="input-group-append">
@@ -224,6 +247,15 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <script type="text/javascript">
 var updateChartStyle = function() {
     var val = jQuery(".chart-picture [name=ChartType]").val();
+    if ( val == 'bar' ) {
+        jQuery("span.stacked-group").removeClass('hidden');
+        jQuery("input.stacked-group-checkbox").prop('disabled', false);
+    }
+    else {
+        jQuery("span.stacked-group").addClass('hidden');
+        jQuery("input.stacked-group-checkbox").prop('disabled', true);
+    }
+
     if ( val != 'table' && jQuery(".chart-picture [name=ChartStyleIncludeTable]").is(':checked') ) {
         val += '+table';
     }
@@ -242,10 +274,54 @@ jQuery(".chart-picture [name=ChartType]").change(function(){
 
 jQuery(".chart-picture [name=ChartStyleIncludeTable]").change( updateChartStyle );
 jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
+jQuery("input.stacked-group-checkbox").change( function() {
+    if ( jQuery(this).is(':checked') ) {
+        jQuery("input.stacked-group-checkbox").not(this).prop('checked', false);
+    }
+});
+
+jQuery("select[name=GroupBy]").change( function() {
+    // "GroupBy-Groups" could be triggered because the they are fully cloned from "GroupBy"
+    if ( jQuery(this).attr('name') == 'GroupBy-Groups' ) {
+        var elem = jQuery(this).closest('fieldset').find('select[name=GroupBy]');
+        setTimeout( function () {
+            elem.change();
+        }, 100 ); // give it a moment to prepare "GroupBy" options
+    }
+    else {
+        jQuery(this).closest('fieldset').find('input.stacked-group-checkbox').val(jQuery(this).val());
+    }
+});
+
+jQuery( function() {
+    jQuery("select[name=ChartFunction-Groups]").change( function() {
+        var allow_stacked = jQuery(".chart-picture [name=ChartType]").val() == 'bar';
+
+        var value_count;
+        jQuery("select[name=ChartFunction-Groups]").each( function() {
+            if ( jQuery(this).val() ) {
+                value_count++;
+                if ( value_count > 1 || !jQuery(this).val().match(/count/i) ) {
+                    allow_stacked = 0;
+                }
+            }
+        } );
+
+        if ( allow_stacked ) {
+            jQuery("span.stacked-group").removeClass('hidden');
+            jQuery("input.stacked-group-checkbox").prop('disabled', false);
+        }
+        else {
+            jQuery("span.stacked-group").addClass('hidden');
+            jQuery("input.stacked-group-checkbox").prop('disabled', true);
+        }
+    }).change();
+});
+
 </script>
 
     <div class="form-row">
-      <div class="col-md-12">
+      <div class="col-12">
         <& /Elements/Submit, Label => loc('Update Chart'), Name => 'Update' &>
       </div>
     </div>
@@ -254,10 +330,14 @@ jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 
   <div class="col-xl-6">
     <div class="saved-search">
-      <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
+      <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts'), AllowCopy => 1 &>
     </div>
   </div>
 </div>
 
 </div>
 </div>
+
+<%ARGS>
+@ExtraQueryParams => ()
+</%ARGS>

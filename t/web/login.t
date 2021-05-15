@@ -93,6 +93,22 @@ diag "mobile login with not mobile client";
     $m->content_lacks( 'Logout', 'really logout' );
 }
 
+diag "mobile normal login, mobile off";
+{
+
+    # default browser in android 2.3.6
+    $m->agent(
+"Mozilla/5.0 (Linux; U; Android 2.3.6; en-us; Nexus One Build/GRK39F) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"
+    );
+
+    $m->get($baseurl);
+    is( $m->uri, $baseurl, "right url" );
+    $m->content_lacks( "/m/index.html?NotMobile=1", 'normal UI login' );
+}
+
+RT::Test->stop_server;
+RT->Config->Set(ShowMobileSite => 1);
+( $baseurl, $m ) = RT::Test->started_ok;
 
 diag "mobile normal login";
 {

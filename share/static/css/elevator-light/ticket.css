@@ -152,3 +152,17 @@ ul.select-queue li a:visited {
 #create-linked-ticket {
     padding-top: 15px;
 }
+
+.priority div.value .current-value {
+    visibility: hidden;
+}
+
+.priority div.value .current-value span.Priority {
+    visibility: visible;
+}
+
+/* .TicketFinalPriority is used in ticket transaction search */
+.FinalPriority,
+.TicketFinalPriority {
+    display: none;
+}

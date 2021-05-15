@@ -69,12 +69,29 @@ is_deeply(
 );
 
 note('submit populated form');
-$m->submit_form( fields => { Subject => 'ticket foo', 'Queue' => $queue1->id, $cf_form_id => $cf_test_value } );
+$m->submit_form( fields => { Subject => 'ticket foo', 'Queue' => $queue1->id, $cf_form_id => $cf_test_value }, button => 'SubmitTicket' );
 $m->text_contains( 'test_cf',      'custom field populated in display' );
 $m->text_contains( $cf_test_value, 'custom field populated in display' );
 
 my $ticket = RT::Test->last_ticket;
 ok( $ticket->id, 'ticket is created' );
 is( $ticket->QueueObj->id, $queue1->id, 'Ticket created with correct queue' );
+
+ok( $m->logout, 'Logged out' );
+ok( $m->login( 'user', 'password' ), 'logged in as user' );
+$m->submit_form_ok( { form_name => 'CreateTicketInQueue' }, 'Try to create ticket' );
+$m->content_contains('Permission Denied', 'No permission to create ticket');
+$m->warning_like(qr/Permission Denied/, 'Permission denied warning' );
+
+ok( $user->PrincipalObj->GrantRight( Right => 'SeeQueue', Object => RT->System ), 'Grant SeeQueue right' );
+$m->submit_form_ok( { form_name => 'CreateTicketInQueue' }, 'Try to create ticket' );
+$m->content_contains( 'Permission Denied', 'No permission to create ticket even with SeeQueue' );
+$m->warning_like(qr/Permission Denied/, 'Permission denied warning' );
+
+ok( $user->PrincipalObj->GrantRight( Right => 'CreateTicket', Object => $queue2 ), 'Grant CreateTicket right' );
+$m->submit_form_ok( { form_name => 'CreateTicketInQueue' }, 'Try to create ticket' );
+$m->content_lacks( 'Permission Denied', 'Has permission to create ticket' );
+$form = $m->form_name('TicketCreate');
+is_deeply( [ $form->find_input('Queue','option')->possible_values ], [ $queue2->id ], 'Only Another queue is listed' );
 
 done_testing();

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG tests => 198, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::Crypt GnuPG => 1, tests => 198, gnupg_options => { passphrase => 'rt-test' };
 
 use Digest::MD5 qw(md5_hex);
 

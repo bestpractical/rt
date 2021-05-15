@@ -133,9 +133,30 @@ diag 'roles now added to queues' if $ENV{'TEST_VERBOSE'};
     is_deeply([sort RT::Ticket->Roles], ['AdminCc', 'Cc', 'Owner', 'RT::CustomRole-1', 'RT::CustomRole-2', 'Requestor'], 'Ticket->Roles');
     is_deeply([sort RT::Queue->ManageableRoleGroupTypes], ['AdminCc', 'Cc', 'RT::CustomRole-2'], 'Queue->ManageableRoleTypes');
 
+    my $alice = RT::Test->load_or_create_user( EmailAddress => 'alice@example.com' );
+    for my $q ( $general, $inbox, $specs, $development ) {
+        my $queue = RT::Queue->new( $alice );
+        $queue->Load( $q->id );
+        ok( $queue->id, 'Load queue' );
+
+        my $qroles = $queue->CustomRoles;
+        is( $qroles->Count, 0, 'No custom roles for users without rights' );
+        $qroles->LimitToSingleValue;
+        is( $qroles->Count, 0, 'No single custom roles for users without rights' );
+
+        is_deeply( [ sort $queue->Roles ], [ 'AdminCc', 'Cc', 'Owner', 'Requestor' ], 'Roles' );
+        is_deeply( [ sort $queue->ManageableRoleGroupTypes ], [ 'AdminCc', 'Cc' ], 'ManageableRoleTypes' );
+        ok( !$queue->HasRole( $engineer->GroupType ), 'HasRole returns false for users without rights' );
+        ok( !$queue->HasRole( $sales->GroupType ), 'HasRole returns false for users without rights' );
+    }
+
+    RT::Test->set_rights( { Principal => $alice->PrincipalObj, Right => ['SeeQueue'] } );
+
+    my @users = ( RT->SystemUser, $alice );
+    for my $user ( @users ) {
     # General
     {
-        my $roles = RT::CustomRoles->new(RT->SystemUser);
+        my $roles = RT::CustomRoles->new($user);
         $roles->LimitToObjectId($general->Id);
         is($roles->Count, 0, 'no roles for General');
 
@@ -152,7 +173,7 @@ diag 'roles now added to queues' if $ENV{'TEST_VERBOSE'};
 
     # Inbox
     {
-        my $roles = RT::CustomRoles->new(RT->SystemUser);
+        my $roles = RT::CustomRoles->new($user);
         $roles->LimitToObjectId($inbox->Id);
         is($roles->Count, 1, 'one role for Inbox');
         is($roles->Next->Name, 'Sales-' . $$, 'and the one role is Sales');
@@ -171,7 +192,7 @@ diag 'roles now added to queues' if $ENV{'TEST_VERBOSE'};
 
     # Specs
     {
-        my $roles = RT::CustomRoles->new(RT->SystemUser);
+        my $roles = RT::CustomRoles->new($user);
         $roles->LimitToObjectId($specs->Id);
         $roles->OrderBy(
             FIELD => 'id',
@@ -200,7 +221,7 @@ diag 'roles now added to queues' if $ENV{'TEST_VERBOSE'};
 
     # Development
     {
-        my $roles = RT::CustomRoles->new(RT->SystemUser);
+        my $roles = RT::CustomRoles->new($user);
         $roles->LimitToObjectId($development->Id);
         is($roles->Count, 1, 'one role for Development');
         is($roles->Next->Name, 'Engineer-' . $$, 'and the one role is sales');
@@ -215,6 +236,7 @@ diag 'roles now added to queues' if $ENV{'TEST_VERBOSE'};
         is_deeply([sort $development->Roles], ['AdminCc', 'Cc', 'Owner', $engineer->GroupType, 'Requestor'], 'Development->Roles');
         is_deeply([sort $development->ManageableRoleGroupTypes], ['AdminCc', 'Cc'], 'Development->ManageableRoleTypes');
         is_deeply([grep { $development->IsManageableRoleGroupType($_) } 'AdminCc', 'Cc', 'Owner', 'RT::CustomRole-1', 'RT::CustomRole-2', 'Requestor', 'Nonexistent'], ['AdminCc', 'Cc'], 'Development IsManageableRoleGroupType');
+    }
     }
 }
 

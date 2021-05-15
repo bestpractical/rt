@@ -25,7 +25,7 @@ ok $m->login(customer => 'customer'), "logged in";
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 
 # Create Dashboard
-$m->follow_link_ok({ id => 'home-dashboard_create' });
+$m->follow_link_ok({ id => 'reports-dashboard_create' });
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'test dashboard');
 $m->click_button(value => 'Create');

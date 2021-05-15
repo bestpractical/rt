@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -182,12 +182,12 @@ if ($ShowRelatedTickets) {
 </%perl>
 
         <div class="related-tickets form-row">
-          <div class="col-md-3 label">
+          <div class="label col-3">
             <a href="<% $url %>">
               <&|/l, $ShowRelatedTickets &>[_1] most recently updated related tickets</&>
             </a>
           </div>
-          <div class="col-md-9 value">
+          <div class="value col-9">
             <& /Elements/CollectionList,
                 %search,
                 Class             => "RT::Tickets",
@@ -213,7 +213,7 @@ if ($ShowRelatedTickets) {
     <label><&|/l&>Add an asset to this ticket:</&></label>
     <div class="form-row">
       <div class="form-group mx-sm-3 mb-2">
-        <input class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
+        <input data-autocomplete="Assets" class="form-control mb-2" size="10" name="<% $Ticket->id %>-RefersTo" placeholder="<&|/l&>Asset #</&>" type="text">
       </div>
       <button type="submit" name="AddAsset" value="Add" class="button btn btn-primary form-control mb-2">Add</button>
     </div>

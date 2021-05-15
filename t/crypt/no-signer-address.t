@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG
+use RT::Test::Crypt
+  GnuPG         => 1,
   tests         => undef,
   gnupg_options => {
     passphrase    => 'rt-test',
@@ -36,7 +37,6 @@ my ($status, undef, $msg) = $ticket->Create(
 ok( $status, "created ticket" ) or diag "error: $msg";
 
 is( scalar @warnings, 1, "Got a warning" );
-like( $warnings[0], qr{signing failed: secret key not available},
-    "Found warning of no secret key");
+like( $warnings[0], qr{signing failed: (?:secret key not available|No secret key)}, "Found warning of no secret key" );
 
 done_testing;

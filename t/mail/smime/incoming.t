@@ -1,19 +1,20 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef, actual_server => 1;
-my $test = 'RT::Test::SMIME';
+use RT::Test::Crypt SMIME => 1, tests => undef, actual_server => 1;
+my $test = 'RT::Test::Crypt';
 
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Tickets;
 use Test::Warn;
+use Test::Deep;
 
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
 
 # configure key for General queue
-RT::Test::SMIME->import_key('sender@example.com');
+$test->smime_import_key('sender@example.com');
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'General',
     CorrespondAddress => 'sender@example.com',
@@ -25,7 +26,7 @@ my $user = RT::Test->load_or_create_user(
     Name => 'root@example.com',
     EmailAddress => 'root@example.com',
 );
-RT::Test::SMIME->import_key('root@example.com.crt', $user);
+$test->smime_import_key('root@example.com.crt', $user);
 RT::Test->add_rights( Principal => $user, Right => 'SuperUser', Object => RT->System );
 
 my $mail = RT::Test->open_mailgate_ok($url);
@@ -52,6 +53,9 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is not encrypted'
     );
     like( $txn->Attachments->First->Content, qr'Blah');
+    my ($msg) = @{ $txn->Attachments->ItemsArrayRef };
+    my @status = $msg->CryptStatus;
+    cmp_deeply( \@status, [], 'Got expected crypt status (Empty array)' );
 }
 
 {
@@ -63,7 +67,7 @@ RT::Test->close_mailgate_ok($mail);
             -from    => 'root@example.com',
             -to      => 'sender@example.com',
             -subject => "Encrypted message for queue",
-            $test->key_path('sender@example.com.crt'),
+            $test->smime_key_path('sender@example.com.crt'),
         ),
         \"Subject: test\n\norzzzzzz",
         \$buf,
@@ -103,8 +107,8 @@ RT::Test->close_mailgate_ok($mail);
             shell_quote(
                 RT->Config->Get('SMIME')->{'OpenSSL'},
                 qw( smime -sign -nodetach -passin pass:123456),
-                -signer => $test->key_path('root@example.com.crt'),
-                -inkey  => $test->key_path('root@example.com.key'),
+                -signer => $test->smime_key_path('root@example.com.crt'),
+                -inkey  => $test->smime_key_path('root@example.com.key'),
             ),
             '|',
             shell_quote(
@@ -112,7 +116,7 @@ RT::Test->close_mailgate_ok($mail);
                 -from    => 'root@example.com',
                 -to      => 'sender@example.com',
                 -subject => "Encrypted and signed message for queue",
-                $test->key_path('sender@example.com.crt'),
+                $test->smime_key_path('sender@example.com.crt'),
             )),
             \"Subject: test\n\norzzzzzz",
             \$buf,
@@ -135,6 +139,30 @@ RT::Test->close_mailgate_ok($mail);
         'recorded incoming mail that is encrypted'
     );
     like( $attach->Content, qr'orzzzz');
+    my @status = $msg->CryptStatus;
+    cmp_deeply(
+        \@status,
+        [   {   Operation   => 'Decrypt',
+                Protocol    => 'SMIME',
+                Message     => 'Decryption process succeeded',
+                EncryptedTo => [ { EmailAddress => 'sender@example.com' } ],
+                Status      => 'DONE'
+            },
+            {   Status           => 'DONE',
+                UserString       => '"Enoch Root" <root@example.com>',
+                Trust            => 'FULL',
+                Serial           => '9974010075738841110',
+                Issuer           => '"CA Owner" <ca.owner@example.com>',
+                CreatedTimestamp => re('^\d+$'),
+                Message =>
+                    'The signature is good, signed by "Enoch Root" <root@example.com>, assured by "CA Owner" <ca.owner@example.com>, trust is full',
+                ExpireTimestamp => re('^\d+$'),
+                Operation       => 'Verify',
+                Protocol        => 'SMIME'
+            }
+        ],
+        'Got expected signing/encryption status'
+    );
 }
 
 {
@@ -144,8 +172,8 @@ RT::Test->close_mailgate_ok($mail);
         shell_quote(
             RT->Config->Get('SMIME')->{'OpenSSL'},
             qw( smime -sign -passin pass:123456),
-            -signer => $test->key_path('root@example.com.crt'),
-            -inkey  => $test->key_path('root@example.com.key'),
+            -signer => $test->smime_key_path('root@example.com.crt'),
+            -inkey  => $test->smime_key_path('root@example.com.key'),
         ),
         \"Content-type: text/plain\n\nThis is the body",
         \$buf,
@@ -172,6 +200,24 @@ RT::Test->close_mailgate_ok($mail);
             "Message was signed"
         );
         like( $attach->Content, qr/This is the body/ );
+        my @status = $msg->CryptStatus;
+        cmp_deeply(
+            \@status,
+            [   {   CreatedTimestamp => re('^\d+$'),
+                    ExpireTimestamp  => re('^\d+$'),
+                    Issuer           => '"CA Owner" <ca.owner@example.com>',
+                    Protocol         => 'SMIME',
+                    Operation        => 'Verify',
+                    Status           => 'DONE',
+                    Serial           => '9974010075738841110',
+                    Message =>
+                        'The signature is good, signed by "Enoch Root" <root@example.com>, assured by "CA Owner" <ca.owner@example.com>, trust is full',
+                    UserString => '"Enoch Root" <root@example.com>',
+                    Trust      => 'FULL'
+                }
+            ],
+            'Got expected crypt status for signed message'
+        );
     }
 
     # Make the signature not match

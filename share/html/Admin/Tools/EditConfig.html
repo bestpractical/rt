@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2016 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,12 +46,12 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+Abort( loc( 'Permission Denied' ) ) unless RT->Config->Get('ShowEditSystemConfig');
+
 my $title = loc('System Configuration');
 unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
  Abort(loc('This feature is only available to system administrators'));
 }
-
-my $has_execute_code = $session{CurrentUser}->HasRight(Right => 'ExecuteCode', Object => RT->System);
 
 my $options = RT->Config->LoadSectionMap();
 my $active_context = {
@@ -62,32 +62,25 @@ my $active_context = {
 
 my @results;
 
-use Data::Dumper;
-my $stringify = sub {
-    my $value = shift;
-    return "" if !defined($value);
-
-    local $Data::Dumper::Terse = 1;
-    local $Data::Dumper::Indent = 2;
-    local $Data::Dumper::Sortkeys = 1;
-    my $output = Dumper $value;
-    chomp $output;
-    return $output;
-};
-
 if (delete $ARGS{Update}) {
     RT->Config->BeginDatabaseConfigChanges;
     $RT::Handle->BeginTransaction;
     my $has_error;
 
+    if ( delete $ARGS{CustomDateRanges} ) {
+        push @results, ProcessCustomDateRanges( ARGSRef => \%ARGS );
+    }
+
     eval {
         for my $key (keys %ARGS) {
             next if $key =~ /-Current$/;
             next if $key eq 'tab' || $key eq 'section' || $key eq 'subsection';
+            # Get rid of extra arguments like in CustomDateRanges
+            next if !exists $ARGS{$key . '-Current'};
 
             my $meta = RT->Config->Meta( $key );
-            my $widget = $meta->{Widget} || '/Widgets/Form/Code';
-            my $is_code = $widget eq '/Widgets/Form/Code';
+            my $widget = $meta->{Widget} || '/Widgets/Form/JSON';
+            my $is_json = $widget eq '/Widgets/Form/JSON';
 
             my $val = $ARGS{$key};
             $val = '' if $val eq '__empty_value__';
@@ -99,55 +92,25 @@ if (delete $ARGS{Update}) {
                 next if !!$val eq !!$prev;
             }
 
-            if ( $meta->{Immutable} || $meta->{Obfuscate} || ($key =~ /Password/i and $key !~ /MinimumPasswordLength/ )) {
+            if ( $meta->{Immutable} || $meta->{Obfuscate} ) {
                 push @results, loc("Cannot change [_1]: Permission Denied", $key);
                 $has_error++;
                 next;
             }
 
-            if ($is_code) {
-                if (!$has_execute_code) {
-                    push @results, loc("Cannot change [_1]: Permission Denied", $key);
-                    $has_error++;
-                    next;
-                }
-
-                my $code = $val;
-                my $coderef;
-                # similar to RT::Scrip::CompileCheck
-                do {
-                    no strict 'vars';
-                    $coderef = eval "sub { $code \n }";
-                };
-                if ($@) {
+            if ($is_json) {
+                my $json = $val;
+                ($val) = RT::Configuration->new( $session{CurrentUser} )->_DeJSONContent($json);
+                if (!defined $val) {
                     my $error = $@;
-                    push @results, loc("Couldn't compile [_1] codeblock '[_2]': [_3]", $key, $code, $error);
+                    push @results, loc("Couldn't decode [_1] JSON '[_2]': [_3]", $key, $json, $error);
                     $has_error++;
                     next;
-                }
-
-                if ($coderef) {
-                    $val = eval { $coderef->() };
-                    if ($@) {
-                        my $error = $@;
-                        push @results, loc("Couldn't execute [_1] codeblock '[_2]': [_3]", $key, $code, $error);
-                        $has_error++;
-                        next;
-                    }
                 }
             }
-
             my $setting = RT::Configuration->new($session{CurrentUser});
-            $setting->Load($key);
+            $setting->LoadByCols(Name => $key, Disabled => 0);
             if ($setting->Id) {
-                if ($setting->Disabled) {
-                    my ($ok, $msg) = $setting->SetDisabled(0);
-                    if (!$ok) {
-                        push @results, $msg;
-                        $has_error++;
-                    }
-                }
-
                 my ($ok, $msg) = $setting->SetContent($val);
                 push @results, $msg;
                 $has_error++ if !$ok;

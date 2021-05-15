@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -327,6 +327,16 @@ sub HasRight {
         };
         return $cached->{'SuperUser'} || $cached->{ $args{'Right'} }
             if $cached;
+
+        if ( ref $args{Object} ne 'RT::System' ) {
+            my $cached =
+              $_ACL_CACHE->{ $self->id . ';:;'
+                  . 'RT::System' . '-'
+                  . $RT::System->id };
+            return 1
+              if $cached
+              && ( $cached->{'SuperUser'} || $cached->{ $args{'Right'} } );
+        }
     }
 
     unshift @{ $args{'EquivObjects'} },
@@ -433,13 +443,37 @@ sub HasRights {
             return ();
         }
     }
-    if ( @$roles ) {
+
+    my @enabled_roles;
+    for my $role ( @$roles ) {
+        if ( $role =~ /^RT::CustomRole-(\d+)$/ ) {
+            my $custom_role = RT::CustomRole->new( RT->SystemUser );
+            $custom_role->Load( $1 );
+            if ( $custom_role->id && !$custom_role->Disabled ) {
+                my $added;
+                for my $object ( @{ $args{'EquivObjects'} } ) {
+                    next unless $object->isa('RT::Queue');
+                    if ( $custom_role->IsAdded( $object->id ) ) {
+                        $added = 1;
+                        last;
+                    }
+                }
+                push @enabled_roles, $role if $added;
+            }
+        }
+        else {
+            push @enabled_roles, $role;
+        }
+    }
+
+    if ( @enabled_roles ) {
+
         my $query
             = "SELECT DISTINCT ACL.RightName "
             . $self->_RolesWithRightQuery(
                 EquivObjects => $args{'EquivObjects'}
             )
-            . ' AND ('. join( ' OR ', map "PrincipalType = '$_'", @$roles ) .')'
+            . ' AND ('. join( ' OR ', map "PrincipalType = '$_'", @enabled_roles ) .')'
         ;
         my $rights = $RT::Handle->dbh->selectcol_arrayref($query);
         unless ($rights) {
@@ -539,9 +573,12 @@ sub _HasGroupRightQuery {
     }
     if ( my $right = $args{'Right'} ) {
         # Only find superuser or rights with the name $right
-        $query .= " AND (ACL.RightName = 'SuperUser' "
-            . ( $right ne 'SuperUser' ? "OR ACL.RightName = '$right'" : '' )
-        . ") ";
+        if ( $right eq 'SuperUser' ) {
+            $query .= " AND ACL.RightName = 'SuperUser' "
+        }
+        else {
+            $query .= " AND ACL.RightName IN ('SuperUser', '$right')";
+        }
     }
     return $query;
 }
@@ -574,6 +611,10 @@ sub _HasRoleRightQuery {
                  @_
                );
 
+    my $groups = RT::Groups->new( RT->SystemUser );
+    $groups->LimitToUserDefinedGroups;
+    $groups->WithMember( PrincipalId => $self->id, Recursively => 1 );
+
     my $query =
         " FROM Groups, Principals, CachedGroupMembers WHERE "
 
@@ -589,7 +630,7 @@ sub _HasRoleRightQuery {
 # also, check to see if the right is being granted _directly_ to this principal,
 #  as is the case when we want to look up group rights
         . "AND Principals.id = CachedGroupMembers.GroupId "
-        . "AND CachedGroupMembers.MemberId = " . $self->Id . " "
+        . "AND CachedGroupMembers.MemberId IN (" . ( join ',', $self->Id, map { $_->id } @{ $groups->ItemsArrayRef } ) . ") "
     ;
 
     if ( $args{'Roles'} ) {
@@ -639,7 +680,30 @@ sub RolesWithRight {
         $RT::Logger->warning( $RT::Handle->dbh->errstr );
         return ();
     }
-    return @$roles;
+
+    my @enabled_roles;
+    for my $role ( @$roles ) {
+        if ( $role =~ /^RT::CustomRole-(\d+)$/ ) {
+            my $custom_role = RT::CustomRole->new( RT->SystemUser );
+            $custom_role->Load( $1 );
+            if ( $custom_role->id && !$custom_role->Disabled ) {
+                my $added;
+                for my $object ( @{ $args{'EquivObjects'} } ) {
+                    next unless $object->isa('RT::Queue');
+                    if ( $custom_role->IsAdded( $object->id ) ) {
+                        $added = 1;
+                        last;
+                    }
+                }
+                push @enabled_roles, $role if $added;
+            }
+        }
+        else {
+            push @enabled_roles, $role;
+        }
+    }
+
+    return @enabled_roles;
 }
 
 sub _RolesWithRightQuery {
@@ -657,13 +721,12 @@ sub _RolesWithRightQuery {
         . " PrincipalType != 'Group'";
 
     if ( my $right = $args{'Right'} ) {
-        $query .=
-            # Only find superuser or rights with the requested right
-            " AND ( RightName = '$right' "
-
-            # Check SuperUser if we were asked to
-            . ( $args{'IncludeSuperusers'} ? "OR RightName = 'SuperUser' " : '' )
-            . ")";
+        if ( $args{'IncludeSuperusers'} && $right ne 'SuperUser' ) {
+            $query .= " AND RightName IN ('SuperUser', '$right')";
+        }
+        else {
+            $query .= " AND RightName = '$right'";
+        }
     }
 
     # skip rights granted on system level if we were asked to
@@ -836,6 +899,12 @@ sub __DependsOn {
         my $objs = RT::Transactions->new( $self->CurrentUser );
         $objs->Limit( FIELD => $type =~ /Add/? 'NewValue': 'OldValue', VALUE => $self->Id );
         $objs->Limit( FIELD => 'Type', VALUE => $type );
+        push( @$list, $objs );
+    }
+    for my $column ( qw(OldValue NewValue) ) {
+        my $objs = RT::Transactions->new( $self->CurrentUser );
+        $objs->Limit( FIELD => $column, VALUE => $self->Id );
+        $objs->Limit( FIELD => 'Type', VALUE => 'SetWatcher' );
         push( @$list, $objs );
     }
 
