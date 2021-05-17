@@ -334,7 +334,8 @@ push @CHECKS, 'Queues <-> Role Groups' => sub {
 push @CHECKS, 'Tickets <-> Role Groups' => sub {
     # from queue to group
     my $res = 1;
-    for my $role (qw/Requestor Owner Cc AdminCc/ ) {
+    no warnings 'once';
+    for my $role ( 'Owner', $RT::Record::Role::Roles::LAZY_ROLE_GROUPS ? () : (qw/Requestor Owner Cc AdminCc/) ) {
         $res *= check_integrity(
             'Tickets', 'EffectiveId' => 'Groups', 'Instance',
             join_condition   => 't.Domain = ? AND t.Name = ?',
