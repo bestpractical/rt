@@ -337,11 +337,14 @@ sub HasRole {
     return scalar grep { $type eq $_ } $self->Roles;
 }
 
-=head2 RoleGroup
+=head2 RoleGroup NAME, CheckRight => RIGHT_NAME, Create => 1|0
 
 Expects a role name as the first parameter which is used to load the
 L<RT::Group> for the specified role on this record.  Returns an unloaded
 L<RT::Group> object on failure.
+
+If the group is not created yet and C<Create> parameter is true(default is
+false), it will create the group accordingly.
 
 =cut
 
@@ -361,6 +364,12 @@ sub RoleGroup {
             Object  => $self,
             Name    => $name,
         );
+
+        if ( !$group->id && $args{Create} ) {
+            if ( my $created = $self->_CreateRoleGroup($name) ) {
+                $group = $created;
+            }
+        }
     }
     return $group;
 }
@@ -502,12 +511,9 @@ sub AddRoleMember {
     return (0, $self->loc("Permission denied"))
         if $acl and not $acl->($type => $principal);
 
-    my $group = $self->RoleGroup( $type );
+    my $group = $self->RoleGroup( $type, Create => 1 );
     if (!$group->id) {
-        $group = $self->_CreateRoleGroup($type);
-        if (!$group || !$group->id) {
-            return (0, $self->loc("Role group '[_1]' not found", $type));
-        }
+       return (0, $self->loc("Role group '[_1]' not found", $type));
     }
 
     return (0, $self->loc('[_1] is already [_2]',
@@ -766,13 +772,10 @@ sub _AddRolesOnCreate {
         for my $role (keys %{$roles}) {
             next unless @{$roles->{$role}};
 
-            my $group = $self->RoleGroup($role);
+            my $group = $self->RoleGroup($role, Create => 1);
             if ( !$group->id ) {
-                $group = $self->_CreateRoleGroup($role);
-                if ( !$group || !$group->id ) {
-                    push @errors, $self->loc( "Couldn't create role group '[_1]'", $role );
-                    next;
-                }
+                push @errors, $self->loc( "Couldn't create role group '[_1]'", $role );
+                next;
             }
 
             my @left;
