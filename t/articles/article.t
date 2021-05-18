@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 67;
+use RT::Test tests => 72;
 
 use_ok 'RT::Articles';
 use_ok 'RT::Classes';
@@ -60,6 +60,27 @@ ok (!$id, $msg);
 
 ok ($id, $msg);
 
+
+
+my $class1 = RT::Class->new($RT::SystemUser);
+($id, $msg) = $class1->Create(Name => "ScopedClassTest1-$$");
+ok ($id, $msg);
+
+my $class2 = RT::Class->new($RT::SystemUser);
+($id, $msg) = $class2->Create(Name => "ScopedClassTest2-$$");
+ok ($id, $msg);
+
+my $a4 = RT::Article->new($RT::SystemUser);
+($id, $msg) = $a4->Create(Class => $class1->id, Name => "ScopedClassTest$$" );
+ok ($id, $msg);
+
+my $a5 = RT::Article->new($RT::SystemUser);
+($id, $msg) = $a5->Create(Class => $class1->id, Name => "ScopedClassTest$$" );
+ok (!$id, $msg);
+
+my $a6 = RT::Article->new($RT::SystemUser);
+($id, $msg) = $a4->Create(Class => $class2->id, Name => "ScopedClassTest$$" );
+ok ($id, $msg);
 
 
 
