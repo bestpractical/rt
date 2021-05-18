@@ -110,11 +110,12 @@ sub Create {
         return ( 0, $self->loc('Invalid Class') );
     }
 
-    $self->{->'_creating_class'} = $class->id;
-
     unless ( $class->CurrentUserHasRight('CreateArticle') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
+
+    # only here for ValidateName, on create, being called in the context of DBIx::SB
+    $self->{'_creating_class'} = $class->id;
 
     return ( undef, $self->loc('Name in use') )
       unless $self->ValidateName( $args{'Name'}, $class->id );
@@ -244,16 +245,16 @@ Empty names are permitted.
 sub ValidateName {
     my $self = shift;
     my $name = shift;
-    my $class = shift || ($self->ClassObj && $self->ClassObj->id) || $self->{'_creating_class'};
+    my $class_id = shift || ($self->ClassObj && $self->ClassObj->id) || $self->{'_creating_class'};
 
     if ( !$name ) {
         return (1);
     }
 
-    if ( $class ) {
+    if ( $class_id ) {
         my $articles = RT::Articles->new($RT::SystemUser);
         $articles->Limit( FIELD => 'Name', OPERATOR => '=', VALUE => $name );  # cannot use LimitName() as it hardcodes 'LIKE'
-        $articles->Limit( FIELD => 'Class', OPERATOR => '=', VALUE => $class );
+        $articles->Limit( FIELD => 'Class', OPERATOR => '=', VALUE => $class_id );
         while ( my $article = $articles->Next ) {
             if ( $article->id && ( !$self->id || ($article->id))) {
                 return (undef);
