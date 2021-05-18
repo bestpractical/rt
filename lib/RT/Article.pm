@@ -247,10 +247,6 @@ sub ValidateName {
     my $name = shift;
     my $class_id = shift || ($self->ClassObj && $self->ClassObj->id) || $self->{'_creating_class'};
 
-    if ( !$name ) {
-        return (1);
-    }
-
     if ( $class_id ) {
         my $articles = RT::Articles->new($RT::SystemUser);
         $articles->Limit( FIELD => 'Name', OPERATOR => '=', VALUE => $name );  # cannot use LimitName() as it hardcodes 'LIKE'
