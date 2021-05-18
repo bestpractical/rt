@@ -127,3 +127,8 @@ td.current-recipients {
     vertical-align: top;
     padding-left: 50px;
 }
+
+/* Prevent page links from running off the side of the page for Firefox */
+span.pagenum {
+    display: inline-block;
+}
