@@ -252,15 +252,14 @@ sub ValidateName {
         $articles->Limit( FIELD => 'Name', OPERATOR => '=', VALUE => $name );  # cannot use LimitName() as it hardcodes 'LIKE'
         $articles->Limit( FIELD => 'Class', OPERATOR => '=', VALUE => $class_id );
         while ( my $article = $articles->Next ) {
-            if ( $article->id && ( !$self->id || ($article->id))) {
+            if ( $article->id && ( !$self->id || ($article->id != $self->id )) ) {
                 return (undef);
             }
         }
     } else {
         my $temp = RT::Article->new($RT::SystemUser);
         $temp->LoadByCols( Name => $name );
-        if ( $temp->id &&
-             (!$self->id || ($temp->id != $self->id ))) {
+        if ( $temp->id && ( !$self->id || ($temp->id != $self->id )) ) {
             return (undef);
         }
     }
@@ -623,7 +622,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 
 
 =cut
-
 
 =head2 Summary
 
