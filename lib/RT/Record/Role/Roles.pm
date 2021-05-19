@@ -317,7 +317,7 @@ sub Roles {
 }
 
 {
-    my %ROLES;
+    our %ROLES;
     sub _ROLES {
         my $class = ref($_[0]) || $_[0];
         return $ROLES{$class} ||= {};
