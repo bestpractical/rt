@@ -117,8 +117,13 @@ sub Create {
 
     return ( undef, $self->loc('Name is required') ) unless $args{Name};
 
+    # Explicitly store the class as object data because ValidateName is run
+    # via DBIx::SearchBuilder and at this point in create, the
+    # object doesn't exist in the DB yet, so ->ClassObj doesn't get the class
+    $self->{'_creating_class'} = $class->id;
+
     return ( undef, $self->loc('Name in use') )
-      unless $self->ValidateName( $args{'Name'} );
+      unless $self->ValidateName( $args{'Name'}, $class->id );
 
     $RT::Handle->BeginTransaction();
     my ( $id, $msg ) = $self->SUPER::Create(
@@ -233,30 +238,36 @@ sub Create {
 
 =head2 ValidateName NAME
 
-Takes a string name. Returns true if that name isn't in use by another article
+Takes a name (string, required) and an optional class id. Returns true if that
+name is not in use by another article of that class.
 
-Empty names are not permitted.
-
+If no class is supplied and the class can't be derived from the article
+object, returns true if that name isn't used by any other article at all.
 
 =cut
 
 sub ValidateName {
     my $self = shift;
     my $name = shift;
+    my $class_id = shift || ($self->ClassObj && $self->ClassObj->id) || $self->{'_creating_class'};
 
     if ( !$name ) {
         return (0);
     }
 
-    my $temp = RT::Article->new($RT::SystemUser);
-    $temp->LoadByCols( Name => $name );
-    if ( $temp->id && 
-         (!$self->id || ($temp->id != $self->id ))) {
+    my $article = RT::Article->new( RT->SystemUser );
+    if ( $class_id ) {
+        $article->LoadByCols( Name => $name, Class => $class_id );
+    }
+    else {
+        $article->LoadByCols( Name => $name );
+    }
+
+    if ( $article->id && ( !$self->id || ($article->id != $self->id )) ) {
         return (undef);
     }
 
     return (1);
-
 }
 
 # }}}
