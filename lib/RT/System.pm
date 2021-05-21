@@ -83,7 +83,7 @@ use Data::GUID;
 __PACKAGE__->AddRight( Admin   => SuperUser           => 'Do anything and everything'); # loc
 __PACKAGE__->AddRight( Staff   => ShowUserHistory     => 'Show history of public user properties'); # loc
 __PACKAGE__->AddRight( Admin   => AdminUsers          => 'Create, modify and delete users'); # loc
-__PACKAGE__->AddRight( Admin   => AdminCustomRoles    => 'Create, modify and delete custom roles'); # loc
+__PACKAGE__->AddRight( Admin   => AdminCustomRole     => 'Create, modify and delete custom roles'); # loc
 __PACKAGE__->AddRight( Staff   => ModifySelf          => "Modify one's own RT account"); # loc
 __PACKAGE__->AddRight( Staff   => ShowArticlesMenu    => 'Show Articles menu'); # loc
 __PACKAGE__->AddRight( Admin   => ShowConfigTab       => 'Show Admin menu'); # loc

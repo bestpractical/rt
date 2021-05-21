@@ -45,4 +45,17 @@ our @Final = (
             }
         }
     },
+    sub {
+        my $acl = RT::ACL->new( RT->SystemUser );
+        $acl->Limit(
+            FIELD => 'RightName',
+            VALUE => 'AdminCustomRoles',
+        );
+        while ( my $ace = $acl->Next ) {
+            my ( $ret, $msg ) = $ace->__Set( Field => 'RightName', Value => 'AdminCustomRole' );
+            if ( !$ret ) {
+                die "Couldn't update right name for ACE #" . $ace->id . ": $msg";
+            }
+        }
+    },
 );

@@ -60,7 +60,7 @@ with "RT::Record::Role::Rights",
      "RT::Record::Role::LookupType",
      "RT::Record::Role::ContextObject";
 
-__PACKAGE__->AddRight( Admin   => AdminCustomRoles      => 'Create, modify and delete custom roles'); # loc
+__PACKAGE__->AddRight( Admin   => AdminCustomRole       => 'Create, modify and delete custom roles'); # loc
 __PACKAGE__->AddRight( General => SeeCustomRole         => 'View custom roles'); # loc
 __PACKAGE__->AddRight( Staff   => ModifyCustomRole      => 'Add, modify and delete custom role members'); # loc
 __PACKAGE__->AddRight( Staff   => SetInitialCustomRole  => 'Add custom role members only at object creation time'); # loc
@@ -106,7 +106,7 @@ sub Create {
         @_,
     );
 
-    unless ( $self->CurrentUser->HasRight(Object => $RT::System, Right => 'AdminCustomRoles') ) {
+    unless ( $self->CurrentUser->HasRight(Object => $RT::System, Right => 'AdminCustomRole') ) {
         return (0, $self->loc('Permission Denied'));
     }
 
@@ -293,7 +293,7 @@ Delete this object. You should Disable instead.
 sub Delete {
     my $self = shift;
 
-    unless ( $self->CurrentUserHasRight('AdminCustomRoles') ) {
+    unless ( $self->CurrentUserHasRight('AdminCustomRole') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -396,7 +396,7 @@ sub AddToObject {
     $args{'ObjectId'} = $object->id;
 
     return ( 0, $self->loc('Permission Denied') )
-        unless $object->CurrentUserHasRight('AdminCustomRoles');
+        unless $object->CurrentUserHasRight('AdminCustomRole');
 
     my $rec = RT::ObjectCustomRole->new( $self->CurrentUser );
     my ( $status, $add ) = $rec->Add( %args, CustomRole => $self );
@@ -440,7 +440,7 @@ sub RemoveFromObject {
     $args{'ObjectId'} = $object->id;
 
     return ( 0, $self->loc('Permission Denied') )
-        unless $object->CurrentUserHasRight('AdminCustomRoles');
+        unless $object->CurrentUserHasRight('AdminCustomRole');
 
     my $rec = RT::ObjectCustomRole->new( $self->CurrentUser );
     $rec->LoadByCols( CustomRole => $self->id, ObjectId => $args{'ObjectId'} );
@@ -595,7 +595,7 @@ sub SetLookupType {
     my $self = shift;
     my $lookup = shift;
 
-    unless ( $self->CurrentUserHasRight('AdminCustomRoles') ) {
+    unless ( $self->CurrentUserHasRight('AdminCustomRole') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
 
@@ -758,7 +758,7 @@ sub SetDisabled {
 sub _Set {
     my $self = shift;
     my %args = @_;
-    unless ( $self->CurrentUserHasRight('AdminCustomRoles') ) {
+    unless ( $self->CurrentUserHasRight('AdminCustomRole') ) {
         return ( 0, $self->loc('Permission Denied') );
     }
     return $self->SUPER::_Set(@_);
