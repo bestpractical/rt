@@ -667,6 +667,17 @@ After you run this, you may have significantly reduced the number of records
 in your CachedGroupMembers table, and may need to tell your database to
 refresh indexes/statistics.
 
+=item * New rights for custom roles
+
+Users now need C<SeeCustomRole> and C<ModifyCustomRole> to view and modify
+ticket/asset custom role members, respectively.
+
+C<SetInitialCustomRole> is to set custom role members on ticket/asset create
+only, quite like C<SetInitialCustomField>.
+
+C<AdminCustomRoles> is renamed to C<AdminCustomRole> and can be granted at
+custom role level too.
+
 =back
 
 =cut
