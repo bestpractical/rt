@@ -50,8 +50,10 @@ my $principal = $user->PrincipalObj;
 ok( $principal, "principal loaded" );
 $principal->GrantRight( Right => 'ShowTicket', Object => $queue );
 $principal->GrantRight( Right => 'SeeQueue'  , Object => $queue );
+$principal->GrantRight( Right => 'SeeCustomRole', Object => $queue );
 
 ok(  $user->HasRight( Right => 'SeeQueue',     Object => $queue ), "user can see queue" );
+ok(  $user->HasRight( Right => 'SeeCustomRole', Object => $queue ), "user can see custom roles" );
 ok(  $user->HasRight( Right => 'ShowTicket',   Object => $queue ), "user can show queue tickets" );
 ok( !$user->HasRight( Right => 'ModifyTicket', Object => $queue ), "user can't modify queue tickets" );
 ok( !$user->HasRight( Right => 'Watch',        Object => $queue ), "user can't watch queue tickets" );

@@ -150,7 +150,7 @@ diag 'roles now added to queues' if $ENV{'TEST_VERBOSE'};
         ok( !$queue->HasRole( $sales->GroupType ), 'HasRole returns false for users without rights' );
     }
 
-    RT::Test->set_rights( { Principal => $alice->PrincipalObj, Right => ['SeeQueue'] } );
+    RT::Test->set_rights( { Principal => $alice->PrincipalObj, Right => ['SeeQueue', 'SeeCustomRole'] } );
 
     my @users = ( RT->SystemUser, $alice );
     for my $user ( @users ) {
