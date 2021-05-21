@@ -7,6 +7,7 @@ use RT::Test::Crypt
   gnupg_options => {
     passphrase    => 'recipient',
     'trust-model' => 'always',
+    'auto-key-locate' => 'local',
 };
 use Test::Warn;
 use MIME::Head;
@@ -378,7 +379,7 @@ warning_like {
     $tick->Create(Subject => 'owner lacks pubkey', Queue => 'general',
                   Owner => $nokey);
 } [
-    qr/nokey\@example.com: skipped: public key not found|error retrieving 'nokey\@example.com' via WKD: No data/,
+    qr/nokey\@example.com: skipped: (?:No public key|public key not found)/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
@@ -400,7 +401,7 @@ my $status;
 warning_like {
     ($status, $id) = RT::Test->send_via_mailgate($mail);
 } [
-    qr/nokey\@example.com: skipped: public key not found|error retrieving 'nokey\@example.com' via WKD: No data/,
+    qr/nokey\@example.com: skipped: (?:No public key|public key not found)/,
     qr/Recipient 'nokey\@example.com' is unusable/,
 ];
 
