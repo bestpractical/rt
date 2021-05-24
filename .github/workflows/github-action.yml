@@ -1,0 +1,37 @@
+#language: bash
+#services: docker
+
+on: push
+
+jobs:
+  rt_test_sqlite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out RT
+        uses: actions/checkout@v2
+      - name: Build RT
+        env:
+          RT_TEST_PARALLEL: 1
+        shell: bash
+        run: |
+          docker build -t rt-base .
+          docker run -d -v $GITHUB_WORKSPACE:/rt --name rt rt-base
+          docker ps -a
+          docker exec rt bash -c "cd /rt && ./configure.ac --with-db-type=SQLite --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
+      - name: Run RT tests
+        shell: bash
+        run: docker exec -e RT_TEST_PARALLEL=1 rt bash -c "cd /rt && prove -lj6 t/*"
+      - name: Post results to Slack
+        if: always()
+        uses: edge/simple-slack-notify@v1.1.1
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NOTIFICATIONS }}
+        with:
+          channel: '#github'
+          status: ${{ job.status }}
+          success_text: '${env.GITHUB_WORKFLOW} (${env.GITHUB_RUN_NUMBER}) tests completed successfully'
+          failure_text: '${env.GITHUB_WORKFLOW} (${env.GITHUB_RUN_NUMBER}) tests failed'
+          cancelled_text: '${env.GITHUB_WORKFLOW} (${env.GITHUB_RUN_NUMBER}) tests cancelled'
+          fields: |
+            [{ "title": "Configuration", "value": "RT Server, SQLite", "short": true },
+            { "title": "URL", "value": "${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}?check_suite_focus=true", "short": true }]
