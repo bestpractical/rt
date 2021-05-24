@@ -541,9 +541,6 @@ sub AddRoleMember {
     my $self = shift;
     my %args = @_;
 
-    return (0, $self->loc("No permission to modify this asset"))
-        unless $self->CurrentUserHasRight("ModifyAsset");
-
     return $self->_AddRoleMember(ACL => sub { $self->_HasModifyRoleMemberRight(@_) }, @_);
 }
 
@@ -556,9 +553,6 @@ Checks I<ModifyAsset> before calling L<RT::Record::Role::Roles/_DeleteRoleMember
 sub DeleteRoleMember {
     my $self = shift;
 
-    return (0, $self->loc("No permission to modify this asset"))
-        unless $self->CurrentUserHasRight("ModifyAsset");
-
     return $self->_DeleteRoleMember(ACL => sub { $self->_HasModifyRoleMemberRight(@_) }, @_);
 }
 
@@ -570,7 +564,7 @@ sub _HasModifyRoleMemberRight {
         return $role->CurrentUserHasRight('ModifyCustomRole');
     }
 
-    return 1;
+    return $self->CurrentUserHasRight("ModifyAsset");
 }
 
 =head2 RoleGroup
