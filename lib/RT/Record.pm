@@ -943,16 +943,13 @@ sub Update {
         # items. If it fails, we don't care
         do {
             no warnings "uninitialized";
-
-            if ( $attribute ne 'Lifecycle' ) {
-                local $@;
-                my $name = eval {
-                    my $object = $attribute . "Obj";
-                    $self->$object->Name;
-                };
-                unless ($@) {
-                    next if $name eq $value || $name eq ( $value || 0 );
-                }
+            local $@;
+            my $name = eval {
+                my $object = $attribute . "Obj";
+                $self->$object->Name;
+            };
+            unless ($@) {
+                next if $name eq $value || $name eq ($value || 0);
             }
 
             next if $truncated_value eq $self->$attribute();
@@ -2181,7 +2178,7 @@ sub CustomFieldValueIsEmpty {
            : $self->LoadCustomFieldByIdentifier( $args{'Field'} );
 
     if ($cf) {
-        if ( $cf->__Value('Type') =~ /^Date(?:Time)?$/ ) {
+        if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
             my $DateObj = RT::Date->new( $self->CurrentUser );
             $DateObj->Set(
                 Format => 'unknown',
@@ -2592,9 +2589,7 @@ sub CustomDateRange {
         # Prefer the schedule/timezone specified in %ServiceAgreements for current object
         if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
             if ( my $config = RT->Config->Get('ServiceAgreements') ) {
-                if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
-                    $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
-                }
+                $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
 
                 # Each SLA could have its own schedule and timezone
                 if ( my $agreement = $config->{Levels}{ $self->SLA } ) {

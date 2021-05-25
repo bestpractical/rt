@@ -706,6 +706,33 @@ sub DeleteValue {
 }
 
 
+sub ValidateValue {
+    my $self = shift;
+    my $value = shift;
+
+    my $valid = $self->SUPER::ValidateValue($value);
+    warn "XXX super valid = $valid";
+    return 0 unless $valid;
+
+    # NB: ensuring that the value (including possibly an empty one)
+    #     matches any validation pattern defined is already checked in
+    #     AddValueForObject and DeleteValueForObject
+
+    # make sure the value is legal for Select custom fields
+    if ( $self->Type eq "Select" ) {
+        if ( $value ) {
+            my $cfvs = $self->Values;
+            while (my $cfv = $cfvs->Next) {
+                my $name = $cfv->Name;
+                return 1 if $name eq $value;
+            }
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
 =head2 ValidateQueue Queue
 
 Make sure that the name specified is valid

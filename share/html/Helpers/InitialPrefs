@@ -1,0 +1,66 @@
+<%args>
+$Update => 0,
+$PreferredKey => undef,
+</%args>
+<%init>
+my @results = ();
+my $UserObj = $session{'CurrentUser'}->UserObj;
+my $preferences = $UserObj->Preferences( $RT::System );
+
+if (defined($PreferredKey) and (not $UserObj->FirstAttribute('PreferredKey')
+        or $PreferredKey ne $UserObj->FirstAttribute('PreferredKey')->Content)) {
+    my ($code, $msg) = $UserObj->SetAttribute(Name => 'PreferredKey', Content => $PreferredKey);
+    push @results, loc('Preferred Key: [_1]', $msg) unless $code;
+}
+
+if ( $Update ) {
+    warn "XXX - updating";
+    $preferences ||= {};
+    $m->comp( '/Widgets/BulkProcess', Meta => {
+                map { $_ => RT->Config->Meta($_) } RT->Config->Options
+            },
+            Store => $preferences,
+            Types => [RT->Config->Options], Default => 1, Arguments => \%ARGS,
+            DefaultValue => { map { $_ => RT->Config->Get($_) }
+                RT->Config->Options
+            }, );
+
+    my ($ok, $msg) = $UserObj->SetPreferences( $RT::System, $preferences );
+    push @results, $ok ? loc("Preferences saved.") : $msg;
+    warn "XXX - updated";
+    $m->redirect( '/' );
+}
+</%init>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><&|/l&>Welcome to Vurious</&></h5>
+      <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
+    <div class="modal-body">
+        <p>Since this appears to be your first time accessing Vurious, please take a moment to help us better customize the experience for you.</p>
+        <form method="post" action="/Helpers/InitialPrefs" name="InitialPreferences" id="InitialPreferences">
+            <&|/Widgets/TitleBox, title => loc( 'Preferences' ) &>
+% my $option = 'EmailFrequency';  # 'DashboardEmailLanguage'
+% my $meta = RT->Config->Meta( $option );
+            <& $meta->{'Widget'},
+                Default      => 1,
+                %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments => $meta->{'WidgetArguments'} ) },
+                Name         => $option,
+                DefaultValue => scalar RT->Config->Get( $option ),
+                CurrentValue => $preferences->{ $option },
+            &>
+            </&>
+
+            <div class="form-row">
+                <div class="col-12">
+                    <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+% $m->abort;

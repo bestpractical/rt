@@ -1,0 +1,150 @@
+<%args>
+$key => ''
+</%args>
+<%init>
+my $has_help;
+my $help_class;
+my $help_content;
+
+# TODO: put in RT::Site::Siemens
+# TODO: add support for langs (cf?)
+sub GetArticleContent {
+    my $article_class = shift || return '';    # required
+    my $article_name = shift || return '';     # required
+    my $article_context = shift || "";         # optional
+    my $article_locales = shift || [];         # optional
+
+    # lookup the article class
+    my $Class = RT::Class->new( RT->SystemUser );
+    my ($ret, $msg) = $Class->Load( $article_class );
+    my $article_classid = $Class->Id;
+    if ($ret and $Class->Id) {
+        RT::Logger->debug("Found article class id: " . $Class->Id);
+    } else {
+        RT::Logger->debug("No article class found for '$article_class' : $msg");
+        return '';
+    }
+
+    # find the article of the given class
+    my $Article = RT::Article->new( RT->SystemUser );
+    ($ret, $msg) = $Article->LoadByCols( Name => $article_name, Class => $Class->Id );
+    if ( $Article and $Article->Id ) {
+        RT::Logger->debug("Found article id: " . $Article->Id);
+        my $class = $Article->ClassObj;
+        my $cfs = $class->ArticleCustomFields;
+        while (my $cf = $cfs->Next) {
+            if ($cf->Name eq 'Content') {
+                my $ocfvs = $Article->CustomFieldValues($cf->Id);
+                my $ocfv = $ocfvs->First;
+                return HTML::Mason::Commands::ScrubHTML($ocfv->Content);
+            }
+        }
+    } else {
+        RT::Logger->debug("No article found for '$article_name'");
+        return '';
+    }
+    return;
+}
+
+# TODO: put in RT::Site::Siemens
+sub GetArticleContentNext {
+    my $article_class = shift || return '';    # required
+    my $article_name = shift || return '';     # required
+    my $article_context = shift || "";         # optional
+    my $article_locales = shift || [];         # optional
+
+    # lookup the article class
+    my $cls = RT::Class->new( RT->SystemUser );
+    my ($ret, $msg) = $cls->Load( $article_class );
+    my $article_classid = $cls->Id;
+    if ($ret and $article_classid) {
+        RT::Logger->debug("Found article class id: $article_classid");
+    } else {
+        RT::Logger->debug("No article class found for '$article_class' : $msg");
+        return '';
+    }
+
+    # find the article of the given class
+    my $art = RT::Article->new( RT->SystemUser );
+    ($ret, $msg) = $art->LoadByCols( Name => $article_name, Class => $article_classid );
+    my $article_id = $art->Id;
+    if ( $ret and $article_id ) {
+        RT::Logger->debug("Found article id: $article_id");
+        my $cls = $art->ClassObj;
+        my $cfs = $cls->ArticleCustomFields;
+        while (my $cf = $cfs->Next) {
+            if ($cf->Name eq 'Content') {
+                my $ocfvs = $art->CustomFieldValues($cf->Id);
+                my $ocfv = $ocfvs->First;
+                return HTML::Mason::Commands::ScrubHTML($ocfv->Content);
+            }
+        }
+    } else {
+        RT::Logger->debug("No article found for '$article_name'");
+        return '';
+    }
+    return;
+}
+# TODO: put in RT::Site::Siemens
+#sub GetArticleContentWithClass {
+#    my $article_class = shift || return '';    # required
+#    my $article_name = shift || return '';     # required
+#    my $article_context = shift || "";         # optional
+#    my $article_locales = shift || [];         # optional
+#
+#    # lookup the article class
+#    my $cls = RT::Class->new( RT->SystemUser );
+#    my ($ret, $msg) = $cls->Load( $article_class );
+#    my $article_classid = $cls->Id;
+#    if ($ret and $cls->Id) {
+#        RT::Logger->debug("Found article class id: " . $cls->Id);
+#    } else {
+#        RT::Logger->debug("No article class found for '$article_class' : $msg");
+#        return '';
+#    }
+#
+#    # find the article of the given class
+#    my $articles = RT::Articles->new( RT->SystemUser );
+#    $articles->Limit({ FIELD => 'Name', OPERATOR => '=', VALUE => $article_name });
+#    $articles->Limit({ FIELD => 'Class', OPERATOR => '=', VALUE => $cls->Id, ENTRYAGGREGATOR => 'AND' });
+#    if ($article_context) {
+#        my $ctx_cf = RT::CustomField->new( RT->SystemUser );
+#        my ($ret, $msg) = $ctx_cf->Load( 'Context' );
+#        $articles->LimitCustomField({ FIELD => $ctx_cf->Name, OPERATOR => '=', VALUE => $article_context, ENTRYAGGREGATOR => 'AND' });
+#    }
+#    if ($article_locales->length) {
+#        my $loc_cf = RT::CustomField->new( RT->SystemUser );
+#        my ($ret, $msg) = $loc_cf->Load( 'Locale' );
+#        $articles->LimitCustomField({ FIELD => $loc_cf->Name, OPERATOR => '=', VALUE => $loc, ENTRYAGGREGATOR => 'AND' });
+#    }
+#    
+#    $Articles->LimitCustomField({ FIELD => '' })
+#    if ( $Article and $Article->Id ) {
+#        RT::Logger->debug("Found article id: " . $Article->Id);
+#        my $class = $Article->ClassObj;
+#        my $cfs = $class->ArticleCustomFields;
+#        while (my $cf = $cfs->Next) {
+#            my $ocfvs = $Article->CustomFieldValues($cf->Id);
+#            my $ocfv = $ocfvs->First;
+#            HTML::Mason::Commands::ScrubHTML($ocfv->Content);
+#        }
+#    } else {
+#        RT::Logger->debug("No article found for " . $article_name);
+#        return '';
+#    }
+#    return;
+#}
+
+if ($key) {
+    my $lh = $session{'CurrentUser'}->LanguageHandle;
+    my @locs = [ $lh->language_tag(), $lh->fallback_languages() ];
+    my $help_class = RT::Config->Get( 'PopupHelpArticleClass' ) || 'Help';
+    $help_content = GetArticleContent( $help_class, $key, \@locs ); 
+    $has_help = $help_content;
+}
+</%init>
+% if ($has_help) {
+<a class="popup-help" tabindex="0" role="button" data-toggle="popover" title="<% $key %>" data-content="<% $help_content %>" data-html="true" data-trigger="focus">
+    <img src="/static/images/question.svg" data-toggle="popover" title="<% $key %>" data-content="<% $help_content %>" data-html="true" data-trigger="focus" />
+</a>
+% }

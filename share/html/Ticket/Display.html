@@ -56,6 +56,11 @@
 <& Elements/ShowUpdateStatus, Ticket => $TicketObj &>
 <& Elements/ShowDependencyStatus, Ticket => $TicketObj &>
 
+<div border="2px solid #1278c6; margin: 10px; padding: 10px;">
+<button class="btn btn-danger" id="show-help">Show Help</button>
+<button class="btn btn-danger" id="hide-help">Hide Help</button>
+</div>
+
 % $m->callback( %ARGS, Ticket => $TicketObj, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowSummary' );
 
 <%PERL>
@@ -181,6 +186,7 @@ if ($ARGS{'id'} eq 'new') {
     my $SkipProcessing;
 
     $TicketObj->Atomic(sub{
+
         $m->callback( CallbackName => 'BeforeProcessArguments',
             TicketObj => $TicketObj,
             ActionsRef => \@Actions, ARGSRef => \%ARGS,

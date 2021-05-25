@@ -45,13 +45,27 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+
+<script>
+jQuery(document).ready(function () {
+    jQuery('[data-toggle="popover"]').popover({trigger: 'focus'})
+    jQuery('#show-help').click(function(e) { jQuery('.popup-help').show() })
+    jQuery('#hide-help').click(function(e) { jQuery('.popup-help').hide() })
+})
+</script>
+<style>
+.popup-help:active, .popup-help:hover { text-decoration: none; }
+.popup-help, .popup-help:focus { outline: none; }
+.popup-help img { padding: 3px; }
+</style>
+
 <div>
   <div class="id form-row">
-    <div class="label col-3"><&|/l&>Id</&>:</div>
+    <div class="label col-3"><&|/l&>Id</&><& /Elements/PopupHelp, key => 'Ticket Id' &>:</div>
     <div class="value col-9"><span><%$Ticket->Id %></span></div>
   </div>
   <div class="status form-row">
-    <div class="label col-3"><&|/l&>Status</&>:</div>
+    <div class="label col-3" data-rt-help-key="TicketStatus"><&|/l&>Status</&><& /Elements/PopupHelp, key => 'Ticket Status' &>:</div>
     <div class="value col-9"><span class="current-value"><% loc($Ticket->Status) %></span></div>
   </div>
 % if ( !$Ticket->QueueObj->SLADisabled ) {
@@ -113,7 +127,7 @@
 %# This will check SeeQueue at the ticket role level, queue level, and global level
 % if ($Ticket->CurrentUserHasRight('SeeQueue')) {
   <div class="queue form-row">
-    <div class="label col-3"><&|/l&>Queue</&>:</div>
+    <div class="label col-3"><&|/l&>Queue</&><& /Elements/PopupHelp, key => 'Ticket Queue' &>:</div>
     <div class="value col-9"><span class="current-value"><& ShowQueue, Ticket => $Ticket, QueueObj => $Ticket->QueueObj &></span></div>
   </div>
 % }
