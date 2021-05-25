@@ -1,0 +1,149 @@
+use strict;
+use warnings;
+
+our @Final = (
+    sub {
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit( FIELD => 'Name', VALUE => [ 'Pref-HomepageSettings', 'HomepageSettings' ], OPERATOR => 'IN' );
+    OUTER: while ( my $attr = $attrs->Next ) {
+            my $attr_id = $attr->Id;
+            my $object  = $attr->Object;
+            my $content = $attr->Content;
+
+            if ( $object && ( $object->isa('RT::User') || $object->isa('RT::System') ) && $content ) {
+                my $dashboard = RT::Dashboard->new( RT->SystemUser );
+                my $panes     = {};
+
+                for my $pane ( sort keys %$content ) {
+                    my $list = $content->{$pane} or next;
+                    for my $entry (@$list) {
+                        my $new_entry = { pane => $pane };
+                        if ( $entry->{type} eq 'system' ) {
+                            if ( my $name = $entry->{name} ) {
+                                my ($search)
+                                    = RT::System->new( RT->SystemUser )->Attributes->Named( 'Search - ' . $name );
+
+                                # Check user created system searches
+                                if ( !$search ) {
+                                    my (@searches)
+                                        = RT::System->new( RT->SystemUser )->Attributes->Named('SavedSearch');
+                                    for my $custom (@searches) {
+                                        if ( $custom->Description eq $entry->{name} ) {
+                                            $search = $custom;
+                                            last;
+                                        }
+                                    }
+                                }
+
+                                if ( $search ) {
+                                    $new_entry->{portlet_type} = 'search';
+                                    $new_entry->{id}           = $search->Id;
+                                    $new_entry->{description}  = "Saved Search: $name";
+                                    $new_entry->{privacy}      = 'RT::System-1';
+                                }
+                                else {
+                                    RT->Logger->warning(
+                                        "System search $name in attribute #$attr_id not found, skipping");
+                                    next;
+                                }
+                            }
+                            else {
+                                RT->Logger->warning("Missing system search name in attribute #$attr_id, skipping");
+                                next;
+                            }
+                        }
+                        elsif ( $entry->{type} eq 'saved' ) {
+                            if ( my $name = $entry->{name} ) {
+                                if ( $name =~ /(.+)-SavedSearch-(\d+)/ ) {
+                                    $new_entry->{privacy}      = $1;
+                                    $new_entry->{id}           = $2;
+                                    $new_entry->{portlet_type} = 'search';
+                                    my $search = RT::Attribute->new( RT->SystemUser );
+                                    $search->Load( $new_entry->{id} );
+                                    if ( $search->Id ) {
+                                        $new_entry->{description} = "Saved Search: " . $search->Description;
+                                    }
+                                    else {
+                                        RT->Logger->warning(
+                                            "Saved search $name in attribute #$attr_id not found, skipping");
+                                        next;
+                                    }
+                                }
+                                else {
+                                    RT->Logger->warning(
+                                        "System search $name in attribute #$attr_id not found, skipping");
+                                    next;
+                                }
+                            }
+                            else {
+                                RT->Logger->warning("Missing system search name in attribute #$attr_id, skipping");
+                                next;
+                            }
+                        }
+                        elsif ( $entry->{type} eq 'component' ) {
+                            $new_entry->{portlet_type} = 'component';
+                            $new_entry->{component}    = $entry->{name};
+                            $new_entry->{description}  = $entry->{name};
+                            $new_entry->{path}         = "/Elements/$entry->{name}";
+                        }
+                        else {
+                            RT->Logger->warning("Unsupported type $entry->{type} in attribute #$attr_id, skipping");
+                            next;
+                        }
+                        push @{$panes->{$pane}}, $new_entry;
+                    }
+                }
+
+                $RT::Handle->BeginTransaction;
+                my %new_values = (
+                    'Name'        => 'Dashboard',
+                    'Description' => 'Homepage',
+                    'Content'     => { Panes => $panes },
+                );
+
+                for my $field ( sort keys %new_values ) {
+                    my $method = "Set$field";
+                    my ( $ret, $msg ) = $attr->$method( $new_values{$field} );
+                    if ( !$ret ) {
+                        RT->Logger->error("Couldn't update $field of attribute #$attr_id: $msg");
+                        $RT::Handle->Rollback;
+                        next OUTER;
+                    }
+                }
+
+                my ( $id, $msg ) = $object->SetAttribute(
+                    'Name'        => $object->isa('RT::User') ? 'Pref-DefaultDashboard' : 'DefaultDashboard',
+                    'Description' => 'Default Dashboard',
+                    'Content'     => $attr_id,
+                );
+                if ($id) {
+                    $RT::Handle->Commit;
+                }
+                else {
+                    RT->Logger->error("Couldn't set DefaultDashboard to $id for attribute #$attr_id: $msg");
+                    $RT::Handle->Rollback;
+                }
+            }
+        }
+    },
+    sub {
+        my $acl = RT::ACL->new(RT->SystemUser);
+
+        # Grant dashboard rights so users with ModifySelf can still
+        # customize MyRT
+        $acl->Limit( FIELD => 'RightName', VALUE => 'ModifySelf' );
+        while ( my $ace = $acl->Next ) {
+            my $object = $ace->Object;
+            my $principal = $ace->PrincipalObj;
+
+            for my $right ( 'SeeOwnDashboard', 'CreateOwnDashboard', 'ModifyOwnDashboard', 'DeleteOwnDashboard' ) {
+                if ( !$principal->HasRight( Object => $object, Right => $right ) ) {
+                    my ( $ret, $msg ) = $principal->GrantRight( Object => $object, Right => $right );
+                    if ( !$ret ) {
+                        RT->Logger->error( "Couldn't grant $right to user #" . $object->Id . ": $msg" );
+                    }
+                }
+            }
+        }
+    },
+);

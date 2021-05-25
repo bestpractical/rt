@@ -45,58 +45,25 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title  &>
-<& /Elements/Tabs &>
-<& /Elements/ListActions, actions => \@actions &>
 
-<&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-lg" &>
-<form method="post" action="MyRT.html" name="UpdateSearches" class="mx-auto max-width-lg">
-  <input type="hidden" name="id" value="<% $id %>" />
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/SelectDashboard, Dashboards => [ GetDashboards( CurrentUser => $UserObj ) ], Default => $default_dashboard_id &>
-    </div>
+% for my $dashboard ( @Dashboards ) {
+%   next if !$ShowEmpty && !$dashboard->{id};
+  <div class="custom-control custom-radio">
+    <input type="radio" id="<% "$Name-$dashboard->{id}" %>" name="<% $Name %>" class="custom-control-input" value="<% $dashboard->{id} %>" <% $dashboard->{id} == $Default ? ' checked="checked"': '' |n %>>
+    <label class="custom-control-label" for="<% "$Name-$dashboard->{id}" %>">
+%   if ( $dashboard->{link} ) {
+      <a href="<% $dashboard->{link} %>" target="_blank"><% $dashboard->{name} %></a>
+%   } else {
+      <% $dashboard->{name} %>
+%   }
+    </label>
   </div>
-  <div class="form-row">
-    <div class="col-12">
-      <& /Elements/Submit, Name => "UpdateDefaultDashboard", Label => loc('Save') &>
-    </div>
-  </div>
-</form>
-</&>
+% }
 
-<%init>
-my @actions;
-my $UserObj = RT::User->new($session{'CurrentUser'});
-$UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
-my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
 
-my $default_dashboard_id = $UserObj->Preferences( DefaultDashboard => 0 );
-
-if ( $ARGS{UpdateDefaultDashboard} && defined $ARGS{DefaultDashboard} ) {
-    my ( $ret, $msg );
-    if ( $ARGS{DefaultDashboard} ) {
-        ( $ret, $msg ) = $UserObj->SetPreferences( 'DefaultDashboard', $ARGS{DefaultDashboard} );
-    }
-    else {
-        if ( $default_dashboard_id ) {
-            ( $ret, $msg ) = $UserObj->DeletePreferences( 'DefaultDashboard' );
-        }
-        else {
-            $ret = 1;
-        }
-    }
-
-    push @actions, $ret ? loc('Preferences saved for user [_1].', $UserObj->Name) : $msg;
-
-    MaybeRedirectForResults(
-        Actions   => \@actions,
-        Path      => "/Admin/Users/MyRT.html",
-        Arguments => { id => $id },
-    );
-}
-
-</%INIT>
 <%ARGS>
-  $id => undef
+$Name => 'DefaultDashboard'
+@Dashboards => ()
+$Default => 0
+$ShowEmpty => 1
 </%ARGS>
