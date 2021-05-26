@@ -2766,7 +2766,6 @@ sub _OverlayAccessible {
     {
         EffectiveId       => { 'read' => 1,  'write' => 1,  'public' => 1 },
           Queue           => { 'read' => 1,  'write' => 1 },
-          Requestors      => { 'read' => 1,  'write' => 1 },
           Owner           => { 'read' => 1,  'write' => 1 },
           Subject         => { 'read' => 1,  'write' => 1 },
           InitialPriority => { 'read' => 1,  'write' => 1 },
