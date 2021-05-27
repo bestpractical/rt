@@ -100,6 +100,58 @@ my $COLUMN_MAP = {
         },
 
     },
+    RemoveCheckBox => {
+        title => sub {
+            my $name = 'RemoveCustomRole';
+            my $checked = $DECODED_ARGS->{ $name .'All' }? 'checked="checked"': '';
+
+            return \qq{<input type="checkbox" name="}, $name, \qq{All" value="1" $checked
+                              onclick="setCheckbox(this, },
+                              $m->interp->apply_escapes($name,'j'),
+                              \qq{)" />};
+        },
+        value => sub {
+            my $id   = $_[0]->id;
+            my $name = 'RemoveCustomRole';
+            my $arg  = $DECODED_ARGS->{$name};
+
+            my $checked = '';
+            if ( $arg && ref $arg ) {
+                $checked = 'checked="checked"' if grep $_ == $id, @$arg;
+            }
+            elsif ( $arg ) {
+                $checked = 'checked="checked"' if $arg == $id;
+            }
+            return \qq{<input type="checkbox" name="}, $name, \qq{" value="$id" $checked />}
+        },
+    },
+    MoveCR => {
+        title => 'Move',
+        value => sub {
+            return '' unless $_[0]->IsAdded( $_[2] );
+
+            my $id      = $_[0]->id;
+            my $name = 'MoveCustomRole';
+            my $args = $m->caller_args( 1 );
+            my @pass = ref $args->{'PassArguments'}
+                ? @{$args->{'PassArguments'}}
+                : ($args->{'PassArguments'});
+            my %pass = map { $_ => $args->{$_} } grep exists $args->{$_}, @pass;
+
+            my $uri = RT->Config->Get('WebPath') . $m->request_path;
+
+            my @res = (
+                \'<a href="',
+                $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveCustomRoleUp => $id ),
+                \'">', loc('~[Up~]'), \'</a>',
+                \' <a href="',
+                $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveCustomRoleDown => $id ),
+                \'">', loc('~[Down~]'), \'</a>'
+            );
+
+            return @res;
+        },
+    },
 };
 
 </%ONCE>

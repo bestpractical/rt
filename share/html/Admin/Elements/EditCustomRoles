@@ -1,0 +1,170 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%#
+%# COPYRIGHT:
+%#
+%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%#                                          <sales@bestpractical.com>
+%#
+%# (Except where explicitly superseded by other copyright notices)
+%#
+%#
+%# LICENSE:
+%#
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%#
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%#
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%#
+%#
+%# CONTRIBUTION SUBMISSION POLICY:
+%#
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%#
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%#
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%RT->Config->Get('WebPath')%><% $m->request_comp->path |n %>" method="post" name="EditCustomRoles">
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
+
+<h2><&|/l&>Selected Custom Roles</&></h2>
+<& /Elements/CollectionList,
+    %ARGS,
+    Collection    => $added_crs,
+    Rows          => 0,
+    Page          => 1,
+    Format        => $format,
+    DisplayFormat => $display_format,
+    AllowSorting  => 0,
+    ShowEmpty     => 0,
+    PassArguments => [
+        qw(Page Order OrderBy id),
+    ],
+&>
+
+<h2><&|/l&>Unselected Custom Roles</&></h2>
+<& /Elements/CollectionList,
+    OrderBy       => 'Name',
+    Order         => 'ASC',
+    %ARGS,
+    Collection    => $not_added_crs,
+    Rows          => $rows,
+    Format        => $format,
+    DisplayFormat => "'__CheckBox.{AddCustomRole}__',". $format,
+    AllowSorting  => 1,
+    ShowEmpty     => 0,
+    PassArguments => [
+        qw(Page Order OrderBy id),
+    ],
+&>
+
+<& /Elements/Submit, Name => 'UpdateCRs' &>
+</form>
+
+
+<%INIT>
+my $id = $Object->Id or Abort( loc("Invalid object") );
+
+if ( !$Object->CurrentUserHasRight('AdminCustomRoles') ) {
+    $m->out( '<p><i>', loc('(No custom roles)'), '</i></p>' );
+    return;
+}
+
+my @results;
+
+## deal with moving sortorder of custom roles
+if ( $MoveCustomRoleUp ) {
+    my $record = RT::ObjectCustomRole->new( $session{'CurrentUser'} );
+    $record->LoadByCols( ObjectId => $id, CustomRole => $MoveCustomRoleUp );
+    unless ( $record->id ) {
+        push @results, loc("Custom role #[_1] is not applied to this object", $MoveCustomRoleUp);
+        last;
+    }
+
+    my ( $status, $msg ) = $record->MoveUp;
+    push @results, $msg;
+}
+if ( $MoveCustomRoleDown ) {
+    my $record = RT::ObjectCustomRole->new( $session{'CurrentUser'} );
+    $record->LoadByCols( ObjectId => $id, CustomRole => $MoveCustomRoleDown );
+    unless ( $record->id ) {
+        push @results, loc("Custom role #[_1] is not applied to this object", $MoveCustomRoleDown);
+        last;
+    }
+
+    my ( $status, $msg ) = $record->MoveDown;
+    push @results, $msg;
+}
+
+if ( $UpdateCRs ) {
+    for my $cr_id ( @AddCustomRole ) {
+        my $cr = RT::CustomRole->new( $session{'CurrentUser'} );
+        $cr->Load( $cr_id );
+        unless ( $cr->id ) {
+            push @results, loc("Couldn't load CustomRole #[_1]", $cr_id);
+            next;
+        }
+        my ( $status, $msg ) = $cr->AddToObject($id);
+        push @results, $msg;
+    }
+    for my $cr_id ( @RemoveCustomRole ) {
+        my $cr = RT::CustomRole->new( $session{'CurrentUser'} );
+        $cr->Load( $cr_id );
+        unless ( $cr->id ) {
+            push @results, loc("Couldn't load CustomRole #[_1]", $cr_id);
+            next;
+        }
+        my ( $status, $msg ) = $cr->RemoveFromObject($id);
+        push @results, $msg;
+    }
+}
+
+$m->callback( CallbackName => 'UpdateExtraFields', Results => \@results, Object => $Object, %ARGS );
+
+my $added_crs = RT::CustomRoles->new( $session{'CurrentUser'} );
+$added_crs->LimitToObjectId($id);
+$added_crs->ApplySortOrder;
+
+my $not_added_crs = RT::CustomRoles->new( $session{'CurrentUser'} );
+$not_added_crs->LimitToNotAdded( $id );
+
+my $format = RT->Config->Get('AdminSearchResultFormat')->{'CustomRoles'};
+my $rows = RT->Config->Get('AdminSearchResultRows')->{'CustomRoles'} || 50;
+
+my $display_format = $id
+            ? ("'__RemoveCheckBox.{$id}__',". $format .", '__MoveCR.{$id}__'")
+            : ("'__CheckBox.{RemoveCustomRole}__',". $format .", '__MoveCR.{$id}__'");
+$m->callback( CallbackName => 'EditDisplayFormat', DisplayFormat => \$display_format, id => $id );
+
+</%INIT>
+<%ARGS>
+$Object
+$UpdateCRs           => undef
+@RemoveCustomRole   => ()
+@AddCustomRole      => ()
+$MoveCustomRoleUp   => undef
+$MoveCustomRoleDown => undef
+</%ARGS>
