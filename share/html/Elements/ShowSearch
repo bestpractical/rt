@@ -68,13 +68,27 @@ my $class = 'RT::Tickets';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
-    unless ( $container_object ) {
-        $m->out(loc("Either you have no rights to view saved search [_1] or identifier is incorrect", $m->interp->apply_escapes($SavedSearch, 'h')));
-        return;
-    }
     $search = RT::Attribute->new( $session{'CurrentUser'} );
-    $search->Load($search_id);
-    unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
+    $search->Load($search_id) if $search_id;
+
+    if ( $search->Id ) {
+
+        # $container_object is undef if it's another user's personal saved
+        # search. We need to explicitly exclude this case as
+        # CurrentUserHasRight doesn't handle that.
+        if ( $container_object && $search->CurrentUserHasRight('display') ) {
+            $SearchArg = $search->Content;
+        }
+        else {
+            RT->Logger->debug( "User "
+                    . $session{CurrentUser}->Name
+                    . " does not have rights to view saved search: "
+                    . $search->__Value('Description')
+                    . "($SavedSearch)" );
+            return;
+        }
+    }
+    else {
         $m->out(loc("Saved search [_1] not found", $m->interp->apply_escapes($SavedSearch, 'h'))) unless $IgnoreMissing;
         return;
     }
