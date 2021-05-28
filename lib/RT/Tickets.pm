@@ -646,10 +646,17 @@ sub _DateLimit {
         );
     }
 
-    my $date = RT::Date->new( $sb->CurrentUser );
-    $date->Set( Format => 'unknown', Value => $value );
+    my $date;
+    # this is to make queries like "Due > 0" still work
+    $rest{QUOTEVALUE} = 1 if $value eq '0';
 
-    if ( $op eq "=" ) {
+    if ( $rest{QUOTEVALUE} ) {
+        $date = RT::Date->new( $sb->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+    }
+
+
+    if ( $op eq "=" && $date ) {
 
         # if we're specifying =, that means we want everything on a
         # particular single day.  in the database, we need to check for >
@@ -685,7 +692,7 @@ sub _DateLimit {
             FUNCTION => $sb->NotSetDateToNullFunction,
             FIELD    => $meta->[1],
             OPERATOR => $op,
-            VALUE    => $date->ISO,
+            VALUE    => $date ? $date->ISO : $value,
             %rest,
         );
     }
@@ -1283,7 +1290,15 @@ sub _CustomFieldDecipher {
     $lookuptype ||= $self->_SingularClass->CustomFieldLookupType;
 
     my ($object, $field, $column) = ($string =~ /^(?:(.+?)\.)?\{(.+)\}(?:\.(Content|LargeContent))?$/);
-    $field ||= ($string =~ /^\{(.*?)\}$/)[0] || $string;
+    if ( !$field ) {
+        if ($string =~ /^(?:(\w+?)|\{(.*?)\})(?:\.(Content|LargeContent))?$/) {
+            $field = $1 || $2;
+            $column = $3;
+        }
+        else {
+            $field = $string;
+        }
+    }
 
     my ($cf, $applied_to);
 
@@ -3307,8 +3322,8 @@ sub _parser {
             $ea = $node->getParent->getNodeValue if $node->getIndex > 0;
             return $self->_OpenParen unless $node->isLeaf;
 
-            my ($key, $subkey, $meta, $op, $value, $bundle)
-                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle/};
+            my ($key, $subkey, $meta, $op, $value, $bundle, $quote_value)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle QuoteValue/};
 
             # normalize key and get class (type)
             my $class = $meta->[0];
@@ -3322,13 +3337,91 @@ sub _parser {
             my $sub = $dispatch{ $class }
                 or die "No dispatch method for class '$class'";
 
+            if ( defined $quote_value && !$quote_value && $value !~ /^(?:[+-]?[0-9]+|NULL)$/i ) {
+                my ( $class, $field );
+
+                # e.g. CF.Foo or CF.{Beta Date}
+                if ( $value =~ /^CF\.(?:\{(.*)}|(.*?))(?:\.(Content|LargeContent))?$/i ) {
+                    my $cf = $1 || $2;
+                    $field = $3 || 'Content';
+                    my ( $ocfvalias ) = $self->_CustomFieldJoin( $cf, $cf );
+                    $value = "$ocfvalias.$field";
+                    $class = 'RT::ObjectCustomFieldValues';
+                }
+                # e.g. ObjectCustomFieldValues_1.Content
+                elsif ( $value =~ /^(\w+?)(?:_\d+)?\.(\w+)$/ ) {
+                    my $table = $1;
+                    $field = $2;
+                    $class = $table =~ /main/i ? 'RT::Tickets' : "RT::$table";
+                }
+                else {
+                    $class = 'RT::Tickets';
+                    $field = $value;
+                }
+
+                my $valid;
+                if ( $class->can('RecordClass')
+                    and ( my $record_class = $class->RecordClass ) )
+                {
+                    $valid = $record_class->_ClassAccessible->{$field}
+                        && $record_class->_ClassAccessible->{$field}{read};
+                }
+
+                die $self->loc( "Wrong query, no such column '[_1]' in '[_2]'", $value, $string ) unless $valid;
+
+                # In case the column(e.g. LastUpdated) is defined in multiple tables
+                $value = "main.$value" if $class eq 'RT::Tickets' && $value =~ /^\w+$/;
+
+                if ( $class eq 'RT::ObjectCustomFieldValues' ) {
+                    if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                        my $cast_to;
+                        if ($subkey) {
+
+                            # like Requestor.id
+                            if ( $subkey eq 'id' ) {
+                                $cast_to = 'INTEGER';
+                            }
+                        }
+                        elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
+                            if ( $meta->{is_numeric} ) {
+                                $cast_to = 'INTEGER';
+                            }
+                            elsif ( $meta->{type} eq 'datetime' ) {
+                                $cast_to = 'TIMESTAMP';
+                            }
+                        }
+
+                        $value = "CAST($value AS $cast_to)" if $cast_to;
+                    }
+                    elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+                        if ($subkey) {
+
+                            # like Requestor.id
+                            if ( $subkey eq 'id' ) {
+                                $value = "TO_NUMBER($value)";
+                            }
+                        }
+                        elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
+                            if ( $meta->{is_numeric} ) {
+                                $value = "TO_NUMBER($value)";
+                            }
+                            elsif ( $meta->{type} eq 'datetime' ) {
+                                $value = "TO_DATE($value,'YYYY-MM-DD HH24:MI:SS')";
+                            }
+                        }
+                    }
+                }
+            }
+
             # A reference to @res may be pushed onto $sub_tree{$key} from
             # above, and we fill it here.
-            $sub->( $self, $key, $op, $value,
-                    ENTRYAGGREGATOR => $ea,
-                    SUBKEY          => $subkey,
-                    BUNDLE          => $bundle,
-                  );
+            $sub->(
+                $self, $key, $op, $value,
+                ENTRYAGGREGATOR => $ea,
+                SUBKEY          => $subkey,
+                BUNDLE          => $bundle,
+                defined $quote_value ? ( QUOTEVALUE => $quote_value ) : (),
+            );
         },
         sub {
             my $node = shift;

@@ -244,7 +244,7 @@ sub __LinearizeTree {
 
             if ( $op =~ /^IS( NOT)?$/i ) {
                 $value = 'NULL';
-            } elsif ( $value !~ /^[+-]?[0-9]+$/ ) {
+            } elsif ( $clause->{QuoteValue} ) {
                 $value =~ s/(['\\])/\\$1/g;
                 $value = "'$value'";
             }
@@ -293,7 +293,7 @@ sub ParseSQL {
     $callback{'CloseParen'} = sub { $node = $node->getParent };
     $callback{'EntryAggregator'} = sub { $node->setNodeValue( $_[0] ) };
     $callback{'Condition'} = sub {
-        my ($key, $op, $value) = @_;
+        my ($key, $op, $value, $value_is_quoted) = @_;
 
         my ($main_key, $subkey) = split /[.]/, $key, 2;
 
@@ -309,9 +309,14 @@ sub ParseSQL {
         # Hardcode value for IS / IS NOT
         $value = 'NULL' if $op =~ /^IS( NOT)?$/i;
 
-        my $clause = { Key => $main_key, Subkey => $subkey,
-                       Meta => $field{ $main_key },
-                       Op => $op, Value => $value };
+        my $clause = {
+            Key           => $main_key,
+            Subkey        => $subkey,
+            Meta          => $field{$main_key},
+            Op            => $op,
+            Value         => $value,
+            QuoteValue    => $value_is_quoted,
+        };
         $node->addChild( __PACKAGE__->new( $clause ) );
     };
     $callback{'Error'} = sub { push @results, @_ };
