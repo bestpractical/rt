@@ -54,7 +54,7 @@ use Role::Basic;
 use Scalar::Util qw(blessed);
 
 # Set this to true to lazily create role groups
-our $LAZY_ROLE_GROUPS;
+our $LAZY_ROLE_GROUPS = 0;
 
 =head1 NAME
 
@@ -811,5 +811,31 @@ sub LabelForRole {
     return $role->{Name};
 }
 
+=head1 OPTIONS
+
+=head2 Lazy Role Groups
+
+Role groups are typically created for all roles on a ticket or asset when
+that object is created. If you are creating a large number of tickets or
+assets automatically (e.g., with an automated import process) and you use
+custom roles in addition to core roles, this requires many additional rows
+to be created for each base ticket or asset. This adds time to the create
+process for each ticket or asset.
+
+Roles support a lazy option that will defer creating the underlying role
+groups until the object is accessed later. This speeds up the initial
+create process with minimal impact if tickets or assets are accessed
+individually later (like a user loading a ticket and working on it).
+
+This lazy behavior is off by default for backward compatibility. To
+enable it, set this package variable:
+
+    $RT::Record::Role::Roles::LAZY_ROLE_GROUPS = 1;
+
+If you are evaluating this option for performance, it's worthwhile to
+benchmark your ticket or asset create process before and after to confirm
+you see faster create times.
+
+=cut
 
 1;
