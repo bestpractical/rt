@@ -68,7 +68,13 @@
 % if ( $Dirty ) {
 <input type="submit" class="button btn btn-primary mr-1" name="SavedSearchRevert" value="<%loc('Revert')%>" />
 % }
-<input type="submit" class="button btn btn-primary mr-1" name="SavedSearchDelete" value="<%loc('Delete')%>" />
+<input class="button btn btn-primary mr-1"
+% if ( $Object && $Object->Id && $Object->DependedOnBy->Count ) {
+  type="button" data-toggle="modal" data-target="#delete-saved-search-confirm-modal"
+% } else {
+  type="submit"
+% }
+  name="SavedSearchDelete" value="<%loc('Delete')%>" />
 % if ( $AllowCopy ) {
 <input type="submit" class="button btn btn-primary mr-1" name="SavedSearchCopy"   value="<%loc('Save as New')%>" />
 % }
@@ -79,6 +85,17 @@
 % } elsif ( !$Object ) {
 <input type="submit" class="button btn btn-primary mr-1" id="SavedSearchSave" name="SavedSearchSave"   value="<%loc('Save')%>" />
 %}
+    </div>
+  </div>
+% }
+
+% if ( $Object && $Object->Id && $Object->DependedOnBy->Count ) {
+  <div class="form-row">
+    <div class="label col-4"><&|/l&>Depended on by</&>:</div>
+    <div class="col-8">
+      <span class="form-control current-value">
+        <a href="#" data-toggle="modal" data-target="#saved-search-depended-on-by-list-modal"><% loc('View') %></a>
+      </span>
     </div>
   </div>
 % }
@@ -94,6 +111,48 @@
 
 </&>
 </div>
+
+% if ( $Object && $Object->Id && $Object->DependedOnBy->Count ) {
+<div class="modal" id="delete-saved-search-confirm-modal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><&|/l&>Really Delete?</&></h5>
+        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <div class="modal-body">
+        <& SELF:GetDependedOnByList, Object => $Object &>
+      </div>
+      <div class="modal-footer">
+        <div class="form-row justify-content-end">
+          <div class="col-auto">
+            <input type="submit" class="button btn btn-primary" name="SavedSearchDelete" value="<% loc('Delete') %>" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="saved-search-depended-on-by-list-modal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><&|/l&>Depended On By List</&></h5>
+        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <div class="modal-body">
+        <& SELF:GetDependedOnByList, Object => $Object &>
+      </div>
+    </div>
+  </div>
+</div>
+% }
+
 <%INIT>
 return unless $session{'CurrentUser'}->HasRight(
     Right  => 'LoadSavedSearch',
@@ -368,4 +427,31 @@ else {
 return @results;
 
 </%INIT>
+</%METHOD>
+
+<%METHOD GetDependedOnByList>
+
+  <p>
+    <&|/l&>This search is used in these dashboards/homepages</&>:
+  </p>
+  <ul class="saved-search-depended-on-by-list list-group-compact">
+% my $links = $Object->DependedOnBy;
+% while ( my $link = $links->Next ) {
+    <li class="list-group-item">
+%   if ( $link->BaseObj->Name eq 'Dashboard' ) {
+      <a href="<% $link->BaseURI->Resolver->HREF %>" target="_blank"><% $link->BaseURI->AsString %></a>
+%   } elsif ( $link->BaseObj->ObjectType eq 'RT::System' ) {
+      <% loc('Global') %>
+%   } elsif ( $link->BaseObj->ObjectType eq 'RT::User' ) {
+      <% loc('User') %>: <& /Elements/ShowUser, User => $link->BaseObj->Object, LinkTarget => '_blank' &>
+%   } else {
+      <% $link->BaseObj->ObjectType %>: #<% $link->BaseObj->ObjectId %>
+%   }
+    </li>
+% }
+  </ul>
+
+<%ARGS>
+$Object
+</%ARGS>
 </%METHOD>

@@ -58,6 +58,7 @@ my %MODULES = (
     '2.4' => {
         "mod_perl" => [qw(mpm_worker authz_core authn_core authz_host env alias perl)],
         "fastcgi"  => [qw(mpm_worker authz_core authn_core authz_host env alias mime fastcgi)],
+        "fcgid"  => [qw(mpm_prefork authz_core authn_core authz_host env alias mime fcgid)],
     },
 );
 
@@ -242,6 +243,7 @@ sub apache_server_info {
         if $mpm;
     print $tmp "ErrorLog /dev/null\n";
     print $tmp "TransferLog /dev/null\n";
+    print $tmp "ServerName localhost\n";
     close $tmp;
     $info = `$res{executable} -V -f $tmp`;
     my %opts = ($info =~ m/^\s*-D\s+([A-Z_]+?)(?:="(.*)")$/mg);

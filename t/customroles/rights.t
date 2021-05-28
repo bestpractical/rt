@@ -80,7 +80,8 @@ sub sales_has_rights_for_inbox_individual {
     my $has_right = shift;
     my $rationale = shift || '';
 
-    my $t = $inbox_individual;
+    my $t = RT::Ticket->new( RT->SystemUser );
+    $t->Load($inbox_individual->Id);
 
     if ($has_right) {
         is($t->RoleAddresses($sales->GroupType), (join ', ', sort $moss->EmailAddress, $ricky->EmailAddress), 'got salespeople');
@@ -129,7 +130,8 @@ sub sales_has_rights_for_inbox_group {
     my $has_right = shift;
     my $rationale = shift || '';
 
-    my $t = $inbox_group;
+    my $t = RT::Ticket->new( RT->SystemUser );
+    $t->Load($inbox_group->Id);
 
     if ($has_right) {
         is($t->RoleAddresses($sales->GroupType), (join ', ', sort $moss->EmailAddress, $ricky->EmailAddress, $blake->EmailAddress, $williamson->EmailAddress), 'got all salespeople');
@@ -161,7 +163,8 @@ sub sales_has_rights_for_specs_individual {
     my $has_right = shift;
     my $rationale = shift || '';
 
-    my $t = $specs_individual;
+    my $t = RT::Ticket->new( RT->SystemUser );
+    $t->Load($specs_individual->Id);
 
     if (!$has_right) {
         is($t->RoleAddresses($sales->GroupType), '', "got no salespeople $rationale");

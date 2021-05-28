@@ -621,6 +621,16 @@ our %META;
             $config->Set( InlineEditPanelBehavior => %$behavior );
         },
     },
+    ShowSearchNavigation => {
+        Section     => 'Ticket display',
+        Overridable => 1,
+        SortOrder   => 13,
+        Widget      => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Show search navigation', # loc
+            Hints       => 'Show search navigation links of "First", "Last", "Prev" and "Next"', # loc
+        }
+    },
 
     # User overridable locale options
     DateTimeFormat => {

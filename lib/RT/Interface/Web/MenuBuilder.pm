@@ -480,7 +480,9 @@ sub BuildMainNav {
                 ) if $can->('ModifyTicket')
                   && $HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
-                if ( defined $HTML::Mason::Commands::session{"collection-RT::Tickets"} ) {
+                if ( RT::Config->Get( 'ShowSearchNavigation', $current_user )
+                    && defined $HTML::Mason::Commands::session{"collection-RT::Tickets"} )
+                {
                     # we have to update session data if we get new ItemMap
                     my $updatesession;
                     $updatesession = 1 unless ( $HTML::Mason::Commands::session{"collection-RT::Tickets"}->{'item_map'} );
@@ -617,12 +619,11 @@ sub BuildMainNav {
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
                 } qw(Query Format OrderBy Order Page Class ObjectType ResultPage ExtraQueryParams),
             ),
-            RowsPerPage => (
-                defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
-                ? $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
-                : $current_search->{'RowsPerPage'}
-            ),
         );
+
+        if ( defined ( my $rows = $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'} // $current_search->{'RowsPerPage'} ) ) {
+            $fallback_query_args{RowsPerPage} = $rows;
+        }
 
         if ( my $extra_params = $fallback_query_args{ExtraQueryParams} ) {
             for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
@@ -844,12 +845,11 @@ sub BuildMainNav {
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
                 } qw(Query Format OrderBy Order Page)
             ),
-            RowsPerPage => (
-                defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
-                ? $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
-                : $current_search->{'RowsPerPage'}
-            ),
         );
+
+        if ( defined ( my $rows = $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'} // $current_search->{'RowsPerPage'} ) ) {
+            $fallback_query_args{RowsPerPage} = $rows;
+        }
 
         if ($query_string) {
             $args = '?' . $query_string;
@@ -1369,6 +1369,7 @@ sub _BuildAdminMenu {
                 my $txn_cfs = $cfs->child( 'transactions' => title => loc('Transactions'),
                     path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction;id='.$id );
 
+                $queue->child( 'custom-roles' => title => loc('Custom Roles'), path => "/Admin/Queues/CustomRoles.html?id=".$id );
                 $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
                 $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
                 $queue->child( 'history' => title => loc('History'), path => "/Admin/Queues/History.html?id=" . $id );

@@ -54,6 +54,8 @@
 
 <form action="<% RT->Config->Get('WebPath') %>/Admin/Groups/Members.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Group->Id%>" />
+<input type="hidden" class="hidden" name="Rows" value="<% $Rows %>" />
+<input type="hidden" class="hidden" name="Page" value="<% $Page %>" />
 
 % $m->callback(CallbackName => 'BeforeEditMembership', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Group => $Group);
 
@@ -68,16 +70,12 @@
 % } else {
       <h4><&|/l&>Users</&></h4>
 % my $Users = $Group->UserMembersObj( Recursively => 0 );
-<%perl>
-my @users = map {$_->[1]}
-            sort { lc($a->[0]) cmp lc($b->[0]) }
-            map { [$_->Format, $_] }
-            @{ $Users->ItemsArrayRef };
-</%perl>
+% $Users->RowsPerPage($Rows);
+% $Users->GotoPage($Page - 1);
       <ul class="list-group list-group-compact">
-% for my $user (@users) {
+% while ( my $user = $Users->Next ) {
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
-% my $id= 'DeleteMember-' . $user->PrincipalObj->Id;
+% my $id = 'DeleteMember-' . $user->PrincipalObj->Id;
         <li class="list-group-item">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" class="checkbox custom-control-input" id="<% $id %>" name="<% $id %>" value="1" />
@@ -88,16 +86,17 @@ my @users = map {$_->[1]}
       </ul>
       <h4><&|/l&>Groups</&></h4>
       <ul class="list-group list-group-compact">
-% my $GroupMembers = $Group->MembersObj;
-% $GroupMembers->LimitToGroups();
-% while ( my $member = $GroupMembers->Next ) {
-% $GroupsSeen{ $member->MemberId } = 1 if $SkipSeenGroups;
-% my $id= 'DeleteMember-' .  $member->MemberId;
+% my $Groups = $Group->GroupMembersObj( Recursively => 0 );
+% $Groups->RowsPerPage($Rows);
+% $Groups->GotoPage($Page - 1);
+% while ( my $group = $Groups->Next ) {
+% $GroupsSeen{ $group->id } = 1 if $SkipSeenGroups;
+% my $id= 'DeleteMember-' .  $group->id;
       <li class="list-group-item">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" class="checkbox custom-control-input" id="<% $id%>" name="<% $id %>" value="1" />
           <label class="custom-control-label" for="<% $id %>">
-            <a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $member->MemberObj->Object->id %>"><% $member->MemberObj->Object->Name %></a>
+            <a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $group->id %>"><% $group->Name %></a>
           </label>
         </div>
       </li>
@@ -113,6 +112,18 @@ my @users = map {$_->[1]}
         SkipUsers => \%UsersSeen, SkipGroups => \%GroupsSeen &>
   </div>
 </div>
+
+% if ( $Pages ) {
+    <& /Elements/CollectionListPaging,
+        BaseURL     => '?',
+        Rows        => $Rows,
+        TotalFound  => $TotalFound,
+        CurrentPage => $Page,
+        Pages       => $Pages,
+        URLParams   => { map { $_ => $ARGS{$_} } qw/id Rows Page/ },
+    &>
+% }
+
 </&>
   <div class="form-row">
     <div class="col-12">
@@ -197,6 +208,23 @@ foreach my $member (grep $_, @AddMembersGroups) {
     my ($val, $msg) = $Group->AddMember($principal->PrincipalId);
     push (@results, $msg);
 }
+
+$Rows ||= 50;
+$Page ||= 1;
+my $TotalFound = $Group->UserMembersObj( Recursively => 0 )->Count;
+if ( my $group_count = $Group->GroupMembersObj( Recursively => 0 )->Count ) {
+    $TotalFound = $group_count if $TotalFound < $group_count;
+}
+
+my $Pages;
+if ( $TotalFound && $TotalFound > $Rows ) {
+    $Pages = int( $TotalFound / $Rows ) + ( $TotalFound % $Rows ? 1 : 0 );
+    # This could happen if admin deletes records on the last page.
+    $Page = $Pages if $Page > $Pages;
+}
+else {
+    $Page = 1;
+}
 </%INIT>
 
 <%ARGS>
@@ -205,4 +233,6 @@ foreach my $member (grep $_, @AddMembersGroups) {
 $id => undef
 $SkipSeenUsers => 1
 $SkipSeenGroups => 1
+$Rows => RT->Config->Get('AdminSearchResultRows')->{Users}
+$Page => 1
 </%ARGS>

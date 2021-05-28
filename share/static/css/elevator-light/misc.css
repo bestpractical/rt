@@ -141,3 +141,8 @@ h1#transaction-extra-info {
     font-size: 1.4rem;
     padding-top: 0.4rem;
 }
+
+/* Prevent page links from running off the side of the page for Firefox */
+span.pagenum {
+    display: inline-block;
+}

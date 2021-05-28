@@ -279,9 +279,21 @@ sub Roles {
     my $self = shift;
     my %attr = @_;
 
-    return   map { $_->[0] }
+    my $key  = join ',', @_;
+    return @{ $self->{_Roles}{$key} } if ref($self) && $self->{_Roles}{$key};
+
+    my @roles =  map { $_->[0] }
             sort {   $a->[1]{SortOrder} <=> $b->[1]{SortOrder}
                   or $a->[0] cmp $b->[0] }
+            map {
+                if ( ref $self && $self->Id && $_->[0] =~ /^RT::CustomRole-(\d+)/ ) {
+                    my $id  = $1;
+                    my $ocr = RT::ObjectCustomRole->new( $self->CurrentUser );
+                    $ocr->LoadByCols( ObjectId => $self->Id, CustomRole => $id );
+                    $_->[1]{SortOrder} = $ocr->SortOrder if $ocr->Id;
+                }
+                $_;
+            }
             grep {
                 my $ok = 1;
                 for my $k (keys %attr) {
@@ -292,6 +304,13 @@ sub Roles {
                  or $_->[1]{AppliesToObjectPredicate}->($self) }
              map { [ $_, $self->_ROLES->{$_} ] }
             keys %{ $self->_ROLES };
+
+    # Cache at ticket/queue object level mainly to reduce calls of
+    # custom role's AppliesToObjectPredicate for performance.
+    if ( ref($self) =~ /RT::(?:Ticket|Queue)/ ) {
+        $self->{_Roles}{$key} = \@roles;
+    }
+    return @roles;
 }
 
 {

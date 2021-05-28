@@ -149,6 +149,34 @@ $m->click( 'Go' );
 $m->text_lacks( $_->Name ) for $users[0];
 $m->text_contains( $_->Name ) for @users[1..3];
 
+ok( $users[3]->SetPrivileged(0) );
+$m->get_ok( $url . '/Admin/Users/index.html' );
+$m->form_name('UsersAdmin');
+$m->click('Go');
+$m->text_contains( $_->Name, 'Found privileged users' ) for @users[ 0 .. 2 ];
+$m->text_lacks( 'user4', 'No unprivileged users' );
+
+# Nobody/RT_System is so common that could appear in the page, here we test
+# links instead
+ok( !$m->find_link( text => 'Nobody' ), 'No user Nobody' );
+ok( !$m->find_link( text => 'RT_System' ), 'No user RT_System' );
+
+$m->form_name('UsersAdmin');
+$m->field( IncludeSystemGroups => 'Unprivileged' );
+$m->click('Go');
+$m->text_lacks( $_->Name, 'No privileged users' ) for @users[ 0 .. 2 ];
+$m->text_contains( 'user4', 'Found unprivileged users' );
+ok( !$m->find_link( text => 'Nobody' ), 'No user Nobody' );
+ok( !$m->find_link( text => 'RT_System' ), 'No user RT_System' );
+
+$m->form_name('UsersAdmin');
+$m->field( IncludeSystemGroups => 'All' );
+$m->click('Go');
+$m->text_contains( $_->Name, 'Found privileged users' ) for @users[ 0 .. 2 ];
+$m->text_contains( 'user4', 'Found unprivileged users' );
+ok( !$m->find_link( text => 'Nobody' ), 'No user Nobody' );
+ok( !$m->find_link( text => 'RT_System' ), 'No user RT_System' );
+
 # TODO more /Admin/Users tests
 
 done_testing;

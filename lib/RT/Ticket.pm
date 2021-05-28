@@ -1762,6 +1762,8 @@ ticket changes via the UI
 sub Atomic {
     my $self = shift;
     my ($subref) = @_;
+    $self->{Atomic}++;
+
     my $has_id = defined $self->id;
     $RT::Handle->BeginTransaction;
     my $depth = $RT::Handle->TransactionDepth;
@@ -1788,8 +1790,9 @@ sub Atomic {
     }
 
     if ($RT::Handle->TransactionDepth == $depth) {
-        $self->ApplyTransactionBatch;
+        $self->ApplyTransactionBatch if $self->{Atomic} == 1 && !$self->{DryRun};
         $RT::Handle->Commit;
+        $self->{Atomic}--;
     }
 
     return $context ? @ret : $ret[0];
@@ -2774,7 +2777,6 @@ sub _OverlayAccessible {
     {
         EffectiveId       => { 'read' => 1,  'write' => 1,  'public' => 1 },
           Queue           => { 'read' => 1,  'write' => 1 },
-          Requestors      => { 'read' => 1,  'write' => 1 },
           Owner           => { 'read' => 1,  'write' => 1 },
           Subject         => { 'read' => 1,  'write' => 1 },
           InitialPriority => { 'read' => 1,  'write' => 1 },

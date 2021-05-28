@@ -371,6 +371,7 @@ sub LoadByCols {
 
     # We don't want to hang onto this
     $self->ClearAttributes;
+    delete $self->{_Roles};
 
     unless ( $self->_Handle->CaseSensitive ) {
         my ( $ret, $msg ) = $self->SUPER::LoadByCols( @_ );
@@ -2757,6 +2758,7 @@ sub FindDependencies {
         or $self->isa("RT::Article")
         or $self->isa("RT::Asset")
         or $self->isa("RT::Catalog")
+        or $self->isa("RT::Attribute")
         or $self->isa("RT::Queue") )
     {
         $objs = RT::Transactions->new( $self->CurrentUser );
