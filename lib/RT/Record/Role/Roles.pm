@@ -140,7 +140,7 @@ as such is not managed by the core codebase or an extension.
 =item CreateGroupPredicate
 
 Optional.  A subroutine whose return value indicates whether the group for this
-role should be created as part of L</_CreateRoleGroups>.  When this subroutine
+role should be created as part of C<_CreateRoleGroups>.  When this subroutine
 is not provided, the group will be created.  The same parameters that will be
 passed to L<RT::Group/CreateRoleGroup> are passed to your predicate (including
 C<Object>)
