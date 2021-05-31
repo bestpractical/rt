@@ -81,8 +81,8 @@ if (@$conditions) {
 
 my %QueryProperties = (
     Query      => $sql,
-    OrderBy    => 'Priority|id',
-    Order      => 'DESC|DESC',
+    OrderBy    => $OrderBy,
+    Order      => $Order,
     Rows       => $Rows || 10,
     ShowHeader => $ShowHeader,
     Format     => $Format,
@@ -123,6 +123,8 @@ $Rows => 10
 $Description => ''
 $TitleBox => 0
 $Format => ''
+$Order => 'DESC|DESC'
+$OrderBy => 'Priority|id'
 $ShowHeader => 0
 $ShowCount => RT->Config->Get('ShowSearchResultCount')
 </%ARGS>

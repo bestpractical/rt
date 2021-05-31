@@ -1876,6 +1876,24 @@ Set($UserSummaryTicketListFormat, q{
        '<small>__TimeLeft__</small>'
 });
 
+=item C<$UserSummaryTicketListOrderBy>
+
+What Tickets column should we order by for RT User Summary portal tickets list.
+
+=cut
+
+Set($UserSummaryTicketListOrderBy, 'Priority|id');
+
+=item C<$UserSummaryTicketListOrder>
+
+When ordering RT User Summary portal tickets list by
+C<$UserSummaryTicketListOrderBy>, should the sort be ascending (ASC) or
+descending (DESC).
+
+=cut
+
+Set($UserSummaryTicketListOrder, 'DESC|DESC');
+
 =item C<$WebBaseURL>, C<$WebURL>
 
 Usually you don't want to set these options. The only obvious reason
@@ -2394,6 +2412,24 @@ Set($MoreAboutRequestorTicketListFormat, q{
        '__Status__',
 });
 
+=item C<$MoreAboutRequestorTicketListOrderBy>
+
+What Tickets column should we order by for RT 'More about requestor' tickets
+list.
+
+=cut
+
+Set($MoreAboutRequestorTicketListOrderBy, 'Priority|id');
+
+=item C<$MoreAboutRequestorTicketListOrder>
+
+When ordering RT 'More about requestor' tickets list by
+C<$MoreAboutRequestorTicketListOrderBy>, should the sort be ascending (ASC) or
+descending (DESC).
+
+=cut
+
+Set($MoreAboutRequestorTicketListOrder, 'DESC|DESC');
 
 =item C<$MoreAboutRequestorExtraInfo>
 
@@ -2800,6 +2836,25 @@ Set($GroupSummaryTicketListFormat, q{
        '<small>__LastUpdatedRelative__</small>',
        '<small>__TimeLeft__</small>'
 });
+
+=item C<$GroupSummaryTicketListOrderBy>
+
+What Tickets column should we order by for RT Group Summary portal tickets
+list.
+
+=cut
+
+Set($GroupSummaryTicketListOrderBy, 'Priority|id');
+
+=item C<$GroupSummaryTicketListOrder>
+
+When ordering RT Group Summary portal tickets list by
+C<$GroupSummaryTicketListOrderBy>, should the sort be ascending (ASC) or
+descending (DESC).
+
+=cut
+
+Set($GroupSummaryTicketListOrder, 'DESC|DESC');
 
 =item C<$GroupSearchFields>
 
