@@ -1110,14 +1110,6 @@ for my $test (@tests) {
     };
 }
 
-TODO: {
-    # Failed to load object RT::Attribute-Dashboard
-    # Failed to load object RT::Attribute-Subscription
-    local $TODO = "attribute's attributes are not supported yet.";
-    Test::NoWarnings::had_no_warnings();
-    Test::NoWarnings::clear_warnings();
-}
-
 RT::Test::done_testing();
 
 sub autorollback {
