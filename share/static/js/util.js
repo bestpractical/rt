@@ -35,8 +35,8 @@ function toggle_upgrade_history(widget, selector) {
     jQuery(widget).toggleClass("rolled-up");
 }
 
-var showModal = function(html) {
-    var modal = jQuery("<div class='modal'></div>");
+var showModal = function(html, static) {
+    var modal = static ? jQuery("<div class='modal' data-backdrop='static'/>") : jQuery("<div class='modal'/>");
     modal.append(html).appendTo("body");
     modal.bind('modal:close', function(ev) { modal.remove(); })
     modal.on('hide.bs.modal', function(ev) { modal.remove(); })
