@@ -159,7 +159,7 @@ my $no_ticket_cf_values = bag(
 
 # Rights Test - Searching asking for CustomFields without SeeCustomField
 {
-    my $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Owner,CustomFields,Subject&fields[Owner]=Name",
+    my $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Owner,CustomFields,Subject&fields[Owner]=Name&orderby=id",
         'Authorization' => $auth,
     );
     is($res->code, 200);
@@ -571,7 +571,7 @@ for my $value (
 
     # Ticket Show - Fields, custom fields
     {
-        $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Owner,CustomFields,Subject&fields[Owner]=Name",
+        $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Owner,CustomFields,Subject&fields[Owner]=Name&orderby=id",
             'Authorization' => $auth,
         );
         is($res->code, 200);
