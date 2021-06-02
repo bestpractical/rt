@@ -1,7 +1,10 @@
 #language: bash
 #services: docker
 
-on: push
+on:
+  push:
+    branches-ignore:
+      - '5.0/github-actions-test-branches-ignore'
 
 jobs:
   rt_test_sqlite:
