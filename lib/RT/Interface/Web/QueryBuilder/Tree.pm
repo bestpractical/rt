@@ -295,6 +295,36 @@ sub ParseSQL {
     $callback{'Condition'} = sub {
         my ($key, $op, $value, $value_is_quoted) = @_;
 
+        if (  !$value_is_quoted
+            && $key   !~ /(?:CustomField|CF)\./
+            && $value =~ /(?:CustomField|CF)\./
+            && RT->Config->Get('DatabaseType') eq 'Pg' )
+        {
+
+            # E.g. LastUpdated > CF.{Beta Date}
+            #
+            # Pg 9 tries to cast all ObjectCustomFieldValues to datetime,
+            # which could fail since not all custom fields are of DateTime
+            # type. To get around this issue, here we switch the key/value
+            # pair to compare as text instead.
+
+            my ($major_version) = $RT::Handle->dbh->selectrow_array("SHOW server_version") =~ /^(\d+)/;
+            if ( $major_version < 10 ) {
+                my %reverse = (
+                    '>'  => '<',
+                    '>=' => '<=',
+                    '<'  => '>',
+                    '<=' => '>=',
+                    '='  => '=',
+                );
+                if ( $reverse{$op} ) {
+                    RT->Logger->debug("Switching $key/$value to compare using text");
+                    ( $key, $value ) = ( $value, $key );
+                    $op = $reverse{$op};
+                }
+            }
+        }
+
         my ($main_key, $subkey) = split /[.]/, $key, 2;
 
         unless( $lcfield{ lc $main_key} ) {
