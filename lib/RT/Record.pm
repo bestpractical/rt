@@ -2747,9 +2747,14 @@ sub FindDependencies {
         }
     }
 
+    my $objs;
+
     # Object attributes, we have to check on every object
-    my $objs = $self->Attributes;
-    $deps->Add( in => $objs );
+    # attributes of attributes are not supported yet though.
+    if ( !$self->isa('RT::Attribute') ) {
+        $objs = $self->Attributes;
+        $deps->Add( in => $objs );
+    }
 
     # Transactions
     if (   $self->isa("RT::Ticket")
