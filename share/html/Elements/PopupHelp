@@ -55,7 +55,5 @@ if ($key) {
 }
 </%init>
 % if ($has_help) {
-<a class="popup-help" tabindex="0" role="button" data-toggle="popover" title="<% $key %>" data-content="<% $help_content %>" data-html="true" data-trigger="focus">
-    <img src="/static/images/question.svg" data-toggle="popover" title="<% $key %>" data-content="<% $help_content %>" data-html="true" data-trigger="focus" />
-</a>
+<span data-help="<% $key %>" data-content="<% $help_content %>" data-action="replace" style="display: none;"/>
 % }

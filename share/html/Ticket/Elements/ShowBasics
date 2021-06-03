@@ -46,11 +46,35 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
+<script src="/static/js/popup-help.js"></script>
 <script>
+function quoteattr(s, preserveCR) {
+    preserveCR = preserveCR ? '&#13;' : '\n';
+    return ('' + s) /* Forces the conversion to string. */
+        .replace(/&/g, '&amp;') /* This MUST be the 1st replacement. */
+        .replace(/'/g, '&apos;') /* The 4 other predefined entities, required. */
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        /*
+        You may add other replacements here for HTML only 
+        (but it's not necessary).
+        Or for XML, only if the named entities are defined in its DTD.
+        */ 
+        .replace(/\r\n/g, preserveCR) /* Must be before the next replacement. */
+        .replace(/[\r\n]/g, preserveCR)
+}
+
 jQuery(document).ready(function () {
     jQuery('[data-toggle="popover"]').popover({trigger: 'focus'})
     jQuery('#show-help').click(function(e) { jQuery('.popup-help').show() })
     jQuery('#hide-help').click(function(e) { jQuery('.popup-help').hide() })
+    jQuery('#add-help').click(function(e) {
+        console.log("==> Adding a custom rule to helpify all submit buttons...")
+        addPopupHelpItems( { selector: 'input.button.form-control.btn.btn-primary', title: 'Submit button', content: 'You probably already know this, but submit buttons will submit stuff', action: "prepend" } )
+        console.log("==> Adding help items as would be done in the page footer...")
+        renderPopupHelpItems()
+    })
 })
 </script>
 <style>
