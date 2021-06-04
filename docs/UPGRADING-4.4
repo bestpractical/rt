@@ -678,6 +678,18 @@ so batch runs only once for the outermost updates. All transactions
 performed for that batch are available from the C<TransactionBatch> method
 as expected.
 
+=item * Ambigious Owner order by option in search replaced with Owner.Name
+
+RT 4.4.5 adds a bunch of new order by and format options for users and roles
+to the Query Builder. For example, you can order by user fields on a user
+like Owner.EmailAddress, Owner.RealName, or even Owner.Organization.
+As part of this change, the previous Owner entry has been renamed to
+Owner.Name.
+
+The upgrade scripts include a step to make this change in any saved searches
+in the database automatically. If you have Owner as an order by field in
+searches stored elsewhere or as a link, you can update to Owner.Name manually.
+
 =back
 
 =cut

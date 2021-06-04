@@ -231,7 +231,7 @@ $m->submit_form(
 
 $m->form_name('BuildQuery');
 
-my $col = ($m->current_form->find_input('SelectDisplayColumns'))[-1];
+my ($col) = grep { ($_->possible_values)[-1] =~ /CustomField/ } $m->find_all_inputs( name => 'SelectDisplayColumns' );
 $col->value( ($col->possible_values)[-1] );
 
 $m->click('AddCol');
