@@ -14,8 +14,6 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
       - name: Check out RT
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Build RT
         env:
           RT_TEST_PARALLEL: 1
@@ -63,8 +61,6 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Build RT
         env:
           RT_TEST_PARALLEL: 1
@@ -121,8 +117,6 @@ jobs:
           echo "RT_GA_START_TIME=$(date +%s)" >> $GITHUB_ENV
       - name: Checkout RT
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Build RT
         env:
           DB_VERSION_TAG: 9.6
