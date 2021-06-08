@@ -1437,7 +1437,7 @@ sub _CanonicalizeRoleName {
     },
     DeleteConfig => sub  {
         my $self = shift;
-        return ('[_1] deleted"', $self->Field); #loc()
+        return ('[_1] deleted', $self->Field); #loc()
     }
 );
 
