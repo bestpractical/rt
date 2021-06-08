@@ -142,8 +142,11 @@ ok( $ret, "Added CF value 'Foo' to users[0]: $msg" );
 ( $ret, $msg ) = $users[1]->AddCustomFieldValue( Field => $cf, Value => 'Foo' );
 ok( $ret, "Added CF value 'Bar' to users[1]: $msg" );
 
+# In Pg, null values sort as if larger than any non-null value by default
+my $null_subject = RT->Config->Get('DatabaseType') eq 'Pg' ? 'zzz' : '-';
+
 @data = (
-    { Subject => '-' },
+    { Subject => $null_subject },
     { Subject => 'Z', Owner => $uids[1] },
     { Subject => 'A', Owner => $uids[0] },
 );
@@ -164,7 +167,7 @@ ok( $ret, "Created custom role: $msg" );
 ok( $ret, "Added CR to queue: $msg" );
 
 @data = (
-    { Subject => '-' },
+    { Subject => $null_subject },
     { Subject => 'Z', $cr->GroupType => $uids[1] },
     { Subject => 'A', $cr->GroupType => $uids[0] },
 );
