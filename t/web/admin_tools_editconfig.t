@@ -82,9 +82,10 @@ sub run_test {
 
     diag $args{name} if $ENV{TEST_VERBOSE};
 
+    $m->form_id( $args{form_id} );
+    $m->untick( "$args{setting}-file", 1 );
     $m->submit_form_ok(
         {
-            form_id => $args{form_id},
             fields  => {
                 $args{setting} => $args{new_value},
             },
