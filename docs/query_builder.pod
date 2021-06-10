@@ -162,6 +162,22 @@ this search:
 
 the results will contain that ticket.
 
+You can also search for group names on roles. For core roles, you can
+select from the dropdown with group names containing "Owner Group", etc.
+Following the example above, if you wanted to find tickets with
+the Helpdesk group assigned to the AdminCc role, you can use this search:
+
+    AdminCCGroup = 'Helpdesk'
+
+You can also search for groups on custom roles using the Name value.
+A search for a group on a custom role looks like:
+
+    CustomRole.{Department}.Name = 'Helpdesk'
+
+Note that if you also have a user with the name 'Helpdesk', the custom
+role search will return all matches, so you will see tickets with both
+username 'Helpdesk' and the group 'Helpdesk' assigned.
+
 =head2 Shallow Searches
 
 In some cases you may want to see tickets only when the user you are
