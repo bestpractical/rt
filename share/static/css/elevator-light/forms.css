@@ -310,6 +310,12 @@ span.current-value.form-control {
   height: auto;
 }
 
+/* Assets widget in ticket display */
+form span.current-value {
+  display: block;
+  padding-top: 5px;
+}
+
 .list-group-item label {
   margin-bottom: 0;
 }
