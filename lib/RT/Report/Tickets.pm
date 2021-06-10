@@ -500,21 +500,29 @@ sub SetupGroupings {
         # If it isn't, we need to do this in two stages -- first, find
         # the distinct matching tickets (with no group by), then search
         # within the matching tickets grouped by what is wanted.
-        my @match = (0);
         $self->Columns( 'id' );
-        while (my $row = $self->Next) {
-            push @match, $row->id;
+        if ( RT->Config->Get('UseSQLForACLChecks') ) {
+            my $query = $self->BuildSelectQuery;
+            $self->CleanSlate;
+            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => "($query)", QUOTEVALUE => 0 );
         }
+        else {
+            # ACL is done in Next call
+            my @match = (0);
+            while ( my $row = $self->Next ) {
+                push @match, $row->id;
+            }
 
-        # Replace the query with one that matches precisely those
-        # tickets, with no joins.  We then mark it as having been ACL'd,
-        # since it was by dint of being in the search results above
-        $self->CleanSlate;
-        while ( @match > 1000 ) {
-            my @batch = splice( @match, 0, 1000 );
-            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@batch );
+            # Replace the query with one that matches precisely those
+            # tickets, with no joins.  We then mark it as having been ACL'd,
+            # since it was by dint of being in the search results above
+            $self->CleanSlate;
+            while ( @match > 1000 ) {
+                my @batch = splice( @match, 0, 1000 );
+                $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@batch );
+            }
+            $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
         }
-        $self->Limit( FIELD => 'Id', OPERATOR => 'IN', VALUE => \@match );
         $self->{'_sql_current_user_can_see_applied'} = 1
     }
 
