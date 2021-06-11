@@ -181,7 +181,11 @@ if ( $NewQuery ) {
 { # Attempt to load what we can from the session and preferences, set defaults
 
     my $current = $session{$hash_name};
-    my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    my $prefs;
+    if ( $Class eq 'RT::Tickets' ) {
+        # User-level search preferences currently apply only to tickets
+        $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    }
     my %orderby = (
         'RT::Tickets'      => RT->Config->Get('DefaultSearchResultOrderBy'),
         'RT::Transactions' => RT->Config->Get('TransactionDefaultSearchResultOrderBy')->{$ObjectType},
@@ -204,7 +208,9 @@ if ( $NewQuery ) {
 
     for( qw(Query Format OrderBy Order RowsPerPage ObjectType) ) {
         $query{$_} = $current->{$_} unless defined $query{$_};
-        $query{$_} = $prefs->{$_} unless defined $query{$_};
+        if ( $prefs ) {
+            $query{$_} = $prefs->{$_} unless defined $query{$_};
+        }
         $query{$_} = $default->{$_} unless defined $query{$_};
     }
 
