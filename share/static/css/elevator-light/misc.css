@@ -146,3 +146,9 @@ h1#transaction-extra-info {
 span.pagenum {
     display: inline-block;
 }
+
+/* Do not change background color on click of dropdown items like "Show
+ * full headers" in ticket history */
+.btn-group.dropdown .dropdown-item:active {
+    background-color: transparent;
+}
