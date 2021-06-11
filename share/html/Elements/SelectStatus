@@ -59,7 +59,7 @@
 %     }
 %     foreach my $status (@{$statuses_by_lifecycle{$lifecycle}}) {
 %         next if ($SkipDeleted && lc $status eq 'deleted');
-%         my $selected = defined $Default && $status eq $Default ? 'selected="selected"' : '';
+%         my $selected = defined $Default && lc $status eq lc $Default ? 'selected="selected"' : '';
 <option value="<% $status %>" <% $selected |n %>><% loc($status) %></option>
 %     }
 %     if ($group_by_lifecycle) {
