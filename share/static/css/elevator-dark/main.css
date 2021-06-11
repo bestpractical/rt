@@ -453,3 +453,11 @@ body.darkmode.IE11 .ui-icon-circle-triangle-e {
     border-color: #717171;
     margin-bottom: 1px;
 }
+
+.darkmode .popover {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.darkmode .popover-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+}

@@ -2073,6 +2073,16 @@ our %META;
     SelfServiceRegex => {
         Immutable => 1,
     },
+    ShowInlineHelp => {
+        Section         => 'General',
+        Overridable     => 1,
+        Description     => 'Show Inline Help',
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Show inline help?', # loc
+            Hints       => 'Displays icons for help topics' #loc
+        },
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();

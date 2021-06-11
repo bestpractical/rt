@@ -144,6 +144,7 @@ sub JSFiles {
         Chart.min.js
         chartjs-plugin-colorschemes.min.js
         jquery.jgrowl.min.js
+        popup-help.js
         }, RT->Config->Get('JSFiles');
 }
 
@@ -5210,7 +5211,6 @@ sub PreprocessTimeUpdates {
     RT::Interface::Web::PreprocessTimeUpdates(@_);
 }
 
-
 =head2 GetDashboards Objects => ARRAY, CurrentUser => CURRENT_USER
 
 Return available dashboards that are saved in the name of objects for
@@ -5287,6 +5287,101 @@ sub GetDashboards {
         @{ $dashboards{$section} } = sort { lc $a->{name} cmp lc $b->{name} } @{ $dashboards{$section} };
     }
     return \%dashboards;
+}
+
+=head3 GetSystemHelpClass locales
+
+Given a list of locales, find the best article class that has been associated with the
+'RT Help System' custom field. Locales are searched in order. The first Class with an
+'RT Help System' custom field and matching 'Locale' custom field will be returned.
+
+=cut
+
+sub GetSystemHelpClass {
+    my $locales = shift || ['en'];
+
+    # Find the custom field that indicates a Class is participating in the RT Help System
+    my $cf = RT::CustomField->new( RT->SystemUser );
+    my ($ret, $msg) = $cf->Load("RT Help System");
+    unless ($ret and $cf->Id) {
+        RT::Logger->warn("Could not find custom field for 'RT Help System' $msg");
+        return;
+    }
+
+    # Loop over the supplied locales in order. Return the first Class that is participating
+    # in the RT Help System that also has a matching Locale custom field value
+    my $Classes = RT::Classes->new( RT->SystemUser );
+    ($ret, $msg) = $Classes->LimitCustomField( CUSTOMFIELD => $cf->Id, OPERATOR => "=", VALUE => "yes" );
+    if ($ret) {
+        for my $locale (@$locales) {
+            $Classes->GotoFirstItem;
+            while (my $class = $Classes->Next) {
+                my $val = $class->FirstCustomFieldValue('Locale');
+                return $class if $val eq $locale;
+            }
+        }
+    } else {
+        RT::Logger->debug("Could not find a participating help Class $msg");
+    }
+
+    # none found
+    RT::Logger->debug("Could not find a suitable help Class for locales: @$locales");
+    return;
+}
+
+=head3 GetHelpArticleTitle class_id, article_name
+
+Returns the value of the C<"Display Name"> Custom Field of an Article of the given Class.
+Often, the class_id will come from GetSystemHelpClass, but it does not have to.
+
+=cut
+
+sub GetHelpArticleTitle {
+    my $class_id = shift || return '';      # required
+    my $article_name = shift || return '';  # required
+
+    # find the article of the given class
+    my $Article = RT::Article->new( RT->SystemUser );
+    my ($ret, $msg) = $Article->LoadByCols( Name => $article_name, Class => $class_id, Disabled => 0 );
+    if ( $Article and $Article->Id ) {
+        return $Article->FirstCustomFieldValue('Display Name') || '';
+    }
+
+    # no match was found
+    RT::Logger->debug("No help article found for '$article_name'");
+    return '';
+}
+
+=head3 GetHelpArticleContent class_id, article_name
+
+Returns the raw, unscrubbed and unescaped Content of an Article of the given Class.
+Often, the class_id will come from GetSystemHelpClass, but it does not have to.
+
+=cut
+
+sub GetHelpArticleContent {
+    my $class_id = shift || return '';      # required
+    my $article_name = shift || return '';  # required
+
+    # find the article of the given class
+    my $Article = RT::Article->new( RT->SystemUser );
+    my ($ret, $msg) = $Article->LoadByCols( Name => $article_name, Class => $class_id, Disabled => 0 );
+    if ( $Article and $Article->Id ) {
+        RT::Logger->debug("Found help article id: " . $Article->Id);
+        my $class = $Article->ClassObj;
+        my $cfs = $class->ArticleCustomFields;
+        while (my $cf = $cfs->Next) {
+            if ($cf->Name eq 'Content') {
+                my $ocfvs = $Article->CustomFieldValues($cf->Id);
+                my $ocfv = $ocfvs->First;
+                return $ocfv->Content;  # do not escape
+            }
+        }
+    }
+
+    # no match was found
+    RT::Logger->debug("No help article found for '$article_name'");
+    return '';
 }
 
 package RT::Interface::Web;

@@ -44,51 +44,25 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %#
-%# END BPS TAGGED BLOCK }}}
-%# End of div#body from /Elements/PageLayout
-  <hr class="clear" />
-</div>
-% $m->callback( %ARGS );
-<div id="footer" title="Best Practical Solutions, LLC, copyright" class="row">
-% # display 3 columns on login page
-% # display 1 column center aligned once logged in, without the "For support and sales..." section
-% my $cols = ( $Menu ? '12' : '4' );
-  <div class="col-<% $cols %>">
-    <p id="version" class="text-center <% $Menu ? 'pb-1' : 'text-md-left' %>">
-%     if ($m->{'rt_base_time'}) {
-        <span id="time"><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%> -</span>
-%     }
-      <span><&|/l_unsafe, $RT::VERSION, &>RT Version [_1]</&></span>
-    </p>
-  </div>
-  <div class="col-<% $cols %>">
-    <p id="bpscredits" class="text-center"><span><&|/l_unsafe, '2021', '&#187;&#124;&#171;', '<a href="https://bestpractical.com/about">Best Practical Solutions, LLC</a>', &>Copyright 1996-[_1] [_2] [_3].</&></span></p>
-  </div>
-% if (!$Menu) {
-  <div class="col-4">
-    <p id="legal" class="text-md-right text-center"><&|/l_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>For support and sales inquiries, please contact [_1].</&></p>
-  </div>
+<%args>
+$key => ''
+</%args>
+<%init>
+my $has_help;
+my $help_class;
+my $help_content;
+my $help_title;
+if ($key) {
+    my $lh = $session{'CurrentUser'}->LanguageHandle;
+    my @locs = ( $lh->language_tag(), $lh->fallback_languages() );
+    my $help_class = GetSystemHelpClass( \@locs );
+    if ($help_class && $help_class->Id) {
+        $help_title = GetHelpArticleTitle( $help_class->id, $key ) || $key;
+        $help_content = GetHelpArticleContent( $help_class->Id, $key );
+    }
+    $has_help = $help_content;
+}
+</%init>
+% if (RT->Config->Get('ShowInlineHelp', $session{CurrentUser}) && $has_help) {
+<span data-help="<% $help_title %>" data-content="<% $help_content %>" data-action="replace" style="display: none;"/>
 % }
-</div>
-% if ($Debug >= 2 ) {
-% require Data::Dumper;
-% my $d = Data::Dumper->new([\%ARGS], [qw(%ARGS)]);
-<pre>
-<%$d->Dump() %>
-</pre>
-% }
-    </div>
-  </body>
-<script>
-jQuery(document).ready(function() {
-    // popup-help.js : any help items that have been queued up via addPopupHelpItems() will
-    // get their popover functionality added at this point, including the default rule
-    // that matches any elements with a 'data-help' attribute
-    renderPopupHelpItems()
-})
-</script>
-</html>
-<%ARGS>
-$Debug => 0
-$Menu => 1
-</%ARGS>
