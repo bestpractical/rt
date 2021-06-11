@@ -88,6 +88,7 @@ if ( $UserString ) {
                           Term      => $UserString,
                           Max       => 100,
                           Exclude   => $exclude );
+    $m->callback( CallbackName => "ModifyUsersLimit", Users => $users, Term => $UserString, ARGSRef => \%ARGS );
     my $first = $users->First;
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."User/Summary.html?id=".$first->Id)
         if $users->Count == 1;
