@@ -1112,6 +1112,33 @@ sub NotSetDateToNullFunction {
     return $res;
 }
 
+sub DistinctFieldValues {
+    my $self  = shift;
+    my %args = (
+        Field       => undef,
+        Order       => undef,
+        Max         => undef,
+        decode_utf8 => 1,
+        @_%2 ? (Field => @_) : (@_)
+    );
+
+    my @values = $self->SUPER::DistinctFieldValues( %args );
+
+    foreach my $value ( @values ) {
+        if ( $args{'decode_utf8'} ) {
+            if ( !utf8::is_utf8( $value ) ) { # mysql/sqlite
+                utf8::decode( $value );
+            }
+        }
+        else {
+            if ( utf8::is_utf8( $value ) ) {
+                utf8::encode( $value );
+            }
+        }
+    }
+    return @values;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
