@@ -1,7 +1,8 @@
 use strict;
 use warnings;
+use utf8;
 
-use RT::Test tests => 18;
+use RT::Test tests => undef;
 
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'Regression',
@@ -103,3 +104,24 @@ EOF
     unlike($freshticket->Subject,qr/\[\Q$subject_tag\E #$ticketid\]/,'Stripped Queue Subject Tag correctly');
 }
 
+
+$queue = RT::Test->load_or_create_queue(
+    Name              => 'Unicode Character Subject Tag Queue',
+    CorrespondAddress => 'rt-recipient@example.com',
+    CommentAddress    => 'rt-recipient@example.com',
+);
+$subject_tag = 'Demande générale';
+ok $queue && $queue->id, 'loaded or created queue';
+
+diag "Test System Subject Tag Matches Queue Object Subject Tag";
+{
+    is(RT->System->SubjectTag($queue), undef, 'No Subject Tag yet');
+    my ($status, $msg) = $queue->SetSubjectTag( $subject_tag );
+    ok $status, "set subject tag for the queue" or diag "error: $msg";
+
+    my @subject_tags = sort RT->System->SubjectTag();
+
+    is($subject_tags[0], $subject_tag, "Set Subject Tag to $subject_tag");
+}
+
+done_testing();
