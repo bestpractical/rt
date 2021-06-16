@@ -131,8 +131,11 @@ our %GROUPINGS_META = (
             my $self = shift;
             my $args = shift;
 
-            my @fields = grep RT::User->_Accessible( $_, "public" ),
-                qw( Name RealName NickName EmailAddress Organization Lang City Country Timezone);
+            my %fields = (
+                user => [ grep RT::User->_Accessible( $_, "public" ),
+                    qw( Name RealName NickName EmailAddress Organization Lang City Country Timezone) ],
+                principal => [ grep RT::User->_Accessible( $_, "public" ), qw( Name ) ],
+            );
 
             my @res;
             if ( $args->{key} =~ /^CustomRole/ ) {
@@ -154,13 +157,13 @@ our %GROUPINGS_META = (
                     $crs->LimitToObjectId( $queue->id );
                 }
                 while ( my $cr = $crs->Next ) {
-                    for my $field (@fields) {
+                    for my $field ( @{ $fields{ $cr->MaxValues ? 'user' : 'principal' } } ) {
                         push @res, [ $cr->Name, $field ], "CustomRole.{" . $cr->id . "}.$field";
                     }
                 }
             }
             else {
-                for my $field (@fields) {
+                for my $field ( @{ $fields{principal} } ) {
                     push @res, [ $args->{key}, $field ], "$args->{key}.$field";
                 }
             }
@@ -182,6 +185,19 @@ our %GROUPINGS_META = (
                 $key = $args{KEY};
             }
             return join ' ', $key, $args{SUBKEY};
+        },
+        Display => sub {
+            my $self = shift;
+            my %args = (@_);
+            if ( $args{FIELD} eq 'id' ) {
+                my $princ = RT::Principal->new( $self->CurrentUser );
+                $princ->Load( $args{'VALUE'} ) if $args{'VALUE'};
+                return $self->loc('(no value)') unless $princ->Id;
+                return $princ->IsGroup ? $self->loc( 'Group: [_1]', $princ->Object->Name ) : $princ->Object->Name;
+            }
+            else {
+                return $args{VALUE};
+            }
         },
     },
     Date => {
@@ -927,17 +943,39 @@ sub GenerateWatcherFunction {
 
     my $type = $args{'FIELD'};
     $type = '' if $type eq 'Watcher';
-    $type =~ s!^CustomRole\.\{(\d+)\}!RT::CustomRole-$1!g;
 
-    my $column = $args{'SUBKEY'} || 'Name';
+    my $single_role;
 
-    my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"};
-    unless ( $u_alias ) {
-        my ($g_alias, $gm_alias);
-        ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( Name => $type );
-        $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
+    if ( $type =~ s!^CustomRole\.\{(\d+)\}!RT::CustomRole-$1! ) {
+        my $id = $1;
+        my $cr = RT::CustomRole->new( $self->CurrentUser );
+        $cr->Load($id);
+        $single_role = 1 if $cr->MaxValues;
     }
-    @args{qw(ALIAS FIELD)} = ($u_alias, $column);
+
+    my $column = $single_role ? $args{'SUBKEY'} || 'Name' : 'id';
+
+    my $alias = $self->{"_sql_report_watcher_alias_$type"};
+    unless ( $alias ) {
+        my $groups = $self->_RoleGroupsJoin(Name => $type);
+        my $group_members = $self->Join(
+            TYPE            => 'LEFT',
+            ALIAS1          => $groups,
+            FIELD1          => 'id',
+            TABLE2          => 'GroupMembers',
+            FIELD2          => 'GroupId',
+            ENTRYAGGREGATOR => 'AND',
+        );
+        $alias = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $group_members,
+            FIELD1 => 'MemberId',
+            TABLE2 => $single_role ? 'Users' : 'Principals',
+            FIELD2 => 'id',
+        );
+        $self->{"_sql_report_watcher_alias_$type"} = $alias;
+    }
+    @args{qw(ALIAS FIELD)} = ($alias, $column);
 
     return %args;
 }
