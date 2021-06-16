@@ -283,4 +283,21 @@ configuration setting.
 
 =back
 
+=head1 UPGRADING FROM 5.0.1 AND EARLIER
+
+=over 4
+
+=item *
+
+Previously C<$OwnerEmail> was shown on the RT login page for users to
+contact with RT issues, in addition to being the address used to send various
+errors like email bounces. A new config option C<$RTSupportEmail> is now used
+for the login page display, allowing admins to set C<$OwnerEmail> to a different
+address if desired, and possibly not display an email address on the login page.
+
+If you want to still display your C<$OwnerEmail> on the login page, just set
+C<$RTSupportEmail> to the same value.
+
+=back
+
 =cut
