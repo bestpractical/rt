@@ -50,8 +50,8 @@ $Object => undef
 </%ARGS>
 <div class="custom-control custom-checkbox">
   <input type="checkbox" name="WipeoutObject" class="custom-control-input" id="cb-<% $Object->UID %>" value="<% $Object->UID %>" />
-% if( $m->comp_exists( $path ) ) {
   <label class="custom-control-label" for="cb-<% $Object->UID %>">
+% if( $m->comp_exists( $path ) ) {
 %   $m->comp( $path, Object => $Object );
 % } else {
     <% $Object->UID %>
