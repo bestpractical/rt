@@ -113,9 +113,11 @@ our %GROUPINGS_META = (
             return $queue->Name;
         },
         Localize => 1,
+        Distinct => 1,
     },
     Priority => {
         Sort => 'numeric raw',
+        Distinct => 1,
     },
     User => {
         SubFields => [grep RT::User->_Accessible($_, "public"), qw(
@@ -125,6 +127,7 @@ our %GROUPINGS_META = (
             Lang City Country Timezone
         )],
         Function => 'GenerateUserFunction',
+        Distinct => 1,
     },
     Watcher => {
         SubFields => sub {
@@ -199,6 +202,22 @@ our %GROUPINGS_META = (
                 return $args{VALUE};
             }
         },
+        Distinct => sub {
+            my $self = shift;
+            my %args = @_;
+            if ( $args{KEY} =~ /^CustomRole\.\{(\d+)\}/ ) {
+                my $id = $1;
+                my $obj = RT::CustomRole->new( RT->SystemUser );
+                $obj->Load( $id );
+                if ( $obj->MaxValues == 1 ) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            }
+            return 0;
+        },
     },
     Date => {
         SubFields => [qw(
@@ -227,6 +246,7 @@ our %GROUPINGS_META = (
             return $raw;
         },
         Sort => 'raw',
+        Distinct => 1,
     },
     CustomField => {
         SubFields => sub {
@@ -281,9 +301,26 @@ our %GROUPINGS_META = (
 
             return 'Custom field [_1]', $cf;
         },
+        Distinct => sub {
+            my $self = shift;
+            my %args = @_;
+            if ( $args{SUBKEY} =~ /\{(\d+)\}/ ) {
+                my $id = $1;
+                my $obj = RT::CustomField->new( RT->SystemUser );
+                $obj->Load( $id );
+                if ( $obj->MaxValues == 1 ) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            }
+            return 0;
+        },
     },
     Enum => {
         Localize => 1,
+        Distinct => 1,
     },
 );
 
@@ -601,6 +638,7 @@ sub SetupGroupings {
         ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
     @group_by = ('Status') unless @group_by;
 
+    my $distinct_results = 1;
     foreach my $e ( splice @group_by ) {
         unless ($self->IsValidGrouping( Query => $args{Query}, GroupBy => $e )) {
             RT->Logger->error("'$e' is not a valid grouping for reports; skipping");
@@ -612,8 +650,18 @@ sub SetupGroupings {
         $e->{'INFO'} = $self->_GroupingType($key);
         $e->{'META'} = $GROUPINGS_META{ $e->{'INFO'} };
         $e->{'POSITION'} = $i++;
+        if ( my $distinct = $e->{'META'}{Distinct} ) {
+            if ( ref($distinct) eq 'CODE' ) {
+                $distinct_results = 0 unless $distinct->( $self, KEY => $key, SUBKEY => $subkey );
+            }
+        }
+        else {
+            $distinct_results = 0;
+        }
         push @group_by, $e;
     }
+    $self->{_distinct_results} = $distinct_results;
+
     $self->GroupBy( map { {
         ALIAS    => $_->{'ALIAS'},
         FIELD    => $_->{'FIELD'},
@@ -1091,7 +1139,7 @@ sub FormatTable {
         $body[ $i ] = { even => ($i+1)%2, cells => [] };
         $i++;
     }
-    @footer = ({ even => ++$i%2, cells => []});
+    @footer = ({ even => ++$i%2, cells => []}) if $self->{_distinct_results};
 
     my $g = 0;
     foreach my $column ( @{ $columns{'Groups'} } ) {
@@ -1114,7 +1162,7 @@ sub FormatTable {
         type => 'label',
         value => $self->loc('Total'),
         colspan => scalar @{ $columns{'Groups'} },
-    };
+    } if $self->{_distinct_results};
 
     my $pick_color = do {
         my @colors = RT->Config->Get("ChartColors");
@@ -1161,7 +1209,7 @@ sub FormatTable {
                 rowspan => scalar @head,
                 color => $pick_color->(++$function_count),
             };
-            push @{ $footer[0]{'cells'} }, { type => 'value', value => undef };
+            push @{ $footer[0]{'cells'} }, { type => 'value', value => undef } if $self->{_distinct_results};
             next;
         }
 
@@ -1196,6 +1244,7 @@ sub FormatTable {
             $i++;
         }
 
+        next unless $self->{_distinct_results};
         unless ( $info->{'META'}{'NoTotals'} ) {
             my $total_code = $self->LabelValueCode( $column );
             foreach my $e ( @subs ) {

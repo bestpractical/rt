@@ -41,12 +41,7 @@ use_ok 'RT::Report::Tickets';
                 ],
             }
         ],
-        'tfoot' => [
-            {   'cells' =>
-                    [ { 'colspan' => 1, 'value' => 'Total', 'type' => 'label' }, { 'value' => 3, 'type' => 'value' }, ],
-                'even' => 1,
-            }
-        ],
+        'tfoot' => [],
         'tbody' => [
             {   'cells' => [
                     {   'type'  => 'label',
