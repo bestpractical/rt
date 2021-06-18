@@ -57,7 +57,7 @@ $m->callback(
 
 my @lines;
 while ( my $CustomField = $CustomFields->Next ) {
-    my %line;
+    my %line = ( Class => 'hidden' );
     $line{'Name'} = "$TicketSQLField.{" . $CustomField->Name . "}";
     $line{'Field'} = $CustomField->Name;
 
@@ -98,6 +98,28 @@ while ( my $CustomField = $CustomFields->Next ) {
 }
 
 $m->callback( Conditions => \@lines, Queues => \%queues );
+
+if (@lines) {
+    my %lines = (
+        Name  => 'SelectCustomField',
+        Field => {
+            Type    => 'select',
+            Options => [ '' => loc('Select Custom Field'), map { $_->{Name}, $_->{Field} } @lines ],
+        },
+        Op => {
+            Type      => 'component',
+            Path      => '/Elements/SelectCustomFieldOperator',
+            Arguments => {
+                True     => loc("is"),
+                False    => loc("isn't"),
+                TrueVal  => '=',
+                FalseVal => '!=',
+            },
+        },
+        Value => { Type => 'text', Size => 20, Id => '' },
+    );
+    push @lines, \%lines for 1 .. ( $TicketSQLField eq 'CF' ? 3 : 1 );
+}
 
 </%INIT>
 

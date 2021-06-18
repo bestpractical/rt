@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="form-row">
+<div class="form-row <% $Condition->{Class} || '' %>">
   <div class="label col-3">
     <% $handle_block->( $Condition->{'Field'}, $Condition->{'Name'} .'Field' ) |n %>
   </div>
@@ -89,7 +89,8 @@ $handle_block = sub {
     }
     if ( $box->{'Type'} eq 'select' ) {
         my $res = '';
-        $res .= qq{<select id="$name" name="$name" class="form-control selectpicker">};
+        my $id = $box->{Id} // $name;
+        $res .= qq{<select id="$id" name="$name" class="form-control selectpicker">};
         my @options = @{ $box->{'Options'} };
         while( defined( my $k = shift @options ) ) {
             my $v = shift @options;
