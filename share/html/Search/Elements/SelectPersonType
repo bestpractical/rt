@@ -94,6 +94,9 @@ else {
           [ "CustomRole.{" . $Role->Name . "}", $Role->Name ],
        );
    }
+   elsif (@Roles) {
+      @types = map { [ "CustomRole.{" . $_->Name . "}", $_->Name ] } @Roles;
+   }
    elsif ($Scope =~ /queue/) {
       @types = qw(Cc AdminCc);
    }
@@ -118,4 +121,5 @@ $Class => 'RT::Tickets'
 $Scope => $Class eq 'RT::Assets' ? 'asset' : 'ticket'
 $Name => 'WatcherType'
 $Role => undef
+@Roles => ()
 </%ARGS>

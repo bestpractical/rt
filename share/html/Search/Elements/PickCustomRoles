@@ -63,19 +63,20 @@ $m->callback(
 );
 
 my @lines;
-while ( my $Role = $CustomRoles->Next ) {
-    my $name = "CustomRole.{" . $Role->Name . "}";
+
+if (my @roles = @{$CustomRoles->ItemsArrayRef}) {
+    my $name = 'CustomRole';
     my %line = (
-        Name => $name,
+        Name  => $name,
         Field => {
-            Type => 'component',
-            Path => 'SelectPersonType',
-            Arguments => { Role => $Role, Default => $name },
+            Type      => 'component',
+            Path      => 'SelectPersonType',
+            Arguments => { Roles => \@roles, Default => "CustomRole.{" . $roles[0]->Name . "}" },
         },
         Op => {
-            Type => 'component',
-            Path => '/Elements/SelectMatch',
-            Arguments => { IncludeShallow => $Role->SingleValue ? 0 : 1 },
+            Type      => 'component',
+            Path      => '/Elements/SelectMatch',
+            Arguments => { IncludeShallow => grep( { !$_->MaxValues } @roles ) ? 1 : 0 },
         },
         Value => { Type => 'text', Size => 20 },
     );
