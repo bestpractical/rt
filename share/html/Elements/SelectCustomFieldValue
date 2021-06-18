@@ -59,7 +59,7 @@
 % } elsif ($CustomField->Type =~ /^Date(Time)?$/) {
 <& /Elements/SelectDate, ShowTime => ($1 ? 1 : 0), Name => $Name, Value => $Default &>
 % } elsif ( $CustomField->Type eq 'Autocomplete' )  {
-<input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" value="<% $Default %>" />
+<input type="text" id="CF-<% $CustomField->id %>" name="<% $Name %>" size="20" value="<% $Default %>" class="form-control" />
 <script type="text/javascript">
 % my @options;
 % my $values = CachedCustomFieldValues($CustomField);
