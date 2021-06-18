@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+<div class="form-row my-0">
+  <div class="col-<% $Suffix ? 12 : 6 %>">
+
 <select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
 % if ($AllowNull) {
 <option value="">-</option>
@@ -59,11 +62,24 @@
 <option value="<% $value %><% $Suffix %>"<%$value eq $Default && qq[ selected="selected"] |n %> ><% loc($label) %> <% loc('Group') %></option>
 %   next;
 %  }
-%  foreach my $subtype (@subtypes) {
-<option value="<%"$value.$subtype"%>"<%$value eq $Default && $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($label) %> <% loc($subtype) %></option>
-%  }
+<option value="<%$value%>"<% $value eq $Default && qq[ selected="selected"] |n %> ><% loc($label) %></option>
 % }
 </select>
+
+  </div>
+
+% if (!$Suffix) {
+  <div class="col-6">
+%   my $Name = $Name . 'SubType';
+    <select id="<%$Name%>" name="<%$Name%>" class="form-control selectpicker">
+%   foreach my $subtype (@subtypes) {
+      <option value="<%$subtype%>"<% $subtype eq 'EmailAddress' && qq[ selected="selected"] |n %> ><% loc($subtype) %></option>
+%   }
+    </select>
+  </div>
+% }
+
+</div>
 
 <%INIT>
 my ( @types, @subtypes );
