@@ -132,3 +132,11 @@ td.current-recipients {
 span.pagenum {
     display: inline-block;
 }
+
+/* Remove the default 2 px top/bottom added by Firefox to give more room
+   for the saved search form on the query builder */
+
+#editquery select option {
+    padding-top: 0;
+    padding-bottom: 0;
+}
