@@ -83,6 +83,7 @@ $groups->Limit(
 foreach (split /\s*,\s*/, $exclude) {
     $groups->Limit(FIELD => 'id', VALUE => $_, OPERATOR => '!=', ENTRYAGGREGATOR => 'AND');
 }
+$m->callback( CallbackName => "ModifyGroupsLimit", Groups => $groups, Term => $term, ARGSRef => \%ARGS );
 
 my @suggestions;
 

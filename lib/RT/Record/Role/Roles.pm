@@ -53,6 +53,9 @@ package RT::Record::Role::Roles;
 use Role::Basic;
 use Scalar::Util qw(blessed);
 
+# Set this to true to lazily create role groups
+our $LAZY_ROLE_GROUPS = 0;
+
 =head1 NAME
 
 RT::Record::Role::Roles - Common methods for records which "watchers" or "roles"
@@ -137,7 +140,7 @@ as such is not managed by the core codebase or an extension.
 =item CreateGroupPredicate
 
 Optional.  A subroutine whose return value indicates whether the group for this
-role should be created as part of L</_CreateRoleGroups>.  When this subroutine
+role should be created as part of C<_CreateRoleGroups>.  When this subroutine
 is not provided, the group will be created.  The same parameters that will be
 passed to L<RT::Group/CreateRoleGroup> are passed to your predicate (including
 C<Object>)
@@ -334,11 +337,14 @@ sub HasRole {
     return scalar grep { $type eq $_ } $self->Roles;
 }
 
-=head2 RoleGroup
+=head2 RoleGroup NAME, CheckRight => RIGHT_NAME, Create => 1|0
 
 Expects a role name as the first parameter which is used to load the
 L<RT::Group> for the specified role on this record.  Returns an unloaded
 L<RT::Group> object on failure.
+
+If the group is not created yet and C<Create> parameter is true(default is
+false), it will create the group accordingly.
 
 =cut
 
@@ -358,6 +364,12 @@ sub RoleGroup {
             Object  => $self,
             Name    => $name,
         );
+
+        if ( !$group->id && $args{Create} ) {
+            if ( my $created = $self->_CreateRoleGroup($name) ) {
+                $group = $created;
+            }
+        }
     }
     return $group;
 }
@@ -499,12 +511,9 @@ sub AddRoleMember {
     return (0, $self->loc("Permission denied"))
         if $acl and not $acl->($type => $principal);
 
-    my $group = $self->RoleGroup( $type );
+    my $group = $self->RoleGroup( $type, Create => 1 );
     if (!$group->id) {
-        $group = $self->_CreateRoleGroup($type);
-        if (!$group || !$group->id) {
-            return (0, $self->loc("Role group '[_1]' not found", $type));
-        }
+       return (0, $self->loc("Role group '[_1]' not found", $type));
     }
 
     return (0, $self->loc('[_1] is already [_2]',
@@ -761,7 +770,14 @@ sub _AddRolesOnCreate {
         my $changed = 0;
 
         for my $role (keys %{$roles}) {
-            my $group = $self->RoleGroup($role);
+            next unless @{$roles->{$role}};
+
+            my $group = $self->RoleGroup($role, Create => 1);
+            if ( !$group->id ) {
+                push @errors, $self->loc( "Couldn't create role group '[_1]'", $role );
+                next;
+            }
+
             my @left;
             for my $principal (@{$roles->{$role}}) {
                 if ($acls{$role}->($principal)) {
@@ -804,5 +820,31 @@ sub LabelForRole {
     return $role->{Name};
 }
 
+=head1 OPTIONS
+
+=head2 Lazy Role Groups
+
+Role groups are typically created for all roles on a ticket or asset when
+that object is created. If you are creating a large number of tickets or
+assets automatically (e.g., with an automated import process) and you use
+custom roles in addition to core roles, this requires many additional rows
+to be created for each base ticket or asset. This adds time to the create
+process for each ticket or asset.
+
+Roles support a lazy option that will defer creating the underlying role
+groups until the object is accessed later. This speeds up the initial
+create process with minimal impact if tickets or assets are accessed
+individually later (like a user loading a ticket and working on it).
+
+This lazy behavior is off by default for backward compatibility. To
+enable it, set this package variable:
+
+    $RT::Record::Role::Roles::LAZY_ROLE_GROUPS = 1;
+
+If you are evaluating this option for performance, it's worthwhile to
+benchmark your ticket or asset create process before and after to confirm
+you see faster create times.
+
+=cut
 
 1;

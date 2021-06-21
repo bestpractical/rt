@@ -20,6 +20,9 @@ my $group;
 my $root = RT::Test->load_or_create_user( Name => 'root', MemberOf => $group->id );
 ok $root && $root->id;
 
+my $test_user = RT::Test->load_or_create_user( Name => 'Test' );
+ok $test_user && $test_user->id;
+
 RT::Test->create_tickets(
     { Queue => $q, },
     { Subject => '-', },
@@ -27,14 +30,24 @@ RT::Test->create_tickets(
     { Subject => 'r', Requestor => $root->id },
     { Subject => 'c', Cc => $root->id },
     { Subject => 'a', AdminCc => $root->id },
+    { Subject => 'ag', AdminCc => $group->id },
+    { Subject => 'ru', Requestor => $test_user->id },
 );
 
 run_tests(
     'OwnerGroup = "Test"' => { '-' => 0, o => 1, r => 0, c => 0, a => 0 },
     'RequestorGroup = "Test"' => { '-' => 0, o => 0, r => 1, c => 0, a => 0 },
     'CCGroup = "Test"' => { '-' => 0, o => 0, r => 0, c => 1, a => 0 },
-    'AdminCCGroup = "Test"' => { '-' => 0, o => 0, r => 0, c => 0, a => 1 },
-    'WatcherGroup = "Test"' => { '-' => 0, o => 1, r => 1, c => 1, a => 1 },
+    'AdminCCGroup = "Test"' => { '-' => 0, o => 0, r => 0, c => 0, a => 1, ag => 1 },
+    'WatcherGroup = "Test"' => { '-' => 0, o => 1, r => 1, c => 1, a => 1, ag => 1 },
+    'Requestor.id = ' . $test_user->Id     => { '-' => 0, ru => 1 },
+    'Requestor.Name = "Test"'              => { '-' => 0, ru => 1 },
+    'AdminCc.id = ' . $group->Id           => { '-' => 0, ag => 1 },
+    'AdminCc = "Test"'                     => { '-' => 0, ag => 1 },
+    'AdminCc.Name = "Test"'                => { '-' => 0, ag => 1 },
+    'Watcher.id = ' . $test_user->Id       => { '-' => 0, ru => 1 },
+    'Watcher.id = ' . $group->Id           => { '-' => 0, ag => 1 },
+    'Watcher.Name = "Test"'                => { '-' => 0, ru => 1, ag => 1 },
 );
 
 warning_like {

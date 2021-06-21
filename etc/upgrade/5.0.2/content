@@ -1,0 +1,28 @@
+use strict;
+use warnings;
+
+our @Initial = (
+
+    # add default reports
+    sub {
+        my $reports_in_menu = 'ReportsInMenu';
+        my $attr            = RT::Attribute->new( RT->SystemUser );
+        $attr->LoadByNameAndObject( Object => RT->System, Name => $reports_in_menu );
+
+        # Update menu if it's not touched by anyone else
+        if ( $attr->Id && $attr->Created eq $attr->LastUpdated ) {
+            RT->Logger->debug("Adding time worked report in menu");
+            my $content = $attr->Content or return;
+            splice @$content, 2, 0,
+                {   id    => 'user_time',
+                    title => 'User time worked',
+                    path  => '/Reports/TimeWorkedReport.html',
+                };
+
+            my ( $ret, $msg ) = $attr->SetContent($content);
+            if ( !$ret ) {
+                RT->Logger->error("Couldn't update ReportsInMenu: $msg");
+            }
+        }
+    }
+);

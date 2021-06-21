@@ -193,6 +193,10 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Due -- an ISO date describing the ticket's due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
+  LazyRoleGroups -- a boolean to control if to create role groups immediately or just when necessary
+
+LazyRoleGroups defaults to C<$RT::Record::Role::Roles::LAZY_ROLE_GROUPS>,
+which is false by default.
 
 Ticket links can be set up during create by passing the link type as a hask key and
 the ticket id to be linked to as a value (or a URI when linking to other objects).
@@ -240,6 +244,7 @@ sub Create {
         SLA                => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
+        LazyRoleGroups     => $RT::Record::Role::Roles::LAZY_ROLE_GROUPS,
         @_
     );
 
@@ -440,15 +445,17 @@ sub Create {
     }
 
     # Create (empty) role groups
-    my $create_groups_ret = $self->_CreateRoleGroups();
-    unless ($create_groups_ret) {
-        $RT::Logger->crit( "Couldn't create ticket groups for ticket "
-              . $self->Id
-              . ". aborting Ticket creation." );
-        $RT::Handle->Rollback();
-        return ( 0, 0,
-            $self->loc("Ticket could not be created due to an internal error")
-        );
+    if ( !$args{LazyRoleGroups} ) {
+        my $create_groups_ret = $self->_CreateRoleGroups();
+        unless ($create_groups_ret) {
+            $RT::Logger->crit( "Couldn't create ticket groups for ticket "
+                  . $self->Id
+                  . ". aborting Ticket creation." );
+            $RT::Handle->Rollback();
+            return ( 0, 0,
+                $self->loc("Ticket could not be created due to an internal error")
+            );
+        }
     }
 
     # Codify what it takes to add each kind of group

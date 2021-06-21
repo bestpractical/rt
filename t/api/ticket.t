@@ -343,4 +343,24 @@ diag("Test ticket types with different cases");
     is($t->Type, "approval", "Approvals, the third and final internal type, are also lc'd during Create");
 }
 
+diag("Test LazyRoleGroups");
+{
+    local $RT::Record::Role::Roles::LAZY_ROLE_GROUPS = 1;
+    my $t = RT::Ticket->new( RT->SystemUser );
+    my ($ok) = $t->Create(
+        Queue     => 'General',
+        Subject   => 'LazyRoleGroup test',
+        Requestor => 'root@localhost',
+    );
+    ok( $t->RoleGroup($_)->Id, "$_ role group is created" ) for qw/Requestor Owner/;
+
+    for my $role (qw/Cc AdminCc/) {
+        ok( !$t->RoleGroup($role)->Id, "$role role group is not created yet" );
+        ok( $t->AddWatcher( Type => $role, Email => 'root@localhost' ) );
+        my $role_group = $t->RoleGroup($role);
+        ok( $role_group->Id,            "$role role group is created" );
+        is( $role_group->MemberEmailAddressesAsString, 'root@localhost', "$role role group has the member root" );
+    }
+}
+
 done_testing;

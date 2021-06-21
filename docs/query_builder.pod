@@ -163,6 +163,22 @@ this search:
 
 the results will contain that ticket.
 
+You can also search for group names on roles. For core roles, you can
+select from the dropdown with group names containing "Owner Group", etc.
+Following the example above, if you wanted to find tickets with
+the Helpdesk group assigned to the AdminCc role, you can use this search:
+
+    AdminCCGroup = 'Helpdesk'
+
+You can also search for groups on custom roles using the Name value.
+A search for a group on a custom role looks like:
+
+    CustomRole.{Department}.Name = 'Helpdesk'
+
+Note that if you also have a user with the name 'Helpdesk', the custom
+role search will return all matches, so you will see tickets with both
+username 'Helpdesk' and the group 'Helpdesk' assigned.
+
 =head2 Shallow Searches
 
 In some cases you may want to see tickets only when the user you are
@@ -279,6 +295,55 @@ When searching for transactions, you can also add criteria about the types of
 tickets the transactions should be on. In our example, we probably only want
 to see active tickets, so in the bottom Ticket Fields section you can select
 Status "is" and "Active". This will then filter out inactive statuses.
+
+=head1 Advanced
+
+In addition to the graphical query builder, RT also has an Advanced page
+where you can write and modify queries and formats directly. For example,
+you can type the following query directly in the Query box:
+
+    Status = 'resolved' AND Resolved > '2019-04-01' AND Queue = 'RT'
+
+and then click "Apply" to let RT validate it. RT will display any syntax errors
+if you make any mistakes so you can fix them.
+
+=head2 Valid Search Values
+
+In the above example, search values like C<'resolved'>, C<'2019-04-01'>,
+and C<'RT'> are all literal search terms: a status, a date, and a string
+representing the name of a queue. These are all static values that will then
+return matching tickets. However, sometimes you want to compare 2 columns
+in RT tables without knowing exact values. This is also supported, for
+example:
+
+=over
+
+=item Search tickets where LastUpdated is after (later than) Resolved
+
+    LastUpdated > Resolved
+
+This finds tickets that have been commented on or otherwise updated after
+they were resolved. Note that C<Resolved> is not quoted, indicating that it's
+the relative date value from a ticket instead of the literal string "Resolved".
+
+=item Search tickets where the Requestor is also the Owner
+
+    Requestor.id = Owner
+
+=item Search tickets where custom fields Foo and Bar have the same value
+
+    CF.Foo = CF.Bar
+
+This is equal to:
+
+    CF.{Foo} = CF.{Bar}
+    CF.Foo = CF.Bar.Content
+
+To compare LargeContent instead:
+
+    CF.IP = CF.IPRange.LargeContent
+
+=back
 
 =head1 Learn More
 

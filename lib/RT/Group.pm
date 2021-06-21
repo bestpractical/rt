@@ -1345,7 +1345,7 @@ Returns this user's PrincipalId
 
 sub PrincipalId {
     my $self = shift;
-    return $self->Id;
+    return $self->Id || 0;
 }
 
 sub InstanceObj {

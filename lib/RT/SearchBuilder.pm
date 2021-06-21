@@ -475,6 +475,7 @@ sub _LimitCustomField {
                  OPERATOR     => '=',
                  KEY          => undef,
                  PREPARSE     => 1,
+                 QUOTEVALUE   => 1,
                  @_ );
 
     my $op     = delete $args{OPERATOR};
@@ -573,7 +574,46 @@ sub _LimitCustomField {
     ########## Content pre-parsing if we know things about the CF
     if ( blessed($cf) and delete $args{PREPARSE} ) {
         my $type = $cf->Type;
-        if ( $type eq 'IPAddress' ) {
+
+        if ( !$args{QUOTEVALUE} ) {
+            my ( $class, $field );
+
+            # e.g. Users_3.Name
+            if ( $value =~ /^(\w+?)(?:_\d+)?\.(\w+)$/ ) {
+                my $table = $1;
+                $field = $2;
+                $class = $table =~ /main/i ? 'RT::Tickets' : "RT::$table";
+            }
+            else {
+                $class = ref $self;
+                $field = $value;
+            }
+
+            if ( $class->can('RecordClass')
+                and ( my $record_class = $class->RecordClass ) )
+            {
+                if ( my $meta = $record_class->_ClassAccessible->{$field} ) {
+                    if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                        if ( $meta->{is_numeric} || $meta->{type} eq 'datetime' ) {
+                            $value = "CAST($value AS VARCHAR)";
+                        }
+                    }
+                    elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+                        if ( $meta->{is_numeric} ) {
+                            $value = "TO_CHAR($value)";
+                        }
+                        elsif ( $type eq 'datetime' ) {
+                            $value = "TO_CHAR($value, 'YYYY-MM-DD HH24:MI:SS')";
+                        }
+                    }
+                }
+            }
+
+            if ( $type eq 'Date' ) {
+                $value = "SUBSTR($value, 1,  10)";
+            }
+        }
+        elsif ( $type eq 'IPAddress' ) {
             my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
             if ($parsed) {
                 $value = $parsed;
@@ -733,6 +773,7 @@ sub _LimitCustomField {
             OPERATOR   => $op,
             VALUE      => $value,
             CASESENSITIVE => 0,
+            QUOTEVALUE => $args{QUOTEVALUE},
         ) );
         $self->Limit(
             %args,
@@ -837,6 +878,7 @@ sub _LimitCustomField {
             ENTRYAGGREGATOR => 'AND',
             SUBCLAUSE       => $args{SUBCLAUSE},
             CASESENSITIVE => 0,
+            QUOTEVALUE      => $args{QUOTEVALUE},
         ) );
         $self->_CloseParen( $args{SUBCLAUSE} ); # LargeContent check
     }
