@@ -86,14 +86,20 @@
 <td class="value"> <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor}, AutocompleteType => 'Principals' &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
 <td class="value"> <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor}, AutocompleteType => 'Principals' &> </td></tr>
+<tr><td class="label"> <&|/l&>Clear Requestor</&>: </td>
+<td class="value"> <input type="checkbox" id="ClearRequestor" class="checkbox custom-control-input" name="ClearRequestor" <% $ARGS{ClearRequestor} ? 'checked="checked"' : '' %> /></td></tr>
 <tr><td class="label"> <&|/l&>Add Cc</&>: </td>
 <td class="value"> <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc}, AutocompleteType => 'Principals' &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Cc</&>: </td>
 <td class="value"> <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc}, AutocompleteType => 'Principals' &> </td></tr>
+<tr><td class="label"> <&|/l&>Clear Cc</&>: </td>
+<td class="value"> <input type="checkbox" id="ClearCc" class="checkbox custom-control-input" name="ClearCc" <% $ARGS{ClearCc} ? 'checked="checked"' : '' %> /></td></tr>
 <tr><td class="label"> <&|/l&>Add AdminCc</&>: </td>
 <td class="value"> <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc}, AutocompleteType => 'Principals' &> </td></tr>
 <tr><td class="label"> <&|/l&>Remove AdminCc</&>: </td>
 <td class="value"> <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc}, AutocompleteType => 'Principals' &> </td></tr>
+<tr><td class="label"> <&|/l&>Clear AdminCc</&>: </td>
+<td class="value"> <input type="checkbox" id="ClearAdminCc" class="checkbox custom-control-input" name="ClearAdminCc" <% $ARGS{ClearAdminCc} ? 'checked="checked"' : '' %> /></td></tr>
 
 % my $single_roles = RT::CustomRoles->new($session{CurrentUser});
 % $single_roles->LimitToSingleValue;
@@ -116,6 +122,10 @@
 <tr>
 <td class="label"> <&|/l, $role->Name &>Remove [_1]</&>: </td>
 <td class="value"> <& /Elements/MultiUserRoleInput, role => $role, Name => "DeleteRT::CustomRole-" . $role->Id, Size => 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &> </td>
+</tr>
+<tr>
+<td class="label"> <&|/l, $role->Name &>Clear [_1]</&>:</td>
+<td class="value"><input type="checkbox" id="ClearRT::CustomRole-<% $role->Id %>" class="checkbox custom-control-input" name="ClearRT::CustomRole-<% $role->Id %>" <% $ARGS{"ClearRT::CustomRole-" . $role->Id} ? 'checked="checked"' : '' %> /></td>
 </tr>
 % }
 

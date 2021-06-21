@@ -3607,6 +3607,23 @@ sub ProcessTicketWatchers {
             push @results, $msg;
         }
 
+        # Clear all watchers in the simple style demanded by the bulk manipulator
+        elsif ( $key =~ /^Clear(Requestor|Cc|AdminCc|RT::CustomRole-\d+)$/ ) {
+            my ( $role_group, $msg ) = $Ticket->RoleGroup($1);
+            if ( $role_group ) {
+                while (my $group_member = $role_group->MembersObj->Next) {
+                    my ( $code, $msg ) = $Ticket->DeleteWatcher(
+                        PrincipalId => $group_member->MemberId,
+                        Type  => $1
+                    );
+                    push @results, $msg;
+                }
+            } else {
+                RT::Logger->error("Could not load RoleGroup for $1");
+                push @results, $msg;
+            }
+        }
+
         # Add new watchers by email address
         elsif ( ( $ARGSRef->{$key} || '' ) =~ /^(?:AdminCc|Cc|Requestor|RT::CustomRole-\d+)$/
             and $key =~ /^WatcherTypeEmail(\d*)$/ )
