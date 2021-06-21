@@ -153,6 +153,27 @@ Now we can see that our culprit seems to primarily be the root user, who
 is getting a bunch of work done but isn't taking tickets. Maybe we just
 need to remind root to take tickets.
 
+=head2 Group By with Roles
+
+As shown in the example above, you can group by ticket roles to get a
+view of tickets based on how various users are attached to the tickets.
+Owner is a single-user role meaning a ticket can have only one Owner,
+so for that type of group-by, your ticket totals will be the same as
+your search result total.
+
+However, most roles allow multiple users. For example, AdminCc can have
+the users staff1 and staff1 both assigned, or even one or more groups. In
+this case, a group-by chart will show all tickets where staff1 and staff2
+are AdminCc's. If they are both on one ticket, it will be charted once for
+each, so for these types of group-by graphs, the ticket total isn't shown
+because it's no longer the same as the total tickets returned by your
+original search.
+
+Starting in RT 4.4.5, you can also group by custom roles. Note that these
+group-by charts do a "shallow" search, meaning they group by direct members
+of the role and do not go further down to chart members of groups who are
+assigned to a role.
+
 =head2 Using Multiple Group Bys
 
 As you can see in the previous example, RT's charts allow you to define
