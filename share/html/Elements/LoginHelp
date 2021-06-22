@@ -46,9 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="login-help">
-<&|/l, RT->Config->Get('OwnerEmail')&>For local help, please contact [_1]</&>
+<&|/l, RT->Config->Get('RTSupportEmail')&>For local help, please contact [_1]</&>
 </div>
 <%init>
-my $source = RT->Config->Meta('OwnerEmail')->{Source};
-return unless $source->{SiteConfig} or $source->{Extension};
+return unless RT->Config->Get('RTSupportEmail');
 </%init>
