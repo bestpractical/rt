@@ -97,6 +97,7 @@ diag 'check changing start time' if $ENV{'TEST_VERBOSE'};
         },
     ));
 
+    set_fixed_time('2021-06-21T10:00:00Z');
     my $ticket = RT::Ticket->new($RT::SystemUser);
     my ($id) = $ticket->Create( Queue => 'General', Subject => 'test sla start time change');
     ok $id, "Created ticket $id";
@@ -111,6 +112,7 @@ diag 'check changing start time' if $ENV{'TEST_VERBOSE'};
     $ticket->SetSLA('standard');
     my $reset_starts = $ticket->StartsObj->Unix;
     is $reset_starts, $starts, 'Start date reset';
+    restore_time();
 }
 
 done_testing;
