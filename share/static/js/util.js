@@ -618,6 +618,7 @@ function refreshCollectionListRow(tbody, table, success, error) {
             tbody = table.find('tbody[data-index=' + index + ']');
             initDatePicker(tbody);
             tbody.find('.selectpicker').selectpicker();
+            RT.Autocomplete.bind(tbody);
             if (success) { success(response) }
         },
         error: error
