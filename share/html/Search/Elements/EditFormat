@@ -73,7 +73,7 @@ jQuery( function() {
                 if ( data.status == 'success' ) {
                     form.find('input[name=Format]').val(data.Format);
                     form.find('select[name=CurrentDisplayColumns]').html(data.CurrentDisplayColumns);
-                    form.find('select[name=SelectDisplayColumns]').val('').change();
+                    form.find('select[name=SelectDisplayColumns]').get(0).selectize.clear();
                     form.find('[name=Link],[name=Title],[name=Size],[name=Face]').val('');
                     form.find('[name=Link],[name=Title],[name=Size],[name=Face]').selectpicker('refresh');
                 }
