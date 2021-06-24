@@ -2742,6 +2742,7 @@ sub RefreshConfigFromDatabase {
     my $needs_update = RT->System->ConfigCacheNeedsUpdate;
     if ($needs_update > $database_config_cache_time) {
         $self->LoadConfigFromDatabase();
+        $HTML::Mason::Commands::ReloadScrubber = 1;
         $database_config_cache_time = $needs_update;
     }
 }

@@ -4678,8 +4678,20 @@ Removes unsafe and undesired HTML from the passed content
 
 =cut
 
+# The scrubber loads its rules in the constructor and some RT
+# config options can change the rules. If config is changed,
+# this flag tells us to reload the state-ful scrubber.
+
+our $ReloadScrubber;
+
 sub ScrubHTML {
     state $scrubber = RT::Interface::Web::Scrubber->new;
+
+    if ( $HTML::Mason::Commands::ReloadScrubber ) {
+        $scrubber = RT::Interface::Web::Scrubber->new;
+        $HTML::Mason::Commands::ReloadScrubber = 0;
+    }
+
     return $scrubber->scrub(@_);
 }
 
