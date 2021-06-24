@@ -164,3 +164,7 @@ span.pagenum {
 .w-15 {
     width: 15% !important;
 }
+
+ul.ui-autocomplete {
+    z-index: 9999;
+}

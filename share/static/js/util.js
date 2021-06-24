@@ -45,6 +45,7 @@ var showModal = function(html) {
     // We need to refresh the select picker plugin on AJAX calls
     // since the plugin only runs on page load.
     jQuery('.selectpicker').selectpicker('refresh');
+    RT.Autocomplete.bind(modal);
 };
 
 /* Classes */
