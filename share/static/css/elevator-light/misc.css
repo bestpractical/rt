@@ -168,3 +168,24 @@ span.pagenum {
 ul.ui-autocomplete {
     z-index: 9999;
 }
+
+.modal.search-results-filter {
+    position: absolute;
+    min-width: 300px;
+    width: auto;
+    height: auto;
+    max-height: 80%;
+    background-color: inherit;
+}
+
+.modal.search-results-filter .modal-dialog.modal-sm {
+    min-width: 300px;
+}
+
+.modal.search-results-filter .modal-dialog.modal-md {
+    min-width: 500px;
+}
+
+.modal.search-results-filter .modal-dialog {
+    margin: 0;
+}

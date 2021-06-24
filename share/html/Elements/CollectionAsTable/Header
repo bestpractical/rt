@@ -59,6 +59,7 @@ $GenericQueryArgs => undef
 $maxitems     => undef
 
 $AllowSorting  => undef
+$AllowFiltering => undef
 $BaseURL       => undef
 @PassArguments => qw(Query Format Rows Page Order OrderBy)
 </%ARGS>
@@ -161,16 +162,18 @@ foreach my $col ( @Format ) {
         $loc_title = loc($m->comp('/Elements/ScrubHTML', Content => $title));
     }
 
-    if ( $AllowSorting and $col->{'attribute'}
-        and my $attr = $m->comp(
+    my $attribute;
+    if ( $col->{'attribute'} ) {
+        $attribute = $m->comp(
             "/Elements/ColumnMap",
             Class => $column_map_class,
             Name  => $col->{'attribute'},
             Attr  => 'attribute'
-        )
-      )
-    {
-        $attr = ProcessColumnMapValue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
+        );
+    }
+
+    if ( $AllowSorting and $attribute ) {
+        my $attr = ProcessColumnMapValue( $attribute, Arguments => [ $col->{'attribute'} ], Escape => 0 );
 
 
         my @new_order_by = @OrderBy;
@@ -209,6 +212,32 @@ foreach my $col ( @Format ) {
     }
     else {
         $m->out( qq{<span class="title">$loc_title</span>} );
+    }
+
+    if ( $AllowFiltering && $Class eq 'RT::Tickets' ) {
+        my $attr = ProcessColumnMapValue( $attribute, Arguments => [ $col->{'attribute'} ], Escape => 1 );
+        my $field;
+        my %supported = map { $_ => 1 }
+            qw/id Subject Status Queue Owner Type Creator LastUpdatedBy SLA InitialPriority FinalPriority Priority TimeLeft TimeWorked TimeEstimated Created LastUpdated Told Starts Started Due Resolved Requestors Requestor Cc AdminCc/;
+
+        if ( ( $attr || '' ) =~ /^(\w+)/ && $supported{$1} ) {
+            $field = $1;
+        }
+        elsif ( ( $attr || '' ) =~ /^(CustomRole\.\{.+?\})/ ) {
+            $field = $1;
+        }
+        elsif ( ( $attr || '' ) =~ /^(?:CF|CustomField(?:View)?)\.(?:(\w+)|\{(.+?)\})/ ) {
+            my $name = $1 || $2;
+            $field = "CustomField.{$name}";
+        }
+
+        if ( $field ) {
+            my $tooltip = loc( 'Filter on [_1]', loc($field) );
+            $m->out(
+                qq{&nbsp;<a href="javascript:void(0)" class="search-filter" class="btn btn-primary button"><span class="fas fa-filter" data-toggle="tooltip" data-placement="bottom" data-original-title="$tooltip"></span></a>}
+            );
+            $m->out( $m->scomp( '/Elements/SearchFilter', Attribute => $field, %ARGS ) );
+        }
     }
     $m->out('</th>');
 }
