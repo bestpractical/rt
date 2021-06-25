@@ -48,6 +48,6 @@
 <div class="help" id="rt-help-text">
 <&| /Widgets/TitleBox, title => loc('RT Configuration') &>
 <p>RT has dozens of configuration options to allow you to modify RT to meet your needs. You can view details about each configuration option online in the <a href="https://docs.bestpractical.com/rt/latest/RT_Config.html" target="_blank">RT documentation</a> or in the file <code>etc/RT_Config.pm</code> on your RT server. You can set global configuration options in the file <code>etc/RT_SiteConfig.pm</code> or right in the browser by clicking the Edit link.</p>
-<p>Changes made in the web interface take precedence over customizations in server configuration files. Some core settings can only be changed in configuration files. Check "Reset" to switch to the corresponding value in configuration files.</p>
+<p>Changes made in the web interface take precedence over customizations in server configuration files. Some core settings can only be changed in configuration files. If you need to undo a change, check "Reset" and Save to completely clear the value set in the web UI.</p>
 </&>
 </div>
