@@ -167,7 +167,7 @@ sub attachment_loop {
 
     # Fetch in batches of size --limit
     {
-        # Indexes all text/plain and text/html attachments
+        # Indexes all text/plain and text/html attachments and their subjects.
         my $attachments = RT::Attachments->new( RT->SystemUser );
         my $txn_alias = $attachments->Join(
             ALIAS1 => 'main',
@@ -184,7 +184,7 @@ sub attachment_loop {
         $attachments->Limit(
             FIELD    => 'ContentType',
             OPERATOR => 'IN',
-            VALUE    => ['text/plain', 'text/html'],
+            VALUE    => ['text/plain', 'text/html', 'multipart/mixed', 'multipart/alternative'],
         );
         $attachments->Limit( FIELD => 'id', OPERATOR => '>', VALUE => $LAST );
         $attachments->OrderBy( FIELD => 'id', ORDER => 'asc' );
