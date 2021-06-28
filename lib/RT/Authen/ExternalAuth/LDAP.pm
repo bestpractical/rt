@@ -157,6 +157,13 @@ For example with Active Directory the following can be used:
 =item group
 
 Does authentication depend on group membership? What group name?
+Can be a single group:
+
+    group => 'cn=mygroup,ou=groups,o=myorg'
+
+Or a list of groups, a user must then require to be a member of one of those groups to be able to connect:
+
+    group => [ 'cn=mygroup1,ou=groups,o=myorg', 'cn=mygroup2,ou=groups,o=myorg', ...]
 
 =item group_attr
 
@@ -302,8 +309,10 @@ sub GetAuth {
         return 0;
     }
 
-    # The user is authenticated ok, but is there an LDAP Group to check?
+    # The user is authenticated ok, but is there LDAP Groups to check?
     if ($group) {
+
+        my @groups = ( ref($group) eq 'ARRAY' ) ? @$group : ( $group );
         my $group_val = lc $group_attr_val eq 'dn'
                             ? $ldap_dn
                             : $ldap_entry->get_value($group_attr_val);
@@ -317,47 +326,51 @@ sub GetAuth {
         # We only need the dn for the actual group since all we care about is existence
         @attrs  = qw(dn);
         my $search_filter = Net::LDAP::Filter->new("(${group_attr}=" . escape_filter_value($group_val) . ")");
+        my $group_success = 0;
+        foreach my $group_dn (@groups) {
+            $RT::Logger->debug( "LDAP Search === ",
+                    "Base:",
+                    $group_dn,
+                    "== Scope:",
+                    $group_scope,
+                    "== Filter:",
+                    $search_filter->as_string,
+                    "== Attrs:",
+                    join(',',@attrs));
 
-        $RT::Logger->debug( "LDAP Search === ",
-                            "Base:",
-                            $group,
-                            "== Scope:",
-                            $group_scope,
-                            "== Filter:",
-                            $search_filter->as_string,
-                            "== Attrs:",
-                            join(',',@attrs));
+            $ldap_msg = $ldap->search(  base   => $group_dn,
+                        filter => $search_filter,
+                        attrs  => \@attrs,
+                        scope  => $group_scope);
 
-        $ldap_msg = $ldap->search(  base   => $group,
-                                    filter => $search_filter,
-                                    attrs  => \@attrs,
-                                    scope  => $group_scope);
+            # And the user isn't a member:
+            unless ( $ldap_msg->code == LDAP_SUCCESS ||
+                    $ldap_msg->code == LDAP_PARTIAL_RESULTS ) {
+                $RT::Logger->critical( "Search for",
+                                       $search_filter->as_string,
+                                       "failed:",
+                                       ldap_error_name($ldap_msg->code),
+                                       $ldap_msg->code
+                );
 
-        # And the user isn't a member:
-        unless ($ldap_msg->code == LDAP_SUCCESS ||
-                $ldap_msg->code == LDAP_PARTIAL_RESULTS) {
-            $RT::Logger->critical(  "Search for",
-                                    $search_filter->as_string,
-                                    "failed:",
-                                    ldap_error_name($ldap_msg->code),
-                                    $ldap_msg->code);
+                # Fail group auth - jump to next group
+                next;
+            }
 
-            # Fail auth - jump to next external auth service
-            return 0;
-        }
+            $RT::Logger->debug( "LDAP group membership check returned",
+		                $ldap_msg->count, "results"
+			      );
 
-        unless ($ldap_msg->count == 1) {
-            $RT::Logger->debug(
-                "LDAP group membership check returned",
-                $ldap_msg->count, "results"
-            );
-            $RT::Logger->info(  $service,
-                                "AUTH FAILED:",
-                                $username);
-
-            # Fail auth - jump to next external auth service
-            return 0;
-        }
+            if ($ldap_msg->count > 0) {
+                $group_success = 1;
+                last;
+            }
+       }
+       unless ( $group_success ) {
+           $RT::Logger->info( $service, "AUTH FAILED:", $username );
+           # Fail group auth - jump to next external auth service
+           return 0;
+       }
     }
 
     # Any other checks you want to add? Add them here.
