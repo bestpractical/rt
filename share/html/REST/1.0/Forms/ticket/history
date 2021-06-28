@@ -158,6 +158,37 @@ if ($tid) {
         push @data, [Attachments => $attachlist];
     }
 
+    # Display custom fields
+    my $CustomFields = $t->CustomFields;
+    while (my $cf = $CustomFields->Next()) {
+        next unless !%$fields
+                 || exists $fields->{"cf.{".lc($cf->Name)."}"}
+                 || exists $fields->{"cf-".lc $cf->Name};
+
+        my $vals = $t->CustomFieldValues($cf->Id());
+        my @out = ();
+        my $count = $vals->Count;
+        next unless $count;
+
+        if ( $count == 1) {
+            my $v = $vals->First;
+            push @out, $v->Content if $v;
+        }
+        else {
+            while (my $v = $vals->Next()) {
+                my $content = $v->Content;
+                if ( $v->Content =~ /,/ ) {
+                    $content =~ s/([\\'])/\\$1/g;
+                    push @out, q{'} . $content . q{'};
+                }
+                else {
+                    push @out, $content;
+                }
+            }
+        }
+        push @data, [ ('CF.{' . $cf->Name . '}') => join ',', @out ];
+    }
+
     my %k = map {@$_} @data;
     $o = [ map {$_->[0]} @data ];
     $k = \%k;
