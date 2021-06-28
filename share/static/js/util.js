@@ -827,6 +827,41 @@ jQuery(function() {
             });
         });
     }
+
+    // Automatically sync to set input values to ones in config files.
+    jQuery('form[name=EditConfig] input[name$="-file"]').change(function (e) {
+        var file_input = jQuery(this);
+        var form = file_input.closest('form');
+        var file_name = file_input.attr('name');
+        var file_value = form.find('input[name=' + file_name + '-Current]').val();
+        var checked = jQuery(this).is(':checked') ? 1 : 0;
+        if ( !checked ) return;
+
+        var db_name = file_name.replace(/-file$/, '');
+        var db_input = form.find(':input[name=' + db_name + ']');
+        var db_input_type = db_input.attr('type') || db_input.prop('tagName').toLowerCase();
+        if ( db_input_type == 'radio' ) {
+            db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
+        }
+        else if ( db_input_type == 'select' ) {
+            db_input.selectpicker('val', file_value.length ? file_value : '__empty_value__');
+        }
+        else {
+            db_input.val(file_value);
+        }
+    });
+
+    // Automatically sync to uncheck use file config checkbox
+    jQuery('form[name=EditConfig] input[name$="-file"]').each(function () {
+        var file_input = jQuery(this);
+        var form = file_input.closest('form');
+        var file_name = file_input.attr('name');
+        var db_name = file_name.replace(/-file$/, '');
+        var db_input = form.find(':input[name=' + db_name + ']');
+        db_input.change(function() {
+            file_input.prop('checked', false);
+        });
+    });
 });
 
 /* inline edit */

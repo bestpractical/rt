@@ -2829,6 +2829,11 @@ sub LoadConfigFromDatabase {
     }
 }
 
+sub _GetFromFilesOnly {
+    my ( $self, $name ) = @_;
+    return $original_setting_from_files{$name} ? $original_setting_from_files{$name}[0] : undef;
+}
+
 RT::Base->_ImportOverlays();
 
 1;

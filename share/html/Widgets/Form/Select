@@ -60,7 +60,9 @@ see docs/extending/using_forms_widgets.pod
     <& SELF:InputOnly, %ARGS &>
     <span class="hints"><% $Hints %></span>
   </div>
+% if ( $CloseRowDiv ) {
 </div>
+% }
 <%ARGS>
 $Name
 $Description      => undef,
@@ -68,6 +70,7 @@ $Hints            => ''
 $LabelLink        => ''
 $LabelCols        => 3
 $ValueCols        => 9
+$CloseRowDiv      => 1
 </%ARGS>
 
 <%METHOD InputOnly>
