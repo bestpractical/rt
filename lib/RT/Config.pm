@@ -1979,6 +1979,63 @@ our %META;
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(ASC DESC)] },
     },
+    AssetDefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSimpleSearchFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSummaryFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSummaryRelatedTicketsFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    DefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    DefaultSelfServiceSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSummaryExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSummaryTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    LDAPFilter => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    LDAPGroupFilter => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    MoreAboutRequestorExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    MoreAboutRequestorTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSummaryExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSummaryTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserTicketDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserTransactionDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
     LogToSyslogConf => {
         Immutable     => 1,
     },
