@@ -1979,6 +1979,18 @@ our %META;
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(ASC DESC)] },
     },
+    SelfServiceUserPrefs => {
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Values      => [qw(edit-prefs view-info edit-prefs-view-info full-edit)],
+            ValuesLabel => {
+                'edit-prefs'           => 'Edit Locale and change password',                           # loc
+                'view-info'            => 'View all the info',                                         # loc
+                'edit-prefs-view-info' => 'View all the info, and edit Locale and change password',    # loc
+                'full-edit'            => 'View and update all the info',                              # loc
+            },
+        },
+    },
     AssetDefaultSearchResultFormat => {
         Widget => '/Widgets/Form/MultilineString',
     },
