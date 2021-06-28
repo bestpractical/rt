@@ -1882,6 +1882,9 @@ our %META;
     LogoURL => {
         Widget => '/Widgets/Form/String',
     },
+    LogoutURL => {
+        Widget => '/Widgets/Form/String',
+    },
     OwnerEmail => {
         Widget => '/Widgets/Form/String',
     },
