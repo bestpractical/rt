@@ -2644,9 +2644,20 @@ Set($WebRemoteUserAutocreate, undef);
 =item C<$UserAutocreateDefaultsOnLogin>
 
 If C<$WebRemoteUserAutocreate> is set to 1, C<$UserAutocreateDefaultsOnLogin>
-will be passed to L<RT::User/Create>.  Use it to set defaults, such as
-creating unprivileged users with C<<{ Privileged => 0 }>>.  This must be
-a hashref.
+will be passed to L<RT::User/Create> when the user is created.
+Use it to set default settings for the new user account, such
+as creating users as unprivileged with:
+
+    Set($UserAutocreateDefaultsOnLogin, { Privileged => 0 });
+
+or privileged:
+
+    Set($UserAutocreateDefaultsOnLogin, { Privileged => 1 });
+
+The settings must be in a hashref as shown.
+
+This option is also used if you have External Auth configured.
+See L</External Authentication and Authorization> for details.
 
 =cut
 
@@ -2743,6 +2754,9 @@ LDAP or Active Directory for authentication (login) and authorization
 settings for the service are listed here. Additional details are available
 in the L<RT::Authen::ExternalAuth> module documentation.
 
+See also L</$UserAutocreateDefaultsOnLogin> for configuring
+defaults for autocreated users.
+
 =over 4
 
 =item C<$ExternalSettings>
@@ -2768,13 +2782,6 @@ no more remain. See L<RT::Authen::ExternalAuth> for details.
 Sets the order of resources for querying user information if you have multiple
 configured. RT will query each resource, in order, until one succeeds or
 no more remain. See L<RT::Authen::ExternalAuth> for details.
-
-=item C<$UserAutocreateDefaultsOnLogin>
-
-A hashref of options to set for users who are autocreated on login via
-ExternalAuth. For example, you can automatically make "Privileged" users
-who were authenticated and created from LDAP or Active Directory.
-See L<RT::Authen::ExternalAuth> for details.
 
 =item C<$AutoCreateNonExternalUsers>
 
