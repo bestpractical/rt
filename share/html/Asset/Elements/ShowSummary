@@ -77,12 +77,12 @@ for my $section (@sections) {
         </&>
       </div>
 % }
-      <div class="col-4">
-        <& /Elements/ShowCustomFieldCustomGroupings,
-          Object => $AssetObj,
-          title_href => $can_edit ? RT->Config->Get("WebPath") . "/Asset/ModifyCFs.html" : "",
-          TitleBoxARGS => { title_class => "inverse" },
-        &>
-    </div>
+
+    <& /Elements/ShowCustomFieldCustomGroupings,
+      Object => $AssetObj,
+      title_href => $can_edit ? RT->Config->Get("WebPath") . "/Asset/ModifyCFs.html" : "",
+      TitleBoxARGS => { title_class => "inverse" },
+      GroupingClass => 'col-4'
+    &>
   </div>
 </div>
