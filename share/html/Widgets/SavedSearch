@@ -108,9 +108,59 @@ if ($self->{SearchId} eq 'new') {
 
 if ( $args->{SavedSearchSave} || $args->{SavedSearchCopy} ) {
     if ( ( my $search = $self->{CurrentSearch}{Object} ) && !$args->{SavedSearchCopy} ) {
+        # permission check
+        if ($search->Object->isa('RT::System')) {
+            unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+                push @actions, loc("No permission to save system-wide searches");
+                return @actions;
+            }
+        }
+
         # rename
         $search->SetDescription( $args->{SavedSearchDescription} );
         $search->SetSubValues(%$SearchParams);
+
+        my ($new_search_type, $new_search_id) = split(/\-/, ($args->{'SavedSearchOwner'} || ''));
+        my $search_type = ref($search->Object);
+        # We need to get current obj_id now, because when we change obj_type to
+        # RT::System, $search->Object->Id returns 1, not the old one :(
+        my $search_id = $search->Object->Id;
+
+        if ( $new_search_type && $new_search_id ) {
+            my ($val, $msg);
+
+            # we need to check right before we change any of ObjectType and ObjectId, 
+            # or it will fail the 2nd change if we use SetObjectType and
+            # SetObjectId sequentially
+
+            if ( $search->CurrentUserHasRight('update') ) {
+                if ( $new_search_type ne $search_type ) {
+                    ( $val, $msg ) = $search->__Set(
+                        Field => 'ObjectType',
+                        Value => $new_search_type,
+                    );
+                    push @actions, loc( 'Unable to set privacy object: [_1]', $msg )
+                      unless ($val);
+                }
+                if ( $new_search_id != $search_id ) {
+                    ( $val, $msg ) = $search->__Set(
+                        Field => 'ObjectId',
+                        Value => $new_search_id,
+                    );
+                    push @actions, loc( 'Unable to set privacy id: [_1]', $msg )
+                      unless ($val);
+                }
+            }
+            else {
+                # two loc are just for convenience so we don't need to
+                # write an extra i18n translation item
+                push @actions,
+                  loc( 'Unable to set privacy object or id: [_1]',
+                    loc('Permission Denied') )
+            }
+        } else {
+            push @actions, loc('Unable to determine object type or id');
+        }
         push @actions, loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
     }
     else {
