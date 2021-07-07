@@ -690,6 +690,24 @@ The upgrade scripts include a step to make this change in any saved searches
 in the database automatically. If you have Owner as an order by field in
 searches stored elsewhere or as a link, you can update to Owner.Name manually.
 
+=item * Default "order by" field for roles in search results
+
+Because of the new options mentioned above, when displaying role information
+we also set defaults for order by behavior when you click headers on search
+results to re-sort them. For example, in a list of ticket results, you can
+click on Requestors to re-sort the results by that field.
+
+Previously this order by used EmailAddress. It now defaults to Name
+because we believe that is more common for sorting, but because of
+the new features you can change this in your search Format.
+For example, you can update the line in the Format section on
+the Advanced page to look like this:
+
+    '<small>__Requestor.EmailAddress__</small>',
+
+That column will then specifically show EmailAddress and when you click
+it will order by EmailAddress.
+
 =back
 
 =cut
