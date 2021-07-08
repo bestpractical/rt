@@ -1882,6 +1882,9 @@ our %META;
     LogoURL => {
         Widget => '/Widgets/Form/String',
     },
+    LogoutURL => {
+        Widget => '/Widgets/Form/String',
+    },
     OwnerEmail => {
         Widget => '/Widgets/Form/String',
     },
@@ -1975,6 +1978,75 @@ our %META;
     DefaultSearchResultOrder => {
         Widget => '/Widgets/Form/Select',
         WidgetArguments => { Values => [qw(ASC DESC)] },
+    },
+    SelfServiceUserPrefs => {
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Values      => [qw(edit-prefs view-info edit-prefs-view-info full-edit)],
+            ValuesLabel => {
+                'edit-prefs'           => 'Edit Locale and change password',                           # loc
+                'view-info'            => 'View all the info',                                         # loc
+                'edit-prefs-view-info' => 'View all the info, and edit Locale and change password',    # loc
+                'full-edit'            => 'View and update all the info',                              # loc
+            },
+        },
+    },
+    AssetDefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSimpleSearchFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSummaryFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    AssetSummaryRelatedTicketsFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    DefaultSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    DefaultSelfServiceSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSummaryExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    GroupSummaryTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    LDAPFilter => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    LDAPGroupFilter => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    MoreAboutRequestorExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    MoreAboutRequestorTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSearchResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSummaryExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserSummaryTicketListFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserTicketDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
+    UserTransactionDataResultFormat => {
+        Widget => '/Widgets/Form/MultilineString',
     },
     LogToSyslogConf => {
         Immutable     => 1,
