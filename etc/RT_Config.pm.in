@@ -1336,9 +1336,20 @@ Set($WebRemoteUserAutocreate, undef);
 =item C<$UserAutocreateDefaultsOnLogin>
 
 If C<$WebRemoteUserAutocreate> is set to 1, C<$UserAutocreateDefaultsOnLogin>
-will be passed to L<RT::User/Create>.  Use it to set defaults, such as
-creating unprivileged users with C<<{ Privileged => 0 }>>.  This must be
-a hashref.
+will be passed to L<RT::User/Create> when the user is created.
+Use it to set default settings for the new user account, such
+as creating users as unprivileged with:
+
+    Set($UserAutocreateDefaultsOnLogin, { Privileged => 0 });
+
+or privileged:
+
+    Set($UserAutocreateDefaultsOnLogin, { Privileged => 1 });
+
+The settings must be in a hashref as shown.
+
+This option is also used if you have External Auth configured.
+See L</External Authentication and Authorization> for details.
 
 =cut
 
@@ -1434,6 +1445,9 @@ LDAP or Active Directory for authentication (login) and authorization
 (enabling/disabling users and setting user attributes). The core configuration
 settings for the service are listed here. Additional details are available
 in the L<RT::Authen::ExternalAuth> module documentation.
+
+See also L</$UserAutocreateDefaultsOnLogin> for configuring
+defaults for autocreated users.
 
 =over 4
 

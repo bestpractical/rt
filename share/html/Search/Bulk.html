@@ -129,6 +129,18 @@
       </div>
 
       <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ClearRequestor" class="checkbox custom-control-input" name="ClearRequestor"
+              <% $ARGS{ClearRequestor} ? 'checked="checked"' : '' %>
+            />
+            <label for="ClearRequestor" class="custom-control-label"><&|/l&>Clear Requestor</&></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
         <div class="label col-3">
           <&|/l&>Add Cc</&>:
         </div>
@@ -147,6 +159,18 @@
       </div>
 
       <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ClearCc" class="checkbox custom-control-input" name="ClearRequestor"
+              <% $ARGS{ClearCc} ? 'checked="checked"' : '' %>
+            />
+            <label for="ClearCc" class="custom-control-label"><&|/l&>Clear Cc</&></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
         <div class="label col-3">
           <&|/l&>Add AdminCc</&>:
         </div>
@@ -161,6 +185,18 @@
         </div>
         <div class="value col-9">
           <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc}, AutocompleteType => 'Principals' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ClearAdminCc" class="checkbox custom-control-input" name="ClearAdminCc"
+              <% $ARGS{ClearAdminCc} ? 'checked="checked"' : '' %>
+            />
+            <label for="ClearAdminCc" class="custom-control-label"><&|/l&>Clear AdminCc</&></label>
+          </div>
         </div>
       </div>
 
@@ -197,6 +233,18 @@
         </div>
         <div class="value col-9">
           <& /Elements/MultiUserRoleInput, role => $role, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ClearRT::CustomRole-<% $role->Id %>" class="checkbox custom-control-input" name="ClearRT::CustomRole-<% $role->Id %>"
+              <% $ARGS{'ClearRT::CustomRole-' . $role->Id} ? 'checked="checked"' : '' %>
+            />
+            <label for="ClearRT::CustomRole-<% $role->Id %>" class="custom-control-label"><&|/l, $role->Name&>Clear [_1]</&></label>
+          </div>
         </div>
       </div>
 % }

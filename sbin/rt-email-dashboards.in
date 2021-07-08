@@ -70,7 +70,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s"
+    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s", "user=s"
 );
 
 if ($opts{'help'}) {
@@ -100,6 +100,7 @@ RT::Dashboard::Mailer->MailDashboards(
     All    => $opts{all},
     DryRun => $opts{dryrun},
     Time   => ($opts{time} || $opts{epoch} || time), # epoch is the old-style
+    User   => $opts{user},
     Opts   => \%opts,
 );
 
@@ -161,6 +162,10 @@ Back-compat for --time SECONDS.
 
 Ignore subscription frequency when considering each dashboard (should only be
 used with --dryrun for testing and debugging)
+
+=item --user User NAME or ID
+
+Only check the specified user's subscriptions
 
 =item --log LEVEL
 

@@ -69,6 +69,7 @@ sub MailDashboards {
         All    => 0,
         DryRun => 0,
         Time   => time,
+        User   => undef,
         @_,
     );
 
@@ -81,6 +82,11 @@ sub MailDashboards {
     my $Users = RT::Users->new(RT->SystemUser);
     $Users->LimitToPrivileged;
     $Users->LimitToEnabled;
+    if ( $args{User} ) {
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load( $args{User} );
+        $Users->Limit( FIELD => 'id', VALUE => $user->Id || 0 );
+    }
 
     while (defined(my $user = $Users->Next)) {
         my ($hour, $dow, $dom) = HourDowDomIn($args{Time}, $user->Timezone || RT->Config->Get('Timezone'));
