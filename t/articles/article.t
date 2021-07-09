@@ -109,7 +109,16 @@ ok (!$id, $msg);
 my $a6 = RT::Article->new($RT::SystemUser);
 ($id, $msg) = $a6->Create(Class => $class2->id, Name => "ScopedClassTest$$" );
 ok ($id, $msg);
+is ($a6->ClassObj->Name, $class2->Name, 'Class name is ' . $class2->Name);
 
+# Can't change class if Name is used in destination class
+($val, $msg) = $a6->SetClass($class1->id);
+ok (!$val, $msg);
+
+($val, $msg) = $a6->SetName('Changed name');
+ok ($val, $msg);
+($val, $msg) = $a6->SetClass($class1->id);
+ok ($val, $msg);
 
 
 # NOT OK
