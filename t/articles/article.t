@@ -27,6 +27,12 @@ ok (UNIVERSAL::isa($article, 'RT::Record'));
 ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record') , "It's a searchbuilder record!");
 
 
+($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS, Name => undef);
+ok (!$id, $msg);
+
+($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS, Name => '');
+ok (!$id, $msg);
+
 ($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS, Name => 'test 1');
 ok ($id, $msg);
 $article->Load($id);
