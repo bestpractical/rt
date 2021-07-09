@@ -2,6 +2,7 @@ import { library, dom } from '@fortawesome/fontawesome-svg-core'
 
 // Import solid weight icons
 import {
+    faFilter as fasFilter,
     faCog as fasCog,
     faEdit as fasEdit,
     faBookmark as fasBookmark,
@@ -49,6 +50,7 @@ import {
 // Add icons to library
 library.add(
     // Solid
+    fasFilter,
     fasCog,
     fasEdit,
     fasBookmark,
