@@ -181,6 +181,24 @@
   &>
 % }
 
+% my $CFs = $ClassObj->CustomFields;
+% if ($CFs->Count) {
+<h5 class="mt-3"><&|/l&>Class Custom Fields:</&></h5>
+% }
+% while (my $CF = $CFs->Next) {
+  <div class="form-row">
+    <div class="label col-3">
+      <% $CF->Name %>:
+% if ( $CF->EntryHint ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+% }
+    </div>
+    <div class="value col-9">
+      <& /Elements/EditCustomField, CustomField => $CF, Object => $ClassObj, &>
+    </div>
+  </div>
+% }
+
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
 </&>
 
@@ -193,6 +211,7 @@
 % }
     </div>
   </div>
+
 </form>
 
 <%INIT>
@@ -241,6 +260,7 @@ if ($ClassObj->Id()) {
     push @results, UpdateRecordObject( AttributesRef => \@attribs,
                                        Object => $ClassObj,
                                        ARGSRef => \%ARGS);
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $ClassObj );
 }
 
 #we're asking about enabled on the web page but really care about disabled.
