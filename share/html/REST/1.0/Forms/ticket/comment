@@ -55,6 +55,8 @@ $id
 use MIME::Entity;
 use RT::Interface::REST;
 
+my $cf_spec = RT::Interface::REST->custom_field_spec(1);
+
 $RT::Logger->debug("Got ticket id=$id for comment");
 $RT::Logger->debug("Got args @{[keys(%changes)]}.");
 
@@ -78,7 +80,8 @@ unless ($action =~ /^(?:Comment|Correspond)$/) {
 }
 
 my $text = $changes{Text};
-my @atts = @{ vsplit($changes{Attachment}) };
+my @atts = @{ vsplit($changes{Attachment}) }
+    if defined $changes{Attachment};
 
 if (!$changes{Text} && @atts == 0) {
     $e = 1;
@@ -106,6 +109,20 @@ $ent->attach(
     }
 }
 
+{
+    my ($status, @msg) = $m->comp(
+        '/Elements/ValidateCustomFields',
+        CustomFields => $ticket->TransactionCustomFields,
+        Object => RT::Transaction->new( $session{'CurrentUser'} ),
+        ARGSRef => \%ARGS
+    );
+    unless ( $status ) {
+        $e = 1;
+        $c = "# " . join("\n# ", @msg);
+        goto OUTPUT;
+    }
+}
+
 unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
         ($action eq "Comment" &&
          $ticket->CurrentUserHasRight("CommentOnTicket")) ||
@@ -117,17 +134,38 @@ unless ($ticket->CurrentUserHasRight('ModifyTicket') ||
     goto OUTPUT;
 }
 
-my $cc = join ", ", @{ vsplit($changes{Cc}) };
-my $bcc = join ", ", @{ vsplit($changes{Bcc}) };
-my ($n, $s) = $ticket->$action(MIMEObj => $ent,
-                               CcMessageTo => $cc,
-                               BccMessageTo => $bcc,
-                               TimeTaken => $changes{TimeWorked} || 0);
+my $cc = join ", ", @{ vsplit($changes{Cc} || '') };
+my $bcc = join ", ", @{ vsplit($changes{Bcc} || '') };
+my ($n, $s, $txn) = $ticket->$action(MIMEObj => $ent,
+                                     CcMessageTo => $cc,
+                                     BccMessageTo => $bcc,
+                                     TimeTaken => $changes{TimeWorked} || 0);
 $c = "# ".$s;
 if ($changes{Status}) {
    my  ($status_n, $status_s) = $ticket->SetStatus($changes{'Status'} );   
   $c .= "\n# ".$status_s;
 }
+
+my %v;
+foreach my $k (keys %changes) {
+    if ($k =~ /^$cf_spec/) {
+        my $key = $1 || $2;
+
+        my $cf = $txn->LoadCustomFieldByIdentifier($key);
+
+        if (not $cf->id) {
+            $c .= "\n# Invalid custom field name ($key)";
+            delete $changes{$k};
+            next;
+        }
+        if ($cf->SingleValue) {
+            $v{"CustomField-".$cf->Id()} = delete $changes{$k};
+        } else {
+            $v{"CustomField-".$cf->Id()} = vsplit(delete $changes{$k});
+        }
+    }
+}
+$txn->UpdateCustomFields(%v);
 
 OUTPUT:
 
