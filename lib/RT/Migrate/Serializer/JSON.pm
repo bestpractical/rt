@@ -524,7 +524,7 @@ sub CanonicalizeAttributes {
                         }
                     }
                 }
-                elsif ( $record->{Name} eq 'Pref-DashboardsInMenu' ) {
+                elsif ( $record->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
                     my @dashboards;
                     for my $item ( @{ $record->{Content}{dashboards} } ) {
                         if ( ref $item eq 'SCALAR' && $$item =~ /(\d+)$/ ) {

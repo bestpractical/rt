@@ -1801,6 +1801,7 @@ sub InsertData {
         my %order = (
             'Dashboard'             => 1,
             'HomepageSettings'      => 1,
+            'DashboardsInMenu'      => 2,
             'Pref-DashboardsInMenu' => 2,
             'Subscription'          => 2,
         );
@@ -2839,7 +2840,7 @@ sub _CanonilizeAttributeContent {
             }
         }
     }
-    elsif ( $item->{Name} eq 'Pref-DashboardsInMenu' ) {
+    elsif ( $item->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
         my @dashboards;
         for my $entry ( @{ $item->{Content}{dashboards} } ) {
             if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {

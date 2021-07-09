@@ -804,7 +804,7 @@ sub FindDependencies {
     $deps->Add( out => $self->Object );
 
     # dashboards in menu attribute has dependencies on each of its dashboards
-    if ($self->Name eq RT::User::_PrefName("DashboardsInMenu")) {
+    if ($self->Name =~ /^(?:Pref-)?DashboardsInMenu$/) {
         my $content = $self->Content;
         for my $pane (values %{ $content || {} }) {
             for my $dash_id (@$pane) {
@@ -908,7 +908,7 @@ sub PostInflateFixup {
     my $spec     = shift;
 
     # decode UIDs to be raw dashboard IDs
-    if ($self->Name eq RT::User::_PrefName("DashboardsInMenu")) {
+    if ( $self->Name =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
         my $content = $self->Content;
 
         for my $pane (values %{ $content || {} }) {
@@ -1023,7 +1023,7 @@ sub Serialize {
     my %store = $self->SUPER::Serialize(@_);
 
     # encode raw dashboard IDs to be UIDs
-    if ($store{Name} eq RT::User::_PrefName("DashboardsInMenu")) {
+    if ( $store{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
         my $content = $self->_DeserializeContent($store{Content});
         for my $pane (values %{ $content || {} }) {
             for (@$pane) {
