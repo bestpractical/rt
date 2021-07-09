@@ -510,6 +510,29 @@ sub _Set {
 
 }
 
+=head2 SetClass CLASS
+
+Set the class for this article.
+
+=cut
+
+sub SetClass {
+    my $self  = shift;
+    my $value = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    # Confirm the name isn't already used in the destination class
+    if ( $self->ValidateName( $self->Name, $value ) ) {
+        return ( $self->_Set( Field => 'Class', Value => $value ) );
+    }
+    else {
+        return ( 0, $self->loc('Name in use in destination class') );
+    }
+}
+
 =head2 _Value PARAM
 
 Return "PARAM" for this object. if the current user doesn't have rights, returns undef
