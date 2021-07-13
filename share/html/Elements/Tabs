@@ -649,15 +649,15 @@ my $build_main_nav = sub {
         path        => '/Reports/ResolvedByDates.html',
         description => loc('Examine tickets resolved in a queue between two dates'),
     );
-    $reports->child( user_time =>
-        title       => loc('User time worked'),
-        description => loc('User time worked'),
-        path        => '/Reports/TimeWorkedReport.html',
-    );
     $reports->child( createdindaterange =>
         title       => loc('Created in a date range'),
         path        => '/Reports/CreatedByDates.html',
         description => loc('Examine tickets created in a queue between two dates'),
+    );
+    $reports->child( user_time =>
+        title       => loc('User time worked'),
+        description => loc('User time worked'),
+        path        => '/Reports/TimeWorkedReport.html',
     );
 
     if ($session{CurrentUser}->HasRight( Right => 'ShowArticlesMenu', Object => RT->System )) {
