@@ -120,6 +120,13 @@ ok ($val, $msg);
 ($val, $msg) = $a6->SetClass($class1->id);
 ok ($val, $msg);
 
+my $a7 = RT::Article->new($RT::SystemUser);
+($id, $msg) = $a7->Create(Class => $class1->id, Name => "ScopedClassTest$$-2" );
+ok ($id, $msg);
+($val, $msg) = $a7->SetName("Changed name");
+ok (!$val, $msg);
+is ($msg, $a7->loc('Name in use'), 'Name in use message');
+
 
 # NOT OK
 #$RT::Handle->SimpleQuery("DELETE FROM Links");
