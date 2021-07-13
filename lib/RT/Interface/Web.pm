@@ -4938,14 +4938,14 @@ sub ListOfReports {
             path        => '/Reports/ResolvedByDates.html',
         },
         {
-            id          => 'user_time',
-            title       => 'User time worked',
-            path        => '/Reports/TimeWorkedReport.html',
-        },
-        {
             id          => 'createdindaterange',
             title       => 'Created in a date range', # loc
             path        => '/Reports/CreatedByDates.html',
+        },
+        {
+            id          => 'user_time',
+            title       => 'User time worked',
+            path        => '/Reports/TimeWorkedReport.html',
         },
     ];
 

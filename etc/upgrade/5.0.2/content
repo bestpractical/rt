@@ -13,7 +13,7 @@ our @Initial = (
         if ( $attr->Id && $attr->Created eq $attr->LastUpdated ) {
             RT->Logger->debug("Adding time worked report in menu");
             my $content = $attr->Content or return;
-            splice @$content, 2, 0,
+            splice @$content, 3, 0,
                 {   id    => 'user_time',
                     title => 'User time worked',
                     path  => '/Reports/TimeWorkedReport.html',
