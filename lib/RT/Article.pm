@@ -533,6 +533,31 @@ sub SetClass {
     }
 }
 
+=head2 SetName NAME
+
+Set Name for this article.
+
+=cut
+
+sub SetName {
+    my $self  = shift;
+    my $value = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    return ( 0, $self->loc('Name is required') ) unless defined $value && length $value;
+
+    # Confirm the name isn't already used
+    if ( $self->ValidateName( $value, $self->Class ) ) {
+        return ( $self->_Set( Field => 'Name', Value => $value ) );
+    }
+    else {
+        return ( 0, $self->loc('Name in use') );
+    }
+}
+
 =head2 _Value PARAM
 
 Return "PARAM" for this object. if the current user doesn't have rights, returns undef
