@@ -431,11 +431,13 @@ return @results;
 
 <%METHOD GetDependedOnByList>
 
+% my $links = $Object->DependedOnBy;
+% $links->RowsPerPage(50);
+% my $total = $links->CountAll;
   <p>
-    <&|/l&>This search is used in these dashboards</&>:
+    <&|/l, $total &>This search is used in the following [quant,_1,dashboard,dashboards]</&>:
   </p>
   <ul class="saved-search-depended-on-by-list list-group-compact">
-% my $links = $Object->DependedOnBy;
 % while ( my $link = $links->Next ) {
     <li class="list-group-item">
 %   if ( $link->BaseObj->Name eq 'Dashboard' ) {
@@ -444,6 +446,10 @@ return @results;
       <% $link->BaseObj->ObjectType %>: #<% $link->BaseObj->ObjectId %>
 %   }
     </li>
+% }
+
+% if ( $total > 50 ) {
+    <li class="list-group-item">...</li>
 % }
   </ul>
 
