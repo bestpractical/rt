@@ -180,6 +180,29 @@ if ($anchor =~ /AddPrincipal/) {
               }
           }
       }
+
+    var auto_set_own_dashboards;
+    jQuery('input[value="ModifySelf"]').change(function() {
+        var form = jQuery(this).closest('form');
+        if ( jQuery(this).is(':checked') ) {
+            if ( form.find('input[value$="OwnDashboard"]:visible:not(:checked)').length ) {
+                jQuery('#grant-own-dashboard-rights-modal').modal('show');
+            }
+        }
+        else {
+            if ( auto_set_own_dashboards ) {
+                form.find('input[value$="OwnDashboard"]:visible:checked').prop('checked', false);
+                auto_set_own_dashboards = false;
+            }
+        }
+    });
+
+    jQuery('#grant-own-dashboard-rights-confirm').click(function() {
+        var form = jQuery(this).closest('form');
+        form.find('input[value$="OwnDashboard"]:visible:not(:checked)').prop('checked', true);
+        jQuery('#grant-own-dashboard-rights-modal').modal('hide');
+        auto_set_own_dashboards = true;
+    });
   });
 </script>
 
@@ -293,6 +316,36 @@ if ( $AddPrincipal ) {
           <& EditRightsCategoryTabs, Context => $Context, id => 'acl-AddPrincipal' &>
         </div>
 % }
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="grant-own-dashboard-rights-modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><&|/l&>Grant Dashboard Rights</&></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          <&|/l&>Users need these additional rights to fully customize their own "RT at a glance":</&>
+        </p>
+        <ul class="list-group-compact">
+%       for my $item ( qw/Create Delete Modify See/ ) {
+          <li class="list-group-item"><% $item %>OwnDashboard</li>
+%       }
+        </ul>
+        <p>
+          <&|/l&>Grant these rights also? (Make sure to Save Changes)</&>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary button" data-dismiss="modal"><&|/l&>No</&></button>
+        <button type="button" class="btn btn-primary button" id="grant-own-dashboard-rights-confirm"><&|/l&>Yes</&></button>
       </div>
     </div>
   </div>

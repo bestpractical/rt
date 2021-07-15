@@ -1800,7 +1800,9 @@ sub InsertData {
 
         my %order = (
             'Dashboard'             => 1,
-            'HomepageSettings'      => 1,
+            'DefaultDashboard'      => 2,
+            'Pref-DefaultDashboard' => 2,
+            'DashboardsInMenu'      => 2,
             'Pref-DashboardsInMenu' => 2,
             'Subscription'          => 2,
         );
@@ -2797,36 +2799,15 @@ sub _LoadObject {
 sub _CanonilizeAttributeContent {
     my $self = shift;
     my $item = shift or return;
-    if ( $item->{Name} =~ /HomepageSettings$/ ) {
-        my $content = $item->{Content};
-        for my $type ( qw/body sidebar/ ) {
-            if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
-                for my $entry ( @{ $content->{$type} } ) {
-                    if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
-                        if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                            my $attributes = $object->Attributes;
-                            $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
-                            $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
-                            if ( my $attribute = $attributes->First ) {
-                                $entry->{name} =
-                                  ref( $object ) . '-' . $object->Id . '-SavedSearch-' . $attribute->Id;
-                            }
-                        }
-                        delete $entry->{$_} for qw/ObjectType ObjectId Description/;
-                    }
-                }
-            }
-        }
-    }
-    elsif ( $item->{Name} eq 'Dashboard' ) {
+    if ( $item->{Name} eq 'Dashboard' ) {
         my $content = $item->{Content}{Panes};
         for my $type ( qw/body sidebar/ ) {
             if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
                 for my $entry ( @{ $content->{$type} } ) {
+                    next unless $entry->{portlet_type} eq 'search';
                     if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                         if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
                             my $attributes = $object->Attributes;
-                            $attributes->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
                             $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                             if ( my $attribute = $attributes->First ) {
                                 $entry->{id} = $attribute->id;
@@ -2839,7 +2820,7 @@ sub _CanonilizeAttributeContent {
             }
         }
     }
-    elsif ( $item->{Name} eq 'Pref-DashboardsInMenu' ) {
+    elsif ( $item->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
         my @dashboards;
         for my $entry ( @{ $item->{Content}{dashboards} } ) {
             if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
@@ -2854,6 +2835,19 @@ sub _CanonilizeAttributeContent {
             }
         }
         $item->{Content}{dashboards} = \@dashboards;
+    }
+    elsif ( $item->{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+        my $entry = $item->{Content};
+        if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
+            if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
+                my $attributes = $object->Attributes;
+                $attributes->Limit( FIELD => 'Name',        VALUE => 'Dashboard' );
+                $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
+                if ( my $attribute = $attributes->First ) {
+                    $item->{Content} = $attribute->id;
+                }
+            }
+        }
     }
     elsif ( $item->{Name} eq 'Subscription' ) {
         my $entry = $item->{Content}{DashboardId};

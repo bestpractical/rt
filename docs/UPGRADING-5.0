@@ -298,6 +298,44 @@ address if desired, and possibly not display an email address on the login page.
 If you want to still display your C<$OwnerEmail> on the login page, just set
 C<$RTSupportEmail> to the same value.
 
+=item * "RT at a glance" is now a dashboard
+
+"RT at a glance" previously could be customized and was stored as
+a special configuration used just for the homepage.
+It is now a dashboard just like other dashboards in RT.
+With this update, you can now easily change your entire homepage
+by selecting a different dashboard to be your default homepage.
+After upgrading, RT at a glance should look the same as it did
+previously, but there are various changes in how it is managed.
+
+The previous global RT at a glance page is converted to a new System
+dashboard called "Homepage". Individual users with a custom homepage
+will see a new dashboard in "My Dashboards" called Homepage. These are
+regular dashboards now, so the names can be changed if desired.
+
+The gears icon on the homepage now links to a page that displays all
+available dashboards and users can select their default homepage from
+the list. To customize, users can create a new dashboard. The privacy
+of dashboards can be set to an individual user, a group, or system-wide,
+depending on the user's rights. This makes it easy to set up and share
+useful homepage configurations.
+
+Users who want to customize their homepage need the rights "ModifySelf",
+"CreateOwnDashboard", "DeleteOwnDashboard", "ModifyOwnDashboard" and
+"SeeOwnDashboard". All users who have "ModifySelf" are automatically granted
+these dashboard rights as part of the upgrade. You can modify these rights
+as desired if you don't want users to be able to create dashboards.
+
+All users can see the default System dashboard set for RT. If you
+want to allow users to see other System dashboards, grant the
+"SeeDashboard" right. This is not done automatically with the upgrade.
+
+For RT admins, Admin > Global > RT at a glance is still available,
+but instead of loading the page configuration editor, it shows a
+list of System dashboards that can be set as the default homepage.
+The RT at a glance option in the user admin page sub-menu also now shows
+a list of dashboards to set for that user.
+
 =back
 
 =cut

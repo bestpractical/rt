@@ -483,28 +483,7 @@ sub CanonicalizeAttributes {
                 );
             }
             else {
-                if ( $record->{Name} =~ /HomepageSettings$/ ) {
-                    my $content = $record->{Content};
-                    for my $type ( qw/body sidebar/ ) {
-                        if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
-                            for my $item ( @{ $content->{$type} } ) {
-                                if ( $item->{type} eq 'saved' && $item->{name} =~ /RT::\w+-\d+-SavedSearch-(\d+)/ ) {
-                                    my $id        = $1;
-                                    my $attribute = RT::Attribute->new( RT->SystemUser );
-                                    $attribute->Load( $id );
-                                    if ( $attribute->id ) {
-                                        $item->{ObjectType}  = $attribute->ObjectType;
-                                        $item->{ObjectId}    = $attribute->Object->Name;
-                                        $item->{Description} = $attribute->Description;
-                                        delete $item->{name};
-                                    }
-                                }
-                                delete $item->{uid};
-                            }
-                        }
-                    }
-                }
-                elsif ( $record->{Name} eq 'Dashboard' ) {
+                if ( $record->{Name} eq 'Dashboard' ) {
                     my $content = $record->{Content}{Panes};
                     for my $type ( qw/body sidebar/ ) {
                         if ( $content->{$type} && ref $content->{$type} eq 'ARRAY' ) {
@@ -524,7 +503,7 @@ sub CanonicalizeAttributes {
                         }
                     }
                 }
-                elsif ( $record->{Name} eq 'Pref-DashboardsInMenu' ) {
+                elsif ( $record->{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
                     my @dashboards;
                     for my $item ( @{ $record->{Content}{dashboards} } ) {
                         if ( ref $item eq 'SCALAR' && $$item =~ /(\d+)$/ ) {
@@ -556,6 +535,20 @@ sub CanonicalizeAttributes {
                             };
                         }
                     }
+                }
+            }
+        }
+        elsif ( $record->{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+            if ( ref $record->{Content} eq 'SCALAR' && ${$record->{Content}} =~ /(\d+)$/ ) {
+                my $id        = $1;
+                my $attribute = RT::Attribute->new( RT->SystemUser );
+                $attribute->Load($id);
+                my $dashboard = {};
+                if ( $attribute->id ) {
+                    $dashboard->{ObjectType}  = $attribute->ObjectType;
+                    $dashboard->{ObjectId}    = $attribute->Object->Name;
+                    $dashboard->{Description} = $attribute->Description;
+                    $record->{Content}        = $dashboard;
                 }
             }
         }
