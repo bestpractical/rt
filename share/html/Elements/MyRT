@@ -74,19 +74,22 @@ unless ( $Portlets ) {
     my $dashboard = RT::Dashboard->new($system_default_id == $dashboard_id ? RT->SystemUser : $session{'CurrentUser'});
     my ( $ok, $msg ) = $dashboard->LoadById( $dashboard_id );
     if ( !$ok ) {
+        my $user_msg = loc('Unable to load selected dashboard, it may have been deleted');
         if ( $dashboard_id == $system_default_id ) {
-            $m->out($m->scomp('/Elements/ListActions', actions => $msg));
+            RT->Logger->warn("Unable to load dashboard: $msg");
+            $m->out($m->scomp('/Elements/ListActions', actions => $user_msg));
             return;
         }
         else {
             my ( $ok, $sys_msg ) = $dashboard->LoadById( $system_default_id );
             if ( $ok ) {
-                $m->out($m->scomp('/Elements/ListActions', actions => [$msg, loc('Fallback to system default homepage')]));
+                $m->out($m->scomp('/Elements/ListActions', actions => [$user_msg, loc('Setting homepage to system default homepage')]));
                 my ( $ok, $msg ) = $user->DeletePreferences( 'DefaultDashboard' );
                 RT->Logger->error( "Couldn't delete DefaultDashboard of user " . $user->Name . ": $msg" ) unless $ok;
             }
             else {
-                $m->out($m->scomp('/Elements/ListActions', actions => [$msg, $sys_msg]));
+                RT->Logger->warn("Unable to load dashboard: $msg $sys_msg");
+                $m->out($m->scomp('/Elements/ListActions', actions => $user_msg));
                 return;
             }
         }
