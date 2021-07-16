@@ -58,6 +58,8 @@ our %LIFECYCLES;
 our %LIFECYCLES_CACHE;
 our %LIFECYCLES_TYPES;
 
+use locale qw/:characters/;
+
 # cache structure:
 #    {
 #        lifecycle_x => {
