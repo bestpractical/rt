@@ -84,6 +84,11 @@ Set(\%Lifecycles,
             "deleted"
         ],
     },
+    "français" => {
+      "initial" => ["NOUVELLE"],
+      "active"  => ["INGÉNIERIE"],
+      "inactive" => ["RÉSOLUE"],
+    }
 );
 END
 }

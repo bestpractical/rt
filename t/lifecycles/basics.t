@@ -307,4 +307,20 @@ diag "Role rights are checked for lifecycles at asset level";
     is $lifecycle->Name, 'assets', 'Test LifecycleObj method';
 }
 
+diag "Test that our French lifecycle is decoded correctly";
+{
+    # Without this we see lc('INGÉNIERIE') being converted to 'ingÉnierie' which is incorrect.
+    # We should expect the output to be 'ingénierie'.
+    use locale qw/:characters/;
+
+    my $lifecycles = RT->Config->Get('Lifecycles');
+    my $french = $lifecycles->{'français'};
+
+    foreach my $type ( qw/initial active inactive/ ) {
+        foreach my $status ( @{$lifecycles->{'français'}->{$type}} ) {
+            is $RT::Lifecycle::LIFECYCLES_CACHE{'français'}->{'canonical_case'}->{lc($status)}, $status, "Successfully converted accented status to lowercase.";
+        }
+    }
+}
+
 done_testing;
