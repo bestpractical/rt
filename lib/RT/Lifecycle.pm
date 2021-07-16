@@ -666,9 +666,13 @@ sub FillCache {
             actions => [],
         };
 
-        my ( $ret, @warnings ) = $self->ValidateLifecycle(Lifecycle => $lifecycle, Name => $name);
-        unless ( $ret ) {
-            warn $_ for @warnings;
+        # Skip validating disabled lifecycles
+        my ( $ret, @warnings );
+        unless ( $lifecycle->{'disabled'} ) {
+            ( $ret, @warnings ) = $self->ValidateLifecycle(Lifecycle => $lifecycle, Name => $name);
+            unless ( $ret ) {
+                warn $_ for @warnings;
+            }
         }
 
         my @statuses;
