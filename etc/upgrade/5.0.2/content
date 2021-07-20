@@ -1,8 +1,66 @@
 use strict;
 use warnings;
 
-our @Initial = (
+our @ScripConditions;
 
+our @Initial = (
+    sub {
+        my $searches = RT::Attributes->new( RT->SystemUser );
+        $searches->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+        $searches->OrderBy( FIELD => 'id' );
+
+        while ( my $search = $searches->Next ) {
+            my $content = $search->Content;
+            next unless ref $content eq 'HASH';
+
+            if ( $content->{OrderBy} ) {
+                my @order_by = split /\|/, $content->{OrderBy};
+                my @new_order_by;
+                my $changed;
+                for my $order_by (@order_by) {
+                    if ( $order_by eq 'Owner' ) {
+                        push @new_order_by, 'Owner.Name';
+                        $changed = 1;
+                    }
+                    else {
+                        push @new_order_by, $order_by;
+                    }
+                }
+                if ($changed) {
+                    $content->{OrderBy} = join '|', @new_order_by;
+                    my ( $ok, $msg ) = $search->SetContent($content);
+                    RT->Logger->error("Unable to upgrade saved chart #@{[$search->id]}: $msg")
+                        unless $ok;
+                }
+            }
+        }
+    },
+    sub {
+        my @conditions = (
+            {   Name                 => 'On Create Via Email',
+                Description          => 'When a ticket is created via Email',
+                ApplicableTransTypes => 'Create',
+                Argument             => 'Email',
+                ExecModule           => 'ViaInterface',
+            },
+            {   Name                 => 'On Create Via Web',
+                Description          => 'When a ticket is created via Web',
+                ApplicableTransTypes => 'Create',
+                Argument             => 'Web,Mobile',
+                ExecModule           => 'ViaInterface',
+            },
+        );
+        for my $condition ( @conditions ) {
+            my $object = RT::ScripCondition->new(RT->SystemUser);
+            $object->Load($condition->{Name});
+            if ( $object->Id ) {
+                RT->Logger->info("Found scrip condition '$condition->{Name}', skipping");
+            }
+            else {
+                push @ScripConditions, $condition;
+            }
+        }
+    },
     # add default reports
     sub {
         my $reports_in_menu = 'ReportsInMenu';
@@ -171,6 +229,32 @@ our @Final = (
                         RT->Logger->error( "Couldn't grant $right to user #" . $object->Id . ": $msg" );
                     }
                 }
+            }
+        }
+    },
+    sub {
+        my $role_groups = RT::Groups->new( RT->SystemUser );
+        $role_groups->{'find_disabled_rows'} = 1;
+        $role_groups->Limit( FIELD => 'Name',   VALUE => 'RT::CustomRole-', OPERATOR => 'LIKE', CASESENSITIVE => 0 );
+        $role_groups->Limit( FIELD => 'Domain', VALUE => '-Role',           OPERATOR => 'LIKE', CASESENSITIVE => 0 );
+        $role_groups->LimitToDeleted;
+
+        while ( my $role_group = $role_groups->Next ) {
+            my ( $ret, $msg ) = $role_group->SetDisabled( 0 );
+            RT->Logger->error( "Couldn't enable role group #" . $role_group->id . ": $msg" ) unless $ret;
+        }
+    },
+    sub {
+        my $attrs = RT::Attributes->new( RT->SystemUser );
+        $attrs->Limit(
+            FIELD    => 'Name',
+            VALUE    => [ 'Dashboard', 'DefaultDashboard', 'Pref-DefaultDashboard' ],
+            OPERATOR => 'IN',
+        );
+        while ( my $attr = $attrs->Next ) {
+            my ( $ret, $msg ) = $attr->_SyncLinks;
+            if ( !$ret ) {
+                die "Couldn't sync links for attribute #" . $attr->id . ": $msg";
             }
         }
     },
