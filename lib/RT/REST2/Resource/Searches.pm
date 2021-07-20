@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::REST2::Resource::Tickets;
+package RT::REST2::Resource::Searches;
 use strict;
 use warnings;
 
@@ -55,71 +55,85 @@ use namespace::autoclean;
 
 extends 'RT::REST2::Resource::Collection';
 with 'RT::REST2::Resource::Collection::ProcessPOSTasGET',
-    'RT::REST2::Resource::Collection::Search';
+    'RT::REST2::Resource::Collection::QueryByJSON';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
-        regex => qr{^/tickets/?$},
-        block => sub { { collection_class => 'RT::Tickets' } },
+        regex => qr{^/searches/?$},
+        block => sub { { collection_class => 'RT::Attributes' } },
     )
 }
 
 use Encode qw( decode_utf8 );
-use RT::REST2::Util qw( error_as_json expand_uid );
+use RT::REST2::Util qw( error_as_json );
 use RT::Search::Simple;
-
-has 'query' => (
-    is          => 'ro',
-    isa         => 'Str',
-    required    => 1,
-    lazy_build  => 1,
-);
-
-sub _build_query {
-    my $self  = shift;
-    my $query = decode_utf8($self->request->param('query') || "");
-
-    if ($self->request->param('simple') and $query) {
-        # XXX TODO: Note that "normal" ModifyQuery callback isn't invoked
-        # XXX TODO: Special-casing of "#NNN" isn't used
-        my $search = RT::Search::Simple->new(
-            Argument    => $query,
-            TicketsObj  => $self->collection,
-        );
-        $query = $search->QueryToSQL;
-    }
-    return $query;
-}
 
 sub allowed_methods {
     [ 'GET', 'HEAD', 'POST' ]
 }
 
-override 'limit_collection' => sub {
+sub limit_collection {
     my $self = shift;
-    my ($ok, $msg) = $self->collection->FromSQL( $self->query );
-    return error_as_json( $self->response, 0, $msg ) unless $ok;
-    super();
-    return 1;
-};
-
-sub expand_field {
-    my $self         = shift;
-    my $item         = shift;
-    my $field        = shift;
-    my $param_prefix = shift;
-    if ( $field =~ /^(Requestor|AdminCc|Cc)/ ) {
-        my $role    = $1;
-        my $members = [];
-        if ( my $group = $item->RoleGroup($role) ) {
-            my $gms = $group->MembersObj;
-            while ( my $gm = $gms->Next ) {
-                push @$members, $self->_expand_object( $gm->MemberObj->Object, $field, $param_prefix );
-            }
-        }
-        return $members;
+    my @objects = RT::SavedSearch->new($self->current_user)->ObjectsForLoading;
+    if ( $self->current_user->HasRight( Object => $RT::System, Right => 'ShowSavedSearches' ) ) {
+        push @objects, RT::System->new( $self->current_user );
     }
-    return $self->SUPER::expand_field( $item, $field, $param_prefix );
+
+    my $query       = $self->query_json;
+    my @fields      = $self->searchable_fields;
+    my %searchable  = map {; $_ => 1 } @fields;
+
+    my @ids;
+    my @attrs;
+    for my $object (@objects) {
+        my $attrs = $object->Attributes;
+        $attrs->Limit( FIELD => 'Name', VALUE => 'SavedSearch' );
+        push @attrs, $attrs;
+    }
+
+    # Default system searches
+    my $attrs = RT::System->new( $self->current_user )->Attributes;
+    $attrs->Limit( FIELD => 'Name', VALUE => 'Search -', OPERATOR => 'STARTSWITH' );
+    push @attrs, $attrs;
+
+    for my $attrs (@attrs) {
+        for my $limit (@$query) {
+            next
+                unless $limit->{field}
+                and $searchable{ $limit->{field} }
+                and defined $limit->{value};
+
+            $attrs->Limit(
+                FIELD => $limit->{field},
+                VALUE => $limit->{value},
+                (   $limit->{operator} ? ( OPERATOR => $limit->{operator} )
+                    : ()
+                ),
+                CASESENSITIVE => ( $limit->{case_sensitive} || 0 ),
+                (   $limit->{entry_aggregator} ? ( ENTRYAGGREGATOR => $limit->{entry_aggregator} )
+                    : ()
+                ),
+            );
+        }
+        push @ids, map { $_->Id } @{ $attrs->ItemsArrayRef };
+    }
+
+    while ( @ids > 1000 ) {
+        my @batch = splice( @ids, 0, 1000 );
+        $self->Limit( FIELD => 'id', VALUE => \@ids, OPERATOR => 'IN' );
+    }
+    $self->collection->Limit( FIELD => 'id', VALUE => \@ids, OPERATOR => 'IN' );
+
+    return 1;
+}
+
+sub serialize_record {
+    my $self   = shift;
+    my $record = shift;
+    my $result = $self->SUPER::serialize_record($record);
+    $result->{type} = 'search';
+    $result->{_url} =~ s!/attribute/!/search/!;
+    return $result;
 }
 
 __PACKAGE__->meta->make_immutable;

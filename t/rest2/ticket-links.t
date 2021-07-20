@@ -27,6 +27,14 @@ ok($ok, $msg);
 ($ok, $msg) = $child->AddLink(Type => 'RefersTo', Target => 'https://bestpractical.com');
 ok($ok, $msg);
 
+my $article = RT::Article->new(RT->SystemUser);
+($ok, $msg) = $article->Create(Class => 'General', Name => 'article foo');
+ok($ok, $msg);
+my $article_id = $article->Id;
+
+($ok, $msg) = $article->AddLink(Type => 'RefersTo', Target => $parent->URI);
+ok($ok, $msg);
+
 $user->PrincipalObj->GrantRight( Right => 'ShowTicket' );
 
 # Inspect existing ticket links (parent)
@@ -47,7 +55,12 @@ $user->PrincipalObj->GrantRight( Right => 'ShowTicket' );
     cmp_deeply($links{'depended-on-by'}, undef, 'no depended-on-by links');
     cmp_deeply($links{'parent'}, undef, 'no parent links');
     cmp_deeply($links{'refers-to'}, undef, 'no refers-to links');
-    cmp_deeply($links{'referred-to-by'}, undef, 'no referred-to-by links');
+    cmp_deeply($links{'referred-to-by'}, [{
+        ref  => 'referred-to-by',
+        type => 'article',
+        id   => $article_id,
+        _url => re(qr{$rest_base_path/article/$article_id$}),
+    }], 'one referred-to-by link');
 
     cmp_deeply($links{'child'}, [{
         ref  => 'child',

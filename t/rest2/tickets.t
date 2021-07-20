@@ -199,7 +199,7 @@ my ($ticket_url, $ticket_id);
 
 # Ticket Search - Fields
 {
-    my $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Subject",
+    my $res = $mech->get("$rest_base_path/tickets?query=id>0&fields=Status,Subject,_hyperlinks",
         'Authorization' => $auth,
     );
     is($res->code, 200);
@@ -209,7 +209,13 @@ my ($ticket_url, $ticket_id);
     my $ticket = $content->{items}->[0];
     is($ticket->{Subject}, 'Ticket creation using REST');
     is($ticket->{Status}, 'new');
-    is(scalar keys %$ticket, 5);
+
+    my $links = $ticket->{_hyperlinks};
+    is( @$links, 2, '2 links by default' );
+    like( $links->[0]{_url}, qr{$rest_base_path/ticket/1$},         'Self link' );
+    like( $links->[1]{_url}, qr{$rest_base_path/ticket/1/history$}, 'History link' );
+
+    is(scalar keys %$ticket, 6);
 }
 
 # Ticket Search - Fields, sub objects, no right to see Queues
@@ -508,6 +514,112 @@ my ($ticket_url, $ticket_id);
     is($content->{ContentType}, 'text/html');
 }
 
+# Ticket Reply, JSON request, missing Content
+{
+    my $res = $mech->get($ticket_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    my $content = $mech->json_response;
+
+    my ($hypermedia) = grep { $_->{ref} eq 'correspond' } @{ $content->{_hyperlinks} };
+    ok($hypermedia, 'got correspond hypermedia');
+    like($hypermedia->{_url}, qr[$rest_base_path/ticket/$ticket_id/correspond$]);
+
+    $res = $mech->post($mech->url_for_hypermedia('correspond'),
+        'Authorization' => $auth,
+        'Content-Type' => 'application/json',
+        'Content' => '{"Subject":"No body!"}',
+    );
+    is($res->code, 201);
+
+    cmp_deeply($mech->json_response, [re(qr/Correspondence added|Message recorded/)]);
+}
+
+# Ticket Reply, changing status
+{
+    my $res = $mech->get($ticket_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    my $content = $mech->json_response;
+
+    my ($hypermedia) = grep { $_->{ref} eq 'correspond' } @{ $content->{_hyperlinks} };
+    ok($hypermedia, 'got correspond hypermedia');
+    like($hypermedia->{_url}, qr[$rest_base_path/ticket/$ticket_id/correspond$]);
+
+    $res = $mech->post($mech->url_for_hypermedia('correspond'),
+        'Authorization' => $auth,
+        'Content-Type' => 'application/json',
+        'Content' => '{"Subject":"I am a-changing the status!","ContentType":"text/plain","Content":"Foo","Status":"rejected"}',
+    );
+    is($res->code, 201);
+
+    cmp_deeply($mech->json_response, [re(qr/Correspondence added|Message recorded/), "Status changed from 'open' to 'rejected'"]);
+
+    like($res->header('Location'), qr{$rest_base_path/transaction/\d+$});
+    $res = $mech->get($res->header('Location'),
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{Type}, 'Correspond');
+    is($content->{TimeTaken}, 0);
+    is($content->{Object}{type}, 'ticket');
+    is($content->{Object}{id}, $ticket_id);
+
+    $res = $mech->get($mech->url_for_hypermedia('attachment'),
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{Content}, encode_base64('Foo')),
+    is($content->{ContentType}, 'text/plain');
+
+    # Check that ticket status was updated
+    $res = $mech->get($ticket_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{Status}, 'rejected', "Ticket status really was changed");
+
+    # Try an invalid status
+    $res = $mech->post($mech->url_for_hypermedia('correspond'),
+        'Authorization' => $auth,
+        'Content-Type' => 'application/json',
+        'Content' => '{"Subject":"I am a-changing the status!","ContentType":"text/plain","Content":"Foo","Status":"bahaha-youre-so-funny"}',
+    );
+    is($res->code, 201);
+
+    cmp_deeply($mech->json_response, [re(qr/Correspondence added|Message recorded/), "Status 'bahaha-youre-so-funny' isn't a valid status for this ticket."]);
+
+    $res = $mech->get($ticket_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{Status}, 'open', "Ticket status really was not changed to illegal value");
+
+    # Comment and change status
+    $res = $mech->post($mech->url_for_hypermedia('comment'),
+        'Authorization' => $auth,
+        'Content-Type' => 'application/json',
+        'Content' => '{"Subject":"I am a-changing the status in a comment!","ContentType":"text/plain","Content":"Foo","Status":"rejected"}',
+    );
+    is($res->code, 201);
+
+    cmp_deeply($mech->json_response, ['Comments added', "Status changed from 'open' to 'rejected'"]);
+
+    $res = $mech->get($ticket_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+    $content = $mech->json_response;
+    is($content->{Status}, 'rejected', "Ticket status really was changed during a comment");
+
+}
+
 # Ticket Sorted Search
 {
     my $ticket2 = RT::Ticket->new($RT::SystemUser);
@@ -710,6 +822,36 @@ my $json = JSON->new->utf8;
     my $value = $ticket->CustomFieldValues( $image_cf )->First;
     is( $value->Content, 'image.png', 'image file name');
     is( $value->LargeContent, $img_content, 'image file content');
+}
+
+# Ticket Search - Role Fields
+{
+
+    my $payload = {
+        Subject   => 'Ticket creation using REST',
+        Queue     => 'General',
+        Content   => 'Testing ticket creation using REST API.',
+        Requestor => 'alice@example.com',
+        Cc        => 'alice@example.com, bob@example.com',
+        AdminCc   => 'root@example.com',
+    };
+
+    my $res = $mech->post_json( "$rest_base_path/ticket", $payload, 'Authorization' => $auth, );
+    is( $res->code, 201 );
+    ok( my $ticket_url = $res->header('location') );
+    ok( my ($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)] );
+
+    $res = $mech->get( "$rest_base_path/tickets?query=id=$ticket_id&fields=Requestor,Cc,AdminCc",
+        'Authorization' => $auth, );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+    is( scalar @{ $content->{items} }, 1 );
+
+    my $ticket = $content->{items}->[0];
+    is( $ticket->{Requestor}[0]{id}, 'alice@example.com', 'Requestor id in search result' );
+    is( $ticket->{Cc}[0]{id},        'alice@example.com', 'Cc id in search result' );
+    is( $ticket->{Cc}[1]{id},        'bob@example.com',   'Cc id in search result' );
+    is( $ticket->{AdminCc}[0]{id},   'root@example.com',  'AdminCc id in search result' );
 }
 
 done_testing;

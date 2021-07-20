@@ -58,8 +58,9 @@ extends 'RT::REST2::Resource';
 use Scalar::Util qw( blessed );
 use Web::Machine::FSM::States qw( is_status_code );
 use Module::Runtime qw( require_module );
-use RT::REST2::Util qw( serialize_record expand_uid format_datetime error_as_json );
+use RT::REST2::Util qw( expand_uid format_datetime error_as_json );
 use POSIX qw( ceil );
+use Encode;
 
 has 'collection_class' => (
     is  => 'ro',
@@ -93,6 +94,21 @@ sub setup_paging {
     $self->collection->GotoPage($page - 1);
 }
 
+sub setup_ordering {
+    my $self = shift;
+    my @orderby_cols;
+    my @orders = $self->request->param('order');
+    foreach my $orderby ($self->request->param('orderby')) {
+        $orderby = decode_utf8($orderby);
+        my $order = shift @orders || 'ASC';
+        $order = uc(decode_utf8($order));
+        $order = 'ASC' unless $order eq 'DESC';
+        push @orderby_cols, {FIELD => $orderby, ORDER => $order};
+    }
+    $self->collection->OrderByCols(@orderby_cols)
+        if @orderby_cols;
+}
+
 sub limit_collection {
     my $self        = shift;
     my $collection  = $self->collection;
@@ -124,6 +140,7 @@ sub limit_collection {
 sub search {
     my $self = shift;
     $self->setup_paging;
+    $self->setup_ordering;
     return $self->limit_collection;
 }
 
@@ -134,13 +151,37 @@ sub serialize {
     my @fields = defined $self->request->param('fields') ? split(/,/, $self->request->param('fields')) : ();
 
     while (my $item = $collection->Next) {
-        my $result = expand_uid( $item->UID );
+        my $result = $self->serialize_record( $item->UID );
 
         # Allow selection of desired fields
         if ($result) {
             for my $field (@fields) {
-                my $field_result = $self->expand_field($item, $field);
-                $result->{$field} = $field_result if defined $field_result;
+                if ( $field eq '_hyperlinks' ) {
+                    my $class = ref $item;
+                    $class =~ s!^RT::!RT::REST2::Resource::!;
+                    if ( $class->require ) {
+                        my $object = $class->new(
+                            record_class => ref $item,
+                            record_id    => $item->id,
+                            record       => $item,
+                            request      => $self->request,
+                            response     => Plack::Response->new,
+                        );
+                        if ( $object->can('hypermedia_links') ) {
+                            $result->{$field} = $object->hypermedia_links;
+                        }
+                        else {
+                            RT->Logger->warning("_hyperlinks is not supported by $class, skipping");
+                        }
+                    }
+                    else {
+                        RT->Logger->warning("Couldn't load $class, skipping _hyperlinks");
+                    }
+                }
+                else {
+                    my $field_result = $self->expand_field($item, $field);
+                    $result->{$field} = $field_result if defined $field_result;
+                }
             }
         }
         push @results, $result;
@@ -178,6 +219,12 @@ sub serialize {
     };
 
     return \%results;
+}
+
+sub serialize_record {
+    my $self   = shift;
+    my $record = shift;
+    return expand_uid($record);
 }
 
 # XXX TODO: Bulk update via DELETE/PUT on a collection resource?

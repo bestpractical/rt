@@ -105,12 +105,13 @@ sub _rtlink_links {
         my $mode = $RT::Link::TYPEMAP{$relation}{Mode};
         my $type = $RT::Link::TYPEMAP{$relation}{Type};
         my $method = $mode . "Obj";
+        my $mode_uri = $mode . 'URI';
 
         my $links = $record->$relation;
 
         while (my $link = $links->Next) {
             my $entry;
-            if ( $link->LocalTarget and $link->LocalBase ){
+            if ( $link->$mode_uri->IsLocal ) {
                 # Internal links
                 $entry = expand_uid($link->$method->UID);
             }
