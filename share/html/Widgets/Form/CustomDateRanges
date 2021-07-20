@@ -77,7 +77,7 @@ my $db_config = RT::Configuration->new( $session{CurrentUser} );
 $db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
 
 my $content;
-$content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
+$content = $db_config->DecodedContent if $db_config->id;
 </%INIT>
 </%METHOD>
 

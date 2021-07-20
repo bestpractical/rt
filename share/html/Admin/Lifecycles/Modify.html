@@ -138,7 +138,7 @@ else {
     unless ($Layout) {
         my $conf = RT::Configuration->new( $session{CurrentUser} );
         $conf->LoadByCols( 'Name' => "LifecycleLayout-$Name", Disabled => 0 );
-        $Layout = $conf->Id ? JSON( $conf->_DeserializeContent( $conf->Content ) ) : '';
+        $Layout = $conf->Id ? JSON( $conf->DecodedContent ) : '';
     }
 }
 
