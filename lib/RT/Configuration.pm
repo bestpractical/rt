@@ -141,10 +141,7 @@ sub Create {
     $RT::Handle->Commit;
     RT->Config->ApplyConfigChangeToAllServerProcesses;
 
-    my $old_value = RT->Config->Get($args{Name});
-    if ( ref $old_value ) {
-        $old_value = $self->_SerializeContent($old_value);
-    }
+    my ($old_value) = $self->EncodeContent( scalar RT->Config->Get( $args{Name} ) );
     RT->Logger->info($self->CurrentUser->Name . " changed " . $args{Name});
     return ( $id, $self->loc( '[_1] changed from "[_2]" to "[_3]"', $self->Name, $old_value // '', $content // '' ) );
 }
@@ -292,11 +289,7 @@ sub SetContent {
     my ( $ok, $msg ) = $self->ValidateContent( Content => $raw_value );
     return ( 0, $msg ) unless $ok;
 
-    my $value = $raw_value;
-    if (ref $value) {
-        $value = $self->_SerializeContent($value, $self->Name);
-        $content_type = 'perl';
-    }
+    ( my $value, $content_type ) = $self->EncodeContent($raw_value);
     if ($self->Content eq $value) {
         return (0, $self->loc("[_1] update: Nothing changed", ucfirst($self->Name)));
     }
@@ -380,6 +373,25 @@ sub ValidateContent {
     return ( 1, $self->loc('Content valid') );
 }
 
+=head2 EncodeContent
+
+Returns a pair of encoded content and content type.
+
+=cut
+
+sub EncodeContent {
+    my $self    = shift;
+    my $content = shift;
+    return ( $content, '' ) unless ref $content;
+
+    if ( my $json = $self->_EnJSONContent($content) ) {
+        return ( $json, 'application/json' );
+    }
+    else {
+        return ( $self->_SerializeContent($content), 'perl' );
+    }
+}
+
 =head1 PRIVATE METHODS
 
 Documented for internal use only, do not call these from outside
@@ -406,10 +418,7 @@ sub _Create {
         return ( 0, $self->loc("You cannot update [_1] using database config; you must edit your site config", $args{'Name'}) );
     }
 
-    if ( ref( $args{'Content'} ) ) {
-        $args{'Content'} = $self->_SerializeContent( $args{'Content'}, $args{'Name'} );
-        $args{'ContentType'} = 'perl';
-    }
+    ( $args{'Content'}, $args{'ContentType'} ) = $self->EncodeContent( $args{'Content'} );
 
     my ( $id, $msg ) = $self->SUPER::Create(
         map { $_ => $args{$_} } qw(Name Content ContentType),
@@ -479,6 +488,19 @@ sub _DeserializeContent {
     }
 
     return $thawed;
+}
+
+sub _EnJSONContent {
+    my $self    = shift;
+    my $content = shift;
+
+    my $json = eval { JSON::to_json( $content, { pretty => 1, canonical => 1 } ) };
+    if ($@) {
+        return wantarray ? ( undef, $@ ) : undef;
+    }
+
+    chomp $json;
+    return $json;
 }
 
 sub _DeJSONContent {

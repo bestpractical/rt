@@ -140,12 +140,7 @@ sub stringify {
     my $value = shift;
 
     return $value unless ref $value;
-
-    local $Data::Dumper::Terse = 1;
-    local $Data::Dumper::Indent = 2;
-    local $Data::Dumper::Sortkeys = 1;
-
-    my $output = Data::Dumper::Dumper $value;
+    my $output = JSON::to_json( $value, { pretty => 1, canonical => 1 } );
     chomp $output;
     return $output;
 }

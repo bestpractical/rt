@@ -116,9 +116,10 @@ while ( my $config = $configs->Next ) {
     }
     else {
         $RT::Handle->BeginTransaction();
-        my ( $ret, $msg ) = $config->__Set( Field => 'ContentType', Value => 'perl' );
+        my ( $content, $content_type ) = $config->EncodeContent($thawed);
+        my ( $ret,     $msg )          = $config->__Set( Field => 'ContentType', Value => $content_type );
         if ($ret) {
-            ( $ret, $msg ) = $config->__Set( Field => 'Content', Value => $config->_SerializeContent($thawed) );
+            ( $ret, $msg ) = $config->__Set( Field => 'Content', Value => $content );
         }
 
         if ($ret) {
