@@ -58,7 +58,7 @@ my $stringify = sub {
     local $Data::Dumper::Sortkeys = 1;
     my $format = '';
     if (ref $value) {
-        eval { $output = to_json($value, {utf8 => 1, pretty => 1, canonical => 1}) };
+        eval { $output = to_json($value, {pretty => 1, canonical => 1}) };
         if ( $@ ) {
             $output = Dumper($value);
             $format = 'code';
