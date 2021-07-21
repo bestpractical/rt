@@ -1010,7 +1010,7 @@ sub _UpdateAttributes {
                                    "The new value has been set.",          # loc
                                    "No column specified",                  # loc
                                    "Immutable field",                      # loc
-                                   "Nonexistant field?",                   # loc
+                                   "Nonexistent field?",                   # loc
                                    "Invalid data",                         # loc
                                    "Couldn't find row",                    # loc
                                    "Missing a primary key?: [_1]",         # loc
