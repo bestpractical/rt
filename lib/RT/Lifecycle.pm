@@ -799,6 +799,22 @@ sub _SaveLifecycles {
     my $lifecycles = shift;
     my $CurrentUser = shift;
 
+    for my $key ( keys %$lifecycles ) {
+        next if $key eq '__maps__';
+        my ( $ret, @warnings )
+            = $class->ValidateLifecycle( Lifecycle => $lifecycles->{$key}, Name => $key, Cleanup => 1 );
+        unless ($ret) {
+            RT->Logger->debug($_) for @warnings;
+        }
+    }
+
+    if ( $lifecycles->{__maps__} ) {
+        my ( $ret, @warnings ) = $class->ValidateLifecycleMaps( Lifecycles => $lifecycles, Cleanup => 1 );
+        unless ($ret) {
+            RT->Logger->debug($_) for @warnings;
+        }
+    }
+
     my $setting = RT::Configuration->new($CurrentUser);
     $setting->LoadByCols(Name => 'Lifecycles', Disabled => 0);
     if ($setting->Id) {
@@ -953,9 +969,12 @@ sub UpdateMaps {
     return (1, $CurrentUser->loc("Lifecycle mappings updated"));
 }
 
-=head2 ValidateLifecycle( CurrentUser => undef, Lifecycle => undef, Name => undef )
+=head2 ValidateLifecycle( CurrentUser => undef, Lifecycle => undef, Name => undef, Cleanup => undef )
 
 Validate passed Lifecycle data structure.
+
+If Cleanup is true, clean up passed Lifecycle data structure, e.g. removing
+nonexistent statuses.
 
 Returns (STATUS, MESSAGE). STATUS is true if succeeded, otherwise false.
 
@@ -967,6 +986,7 @@ sub ValidateLifecycle {
         CurrentUser => undef,
         Lifecycle   => undef,
         Name        => undef,
+        Cleanup     => undef,
         @_,
     );
     my $current_user = $args{CurrentUser} || RT->SystemUser;
@@ -995,20 +1015,36 @@ sub ValidateLifecycle {
     for my $state ( keys %{ $lifecycle->{defaults} || {} } ) {
         my $status = $lifecycle->{defaults}{$state};
         if ( $status ) {
-            push @warnings, $current_user->loc( "Nonexistent default [_1] status [_2] in [_3] lifecycle", $state, lc $status, $name )
-                unless $lifecycle->{canonical_case}{ lc $status };
+            unless ( $lifecycle->{canonical_case}{ lc $status } ) {
+                push @warnings, $current_user->loc( "Nonexistent default [_1] status [_2] in [_3] lifecycle", $state, lc $status, $name )
+                    unless $lifecycle->{canonical_case}{ lc $status };
+                if ( $args{Cleanup} ) {
+                    delete $lifecycle->{defaults}{$state};
+                }
+            }
         }
         else {
             push @warnings, $current_user->loc( "Empty default [_1] status in [_2] Lifecycle", $state, $name );
         }
     }
     for my $from ( keys %{ $lifecycle->{transitions} || {} } ) {
-        push @warnings, $current_user->loc( "Nonexistent status [_1] in transitions in [_2] lifecycle", lc $from, $name )
-            unless $from eq '' || $lifecycle->{canonical_case}{ lc $from };
+        unless ( $from eq '' || $lifecycle->{canonical_case}{ lc $from } ) {
+            push @warnings,
+                $current_user->loc( "Nonexistent status [_1] in transitions in [_2] lifecycle", lc $from, $name );
+            if ( $args{Cleanup} ) {
+                delete $lifecycle->{transitions}{$from};
+                next;
+            }
+        }
 
         for my $status ( @{ ( $lifecycle->{transitions}{$from} ) || [] } ) {
             push @warnings, $current_user->loc( "Nonexistent status [_1] in transitions in [_2] lifecycle", lc $status, $name )
                 unless $lifecycle->{canonical_case}{ lc $status };
+        }
+
+        if ( $args{Cleanup} ) {
+            $lifecycle->{transitions}{$from}
+                = [ grep { $lifecycle->{canonical_case}{ lc $_ } } @{ ( $lifecycle->{transitions}{$from} ) || [] } ];
         }
     }
 
@@ -1016,22 +1052,42 @@ sub ValidateLifecycle {
         my ( $from, $to ) = split /\s*->\s*/, $schema, 2;
         unless ( $from and $to ) {
             push @warnings, $current_user->loc( "Invalid right transition [_1] in [_2] lifecycle", $schema, $name );
+            if ( $args{Cleanup} ) {
+                delete $lifecycle->{rights}{$schema};
+            }
             next;
         }
-        push @warnings, $current_user->loc( "Nonexistent status [_1] in right transition in [_2] lifecycle", lc $from, $name )
-            unless $from eq '*'
-            or $lifecycle->{canonical_case}{ lc $from };
-        push @warnings, $current_user->loc( "Nonexistent status [_1] in right transition in [_2] lifecycle", lc $to, $name )
-            unless $to eq '*' || $lifecycle->{canonical_case}{ lc $to };
 
-        push @warnings,
-            $current_user->loc( "Invalid right name ([_1]) in [_2] lifecycle; right names must be ASCII", $lifecycle->{rights}{$schema}, $name )
-            if $lifecycle->{rights}{$schema} =~ /\P{ASCII}/;
+        my $invalid;
+        unless ( $from eq '*' or $lifecycle->{canonical_case}{ lc $from } ) {
+            push @warnings,
+                $current_user->loc( "Nonexistent status [_1] in right transition in [_2] lifecycle", lc $from, $name );
+            $invalid = 1;
+        }
 
-        push @warnings,
-            $current_user
-            ->loc( "Invalid right name ([_1]) in [_2] lifecycle; right names must be <= 25 characters", $lifecycle->{rights}{$schema}, $name )
-            if length( $lifecycle->{rights}{$schema} ) > 25;
+        unless ( $to eq '*' or $lifecycle->{canonical_case}{ lc $to } ) {
+            push @warnings,
+                $current_user->loc( "Nonexistent status [_1] in right transition in [_2] lifecycle", lc $to, $name );
+            $invalid = 1;
+        }
+
+        if ( $lifecycle->{rights}{$schema} =~ /\P{ASCII}/ ) {
+            push @warnings,
+                $current_user->loc( "Invalid right name ([_1]) in [_2] lifecycle; right names must be ASCII",
+                    $lifecycle->{rights}{$schema}, $name );
+            $invalid = 1;
+        }
+
+        if ( length( $lifecycle->{rights}{$schema} ) > 25 ) {
+            push @warnings,
+                $current_user->loc( "Invalid right name ([_1]) in [_2] lifecycle; right names must be <= 25 characters",
+                $lifecycle->{rights}{$schema}, $name );
+            $invalid = 1;
+        }
+
+        if ( $args{Cleanup} && $invalid ) {
+            delete $lifecycle->{rights}{$schema};
+        }
     }
 
     my @actions;
@@ -1044,26 +1100,43 @@ sub ValidateLifecycle {
         @actions = @{ $lifecycle->{'actions'} };
     }
 
+    my @valid_actions;
     while ( my ( $transition, $info ) = splice @actions, 0, 2 ) {
         my ( $from, $to ) = split /\s*->\s*/, $transition, 2;
         unless ( $from and $to ) {
             push @warnings, $current_user->loc( "Invalid action status change [_1], in [_2] lifecycle", $transition, $name );
             next;
         }
-        push @warnings, $current_user->loc( "Nonexistent status [_1] in actions in [_2] lifecycle", lc $from, $name )
-            unless $from eq '*'
-            or $lifecycle->{canonical_case}{ lc $from };
-        push @warnings, $current_user->loc( "Nonexistent status [_1] in actions in [_2] lifecycle", lc $to, $name )
-            unless $to eq '*'
-            or $lifecycle->{canonical_case}{ lc $to };
+
+        my $invalid;
+        unless ( $from eq '*' or $lifecycle->{canonical_case}{ lc $from } ) {
+            push @warnings, $current_user->loc( "Nonexistent status [_1] in actions in [_2] lifecycle", lc $from, $name );
+            $invalid = 1;
+        }
+
+        unless ( $to eq '*' or $lifecycle->{canonical_case}{ lc $to } ) {
+            push @warnings, $current_user->loc( "Nonexistent status [_1] in actions in [_2] lifecycle", lc $to, $name );
+            $invalid = 1;
+        }
+
+        if ( $args{Cleanup} && !$invalid ) {
+            push @valid_actions, $transition, $info;
+        }
+    }
+
+    if ( $args{Cleanup} ) {
+        $lifecycle->{'actions'} = \@valid_actions;
     }
 
     return @warnings ? ( 0, uniq @warnings ) : 1;
 }
 
-=head2 ValidateLifecycleMaps( CurrentUser => undef )
+=head2 ValidateLifecycleMaps( CurrentUser => undef, Lifecycles => undef, Maps => undef, Cleanup => undef )
 
 Validate lifecycle Maps.
+
+If Cleanup is true, clean up maps structure, e.g. removing nonexistent
+statuses.
 
 Returns (STATUS, MESSAGES). STATUS is true if succeeded, otherwise false.
 
@@ -1073,32 +1146,57 @@ sub ValidateLifecycleMaps {
     my $self = shift;
     my %args = (
         CurrentUser => undef,
+        Lifecycles  => undef,
+        Maps        => undef,
+        Cleanup     => undef,
         @_,
     );
     my $current_user = $args{CurrentUser} || RT->SystemUser;
 
     my @warnings;
-    for my $mapname ( keys %{ $LIFECYCLES_CACHE{'__maps__'} || {} } ) {
+    my $lifecycles = $args{Lifecycles} || \%LIFECYCLES_CACHE;
+    my $maps       = $args{Maps} || $lifecycles->{__maps__} || $LIFECYCLES_CACHE{__maps__} || {};
+
+    for my $mapname ( keys %$maps ) {
         my ( $from, $to ) = split /\s*->\s*/, $mapname, 2;
         unless ( $from and $to ) {
             push @warnings, $current_user->loc( "Invalid lifecycle mapping [_1]", $mapname );
+            if ( $args{Cleanup} ) {
+                delete $maps->{$mapname};
+            }
             next;
         }
         push @warnings, $current_user->loc( "Nonexistent lifecycle [_1] in [_2] lifecycle map", $from, $mapname )
-            unless $LIFECYCLES_CACHE{$from};
+            unless $lifecycles->{$from};
         push @warnings, $current_user->loc( "Nonexistent lifecycle [_1] in [_2] lifecycle map", $to, $mapname )
-            unless $LIFECYCLES_CACHE{$to};
+            unless $lifecycles->{$to};
 
         # Ignore mappings referring to disabled lifecycles
         next if $LIFECYCLES_CACHE{$from} && $LIFECYCLES_CACHE{$from}{disabled};
         next if $LIFECYCLES_CACHE{$to} && $LIFECYCLES_CACHE{$to}{disabled};
 
-        my $map = $LIFECYCLES_CACHE{'__maps__'}{$mapname};
+        if ( $args{Cleanup} && ( !$lifecycles->{$from} || !$lifecycles->{$to} ) ) {
+            delete $maps->{$mapname};
+            next;
+        }
+
+        my $map = $maps->{$mapname};
+        my $new_map = {};
         for my $status ( keys %{$map} ) {
             push @warnings, $current_user->loc( "Nonexistent status [_1] in [_2] in [_3] lifecycle map", lc $status, $from, $mapname )
-                if $LIFECYCLES_CACHE{$from} && !$LIFECYCLES_CACHE{$from}{canonical_case}{ lc $status };
+                if $lifecycles->{$from} && !$lifecycles->{$from}{canonical_case}{ lc $status };
             push @warnings, $current_user->loc( "Nonexistent status [_1] in [_2] in [_3] lifecycle map", lc $map->{$status}, $to, $mapname )
-                if $LIFECYCLES_CACHE{$to} && !$LIFECYCLES_CACHE{$to}{canonical_case}{ lc $map->{$status} };
+                if $lifecycles->{$to} && !$lifecycles->{$to}{canonical_case}{ lc $map->{$status} };
+            $new_map->{$status} = $map->{$status}
+                if $args{Cleanup}
+                && $lifecycles->{$from}
+                && $lifecycles->{$from}{canonical_case}{ lc $status }
+                && $lifecycles->{$to}
+                && $lifecycles->{$to}{canonical_case}{ lc $map->{$status} };
+        }
+
+        if ( $args{Cleanup} ) {
+            $maps->{$mapname} = $new_map;
         }
     }
 
