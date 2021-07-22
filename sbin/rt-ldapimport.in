@@ -83,6 +83,7 @@ Init(
     \%OPT,
     'debug',
     'import',
+    'update-privilege' 
     'users!', 'groups!');
 
 my $importer = RT::LDAPImport->new;
@@ -90,7 +91,7 @@ my $importer = RT::LDAPImport->new;
 if ($OPT{import}) {
     if ($OPT{users}) {
         print "Starting import\n";
-        $importer->import_users(import => 1);
+        $importer->import_users(import => 1, update_privilege => $OPT{'update-privilege'});
     }
     if ($OPT{groups}) {
         print "Starting group import\n";
@@ -136,6 +137,11 @@ Without this flag, merely does a dry-run of the import.
 =item C<--verbose>
 
 Log more data when importing.
+
+=item C<--update-privilege>
+
+When updating existing users, also update privilege.
+Without this flag privilege will not be updated when LDAPCreatePrivileged and LDAPUpdateUsers is set.
 
 =item C<--no-users>
 
