@@ -198,5 +198,55 @@ queues.
 You can manage queue-specific templates by visiting
 Admin -> Queues -> Select -> ... -> Templates.
 
+=head1 Examples
+
+Note: if you are copy/pasting the examples below, please make sure to remove any extra
+leading spaces. As a reference, all of the mail headers like Content-Type: should be
+flush left.
+
+The following is an example of a template that could be used to provide a standard
+signature at the end of outgoing email notifications
+
+    RT-Attach-Message: yes
+    Content-Type: text/plain
+
+    { $Transaction->Content( Type => "text/plain") }
+
+
+    ---
+    {
+        my $user = RT::User->new( $Transaction->CurrentUser );
+        $user->Load( $Transaction->Creator );
+        $OUT .= ( $user->RealName or $user->Name ) . "\n";
+        $OUT .= ( $user->EmailAddress or 'sales@acme.com' ) . "\n";
+        $OUT .= ( $user->WorkPhone or $user->MobilePhone or '555-123-4567' ) . "\n";
+        $OUT .= ( $user->Organization or 'Acme Corp' ) . "\n";
+        my $addr = $user->Address1;
+        $addr .= ("\n" . $user->Address2 . "\n") if ($addr and $user->Address2);
+        $addr .= ("\n" . $user->City . ", " . $user->State . " " . $user->Zip . "\n") if ($user->City);
+        $OUT .= ( $addr or '123 Main St. Anywhere, NY, 12345' ) . "\n";
+    }
+
+One might even imagine customizing the signature based on something about the ticket,
+such as the value of a particular custom field
+
+    RT-Attach-Message: yes
+    Content-Type: text/plain
+
+    { $Transaction->Content( Type => "text/plain") }
+
+    ---
+    {
+        my $user = RT::User->new( $Transaction->CurrentUser );
+        $user->Load( $Transaction->Creator );
+        $OUT .= ( $user->RealName or $user->Name ) . "\n";
+        $OUT .= ( $user->EmailAddress or 'sales@acme.com' ) . "\n";
+        if ($Ticket->FirstCustomFieldValue('Request Type') eq 'support') {
+           $OUT .=  "Acme Corp, IT Support Department\n";
+        } else {
+            $OUT .= "Acme Corp, Media Relations Department\n";
+        }
+    }
+
 =cut
 
