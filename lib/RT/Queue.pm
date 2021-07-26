@@ -129,7 +129,7 @@ __PACKAGE__->AddRight( Staff   => ModifyTicket        => 'Modify tickets' ); # l
 __PACKAGE__->AddRight( Staff   => DeleteTicket        => 'Delete tickets' ); # loc
 __PACKAGE__->AddRight( Staff   => TakeTicket          => 'Take tickets' ); # loc
 __PACKAGE__->AddRight( Staff   => StealTicket         => 'Steal tickets' ); # loc
-__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner on owned tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner' ); # loc
 
 __PACKAGE__->AddRight( Staff   => ForwardMessage      => 'Forward messages outside of RT' ); # loc
 

@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-
 % for my $section ( sort keys %Dashboards ) {
 <table class="table table-striped table-hover collection-as-table">
   <thead>
