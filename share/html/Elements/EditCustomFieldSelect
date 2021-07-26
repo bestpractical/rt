@@ -68,9 +68,16 @@
 % }
 %   }
 %   my $CFVs = CachedCustomFieldValues($CustomField);
+%#  Since external custom field values all have the same ID (1) we need to increment a
+%#  variable for a unique Bootstrap CSS input ID value.
+%   my $i = 1;
 %   while ( my $value = $CFVs->Next ) {
 %     my $content = $value->Name;
 %     my $labelid = "$name-". $value->id;
+%     if ( $CustomField->IsExternalValues ) {
+%         $labelid = "$name-$i";
+%         $i++;
+%     }
 <div data-name="<% $value->Category || '' %>" class="custom-control custom-<% $checktype %>">
   <input class="custom-control-input"  type="<% $checktype %>" name="<% $name %>" id="<% $labelid %>" value="<% $content %>" <% $default{ lc $content }? ' checked="checked"' : '' |n%> />
   <label class="custom-control-label" for="<% $labelid %>"><% $content %></label><br />
