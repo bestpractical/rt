@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rt\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-06-26 19:30+0000\n"
-"PO-Revision-Date: 2018-06-26 21:46+0000\n"
+"POT-Creation-Date: 2019-03-05 17:51+0000\n"
+"PO-Revision-Date: 2019-10-15 14:36+0000\n"
 "Last-Translator: Andi Chandler <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-01-31 18:41+0000\n"
-"X-Generator: Launchpad (build 18862)\n"
+"X-Launchpad-Export-Date: 2021-07-26 19:09+0000\n"
+"X-Generator: Launchpad (build 20124175fa98fcb4b43973265a1561174418f4bd)\n"
 
 #. ($RT::DatabaseName)
 #: share/html/Install/DatabaseDetails.html:177
@@ -36,11 +36,11 @@ msgstr "%1 appears to be fully initialised. We won't need to create any tables o
 #. ($name, $self->loc($args{Type}))
 #. ($email->format, loc($field =~ /^(.*?)s?$/))
 #. ($email->format, loc(substr($field, 6)))
-#: lib/RT/Record/Role/Roles.pm:388 lib/RT/Record/Role/Roles.pm:396 share/html/Ticket/Create.html:494 share/html/Ticket/Update.html:344 share/html/m/ticket/create:189 share/html/m/ticket/reply:207
+#: lib/RT/Record/Role/Roles.pm:422 lib/RT/Record/Role/Roles.pm:435 share/html/Ticket/Create.html:504 share/html/Ticket/Update.html:402 share/html/m/ticket/create:199 share/html/m/ticket/reply:211
 msgid "%1 is an address RT receives mail at. Adding it as a '%2' would create a mail loop"
 msgstr "%1 is an address where RT receives mail. Adding it as a '%2' would create a mail loop"
 
-#: share/html/Admin/Elements/EditCustomFieldValues:88 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:107 share/html/Admin/Queues/People.html:64 share/html/Asset/Elements/EditCatalogPeople:59 share/html/Elements/BulkLinks:109 share/html/Elements/EditLinks:104 share/html/Ticket/Elements/EditPeople:89
+#: share/html/Admin/Elements/EditCustomFieldValues:88 share/html/Admin/Elements/EditTemplates:70 share/html/Admin/Groups/Members.html:123 share/html/Admin/Queues/People.html:64 share/html/Asset/Elements/EditCatalogPeople:59 share/html/Elements/BulkLinks:109 share/html/Elements/EditLinks:104 share/html/Ticket/Elements/EditPeople:89
 msgid "(Check box to delete)"
 msgstr "(Tick box to delete)"
 
@@ -68,9 +68,18 @@ msgstr "All catalogues matching search criteria"
 msgid "All iCal feeds embed a secret token which authorizes you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 msgstr "All iCal feeds embed a secret token which authorises you.  If the URL for one of your iCal feeds was exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b>, below."
 
+#: share/html/User/Elements/RelatedData:74
+msgid "Anonymize User"
+msgstr "Anonymise User"
+
 #: share/html/Search/Simple.html:65
 msgid "Any word not recognized by RT is searched for in ticket subjects."
 msgstr "Any word not recognised by RT is searched for in ticket subjects."
+
+#. ($UserObj->Name)
+#: share/html/Admin/Users/Modify.html:241
+msgid "Are you sure you want to anonymize user: %1?"
+msgstr "Are you sure you want to anonymise user: %1?"
 
 #. ($valid_image_types)
 #: share/html/Admin/Tools/Theme.html:277
@@ -82,7 +91,7 @@ msgid "Autoreply To Requestors"
 msgstr "Autoreply to Requestors"
 
 #. ($ARGS{'SavedSearchLoad'})
-#: share/html/Search/Elements/EditSearches:176
+#: share/html/Search/Elements/EditSearches:213
 msgid "Can not load saved search \"%1\""
 msgstr "Cannot load saved search \"%1\""
 
@@ -91,7 +100,7 @@ msgid "Can't link to a deleted ticket"
 msgstr "Cannot link to a deleted ticket"
 
 #. ($QueueObj->Name)
-#: lib/RT/Interface/Web.pm:3987
+#: lib/RT/Interface/Web.pm:4104
 msgid "Can't quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 msgstr "Cannot quickly create ticket in queue %1 because custom fields are required.  Please finish by using the normal ticket creation page."
 
@@ -143,7 +152,7 @@ msgstr "Catalogue Create txn failed: %1"
 msgid "Catalog create failed: %1"
 msgstr "Catalogue create failed: %1"
 
-#: share/html/Elements/Tabs:1146 share/html/Elements/Tabs:228
+#: share/html/Elements/Tabs:1160 share/html/Elements/Tabs:228
 msgid "Catalogs"
 msgstr "Catalogues"
 
@@ -166,6 +175,11 @@ msgstr "Condition is a mandatory argument"
 #: share/html/Install/DatabaseDetails.html:137
 msgid "Connection succeeded"
 msgstr "Connection successful"
+
+#. ($self->loc('Name'))
+#: lib/RT/User.pm:401
+msgid "Could not anonymize user %1"
+msgstr "Could not anonymise user %1"
 
 #: lib/RT/Catalog.pm:234
 msgid "Couldn't create role groups for catalog"
@@ -259,7 +273,7 @@ msgstr "Include disabled catalogues in listing."
 msgid "Initialize Database"
 msgstr "Initialise Database"
 
-#: lib/RT/Asset.pm:219
+#: lib/RT/Asset.pm:228
 msgid "Invalid Catalog"
 msgstr "Invalid Catalogue"
 
@@ -280,7 +294,7 @@ msgstr "LocalisedDateTime"
 msgid "Modify asset catalogs"
 msgstr "Modify asset catalogues"
 
-#: lib/RT/Interface/Web.pm:4126
+#: lib/RT/Interface/Web.pm:4243
 msgid "No catalog specified."
 msgstr "No catalogue specified."
 
@@ -296,7 +310,7 @@ msgstr "No longer authorised"
 msgid "No permission to modify this catalog"
 msgstr "No permission to modify this catalogue"
 
-#: lib/RT/User.pm:95 share/html/Admin/Users/Modify.html:139 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/Elements/EditAboutMe:125 share/html/Prefs/Elements/ShowAboutMe:111
+#: lib/RT/User.pm:97 share/html/Admin/Users/Modify.html:139 share/html/Elements/RT__User/ColumnMap:76 share/html/Prefs/Elements/EditAboutMe:125 share/html/Prefs/Elements/ShowAboutMe:111
 msgid "Organization"
 msgstr "Organisation"
 
@@ -308,7 +322,7 @@ msgstr "RT is used by Fortune 100 companies, one-person businesses, government a
 msgid "RT's logging configuration is summarized below:"
 msgstr "RT's logging configuration is summarised below:"
 
-#: share/html/Elements/Tabs:633
+#: share/html/Elements/Tabs:639
 msgid "Reports summarizing ticket resolution and status"
 msgstr "Reports summarising ticket resolution and status"
 
@@ -341,7 +355,7 @@ msgid "This custom field can not have a canonicalizer"
 msgstr "This custom field can not have a canonicaliser"
 
 #. ($id)
-#: lib/RT/Interface/Web.pm:4131
+#: lib/RT/Interface/Web.pm:4248
 msgid "Unable to find catalog %1"
 msgstr "Unable to find catalogue %1"
 
@@ -353,6 +367,10 @@ msgstr "Unable to find catalogue '%1'"
 #: share/html/Errors/WebRemoteUser/NoInternalUser:48 share/html/Errors/WebRemoteUser/NoRemoteUser:48
 msgid "Unauthorized"
 msgstr "Unauthorised"
+
+#: lib/RT/User.pm:433
+msgid "User successfully anonymized"
+msgstr "User successfully anonymised"
 
 #: share/html/Install/DatabaseDetails.html:64
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
@@ -380,7 +398,7 @@ msgstr "You can also click on the logo above to get colours!"
 msgid "You don't have permission to create assets in catalog %1."
 msgstr "You don't have permission to create assets in catalogue %1."
 
-#: lib/RT/Interface/Web.pm:4134
+#: lib/RT/Interface/Web.pm:4251
 msgid "You don't have permission to view this catalog."
 msgstr "You don't have permission to view this catalogue."
 
@@ -389,7 +407,7 @@ msgstr "You don't have permission to view this catalogue."
 msgid "Your system supports automatic color suggestions for: %1"
 msgstr "Your system supports automatic colour suggestions for: %1"
 
-#: lib/RT/Transaction.pm:1337
+#: lib/RT/Transaction.pm:1349
 msgid "[a hidden catalog]"
 msgstr "[a hidden catalogue]"
 
