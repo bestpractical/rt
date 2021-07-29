@@ -57,7 +57,7 @@ $ValueAttribute = 'Name' unless $ValueAttribute =~ /^(?:id|Name)$/;
 
 my $value = '';
 
-if ( $Default and not $Default =~ /\D/ ) {
+if ( $Default ) {
     my $user = RT::User->new( $session{'CurrentUser'} );
     $user->Load($Default);
     $value = $user->$ValueAttribute;
