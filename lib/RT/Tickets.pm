@@ -1788,7 +1788,7 @@ sub Limit {
         if $self->{parsing_ticketsql} and not $args{LEFTJOIN};
 
     $self->{_sql_looking_at}{ lc $args{FIELD} } = 1
-        if $args{FIELD} and (not $args{ALIAS} or $args{ALIAS} eq "main");
+        if $args{FIELD} and (not $args{ALIAS} or $args{ALIAS} eq "main") and not $args{LEFTJOIN};
 
     $self->SUPER::Limit(%args);
 }
