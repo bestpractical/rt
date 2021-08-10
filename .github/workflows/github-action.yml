@@ -63,9 +63,10 @@ jobs:
       - name: Build RT
         shell: bash
         run: |
-          docker run --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.6
-          docker build -t rt-base .
-          docker run -d -v $GITHUB_WORKSPACE:/rt --name rt --link mariadb:db rt-base
+          docker network create rt
+          docker run --network rt --name mariadb -e MYSQL_ROOT_PASSWORD=password -d mariadb:10.6
+          docker build --network rt -t rt-base .
+          docker run -d -v $GITHUB_WORKSPACE:/rt --env RT_TEST_DB_HOST=mariadb --env RT_TEST_RT_HOST=172.16.0.0/255.240.0.0 --network rt --name rt rt-base
           docker exec rt bash -c "cd /rt && ./configure.ac --with-db-type=mysql --with-my-user-group --enable-layout=inplace --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps"
       - name: Run RT tests
         shell: bash
@@ -109,9 +110,10 @@ jobs:
       - name: Build RT
         shell: bash
         run: |
-          docker run --name postgresql --mount type=tmpfs,destination=/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d postgres:12.8
-          docker build -t rt-base .
-          docker run -d -v $GITHUB_WORKSPACE:/rt --name rt --link postgresql:db rt-base
+          docker network create rt
+          docker run --network rt --name postgresql --mount type=tmpfs,destination=/var/lib/postgresql/data -e POSTGRES_PASSWORD=password -d postgres:12.8
+          docker build --network rt -t rt-base .
+          docker run -d -v $GITHUB_WORKSPACE:/rt --env RT_TEST_DB_HOST=postgresql --network rt --name rt rt-base
           docker exec rt bash -c "chown -R rt-user /rt; touch /etc/apache2/mime.types"
           docker exec -e USER=rt-user -u rt-user rt bash -c "cd /rt && ./configure.ac --with-db-type=Pg --with-my-user-group --enable-layout=inplace --with-web-handler=fcgid --enable-developer --enable-externalauth --enable-gpg --enable-smime && mkdir -p /rt/var && make testdeps && chmod a+rX /rt/sbin/*"
       - name: Run RT tests
