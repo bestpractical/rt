@@ -1,6 +1,3 @@
-#language: bash
-#services: docker
-
 on:
   push:
     branches-ignore:
