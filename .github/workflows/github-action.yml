@@ -31,6 +31,7 @@ jobs:
         shell: bash
         run: docker exec -e RT_TEST_PARALLEL=1 rt bash -c "cd /rt && prove -rlj6 t/*"
       - name: Get run time
+        if: always()
         shell: bash
         run: |
           export RT_GA_END_TIME=$(date +%s)
@@ -87,6 +88,7 @@ jobs:
         shell: bash
         run: docker exec -e RT_TEST_PARALLEL=1 -e RT_DBA_USER=root -e RT_DBA_PASSWORD=password rt bash -c "cd /rt && prove -rlj6 t/*"
       - name: Get run time
+        if: always()
         shell: bash
         run: |
           export RT_GA_END_TIME=$(date +%s)
@@ -148,6 +150,7 @@ jobs:
         shell: bash
         run: docker exec -e RT_TEST_PARALLEL=1 -e RT_DBA_USER=postgres -e RT_DBA_PASSWORD=password -u rt-user rt bash -c "cd /rt && prove -rlj6 t/*"
       - name: Get run time
+        if: always()
         shell: bash
         run: |
           export RT_GA_END_TIME=$(date +%s)
