@@ -804,9 +804,17 @@ sub AttemptPasswordAuthentication {
     my $user_obj = RT::CurrentUser->new();
     $user_obj->Load( $ARGS->{user} );
 
+    # Load the RT system user as well to avoid timing side channel
+    my $system_user = RT::CurrentUser->new();
+    $system_user->Load(1);    # User with ID 1 should always exist!
+
     my $m = $HTML::Mason::Commands::m;
 
     unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
+        if (!$user_obj->id) {
+            # Avoid timing side channel... always run IsPassword
+            $system_user->IsPassword( $ARGS->{pass} );
+        }
         $RT::Logger->error("FAILED LOGIN for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
         $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
         return (0, HTML::Mason::Commands::loc('Your username or password is incorrect'));
