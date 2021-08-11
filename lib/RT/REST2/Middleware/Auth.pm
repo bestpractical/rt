@@ -132,10 +132,19 @@ sub login_from_basicauth {
         my($user, $pass) = split /:/, (MIME::Base64::decode($1) || ":"), 2;
         my $cu = RT::CurrentUser->new;
         $cu->Load($user);
+
+        # Load the RT system user as well to avoid timing side channel
+        my $system_user = RT::CurrentUser->new();
+        $system_user->Load(1);    # User with ID 1 should always exist!
+
         if ($cu->id and $cu->IsPassword($pass)) {
             return $cu;
         }
         else {
+            if (!$cu->id) {
+                # Avoid timing side channel... always run IsPassword
+                $system_user->IsPassword($pass);
+            }
             RT->Logger->info("Failed login for $user");
             return;
         }
