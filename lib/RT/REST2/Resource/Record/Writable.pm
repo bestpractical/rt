@@ -53,7 +53,7 @@ use warnings;
 use Moose::Role;
 use namespace::autoclean;
 use JSON ();
-use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields process_uploads update_role_members );
+use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields process_uploads update_role_members fix_custom_role_ids );
 use List::MoreUtils 'uniq';
 
 with 'RT::REST2::Resource::Role::RequestBodyIsJSON'
@@ -356,6 +356,13 @@ sub create_record {
             }
         }
     }
+
+    if ( $args{CustomRoles} ) {
+        # RT::Ticket::Create wants custom role IDs (like RT::CustomRole-ID)
+        # rather than role names.
+        %args = ( %args, %{ fix_custom_role_ids( $record, delete $args{CustomRoles} ) } );
+    }
+
 
     my $method = $record->isa('RT::Group') ? 'CreateUserDefinedGroup' : 'Create';
     my ($ok, @rest) = $record->$method(%args);
