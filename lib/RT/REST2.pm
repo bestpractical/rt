@@ -1233,7 +1233,7 @@ image or binary files as custom fields values.
                     "Content"    : "That <em>damned</em> printer is out of order <b>again</b>!",
                     "ContentType": "text/html",
                     "CustomFields"  : {
-                        "XX_SINGLE_IMAGE_OR_BINARY_CF_ID_XX"   => { "UploadField": "FILE_1",
+                        "XX_SINGLE_IMAGE_OR_BINARY_CF_ID_XX"   => { "UploadField": "FILE_1" },
                         "XX_MULTI_VALUE_IMAGE_OR_BINARY_CF_ID" => [ { "UploadField": "FILE_2" }, { "UploadField": "FILE_3" } ]
                     }
                   };type=application/json'
