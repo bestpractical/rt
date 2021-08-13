@@ -78,8 +78,13 @@ $ShowEmptyOption => !defined $Default
 </%ARGS>
 <%INIT>
 my $default_label = '';
-if ( defined $Default && length $Default && $QueueObj ) {
-    $default_label = RT::Ticket->_PriorityAsString( $Default, $QueueObj->__Value('Name') ) || '';
+if ( defined $Default && length $Default ) {
+    if ( $Default =~ /\D/ ) {
+        $default_label = $Default;
+    }
+    elsif ( $QueueObj ) {
+        $default_label = RT::Ticket->_PriorityAsString( $Default, $QueueObj->__Value('Name') ) || '';
+    }
 }
 
 my %config = RT->Config->Get('PriorityAsString');
