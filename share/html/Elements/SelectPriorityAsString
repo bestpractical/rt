@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <select class="select-priority selectpicker form-control" name="<% $Name %>">
-% unless ( defined $Default ) {
+% if ( $ShowEmptyOption ) {
   <option value="">-</option>
 % }
 % for my $name ( sort { lc $a cmp lc $b } keys %Options ) {
@@ -74,6 +74,7 @@ $Name => 'Priority'
 $Default => undef
 $QueueObj => undef
 %Options
+$ShowEmptyOption => !defined $Default
 </%ARGS>
 <%INIT>
 my $default_label = '';
