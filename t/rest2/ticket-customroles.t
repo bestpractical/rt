@@ -195,6 +195,46 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     }, 'one Single Member');
 }
 
+diag 'Create and view ticket with custom roles by name';
+{
+    my $payload = {
+        Subject   => 'Ticket with multiple watchers',
+        Queue     => 'General',
+        CustomRoles => { 'Multi Member' => ['multi@example.com', 'multi2@example.com'],
+                         'Single Member' => 'test@localhost' },
+    };
+
+    my $res = $mech->post_json("$rest_base_path/ticket",
+        $payload,
+        'Authorization' => $auth,
+    );
+    is($res->code, 201);
+    ok(my $ticket_url = $res->header('location'));
+    ok((my $ticket_id) = $ticket_url =~ qr[/ticket/(\d+)]);
+
+    $res = $mech->get($ticket_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    my $content = $mech->json_response;
+    cmp_deeply($content->{$multi->GroupType}, [{
+        type => 'user',
+        id   => 'multi@example.com',
+        _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
+    }, {
+        type => 'user',
+        id   => 'multi2@example.com',
+        _url => re(qr{$rest_base_path/user/multi2\@example\.com$}),
+    }], 'two Multi Members');
+
+    cmp_deeply($content->{$single->GroupType}, {
+        type => 'user',
+        id   => 'test@localhost',
+        _url => re(qr{$rest_base_path/user/test\@localhost}),
+    }, 'one Single Member');
+}
+
 # Modify single-member role
 {
     my $payload = {
@@ -363,7 +403,7 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     my @stable_payloads = (
     {
         Subject => 'no changes to watchers',
-        _messages => ["Ticket 5: Subject changed from 'Ticket for modifying watchers' to 'no changes to watchers'"],
+        _messages => ["Ticket 6: Subject changed from 'Ticket for modifying watchers' to 'no changes to watchers'"],
         _name => 'no watcher keys',
     },
     {
