@@ -5232,6 +5232,7 @@ sub GetDashboards {
     my %args = (
         Objects     => undef,
         CurrentUser => $session{CurrentUser},
+        DefaultAttribute => 'DefaultDashboard',
         @_,
     );
 
@@ -5239,7 +5240,7 @@ sub GetDashboards {
 
     $args{Objects} ||= [ RT::Dashboard->new( $args{CurrentUser} )->ObjectsForLoading( IncludeSuperuserGroups => 1 ) ];
 
-    my ($system_default) = RT::System->new( $args{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
+    my ($system_default) = RT::System->new( $args{'CurrentUser'} )->Attributes->Named( $args{DefaultAttribute} );
     my $default_dashboard_id = $system_default ? $system_default->Content : 0;
 
     my $found_system_default;
