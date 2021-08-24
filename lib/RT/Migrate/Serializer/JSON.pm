@@ -538,7 +538,7 @@ sub CanonicalizeAttributes {
                 }
             }
         }
-        elsif ( $record->{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+        elsif ( $record->{Name} =~ /DefaultDashboard$/ ) {
             if ( ref $record->{Content} eq 'SCALAR' && ${$record->{Content}} =~ /(\d+)$/ ) {
                 my $id        = $1;
                 my $attribute = RT::Attribute->new( RT->SystemUser );
