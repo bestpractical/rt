@@ -56,5 +56,5 @@
 <%ARGS>
 $role
 $Ticket => undef
-$ShowEntryHint => 1
+$ShowEntryHint => 0
 </%ARGS>
