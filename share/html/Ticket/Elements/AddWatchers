@@ -109,7 +109,7 @@
       <&|/l&>Type</&>
     </div>
     <div class="col-9">
-      <&|/l&>Email</&>
+      <&|/l&>User or Group</&>
     </div>
   </div>
 % my $counter = 4;
