@@ -16,15 +16,6 @@ jQuery(function() {
         if (typeof(selection) !== "string" || selection.length < 3)
             return;
 
-        // TODO: wrap long lines before quoting
-        selection = selection.replace(/^/gm, "> ");
-        if ( RT.Config.MessageBoxRichText ) {
-            selection = selection.replace(/\r?\n/g, "<br>");
-            selection = selection.concat("<br><br>");
-        }
-        else {
-            selection = selection.concat("\n\n");
-        }
         selection = encodeURIComponent(selection);
 
         if ( !link.prop('data-href') ) {

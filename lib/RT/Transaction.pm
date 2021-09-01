@@ -399,21 +399,48 @@ sub Content {
     }
 
     if ( $args{'Quote'} ) {
-        if ($args{Type} eq 'text/html') {
-            $content = '<div class="gmail_quote">'
-                . $self->QuoteHeader
-                . '<br /><blockquote class="gmail_quote" type="cite">'
-                . $content
-                . '</blockquote></div>';
-        } else {
-            $content = $self->ApplyQuoteWrap(content => $content,
-                                             cols    => $args{'Wrap'} );
-
-            $content = $self->QuoteHeader . "\n$content";
-        }
+        $content = $self->ApplyQuoteFormat( Content => $content,
+                                            Type => $args{'Type'},
+                                            QuoteHeader => 1,
+                                            Wrap        => $args{'Wrap'} );
     }
 
     return ($content);
+}
+
+=head2 ApplyQuoteFormat
+
+Apply additional quote formatting like quote characters and the
+quote header.
+
+=cut
+
+sub ApplyQuoteFormat {
+    my $self = shift;
+    my %args = (
+        Type => '',
+        Wrap => RT->Config->Get('QuoteWrapWidth'),
+        @_
+    );
+
+    my $content = $args{'Content'};
+    my $quote_header = '';
+
+    if ( $args{'QuoteHeader'} ) {
+        $quote_header = $self->QuoteHeader;
+    }
+
+    if ( $args{'Type'} eq 'text/html') {
+        $content = '<div class="gmail_quote">'
+            . $quote_header
+            . '<br /><blockquote class="gmail_quote" type="cite">'
+            . $content
+            . '</blockquote></div>';
+    } else {
+        $content = $self->ApplyQuoteWrap(content => $content,
+                                         cols    => $args{'Wrap'} );
+        $content = $quote_header . "\n$content";
+    }
 }
 
 =head2 QuoteHeader

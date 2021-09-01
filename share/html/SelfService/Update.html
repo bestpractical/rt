@@ -88,7 +88,7 @@
 % my $temp = $ARGS{'QuoteTransaction'};
 % delete $ARGS{'QuoteTransaction'};
 %    if ( $ARGS{'ContentFromQuote'} ) {   # Handle quoted content
-         <& /Elements/MessageBox, Name=>"UpdateContent", Message=>$ARGS{'UpdateContent'}, IncludeSignature => 1, %ARGS&>
+         <& /Elements/MessageBox, Name=>"UpdateContent", Message=>$quoted_message, IncludeSignature => 1, %ARGS&>
 %    }
 %    else {
 %        # Suppress signature here to avoid adding it multiple times on Update page edits, when
@@ -132,6 +132,27 @@ Abort( loc("No permission to view update ticket") )
     or $Ticket->CurrentUserHasRight('ModifyTicket') );
 
 ProcessAttachments(ARGSRef => \%ARGS);
+
+# Process quoted text passed in from ticket display
+my $quoted_message;
+if ( $ARGS{'ContentFromQuote'} ) {
+    my $content_type = RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
+
+    # Using the transaction object only for the quote methods
+    my $transaction = RT::Transaction->new( $session{'CurrentUser'} );
+    if ( $ARGS{'QuoteTransaction'} ) {
+        $transaction->Load( $ARGS{'QuoteTransaction'} );
+        $quoted_message = $transaction->ApplyQuoteFormat( Content    => $ARGS{'UpdateContent'},
+                                                          Type        => $content_type,
+                                                          QuoteHeader => 1 );
+    }
+    else {
+        $transaction = $Ticket->Transactions->First;
+        $quoted_message = $transaction->ApplyQuoteFormat( Content    => $ARGS{'UpdateContent'},
+                                                          Type        => $content_type,
+                                                          QuoteHeader => 0 );
+    }
+}
 
 if ( exists $ARGS{SubmitTicket} ) {
     $m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
