@@ -30,7 +30,7 @@ jQuery(function() {
         if ( !link.prop('data-href') ) {
             link.prop('data-href', link.attr('href'));
         }
-        link.attr("href", link.prop("data-href").concat("&UpdateContent=" + selection));
+        link.attr("href", link.prop("data-href").concat("&ContentFromQuote=1&UpdateContent=" + selection));
     };
 
     var apply_quote = function() {
