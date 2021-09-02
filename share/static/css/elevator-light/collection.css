@@ -65,3 +65,24 @@ th.collection-as-table {
 th.collection-as-table span.title {
     white-space: normal;
 }
+
+/* When determining if text shall be wrapped, Firefox seems overlook the
+ * following nowrap icons, which could cause these icons to overflow. Here
+ * we intentionally add some space to the title box to get around this issue
+ * */
+
+@-moz-document url-prefix() {
+
+    th.collection-as-table span.title {
+        padding-right: 2em;
+    }
+
+    th.collection-as-table span.title + * {
+        margin-left: -2em;
+    }
+
+    /* no need extra space if there are no icons */
+    th.collection-as-table span.title:last-child {
+        padding-right: 0;
+    }
+}
