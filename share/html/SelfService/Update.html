@@ -97,7 +97,7 @@
 %    }
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
-% my $IncludeSignature = 1;
+% my $IncludeSignature = RT->Config->Get('MessageBoxIncludeSignature');
 <& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
 </div>
