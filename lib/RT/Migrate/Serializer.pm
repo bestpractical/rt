@@ -236,6 +236,9 @@ sub PushAll {
 
     $self->PushCollections(qw(Links));
     $self->PushCollections(qw(Transactions Attachments));
+
+    # Configurations
+    $self->PushCollections(qw(Configurations));
 }
 
 sub PushCollections {
@@ -325,6 +328,10 @@ sub PushBasics {
     my $attributes = RT::Attributes->new( RT->SystemUser );
     $attributes->LimitToObject( $RT::System );
     $self->PushObj( $attributes );
+
+    my $configurations = RT::Configurations->new( RT->SystemUser );
+    $configurations->LimitToEnabled();
+    $self->PushObj( $configurations );
 
     # Global ACLs
     if ($self->{FollowACL}) {
