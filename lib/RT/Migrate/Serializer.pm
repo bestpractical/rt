@@ -191,6 +191,9 @@ sub PushAll {
 
     # Attributes
     $self->PushCollections(qw(Attributes));
+
+    # Configurations
+    $self->PushCollections(qw(Configurations));
 }
 
 sub PushCollections {
@@ -201,6 +204,7 @@ sub PushCollections {
 
         $class->require or next;
         my $collection = $class->new( RT->SystemUser );
+
         $collection->FindAllRows if $self->{FollowDisabled};
         $collection->CleanSlate;    # some collections (like groups and users) join in _Init
         $collection->UnLimit;
@@ -280,6 +284,10 @@ sub PushBasics {
     my $attributes = RT::Attributes->new( RT->SystemUser );
     $attributes->LimitToObject( $RT::System );
     $self->PushObj( $attributes );
+
+    my $configurations = RT::Configurations->new( RT->SystemUser );
+    $configurations->UnLimit();
+    $self->PushObj( $configurations );
 
     # Global ACLs
     if ($self->{FollowACL}) {

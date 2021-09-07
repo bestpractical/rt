@@ -855,10 +855,10 @@ sub InsertData {
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
     our (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
+           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Configurations, @Initial, @Final,
            @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics);
     local (@Groups, @Users, @Members, @ACL, @Queues, @Classes, @ScripActions, @ScripConditions,
-           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Initial, @Final,
+           @Templates, @CustomFields, @CustomRoles, @Scrips, @Attributes, @Configurations, @Initial, @Final,
            @Catalogs, @Assets, @Articles, @OCFVs, @Topics, @ObjectTopics);
 
     local $@;
@@ -906,6 +906,7 @@ sub InsertData {
                 CustomRoles     => \@CustomRoles,
                 Scrips          => \@Scrips,
                 Attributes      => \@Attributes,
+                Configurations  => \@Configurations,
                 Initial         => \@Initial,
                 Final           => \@Final,
                 Catalogs        => \@Catalogs,
@@ -1853,6 +1854,29 @@ sub InsertData {
         }
         $RT::Logger->debug("done.");
     }
+
+    if ( @Configurations ) {
+        $RT::Logger->debug("Creating configurations...");
+        my $sys = RT::System->new( RT->SystemUser );
+        my $configuration_obj = RT::Configuration->new( RT->SystemUser );
+
+        foreach my $item ( @Configurations ) {
+            if ( $item->{_Updated} || $item->{_Deleted} ) {
+                $self->_UpdateOrDeleteObject( 'RT::Configuration', $item );
+                next;
+            }
+
+            my ( $return, $msg ) = $configuration_obj->Create ( %$item );
+            unless ( $return ) {
+                $RT::Logger->error( $msg );
+            }
+            else {
+                $RT::Logger->debug( $return ."." );
+            }
+        }
+        $RT::Logger->debug("done.");
+    }
+
     if ( @Final ) {
         $RT::Logger->debug("Running final actions...");
         for ( @Final ) {
@@ -2401,7 +2425,7 @@ sub _UpdateObject {
 
     my $original = delete $values->{_Original};
 
-    for my $type ( qw/Attributes CustomFields Topics/ ) {
+    for my $type ( qw/Attributes CustomFields Topics Configurations/ ) {
         if ( my $items = delete $values->{$type} ) {
             if ( $type eq 'Attributes' ) {
                 for my $item ( @$items ) {
@@ -2502,7 +2526,6 @@ sub _UpdateObject {
     }
 
     for my $field ( sort { $a eq 'ApplyTo' || $b eq 'ApplyTo' ? 1 : 0 } keys %$values ) {
-
         if ( $class eq 'RT::Attribute' ) {
             if ( $field eq 'Content' ) {
                 $self->_CanonilizeAttributeContent( $values );
@@ -2510,6 +2533,9 @@ sub _UpdateObject {
         }
 
         my $value = $values->{$field};
+        if ( $class eq 'RT::Configuration' ) {
+            $value = RT::Configuration->_DeserializeContent( $value );
+        }
 
         if ( $class eq 'RT::CustomField' ) {
             if ( $field eq 'ApplyTo' ) {
@@ -2631,7 +2657,7 @@ sub _UpdateObject {
             if ( $object->can( $set_method ) || $object->_Accessible( $field, 'write' ) ) {
                 my ( $ret, $msg );
                 if ( $object->can( $set_method ) ) {
-                    ( $ret, $msg ) = $object->$set_method( $values->{$field} );
+                    ( $ret, $msg ) = $object->$set_method( $value );
                 }
                 elsif ( $object->_Accessible( $field, 'write' ) ) {
                     ( $ret, $msg ) = $object->_Set( Field => $field, Value => $value );
@@ -2751,6 +2777,9 @@ sub _LoadObject {
     }
     elsif ( $class eq 'RT::Scrip' ) {
         $object->LoadByCols( Description => $values->{_Original}{Description} );
+    }
+    elsif ( $class eq 'RT::Configuration' ) {
+        $object->Load( $values->{_Original}{Name} );
     }
     else {
         if ( $class eq 'RT::Group' ) {

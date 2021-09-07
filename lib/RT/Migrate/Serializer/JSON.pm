@@ -571,6 +571,10 @@ sub CanonicalizeAttributes {
     }
 }
 
+sub CanonicalizeConfigurations {
+    my $self = shift;
+}
+
 sub CanonicalizeObjects {
     my $self = shift;
 
@@ -711,6 +715,7 @@ sub WriteFile {
     $self->CanonicalizeCustomFields;
     $self->CanonicalizeArticles;
     $self->CanonicalizeAttributes;
+    $self->CanonicalizeConfigurations;
 
     my $all_records = $self->{Records};
     my $sync = $self->{Sync};
