@@ -1051,6 +1051,35 @@ my @tests = (
               );
         },
     },
+    {
+        name => 'Configurations',
+        create => sub {
+            my $configuration = RT::Configuration->new( RT->SystemUser );
+            my ($ok, $msg) = $configuration->Create(
+                Name        => 'PriorityAsString',
+                Content     => "{ 'Default' => { 'High' => 100, 'Low' => 0, 'Medium' => 50 } }",
+                ContentType => 'perl',
+            );
+            ok($ok, $msg);
+
+            ($ok, $msg) = $configuration->Create(
+                Name        => 'EnablePriorityAsString',
+                Content     => "1",
+            );
+            ok($ok, $msg);
+        },
+        present => sub {
+            my $configuration = RT::Configuration->new( RT->SystemUser );
+            $configuration->Load( 'PriorityAsString' );
+            ok($configuration->Id, 'Loaded PriorityAsString configuration');
+            is($configuration->Content, "{ 'Default' => { 'High' => 100, 'Low' => 0, 'Medium' => 50 } }", 'PriorityAsString content is correct');
+            is($configuration->ContentType, 'perl', 'ContentType is perl');
+
+            $configuration->Load( 'EnablePriorityAsString' );
+            ok($configuration->Id, 'Loaded EnablePriorityAsString configuration');
+            is($configuration->Content, "1", 'EnablePriorityAsString content is correct');
+        },
+    },
 );
 
 my $id = 0;
