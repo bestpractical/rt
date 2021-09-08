@@ -147,9 +147,14 @@ $COLUMN_MAP = {
                     my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
 
                     if ($count == 1) {
+                        # Count can be 1 but when UseSQLForACLChecks is set to 0 the rights check hasn't been
+                        # peformed yet, meaning the current user may not be able to see the linked ticket.
+                        # Therefore we need to check if a ticket is actually found.
                         my $pending_ticket = $unresolved_dependencies->Next;
-                        my $pending_ticket_url = RT->Config->Get('WebPath') . '/Ticket/Display.html?id=' . $pending_ticket->id;
-                        return \'<a href="',$pending_ticket_url,\'">', loc('(pending ticket #[_1])',$pending_ticket->id), \'</a>';
+                        if ($pending_ticket) {
+                            my $pending_ticket_url = RT->Config->Get('WebPath') . '/Ticket/Display.html?id=' . $pending_ticket->id;
+                            return \'<a href="',$pending_ticket_url,\'">', loc('(pending ticket #[_1])',$pending_ticket->id), \'</a>';
+                        }
                     }
 
                     return \'<a href="',$SearchURL,\'">', loc('(pending [quant,_1,other ticket,other tickets])',$count), \'</a>';
