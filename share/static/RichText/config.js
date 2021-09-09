@@ -26,10 +26,6 @@ CKEDITOR.editorConfig = function( config ) {
 
     	config.removeButtons = 'Underline,Subscript,Superscript,About,Link,Image,HorizontalRule,SpecialChar,Source,DocProps,Unlink,Anchor,Strike,Cut,Copy,Outdent,Indent';
 
-	// Remove some buttons provided by the standard plugins, which are
-	// not needed in the Standard(s) toolbar.
-//	config.removeButtons = 'Underline,Subscript,Superscript';
-
 	// Simplify the dialog windows.
 	config.removeDialogTabs = 'image:advanced;link:advanced';
     if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
