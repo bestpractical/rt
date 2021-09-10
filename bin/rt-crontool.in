@@ -440,7 +440,7 @@ ticket metadata, which is useful especially for long-running jobs.
 Specify the max number of children to maintain. This implies parallel
 processing, which is false by default.
 
-=item max-ticket-per-process
+=item max-tickets-per-process
 
 Specify the max number of tickets to process in each child. Only take effect with --max-processes.
 Default is 100.
