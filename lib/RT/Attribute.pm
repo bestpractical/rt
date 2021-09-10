@@ -886,6 +886,7 @@ sub PostInflateFixup {
     my $self     = shift;
     my $importer = shift;
     my $spec     = shift;
+    return if $importer->{Clone};
 
     # decode UIDs to be raw dashboard IDs
     if ( $self->Name =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
