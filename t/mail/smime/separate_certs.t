@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef;
+use RT::Test::Crypt SMIME => 1, tests => undef;
 
 use IPC::Run3 'run3';
 use Test::Warn;
@@ -25,7 +25,7 @@ my $key_ring = RT->Config->Get('SMIME')->{'Keyring'};
 for my $key ( keys %signing ) {
     diag "Testing signing with $key";
 
-    RT::Test::SMIME->import_key('sender@example.com');
+    RT::Test::Crypt->smime_import_key('sender@example.com');
     if ( $key ne 'sender@example.com' ) {
         rename File::Spec->catfile( $key_ring, 'sender@example.com.pem' ), File::Spec->catfile( $key_ring, $key )
           or die $!;
@@ -47,7 +47,7 @@ END
         like( $mails[0], qr'Content-Type: application/x-pkcs7-signature', 'Sent message contains signature' );
 
         my ( $buf, $err );
-        run3( [ qw(openssl smime -verify), '-CAfile', RT::Test::SMIME->key_path . "/demoCA/cacert.pem", ],
+        run3( [ qw(openssl smime -verify), '-CAfile', RT::Test::Crypt->smime_key_path . "/demoCA/cacert.pem", ],
             \$mails[0], \$buf, \$err );
 
         like( $err, qr'Verification successful', 'Verification output' );
@@ -73,12 +73,12 @@ my %encryption = (
 my $root = RT::Test->load_or_create_user( Name => 'root' );
 ( $ret, $msg ) = $root->SetEmailAddress('root@example.com');
 ok( $ret, 'set root email to root@example.com' );
-RT::Test::SMIME->import_key( 'root@example.com', $root );
+RT::Test::Crypt->smime_import_key( 'root@example.com', $root );
 
 for my $key ( keys %encryption ) {
     diag "Testing decryption with $key";
 
-    RT::Test::SMIME->import_key('sender@example.com');
+    RT::Test::Crypt->smime_import_key('sender@example.com');
     if ( $key ne 'sender@example.com' ) {
         rename File::Spec->catfile( $key_ring, 'sender@example.com.pem' ), File::Spec->catfile( $key_ring, $key )
           or die $!;
@@ -90,7 +90,7 @@ for my $key ( keys %encryption ) {
             -from    => 'root@example.com',
             -to      => 'sender@example.com',
             -subject => "Encrypted message for queue",
-            RT::Test::SMIME->key_path('sender@example.com.crt'),
+            RT::Test::Crypt->smime_key_path('sender@example.com.crt'),
         ],
         \"\nthis is content",
         \$buf,
