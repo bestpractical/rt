@@ -13,6 +13,7 @@ $m->follow_link_ok( { text => 'System Configuration' }, 'followed link to "Syste
 ok( !$m->find_link( text => 'Edit' ), 'no edit link' );
 $m->get_ok('/Admin/Tools/EditConfig.html');
 $m->content_contains('Permission Denied');
+$m->warning_like( qr/Permission Denied/, 'Permission denied warning' );
 
 RT::Test->stop_server;
 RT->Config->Set( ShowEditSystemConfig => 1 );
