@@ -132,26 +132,26 @@ my $quote = '<div class="gmail_quote">Someone wrote:<br />'
 subtest "HTML, no reply" => sub {
     template_is(
         qw/HTML/,
-        '<br /><p>--&nbsp;<br />Signature one<br />Signature two</p>',
+        '<p>&nbsp;</p><p>--&nbsp;<br />Signature one<br />Signature two</p>',
     ) };
 
 subtest "HTML, no reply, before quote (which is irrelevant)" => sub {
     template_is(
         qw/HTML BeforeQuote/,
-        '<br /><p>--&nbsp;<br />Signature one<br />Signature two</p>',
+        '<p>&nbsp;</p><p>--&nbsp;<br />Signature one<br />Signature two</p>',
     ) };
 
 subtest "HTML, reply" => sub {
     template_is(
         qw/HTML Quote/,
-        $quote.'<br /><p>--&nbsp;<br />Signature one<br />Signature two</p>',
+        $quote.'<p>&nbsp;</p><p>--&nbsp;<br />Signature one<br />Signature two</p>',
     ) };
 
 subtest "HTML, reply, before quote" => sub {
     template_is(
         qw/HTML Quote BeforeQuote/,
-        '<br /><p>--&nbsp;<br />Signature one<br />Signature two</p>'
-            . "<br />" . $quote,
+        '<p>&nbsp;</p><p>--&nbsp;<br />Signature one<br />Signature two</p>'
+            . "<p>&nbsp;</p>" . $quote,
     ) };
 
 
