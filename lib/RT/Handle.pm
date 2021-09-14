@@ -468,6 +468,9 @@ sub InsertACL {
         $path = $base_path;
     }
 
+    # Get the full path since . is no longer in @INC after perl 5.24
+    $path = Cwd::abs_path($path);
+
     local *acl;
     do $path || return (0, "Couldn't load ACLs: " . $@);
     my @acl = acl($dbh);
@@ -864,6 +867,8 @@ sub InsertData {
 
     local $@;
 
+    # Get the full path since . is no longer in @INC after perl 5.24
+    $datafile = Cwd::abs_path($datafile);
     $RT::Logger->debug("Going to load '$datafile' data file");
 
     my $datafile_content = do {
