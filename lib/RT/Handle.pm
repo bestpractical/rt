@@ -863,6 +863,8 @@ sub InsertData {
 
     local $@;
 
+    # Get the full path since . is no longer in @INC after perl 5.24
+    $datafile = Cwd::abs_path($datafile);
     $RT::Logger->debug("Going to load '$datafile' data file");
 
     my $datafile_content = do {
