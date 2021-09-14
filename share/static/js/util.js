@@ -779,11 +779,12 @@ jQuery(function() {
     if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
 
         // Add action type into iframe to customize default font color
-        jQuery(['action-response', 'action-private']).each(function(index, class_name) {
-            jQuery('.' + class_name).on('DOMNodeInserted', 'iframe', function(e) {
-                setTimeout(function() {
-                    jQuery(e.target).contents().find('.cke_editable').addClass(class_name);
-                }, 100);
+        CKEDITOR.on('instanceReady', function(e) {
+            var container = jQuery(e.editor.element.$.closest('div.messagebox-container'));
+            jQuery(['action-response', 'action-private']).each(function(index, class_name) {
+                if ( container.hasClass(class_name) ) {
+                    container.find('iframe').contents().find('.cke_editable').addClass(class_name);
+                }
             });
         });
 
