@@ -331,7 +331,17 @@ sub CurrentUserCanDelete {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan($privacy, Right => 'Delete');
+    my $can = $self->_CurrentUserCan($privacy, Right => 'Delete');
+
+    # Don't allow to delete system default dashboard
+    if ($can) {
+        my ($system_default) = RT::System->new( RT->SystemUser )->Attributes->Named('DefaultDashboard');
+        if ( $system_default && $system_default->Content && $system_default->Content == $self->Id ) {
+            return 0;
+        }
+    }
+
+    return $can;
 }
 
 sub CurrentUserCanSubscribe {

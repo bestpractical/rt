@@ -85,6 +85,9 @@ for my $group ( @Groupings ) {
     );
     $m->callback( CallbackName => 'TitleBox', Object => $Object, Grouping => $group, ARGSRef => \%grouping_args );
 </%perl>
+
+<div class="<% $ARGS{'GroupingClass'} ? $ARGS{'GroupingClass'} : '' %>">
+
 <&| /Widgets/TitleBox, %grouping_args &>
 % unless ($modify_behavior eq 'always') {
   <div class="inline-edit-display">
@@ -103,6 +106,7 @@ for my $group ( @Groupings ) {
   </form>
 % }
 </&>
+</div>
 % }
 <%ARGS>
 $Object

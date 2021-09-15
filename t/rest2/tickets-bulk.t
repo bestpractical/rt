@@ -176,6 +176,7 @@ my @ticket_ids;
         ],
         'json response content'
     );
+    $user->PrincipalObj->RevokeRight( Right => 'ModifyTicket' );
 }
 
 {
@@ -183,6 +184,81 @@ my @ticket_ids;
         my $res = $mech->get( "$rest_base_path/tickets/bulk", 'Authorization' => $auth );
         is( $res->code, 405, "tickets/bulk doesn't support " . uc $method );
     }
+}
+
+$user->PrincipalObj->GrantRight( Right => 'ShowTicket' );
+
+{
+    diag "no ReplyToTicket right";
+    my $res = $mech->post_json(
+        "$rest_base_path/tickets/bulk/correspond",
+        [ { id => $ticket_ids[0], Content => 'test correspond', ContentType => 'text/plain' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, "status code" );
+    is_deeply( $mech->json_response, [ [ $ticket_ids[0], "Permission Denied", ] ], 'permission denied' );
+
+    diag "grant ReplyToTicket right";
+    $user->PrincipalObj->GrantRight( Right => 'ReplyToTicket' );
+
+    $res = $mech->post_json(
+        "$rest_base_path/tickets/bulk/correspond",
+        [ { id => $ticket_ids[0], Content => 'test correspond', ContentType => 'text/plain' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, 'status code' );
+    is_deeply( $mech->json_response, [ [ $ticket_ids[0], "Correspondence added", ] ], 'Correspondence added' );
+
+    $user->PrincipalObj->GrantRight( Right => 'ModifyTicket' );
+    $res = $mech->post_json(
+        "$rest_base_path/tickets/bulk/correspond",
+        [ { id => $ticket_ids[0], Content => 'test correspond', ContentType => 'text/plain', Status => 'new' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, 'status code' );
+    is_deeply(
+        $mech->json_response,
+        [ [ $ticket_ids[0], "Correspondence added", "Status changed from 'open' to 'new'" ] ],
+        'Correspondence added'
+    );
+    $user->PrincipalObj->RevokeRight( Right => $_ ) for qw/ReplyToTicket ModifyTicket/;
+}
+
+{
+    diag "no CommentOnTicket right";
+    my $res = $mech->post_json(
+        "$rest_base_path/tickets/bulk/comment",
+        [ { id => $ticket_ids[0], Content => 'test comment', ContentType => 'text/plain' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, "status code" );
+    is_deeply( $mech->json_response, [ [ $ticket_ids[0], "Permission Denied", ] ], 'permission denied' );
+
+    diag "grant CommentOnTicket right";
+    $user->PrincipalObj->GrantRight( Right => 'CommentOnTicket' );
+
+    $res = $mech->post_json(
+        "$rest_base_path/tickets/bulk/comment",
+        [ { id => $ticket_ids[0], Content => 'test comment', ContentType => 'text/plain' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, 'status code' );
+    is_deeply( $mech->json_response, [ [ $ticket_ids[0], "Comments added", ] ], 'Comments added' );
+
+    # Do status change along with comment
+    $user->PrincipalObj->GrantRight( Right => $_ ) for qw/ShowTicket ModifyTicket/;
+    $res = $mech->post_json(
+        "$rest_base_path/tickets/bulk/comment",
+        [ { id => $ticket_ids[0], Content => 'test comment', ContentType => 'text/plain', Status => 'open' } ],
+        'Authorization' => $auth,
+    );
+    is( $res->code, 201, 'status code' );
+    is_deeply(
+        $mech->json_response,
+        [ [ $ticket_ids[0], "Comments added", "Status changed from 'new' to 'open'" ] ],
+        'Comments added'
+    );
+    $user->PrincipalObj->RevokeRight( Right => $_ ) for qw/CommentOnTicket ModifyTicket/;
 }
 
 done_testing;

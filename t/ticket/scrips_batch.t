@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 19;
+use RT::Test tests => undef;
 use_ok('RT');
 use_ok('RT::Ticket');
 
@@ -76,6 +76,19 @@ END
     $m->click('SubmitTicket');
 
     is_deeply parse_handle($tmp_fh), ['Comment', 'Status'], 'Comment + Resolve';
+
+    $m->follow_link_ok( { text => 'Comment' } );
+    $m->form_name('TicketUpdate');
+
+    my $root = RT::User->new( RT->SystemUser );
+    $root->Load('root');
+    $m->field( Owner => $root->Id );
+
+    # Assume ticket update page is customized to add Due date input
+    $m->field( Due_Date => '2021-05-05' );
+    $m->click('SubmitTicket');
+
+    is_deeply parse_handle($tmp_fh), ['Set', 'SetWatcher', 'Set'], 'Set Owner + Set Due';
 }
 
 sub value_name {
@@ -101,3 +114,4 @@ sub parse_handle {
     return \@lines;
 }
 
+done_testing;

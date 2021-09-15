@@ -80,12 +80,13 @@ sub TestArgs
     my %args = @_;
 
     my @strings;
+    my $Organization = RT->Config->Get('Organization');
     foreach my $name( @RT::Shredder::SUPPORTED_OBJECTS ) {
         next unless $args{$name};
 
         my $list = $args{$name};
         $list = [$list] unless UNIVERSAL::isa( $list, 'ARRAY' );
-        push @strings, map "RT::$name\-$_", @$list;
+        push @strings, map "RT::$name-$Organization-$_", @$list;
     }
 
     my @objs = RT::Shredder->CastObjectsToRecords( Objects => \@strings );

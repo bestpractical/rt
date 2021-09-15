@@ -60,7 +60,7 @@
 <input type="hidden" class="hidden" name="Action" value="<% $Action %>" />
 <input type="hidden" class="hidden" name="Token" value="<% $ARGS{'Token'} %>" />
 
-<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $TicketObj->QueueObj &>
 
 <div id="ticket-update-metadata">
   <&|/Widgets/TitleBox, title => loc('Ticket and Transaction'), class => 'ticket-info-basics' &>
@@ -402,6 +402,12 @@ if ( $ARGS{'SubmitTicket'} ) {
         TicketObj => $TicketObj,
     );
     $checks_failure = 1 unless $status;
+
+    ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
+    unless ( $status ) {
+        push @results, @msg;
+        $checks_failure = 1;
+    }
 }
 
 # check email addresses for RT's
@@ -410,13 +416,24 @@ if ( $ARGS{'SubmitTicket'} ) {
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
 
-        my @emails = Email::Address->parse( $value );
-        foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
-            push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc(substr($field, 6)) );
-            $checks_failure = 1;
-            $email = undef;
+        my @emails;
+        my @list = RT::EmailParser->_ParseEmailAddress( $value );
+        foreach my $entry ( @list ) {
+            if ( $entry->{type} eq 'mailbox' ) {
+                my $email = $entry->{value};
+                if ( RT::EmailParser->IsRTAddress($email->address) ) {
+                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc(substr($field, 6)) );
+                    $checks_failure ||= 1;
+                }
+                else {
+                    push @emails, $email->format;
+                }
+            }
+            else {
+                push @emails, $entry->{value};
+            }
         }
-        $ARGS{ $field } = join ', ', map $_->format, grep defined, @emails;
+        $ARGS{ $field } = join ', ', grep defined, @emails;
     }
 }
 

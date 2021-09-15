@@ -57,7 +57,7 @@ $m->callback( ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 my $title = loc( "Grouped search results");
 
-my @search_fields = ( qw(Query GroupBy ChartStyle ChartFunction Width Height ExtraQueryParams), @ExtraQueryParams );
+my @search_fields = ( qw(Query GroupBy StackedGroupBy ChartStyle ChartFunction Width Height ExtraQueryParams), @ExtraQueryParams );
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
     SearchFields => [@search_fields],
@@ -163,6 +163,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Name => 'GroupBy',
           Query => $query{Query},
           Default => $query{'GroupBy'}[0],
+          Stacked => $query{'GroupBy'}[0] eq ($query{StackedGroupBy} // '') ? 1 : 0,
+          StackedId => 'StackedGroupBy-1',
         &>
         </fieldset>
         <fieldset><legend><% loc('and then') %></legend>
@@ -171,6 +173,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Query => $query{Query},
           Default => $query{'GroupBy'}[1] // q{},
           ShowEmpty => 1,
+          Stacked => $query{'GroupBy'}[1] && ($query{'GroupBy'}[1] eq ($query{StackedGroupBy} // '')) ? 1 : 0,
+          StackedId => 'StackedGroupBy-2',
         &>
       </fieldset>
       <fieldset><legend><% loc('and then') %></legend>
@@ -179,6 +183,8 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
           Query => $query{Query},
           Default => $query{'GroupBy'}[2] // q{},
           ShowEmpty => 1,
+          Stacked => $query{'GroupBy'}[2] && ($query{'GroupBy'}[2] eq ($query{StackedGroupBy} // '')) ? 1 : 0,
+          StackedId => 'StackedGroupBy-3',
         &>
       </fieldset>
     </&>
@@ -241,6 +247,15 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 <script type="text/javascript">
 var updateChartStyle = function() {
     var val = jQuery(".chart-picture [name=ChartType]").val();
+    if ( val == 'bar' ) {
+        jQuery("span.stacked-group").removeClass('hidden');
+        jQuery("input.stacked-group-checkbox").prop('disabled', false);
+    }
+    else {
+        jQuery("span.stacked-group").addClass('hidden');
+        jQuery("input.stacked-group-checkbox").prop('disabled', true);
+    }
+
     if ( val != 'table' && jQuery(".chart-picture [name=ChartStyleIncludeTable]").is(':checked') ) {
         val += '+table';
     }
@@ -259,6 +274,50 @@ jQuery(".chart-picture [name=ChartType]").change(function(){
 
 jQuery(".chart-picture [name=ChartStyleIncludeTable]").change( updateChartStyle );
 jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
+jQuery("input.stacked-group-checkbox").change( function() {
+    if ( jQuery(this).is(':checked') ) {
+        jQuery("input.stacked-group-checkbox").not(this).prop('checked', false);
+    }
+});
+
+jQuery("select[name=GroupBy]").change( function() {
+    // "GroupBy-Groups" could be triggered because the they are fully cloned from "GroupBy"
+    if ( jQuery(this).attr('name') == 'GroupBy-Groups' ) {
+        var elem = jQuery(this).closest('fieldset').find('select[name=GroupBy]');
+        setTimeout( function () {
+            elem.change();
+        }, 100 ); // give it a moment to prepare "GroupBy" options
+    }
+    else {
+        jQuery(this).closest('fieldset').find('input.stacked-group-checkbox').val(jQuery(this).val());
+    }
+});
+
+jQuery( function() {
+    jQuery("select[name=ChartFunction-Groups]").change( function() {
+        var allow_stacked = jQuery(".chart-picture [name=ChartType]").val() == 'bar';
+
+        var value_count;
+        jQuery("select[name=ChartFunction-Groups]").each( function() {
+            if ( jQuery(this).val() ) {
+                value_count++;
+                if ( value_count > 1 || !jQuery(this).val().match(/count/i) ) {
+                    allow_stacked = 0;
+                }
+            }
+        } );
+
+        if ( allow_stacked ) {
+            jQuery("span.stacked-group").removeClass('hidden');
+            jQuery("input.stacked-group-checkbox").prop('disabled', false);
+        }
+        else {
+            jQuery("span.stacked-group").addClass('hidden');
+            jQuery("input.stacked-group-checkbox").prop('disabled', true);
+        }
+    }).change();
+});
+
 </script>
 
     <div class="form-row">
@@ -271,7 +330,7 @@ jQuery(".chart-picture [name=ChartStyleIncludeSQL]").change( updateChartStyle );
 
   <div class="col-xl-6">
     <div class="saved-search">
-      <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
+      <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts'), AllowCopy => 1 &>
     </div>
   </div>
 </div>

@@ -2,11 +2,6 @@ use strict;
 use warnings;
 use RT::Test::REST2 tests => undef;
 
-BEGIN {
-    plan skip_all => 'RT 4.4 required'
-        unless RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
-}
-
 use Test::Deep;
 
 my $mech = RT::Test::REST2->mech;
@@ -167,6 +162,46 @@ $user->PrincipalObj->GrantRight( Right => $_ )
         Queue     => 'General',
         $multi->GroupType  => ['multi@example.com', 'multi2@example.com'],
         $single->GroupType => ['test@localhost', 'single2@example.com'],
+    };
+
+    my $res = $mech->post_json("$rest_base_path/ticket",
+        $payload,
+        'Authorization' => $auth,
+    );
+    is($res->code, 201);
+    ok(my $ticket_url = $res->header('location'));
+    ok((my $ticket_id) = $ticket_url =~ qr[/ticket/(\d+)]);
+
+    $res = $mech->get($ticket_url,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    my $content = $mech->json_response;
+    cmp_deeply($content->{$multi->GroupType}, [{
+        type => 'user',
+        id   => 'multi@example.com',
+        _url => re(qr{$rest_base_path/user/multi\@example\.com$}),
+    }, {
+        type => 'user',
+        id   => 'multi2@example.com',
+        _url => re(qr{$rest_base_path/user/multi2\@example\.com$}),
+    }], 'two Multi Members');
+
+    cmp_deeply($content->{$single->GroupType}, {
+        type => 'user',
+        id   => 'test@localhost',
+        _url => re(qr{$rest_base_path/user/test\@localhost}),
+    }, 'one Single Member');
+}
+
+diag 'Create and view ticket with custom roles by name';
+{
+    my $payload = {
+        Subject   => 'Ticket with multiple watchers',
+        Queue     => 'General',
+        CustomRoles => { 'Multi Member' => ['multi@example.com', 'multi2@example.com'],
+                         'Single Member' => 'test@localhost' },
     };
 
     my $res = $mech->post_json("$rest_base_path/ticket",
@@ -368,7 +403,7 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     my @stable_payloads = (
     {
         Subject => 'no changes to watchers',
-        _messages => ["Ticket 5: Subject changed from 'Ticket for modifying watchers' to 'no changes to watchers'"],
+        _messages => ["Ticket 6: Subject changed from 'Ticket for modifying watchers' to 'no changes to watchers'"],
         _name => 'no watcher keys',
     },
     {
@@ -563,5 +598,45 @@ $user->PrincipalObj->GrantRight( Right => $_ )
     }, 'Later Single Member is Nobody');
 }
 
-done_testing;
 
+# Ticket Search
+{
+
+    my $payload = {
+        Subject            => 'Ticket creation using REST',
+        Queue              => 'General',
+        Content            => 'Testing ticket creation using REST API.',
+        $single->GroupType => 'single2@example.com',
+        $multi->GroupType  => 'multi@example.com, multi2@example.com',
+    };
+
+    my $res = $mech->post_json( "$rest_base_path/ticket", $payload, 'Authorization' => $auth, );
+    is( $res->code, 201 );
+    ok( my $ticket_url = $res->header('location') );
+    ok( my ($ticket_id) = $ticket_url =~ qr[/ticket/(\d+)] );
+
+    $res = $mech->get(
+        "$rest_base_path/tickets?query=id=$ticket_id&fields=" . join( ',', $single->GroupType, $multi->GroupType ),
+        'Authorization' => $auth,
+    );
+    is( $res->code, 200 );
+    my $content = $mech->json_response;
+    is( scalar @{ $content->{items} }, 1 );
+
+    my $ticket = $content->{items}->[0];
+    is( $ticket->{ $single->GroupType }{id},   'single2@example.com', 'Single Member id in search result' );
+    is( $ticket->{ $multi->GroupType }[0]{id}, 'multi@example.com',   'Multi Member id in search result' );
+    is( $ticket->{ $multi->GroupType }[1]{id}, 'multi2@example.com',  'Multi Member id in search result' );
+
+    $res = $mech->get( "$rest_base_path/tickets?query=id=$ticket_id&fields=CustomRoles", 'Authorization' => $auth, );
+    is( $res->code, 200 );
+    $content = $mech->json_response;
+    is( scalar @{ $content->{items} }, 1 );
+
+    $ticket = $content->{items}->[0];
+    is( $ticket->{CustomRoles}{ $single->GroupType }{id}, 'single2@example.com',  'Single Member id in search result' );
+    is( $ticket->{CustomRoles}{ $multi->GroupType }[0]{id}, 'multi@example.com',  'Multi Member id in search result' );
+    is( $ticket->{CustomRoles}{ $multi->GroupType }[1]{id}, 'multi2@example.com', 'Multi Member id in search result' );
+}
+
+done_testing;

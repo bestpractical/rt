@@ -64,7 +64,7 @@
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 % if ($gnupg_widget) {
-  <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+  <& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $QueueObj &>
 % }
 
 <div id="Ticket-Create-basics">
@@ -155,23 +155,23 @@
 <div class="form-row">
 <div class="label col-2"><&|/l&>Requestors</&>:</div>
 <div class="value col-9">
-<& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &>
+<& /Elements/EmailInput, Name => 'Requestors', Size => undef, Default => $ARGS{Requestors} // $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &>
 % $m->callback( CallbackName => 'AfterRequestors', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 </div>
 </div>
 
 <div class="form-row">
 <div class="label col-2"><&|/l&>Cc</&>:
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to a list of email addresses. These people will receive future updates.</&>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
 </div>
-<div class="value col-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1 &></div>
+<div class="value col-9"><& /Elements/EmailInput, Name => 'Cc', Size => undef, Default => $ARGS{Cc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
 </div>
 
 <div class="form-row">
 <div class="label col-2"><&|/l&>Admin Cc</&>:
-<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to a list of administrative email addresses. These people will receive future updates.</&>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Sends a copy of this update to the provided users or groups. These people will receive future updates.</&>"></span>
 </div>
-<div class="value col-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1 &></div>
+<div class="value col-9"><& /Elements/EmailInput, Name => 'AdminCc', Size => undef, Default => $ARGS{AdminCc}, AutocompleteMultiple => 1, AutocompleteType => 'Principals' &></div>
 </div>
 
 % my $roles = $QueueObj->CustomRoles;
@@ -188,7 +188,7 @@
     <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 % }
   </div>
-  <div class="form-group value col-9"><& /Elements/EmailInput, Name => $role->GroupType, Size => undef, Default => $ARGS{$role->GroupType}, AutocompleteMultiple => 1 &></div>
+  <div class="form-group value col-9"><& /Elements/MultiUserRoleInput, role => $role, Default => $ARGS{$role->GroupType} &></div>
 </div>
 % }
 
@@ -466,6 +466,12 @@ my $checks_failure = 0;
         $checks_failure = 1;
         push @results, @msg;
     }
+
+    ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
+    unless ( $status ) {
+        push @results, @msg;
+        $checks_failure = 1;
+    }
 }
 
 my $gnupg_widget = $m->comp('/Elements/Crypt/SignEncryptWidget:new', Arguments => \%ARGS );
@@ -490,13 +496,24 @@ if ( $ARGS{SubmitTicket} ) {
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
 
-        my @emails = Email::Address->parse( $value );
-        foreach my $email ( grep RT::EmailParser->IsRTAddress($_->address), @emails ) {
-            push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field =~ /^(.*?)s?$/) );
-            $checks_failure = 1;
-            $email = undef;
+        my @emails;
+        my @list = RT::EmailParser->_ParseEmailAddress( $value );
+        foreach my $entry ( @list ) {
+            if ( $entry->{type} eq 'mailbox' ) {
+                my $email = $entry->{value};
+                if ( RT::EmailParser->IsRTAddress($email->address) ) {
+                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field =~ /^(.*?)s?$/) );
+                    $checks_failure ||= 1;
+                }
+                else {
+                    push @emails, $email->format;
+                }
+            }
+            else {
+                push @emails, $entry->{value};
+            }
         }
-        $ARGS{ $field } = join ', ', map $_->format, grep defined, @emails;
+        $ARGS{ $field } = join ', ', grep defined, @emails;
     }
 }
 

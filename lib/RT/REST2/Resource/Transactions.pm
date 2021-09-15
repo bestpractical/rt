@@ -55,6 +55,7 @@ use namespace::autoclean;
 
 extends 'RT::REST2::Resource::Collection';
 with 'RT::REST2::Resource::Collection::QueryByJSON';
+with 'RT::REST2::Resource::Collection::QueryBySQL';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(

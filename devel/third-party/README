@@ -19,7 +19,7 @@ Description: modern select with intuitive multiselection, searching, and much mo
 Origin: https://github.com/snapappointments/bootstrap-select
 License: MIT
 
-* Chart-2.8.0
+* Chart-2.9.4
 Description: HTML5 Charts using the <canvas> tag
 Origin: https://github.com/chartjs/Chart.js
 License: MIT
@@ -52,6 +52,7 @@ License: MIT
 * eyedropper.svg
 Description: color picker icon
 Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
+Author: The Noun Project
 License: CC BY 3.0
 
 * jquery-3.4.1.js

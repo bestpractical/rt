@@ -75,7 +75,7 @@
 
   <div class="content">
 <%PERL>
-$m->comp('/Elements/ShowCustomFields', Object => $Transaction, HideEmpty => 1 ) if $HasTxnCFs;
+$m->comp('/Elements/ShowCustomFields', Object => $Transaction, HideEmpty => 1, LabelCols => 2, ValueCols => 10 ) if $HasTxnCFs;
 $m->comp(
     'ShowTransactionAttachments',
     %ARGS,
@@ -300,6 +300,8 @@ $m->callback(
     Description => \$desc,
     ShowBody    => \$ShowBody,
     CreatorObj  => \$CreatorObj,
+    HasTxnCFs   => \$HasTxnCFs,
+    ARGSRef     => \%ARGS,
 );
 
 my $actions = '';

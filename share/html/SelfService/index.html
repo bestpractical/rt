@@ -70,7 +70,7 @@ if (RT->Config->Get('SelfServiceUseDashboard')) {
 }
 
 # Default to old-style "My Open Tickets"
-$m->comp('/SelfService/Open.html', Page => $Page);
+$m->comp('/SelfService/Open.html', %ARGS, Page => $Page);
 
 </%INIT>
 <%ARGS>

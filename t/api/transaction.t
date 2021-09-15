@@ -47,6 +47,108 @@ use_ok ('RT::Transaction');
                     "Caught URI warning";
 
     is( $brief, 'Reference to ticket 42 deleted', "Got string description: $brief");
+
+}
+
+diag 'Test Content';
+{
+    require MIME::Entity;
+
+    my $plain_file = File::Spec->catfile( RT::Test->temp_directory, 'attachment.txt' );
+    open my $plain_fh, '>', $plain_file or die $!;
+    print $plain_fh 'this is attachment';
+    close $plain_fh;
+
+    my @mime;
+
+    my $mime = MIME::Entity->build( Data => [ 'main body' ] );
+    push @mime, { object => $mime, expected => 'main body', description => 'no attachment' };
+
+    $mime = MIME::Entity->build( Type => 'multipart/mixed' );
+    $mime->attach(
+        Type => 'text/plain',
+        Data => [ 'main body' ],
+    );
+    $mime->attach(
+        Path => $plain_file,
+        Type => 'text/plain',
+    );
+    push @mime, { object => $mime, expected => 'main body', description => 'has an attachment' };
+
+    $mime = MIME::Entity->build( Type => 'multipart/mixed' );
+    $mime->attach(
+        Path => $plain_file,
+        Type => 'text/plain',
+    );
+    $mime->attach(
+        Type => 'text/plain',
+        Data => [ 'main body' ],
+    );
+    push @mime, { object => $mime, expected => 'main body', description => 'has an attachment as the first part' };
+
+    $mime = MIME::Entity->build( Type => 'multipart/mixed' );
+    $mime->attach(
+        Path => $plain_file,
+        Type => 'text/plain',
+    );
+    push @mime,
+      { object => $mime, expected => 'This transaction appears to have no content', description => 'has an attachment but no main part' };
+
+    my $parser = MIME::Parser->new();
+    $parser->output_to_core(1);
+    $mime = $parser->parse_data( <<EOF );
+Content-Type: multipart/mixed; boundary="=-=-="
+
+--=-=-=
+Content-Type: message/rfc822
+Content-Disposition: inline
+
+Content-Type: text/plain
+Subject: test
+
+main body
+--=-=-=
+EOF
+
+    push @mime, { object => $mime, expected => "main body", description => 'has an rfc822 message' };
+
+    $mime = $parser->parse_data( <<EOF );
+Content-Type: multipart/mixed; boundary="=-=-="
+
+--=-=-=
+Content-Type: message/rfc822
+Content-Disposition: attachment
+
+Content-Type: text/plain
+Subject: test
+
+inner body of rfc822
+
+--=-=-=
+Content-Type: text/plain
+Subject: test
+
+main body
+--=-=-=
+
+EOF
+
+    push @mime,
+      { object => $mime, expected => 'main body', description => 'has an attachment of rfc822 message and main part' };
+
+    for my $mime ( @mime ) {
+        my $ticket = RT::Ticket->new( RT->SystemUser );
+        my ( $id, $txn_id ) = $ticket->Create(
+            Queue   => 'General',
+            Subject => 'Testing content',
+            MIMEObj => $mime->{object},
+        );
+        ok( $id,     'Created ticket' );
+        ok( $txn_id, 'Created transaction' );
+        my $txn = RT::Transaction->new( RT->SystemUser );
+        $txn->Load( $txn_id );
+        is( $txn->Content, $mime->{expected}, "Got expected content for MIME: $mime->{description}" );
+    }
 }
 
 done_testing;

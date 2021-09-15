@@ -63,19 +63,20 @@ with (
 
 requires 'collection';
 
-has 'query' => (
+has 'query_json' => (
     is          => 'ro',
     isa         => 'ArrayRef[HashRef]',
     required    => 1,
     lazy_build  => 1,
 );
 
-sub _build_query {
+sub _build_query_json {
     my $self = shift;
     my $content = $self->request->method eq 'GET'
                 ? $self->request->param('query')
                 : $self->request->content;
-    return $content ? JSON::decode_json($content) : [];
+    return [] unless $content && $content =~ /\s*\[/;
+    return JSON::decode_json($content);
 }
 
 sub allowed_methods {
@@ -86,44 +87,60 @@ sub searchable_fields {
     $_[0]->collection->RecordClass->ReadableAttributes
 }
 
-sub limit_collection {
+sub limit_collection_from_json {
     my $self        = shift;
     my $collection  = $self->collection;
-    my $query       = $self->query;
+    my $query       = $self->query_json;
+
+    return 1 unless ref $query eq 'ARRAY' && scalar @{$query};
+
     my @fields      = $self->searchable_fields;
     my %searchable  = map {; $_ => 1 } @fields;
 
-    $collection->{'find_disabled_rows'} = 1
-        if $self->request->param('find_disabled_rows');
+    my $custom_field_object = RT::CustomField->new( $self->request->env->{"rt.current_user"} );
 
     for my $limit (@$query) {
-        next unless $limit->{field}
-                and $searchable{$limit->{field}}
-                and defined $limit->{value};
+        next unless $limit->{field} && defined $limit->{value};
 
-        $collection->Limit(
-            FIELD       => $limit->{field},
-            VALUE       => $limit->{value},
-            ( $limit->{operator}
+        if ( $limit->{field} =~ /(?:CF|CustomField)\.\{(.*)\}/i ) {
+            my $cf_name = $1;
+            next unless $cf_name;
+
+            my ($ret, $msg) = $custom_field_object->LoadByName(
+                Name          => $cf_name,
+                LookupType    => $collection->RecordClass->CustomFieldLookupType,
+                IncludeGlobal => 1
+            );
+
+            unless ( $ret && $custom_field_object->Id ) {
+                RT::Logger->error( "Could not load custom field: $limit->{'field'}: $msg" );
+                next;
+            }
+
+            $collection->LimitCustomField(
+              VALUE       => $limit->{'value'},
+              CUSTOMFIELD => $custom_field_object->Id,
+              ( $limit->{operator}
                 ? (OPERATOR => $limit->{operator})
                 : () ),
-            CASESENSITIVE => ($limit->{case_sensitive} || 0),
-            ( $limit->{entry_aggregator}
-                ? (ENTRYAGGREGATOR => $limit->{entry_aggregator})
-                : () ),
-        );
-    }
+            );
+        }
+        else {
+            next unless $searchable{$limit->{field}};
 
-    my @orderby_cols;
-    my @orders = $self->request->param('order');
-    foreach my $orderby ($self->request->param('orderby')) {
-        my $order = shift @orders || 'ASC';
-        $order = uc($order);
-        $order = 'ASC' unless $order eq 'DESC';
-        push @orderby_cols, {FIELD => $orderby, ORDER => $order};
+            $collection->Limit(
+                FIELD       => $limit->{field},
+                VALUE       => $limit->{value},
+                ( $limit->{operator}
+                    ? (OPERATOR => $limit->{operator})
+                    : () ),
+                CASESENSITIVE => ($limit->{case_sensitive} || 0),
+                ( $limit->{entry_aggregator}
+                    ? (ENTRYAGGREGATOR => $limit->{entry_aggregator})
+                    : () ),
+            );
+        }
     }
-    $self->collection->OrderByCols(@orderby_cols)
-        if @orderby_cols;
 
     return 1;
 }

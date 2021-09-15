@@ -96,6 +96,8 @@
 
 <& /Elements/Framekiller &>
 
+% $m->callback( CallbackName => 'EndOfHead', ARGSRef => \%ARGS );
+
 </head>
   <body class="<% join( ' ',@{$ARGS{'BodyClass'}}, RT->Config->Get('WebDefaultStylesheet', $session{CurrentUser}) =~ /-dark$/ ? 'darkmode' : ()) %>" <% $id && qq[id="comp-$id"] |n %>>
     <div class="main-container">

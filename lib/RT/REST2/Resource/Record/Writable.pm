@@ -53,7 +53,7 @@ use warnings;
 use Moose::Role;
 use namespace::autoclean;
 use JSON ();
-use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields process_uploads );
+use RT::REST2::Util qw( deserialize_record error_as_json expand_uid update_custom_fields process_uploads update_role_members fix_custom_role_ids );
 use List::MoreUtils 'uniq';
 
 with 'RT::REST2::Resource::Role::RequestBodyIsJSON'
@@ -158,7 +158,7 @@ sub update_record {
     );
 
     push @results, update_custom_fields($self->record, $data->{CustomFields});
-    push @results, $self->_update_role_members($data);
+    push @results, update_role_members($self->record, $data);
     push @results, $self->_update_links($data);
     push @results, $self->_update_disabled($data->{Disabled})
       unless grep { $_ eq 'Disabled' } $self->record->WritableAttributes;
@@ -167,124 +167,6 @@ sub update_record {
 
     # XXX TODO: Figure out how to return success/failure?  Core RT::Record's
     # ->Update will need to be replaced or improved.
-    return @results;
-}
-
-sub _update_role_members {
-    my $self = shift;
-    my $data = shift;
-
-    my $record = $self->record;
-
-    return unless $record->DOES('RT::Record::Role::Roles');
-
-    my @results;
-
-    foreach my $role ($record->Roles) {
-        next unless exists $data->{$role};
-
-        # special case: RT::Ticket->Update already handles Owner for us
-        next if $role eq 'Owner' && $record->isa('RT::Ticket');
-
-        my $val = $data->{$role};
-
-        if ($record->Role($role)->{Single}) {
-            if (ref($val) eq 'ARRAY') {
-                $val = $val->[0];
-            }
-            elsif (ref($val)) {
-                die "Invalid value type for role $role";
-            }
-
-            my ($ok, $msg);
-            if ($record->can('AddWatcher')) {
-                ($ok, $msg) = $record->AddWatcher(
-                    Type => $role,
-                    User => $val,
-                );
-            } else {
-                ($ok, $msg) = $record->AddRoleMember(
-                    Type => $role,
-                    User => $val,
-                );
-            }
-            push @results, $msg;
-        }
-        else {
-            my %count;
-            my @vals;
-
-            for (ref($val) eq 'ARRAY' ? @$val : $val) {
-                my ($principal_id, $msg);
-
-                if (/^\d+$/) {
-                    $principal_id = $_;
-                }
-                elsif ($record->can('CanonicalizePrincipal')) {
-                    ((my $principal), $msg) = $record->CanonicalizePrincipal(User => $_);
-                    $principal_id = $principal->Id;
-                }
-                else {
-                    my $user = RT::User->new($record->CurrentUser);
-                    if (/@/) {
-                        ((my $ok), $msg) = $user->LoadOrCreateByEmail( $_ );
-                    } else {
-                        ((my $ok), $msg) = $user->Load( $_ );
-                    }
-                    $principal_id = $user->PrincipalId;
-                }
-
-                if (!$principal_id) {
-                    push @results, $msg;
-                    next;
-                }
-
-                push @vals, $principal_id;
-                $count{$principal_id}++;
-            }
-
-            my $group = $record->RoleGroup($role);
-            my $members = $group->MembersObj;
-            while (my $member = $members->Next) {
-                $count{$member->MemberId}--;
-            }
-
-            # RT::Ticket has specialized methods
-            my $add_method = $record->can('AddWatcher') ? 'AddWatcher' : 'AddRoleMember';
-            my $del_method = $record->can('DeleteWatcher') ? 'DeleteWatcher' : 'DeleteRoleMember';
-
-            # we want to provide a stable order, so first go by the order
-            # provided in the argument list, and then for any role members
-            # that are being removed, remove in sorted order
-            for my $id (uniq(@vals, sort keys %count)) {
-                my $count = $count{$id};
-                if ($count == 0) {
-                    # new == old, no change needed
-                }
-                elsif ($count > 0) {
-                    # new > old, need to add new
-                    while ($count-- > 0) {
-                        my ($ok, $msg) = $record->$add_method(
-                            Type        => $role,
-                            PrincipalId => $id,
-                        );
-                        push @results, $msg;
-                    }
-                }
-                elsif ($count < 0) {
-                    # old > new, need to remove old
-                    while ($count++ < 0) {
-                        my ($ok, $msg) = $record->$del_method(
-                            Type        => $role,
-                            PrincipalId => $id,
-                        );
-                        push @results, $msg;
-                    }
-                }
-            }
-        }
-    }
-
     return @results;
 }
 
@@ -474,6 +356,13 @@ sub create_record {
             }
         }
     }
+
+    if ( $args{CustomRoles} ) {
+        # RT::Ticket::Create wants custom role IDs (like RT::CustomRole-ID)
+        # rather than role names.
+        %args = ( %args, %{ fix_custom_role_ids( $record, delete $args{CustomRoles} ) } );
+    }
+
 
     my $method = $record->isa('RT::Group') ? 'CreateUserDefinedGroup' : 'Create';
     my ($ok, @rest) = $record->$method(%args);

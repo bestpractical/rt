@@ -135,3 +135,32 @@ svg.icon-helper {
 legend {
   font-size: 1rem;
 }
+
+/* transaction display page */
+h1#transaction-extra-info {
+    font-size: 1.4rem;
+    padding-top: 0.4rem;
+}
+
+/* Prevent page links from running off the side of the page for Firefox */
+span.pagenum {
+    display: inline-block;
+}
+
+/* Do not change background color on click of dropdown items like "Show
+ * full headers" in ticket history */
+.btn-group.dropdown .dropdown-item:active {
+    background-color: transparent;
+}
+
+/* Remove the default 2 px top/bottom added by Firefox to give more room
+   for the saved search form on the query builder */
+
+#editquery select option {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.w-15 {
+    width: 15% !important;
+}

@@ -375,16 +375,31 @@ sub _EnumLimit {
     # SQL::Statement changes != to <>.  (Can we remove this now?)
     $op = "!=" if $op eq "<>";
 
-    die "Invalid Operation: $op for $field"
-        unless $op eq "="
-        or $op     eq "!=";
+    die "Invalid Operation: $op for $field" unless $op =~ /^(?:=|!=|IN|NOT IN)$/i;
 
     my $meta = $FIELD_METADATA{$field};
-    if ( defined $meta->[1] && defined $value && $value !~ /^\d+$/ ) {
+    if ( defined $meta->[1] && defined $value ) {
         my $class = "RT::" . $meta->[1];
-        my $o     = $class->new( $sb->CurrentUser );
-        $o->Load($value);
-        $value = $o->Id || 0;
+
+        if ( ref $value eq 'ARRAY' ) {
+            my @values;
+            for my $i (@$value) {
+                if ( $i !~ /^\d+$/ ) {
+                    my $o = $class->new( $sb->CurrentUser );
+                    $o->Load($i);
+                    push @values, $o->Id || 0;
+                }
+                else {
+                    push @values, $i;
+                }
+            }
+            $value = \@values;
+        }
+        elsif ( $value !~ /^\d+$/ ) {
+            my $o = $class->new( $sb->CurrentUser );
+            $o->Load($value);
+            $value = $o->Id || 0;
+        }
     } elsif ( $field eq "Type" ) {
         $value = lc $value if $value =~ /^(ticket|approval|reminder)$/i;
     }
@@ -631,16 +646,23 @@ sub _DateLimit {
         );
     }
 
-    my $date = RT::Date->new( $sb->CurrentUser );
-    $date->Set( Format => 'unknown', Value => $value );
+    my $date;
+    # this is to make queries like "Due > 0" still work
+    $rest{QUOTEVALUE} = 1 if $value eq '0';
 
-    if ( $op eq "=" ) {
+    if ( $rest{QUOTEVALUE} ) {
+        $date = RT::Date->new( $sb->CurrentUser );
+        $date->Set( Format => 'unknown', Value => $value );
+    }
+
+
+    if ( $op eq "=" && $date ) {
 
         # if we're specifying =, that means we want everything on a
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->SetToMidnight( Timezone => 'server' );
+        $date->SetToMidnight( Timezone => 'user' );
         my $daystart = $date->ISO;
         $date->AddDay;
         my $dayend = $date->ISO;
@@ -670,7 +692,7 @@ sub _DateLimit {
             FUNCTION => $sb->NotSetDateToNullFunction,
             FIELD    => $meta->[1],
             OPERATOR => $op,
-            VALUE    => $date->ISO,
+            VALUE    => $date ? $date->ISO : $value,
             %rest,
         );
     }
@@ -704,7 +726,12 @@ sub _StringLimit {
     }
 
     if ($field eq "Status") {
-        $value = lc $value;
+        if ( ref $value eq 'ARRAY' ) {
+            $value = [ map lc, @$value ];
+        }
+        else {
+            $value = lc $value;
+        }
     }
 
     $sb->Limit(
@@ -746,9 +773,21 @@ sub _QueueLimit {
 
     }
 
-    my $o = RT::Queue->new( $sb->CurrentUser );
-    $o->Load($value);
-    $value = $o->Id || 0;
+    if ( ref $value eq 'ARRAY' ) {
+        my @values;
+        for my $v ( @$value ) {
+            my $o = RT::Queue->new( $sb->CurrentUser );
+            $o->Load($v);
+            push @values, $o->Id || 0;
+        }
+        $value = \@values;
+    }
+    else {
+        my $o = RT::Queue->new( $sb->CurrentUser );
+        $o->Load($value);
+        $value = $o->Id || 0;
+    }
+
     $sb->Limit(
         FIELD         => $field,
         OPERATOR      => $op,
@@ -787,7 +826,7 @@ sub _TransDateLimit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->SetToMidnight( Timezone => 'server' );
+        $date->SetToMidnight( Timezone => 'user' );
         my $daystart = $date->ISO;
         $date->AddDay;
         my $dayend = $date->ISO;
@@ -802,7 +841,7 @@ sub _TransDateLimit {
         $sb->Limit(
             ALIAS         => $txn_alias,
             FIELD         => 'Created',
-            OPERATOR      => "<=",
+            OPERATOR      => "<",
             VALUE         => $dayend,
             @rest,
             ENTRYAGGREGATOR => 'AND',
@@ -1065,7 +1104,9 @@ Try and turn a custom role descriptor (e.g. C<CustomRole.{Engineer}>) into
 sub _CustomRoleDecipher {
     my ($self, $string) = @_;
 
-    my ($field, $column) = ($string =~ /^\{(.+)\}(?:\.(\w+))?$/);
+    # $column could be core fields like "EmailAddress" or CFs like
+    # "CustomField.{Department}", the CF format is used in OrderByCols.
+    my ($field, $column) = ($string =~ /^\{(.+?)\}(?:\.(.+))?$/);
 
     my $role;
 
@@ -1161,34 +1202,81 @@ sub _WatcherMembershipLimit {
     my $meta = $FIELD_METADATA{$field};
     my $type = $meta->[1] || '';
 
-    my ($members_alias, $members_column);
     if ( $type eq 'Owner' ) {
-        ($members_alias, $members_column) = ('main', 'Owner');
-    } else {
-        (undef, undef, $members_alias) = $self->_WatcherJoin( New => 1, Name => $type );
-        $members_column = 'id';
+        my $cgm_alias = $self->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'Owner',
+            TABLE2 => 'CachedGroupMembers',
+            FIELD2 => 'MemberId',
+        );
+        $self->Limit(
+            ALIAS    => $cgm_alias,
+            FIELD    => 'GroupId',
+            VALUE    => $value,
+            OPERATOR => $op,
+            %rest,
+        );
     }
+    else {
+        my $groups = $self->_RoleGroupsJoin( Name => $type, Class => $self->_RoleGroupClass, New => 1 );
+        my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
 
-    my $cgm_alias = $self->Join(
-        ALIAS1          => $members_alias,
-        FIELD1          => $members_column,
-        TABLE2          => 'CachedGroupMembers',
-        FIELD2          => 'MemberId',
-    );
-    $self->Limit(
-        LEFTJOIN => $cgm_alias,
-        ALIAS => $cgm_alias,
-        FIELD => 'Disabled',
-        VALUE => 0,
-    );
+        my $cgm             = $self->NewAlias('CachedGroupMembers');
+        my $group_members_2 = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $group_members,
+            FIELD1 => 'MemberId',
+            ALIAS2 => $cgm,
+            FIELD2 => 'GroupId',
+        );
+        $self->Limit(
+            LEFTJOIN   => $group_members_2,
+            FIELD      => 'GroupId',
+            OPERATOR   => '!=',
+            VALUE      => "$group_members_2.MemberId",
+            QUOTEVALUE => 0,
+        );
 
-    $self->Limit(
-        ALIAS    => $cgm_alias,
-        FIELD    => 'GroupId',
-        VALUE    => $value,
-        OPERATOR => $op,
-        %rest,
-    );
+        $self->Limit(
+            LEFTJOIN        => $group_members_2,
+            ALIAS           => $cgm,
+            FIELD           => 'Disabled',
+            VALUE           => 0,
+            ENTRYAGGREGATOR => 'AND',
+        );
+
+        my $users = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $group_members_2,
+            FIELD1 => 'MemberId',
+            TABLE2 => 'Users',
+            FIELD2 => 'id',
+        );
+
+        my $cgm_2           = $self->NewAlias('CachedGroupMembers');
+        my $group_members_3 = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => $users,
+            FIELD1 => 'id',
+            ALIAS2 => $cgm_2,
+            FIELD2 => 'MemberId',
+        );
+
+        $self->Limit(
+            LEFTJOIN => $cgm_2,
+            ALIAS    => $cgm_2,
+            FIELD    => 'Disabled',
+            VALUE    => 0,
+        );
+
+        $self->Limit(
+            ALIAS    => $group_members_3,
+            FIELD    => 'GroupId',
+            VALUE    => $value,
+            OPERATOR => $op,
+            %rest,
+        );
+    }
 }
 
 =head2 _CustomFieldDecipher
@@ -1204,7 +1292,15 @@ sub _CustomFieldDecipher {
     $lookuptype ||= $self->_SingularClass->CustomFieldLookupType;
 
     my ($object, $field, $column) = ($string =~ /^(?:(.+?)\.)?\{(.+)\}(?:\.(Content|LargeContent))?$/);
-    $field ||= ($string =~ /^\{(.*?)\}$/)[0] || $string;
+    if ( !$field ) {
+        if ($string =~ /^(?:(\w+?)|\{(.*?)\})(?:\.(Content|LargeContent))?$/) {
+            $field = $1 || $2;
+            $column = $3;
+        }
+        else {
+            $field = $string;
+        }
+    }
 
     my ($cf, $applied_to);
 
@@ -1434,7 +1530,54 @@ sub OrderByCols {
                 $self->{_sql_u_watchers_alias_for_sort}{ $cache_key }
                     = $users = ( $self->_WatcherJoin( Name => $type, Class => "RT::" . $class ) )[2];
             }
-            push @res, { %$row, ALIAS => $users, FIELD => $column };
+
+            if ( $column =~ /^CustomField\.\{(.+)\}$/ ) {
+                my $cf_name = $1;
+                my $cf      = RT::CustomField->new( $self->CurrentUser );
+                $cf->LoadByCols( LookupType => RT::User->CustomFieldLookupType, Name => $cf_name );
+                if ( $cf->id ) {
+                    my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
+                    $self->Join(
+                        TYPE   => 'LEFT',
+                        ALIAS1 => $users,
+                        FIELD1 => 'id',
+                        ALIAS2 => $ocfvs,
+                        FIELD2 => 'ObjectId',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'CustomField',
+                        VALUE           => $cf->id,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    # The following is copied from RT::SearchBuilder::_OrderByCF
+                    my $CFvs = $self->Join(
+                        TYPE   => 'LEFT',
+                        ALIAS1 => $ocfvs,
+                        FIELD1 => 'CustomField',
+                        TABLE2 => 'CustomFieldValues',
+                        FIELD2 => 'CustomField',
+                    );
+                    $self->Limit(
+                        LEFTJOIN        => $CFvs,
+                        FIELD           => 'Name',
+                        QUOTEVALUE      => 0,
+                        VALUE           => "$ocfvs.Content",
+                        ENTRYAGGREGATOR => 'AND'
+                    );
+                    push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' },
+                        { %$row, ALIAS => $ocfvs, FIELD => 'Content' };
+                }
+                else {
+                    RT->Logger->warning("Couldn't load user custom field $cf_name");
+                    next;
+                }
+            }
+            else {
+                push @res, { %$row, ALIAS => $users, FIELD => $column };
+            }
        } elsif ( defined $meta->[0] && $meta->[0] eq 'CUSTOMFIELD' ) {
            my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
            my $cfkey = $cf ? $cf->id : "$object.$field";
@@ -2693,11 +2836,16 @@ sub CurrentUserCanSee {
         if ( $join_roles ) {
             $role_group_alias = $self->_RoleGroupsJoin( New => 1 );
             $cgm_alias = $self->_GroupMembersJoin( GroupsAlias => $role_group_alias );
+
+            my $groups = RT::Groups->new( RT->SystemUser );
+            $groups->LimitToUserDefinedGroups;
+            $groups->WithMember( PrincipalId => $id, Recursively => 1 );
+
             $self->Limit(
                 LEFTJOIN   => $cgm_alias,
                 FIELD      => 'MemberId',
-                OPERATOR   => '=',
-                VALUE      => $id,
+                OPERATOR   => 'IN',
+                VALUE      => [ $id, map { $_->id } @{ $groups->ItemsArrayRef } ],
             );
         }
         my $limit_queues = sub {
@@ -3035,6 +3183,46 @@ sub _parser {
     );
     die join "; ", map { ref $_ eq 'ARRAY' ? $_->[ 0 ] : $_ } @results if @results;
 
+    if ( RT->Config->Get('EnablePriorityAsString') ) {
+        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
+        my %config = RT->Config->Get('PriorityAsString');
+        my @names;
+        if (%$queues) {
+            for my $id ( keys %$queues ) {
+                my $queue = RT::Queue->new( $self->CurrentUser );
+                $queue->Load($id);
+                if ( $queue->Id ) {
+                    push @names, $queue->__Value('Name');    # Skip ACL check
+                }
+            }
+        }
+        else {
+            @names = keys %config;
+        }
+
+        my %map;
+        for my $name (@names) {
+            if ( my $value = exists $config{$name} ? $config{$name} : $config{Default} ) {
+                my %hash = ref $value eq 'ARRAY' ? @$value : %$value;
+                for my $label ( keys %hash ) {
+                    $map{lc $label} //= $hash{$label};
+                }
+            }
+        }
+
+        $tree->traverse(
+            sub {
+                my $node = shift;
+                return unless $node->isLeaf;
+                my $value = $node->getNodeValue;
+                if ( $value->{Key} =~ /^(?:Initial|Final)?Priority$/i ) {
+                    $value->{Value} = $map{ lc $value->{Value} } if defined $map{ lc $value->{Value} };
+                }
+            }
+        );
+    }
+
+
     my ( $active_status_node, $inactive_status_node );
 
     my $escape_quotes = sub {
@@ -3133,45 +3321,6 @@ sub _parser {
         }
     );
 
-    if ( RT->Config->Get('EnablePriorityAsString') ) {
-        my $queues = $tree->GetReferencedQueues( CurrentUser => $self->CurrentUser );
-        my %config = RT->Config->Get('PriorityAsString');
-        my @names;
-        if (%$queues) {
-            for my $id ( keys %$queues ) {
-                my $queue = RT::Queue->new( $self->CurrentUser );
-                $queue->Load($id);
-                if ( $queue->Id ) {
-                    push @names, $queue->__Value('Name');    # Skip ACL check
-                }
-            }
-        }
-        else {
-            @names = keys %config;
-        }
-
-        my %map;
-        for my $name (@names) {
-            if ( my $value = exists $config{$name} ? $config{$name} : $config{Default} ) {
-                my %hash = ref $value eq 'ARRAY' ? @$value : %$value;
-                for my $label ( keys %hash ) {
-                    $map{lc $label} //= $hash{$label};
-                }
-            }
-        }
-
-        $tree->traverse(
-            sub {
-                my $node = shift;
-                return unless $node->isLeaf;
-                my $value = $node->getNodeValue;
-                if ( $value->{Key} =~ /^(?:Initial|Final)?Priority$/i ) {
-                    $value->{Value} = $map{ lc $value->{Value} } if defined $map{ lc $value->{Value} };
-                }
-            }
-        );
-    }
-
     # Perform an optimization pass looking for watcher bundling
     $tree->traverse(
         sub {
@@ -3193,6 +3342,68 @@ sub _parser {
         }
     );
 
+    # Convert simple OR'd clauses to IN for better performance, e.g.
+    #     (Status = 'new' OR Status = 'open' OR Status = 'stalled')
+    # to
+    #     Status IN ('new', 'open', 'stalled')
+
+    $tree->traverse(
+        sub {
+            my $node   = shift;
+            my $parent = $node->getParent;
+            return if $parent eq 'root';    # Skip root's root
+
+            # For simple searches like "Status = 'new' OR Status = 'open'",
+            # the OR node is also the root node, go up one level.
+            $node = $parent if $node->isLeaf && $parent->isRoot;
+
+            return if $node->isLeaf;
+
+            if ( ( $node->getNodeValue // '' ) =~ /^or$/i && $node->getChildCount > 1 ) {
+                my @children = $node->getAllChildren;
+                my %info;
+                for my $child (@children) {
+
+                    # Only handle innermost ORs
+                    return unless $child->isLeaf;
+                    my $entry = $child->getNodeValue;
+                    return unless $entry->{Op} =~ /^!?=$/;
+
+                    # Handle String/Int/Id/Enum/Queue/Lifecycle only for
+                    # now. Others have more complicated logic inside, which
+                    # can't be easily converted.
+
+                    return unless ( $entry->{Meta}[0] // '' ) =~ /^(?:STRING|INT|ID|ENUM|QUEUE|LIFECYCLE)$/;
+
+                    for my $field (qw/Key SubKey Op Value/) {
+                        $info{$field}{ $entry->{$field} // '' } ||= 1;
+
+                        if ( $field eq 'Value' ) {
+
+                            # In case it's meta value like __Bookmarked__
+                            return if $entry->{Meta}[0] eq 'ID' && $entry->{$field} !~ /^\d+$/;
+                        }
+                        elsif ( keys %{ $info{$field} } > 1 ) {
+                            return;    # Skip if Key/SubKey/Op are different
+                        }
+                    }
+                }
+
+                my $first_child = shift @children;
+                my $entry       = $first_child->getNodeValue;
+                $entry->{Op} = $info{Op}{'='} ? 'IN' : 'NOT IN';
+                $entry->{Value} = [ sort keys %{ $info{Value} } ];
+                if ( $node->isRoot ) {
+                    $parent->removeChild($_) for @children;
+                }
+                else {
+                    $parent->removeChild($node);
+                    $parent->addChild($first_child);
+                }
+            }
+        }
+    );
+
     my $ea = '';
     $tree->traverse(
         sub {
@@ -3200,8 +3411,8 @@ sub _parser {
             $ea = $node->getParent->getNodeValue if $node->getIndex > 0;
             return $self->_OpenParen unless $node->isLeaf;
 
-            my ($key, $subkey, $meta, $op, $value, $bundle)
-                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle/};
+            my ($key, $subkey, $meta, $op, $value, $bundle, $quote_value)
+                = @{$node->getNodeValue}{qw/Key Subkey Meta Op Value Bundle QuoteValue/};
 
             # normalize key and get class (type)
             my $class = $meta->[0];
@@ -3215,13 +3426,91 @@ sub _parser {
             my $sub = $dispatch{ $class }
                 or die "No dispatch method for class '$class'";
 
+            if ( defined $quote_value && !$quote_value && $value !~ /^(?:[+-]?[0-9]+|NULL)$/i ) {
+                my ( $class, $field );
+
+                # e.g. CF.Foo or CF.{Beta Date}
+                if ( $value =~ /^CF\.(?:\{(.*)}|(.*?))(?:\.(Content|LargeContent))?$/i ) {
+                    my $cf = $1 || $2;
+                    $field = $3 || 'Content';
+                    my ( $ocfvalias ) = $self->_CustomFieldJoin( $cf, $cf );
+                    $value = "$ocfvalias.$field";
+                    $class = 'RT::ObjectCustomFieldValues';
+                }
+                # e.g. ObjectCustomFieldValues_1.Content
+                elsif ( $value =~ /^(\w+?)(?:_\d+)?\.(\w+)$/ ) {
+                    my $table = $1;
+                    $field = $2;
+                    $class = $table =~ /main/i ? 'RT::Tickets' : "RT::$table";
+                }
+                else {
+                    $class = 'RT::Tickets';
+                    $field = $value;
+                }
+
+                my $valid;
+                if ( $class->can('RecordClass')
+                    and ( my $record_class = $class->RecordClass ) )
+                {
+                    $valid = $record_class->_ClassAccessible->{$field}
+                        && $record_class->_ClassAccessible->{$field}{read};
+                }
+
+                die $self->loc( "Wrong query, no such column '[_1]' in '[_2]'", $value, $string ) unless $valid;
+
+                # In case the column(e.g. LastUpdated) is defined in multiple tables
+                $value = "main.$value" if $class eq 'RT::Tickets' && $value =~ /^\w+$/;
+
+                if ( $class eq 'RT::ObjectCustomFieldValues' ) {
+                    if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                        my $cast_to;
+                        if ($subkey) {
+
+                            # like Requestor.id
+                            if ( $subkey eq 'id' ) {
+                                $cast_to = 'INTEGER';
+                            }
+                        }
+                        elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
+                            if ( $meta->{is_numeric} ) {
+                                $cast_to = 'INTEGER';
+                            }
+                            elsif ( $meta->{type} eq 'datetime' ) {
+                                $cast_to = 'TIMESTAMP';
+                            }
+                        }
+
+                        $value = "CAST($value AS $cast_to)" if $cast_to;
+                    }
+                    elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+                        if ($subkey) {
+
+                            # like Requestor.id
+                            if ( $subkey eq 'id' ) {
+                                $value = "TO_NUMBER($value)";
+                            }
+                        }
+                        elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
+                            if ( $meta->{is_numeric} ) {
+                                $value = "TO_NUMBER($value)";
+                            }
+                            elsif ( $meta->{type} eq 'datetime' ) {
+                                $value = "TO_DATE($value,'YYYY-MM-DD HH24:MI:SS')";
+                            }
+                        }
+                    }
+                }
+            }
+
             # A reference to @res may be pushed onto $sub_tree{$key} from
             # above, and we fill it here.
-            $sub->( $self, $key, $op, $value,
-                    ENTRYAGGREGATOR => $ea,
-                    SUBKEY          => $subkey,
-                    BUNDLE          => $bundle,
-                  );
+            $sub->(
+                $self, $key, $op, $value,
+                ENTRYAGGREGATOR => $ea,
+                SUBKEY          => $subkey,
+                BUNDLE          => $bundle,
+                defined $quote_value ? ( QUOTEVALUE => $quote_value ) : (),
+            );
         },
         sub {
             my $node = shift;

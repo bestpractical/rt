@@ -122,6 +122,16 @@ $m->out("\n".'<input type="hidden" class="hidden" name="'
         . ($Name ? $m->interp->apply_escapes($Name, 'h') : $m->interp->apply_escapes($NamePrefix, 'h').$CustomField->Id.'-Values')
         . '-Magic" value="1" />'."\n");
 
+# Just show hints for user cfs that will be set from external sources on create
+if ( RT->Config->Get('ExternalInfoPriority') && $Object && $Object->isa('RT::User') && !$Object->Id ) {
+    for my $source ( @{RT->Config->Get('ExternalInfoPriority')} ) {
+        if ( RT->Config->Get('ExternalSettings')->{$source}{attr_map}{'UserCF.'.$CustomField->Name} ) {
+            $Type = 'Display';
+            $Default = loc('Set from external source');
+            last;
+        }
+    }
+}
 
 my $EditComponent = "EditCustomField$Type";
 $m->callback( %ARGS, CallbackName => 'EditComponentName', Name => \$EditComponent, CustomField => $CustomField, Object => $Object, Rows => \$Rows, Cols => \$Cols);

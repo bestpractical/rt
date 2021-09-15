@@ -100,6 +100,7 @@ GetOptions(
     "users!",
     "groups!",
     "deleted!",
+    "disabled!",
 
     "scrips!",
     "acls!",

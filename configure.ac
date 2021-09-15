@@ -54,9 +54,9 @@ AC_ARG_WITH(web-handler,
         ]),
     WEB_HANDLER=$withval,
     WEB_HANDLER=fastcgi)
-my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl1|modperl2|fastcgi|standalone)$/i, grep defined && length, split /\s*,\s*/, $ARGV@<:@0@:>@' $WEB_HANDLER)
+my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl1|modperl2|fastcgi|fcgid|standalone)$/i, grep defined && length, split /\s*,\s*/, $ARGV@<:@0@:>@' $WEB_HANDLER)
 if test "$my_web_handler_test" != "ok"; then
-	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi and standalone are valid web-handlers])
+	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, fcgid and standalone are valid web-handlers])
 fi
 AC_SUBST(WEB_HANDLER)
 
@@ -111,9 +111,9 @@ AC_SUBST(LIBS_OWNER)
 dnl LIBS_GROUP
 AC_ARG_WITH(libs-group,
 	    AC_HELP_STRING([--with-libs-group=GROUP],
-	    		   [group that will own RT binaries (default bin)]),
+	    		   [group that will own RT libraries (default root)]),
             LIBS_GROUP=$withval,
-            LIBS_GROUP=bin)
+            LIBS_GROUP=root)
 AC_SUBST(LIBS_GROUP)
 
 dnl DB_TYPE
@@ -506,6 +506,7 @@ AC_CONFIG_FILES([
                  t/data/configs/apache2.2+mod_perl.conf
                  t/data/configs/apache2.2+fastcgi.conf
                  t/data/configs/apache2.4+mod_perl.conf
-                 t/data/configs/apache2.4+fastcgi.conf],
+                 t/data/configs/apache2.4+fastcgi.conf
+                 t/data/configs/apache2.4+fcgid.conf],
                )
 AC_OUTPUT

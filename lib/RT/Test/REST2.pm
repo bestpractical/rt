@@ -103,6 +103,7 @@ sub mech { RT::Test::REST2::Mechanize->new }
         $u->Create(
             Name => 'test',
             Password => 'password',
+            EmailAddress => 'test@rt.example',
             Privileged => 1,
         );
         return $u;

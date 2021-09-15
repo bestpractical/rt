@@ -1026,10 +1026,10 @@ my @tests = (
         present => sub {
             # Provided in core initialdata
             my $homepage = RT::Attribute->new(RT->SystemUser);
-            $homepage->LoadByNameAndObject(Name => 'HomepageSettings', Object => RT->System);
+            $homepage->LoadByNameAndObject(Name => 'Dashboard', Description => 'Homepage', Object => RT->System);
             ok($homepage->Id, 'Loaded homepage attribute');
-            is($homepage->Name, 'HomepageSettings', 'Name is HomepageSettings');
-            is($homepage->Description, 'HomepageSettings', 'Description is HomepageSettings');
+            is($homepage->Name, 'Dashboard', 'Name is Dashboard');
+            is($homepage->Description, 'Homepage', 'Description is Homepage');
             is($homepage->ContentType, 'storable', 'ContentType is storable');
 
             my $root = RT::User->new(RT->SystemUser);

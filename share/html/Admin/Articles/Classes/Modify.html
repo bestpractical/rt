@@ -99,6 +99,21 @@
     </div>
     <div class="value col-9">
       <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="Include-LinkToTicket" name="Include-LinkToTicket" value="1" <% $include{LinkToTicket} %>
+% if ( !RT->Config->Get('LinkArticlesOnInclude') ) {
+      disabled="disabled"
+% }
+>
+        <label class="custom-control-label" for="Include-LinkToTicket"><&|/l&>Link article to ticket</&></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+    </div>
+    <div class="value col-9">
+      <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input checkbox" id="Include-Name" name="Include-Name" value="1" <% $include{Name} %>>
         <label class="custom-control-label" for="Include-Name"><&|/l&>Include article name</&></label>
       </div>
@@ -166,6 +181,24 @@
   &>
 % }
 
+% my $CFs = $ClassObj->CustomFields;
+% if ($CFs->Count) {
+<h5 class="mt-3"><&|/l&>Class Custom Fields:</&></h5>
+% }
+% while (my $CF = $CFs->Next) {
+  <div class="form-row">
+    <div class="label col-3">
+      <% $CF->Name %>:
+% if ( $CF->EntryHint ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+% }
+    </div>
+    <div class="value col-9">
+      <& /Elements/EditCustomField, CustomField => $CF, Object => $ClassObj, &>
+    </div>
+  </div>
+% }
+
 %$m->callback( CallbackName => 'BeforeSubmit', CustomFields => $cfs, ClassObj => $ClassObj );
 </&>
 
@@ -178,6 +211,7 @@
 % }
     </div>
   </div>
+
 </form>
 
 <%INIT>
@@ -226,6 +260,7 @@ if ($ClassObj->Id()) {
     push @results, UpdateRecordObject( AttributesRef => \@attribs,
                                        Object => $ClassObj,
                                        ARGSRef => \%ARGS);
+    push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $ClassObj );
 }
 
 #we're asking about enabled on the web page but really care about disabled.
@@ -236,6 +271,8 @@ if ((defined $Enabled && $Enabled == 1) or (not defined $Enabled and $Create)) {
 }
 
 my %include = (Name => 1, Summary => 1, EscapeHTML => 1);
+$include{LinkToTicket} = 1 if RT->Config->Get('LinkArticlesOnInclude');
+
 my $subject_cfs = [];
 my $subject_cf_labels = {};
 

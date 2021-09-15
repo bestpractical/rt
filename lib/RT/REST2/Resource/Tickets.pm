@@ -54,7 +54,8 @@ use Moose;
 use namespace::autoclean;
 
 extends 'RT::REST2::Resource::Collection';
-with 'RT::REST2::Resource::Collection::ProcessPOSTasGET';
+with 'RT::REST2::Resource::Collection::ProcessPOSTasGET',
+    'RT::REST2::Resource::Collection::Search';
 
 sub dispatch_rules {
     Path::Dispatcher::Rule::Regex->new(
@@ -64,7 +65,7 @@ sub dispatch_rules {
 }
 
 use Encode qw( decode_utf8 );
-use RT::REST2::Util qw( error_as_json );
+use RT::REST2::Util qw( error_as_json expand_uid );
 use RT::Search::Simple;
 
 has 'query' => (
@@ -94,24 +95,31 @@ sub allowed_methods {
     [ 'GET', 'HEAD', 'POST' ]
 }
 
-sub limit_collection {
+override 'limit_collection' => sub {
     my $self = shift;
     my ($ok, $msg) = $self->collection->FromSQL( $self->query );
     return error_as_json( $self->response, 0, $msg ) unless $ok;
-
-    my @orderby_cols;
-    my @orders = $self->request->param('order');
-    foreach my $orderby ($self->request->param('orderby')) {
-        $orderby = decode_utf8($orderby);
-        my $order = shift @orders || 'ASC';
-        $order = uc(decode_utf8($order));
-        $order = 'ASC' unless $order eq 'DESC';
-        push @orderby_cols, {FIELD => $orderby, ORDER => $order};
-    }
-    $self->collection->OrderByCols(@orderby_cols)
-        if @orderby_cols;
-
+    super();
     return 1;
+};
+
+sub expand_field {
+    my $self         = shift;
+    my $item         = shift;
+    my $field        = shift;
+    my $param_prefix = shift;
+    if ( $field =~ /^(Requestor|AdminCc|Cc)/ ) {
+        my $role    = $1;
+        my $members = [];
+        if ( my $group = $item->RoleGroup($role) ) {
+            my $gms = $group->MembersObj;
+            while ( my $gm = $gms->Next ) {
+                push @$members, $self->_expand_object( $gm->MemberObj->Object, $field, $param_prefix );
+            }
+        }
+        return $members;
+    }
+    return $self->SUPER::expand_field( $item, $field, $param_prefix );
 }
 
 __PACKAGE__->meta->make_immutable;

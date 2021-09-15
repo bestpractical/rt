@@ -193,6 +193,10 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Due -- an ISO date describing the ticket's due date and time in GMT
   MIMEObj -- a MIME::Entity object with the content of the initial ticket request.
   CustomField-<n> -- a scalar or array of values for the customfield with the id <n>
+  LazyRoleGroups -- a boolean to control if to create role groups immediately or just when necessary
+
+LazyRoleGroups defaults to C<$RT::Record::Role::Roles::LAZY_ROLE_GROUPS>,
+which is false by default.
 
 Ticket links can be set up during create by passing the link type as a hask key and
 the ticket id to be linked to as a value (or a URI when linking to other objects).
@@ -240,6 +244,7 @@ sub Create {
         SLA                => undef,
         MIMEObj            => undef,
         _RecordTransaction => 1,
+        LazyRoleGroups     => $RT::Record::Role::Roles::LAZY_ROLE_GROUPS,
         @_
     );
 
@@ -440,15 +445,17 @@ sub Create {
     }
 
     # Create (empty) role groups
-    my $create_groups_ret = $self->_CreateRoleGroups();
-    unless ($create_groups_ret) {
-        $RT::Logger->crit( "Couldn't create ticket groups for ticket "
-              . $self->Id
-              . ". aborting Ticket creation." );
-        $RT::Handle->Rollback();
-        return ( 0, 0,
-            $self->loc("Ticket could not be created due to an internal error")
-        );
+    if ( !$args{LazyRoleGroups} ) {
+        my $create_groups_ret = $self->_CreateRoleGroups();
+        unless ($create_groups_ret) {
+            $RT::Logger->crit( "Couldn't create ticket groups for ticket "
+                  . $self->Id
+                  . ". aborting Ticket creation." );
+            $RT::Handle->Rollback();
+            return ( 0, 0,
+                $self->loc("Ticket could not be created due to an internal error")
+            );
+        }
     }
 
     # Codify what it takes to add each kind of group
@@ -1689,10 +1696,12 @@ sub _RecordNote {
 
     foreach my $type (qw/Cc Bcc/) {
         if ( defined $args{ $type . 'MessageTo' } ) {
-
-            my $addresses = join ', ', (
-                map { RT::User->CanonicalizeEmailAddress( $_->address ) }
-                    Email::Address->parse( $args{ $type . 'MessageTo' } ) );
+            my ( $users ) = $self->ParseInputPrincipals( $args{ $type . 'MessageTo' } );
+            my $addresses = join ', ',
+              (
+                map { RT::User->CanonicalizeEmailAddress( $_ ) }
+                map { $_->EmailAddress || () } @$users
+              );
             $args{'MIMEObj'}->head->replace( 'RT-Send-' . $type, Encode::encode( "UTF-8", $addresses ) );
         }
     }
@@ -1760,6 +1769,8 @@ ticket changes via the UI
 sub Atomic {
     my $self = shift;
     my ($subref) = @_;
+    $self->{Atomic}++;
+
     my $has_id = defined $self->id;
     $RT::Handle->BeginTransaction;
     my $depth = $RT::Handle->TransactionDepth;
@@ -1786,8 +1797,9 @@ sub Atomic {
     }
 
     if ($RT::Handle->TransactionDepth == $depth) {
-        $self->ApplyTransactionBatch;
+        $self->ApplyTransactionBatch if $self->{Atomic} == 1 && !$self->{DryRun};
         $RT::Handle->Commit;
+        $self->{Atomic}--;
     }
 
     return $context ? @ret : $ret[0];
@@ -2619,8 +2631,7 @@ sub SeenUpTo {
     }
 
     my $txns = $self->Transactions;
-    $txns->Limit( FIELD => 'Type', VALUE => 'Comment' );
-    $txns->Limit( FIELD => 'Type', VALUE => 'Correspond' );
+    $txns->Limit( FIELD => 'Type', VALUE => [ 'Comment', 'Correspond' ], OPERATOR => 'IN' );
     $txns->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $uid );
     $txns->Limit(
         FIELD => 'Created',
@@ -2773,7 +2784,6 @@ sub _OverlayAccessible {
     {
         EffectiveId       => { 'read' => 1,  'write' => 1,  'public' => 1 },
           Queue           => { 'read' => 1,  'write' => 1 },
-          Requestors      => { 'read' => 1,  'write' => 1 },
           Owner           => { 'read' => 1,  'write' => 1 },
           Subject         => { 'read' => 1,  'write' => 1 },
           InitialPriority => { 'read' => 1,  'write' => 1 },

@@ -443,8 +443,17 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         push @results, $msg;
     }
 
-    # Update any existing values
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
+    # Delete any fields that want to be deleted
+    foreach my $key ( keys %ARGS ) {
+        next unless $key =~ /^Delete-$paramtag-(\d+)$/;
+        my ($val, $msg) = $CustomFieldObj->DeleteValue( $1 );
+        my $cf_delete = $ARGS{ $paramtag . "-$1-Name" };
+        $msg = loc("Custom field value [_1] deleted", $cf_delete) if $val;
+        push (@results, $msg);
+    }
+
+    # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
         foreach my $attr (qw(Name Description SortOrder Category)) {

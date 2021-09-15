@@ -57,6 +57,7 @@ sub Table {'Attributes'}
 
 use Storable qw/nfreeze thaw/;
 use MIME::Base64;
+use RT::URI::attribute;
 
 
 =head1 NAME
@@ -145,6 +146,7 @@ sub Create {
                 Content => '',
                 ContentType => '',
                 Object => undef,
+                RecordTransaction => undef,
                 @_);
 
     if ($args{Object} and UNIVERSAL::can($args{Object}, 'Id')) {
@@ -181,15 +183,42 @@ sub Create {
         $args{'ContentType'} = 'storable';
     }
 
-    $self->SUPER::Create(
-                         Name => $args{'Name'},
-                         Content => $args{'Content'},
-                         ContentType => $args{'ContentType'},
-                         Description => $args{'Description'},
-                         ObjectType => $args{'ObjectType'},
-                         ObjectId => $args{'ObjectId'},
-);
+    $args{'RecordTransaction'} //= 1 if $args{'Name'} =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
 
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+    my @return = $self->SUPER::Create(
+        Name        => $args{'Name'},
+        Content     => $args{'Content'},
+        ContentType => $args{'ContentType'},
+        Description => $args{'Description'},
+        ObjectType  => $args{'ObjectType'},
+        ObjectId    => $args{'ObjectId'},
+    );
+
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my ( $ret, $msg ) = $self->_NewTransaction( Type => 'Create' );
+            if ($ret) {
+                ( $ret, $msg ) = $self->AddAttribute(
+                    Name    => 'ContentHistory',
+                    Content => $self->_DeserializeContent( $args{'Content'} ) || {},
+                );
+            }
+
+            @return = ( $ret, $msg ) unless $ret;
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    $self->_SyncLinks if $return[0];
+    return wantarray ? @return : $return[0];
 }
 
 
@@ -267,7 +296,8 @@ sub Content {
 sub _SerializeContent {
     my $self = shift;
     my $content = shift;
-        return( encode_base64(nfreeze($content))); 
+    local $Storable::canonical = 1;
+    return( encode_base64(nfreeze($content)));
 }
 
 
@@ -285,7 +315,10 @@ sub SetContent {
         }
     }
     my ($ok, $msg) = $self->_Set( Field => 'Content', Value => $content );
-    return ($ok, $self->loc("Attribute updated")) if $ok;
+    if ($ok) {
+        $self->_SyncLinks;
+        return ( $ok, $self->loc("Attribute updated") );
+    }
     return ($ok, $msg);
 }
 
@@ -373,11 +406,60 @@ sub Object {
 
 sub Delete {
     my $self = shift;
-    unless ($self->CurrentUserHasRight('delete')) {
-        return (0,$self->loc('Permission Denied'));
+    my %args = (
+        RecordTransaction => undef,
+        @_,
+    );
+
+    unless ( $self->CurrentUserHasRight('delete') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
 
-    return($self->SUPER::Delete(@_));
+    # Get values even if current user doesn't have right to see
+    my $name = $self->__Value('Name');
+    my @links;
+    if ( $name =~ /^(?:Dashboard|(?:Pref-)?DefaultDashboard)$/ ) {
+        push @links, @{ $self->DependsOn->ItemsArrayRef };
+    }
+
+    if ( $name =~ /^(?:Dashboard|SavedSearch)$/ ) {
+        push @links, @{ $self->DependedOnBy->ItemsArrayRef };
+    }
+
+    $args{'RecordTransaction'} //= 1 if $name =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+
+    my @return = $self->SUPER::Delete(@_);
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my $txn = RT::Transaction->new( $self->CurrentUser );
+            my ( $ret, $msg ) = $txn->Create(
+                ObjectId   => $self->Id,
+                ObjectType => ref($self),
+                Type       => 'Delete',
+            );
+            @return = ( $ret, $msg ) unless $ret;
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    if ( $return[0] ) {
+        for my $link (@links) {
+            my ( $ret, $msg ) = $link->Delete;
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+            }
+        }
+    }
+
+    return @return;
 }
 
 
@@ -395,12 +477,101 @@ sub _Value {
 
 sub _Set {
     my $self = shift;
-    unless ($self->CurrentUserHasRight('update')) {
+    my %args = (
+        Field             => undef,
+        Value             => undef,
+        RecordTransaction => undef,
+        TransactionType   => 'Set',
+        @_
+    );
 
-        return (0,$self->loc('Permission Denied'));
+    unless ( $self->CurrentUserHasRight('update') ) {
+        return ( 0, $self->loc('Permission Denied') );
     }
-    return($self->SUPER::_Set(@_));
 
+    # Get values even if current user doesn't have right to see
+    $args{'RecordTransaction'} //= 1 if $self->__Value('Name') =~ /^(?:SavedSearch|Dashboard|Subscription)$/;
+    my $old_value = $self->__Value( $args{'Field'} ) if $args{'RecordTransaction'};
+
+    $RT::Handle->BeginTransaction if $args{'RecordTransaction'};
+
+    # Set the new value
+    my @return = $self->SUPER::_Set(
+        Field => $args{'Field'},
+        Value => $args{'Value'},
+    );
+
+    if ( $args{'RecordTransaction'} ) {
+        if ( $return[0] ) {
+            my ( $new_ref, $old_ref );
+
+            my %opt = (
+                Type  => $args{'TransactionType'},
+                Field => $args{'Field'},
+            );
+            if ( $args{'Field'} eq 'Content' ) {
+
+                $opt{ReferenceType} = 'RT::Attribute';
+
+                my $attrs = $self->Attributes;
+                $attrs->Limit( FIELD => 'Name', VALUE => 'ContentHistory' );
+                $attrs->OrderByCols( { FIELD => 'id', ORDER => 'DESC' } );
+                if ( my $old_content = $attrs->First ) {
+                    $opt{OldReference} = $old_content->id;
+                }
+                else {
+                    RT->Logger->debug("Couldn't find ContentHistory, creating one from old value");
+                    my ( $ret, $msg ) = $self->AddAttribute(
+                        Name    => 'ContentHistory',
+                        Content => $self->__Value('ContentType') eq 'storable'
+                        ? $self->_DeserializeContent($old_value)
+                        : $old_value,
+                    );
+                    if ($ret) {
+                        $opt{OldReference} = $ret;
+                    }
+                    else {
+                        @return = ( $ret, $msg );
+                    }
+                }
+
+                if ( $return[0] ) {
+                    my ( $ret, $msg ) = $self->AddAttribute(
+                        Name    => 'ContentHistory',
+                        Content => $self->_DeserializeContent( $args{'Value'} ),
+                        Content => $self->__Value('ContentType') eq 'storable'
+                        ? $self->_DeserializeContent( $args{'Value'} )
+                        : $args{'Value'},
+                    );
+
+                    if ($ret) {
+                        $opt{NewReference} = $ret;
+                    }
+                    else {
+                        @return = ( $ret, $msg );
+                    }
+                }
+            }
+            else {
+                $opt{'OldValue'} = $old_value;
+                $opt{'NewValue'} = $args{'Value'};
+            }
+
+            if ( $return[0] ) {
+                my ( $ret, $msg ) = $self->_NewTransaction(%opt);
+                @return = ( $ret, $msg ) unless $ret;
+            }
+        }
+
+        if ( $return[0] ) {
+            $RT::Handle->Commit;
+        }
+        else {
+            $RT::Handle->Rollback;
+        }
+    }
+
+    return wantarray ? @return : $return[0];
 }
 
 
@@ -634,7 +805,7 @@ sub FindDependencies {
     $deps->Add( out => $self->Object );
 
     # dashboards in menu attribute has dependencies on each of its dashboards
-    if ($self->Name eq RT::User::_PrefName("DashboardsInMenu")) {
+    if ($self->Name =~ /^(?:Pref-)?DashboardsInMenu$/) {
         my $content = $self->Content;
         for my $pane (values %{ $content || {} }) {
             for my $dash_id (@$pane) {
@@ -644,32 +815,11 @@ sub FindDependencies {
             }
         }
     }
-    # homepage settings attribute has dependencies on each of the searches in it
-    elsif ($self->Name eq RT::User::_PrefName("HomepageSettings")) {
-        my $content = $self->Content;
-        for my $pane (values %{ $content || {} }) {
-            for my $component (@$pane) {
-                # this hairy code mirrors what's in the saved search loader
-                # in /Elements/ShowSearch
-                if ($component->{type} eq 'saved') {
-                    if ($component->{name} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/) {
-                        my $attr = RT::Attribute->new($self->CurrentUser);
-                        $attr->LoadById($3);
-                        $deps->Add( out => $attr );
-                    }
-                }
-                elsif ($component->{type} eq 'system') {
-                    my ($search) = RT::System->new($self->CurrentUser)->Attributes->Named( 'Search - ' . $component->{name} );
-                    unless ( $search && $search->Id ) {
-                        my (@custom_searches) = RT::System->new($self->CurrentUser)->Attributes->Named('SavedSearch');
-                        foreach my $custom (@custom_searches) {
-                            if ($custom->Description eq $component->{name}) { $search = $custom; last }
-                        }
-                    }
-                    $deps->Add( out => $search ) if $search;
-                }
-            }
-        }
+    # DefaultDashboard has id of dashboard it uses
+    elsif ($self->Name =~ /^(?:Pref-)?DefaultDashboard$/) {
+        my $attr = RT::Attribute->new( $self->CurrentUser );
+        $attr->LoadById($self->Content);
+        $deps->Add( out => $attr ) if $attr->Id;
     }
     # dashboards have dependencies on all the searches and dashboards they use
     elsif ($self->Name eq 'Dashboard' || $self->Name eq 'SelfServiceDashboard') {
@@ -691,6 +841,17 @@ sub FindDependencies {
         $attr->LoadById($content->{DashboardId});
         $deps->Add( out => $attr );
     }
+
+    # Links
+    my $links = RT::Links->new( $self->CurrentUser );
+    $links->Limit(
+        SUBCLAUSE       => "either",
+        FIELD           => $_,
+        VALUE           => $self->URI,
+        ENTRYAGGREGATOR => 'OR',
+        )
+        for qw/Base Target/;
+    $deps->Add( in => $links );
 }
 
 sub PreInflate {
@@ -725,9 +886,10 @@ sub PostInflateFixup {
     my $self     = shift;
     my $importer = shift;
     my $spec     = shift;
+    return if $importer->{Clone};
 
     # decode UIDs to be raw dashboard IDs
-    if ($self->Name eq RT::User::_PrefName("DashboardsInMenu")) {
+    if ( $self->Name =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
         my $content = $self->Content;
 
         for my $pane (values %{ $content || {} }) {
@@ -749,36 +911,23 @@ sub PostInflateFixup {
         }
         $self->SetContent($content);
     }
-    # decode UIDs to be saved searches
-    elsif ($self->Name eq RT::User::_PrefName("HomepageSettings")) {
+    elsif ( $self->Name =~ /^(?:Pref-)?DefaultDashboard$/ ) {
         my $content = $self->Content;
-
-        for my $pane (values %{ $content || {} }) {
-            for (@$pane) {
-                if (ref($_->{uid}) eq 'SCALAR') {
-                    my $uid = $_->{uid};
-                    my $attr = $importer->LookupObj($$uid);
-
-                    if ($attr) {
-                        if ($_->{type} eq 'saved') {
-                            $_->{name} = join '-', $attr->ObjectType, $attr->ObjectId, 'SavedSearch', $attr->id;
-                        }
-                        # if type is system, name doesn't need to change
-                        # if type is anything else, pass it through as is
-                        delete $_->{uid};
-                    }
-                    else {
-                        $importer->Postpone(
-                            for    => $$uid,
-                            uid    => $spec->{uid},
-                            method => 'PostInflateFixup',
-                        );
-                    }
-                }
+        if ( ref($content) eq 'SCALAR' ) {
+            my $attr = $importer->LookupObj($$_);
+            if ($attr) {
+                $content = $attr->Id;
+            }
+            else {
+                $importer->Postpone(
+                    for    => $$content,
+                    uid    => $spec->{uid},
+                    method => 'PostInflateFixup',
+                );
             }
         }
-        $self->SetContent($content);
     }
+    # decode UIDs to be saved searches
     elsif ($self->Name eq 'Dashboard') {
         my $content = $self->Content;
 
@@ -842,7 +991,7 @@ sub Serialize {
     my %store = $self->SUPER::Serialize(@_);
 
     # encode raw dashboard IDs to be UIDs
-    if ($store{Name} eq RT::User::_PrefName("DashboardsInMenu")) {
+    if ( $store{Name} =~ /^(?:Pref-)?DashboardsInMenu$/ ) {
         my $content = $self->_DeserializeContent($store{Content});
         for my $pane (values %{ $content || {} }) {
             for (@$pane) {
@@ -853,38 +1002,11 @@ sub Serialize {
         }
         $store{Content} = $self->_SerializeContent($content);
     }
-    # encode saved searches to be UIDs
-    elsif ($store{Name} eq RT::User::_PrefName("HomepageSettings")) {
-        my $content = $self->_DeserializeContent($store{Content});
-        for my $pane (values %{ $content || {} }) {
-            for (@$pane) {
-                # this hairy code mirrors what's in the saved search loader
-                # in /Elements/ShowSearch
-                if ($_->{type} eq 'saved') {
-                    if ($_->{name} =~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/) {
-                        my $attr = RT::Attribute->new($self->CurrentUser);
-                        $attr->LoadById($3);
-                        $_->{uid} = \($attr->UID);
-                    }
-                    # if we can't parse the name, just pass it through
-                }
-                elsif ($_->{type} eq 'system') {
-                    my ($search) = RT::System->new($self->CurrentUser)->Attributes->Named( 'Search - ' . $_->{name} );
-                    unless ( $search && $search->Id ) {
-                        my (@custom_searches) = RT::System->new($self->CurrentUser)->Attributes->Named('SavedSearch');
-                        foreach my $custom (@custom_searches) {
-                            if ($custom->Description eq $_->{name}) { $search = $custom; last }
-                        }
-                    }
-                    # if we can't load the search, just pass it through
-                    if ($search) {
-                        $_->{uid} = \($search->UID);
-                    }
-                }
-                # pass through everything else (e.g. component)
-            }
-        }
-        $store{Content} = $self->_SerializeContent($content);
+    elsif ( $store{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+        my $content = $store{Content};
+        my $attr    = RT::Attribute->new( $self->CurrentUser );
+        $attr->LoadById($content);
+        $store{Content} = \$attr->UID;
     }
     # encode saved searches and dashboards to be UIDs
     elsif ($store{Name} eq 'Dashboard') {
@@ -911,6 +1033,111 @@ sub Serialize {
     }
 
     return %store;
+}
+
+=head2 URI
+
+Returns this attribute's URI
+
+=cut
+
+sub URI {
+    my $self = shift;
+    my $uri  = RT::URI::attribute->new( $self->CurrentUser );
+    return $uri->URIForObject($self);
+}
+
+
+=head2 _SyncLinks
+
+For dashboard and homepage attributes, keep links to saved searches they
+include up to date. It does nothing for other attributes.
+
+Returns 1 on success and 0 on failure.
+
+=cut
+
+sub _SyncLinks {
+    my $self = shift;
+    my $name = $self->__Value('Name');
+
+    my $success;
+
+    if ( $name eq 'Dashboard' ) {
+        my $content = $self->_DeserializeContent( $self->__Value('Content') );
+
+        my %searches = map { $_->{id} => 1 } grep { $_->{portlet_type} eq 'search' } @{ $content->{Panes}{body} },
+            @{ $content->{Panes}{sidebar} };
+
+        my $links = $self->DependsOn;
+        while ( my $link = $links->Next ) {
+            next if delete $searches{ $link->TargetObj->id };
+            my ( $ret, $msg ) = $link->Delete;
+            if ( !$ret ) {
+                RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+                $success //= 0;
+            }
+        }
+
+        for my $id ( keys %searches ) {
+            my $link = RT::Link->new( $self->CurrentUser );
+            my $attribute = RT::Attribute->new( $self->CurrentUser );
+            $attribute->Load($id);
+            if ( $attribute->id ) {
+                my ( $ret, $msg )
+                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+    }
+    elsif ( $name =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+        my $id    = $self->__Value('Content');
+        my $links = $self->DependsOn;
+        my $found;
+        while ( my $link = $links->Next ) {
+            if ( $link->TargetObj->id == $id ) {
+                $found = 1;
+            }
+            else {
+
+                my ( $ret, $msg ) = $link->Delete;
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't delete link #" . $link->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+
+        if ( !$found ) {
+            my $link      = RT::Link->new( $self->CurrentUser );
+            my $attribute = RT::Attribute->new( $self->CurrentUser );
+            $attribute->Load($id);
+            if ( $attribute->id ) {
+                my ( $ret, $msg )
+                    = $link->Create( Type => 'DependsOn', Base => 'attribute:' . $self->id, Target => "attribute:$id" );
+                if ( !$ret ) {
+                    RT->Logger->error( "Couldn't create link for attribute #:" . $self->id . ": $msg" );
+                    $success //= 0;
+                }
+            }
+        }
+    }
+
+    return $success // 1;
+}
+
+=head2 CurrentUserCanSee
+
+Shortcut of CurrentUserHasRight('display').
+
+=cut
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return $self->CurrentUserHasRight('display');
 }
 
 RT::Base->_ImportOverlays();

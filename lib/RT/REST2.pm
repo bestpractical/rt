@@ -290,6 +290,37 @@ below).
 
 The time, in minutes, you've taken to work on your response/comment, optional.
 
+=item C<Status>
+
+The new status (for example, "open", "rejected", etc.) to set the
+ticket to.  The Status value must be a valid status based on the
+lifecycle of the ticket's current queue.
+
+=item C<CustomRoles>
+
+A hash whose keys are custom role names and values are as described below:
+
+For a single-value custom role, the value must be a string representing an
+email address or user name; the custom role is set to the user with
+that email address or user name.
+
+For a multi-value custom role, the value can be a string representing
+an email address or user name, or can be an array of email addresses
+or user names; in either case, the members of the custom role are set
+to the corresponding users.
+
+=item C<CustomFields>
+
+A hash similar to the C<CustomRoles> hash, but whose keys are custom
+field names that apply to the Ticket; those fields are set to the
+supplied values.
+
+=item C<TxnCustomFields>
+
+A hash similar to the C<CustomRoles> hash, but whose keys are custom
+field names that apply to the Transaction; those fields are set
+to the supplied values.
+
 =back
 
 =head3 Add Attachments
@@ -454,8 +485,19 @@ curl for SSL like --cacert.
     GET /tickets?simple=1;query=<simple search query>
         search for tickets using simple search syntax
 
+    # If there are multiple saved searches using the same description, the
+    # behavior of "which saved search shall be selected" is undefined, use
+    # id instead in this case.
+
+    # If both search and other arguments like "query" are specified, the
+    # latter takes higher precedence than the corresponding fields defined
+    # in the given saved search.
+
+    GET /tickets?search=<saved search id or description>
+        search for tickets using saved search
+
     POST /tickets
-        search for tickets with the 'query' and optional 'simple' parameters
+        search for tickets with the 'search' or 'query' and optional 'simple' parameters 
 
     POST /ticket
         create a ticket; provide JSON content
@@ -487,14 +529,19 @@ curl for SSL like --cacert.
     PUT /tickets/bulk
         update multiple tickets' metadata; provide JSON content(array of hashes)
 
+    POST /tickets/bulk/correspond
+    POST /tickets/bulk/comment
+        add a reply or comment to multiple tickets; provide JSON content(array of hashes)
+
 =head3 Ticket Examples
 
 Below are some examples using the endpoints above.
 
-    # Create a ticket, setting some custom fields
+    # Create a ticket, setting some custom fields and a custom role
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
         -d '{ "Queue": "General", "Subject": "Create ticket test",
             "Requestor": "user1@example.com", "Cc": "user2@example.com",
+            "CustomRoles": {"My Role": "staff1@example.com"},
             "Content": "Testing a create",
             "CustomFields": {"Severity": "Low"}}'
         'https://myrt.com/REST/2.0/ticket'
@@ -542,7 +589,7 @@ Below are some examples using the endpoints above.
         'https://myrt.com/REST/2.0/ticket/6/correspond'
 
     # Comment on a ticket
-    curl -X POST -H "Content-Type: text/plain" -u 'root:password'
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
         -d 'Testing a comment'
         'https://myrt.com/REST/2.0/ticket/6/comment'
 
@@ -550,6 +597,21 @@ Below are some examples using the endpoints above.
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
         -d '{ "Content": "Testing a comment", "ContentType": "text/plain", "CustomFields": {"Severity": "High"} }'
         'https://myrt.com/REST/2.0/ticket/6/comment'
+
+    # Comment on a ticket with custom role update
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+        -d '{ "Content": "Testing a comment", "ContentType": "text/plain", "CustomRoles": {"Manager": "manager@example.com"} }'
+        'https://myrt.com/REST/2.0/ticket/6/comment'
+
+    # Update many tickets at once with bulk by sending an array with ticket ids
+    # Results are returned for each update in a JSON array with ticket ids and corresponding messages
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+        -d '[{ "id": "20", "Content": "Testing a correspondence", "ContentType": "text/plain" },
+             { "id": "18", "Content": "Testing a correspondence", "ContentType": "text/plain", "Status":"resolved", "CustomRoles": {"Manager": "manager@example.com"}, "CustomFields": {"State": "New York"} }]'
+        'https://myrt.com/REST/2.0/tickets/bulk/correspond'
+
+    [["20","Correspondence added"],["18","Correspondence added","State New York added","Added manager@example.com as Manager for this ticket","Status changedfrom 'open' to 'resolved'"]]
+
 
 =head3 Ticket Fields
 
@@ -575,6 +637,10 @@ a single ticket id or an array.
 
 =head3 Transactions
 
+    GET /transactions?query=<TransactionSQL>
+    POST /transactions
+        search for transactions using TransactionSQL
+
     GET /transactions?query=<JSON>
     POST /transactions
         search for transactions using L</JSON searches> syntax
@@ -590,6 +656,12 @@ a single ticket id or an array.
 
     GET /transaction/:id
         retrieve a transaction
+
+=head3 Transactions Examples
+
+    # Search transactions using C<TransactionSQL>
+    curl -X POST -u 'root:password' -d "query=Creator='Dave' AND Type='Correspond'"
+        'https://myrt.com/REST/2.0/transactions'
 
 =head3 Attachments and Messages
 
@@ -642,6 +714,10 @@ a single ticket id or an array.
 
 =head3 Assets
 
+    GET /assets?query=<AssetSQL>
+    POST /assets
+        search for assets using AssetSQL
+
     GET /assets?query=<JSON>
     POST /assets
         search for assets using L</JSON searches> syntax
@@ -660,6 +736,29 @@ a single ticket id or an array.
 
     GET /asset/:id/history
         retrieve list of transactions for asset
+
+=head3 Assets Examples
+
+Below are some examples using the endpoints above.
+
+    # Create an Asset
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+        -d '{"Name" : "Asset From Rest", "Catalog" : "General assets", "Content" : "Some content"}'
+        'https://myrt.com/REST/2.0/asset'
+
+    # Search Assets
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+    -d '[{ "field" : "id", "operator" : ">=", "value" : 0 }]'
+    'https://myrt.com/REST/2.0/assets'
+
+    # Search Assets Based On Custom Field Values using L</JSON searches>
+    curl -X POST -H "Content-Type: application/json" -u 'root:password'
+        -d '[{ "field" : "CustomField.{Department}", "value" : "Engineering" }]'
+        'https://myrt.com/REST/2.0/assets'
+
+    # Search assets using AssetSQL
+    curl -X POST -u 'root:password' -d "query=Catalog='General assets' AND 'CF.{Asset Type}' LIKE 'Computer'"
+        'https://myrt.com/REST/2.0/assets'
 
 =head3 Assets Examples
 
@@ -897,6 +996,16 @@ Below are some examples using the endpoints above.
     GET /customrole/:id
         retrieve a custom role
 
+=head3 Saved Searches
+
+    GET /searches?query=<JSON>
+    POST /searches
+        search for saved searches using L</JSON searches> syntax
+
+    GET /search/:id
+    GET /search/:description
+        retrieve a saved search
+
 =head3 Miscellaneous
 
     GET /
@@ -918,7 +1027,11 @@ values).  An example:
               "value":    "Engineering" },
 
             { "field":    "Lifecycle",
-              "value":    "helpdesk" }
+              "value":    "helpdesk" },
+
+            { "field"    : "CustomField.{Department}",
+              "operator" : "=",
+              "value"    : "Human Resources" }
         ]
     '
 
@@ -1121,7 +1234,7 @@ image or binary files as custom fields values.
                     "Content"    : "That <em>damned</em> printer is out of order <b>again</b>!",
                     "ContentType": "text/html",
                     "CustomFields"  : {
-                        "XX_SINGLE_IMAGE_OR_BINARY_CF_ID_XX"   => { "UploadField": "FILE_1",
+                        "XX_SINGLE_IMAGE_OR_BINARY_CF_ID_XX"   => { "UploadField": "FILE_1" },
                         "XX_MULTI_VALUE_IMAGE_OR_BINARY_CF_ID" => [ { "UploadField": "FILE_2" }, { "UploadField": "FILE_3" } ]
                     }
                   };type=application/json'
@@ -1192,14 +1305,14 @@ You can use additional fields parameters to expand child blocks, for
 example (line wrapping inserted for readability):
 
     XX_RT_URL_XX/REST/2.0/tickets
-      ?fields=Owner,Status,Created,Subject,Queue,CustomFields
+      ?fields=Owner,Status,Created,Subject,Queue,CustomFields,Requestor,Cc,AdminCc,RT::CustomRole-1
       &fields[Queue]=Name,Description
 
 Says that in the result set for tickets, the extra fields for Owner, Status,
-Created, Subject, Queue and CustomFields should be included. But in
-addition, for the Queue block, also include Name and Description. The
-results would be similar to this (only one ticket is displayed in this
-example):
+Created, Subject, Queue, CustomFields, Requestor, Cc, AdminCc and
+CustomRoles should be included. But in addition, for the Queue block, also
+include Name and Description. The results would be similar to this (only one
+ticket is displayed in this example):
 
    "items" : [
       {
@@ -1229,8 +1342,30 @@ example):
                  "name" : "My Custom Field",
                  "values" : [
                      "CustomField value"
-                 },
+                 ]
              }
+         ],
+         "Requestor" : [
+            {
+               "id" : "root",
+               "type" : "user",
+               "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+            }
+         ],
+         "Cc" : [
+            {
+               "id" : "root",
+               "type" : "user",
+               "_url" : "XX_RT_URL_XX/REST/2.0/user/root"
+            }
+         ],
+         "AdminCc" : [],
+         "RT::CustomRole-1" : [
+            {
+               "_url" : "XX_RT_URL_XX/REST/2.0/user/foo@example.com",
+               "type" : "user",
+               "id" : "foo@example.com"
+            }
          ]
       }
       { … },

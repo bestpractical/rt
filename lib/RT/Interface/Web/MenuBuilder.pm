@@ -480,9 +480,12 @@ sub BuildMainNav {
                 ) if $can->('ModifyTicket')
                   && $HTML::Mason::Commands::session{CurrentUser}->HasRight( Right => 'ShowAssetsMenu', Object => RT->System );
 
-                if ( defined $HTML::Mason::Commands::session{"collection-RT::Tickets"} ) {
+                if ( RT::Config->Get( 'ShowSearchNavigation', $current_user )
+                    && defined $HTML::Mason::Commands::session{"collection-RT::Tickets"} )
+                {
                     # we have to update session data if we get new ItemMap
-                    my $updatesession = 1 unless ( $HTML::Mason::Commands::session{"collection-RT::Tickets"}->{'item_map'} );
+                    my $updatesession;
+                    $updatesession = 1 unless ( $HTML::Mason::Commands::session{"collection-RT::Tickets"}->{'item_map'} );
 
                     my $item_map = $HTML::Mason::Commands::session{"collection-RT::Tickets"}->ItemMap;
 
@@ -616,12 +619,11 @@ sub BuildMainNav {
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
                 } qw(Query Format OrderBy Order Page Class ObjectType ResultPage ExtraQueryParams),
             ),
-            RowsPerPage => (
-                defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
-                ? $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
-                : $current_search->{'RowsPerPage'}
-            ),
         );
+
+        if ( defined ( my $rows = $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'} // $current_search->{'RowsPerPage'} ) ) {
+            $fallback_query_args{RowsPerPage} = $rows;
+        }
 
         if ( my $extra_params = $fallback_query_args{ExtraQueryParams} ) {
             for my $param ( ref $extra_params eq 'ARRAY' ? @$extra_params : $extra_params ) {
@@ -700,11 +702,15 @@ sub BuildMainNav {
         }
         if ($has_query) {
             my $result_page = $HTML::Mason::Commands::DECODED_ARGS->{ResultPage};
-            if ( my $web_path = RT->Config->Get('WebPath') ) {
-                $result_page =~ s!^$web_path!!;
+            if ( $result_page ) {
+                if ( my $web_path = RT->Config->Get('WebPath') ) {
+                    $result_page =~ s!^$web_path!!;
+                }
+            }
+            else {
+                $result_page = '/Search/Results.html';
             }
 
-            $result_page ||= '/Search/Results.html';
             $current_search_menu->child( results => title => loc('Show Results'), path => "$result_page$args" );
         }
 
@@ -839,12 +845,11 @@ sub BuildMainNav {
                     $p => $HTML::Mason::Commands::DECODED_ARGS->{$p} || $current_search->{$p}
                 } qw(Query Format OrderBy Order Page)
             ),
-            RowsPerPage => (
-                defined $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
-                ? $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'}
-                : $current_search->{'RowsPerPage'}
-            ),
         );
+
+        if ( defined ( my $rows = $HTML::Mason::Commands::DECODED_ARGS->{'RowsPerPage'} // $current_search->{'RowsPerPage'} ) ) {
+            $fallback_query_args{RowsPerPage} = $rows;
+        }
 
         if ($query_string) {
             $args = '?' . $query_string;
@@ -927,6 +932,20 @@ sub BuildMainNav {
             $page->child( history => title => loc('History'), path => '/User/History.html?id=' . $HTML::Mason::Commands::DECODED_ARGS->{'id'} );
         }
     }
+
+    # Top menu already has the create link, adding it to page menu is just
+    # for convenience. As user admin page already has quite a few items in
+    # page menu and it's unlikely that admins want to create new dashboard
+    # when editing a user's preference, here we don't touch admin user page.
+    if ( $request_path =~ m{^/(Prefs|Admin/Global)/MyRT\.html} ) {
+        if ( RT::Dashboard->new($current_user)->CurrentUserCanCreateAny ) {
+            $page->child(
+                'dashboard_create' => title => loc('New Dashboard'),
+                path               => "/Dashboards/Modify.html?Create=1"
+            );
+        }
+    }
+
 
     if ( $request_path =~ /^\/(?:index.html|$)/ ) {
         my $alt = loc('Edit');
@@ -1297,6 +1316,16 @@ sub _BuildAdminMenu {
         path        => '/Admin/Tools/Shredder',
     );
 
+    if ( RT->Config->Get('GnuPG')->{'Enable'}
+        && $current_user->HasRight( Right => 'SuperUser', Object => RT->System ) )
+    {
+        $admin_tools->child(
+            'gnupg'     => title => loc('Manage GnuPG Keys'),
+            description => loc('Manage GnuPG keys'),
+            path        => '/Admin/Tools/GnuPG.html',
+        );
+    }
+
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;
 
@@ -1354,6 +1383,7 @@ sub _BuildAdminMenu {
                 my $txn_cfs = $cfs->child( 'transactions' => title => loc('Transactions'),
                     path => '/Admin/Queues/CustomFields.html?SubType=RT::Ticket-RT::Transaction;id='.$id );
 
+                $queue->child( 'custom-roles' => title => loc('Custom Roles'), path => "/Admin/Queues/CustomRoles.html?id=".$id );
                 $queue->child( 'group-rights' => title => loc('Group Rights'), path => "/Admin/Queues/GroupRights.html?id=".$id );
                 $queue->child( 'user-rights' => title => loc('User Rights'), path => "/Admin/Queues/UserRights.html?id=" . $id );
                 $queue->child( 'history' => title => loc('History'), path => "/Admin/Queues/History.html?id=" . $id );

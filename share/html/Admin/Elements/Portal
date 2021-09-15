@@ -49,4 +49,5 @@
 <&| /Widgets/TitleBox, title => loc('RT Portal') &>
 <iframe src="https://bestpractical.com/rt/integration/news?utm_source=rt&utm_medium=iframe&utm_campaign=<%$RT::VERSION%>"></iframe>
 </&>
+% $m->callback( CallbackName => 'AfterRTPortal', ARGSRef => \%ARGS );
 </div>

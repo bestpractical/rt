@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG
+use RT::Test::Crypt
+  GnuPG         => 1,
   tests         => 7,
   gnupg_options => {
     passphrase => 'rt-test',
-    homedir => RT::Test::GnuPG::new_homedir(RT::Test::get_abs_relocatable_dir(
+    homedir => RT::Test::Crypt::new_homedir(RT::Test::get_abs_relocatable_dir(
         File::Spec->updir(), qw/data gnupg keyrings/
     )),
   };

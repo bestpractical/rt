@@ -182,17 +182,20 @@ function checkAllObjects()
 function checkboxToInput(target,checkbox,val){    
     var tar = jQuery('#' + escapeCssSelector(target));
     var box = jQuery('#' + escapeCssSelector(checkbox));
+
+    var emails = jQuery.grep(tar.val().split(/,\s*/), function(email) {
+        return email.match(/\S/) ? true : false;
+    });
+
     if(box.prop('checked')){
-        if (tar.val()==''){
-            tar.val(val);
-        }
-        else{
-            tar.val( val+', '+ tar.val() );        
+        if ( emails.indexOf(val) == -1 ) {
+            emails.unshift(val);
         }
     }
     else{
-        tar.val(tar.val().replace(val+', ',''));
-        tar.val(tar.val().replace(val,''));
+        emails = jQuery.grep(emails, function(email) {
+            return email != val;
+        });
     }
     jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
 
@@ -205,7 +208,32 @@ function checkboxToInput(target,checkbox,val){
             selectize.removeItem(val, true);
         }
     }
-    tar.change();
+    tar.val(emails.join(', ')).change();
+}
+
+function checkboxesToInput(target,checkboxes) {
+    var tar = jQuery('#' + escapeCssSelector(target));
+
+    var emails = jQuery.grep(tar.val().split(/,\s*/), function(email) {
+        return email.match(/\S/) ? true : false;
+    });
+
+    jQuery(checkboxes).each(function(index, checkbox) {
+        var val = jQuery(checkbox).attr('data-address');
+        if(jQuery(checkbox).prop('checked')){
+            if ( emails.indexOf(val) == -1 ) {
+                emails.unshift(val);
+            }
+        }
+        else{
+            emails = jQuery.grep(emails, function(email) {
+                return email != val;
+            });
+        }
+    });
+
+    jQuery('#UpdateIgnoreAddressCheckboxes').val(true);
+    tar.val(emails.join(', ')).change();
 }
 
 // ahah for back compatibility as plugins may still use it
@@ -250,7 +278,17 @@ function initDatePicker(elem) {
         hourGrid: 6,
         minuteGrid: 15,
         showSecond: false,
-        timeFormat: 'HH:mm:ss'
+        timeFormat: 'HH:mm:ss',
+        // datetimepicker doesn't reset time part when input value is cleared,
+        // so we reset it here
+        beforeShow: function(input, dp, tp) {
+            if ( jQuery(this).val() == '' ) {
+                tp.hour = tp._defaults.hour || 0;
+                tp.minute = tp._defaults.minute || 0;
+                tp.second = tp._defaults.second || 0;
+                tp.millisec = tp._defaults.millisec || 0;
+            }
+        }
     }) ).each(function(index, el) {
         var tp = jQuery.datepicker._get( jQuery.datepicker._getInst(el), 'timepicker');
         if (!tp) return;
@@ -580,11 +618,25 @@ function refreshCollectionListRow(tbody, table, success, error) {
             tbody = table.find('tbody[data-index=' + index + ']');
             initDatePicker(tbody);
             tbody.find('.selectpicker').selectpicker();
+            RT.Autocomplete.bind(tbody);
             if (success) { success(response) }
         },
         error: error
     });
 }
+
+// disable submit on enter in autocomplete boxes
+jQuery(function() {
+    jQuery('input[data-autocomplete], input.ui-autocomplete-input').each(function() {
+        var input = jQuery(this);
+
+        input.on('keypress', function(event) {
+            if (event.keyCode === 13 && jQuery('ul.ui-autocomplete').is(':visible')) {
+                return false;
+            }
+        });
+    });
+});
 
 function escapeCssSelector(str) {
     return str.replace(/([^A-Za-z0-9_-])/g,'\\$1');
@@ -775,6 +827,41 @@ jQuery(function() {
             });
         });
     }
+
+    // Automatically sync to set input values to ones in config files.
+    jQuery('form[name=EditConfig] input[name$="-file"]').change(function (e) {
+        var file_input = jQuery(this);
+        var form = file_input.closest('form');
+        var file_name = file_input.attr('name');
+        var file_value = form.find('input[name=' + file_name + '-Current]').val();
+        var checked = jQuery(this).is(':checked') ? 1 : 0;
+        if ( !checked ) return;
+
+        var db_name = file_name.replace(/-file$/, '');
+        var db_input = form.find(':input[name=' + db_name + ']');
+        var db_input_type = db_input.attr('type') || db_input.prop('tagName').toLowerCase();
+        if ( db_input_type == 'radio' ) {
+            db_input.filter('[value=' + (file_value || 0) + ']').prop('checked', true);
+        }
+        else if ( db_input_type == 'select' ) {
+            db_input.selectpicker('val', file_value.length ? file_value : '__empty_value__');
+        }
+        else {
+            db_input.val(file_value);
+        }
+    });
+
+    // Automatically sync to uncheck use file config checkbox
+    jQuery('form[name=EditConfig] input[name$="-file"]').each(function () {
+        var file_input = jQuery(this);
+        var form = file_input.closest('form');
+        var file_name = file_input.attr('name');
+        var db_name = file_name.replace(/-file$/, '');
+        var db_input = form.find(':input[name=' + db_name + ']');
+        db_input.change(function() {
+            file_input.prop('checked', false);
+        });
+    });
 });
 
 /* inline edit */

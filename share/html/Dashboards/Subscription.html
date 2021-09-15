@@ -253,6 +253,33 @@
 %     SubscriptionObj => $SubscriptionObj, DashboardObj => $Dashboard );
 </&>
 
+<&| /Widgets/TitleBox, title => loc('Search Context') &>
+
+  <p class="description mt-3 mt-1 ml-3">
+  <&|/l&>Most searches show the same results for all users and can be run as the user who owns the dashboard subscription (Subscription owner).</&>
+  </p>
+
+  <p class="description mt-3 mt-1 ml-3">
+  <&|/l&>For searches like "10 highest priority tickets I own" that contain __CurrentUser__ in the query, the results are specific to each recipient. For dashboards with these searches, select "Each dashboard recipient" below to run each search with the recipient set as the "Current User".</&>
+  </p>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Run Dashboard Searches As</&>:
+    </div>
+    <div class="value col-9">
+      <div class="custom-control custom-radio">
+        <input type="radio" id="context-subscriber" name="Context" class="custom-control-input" value="subscriber" <% ($fields{'Context'} // '') ne 'recipient' ? 'checked="checked"' : "" |n %>></input>
+        <label class="custom-control-label" for="context-subscriber"><&|/l&>Subscription owner</&>(<% $session{CurrentUser}->Name %>)</label>
+      </div>
+      <div class="custom-control custom-radio">
+        <input type="radio" id="context-recipient" name="Context" class="custom-control-input" value="recipient" <% ($fields{'Context'} // '') eq 'recipient' ? 'checked="checked"' : "" |n %>></input>
+        <label class="custom-control-label" for="context-recipient"><&|/l&>Each dashboard recipient</&></label>
+      </div>
+    </div>
+  </div>
+</&>
+
 <&| /Widgets/TitleBox, title => loc('Recipients') &>
 <& Elements/SubscriptionRecipients,
     UserField => $UserField, UserString => $UserString, UserOp => $UserOp,
@@ -310,6 +337,7 @@ my %fields = (
     Counter     => 0,
     Language    => '',
     SuppressIfEmpty => 0,
+    Context     => 'subscriber',
 );
 
 $m->callback( %ARGS, CallbackName => 'SubscriptionFields', FieldsRef => \%fields,

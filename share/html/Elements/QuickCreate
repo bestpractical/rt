@@ -76,7 +76,7 @@
   </div>
   <div class="form-row input-row">
     <div class="label col-3"><&|/l&>Requestors</&>:</div>
-    <div class="value col-9"><& /Elements/EmailInput, Name => 'Requestors', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &></div>
+    <div class="value col-9"><& /Elements/EmailInput, Name => 'Requestors', AutocompleteType => 'Principals', Size => '40', Default => $args->{Requestors} || $session{CurrentUser}->EmailAddress, AutocompleteMultiple => 1 &></div>
   </div>
   <div class="form-row input-row">
     <div class="label col-3"><&|/l&>Content</&>:</div>

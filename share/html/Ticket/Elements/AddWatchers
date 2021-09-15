@@ -109,7 +109,7 @@
       <&|/l&>Type</&>
     </div>
     <div class="col-9">
-      <&|/l&>Email</&>
+      <&|/l&>User or Group</&>
     </div>
   </div>
 % my $counter = 4;
@@ -133,7 +133,7 @@
       <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail" . $i, Queue => $Ticket->QueueObj &>
     </div>
     <div class="col-6">
-      <& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20' &>
+      <& /Elements/EmailInput, Name => 'WatcherAddressEmail' . $i, Size => '20', AutocompleteType => 'Principals' &>
     </div>
   </div>
 % }

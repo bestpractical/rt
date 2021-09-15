@@ -49,7 +49,7 @@
 <div class="asset-people-<% CSSClass($role) %> form-row">
   <div class="label col-3"><% loc($role) %>:</div>
   <div class="value col-9">
-    <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1 &>
+    <& /Elements/EmailInput, Name => $role, Size => undef, Default => $ARGS{$role}, Autocomplete => 1, ($AssetObj->Role($role)->{Single} ? () : (AutocompleteType => 'Principals', AutocompleteMultiple => 1)) &>
   </div>
 </div>
 % }

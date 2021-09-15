@@ -24,7 +24,7 @@ diag( 'Group Summary access and ticket creation' );
     $group_id = $m->form_name( 'ModifyGroup' )->value( 'id' );
     ok( $group_id, "Found id of the group in the form, #$group_id" );
 
-    $m->follow_link_ok({ id => 'page-summary', url_regex => qr|/Group/Summary\.html\?id=$group_id$!| },
+    $m->follow_link_ok({ id => 'page-summary', url_regex => qr|/Group/Summary\.html\?id=$group_id$| },
                          'Followed Group Summary link');
 
     $m->submit_form_ok({ form_name => 'CreateTicket' },

@@ -71,11 +71,13 @@ use RT;
 
 use Getopt::Long;
 
-use RT::Interface::CLI qw(GetCurrentUser loc);
+use RT::Interface::CLI qw(GetCurrentUser Init loc);
 
 my ( $search, $condition, $actions, $search_arg, $condition_arg, $actions_arg,
-     $template, $template_id, $transaction, $transaction_type, $help, $log, $verbose );
-GetOptions(
+     $template, $template_id, $transaction, $transaction_type, $reload_ticket, $log, $verbose,
+     $max_processes, $max_tickets_per_process, $dryrun );
+
+my %OPT = (
     "search=s"           => \$search,
     "search-arg=s"       => \$search_arg,
     "condition=s"        => \$condition,
@@ -86,19 +88,18 @@ GetOptions(
     "template-id=s"      => \$template_id,
     "transaction=s"      => \$transaction,
     "transaction-type=s" => \$transaction_type,
+    "reload-ticket"      => \$reload_ticket,
+    "max-processes=i"    => \$max_processes,
+    "max-tickets-per-process=i" => \$max_tickets_per_process,
     "log=s"              => \$log,
     "verbose|v"          => \$verbose,
-    "help"               => \$help,
+    "dry-run"            => \$dryrun,
 );
 
-# Load the config file
-RT::LoadConfig();
+Init( %OPT );
 
 # adjust logging to the screen according to options
 RT->Config->Set( LogToSTDERR => $log ) if $log;
-
-#Connect to the database and get RT::SystemUser and RT::Nobody loaded
-RT::Init();
 
 require RT::Tickets;
 require RT::Template;
@@ -106,15 +107,15 @@ require RT::Template;
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
 
-# show help even if there is no current user
-help() if $help;
-
 unless ( $CurrentUser->Id ) {
     print loc("No RT user found. Please consult your RT administrator.") . "\n";
     exit(1);
 }
 
-help() unless $search && $actions;
+unless ( $search && $actions ) {
+    Pod::Usage::pod2usage({ verbose => 2});
+    exit(0);
+}
 
 $transaction = lc( $transaction||'' );
 if ( $transaction && $transaction !~ /^(first|all|last)$/i ) {
@@ -152,8 +153,46 @@ $search  = $search->new(
 );
 $search->Prepare();
 
-#for each ticket we've found
-while ( my $ticket = $tickets->Next() ) {
+if ($max_processes) {
+    $max_tickets_per_process ||= 100;
+    require Parallel::ForkManager;
+    my $pm         = Parallel::ForkManager->new($max_processes);
+    my @ticket_ids = map { $_->Id } @{ $tickets->ItemsArrayRef };
+
+    # DB connection couldn't be shared between processes
+    $RT::Handle->Disconnect;
+
+    while (@ticket_ids) {
+        my @ids = splice @ticket_ids, 0, $max_tickets_per_process;
+        my $pid = $pm->start and next;
+
+        # Reconnect to DB and initialize logging in each child
+        $RT::Handle->Connect;
+        RT->Config->Set( 'LogToFile',      $log || RT->Config->Get('LogToSTDERR') );
+        RT->Config->Set( 'LogToFileNamed', 'rt-crontool-' . time . "-$$.log" );
+        undef $RT::Logger;
+        RT::InitLogging();
+
+        for my $id (@ids) {
+            my $ticket = RT::Ticket->new($CurrentUser);
+            $ticket->Load($id);
+            process_ticket($ticket);
+        }
+        $pm->finish;
+    }
+    $pm->wait_all_children;
+}
+else {
+
+    #for each ticket we've found
+    while ( my $ticket = $tickets->Next() ) {
+        process_ticket($ticket);
+    }
+}
+
+sub process_ticket {
+    my $ticket = shift;
+    $ticket->Load($ticket->Id) if $reload_ticket;
     print $ticket->Id() . ":\n" if ($verbose);
 
     my $template_obj = get_template( $ticket );
@@ -228,6 +267,7 @@ sub process {
         next unless $action_obj->Prepare;
         print "\t".loc("Action prepared...")."\n" if $verbose;
 
+        next if $dryrun;
         # commit our action.
         next unless $action_obj->Commit;
         print "\t".loc("Action committed.")."\n" if $verbose;
@@ -308,75 +348,6 @@ sub load_module {
 
 }
 
-
-sub help {
-
-    print loc( "[_1] is a tool to act on tickets from an external scheduling tool, such as cron.", $0 )
-      . "\n";
-    print loc("It takes several arguments:") . "\n\n";
-
-    print "        "
-      . loc( "[_1] - Specify the search module you want to use", "--search" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - An argument to pass to [_2]", "--search-arg", "--search" )
-      . "\n";
-
-    print "        "
-      . loc( "[_1] - Specify the condition module you want to use", "--condition" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - An argument to pass to [_2]", "--condition-arg", "--condition" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Specify the action module you want to use. This option may be repeated to apply multiple actions to found tickets.", "--action" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - An argument to pass to [_2]. This option may be repeated to pass corresponding arguments to multiple calls of [_2].", "--action-arg", "--action" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Specify name or id of template(s) you want to use", "--template" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Specify if you want to use either 'first', 'last' or 'all' transactions", "--transaction" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Specify the comma separated list of transactions' types you want to use", "--transaction-type" )
-      . "\n";
-    print "        "
-      . loc( "[_1] - Adjust LogToSTDERR config option", "--log" ) . "\n";
-    print "        "
-      . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";
-    print "\n";
-    print "\n";
-    print loc("Security:")."\n";
-    print loc("This tool allows the user to run arbitrary perl modules from within RT.")." ". 
-        loc("If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT.")." ".
-        loc("It is incredibly important that nonprivileged users not be allowed to run this tool."). " " . 
-        loc("It is suggested that you create a non-privileged unix user with the correct group membership and RT access to run this tool.")."\n";
-    print "\n";
-    print loc("Example:");
-    print "\n";
-    print " "
-      . loc( "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
-      )
-      . "\n\n";
-
-    print " bin/rt-crontool \\\n";
-    print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print "  --condition RT::Condition::Overdue \\\n";
-    print "  --action RT::Action::SetPriority --action-arg 99 \\\n";
-    print "  --verbose\n";
-
-    print "\n";
-    print loc("Escalate tickets"). "\n";
-    print " bin/rt-crontool \\\n";
-    print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print"  --action RT::Action::EscalatePriority\n";
-
-    exit(0);
-}
-
 __END__
 
 =head1 NAME
@@ -396,6 +367,12 @@ rt-crontool - a tool to act on tickets from an external scheduling tool
       rt-crontool \
         --search RT::Search::ActiveTicketsInQueue  --search-arg general \
         --action RT::Action::EscalatePriority
+
+    # Process tickets in parallel
+      rt-crontool \
+        --search RT::Search::ActiveTicketsInQueue  --search-arg general \
+        --action RT::Action::SomeTimeConsumingAction
+        --max-processes 10 --max-tickets-per-process 100
 
 =head1 DESCRIPTION
 
@@ -453,6 +430,21 @@ Specify if you want to use either 'first', 'last' or 'all' transactions
 
 Specify the comma separated list of transactions' types you want to use
 
+=item reload-ticket
+
+Reload ticket before processing in tickets iteration. This is to refresh
+ticket metadata, which is useful especially for long-running jobs.
+
+=item max-processes
+
+Specify the max number of children to maintain. This implies parallel
+processing, which is false by default.
+
+=item max-tickets-per-process
+
+Specify the max number of tickets to process in each child. Only take effect with --max-processes.
+Default is 100.
+
 =item log
 
 Adjust LogToSTDERR config option
@@ -460,6 +452,11 @@ Adjust LogToSTDERR config option
 =item verbose
 
 Output status updates to STDOUT
+
+=item dry-run
+
+Actions are composed of 2 parts: "Prepare" and "Commit".  C<dry-run>
+skips the "Commit" part.
 
 =back
 

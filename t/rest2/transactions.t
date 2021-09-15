@@ -59,6 +59,35 @@ my ($comment_txn_url, $comment_txn_id);
     ok(($comment_txn_id) = $comment_txn_url =~ qr[/transaction/(\d+)]);
 }
 
+# search transactions for a specific ticket using TransactionSQL
+{
+    my $res = $mech->get("$rest_base_path/transactions?query=ObjectType='RT::Ticket' AND ObjectId=".$ticket->Id,
+        'Authorization' => $auth,
+    );
+    is($res->code, 200);
+
+    my $content = $mech->json_response;
+    is($content->{count}, 5);
+    is($content->{page}, 1);
+    is($content->{per_page}, 20);
+    is($content->{total}, 5);
+    is(scalar @{$content->{items}}, 5);
+
+    my ($create, $priority1, $subject, $priority2, $comment) = @{ $content->{items} };
+
+    is($create->{type}, 'transaction');
+    is($priority1->{type}, 'transaction');
+    is($subject->{type}, 'transaction');
+    is($priority2->{type}, 'transaction');
+    is($comment->{type}, 'transaction');
+
+    $create_txn_url = $create->{_url};
+    ok(($create_txn_id) = $create_txn_url =~ qr[/transaction/(\d+)]);
+
+    $comment_txn_url = $comment->{_url};
+    ok(($comment_txn_id) = $comment_txn_url =~ qr[/transaction/(\d+)]);
+}
+
 # Transaction display
 {
     my $res = $mech->get($create_txn_url,

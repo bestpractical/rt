@@ -187,6 +187,20 @@ If you previously used numbers for priority and would like to continue
 to do so, you can set the new C<$EnablePriorityAsString> option to false.
 That will disable the new string-based display.
 
+We also now hide Final Priority by default, but if you previously used it
+and would like to continue to do so, you can add this to the Custom CSS
+section on the Theme editor:
+
+    .FinalPriority, .TicketFinalPriority {
+        display: flex;
+    }
+    .priority div.value .current-value {
+        visibility: visible;
+    }
+    .priority div.value .current-value .FinalPriority {
+        display: inline;
+    }
+
 If you would like to now use strings for priority like Low, Medium, High,
 check the new C<%PriorityAsString> configuration option. RT provides a simple
 default setting that may be sufficient. Set new values if you would like
@@ -266,6 +280,161 @@ The System Configuration editor (Admin > Tools > System Configuration > Edit)
 now uses JSON rather than Perl syntax to represent arrays and hashes.  Be
 sure to enter valid JSON if you wish to modify an array- or hash-valued
 configuration setting.
+
+=back
+
+=head1 UPGRADING FROM 5.0.1 AND EARLIER
+
+=over 4
+
+=item *
+
+Previously C<$OwnerEmail> was shown on the RT login page for users to
+contact with RT issues, in addition to being the address used to send various
+errors like email bounces. A new config option C<$RTSupportEmail> is now used
+for the login page display, allowing admins to set C<$OwnerEmail> to a different
+address if desired, and possibly not display an email address on the login page.
+
+If you want to still display your C<$OwnerEmail> on the login page, just set
+C<$RTSupportEmail> to the same value.
+
+=item * "RT at a glance" is now a dashboard
+
+"RT at a glance" previously could be customized and was stored as
+a special configuration used just for the homepage.
+It is now a dashboard just like other dashboards in RT.
+With this update, you can now easily change your entire homepage
+by selecting a different dashboard to be your default homepage.
+After upgrading, RT at a glance should look the same as it did
+previously, but there are various changes in how it is managed.
+
+The previous global RT at a glance page is converted to a new System
+dashboard called "Homepage". Individual users with a custom homepage
+will see a new dashboard in "My Dashboards" called Homepage. These are
+regular dashboards now, so the names can be changed if desired.
+
+The gears icon on the homepage now links to a page that displays all
+available dashboards and users can select their default homepage from
+the list. To customize, users can create a new dashboard. The privacy
+of dashboards can be set to an individual user, a group, or system-wide,
+depending on the user's rights. This makes it easy to set up and share
+useful homepage configurations.
+
+Users who want to customize their homepage need the rights "ModifySelf",
+"CreateOwnDashboard", "DeleteOwnDashboard", "ModifyOwnDashboard" and
+"SeeOwnDashboard". All users who have "ModifySelf" are automatically granted
+these dashboard rights as part of the upgrade. You can modify these rights
+as desired if you don't want users to be able to create dashboards.
+
+All users can see the default System dashboard set for RT. If you
+want to allow users to see other System dashboards, grant the
+"SeeDashboard" right. This is not done automatically with the upgrade.
+
+For RT admins, Admin > Global > RT at a glance is still available,
+but instead of loading the page configuration editor, it shows a
+list of System dashboards that can be set as the default homepage.
+The RT at a glance option in the user admin page sub-menu also now shows
+a list of dashboards to set for that user.
+
+=back
+
+=head1 UPGRADING FROM 5.0.0 AND 5.0.1
+
+This section duplicates upgrading notes for changes included in
+RT 4.4.5 and RT 5.0.2. These changes are duplicated here for
+users upgrading from RT 5.0.0 or 5.0.1 who won't run the RT 4.4.5
+upgrade.
+
+=over 4
+
+=item * Privacy Menu in Query Builder
+
+On the Query Builder, the Privacy menu loads groups you are a member of as potential
+places to save searches. However, it previously did not confirm the current user
+had the EditSavedSearches right, so you might try to save a search with a group
+and receive an error until that right was granted.
+
+This has been fixed, so now groups load only if you have rights to create the
+search via EditSavedSearches on the group or globally. This may change the groups
+that appear in the Privacy menu, but shouldn't change functionality since users
+without the correct rights were unable to create searches.
+
+=item * AttachmentListCount Default
+
+The C<AttachmentListCount> configuration option now defaults to 5.
+To restore the previous configuration and show all attachments,
+add the following to your C<RT_SiteConfig.pm>.
+
+    Set($AttachmentListCount, undef);
+
+=item * User Timezone and Dates in Ticket Searches
+
+This releases fixes an issue with how "=" in time comparisons in ticket
+searches applied timezone settings. Previously, dates would be adjusted
+based on the global RT timezone even if the user had a different timezone.
+This has been fixed to correctly use the user's timezone.
+
+Note that this change may modify results for some saved searches for users
+with a different timezone than RT's global setting.
+
+=item * Script to reduce records in CachedGroupMembers
+
+When adding groups to roles on tickets, we have found that caching the
+members of these added groups in the CachedGroupMembers table makes
+performance worse rather than improving it. This release includes updates
+to no longer add these members recursively.
+
+If you use groups in ticket roles, it's likely your CachedGroupMembers table
+has a large number of now unnecessary records and these can hurt performance.
+To delete these extra records run the following script:
+
+    /opt/rt5/etc/upgrade/shrink-cgm-table
+
+Depending on how many records your system has, this may take a while to run.
+After you run this, you may have significantly reduced the number of records
+in your CachedGroupMembers table, and may need to tell your database to
+refresh indexes/statistics.
+
+=item * Run Transaction Batch last, even in nested updates
+
+When RT processes scrips, Batch mode scrips should always run last.
+Previously, with nested updates, inner updates would run batch before
+all outer updates were complete. One example of this is processing ticket
+updates, the Basics update calls an inner "atomic" transaction to update
+Owner, which would cause the unexpected batch run. This has been fixed
+so batch runs only once for the outermost updates. All transactions
+performed for that batch are available from the C<TransactionBatch> method
+as expected.
+
+=item * Ambigious Owner order by option in search replaced with Owner.Name
+
+RT 4.4.5 adds a bunch of new order by and format options for users and roles
+to the Query Builder. For example, you can order by user fields on a user
+like Owner.EmailAddress, Owner.RealName, or even Owner.Organization.
+As part of this change, the previous Owner entry has been renamed to
+Owner.Name.
+
+The upgrade scripts include a step to make this change in any saved searches
+in the database automatically. If you have Owner as an order by field in
+searches stored elsewhere or as a link, you can update to Owner.Name manually.
+
+=item * Default "order by" field for roles in search results
+
+Because of the new options mentioned above, when displaying role information
+we also set defaults for order by behavior when you click headers on search
+results to re-sort them. For example, in a list of ticket results, you can
+click on Requestors to re-sort the results by that field.
+
+Previously this order by used EmailAddress. It now defaults to Name
+because we believe that is more common for sorting, but because of
+the new features you can change this in your search Format.
+For example, you can update the line in the Format section on
+the Advanced page to look like this:
+
+    '<small>__Requestor.EmailAddress__</small>',
+
+That column will then specifically show EmailAddress and when you click
+it will order by EmailAddress.
 
 =back
 

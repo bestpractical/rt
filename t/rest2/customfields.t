@@ -131,8 +131,7 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy);
-    push @fields, qw(UniqueValues EntryHint) if RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
+    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
@@ -158,8 +157,7 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy);
-    push @fields, qw(UniqueValues EntryHint) if RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
+    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
@@ -191,8 +189,7 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy);
-    push @fields, qw(UniqueValues EntryHint) if RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
+    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
@@ -224,8 +221,7 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy);
-    push @fields, qw(UniqueValues EntryHint) if RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
+    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
@@ -257,8 +253,7 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy);
-    push @fields, qw(UniqueValues EntryHint) if RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
+    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};
@@ -293,8 +288,7 @@ my $freeform_cf_id;
     is($content->{MaxValues}, 1);
     is($content->{Disabled}, 0);
 
-    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy);
-    push @fields, qw(UniqueValues EntryHint) if RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
+    my @fields = qw(SortOrder Pattern Created Creator LastUpdated LastUpdatedBy UniqueValues EntryHint);
     ok(exists $content->{$_}, "got $_") for @fields;
 
     my $links = $content->{_hyperlinks};

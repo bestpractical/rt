@@ -48,7 +48,7 @@
 <%args>
 $Name            => 'Queue'
 $Default         => 0
-$Class           => 'select-queue field'
+$Class           => 'select-queue field form-control'
 $Placeholder     => ''
 
 $ShowAllQueues   => 1

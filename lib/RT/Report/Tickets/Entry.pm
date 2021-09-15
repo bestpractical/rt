@@ -125,6 +125,14 @@ sub Query {
             my $value = $self->RawValue( $column );
             my $op = '=';
             if ( defined $value ) {
+                if ( $info->{INFO} eq 'Watcher' && $info->{FIELD} eq 'id' ) {
+
+                    # convert id to name
+                    my $princ = RT::Principal->new( $self->CurrentUser );
+                    $princ->Load($value);
+                    $value = $princ->Object->Name if $princ->Object;
+                }
+
                 unless ( $value =~ /^\d+$/ ) {
                     $value =~ s/(['\\])/\\$1/g;
                     $value = "'$value'";

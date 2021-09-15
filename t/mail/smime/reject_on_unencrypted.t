@@ -1,8 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test::SMIME tests => undef, actual_server => 1, config => 'Set( @MailPlugins, "Authz::RequireEncrypted" );';
-my $test = 'RT::Test::SMIME';
+use RT::Test::Crypt SMIME=>1, tests => undef, actual_server => 1, config => 'Set( @MailPlugins, "Authz::RequireEncrypted" );';
+my $test = 'RT::Test::Crypt';
 
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
@@ -12,7 +12,7 @@ my ($url, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
 
 # configure key for General queue
-RT::Test::SMIME->import_key('sender@example.com');
+$test->smime_import_key('sender@example.com');
 my $queue = RT::Test->load_or_create_queue(
     Name              => 'General',
     CorrespondAddress => 'sender@example.com',
@@ -24,7 +24,7 @@ my $user = RT::Test->load_or_create_user(
     Name => 'root@example.com',
     EmailAddress => 'root@example.com',
 );
-RT::Test::SMIME->import_key('root@example.com.crt', $user);
+$test->smime_import_key('root@example.com.crt', $user);
 RT::Test->add_rights( Principal => $user, Right => 'SuperUser', Object => RT->System );
 
 my $mail = RT::Test->open_mailgate_ok($url);
@@ -59,7 +59,7 @@ RT::Test->close_mailgate_ok($mail);
             -from    => 'root@example.com',
             -to      => 'sender@example.com',
             -subject => "Encrypted message for queue",
-            $test->key_path('sender@example.com.crt' ),
+            $test->smime_key_path('sender@example.com.crt' ),
         ),
         \"Subject: test\n\norzzzzzz",
         \$buf,
@@ -99,8 +99,8 @@ RT::Test->close_mailgate_ok($mail);
             shell_quote(
                 RT->Config->Get('SMIME')->{'OpenSSL'},
                 qw( smime -sign -nodetach -passin pass:123456),
-                -signer => $test->key_path('root@example.com.crt' ),
-                -inkey  => $test->key_path('root@example.com.key' ),
+                -signer => $test->smime_key_path('root@example.com.crt' ),
+                -inkey  => $test->smime_key_path('root@example.com.key' ),
             ),
             '|',
             shell_quote(
@@ -108,7 +108,7 @@ RT::Test->close_mailgate_ok($mail);
                 -from    => 'root@example.com',
                 -to      => 'sender@example.com',
                 -subject => "Encrypted and signed message for queue",
-                $test->key_path('sender@example.com.crt' ),
+                $test->smime_key_path('sender@example.com.crt' ),
             )),
             \"Subject: test\n\norzzzzzz",
             \$buf,

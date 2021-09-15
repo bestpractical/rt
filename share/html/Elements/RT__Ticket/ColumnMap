@@ -82,8 +82,9 @@ my $LinkCallback = sub {
 };
 
 my $trustSub = sub {
+    my $queue = shift;
     my $user = shift;
-    my %key = RT::Crypt->GetKeyInfo( Key => $user->EmailAddress );
+    my %key = RT::Crypt->GetKeyInfo( Key => $user->EmailAddress, Queue => $queue );
     if (!defined $key{'info'}) {
         return $m->interp->apply_escapes(' ' . loc("(no pubkey!)"), "h");
     } elsif ($key{'info'}{'TrustLevel'} == 0) {
@@ -146,9 +147,14 @@ $COLUMN_MAP = {
                     my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
 
                     if ($count == 1) {
+                        # Count can be 1 but when UseSQLForACLChecks is set to 0 the rights check hasn't been
+                        # peformed yet, meaning the current user may not be able to see the linked ticket.
+                        # Therefore we need to check if a ticket is actually found.
                         my $pending_ticket = $unresolved_dependencies->Next;
-                        my $pending_ticket_url = RT->Config->Get('WebPath') . '/Ticket/Display.html?id=' . $pending_ticket->id;
-                        return \'<a href="',$pending_ticket_url,\'">', loc('(pending ticket #[_1])',$pending_ticket->id), \'</a>';
+                        if ($pending_ticket) {
+                            my $pending_ticket_url = RT->Config->Get('WebPath') . '/Ticket/Display.html?id=' . $pending_ticket->id;
+                            return \'<a href="',$pending_ticket_url,\'">', loc('(pending ticket #[_1])',$pending_ticket->id), \'</a>';
+                        }
                     }
 
                     return \'<a href="',$SearchURL,\'">', loc('(pending [quant,_1,other ticket,other tickets])',$count), \'</a>';
@@ -301,7 +307,7 @@ $COLUMN_MAP = {
     KeyRequestors => {
         title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->Requestor, PostUser => $trustSub ) ) }
+        value     => sub { my $ticket = $_[0]; return \($m->scomp("/Elements/ShowPrincipal", Object => $ticket->Requestor, PostUser => sub { my $user = shift; return $trustSub->($ticket->QueueObj, $user); }))}
     },
     KeyOwnerName => {
         title     => 'Owner', # loc
@@ -309,7 +315,7 @@ $COLUMN_MAP = {
         value     => sub {
             my $t = shift;
             my $name = $t->OwnerObj->Name;
-            my %key = RT::Crypt->GetKeyInfo( Key => $t->OwnerObj->EmailAddress );
+            my %key = RT::Crypt->GetKeyInfo( Key => $t->OwnerObj->EmailAddress, Queue => $t->QueueObj );
             if (!defined $key{'info'}) {
                 $name .= ' '. loc("(no pubkey!)");
             }
@@ -323,7 +329,8 @@ $COLUMN_MAP = {
     KeyOwner => {
         title     => 'Owner', # loc
         attribute => 'Owner',
-        value     => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->OwnerObj, PostUser => $trustSub ) ) }
+        value     => sub {
+            my $ticket = $_[0]; return \($m->scomp("/Elements/ShowPrincipal", Object => $ticket->OwnerObj, PostUser => sub { my $user = shift; return $trustSub->($ticket->QueueObj, $user); }))},
     },
 
     # Everything from LINKTYPEMAP
@@ -409,7 +416,8 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
 
         my $escaped     = $m->interp->apply_escapes( $string,      'h' );
         my $loc_escaped = $m->interp->apply_escapes( loc($string), 'h' );
-        return \( qq{<span class="ticket-info-$class-} . lc($escaped) . qq{">$loc_escaped</span>} );
+
+        return \( qq{<span class="ticket-info-$class-} . CSSClass(lc($escaped)) . qq{">$loc_escaped</span>} );
 
     };
     foreach my $field (qw(Priority InitialPriority FinalPriority)) {

@@ -56,7 +56,6 @@
 </font>
 % }
 % }
-<br />
 <%init>
 @actions = map ref $_? $_: [$_, 0], grep defined && length, @actions;
 return unless @actions;

@@ -557,6 +557,43 @@ use Email::Address::List;
 
 sub ParseEmailAddress {
     my $self = shift;
+
+    my @list = $self->_ParseEmailAddress( @_ );
+
+    my @addresses;
+    foreach my $e ( @list ) {
+        if ( $e->{'type'} eq 'mailbox' ) {
+            push @addresses, $e->{'value'};
+        }
+        elsif ( $e->{'value'} =~ /^(group:)?(.+)$/ ) {
+            my ( $is_group, $name ) = ( $1, $2 );
+            if ( $is_group ) {
+                RT->Logger->warning( $e->{'value'} . " is a group, skipping" );
+                next;
+            }
+
+            my $user = RT::User->new( RT->SystemUser );
+            $user->Load( $name );
+            if ( $user->id ) {
+                push @addresses, Email::Address->new( $user->Name, $user->EmailAddress );
+            }
+            else {
+                RT->Logger->error( $e->{'value'} . " is not a valid email address and is not user name" );
+            }
+        }
+        else {
+            # should never reach here.
+        }
+    }
+
+    $self->CleanupAddresses( @addresses );
+
+    return @addresses;
+}
+
+# Returns a list of hashes, like what C<Email::Address::List::parse> returns
+sub _ParseEmailAddress {
+    my $self           = shift;
     my $address_string = shift;
 
     # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
@@ -565,36 +602,43 @@ sub ParseEmailAddress {
     my @list = Email::Address::List->parse(
         $address_string,
         skip_comments => 1,
-        skip_groups => 1,
     );
     my $logger = sub { RT->Logger->error(
         "Unable to parse an email address from $address_string: ". shift
     ) };
 
-    my @addresses;
-    foreach my $e ( @list ) {
+    my @entries;
+
+    # If the string begins with group, e.g. "group:foo", then the first 2
+    # items returned from Email::Address::List are:
+    # { 'value' => 'group', 'type' => 'group start' },
+    # { 'value' => 'foo', 'type' => 'unknown' }
+    my $in_group;
+
+    foreach my $e (@list) {
         if ($e->{'type'} eq 'mailbox') {
             if ($e->{'not_ascii'}) {
                 $logger->($e->{'value'} ." contains not ASCII values");
                 next;
             }
-            push @addresses, $e->{'value'}
-        } elsif ( $e->{'value'} =~ /^\s*(\w+)\s*$/ ) {
-            my $user = RT::User->new( RT->SystemUser );
-            $user->Load( $1 );
-            if ($user->id) {
-                push @addresses, Email::Address->new($user->Name, $user->EmailAddress);
-            } else {
-                $logger->($e->{'value'} ." is not a valid email address and is not user name");
-            }
+            push @entries, $e;
+        } elsif ($e->{'type'} eq 'group start') {
+            $in_group = 1;
+            next;
+        } elsif ($e->{'type'} eq 'group end') {
+            undef $in_group;
+            next;
+        } elsif ($e->{'value'} =~ /^\s*(group\s*:)?\s*(\S.*?)\s*$/i) {
+            my ( $is_group, $name ) = ( $1, $2 );
+            $e->{'value'} = $in_group || $is_group ? "group:$name" : $name;
+            push @entries, $e;
         } else {
             $logger->($e->{'value'} ." is not a valid email address");
         }
+        undef $in_group;
     }
 
-    $self->CleanupAddresses(@addresses);
-
-    return @addresses;
+    return @entries;
 }
 
 =head2 CleanupAddresses ARRAY
