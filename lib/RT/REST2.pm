@@ -537,10 +537,11 @@ curl for SSL like --cacert.
 
 Below are some examples using the endpoints above.
 
-    # Create a ticket, setting some custom fields
+    # Create a ticket, setting some custom fields and a custom role
     curl -X POST -H "Content-Type: application/json" -u 'root:password'
         -d '{ "Queue": "General", "Subject": "Create ticket test",
             "Requestor": "user1@example.com", "Cc": "user2@example.com",
+            "CustomRoles": {"My Role": "staff1@example.com"},
             "Content": "Testing a create",
             "CustomFields": {"Severity": "Low"}}'
         'https://myrt.com/REST/2.0/ticket'
@@ -1233,7 +1234,7 @@ image or binary files as custom fields values.
                     "Content"    : "That <em>damned</em> printer is out of order <b>again</b>!",
                     "ContentType": "text/html",
                     "CustomFields"  : {
-                        "XX_SINGLE_IMAGE_OR_BINARY_CF_ID_XX"   => { "UploadField": "FILE_1",
+                        "XX_SINGLE_IMAGE_OR_BINARY_CF_ID_XX"   => { "UploadField": "FILE_1" },
                         "XX_MULTI_VALUE_IMAGE_OR_BINARY_CF_ID" => [ { "UploadField": "FILE_2" }, { "UploadField": "FILE_3" } ]
                     }
                   };type=application/json'

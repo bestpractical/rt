@@ -1245,6 +1245,8 @@ sub StripContent {
     # massage content to easily detect if there's any real content
     $content =~ s/\s+//g; # yes! remove all the spaces
     if ( $html ) {
+        # Remove the blank line added for signatures
+        $content =~ s!<p>&nbsp;</p>!!g;
         # remove html version of spaces and newlines
         $content =~ s!&nbsp;!!g;
         $content =~ s!<br/?>!!g;

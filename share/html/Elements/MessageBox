@@ -85,14 +85,14 @@ if ( $IncludeSignature and $signature =~ /\S/ ) {
         $signature =~ s/"/&quot;/g;  # "//;
         $signature =~ s/'/&#39;/g;   # '//;
         $signature =~ s{\n}{<br />}g;
-        $signature = "<br /><p>--&nbsp;<br />$signature</p>";
+        $signature = "<p>&nbsp;</p><p>--&nbsp;<br />$signature</p>";
     } else {
         $signature = "\n\n-- \n". $signature . "\n";
     }
 
     if ($message =~ /\S/) {
         if (RT->Config->Get('SignatureAboveQuote', $session{CurrentUser})) {
-            $signature .= $Type eq 'text/html' ? "<br />" : "\n";
+            $signature .= $Type eq 'text/html' ? "<p>&nbsp;</p>" : "\n";
         } else {
             $signature = ($Type eq 'text/html' ? "" : "\n") . $signature;
         }

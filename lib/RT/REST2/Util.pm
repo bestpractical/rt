@@ -224,7 +224,7 @@ sub deserialize_record {
 
     # Sanitize input for the Perl API
     for my $field (sort keys %$data) {
-        my $skip_regex = join '|', 'CustomFields', 'Attachments',
+        my $skip_regex = join '|', 'CustomFields', 'CustomRoles', 'Attachments',
             $record->DOES("RT::Record::Role::Links") ? ( sort keys %RT::Link::TYPEMAP ) : ();
         next if $field =~ /$skip_regex/;
 
