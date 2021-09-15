@@ -379,4 +379,90 @@ diag "Columns as values in searches";
     is( $count, 1, 'Found 1 ticket' );
 }
 
+diag "Ticket role group member custom fields";
+{
+    my $cr = RT::CustomRole->new( RT->SystemUser );
+    my ( $ret, $msg ) = $cr->Create(
+        Name      => 'Engineer',
+        MaxValues => 0,
+    );
+    ok( $ret, "Created custom role: $msg" );
+
+    ( $ret, $msg ) = $cr->AddToObject( ObjectId => 'General' );
+    ok( $ret, "Added CR to queue: $msg" );
+
+    my $cf = RT::CustomField->new( RT->SystemUser );
+    ( $ret, $msg ) = $cf->Create(
+        Name       => 'manager',
+        Type       => 'FreeformSingle',
+        LookupType => RT::User->CustomFieldLookupType,
+    );
+    ok( $ret,                                                "Created user cf: $msg" );
+    ok( $cf->AddToObject( RT::User->new( RT->SystemUser ) ), 'Applied user CF globally' );
+
+    my $ticket  = RT::Test->create_ticket( Queue => 'General', Subject => 'test role member cfs' );
+    my $admincc = $ticket->RoleGroup('AdminCc');
+
+    my $alice = RT::Test->load_or_create_user( Name => 'alice' );
+    ok( $alice->AddCustomFieldValue( Field => 'manager', Value => 'bob' ) );
+
+    my $bob = RT::Test->load_or_create_user( Name => 'bob' );
+    ok( $bob->AddCustomFieldValue( Field => 'manager', Value => 'root' ) );
+
+    my $richard = RT::Test->load_or_create_user( Name => 'richard' );
+    ok( $richard->AddCustomFieldValue( Field => 'manager', Value => 'alice' ) );
+
+    my $tickets = RT::Tickets->new( RT->SystemUser );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} = 'bob'");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    $alice->PrincipalObj->GrantRight( Right => 'OwnTicket' );
+    ( $ret, $msg ) = $ticket->SetOwner('alice');
+    ok( $ret, $msg );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} = 'bob'");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager = 'alice'");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    ( $ret, $msg ) = $ticket->RoleGroup('Requestor')->AddMember( $richard->Id );
+    ok( $ret, $msg );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Requestor.CustomField.manager = 'alice'");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.{manager} = 'root'");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    ( $ret, $msg ) = $ticket->RoleGroup( $cr->GroupType )->AddMember( $bob->Id );
+    ok( $ret, $msg );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.{manager} = 'root'");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+
+    ok( $bob->AddCustomFieldValue( Field => 'manager', Value => 'nobody' ) );
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND CustomRole.{Engineer}.CustomField.{manager} = 'root'");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    $alice->PrincipalObj->GrantRight( Right => 'ShowTicket' );
+    my $alice_current_user = RT::CurrentUser->new( RT->SystemUser );
+    $alice_current_user->Load( $alice->Id );
+
+    $tickets = RT::Tickets->new($alice_current_user);
+
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} = 'bob'");
+    ok( !$tickets->Count, 'No tickets found' );
+
+    $alice->PrincipalObj->GrantRight( Right => 'SeeCustomField', Object => $cf );
+    $tickets->FromSQL("Subject = 'test role member cfs' AND Owner.CustomField.{manager} = 'bob'");
+    is( $tickets->Count,     1,           'Found 1 ticket' );
+    is( $tickets->First->id, $ticket->id, 'Found the ticket' );
+}
+
 done_testing;
