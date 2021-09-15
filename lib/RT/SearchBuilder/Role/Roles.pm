@@ -338,11 +338,48 @@ sub RoleLimit {
         # do the right thing when there is only one exist and semi-working solution
         # otherwise.
         my $users_obj = RT::Users->new( $self->CurrentUser );
-        $users_obj->Limit(
-            FIELD         => $args{FIELD},
-            OPERATOR      => $args{OPERATOR},
-            VALUE         => $args{VALUE},
-        );
+        if ( $args{FIELD} =~ /^CustomField\.(?:(\w+)|\{(.+)\})$/i ) {
+            my $cf_name = $1 || $2;
+            my $cf      = RT::CustomField->new( $self->CurrentUser );
+            $cf->LoadByCols( LookupType => RT::User->CustomFieldLookupType, Name => $cf_name );
+            if ( $cf->id && $cf->CurrentUserHasRight('SeeCustomField') ) {
+                my $ocfvs = $users_obj->Join(
+                    ALIAS1 => 'main',
+                    FIELD1 => 'id',
+                    TABLE2 => 'ObjectCustomFieldValues',
+                    FIELD2 => 'ObjectId',
+                );
+
+                $users_obj->Limit(
+                    LEFTJOIN        => $ocfvs,
+                    FIELD           => 'CustomField',
+                    VALUE           => $cf->id,
+                    ENTRYAGGREGATOR => 'AND',
+                );
+
+                $users_obj->Limit(
+                    LEFTJOIN        => $ocfvs,
+                    FIELD           => 'Disabled',
+                    VALUE           => 0,
+                    ENTRYAGGREGATOR => 'AND',
+                );
+
+                $users_obj->Limit(
+                    ALIAS         => $ocfvs,
+                    FIELD         => 'Content',
+                    OPERATOR      => $args{OPERATOR},
+                    VALUE         => $args{VALUE},
+                    CASESENSITIVE => 0,
+                );
+            }
+        }
+        else {
+            $users_obj->Limit(
+                FIELD         => $args{FIELD},
+                OPERATOR      => $args{OPERATOR},
+                VALUE         => $args{VALUE},
+            );
+        }
         $users_obj->OrderBy;
         $users_obj->RowsPerPage(2);
         my @users = @{ $users_obj->ItemsArrayRef };
@@ -392,21 +429,75 @@ sub RoleLimit {
                 TABLE2          => 'Users',
                 FIELD2          => 'id',
             );
-            $self->Limit(
-                LEFTJOIN      => $users,
-                ALIAS         => $users,
-                FIELD         => $args{FIELD},
-                OPERATOR      => $args{OPERATOR},
-                VALUE         => $args{VALUE},
-                CASESENSITIVE => 0,
-            );
-            $self->Limit(
-                %args,
-                ALIAS         => $users,
-                FIELD         => 'id',
-                OPERATOR      => 'IS',
-                VALUE         => 'NULL',
-            );
+            if ( $args{FIELD} =~ /^CustomField\.(?:(\w+)|\{(.+)\})$/i ) {
+                my $cf_name = $1 || $2;
+                my $cf      = RT::CustomField->new( $self->CurrentUser );
+                $cf->LoadByCols( LookupType => RT::User->CustomFieldLookupType, Name => $cf_name );
+                if ( $cf->id && $cf->CurrentUserHasRight('SeeCustomField') ) {
+                    my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
+                    $self->Join(
+                        TYPE   => 'LEFT',
+                        ALIAS1 => $users,
+                        FIELD1 => 'id',
+                        ALIAS2 => $ocfvs,
+                        FIELD2 => 'ObjectId',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'CustomField',
+                        VALUE           => $cf->id,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'Disabled',
+                        VALUE           => 0,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN      => $ocfvs,
+                        ALIAS         => $ocfvs,
+                        OPERATOR      => $args{OPERATOR},
+                        FIELD         => 'Content',
+                        VALUE         => $args{VALUE},
+                        CASESENSITIVE => 0,
+                    );
+                    $self->Limit(
+                        %args,
+                        ALIAS    => $ocfvs,
+                        FIELD    => 'id',
+                        OPERATOR => 'IS',
+                        VALUE    => 'NULL',
+                    );
+                }
+                else {
+                    $self->Limit(
+                        %args,
+                        FIELD => 'id',
+                        VALUE => 0,
+                    );
+                }
+            }
+            else {
+                $self->Limit(
+                    LEFTJOIN      => $users,
+                    ALIAS         => $users,
+                    FIELD         => $args{FIELD},
+                    OPERATOR      => $args{OPERATOR},
+                    VALUE         => $args{VALUE},
+                    CASESENSITIVE => 0,
+                );
+                $self->Limit(
+                    %args,
+                    ALIAS         => $users,
+                    FIELD         => 'id',
+                    OPERATOR      => 'IS',
+                    VALUE         => 'NULL',
+                );
+            }
         }
     } else {
         # positive condition case
@@ -472,14 +563,61 @@ sub RoleLimit {
                     FIELD2          => 'id',
                 );
             }
-            $self->Limit(
-                %args,
-                ALIAS           => $users,
-                FIELD           => $args{FIELD},
-                OPERATOR        => $args{OPERATOR},
-                VALUE           => $args{VALUE},
-                CASESENSITIVE   => 0,
-            );
+
+            if ( $args{FIELD} =~ /^CustomField\.(?:(\w+)|\{(.+)\})$/i ) {
+                my $cf_name = $1 || $2;
+                my $cf      = RT::CustomField->new( $self->CurrentUser );
+                $cf->LoadByCols( LookupType => RT::User->CustomFieldLookupType, Name => $cf_name );
+                if ( $cf->id && $cf->CurrentUserHasRight('SeeCustomField') ) {
+                    my $ocfvs = $self->NewAlias('ObjectCustomFieldValues');
+                    $self->Join(
+                        ALIAS1 => $users,
+                        FIELD1 => 'id',
+                        ALIAS2 => $ocfvs,
+                        FIELD2 => 'ObjectId',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'CustomField',
+                        VALUE           => $cf->id,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->Limit(
+                        LEFTJOIN        => $ocfvs,
+                        FIELD           => 'Disabled',
+                        VALUE           => 0,
+                        ENTRYAGGREGATOR => 'AND',
+                    );
+
+                    $self->Limit(
+                        %args,
+                        ALIAS           => $ocfvs,
+                        OPERATOR        => $args{OPERATOR},
+                        FIELD           => 'Content',
+                        VALUE           => $args{VALUE},
+                        CASESENSITIVE   => 0,
+                    );
+                }
+                else {
+                    $self->Limit(
+                        %args,
+                        FIELD => 'id',
+                        VALUE => 0,
+                    );
+                }
+            }
+            else {
+                $self->Limit(
+                    %args,
+                    ALIAS           => $users,
+                    FIELD           => $args{FIELD},
+                    OPERATOR        => $args{OPERATOR},
+                    VALUE           => $args{VALUE},
+                    CASESENSITIVE   => 0,
+                );
+            }
         }
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
