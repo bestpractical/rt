@@ -1527,7 +1527,7 @@ default. Add it to your configuration as shown below to enable it.
             'RT::Initialdata::JSON',
             'RT::Extension::Initialdata::Foo',
             ...
-         [
+         ]
        );
 
 =back
