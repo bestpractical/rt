@@ -62,9 +62,10 @@ GENERAL INSTALLATION
 --------------------
 
  1) Unpack this distribution other than where you want to install RT.
-    To do this cleanly, run the following command:
+    Your home directory or /usr/local/src are both fine choices.
+    Change to that directory and run the following command:
 
-        tar xzvf rt.tar.gz -C /tmp
+        tar xzvf rt.tar.gz
 
  2) Run the "configure" script.  To see the list of options, run:
 
