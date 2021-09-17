@@ -77,4 +77,63 @@ sub Table { 'Shorteners'}
 
 RT::Base->_ImportOverlays();
 
+
+=head2 ClearOld TIME
+
+Delete all temporary Shorteners that haven't been accessed for the specified
+TIME.
+
+TIME is in the C<< <NUM>[<unit>] >> format. Default unit is D(ays). H(our),
+M(onth) and Y(ear) are also supported.
+
+Passing 0 to delete all temporary Shorteners. Default is 1M(i.e. 1 month).
+
+Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
+
+=cut
+
+sub ClearOld {
+    my $self  = shift;
+    my $older = shift // '1M';
+
+    my $seconds;
+    if ($older) {
+        unless ( $older =~ /^\s*([0-9]+)\s*(H|D|M|Y)?$/i ) {
+            return ( 0, $self->loc("wrong format of the 'older' argumnet") );
+        }
+        my ( $num, $unit ) = ( $1, uc( $2 || 'D' ) );
+        my %factor = ( H => 60 * 60 );
+        $factor{'D'} = $factor{'H'} * 24;
+        $factor{'M'} = $factor{'D'} * 31;
+        $factor{'Y'} = $factor{'D'} * 365;
+        $seconds     = $num * $factor{$unit};
+    }
+
+    my $dbh = RT->DatabaseHandle->dbh;
+    my $rows;
+    if ($seconds) {
+        require POSIX;
+        my $date = POSIX::strftime( "%Y-%m-%d %H:%M", gmtime( time - int $seconds ) );
+        my $sth  = $dbh->prepare("DELETE FROM Shorteners WHERE Permanent = ? AND LastAccessed < ?");
+        return ( 0, $self->loc( "Couldn't prepare query: [_1]", $dbh->errstr ) ) unless $sth;
+        $rows = $sth->execute( 0, $date );
+        return ( 0, $self->loc( "Couldn't execute query: [_1]", $dbh->errstr ) ) unless defined $rows;
+    }
+    else {
+        my $sth = $dbh->prepare("DELETE FROM Shorteners WHERE Permanent = ?");
+        return ( 0, $self->loc( "Couldn't prepare query: [_1]", $dbh->errstr ) ) unless $sth;
+        $rows = $sth->execute(0);
+        return ( 0, $self->loc( "Couldn't execute query: [_1]", $dbh->errstr ) ) unless defined $rows;
+    }
+
+    # $rows could be 0E0, here we want to show it 0
+    $rows = sprintf '%d', $rows;
+    if ( $rows == 0 ) {
+        return ( 1, $self->loc("No qualified shorteners found, nothing to do") );
+    }
+    else {
+        return ( 1, $self->loc( "Successfully deleted [quant,_1,shortener,shorteners]", $rows ) );
+    }
+}
+
 1;
