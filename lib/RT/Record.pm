@@ -313,6 +313,12 @@ sub Create {
     $attribs{'LastUpdatedBy'} = $self->CurrentUser->id || '0'
       if ( $self->_Accessible( 'LastUpdatedBy', 'auto' ) && !$attribs{'LastUpdatedBy'});
 
+    $attribs{'LastAccessed'} = $now_iso
+      if ( $self->_Accessible( 'LastAccessed', 'auto' ) && !$attribs{'LastAccessed'});
+
+    $attribs{'LastAccessedBy'} = $self->CurrentUser->id || '0'
+      if ( $self->_Accessible( 'LastAccessedBy', 'auto' ) && !$attribs{'LastAccessedBy'});
+
     my $id = $self->SUPER::Create(%attribs);
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
         if ( $id->errno ) {

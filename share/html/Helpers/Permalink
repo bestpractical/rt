@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,53 +45,55 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<%init>
-my $path = $m->dhandler_arg;
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><&|/l&>Permalink</&></h5>
+      <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
+    <div class="modal-body text-center">
+      <div class="my-2">
+        <a href="<% $URL %>"><% $URL %></a><br>
+      </div>
+      <div>
+        <button class="button btn btn-primary clipboard-copy" data-copied-text=<% loc('Copied') %> data-clipboard-text="<% $URL %>"><% loc('Copy') %></button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+    jQuery(function() {
+        var clipboard = new ClipboardJS('.clipboard-copy');
+        clipboard.on('success', function(e) {
+            var btn = jQuery(e.trigger);
+            btn.text(btn.data('copied-text'));
+        });
+    });
+</script>
+% $m->abort;
 
-my $notfound = sub {
-    my $mesg = shift;
-    $r->headers_out->{'Status'} = '404 Not Found';
-    $RT::Logger->info("Error encountered in rss generation: $mesg");
-    $m->clear_and_abort;
-};
+<%INIT>
+my $shortener = RT::Shortener->new( $session{CurrentUser} );
+$shortener->LoadByCode($Code);
 
-$notfound->("Invalid path: $path") unless $path =~ m!^([^/]+)/([^/]+)/?!;
-
-my ( $name, $auth ) = ( $1, $2 );
-
-# Unescape parts
-$name =~ s/\%([0-9a-z]{2})/chr(hex($1))/gei;
-
-# convert to perl strings
-$name = Encode::decode( "UTF-8", $name);
-
-my $user = RT::User->new(RT->SystemUser);
-$user->Load($name);
-$notfound->("Invalid user: $user") unless $user->id;
-
-$notfound->("Invalid authstring")
-  unless $user->ValidateAuthString( $auth,
-          $ARGS{sc} || ( $ARGS{Query} . $ARGS{Order} . $ARGS{OrderBy} ) );
-
-my $cu = RT::CurrentUser->new;
-$cu->Load($user);
-local $session{'CurrentUser'} = $cu;
-
-if ( my $sc = $ARGS{sc} ) {
-    my $shortener = RT::Shortener->new( $session{CurrentUser} );
-    $shortener->LoadByCode($sc);
-    if ( $shortener->Id ) {
-        my $content = $shortener->DecodedContent;
-        for my $key ( keys %$content ) {
-            if ( !exists $ARGS{$key} ) {
-                $ARGS{$key} = $content->{$key};
-            }
-        }
-    }
-    else {
-        RT->Logger->warning("Couldn't load shortener $sc");
-    }
+if ( $URL =~ m{^/} ) {
+    $URL = RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') .  $URL;
 }
 
-$m->comp("/Search/Elements/ResultsRSSView", %ARGS);
-</%init>
+my %data;
+if ( $shortener->Id ) {
+    if ( !$shortener->Permanent ) {
+        my ( $ret, $msg ) = $shortener->SetPermanent(1);
+        unless ( $ret ) {
+            RT->Logger->error("Couldn't update Permanent for $Code: $msg");
+        }
+    }
+}
+</%INIT>
+
+<%ARGS>
+$Code => ''
+$URL => ''
+</%ARGS>

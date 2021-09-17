@@ -197,7 +197,7 @@ foreach my $col ( @Format ) {
         $m->out(
             '<span class="title"><a href="' . $m->interp->apply_escapes($BaseURL
             . $m->comp( '/Elements/QueryString',
-                %$generic_query_args,
+                ShortenSearchQuery(%$generic_query_args),
                 OrderBy => join( '|', @new_order_by ), Order => join( '|', @new_order ),
             ), 'h')
             . '">'. $loc_title .'</a></span>'

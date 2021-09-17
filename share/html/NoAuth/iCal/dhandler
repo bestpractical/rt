@@ -68,6 +68,18 @@ my $user = RT::User->new( RT->SystemUser );
 $user->Load( $name );
 $notfound->() unless $user->id;
 
+if ( $search =~ /^sc-(\w+)$/ ) {
+    my $sc        = $1;
+    my $shortener = RT::Shortener->new( $session{CurrentUser} );
+    $shortener->LoadByCode($sc);
+    if ( $shortener->Id ) {
+        $search = $shortener->DecodedContent->{Query};
+    }
+    else {
+        RT->Logger->warning("Couldn't load shortener $sc");
+    }
+}
+
 $notfound->() unless $user->ValidateAuthString( $auth, $search );
 
 my $cu = RT::CurrentUser->new;

@@ -364,11 +364,12 @@ $session{$hash_name} = {
 # Show the results, if we were asked.
 
 if ( $ARGS{'DoSearch'} ) {
-    my $redir_query_string = $m->comp(
-        '/Elements/QueryString',
-        %query,
-        SavedChartSearchId => $ARGS{'SavedChartSearchId'},
-        SavedSearchId => $saved_search{'Id'},
+    my $redir_query_string = QueryString(
+        ShortenSearchQuery(
+            %query,
+            SavedChartSearchId => $ARGS{'SavedChartSearchId'},
+            SavedSearchId      => $saved_search{'Id'},
+        )
     );
     RT::Interface::Web::Redirect("$ResultPage?$redir_query_string");
     $m->abort;

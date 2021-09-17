@@ -961,6 +961,15 @@ jQuery(function() {
 
     // Handle implicit form submissions like hitting Return/Enter on text inputs
     jQuery('form[name=search-results-filter]').submit(filterSearchResults);
+    jQuery('a.permalink').click(function() {
+        var link = jQuery(this);
+        jQuery.get(
+            RT.Config.WebPath + "/Helpers/Permalink",
+            { Code: link.data('code'), URL: link.data('url') },
+            showModal
+        );
+        return false;
+    });
 });
 
 function filterSearchResults () {
