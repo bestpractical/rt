@@ -2552,8 +2552,12 @@ sub _UpdateObject {
         }
     }
 
-    for my $field ( sort { $a eq 'ApplyTo' || $b eq 'ApplyTo' ? 1 : 0 } keys %$values ) {
+    my %order = (
+        'Queue'   => 1,
+        'ApplyTo' => 1,
+    );
 
+    for my $field ( sort { ( $order{$a} || 0 ) <=> ( $order{b} || 0 ) } keys %$values ) {
         if ( $class eq 'RT::Attribute' ) {
             if ( $field eq 'Content' ) {
                 $self->_CanonilizeAttributeContent( $values );
@@ -2685,6 +2689,98 @@ sub _UpdateObject {
                         RT->Logger->error( "Couldn't create CustomFieldValue $new{$name}{Name} to CustomField #"
                               . $object->id
                               . ": $msg" );
+                    }
+                }
+                next;
+            }
+        }
+        elsif ( $class eq 'RT::Scrip' ) {
+            if ( $field eq 'Queue' ) {
+                my %current;
+                my %new;
+
+                # Calculate changes based on $original if possible
+                if ( defined $original->{Queue} ) {
+                    for my $item ( @{$original->{Queue}} ) {
+                        # Globally applied
+                        if ( $item->{ObjectId} eq 0 ) {
+                            $current{ $item->{Stage} }{0} = $item->{SortOrder};
+                        }
+                        else {
+                            my $queue = RT::Queue->new( RT->SystemUser );
+                            $queue->Load( $item->{ObjectId} );
+                            if ( $queue->id ) {
+                                $current{ $item->{Stage} }{ $queue->id } = $item->{SortOrder};
+                            }
+                        }
+                    }
+                }
+                else {
+                    my $object_scrips = RT::ObjectScrips->new(RT->SystemUser);
+                    $object_scrips->LimitToScrip($object->id);
+
+                    while ( my $object_scrip = $object_scrips->Next ) {
+                        $current{$object_scrip->Stage}{$object_scrip->ObjectId} = $object_scrip->SortOrder;
+                    }
+                }
+
+                for my $item ( @{ $value || [] } ) {
+                    if ( $item->{ObjectId} eq 0 ) {
+                        $new{ $item->{Stage} }{0} = $item->{SortOrder};
+                    }
+                    else {
+                        my $queue = RT::Queue->new( RT->SystemUser );
+                        $queue->Load( $item->{ObjectId} );
+                        if ( $queue->id ) {
+                            $new{ $item->{Stage} }{ $queue->id } = $item->{SortOrder};
+                        }
+                    }
+                }
+
+                for my $stage ( sort keys %current ) {
+                    for my $id ( sort { $current{$stage}{$a} <=> $current{$stage}{$b} } keys %{ $current{$stage} } ) {
+                        my $object_scrip = RT::ObjectScrip->new( RT->SystemUser );
+                        $object_scrip->LoadByCols( Scrip => $object->id, ObjectId => $id, Stage => $stage );
+                        if ( $object_scrip->id ) {
+                            if ( defined $new{$stage}{$id} ) {
+                                if ( $new{$stage}{$id} != $current{$stage}{$id} ) {
+                                    my ( $ret, $msg ) = $object_scrip->SetSortOrder( $new{$stage}{$id} );
+                                    if ( !$ret ) {
+                                        RT->Logger->error( "Couldn't update SortOrder of ObjectScrip #"
+                                                . $object_scrip->id
+                                                . ": $msg" );
+                                    }
+                                }
+                            }
+                            else {
+                                my ( $ret, $msg ) = $object_scrip->Delete;
+                                if ( !$ret ) {
+                                    RT->Logger->error( "Couldn't delete ObjectScrip #" . $object_scrip->id . ": $msg" );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for my $stage ( sort keys %new ) {
+                    for my $id ( sort { $new{$stage}{$a} <=> $new{$stage}{$b} } keys %{ $new{$stage} } ) {
+                        next if defined $current{$stage}{$id};
+
+                        my $object_scrip = RT::ObjectScrip->new( RT->SystemUser );
+                        $object_scrip->LoadByCols( Scrip => $object->id, ObjectId => $id, Stage => $stage );
+                        if ( !$object_scrip->id ) {
+                            my ( $ret, $msg ) = $object_scrip->Create(
+                                Scrip     => $object->id,
+                                ObjectId  => $id,
+                                Stage     => $stage,
+                                SortOrder => $new{$stage}{SortOrder},
+                            );
+                            if ( !$ret ) {
+                                RT->Logger->error( "Couldn't create ObjectScrip for Scrip #"
+                                        . $object->id
+                                        . " and Queue #$id: $msg" );
+                            }
+                        }
                     }
                 }
                 next;
