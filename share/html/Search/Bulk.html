@@ -207,6 +207,9 @@
       <div class="form-row">
         <div class="label col-3">
           <&|/l, $role->Name &>Make [_1]</&>:
+%         if ($role->EntryHint) {
+            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
         </div>
         <div class="value col-9">
           <& /Elements/SingleUserRoleInput, role => $role, ShowPlaceholder => 0, ShowEntryHint => 0, Size => 20, Default => $ARGS{"RT::CustomRole-" . $role->Id} &>
@@ -221,6 +224,9 @@
       <div class="form-row">
         <div class="label col-3">
           <&|/l, $role->Name &>Add [_1]</&>:
+%         if ($role->EntryHint) {
+            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
         </div>
         <div class="value col-9">
           <& /Elements/MultiUserRoleInput, role => $role, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
@@ -230,6 +236,9 @@
       <div class="form-row">
         <div class="label col-3">
           <&|/l, $role->Name &>Remove [_1]</&>:
+%         if ($role->EntryHint) {
+            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
         </div>
         <div class="value col-9">
           <& /Elements/MultiUserRoleInput, role => $role, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
