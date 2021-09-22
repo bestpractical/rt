@@ -22,7 +22,7 @@ requires 'DateTime', '>= 0.44';
 requires 'DateTime::Format::Natural', '>= 0.67';
 requires 'DateTime::Locale', '>= 0.40, != 1.00, != 1.01';
 requires 'DBI', '>= 1.37';
-requires 'DBIx::SearchBuilder', '>= 1.68';
+requires 'DBIx::SearchBuilder', '>= 1.71';
 requires 'Devel::GlobalDestruction';
 requires 'Devel::StackTrace', '>= 1.19, != 1.28, != 1.29';
 requires 'Digest::base';
