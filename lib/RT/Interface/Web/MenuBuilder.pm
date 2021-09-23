@@ -1362,6 +1362,12 @@ sub _BuildAdminMenu {
         );
     }
 
+    $admin_tools->child(
+        'shortener' => title => loc('Shortener Viewer'),
+        description => loc('View shortener details'),
+        path        => '/Admin/Tools/Shortener.html',
+    );
+
     if ( $request_path =~ m{^/Admin/(Queues|Users|Groups|CustomFields|CustomRoles)} ) {
         my $type = $1;
 
