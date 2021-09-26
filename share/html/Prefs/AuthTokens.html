@@ -50,9 +50,11 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <& /Elements/AuthToken/List, %ARGS, Owner => $session{'CurrentUser'}->Id &>
+% $m->callback( CallbackName => 'AfterAuthTokensList', ARGSRef => \%ARGS );
 
 <%INIT>
 my @results = ProcessAuthToken(ARGSRef => \%ARGS);
+$m->callback( CallbackName => 'AfterAuthTokensProcessing', ARGSRef => \%ARGS, Actions => \@results );
 
 MaybeRedirectForResults( Actions => \@results );
 </%INIT>
