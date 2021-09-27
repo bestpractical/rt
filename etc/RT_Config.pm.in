@@ -1625,6 +1625,16 @@ Admin -> Tools menu for SuperUsers.
 
 Set($StatementLog, undef);
 
+=item SQL bind parameters
+
+RT enables SQL bind parameters for all searches by default, which improves
+performance especially for Oracle. If you need to disable this for some
+reason, add this to config:
+
+    $ENV{SB_PREFER_BIND} = 0;
+
+See also L<DBIx::SearchBuilder/BuildSelectQuery>.
+
 =back
 
 

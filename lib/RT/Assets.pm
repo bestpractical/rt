@@ -983,6 +983,9 @@ sub _LinkLimit {
     if ( RT->Config->Get('DatabaseType') eq 'SQLite' ) {
         $join_expression = qq{'$local_prefix' || main.id};
     }
+    elsif ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+        $join_expression = qq{CONCAT( '$local_prefix'::text,  main.id )};;
+    }
     else {
         $join_expression = qq{CONCAT( '$local_prefix',  main.id )};;
     }
