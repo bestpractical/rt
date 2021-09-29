@@ -274,6 +274,7 @@ sub HandleRequest {
         my $mason_cache_created = MasonCacheCreatedDate();
         if ( $HTML::Mason::Commands::m->interp->{rt_mason_cache_created} ne $mason_cache_created ) {
             $HTML::Mason::Commands::m->interp->flush_code_cache;
+            $HTML::Mason::Commands::m->clear_callback_cache;
             $HTML::Mason::Commands::m->interp->{rt_mason_cache_created} = $mason_cache_created;
         }
     }
