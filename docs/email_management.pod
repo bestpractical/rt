@@ -1,0 +1,76 @@
+=head1 RT and Email
+
+Nearly all RT instances are set up to receive and send email for communication
+on tickets and many other notification scenarios. Often the email addresses
+RT receives email from are used by end users to communicate with you about
+their tickets. Whether it's for support (support@example.com) or security
+(incident@example.com), these emails go directly into RT and either create
+a new ticket or add a note to an existing ticket.
+
+RT also sends email to notify the people connected to a ticket (watchers)
+that a new message has been added. The result is that your team all gets
+notified as if they received the email directly, but it's all tracked in
+RT. People can be added and removed from the ticket to manage
+notifications through the life of the ticket.
+
+=head1 Email Warnings and Errors
+
+Just as with your regular email, there are various things that can
+happen to interfere with email received by, or sent out from, RT.
+If you are the RT administrator, the first thing you need to do
+to troubleshoot these issues is to be aware of them.
+
+To receive an email from RT when it finds an email issue, set the
+L<RT_Config/OwnerEmail> configuration option to your email address.
+You should use an email address that specifically goes to a person.
+Do not set this to an RT email address since it's being sent because
+RT has detected an email issue.
+
+In RT 5.0.1 and earlier, C<OwnerEmail> would also be displayed on the
+default RT login page for users who might have issues logging in. Starting
+in RT 5.0.2, L<RT_Config/RTSupportEmail> controls the email shown on the
+login page, so you can set C<OwnerEmail> without it being displayed.
+
+Below are some of the different types of email notifications you might
+receive from RT.
+
+=head2 Rights Notifications
+
+RT has various rights that manage how users can interact with the system,
+including C<CreateTicket>, C<ReplyToTicket>, and C<CommentOnTicket>. If
+a user sends an email to an RT email address and that user (identified by
+their From address) doesn't have rights to create a ticket, RT will
+automatically send a reply explaining that they don't have rights. If you
+have C<OwnerEmail> set, you will also get an email.
+
+This is a good way to confirm you have your rights set correctly. If you
+restrict your RT, it maybe be perfectly OK to prevent unknown users from
+creating or updating tickets. Receiving a notification email is a good way
+to confirm you aren't blocking someone who should have access.
+
+=head2 Bounced Email
+
+Sometimes when we send email, the email server that receives it may detect
+a problem of some sort and "bounce" it back with an error message. That
+automatic response email from the remote server can come back to RT
+looking like a normal ticket reply. If RT posts that to the ticket, another
+email could go out which will generate the same error response. This back
+and forth is called an "email loop" and it can continue until one of the servers
+starts to have problems.
+
+To prevent this, RT works to detect incoming email that looks like a bounce
+and prevent it from getting added to tickets, avoiding these loops. To further
+refine this behavior, RT also has the options L<RT_Config/LoopsToRTOwner>
+and L<RT_Config/StoreLoops>.
+
+Bounces usually result from some issue with a recipient address. This could
+be a typo in the email address itself, or the receipient may no longer be at
+that company so their email account is inactive. The solution for these
+cases is to fix the incorrect email address on the RT user record or remove
+the user with the inactive email address from the ticket so RT will stop
+sending email to that address.
+
+In some cases, an email address for another automated system or even one
+of RT's own email addresses, can get added as a watcher on a ticket. These
+can also result in automated email replies or bounces and the solution is
+to remove them from roles (Requestors, Cc, etc.) on the ticket.
