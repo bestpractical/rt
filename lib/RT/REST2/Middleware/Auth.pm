@@ -86,12 +86,7 @@ sub login_from_cookie {
         # this is foul but LoadSessionFromCookie doesn't have a hook for
         # saying "look up cookie in my $env". this beats duplicating
         # LoadSessionFromCookie
-        local *RT::Interface::Web::RequestENV = sub { return $env->{$_[0]} }
-            if RT::Handle::cmp_version($RT::VERSION, '4.4.0') >= 0;
-
-        # similar but for 4.2
-        local %ENV = %$env
-            if RT::Handle::cmp_version($RT::VERSION, '4.4.0') < 0;
+        local *RT::Interface::Web::RequestENV = sub { return $env->{$_[0]} };
 
         local *HTML::Mason::Commands::session;
 
