@@ -1910,41 +1910,6 @@ sub RequestENV {
     return $name ? $env->{$name} : $env;
 }
 
-=head2 ClearMasonCache
-
-Delete current mason cache.
-
-=cut
-
-sub ClearMasonCache {
-    require File::Path;
-    require File::Spec;
-    my $mason_obj_dir = File::Spec->catdir( $RT::MasonDataDir, 'obj' );
-
-    my $error;
-
-    # There is a race condition that other processes add new cache items while
-    # remove_tree is running, which could prevent it from deleting the whole "obj"
-    # directory with errors like "Directory not empty". Let's try for a few times
-    # here to get around it.
-
-    for ( 1 .. 10 ) {
-        last unless -e $mason_obj_dir;
-        File::Path::remove_tree( $mason_obj_dir, { safe => 1, error => \$error } );
-    }
-
-    if ( $error && @$error ) {
-
-        # Only one dir is specified, so there will be only one error if any
-        my ( $file, $message ) = %{ $error->[0] };
-        RT->Logger->error("Failed to clear mason cache: $file => $message");
-        return ( 0, HTML::Mason::Commands::loc( "Failed to clear mason cache: [_1] => [_2]", $file, $message ) );
-    }
-    else {
-        return ( 1, HTML::Mason::Commands::loc('Cache cleared') );
-    }
-}
-
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
