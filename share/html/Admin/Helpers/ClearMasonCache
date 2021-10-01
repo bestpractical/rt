@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <%init>
 
-my ( $ret, $msg ) = RT::Interface::Web::ClearMasonCache();
+$m->interp->remove_object_files;
 $r->content_type( 'application/json; charset=utf-8' );
-$m->out( JSON( { status => $ret, message => $msg } ) );
+$m->out( JSON( { status => 1, message => loc('Cache cleared') } ) );
 $m->abort;
 </%init>
