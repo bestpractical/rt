@@ -285,6 +285,10 @@ sub find_differences {
         if ( $record->{Topics} ) {
             delete $_->{id} for @{$record->{Topics}};
         }
+
+        if ( $type eq 'Scrips' && $record->{Queue} ) {
+            delete $_->{id} for @{$record->{Queue}};
+        }
     }
 
     my @changes;
