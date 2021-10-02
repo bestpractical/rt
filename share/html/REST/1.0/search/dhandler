@@ -52,6 +52,7 @@ $query
 $format => undef
 $orderby => undef
 $fields => undef
+$include_deleted => undef
 </%ARGS>
 <%INIT>
 my $type = $m->dhandler_arg;
@@ -116,6 +117,10 @@ if ( $type =~ /^(ticket|queue|user|group)$/i ) {
 
     if ( defined $query && length $query ) {
         if ( $type eq 'ticket' ) {
+            if ($include_deleted) {
+                 $objects->{'allow_deleted_search'} = 1
+            }
+
             my ( $n, $s );
             eval { ( $n, $s ) = $objects->FromSQL($query); };
             if ( $@ || $n == 0 ) {
