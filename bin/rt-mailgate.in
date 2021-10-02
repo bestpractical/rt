@@ -56,6 +56,7 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+use IO::Socket::SSL;
 
 my $opts = { };
 GetOptions( $opts,   "queue=s", "action=s", "url=s",
@@ -154,7 +155,13 @@ sub get_useragent {
     $ua->agent("rt-mailgate/@RT_VERSION_MAJOR@.@RT_VERSION_MINOR@.@RT_VERSION_PATCH@ ");
     $ua->cookie_jar( { file => $opts->{'jar'} } ) if $opts->{'jar'};
 
-    $ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} );
+	if ( $opts->{"verify-ssl"} == 0 ) {
+		$ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} );
+		$ua->ssl_opts( SSL_verify_mode => IO::Socket::SSL::SSL_VERIFY_NONE );
+	} else {
+       	$ua->ssl_opts( verify_hostname => $opts->{'verify-ssl'} );
+    }
+
     $ua->ssl_opts( SSL_ca_file => $opts->{'ca-file'} )
         if $opts->{'ca-file'};
 
