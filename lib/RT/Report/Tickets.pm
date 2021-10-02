@@ -99,6 +99,8 @@ our @GROUPINGS = (
     CF            => 'CustomField',     #loc_left_pair
 
     SLA           => 'Enum',            #loc_left_pair
+
+    Lifecycle     => 'Lifecycle',       #loc_left_pair
 );
 our %GROUPINGS;
 
@@ -353,6 +355,9 @@ our %GROUPINGS_META = (
         Show     => 1,
         Sort     => 'duration',
         Distinct => 1,
+    },
+    Lifecycle => {
+        Function => 'GenerateLifecycleFunction',
     },
 );
 
@@ -1399,6 +1404,22 @@ sub GenerateWatcherFunction {
     }
     @args{qw(ALIAS FIELD)} = ($alias, $column);
 
+    return %args;
+}
+
+sub GenerateLifecycleFunction {
+    my $self = shift;
+    my %args = @_;
+
+    my $l_alias = $self->{"_sql_report_lifecycle"}
+        ||= $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => 'main',
+            FIELD1 => 'Queue',,
+            TABLE2 => 'Queues',
+            FIELD2 => 'id',
+        );
+    @args{qw(ALIAS FIELD)} = ($l_alias, 'Lifecycle');
     return %args;
 }
 
