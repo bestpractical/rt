@@ -2018,6 +2018,33 @@ sub ExpandShortenerCode {
             my $content = $shortener->DecodedContent;
             $shortener->_SetLastAccessed;
 
+            if ( my $search_id = delete $content->{SavedSearchId} ) {
+                my $search = RT::SavedSearch->new( $HTML::Mason::Commands::session{CurrentUser} );
+                my ( $ret, $msg ) = $search->LoadById($search_id);
+                if ($ret) {
+                    my %search_content = %{ $search->{Attribute}->Content || {} };
+                    my $type           = delete $search_content{SearchType} || 'Ticket';
+                    my $id             = join '-',
+                        $search->_build_privacy( $search->{Attribute}->ObjectType, $search->{Attribute}->ObjectId ),
+                        'SavedSearch', $search_id;
+                    if ( $type eq 'Chart' ) {
+                        $content->{SavedChartSearchId} = $id;
+                    }
+                    else {
+                        $content->{SavedSearchId} = $id;
+                        $content->{Class}         = "RT::${type}s";
+                    }
+
+                    $content->{SearchFields}    = [ keys %search_content ];
+                    $content->{SavedSearchLoad} = $content->{SavedSearchId} || $content->{SavedChartSearchId};
+                }
+                else {
+                    RT->Logger->warning("Could not load saved search $sc: $msg");
+                    push @{ $HTML::Mason::Commands::session{Actions}{''} },
+                        HTML::Mason::Commands::loc( "Could not load saved search [_1]: [_2]", $sc, $msg );
+                }
+            }
+
             # Shredder uses different parameters from search pages
             if ( $HTML::Mason::Commands::r->path_info =~ m{^/+Admin/Tools/Shredder} ) {
                 if ( $content->{Class} eq 'RT::Tickets' ) {

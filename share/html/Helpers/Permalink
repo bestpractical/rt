@@ -54,11 +54,17 @@
       </a>
     </div>
     <div class="modal-body text-center">
+%   if ( $shortener->Id && $shortener->DecodedContent->{SavedSearchId} ) {
+      <p class="description mt-1 ml-3">
+        <&|/l&>If you share this link, other users will need rights to load your saved search. Note that My saved searches are visible only to you.</&>
+      </p>
+%   }
+
       <div class="my-2">
         <a href="<% $URL %>"><% $URL %></a><br>
       </div>
       <div>
-        <button class="button btn btn-primary clipboard-copy" data-copied-text=<% loc('Copied') %> data-clipboard-text="<% $URL %>"><% loc('Copy') %></button>
+        <button class="button btn btn-primary form-control clipboard-copy" data-copied-text=<% loc('Copied') %> data-clipboard-text="<% $URL %>"><% loc('Copy') %></button>
       </div>
     </div>
   </div>
