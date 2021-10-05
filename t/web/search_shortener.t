@@ -64,4 +64,46 @@ $m->form_id('shredder-search-form');
 is( $m->value('Tickets:query'), 'id < 10', 'Tickets:query in shredder' );
 is( $m->value('Tickets:limit'), 50,        'Tickets:limit in shredder' );
 
+
+$m->get_ok('/Search/Build.html?Query=Queue="General"');
+$m->submit_form_ok(
+    {   form_name => 'BuildQuery',
+        fields    => { SavedSearchDescription => 'my saved search' },
+        button    => 'SavedSearchSave',
+    },
+    'Created saved search'
+);
+$m->follow_link_ok( { text => 'View', url_regex => qr{/Search/Build\.html\?sc=\w+} } );
+$m->form_name('BuildQuery');
+is( $m->value('SavedSearchDescription'), 'my saved search', 'Loaded saved search' );
+
+$m->follow_link_ok( { text => 'Chart', url_regex => qr{/Search/Chart\.html\?.*\bsc=\w+} } );
+$m->text_contains(q{Queue = 'General'});
+
+$m->submit_form_ok(
+    {   form_number => 3,
+        fields      => { Width => 800, Height => 400 },
+        button      => 'Update',
+    },
+    'Updaetd chart search'
+);
+$m->form_number(3);
+is( $m->value('Width'),  800, 'Width is updated' );
+is( $m->value('Height'), 400, 'Height is updated' );
+
+$m->submit_form_ok(
+    {   form_name => 'SaveSearch',
+        fields    => { SavedSearchDescription => 'my chart saved search' },
+        button    => 'SavedSearchSave',
+    },
+    'Created chart saved search'
+);
+$m->follow_link_ok( { text => 'View', url_regex => qr{/Search/Chart\.html\?sc=\w+} } );
+$m->form_name('SaveSearch');
+is( $m->value('SavedSearchDescription'), 'my chart saved search', 'Loaded chart saved search' );
+
+$m->form_number(3);
+is( $m->value('Width'),  800, 'Width is set' );
+is( $m->value('Height'), 400, 'Height is set' );
+
 done_testing;
