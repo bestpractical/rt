@@ -305,6 +305,8 @@ sub _Create {
         @_
     );
 
+    $args{'Name'} = $self->CanonicalizeName( $args{'Name'} );
+
     if ($args{'Domain'}) {
         # Enforce uniqueness on user defined group names
         if ($args{'Domain'} eq 'UserDefined') {
@@ -647,7 +649,7 @@ sub SetName {
     my $self = shift;
     my $value = shift;
 
-    my ($status, $msg) = $self->_Set( Field => 'Name', Value => $value );
+    my ($status, $msg) = $self->_Set( Field => 'Name', Value => $self->CanonicalizeName($value) );
     return ($status, $msg);
 }
 
@@ -1788,6 +1790,20 @@ sub URI {
     require RT::URI::group;
     my $uri = RT::URI::group->new($self->CurrentUser);
     return $uri->URIForObject($self);
+}
+
+=head2 CanonicalizeName NAME
+
+Strip leading/trailing spaces and returns the updated name.
+
+=cut
+
+sub CanonicalizeName {
+    my $self = shift;
+    my $name = shift // return undef;
+    $name =~ s!^\s+!!;
+    $name =~ s!\s+$!!;
+    return $name;
 }
 
 RT::Base->_ImportOverlays();

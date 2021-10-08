@@ -114,6 +114,7 @@ if ($Create) {
         my ($create_id, $create_msg) = $Group->CreateUserDefinedGroup(Name => $Name );
         if ($create_id) {
             $id = $Group->Id;
+            $Name = $Group->Name; # In case original $Name has leading/trailing spaces
             push @results, $create_msg;
         } else {
             push @results, loc("Group could not be created: [_1]", $create_msg);
