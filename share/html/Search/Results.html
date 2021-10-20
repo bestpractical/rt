@@ -87,7 +87,7 @@
 
 % my %hiddens = ( BaseQuery => $BaseQuery || $Query, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
 <div align="right" class="refresh">
-<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
+<form method="POST" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
@@ -301,6 +301,8 @@ $link_rel{first} = $BaseURL . $genpage->(1)         if $Page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($Page - 1) if $Page > 1;
 $link_rel{next}  = $BaseURL . $genpage->($Page + 1) if ($Page * $Rows) < $count;
 $link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($count/$Rows)) if $Rows and ($Page * $Rows) < $count;
+
+$m->notes( RefreshURL => '?' . QueryString( ShortenSearchQuery(%ARGS) ) );
 </%INIT>
 <%CLEANUP>
 $session{$session_name}->PrepForSerialization();
