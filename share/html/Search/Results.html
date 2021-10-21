@@ -85,7 +85,7 @@
 % }
 % $m->callback( ARGSRef => \%ARGS, Count => $count, CallbackName => 'AfterResults' );
 
-% my %hiddens = ( BaseQuery => $BaseQuery || $Query, Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
+% my %hiddens = ( BaseQuery => $BaseQuery || $Query, Query => $Query, Format => $Format, Class => $Class, ObjectType => $ObjectType, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
 <div align="right" class="refresh">
 <form method="POST" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
