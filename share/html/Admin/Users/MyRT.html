@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,22 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => $title  &>
 <& /Elements/Tabs &>
-
 <& /Elements/ListActions, actions => \@actions &>
 
-<form method="post" action="MyRT.html">
-<input type="hidden" name="id" value="<% $id %>" />
-<input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button" value="<%loc('Reset to default')%>">
+<&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-lg" &>
+<form method="post" action="MyRT.html" name="UpdateSearches" class="mx-auto max-width-lg">
+  <input type="hidden" name="id" value="<% $id %>" />
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/SelectDashboard, Dashboards => GetDashboards( CurrentUser => $UserObj ), Default => $default_dashboard_id &>
+    </div>
+  </div>
 </form>
-
-<br />
-
-% for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane &></&>
-<br />
-% }
+</&>
 
 <%init>
 my @actions;
@@ -70,58 +66,33 @@ my $UserObj = RT::User->new($session{'CurrentUser'});
 $UserObj->Load($id) || Abort("Couldn't load user '" . ($id || '') . "'");
 my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
 
-if ($ARGS{Reset}) {
-    my ($ok, $msg) = $UserObj->SetPreferences('HomepageSettings', {});
-    push @actions, $ok ? loc('Preferences saved for user [_1].', $UserObj->Name) : $msg;
-}
+my $default_dashboard_id = $UserObj->Preferences( DefaultDashboard => 0 );
 
-my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-my $portlets  = $UserObj->Preferences('HomepageSettings', $default_portlets ? $default_portlets->Content  : {});
-
-my %allowed_components = map {$_ => 1} @{ RT->Config->Get('HomepageComponents') };
-
-my @items;
-push @items, map {["component-$_", loc($_)]} sort keys %allowed_components;
-
-my $sys = RT::System->new( RT::CurrentUser->new($UserObj) );
-my @objs = ($sys);
-
-push @objs, RT::SavedSearch->new( RT::CurrentUser->new( $UserObj ) )->ObjectsForLoading;
-
-for my $object (@objs) {
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-        my ($desc, $loc_desc, $search) = @$_;
-        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-        if ($object eq $sys && $SearchType eq 'Ticket') {
-            push @items, ["system-$desc", $loc_desc];
+my ($default) = map { /^DefaultDashboard-(\d+)/ ? $1 : () } keys %ARGS;
+if ( defined $default ) {
+    my ( $ret, $msg );
+    if ( $default ) {
+        ( $ret, $msg ) = $UserObj->SetPreferences( 'DefaultDashboard', $default );
+    }
+    else {
+        if ( $default_dashboard_id ) {
+            ( $ret, $msg ) = $UserObj->DeletePreferences( 'DefaultDashboard' );
         }
         else {
-            my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
-            my $type = ($SearchType eq 'Ticket')
-                ? 'Saved Search' # loc
-                : $SearchType;
-            push @items, ["saved-$oid", loc($type).": $loc_desc"];
+            $ret = 1;
         }
     }
+
+    push @actions, $ret ? loc('Preferences saved for user [_1].', $UserObj->Name) : $msg;
+
+    MaybeRedirectForResults(
+        Actions   => \@actions,
+        Path      => "/Admin/Users/MyRT.html",
+        Arguments => { id => $id },
+    );
 }
 
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'sidebar'],
-    Action => "MyRT.html?id=$id",
-    items => \@items,
-    current_portlets => $portlets,
-    OnSave => sub {
-        my ( $conf, $pane ) = @_;
-        my ($ok, $msg) = $UserObj->SetPreferences( 'HomepageSettings', $conf );
-        push @actions, $ok ? loc('Preferences [_1] for user [_2].', $pane, $UserObj->Name) : $msg;
-    }
-);
-
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
-    for @panes;
-
-</%init>
+</%INIT>
 <%ARGS>
-$id => undef
+  $id => undef
 </%ARGS>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,14 +49,25 @@
   <hr class="clear" />
 </div>
 % $m->callback( %ARGS );
-<div id="footer" title="Best Practical Solutions, LLC, copyright and logo">
-% if ($m->{'rt_base_time'}) {
-  <p id="time"><span><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%></span></p>
-%}
-  <p id="bpscredits"><span><&|/l_unsafe,     '&#187;&#124;&#171;', $RT::VERSION, '2019', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>', &>[_1] RT [_2] Copyright 1996-[_3] [_4].</&>
-</span></p>
+<div id="footer" title="Best Practical Solutions, LLC, copyright" class="row">
+% # display 3 columns on login page
+% # display 1 column center aligned once logged in, without the "For support and sales..." section
+% my $cols = ( $Menu ? '12' : '4' );
+  <div class="col-<% $cols %>">
+    <p id="version" class="text-center <% $Menu ? 'pb-1' : 'text-md-left' %>">
+%     if ($m->{'rt_base_time'}) {
+        <span id="time"><&|/l&>Time to display</&>: <%Time::HiRes::tv_interval( $m->{'rt_base_time'} )%> -</span>
+%     }
+      <span><&|/l_unsafe, $RT::VERSION, &>RT Version [_1]</&></span>
+    </p>
+  </div>
+  <div class="col-<% $cols %>">
+    <p id="bpscredits" class="text-center"><span><&|/l_unsafe, '2021', '&#187;&#124;&#171;', '<a href="https://bestpractical.com/about">Best Practical Solutions, LLC</a>', &>Copyright 1996-[_1] [_2] [_3].</&></span></p>
+  </div>
 % if (!$Menu) {
-  <p id="legal"><&|/l_unsafe, '<a href="http://www.gnu.org/licenses/gpl-2.0.html">', '</a>' &>Distributed under [_1]version 2 of the GNU GPL[_2].</&><br /><&|/l_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>To inquire about support, training, custom development or licensing, please contact [_1].</&><br /></p>
+  <div class="col-4">
+    <p id="legal" class="text-md-right text-center"><&|/l_unsafe, '<a href="mailto:sales@bestpractical.com">sales@bestpractical.com</a>' &>For support and sales inquiries, please contact [_1].</&></p>
+  </div>
 % }
 </div>
 % if ($Debug >= 2 ) {
@@ -66,6 +77,7 @@
 <%$d->Dump() %>
 </pre>
 % }
+    </div>
   </body>
 </html>
 <%ARGS>

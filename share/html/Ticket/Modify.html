@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,16 +56,20 @@
 <input type="hidden" class="hidden" name="id" value="<% $TicketObj->Id %>" />
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
-<table>
+<div>
 <& Elements/EditBasics, TicketObj => $TicketObj, defaults => \%ARGS, InTable => 1 &>
 <& /Elements/EditCustomFields, %ARGS, Object => $TicketObj, Grouping => 'Basics', InTable => 1 &>
-</table>
+</div>
 </&>
 % $m->callback( CallbackName => 'AfterBasics', Ticket => $TicketObj );
 
 <& /Elements/EditCustomFieldCustomGroupings, %ARGS, Object => $TicketObj, AsTable => !!RT->Config->Get('EditCustomFieldsSingleColumn', $session{'CurrentUser'}) &>
 
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>
+    </div>
+  </div>
 </form>
 
 % $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $TicketObj);
@@ -88,6 +92,12 @@ $m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef =>
         ARGSRef      => \%ARGS,
     );
     unless ($status) {
+        push @results, @msg;
+        $skip_update = 1;
+    }
+
+    ( $status, @msg ) = PreprocessTimeUpdates( \%ARGS );
+    unless ( $status ) {
         push @results, @msg;
         $skip_update = 1;
     }

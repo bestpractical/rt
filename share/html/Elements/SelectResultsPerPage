@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 %# TODO: Better default handling
 
-<select name="<% $Name %>">
+<select name="<% $Name %>" class="form-control selectpicker">
 % foreach my $value ( @values ) {
 <option value="<% $value %>" <% $value == $Default? 'selected="selected"': '' |n%>>
 <% shift @labels %>
@@ -58,7 +58,7 @@
 <%INIT>
 my @values = qw(0 10 25 50 100);
 my @labels = (loc('Unlimited'), qw(10 25 50 100));
-$Default = 50 unless defined $Default;
+$Default = 50 unless defined $Default && $Default =~ /^\d+$/;
 </%INIT>
 <%ARGS>
 

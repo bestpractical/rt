@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,7 +48,7 @@
 <%args>
 $Name            => 'Queue'
 $Default         => 0
-$Class           => 'select-queue field'
+$Class           => 'select-queue field form-control'
 $Placeholder     => ''
 
 $ShowAllQueues   => 1
@@ -63,6 +63,7 @@ $DefaultQueue->Load( $Default );
 undef $CheckQueueRight if $ShowAllQueues;
 </%init>
 <input name="<% $Name %>"
+       type="text"
        size="25"
        value="<% $DefaultQueue->id ? $DefaultQueue->Name : "" %>"
        class="<% $Class %>"

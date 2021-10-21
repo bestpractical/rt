@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,10 +51,22 @@ $ShowHeaders       => 0
 $ShowTitle         => 1
 $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
+$SingleTransaction => 0
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
 my $histid      = "\L$record_type\E-" . $Object->id . "-history";
+
+my $reverse_txns = $ARGS{'ReverseTxns'};
+if ( $reverse_txns ) {
+    # If we got something, reverse it for the link
+    $reverse_txns = $reverse_txns eq 'ASC' ? 'DESC' : 'ASC';
+}
+else {
+    # Default the link to the opposite of the config setting
+    # Oldest Txns first is ASC, so reverse it for this option default
+    $reverse_txns = RT->Config->Get("OldestTransactionsFirst", $session{'CurrentUser'}) ? 'DESC' : 'ASC';
+}
 </%INIT>
 <div class="history <% lc $record_type %>" id="<% $histid %>">
 <%perl>
@@ -62,15 +74,13 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
     my $title = $ShowTitle
                     ? loc('History')
                     : '&nbsp;';
-
-    my $titleright = '';
+    my @elements;
     if ( $ScrollShowHistory ) {
-        $titleright .= qq{<span id="LoadAllHistoryContainer">} .
-                       qq{<a href="#" id="LoadAllHistory">} .
-                       loc('Load all history') .
-                       qq{</a>} .
-                       ($ShowDisplayModes ? '&mdash;' : '') .
-                       qq{</span>};
+        push( @elements, qq{<span id="LoadAllHistoryContainer">} .
+                         qq{<a href="#" id="LoadAllHistory">} .
+                         loc('Load all history') .
+                         qq{</a>} .
+                         qq{</span>} );
     }
 
     if ( $ShowDisplayModes ) {
@@ -78,27 +88,49 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
             my $open_all  = $m->interp->apply_escapes( loc("Show all quoted text"), 'j' );
             my $open_html = $m->interp->apply_escapes( loc("Show all quoted text"), 'h' );
             my $close_all = $m->interp->apply_escapes( loc("Hide all quoted text"), 'j' );
-            $titleright .=    '<a href="#" data-direction="open" '
-                            . qq{onclick="return toggle_all_folds(this, $open_all, $close_all);"}
-                            . ">$open_html</a> &mdash; ";
+            push( @elements, qq{<a href="#" data-direction="open" } .
+                             qq{onclick="return toggle_all_folds(this, $open_all, $close_all);"} .
+                             qq{>$open_html</a>} );
         }
 
         if ($ShowHeaders) {
-            $titleright .= qq{<a href="?ForceShowHistory=1;id=} .
-                           $Object->id.qq{#$histid">} .
-                           loc("Show brief headers") .
-                           qq{</a>};
+            push( @elements, qq{<a href="?ForceShowHistory=1;id=} .
+                             $Object->id.qq{#$histid">} .
+                             loc("Show brief headers") .
+                             qq{</a>} );
         } else {
-            $titleright .= qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
-                           $Object->id.qq{#$histid">} .
-                           loc("Show full headers") .
-                           qq{</a>};
+            push( @elements, qq{<a href="?ForceShowHistory=1;ShowHeaders=1;id=} .
+                             $Object->id.qq{#$histid">} .
+                             loc("Show full headers") .
+                             qq{</a>} );
         }
     }
 
+    # Don't need to reverse history when showing a single transaction
+    unless ( $SingleTransaction ) {
+        push( @elements, qq{<a href="?ForceShowHistory=1;ReverseTxns=$reverse_txns;id=} .
+                         $Object->id.qq{#$histid">} .
+                         loc("Reverse history order") .
+                         qq{</a>} );
+    }
+
+    my $titleright;
+    if ( @elements ) {
+        # build the new link
+        my $alt = loc('Options');
+        $titleright = qq{<div class="btn-group dropdown"><a id="history-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span></a><ul class="dropdown-menu dropdown-menu-right">};
+
+        # foreach of the elements, build a new <li>$element</li> and append to the output.
+        foreach my $element ( @elements ) {
+            $titleright .= qq{<li class="dropdown-item">$element</li>};
+        }
+
+        $titleright .= q{</ul></div>};
+    }
+
 </%perl>
-% $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright );
-<& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright &>
+% $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright, ARGSRef => \%ARGS );
+<& /Widgets/TitleBoxStart, title => $title, titleright_raw => $titleright, class => 'fullwidth' &>
 % }
 
 <div class="history-container">

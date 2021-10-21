@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,8 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox, title => loc('Refresh')&>
 <form method="get" action="<% RT->Config->Get('WebPath') . $m->request_path %>">
-<& /Elements/Refresh, Name => 'HomeRefreshInterval', 
-    Default => $session{'home_refresh_interval'}||RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'}) &>
-<& /Elements/Submit,  Label => loc('Go!') &>
-</&>
+<div class="form-row">
+  <div class="col-auto">
+    <& /Elements/Refresh, Name => 'HomeRefreshInterval',
+      Default => $session{'home_refresh_interval'}||RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'}) &>
+  </div>
+  <div class="col-auto">
+    <& /Elements/Submit,  Label => loc('Go!') &>
+  </div>
+</div>
 </form>
+</&>

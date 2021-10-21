@@ -8,7 +8,7 @@ use RT::Test
     nodb      => 1,
     server_ok => 1;
 
-my $dbname     = 'rt4test_install_xxx';
+my $dbname     = 'rt5test_install_xxx';
 my $rtname     = 'rttestname';
 my $domain     = 'rttes.com';
 my $password   = 'newpass';

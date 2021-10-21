@@ -65,7 +65,8 @@ diag "create a ticket via web and set IP" if $ENV{'TEST_VERBOSE'};
             fields    => {
                 Subject   => 'test ip',
                 $cf_field => $ip,
-            }
+            },
+            button    => 'SubmitTicket',
         );
 
         $agent->content_contains( $valid{$ip}, "IP on the page" );
@@ -93,7 +94,8 @@ diag "create a ticket and edit IP field using Edit page"
     ok $agent->goto_create_ticket($q), "go to create ticket";
     $agent->submit_form(
         form_name => 'TicketCreate',
-        fields    => { Subject => 'test ip', }
+        fields    => { Subject => 'test ip', },
+        button    => 'SubmitTicket',
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;
@@ -147,7 +149,8 @@ diag "check that we parse correct IPs only" if $ENV{'TEST_VERBOSE'};
             fields    => {
                 Subject   => 'test ip',
                 $cf_field => $invalid,
-            }
+            },
+            button    => 'SubmitTicket',
         );
 
         $agent->content_contains( 'is not a valid IP address',
@@ -165,7 +168,8 @@ diag "create two tickets with different IPs and check several searches"
         fields    => {
             Subject   => 'test ip',
             $cf_field => 'abcd::',
-        }
+        },
+        button    => 'SubmitTicket',
     );
 
     my ($id1) = $agent->content =~ /Ticket (\d+) created/;
@@ -177,7 +181,8 @@ diag "create two tickets with different IPs and check several searches"
         fields    => {
             Subject   => 'test ip',
             $cf_field => 'bbcd::',
-        }
+        },
+        button    => 'SubmitTicket',
     );
 
     my ($id2) = $agent->content =~ /Ticket (\d+) created/;
@@ -231,7 +236,8 @@ diag "create a ticket with an IP of abcd:23:: and search for doesn't match 'abcd
         fields    => {
             Subject   => 'local',
             $cf_field => 'abcd:23::',
-        }
+        },
+        button    => 'SubmitTicket',
     );
 
     my ($id) = $agent->content =~ /Ticket (\d+) created/;

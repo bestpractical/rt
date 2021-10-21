@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -48,14 +48,24 @@
 <%DOC>
 see docs/extending/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget">
-<span class="label description"><% $Description %></span>
-<span class="value"><& SELF:InputOnly, %ARGS &></span>
-% if ( $Default ) {
-<span class="comment"><% $DefaultLabel %></span>
+<div id="form-box-<% lc $Name %>" class="widget form-row">
+  <div class="label col-<% $LabelCols %>">
+% if( $LabelLink ) {
+    <a href="<% $LabelLink %>" target="_blank"><% $Description %></a>
+% } else {
+    <% $Description %>
 % }
-<span class="hints"><% $Hints %></span>
+  </div>
+  <div class="value col-<% $ValueCols %>">
+    <& SELF:InputOnly, %ARGS &>
+% if ( $Default ) {
+    <span class="comment"><% $DefaultLabel %></span>
+% }
+    <span class="hints"><% $Hints %></span>
+  </div>
+% if ( $CloseRowDiv ) {
 </div>
+% }
 <%INIT>
 $_ = '' foreach grep !defined, $CurrentValue, $DefaultValue;
 $DefaultLabel ||= loc( 'Default: [_1]', $DefaultValue );
@@ -71,13 +81,18 @@ $CurrentValue => '',
 $Default        => 0,
 $DefaultValue   => 0,
 $DefaultLabel   => undef
+$LabelLink      => ''
+$LabelCols      => 3
+$ValueCols      => 9
+$CloseRowDiv    => 1
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="text" name="<% $Name %>" value="<% $CurrentValue %>" />\
+<input type="text" name="<% $Name %>" size="<% $Size %>" value="<% $CurrentValue %>" class="form-control" />\
 <%ARGS>
 $Name
 $CurrentValue => '',
+$Size => 20
 </%ARGS>
 <%INIT>
 $CurrentValue = '' unless defined $CurrentValue;

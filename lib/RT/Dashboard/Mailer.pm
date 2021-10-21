@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,6 +69,7 @@ sub MailDashboards {
         All    => 0,
         DryRun => 0,
         Time   => time,
+        User   => undef,
         @_,
     );
 
@@ -81,6 +82,11 @@ sub MailDashboards {
     my $Users = RT::Users->new(RT->SystemUser);
     $Users->LimitToPrivileged;
     $Users->LimitToEnabled;
+    if ( $args{User} ) {
+        my $user = RT::User->new( RT->SystemUser );
+        $user->Load( $args{User} );
+        $Users->Limit( FIELD => 'id', VALUE => $user->Id || 0 );
+    }
 
     while (defined(my $user = $Users->Next)) {
         my ($hour, $dow, $dom) = HourDowDomIn($args{Time}, $user->Timezone || RT->Config->Get('Timezone'));
@@ -172,11 +178,26 @@ sub MailDashboards {
                         $lang = 'en';
                     }
 
+                    my $context_user;
+                    if ( ( $subscription->SubValue( 'Context' ) // '' ) eq 'recipient' ) {
+                        $context_user = RT::CurrentUser->new( RT->SystemUser );
+                        my ( $ret, $msg ) = $context_user->LoadByEmail( $email );
+                        unless ( $ret ) {
+                            RT->Logger->error( "Failed to load user with email $email: $msg" );
+                            next;
+                        }
+                        $context_user->{'LangHandle'} = RT::I18N->get_handle($lang);
+                    }
+                    else {
+                        $context_user = $currentuser;
+                    }
+
                     $currentuser->{'LangHandle'} = RT::I18N->get_handle($lang);
 
                     $self->SendDashboard(
                         %args,
                         CurrentUser  => $currentuser,
+                        ContextUser  => $context_user,
                         Email        => $email,
                         Subscription => $subscription,
                         From         => $from,
@@ -274,6 +295,7 @@ sub SendDashboard {
     my $self = shift;
     my %args = (
         CurrentUser  => undef,
+        ContextUser  => undef,
         Email        => undef,
         Subscription => undef,
         DryRun       => 0,
@@ -281,6 +303,7 @@ sub SendDashboard {
     );
 
     my $currentuser  = $args{CurrentUser};
+    my $context_user = $args{ContextUser} || $currentuser;
     my $subscription = $args{Subscription};
 
     my $rows = $subscription->SubValue('Rows');
@@ -299,7 +322,7 @@ sub SendDashboard {
         );
     }
 
-    $RT::Logger->debug('Generating dashboard "'.$dashboard->Name.'" for user "'.$currentuser->Name.'":');
+    $RT::Logger->debug('Generating dashboard "'.$dashboard->Name.'" for user "'.$context_user->Name.'":');
 
     if ($args{DryRun}) {
         print << "SUMMARY";
@@ -311,6 +334,7 @@ SUMMARY
     }
 
     local $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
+    local $HTML::Mason::Commands::session{ContextUser} = $context_user;
     local $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
     my $HasResults = undef;

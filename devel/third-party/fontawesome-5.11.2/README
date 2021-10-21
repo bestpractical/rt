@@ -1,0 +1,25 @@
+RT now uses fontawesome to render icons in the web user interface. We use the SVG version of the icons, but RT uses only a small subset of all the free icons available. To reduce the file size of the fontawesome javascript file, we run the webpack utility to perform tree shaking on the source files and generate only what RT needs. This README describes how to generate this file from the source fontawesome files.
+
+The tools to perform this tree-shaking are all written in javascript, so to generate these files you need to install node.js and have a working npm utility.
+
+The existing tools assume the below will be installed in node_modules in the rt/devel/third-party/fontawesome directory, which should be your current working directory for this process.
+
+1. Get fontawesome
+
+$ npm i @fortawesome/fontawesome-svg-core
+$ npm i @fortawesome/free-solid-svg-icons
+$ npm i @fortawesome/free-regular-svg-icons
+
+2. Install the webpack utility and babel helper
+
+$ npm i webpack
+$ npm i webpack-cli
+$ npm i babel-minify-webpack-plugin
+
+3. Edit index.js and add the new icons you want.
+
+4. Run webpack:
+
+$ node_modules/.bin/webpack --config=webpack.config.js
+
+5. A new dist directory should be created with a fontawesome.js file. Copy this file to a location RT can use it and you should have your new icons. For core RT, the new file should go in share/static/js.

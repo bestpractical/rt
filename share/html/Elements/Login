@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, CallbackName => 'Header' );
 <& /Elements/Header, Title => loc('Login'), Focus => '#user', RichText => 0 &>
+% # Close div for rt-header-container started in Header
+</div>
 
 <div id="body" class="login-body">
 
@@ -66,15 +68,23 @@
 % unless (RT->Config->Get('WebRemoteUserAuth') and !RT->Config->Get('WebFallbackToRTLogin')) {
 <form id="login" name="login" method="post" action="<% RT->Config->Get('WebPath') %>/NoAuth/Login.html">
 
-<div class="input-row">
-    <span class="label"><&|/l&>Username</&>:</span>
-    <span class="input"><input name="user" value="<%$user%>" id="user" /></span>
-</div>
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Username</&>:
+    </div>
+    <div class="value col-9">
+      <input class="form-control" type="text" name="user" value="<%$user%>" id="user" autocapitalize="off" />
+    </div>
+  </div>
 
-<div class="input-row">
-    <span class="label"><&|/l&>Password</&>:</span>
-    <span class="input"><input type="password" name="pass" /></span>
-</div>
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Password</&>:
+    </div>
+    <div class="value col-9">
+      <input class="form-control" type="password" name="pass" />
+    </div>
+  </div>
 
 <input type="hidden" name="next" value="<% $next %>" />
 
@@ -87,9 +97,11 @@ jQuery(function(){
 });
 </script>
 
-<div class="button-row">
-    <span class="input"><input type="submit" class="button" value="<&|/l&>Login</&>" /></span>
-</div>
+  <div class="form-row">
+    <div class="col-12 text-right">
+      <input type="submit" class="form-control btn btn-primary" value="<&|/l&>Login</&>" />
+    </div>
+  </div>
 
 %# Give callbacks a chance to add more control elements
 % $m->callback( %ARGS );
@@ -100,7 +112,8 @@ jQuery(function(){
 <& /Elements/LoginHelp &>
 </div><!-- #login-box -->
 % $m->callback( %ARGS, CallbackName => 'AfterForm' );
-</div><!-- #login-body -->
+% # Omit closing div for login-body because Footer adds a closing div,
+% # normally for the PageLayout template
 <& /Elements/Footer, Menu => 0 &>
 <%ARGS>
 $next => ''

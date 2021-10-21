@@ -1,0 +1,20 @@
+use strict;
+use warnings;
+
+our @Final = sub {
+    my %args = @_;
+    my $db_type = RT->Config->Get('DatabaseType');
+    return unless $db_type =~ /Pg|mysql/;
+
+    my $fts_config = RT->Config->Get('FullTextSearch') or return;
+    return unless $fts_config->{'Enable'} && $fts_config->{'Indexed'};
+
+    my $sql;
+    if ( $db_type eq 'Pg' ) {
+        $sql = "ALTER TABLE $fts_config->{'Table'} ALTER COLUMN id SET DATA TYPE BIGINT";
+    }
+    else {
+        $sql = "ALTER TABLE $fts_config->{'Table'} MODIFY id BIGINT NOT NULL AUTO_INCREMENT, CONVERT TO CHARACTER SET utf8mb4";
+    }
+    $args{admin_dbh}->do($sql) or warn "Couldn't run SQL query: $sql: " . $args{admin_dbh}->errstr;
+};

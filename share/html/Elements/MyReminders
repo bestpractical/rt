@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
-    class => 'reminders',
+    class => 'reminders fullwidth',
     title => loc("My reminders"),
     title_href => RT->Config->Get('WebPath') . '/Tools/MyReminders.html' &>
 

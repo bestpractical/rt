@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,15 +66,29 @@ my $initial_label = $HideUnsetFields ? $show_label : $hide_label;
 my $url = "?HideUnsetFields=" . ($HideUnsetFields ? 0 : 1) . ";id=$ARGS{id}";
 my $url_html = $m->interp->apply_escapes($url, 'h');
 
-my $titleright = qq{<a href="$url_html" data-show-label="$show_label" data-hide-label="$hide_label" onclick="return toggle_hide_unset(this)">$initial_label</a>};
+my $search_menu = $m->scomp( '/Elements/Menu', menu => HTML::Mason::Commands::SearchResultsPageMenu(), class => 'page-menu page-nav-shadow sf-menu sf-js-enabled sf-shadow', id => 'search-results-page-menu', 'parent_id' => 'page' ) || '';
+my $alt = loc('Options');
+my $titleright = qq{
+<div class="btn-group dropdown">
+  <div class="search-results-page-menu-container">
+    $search_menu
+  </div>
+  <a id="metadata-dropdown" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-right">
+    <li class="dropdown-item">
+      <a href="$url_html" data-show-label="$show_label" data-hide-label="$hide_label" onclick="return toggle_hide_unset(this)">$initial_label</a>
+    </li>
+  </ul>
+</div>};
 </%PERL>
 
 <div class="summary unset-fields-container<% $HideUnsetFields ? ' unset-fields-hidden' : '' %>">
-<&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $titleright &>
-<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments &>
+<&| /Widgets/TitleBox, title => loc('Ticket metadata'), titleright_raw => $titleright, class => 'fullwidth' &>
+<& /Ticket/Elements/ShowSummary,  Ticket => $TicketObj, Attachments => $attachments, InlineEdit => $InlineEdit &>
 </&>
 </div>
-<br />
 
 % $m->callback( Ticket => $TicketObj, %ARGS, Transactions => $transactions, Attachments => $attachments, CallbackName => 'BeforeShowHistory' );
 
@@ -83,22 +97,26 @@ my $titleright = qq{<a href="$url_html" data-show-label="$show_label" data-hide-
     <& /Ticket/Elements/ScrollShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
+        ReverseTxns => $ARGS{'ReverseTxns'},
     &>
 % } else {
     <& /Elements/ShowHistory ,
           Object => $TicketObj,
           Transactions => $transactions,
           ShowHeaders => $ARGS{'ShowHeaders'},
+          ReverseTxns => $ARGS{'ReverseTxns'},
           Attachments => $attachments,
           AttachmentContent => $attachment_content
     &>
@@ -116,6 +134,7 @@ $TicketObj => undef
 $ShowHeaders => 0
 $HideUnsetFields => RT->Config->Get('HideUnsetFieldsOnDisplay', $session{CurrentUser})
 $ForceShowHistory => 0
+$InlineEdit => RT->Config->Get('InlineEdit', $session{CurrentUser})
 </%ARGS>
 
 <%INIT>
@@ -156,6 +175,7 @@ if ($ARGS{'id'} eq 'new') {
 } else { 
     $TicketObj ||= LoadTicket($ARGS{'id'});
 
+    # fill ACL cache
     $TicketObj->CurrentUser->PrincipalObj->HasRights( Object => $TicketObj );
 
     my $SkipProcessing;
@@ -216,6 +236,26 @@ if ($ARGS{'id'} eq 'new') {
 
 $title = loc("#[_1]: [_2]", $TicketObj->Id, $TicketObj->Subject || '');
 
+if ( $ARGS{'id'} and $ARGS{'id'} eq 'new' ) {
+    if ( $ARGS{'AddGroupCc'} ){
+        my $group = RT::Group->new($session{'CurrentUser'});
+        my ($ret, $msg) = $group->LoadUserDefinedGroup($ARGS{'AddGroupCc'});
+
+        unless ( $ret ){
+            RT::Logger->warn("Unable to load group " . $ARGS{'AddGroupCc'} . ", $msg. Not adding as Cc.");
+            return;
+        }
+
+        ( $ret, $msg ) = $TicketObj->AddWatcher(
+            Type        => 'Cc',
+            PrincipalId => $group->Id
+        );
+
+        RT::Logger->warn("Unable to add group " . $group->Name . ": " . $group->Id . " as a Cc: $msg")
+            unless $ret;
+    }
+}
+
 $m->callback(
     CallbackName => 'BeforeDisplay',
     TicketObj => \$TicketObj,
@@ -235,13 +275,19 @@ MaybeRedirectForResults(
     Arguments => { id => $TicketObj->id },
 );
 
-my $transactions = $TicketObj->SortedTransactions;
+my $transactions;
+if ( $ARGS{'ReverseTxns'} ) {
+    $transactions = $TicketObj->SortedTransactions($ARGS{'ReverseTxns'});
+}
+else {
+    $transactions = $TicketObj->SortedTransactions;
+}
 my $attachments = $TicketObj->Attachments;
 my $attachment_content = $TicketObj->TextAttachments;
 
 my %link_rel;
-if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
-    my $item_map = $session{'tickets'}->ItemMap;
+if (RT::Config->Get( 'ShowSearchNavigation', $session{'CurrentUser'} ) && defined $session{'collection-RT::Tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
+    my $item_map = $session{'collection-RT::Tickets'}->ItemMap;
     $link_rel{first} = "/Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$TicketObj->Id}{prev};
     $link_rel{prev}  = "/Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{prev} if $item_map->{$TicketObj->Id}{prev};
     $link_rel{next}  = "/Ticket/Display.html?id=" . $item_map->{$TicketObj->Id}{next} if $item_map->{$TicketObj->Id}{next};

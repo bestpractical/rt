@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -88,6 +88,8 @@ sub Run
     my %args = ( Object => undef, @_ );
     my $query = $args{'Object'}->_AsInsertQuery;
     $query .= "\n" unless $query =~ /\n$/;
+
+    utf8::encode($query) if utf8::is_utf8($query);
 
     return 1 if print $fh $query;
     return (0, "Couldn't write to filehandle");

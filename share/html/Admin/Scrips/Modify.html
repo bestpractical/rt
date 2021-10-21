@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,18 +49,21 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip">
+<form method="post" action="Modify.html" id="ModifyScrip" name="ModifyScrip" class="mx-auto max-width-xl">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="From" value="<% $From || q{} %>" />
 
 <&| /Widgets/TitleBox, title => loc('Basics') &>
-<table>
 
 <& Elements/EditBasics, %ARGS, Scrip => $scrip &>
 
 % if ( not $disabled ) {
-<tr><td class="label"><a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:</td>
-<td class="value">\
+  <div class="form-row">
+    <div class="label col-2">
+      <a href="Objects.html?id=<% $id %>"><&|/l&>Applies to</&></a>:
+    </div>
+    <div class="value col-9">
+      <span class="current-value form-control">
 % if ( $scrip->IsGlobal ) {
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Global/Scrips.html"><% loc('Global') %></a>
 % } else {
@@ -74,23 +77,39 @@
 % }
 % $m->out(', ...') if $found == 10;
 % }
-<td></tr>
+      </span>
+    </div>
+  </div>
 % }
 
-<tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
-<input type="checkbox" class="checkbox" name="Enabled" id="Enabled" value="1" <% $EnabledChecked |n%> />
-<label for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
-</td></tr>
 
-</table>
+  <div class="form-row">
+    <div class="label col-2">
+    </div>
+    <div class="value col-9">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="checkbox custom-control-input" name="Enabled" id="Enabled" value="1" <% $EnabledChecked |n%> />
+        <label class="custom-control-label" for="Enabled"><&|/l&>Enabled (Unchecking this box disables this scrip)</&></label>
+      </div>
+    </div>
+  </div>
+
 </&>
 
-<& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+    </div>
+  </div>
 
 % if ($session{CurrentUser}->HasRight(Object => $RT::System, Right => 'ExecuteCode')) {
 <& Elements/EditCustomCode, %ARGS, Scrip => $scrip &>
-<& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Save Changes'), Name => 'Update', Reset => 1 &>
+    </div>
+  </div>
 % }
 
 </form>

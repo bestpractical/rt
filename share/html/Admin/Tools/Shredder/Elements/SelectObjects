@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,19 +49,28 @@
 @Objects => ()
 </%ARGS>
 <div id="shredder-plugin-results">
+  <&| /Widgets/TitleBox, title => loc("Results") &>
+
 % unless( @Objects ) {
-<& /Elements/ListActions, actions => [loc("Objects list is empty")] &>
+    <& /Elements/ListActions, actions => [loc("Objects list is empty")] &>
 % } else {
-<div class="shredder-form">
-<input id="shredder-select-all-objects-checkbox" type="checkbox" name="SelectAllObjects" onclick="checkAllObjects()" />
-<span><% loc("click to check/uncheck all objects at once") %></span>
-<hr />
+    <div class="shredder-form">
+      <div class="custom-control custom-checkbox">
+        <input id="shredder-select-all-objects-checkbox" type="checkbox" name="SelectAllObjects" class="custom-control-input" onclick="checkAllObjects()" />
+        <label class="custom-control-label" for="shredder-select-all-objects-checkbox"><% loc("click to check/uncheck all objects at once") %></label>
+      </div>
+      <hr />
 % foreach my $o( @Objects ) {
-<& ObjectCheckBox, Object => $o &>
+      <& ObjectCheckBox, Object => $o &>
 % }
-</div>
-<& /Elements/Submit, Name => 'Wipeout', Label => loc('Wipeout') &>
+      <div class="form-row">
+        <div class="col-12">
+          <& /Elements/Submit, Name => 'Wipeout', Label => loc('Wipeout') &>
+        </div>
+      </div>
+    </div>
 % }
+  </&>
 </div>
 <%INIT>
 </%INIT>

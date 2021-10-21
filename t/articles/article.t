@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 67;
+use RT::Test tests => undef;
 
 use_ok 'RT::Articles';
 use_ok 'RT::Classes';
@@ -27,7 +27,13 @@ ok (UNIVERSAL::isa($article, 'RT::Record'));
 ok (UNIVERSAL::isa($article, 'DBIx::SearchBuilder::Record') , "It's a searchbuilder record!");
 
 
-($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS);
+($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS, Name => undef);
+ok (!$id, $msg);
+
+($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS, Name => '');
+ok (!$id, $msg);
+
+($id, $msg) = $article->Create( Class => $CLASS, Summary => $CLASS, Name => 'test 1');
 ok ($id, $msg);
 $article->Load($id);
 is ($article->Summary, $CLASS, "The summary is set correct");
@@ -82,15 +88,55 @@ ok ($val, "Article Deleted: $msg");
 $a2->Load($id);
 ok ($a2->Disabled, "the article is disabled");
 
+
+
+my $class1 = RT::Class->new($RT::SystemUser);
+($id, $msg) = $class1->Create(Name => "ScopedClassTest1-$$");
+ok ($id, $msg);
+
+my $class2 = RT::Class->new($RT::SystemUser);
+($id, $msg) = $class2->Create(Name => "ScopedClassTest2-$$");
+ok ($id, $msg);
+
+my $a4 = RT::Article->new($RT::SystemUser);
+($id, $msg) = $a4->Create(Class => $class1->id, Name => "ScopedClassTest$$" );
+ok ($id, $msg);
+
+my $a5 = RT::Article->new($RT::SystemUser);
+($id, $msg) = $a5->Create(Class => $class1->id, Name => "ScopedClassTest$$" );
+ok (!$id, $msg);
+
+my $a6 = RT::Article->new($RT::SystemUser);
+($id, $msg) = $a6->Create(Class => $class2->id, Name => "ScopedClassTest$$" );
+ok ($id, $msg);
+is ($a6->ClassObj->Name, $class2->Name, 'Class name is ' . $class2->Name);
+
+# Can't change class if Name is used in destination class
+($val, $msg) = $a6->SetClass($class1->id);
+ok (!$val, $msg);
+
+($val, $msg) = $a6->SetName('Changed name');
+ok ($val, $msg);
+($val, $msg) = $a6->SetClass($class1->id);
+ok ($val, $msg);
+
+my $a7 = RT::Article->new($RT::SystemUser);
+($id, $msg) = $a7->Create(Class => $class1->id, Name => "ScopedClassTest$$-2" );
+ok ($id, $msg);
+($val, $msg) = $a7->SetName("Changed name");
+ok (!$val, $msg);
+is ($msg, $a7->loc('Name in use'), 'Name in use message');
+
+
 # NOT OK
 #$RT::Handle->SimpleQuery("DELETE FROM Links");
 
 my $article_a = RT::Article->new($RT::SystemUser);
-($id, $msg) = $article_a->Create( Class => $CLASS, Summary => "ArticleTestlink1".$$);
+($id, $msg) = $article_a->Create( Class => $CLASS, Summary => "ArticleTestlink1".$$, Name => 'test 2');
 ok($id,$msg);
 
 my $article_b = RT::Article->new($RT::SystemUser);
-($id, $msg) = $article_b->Create( Class => $CLASS, Summary => "ArticleTestlink2".$$);
+($id, $msg) = $article_b->Create( Class => $CLASS, Summary => "ArticleTestlink2".$$, Name => 'test 3');
 ok($id,$msg);
 
 # Create a link between two articles
@@ -195,7 +241,7 @@ ok ($id, $msg);
 
 
 my $art = RT::Article->new($RT::SystemUser);
-($id, $msg) = $art->Create (Class => $CLASS);
+($id, $msg) = $art->Create (Class => $CLASS, Name => 'test 4');
 ok ($id,$msg);
 
 ok($art->URI);
@@ -205,7 +251,7 @@ ok($art->__Value('URI') eq $art->URI, "The uri in the db is set correctly");
 
 
  $art = RT::Article->new($RT::SystemUser);
-($id, $msg) = $art->Create (Class => $CLASS);
+($id, $msg) = $art->Create (Class => $CLASS, Name => 'test 5');
 ok ($id,$msg);
 
 ok($art->URIObj);
@@ -227,3 +273,4 @@ ok ($trans->Field eq 'Summary', "it is about setting the Summary");
 is  ($trans->NewValue , 'testFoo', "The new content is 'foo'");
 is ($trans->OldValue,$s, "the old value was preserved");
 
+done_testing();

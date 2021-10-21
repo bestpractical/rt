@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -96,6 +96,7 @@ sub Create {
     my %args = (
         Name         => '',
         Summary      => '',
+        SortOrder    => 0,
         Class        => '0',
         CustomFields => {},
         Links        => {},
@@ -114,14 +115,22 @@ sub Create {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    return ( undef, $self->loc('Name is required') ) unless $args{Name};
+
+    # Explicitly store the class as object data because ValidateName is run
+    # via DBIx::SearchBuilder and at this point in create, the
+    # object doesn't exist in the DB yet, so ->ClassObj doesn't get the class
+    $self->{'_creating_class'} = $class->id;
+
     return ( undef, $self->loc('Name in use') )
-      unless $self->ValidateName( $args{'Name'} );
+      unless $self->ValidateName( $args{'Name'}, $class->id );
 
     $RT::Handle->BeginTransaction();
     my ( $id, $msg ) = $self->SUPER::Create(
         Name    => $args{'Name'},
         Class   => $class->Id,
         Summary => $args{'Summary'},
+        SortOrder => $args{'SortOrder'},
         Disabled => $args{'Disabled'},
     );
     unless ($id) {
@@ -229,30 +238,36 @@ sub Create {
 
 =head2 ValidateName NAME
 
-Takes a string name. Returns true if that name isn't in use by another article
+Takes a name (string, required) and an optional class id. Returns true if that
+name is not in use by another article of that class.
 
-Empty names are permitted.
-
+If no class is supplied and the class can't be derived from the article
+object, returns true if that name isn't used by any other article at all.
 
 =cut
 
 sub ValidateName {
     my $self = shift;
     my $name = shift;
+    my $class_id = shift || ($self->ClassObj && $self->ClassObj->id) || $self->{'_creating_class'};
 
     if ( !$name ) {
-        return (1);
+        return (0);
     }
 
-    my $temp = RT::Article->new($RT::SystemUser);
-    $temp->LoadByCols( Name => $name );
-    if ( $temp->id && 
-         (!$self->id || ($temp->id != $self->id ))) {
+    my $article = RT::Article->new( RT->SystemUser );
+    if ( $class_id ) {
+        $article->LoadByCols( Name => $name, Class => $class_id );
+    }
+    else {
+        $article->LoadByCols( Name => $name );
+    }
+
+    if ( $article->id && ( !$self->id || ($article->id != $self->id )) ) {
         return (undef);
     }
 
     return (1);
-
 }
 
 # }}}
@@ -495,6 +510,54 @@ sub _Set {
 
 }
 
+=head2 SetClass CLASS
+
+Set the class for this article.
+
+=cut
+
+sub SetClass {
+    my $self  = shift;
+    my $value = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    # Confirm the name isn't already used in the destination class
+    if ( $self->ValidateName( $self->Name, $value ) ) {
+        return ( $self->_Set( Field => 'Class', Value => $value ) );
+    }
+    else {
+        return ( 0, $self->loc('Name in use in destination class') );
+    }
+}
+
+=head2 SetName NAME
+
+Set Name for this article.
+
+=cut
+
+sub SetName {
+    my $self  = shift;
+    my $value = shift;
+
+    unless ( $self->CurrentUserHasRight('ModifyArticle') ) {
+        return ( 0, $self->loc("Permission Denied") );
+    }
+
+    return ( 0, $self->loc('Name is required') ) unless defined $value && length $value;
+
+    # Confirm the name isn't already used
+    if ( $self->ValidateName( $value, $self->Class ) ) {
+        return ( $self->_Set( Field => 'Name', Value => $value ) );
+    }
+    else {
+        return ( 0, $self->loc('Name in use') );
+    }
+}
+
 =head2 _Value PARAM
 
 Return "PARAM" for this object. if the current user doesn't have rights, returns undef
@@ -541,6 +604,8 @@ the Article's Class is applied to that Queue.
 
 sub LoadByInclude {
     my $self = shift;
+    RT->Deprecated( Remove  => '5.2' );
+
     my %args = @_;
     my $Field = $args{Field};
     my $Value = $args{Value};
@@ -775,7 +840,7 @@ sub _CoreAccessible {
         Summary => 
                 {read => 1, write => 1, type => 'varchar(255)', default => ''},
         SortOrder => 
-                {read => 1, write => 1, type => 'int(11)', default => '0'},
+                {read => 1, write => 1, type => 'int(11)', default => '0', is_numeric => 1},
         Class => 
                 {read => 1, write => 1, type => 'int(11)', default => '0'},
         Parent => 

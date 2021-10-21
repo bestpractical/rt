@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,14 +45,17 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% my $alt = loc('Edit');
+
 <&|/Widgets/TitleBox,
     title => loc(RT::SavedSearch->EscapeDescription($search->Description), $ProcessedSearchArg->{'Rows'}),
     title_raw => $title_raw,
     title_href => $query_link_url.$QueryString,
-    titleright => $customize ? loc('Edit') : '',
+    titleright_raw => $customize ? qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>] : '',
     titleright_href => $customize,
-    hideable => $hideable &>
-<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets', HasResults => $HasResults, PreferOrderBy => 1 &>
+    hideable => $hideable,
+    class => 'fullwidth' &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => $class, HasResults => $HasResults, PreferOrderBy => 1 &>
 </&>
 <%init>
 my $search;
@@ -61,22 +64,62 @@ my $SearchArg;
 my $customize;
 my $query_display_component = '/Elements/CollectionList';
 my $query_link_url = RT->Config->Get('WebPath').'/Search/Results.html';
+my $class = 'RT::Tickets';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
-    unless ( $container_object ) {
-        $m->out(loc("Either you have no rights to view saved search [_1] or identifier is incorrect", $m->interp->apply_escapes($SavedSearch, 'h')));
-        return;
-    }
     $search = RT::Attribute->new( $session{'CurrentUser'} );
-    $search->Load($search_id);
-    unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
+    $search->Load($search_id) if $search_id;
+
+    if ( $search->Id ) {
+
+        # $container_object is undef if it's another user's personal saved
+        # search. We need to explicitly exclude this case as
+        # CurrentUserHasRight doesn't handle that.
+        if ( $container_object && $search->CurrentUserHasRight('display') ) {
+            $SearchArg = $search->Content;
+        }
+        else {
+            RT->Logger->debug( "User "
+                    . $session{CurrentUser}->Name
+                    . " does not have rights to view saved search: "
+                    . $search->__Value('Description')
+                    . "($SavedSearch)" );
+            return;
+        }
+    }
+    else {
         $m->out(loc("Saved search [_1] not found", $m->interp->apply_escapes($SavedSearch, 'h'))) unless $IgnoreMissing;
         return;
     }
+
+    if ( $search->Object->isa('RT::System') ) {
+        $SearchArg = $user->Preferences( $search, $search->Content );
+    }
+
     $SearchArg->{'SavedSearchId'} ||= $SavedSearch;
     $SearchArg->{'SearchType'} ||= 'Ticket';
-    if ( $SearchArg->{SearchType} ne 'Ticket' ) {
+    if ( $SearchArg->{SearchType} eq 'Transaction' ) {
+        $class = $SearchArg->{Class} = 'RT::Transactions';
+        $customize
+            = RT->Config->Get('WebPath')
+            . '/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch, Class => 'RT::Transactions' );
+        $ShowCount = RT->Config->Get('TransactionShowSearchResultCount')->{'RT::Ticket'};
+    }
+    elsif ( $SearchArg->{SearchType} eq 'Asset' ) {
+        $class = $SearchArg->{Class} = 'RT::Assets';
+        $customize
+            = RT->Config->Get('WebPath')
+            . '/Search/Build.html?'
+            . $m->comp( '/Elements/QueryString', SavedSearchLoad => $SavedSearch, Class => 'RT::Assets' );
+        $ShowCount = RT->Config->Get('AssetShowSearchResultCount');
+    }
+    elsif ( $SearchArg->{SearchType} ne 'Ticket' ) {
+
+        if ( $SearchArg->{'SearchType'} eq 'Chart' ) {
+            $SearchArg->{'SavedChartSearchId'} ||= $SavedSearch;
+        }
 
         # XXX: dispatch to different handler here
         $query_display_component
@@ -84,11 +127,19 @@ if ($SavedSearch) {
         $query_link_url = RT->Config->Get('WebPath') . "/Search/$SearchArg->{SearchType}.html";
         $ShowCount = 0;
     } elsif ($ShowCustomize) {
-        $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
-            . $m->comp( '/Elements/QueryString',
-            SavedSearchLoad => $SavedSearch );
+        if ( $search->Object->isa('RT::System') ) {
+            $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
+                . $m->comp( '/Elements/QueryString',
+                    name => ref($search) . '-' . $search->Id );
+        }
+        else {
+            $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
+                . $m->comp( '/Elements/QueryString',
+                SavedSearchLoad => $SavedSearch );
+        }
     }
 } else {
+    RT->Deprecated( Message => 'Passing bare $Name is deprecated', Instead => '$SavedSearch', Remove => '5.2' );
     ($search) = RT::System->new( $session{'CurrentUser'} ) ->Attributes->Named( 'Search - ' . $Name );
     unless ( $search && $search->Id ) {
         my (@custom_searches) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('SavedSearch');
@@ -133,14 +184,33 @@ my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 my $title_raw;
 if ($ShowCount) {
-    my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-    $tickets->FromSQL($ProcessedSearchArg->{Query});
-    my $count = $tickets->CountAll();
+    my $collection = $class->new( $session{'CurrentUser'} );
+    my $query;
+    if ( $class eq 'RT::Transactions' ) {
+        $query = join ' AND ', "ObjectType = '$ProcessedSearchArg->{ObjectType}'",
+            $ProcessedSearchArg->{Query} ? "($ProcessedSearchArg->{Query})" : ();
+    }
+    else {
+        $query = $ProcessedSearchArg->{Query};
+    }
 
-    $title_raw = '<span class="results-count">' . loc('(Found [quant,_1,ticket,tickets])', $count) . '</span>';
+    $collection->FromSQL($query);
+    my $count = $collection->CountAll();
+
+    my $title;
+    if ( $class eq 'RT::Transactions' ) {
+        $title = loc('(Found [quant,_1,transaction,transactions])', $count);
+    }
+    elsif ( $class eq 'RT::Assets' ) {
+        $title = loc('(Found [quant,_1,asset,assets])', $count);
+    }
+    else {
+        $title = loc('(Found [quant,_1,ticket,tickets])', $count);
+    }
+    $title_raw = '<span class="results-count">' . $title . '</span>';
 
     # don't repeat the search in CollectionList
-    $ProcessedSearchArg->{Collection} = $tickets;
+    $ProcessedSearchArg->{Collection} = $collection;
     $ProcessedSearchArg->{TotalFound} = $count;
 }
 </%init>

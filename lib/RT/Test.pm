@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -305,7 +305,7 @@ sub bootstrap_config {
     open( my $config, '>', $tmp{'config'}{'RT'} )
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
-    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt4test_$port" : "rt4test";
+    my $dbname = $ENV{RT_TEST_PARALLEL}? "rt5test_$port" : "rt5test";
     print $config qq{
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
@@ -323,6 +323,10 @@ Set( \$ShowHistory, "always");
     }
     if ( $ENV{'RT_TEST_DB_HOST'} ) {
         print $config "Set( \$DatabaseHost , '$ENV{'RT_TEST_DB_HOST'}');\n";
+    }
+    if ( $ENV{'RT_TEST_RT_HOST'} ) {
+        # Used to add rights for test users in the DB when testing mysql/mariadb
+        print $config "Set( \$DatabaseRTHost , '$ENV{'RT_TEST_RT_HOST'}');\n";
     }
 
     if ( $args{'plugins'} ) {
@@ -503,7 +507,7 @@ sub bootstrap_db {
     my $db_type = RT->Config->Get('DatabaseType');
 
     if ($db_type eq "SQLite") {
-        RT->Config->WriteSet( DatabaseName => File::Spec->catfile( $self->temp_directory, "rt4test" ) );
+        RT->Config->WriteSet( DatabaseName => File::Spec->catfile( $self->temp_directory, "rt5test" ) );
     }
 
     __create_database();
@@ -1097,7 +1101,7 @@ sub add_rights {
 
 =head2 switch_templates_to TYPE
 
-This runs /opt/rt4/etc/upgrade/switch-templates-to in order to change the templates from
+This runs /opt/rt5/etc/upgrade/switch-templates-to in order to change the templates from
 HTML to text or vice versa.  TYPE is the type to switch to, either C<html> or
 C<text>.
 
@@ -1792,6 +1796,43 @@ sub done_testing {
     }
 
     $builder->done_testing(@_);
+}
+
+# Some utilities must only run one process at a time, so they check
+# for other running processes and quit if another is found. In parallel
+# test mode, this can cause test failures if two tests happen to run at
+# the same time.
+
+# This test helper checks for a running process, and if found sleeps and
+# tries again for a short time rather than immediately failing.
+
+sub run_singleton_command {
+    my $self    = shift;
+    my $command = shift;
+    my @args    = @_;
+
+    my $dir = "$tmp{'directory'}/../singleton";
+    mkdir $dir unless -e $dir;
+
+    my $flag = $command;
+    $flag =~ s!/!-!g;
+    $flag = "$dir/$flag";
+
+    for ( 1 .. 100 ) {
+        if ( -e $flag ) {
+            sleep 1;
+        }
+        else {
+            open my $fh, '>', $flag or die $!;
+            close $fh;
+            last;
+        }
+    }
+
+    my $ret = !system( $command, @args );
+    unlink $flag;
+
+    return $ret;
 }
 
 END {

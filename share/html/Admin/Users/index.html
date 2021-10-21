@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,18 +47,24 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, Title => loc('Select a user') &>
 <& /Elements/Tabs &>
-    
-<h1><% $caption %></h1>
-
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html">
+<div class="container">
+<&| /Widgets/TitleBox, hideable => 0, class => 'admin-select-user', content_class => 'mx-auto width-md' &>
+  <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" class="mx-auto">
 % foreach my $field( qw(Format Rows Page Order OrderBy) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
-<input type="hidden" name="UserField" value="Name" />
-<input type="hidden" name="UserOp" value="LIKE" />
-<&|/l&>Go to user</&>
-<input type="text" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+  <input type="hidden" name="UserField" value="Name" />
+  <input type="hidden" name="UserOp" value="LIKE" />
+
+  <div class="form-row">
+    <div class="label col-4 text-left">
+      <&|/l&>Go to user</&>
+    </div>
+    <div class="col-8">
+      <input type="text" class="form-control" name="UserString" value="" data-autocomplete="Users" data-autocomplete-return="Name" id="autocomplete-UserString" />
+    </div>
+  </div>
 <script type="text/javascript">
 jQuery(function(){
     // Jump directly to the page if a user is chosen
@@ -67,44 +73,104 @@ jQuery(function(){
     });
 });
 </script>
-</form>
+  </form>
+  <hr />
+  <p class="font-weight-bold">Additional search options</p>
+  <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" name="UsersAdmin" class="mx-auto max-width-md">
 
-<form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Users/index.html" name="UsersAdmin">
 % foreach my $field( qw(Format Rows Page Order OrderBy) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
-<table>
-    <tr><td><&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields &></td></tr>
-    <tr><td><&|/l&>And all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
-                SelectFieldName => 'UserField2',
-                SelectOpName    => 'UserOp2',
-                InputStringName => 'UserString2',
-                UserField       => $UserField2,
-                UserOp          => $UserOp2,
-                UserString      => $UserString2,
-            &></td></tr>
-    <tr><td><&|/l&>And all users whose</&> <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
-                SelectFieldName => 'UserField3',
-                SelectOpName    => 'UserOp3',
-                InputStringName => 'UserString3',
-                UserField       => $UserField3,
-                UserOp          => $UserOp3,
-                UserString      => $UserString3,
-            &></td></tr>
-</table>
-<input type="checkbox" class="checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
-<label for="FindDisabledUsers"><&|/l&>Include disabled users in search.</&></label>
-<br />
-<div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" name="Go" /></div>
-</form>
 
+  <div class="form-row">
+    <div class="label col-3 text-left">
+      <&|/l&>Include</&>
+    </div>
+    <div class="col-3">
+      <select name="IncludeSystemGroups" class="selectpicker form-control">
+% my $group_selected;
+% for my $group_value ( qw(Privileged Unprivileged All) ) {
+%   $group_selected = '';
+%   if ( $group_value eq $IncludeSystemGroups ) {
+%     $group_selected = 'selected="selected"';
+%   }
+          <option value="<% $group_value %>" <% $group_selected |n %>><% loc($group_value) %></option>
+% }
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="label col-3 text-left">
+      <&|/l&>Find all users whose</&>
+    </div>
+      <& /Elements/SelectUsers, %ARGS, Fields => \@fields &>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3 text-left">
+      <&|/l&>And all users whose</&>
+    </div>
+    <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
+        SelectFieldName => 'UserField2',
+        SelectOpName    => 'UserOp2',
+        InputStringName => 'UserString2',
+        UserField       => $UserField2,
+        UserOp          => $UserOp2,
+        UserString      => $UserString2,
+    &>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3 text-left">
+      <&|/l&>And all users whose</&>
+    </div>
+    <& /Elements/SelectUsers, %ARGS, Fields => \@fields,
+        SelectFieldName => 'UserField3',
+        SelectOpName    => 'UserOp3',
+        InputStringName => 'UserString3',
+        UserField       => $UserField3,
+        UserOp          => $UserOp3,
+        UserString      => $UserString3,
+    &>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3 text-left pt-1">
+      <&|/l&>Include all</&>
+    </div>
+    <div class="col-auto mt-1">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindEnabledUsers" name="FindEnabledUsers" value="1" <% $FindEnabledUsers? 'checked="checked"': '' %> />
+        <label class="custom-control-label" for="FindEnabledUsers"><&|/l&>Enabled users</&></label>
+      </div>
+    </div>
+    <div class="col-auto mt-1">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input checkbox" id="FindDisabledUsers" name="FindDisabledUsers" value="1" <% $FindDisabledUsers? 'checked="checked"': '' %> />
+        <label class="custom-control-label" for="FindDisabledUsers"><&|/l&>Disabled users</&></label>
+      </div>
+    </div>
+  </div>
+
+% $m->callback( %ARGS, UsersObj => $users, CallbackName => 'InUsersAdminForm' );
+
+  <div class="form-row">
+    <div class="col-12 text-right">
+      <input type="submit" class="button btn btn-primary" value="<&|/l&>Go!</&>" name="Go" />
+    </div>
+  </div>
+  </form>
+</&>
+</div>
+<br />
 % unless ( $users->Count ) {
-<em><&|/l&>No users matching search criteria found.</&></em>
+<p class="font-weight-bold"><&|/l&>No users matching search criteria found.</&></p>
 % } else {
 <p><&|/l&>Select a user</&>:</p>
 
-<& /Elements/CollectionList,
+<%perl>
+my %collection_list_args = (
     OrderBy => 'Name',
     Order => 'ASC',
     Rows  => $Rows,
@@ -112,15 +178,32 @@ jQuery(function(){
     Format => $Format,
     Collection => $users,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers)],
-&>
+    PassArguments => [qw(Format Rows Page Order OrderBy UserString UserOp UserField UserString2 UserOp2 UserField2 UserString3 UserOp3 UserField3 IdLike EmailLike FindDisabledUsers FindEnabledUsers IncludeSystemGroups)],
+);
+</%perl>
+
+% $m->callback( %ARGS, UsersObj => $users, CallbackName => 'ModifyCollectionListArgs', CollectionListArgs => \%collection_list_args );
+<& /Elements/CollectionList, %collection_list_args &>
 
 % }
 
 <%INIT>
 my $caption;
 my $users = RT::Users->new( $session{'CurrentUser'} );
-$users->FindAllRows if $FindDisabledUsers;
+
+if ( $FindEnabledUsers ) {
+    $FindDisabledUsers ? $users->FindAllRows : $users->LimitToEnabled;
+}
+else {
+    if ( not $FindDisabledUsers ) {
+        # If both FindEnabled and FindDisabled are false, there are no results,
+        # so set FindEnabled as a default
+        $FindEnabledUsers = 1;
+    }
+    $FindDisabledUsers ? $users->LimitToDeleted : $users->LimitToEnabled;
+}
+
+$m->callback( UsersObj => $users, ARGSRef => \%ARGS, CallbackName => 'Initial' );
 
 $caption = loc("Users matching search criteria");
 my @users_queries = ();
@@ -159,10 +242,21 @@ if ( scalar @users_queries ) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Admin/Users/Modify.html?id=".$users->First->id)
           if $users->Count == 1;
 }
-else {
+
+if ( $IncludeSystemGroups eq 'Privileged' ) {
     $caption = loc("Privileged users");
     $users->LimitToPrivileged;
 }
+elsif ( $IncludeSystemGroups eq 'Unprivileged' ) {
+    $caption = loc("Unprivileged users");
+    $users->LimitToUnprivileged;
+}
+else {
+    # Must be all
+    $caption = loc("All users");
+}
+
+$users->LimitToEndUsers;
 
 $Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Users'};
 my $Rows = RT->Config->Get('AdminSearchResultRows')->{'Users'} || 50;
@@ -205,6 +299,7 @@ $UserOp3 => undef
 $UserField3 => 'Name'
 $IdLike => undef
 $EmailLike => undef
-
 $FindDisabledUsers => 0
+$FindEnabledUsers => undef
+$IncludeSystemGroups => 'Privileged'
 </%ARGS>

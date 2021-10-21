@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,7 +49,9 @@
 $Plugin => ''
 </%ARGS>
 <div id="shredder-plugin-<% $Plugin %>-help" class="shredder-help">
-<% $text |n%>
+  <&| /Widgets/TitleBox, title => "$Plugin Help" &>
+    <% $text |n%>
+  </&>
 </div>
 <%ONCE>
 use RT::Shredder::Plugin;

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 63;
+use RT::Test;
 my $plain_file = File::Spec->catfile( RT::Test->temp_directory, 'attachment.txt' );
 open my $plain_fh, '>', $plain_file or die $!;
 print $plain_fh "this is plain content";
@@ -49,27 +49,27 @@ for my $type ( 'text/plain', 'text/html' ) {
     $m->field( 'Attach',  $plain_file );
     $m->field( 'Content', 'this is main content' );
     $m->field( 'ContentType', $type ) unless $type eq 'text/plain';
-    $m->submit;
+    $m->click('SubmitTicket');
     is( $m->status, 200, "request successful" );
     $m->content_contains('with plain attachment',
         'we have subject on the page' );
     $m->content_contains('this is main content', 'main content' );
-    $m->content_contains("Download $plain_name", 'download plain file link' );
+    ok( $m->find_link( text => $plain_name, url_regex => qr{Attachment/} ), 'download plain file link' );
 
     # Check for Message-IDs
-    follow_parent_with_headers_link($m, text => 'with headers', n => 1);
+    follow_parent_with_headers_link($m, url_regex => qr/Attachment\/WithHeaders\//, n => 1);
     $m->content_like(qr/^Message-ID:/im, 'create content has one Message-ID');
     $m->content_unlike(qr/^Message-ID:.+?Message-ID:/ism, 'but not two Message-IDs');
     $m->back;
 
-    follow_with_headers_link($m, text => "Download $plain_name", n => 1);
+    follow_with_headers_link($m, url_regex => qr/Attachment\/\d+\/\d+\/$plain_name/, n => 1);
     $m->content_unlike(qr/^Message-ID:/im, 'attachment lacks a Message-ID');
     $m->back;
 
     my ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main content/, 'email contains main content' );
     # check the email link in page too
-    $m->follow_link_ok( { text => 'Show' }, 'show the email outgoing' );
+    $m->follow_link_ok( { url_regex => qr/ShowEmailRecord/ }, 'show the email outgoing' );
     $m->content_contains('this is main content', 'email contains main content');
     $m->back;
 
@@ -89,26 +89,67 @@ for my $type ( 'text/plain', 'text/html' ) {
     is( $m->status, 200, "request successful" );
 
     $m->content_contains("this is main reply content", 'main reply content' );
-    $m->content_contains("Download $html_name", 'download html file link' );
+    ok( $m->find_link( text => $html_name, url_regex => qr{Attachment/} ), 'download html file link' );
 
     # Check for Message-IDs
-    follow_parent_with_headers_link($m, text => 'with headers', n => 2);
+    follow_parent_with_headers_link($m, url_regex => qr/Attachment\/WithHeaders\//, n => 2);
     $m->content_like(qr/^Message-ID:/im, 'correspondence has one Message-ID');
     $m->content_unlike(qr/^Message-ID:.+?Message-ID:/ism, 'but not two Message-IDs');
     $m->back;
 
-    follow_with_headers_link($m, text => "Download $plain_name", n => 2);
+    follow_with_headers_link($m, url_regex => qr/Attachment\/\d+\/\d+\/$plain_name/, n => 2);
     $m->content_unlike(qr/^Message-ID:/im, 'text/plain attach lacks a Message-ID');
     $m->back;
 
-    follow_with_headers_link($m, text => "Download $html_name", n => 1);
+    follow_with_headers_link($m, url_regex => qr/Attachment\/\d+\/\d+\/$html_name/, n => 1);
     $m->content_unlike(qr/^Message-ID:/im, 'text/html attach lacks a Message-ID');
     $m->back;
 
     ( $mail ) = RT::Test->fetch_caught_mails;
     like( $mail, qr/this is main reply content/, 'email contains main reply content' );
     # check the email link in page too
-    $m->follow_link_ok( { text => 'Show', n => 2 }, 'show the email outgoing' );
+    $m->follow_link_ok( { url_regex => qr/ShowEmailRecord/, n => 2 }, 'show the email outgoing' );
     $m->content_contains("this is main reply content", 'email contains main reply content');
     $m->back;
 }
+
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject => 'with main body',
+            Content => 'this is main body',
+            Attach  => $plain_file,
+        },
+        button    => 'SubmitTicket',
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+ok( $m->find_link( text => $plain_name ), 'download plain file link' );
+$m->follow_link_ok( { url_regex => qr/QuoteTransaction=/ }, 'reply the create transaction' );
+my $form    = $m->form_name( 'TicketUpdate' );
+my $content = $form->find_input( 'UpdateContent' );
+like( $content->value, qr/this is main body/, 'has transaction content' );
+
+$m->goto_create_ticket( $qid );
+$m->submit_form_ok(
+    {
+        form_name => 'TicketCreate',
+        fields    => {
+            Subject => 'without main body',
+            Attach  => $plain_file,
+        },
+        button    => 'SubmitTicket',
+    },
+    'submit TicketCreate form'
+);
+$m->text_like( qr/Ticket \d+ created in queue/, 'ticket is created' );
+ok( $m->find_link( text => $plain_name ), 'download plain file link' );
+$m->follow_link_ok( { url_regex => qr/QuoteTransaction=/ }, 'reply the create transaction' );
+$form    = $m->form_name( 'TicketUpdate' );
+$content = $form->find_input( 'UpdateContent' );
+like( $content->value, qr/This transaction appears to have no content/, 'no transaction content' );
+
+done_testing;

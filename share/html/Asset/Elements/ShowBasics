@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,26 +45,44 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr class="asset-catalog">
-    <td class="label"><&|/l&>Catalog</&>:</td>
-    <td><& ShowCatalog, Asset => $AssetObj &></td>
-  </tr>
-  <tr class="asset-name">
-    <td class="label"><&|/l&>Name</&>:</td>
-    <td><% $AssetObj->Name || '' %></td>
-  </tr>
-  <tr class="asset-description">
-    <td class="label"><&|/l&>Description</&>:</td>
-    <td><% $AssetObj->Description || '' %></td>
-  </tr>
-  <tr class="asset-status">
-    <td class="label"><&|/l&>Status</&>:</td>
-    <td class="value"><% loc($AssetObj->Status) %></td>
-  </tr>
-  <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics', Table => 0 &>
+<div class="form-row asset-catalog">
+  <div class="label col-3">
+    <&|/l&>Catalog</&>:
+  </div>
+  <div class="value col-9">
+    <& ShowCatalog, Asset => $AssetObj &>
+  </div>
+</div>
+
+<div class="form-row asset-name">
+  <div class="col-3 label">
+    <&|/l&>Name</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value"><% $AssetObj->Name || '' %></span>
+  </div>
+</div>
+
+<div class="form-row asset-description">
+  <div class="col-3 label">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value"><% $AssetObj->Description || '' %></span>
+  </div>
+</div>
+
+<div class="form-row asset-status">
+  <div class="col-3 label">
+    <&|/l&>Status</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value"><% $AssetObj->Status || '' %></span>
+  </div>
+</div>
+
+<& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Basics' &>
 % $m->callback(%ARGS, CallbackName => "AfterFields");
-</table>
 <%args>
 $AssetObj
 </%args>

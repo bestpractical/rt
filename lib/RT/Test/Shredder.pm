@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -125,7 +125,7 @@ sub import {
 =head3 db_name
 
 Returns the absolute file path to the current DB.
-It is C<<RT::Test->temp_directory . "rt4test" >>.
+It is C<<RT::Test->temp_directory . "rt5test" >>.
 
 =cut
 

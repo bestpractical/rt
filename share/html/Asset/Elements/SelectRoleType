@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -50,7 +50,7 @@ $Object
 $Name
 $AllowNull  => 0
 </%args>
-<select name="<% $Name %>">
+<select name="<% $Name %>" class="selectpicker form-control">
 % if ($AllowNull) {
   <option value=""></option>
 % }

@@ -64,7 +64,7 @@ ok !<$dir/*>, "Attachments directory is empty";
 
 ok -e 'sbin/rt-externalize-attachments', "Found rt-externalize-attachments script";
 ok -x 'sbin/rt-externalize-attachments', "rt-externalize-attachments is executable";
-ok !system('sbin/rt-externalize-attachments'), "rt-externalize-attachments ran successfully";
+ok( RT::Test->run_singleton_command('sbin/rt-externalize-attachments'), "rt-externalize-attachments ran successfully" );
 
 @attachs = @{ $ticket->Transactions->First->Attachments->ItemsArrayRef };
 is $attachs[1]->Content, 'test', "Can still get the text part content";

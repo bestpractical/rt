@@ -17,17 +17,23 @@ sub create_dashboard {
     $m->click_button(value => 'Create');
     $m->title_is('Modify the dashboard Testing!');
 
+    my ( $dashboard_id ) = ( $m->uri =~ /id=(\d+)/ );
+    ok( $dashboard_id, "got a dashboard ID, $dashboard_id" );  # 8
+
     $m->follow_link_ok({text => 'Content'});
     $m->title_is('Modify the content of dashboard Testing!');
 
-    my $form = $m->form_name('Dashboard-Searches-body');
-    my @input = $form->find_input('Searches-body-Available');
-    my ($dashboards_component) =
-        map { ( $_->possible_values )[1] }
-        grep { ( $_->value_names )[1] =~ /Dashboards/ } @input;
-    $form->value('Searches-body-Available' => $dashboards_component );
-    $m->click_button(name => 'add');
-    $m->content_contains('Dashboard updated');
+    $m->submit_form_ok({
+        form_name => 'UpdateSearches',
+        fields    => {
+            dashboard_id => $dashboard_id,
+            body         => 'component-Dashboards',
+        },
+        button => 'UpdateSearches',
+    }, "added 'Dashboards' to dashboard 'Testing!'" );
+
+    like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+    $m->content_contains( 'Dashboard updated' );
 
     $m->follow_link_ok({text => 'Show'});
     $m->title_is('Testing! Dashboard');

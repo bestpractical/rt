@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -129,7 +129,7 @@ __PACKAGE__->AddRight( Staff   => ModifyTicket        => 'Modify tickets' ); # l
 __PACKAGE__->AddRight( Staff   => DeleteTicket        => 'Delete tickets' ); # loc
 __PACKAGE__->AddRight( Staff   => TakeTicket          => 'Take tickets' ); # loc
 __PACKAGE__->AddRight( Staff   => StealTicket         => 'Steal tickets' ); # loc
-__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner on owned tickets' ); # loc
+__PACKAGE__->AddRight( Staff   => ReassignTicket      => 'Modify ticket owner' ); # loc
 
 __PACKAGE__->AddRight( Staff   => ForwardMessage      => 'Forward messages outside of RT' ); # loc
 
@@ -280,7 +280,7 @@ sub _ValidateName {
     $tempqueue->Load($name);
 
     #If this queue exists, return undef
-    if ( $tempqueue->Name() && $tempqueue->id != $self->id)  {
+    if ( $tempqueue->Name() && ( !$self->id || $tempqueue->id != $self->id ) ) {
         return (undef, $self->loc("Queue already exists") );
     }
 
@@ -482,6 +482,9 @@ sub CustomRoles {
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
         $roles->LimitToObjectId( $self->Id );
         $roles->ApplySortOrder;
+    }
+    else {
+        $roles->Limit( FIELD => 'id', VALUE => 0, SUBCLAUSE => 'ACL' );
     }
     return ($roles);
 }
@@ -1089,11 +1092,13 @@ sub FindDependencies {
                   VALUE    => 'RT::Queue-' );
     $deps->Add( in => $objs );
 
-    # Tickets
-    $objs = RT::Tickets->new( $self->CurrentUser );
-    $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
-    $objs->{allow_deleted_search} = 1;
-    $deps->Add( in => $objs );
+    # Tickets (skipped early as an optimization)
+    if ($walker->{FollowTickets} || !defined($walker->{FollowTickets})) {
+        $objs = RT::Tickets->new( $self->CurrentUser );
+        $objs->Limit( FIELD => "Queue", VALUE => $self->Id );
+        $objs->{allow_deleted_search} = 1;
+        $deps->Add( in => $objs );
+    }
 
     # Object Custom Roles
     $objs = RT::ObjectCustomRoles->new( $self->CurrentUser );
@@ -1199,6 +1204,29 @@ sub SetDefaultValue {
         $new_value = $self->loc( '(no value)' );
     }
 
+    if ( $args{Name} eq 'Article' && $args{Value} ) {
+        my $article = RT::Article->new($self->CurrentUser);
+        my ($ret, $msg);
+        if ( $args{Value} =~ /^\d+$/ ) {
+            ($ret, $msg) = $article->Load( $args{Value} );
+        }
+        else {
+            ($ret, $msg) = $article->LoadByCols( Name => $args{Value} );
+        }
+        return ($ret, $msg ) unless $ret;
+
+        $args{Value} = $article->Id;
+        $new_value = $article->Name;
+    }
+
+    if ( $args{Name} eq 'Article' && $old_value =~ /^\d+$/ ) {
+        my $article = RT::Article->new($self->CurrentUser);
+        my ($ret, $msg) = $article->Load( $old_value );
+        if ($ret) {
+            $old_value = $article->Name;
+        }
+    }
+
     return 1 if $new_value eq $old_value;
 
     my ($ret, $msg) = $self->SetAttribute(
@@ -1207,6 +1235,17 @@ sub SetDefaultValue {
             %{ $old_content || {} }, $args{Name} => $args{Value},
         },
     );
+
+    if ( $args{Name} =~ /Priority/ && RT->Config->Get('EnablePriorityAsString') ) {
+        if ( $old_value ne $self->loc('(no value)') ) {
+            my $str = RT::Ticket->_PriorityAsString( $old_value, $self->Name );
+            $old_value = $self->loc($str) if $str;
+        }
+        if ( $new_value ne $self->loc('(no value)') ) {
+            my $str = RT::Ticket->_PriorityAsString( $new_value, $self->Name );
+            $new_value = $self->loc($str) if $str;
+        }
+    }
 
     if ( $ret ) {
         return ( $ret, $self->loc( 'Default value of [_1] changed from [_2] to [_3]', $args{Name}, $old_value, $new_value ) );
@@ -1301,6 +1340,20 @@ sub SetDefaultDueIn {
         Name => 'Due',
         Value => $value,
     );
+}
+
+sub HiddenCustomRoleIDsForURL {
+    my $self = shift;
+    my $url  = shift;
+
+    my $roles = $self->CustomRoles;
+    my @ids;
+
+    while (my $role = $roles->Next) {
+        push @ids, $role->Id if $role->IsHiddenForURL($url);
+    }
+
+    return @ids;
 }
 
 RT::Base->_ImportOverlays();

@@ -4,15 +4,45 @@ users over developer modification.
 
 The rest of this file documents the contents of the directory.
 
+* bootstrap-4.2.1
+Description: front-end framework
+Origin: https://github.com/twbs/bootstrap
+License: MIT
+
+* bootstrap-combobox-1.2.0
+Description: combobox for bootstrap
+Origin: https://github.com/danielfarrell/bootstrap-combobox
+License: Apache
+
+* bootstrap-select-1.13.10
+Description: modern select with intuitive multiselection, searching, and much more
+Origin: https://github.com/snapappointments/bootstrap-select
+License: MIT
+
+* Chart-2.9.4
+Description: HTML5 Charts using the <canvas> tag
+Origin: https://github.com/chartjs/Chart.js
+License: MIT
+
+* chartjs-plugin-colorschemes-0.3.0
+Description: predefined color schemes for Chart.js
+Origin: https://github.com/nagix/chartjs-plugin-colorschemes
+License: MIT
+
 * chosen-1.4.2
 Description: <select> box enhancer
 Origin: https://github.com/harvesthq/chosen
 License: MIT
 
-* ckeditor-4.5.3
+* ckeditor-4.13.0
 Description: WYSIWYG text editor
-Origin: http://ckeditor.com/builder
-License: GPL
+Origin: https://github.com/ckeditor/ckeditor4
+License: GPL 2
+
+* d3
+Description: Bring data to life with SVG, Canvas and HTML
+Origin: https://d3js.org
+License: BSD 3-Clause
 
 * dropzone-4.0.1
 Description: drag and drop attachment uploader
@@ -22,16 +52,17 @@ License: MIT
 * eyedropper.svg
 Description: color picker icon
 Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
+Author: The Noun Project
 License: CC BY 3.0
 
-* jquery-1.11.3.js
+* jquery-3.4.1.js
 Description: DOM manipulation
-Origin: http://code.jquery.com/jquery-1.11.3.js
+Origin: http://code.jquery.com/jquery-3.4.1.js
 License: MIT
 
-* jquery-modal-0.5.2.js
-Description: modal popup dialogs
-Origin: https://github.com/kylefox/jquery-modal
+* jquery-jgrowl-1.4.5/
+Description: javascript notifications
+Origin: https://github.com/stanlemon/jGrowl/tree/1.4.5
 License: MIT
 
 * jquery-tablesorter-2.0.5b.js 
@@ -39,7 +70,7 @@ Description: sort tables without page refresh
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
 
-* jquery-ui-1.11.4.custom/
+* jquery-ui-1.12.1.custom/
 Description: JavaScript user interface enhancements
 Origin: http://jqueryui.com/download/
 License: MIT
@@ -49,3 +80,22 @@ Description: keyboard shortcuts
 Origin: https://github.com/ccampbell/mousetrap
 License: Apache
 
+* popper-1.14.6.js
+Description: computes and, optionally, applies the styles to the poppers(bootstrap requires it)
+Origin: https://github.com/FezVrasta/popper.js
+License: MIT
+
+* fontawesome-5.11.2
+Description: A set of SVG icons. Icon files are installed via npm, then webpack tree-shakes to generate js for only the icons we use.
+Origin: https://github.com/FortAwesome/Font-Awesome/tree/master/js-packages/%40fortawesome
+License: Icons: CC BY 4.0, Code: MIT License
+
+* superfish-1.7.10
+Description: an enhanced Suckerfish-style menu jQuery plugin
+Origin: https://github.com/joeldbirch/superfish
+License: MIT and GPL
+
+* selectize-0.12.6
+Description: bubble-like multiple user inputs
+Origin: https://selectize.github.io/selectize.js/
+License: Apache

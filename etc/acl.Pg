@@ -66,6 +66,10 @@ sub acl {
         CustomRoles
         objectcustomroles_id_seq
         ObjectCustomRoles
+        configurations_id_seq
+        Configurations
+        authtokens_id_seq
+        AuthTokens
     );
 
     my $db_user = RT->Config->Get('DatabaseUser');

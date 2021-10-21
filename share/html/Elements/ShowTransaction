@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,12 +47,20 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="<% join ' ', @classes %>" data-transaction-id="<% $Transaction->id %>">
   <div class="metadata">
+% if ( $actions ) {
+    <span class="actions"><% $actions |n %></span>
+% }
     <span class="type">
       <a name="txn-<% $Transaction->id %>" \
 % if ( $DisplayPath ) {
       href="<% $DisplayPath %>?id=<% $Object->id %>#txn-<% $Transaction->id %>" \
+% } elsif ( $HTML::Mason::Commands::r->path_info =~ m{^/SelfService/} ) {
+      href="<% RT->Config->Get('WebPath') %>/SelfService/Transaction/Display.html?id=<% $Transaction->id %>" \
+% } else {
+      href="<% RT->Config->Get('WebPath') %>/Transaction/Display.html?id=<% $Transaction->id %>" \
 % }
-      >#</a>
+% my $alt = loc('Show transaction link');
+      ><span class="fas fa-link" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span></a>
     </span>
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterAnchor' );
     <span class="date"><% $date |n %></span>
@@ -63,14 +71,11 @@
 % if ( $Object->isa("RT::Ticket") and $Object->CurrentUserCanSeeTime ) {
     <span class="time-taken"><% $time %></span>
 % }
-% if ( $actions ) {
-    <span class="actions"><% $actions |n %></span>
-% }
   </div>
 
   <div class="content">
 <%PERL>
-$m->comp('/Elements/ShowCustomFields', Object => $Transaction, HideEmpty => 1 ) if $HasTxnCFs;
+$m->comp('/Elements/ShowCustomFields', Object => $Transaction, HideEmpty => 1, LabelCols => 2, ValueCols => 10 ) if $HasTxnCFs;
 $m->comp(
     'ShowTransactionAttachments',
     %ARGS,
@@ -78,6 +83,48 @@ $m->comp(
 ) if $ShowBody;
 </%PERL>
   </div>
+% if ($Transaction->Type eq 'CustomField' && $Transaction->Field ) {
+%     my ($old, $new);
+%     my $cf = RT::CustomField->new( $session{CurrentUser} );
+%     $cf->SetContextObject( $Transaction->Object );
+%     $cf->Load( $Transaction->Field );
+%     if ($cf->Id && $cf->Type =~ /text/i) {
+%        $old = $Transaction->OldValue // loc('(no value)');
+%        $old = $m->comp('/Elements/ScrubHTML', Content => $old);
+%        $old =~ s|\n|<br />|g;
+%        $new = $Transaction->NewValue // loc('(no value)');
+%        $new = $m->comp('/Elements/ScrubHTML', Content => $new);
+%        $new =~ s|\n|<br />|g;
+<div class="details hidden" id="txn-<% $Transaction->Id %>-details">
+% if ( $old eq loc('(no value)')  ) {
+  <div class="form-row">
+    <div class="label col-2"><% loc('Added') %>:</div>
+    <div class="value col-10"><% $new |n %></div>
+  </div>
+% }
+% elsif ( $new eq loc('(no value)')  ) {
+  <div class="form-row">
+    <div class="label col-2"><% loc('Deleted') %>:</div>
+    <div class="value col-10"><% $old |n %></div>
+  </div>
+% }
+% else {
+  <div class="form-row">
+    <div class="label col-2"><% loc('From') %>:</div>
+    <div class="value col-10"><% $old |n %></div>
+  </div>
+  <div class="form-row">
+    <div class="label col-2"><% loc('To') %>:</div>
+    <div class="value col-10"><% $new |n %></div>
+  </div>
+  <div class="form-row diff">
+    <div class="label col-2"><% loc('Changes') %>:</div>
+    <div class="value col-10"><% loc('Loading...') %></div>
+  </div>
+% }
+</div>
+%     }
+% }
 % $m->callback( %ARGS, Transaction => $Transaction, CallbackName => 'AfterContent' );
 </div>
 
@@ -148,8 +195,9 @@ if ( $ShowBody && !$Attachments ) {
 my @actions = ();
 my $txn_type = $Transaction->Type;
 if ( $txn_type =~ /EmailRecord$/ ) {
+    my $alt = loc('Show email contents');
     push @actions, {
-        title  => loc('Show'),
+        title  => qq[<span class="fas fa-envelope-open-text" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
         target => '_blank',
         path   => $EmailRecordPath
             .'?id='. $Object->id
@@ -159,7 +207,14 @@ if ( $txn_type =~ /EmailRecord$/ ) {
 
     $ShowBody = 0;
 }
-
+elsif ($txn_type eq 'CustomField' && $Transaction->Field) {
+    my $cf = RT::CustomField->new( $session{CurrentUser} );
+    $cf->SetContextObject( $Transaction->Object );
+    $cf->Load( $Transaction->Field );
+    if ($cf->Id && $cf->Type =~ /text/i) {
+        push @actions, { class => 'toggle-txn-details', title => loc('Show Details'), path => '#' };
+    }
+}
 # If the transaction has anything attached to it at all
 elsif ( %$Attachments && $ShowActions ) {
     my %has_right = map {
@@ -175,9 +230,10 @@ elsif ( %$Attachments && $ShowActions ) {
             || $Object->CurrentUserHasRight( $has_right{'ReplyTo'} )
         )
     ) {
+        my $alt = loc('Reply');
         push @actions, {
             class  => "reply-link",
-            title  => loc('Reply'),
+            title  => qq[<span class="fas fa-reply" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $UpdatePath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -190,9 +246,10 @@ elsif ( %$Attachments && $ShowActions ) {
             || $Object->CurrentUserHasRight( $has_right{'CommentOn'} )
         )
     ) {
+        my $alt = loc('Comment');
         push @actions, {
             class  => "comment-link",
-            title  => loc('Comment'),
+            title  => qq[<span class="fas fa-comment" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $UpdatePath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -203,9 +260,10 @@ elsif ( %$Attachments && $ShowActions ) {
     if ( $ForwardPath && $has_right{'Forward'}
         && $Object->CurrentUserHasRight( $has_right{'Forward'} )
     ) {
+        my $alt = loc('Forward');
         push @actions, {
             class  => "forward-link",
-            title  => loc('Forward'),
+            title  => qq[<span class="fas fa-forward" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $ForwardPath
                 .'?id='. $Object->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -216,9 +274,10 @@ elsif ( %$Attachments && $ShowActions ) {
         && RT->Config->Get('Crypt')->{'Enable'}
         && RT->Config->Get('Crypt')->{'AllowEncryptDataInDB'}
     ) {
+        my $alt = loc('Encrypt/Decrypt');
         push @actions, {
             class  => "encryption-link",
-            title  => loc('Encrypt/Decrypt'),
+            title  => qq[<span class="fas fa-key" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
             path   => $EncryptionPath
                 .'?id='. $Transaction->id
                 .'&QuoteTransaction='. $Transaction->id
@@ -241,6 +300,8 @@ $m->callback(
     Description => \$desc,
     ShowBody    => \$ShowBody,
     CreatorObj  => \$CreatorObj,
+    HasTxnCFs   => \$HasTxnCFs,
+    ARGSRef     => \%ARGS,
 );
 
 my $actions = '';
@@ -258,10 +319,10 @@ if ( @actions ) {
                 ? ' class="'. $i->apply_escapes( $a->{'class'}, 'h' ) .'"'
                 : ''
             )
-            .'>'. $i->apply_escapes( $a->{'title'}, 'h' ) .'</a>'
+            .'>'. $a->{'title'} .'</a>'
         ;
     }
-    $actions = join '&nbsp;', map "[$_]", @actions;
+    $actions = join '&nbsp;', @actions;
 }
 
 # make date unbreakable

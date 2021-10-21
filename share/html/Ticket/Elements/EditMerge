@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,16 +45,15 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<i>
+<div class='ticket-merge-text <% $MergeTextClass %>'>
 <&|/l&>Warning: merging is a non-reversible action! Enter a single ticket number to be merged into.</&>
-</i>
-
-<table>
-  <tr>
-    <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></td>
-  </tr>
-</table>
+</div>
+<div>
+  <div class="form-row">
+    <div class="label <% $LabelStyle %>"><&|/l&>Merge into</&>:</div>
+    <div class="value <% $ValueStyle %>"><input type="text" class="form-control" name="<% $Name %>" value="<% $Default || '' %>" data-autocomplete="Tickets" data-autocomplete-exclude="<% join( ' ', @excludes) || '' %>" /></div>
+  </div>
+</div>
 
 <%INIT>
 my @excludes;
@@ -76,4 +75,7 @@ $Ticket => undef
 $Tickets => undef
 $Name => ''
 $Default => ''
+$MergeTextClass => 'ticket-merge-position'
+$LabelStyle => 'col-2'
+$ValueStyle => 'col-4'
 </%ARGS>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -58,21 +58,99 @@
 % }
 
 <&|/Widgets/TitleBox, title => loc('Basics') &>
-<table>
-    <tr>
-     <td class="label"><&|/l&>Name</&>:</td>
-     <td class="value"><input name="Name" value="<%$Dashboard->Name%>" /></td>
-    </tr>
-    <tr>
-    <td class="label"><&|/l&>Privacy</&>:</td>
-    <td><& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &></td>
-</tr>
-</table>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Name</&>:
+    </div>
+    <div class="value col-9">
+        <input class="form-control" type="text" name="Name" value="<%$Dashboard->Name%>" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Privacy</&>:
+    </div>
+    <div class="value col-9">
+      <& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
+    </div>
+  </div>
+
+% if ( $Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {
+  <div class="form-row">
+    <div class="label col-3"><&|/l&>Depended on by</&>:</div>
+    <div class="col-9">
+      <span class="form-control current-value">
+        <a href="#" data-toggle="modal" data-target="#dashboard-depended-on-by-list-modal"><% loc('View') %></a>
+      </span>
+    </div>
+  </div>
+% }
 </&>
-<& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
+
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'Save', Label =>( $Create ? loc('Create') : loc('Save Changes') ) &>
+    </div>
+  </div>
 
 % if ($Dashboard->Id && $can_delete) {
-<& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
+  <div class="form-row">
+    <div class="col-12">
+%   if ( $Dashboard->{Attribute}->DependedOnBy->Count ) {
+      <div class="text-right">
+        <input type="button" class="form-control btn btn-primary button" data-toggle="modal" data-target="#delete-dashboard-confirm-modal" value="<%loc('Delete')%>" />
+      </div>
+%   } else {
+      <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
+%   }
+    </div>
+  </div>
+% }
+
+% if ($Dashboard->Id && $Dashboard->{Attribute}->DependedOnBy->Count ) {
+
+% if ($can_delete) {
+<div class="modal" id="delete-dashboard-confirm-modal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><&|/l&>Really Delete?</&></h5>
+        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <div class="modal-body">
+        <& SELF:GetDependedOnByList, Object => $Dashboard &>
+      </div>
+      <div class="modal-footer">
+        <div class="form-row justify-content-end">
+          <div class="col-auto">
+            <input type="submit" class="button btn btn-primary" name="Delete" value="<% loc('Delete') %>" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+% }
+
+<div class="modal" id="dashboard-depended-on-by-list-modal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><&|/l&>Depended On By List</&></h5>
+        <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <div class="modal-body">
+        <& SELF:GetDependedOnByList, Object => $Dashboard &>
+      </div>
+    </div>
+  </div>
+</div>
 % }
 </form>
 <%INIT>
@@ -180,3 +258,33 @@ $id => '' unless defined $id
 $Delete => undef
 </%ARGS>
 
+<%METHOD GetDependedOnByList>
+
+% my $links = $Object->{Attribute}->DependedOnBy;
+% $links->RowsPerPage(50);
+% my $total = $links->CountAll;
+  <p>
+    <&|/l, $total &>This dashboard is used in homepage of the following [quant,_1,user,users]</&>:
+  </p>
+  <ul class="dashboard-depended-on-by-list list-group-compact">
+% while ( my $link = $links->Next ) {
+    <li class="list-group-item">
+%   if ( $link->BaseObj->ObjectType eq 'RT::System' ) {
+      <% loc('Global') %>
+%   } elsif ( $link->BaseObj->ObjectType eq 'RT::User' ) {
+      <% loc('User') %>: <& /Elements/ShowUser, User => $link->BaseObj->Object, LinkTarget => '_blank' &>
+%   } else {
+       <% $link->BaseObj->ObjectType %>: #<% $link->BaseObj->ObjectId %>
+%   }
+    </li>
+% }
+
+% if ( $total > 50 ) {
+    <li class="list-group-item">...</li>
+% }
+  </ul>
+
+<%ARGS>
+$Object
+</%ARGS>
+</%METHOD>

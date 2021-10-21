@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -63,11 +63,13 @@ $Toggle => 0
 </%ARGS>
 <span class="toggle-bookmark toggle-bookmark-<% $id %>">
 % my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
-<a align="right" href="<% $url %>" onclick="jQuery.get(<% $url |n,j %>, function(data){ jQuery('.toggle-bookmark-'+<% $id |n,j%>).replaceWith(data) }); return false;" >
+<a href="<% $url %>" onclick="toggle_bookmark(<% $url |n,j %>, <% $id |n,j%>); return false;" >
 % if ( $is_bookmarked ) {
-<img src="<% RT->Config->Get('WebPath') %>/static/images/star-full.png" alt="<% loc('Remove Bookmark') %>" />
+% my $alt = loc('Remove Bookmark');
+<span class="fas fa-bookmark bookmark-selected" data-fa-transform="shrink-2 up-0.25" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
 % } else {
-<img src="<% RT->Config->Get('WebPath') %>/static/images/star-empty.png" alt="<% loc('Add Bookmark') %>" />
+% my $alt = loc('Add Bookmark');
+<span class="far fa-bookmark" style="color:black" alt="<% $alt %>" data-toggle="tooltip" data-placement="top" data-original-title="<% $alt %>"></span>
 % }
 </a>
 </span>

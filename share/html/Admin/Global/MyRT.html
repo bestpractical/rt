@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,66 +45,37 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc("RT at a glance") &>
+<& /Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
+<& /Elements/ListActions, actions => \@results &>
 
-<& /Elements/ListActions, actions => \@actions &>
-<br />
-% for my $pane (@panes) {
-<&|/Widgets/TitleBox, title => loc('RT at a glance').': '.loc($pane->{Name}), bodyclass => "" &>
-<& /Widgets/SelectionBox:show, self => $pane &></&>
-<br />
-% }
-<%init>
-my @actions;
+<&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-lg" &>
+<form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-lg">
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/SelectDashboard, Dashboards => GetDashboards( Objects => [ RT->System ] ), Default => $default_dashboard_id, ShowEmpty => 0 &>
+    </div>
+  </div>
+</form>
+</&>
 
-my @items = map { [ "component-$_", loc($_) ] } sort @{ RT->Config->Get('HomepageComponents') };
-my $sys = RT::System->new( $session{'CurrentUser'} );
-# XXX: put this in savedsearches_to_portlet_items
-for ( $m->comp( "/Search/Elements/SearchesForObject",
-                Object => $sys )) {
-    my ( $desc, $loc_desc, $search ) = @$_;
-    my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
-    if ( $SearchType eq 'Ticket' ) {
-        push @items, [ "system-$desc", $loc_desc ];
-    } else {
-        my $oid = ref($sys) . '-' . $sys->Id . '-SavedSearch-' . $search->Id;
-        my $type = ( $SearchType eq 'Ticket' )
-          ? 'Saved Search'    # loc
-          : $SearchType;
-        push @items, [ "saved-$oid", loc($type) . ": $loc_desc" ];
-    }
+<%INIT>
+Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
+
+my @results;
+my $title = loc("Customize").' '.loc("Global RT at a glance");
+
+my ($system_default) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
+my $default_dashboard_id = $system_default ? $system_default->Content : 0;
+
+my ($default) = map { /^DefaultDashboard-(\d+)/ ? $1 : () } keys %ARGS;
+if ( $default ) {
+    my ( $ret, $msg ) = RT->System->SetAttribute( Name => 'DefaultDashboard', Description => 'Default Dashboard', Content => $default );
+    push @results, $ret ? loc('Preferences saved.') : $msg;
+    MaybeRedirectForResults(
+        Actions => \@results,
+        Path    => "/Admin/Global/MyRT.html",
+    );
 }
 
-my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
-
-my $has_right = $session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser');
-
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureMyRT',
-    panes  => [
-        'body', #loc
-        'sidebar', #loc
-    ],
-    Action => 'MyRT.html',
-    items => \@items,
-    ReadOnly => !$has_right,
-    current_portlets => $default_portlets->Content,
-    OnSave => sub {
-        my ( $conf, $pane ) = @_;
-        if (!$has_right) {
-            push @actions, loc( 'Permission Denied' );
-        }
-        else {
-            $default_portlets->SetContent( $conf );
-            push @actions, loc( 'Global portlet [_1] saved.', $pane );
-        }
-    }
-);
-
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
-    for @panes;
-
-
-</%init>
-
+</%INIT>

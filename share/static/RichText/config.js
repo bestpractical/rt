@@ -1,45 +1,34 @@
-/** @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. 
- * All rights reserved.
- * For licensing, see LICENSE.html or http://ckeditor.com/license */
+/**
+ * @license Copyright (c) 2003-2019, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see https://ckeditor.com/legal/ckeditor-oss-license
+ */
 
 CKEDITOR.editorConfig = function( config ) {
-        // %REMOVE_START%
-        // The configuration options below are needed when running CKEditor from source files.
-        config.plugins = 'dialogui,dialog,a11yhelp,dialogadvtab,basicstyles,blockquote,clipboard,button,panelbutton,panel,floatpanel,colorbutton,menu,contextmenu,resize,toolbar,enterkey,entities,find,floatingspace,listblock,richcombo,font,format,htmlwriter,wysiwygarea,indent,justify,fakeobjects,link,indentlist,list,liststyle,magicline,pastetext,pastefromword,removeformat,selectall,sourcearea,specialchar,menubutton,tab,table,tabletools,undo,popup,autolink,horizontalrule';
-        config.skin = 'flat';
-        // %REMOVE_END%
+	// Define changes to default configuration here.
+	// For complete reference see:
+	// https://ckeditor.com/docs/ckeditor4/latest/api/CKEDITOR_config.html
 
+    	config.toolbarGroups = [
+    		{ name: 'styles', groups: [ 'styles' ] },
+    		{ name: 'colors', groups: [ 'colors' ] },
+    		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+    		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+    		{ name: 'links', groups: [ 'links' ] },
+    		{ name: 'insert', groups: [ 'insert' ] },
+    		{ name: 'forms', groups: [ 'forms' ] },
+    		{ name: 'tools', groups: [ 'tools' ] },
+    		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+    		{ name: 'others', groups: [ 'others' ] },
+    		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+    		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+    		{ name: 'about', groups: [ 'about' ] }
+    	];
 
-config.toolbar = 'Full';
-config.toolbar_Full = [
-    ['Cut','Copy','Paste','PasteText','PasteFromWord'],
-    ['Undo','Redo','-','-','SelectAll','RemoveFormat'],
-    ['Table','HorizontalRule','SpecialChar','Link'],
-    '/',
-    ['Bold','Italic','Underline','Strike'],
-    ['NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote'],
-    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-    '/',
-    ['Format','Font','FontSize'],
-    ['TextColor'],
-    ['Source']
-];
+    	config.removeButtons = 'Underline,Subscript,Superscript,About,Link,Image,HorizontalRule,SpecialChar,Source,DocProps,Unlink,Anchor,Strike,Cut,Copy,Outdent,Indent';
 
-config.enterMode = CKEDITOR.ENTER_BR;
-config.shiftEnterMode = CKEDITOR.ENTER_P;
-config.enableTabKeyTools = true;
-config.htmlEncodeOutput = false;
-config.disableNativeSpellChecker = false;
-config.browserContextMenuOnCtrl = true;
-config.toolbarCanCollapse = true;
-config.toolbarStartupExpanded = false;
-config.font_names =
-   'Arial/Arial, Helvetica, sans-serif;' +
-   'Courier New/Courier New, Courier, monospace;' +
-   'Georgia/Georgia, serif;' +
-   'Lucida Sans Unicode/Lucida Sans Unicode, Lucida Grande, sans-serif;' +
-   'Tahoma/Tahoma, Geneva, sans-serif;' +
-   'Times New Roman/Times New Roman, Times, serif;' +
-   'Trebuchet MS/Trebuchet MS, Helvetica, sans-serif;' +
-   'Verdana/Verdana, Geneva, sans-serif';
+	// Simplify the dialog windows.
+	config.removeDialogTabs = 'image:advanced;link:advanced';
+    if ( RT.Config.WebDefaultStylesheet.match(/dark/) ) {
+        config.contentsCss = [ RT.Config.WebPath + '/static/RichText/contents.css', RT.Config.WebPath + '/static/RichText/contents-dark.css' ];
+    }
 };

@@ -31,7 +31,7 @@ use_ok 'RT::Report::Tickets';
     my %columns = $report->SetupGroupings(
         Query    => 'id > 0',
         GroupBy  => ['Queue'],
-        Function => ['ALL(Created-Resolved)'],
+        Function => ['ALL(Created to Resolved)'],
     );
     $report->SortEntries;
 
@@ -41,7 +41,7 @@ use_ok 'RT::Report::Tickets';
                         {
                           'cells' => [
                                { 'rowspan' => 2, 'value' => 'Queue', 'type' => 'head' },
-                               { 'colspan' => 4, 'value' => 'Summary of Created-Resolved', 'type' => 'head' }
+                               { 'colspan' => 4, 'value' => 'Summary of Created to Resolved', 'type' => 'head' }
                              ]
                         },
                         {

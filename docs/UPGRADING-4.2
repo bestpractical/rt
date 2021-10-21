@@ -107,7 +107,7 @@ extra transactions, and keeping the summed time spent consistent.
 In order to fix the history records of old ticket you can run the following
 command:
 
-    /opt/rt4/etc/upgrade/time-worked-history
+    /opt/rt5/etc/upgrade/time-worked-history
 
 This command deletes records from the Transactions table. This script can only fix
 TimeWorked mismatches, but not TimeLeft or TimeEstimated.
@@ -130,11 +130,11 @@ existing installs.  While new installs use the HTML templates by default,
 upgrades from older versions don't automatically switch to the HTML versions.
 To switch existing scrips, run:
 
-    /opt/rt4/etc/upgrade/switch-templates-to html
+    /opt/rt5/etc/upgrade/switch-templates-to html
 
 To switch from HTML back to text, run:
 
-    /opt/rt4/etc/upgrade/switch-templates-to text
+    /opt/rt5/etc/upgrade/switch-templates-to text
 
 =item *
 

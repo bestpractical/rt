@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -72,6 +72,7 @@ my $show_content = sub {
 my $show;
 $show = sub {
     my $attach = shift;
+    $m->out('</div>');  # Close rt-header-container
     $m->out('<div id="body">');
     $m->out('<div class="plain-text-white-space">') if $plain_text_mono;
 

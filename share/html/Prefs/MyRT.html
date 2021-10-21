@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,35 +46,34 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => $title &>
-<& /Elements/Tabs
-&>
+<& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<br />
-
-% for my $pane ( @panes ) {
-<&|/Widgets/TitleBox,
-    title => loc('RT at a glance') .': '. loc( $pane->{Name} ),
-    bodyclass => ""
-&>
-<& /Widgets/SelectionBox:show, self => $pane &>
-</&>
-% }
-
-<&|/Widgets/TitleBox, title => loc('Options'), bodyclass => "" &>
-<form method="post" action="MyRT.html">
-<&|/l&>Rows per box</&>:
-<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
-<input type="submit" class="button" name="UpdateSummaryRows" value="<% loc('Save') %>" />
-</form>
-</&>
-<&|/Widgets/TitleBox, title => loc("Reset RT at a glance") &>
-<form method="post" action="MyRT.html">
-<input type="hidden" name="Reset" value="1" />
-<input type="submit" class="button" value="<% loc('Reset to default') %>">
+<&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-xl" &>
+<form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-xl">
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/SelectDashboard, Dashboards => GetDashboards(), Default => $default_dashboard_id &>
+    </div>
+  </div>
 </form>
 </&>
 
+<&|/Widgets/TitleBox, title => loc('Options'), bodyclass => "", class => "mx-auto max-width-xl" &>
+<form method="post" action="MyRT.html" class="mx-auto max-width-xl">
+<div class="form-row">
+  <div class="label col-auto">
+    <&|/l&>Rows per box</&>:
+  </div>
+  <div class="col-auto">
+    <input class="form-control" type="text" name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
+  </div>
+  <div class="col-auto">
+    <input type="submit" class="button form-control btn btn-primary" name="UpdateSummaryRows" value="<% loc('Save') %>" />
+  </div>
+</div>
+</form>
+</&>
 
 <%INIT>
 my @results;
@@ -93,73 +92,29 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
 }
 $ARGS{'SummaryRows'} ||= $user->Preferences('SummaryRows', RT->Config->Get('DefaultSummaryRows'));
 
-if ($ARGS{Reset}) {
-    for my $pref_name ('HomepageSettings', 'SummaryRows') {
-        next unless $user->Preferences($pref_name);
-        my ($ok, $msg) = $user->DeletePreferences($pref_name);
-        push @results, $msg unless $ok;
+my $default_dashboard_id = $session{'CurrentUser'}->Preferences( DefaultDashboard => 0 );
+
+my ($default) = map { /^DefaultDashboard-(\d+)/ ? $1 : () } keys %ARGS;
+if ( defined $default ) {
+    my ( $ret, $msg );
+    if ( $default ) {
+        ( $ret, $msg ) = $session{CurrentUser}->SetPreferences( 'DefaultDashboard', $default );
     }
-    push @results, loc('Preferences saved.') unless @results;
-}
-
-my $portlets = $user->Preferences('HomepageSettings');
-unless ($portlets) {
-    my ($defaults) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
-    $portlets = $defaults ? $defaults->Content : {};
-}
-
-my %seen;
-my @items = map ["component-$_", loc($_)], grep !$seen{$_}++, @{RT->Config->Get('HomepageComponents')};
-
-my $sys = RT::System->new($session{'CurrentUser'});
-my @objs = ($sys);
-
-push @objs, RT::SavedSearch->new( $session{CurrentUser} )->ObjectsForLoading
-    if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
-                                          Object => $RT::System );
-
-my @sys_searches;
-for my $object (@objs) {
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
-        my ($desc, $loc_desc, $search) = @$_;
-
-        my $SearchType = 'Ticket';
-        if ((ref($search->Content)||'') eq 'HASH') {
-            $SearchType = $search->Content->{'SearchType'}
-                if $search->Content->{'SearchType'};
+    else {
+        if ( $default_dashboard_id ) {
+            ( $ret, $msg ) = $session{CurrentUser}->DeletePreferences( 'DefaultDashboard' );
         }
         else {
-            $RT::Logger->debug("Search ".$search->id." ($desc) appears to have no Content");
-        }
-
-        if ($object eq $sys && $SearchType eq 'Ticket') {
-            push @items, ["system-$desc", $loc_desc];
-            push @sys_searches, [$desc, $search];
-        }
-        else {
-            my $oid = ref($object).'-'.$object->Id.'-SavedSearch-'.$search->Id;
-            my $type = ($SearchType eq 'Ticket')
-                ? 'Saved Search' # loc
-                : $SearchType;
-            push @items, ["saved-$oid", loc($type).": $loc_desc"];
+            $ret = 1;
         }
     }
+
+    push @results, $ret ? loc('Preferences saved.') : $msg;
+
+    MaybeRedirectForResults(
+        Actions => \@results,
+        Path    => "/Prefs/MyRT.html",
+    );
 }
-
-my @panes = $m->comp(
-    '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'sidebar'],
-    Action => 'MyRT.html',
-    items => \@items,
-    current_portlets => $portlets,
-    OnSave => sub {
-        my ( $conf, $pane ) = @_;
-        my ($ok, $msg) = $user->SetPreferences( 'HomepageSettings', $conf );
-        push @results, $ok ? loc('Preferences saved for [_1].', $pane) : $msg;
-    }
-);
-
-$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_ )
-    for @panes;
 
 </%INIT>

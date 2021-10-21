@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,6 +49,7 @@
     type="text"
     id="<% $Name %>"
     name="<% $Name %>"
+    class="<% $AutocompleteMultiple ? '' : 'form-control' %>"
     value="<% $Default || '' %>"
 
 % if (defined $Size) {
@@ -60,11 +61,12 @@
 % }
 
 % if ($Autocomplete) {
-    data-autocomplete="Users"
+    data-autocomplete="<% $AutocompleteType %>"
 % }
 
 % if ($AutocompleteMultiple) {
     data-autocomplete-multiple
+    autocomplete="off"
 % }
 
 % if ($AutocompleteReturn) {
@@ -79,6 +81,18 @@
     data-autocomplete-include-system
 % }
 
+% if (@options) {
+    data-options="<% JSON(\@options) %>"
+% }
+
+% if (@items) {
+    data-items="<% JSON(\@items) %>"
+% }
+
+% if ($AutocompleteExclude) {
+    data-autocomplete-exclude="<% $AutocompleteExclude %>"
+% }
+
 />
 % if ($EntryHint) {
 <br>
@@ -86,15 +100,57 @@
   <% loc($EntryHint) %>
 </font></i>
 % }
+
+<%INIT>
+my @options;
+my @items;
+if ($AutocompleteMultiple) {
+
+    my $get_autocomplete_option = sub {
+        my $term = shift;
+        return unless $term =~ /\S/;
+        my $json = $m->scomp(
+            '/Helpers/Autocomplete/Users',
+            term => $term,
+            max  => 1,
+            $AutocompleteReturn ? ( return => $AutocompleteReturn ) : (),
+            abort => 0,
+        );
+        if ($json) {
+            if ( my $parsed = JSON::from_json($json) ) {
+                return $parsed->[0] || ();
+            }
+        }
+        return;
+    };
+
+    for my $email ( @$Options ) {
+        if ( my $option = $get_autocomplete_option->($email) ) {
+            push @options, $option;
+        }
+    }
+
+    for my $email ( split '\s*,\s*', $Default || '' ) {
+        if ( my $option = $get_autocomplete_option->($email) ) {
+            push @options, $option;
+            push @items, $option->{value};
+        }
+    }
+}
+</%INIT>
+
 <%ARGS>
 $Name
 $Size    => 40
 $Default => ''
 $Autocomplete => 1
+$AutocompleteType => 'Users'
 $AutocompleteMultiple => 0
 $AutocompleteReturn => ''
 $AutocompleteNobody => 0
 $AutocompleteSystem => 0
 $EntryHint => ''
 $Placeholder => ''
+$Options => []
+$AutocompleteExclude => undef
 </%ARGS>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -62,7 +62,7 @@ my $interp = $m->interp;
 my $eh  = sub { $interp->apply_escapes( @_, 'h' ) };
 my $eu  = sub { $interp->apply_escapes( @_, 'u' ) };
 
-$m->out('<table class="collection-as-table chart">'. "\n");
+$m->out('<table class="table table-bordered collection-as-table chart">'. "\n");
 foreach my $section (qw(thead tbody tfoot)) {
     next unless $Table{ $section } && @{ $Table{ $section } };
 
@@ -87,8 +87,6 @@ foreach my $section (qw(thead tbody tfoot)) {
                 my $value = int $cell->{ $dir };
                 $m->out(qq{ $dir="$value"});
             }
-            $m->out(' style="background-color: #'. $m->interp->apply_escapes($cell->{color}) .'"')
-                if $cell->{color};
 
             $m->out('>');
             if ( defined $cell->{'value'} ) {

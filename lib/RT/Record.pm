@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -371,6 +371,7 @@ sub LoadByCols {
 
     # We don't want to hang onto this
     $self->ClearAttributes;
+    delete $self->{_Roles};
 
     unless ( $self->_Handle->CaseSensitive ) {
         my ( $ret, $msg ) = $self->SUPER::LoadByCols( @_ );
@@ -942,13 +943,16 @@ sub Update {
         # items. If it fails, we don't care
         do {
             no warnings "uninitialized";
-            local $@;
-            my $name = eval {
-                my $object = $attribute . "Obj";
-                $self->$object->Name;
-            };
-            unless ($@) {
-                next if $name eq $value || $name eq ($value || 0);
+
+            if ( $attribute ne 'Lifecycle' ) {
+                local $@;
+                my $name = eval {
+                    my $object = $attribute . "Obj";
+                    $self->$object->Name;
+                };
+                unless ($@) {
+                    next if $name eq $value || $name eq ( $value || 0 );
+                }
             }
 
             next if $truncated_value eq $self->$attribute();
@@ -1729,13 +1733,24 @@ sub Transactions {
 Returns the result of L</Transactions> ordered per the
 I<OldestTransactionsFirst> preference/option.
 
+Pass an optional value 'ASC' or 'DESC' to force a specific
+order.
+
 =cut
 
 sub SortedTransactions {
     my $self  = shift;
+    my $order = shift || 0;
     my $txns  = $self->Transactions;
-    my $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
-        ? 'ASC' : 'DESC';
+
+    if ( $order && ( $order eq 'ASC' || $order eq 'DESC' ) ) {
+        # Use provided value
+    }
+    else {
+        $order = RT->Config->Get("OldestTransactionsFirst", $self->CurrentUser)
+            ? 'ASC' : 'DESC';
+    }
+
     $txns->OrderByCols(
         { FIELD => 'Created',   ORDER => $order },
         { FIELD => 'id',        ORDER => $order },
@@ -1770,6 +1785,7 @@ our %TRANSACTION_CLASSIFICATION = (
             Owner Creator LastUpdatedBy
         ) ),
     },
+    CustomField => 'cfs',
     SystemError => 'error',
     AttachmentTruncate => 'attachment-truncate',
     AttachmentDrop => 'attachment-drop',
@@ -2111,19 +2127,23 @@ Add default values to object's empty custom fields.
 
 sub AddCustomFieldDefaultValues {
     my $self = shift;
-    my $cfs  = $self->CustomFields;
+
+    my $object = ( ref $self )->new( RT->SystemUser );
+    $object->Load( $self->id );
+
+    my $cfs  = $object->CustomFields;
     my @msgs;
     while ( my $cf = $cfs->Next ) {
-        next if $self->CustomFieldValues($cf->id)->Count || !$cf->SupportDefaultValues;
+        next if $object->CustomFieldValues($cf->id)->Count || !$cf->SupportDefaultValues;
         my ( $on ) = grep { $_->isa( $cf->RecordClassFromLookupType ) } $cf->ACLEquivalenceObjects;
         my $values = $cf->DefaultValues( Object => $on || RT->System );
         foreach my $value ( UNIVERSAL::isa( $values => 'ARRAY' ) ? @$values : $values ) {
-            next if $self->CustomFieldValueIsEmpty(
+            next if $object->CustomFieldValueIsEmpty(
                 Field => $cf,
                 Value => $value,
             );
 
-            my ( $status, $msg ) = $self->_AddCustomFieldValue(
+            my ( $status, $msg ) = $object->_AddCustomFieldValue(
                 Field             => $cf->id,
                 Value             => $value,
                 RecordTransaction => 0,
@@ -2161,7 +2181,7 @@ sub CustomFieldValueIsEmpty {
            : $self->LoadCustomFieldByIdentifier( $args{'Field'} );
 
     if ($cf) {
-        if ( $cf->Type =~ /^Date(?:Time)?$/ ) {
+        if ( $cf->__Value('Type') =~ /^Date(?:Time)?$/ ) {
             my $DateObj = RT::Date->new( $self->CurrentUser );
             $DateObj->Set(
                 Format => 'unknown',
@@ -2400,6 +2420,315 @@ sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
 }
 
+# Matches one field in "field - field" style range specs. Subclasses
+# that can participate in custom date ranges should override this method
+# to match their additional date fields. Be sure to call this superclass
+# method to get "now", datetime columns and CF parsing.
+
+sub _CustomDateRangeFieldParser {
+    my $self = shift;
+    my $regex = qr{
+        now
+        | cf\. (?: \{ .*? \} | \S+ )
+    }xi;
+
+    for my $column ( keys %{ $_TABLE_ATTR->{ ref $self || $self} } ) {
+        my $entry = $_TABLE_ATTR->{ ref $self || $self}{$column};
+        next unless $entry->{read} && ( $entry->{type} // '' ) eq 'datetime';
+        $regex .= '|' . qr{$column}i;
+    }
+    return $regex;
+}
+
+# Returns an RT::Date instantiated with this record's value for the parsed
+# field name. Includes the $range_name parameter only for diagnostics.
+# Subclasses should override this to instantiate the fields they added in
+# _CustomDateRangeFieldParser.
+
+sub _DateForCustomDateRangeField {
+    my $self       = shift;
+    my $field      = shift;
+    my $range_name = shift;
+
+    my $date = RT::Date->new($self->CurrentUser);
+
+    if (lc($field) eq 'now') {
+        $date->Set(Format => 'unix', Value => time);
+    }
+    elsif ($field =~ m{^ cf\. (?: \{ (.*?) \} | (\S+) ) $}xi) {
+        my $name = $1 || $2;
+        my $value = $self->FirstCustomFieldValue($name);
+
+        if (!$value) {
+            # no CF value for this record, so bail out
+            return;
+        }
+
+        $date->Set(Format => 'unknown', Value => $value, Timezone => 'UTC');
+    }
+    else {
+        if ( my ($column) = grep { lc $field eq lc $_ } keys %{ $_TABLE_ATTR->{ ref $self || $self } } ) {
+            my $method = $column . 'Obj';
+            if ( $self->can($method) ) {
+                $date = $self->$method;
+            }
+            else {
+                RT->Logger->error( "Missing $method in " . ref $self );
+                return;
+            }
+        }
+        else {
+            RT->Logger->error("Unable to parse '$field' as a field name in CustomDateRanges '$range_name'");
+            return;
+        }
+    }
+
+    return $date;
+}
+
+# Parses custom date range spec and returns a hash containing parsed info.
+# Returns the empty list if there's an error.
+
+sub _ParseCustomDateRangeSpec {
+    my $self = shift;
+    my $name = shift;
+    my $spec = shift;
+
+    my $calculation;
+    my $format;
+
+    if (ref($spec)) {
+        $calculation = $spec->{value} || join( ' - ', $spec->{to}, $spec->{from} );
+        $format = $spec->{format};
+    }
+    else {
+        $calculation = $spec;
+    }
+
+    if (!$calculation || ref($calculation)) {
+        RT->Logger->error("CustomDateRanges '$name' 'value' must be a string");
+        return;
+    }
+
+    if ($format && ref($format) ne 'CODE') {
+        RT->Logger->error("CustomDateRanges '$name' 'format' must be a CODE reference");
+        return;
+    }
+
+    # class-specific matcher for now, created, CF.{foo bar}, CF.baz, etc.
+    my $field_parser = $self->_CustomDateRangeFieldParser;
+
+    # regex parses "field - field" (intentionally very strict)
+    my $calculation_parser = qr{
+        ^
+        ($field_parser)   # to field name
+        \s+ - \s+       # space, operator, more space
+        ($field_parser)   # from field name
+        $
+    }x;
+
+    my @matches = $calculation =~ $calculation_parser;
+
+    if (!@matches) {
+        RT->Logger->error("Unable to parse '$calculation' as a calculated value in CustomDateRanges '$name'");
+        return;
+    }
+
+    if ( ref $spec ) {
+        for my $type ( qw/from to/ ) {
+            if ( $spec->{"${type}_fallback"} && $spec->{"${type}_fallback"} !~ /^$field_parser$/ ) {
+                RT->Logger->error( "Invalid ${type}_fallback field: " . $spec->{"${type}_fallback"} );
+                return;
+            }
+        }
+    }
+
+    my %date_range_spec = ( from => $matches[1], to => $matches[0], ref $spec ? %$spec : () );
+    return %date_range_spec;
+}
+
+=head2 CustomDateRange name, spec
+
+Takes a L<RT_Config/%CustomDateRanges>-style spec string and its name (for
+diagnostics). Returns a localized string evaluating the calculation. If either
+date is unset, or anything fails to parse, this returns C<undef>.
+
+=cut
+
+sub CustomDateRange {
+    my $self = shift;
+    my $name = shift;
+    my $spec = shift;
+
+    my %date_range_spec = $self->_ParseCustomDateRangeSpec($name, $spec);
+
+    # parse failed; render no value
+    return unless $date_range_spec{from} && $date_range_spec{to};
+
+    my $end_dt = $self->_DateForCustomDateRangeField($date_range_spec{to}, $name);
+    my $start_dt = $self->_DateForCustomDateRangeField($date_range_spec{from}, $name);
+
+    unless ( $start_dt && $start_dt->IsSet ) {
+        if ( ref $spec && $date_range_spec{from_fallback} ) {
+            $start_dt = $self->_DateForCustomDateRangeField( $date_range_spec{from_fallback}, $name );
+        }
+    }
+
+    unless ( $end_dt && $end_dt->IsSet ) {
+        if ( ref $spec && $date_range_spec{to_fallback} ) {
+            $end_dt = $self->_DateForCustomDateRangeField( $date_range_spec{to_fallback}, $name );
+        }
+    }
+
+    # RT::Date instantiation failed; render no value
+    return unless $start_dt && $start_dt->IsSet
+               && $end_dt && $end_dt->IsSet;
+
+    my $duration;
+    if ( $date_range_spec{business_time} ) {
+        my $schedule;
+        my $timezone;
+
+        # Prefer the schedule/timezone specified in %ServiceAgreements for current object
+        if ( $self->isa('RT::Ticket') && !$self->QueueObj->SLADisabled && $self->SLA ) {
+            if ( my $config = RT->Config->Get('ServiceAgreements') ) {
+                if ( ref( $config->{QueueDefault}{ $self->QueueObj->Name } ) eq 'HASH' ) {
+                    $timezone = $config->{QueueDefault}{ $self->QueueObj->Name }{Timezone};
+                }
+
+                # Each SLA could have its own schedule and timezone
+                if ( my $agreement = $config->{Levels}{ $self->SLA } ) {
+                    $schedule = $agreement->{BusinessHours};
+                    $timezone ||= $agreement->{Timezone};
+                }
+            }
+        }
+        $timezone ||= RT->Config->Get('Timezone');
+        $schedule ||= 'Default';
+
+        {
+            local $ENV{'TZ'} = $ENV{'TZ'};
+            if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
+                $ENV{'TZ'} = $timezone;
+                require POSIX;
+                POSIX::tzset();
+            }
+
+            my $bhours = RT::SLA->BusinessHours($schedule);
+            $duration = $bhours->between(
+                $start_dt->Unix <= $end_dt->Unix
+                ? ( $start_dt->Unix, $end_dt->Unix )
+                : ( $end_dt->Unix, $start_dt->Unix )
+            );
+            $duration *= -1 if $start_dt->Unix > $end_dt->Unix;
+        }
+
+        if ( $timezone ne ( $ENV{'TZ'} || '' ) ) {
+            POSIX::tzset();
+        }
+    }
+
+    $duration //= $end_dt->Diff($start_dt);
+
+    # _ParseCustomDateRangeSpec guarantees $format is a coderef
+    if ($date_range_spec{format}) {
+        return $date_range_spec{format}->($duration, $end_dt, $start_dt, $self);
+    }
+    else {
+        my $max_unit = $date_range_spec{business_time} ? 'hour' : 'year';
+
+        # "x days ago" is strongly suggestive of comparing with the current
+        # time; but if we're comparing two arbitrary times, "x days prior"
+        # reads better
+        if ($duration < 0) {
+            $duration *= -1;
+            return $self->loc('[_1] prior', $end_dt->DurationAsString($duration, MaxUnit => $max_unit));
+        }
+        else {
+            return $end_dt->DurationAsString($duration, MaxUnit => $max_unit);
+        }
+    }
+}
+
+=head2 CustomDateRanges
+
+Return all of the custom date ranges of current class.
+
+=cut
+
+sub CustomDateRanges {
+    my $self = shift;
+    my %args = (
+        Type          => undef,
+        ExcludeSystem => undef,
+        ExcludeUsers  => undef,
+        ExcludeUser   => undef,
+        @_,
+    );
+
+    my $type = $args{Type} || ref $self || $self,;
+    my %ranges;
+
+    if ( !$args{ExcludeSystem} ) {
+        if ( my $config = RT->Config->Get('CustomDateRanges') ) {
+            for my $name ( keys %{ $config->{$type} || {} } ) {
+                $ranges{$name} ||= $config->{$type}{$name};
+            }
+        }
+
+        if ( my $db_config = RT->Config->Get('CustomDateRangesUI') ) {
+            for my $name ( keys %{ $db_config->{$type} || {} } ) {
+                $ranges{$name} ||= $db_config->{$type}{$name};
+            }
+        }
+    }
+
+    if ( !$args{ExcludeUsers} ) {
+        my $attributes = RT::Attributes->new( RT->SystemUser );
+        $attributes->Limit( FIELD => 'Name',       VALUE => 'Pref-CustomDateRanges' );
+        $attributes->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+        if ( $args{ExcludeUser} ) {
+            $attributes->Limit( FIELD => 'Creator', OPERATOR => '!=', VALUE => $args{ExcludeUser} );
+        }
+        $attributes->OrderBy( FIELD => 'id' );
+
+        while ( my $attribute = $attributes->Next ) {
+            if ( my $content = $attribute->Content ) {
+                for my $name ( keys %{ $content->{$type} || {} } ) {
+                    $ranges{$name} ||= $content->{$type}{$name};
+                }
+            }
+        }
+    }
+    return %ranges;
+}
+
+=head2 CustomDateRangeFields
+
+Return all of the fields custom date range could use for current class.
+
+=cut
+
+sub CustomDateRangeFields {
+    my $self = shift;
+    my $type = ref $self || $self;
+
+    my @fields = 'now';
+
+    for my $column ( keys %{ $_TABLE_ATTR->{ ref $self || $self } } ) {
+        my $entry = $_TABLE_ATTR->{ ref $self || $self }{$column};
+        next unless $entry->{read} && ( $entry->{type} // '' ) eq 'datetime';
+        push @fields, $column;
+    }
+
+    my $cfs = RT::CustomFields->new( ref $self ? $self->CurrentUser : RT->SystemUser );
+    $cfs->Limit( FIELD => 'Type', VALUE => [ 'Date', 'DateTime' ], OPERATOR => 'IN' );
+    while ( my $cf = $cfs->Next ) {
+        push @fields, 'CF.{' . $cf->Name . '}';
+    }
+    return sort { lc $a cmp lc $b } @fields;
+}
+
 sub UID {
     my $self = shift;
     return undef unless defined $self->Id;
@@ -2418,9 +2747,14 @@ sub FindDependencies {
         }
     }
 
+    my $objs;
+
     # Object attributes, we have to check on every object
-    my $objs = $self->Attributes;
-    $deps->Add( in => $objs );
+    # attributes of attributes are not supported yet though.
+    if ( !$self->isa('RT::Attribute') ) {
+        $objs = $self->Attributes;
+        $deps->Add( in => $objs );
+    }
 
     # Transactions
     if (   $self->isa("RT::Ticket")
@@ -2429,6 +2763,7 @@ sub FindDependencies {
         or $self->isa("RT::Article")
         or $self->isa("RT::Asset")
         or $self->isa("RT::Catalog")
+        or $self->isa("RT::Attribute")
         or $self->isa("RT::Queue") )
     {
         $objs = RT::Transactions->new( $self->CurrentUser );
@@ -2598,7 +2933,7 @@ sub _AsInsertQuery
 
     my $dbh = $RT::Handle->dbh;
 
-    my $res = "INSERT INTO ". $dbh->quote_identifier( $self->Table );
+    my $res = "INSERT INTO ". $self->Table;
     my $values = $self->{'values'};
     $res .= "(". join( ",", map { $dbh->quote_identifier( $_ ) } sort keys %$values ) .")";
     $res .= " VALUES";

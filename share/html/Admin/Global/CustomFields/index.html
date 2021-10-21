@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,9 +49,9 @@
 <& /Admin/Elements/Header, Title => $title &>
 <& /Elements/Tabs &>
 
-<ul>
+<ul class="list-group list-group-borderless">
 % foreach my $key (sort keys %$tabs) {
-<li><span><a href="<% $tabs->{$key}{path} %>"><% $tabs->{$key}{title} %></a></span><br />
+<li class="list-group-item"><span><a href="<% $tabs->{$key}{path} %>"><% $tabs->{$key}{title} %></a></span><br />
 <% $tabs->{$key}{text} %>
 </li>
 % }

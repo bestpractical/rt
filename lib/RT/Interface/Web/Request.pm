@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -55,11 +55,7 @@ use HTML::Mason::PSGIHandler;
 use base qw(HTML::Mason::Request::PSGI);
 use Params::Validate qw(:all);
 
-my %deprecated = (
-    '/Admin/CustomFields/Modify.html' => {
-        'AfterUpdateCustomFieldValue' => { Remove => '4.6' },
-    },
-);
+my %deprecated = ();
 
 sub new {
     my $class = shift;

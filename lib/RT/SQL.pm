@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -64,9 +64,17 @@ my @tokens = qw[VALUE AGGREGATOR OPERATOR OPEN_PAREN CLOSE_PAREN KEYWORD];
 use Regexp::Common qw /delimited/;
 my $re_aggreg      = qr[(?i:AND|OR)];
 my $re_delim       = qr[$RE{delimited}{-delim=>qq{\'\"}}];
-my $re_value       = qr[[+-]?\d+|(?i:NULL)|$re_delim];
-my $re_keyword     = qr[[{}\w\.]+|$re_delim];
-my $re_op          = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)|(?i:NOT STARTSWITH)|(?i:STARTSWITH)|(?i:NOT ENDSWITH)|(?i:ENDSWITH)]; # long to short
+
+# We need to support bare(not quoted) strings like CF.{Beta Date} to use the
+# content of related custom field as the value to compare, e.g.
+#
+#       Due < CF.{Beta Date}
+#
+# Support it in keyword part is mainly for consistency.
+
+my $re_value       = qr[(?i:CF)\.\{.+?\}(?:\.(?i:Content|LargeContent))?|[\w\.]+|[+-]?\d+|(?i:NULL)|$re_delim];
+my $re_keyword     = qr[(?i:CF)\.\{.+?\}(?:\.(?i:Content|LargeContent))?|[{}\w\.]+|$re_delim];
+my $re_op          = qr[(?i:SHALLOW )?(?:=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)|(?i:NOT STARTSWITH)|(?i:STARTSWITH)|(?i:NOT ENDSWITH)|(?i:ENDSWITH))]; # long to short
 my $re_open_paren  = qr[\(];
 my $re_close_paren = qr[\)];
 
@@ -169,7 +177,26 @@ sub Parse {
                 s!\\(.)!$1!g;
             }
 
-            $cb->{'Condition'}->( $key, $op, $value );
+            my $quote_value;
+            if ( $match =~ /$re_delim/o ) {
+                $quote_value = 1;
+
+                # It's really rare to search strings like "CF.foo", to DWIM,
+                # automatically convert to columns
+                if ( $value =~ /^CF\.(?:\{(.*)\}|(.*?))(?:\.(Content|LargeContent))?$/i ) {
+                    RT->Logger->debug("Unquote value($match) to search custom field instead");
+                    $quote_value = 0;
+                }
+            }
+            elsif ( $match =~ /^[a-z]/i ) {
+                # Value is a column
+                $quote_value = 0;
+            }
+            else {
+                # Not setting value here to fallback to default behavior
+            }
+
+            $cb->{'Condition'}->( $key, $op, $value, $quote_value );
 
             ($key,$op,$value) = ("","","");
             $want = AGGREG;

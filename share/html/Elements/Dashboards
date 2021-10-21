@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,10 +45,12 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
+% my $alt = loc('Edit');
+
 <&|/Widgets/TitleBox,
     title => loc('Dashboards'),
     title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
-    titleright => loc("Edit"),
+    titleright_raw => qq[<span class="fas fa-cog icon-bordered fa-2x" alt="$alt" data-toggle="tooltip" data-placement="top" data-original-title="$alt"></span>],
     titleright_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
 &>
 

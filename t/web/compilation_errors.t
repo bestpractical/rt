@@ -10,7 +10,7 @@ BEGIN {
         -f && /\.html$/ && $_ !~ /Logout.html$/ && $File::Find::dir !~ /RichText/;
     }
     my $tests = 7;
-    find( sub { wanted() and $tests += 3 }, 'share/html/' );
+    find( sub { wanted() and $tests += 4 }, 'share/html/', 'share/html/SelfService/' );
     plan tests => $tests + 1; # plus one for warnings check
 }
 
@@ -41,6 +41,18 @@ $agent->content_contains('Logout', "Found a logout link");
 
 find ( { wanted => sub { wanted() and test_get($agent, $File::Find::name) }, no_chdir => 1 } , 'share/html/');
 
+my $customer = RT::Test->load_or_create_user(
+    Name         => 'user1',
+    Password     => 'password',
+    EmailAddress => 'user1@example.com',
+    Privileged   => 0,
+);
+# Classic permission settings
+RT::Test->add_rights( { Principal => 'Everyone', Right => [qw(CreateTicket SeeQueue)] } );
+
+$agent->login( user1 => 'password', logout => 1 );
+find( { wanted => sub { wanted() and test_get( $agent, $File::Find::name ) }, no_chdir => 1 }, 'share/html/SelfService' );
+
 # We expect to spew a lot of warnings; toss them away
 $agent->get_warnings;
 
@@ -59,5 +71,6 @@ sub test_get {
                 diag "$file: $error";
             }
         };
+        $agent->content_contains('</html>', "Found HTML end tag");
 }
 

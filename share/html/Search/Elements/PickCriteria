@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -47,25 +47,32 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Add Criteria')&>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-
-
 % $m->callback( %ARGS, CallbackName => "BeforeBasics" );
-<& PickBasics, queues => \%queues &>
-<& PickCustomRoles, queues => \%queues &>
-<& PickTicketCFs, queues => \%queues &>
-<& PickObjectCFs, Class => 'Transaction', queues => \%queues &>
-<& PickObjectCFs, Class => 'Queue', queues => \%queues &>
-% $m->callback( %ARGS, CallbackName => "AfterCFs" );
 
-<tr class="separator"><td colspan="3"><hr /></td></tr>
-<tr>
-<td class="label"><&|/l&>Aggregator</&></td>
-<td class="operator" colspan="2"><& SelectAndOr, Name => "AndOr" &></td>
+% if ( $Class eq 'RT::Transactions' ) {
+    <& PickBasics, queues => \%queues, %ARGS &>
+    <& PickTransactionCFs, queues => \%queues, %ARGS &>
+%   $m->callback( %ARGS, CallbackName => "AfterCFs" );
+%   if ( $ObjectType eq 'RT::Ticket' ) {
+    <& PickTickets, queues => \%queues, %ARGS &>
+%   }
+% } elsif ( $Class eq 'RT::Assets' ) {
+    <& PickBasics, catalogs => \%catalogs, %ARGS &>
+    <& PickAssetCFs, catalogs => \%catalogs, %ARGS &>
+%   $m->callback( %ARGS, CallbackName => "AfterCFs" );
+% } else {
+    <& PickBasics, queues => \%queues &>
+    <& PickCustomRoles, queues => \%queues &>
+    <& PickTicketCFs, queues => \%queues &>
+    <& PickObjectCFs, Class => 'Transaction', queues => \%queues &>
+    <& PickObjectCFs, Class => 'Queue', queues => \%queues &>
+%   $m->callback( %ARGS, CallbackName => "AfterCFs" );
+% }
 
-</tr>
-
-</table>
+<div class="form-row">
+  <div class="label col-3"><&|/l&>Aggregator</&></div>
+  <div class="col-9 operator"><& SelectAndOr, Name => "AndOr" &></div>
+</div>
 
 </&>
 
@@ -73,4 +80,7 @@
 $addquery => 0
 $query => undef
 %queues => ()
+%catalogs => ()
+$Class => 'RT::Tickets'
+$ObjectType => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

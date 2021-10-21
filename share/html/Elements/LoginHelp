@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,9 +46,8 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <div class="login-help">
-<&|/l, RT->Config->Get('OwnerEmail')&>For local help, please contact [_1]</&>
+<&|/l, RT->Config->Get('RTSupportEmail')&>For local help, please contact [_1]</&>
 </div>
 <%init>
-my $source = RT->Config->Meta('OwnerEmail')->{Source};
-return unless $source->{SiteConfig} or $source->{Extension};
+return unless RT->Config->Get('RTSupportEmail');
 </%init>

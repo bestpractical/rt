@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -69,6 +69,7 @@ use warnings;
 use 5.010;
 
 use base qw(DBIx::SearchBuilder RT::Base);
+$DBIx::SearchBuilder::PREFER_BIND = 1 unless defined $ENV{SB_PREFER_BIND};
 
 use RT::Base;
 use DBIx::SearchBuilder "1.40";
@@ -475,6 +476,7 @@ sub _LimitCustomField {
                  OPERATOR     => '=',
                  KEY          => undef,
                  PREPARSE     => 1,
+                 QUOTEVALUE   => 1,
                  @_ );
 
     my $op     = delete $args{OPERATOR};
@@ -573,7 +575,46 @@ sub _LimitCustomField {
     ########## Content pre-parsing if we know things about the CF
     if ( blessed($cf) and delete $args{PREPARSE} ) {
         my $type = $cf->Type;
-        if ( $type eq 'IPAddress' ) {
+
+        if ( !$args{QUOTEVALUE} ) {
+            my ( $class, $field );
+
+            # e.g. Users_3.Name
+            if ( $value =~ /^(\w+?)(?:_\d+)?\.(\w+)$/ ) {
+                my $table = $1;
+                $field = $2;
+                $class = $table =~ /main/i ? 'RT::Tickets' : "RT::$table";
+            }
+            else {
+                $class = ref $self;
+                $field = $value;
+            }
+
+            if ( $class->can('RecordClass')
+                and ( my $record_class = $class->RecordClass ) )
+            {
+                if ( my $meta = $record_class->_ClassAccessible->{$field} ) {
+                    if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
+                        if ( $meta->{is_numeric} || $meta->{type} eq 'datetime' ) {
+                            $value = "CAST($value AS VARCHAR)";
+                        }
+                    }
+                    elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+                        if ( $meta->{is_numeric} ) {
+                            $value = "TO_CHAR($value)";
+                        }
+                        elsif ( $type eq 'datetime' ) {
+                            $value = "TO_CHAR($value, 'YYYY-MM-DD HH24:MI:SS')";
+                        }
+                    }
+                }
+            }
+
+            if ( $type eq 'Date' ) {
+                $value = "SUBSTR($value, 1,  10)";
+            }
+        }
+        elsif ( $type eq 'IPAddress' ) {
             my $parsed = RT::ObjectCustomFieldValue->ParseIP($value);
             if ($parsed) {
                 $value = $parsed;
@@ -733,6 +774,7 @@ sub _LimitCustomField {
             OPERATOR   => $op,
             VALUE      => $value,
             CASESENSITIVE => 0,
+            QUOTEVALUE => $args{QUOTEVALUE},
         ) );
         $self->Limit(
             %args,
@@ -837,6 +879,7 @@ sub _LimitCustomField {
             ENTRYAGGREGATOR => 'AND',
             SUBCLAUSE       => $args{SUBCLAUSE},
             CASESENSITIVE => 0,
+            QUOTEVALUE      => $args{QUOTEVALUE},
         ) );
         $self->_CloseParen( $args{SUBCLAUSE} ); # LargeContent check
     }
@@ -914,14 +957,14 @@ sub Limit {
     }
 
     if (($ARGS{FIELD}||'') =~ /\W/
-          or $ARGS{OPERATOR} !~ /^(=|<|>|!=|<>|<=|>=
+          or $ARGS{OPERATOR} !~ /^((?:SHALLOW\s*)?(?:=|<|>|!=|<>|<=|>=
                                   |(NOT\s*)?LIKE
                                   |(NOT\s*)?(STARTS|ENDS)WITH
                                   |(NOT\s*)?MATCHES
                                   |IS(\s*NOT)?
                                   |(NOT\s*)?IN
                                   |\@\@
-                                  |AGAINST)$/ix) {
+                                  |AGAINST))$/ix) {
         $RT::Logger->crit("Possible SQL injection attack: $ARGS{FIELD} $ARGS{OPERATOR}");
         %ARGS = (
             %ARGS,
@@ -940,7 +983,7 @@ sub Limit {
     if ( $table and $ARGS{FIELD} and my $instead = $deprecated{ lc $table }{ lc $ARGS{'FIELD'} } ) {
         RT->Deprecated(
             Message => "$table.$ARGS{'FIELD'} column is deprecated",
-            Instead => $instead, Remove => '4.6'
+            Instead => $instead, Remove => '5.2'
         );
     }
 
@@ -1068,6 +1111,33 @@ sub NotSetDateToNullFunction {
         $res = $self->CombineFunctionWithField( %args, FUNCTION => $res );
     }
     return $res;
+}
+
+sub DistinctFieldValues {
+    my $self  = shift;
+    my %args = (
+        Field       => undef,
+        Order       => undef,
+        Max         => undef,
+        decode_utf8 => 1,
+        @_%2 ? (Field => @_) : (@_)
+    );
+
+    my @values = $self->SUPER::DistinctFieldValues( %args );
+
+    foreach my $value ( @values ) {
+        if ( $args{'decode_utf8'} ) {
+            if ( !utf8::is_utf8( $value ) ) { # mysql/sqlite
+                utf8::decode( $value );
+            }
+        }
+        else {
+            if ( utf8::is_utf8( $value ) ) {
+                utf8::encode( $value );
+            }
+        }
+    }
+    return @values;
 }
 
 RT::Base->_ImportOverlays();

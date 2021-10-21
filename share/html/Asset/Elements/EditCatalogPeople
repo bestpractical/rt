@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,9 +51,14 @@ $Object
 <%init>
 </%init>
 % for my $role ($Object->Roles( ACLOnly => 0 )) {
-<div class="role-<% CSSClass($role) %> role">
-  <h3><% loc($role) %></h3>
-  <& EditRoleMembers, Group => $Object->RoleGroup($role) &>
-</div>
+  <div class="role-<% CSSClass($role) %> role">
+    <h3><% loc($role) %></h3>
+    <& EditRoleMembers, Group => $Object->RoleGroup($role) &>
+  </div>
 % }
-<em><&|/l&>(Check box to delete)</&></em>
+
+<div class="col-12">
+  <div class="form-row">
+    <em><&|/l&>(Check box to delete)</&></em>
+  </div>
+</div>

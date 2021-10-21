@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,4 +49,5 @@
 <&| /Widgets/TitleBox, title => loc('RT Portal') &>
 <iframe src="https://bestpractical.com/rt/integration/news?utm_source=rt&utm_medium=iframe&utm_campaign=<%$RT::VERSION%>"></iframe>
 </&>
+% $m->callback( CallbackName => 'AfterRTPortal', ARGSRef => \%ARGS );
 </div>

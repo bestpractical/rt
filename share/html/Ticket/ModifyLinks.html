@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -54,8 +54,9 @@
 <form action="ModifyLinks.html" name="ModifyLinks" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% my $alt = loc('Graph ticket links');
 % my (@extra);
-% push @extra, titleright_raw => '<a href="'. RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->Config->Get('DisableGraphViz');
+% push @extra, titleright_raw => '<a href="' . RT->Config->Get('WebPath') . '/Ticket/Graphs/index.html?id=' . $Ticket->id . '"><span class="fas fa-project-diagram icon-bordered fa-2x" alt="' . $alt . '" data-toggle="tooltip" data-placement="top" data-original-title="' .  $alt . '"></span></a>' unless RT->Config->Get('DisableGraphViz');
 <&| /Widgets/TitleBox, title => loc('Edit Links'), class=>'ticket-info-links', @extra &>
 <& /Elements/EditLinks, Object => $Ticket &>
 </&>
@@ -64,7 +65,11 @@
 <& Elements/EditMerge, Ticket => $Ticket, %ARGS &>
 </&>
 
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
+    </div>
+  </div>
 </form>
 
 % $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $Ticket);

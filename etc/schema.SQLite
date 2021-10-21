@@ -121,7 +121,7 @@ CREATE TABLE Transactions (
   ObjectId integer NULL DEFAULT 0 ,
   TimeTaken integer NULL DEFAULT 0 ,
   Type varchar(20) collate NOCASE NULL  ,
-  Field varchar(40) collate NOCASE NULL  ,
+  Field varchar(255) collate NOCASE NULL  ,
   OldValue varchar(255) collate NOCASE NULL  ,
   NewValue varchar(255) collate NOCASE NULL  ,
   ReferenceType varchar(255) collate NOCASE NULL  ,
@@ -463,8 +463,7 @@ Disabled smallint NOT NULL DEFAULT 0,
 Creator integer NOT NULL DEFAULT 0,
 Created TIMESTAMP NULL,
 LastUpdatedBy integer NOT NULL DEFAULT 0,
-LastUpdated TIMESTAMP NULL,
-HotList smallint NOT NULL DEFAULT 0
+LastUpdated TIMESTAMP NULL
 );
 
 CREATE TABLE Articles (
@@ -570,3 +569,32 @@ CREATE TABLE ObjectCustomRoles (
   PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX ObjectCustomRoles1 ON ObjectCustomRoles (ObjectId, CustomRole);
+
+CREATE TABLE Configurations (
+    id                INTEGER PRIMARY KEY,
+    Name              varchar(255)    collate NOCASE NOT NULL,
+    Content           longtext        collate NOCASE NULL,
+    ContentType       varchar(80)     collate NOCASE NULL,
+    Disabled          int2            NOT NULL DEFAULT 0,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL
+);
+
+CREATE INDEX Configurations1 ON Configurations (Name, Disabled);
+CREATE INDEX Configurations2 ON Configurations (Disabled);
+
+CREATE TABLE AuthTokens (
+    id                INTEGER PRIMARY KEY,
+    Owner             int(11)         NOT NULL DEFAULT 0,
+    Token             varchar(256)    collate NOCASE NULL  ,
+    Description       varchar(255)    NOT NULL DEFAULT '',
+    LastUsed          timestamp                DEFAULT NULL,
+    Creator           int(11)         NOT NULL DEFAULT 0,
+    Created           timestamp                DEFAULT NULL,
+    LastUpdatedBy     int(11)         NOT NULL DEFAULT 0,
+    LastUpdated       timestamp                DEFAULT NULL
+);
+
+CREATE INDEX AuthTokensOwner on AuthTokens (Owner);

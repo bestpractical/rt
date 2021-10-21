@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -82,6 +82,7 @@ if ($aid) {
         return [ "# Invalid attachment id: $aid", [], {}, 1 ];
     }
     if ($content) {
+        $m->notes( 'raw-content' => 1 );
         $c = $attachment->OriginalContent;
         # if we're sending a binary attachment (and only the attachment)
         # flag it so bin/rt knows to special case it

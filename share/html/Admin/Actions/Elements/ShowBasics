@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,33 +45,41 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<tr>
-  <td class="label"><&|/l&>Name</&>:</td>
-  <td class="value">
-    <% $ARGS{"Name"} || $Action->Name || '' %>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Name</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value"><% $ARGS{"Name"} || $Action->Name || '' %></span>
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Description</&>:</td>
-  <td class="value">
-    <% $ARGS{"Description"} || $Action->Description || '' %>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value"><% $ARGS{"Description"} || $Action->Description || '' %></span>
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Action Module</&>:</td>
-  <td class="value">
-    <% $ARGS{"ExecModule"} || $Action->ExecModule || ''%>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Action Module</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value"><% $ARGS{"ExecModule"} || $Action->ExecModule || ''%></span>
+  </div>
+</div>
 
-<tr>
-  <td class="label"><&|/l&>Parameters to Pass</&>:</td>
-  <td class="value">
-    <% $ARGS{"Argument"} || $Action->Argument || '' %>
-  </td>
-</tr>
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Parameters to Pass</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value"><% $ARGS{"Argument"} || $Action->Argument || '' %></span>
+  </div>
+</div>
 
 <%ARGS>
 $Action

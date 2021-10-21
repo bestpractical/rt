@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 20;
+use RT::Test tests => undef;
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
@@ -45,14 +45,21 @@ $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
 
 $m->content_lacks( 'value="Update"', 'no update button' );
 
-$m->submit_form(
-    form_name => 'Dashboard-Searches-body',
-    fields =>
-      { 'Searches-body-Available' => "search-$search_id-RT::User-$user_id" },
-    button => 'add',
-);
+# add foo saved search to the dashboard
 
-$m->content_contains('Dashboard updated', 'added search foo to dashboard bar' );
+my $args = {
+    "dashboard_id" => $dashboard_id,
+    "body"         => "saved-" . "RT::User-" . $user_id . "-SavedSearch-" . $search_id,
+};
+
+$m->submit_form_ok({
+    form_name => 'UpdateSearches',
+    fields    => $args,
+    button    => 'UpdateSearches',
+}, "added search foo to dashboard bar" );
+
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
 # delete the created search
 
@@ -71,18 +78,22 @@ $m->content_lacks( $search_uri, 'deleted search foo' );
 # here is what we really want to test
 
 $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
-$m->content_contains('Deleted queries', 'found deleted message' );
+$m->content_contains('Unable to find search Saved Search: foo', 'found deleted message' );
 
-# Update button shows so we can update the deleted search easily
-$m->content_contains( 'value="Update"', 'found update button' );
+$args = {
+    "dashboard_id" => $dashboard_id,
+};
 
-$m->submit_form(
-    form_name => 'Dashboard-Searches-body',
-    button    => 'update',
-);
+$m->submit_form_ok({
+    form_name => 'UpdateSearches',
+    fields    => $args,
+    button    => 'UpdateSearches',
+}, "removed search foo from dashboard" );
 
-$m->content_lacks('Deleted queries', 'deleted message is gone' );
-$m->content_lacks( 'value="Update"', 'update button is gone too' );
+like( $m->uri, qr/results=[A-Za-z0-9]{32}/, 'URL redirected for results' );
+$m->content_contains( 'Dashboard updated' );
 
-$m->get_warnings; # we'll get a lot of warnings because the deleted search
+$m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
+$m->content_lacks('Unable to find search Saved Search: foo', 'deleted message is gone' );
 
+done_testing;

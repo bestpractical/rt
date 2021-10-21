@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,22 +46,25 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => $title &>
-<& /Elements/CollectionList, Title   => $title,
-  Format  => $Format,
-  Query   => $Query,
-  Order   => @Order,
-  OrderBy => @OrderBy,
-  BaseURL => $BaseURL,
-  AllowSorting => 1,
-  Class   => 'RT::Tickets',
-  Rows    => $Rows,
-  Page    => $Page &>
+  <& /Elements/CollectionList,
+    Title        => $title,
+    Format       => $Format,
+    Query        => $Query,
+    Order        => @Order,
+    OrderBy      => @OrderBy,
+    BaseURL      => $BaseURL,
+    AllowSorting => 1,
+    Class        => 'RT::Tickets',
+    Rows         => $Rows,
+    Page         => $Page,
+    InlineEdit   => 0,
+  &>
 </&>
 
 <%INIT>
 $title ||= loc("My [_1] tickets", $friendly_status);
 my $id = $session{'CurrentUser'}->id;
-my $Query = "( Watcher.id = $id )";
+my $Query = "( $SortByRole.id = $id )";
 
 if ($status) {
     $status =~ s/(['\\])/\\$1/g;
@@ -79,4 +82,5 @@ $Page => 1
 @Order => ('ASC')
 @OrderBy => ('Created')
 $Rows => 50
+$SortByRole => 'Requestor' # Role to use when determining "My" tickets
 </%ARGS>

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,19 +49,27 @@
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues">
+<form method="post" action="DefaultValues.html" name="ModifyDefaultValues" id="ModifyDefaultValues" class="mx-auto max-width-lg">
 <input type="hidden" name="id" value="<% $catalog->id %>" />
 
 <& /Elements/EditCustomFieldCustomGroupings,
     CustomFieldGenerator => sub {
         $catalog->AssetCustomFields->LimitToDefaultValuesSupportedTypes
     },
-    TitleBoxARGS => { title_class => "inverse" },
+    TitleBoxARGS => { title_class => "inverse", content_class => 'mx-auto width-sm' },
     Object => RT::Asset->new($session{CurrentUser})
 &>
 
-<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
-<& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'Reset', Label => loc('Reset Custom Field Values to Default') &>
+    </div>
+  </div>
 </form>
 
 <%INIT>

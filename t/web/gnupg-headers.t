@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use RT::Test::GnuPG
+use RT::Test::Crypt
+  GnuPG         => 1,
   tests         => 15,
   gnupg_options => {
     passphrase    => 'recipient',
@@ -31,9 +32,9 @@ $m->goto_create_ticket($queue);
 $m->form_name('TicketCreate');
 $m->field( 'Subject', 'Signing test' );
 $m->field( 'Content', 'Some other content' );
-$m->submit;
+$m->click('SubmitTicket');
 $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
-$m->follow_link_ok( { text => 'with headers' } );
+$m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/ } );
 $m->content_contains('X-RT-Encrypt: 0');
 $m->content_contains('X-RT-Sign: 0');
 
@@ -45,9 +46,9 @@ $m->field( 'Subject', 'Signing test' );
 $m->field( 'Content', 'Some other content' );
 $m->tick( 'Encrypt', 1 );
 $m->tick( 'Sign',    1 );
-$m->submit;
+$m->click('SubmitTicket');
 $m->content_like( qr/Ticket \d+ created/i, 'created the ticket' );
-$m->follow_link_ok( { text => 'with headers' } );
+$m->follow_link_ok( { url_regex => qr/Attachment\/WithHeaders\/\d+/ } );
 $m->content_contains('X-RT-Encrypt: 1');
 $m->content_contains('X-RT-Sign: 1');
 

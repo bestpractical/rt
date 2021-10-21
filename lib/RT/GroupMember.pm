@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -122,6 +122,20 @@ sub _InsertCGM {
         VALUE => 'main.GroupId',
         QUOTEVALUE => 0,
         ENTRYAGGREGATOR => 'AND',
+    );
+    my $groups = $cgm->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'GroupId',
+        TABLE2 => 'Groups',
+        FIELD2 => 'id',
+    );
+    $cgm->Limit(
+        ALIAS           => $groups,
+        FIELD           => 'Domain',
+        OPERATOR        => '!=',
+        VALUE           => 'RT::Ticket-Role',
+        ENTRYAGGREGATOR => 'AND',
+        CASESENSITIVE   => 0,
     );
 
     while ( my $parent_member = $cgm->Next ) {
@@ -524,8 +538,8 @@ sub __DependsOn {
     my $group = $self->GroupObj->Object;
     # XXX: If we delete member of the ticket owner role group then we should also
     # fix ticket object, but only if we don't plan to delete group itself!
-    unless( ($group->Name || '') eq 'Owner' &&
-        ($group->Domain || '') eq 'RT::Ticket-Role' ) {
+    my $class = $group->RoleClass;
+    unless( $class and $class->Role($group->Name)->{Single}) {
         return $self->SUPER::__DependsOn( %args );
     }
 
@@ -544,15 +558,15 @@ sub __DependsOn {
             my $group = $args{'TargetObject'};
             return if $args{'Shredder'}->GetState( Object => $group )
                 & (RT::Shredder::Constants::WIPED|RT::Shredder::Constants::IN_WIPING);
-            return unless ($group->Name || '') eq 'Owner';
-            return unless ($group->Domain || '') eq 'RT::Ticket-Role';
+            my $class = $group->RoleClass or return;
+            return unless $class->Role($group->Name)->{Single};
 
             return if $group->MembersObj->Count > 1;
 
             my $group_member = $args{'BaseObject'};
 
             if( $group_member->MemberObj->id == RT->Nobody->id ) {
-                RT::Shredder::Exception->throw( "Couldn't delete Nobody from owners role group" );
+                RT::Shredder::Exception->throw( "Couldn't delete Nobody from @{[$group->Name]} role group" );
             }
 
             my( $status, $msg ) = $group->AddMember( RT->Nobody->id );

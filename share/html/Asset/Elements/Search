@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,7 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/Asset/Search/" class="asset-search">
-  <input name="q" accesskey="0" class="field" value="<% $value %>" placeholder="<&|/l&>Search Assets</&>..." type="search" results=5 autosave="search-assets" />
+  <input name="q" accesskey="0" class="field form-control" value="<% $value %>" placeholder="<&|/l&>Search Assets</&>..." type="search" results="5" autosave="search-assets" />
 </form>
 <%init>
 my $value = defined $DECODED_ARGS->{q} ? $DECODED_ARGS->{q} : '';

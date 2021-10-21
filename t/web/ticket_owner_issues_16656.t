@@ -26,18 +26,14 @@ ok $agent_root->login('root', 'password'), 'logged in as user root';
 
 diag "user_a doesn't show up in create form";
 {
-    $agent_root->get_ok('/', 'open home page');
-    $agent_root->form_name('CreateTicketInQueue');
-    $agent_root->select( 'Queue', '1' );
-    $agent_root->submit;
-
+    $agent_root->get_ok('/Ticket/Create.html?Queue=1', 'open ticket create page');
     $agent_root->content_contains('Create a new ticket', 'opened create ticket page');
     my $form = $agent_root->form_name('TicketCreate');
     my $input = $form->find_input('Owner');
     is $input->value, RT->Nobody->Id, 'correct owner selected';
     ok((not scalar grep { $_ == $user_a->Id } $input->possible_values), 'no user_a value in dropdown');
     $form->value('Requestors', 'user_a@example.com');
-    $agent_root->submit;
+    $agent_root->click('SubmitTicket');
 
     $agent_root->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
     my ($id) = ($agent_root->content =~ /Ticket (\d+) created in queue/);

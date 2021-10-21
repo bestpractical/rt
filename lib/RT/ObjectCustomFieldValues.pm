@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -206,28 +206,6 @@ sub HasEntry {
     else {
         return undef;
     }
-}
-
-sub _DoSearch {
-    my $self = shift;
-
-    if ( exists $self->{'find_expired_rows'} ) {
-        RT->Deprecated( Arguments => "find_expired_rows", Instead => 'find_disabled_rows', Remove => '4.6' );
-        $self->{'find_disabled_rows'} = $self->{'find_expired_rows'};
-    }
-
-    return $self->SUPER::_DoSearch(@_);
-}
-
-sub _DoCount {
-    my $self = shift;
-
-    if ( exists $self->{'find_expired_rows'} ) {
-        RT->Deprecated( Arguments => "find_expired_rows", Instead => 'find_disabled_rows', Remove => '4.6' );
-        $self->{'find_disabled_rows'} = $self->{'find_expired_rows'};
-    }
-
-    return $self->SUPER::_DoCount(@_);
 }
 
 RT::Base->_ImportOverlays();

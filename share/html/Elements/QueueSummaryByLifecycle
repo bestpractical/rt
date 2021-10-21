@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,7 +51,8 @@
     next unless @cur_statuses;
 </%perl>
 
-<table border="0" cellspacing="0" cellpadding="1" width="100%" class="queue-summary">
+<div class="table-responsive">
+<table border="0" cellspacing="0" cellpadding="1" width="100%" class="table queue-summary">
 
 <tr>
     <th class="collection-as-table"><&|/l&>Queue</&></th>
@@ -81,6 +82,7 @@ for my $queue (@$queues) {
 </tr>
 % }
 </table>
+</div>
 % }
 <%INIT>
 my $build_search_link = sub {
@@ -120,8 +122,8 @@ for my $queue (@$queues) {
 }
 
 my @statuses;
-my %seen;
-foreach my $set ( 'initial', 'active' ) {
+my %seen = ( deleted => 1 ); # Always exclude "deleted"
+foreach my $set ( @Statuses ) {
     foreach my $lifecycle ( map $lifecycle{$_}, sort keys %lifecycle ) {
         push @statuses, grep !$seen{ lc $_ }++, $lifecycle->Valid($set);
     }
@@ -147,4 +149,5 @@ while ( my $entry = $report->Next ) {
 </%INIT>
 <%ARGS>
 $queues => undef  # Arrayref of hashes with cached queue info
+@Statuses => qw/initial active/
 </%ARGS>

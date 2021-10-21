@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -65,6 +65,11 @@ with "RT::Record::Role::Rights";
 
 sub Table {'Classes'}
 
+# this object can take custom fields
+
+use RT::CustomField;
+RT::CustomField->RegisterLookupType( CustomFieldLookupType() => 'Classes' );    #loc
+
 =head2 Load IDENTIFIER
 
 Loads a class, either by name or by id
@@ -117,7 +122,6 @@ sub Create {
         Name        => '',
         Description => '',
         SortOrder   => '0',
-        HotList     => 0,
         @_
     );
 
@@ -135,7 +139,6 @@ sub Create {
         Name        => $args{'Name'},
         Description => $args{'Description'},
         SortOrder   => $args{'SortOrder'},
-        HotList     => $args{'HotList'},
     );
 
 }
@@ -474,24 +477,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 HotList
-
-Returns the current value of HotList. 
-(In the database, HotList is stored as int(2).)
-
-
-
-=head2 SetHotList VALUE
-
-
-Set HotList to VALUE. 
-Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
-(In the database, HotList will be stored as a int(2).)
-
-
-=cut
-
-
 =head2 Creator
 
 Returns the current value of Creator. 
@@ -541,8 +526,6 @@ sub _CoreAccessible {
         SortOrder => 
                 {read => 1, write => 1, type => 'int(11)', default => '0'},
         Disabled => 
-                {read => 1, write => 1, type => 'int(2)', default => '0'},
-        HotList => 
                 {read => 1, write => 1, type => 'int(2)', default => '0'},
         Creator => 
                 {read => 1, auto => 1, type => 'int(11)', default => '0'},
@@ -607,6 +590,10 @@ sub PreInflate {
     return if $importer->MergeBy( "Name", $class, $uid, $data );
 
     return 1;
+}
+
+sub CustomFieldLookupType {
+    "RT::Class";
 }
 
 RT::Base->_ImportOverlays();

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,5 +46,5 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->Config->Get('WebPath') %>/SelfService/Display.html" method="get" id="GotoTicket" name="GotoTicket">
-<input name="id" class="field" placeholder="<&|/l&>Go to Ticket</&>..." type="search"/>
+<input name="id" class="field form-control" placeholder="<&|/l&>Go to Ticket</&>..." type="search"/>
 </form>

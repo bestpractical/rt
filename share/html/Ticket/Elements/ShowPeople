@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,18 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr class="owner">
-    <td class="label"><&|/l&>Owner</&>:</td>
+<div>
+  <div class="form-row owner">
+    <div class="label col-3"><&|/l&>Owner</&>:</div>
 % my $owner = $Ticket->OwnerObj;
-    <td class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
+    <div class="value col-9"><span class="current-value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
     <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
 % $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
-    </td>
-  </tr>
+    </span></div>
+  </div>
 
 % my $single_roles = $Ticket->QueueObj->CustomRoles;
 % $single_roles->LimitToSingleValue;
+
+% my @hidden = $Ticket->QueueObj->HiddenCustomRoleIDsForURL;
+% $single_roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+
 % $m->callback( CustomRoles => $single_roles, SingleRoles => 1, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $single_roles->Next) {
 %     my $group = $Ticket->RoleGroup($role->GroupType);
@@ -67,37 +71,40 @@
 %# so fall back to nobody
 
 %     my $user = $users->First || RT->Nobody;
-  <tr>
-    <td class="label"><% $role->Name %>:</td>
-    <td class="value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-3"><% $role->Name %>:</div>
+    <div class="value col-9"><span class="current-value"><& /Elements/ShowUser, User => $user, Ticket => $Ticket &></span></div>
+  </div>
 % }
 
-  <tr class="requestors">
-    <td class="labeltop"><&|/l&>Requestors</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></td>
-  </tr>
-  <tr class="cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
-    <td class="labeltop"><&|/l&>Cc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></td>
-  </tr>
-  <tr class="admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
-    <td class="labeltop"><&|/l&>AdminCc</&>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
-  </tr>
+  <div class="form-row requestors">
+    <div class="label col-3"><&|/l&>Requestors</&>:</div>
+    <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Requestors, Ticket => $Ticket &></span></div>
+  </div>
+  <div class="form-row cc<% $Ticket->Cc->MembersObj->Count ? q{} : q{ unset-field}%>">
+    <div class="label col-3"><&|/l&>Cc</&>:</div>
+    <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->Cc, Ticket => $Ticket &></span></div>
+  </div>
+  <div class="form-row admincc<% $Ticket->AdminCc->MembersObj->Count ? q{} : q{ unset-field}%>">
+    <div class="label col-3"><&|/l&>AdminCc</&>:</div>
+    <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></span></div>
+  </div>
 
 % my $multi_roles = $Ticket->QueueObj->CustomRoles;
 % $multi_roles->LimitToMultipleValue;
+
+% $multi_roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+
 % $m->callback( CustomRoles => $multi_roles, SingleRoles => 0, Ticket => $Ticket, %ARGS, CallbackName => 'ModifyCustomRoles' );
 % while (my $role = $multi_roles->Next) {
-  <tr>
-    <td class="labeltop"><% $role->Name %>:</td>
-    <td class="value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></td>
-  </tr>
+  <div class="form-row">
+    <div class="label col-3"><% $role->Name %>:</div>
+    <div class="value col-9"><span class="current-value"><& ShowGroupMembers, Group => $Ticket->RoleGroup($role->GroupType), Ticket => $Ticket &></span></div>
+  </div>
 % }
 
   <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket, Grouping => 'People', Table => 0 &>
-</table>
+</div>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

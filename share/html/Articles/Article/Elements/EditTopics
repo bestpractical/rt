@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,12 +45,13 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-<tr>
-<td class="label"><&|/l&>Topics</&>:</td>
-<td class="value">
-<input type="hidden" name="EditTopics" value="1" />
-<select multiple size="10" name="Topics" class="selection-box">
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Topics</&>:
+  </div>
+  <input type="hidden" name="EditTopics" value="1" />
+  <div class="value col-9">
+<select multiple size="10" name="Topics" class="tall selection-box">
 % if (@Classes) {
 %   unless ($OnlyThisClass) {
 <optgroup label="Current classes (<% join(" ", map {$_->Name} @Classes) %>)">
@@ -80,10 +81,8 @@
 </optgroup>
 % }
 </select>
-</td>
-</tr>
-</table>
-
+  </div>
+</div>
 <%INIT>
 use Tree::Simple;
 

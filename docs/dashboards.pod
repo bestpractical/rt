@@ -9,6 +9,20 @@ dashboard and notifications to track outstanding invoice tickets.
 There are several different rights you can grant to allow users access to the 
 features described here. These rights are described in L</"Dashboard Rights">.
 
+=head2 RT at a glance
+
+RT's homepage, called RT at a glance, is a dashboard that has been set as your
+current homepage. By default, all users see the system-level dashboard set by
+the RT administrator. If you have the "ModifySelf" right, you can easily change your
+homepage by clicking on the gear icon. You'll see a page showing you all dashboards
+you currently have access to. Click "View Dashboard" to see what it contains.
+If you have rights, you can use "Edit Dashboard" to update a dashboard. Just
+click the "Set as Homepage" button to change your homepage to a different dashboard.
+
+To create your own custom dashboards and use one as your homepage, you can
+click the "New Dashboard" option in the submenu on the customize page.
+Details on how to set up your new dashboard are provided below.
+
 =head2 Creating a Personal Dashboard
 
 Saved searches and charts are the building blocks of dashboards, so to set up a 
@@ -98,6 +112,13 @@ will be rendered right below the saved search.
 =for :text [Dashboard chart F<docs/images/dashboard-chart.png>]
 
 =for :man [Dashboard chart F<docs/images/dashboard-chart.png>]
+
+=head2 RT Portlets
+
+RT also provides portlets that you can add to your dashboards. These are
+pre-defined components that provide common searches like "My Tickets" or
+custom functionality like the "QuickCreate" portlet. You'll see these in
+the Components section when you create and modify dashboards.
 
 =head2 Dashboard Menu Entries
 
@@ -204,3 +225,9 @@ For dashboards themselves, there are See, Create, Modify, and Delete rights for
 each of personal, group, and system dashboards. This allows you to select the 
 right combination of rights for users and groups on your system. For 
 subscriptions, there is a "Subscribe to dashboards" (SubscribeDashboard) right.
+
+If you just want to allow users to create dashboards so they can customize
+their homepage, grant "ModifySelf", "SeeOwnDashboard", "ModifyOwnDashboard" and
+"DeleteOwnDashboard". All users can select the current default System dashboard
+and set it as their homepage. To allow users to see other System dashboards,
+grant "SeeDashboard".

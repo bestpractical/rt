@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,9 +59,6 @@ $Wipeout => ''
 <& /Elements/ListActions, actions => $messages{'Success'} &>
 <& Elements/DumpFileLink, File => $dump_file &>
 <& Elements/SelectPlugin, Plugin => $Plugin, %ARGS &>
-<div id="shredder-submit-button" class="<% $Plugin? '': 'hidden' %>">
-<& /Elements/Submit, Name => 'Search', Label => loc('Search') &>
-</div>
 </div>
 <br />
 % if( $Search || $Wipeout ) {

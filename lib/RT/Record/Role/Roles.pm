@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -52,6 +52,9 @@ use warnings;
 package RT::Record::Role::Roles;
 use Role::Basic;
 use Scalar::Util qw(blessed);
+
+# Set this to true to lazily create role groups
+our $LAZY_ROLE_GROUPS = 0;
 
 =head1 NAME
 
@@ -137,7 +140,7 @@ as such is not managed by the core codebase or an extension.
 =item CreateGroupPredicate
 
 Optional.  A subroutine whose return value indicates whether the group for this
-role should be created as part of L</_CreateRoleGroups>.  When this subroutine
+role should be created as part of C<_CreateRoleGroups>.  When this subroutine
 is not provided, the group will be created.  The same parameters that will be
 passed to L<RT::Group/CreateRoleGroup> are passed to your predicate (including
 C<Object>)
@@ -248,7 +251,10 @@ Returns an empty hashref if the role doesn't exist.
 =cut
 
 sub Role {
-    return \%{ $_[0]->_ROLES->{$_[1]} || {} };
+    my $self = shift;
+    my $type = shift;
+    return {} unless $self->HasRole( $type );
+    return \%{ $self->_ROLES->{$type} };
 }
 
 =head2 Roles
@@ -276,9 +282,21 @@ sub Roles {
     my $self = shift;
     my %attr = @_;
 
-    return   map { $_->[0] }
+    my $key  = join ',', @_;
+    return @{ $self->{_Roles}{$key} } if ref($self) && $self->{_Roles}{$key};
+
+    my @roles =  map { $_->[0] }
             sort {   $a->[1]{SortOrder} <=> $b->[1]{SortOrder}
                   or $a->[0] cmp $b->[0] }
+            map {
+                if ( ref $self && $self->Id && $_->[0] =~ /^RT::CustomRole-(\d+)/ ) {
+                    my $id  = $1;
+                    my $ocr = RT::ObjectCustomRole->new( $self->CurrentUser );
+                    $ocr->LoadByCols( ObjectId => $self->Id, CustomRole => $id );
+                    $_->[1]{SortOrder} = $ocr->SortOrder if $ocr->Id;
+                }
+                $_;
+            }
             grep {
                 my $ok = 1;
                 for my $k (keys %attr) {
@@ -287,8 +305,15 @@ sub Roles {
                 $ok }
             grep { !$_->[1]{AppliesToObjectPredicate}
                  or $_->[1]{AppliesToObjectPredicate}->($self) }
-             map { [ $_, $self->Role($_) ] }
+             map { [ $_, $self->_ROLES->{$_} ] }
             keys %{ $self->_ROLES };
+
+    # Cache at ticket/queue object level mainly to reduce calls of
+    # custom role's AppliesToObjectPredicate for performance.
+    if ( ref($self) =~ /RT::(?:Ticket|Queue)/ ) {
+        $self->{_Roles}{$key} = \@roles;
+    }
+    return @roles;
 }
 
 {
@@ -312,11 +337,14 @@ sub HasRole {
     return scalar grep { $type eq $_ } $self->Roles;
 }
 
-=head2 RoleGroup
+=head2 RoleGroup NAME, CheckRight => RIGHT_NAME, Create => 1|0
 
 Expects a role name as the first parameter which is used to load the
 L<RT::Group> for the specified role on this record.  Returns an unloaded
 L<RT::Group> object on failure.
+
+If the group is not created yet and C<Create> parameter is true(default is
+false), it will create the group accordingly.
 
 =cut
 
@@ -336,6 +364,12 @@ sub RoleGroup {
             Object  => $self,
             Name    => $name,
         );
+
+        if ( !$group->id && $args{Create} ) {
+            if ( my $created = $self->_CreateRoleGroup($name) ) {
+                $group = $created;
+            }
+        }
     }
     return $group;
 }
@@ -389,6 +423,11 @@ sub CanonicalizePrincipal {
                 if RT::EmailParser->IsRTAddress( $email );
         }
     } else {
+        if ( ( $args{User} || '' ) =~ /^\s*group\s*:\s*(\S.*?)\s*$/i ) {
+            $args{Group} = $1;
+            delete $args{User};
+        }
+
         if ($args{User}) {
             my $name = delete $args{User};
             # Sanity check the address
@@ -472,12 +511,9 @@ sub AddRoleMember {
     return (0, $self->loc("Permission denied"))
         if $acl and not $acl->($type => $principal);
 
-    my $group = $self->RoleGroup( $type );
+    my $group = $self->RoleGroup( $type, Create => 1 );
     if (!$group->id) {
-        $group = $self->_CreateRoleGroup($type);
-        if (!$group || !$group->id) {
-            return (0, $self->loc("Role group '[_1]' not found", $type));
-        }
+       return (0, $self->loc("Role group '[_1]' not found", $type));
     }
 
     return (0, $self->loc('[_1] is already [_2]',
@@ -507,14 +543,9 @@ Takes a set of key-value pairs:
 
 =over 4
 
-=item PrincipalId
+=item Principal, PrincipalId, User, or Group
 
-Optional.  The ID of the L<RT::Principal> object to remove.
-
-=item User
-
-Optional.  The Name or EmailAddress of an L<RT::User> to use as the
-principal
+Required. Canonicalized through L</CanonicalizePrincipal>.
 
 =item Type
 
@@ -528,8 +559,6 @@ status of "Permission denied".
 
 =back
 
-One, and only one, of I<PrincipalId> or I<User> is required.
-
 Returns a tuple of (principal object that was removed, message).
 
 =cut
@@ -541,20 +570,8 @@ sub DeleteRoleMember {
     return (0, $self->loc("That role is invalid for this object"))
         unless $args{Type} and $self->HasRole($args{Type});
 
-    if ($args{User}) {
-        my $user = RT::User->new( $self->CurrentUser );
-        $user->LoadByEmail( $args{User} );
-        $user->Load( $args{User} ) unless $user->id;
-        return (0, $self->loc("Could not load user '[_1]'", $args{User}) )
-            unless $user->id;
-        $args{PrincipalId} = $user->PrincipalId;
-    }
-
-    return (0, $self->loc("No valid PrincipalId"))
-        unless $args{PrincipalId};
-
-    my $principal = RT::Principal->new( $self->CurrentUser );
-    $principal->Load( $args{PrincipalId} );
+    my ($principal, $msg) = $self->CanonicalizePrincipal(%args);
+    return (0, $msg) if !$principal;
 
     my $acl = delete $args{ACL};
     return (0, $self->loc("Permission denied"))
@@ -568,12 +585,12 @@ sub DeleteRoleMember {
                             $principal->Object->Name, $self->loc($args{Type}) ) )
         unless $group->HasMember($principal);
 
-    my ($ok, $msg) = $group->_DeleteMember($args{PrincipalId}, RecordTransaction => !$args{Silent});
+    ((my $ok), $msg) = $group->_DeleteMember($principal->Id, RecordTransaction => !$args{Silent});
     unless ($ok) {
-        $RT::Logger->error("Failed to remove $args{PrincipalId} as a member of group ".$group->Id.": ".$msg);
+        $RT::Logger->error("Failed to remove ".$principal->Id." as a member of group ".$group->Id.": ".$msg);
 
         return ( 0, $self->loc('Could not remove [_1] as a [_2]',
-                    $principal->Object->Name, $self->loc($args{Type})) );
+                    $principal->Object->Name, $group->Label) );
     }
 
     return ($principal, $msg);
@@ -621,26 +638,87 @@ sub _ResolveRoles {
                             $self->loc("Couldn't load principal: [_1]", $msg);
                     }
                 } else {
-                    my @addresses = RT::EmailParser->ParseEmailAddress( $value );
-                    for my $address ( @addresses ) {
-                        my $user = RT::User->new( RT->SystemUser );
-                        my ($id, $msg) = $user->LoadOrCreateByEmail( $address );
-                        if ( $id ) {
-                            # Load it back as us, not as the system
-                            # user, to be completely safe.
-                            $user = RT::User->new( $self->CurrentUser );
-                            $user->Load( $id );
-                            push @{ $roles->{$role} }, $user->PrincipalObj;
-                        } else {
-                            push @errors,
-                                $self->loc("Couldn't load or create user: [_1]", $msg);
-                        }
-                    }
+                    my ($users, $errors) = $self->ParseInputPrincipals( $value );
+
+                    push @{ $roles->{$role} }, map { $_->PrincipalObj } @{$users};
+                    push @errors, @$errors if @$errors;
                 }
             }
         }
     }
     return (@errors);
+}
+
+=head2 ParseInputPrincipals
+
+In the RT web UI, some watcher input fields can accept RT users
+identified by email address or RT username. On the ticket Create
+and Update pages, these fields can have multiple values submitted
+as a comma-separated list. This method parses such lists and returns
+an array of user objects found or created for each parsed value.
+
+C<ParseEmailAddress> in L<RT::EmailParser> provides a similar
+function, but only handles email addresses, filtering out
+usernames. It also returns a list of L<Email::Address> objects
+rather than RT objects.
+
+Accepts: a string with usernames and email addresses
+
+Returns: arrayref of RT::User objects, arrayref of any error strings
+
+=cut
+
+sub ParseInputPrincipals {
+    my $self = shift;
+    my @list = RT::EmailParser->_ParseEmailAddress( @_ );
+
+    my @principals;    # Collect user or group objects
+    my @errors;
+
+    foreach my $e ( @list ) {
+        if ( $e->{'type'} eq 'mailbox' ) {
+            my $user = RT::User->new( RT->SystemUser );
+            my ( $id, $msg ) = $user->LoadOrCreateByEmail( $e->{'value'} );
+            if ( $id ) {
+                push @principals, $user;
+            }
+            else {
+                push @errors, $self->loc( "Couldn't load or create user: [_1]", $msg );
+                RT::Logger->error( "Couldn't load or create user from email address " . $e->{'value'} . ", " . $msg );
+            }
+        }
+        elsif ( $e->{'value'} =~ /^(group:)?(.+)$/ ) {
+
+            my ( $is_group, $name ) = ( $1, $2 );
+            if ( $is_group ) {
+                my $group = RT::Group->new( RT->SystemUser );
+                my ( $id, $msg ) = $group->LoadUserDefinedGroup( $name );
+                if ( $id ) {
+                    push @principals, $group;
+                }
+                else {
+                    push @errors, $self->loc( "Couldn't load group: [_1]", $msg );
+                    RT::Logger->error( "Couldn't load group from value " . $e->{'value'} . ", " . $msg );
+                }
+            }
+            else {
+                my $user = RT::User->new( RT->SystemUser );
+                my ( $id, $msg ) = $user->Load( $name );
+                if ( $id ) {
+                    push @principals, $user;
+                }
+                else {
+                    push @errors, $self->loc( "Couldn't load user: [_1]", $msg );
+                    RT::Logger->error( "Couldn't load user from value " . $e->{'value'} . ", " . $msg );
+                }
+            }
+        }
+        else {
+            # should never reach here.
+        }
+    }
+
+    return ( \@principals, \@errors );
 }
 
 sub _CreateRoleGroup {
@@ -692,7 +770,14 @@ sub _AddRolesOnCreate {
         my $changed = 0;
 
         for my $role (keys %{$roles}) {
-            my $group = $self->RoleGroup($role);
+            next unless @{$roles->{$role}};
+
+            my $group = $self->RoleGroup($role, Create => 1);
+            if ( !$group->id ) {
+                push @errors, $self->loc( "Couldn't create role group '[_1]'", $role );
+                next;
+            }
+
             my @left;
             for my $principal (@{$roles->{$role}}) {
                 if ($acls{$role}->($principal)) {
@@ -735,5 +820,31 @@ sub LabelForRole {
     return $role->{Name};
 }
 
+=head1 OPTIONS
+
+=head2 Lazy Role Groups
+
+Role groups are typically created for all roles on a ticket or asset when
+that object is created. If you are creating a large number of tickets or
+assets automatically (e.g., with an automated import process) and you use
+custom roles in addition to core roles, this requires many additional rows
+to be created for each base ticket or asset. This adds time to the create
+process for each ticket or asset.
+
+Roles support a lazy option that will defer creating the underlying role
+groups until the object is accessed later. This speeds up the initial
+create process with minimal impact if tickets or assets are accessed
+individually later (like a user loading a ticket and working on it).
+
+This lazy behavior is off by default for backward compatibility. To
+enable it, set this package variable:
+
+    $RT::Record::Role::Roles::LAZY_ROLE_GROUPS = 1;
+
+If you are evaluating this option for performance, it's worthwhile to
+benchmark your ticket or asset create process before and after to confirm
+you see faster create times.
+
+=cut
 
 1;

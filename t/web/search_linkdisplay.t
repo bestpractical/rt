@@ -31,7 +31,7 @@ my $class = RT::Class->new( RT->SystemUser );
 ok ($id, $msg);
 
 my $article = RT::Article->new( RT->SystemUser );
-($id, $msg) = $article->Create( Class => $class->Name, Summary => 'Test Article' );
+($id, $msg) = $article->Create( Class => $class->Name, Summary => 'Test Article', Name => 'Test' );
 ok ($id, $msg);
 $article->Load($id);
 
@@ -58,5 +58,49 @@ is( $ref->text, "#".$ticket2->Id.": ticket bar", $ticket2->Id . " is displayed" 
 $ref = $m->find_link( url_regex => qr!/Article/Display.html! );
 ok( $ref, "found article link" );
 is( $ref->text, $article->URIObj->Resolver->AsString, $article->URIObj->Resolver->AsString . " is displayed" );
+
+
+# Get a search that returns multiple tickets
+$m->get_ok("/Search/Results.html?Format=id,RefersTo;Query=id>0");
+
+ok $m->goto_ticket( $ticket->Id ), 'opened diplay page of ticket # ' . $ticket->Id;
+my $t_link = $m->dom->at("#li-page-next a")->attr('href');
+is( $t_link, "/Ticket/Display.html?id=" . $ticket2->Id, 'link to the next ticket in current search found' );
+
+diag "Set ShowSearchNavigation to false and confirm we do not load navigation links.";
+{
+    RT::Test->stop_server;
+    RT->Config->Set( 'ShowSearchNavigation' => 0 );
+    ( $baseurl, $m ) = RT::Test->started_ok;
+
+    # Get a search that returns multiple tickets
+    $m->get_ok("/Search/Results.html?Format=id,RefersTo;Query=id>0");
+
+    ok $m->goto_ticket( $ticket->Id ), 'opened diplay page of ticket # ' . $ticket->Id;
+    $t_link = $m->dom->at("#li-page-next a");
+    is( $t_link, undef, "Search navigation results are not rendered" );
+}
+
+diag "Override ShowSearchNavigation at user pref level.";
+{
+    ok( $m->login( 'root', 'password' ), 'logged in as root' );
+
+    my $root = RT::User->new( RT->SystemUser );
+    $root->Load('root');
+    ok( $root->Id, "Loaded root user" );
+
+    $root->SetPreferences( $RT::System => { %{ $root->Preferences($RT::System) || {} }, ShowSearchNavigation => 1 } );
+
+    is( RT::Config->Get( 'ShowSearchNavigation', $root ), 1, "User pref for ShowSearchNavigation successfully set." );
+
+    $m->get_ok("/Search/Results.html?Format=id,RefersTo;Query=id>0");
+
+    ok $m->goto_ticket( $ticket->Id ), 'opened diplay page of ticket # ' . $ticket->Id;
+    my $t_link = $m->dom->at("#li-page-next a")->attr('href');
+    is( $t_link, "/Ticket/Display.html?id=" . $ticket2->Id, 'link to the next ticket in current search found' );
+
+    $root->SetPreferences( $RT::System => { %{ $root->Preferences($RT::System) || {} }, ShowSearchNavigation => 0 } );
+    is( RT::Config->Get( 'ShowSearchNavigation', $root ), 0, "User pref for ShowSearchNavigation successfully set." );
+}
 
 done_testing;

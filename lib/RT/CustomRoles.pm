@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -170,6 +170,29 @@ sub ApplySortOrder {
         FIELD => 'SortOrder',
         ORDER => $order,
     } );
+}
+
+=head2 LimitToNotAdded
+
+Takes either list of object ids or nothing. Limits collection
+to custom roles to listed objects or any corespondingly.
+
+=cut
+
+sub LimitToNotAdded {
+    my $self = shift;
+    return RT::ObjectCustomRoles->new( $self->CurrentUser )->LimitTargetToNotAdded( $self => @_ );
+}
+
+=head2 LimitToAdded
+
+Limits collection to custom roles to listed objects or any corespondingly.
+
+=cut
+
+sub LimitToAdded {
+    my $self = shift;
+    return RT::ObjectCustomRoles->new( $self->CurrentUser )->LimitTargetToAdded( $self => @_ );
 }
 
 RT::Base->_ImportOverlays();

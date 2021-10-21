@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,7 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'BeforeDateInput', Object => $Object, ARGSRef => $ARGSRef, ShowTimeRef => \$ShowTime, );
-<input type="text" class="datepicker<% $ShowTime ? ' withtime' : '' %>" id="<% $Name %>" name="<% $Name %>" value="<% $Default %>" size="<% $Size %>" autocomplete="off" />
+<input type="text" class="datepicker<% $ShowTime ? ' withtime' : '' %> form-control"
+% if ( $id ) {
+ id="<% $id %>"
+% }
+ name="<% $Name %>" value="<% $Default %>" size="<% $Size %>" autocomplete="off" />
 % $m->callback( %ARGS, Name => $Name, CallbackName => 'AfterDateInput', Object => $Object, ARGSRef => $ARGSRef, );
 <%init>
 unless ((defined $Default) or ($current <= 0)) {
@@ -61,6 +65,8 @@ $Default ||= '';
 unless ($Name) {
     $Name = $menu_prefix. "_Date";
 }
+
+$id = $Name if !defined($id);
 </%init>
 <%args>
 $ShowTime    => 1
@@ -71,4 +77,5 @@ $Name        => undef
 $Size        => 16
 $Object      => undef
 $ARGSRef     => undef
+$id          => undef
 </%args>

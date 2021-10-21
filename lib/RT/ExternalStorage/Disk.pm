@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -135,7 +135,7 @@ RT::ExternalStorage::Disk - On-disk storage of attachments
 
     Set(%ExternalStorage,
         Type => 'Disk',
-        Path => '/opt/rt4/var/attachments',
+        Path => '/opt/rt5/var/attachments',
     );
 
 =head1 DESCRIPTION

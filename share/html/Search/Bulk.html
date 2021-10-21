@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,143 +53,352 @@
 % foreach my $var (qw(Query Format OrderBy Order Rows Page SavedSearchId SavedChartSearchId Token)) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
+
+% for my $input ( @ExtraQueryParams ) {
+<input type="hidden" class="hidden" name="ExtraQueryParams" value="<% $input %>" />
+%   if ( defined $ARGS{$input} ) {
+<input type="hidden" class="hidden" name="<% $input %>" value="<% $ARGS{$input} %>" />
+%   }
+% }
+
 <& /Elements/CollectionList, 
     Query => $Query,
     DisplayFormat => $DisplayFormat,
     Format => $Format,
-    Verbatim => 1,
     AllowSorting => 1,
     OrderBy => $OrderBy,
     Order => $Order,
     Rows => $Rows,
     Page => $Page,
     BaseURL => RT->Config->Get('WebPath')."/Search/Bulk.html?",
-    Class => 'RT::Tickets'
+    Class => 'RT::Tickets',
+    InlineEdit => 0,
    &>
 
 % $m->callback(CallbackName => 'AfterTicketList', ARGSRef => \%ARGS);
 
 <hr />
 
-<& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1 &>
-<br />
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit, Label => loc('Update'), CheckboxNameRegex => '/^UpdateTicket(All)?$/', CheckAll => 1, ClearAll => 1 &>
+  </div>
+</div>
+
 <&|/Widgets/TitleBox, title => $title &>
-<table>
-<tr>
-<td valign="top">
-<table>
-<tr><td class="label"> <&|/l&>Make Owner</&>: </td>
-<td class="value"> <& /Elements/SelectOwner, Name => "Owner", Default => $ARGS{Owner} || '' &>
-<label>(<input type="checkbox" class="checkbox" name="ForceOwnerChange"
-<% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %> /> <&|/l&>Force change</&>)</label></td></tr>
-<tr><td class="label"> <&|/l&>Add Requestor</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor} &> </td></tr>
-<tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor} &> </td></tr>
-<tr><td class="label"> <&|/l&>Add Cc</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc} &> </td></tr>
-<tr><td class="label"> <&|/l&>Remove Cc</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc} &> </td></tr>
-<tr><td class="label"> <&|/l&>Add AdminCc</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc} &> </td></tr>
-<tr><td class="label"> <&|/l&>Remove AdminCc</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc} &> </td></tr>
+  <div class="form-row">
+    <div class="col-6">
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make Owner</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/SelectOwner, Name => "Owner", Default => $ARGS{Owner} || '' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ForceOwnerChange" class="checkbox custom-control-input" name="ForceOwnerChange"
+              <% $ARGS{ForceOwnerChange} ? 'checked="checked"' : '' %>
+            />
+            <label for="ForceOwnerChange" class="custom-control-label">(<&|/l&>Force change</&>)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Add Requestor</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/EmailInput, Name => "AddRequestor", Size=> 20, Default => $ARGS{AddRequestor}, AutocompleteType => 'Principals' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Remove Requestor</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/EmailInput, Name => "DeleteRequestor", Size=> 20, Default => $ARGS{DeleteRequestor}, AutocompleteType => 'Principals' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ClearRequestor" class="checkbox custom-control-input" name="ClearRequestor"
+              <% $ARGS{ClearRequestor} ? 'checked="checked"' : '' %>
+            />
+            <label for="ClearRequestor" class="custom-control-label"><&|/l&>Clear Requestor</&></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Add Cc</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/EmailInput, Name => "AddCc", Size=> 20, Default => $ARGS{AddCc}, AutocompleteType => 'Principals' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Remove Cc</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/EmailInput, Name => "DeleteCc", Size=> 20, Default => $ARGS{DeleteCc}, AutocompleteType => 'Principals' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ClearCc" class="checkbox custom-control-input" name="ClearRequestor"
+              <% $ARGS{ClearCc} ? 'checked="checked"' : '' %>
+            />
+            <label for="ClearCc" class="custom-control-label"><&|/l&>Clear Cc</&></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Add AdminCc</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/EmailInput, Name => "AddAdminCc", Size=> 20, Default => $ARGS{AddAdminCc}, AutocompleteType => 'Principals' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Remove AdminCc</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/EmailInput, Name => "DeleteAdminCc", Size=> 20, Default => $ARGS{DeleteAdminCc}, AutocompleteType => 'Principals' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ClearAdminCc" class="checkbox custom-control-input" name="ClearAdminCc"
+              <% $ARGS{ClearAdminCc} ? 'checked="checked"' : '' %>
+            />
+            <label for="ClearAdminCc" class="custom-control-label"><&|/l&>Clear AdminCc</&></label>
+          </div>
+        </div>
+      </div>
 
 % my $single_roles = RT::CustomRoles->new($session{CurrentUser});
 % $single_roles->LimitToSingleValue;
 % $single_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $single_roles->Next) {
-<tr>
-<td class="label"> <&|/l, $role->Name &>Make [_1]</&>: </td>
-<td class="value"><& /Elements/SingleUserRoleInput, role => $role, ShowPlaceholder => 0, ShowEntryHint => 0, Size => 20, Default => $ARGS{"RT::CustomRole-" . $role->Id} &></td>
-</tr>
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l, $role->Name &>Make [_1]</&>:
+%         if ($role->EntryHint) {
+            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
+        </div>
+        <div class="value col-9">
+          <& /Elements/SingleUserRoleInput, role => $role, ShowPlaceholder => 0, ShowEntryHint => 0, Size => 20, Default => $ARGS{"RT::CustomRole-" . $role->Id} &>
+        </div>
+      </div>
 % }
 
 % my $multi_roles = RT::CustomRoles->new($session{CurrentUser});
 % $multi_roles->LimitToMultipleValue;
 % $multi_roles->LimitToObjectId($_) for keys %$seen_queues;
 % while (my $role = $multi_roles->Next) {
-<tr>
-<td class="label"> <&|/l, $role->Name &>Add [_1]</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id} &> </td>
-</tr>
-<tr>
-<td class="label"> <&|/l, $role->Name &>Remove [_1]</&>: </td>
-<td class="value"> <& /Elements/EmailInput, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id} &> </td>
-</tr>
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l, $role->Name &>Add [_1]</&>:
+%         if ($role->EntryHint) {
+            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
+        </div>
+        <div class="value col-9">
+          <& /Elements/MultiUserRoleInput, role => $role, Name => "AddRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"AddRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l, $role->Name &>Remove [_1]</&>:
+%         if ($role->EntryHint) {
+            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+%         }
+        </div>
+        <div class="value col-9">
+          <& /Elements/MultiUserRoleInput, role => $role, Name => "DeleteRT::CustomRole-" . $role->Id, Size=> 20, Default => $ARGS{"DeleteRT::CustomRole-" . $role->Id}, AutocompleteMultiple => 0 &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3"></div>
+        <div class="value col-9">
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="ClearRT::CustomRole-<% $role->Id %>" class="checkbox custom-control-input" name="ClearRT::CustomRole-<% $role->Id %>"
+              <% $ARGS{'ClearRT::CustomRole-' . $role->Id} ? 'checked="checked"' : '' %>
+            />
+            <label for="ClearRT::CustomRole-<% $role->Id %>" class="custom-control-label"><&|/l, $role->Name&>Clear [_1]</&></label>
+          </div>
+        </div>
+      </div>
 % }
 
-</table>
-</td>
-<td valign="top">
-<table>
-<tr><td class="label"> <&|/l&>Make subject</&>: </td>
-<td class="value"> <input name="Subject" size="20" value="<% $ARGS{Subject} || '' %>"/> </td></tr>
-<tr><td class="label"> <&|/l&>Make priority</&>: </td>
-<td class="value"> <& /Elements/SelectPriority, Name => "Priority", Default => $ARGS{Priority} &> </td></tr>
-<tr><td class="label"> <&|/l&>Make queue</&>: </td>
-<td class="value"> <& /Elements/SelectQueue, Name => "Queue", Default => $ARGS{Queue} &> </td></tr>
-<tr><td class="label"> <&|/l&>Make Status</&>: </td>
-<td class="value"> <& /Ticket/Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}, Queues => $seen_queues &> </td></tr>
+    </div>
+    <div class="col-6">
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make subject</&>:
+        </div>
+        <div class="value col-9">
+          <input class="form-control" type="text" name="Subject" size="20" value="<% $ARGS{Subject} || '' %>"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make priority</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/SelectPriority, Name => "Priority", Default => $ARGS{Priority}, Queues => $seen_queues &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make queue</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/SelectQueue, Name => "Queue", Default => $ARGS{Queue} &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make Status</&>:
+        </div>
+        <div class="value col-9">
+          <& /Ticket/Elements/SelectStatus, Name => "Status", Default => $ARGS{Status}, Queues => $seen_queues &>
+        </div>
+      </div>
+
 % if ($hasSLA) {
-<tr><td class="label"> <&|/l&>Make SLA</&>: </td>
-<td class="value"> <& /Elements/SelectSLA, Name => "SLA", Default => $ARGS{SLA} &> </td></tr>
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make SLA</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/SelectSLA, Name => "SLA", Default => $ARGS{SLA} &>
+        </div>
+      </div>
 % }
-<tr><td class="label"> <&|/l&>Make date Starts</&>: </td>
-<td class="value"> <& /Elements/SelectDate, Name => "Starts_Date", Default => $ARGS{Starts_Date} || '' &> </td></tr>
-<tr><td class="label"> <&|/l&>Make date Started</&>: </td>
-<td class="value"> <& /Elements/SelectDate, Name => "Started_Date", Default => $ARGS{Started_Date} || '' &> </td></tr>
-<tr><td class="label"> <&|/l&>Make date Told</&>: </td>
-<td class="value"> <& /Elements/SelectDate, Name => "Told_Date", Default => $ARGS{Told_Date} || '' &> </td></tr>
-<tr><td class="label"> <&|/l&>Make date Due</&>: </td>
-<td class="value"> <& /Elements/SelectDate, Name => "Due_Date", Default => $ARGS{Due_Date} || '' &> </td></tr>
-</table>
 
-</td>
-</tr>
-</table>
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make date Starts</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/SelectDate, Name => "Starts_Date", Default => $ARGS{Starts_Date} || '' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make date Started</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/SelectDate, Name => "Started_Date", Default => $ARGS{Started_Date} || '' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make date Told</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/SelectDate, Name => "Told_Date", Default => $ARGS{Told_Date} || '' &>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Make date Due</&>:
+        </div>
+        <div class="value col-9">
+          <& /Elements/SelectDate, Name => "Due_Date", Default => $ARGS{Due_Date} || '' &>
+        </div>
+      </div>
+    </div>
+  </div>
 </&>
 <&| /Widgets/TitleBox, title => loc('Add comments or replies to selected tickets') &>
-<table>
-<tr><td align="right"><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType" id="UpdateType">
-  <option value="private" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'private' ? 'selected="selected"' : '' %> ><&|/l&>Comments (Not sent to requestors)</&></option>
-<option value="response" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'response' ? 'selected="selected"' : '' %>><&|/l&>Reply to requestors</&></option>
-</select> 
-</td></tr>
-<tr>
-    <td align="right"><&|/l&>Subject</&>:</td>
-    <td>
-        <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || "" %>" />
+  <div class="form-row">
+    <div class="form-group label col-2">
+      <&|/l&>Update Type</&>:
+    </div>
+    <div class="value col-9">
+      <select class="form-control selectpicker" name="UpdateType" id="UpdateType">
+          <option value="private" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'private' ? 'selected="selected"' : '' %> ><&|/l&>Comments (Not sent to requestors)</&></option>
+        <option value="response" <% $ARGS{UpdateType} && $ARGS{UpdateType} eq 'response' ? 'selected="selected"' : '' %>><&|/l&>Reply to requestors</&></option>
+      </select> 
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group label col-2">
+      <&|/l&>Subject</&>:
+    </div>
+    <div class="value col-9">
+      <input class="form-control" type="text" name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || "" %>" />
+    </div>
+  </div>
 % $m->callback( %ARGS, CallbackName => 'AfterUpdateSubject' );
-    </td>
-</tr>
+
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', CustomFields => $TxnCFs );
 % while (my $CF = $TxnCFs->Next()) {
-<tr>
-<td align="right"><% $CF->Name %>:</td>
-<td><& /Elements/EditCustomField,
-    CustomField => $CF,
-    Object => RT::Transaction->new( $session{'CurrentUser'} ),
-    &><em><% $CF->EntryHint // '' %></em></td>
-</td></tr>
+  <div class="form-row">
+    <div class="form-group label col-2">
+      <span class="name"><% $CF->Name %>:</span>
+% if ( $CF->EntryHint ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+% }
+    </div>
+    <div class="value col-9">
+      <& /Elements/EditCustomField,
+        CustomField => $CF,
+        Object => RT::Transaction->new( $session{'CurrentUser'} ),
+      &>
+    </div>
+  </div>
 % } # end if while
 
- <tr><td class="labeltop"><&|/l&>Message</&>:</td>
- <td class="messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
+  <div class="form-group">
+    <div class="messagebox-container action-<% $ARGS{UpdateType} || 'private' %>">
 % $m->callback( %ARGS, CallbackName => 'BeforeMessageBox' );
 %# Currently, bulk update always starts with Comment not Reply selected, so we check this unconditionally
 % my $IncludeSignature = RT->Config->Get('MessageBoxIncludeSignatureOnComment');
-<& /Elements/MessageBox, Name => "UpdateContent", 
-    $ARGS{UpdateContent} ? ( Default => $ARGS{UpdateContent}, IncludeSignature => 0 ) :
-                        ( IncludeSignature => $IncludeSignature ),
-        &>
- </td></tr>
+      <& /Elements/MessageBox, Name => "UpdateContent", 
+          $ARGS{UpdateContent} ? ( Default => $ARGS{UpdateContent}, IncludeSignature => 0 ) :
+            ( IncludeSignature => $IncludeSignature ),
+      &>
+    </div>
+  </div>
 
-<& /Ticket/Elements/AddAttachments, %ARGS &>
-
- </table>
-
+  <& /Ticket/Elements/AddAttachments, %ARGS &>
 </&>
 
 <%perl>
@@ -206,7 +415,6 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 % }
 
 <&|/Widgets/TitleBox, title => loc('Edit Links'), color => "#336633"&>
-<em><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></em><br />
 <& /Elements/BulkLinks, Collection => $Tickets, $ARGS{'AddMoreAttach'} ? %ARGS : () &>
 </&>
 
@@ -214,7 +422,11 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 <& /Ticket/Elements/EditMerge, Tickets => $Tickets, %ARGS &>
 </&>
 
-<& /Elements/Submit, Label => loc('Update') &>
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit, Label => loc('Update') &>
+  </div>
+</div>
 
 
 </form>
@@ -226,6 +438,8 @@ $cfs->SetContextObject( values %$seen_queues ) if keys %$seen_queues == 1;
 </div>
 
 <%INIT>
+Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'ShowSearchBulkUpdate', Object => RT->System );
+
 my (@results);
 
 $m->callback(CallbackName => 'Initial', ARGSRef => \%ARGS, results_ref => \@results, QueryRef => \$Query, UpdateTicketRef => \@UpdateTicket);
@@ -363,4 +577,5 @@ $Order => 'ASC'
 $OrderBy => 'id'
 $Query => undef
 @UpdateTicket => ()
+@ExtraQueryParams => ()
 </%args>

@@ -80,7 +80,7 @@ for my $type ( "DependsOn", "MemberOf", "RefersTo" ) {
                 $m->field( "$type-new", "$deleted_id $active_id $inactive_id" );
             }
 
-            $m->submit;
+            $m->click('SubmitTicket');
             $m->content_like(qr/Ticket \d+ created/, 'created ticket');
             $m->content_contains("Linking to a deleted ticket is not allowed");
             $id = RT::Test->last_ticket->id;

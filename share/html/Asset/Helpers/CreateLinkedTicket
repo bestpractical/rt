@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -60,5 +60,17 @@ elsif ( $Asset ){
 }
 
 </%init>
-<& /Asset/Elements/CreateLinkedTicket, AssetObj => \@asset_objs, Requestors => $Requestors &>
+<div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><&|/l&>Create Linked Ticket</&></h5>
+      <a href="javascript:void(0)" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
+    <div class="modal-body">
+      <& /Asset/Elements/CreateLinkedTicket, AssetObj => \@asset_objs, Requestors => $Requestors &>
+    </div>
+  </div>
+</div>
 % $m->abort;

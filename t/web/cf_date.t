@@ -54,10 +54,7 @@ diag 'check valid inputs with various timezones in ticket create page';
 {
     my ( $ticket, $id );
 
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_contains('Select date', 'has cf field' );
 
     $m->submit_form(
@@ -67,6 +64,7 @@ diag 'check valid inputs with various timezones in ticket create page';
             Content                                       => 'test',
             "Object-RT::Ticket--CustomField-$cfid-Values" => '2010-05-04',
         },
+        button => 'SubmitTicket',
     );
     ok( ($id) = $m->content =~ /Ticket (\d+) created/, "created ticket $id" );
 
@@ -165,10 +163,7 @@ diag 'check search build page';
 
 diag 'check invalid inputs';
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     my $form = $m->form_name("TicketCreate");
 
     $m->submit_form(
@@ -178,6 +173,7 @@ diag 'check invalid inputs';
             Content                                       => 'test',
             "Object-RT::Ticket--CustomField-$cfid-Values" => 'foodate',
         },
+        button => 'SubmitTicket',
     );
     $m->content_like( qr/Ticket \d+ created/,
         "a ticket is created succesfully" );
@@ -212,10 +208,7 @@ diag 'retain values when adding attachments';
     $txn_cf->AddToObject(RT::Queue->new(RT->SystemUser));
     my $txn_cfid = $txn_cf->id;
 
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields    => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_contains('test cf date', 'has cf' );
     $m->content_contains('test txn cf date', 'has txn cf' );
 
@@ -238,7 +231,7 @@ diag 'retain values when adding attachments';
     is( $m->value( "Object-RT::Transaction--CustomField-$txn_cfid-Values" ),
         "2015-08-15", "txn cf date date value still on form" );
 
-    $m->submit_form();
+    $m->submit_form( button => 'SubmitTicket' );
     ok( ($id) = $m->content =~ /Ticket (\d+) created/, "created ticket $id" );
 
     $m->follow_link_ok( {text => 'Reply'} );

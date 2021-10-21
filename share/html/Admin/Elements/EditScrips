@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -66,11 +66,15 @@
 <p><i><&|/l&>(No scrips)</&></i></p>
 % }
 
-<& /Elements/Submit,
-    Name => 'RemoveScrips',
-    Caption => loc("Un-apply selected scrips"),
-    Label => loc("Update"),
-&>
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit,
+        Name => 'RemoveScrips',
+        Caption => loc("Un-apply selected scrips"),
+        Label => loc("Update"),
+    &>
+  </div>
+</div>
 
 <h2><&|/l&>Not applied scrips</&></h2>
 % $scrips = $find_scrips->(Added => 0);
@@ -90,11 +94,15 @@
 
 <& SelectStageForAdded &>
 
-<& /Elements/Submit,
-    Name => 'AddScrips',
-    Caption => loc("Apply selected scrips"),
-    Label => loc("Update"),
-&>
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit,
+        Name => 'AddScrips',
+        Caption => loc("Apply selected scrips"),
+        Label => loc("Update"),
+    &>
+  </div>
+</div>
 
 </form>
 

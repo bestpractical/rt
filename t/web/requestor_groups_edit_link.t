@@ -30,13 +30,14 @@ my ($id) = $ticket->Create(
 );
 ok( $id, 'created ticket' );
 
+my $url_regex = qr{\/Admin\/Users\/Memberships\.html};
 
 ok( $m->login( user_a => 'password' ), 'logged in as user_a' );
 
 $m->goto_ticket($id);
 
 ok(
-    !$m->find_link( text => 'Edit' ), 'no Edit link without AdminUsers permission'
+    !$m->find_link( url_regex => $url_regex ), 'no Edit link without AdminUsers permission'
 );
 
 ok(
@@ -50,6 +51,6 @@ ok(
 );
 
 $m->goto_ticket($id);
-$m->follow_link_ok( { text => 'Edit' }, 'follow the Edit link' );
+$m->follow_link_ok( { url_regex => $url_regex }, 'follow the Edit link' );
 is( $m->uri, $url . "/Admin/Users/Memberships.html?id=" . $user_a->id, 'url is right' );
 

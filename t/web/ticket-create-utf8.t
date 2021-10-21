@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 43;
+use RT::Test tests => undef;
 
 my $ru_test = "\x{442}\x{435}\x{441}\x{442}";
 my $ru_support = "\x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}";
@@ -29,7 +29,7 @@ foreach my $test_str ( $ru_test, $l1_test ) {
     ok $m->goto_create_ticket( $q ), "go to create ticket";
     $m->form_name('TicketCreate');
     $m->field( Subject => $test_str );
-    $m->submit;
+    $m->click('SubmitTicket');
 
     $m->content_like( 
         qr{<td\s+class="message-header-value\s*"[^>]*>\s*\Q$test_str\E\s*</td>}i,
@@ -47,7 +47,7 @@ foreach my $test_str ( $ru_test, $l1_test ) {
         $m->form_name('TicketCreate');
         $m->field( Subject => $test_str );
         $m->field( Content => $support_str );
-        $m->submit;
+        $m->click('SubmitTicket');
 
         $m->content_like( 
             qr{<td\s+class="message-header-value\s*"[^>]*>\s*\Q$test_str\E\s*</td>}i,
@@ -63,26 +63,24 @@ foreach my $test_str ( $ru_test, $l1_test ) {
     }
 }
 
-# create a ticket with a subject and content
-foreach my $test_str ( $ru_test, $l1_test ) {
-    foreach my $support_str ( $ru_support, $l1_support ) {
-        ok $m->goto_create_ticket( $q ), "go to create ticket";
-        $m->form_name('TicketCreate');
-        $m->field( Subject => $test_str );
-        $m->field( Content => $support_str );
-        $m->submit;
+my $article = RT::Article->new($RT::SystemUser);
+my ( $id, $msg ) = $article->Create(
+    Class   => 'General',
+    Name    => 'My Article',
+    'CustomField-Content' => 'My Article Test Content',
+);
+ok( $id, $msg );
+(my $ret, $msg) = $article->Load(1);
+ok ($ret, $msg);
 
-        $m->content_like( 
-            qr{<td\s+class="message-header-value\s*"[^>]*>\s*\Q$test_str\E\s*</td>}i,
-            'header on the page'
-        );
-        $m->content_contains(
-            $support_str,
-            'content on the page'
-        );
+my $queue = RT::Queue->new(RT->SystemUser);
+$queue->Load('General');
+ok( $queue, 'Loaded General Queue' );
+($ret, $msg) = $queue->SetDefaultValue( Name => 'Article', Value => $article->Id);
+ok( $ret, $msg );
 
-        my $ticket = RT::Test->last_ticket;
-        is $ticket->Subject, $test_str, "correct subject";
-    }
-}
+ok $m->login(root => 'password'), "logged in";
+$m->goto_create_ticket('General');
+$m->scraped_id_is('Content', '#1: My Article <br />-------------- <br />Content: <br />------- <br />My Article Test Content <br />');
 
+done_testing;

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => undef;
+use RT::Test tests => undef, config => 'Set($EnableJSChart, 0);';
 
 plan skip_all => 'GD required'
     unless GD->require;
@@ -49,14 +49,14 @@ is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
 
 
-# Group by Requestor email
-$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.EmailAddress" );
-$m->content_like(qr{<th[^>]*>Requestor\s+EmailAddress</th>\s*<th[^>]*>Ticket count\s*</th>},
+# Group by Requestor name
+$m->get_ok( "/Search/Chart.html?Query=id>0&GroupBy=Requestor.Name" );
+$m->content_like(qr{<th[^>]*>Requestor\s+Name</th>\s*<th[^>]*>Ticket count\s*</th>},
                  "Grouped by requestor");
 $m->content_like(qr{root0\@localhost\s*</th>\s*<td[^>]*>\s*<a[^>]*>3</a>}, "Found results in table");
 $m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
 
-$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.EmailAddress" );
+$m->get_ok( "/Search/Chart?Query=id>0&GroupBy=Requestor.Name" );
 is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
 

@@ -26,10 +26,7 @@ $m->click_ok( "UpdateObjs" );
 $m->content_contains("Globally added custom field Images");
 
 
-$m->submit_form_ok({
-    form_name => "CreateTicketInQueue",
-    fields    => { Queue => 'General' },
-});
+$m->submit_form( form_name => "CreateTicketInQueue" );
 $m->content_contains("Upload one image");
 $m->submit_form_ok({
     form_name => "TicketCreate",
@@ -37,6 +34,7 @@ $m->submit_form_ok({
         Subject => 'Test ticket',
         Content => 'test',
     },
+    button => 'SubmitTicket',
 });
 $m->content_like( qr/Ticket \d+ created/,
                   "a ticket is created succesfully" );

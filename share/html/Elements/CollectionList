@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,8 +46,19 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-if (!$Collection && $Class eq 'RT::Tickets') {
-    $Collection = RT::Tickets->new( $session{'CurrentUser'} );
+if (!$Collection) {
+    $Collection = $Class->new( $session{'CurrentUser'} );
+    if ( $Class eq 'RT::Transactions' ) {
+        my @limits = ( "ObjectType = '$ObjectType'", $Query ? "($Query)" : () );
+        if ( $ObjectType eq 'RT::Ticket' ) {
+            unshift @limits, "TicketType = 'ticket'";
+        }
+        $Query = join ' AND ', @limits;
+    }
+    $Collection->FromSQL($Query);
+}
+elsif (!$Collection && $Class eq 'RT::Assets') {
+    $Collection = RT::Assets->new( $session{'CurrentUser'} );
     $Collection->FromSQL($Query);
 }
 
@@ -111,13 +122,22 @@ foreach my $col (@Format) {
 }
 
 $Class ||= $Collection->ColumnMapClassName;
-if ($Class =~ /::/) { # older passed in value
-    $Class =~ s/s$//;
-    $Class =~ s/:/_/g;
-}
 
-$m->out('<table cellspacing="0" class="' .
-            ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ' collection-as-table">');
+$InlineEdit = 0 unless $Collection->isa('RT::Tickets');
+
+$m->out('<div class="table-responsive">');
+$m->out('<table cellspacing="0"');
+$m->out(' class="table ' .  ($Collection->isa('RT::Tickets') ? 'ticket-list' : 'collection') . ($InlineEdit ? ' inline-edit' : '') . ' collection-as-table"');
+$m->out(' data-display-format="' . $m->interp->apply_escapes($DisplayFormat, 'h') . '"');
+$m->out(' data-max-items="' . $maxitems . '"');
+$m->out(' data-class="' . $Collection->RecordClass . '"');
+$m->out('>');
+
+if ( $ShowCols ) {
+    $m->out('<colgroup>');
+    $m->out('<col>') for 1 .. $maxitems;
+    $m->out('</colgroup>');
+}
 
 if ( $ShowHeader ) {
     $m->comp('/Elements/CollectionAsTable/Header',
@@ -154,20 +174,22 @@ while ( my $record = $Collection->Next ) {
     );
 
     $m->comp('/Elements/CollectionAsTable/Row',
-        i         => $i,
-        Format    => \@Format,
-        record    => $record,
-        maxitems  => $maxitems,
-        ColumnMap => $column_map,
-        Class     => $Class,
-        Warning   => $warning,
-        Classes   => $Classes,
+        i          => $i,
+        Format     => \@Format,
+        record     => $record,
+        maxitems   => $maxitems,
+        ColumnMap  => $column_map,
+        Class      => $Class,
+        Warning    => $warning,
+        Classes    => $Classes,
+        InlineEdit => $InlineEdit,
     );
 
     $$HasResults++ if $HasResults;
 }
 
 $m->out('</table>');
+$m->out('</div>');
 if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
   my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
   my $pages = int( $TotalFound / $Rows ) + $oddRows;
@@ -182,6 +204,7 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
         TotalFound  => $TotalFound,
         CurrentPage => $Page,
         Pages       => $pages,
+        PageParam   => $PageParam,
         URLParams   => \%query_args
     );
 
@@ -199,15 +222,19 @@ $DisplayFormat => undef
 $GenericQueryArgs => undef
 $Rows          => undef
 $Page          => 1
+$PageParam     => 'Page'
 $Title         => loc('Ticket Search')
 $BaseURL       => RT->Config->Get('WebPath') . $m->request_comp->path .'?'
-@PassArguments => qw( Query Format Rows Page Order OrderBy)
+@PassArguments => qw( Query Format Rows Page Order OrderBy Class ObjectType )
 
 $AllowSorting   => 0  # Make headers in table links that will resort results
 $PreferOrderBy  => 0  # Prefer the passed-in @OrderBy to the collection default
 $ShowNavigation => 1
 $ShowHeader     => 1
+$ShowCols       => 1
 $ShowEmpty      => 0
+$InlineEdit     => RT->Config->Get('InlineEdit', $session{CurrentUser})
 $Query => 0
 $HasResults     => undef
+$ObjectType     => $Class eq 'RT::Transactions' ? 'RT::Ticket' : ''
 </%ARGS>

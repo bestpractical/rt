@@ -1,4 +1,4 @@
-use RT::Test nodata => 1, tests => 38;
+use RT::Test nodata => 1, tests => undef;
 
 use strict;
 use warnings;
@@ -174,3 +174,81 @@ note "Right name canonicalization";
     ok $ok, "Granted ShowTicket: $msg";
     ok $user->HasRight( Right => "showticket", Object => RT->System ), "HasRight showticket";
 }
+
+diag "Ticket role rights for users in groups that are added in ticket roles";
+{
+    RT::Test->load_or_create_queue( Name => 'General' );
+    my $ticket = RT::Test->create_ticket( Queue => 'General', Subject => 'test ticket role group' );
+    my $admincc = $ticket->RoleGroup('AdminCc');
+    ok( $admincc->PrincipalObj->GrantRight( Right => 'ShowTicket', Object => $ticket->QueueObj ),
+        'Grant AdminCc ShowTicket right' );
+
+    my $delegates = RT::Test->load_or_create_group('delegates');
+    my $core      = RT::Test->load_or_create_group('core team');
+    my $alice     = RT::Test->load_or_create_user( Name => 'alice' );
+    my $bob       = RT::Test->load_or_create_user( Name => 'bob' );
+    ok( $delegates->AddMember( $core->PrincipalId ), 'Add core team to delegates' );
+    ok( $delegates->AddMember( $bob->PrincipalId ),  'Add bob to delegates' );
+    ok( $core->AddMember( $alice->PrincipalId ),     'Add alice to core team' );
+
+    my $current_alice = RT::CurrentUser->new( RT->SystemUser );
+    $current_alice->Load( $alice->id );
+    my $current_bob = RT::CurrentUser->new( RT->SystemUser );
+    $current_bob->Load( $bob->id );
+
+    for my $current_user ( $current_alice, $current_bob ) {
+        ok( !$current_user->HasRight( Object => $ticket, Right => 'ShowTicket' ),
+            'No ShowTicket right for ' . $current_user->Name );
+        my $tickets = RT::Tickets->new($current_user);
+        $tickets->FromSQL("Subject = 'test ticket role group'");
+        ok( !$tickets->Count, 'No tickets found for user ' . $current_user->Name );
+    }
+
+    ok( $admincc->AddMember( $delegates->PrincipalId ), 'Add delegates to AdminCc' );
+
+    for my $current_user ( $current_alice, $current_bob ) {
+        ok( $current_user->HasRight( Object => $ticket, Right => 'ShowTicket' ),
+            'Has ShowTicket right for ' . $current_user->Name );
+        my $tickets = RT::Tickets->new($current_user);
+        $tickets->FromSQL("Subject = 'test ticket role group'");
+        is( $tickets->Count,     1,           'Found 1 ticket for ' . $current_user->Name );
+        is( $tickets->First->id, $ticket->id, 'Found the ticket for ' . $current_user->Name );
+    }
+
+    ok( $admincc->DeleteMember( $delegates->PrincipalId ), 'Delete delegates from AdminCc' );
+    for my $current_user ( $current_alice, $current_bob ) {
+        ok( !$current_user->HasRight( Object => $ticket, Right => 'ShowTicket' ),
+            'No ShowTicket right any more for ' . $current_user->Name
+        );
+        my $tickets = RT::Tickets->new($current_user);
+        $tickets->FromSQL("Subject = 'test ticket role group'");
+        ok( !$tickets->Count, 'No tickets found any more for ' . $current_user->Name );
+    }
+
+
+    ok( $admincc->AddMember( $delegates->PrincipalId ), 'Add delegates to AdminCc again' );
+
+    for my $current_user ( $current_alice, $current_bob ) {
+        ok( $current_user->HasRight( Object => $ticket, Right => 'ShowTicket' ),
+            'Has ShowTicket right again for ' . $current_user->Name
+        );
+        my $tickets = RT::Tickets->new($current_user);
+        $tickets->FromSQL("Subject = 'test ticket role group'");
+        is( $tickets->Count,     1,           'Found 1 ticket again for ' . $current_user->Name );
+        is( $tickets->First->id, $ticket->id, 'Found the ticket again for ' . $current_user->Name );
+    }
+
+    ok( $admincc->PrincipalObj->RevokeRight( Right => 'ShowTicket', Object => $ticket->QueueObj ),
+        'Revoke AdminCc ShowTicket right' );
+
+    for my $current_user ( $current_alice, $current_bob ) {
+        ok( !$current_user->HasRight( Object => $ticket, Right => 'ShowTicket' ),
+            'No ShowTicket right any more for ' . $current_user->Name
+        );
+        my $tickets = RT::Tickets->new($current_user);
+        $tickets->FromSQL("Subject = 'test ticket role group'");
+        ok( !$tickets->Count, 'No tickets found any more for ' . $current_user->Name );
+    }
+}
+
+done_testing;

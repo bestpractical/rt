@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -57,7 +57,11 @@
 <&| /Widgets/TitleBox,title => loc('Modify dates for ticket #[_1]', $TicketObj->Id), class=> 'ticket-info-dates' &>
 <& Elements/EditDates, TicketObj => $TicketObj &>
 </&>
-<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
+    </div>
+  </div>
 </form>
 
 % $m->callback(CallbackName => 'AfterForm', ARGSRef => \%ARGS, Ticket => $TicketObj);

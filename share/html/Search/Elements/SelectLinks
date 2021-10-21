@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,13 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$Name%>">
+<select name="<%$Name%>" class="form-control selectpicker">
 % foreach (@fields) {
 <option value="<%$_->[0]%>"><% $_->[1] %></option>
 % }
 </select>
 <%ARGS>
 $Name => 'LinksField'
+$Class => 'RT::Tickets'
 </%ARGS>
 
 <%INIT>
@@ -62,6 +63,6 @@ my @fields = (
     [ DependedOnBy => loc("Depended on by") ],
     [ RefersTo     => loc("Refers to") ],
     [ ReferredToBy => loc("Referred to by") ],
-    [ LinkedTo     => loc("Links to") ],
+    [ $Class eq 'RT::Tickets' ? 'LinkedTo' : 'Linked' => loc("Links to") ],
 );
 </%INIT>

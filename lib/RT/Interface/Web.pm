@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -60,6 +60,7 @@ RT::Interface::Web
 
 use strict;
 use warnings;
+use 5.010;
 
 package RT::Interface::Web;
 
@@ -68,11 +69,13 @@ use RT::CustomRoles;
 use URI qw();
 use RT::Interface::Web::Menu;
 use RT::Interface::Web::Session;
+use RT::Interface::Web::Scrubber;
 use Digest::MD5 ();
 use List::MoreUtils qw();
 use JSON qw();
 use Plack::Util;
 use HTTP::Status qw();
+use Regexp::Common;
 
 =head2 SquishedCSS $style
 
@@ -108,34 +111,40 @@ sub SquishedJS {
 
 sub JSFiles {
     return qw{
-      jquery-1.12.4p1.min.js
-      jquery_noconflict.js
-      jquery-ui.min.js
-      jquery-ui-timepicker-addon.js
-      jquery-ui-patch-datepicker.js
-      jquery.modal.min.js
-      jquery.modal-defaults.js
-      jquery.cookie.js
-      titlebox-state.js
-      i18n.js
-      util.js
-      autocomplete.js
-      jquery.event.hover-1.0.js
-      superfish.js
-      supersubs.js
-      jquery.supposition.js
-      chosen.jquery.min.js
-      history-folding.js
-      cascaded.js
-      forms.js
-      event-registration.js
-      late.js
-      mousetrap.min.js
-      keyboard-shortcuts.js
-      assets.js
-      /static/RichText/ckeditor.js
-      dropzone.min.js
-      }, RT->Config->Get('JSFiles');
+        jquery-3.4.1.min.js
+        jquery_noconflict.js
+        jquery-ui.min.js
+        jquery-ui-timepicker-addon.js
+        jquery-ui-patch-datepicker.js
+        jquery.cookie.js
+        selectize.min.js
+        popper.min.js
+        bootstrap.min.js
+        bootstrap-select.min.js
+        bootstrap-combobox.js
+        i18n.js
+        util.js
+        autocomplete.js
+        superfish.min.js
+        jquery.supposition.js
+        chosen.jquery.min.js
+        history-folding.js
+        cascaded.js
+        forms.js
+        event-registration.js
+        late.js
+        mousetrap.min.js
+        keyboard-shortcuts.js
+        assets.js
+        /static/RichText/ckeditor.min.js
+        dropzone.min.js
+        quoteselection.js
+        fontawesome.min.js
+        rights-inspector.js
+        Chart.min.js
+        chartjs-plugin-colorschemes.min.js
+        jquery.jgrowl.min.js
+        }, RT->Config->Get('JSFiles');
 }
 
 =head2 ClearSquished
@@ -265,6 +274,16 @@ sub HandleRequest {
         require Module::Refresh;
         Module::Refresh->refresh;
     }
+    else {
+        require File::Spec;
+        my $mason_cache_created = ( stat File::Spec->catdir( $RT::MasonDataDir, 'obj' ) )[ 9 ] // '';
+        if ( ( $HTML::Mason::Commands::m->{rt_mason_cache_created} // '' ) ne $mason_cache_created ) {
+            $HTML::Mason::Commands::m->interp->flush_code_cache;
+            $HTML::Mason::Commands::m->{rt_mason_cache_created} = $mason_cache_created;
+        }
+    }
+
+    RT->Config->RefreshConfigFromDatabase();
 
     $HTML::Mason::Commands::r->content_type("text/html; charset=utf-8");
 
@@ -291,6 +310,7 @@ sub HandleRequest {
     MaybeShowInstallModePage();
 
     MaybeRebuildCustomRolesCache();
+    RT->System->MaybeRebuildLifecycleCache();
 
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
@@ -323,6 +343,8 @@ sub HandleRequest {
     # attempt external auth
     $HTML::Mason::Commands::m->comp( '/Elements/DoAuth', %$ARGS )
         if @{ RT->Config->Get( 'ExternalAuthPriority' ) || [] };
+
+    AttemptTokenAuthentication($ARGS) unless _UserLoggedIn();
 
     # Process per-page authentication callbacks
     $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
@@ -820,10 +842,18 @@ sub AttemptPasswordAuthentication {
     my $user_obj = RT::CurrentUser->new();
     $user_obj->Load( $ARGS->{user} );
 
+    # Load the RT system user as well to avoid timing side channel
+    my $system_user = RT::CurrentUser->new();
+    $system_user->Load(1);    # User with ID 1 should always exist!
+
     my $m = $HTML::Mason::Commands::m;
 
     my $remote_addr = RequestENV('REMOTE_ADDR');
     unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
+        if (!$user_obj->id) {
+            # Avoid timing side channel... always run IsPassword
+            $system_user->IsPassword( $ARGS->{pass} );
+        }
         $RT::Logger->error("FAILED LOGIN for @{[$ARGS->{user}]} from $remote_addr");
         $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
         return (0, HTML::Mason::Commands::loc('Your username or password is incorrect'));
@@ -854,6 +884,39 @@ sub AttemptPasswordAuthentication {
         return (1, HTML::Mason::Commands::loc('Logged in'));
     }
 }
+
+sub AttemptTokenAuthentication {
+    my $ARGS = shift;
+    my ($pass, $user) = ('', '');
+    if ((RequestENV('HTTP_AUTHORIZATION')||'') =~ /^token (.*)$/i) {
+        $pass ||= $1;
+        my ($user_obj, $token) = RT::Authen::Token->UserForAuthString($pass, $user);
+        if ( $user_obj ) {
+            # log in
+            my $remote_addr = RequestENV('REMOTE_ADDR');
+            $RT::Logger->info("Successful login for @{[$user_obj->Name]} from $remote_addr using authentication token #@{[$token->Id]} (\"@{[$token->Description]}\")");
+
+            # It's important to nab the next page from the session before we blow
+            # the session away
+            my $next = RT::Interface::Web::RemoveNextPage($ARGS->{'next'});
+            $next = $next->{'url'} if ref $next;
+
+            RT::Interface::Web::InstantiateNewSession();
+            $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+
+            # Really the only time we don't want to redirect here is if we were
+            # passed user and pass as query params in the URL.
+            if ($next) {
+                RT::Interface::Web::Redirect($next);
+            }
+            elsif ($ARGS->{'next'}) {
+                # Invalid hash, but still wants to go somewhere, take them to /
+                RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+            }
+        }
+    }
+}
+
 
 =head2 LoadSessionFromCookie
 
@@ -1155,6 +1218,7 @@ sub SendStaticFile {
 sub MobileClient {
     my $self = shift;
 
+    return undef unless RT->Config->Get('ShowMobileSite');
 
 if ((RequestENV('HTTP_USER_AGENT') || '') =~ /(?:hiptop|Blazer|Novarra|Vagabond|SonyEricsson|Symbian|NetFront|UP.Browser|UP.Link|Windows CE|MIDP|J2ME|DoCoMo|J-PHONE|PalmOS|PalmSource|iPhone|iPod|AvantGo|Nokia|Android|WebOS|S60|Mobile)/io && !$HTML::Mason::Commands::session{'NotMobile'})  {
     return 1;
@@ -1181,6 +1245,8 @@ sub StripContent {
     # massage content to easily detect if there's any real content
     $content =~ s/\s+//g; # yes! remove all the spaces
     if ( $html ) {
+        # Remove the blank line added for signatures
+        $content =~ s!<p>&nbsp;</p>!!g;
         # remove html version of spaces and newlines
         $content =~ s!&nbsp;!!g;
         $content =~ s!<br/?>!!g;
@@ -1242,18 +1308,35 @@ sub DecodeARGS {
 sub PreprocessTimeUpdates {
     my $ARGS = shift;
 
-    # This code canonicalizes time inputs in hours into minutes
+    my @msg;
+
+    # This code validates and canonicalizes time inputs(including hours into minutes)
     foreach my $field ( keys %$ARGS ) {
         next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS->{$1};
         my $local = $1;
         $ARGS->{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
                       {($1 || 0) + $3 ? $2 / $3 : 0}xe;
+
+        $ARGS->{$local} =~ s!^\s+!!;
+        $ARGS->{$local} =~ s!\s+$!!;
+        $ARGS->{$local} =~ s!,!!g;
+
+        if ( $ARGS->{$local} && $ARGS->{$local} !~ /^$RE{num}{real}$/ ) {
+            push @msg, HTML::Mason::Commands::loc( 'Invalid [_1]: it should be a number', HTML::Mason::Commands::loc( $local ) );
+            next;
+        }
         if ( $ARGS->{$field} && $ARGS->{$field} =~ /hours/i ) {
             $ARGS->{$local} *= 60;
         }
+
+        # keep decimal part as the column in db is int
+        $ARGS->{$local} = sprintf( '%.0f', $ARGS->{$local} );
+
         delete $ARGS->{$field};
     }
 
+    return 1 unless @msg;
+    return wantarray ? ( 0, @msg ) : 0;
 }
 
 sub MaybeEnableSQLStatementLog {
@@ -1303,7 +1386,9 @@ sub LogRecordedSQLStatements {
         }
         $RT::Logger->log(
             level   => $log_sql_statements,
-            message => "SQL("
+            message => ($HTML::Mason::Commands::session{'CurrentUser'}->Name // '')
+                . " - "
+                . "SQL("
                 . sprintf( "%.6f", $duration )
                 . "s): $sql;"
                 . ( @bind ? "  [ bound values: @{[map{ defined $_ ? qq|'$_'| : 'undef'} @bind]} ]" : "" )
@@ -1428,6 +1513,9 @@ our %WHITELISTED_COMPONENT_ARGS = (
     '/Articles/Article/ExtractIntoClass.html' => ['Ticket'],
     # Only affects display
     '/Ticket/Display.html' => ['HideUnsetFields'],
+
+    '/Admin/Tools/RightsInspector.html' => ['Principal', 'Object', 'Right'],
+    '/Helpers/RightsInspector/Search' => ['principal', 'object', 'right', 'continueAfter'],
 );
 
 # Components which are blacklisted from automatic, argument-based whitelisting.
@@ -1870,6 +1958,46 @@ sub RequestENV {
     return $name ? $env->{$name} : $env;
 }
 
+sub ClientIsIE {
+    # IE 11.0 dropped "MSIE", so we can't use that alone
+    return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
+}
+
+=head2 ClearMasonCache
+
+Delete current mason cache.
+
+=cut
+
+sub ClearMasonCache {
+    require File::Path;
+    require File::Spec;
+    my $mason_obj_dir = File::Spec->catdir( $RT::MasonDataDir, 'obj' );
+
+    my $error;
+
+    # There is a race condition that other processes add new cache items while
+    # remove_tree is running, which could prevent it from deleting the whole "obj"
+    # directory with errors like "Directory not empty". Let's try for a few times
+    # here to get around it.
+
+    for ( 1 .. 10 ) {
+        last unless -e $mason_obj_dir;
+        File::Path::remove_tree( $mason_obj_dir, { safe => 1, error => \$error } );
+    }
+
+    if ( $error && @$error ) {
+
+        # Only one dir is specified, so there will be only one error if any
+        my ( $file, $message ) = %{ $error->[0] };
+        RT->Logger->error("Failed to clear mason cache: $file => $message");
+        return ( 0, HTML::Mason::Commands::loc( "Failed to clear mason cache: [_1] => [_2]", $file, $message ) );
+    }
+    else {
+        return ( 1, HTML::Mason::Commands::loc('Cache cleared') );
+    }
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -1878,6 +2006,10 @@ use Scalar::Util qw(blessed);
 
 sub Menu {
     return $HTML::Mason::Commands::m->notes('menu');
+}
+
+sub SearchResultsPageMenu {
+    return $HTML::Mason::Commands::m->notes('search-results-page-menu');
 }
 
 sub PageMenu {
@@ -1903,7 +2035,9 @@ sub RenderMenu {
     $res .= '<ul';
     $res .= ' id="'. $interp->apply_escapes($id, 'h') .'"'
         if $id;
-    $res .= ' class="toplevel"' if $toplevel;
+    my $class = $args{class} // '';
+    $class .= ' toplevel' if $toplevel;
+    $res .= " class='$class'";
     $res .= ">\n";
 
     for my $child ($menu->children) {
@@ -1929,6 +2063,7 @@ sub RenderMenu {
             if ( $tmp = $child->class ) {
                 $res .= ' '. $interp->apply_escapes($tmp, 'h');
             }
+            $res .= ' btn' if ( defined $id && ( $id eq 'page-menu' || $id eq 'search-results-page-menu' ) );
             $res .= '"';
 
             my $path = $child->path;
@@ -3467,6 +3602,44 @@ sub _NormalizeObjectCustomFieldValue {
     return @values;
 }
 
+=head2 _FilterUserCFValuesOnCreate
+
+On create, user objects can have CFs set from LDAP or other sources.
+Clear submitted user custom field form values on create if the custom field
+already has a value set on create.
+
+=cut
+
+sub _FilterUserCFValuesOnCreate {
+    my %args    = @_;
+    my $ARGSRef = $args{'ARGSRef'};
+    my $UserObj = $args{'UserObj'};
+
+    my %custom_fields_to_mod = _ParseObjectCustomFieldArgs($ARGSRef);
+
+    foreach my $cf ( keys %{ $custom_fields_to_mod{'RT::User'}{0} } ) {
+        my $CustomFieldObj = RT::CustomField->new( $session{'CurrentUser'} );
+        $CustomFieldObj->SetContextObject($UserObj);
+        $CustomFieldObj->LoadById($cf);
+        unless ( $CustomFieldObj->id ) {
+            $RT::Logger->warning("Couldn't load custom field #$cf");
+            next;
+        }
+
+        if ( $UserObj->FirstCustomFieldValue($CustomFieldObj->Id) ) {
+
+            my ($ret, $grouping) = _ValidateConsistentCustomFieldValues($cf,
+                    $custom_fields_to_mod{'RT::User'}{0}{$cf});
+            my $user_cf_name = GetCustomFieldInputName( CustomField => $CustomFieldObj, Grouping => $grouping );
+
+            delete $ARGSRef->{$user_cf_name} if exists $ARGSRef->{$user_cf_name};
+            delete $ARGSRef->{$user_cf_name . "-Magic"} if exists $ARGSRef->{$user_cf_name . "-Magic"};
+        }
+    }
+
+    return;
+}
+
 =head2 ProcessTicketWatchers ( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
 Returns an array of results messages.
@@ -3504,6 +3677,28 @@ sub ProcessTicketWatchers {
                 Type  => $1
             );
             push @results, $msg;
+        }
+
+        # Clear all watchers in the simple style demanded by the bulk manipulator
+        elsif ( $key =~ /^Clear(Requestor|Cc|AdminCc|RT::CustomRole-\d+)$/ ) {
+            my ( $role_group, $msg ) = $Ticket->RoleGroup($1);
+            if ( $role_group ) {
+                my $members = $role_group->MembersObj;
+                while (my $group_member = $members->Next) {
+                    # In case the member is deleted automatically by scrips,
+                    # call HasMember to make sure the member still exists.
+                    if ( $role_group->HasMember( $group_member->MemberId ) ) {
+                        my ( $code, $msg ) = $Ticket->DeleteWatcher(
+                            PrincipalId => $group_member->MemberId,
+                            Type        => $1
+                        );
+                        push @results, $msg;
+                    }
+                }
+            } else {
+                RT::Logger->error("Could not load RoleGroup for $1");
+                push @results, $msg;
+            }
         }
 
         # Add new watchers by email address
@@ -3774,12 +3969,6 @@ sub ProcessTransactionSquelching {
         (    ref $args->{'TxnSendMailTo'} eq "ARRAY"  ? @{$args->{'TxnSendMailTo'}} :
          defined $args->{'TxnSendMailTo'}             ?  ($args->{'TxnSendMailTo'}) :
                                                                              () );
-    for my $type ( qw/Cc Bcc/ ) {
-        next unless $args->{"Update$type"};
-        for my $addr ( Email::Address->parse( $args->{"Update$type"} ) ) {
-            $checked{$addr->address} ||= 1;
-        }
-    }
     my %squelched = map { $_ => 1 } grep { not $checked{$_} } split /,/, ($args->{'TxnRecipients'}||'');
     return %squelched;
 }
@@ -3909,7 +4098,7 @@ sub GetColumnMapEntry {
 
     # complex things
     elsif ( my ( $mainkey, $subkey ) = $args{'Name'} =~ /^(.*?)\.(.+)$/ ) {
-        $subkey =~ s/^\{(.*)\}$/$1/;
+        $subkey =~ s/^\{(.*)\}/$1/ unless $mainkey eq 'CustomRole';
         return undef unless $args{'Map'}->{$mainkey};
         return $args{'Map'}{$mainkey}{ $args{'Attribute'} }
             unless ref $args{'Map'}{$mainkey}{ $args{'Attribute'} } eq 'CODE';
@@ -3925,7 +4114,12 @@ sub ProcessColumnMapValue {
 
     if ( ref $value ) {
         if ( UNIVERSAL::isa( $value, 'CODE' ) ) {
-            my @tmp = $value->( @{ $args{'Arguments'} } );
+            my @tmp;
+            eval { @tmp = $value->( @{ $args{'Arguments'} } ); };
+            if ( $@ ) {
+                # Looks like the object $value doesn't have the requested method
+                return ProcessColumnMapValue( loc("Invalid column") );
+            }
             return ProcessColumnMapValue( ( @tmp > 1 ? \@tmp : $tmp[0] ), %args );
         } elsif ( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
             return join '', map ProcessColumnMapValue( $_, %args ), @$value;
@@ -4188,14 +4382,17 @@ sub ProcessAssetRoleMembers {
                 $is = $1;
             }
 
-            my ($ok, $msg) = $object->$method(
-                Type        => $role,
-                ($ARGS{$arg} =~ /\D/
-                    ? ($is => $ARGS{$arg})
-                    : (PrincipalId => $ARGS{$arg})
-                ),
-            );
-            push @results, $msg;
+            my @members = ( ref( $ARGS{$arg} ) eq 'ARRAY' ) ? ( @{ $ARGS{$arg} } ) : ( $ARGS{$arg} );
+            foreach my $member (@members) {
+                my ( $ok, $msg ) = $object->$method(
+                    Type => $role,
+                    (   $member =~ /\D/
+                        ? ( $is => $member )
+                        : ( PrincipalId => $member )
+                    ),
+                );
+                push @results, $msg;
+            }
         }
         elsif ($arg =~ /^RemoveAllRoleMembers-(.+)$/) {
             my $role = $1;
@@ -4341,20 +4538,22 @@ sub ProcessAssetsSearchArguments {
         push @PassArguments, 'SearchAssets';
     }
 
-    my $Format = RT->Config->Get('AssetSearchFormat');
-    $Format = $Format->{$args{'Catalog'}->id}
-        || $Format->{$args{'Catalog'}->Name}
-        || $Format->{''} if ref $Format;
-    $Format ||= q[
-        '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
-        '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
-        Description,
-        Status,
-    ];
+    if ( !$ARGSRef->{Format} ) {
+        my $Format = RT->Config->Get('AssetSimpleSearchFormat');
+        $Format = $Format->{$args{'Catalog'}->id}
+            || $Format->{$args{'Catalog'}->Name}
+            || $Format->{''} if ref $Format;
+        $ARGSRef->{Format} = $Format || q[
+            '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__id__</a></b>/TITLE:#',
+            '<b><a href="__WebPath__/Asset/Display.html?id=__id__">__Name__</a></b>/TITLE:Name',
+            Description,
+            Status,
+        ];
+    }
 
     $ARGSRef->{OrderBy} ||= 'id';
 
-    push @PassArguments, qw/OrderBy Order Page/;
+    push @PassArguments, qw/OrderBy Order Page Format/;
 
     return (
         OrderBy         => 'id',
@@ -4362,7 +4561,6 @@ sub ProcessAssetsSearchArguments {
         Rows            => 50,
         (map { $_ => $ARGSRef->{$_} } grep { defined $ARGSRef->{$_} } @PassArguments),
         PassArguments   => \@PassArguments,
-        Format          => $Format,
     );
 }
 
@@ -4434,11 +4632,6 @@ sub SetObjectSessionCache {
         $HTML::Mason::Commands::m->callback( CallbackName => 'ModifyCollection',
             CallbackPage => '/Elements/Quicksearch',
             ARGSRef => \%args, Collection => $collection, ObjectType => $ObjectType );
-
-        # This is included for continuity in the 4.2 series. It will be removed in 4.6.
-        $HTML::Mason::Commands::m->callback( CallbackName => 'SQLFilter',
-            CallbackPage => '/Elements/QueueSummaryByLifecycle', Queues => $collection )
-            if $ObjectType eq "RT::Queue";
 
         $session{$cache_key}{id} = {};
 
@@ -4517,129 +4710,21 @@ Removes unsafe and undesired HTML from the passed content
 
 =cut
 
-my $SCRUBBER;
+# The scrubber loads its rules in the constructor and some RT
+# config options can change the rules. If config is changed,
+# this flag tells us to reload the state-ful scrubber.
+
+our $ReloadScrubber;
+
 sub ScrubHTML {
-    my $Content = shift;
-    $SCRUBBER = _NewScrubber() unless $SCRUBBER;
+    state $scrubber = RT::Interface::Web::Scrubber->new;
 
-    $Content = '' if !defined($Content);
-    return $SCRUBBER->scrub($Content);
-}
-
-=head2 _NewScrubber
-
-Returns a new L<HTML::Scrubber> object.
-
-If you need to be more lax about what HTML tags and attributes are allowed,
-create C</opt/rt4/local/lib/RT/Interface/Web_Local.pm> with something like the
-following:
-
-    package HTML::Mason::Commands;
-    # Let tables through
-    push @SCRUBBER_ALLOWED_TAGS, qw(TABLE THEAD TBODY TFOOT TR TD TH);
-    1;
-
-=cut
-
-our @SCRUBBER_ALLOWED_TAGS = qw(
-    A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP S DEL STRIKE H1 H2 H3 H4 H5
-    H6 DIV UL OL LI DL DT DD PRE BLOCKQUOTE BDO
-);
-
-our %SCRUBBER_ALLOWED_ATTRIBUTES = (
-    # Match http, https, ftp, mailto and relative urls
-    # XXX: we also scrub format strings with this module then allow simple config options
-    href   => qr{^(?:https?:|ftp:|mailto:|/|__Web(?:Path|HomePath|BaseURL|URL)__)}i,
-    face   => 1,
-    size   => 1,
-    color  => 1,
-    target => 1,
-    style  => qr{
-        ^(?:\s*
-            (?:(?:background-)?color: \s*
-                    (?:rgb\(\s* \d+, \s* \d+, \s* \d+ \s*\) |   # rgb(d,d,d)
-                       \#[a-f0-9]{3,6}                      |   # #fff or #ffffff
-                       [\w\-]+                                  # green, light-blue, etc.
-                       )                            |
-               text-align: \s* \w+                  |
-               font-size: \s* [\w.\-]+              |
-               font-family: \s* [\w\s"',.\-]+       |
-               font-weight: \s* [\w\-]+             |
-
-               border-style: \s* \w+                |
-               border-color: \s* [#\w]+             |
-               border-width: \s* [\s\w]+            |
-               padding: \s* [\s\w]+                 |
-               margin: \s* [\s\w]+                  |
-
-               # MS Office styles, which are probably fine.  If we don't, then any
-               # associated styles in the same attribute get stripped.
-               mso-[\w\-]+?: \s* [\w\s"',.\-]+
-            )\s* ;? \s*)
-         +$ # one or more of these allowed properties from here 'till sunset
-    }ix,
-    dir    => qr/^(rtl|ltr)$/i,
-    lang   => qr/^\w+(-\w+)?$/,
-
-    # timeworked per user attributes
-    'data-ticket-id'    => 1,
-    'data-ticket-class' => 1,
-);
-
-our %SCRUBBER_RULES = ();
-
-# If we're displaying images, let embedded ones through
-if (RT->Config->Get('ShowTransactionImages') or RT->Config->Get('ShowRemoteImages')) {
-    $SCRUBBER_RULES{'img'} = {
-        '*' => 0,
-        alt => 1,
-    };
-
-    my @src;
-    push @src, qr/^cid:/i
-        if RT->Config->Get('ShowTransactionImages');
-
-    push @src, $SCRUBBER_ALLOWED_ATTRIBUTES{'href'}
-        if RT->Config->Get('ShowRemoteImages');
-
-    $SCRUBBER_RULES{'img'}->{'src'} = join "|", @src;
-}
-
-sub _NewScrubber {
-    require HTML::Scrubber;
-    my $scrubber = HTML::Scrubber->new();
-
-    if (HTML::Gumbo->require) {
-        no warnings 'redefine';
-        my $orig = \&HTML::Scrubber::scrub;
-        *HTML::Scrubber::scrub = sub {
-            my $self = shift;
-
-            eval { $_[0] = HTML::Gumbo->new->parse( $_[0] ); chomp $_[0] };
-            warn "HTML::Gumbo pre-parse failed: $@" if $@;
-            return $orig->($self, @_);
-        };
-        push @SCRUBBER_ALLOWED_TAGS, qw/TABLE THEAD TBODY TFOOT TR TD TH/;
-        $SCRUBBER_ALLOWED_ATTRIBUTES{$_} = 1 for
-            qw/colspan rowspan align valign cellspacing cellpadding border width height/;
+    if ( $HTML::Mason::Commands::ReloadScrubber ) {
+        $scrubber = RT::Interface::Web::Scrubber->new;
+        $HTML::Mason::Commands::ReloadScrubber = 0;
     }
 
-    $scrubber->default(
-        0,
-        {
-            %SCRUBBER_ALLOWED_ATTRIBUTES,
-            '*' => 0, # require attributes be explicitly allowed
-        },
-    );
-    $scrubber->deny(qw[*]);
-    $scrubber->allow(@SCRUBBER_ALLOWED_TAGS);
-    $scrubber->rules(%SCRUBBER_RULES);
-
-    # Scrubbing comments is vital since IE conditional comments can contain
-    # arbitrary HTML and we'd pass it right on through.
-    $scrubber->comment(0);
-
-    return $scrubber;
+    return $scrubber->scrub(@_);
 }
 
 =head2 JSON
@@ -4665,6 +4750,553 @@ sub GetCustomFieldInputName {
 
 sub GetCustomFieldInputNamePrefix {
     RT::Interface::Web::GetCustomFieldInputNamePrefix(@_);
+}
+
+=head2  LoadTransaction id
+
+Takes a transaction id as its only variable. if it's handed an array, it takes
+the first value.
+
+Returns an RT::Transaction object as the current user.
+
+=cut
+
+sub LoadTransaction {
+    my $id = shift;
+
+    if ( ref($id) eq "ARRAY" ) {
+        $id = $id->[0];
+    }
+
+    unless ($id) {
+        Abort( loc('No transaction specified'), Code => HTTP::Status::HTTP_BAD_REQUEST );
+    }
+
+    my $Transaction = RT::Transaction->new( $session{'CurrentUser'} );
+    $Transaction->Load($id);
+    unless ( $Transaction->id ) {
+        Abort( loc( 'Could not load transaction #[_1]', $id ), Code => HTTP::Status::HTTP_NOT_FOUND );
+    }
+    return $Transaction;
+}
+
+=head2 GetDefaultQueue
+
+Processes global and user-level configuration options to find the default
+queue for the current user.
+
+Accepts no arguments, returns the ID of the default queue, if found, or undef.
+
+=cut
+
+sub GetDefaultQueue {
+    my $queue;
+
+    # RememberDefaultQueue tracks the last queue used by this user, if set.
+    if ( $session{'DefaultQueue'} && RT->Config->Get( "RememberDefaultQueue", $session{'CurrentUser'} ) ) {
+        $queue = $session{'DefaultQueue'};
+    }
+    else {
+        $queue = RT->Config->Get( "DefaultQueue", $session{'CurrentUser'} );
+    }
+
+    return $queue;
+}
+
+=head2 UpdateDashboard
+
+Update global and user-level dashboard preferences.
+
+For arguments, takes submitted args from the page and a hashref of available
+items.
+
+Gets additional information for submitted items from the hashref of
+available items, since the args can't contain all information about the
+item.
+
+=cut
+
+sub UpdateDashboard {
+    my $args            = shift;
+    my $available_items = shift;
+
+    my $id = $args->{dashboard_id};
+
+    my $data = {
+        "dashboard_id" => $id,
+        "panes"        => {
+            "body"    => [],
+            "sidebar" => []
+        }
+    };
+
+    foreach my $arg (qw{ body sidebar }) {
+        my $pane   = $arg;
+        my $values = $args->{$pane};
+
+        next unless $values;
+
+        # force value to an arrayref so we can handle both single and multiple members of each pane.
+        $values = [$values] unless ref $values;
+
+        foreach my $value ( @{$values} ) {
+            $value =~ m/^(\w+)-(.+)$/i;
+            my $type = $1;
+            my $name = $2;
+            push @{ $data->{panes}->{$pane} }, { type => $type, name => $name };
+        }
+    }
+
+    my ( $ok, $msg );
+    my $class = $args->{self_service_dashboard} ? 'RT::Dashboard::SelfService' : 'RT::Dashboard';
+    my $Dashboard = $class->new( $session{'CurrentUser'} );
+    ( $ok, $msg ) = $Dashboard->LoadById($id);
+
+    # report error at the bottom
+    return ( $ok, $msg ) unless $ok && $Dashboard->Id;
+
+    my $content;
+    for my $pane_name ( keys %{ $data->{panes} } ) {
+        my @pane;
+
+        for my $item ( @{ $data->{panes}{$pane_name} } ) {
+            my %saved;
+            $saved{pane}         = $pane_name;
+            $saved{portlet_type} = $item->{type};
+
+            $saved{description} = $available_items->{ $item->{type} }{ $item->{name} }{label};
+
+            if ( $item->{type} eq 'component' ) {
+                $saved{component} = $item->{name};
+
+                # Absolute paths stay absolute, relative paths go into
+                # /Elements. This way, extensions that add portlets work.
+                my $path = $item->{name};
+                $path = "/Elements/$path" if substr( $path, 0, 1 ) ne '/';
+
+                $saved{path} = $path;
+            } elsif ( $item->{type} eq 'saved' ) {
+                $saved{portlet_type} = 'search';
+
+                $item->{searchType} = $available_items->{ $item->{type} }{ $item->{name} }{search_type}
+                                      if exists $available_items->{ $item->{type} }{ $item->{name} }{search_type};
+
+                my $type = $item->{searchType};
+                $type = 'Saved Search' if !$type || $type eq 'Ticket';
+                $saved{description} = loc($type) . ': ' . $saved{description};
+
+                $item->{searchId} = $available_items->{ $item->{type} }{ $item->{name} }{search_id}
+                                    if exists $available_items->{ $item->{type} }{ $item->{name} }{search_id};
+
+                my ( $obj_type, $obj_id, undef, $search_id ) = split '-', $item->{name};
+                $saved{privacy} = "$obj_type-$obj_id";
+                $saved{id}      = $search_id;
+            } elsif ( $item->{type} eq 'dashboard' ) {
+                my ( undef, $dashboard_id, $obj_type, $obj_id ) = split '-', $item->{name};
+                $saved{privacy}     = "$obj_type-$obj_id";
+                $saved{id}          = $dashboard_id;
+                $saved{description} = loc('Dashboard') . ': ' . $saved{description};
+            }
+
+            push @pane, \%saved;
+        }
+
+        $content->{$pane_name} = \@pane;
+    }
+
+    return ( $ok, $msg ) = $Dashboard->Update( Panes => $content );
+}
+
+=head2 ListOfReports
+
+Returns the list of reports registered with RT.
+
+=cut
+
+sub ListOfReports {
+
+    # TODO: Make this a dynamic list generated by loading files in the Reports
+    # directory
+
+    my $list_of_reports = [
+        {
+            id          => 'resolvedbyowner',
+            title       => 'Resolved by owner', # loc
+            path        => '/Reports/ResolvedByOwner.html',
+        },
+        {
+            id          => 'resolvedindaterange',
+            title       => 'Resolved in date range', # loc
+            path        => '/Reports/ResolvedByDates.html',
+        },
+        {
+            id          => 'createdindaterange',
+            title       => 'Created in a date range', # loc
+            path        => '/Reports/CreatedByDates.html',
+        },
+        {
+            id          => 'user_time',
+            title       => 'User time worked',
+            path        => '/Reports/TimeWorkedReport.html',
+        },
+    ];
+
+    return $list_of_reports;
+}
+
+=head2 ProcessCustomDateRanges ARGSRef => ARGSREF, UserPreference => 0|1
+
+For system database configuration, it adds corresponding arguments to the
+passed ARGSRef, and the following code on EditConfig.html page will do the
+real update job.
+
+For user preference, it updates attributes accordingly.
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessCustomDateRanges {
+    my %args = (
+        ARGSRef        => undef,
+        UserPreference => 0,
+        @_
+    );
+    my $args_ref = $args{ARGSRef};
+
+    my ( $config, $content );
+    if ( $args{UserPreference} ) {
+        $config = { 'RT::Ticket' => { RT::Ticket->CustomDateRanges( ExcludeUser => $session{CurrentUser}->Id ) } };
+        $content = $session{CurrentUser}->Preferences('CustomDateRanges');
+
+        # SetPreferences also checks rights, we short-circuit to avoid
+        # returning misleading messages.
+
+        return ( 0, loc("No permission to set preferences") )
+            unless $session{CurrentUser}->CurrentUserCanModify('Preferences');
+    }
+    else {
+        $config = RT->Config->Get('CustomDateRanges');
+        my $db_config = RT::Configuration->new( $session{CurrentUser} );
+        $db_config->LoadByCols( Name => 'CustomDateRangesUI', Disabled => 0 );
+        $content = $db_config->_DeserializeContent( $db_config->Content ) if $db_config->id;
+    }
+
+    my @results;
+    my %label = (
+        from          => 'From',                   # loc
+        to            => 'To',                     # loc
+        from_fallback => 'From Value if Unset',    # loc
+        to_fallback   => 'To Value if Unset',      # loc
+    );
+
+    my $need_save;
+    if ($content) {
+        my @current_names = sort keys %{ $content->{'RT::Ticket'} };
+        for my $id ( 0 .. $#current_names ) {
+            my $current_name = $current_names[$id];
+            my $spec         = $content->{'RT::Ticket'}{$current_name};
+            my $name         = $args_ref->{"$id-name"};
+
+            if ( $args_ref->{"$id-Delete"} ) {
+                delete $content->{'RT::Ticket'}{$current_name};
+                push @results, loc( 'Deleted [_1]', $current_name );
+                $need_save ||= 1;
+                next;
+            }
+
+            if ( $config && $config->{'RT::Ticket'}{$name} ) {
+                push @results, loc( "[_1] already exists", $name );
+                next;
+            }
+
+            my $updated;
+            for my $field (qw/from from_fallback to to_fallback/) {
+                next if ( $spec->{$field} // '' ) eq $args_ref->{"$id-$field"};
+                if ((   $args_ref->{"$id-$field"}
+                        && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args_ref->{"$id-$field"} )
+                    )
+                    || ( !$args_ref->{"$id-$field"} && $field =~ /fallback/ )
+                   )
+                {
+                    $spec->{$field} = $args_ref->{"$id-$field"};
+                    $updated ||= 1;
+                }
+                else {
+                    push @results, loc( 'Invalid [_1] for [_2]', loc( $label{$field} ), $name );
+                    next;
+                }
+            }
+
+            if ( $spec->{business_time} != $args_ref->{"$id-business_time"} ) {
+                $spec->{business_time} = $args_ref->{"$id-business_time"};
+                $updated ||= 1;
+            }
+
+            $content->{'RT::Ticket'}{$name} = $spec;
+            if ( $name ne $current_name ) {
+                delete $content->{'RT::Ticket'}{$current_name};
+                $updated ||= 1;
+            }
+
+            if ($updated) {
+                push @results, loc( 'Updated [_1]', $name );
+                $need_save ||= 1;
+            }
+        }
+    }
+
+    if ( $args_ref->{name} ) {
+        for my $field (qw/from from_fallback to to_fallback business_time/) {
+            $args_ref->{$field} = [ $args_ref->{$field} ] unless ref $args_ref->{$field};
+        }
+
+        my $i = 0;
+        for my $name ( @{ $args_ref->{name} } ) {
+            if ($name) {
+                if ( $config && $config->{'RT::Ticket'}{$name} || $content && $content->{'RT::Ticket'}{$name} ) {
+                    push @results, loc( "[_1] already exists", $name );
+                    $i++;
+                    next;
+                }
+            }
+            else {
+                $i++;
+                next;
+            }
+
+            my $spec = { business_time => $args_ref->{business_time}[$i] };
+            for my $field (qw/from from_fallback to to_fallback/) {
+                if ((   $args_ref->{$field}[$i]
+                        && RT::Ticket->_ParseCustomDateRangeSpec( $name, join ' - ', 'now', $args_ref->{$field}[$i] )
+                    )
+                    || ( !$args_ref->{$field}[$i] && $field =~ /fallback/ )
+                   )
+                {
+                    $spec->{$field} = $args_ref->{$field}[$i];
+                }
+                else {
+                    push @results, loc( 'Invalid [_1] for [_2]', loc($field), $name );
+                    $i++;
+                    next;
+                }
+            }
+
+            $content->{'RT::Ticket'}{$name} = $spec;
+            push @results, loc( 'Created [_1]', $name );
+            $need_save ||= 1;
+            $i++;
+        }
+    }
+
+    if ($need_save) {
+        if ( $args{UserPreference} ) {
+            my ( $ret, $msg );
+            if ( keys %{$content->{'RT::Ticket'}} ) {
+                ( $ret, $msg ) = $session{CurrentUser}->SetPreferences( 'CustomDateRanges', $content );
+            }
+            else {
+                ( $ret, $msg ) = $session{CurrentUser}->DeletePreferences( 'CustomDateRanges' );
+            }
+
+            unless ($ret) {
+                RT->Logger->error($msg);
+                push @results, $msg;
+            }
+        }
+        else {
+            $args_ref->{'CustomDateRangesUI-Current'} = ''; # EditConfig.html needs this to update CustomDateRangesUI
+            $args_ref->{CustomDateRangesUI} = $content;
+        }
+    }
+    return @results;
+}
+
+=head2 ProcessAuthToken ARGSRef => ARGSREF
+
+Returns an array of results messages.
+
+=cut
+
+sub ProcessAuthToken {
+    my %args = (
+        ARGSRef => undef,
+        @_
+    );
+    my $args_ref = $args{ARGSRef};
+
+    my @results;
+    my $token = RT::AuthToken->new( $session{CurrentUser} );
+
+    if ( $args_ref->{Create} ) {
+
+        # Don't require password for systems with some form of federated auth
+        # or if configured to not require a password
+        my %res = $session{'CurrentUser'}->CurrentUserRequireToSetPassword();
+        my $require_password = 1;
+        if ( RT->Config->Get('DisablePasswordForAuthToken') or not $res{'CanSet'}) {
+            $require_password = 0;
+        }
+
+        if ( !length( $args_ref->{Description} ) ) {
+            push @results, loc("Description cannot be blank.");
+        }
+        elsif ( $require_password && !length( $args_ref->{Password} ) ) {
+            push @results, loc("Please enter your current password.");
+        }
+        elsif ( $require_password && !$session{CurrentUser}->IsPassword( $args_ref->{Password} ) ) {
+            push @results, loc("Please enter your current password correctly.");
+        }
+        else {
+            my ( $ok, $msg, $auth_string ) = $token->Create(
+                Owner       => $args_ref->{Owner},
+                Description => $args_ref->{Description},
+            );
+            if ($ok) {
+                push @results, $msg;
+                push @results,
+                    loc(
+                        '"[_1]" is your new authentication token. Treat it carefully like a password. Please save it now because you cannot access it again.',
+                        $auth_string
+                    );
+            }
+            else {
+                push @results, loc('Unable to create a new authentication token. Contact your RT administrator.');
+                RT->Logger->error('Unable to create authentication token: ' . $msg);
+            }
+        }
+    }
+    elsif ( $args_ref->{Update} || $args_ref->{Revoke} ) {
+
+        $token->Load( $args_ref->{Token} );
+        if ( $token->Id ) {
+            if ( $args_ref->{Update} ) {
+                if ( length( $args_ref->{Description} ) ) {
+                    if ( $args_ref->{Description} ne $token->Description ) {
+                        my ( $ok, $msg ) = $token->SetDescription( $args_ref->{Description} );
+                        push @results, $msg;
+                    }
+                }
+                else {
+                    push @results, loc("Description cannot be blank.");
+                }
+            }
+            elsif ( $args_ref->{Revoke} ) {
+                my ( $ok, $msg ) = $token->Delete;
+                push @results, $msg;
+            }
+        }
+        else {
+            push @results, loc("Could not find token: [_1]", $args_ref->{Token});
+        }
+    }
+    return @results;
+}
+
+=head3 CachedCustomFieldValues FIELD
+
+Similar to FIELD->Values, but caches the return value of FIELD->Values
+in $m->notes in anticipation of it being used again.
+
+=cut
+
+sub CachedCustomFieldValues {
+    my $cf = shift;
+
+    my $key = 'CF-' . $cf->Id . '-Values';
+
+    if ($m->notes($key)) {
+        # Reset the iterator so we always start from the beginning
+        $m->notes($key)->GotoFirstItem;
+        return $m->notes($key);
+    }
+
+    # Wasn't in the cache; grab it and cache it.
+    $m->notes($key, $cf->Values);
+    return $m->notes($key);
+}
+
+sub PreprocessTimeUpdates {
+    RT::Interface::Web::PreprocessTimeUpdates(@_);
+}
+
+
+=head2 GetDashboards Objects => ARRAY, CurrentUser => CURRENT_USER
+
+Return available dashboards that are saved in the name of objects for
+specified user.
+
+=cut
+
+sub GetDashboards {
+    my %args = (
+        Objects     => undef,
+        CurrentUser => $session{CurrentUser},
+        @_,
+    );
+
+    return unless $args{CurrentUser};
+
+    $args{Objects} ||= [ RT::Dashboard->new( $args{CurrentUser} )->ObjectsForLoading( IncludeSuperuserGroups => 1 ) ];
+
+    my ($system_default) = RT::System->new( $args{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
+    my $default_dashboard_id = $system_default ? $system_default->Content : 0;
+
+    my $found_system_default;
+
+    require RT::Dashboards;
+    my %dashboards;
+    my %system_default;
+    foreach my $object ( @{ $args{Objects} } ) {
+        my $list = RT::Dashboards->new( $args{CurrentUser} );
+        $list->LimitToPrivacy( join( '-', ref($object), $object->Id ) );
+        my $section;
+        if ( ref $object eq 'RT::User' && $object->Id == $session{CurrentUser}->Id ) {
+            $section = loc("My dashboards");
+        }
+        else {
+            $section = loc( "[_1]'s dashboards", $object->Name );
+        }
+
+        while ( my $dashboard = $list->Next ) {
+            # Use current logged in user to determine if to return link or not
+            $dashboard->CurrentUser( $session{CurrentUser} );
+            push @{ $dashboards{$section} },
+                {   id        => $dashboard->Id,
+                    name      => $dashboard->Name,
+                    view_link => $dashboard->CurrentUserCanSee()
+                    ? join( '/', RT->Config->Get('WebPath'), 'Dashboards', $dashboard->Id, $dashboard->Name )
+                    : '',
+                    edit_link => $dashboard->CurrentUserCanModify()
+                    ? join( '/', RT->Config->Get('WebPath'), 'Dashboards', 'Queries.html?id=' . $dashboard->Id )
+                    : '',
+                };
+
+            if ( $dashboard->Id == $default_dashboard_id ) {
+                %system_default = ( section => $section, %{ $dashboards{$section}[-1] } );
+            }
+        }
+    }
+
+    if (%system_default) {
+        push @{ $dashboards{ $system_default{section} } },
+            {   id        => 0,
+                name      => loc('System Default') . " ($system_default{name})",
+                view_link => $system_default{view_link},
+                edit_link => $system_default{edit_link},
+            };
+    }
+    else {
+        push @{$dashboards{"System's dashboards"}}, {
+            id   => 0,
+            name => loc('System Default'),
+        };
+    }
+
+    for my $section ( keys %dashboards ) {
+        @{ $dashboards{$section} } = sort { lc $a->{name} cmp lc $b->{name} } @{ $dashboards{$section} };
+    }
+    return \%dashboards;
 }
 
 package RT::Interface::Web;

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,26 +45,41 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<tr><td class="label"><&|/l&>Description</&>:</td><td class="value">\
-<input name="Description" \
-    size="60" \
-    value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
-</td></tr>
+<div class="form-row">
+  <div class="label col-2">
+    <&|/l&>Description</&>:
+  </div>
+  <div class="value col-9">
+    <input type="text" class="form-control" name="Description" size="60" value="<% $ARGS{"Description"} || $Scrip->Description || '' %>" />
+  </div>
+</div>
 
-<tr><td class="label"><&|/l&>Condition</&>:</td><td class="value">\
-<& /Admin/Elements/SelectScripCondition,
-    Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id,
-&></td></tr>
+<div class="form-row">
+  <div class="label col-2">
+    <&|/l&>Condition</&>:
+  </div>
+  <div class="value col-9">
+    <& /Admin/Elements/SelectScripCondition, Default => $ARGS{"ScripCondition"} || $Scrip->ConditionObj->Id, &>
+  </div>
+</div>
 
-<tr><td class="label"><&|/l&>Action</&>:</td><td class="value">\
-<& /Admin/Elements/SelectScripAction,
-    Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id,
-&></td></tr>
+<div class="form-row">
+  <div class="label col-2">
+    <&|/l&>Action</&>:
+  </div>
+  <div class="value col-9">
+    <& /Admin/Elements/SelectScripAction, Default => $ARGS{"ScripAction"} || $Scrip->ActionObj->Id, &>
+  </div>
+</div>
 
-<tr><td class="label"><&|/l&>Template</&>:</td><td class="value">\
-<& SelectTemplate,
-    Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue,
-&></td></tr>
+<div class="form-row">
+  <div class="label col-2">
+    <&|/l&>Template</&>:
+  </div>
+  <div class="value col-9">
+    <& SelectTemplate, Default => $ARGS{"Template"}, Scrip => $Scrip, Queue => $Queue &>
+  </div>
+</div>
 
 <%ARGS>
 $Scrip

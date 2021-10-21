@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,21 +52,43 @@
 % if ($session{'CurrentUser'}->HasRight( Right => 'CreateSavedSearch',
 %                                       Object=> $RT::System )) {
 <h2><&|/l&>Save this search</&></h2>
-<&|/l&>Name:</&> <input name="NewSearchName" value="<%$Name||''%>">
-<&|/l&>Privacy:</&> <& SelectSearchPrivacy, Name => 'SearchPrivacy', Default => $Privacy &><br />
+
+<div class="form-row">
+  <div class="label col-auto">
+    <&|/l&>Name:</&>
+  </div>
+  <div class="value col-auto">
+    <input class="form-control" type="text" name="NewSearchName" value="<%$Name||''%>">
+  </div>
+  <div class="label col-auto">
+    <&|/l&>Privacy:</&>
+  </div>
+  <div class="value col-auto">
+    <& SelectSearchPrivacy, Name => 'SearchPrivacy', Default => $Privacy &>
+  </div>
+
+  <div class="col-auto">
 %     if ($CurrentSearch && $CurrentSearch ne 'new') {
-<input value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
-<input value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
-<input value="<%loc('Delete')%>" name="Delete" type="submit" />&nbsp;
+<input class="form-control btn btn-primary" value="<%loc('Update')%>" name="Update" type="submit" />&nbsp;
+<input class="form-control btn btn-primary" value="<%loc('Save new')%>" name="Save" type="submit" />&nbsp;
+<input class="form-control btn btn-primary" value="<%loc('Delete')%>" name="Delete" type="submit" />&nbsp;
 %     } else {
-<input value="<%loc('Save')%>" name="Save" type="submit" />
+<input class="form-control btn btn-primary" value="<%loc('Save')%>" name="Save" type="submit" />
 %     }
+  </div>
+</div>
 <hr />
 % } # if HasRight 'CreateSavedSearch'
 
 <h2><&|/l&>Load a saved search</&></h2>
-<& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
-<input value="<%loc('Load')%>" name="Load" type="submit">
+<div class="form-row">
+  <div class="value col-auto">
+    <& SelectSavedSearches, Name => 'LoadSavedSearch', Default => $CurrentSearch &>
+  </div>
+  <div class="col-auto">
+    <input class="form-control btn btn-primary" value="<%loc('Load')%>" name="Load" type="submit">
+  </div>
+</div>
 <& /Widgets/TitleBoxEnd &>
 
 <%INIT>

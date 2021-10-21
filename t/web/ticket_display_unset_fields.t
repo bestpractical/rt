@@ -44,19 +44,19 @@ diag "test with root";
     my $dom = $m->dom;
 
     for my $class (qw/starts started due resolved cc admincc/) {
-        is $dom->find(qq{tr.$class.unset-field})->size, 1, "found unset $class";
+        is $dom->find(qq{div.$class.unset-field})->size, 1, "found unset $class";
     }
 
-    is $dom->find(qq{tr.told:not(.unset-field)})->size, 1, "has Told as root can modify it";
+    is $dom->find(qq{div.told:not(.unset-field)})->size, 1, "has Told as root can modify it";
 
     for my $class (@link_classes) {
-        is $dom->find(qq{tr.$class:not(.unset-field)})->size, 1, "has $class as root can create";
+        is $dom->find(qq{div.$class:not(.unset-field)})->size, 1, "has $class as root can create";
     }
 
     $m->goto_ticket( $bar->id );
     $dom = $m->dom;
     for my $class (qw/starts started due resolved cc admincc/) {
-        is $dom->find(qq{tr.$class:not(.unset-field)})->size, 1, "has $class as value is set";
+        is $dom->find(qq{div.$class:not(.unset-field)})->size, 1, "has $class as value is set";
     }
 }
 
@@ -68,14 +68,14 @@ diag "test without ModifyTicket right";
     $m->login( 'foo', 'password', logout => 1 );
     $m->goto_ticket( $foo->id );
     my $dom = $m->dom;
-    is $dom->find(qq{tr.told.unset-field})->size, 1, "lacks Told as it is unset and user has no modify right";
+    is $dom->find(qq{div.told.unset-field})->size, 1, "lacks Told as it is unset and user has no modify right";
     for my $class ( @link_classes ) {
-        is $dom->find(qq{tr.$class.unset-field})->size, 1, "lacks $class as it is unset and user has no modify right";
+        is $dom->find(qq{div.$class.unset-field})->size, 1, "lacks $class as it is unset and user has no modify right";
     }
 
     $m->goto_ticket( $bar->id );
     $dom = $m->dom;
-    is $dom->find(qq{tr.DependsOn:not(.unset-field)})->size, 1, "has Depends on as it is set";
+    is $dom->find(qq{div.DependsOn:not(.unset-field)})->size, 1, "has Depends on as it is set";
 }
 
 diag "Test unset custom fields";
@@ -92,7 +92,7 @@ diag "Test unset custom fields";
     $m->goto_ticket( $foo->id );
     my $dom = $m->dom;
     my $cfid = $cf->Id;
-    is $dom->find(qq{tr.custom-field.custom-field-$cfid.unset-field})->size, 1, "found unset custom field";
+    is $dom->find(qq{div.custom-field.custom-field-$cfid.unset-field})->size, 1, "found unset custom field";
 
     # open ticket "Basics" page
     my $EditUrl = "/Ticket/Modify.html?id=" . $foo->id;
@@ -114,7 +114,7 @@ diag "Test unset custom fields";
     $m->goto_ticket( $foo->id );
     $dom = $m->dom;
     $m->content_contains('some unique content');
-    isnt $dom->find(qq{tr.customfield.unset-field})->size, 1, "no unset custom fields";
+    isnt $dom->find(qq{div.customfield.unset-field})->size, 1, "no unset custom fields";
 }
 
 done_testing;

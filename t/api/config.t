@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use RT;
-use RT::Test nodb => 1, tests => undef;
+use RT::Test tests => undef;
 use Test::Warn;
 
 ok(
@@ -40,7 +40,7 @@ warning_like {RT::Config->PostLoadCheck} qr{Unknown encoding \'foo\' in \@EmailI
   'Correct warning for encoding foo';
 
 RT::Config->Set( WebDefaultStylesheet => 'non-existent-skin-name' );
-warning_like {RT::Config->PostLoadCheck} qr{rudder},
+warning_like {RT::Config->PostLoadCheck} qr{elevator-light},
     'Correct warning for default stylesheet';
 
 my @canonical_encodings = RT::Config->Get('EmailInputEncodings');

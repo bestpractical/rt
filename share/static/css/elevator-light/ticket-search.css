@@ -1,0 +1,11 @@
+#pick-criteria .form-row .label .bootstrap-select {
+    margin-top: -5px;
+}
+
+#pick-criteria .form-row .form-check {
+    margin-top: 5px;
+}
+
+#pick-criteria .value .form-row {
+    margin-top: 0;
+}

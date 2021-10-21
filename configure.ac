@@ -54,14 +54,14 @@ AC_ARG_WITH(web-handler,
         ]),
     WEB_HANDLER=$withval,
     WEB_HANDLER=fastcgi)
-my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl1|modperl2|fastcgi|standalone)$/i, grep defined && length, split /\s*,\s*/, $ARGV@<:@0@:>@' $WEB_HANDLER)
+my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl1|modperl2|fastcgi|fcgid|standalone)$/i, grep defined && length, split /\s*,\s*/, $ARGV@<:@0@:>@' $WEB_HANDLER)
 if test "$my_web_handler_test" != "ok"; then
-	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi and standalone are valid web-handlers])
+	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, fcgid and standalone are valid web-handlers])
 fi
 AC_SUBST(WEB_HANDLER)
 
 dnl Defaults paths for installation
-AC_PREFIX_DEFAULT([/opt/rt4])
+AC_PREFIX_DEFAULT([/opt/rt5])
 RT_ENABLE_LAYOUT
 
 
@@ -111,9 +111,9 @@ AC_SUBST(LIBS_OWNER)
 dnl LIBS_GROUP
 AC_ARG_WITH(libs-group,
 	    AC_HELP_STRING([--with-libs-group=GROUP],
-	    		   [group that will own RT binaries (default bin)]),
+	    		   [group that will own RT libraries (default root)]),
             LIBS_GROUP=$withval,
-            LIBS_GROUP=bin)
+            LIBS_GROUP=root)
 AC_SUBST(LIBS_GROUP)
 
 dnl DB_TYPE
@@ -175,9 +175,9 @@ AC_SUBST(DB_DBA)
 dnl DB_DATABASE
 AC_ARG_WITH(db-database,
 	    AC_HELP_STRING([--with-db-database=DBNAME],
-	    		   [name of the database to use (default: rt4)]),
+	    		   [name of the database to use (default: rt5)]),
             DB_DATABASE=$withval,
-            DB_DATABASE=rt4)
+            DB_DATABASE=rt5)
 AC_SUBST(DB_DATABASE)
 
 dnl DB_RT_USER
@@ -223,7 +223,7 @@ AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
 my_group=$($PERL -MPOSIX=getgid -le 'print scalar getgrgid getgid')
-my_user=${USER:-$LOGNAME}
+my_user=$($PERL -MPOSIX=getuid -le 'print scalar getpwuid getuid')
 AC_ARG_WITH(my-user-group,
             AC_HELP_STRING([--with-my-user-group],
                            [set all users and groups to current user/group]),
@@ -462,12 +462,15 @@ AC_CONFIG_FILES([
                  etc/upgrade/time-worked-history
                  etc/upgrade/upgrade-articles
                  etc/upgrade/upgrade-assets
+                 etc/upgrade/upgrade-authtokens
+                 etc/upgrade/upgrade-configurations
                  etc/upgrade/vulnerable-passwords
                  etc/upgrade/upgrade-sla
                  sbin/rt-ldapimport
                  sbin/rt-attributes-viewer
                  sbin/rt-preferences-viewer
                  sbin/rt-session-viewer
+                 sbin/rt-dump-initialdata
                  sbin/rt-dump-metadata
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies
@@ -503,6 +506,7 @@ AC_CONFIG_FILES([
                  t/data/configs/apache2.2+mod_perl.conf
                  t/data/configs/apache2.2+fastcgi.conf
                  t/data/configs/apache2.4+mod_perl.conf
-                 t/data/configs/apache2.4+fastcgi.conf],
+                 t/data/configs/apache2.4+fastcgi.conf
+                 t/data/configs/apache2.4+fcgid.conf],
                )
 AC_OUTPUT

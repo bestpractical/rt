@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -77,6 +77,13 @@ kilobytes or megabytes.
 =cut
 
 sub SupportArgs { return $_[0]->SUPER::SupportArgs, qw(files_only file longer) }
+
+# used to generate checkboxes instead of text fields in the web interface
+sub ArgIsBoolean {
+    my( $self, $arg ) = @_;
+    my %boolean_atts = map { $_ => 1 } qw( files_only );
+    return $boolean_atts{$arg};
+}
 
 sub TestArgs
 {

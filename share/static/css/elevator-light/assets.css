@@ -1,0 +1,12 @@
+#assets-accordion h3 a.unlink-asset {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: inherit;
+    padding: 0;
+}
+
+.add-asset {
+  padding-top: 10px;
+  border-top: 1px solid #E0E6EC;
+}

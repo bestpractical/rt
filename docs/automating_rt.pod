@@ -15,7 +15,7 @@ different ways you can automate tasks.
 
 All of the options for L<rt-crontool> are documented with the tool itself:
 
-    $ perldoc /opt/rt4/bin/rt-crontool
+    $ perldoc /opt/rt5/bin/rt-crontool
 
 and on the Best Practical web site.
 
@@ -62,7 +62,7 @@ Starting with a simple example, this command performs a search and
 displays output, but doesn't do anything to the returned tickets.
 This can be useful for safely testing search criteria.
 
-    /opt/rt4/bin/rt-crontool --search RT::Search::FromSQL \
+    /opt/rt5/bin/rt-crontool --search RT::Search::FromSQL \
         --search-arg "Owner = 'root'" \
         --action RT::Action \
         --verbose \
@@ -84,7 +84,7 @@ You can auto-set status based on any criteria you can define in
 a TicketSQL statement. For example, this command will resolve all
 active tickets that haven't been acted on in a month or more:
 
-    /opt/rt4/bin/rt-crontool --search RT::Search::FromSQL \
+    /opt/rt5/bin/rt-crontool --search RT::Search::FromSQL \
         --search-arg "(Status != 'resolved' AND Status != 'rejected') \
                        AND LastUpdated <= '1 month ago'" \
         --action RT::Action::SetStatus \
@@ -114,7 +114,7 @@ the selected tickets, and the transition must be allowed.
 The following command records a comment on all tickets returned from the
 query -- in this case, tickets that are new and unowned after 3 days.
 
-    /opt/rt4/bin/rt-crontool --search RT::Search::FromSQL \
+    /opt/rt5/bin/rt-crontool --search RT::Search::FromSQL \
         --search-arg "Owner = 'Nobody' AND Status = 'new' \
                       AND Created < '3 days ago'" \
         --action RT::Action::RecordComment \
@@ -138,7 +138,7 @@ using the L<RT::Action::RecordCorrespondence> module.
 While the example above sends notifications as a side-effect of recording
 a comment, you can also send notifications directly.
 
-    /opt/rt4/bin/rt-crontool --search RT::Search::FromSQL \
+    /opt/rt5/bin/rt-crontool --search RT::Search::FromSQL \
         --search-arg "(Status != 'resolved' AND Status != 'rejected') \
                       AND Queue = 'Project Work'" \
         --condition RT::Condition::Overdue \
@@ -178,7 +178,7 @@ date and are still not resolved have priority escalated automatically.
 
 This command escalates tickets in a designated queue:
 
-    /opt/rt4/bin/rt-crontool --search RT::Search::ActiveTicketsInQueue \
+    /opt/rt5/bin/rt-crontool --search RT::Search::ActiveTicketsInQueue \
         --search-arg "General" \
         --action RT::Action::EscalatePriority
 
@@ -186,7 +186,7 @@ The C<--search-arg> is the name of the queue in which to escalate tickets.
 As shown in previous examples, you can also set your criteria using a
 TicketSQL query as well:
 
-    /opt/rt4/bin/rt-crontool --search RT::Search::FromSQL \
+    /opt/rt5/bin/rt-crontool --search RT::Search::FromSQL \
         --search-arg "(Status='new' OR Status='open') AND Due > 'Jan 1, 1970'" \
         --action RT::Action::EscalatePriority
 
@@ -224,7 +224,7 @@ appropriate transaction object for your conditions and actions. For
 example, if you had an action you wanted to perform based on the content
 of the last reply on stalled tickets, you could do something like:
 
-    /opt/rt4/bin/rt-crontool --search RT::Search::FromSQL \
+    /opt/rt5/bin/rt-crontool --search RT::Search::FromSQL \
         --search-arg "Status = 'stalled' AND Queue = 'General'" \
         --action RT::Action::CheckLastCorrespond \
         --transaction last \

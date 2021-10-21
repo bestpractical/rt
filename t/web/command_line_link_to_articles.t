@@ -9,7 +9,7 @@ ok( $class_id, $msg );
 
 my $article = RT::Article->new( RT->SystemUser );
 ( my $article_id, $msg ) =
-  $article->Create( Class => 'foo', Summary => 'article summary' );
+  $article->Create( Class => 'foo', Summary => 'article summary', Name => 'Test' );
 ok( $article_id, $msg );
 
 my ( $baseurl, $m ) = RT::Test->started_ok;

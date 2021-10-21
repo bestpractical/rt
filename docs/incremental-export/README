@@ -23,7 +23,7 @@ For additional information on the following steps, please review
 rt-importer --help and rt-serializer --help
 
 During your final cutover, you will bring down the production web and mail servers for the final time.
-Run /opt/rt4/sbin/rt-serializer --incremental
+Run /opt/rt5/sbin/rt-serializer --incremental
 This will create a directory named $Organization:date
 Once this has completed, you will copy this directory to the new server.
-On the new server, run /opt/rt4/sbin/rt-importer $Organization:date
+On the new server, run /opt/rt5/sbin/rt-importer $Organization:date

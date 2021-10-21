@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -478,24 +478,6 @@ sub LimitReferredToBy {
 }
 
 # }}}
-
-=head2 LimitHostlistClasses
-
-Only fetch Articles from classes where Hotlist is true.
-
-=cut
-
-sub LimitHotlistClasses {
-    my $self = shift;
-
-    my $classes = $self->Join(
-        ALIAS1 => 'main',
-        FIELD1 => 'Class',
-        TABLE2 => 'Classes',
-        FIELD2 => 'id',
-    );
-    $self->Limit( ALIAS => $classes, FIELD => 'HotList', VALUE => 1 );
-}
 
 =head2 LimitAppliedClasses Queue => QueueObj
 

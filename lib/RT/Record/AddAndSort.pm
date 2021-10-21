@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -491,6 +491,22 @@ calls ObjectId if it's not provided.
 =cut
 
 sub NextSortOrder {
+    my $self        = shift;
+    my $last_object = $self->LastSibling( @_ );
+    return 0 unless $last_object;
+    return $last_object->SortOrder + 1;
+}
+
+
+=head3 LastSibling
+
+Returns the object with maximum SortOrder in the L<neighborhood|/Neighbors>.
+Pass arguments to L</Neighbors> and can take optional ObjectId argument,
+calls ObjectId if it's not provided.
+
+=cut
+
+sub LastSibling {
     my $self = shift;
     my %args = (@_);
 
@@ -506,8 +522,7 @@ sub NextSortOrder {
         $neighbors->UnLimit;
     }
     $neighbors->OrderBy( FIELD => 'SortOrder', ORDER => 'DESC' );
-    return 0 unless my $first = $neighbors->First;
-    return $first->SortOrder + 1;
+    return $neighbors->First;
 }
 
 =head3 IsSortOrderShared

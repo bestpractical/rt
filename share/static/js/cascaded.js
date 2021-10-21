@@ -78,4 +78,8 @@ function filter_cascade_select (select, complete_select, vals) {
                 cloned_empty_label = true;
         }
     }
+
+    if ( jQuery(select).closest('div.bootstrap-select').length ) {
+        jQuery(select).selectpicker('refresh');
+    }
 }

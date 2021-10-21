@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<textarea autocomplete="off" class="messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">
-% $m->comp('/Articles/Elements/IncludeArticle', %ARGS) if $IncludeArticle;
+<textarea autocomplete="off" class="form-control messagebox <% $Type eq 'text/html' ? 'richtext' : '' %>" <% $SuppressAttachmentWarning ? 'suppress-attachment-warning' : '' %> <% $width_attr %>="<% $Width %>" rows="<% $Height %>" <% $wrap_type |n %> name="<% $Name %>" id="<% $Name %>" placeholder="<% $Placeholder %>">
+% $m->comp('/Articles/Elements/IncludeArticle', %ARGS, IncludeArticleId => $article_id, QueueObj => $QueueObj) if $IncludeArticle;
 % $m->callback( %ARGS, SignatureRef => \$signature, DefaultRef => \$Default, MessageRef => \$message );
 % if (RT->Config->Get("SignatureAboveQuote", $session{'CurrentUser'})) {
 <% $Default || '' %><% $signature %><% $message %></textarea>
@@ -85,20 +85,30 @@ if ( $IncludeSignature and $signature =~ /\S/ ) {
         $signature =~ s/"/&quot;/g;  # "//;
         $signature =~ s/'/&#39;/g;   # '//;
         $signature =~ s{\n}{<br />}g;
-        $signature = "<br /><p>--&nbsp;<br />$signature</p>";
+        $signature = "<p>&nbsp;</p><p>--&nbsp;<br />$signature</p>";
     } else {
         $signature = "\n\n-- \n". $signature . "\n";
     }
 
     if ($message =~ /\S/) {
         if (RT->Config->Get('SignatureAboveQuote', $session{CurrentUser})) {
-            $signature .= $Type eq 'text/html' ? "<br />" : "\n";
+            $signature .= $Type eq 'text/html' ? "<p>&nbsp;</p>" : "\n";
         } else {
             $signature = ($Type eq 'text/html' ? "" : "\n") . $signature;
         }
     }
 } else {
     $signature = '';
+}
+
+my $article_id;
+if ( $IncludeDefaultArticle && defined $QueueObj && $QueueObj->Id ) {
+    # Load a default article
+    $article_id = $QueueObj->DefaultValue('Article') if $QueueObj->DefaultValue('Article');
+}
+else {
+    # Load from the page, if provided
+    $article_id = $ARGS{'IncludeArticleId'} if $ARGS{'IncludeArticleId'};
 }
 
 # wrap="something" seems to really break IE + richtext
@@ -124,5 +134,7 @@ $IncludeSignature          => RT->Config->Get('MessageBoxIncludeSignature');
 $IncludeArticle            => 1;
 $Type                      => RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ? 'text/html' : 'text/plain';
 $SuppressAttachmentWarning => 0
-$Placeholder               => ''
+$Placeholder               => loc('Type your message here')
+$IncludeDefaultArticle     => 0  # Preload a default article based on queue settings
+$QueueObj                  => undef
 </%ARGS>

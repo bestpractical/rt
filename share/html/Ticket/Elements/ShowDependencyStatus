@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,8 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="dependency-status">
+<div class="dependency-status form-row">
+  <div class="col-12">
 % if ($approvals) {
     <span class="summary">
 %   if ($approvals == 1) {
@@ -59,6 +60,7 @@
   <span class="summary"><&|/l, $depends &>Pending [quant,_1,ticket,tickets].</&></span>
   <&|/l, $depends &>This ticket cannot be resolved until its [numerate,_1,dependency is,dependencies are] resolved.</&>
 % }
+  </div>
 </div>
 <%args>
 $Ticket

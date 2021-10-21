@@ -3,7 +3,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -70,7 +70,7 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 my %opts;
 use Getopt::Long;
 GetOptions( \%opts,
-    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s"
+    "help|h", "dryrun", "time=i", "epoch=i", "all", "log=s", "user=s"
 );
 
 if ($opts{'help'}) {
@@ -89,6 +89,12 @@ RT::LoadConfig();
 # adjust logging to the screen according to options
 RT->Config->Set( LogToSTDERR => $opts{log} ) if $opts{log};
 
+# Disable JS chart as email clients don't support it
+RT->Config->Set( EnableJSChart => 0 );
+
+# Disable inline editing as email clients don't support it
+RT->Config->Set( InlineEdit => 0 );
+
 # Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
 
@@ -97,6 +103,7 @@ RT::Dashboard::Mailer->MailDashboards(
     All    => $opts{all},
     DryRun => $opts{dryrun},
     Time   => ($opts{time} || $opts{epoch} || time), # epoch is the old-style
+    User   => $opts{user},
     Opts   => \%opts,
 );
 
@@ -158,6 +165,10 @@ Back-compat for --time SECONDS.
 
 Ignore subscription frequency when considering each dashboard (should only be
 used with --dryrun for testing and debugging)
+
+=item --user User NAME or ID
+
+Only check the specified user's subscriptions
 
 =item --log LEVEL
 

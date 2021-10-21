@@ -46,28 +46,28 @@ $m->get_ok($url . "/Ticket/ModifyAll.html?id=" . $ticket->id);
 $m->form_name('TicketModifyAll');
 $m->field('Starts_Date' => "2013-01-01 00:00:00");
 $m->click('SubmitTicket');
-$m->text_contains("Starts: (Tue Jan 01 00:00:00 2013)", 'start date successfully updated');
+$m->text_like(qr/Starts:\s*\Q(Tue Jan 01 00:00:00 2013)/, 'start date successfully updated');
 
 $m->form_name('TicketModifyAll');
 $m->field('Started_Date' => "2014-01-01 00:00:00");
 $m->click('SubmitTicket');
-$m->text_contains("Started: (Wed Jan 01 00:00:00 2014)", 'started date successfully updated');
+$m->text_like(qr/Started:\s*\Q(Wed Jan 01 00:00:00 2014)/, 'started date successfully updated');
 
 $m->form_name('TicketModifyAll');
 $m->field('Told_Date' => "2015-01-01 00:00:00");
 $m->click('SubmitTicket');
-$m->text_contains("Last Contact:  (Thu Jan 01 00:00:00 2015)", 'told date successfully updated');
+$m->text_like(qr/Last Contact:\s*\Q(Thu Jan 01 00:00:00 2015)/, 'told date successfully updated');
 
 for my $unset ("0", "-", " ") {
     $m->form_name('TicketModifyAll');
     $m->field('Due_Date' => "2016-01-01 00:00:00");
     $m->click('SubmitTicket');
-    $m->text_contains("Due: (Fri Jan 01 00:00:00 2016)", 'due date successfully updated');
+    $m->text_like(qr/Due:\s*\Q(Fri Jan 01 00:00:00 2016)/, 'due date successfully updated');
 
     $m->form_name('TicketModifyAll');
     $m->field('Due_Date' => $unset);
     $m->click('SubmitTicket');
-    $m->text_contains("Due: (Not set)", "due date successfully cleared with '$unset'");
+    $m->text_like(qr/Due:\s*\Q(Not set)/, "due date successfully cleared with '$unset'");
 
     if ( $unset eq '-' ) {
         my @warnings = $m->get_warnings;

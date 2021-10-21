@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -72,6 +72,11 @@ my $COLUMN_MAP = {
     QueueId => {
         title     => 'Queue', # loc
         value     => sub { $_[0]->Queue },
+    },
+    Type => {
+        title     => 'Type', # loc
+        attribute => 'Type',
+        value     => sub { $_[0]->Type },
     },
     IsEmpty => {
         title     => 'Empty', # loc

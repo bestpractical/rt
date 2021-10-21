@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,10 +45,14 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<div class="titlebox<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>">
-  <div class="titlebox-title<% $title_class ? " $title_class" : ''%>">
+<div class="titlebox body-content-class card<% $class ? " $class " : '' %><% $rolledup ? " rolled-up" : ""%>" id="<% $id %>"\
+% for my $key (keys %$data) {
+ data-<% $key %>="<% $data->{$key} %>"\
+% }
+>
+  <div class="titlebox-title card-header<% $title_class ? " $title_class" : ''%>">
 % if ($hideable) {
-    <span class="widget"><a href="#" onclick="return rollup(<%$tid|n,j%>);" title="Toggle visibility"></a></span>
+    <span class="toggle <% $rolledup ? " collapsed" : ""%>" data-toggle="collapse" data-target="#<%$tid|n%>" title="<% loc('Toggle visibility') %>"></span>
 % }
     <span class="left"><%
             $title_href ? qq[<a href="$title_href">] : '' | n
@@ -58,7 +62,8 @@
         <% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>\
     </span>
   </div>
-  <div class="titlebox-content <% $bodyclass %><% $rolledup ? " hidden" : ""%>" id="<% $tid %>">
+  <div class="titlebox-content collapse<% $bodyclass %><% $rolledup ? " hidden" : " show"%><% " $content_class" || '' %>" id="<% $tid %>">
+    <div class="card-body">
 <%ARGS>
 $class => ''
 $bodyclass => ''
@@ -72,6 +77,8 @@ $titleright_raw => ''
 $id => ''
 $hideable => 1
 $rolledup => 0
+$data => {}
+$content_class => ''
 </%ARGS>
 
 <%init>

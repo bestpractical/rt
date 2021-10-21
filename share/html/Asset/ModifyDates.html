@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,13 +52,16 @@
 
 <span class="catalog <% CSSClass($asset->CatalogObj->Name) %>">
 <form method="post" enctype="multipart/form-data" id="ModifyAssetDates" action="ModifyDates.html">
-  <input type="hidden" name="id" value="<% $asset->id %>">
+<input type="hidden" name="id" value="<% $asset->id %>">
 
   <&| /Widgets/TitleBox, title => loc("Dates"), class => "asset-dates", title_class => "inverse" &>
     <& Elements/EditDates, %ARGS, AssetObj => $asset &>
   </&>
-
-  <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Save asset'), Name => "Update" &>
+    </div>
+  </div>
 </form>
 </span>
 

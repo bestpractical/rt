@@ -246,4 +246,14 @@ diag "Alternating encoded-words and not, space is preserved";
     );
 }
 
+diag "A wide character split into 2 successive encoded words";
+{
+    my $str = q{=?UTF-8?B?5L2g5Q==?==?UTF-8?B?pb0=?=};
+    is_string(
+        RT::I18N::DecodeMIMEWordsToUTF8($str, "Subject"),
+        q{你好},
+        "A wide character split into 2 encoded words is parsed correctly"
+    );
+}
+
 done_testing;

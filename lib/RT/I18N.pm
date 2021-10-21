@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -66,6 +66,9 @@ use base 'Locale::Maketext::Fuzzy';
 use MIME::Entity;
 use MIME::Head;
 use File::Glob;
+use Encode::HanExtra;
+use Encode::Guess;
+use Encode::Detect::Detector;
 
 # I decree that this project's first language is English.
 
@@ -437,7 +440,7 @@ sub _DecodeMIMEWordsToEncoding {
     # string in array this happen when we have 'key="=?encoded?="; key="plain"'
     $list[-1] .= substr($str, pos $str);
 
-    $str = '';
+    my @parts;
     while (@list) {
         my ($prefix, $charset, $encoding, $enc_str, $trailing) =
                 splice @list, 0, 5;
@@ -456,18 +459,46 @@ sub _DecodeMIMEWordsToEncoding {
                 ."only Q(uoted-printable) and B(ase64) are supported");
         }
 
-        # now we have got a decoded subject, try to convert into the encoding
-        if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
-            if ( Encode::find_encoding($charset) ) {
-                Encode::from_to( $enc_str, $charset, $to_charset );
-            } else {
-                $RT::Logger->warning("Charset '$charset' is not supported");
-                $enc_str =~ s/[^[:print:]]/\357\277\275/g;
-                Encode::from_to( $enc_str, 'UTF-8', $to_charset )
-                    unless $to_charset eq 'utf-8';
-            }
+        push @parts, grep { defined && length } $prefix, { charset => $charset, value => $enc_str }, $trailing;
+    }
+
+    # Concatenate strings first in case a wide character is split into
+    # succssive parts like "=?UTF-8?B?5L2g5Q==?=" and "=?UTF-8?B?pb0=?="
+    my @merged;
+    for my $part (@parts) {
+        if (   $merged[-1]
+            && ref $merged[-1] eq 'HASH'
+            && ref $part eq 'HASH'
+            && $merged[-1]->{charset} eq $part->{charset} )
+        {
+            $merged[-1]{value} .= $part->{value};
         }
-        $str .= $prefix . $enc_str . $trailing;
+        else {
+            push @merged, $part;
+        }
+    }
+
+    $str = '';
+    for my $part (@merged) {
+        if ( ref $part eq 'HASH' ) {
+            my $charset = $part->{charset};
+            my $enc_str = $part->{value};
+            if ( $charset ne $to_charset || $charset =~ /^utf-?8(?:-strict)?$/i ) {
+                if ( Encode::find_encoding($charset) ) {
+                    Encode::from_to( $enc_str, $charset, $to_charset );
+                }
+                else {
+                    $RT::Logger->warning("Charset '$charset' is not supported");
+                    $enc_str =~ s/[^[:print:]]/\357\277\275/g;
+                    Encode::from_to( $enc_str, 'UTF-8', $to_charset )
+                        unless $to_charset eq 'utf-8';
+                }
+            }
+            $str .= $enc_str;
+        }
+        else {
+            $str .= $part;
+        }
     }
 
     return ($str)
@@ -506,12 +537,10 @@ sub _FindOrGuessCharset {
 
 =head2 _GuessCharset STRING
 
-use Encode::Guess to try to figure it out the string's encoding.
+Use L<Encode::Guess> and L<Encode::Detect::Detector> to try to figure it out
+the string's encoding.
 
 =cut
-
-use constant HAS_ENCODE_GUESS => Encode::Guess->require;
-use constant HAS_ENCODE_DETECT => Encode::Detect::Detector->require;
 
 sub _GuessCharset {
     my $fallback = _CanonicalizeCharset('iso-8859-1');
@@ -528,31 +557,17 @@ sub _GuessCharset {
 
     if ( $encodings[0] eq '*' ) {
         shift @encodings;
-        if ( HAS_ENCODE_DETECT ) {
-            my $charset = Encode::Detect::Detector::detect( $_[0] );
-            if ( $charset ) {
-                $RT::Logger->debug("Encode::Detect::Detector guessed encoding: $charset");
-                return _CanonicalizeCharset( Encode::resolve_alias( $charset ) );
-            }
-            else {
-                $RT::Logger->debug("Encode::Detect::Detector failed to guess encoding");
-            }
-        }
-        else {
-            $RT::Logger->error(
-                "You requested to guess encoding, but we couldn't"
-                ." load Encode::Detect::Detector module"
-            );
+        my $charset = Encode::Detect::Detector::detect( $_[0] );
+        if ( $charset ) {
+            $RT::Logger->debug("Encode::Detect::Detector guessed encoding: $charset");
+            return _CanonicalizeCharset( Encode::resolve_alias( $charset ) );
+        } else {
+            $RT::Logger->debug("Encode::Detect::Detector failed to guess encoding");
         }
     }
 
     unless ( @encodings ) {
         $RT::Logger->warning("No EmailInputEncodings set except '*', fallback to $fallback");
-        return $fallback;
-    }
-
-    unless ( HAS_ENCODE_GUESS ) {
-        $RT::Logger->error("We couldn't load Encode::Guess module, fallback to $fallback");
         return $fallback;
     }
 
@@ -607,12 +622,6 @@ sub _CanonicalizeCharset {
     elsif ( $charset eq 'euc-cn' ) {
         # gbk is superset of gb2312/euc-cn so it's safe
         return 'gbk';
-    }
-    elsif ( $charset =~ /^(?:(?:big5(-1984|-2003|ext|plus))|cccii|unisys|euc-tw|gb18030|(?:cns11643-\d+))$/ ) {
-        unless ( Encode::HanExtra->require ) {
-            RT->Logger->error("Please install Encode::HanExtra to handle $charset");
-        }
-        return $charset;
     }
     else {
         return $charset;

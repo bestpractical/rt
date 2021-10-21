@@ -1,0 +1,2 @@
+-- Add transaction support for new config in database feature
+ALTER TABLE Transactions MODIFY Field VARCHAR2(255);

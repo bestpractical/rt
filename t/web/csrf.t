@@ -143,14 +143,12 @@ $m->content_contains("your browser did not supply a Referrer header");
 $m->title_is('Possible cross-site request forgery');
 
 # Sending a wrong CSRF is just a normal request.  We'll make a request
-# with just an invalid token, which means no Queue=, which means
-# Create.html errors out.
+# with just an invalid token, which means no Queue=x so default queue used
 my $link = $m->find_link(text_regex => qr{resume your request});
 (my $broken_url = $link->url) =~ s/(CSRF_Token)=\w+/$1=crud/;
 $m->get($broken_url);
-$m->content_like(qr/Queue\s+could not be loaded/);
-$m->title_is('RT Error');
-$m->warning_like(qr/Queue\s+could not be loaded/);
+$m->content_like(qr/Create\sa\snew\sticket\sin\sGeneral/);
+$m->title_is('Create a new ticket in General');
 
 # The token doesn't work for other pages, or other arguments to the same page.
 $m->add_header(Referer => undef);
@@ -173,8 +171,7 @@ $m->title_is('Configuration for queue test');
 $m->get_ok("/Ticket/Create.html?Queue=$other_queue_id&CSRF_Token=$token");
 $m->content_lacks("Possible cross-site request forgery");
 $m->title_is('Create a new ticket in General');
-$m->text_unlike(qr/Queue:\s*Other queue/);
-$m->text_like(qr/Queue:\s*General/);
+is($m->form_name('TicketCreate')->value('Queue'), 1, 'Queue selection dropdown populated and pre-selected');
 
 # Ensure that file uploads work across the interstitial
 $m->delete_header('Referer');
@@ -192,12 +189,12 @@ $m->field('Attach',  $logofile);
 
 # Lose the referer before the POST
 $m->add_header(Referer => undef);
-$m->submit;
+$m->click('SubmitTicket');
 $m->content_contains("Possible cross-site request forgery");
 $m->content_contains("If you really intended to visit <tt>$baseurl/Ticket/Create.html</tt>");
 $m->follow_link(text_regex => qr{resume your request});
-$m->content_contains('Download bpslogo.png', 'page has file name');
-$m->follow_link_ok({text => "Download bpslogo.png"});
+ok( $m->find_link( text => 'bpslogo.png', url_regex => qr{Attachment/} ), 'page has the file link' );
+$m->follow_link_ok( { url_regex => qr/Attachment\/\d+\/\d+\/bpslogo\.png/ } );
 is($m->content, $logo_contents, "Binary content matches");
 
 
@@ -223,6 +220,5 @@ $m->content_lacks("Possible cross-site request forgery");
 is($m->response->redirects, 0, "no redirection");
 like($m->response->request->uri, qr{^http://[^/]+\Q/SelfService/Create.html\E\?CSRF_Token=\w+$});
 $m->title_is('Create a ticket in #1');
-$m->content_contains('Describe the issue below:');
 
 done_testing;

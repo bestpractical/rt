@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -68,7 +68,26 @@ while ( my $CF = $CustomFields->Next ) {
     next if $submitted->{"Values-Magic"} and exists $submitted->{"Values"}
         and ref $submitted->{"Values"};
 
+    my ( $invalid, $invalid_message );
+    $m->callback(
+        CallbackName    => 'ValidateValue',
+        Object          => $Object,
+        CustomField     => $CF,
+        Value           => \( $submitted->{Values} // $submitted->{Value} // $submitted->{Upload} ),
+        ARGSRef         => $ARGSRef,
+        CustomFieldArgs => $CFArgs,
+        Invalid         => \$invalid,
+        InvalidMessage  => \$invalid_message,
+    );
+
     $m->notes(('Field-' . $CF->Id) => $submitted->{Values} // $submitted->{Value});
+
+    if ( $invalid ) {
+        $m->notes( 'InvalidField-' . $CF->Id => $invalid_message );
+        push @res, $CF->Name . ': ' . $invalid_message;
+        $valid = 0;
+        next;
+    }
 
     my @values = _NormalizeObjectCustomFieldValue(
         CustomField => $CF,

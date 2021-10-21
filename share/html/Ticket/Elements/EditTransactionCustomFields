@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -46,18 +46,20 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( CallbackName => 'BeforeTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, InTable => $InTable );
-% if ( $WRAP ) {
-<<% $WRAP %> class="edit-transaction-custom-fields">
+% if ( !$InTable ) {
+<div class="edit-transaction-custom-fields">
 % }
 % if ($CustomFields->Count) {
 % while (my $CF = $CustomFields->Next()) {
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
-<<% $FIELD %>>
-<<% $CELL %> class="label cflabel">
-  <span class="name"><% $CF->Name %>:</span><br />
-  <span class="type"><% $CF->EntryHint // '' %></span>
-</<% $CELL %>>
-<<% $CELL %>>
+<div class="form-row">
+<div class="label col-<% $LabelCols %>">
+  <span class="name"><% $CF->Name %>:</span>
+% if ( $CF->EntryHint ) {
+  <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+% }
+</div>
+<div class="value col-<% $ValueCols %>">
 <& /Elements/EditCustomField,
     %ARGS,
     CustomField => $CF,
@@ -67,12 +69,12 @@
         <br />
         <span class="cfinvalidfield"><% $msg %></span>
 %  }
-</<% $CELL %>>
-</<% $FIELD %>>
+</div>
+</div>
 % }
 % }
-% if ( $WRAP ) {
-</<% $WRAP %>>
+% if ( !$InTable ) {
+</div>
 % }
 % $m->callback( CallbackName => 'AfterTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, InTable => $InTable );
 
@@ -87,21 +89,12 @@ if ($TicketObj) {
 
 $m->callback( CallbackName => 'MassageTransactionCustomFields', CustomFields => $CustomFields, InTable => $InTable );
 
-$AsTable ||= $InTable;
-my $FIELD = $AsTable ? 'tr' : 'div';
-my $CELL  = $AsTable ? 'td' : 'div';
-my $WRAP  = '';
-if ( $AsTable ) {
-    $WRAP = 'table' unless $InTable;
-} else {
-    $WRAP = 'div';
-}
-
 </%INIT>
 <%ARGS>
 $TicketObj => undef
 $QueueObj => undef
-$AsTable => 0
 $InTable => 0
+$LabelCols => 3
+$ValueCols => 9
 </%ARGS>
 

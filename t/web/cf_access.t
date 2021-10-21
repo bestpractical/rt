@@ -126,10 +126,7 @@ ok $m->login( $tester->Name, 123456, logout => 1), 'logged in';
 diag "check that we have no the CF on the create"
     ." ticket page when user has no SeeCustomField right";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_lacks('Upload multiple images', 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
@@ -139,6 +136,7 @@ diag "check that we have no the CF on the create"
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
+        button => 'SubmitTicket',
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
 
@@ -156,10 +154,7 @@ RT::Test->set_rights(
 diag "check that we have no the CF on the create"
     ." ticket page when user has no ModifyCustomField right";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_lacks('Upload multiple images', 'has no upload image field');
 
     my $form = $m->form_name("TicketCreate");
@@ -169,6 +164,7 @@ diag "check that we have no the CF on the create"
     $m->submit_form(
         form_name => "TicketCreate",
         fields => { Subject => 'test' },
+        button => 'SubmitTicket',
     );
     $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
     ok $tid, "a ticket is created succesfully";
@@ -188,10 +184,8 @@ RT::Test->set_rights(
 
 diag "create a ticket with an image";
 {
-    $m->submit_form(
-        form_name => "CreateTicketInQueue",
-        fields => { Queue => 'General' },
-    );
+
+    $m->submit_form( form_name => "CreateTicketInQueue" );
     $m->content_contains('Upload multiple images', 'has a upload image field');
 
     $cf =~ /(\d+)$/ or die "Hey this is impossible dude";
@@ -203,6 +197,7 @@ diag "create a ticket with an image";
             $upload_field => ImageFile,
             Subject => 'testing img cf creation',
         },
+        button => 'SubmitTicket',
     );
 
     $m->content_like(qr/Ticket \d+ created/, "a ticket is created succesfully");
@@ -231,7 +226,7 @@ $m->submit_form(
 
 $m->form_name('BuildQuery');
 
-my $col = ($m->current_form->find_input('SelectDisplayColumns'))[-1];
+my ($col) = grep { ($_->possible_values)[-1] =~ /CustomField/ } $m->find_all_inputs( name => 'SelectDisplayColumns' );
 $col->value( ($col->possible_values)[-1] );
 
 $m->click('AddCol');

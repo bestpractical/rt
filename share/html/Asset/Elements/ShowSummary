@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -69,15 +69,20 @@ for my $section (@sections) {
 }
 </%init>
 <div class="asset-metadata">
+  <div class="form-row">
 % for my $section (@sections) {
-<&| /Widgets/TitleBox, title => loc($section), title_href => $can_edit ? $link{$section} : "", title_class => "inverse", class => "asset-\L$section" &>
-    <& "Show$section", AssetObj => $AssetObj &>
-</&>
+      <div class="col-4">
+        <&| /Widgets/TitleBox, title => loc($section), title_href => $can_edit ? $link{$section} : "", title_class => "inverse", class => "asset-\L$section" &>
+          <& "Show$section", AssetObj => $AssetObj &>
+        </&>
+      </div>
 % }
 
-<& /Elements/ShowCustomFieldCustomGroupings,
-     Object => $AssetObj,
-     title_href => $can_edit ? RT->Config->Get("WebPath") . "/Asset/ModifyCFs.html" : "",
-     TitleBoxARGS => { title_class => "inverse" },
- &>
+    <& /Elements/ShowCustomFieldCustomGroupings,
+      Object => $AssetObj,
+      title_href => $can_edit ? RT->Config->Get("WebPath") . "/Asset/ModifyCFs.html" : "",
+      TitleBoxARGS => { title_class => "inverse" },
+      GroupingClass => 'col-4'
+    &>
+  </div>
 </div>

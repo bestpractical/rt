@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<select multiple="multiple" name="<% $Name %>"  size="10">
+<select multiple="multiple" name="<% $Name %>" class="tall" size="10">
 % while ( my $user = $users->Next ) {
 <option value="<% $user->id %>">\
 <& /Elements/ShowUser, User => $user &>\

@@ -1,24 +1,23 @@
-/* This file was modified to look for superfish in $.fn.superfish instead of $.superfish */
-
 /*
- * Supposition v0.2 - an optional enhancer for Superfish jQuery menu widget
+ * Supposition v0.3a - an optional enhancer for Superfish jQuery menu widget
  *
- * Copyright (c) 2008 Joel Birch - based mostly on work by Jesse Klaasse and credit goes largely to him.
+ * Copyright (c) 2013 Joel Birch - based on work by Jesse Klaasse - credit goes largely to him.
  * Special thanks to Karl Swedberg for valuable input.
  *
  * Dual licensed under the MIT and GPL licenses:
- * 	http://www.opensource.org/licenses/mit-license.php
+ *   http://www.opensource.org/licenses/mit-license.php
  * 	http://www.gnu.org/licenses/gpl.html
  */
 
-(function($){
+;(function($){
 
 	$.fn.supposition = function(){
-		var $w = $(window), /*do this once instead of every onBeforeShow call*/
+		var $w = $(window),/*do this once instead of every onBeforeShow call*/
+			$topNav, 
 			_offset = function(dir) {
-				return window[dir == 'y' ? 'pageYOffset' : 'pageXOffset']
-				|| document.documentElement && document.documentElement[dir=='y' ? 'scrollTop' : 'scrollLeft']
-			    || document.body[dir=='y' ? 'scrollTop' : 'scrollLeft'];
+				return window[dir === 'y' ? 'pageYOffset' : 'pageXOffset'] || 
+					document.documentElement && document.documentElement[dir==='y' ? 'scrollTop' : 'scrollLeft'] || 
+					document.body[dir==='y' ? 'scrollTop' : 'scrollLeft'];
 			},
 			onInit = function(){
 				/* I haven't touched this bit - needs work as there are still z-index issues */
@@ -40,7 +39,7 @@
 						totalRight = $w.width() + _offset('x'),
 						menuRight = $u.offset().left + menuWidth;
 					if (menuRight > totalRight) {
-						$u.css('margin-left', ($u.parents('ul').length == 1 ? totalRight - menuRight : -(menuWidth + parentWidth)) + 'px');
+						$u.css('margin-left', ($u.parents('ul').length === 1 ? totalRight - menuRight : -(menuWidth + parentWidth)) + 'px');
 					}
 
 					var windowHeight = $w.height(),
@@ -56,15 +55,16 @@
 			};
 		
 		return this.each(function() {
-			var o = $.fn.superfish.o[this.serial]; /* get this menu's options */
+			var $this = $(this),
+				o = $this.data('sf-options'); /* get this menu's options */
 			
 			/* if callbacks already set, store them */
 			var _onInit = o.onInit,
 				_onBeforeShow = o.onBeforeShow,
 				_onHide = o.onHide;
 				
-			$.extend($.fn.superfish.o[this.serial],{
-				onInit		: function() {
+			$.extend($this.data('sf-options'),{
+				onInit: function() {
 					onInit.call(this); /* fire our Supposition callback */
 					_onInit.call(this); /* fire stored callbacks */
 				},
@@ -72,7 +72,7 @@
 					onBeforeShow.call(this); /* fire our Supposition callback */
 					_onBeforeShow.call(this); /* fire stored callbacks */
 				},
-				onHide		: function() {
+				onHide: function() {
 					onHide.call(this); /* fire our Supposition callback */
 					_onHide.call(this); /* fire stored callbacks */
 				}

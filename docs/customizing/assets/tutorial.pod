@@ -8,7 +8,7 @@ assets, search for them, link them to tickets, etc.
 
 =begin HTML
 
-<p><img src="http://static.bestpractical.com/images/assets/asset-search.png"
+<p><img src="../../images/asset-search.png"
 alt="Asset Search Results" /></p>
 
 =end HTML
@@ -74,7 +74,7 @@ if you like as well.
 
 =begin HTML
 
-<p><img src="http://static.bestpractical.com/images/assets/edit-catalog.png"
+<p><img src="../../images/edit-catalog.png"
 alt="Edit Catalog" /></p>
 
 =end HTML
@@ -99,7 +99,7 @@ like custom fields for other RT objects.
 
 =begin HTML
 
-<p><img src="http://static.bestpractical.com/images/assets/asset-cfs.png"
+<p><img src="../../images/asset-cfs.png"
 alt="Asset Custom Fields" /></p>
 
 =end HTML
@@ -181,7 +181,7 @@ get an Asset Details label on the other custom fields.
 =begin HTML
 
 <p><img
-src="http://static.bestpractical.com/images/assets/asset-date-details.png"
+src="../../images/asset-date-details.png"
 alt="Asset Date and Details Display" /></p>
 
 =end HTML
@@ -203,7 +203,7 @@ group.
 
 =begin HTML
 
-<p><img src="http://static.bestpractical.com/images/assets/catalog-rights.png"
+<p><img src="../../images/catalog-rights.png"
 alt="Catalog Rights" /></p>
 
 =end HTML
@@ -252,7 +252,7 @@ page with some information pre-filled.
 =begin HTML
 
 <p><img
-src="http://static.bestpractical.com/images/assets/asset-ticket-create.png"
+src="../../images/asset-ticket-create.png"
 alt="Create Ticket for Asset Work" /></p>
 
 =end HTML
@@ -300,7 +300,7 @@ the work.
 =begin HTML
 
 <p><img
-src="http://static.bestpractical.com/images/assets/asset-ticket-create-selfservice.png"
+src="../../images/asset-ticket-create-selfservice.png"
 alt="Self Service Ticket for Asset Work" /></p>
 
 =end HTML

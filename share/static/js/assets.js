@@ -1,23 +1,16 @@
 jQuery(function() {
     var showModal = function(html) {
-        jQuery("<div class='modal'></div>")
-            .append(html).appendTo("body")
-            .bind('modal:close', function(ev,modal) { modal.elm.remove(); })
-            .modal();
+        var modal = jQuery("<div class='modal'></div>");
+        modal.append(html).appendTo("body");
+        modal.bind('modal:close', function(ev) { modal.remove(); })
+        modal.on('hide.bs.modal', function(ev) { modal.remove(); })
+        modal.modal('show');
+
+        // We need to refresh the select picker plugin on AJAX calls
+        // since the plugin only runs on page load.
+        jQuery('.selectpicker').selectpicker('refresh');
     };
 
-    var assets = jQuery("#assets-accordion");
-    assets.accordion({
-        // Open the accordion if there's only one fold, otherwise start with
-        // all assets collapsed.
-        active:         assets.find("h3").length == 1 ? 0 : false,
-        collapsible:    true,
-        heightStyle:    'content',
-        header: "h3"
-    }).find("h3 a.unlink-asset").click(function(ev){
-        ev.stopPropagation();
-        return true;
-    });
     jQuery(".ticket-assets form").submit(function(){
         var input = jQuery("[name*=RefersTo]", this);
         if (input.val())
@@ -50,13 +43,6 @@ jQuery(function() {
         var url = RT.Config.WebHomePath + '/Asset/Helpers/CreateLinkedTicket?' + selected;
         jQuery.post(
             url,
-            showModal
-        );
-    });
-    jQuery("#assets-create").click(function(ev){
-        ev.preventDefault();
-        jQuery.get(
-            RT.Config.WebHomePath + "/Asset/Helpers/CreateInCatalog",
             showModal
         );
     });

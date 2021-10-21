@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -99,6 +99,10 @@ will appear as a key whose value is 1.
 
 sub GetReferencedQueues {
     my $self = shift;
+    my %args = (
+        CurrentUser => '',
+        @_
+    );
 
     my $queues = {};
 
@@ -110,14 +114,64 @@ sub GetReferencedQueues {
             return unless $node->isLeaf;
 
             my $clause = $node->getNodeValue();
-            return unless $clause->{Key} eq 'Queue';
-            return unless $clause->{Op} eq '=';
-
-            $queues->{ $clause->{Value} } = 1;
+            if ( $clause->{Key} =~ /^(?:Ticket)?Queue$/ ) {
+                if ( $clause->{Op} eq '=' ) {
+                    $queues->{ $clause->{Value} } ||= 1;
+                }
+                elsif ( $clause->{Op} =~ /^LIKE$/i ) {
+                    my $qs = RT::Queues->new( $args{CurrentUser} || $HTML::Mason::Commands::session{CurrentUser} );
+                    $qs->Limit( FIELD => 'Name', VALUE => $clause->{Value}, OPERATOR => 'LIKE', CASESENSITIVE => 0 );
+                    while ( my $q = $qs->Next ) {
+                        next unless $q->id;
+                        $queues->{ $q->id } ||= 1;
+                    }
+                }
+            }
+            elsif ( $clause->{Key} eq 'Lifecycle' ) {
+                if ( $clause->{Op} eq '=' ) {
+                    my $qs = RT::Queues->new( $args{CurrentUser} || $HTML::Mason::Commands::session{CurrentUser} );
+                    $qs->Limit( FIELD => 'Lifecycle', VALUE => $clause->{Value} );
+                    while ( my $q = $qs->Next ) {
+                        next unless $q->id;
+                        $queues->{ $q->id } ||= 1;
+                    }
+                }
+            }
+            return;
         }
     );
 
     return $queues;
+}
+
+=head2 GetReferencedCatalogs
+
+Returns a hash reference; each catalog referenced with an '=' operation
+will appear as a key whose value is 1.
+
+=cut
+
+sub GetReferencedCatalogs {
+    my $self = shift;
+
+    my $catalogs = {};
+
+    $self->traverse(
+        sub {
+            my $node = shift;
+
+            return if $node->isRoot;
+            return unless $node->isLeaf;
+
+            my $clause = $node->getNodeValue();
+            return unless $clause->{ Key } eq 'Catalog';
+            return unless $clause->{ Op } eq '=';
+
+            $catalogs->{ $clause->{ Value } } = 1;
+        }
+    );
+
+    return $catalogs;
 }
 
 =head2 GetQueryAndOptionList SELECTED_NODES
@@ -220,7 +274,7 @@ sub __LinearizeTree {
 
             if ( $op =~ /^IS( NOT)?$/i ) {
                 $value = 'NULL';
-            } elsif ( $value !~ /^[+-]?[0-9]+$/ ) {
+            } elsif ( $clause->{QuoteValue} ) {
                 $value =~ s/(['\\])/\\$1/g;
                 $value = "'$value'";
             }
@@ -251,13 +305,14 @@ sub ParseSQL {
     my %args = (
         Query => '',
         CurrentUser => '', #XXX: Hack
+        Class => 'RT::Tickets',
         @_
     );
     my $string = $args{'Query'};
 
     my @results;
 
-    my %field = %{ RT::Tickets->new( $args{'CurrentUser'} )->FIELDS };
+    my %field = %{ $args{Class}->new( $args{'CurrentUser'} )->FIELDS };
     my %lcfield = map { ( lc($_) => $_ ) } keys %field;
 
     my $node =  $self;
@@ -269,7 +324,37 @@ sub ParseSQL {
     $callback{'CloseParen'} = sub { $node = $node->getParent };
     $callback{'EntryAggregator'} = sub { $node->setNodeValue( $_[0] ) };
     $callback{'Condition'} = sub {
-        my ($key, $op, $value) = @_;
+        my ($key, $op, $value, $value_is_quoted) = @_;
+
+        if (  !$value_is_quoted
+            && $key   !~ /(?:CustomField|CF)\./
+            && $value =~ /(?:CustomField|CF)\./
+            && RT->Config->Get('DatabaseType') eq 'Pg' )
+        {
+
+            # E.g. LastUpdated > CF.{Beta Date}
+            #
+            # Pg 9 tries to cast all ObjectCustomFieldValues to datetime,
+            # which could fail since not all custom fields are of DateTime
+            # type. To get around this issue, here we switch the key/value
+            # pair to compare as text instead.
+
+            my ($major_version) = $RT::Handle->dbh->selectrow_array("SHOW server_version") =~ /^(\d+)/;
+            if ( $major_version < 10 ) {
+                my %reverse = (
+                    '>'  => '<',
+                    '>=' => '<=',
+                    '<'  => '>',
+                    '<=' => '>=',
+                    '='  => '=',
+                );
+                if ( $reverse{$op} ) {
+                    RT->Logger->debug("Switching $key/$value to compare using text");
+                    ( $key, $value ) = ( $value, $key );
+                    $op = $reverse{$op};
+                }
+            }
+        }
 
         my ($main_key, $subkey) = split /[.]/, $key, 2;
 
@@ -278,12 +363,21 @@ sub ParseSQL {
         }
         $main_key = $lcfield{ lc $main_key };
 
+        if ( $op =~ /^SHALLOW\s+/i && ($main_key !~ /(?:Requestor|Owner|AdminCc|Cc|CustomRole)/) ) {
+            push @results, [ $args{'CurrentUser'}->loc("Unsupported operator: [_1]", $op), -1 ];
+        }
+
         # Hardcode value for IS / IS NOT
         $value = 'NULL' if $op =~ /^IS( NOT)?$/i;
 
-        my $clause = { Key => $main_key, Subkey => $subkey,
-                       Meta => $field{ $main_key },
-                       Op => $op, Value => $value };
+        my $clause = {
+            Key           => $main_key,
+            Subkey        => $subkey,
+            Meta          => $field{$main_key},
+            Op            => $op,
+            Value         => $value,
+            QuoteValue    => $value_is_quoted,
+        };
         $node->addChild( __PACKAGE__->new( $clause ) );
     };
     $callback{'Error'} = sub { push @results, @_ };

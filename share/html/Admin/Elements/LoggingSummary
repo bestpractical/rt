@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -84,9 +84,9 @@ if (my $level = RT->Config->Get("StatementLog")) {
 </%init>
 <p>
 <&|/l&>RT's logging configuration is summarized below:</&>
-<ul>
+<ul class="list-group-compact list-group">
 % for my $msg (@summary) {
-  <li><% ref($msg) ? $$msg : $m->interp->apply_escapes($msg, 'h') |n %></li>
+  <li class="list-group-item"><% ref($msg) ? $$msg : $m->interp->apply_escapes($msg, 'h') |n %></li>
 % }
 </ul>
 </p>

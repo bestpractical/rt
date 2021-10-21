@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -126,6 +126,14 @@ sub login {
 sub logged_in_as {
     my $self = shift;
     my $user = shift || '';
+
+    if ( $user =~ /\@/ ) {
+        my $user_object = RT::User->new( RT->SystemUser );
+        $user_object->LoadByEmail($user);
+        if ( $user_object->Id ) {
+            $user = $user_object->Name;
+        }
+    }
 
     unless ( $self->status == HTTP::Status::HTTP_OK ) {
         Test::More::diag( "error: status is ". $self->status );
@@ -303,7 +311,7 @@ sub ticket_status {
     my $id = shift;
     
     $self->display_ticket( $id);
-    my ($got) = ($self->content =~ m{Status:\s*</td>\s*<td[^>]*?class="value"[^>]*?>\s*([\w ]+?)\s*</td>}ism);
+    my ($got) = ($self->content =~ m{Status:\s*</div>\s*<div.*?>\s*<span.*?>\s*([\w ]+?)\s*</span>}ism);
     unless ( $got ) {
         Test::More::diag("Error: couldn't find status value on the page, may be regexp problem");
     }

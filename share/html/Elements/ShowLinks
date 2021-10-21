@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,42 +45,55 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
+<div class="container">
 % for my $type (@display) {
-  <tr class="<%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
-    <td class="labeltop">
+  <div class="form-row <%$type%><% $clone{$type} || $Object->$type->Count ? q{} : q{ unset-field}%>">
+    <div class="label col-4 col-md-3">
       <& ShowRelationLabel, Object => $Object, Label => $labels{$type}.':', Relation => $type &>
 %     if ($clone{$type}) {
         <span class="create">(<a href="<% $clone{$type} %>"><% loc('Create') %></a>)</span>
 %     }
-    </td>
-    <td class="value">
+    </div>
+    <div class="value col-8 col-md-9"><span class="current-value">
       <& ShowLinksOfType, Object => $Object, Type => $type, Recurse => ($type eq 'Members') &>
-    </td>
-  </tr>
+    </span></div>
+  </div>
 % }
-
+</div>
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );
   <& /Elements/ShowCustomFields, Object => $Object, Grouping => 'Links', Table => 0 &>
 
-</table>
-
 % if ($Object->isa('RT::Ticket')) {
-  <form action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
+<div id="create-linked-ticket" class="container">
+  <form class="form-inline justify-content-center" action="<% RT->Config->Get('WebPath') ."/Helpers/SpawnLinkedTicket" %>" name="SpawnLinkedTicket">
+  <div class="form-row">
     <input type="hidden" name="CloneTicket" value="<% $Object->id %>">
-    <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket">
-    <select name="LinkType">
-      <option value="DependsOn-new"><% loc('Depends on') %></option>
-      <option value="new-DependsOn"><% loc('Depended on by') %></option>
-      <option value="MemberOf-new"><% loc('Parents') %></option>
-      <option value="new-MemberOf"><% loc('Children') %></option>
-      <option value="RefersTo-new"><% loc('Refers to') %></option>
-      <option value="new-RefersTo"><% loc('Referred to by') %></option>
-    </select>
-    <&|/l&>Ticket in</&>
-    <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
+    <div class="col-auto label">
+      <&|/l&>Create new</&>
+    </div>
+    <div class="col-auto">
+      <select name="LinkType" class="selectpicker form-control">
+        <option value="DependsOn-new"><% loc('Depends on') %></option>
+        <option value="new-DependsOn"><% loc('Depended on by') %></option>
+        <option value="MemberOf-new"><% loc('Parents') %></option>
+        <option value="new-MemberOf"><% loc('Children') %></option>
+        <option value="RefersTo-new"><% loc('Refers to') %></option>
+        <option value="new-RefersTo"><% loc('Referred to by') %></option>
+      </select>
+    </div>
+    <div class="col-auto label">
+      <&|/l&>Ticket in</&>
+    </div>
+    <div class="col-auto">
+      <& /Elements/SelectNewTicketQueue, Name => 'CloneQueue' &>
+    </div>
+    <div class="col-auto">
+      <input type="submit" value="<&|/l&>Create</&>" name="SpawnLinkedTicket" class="form-control button btn btn-primary">
+    </div>
+  </div>
   </form>
+</div>
 % }
 <%INIT>
 my @display = qw(DependsOn DependedOnBy MemberOf Members RefersTo ReferredToBy);

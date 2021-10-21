@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -108,6 +108,17 @@ classes B<must> support.
 =cut
 
 sub SupportArgs { return () }
+
+=head3 ArgIsBoolean
+
+Takes the name of an argument.
+Returns true if the argument is a boolean.
+
+Used to display checkboxes in the web interface.
+
+=cut
+
+sub ArgIsBoolean { return; }
 
 =head3 HasSupportForArgs
 

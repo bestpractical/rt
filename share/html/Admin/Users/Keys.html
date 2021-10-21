@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -59,25 +59,33 @@
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Users/Keys.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $UserObj->Id %>" />
 
-% if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
+% if (RT::Config->Get('GnuPG')->{Enable}) {
 <&|/Widgets/TitleBox, title => loc('GnuPG private key') &>
-<& /Widgets/Form/Select,
+  <& /Widgets/Form/Select,
     Name         => 'PrivateKey',
     Description  => loc('Private Key'),
     Values       => \@potential_keys,
     CurrentValue => $UserObj->PrivateKey,
     DefaultLabel => loc('No private key'),
-&>
+  &>
 </&>
 % }
 
-% if (RT::Crypt->UseForOutgoing eq 'SMIME') {
+% if (RT::Config->Get('SMIME')->{Enable}) {
 <&|/Widgets/TitleBox, title => loc('SMIME Certificate') &>
-<textarea name="SMIMECertificate"><% $UserObj->SMIMECertificate || '' %></textarea>
+<div class="form-row">
+  <div class="col-12">
+    <textarea rows="25" class="form-control" name="SMIMECertificate"><% $UserObj->SMIMECertificate || '' %></textarea>
+  </div>
+</div>
 </&>
 % }
 
-<& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+<div class="form-row">
+  <div class="col-12">
+    <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
+  </div>
+</div>
 </form>
 
 <%ARGS>
@@ -99,9 +107,9 @@ $id = $ARGS{'id'} = $UserObj->id;
 my @potential_keys;
 my $email = $UserObj->EmailAddress;
 
-if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
+if (RT::Config->Get('GnuPG')->{Enable}) {
     my %keys_meta = RT::Crypt->GetKeysForSigning( Signer => $email, Protocol => 'GnuPG' );
-    @potential_keys = map $_->{'Key'}, @{ $keys_meta{'info'} || [] };
+    @potential_keys = map $_->{'Fingerprint'}, @{ $keys_meta{'info'} || [] };
 
     $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
         Name      => 'PrivateKey',
@@ -121,7 +129,7 @@ if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
     }
 }
 
-if (RT::Crypt->UseForOutgoing eq 'SMIME') {
+if (RT::Config->Get('SMIME')->{Enable}) {
     if ( $Update and ($ARGS{'SMIMECertificate'}||'') ne ($UserObj->SMIMECertificate||'') ) {
         my ($status, $msg) = $UserObj->SetSMIMECertificate( $ARGS{'SMIMECertificate'} );
         push @results, $msg;

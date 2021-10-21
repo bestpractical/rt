@@ -14,7 +14,7 @@ use RT::Test tests => undef;
     ok ( $m->goto_create_ticket( $queue ) );
     $m->form_name( 'TicketCreate' );
     $m->field( Subject => 'Test Ticket' );
-    $m->submit;
+    $m->click('SubmitTicket');
 
     $m->follow_link_ok( { id => 'admin-custom-fields' } );
     $m->follow_link_ok( { id => 'page-create' } );

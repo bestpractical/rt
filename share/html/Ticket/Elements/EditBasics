@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -52,6 +52,7 @@ $QueueObj => undef
 $InTable => 0
 %defaults => ()
 $ExcludeCustomRoles => 0
+$ExcludeOwner => 0
 </%ARGS>
 <%INIT>
 if ($TicketObj) {
@@ -62,7 +63,7 @@ unless ( @fields ) {
     my $subject = $defaults{'Subject'} || $TicketObj->Subject;
     @fields = (
         {   name => 'Subject',
-            html => '<input name="Subject" value="'.(defined($subject) ? $m->interp->apply_escapes( $subject, 'h' ) : '').'" />',
+            html => '<input name="Subject" type="text" value="'.(defined($subject) ? $m->interp->apply_escapes( $subject, 'h' ) : '').'" class="form-control" />',
         },
         {   name => 'Status',
             comp => '/Ticket/Elements/SelectStatus',
@@ -128,6 +129,7 @@ unless ( @fields ) {
                     args => {
                         Name => $field,
                         Default => $defaults{$field} || $TicketObj->$field,
+                        QueueObj => $TicketObj->QueueObj,
                     }
                 }
             } ('Priority', 'Final Priority')
@@ -140,10 +142,15 @@ my @role_fields;
 unless ($ExcludeCustomRoles) {
     my $roles = $QueueObj->CustomRoles;
     $roles->LimitToSingleValue;
+
+    my @hidden = $QueueObj->HiddenCustomRoleIDsForURL;
+    $roles->Limit(FIELD => 'id', OPERATOR => 'NOT IN', VALUE => \@hidden) if @hidden;
+
     $m->callback( CallbackName => 'ModifyCustomRoles', %ARGS, CustomRoles => $roles);
     while (my $role = $roles->Next) {
         push @role_fields, {
             name => $role->Name,
+            hint => $role->EntryHint,
             comp => '/Elements/SingleUserRoleInput',
             args => {
                 role    => $role,
@@ -152,6 +159,10 @@ unless ($ExcludeCustomRoles) {
             }
         };
     }
+}
+
+if ($ExcludeOwner) {
+    @fields = grep { ($_->{name}||'') ne 'Owner' } @fields;
 }
 
 # inflate the marker for custom roles into the field specs for each one
@@ -170,16 +181,21 @@ for my $field (@fields) {
 </%INIT>
 
 % unless ($InTable) {
-<table>
+<div>
 % }
 % for my $field (@fields) {
- <tr class="<% lc $field->{'name'} %>">\
-<td class="label"><% loc($field->{'name'}) %>:</td>\
-<td class="value"><% $field->{'html'} |n %></td>\
-</tr>
+%# Prefer input name as css class, e.g. "FinalPriority" instead of "Final_Priority"
+  <div class="form-row <% CSSClass( $field->{args}{Name} || $field->{'name'} ) %>">
+    <div class="label col-3"><% loc($field->{'name'}) %>:
+%   if ( my $hint = $field->{hint} ) {
+      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $hint %>"></span>
+%   }
+    </div>
+    <div class="value col-9"><% $field->{'html'} |n %></div>
+  </div>
 % }
 % $m->callback( CallbackName => 'EndOfList', TicketObj => $TicketObj, %ARGS, Fields => \@fields );
 % unless ($InTable) {
-</table>
+</div>
 % }
 

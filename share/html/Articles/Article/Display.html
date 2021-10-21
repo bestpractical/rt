@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,28 +49,59 @@
 <& /Elements/Tabs &>
 
 <&| /Widgets/TitleBox, title => loc('The Basics'), class => 'article-basics', &>
-<table>
-    <tr>
-        <td class="label"><&|/l&>Summary</&>:</td>
-        <td class="value"><%$article->Summary%></td>
-    </tr>
-    <tr>
-        <td class="label"><&|/l&>Class</&>:</td>
-        <td class="value"><%$article->ClassObj->Name%></td>
-    </tr>
-    <tr>
-        <td class="label"><&|/l&>Creator</&>:</td>
-        <td class="value"><& /Elements/ShowUser, User => $article->CreatorObj &></td>
-    </tr>
-    <tr>
-        <td class="label"><&|/l&>Created</&>:</td>
-        <td class="value"><%$article->CreatedObj->AsString%></td>
-    </tr>
-    <tr>
-        <td class="label"><&|/l&>Updated</&>:</td>
-        <td class="value"><%$article->LastUpdatedObj->AsString%></td>
-    </tr>
-</table>
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Summary</&>:
+    </div>
+    <div class="value col-9">
+      <span class="current-value"><%$article->Summary%></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Sort Order</&>:
+    </div>
+    <div class="value col-9">
+      <span class="current-value"><%$article->SortOrder%></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Class</&>:
+    </div>
+    <div class="value col-9">
+      <span class="current-value"><%$article->ClassObj->Name%></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Creator</&>:
+    </div>
+    <div class="value col-9">
+      <span class="current-value"><& /Elements/ShowUser, User => $article->CreatorObj &></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Created</&>:
+    </div>
+    <div class="value col-9">
+      <span class="current-value"><%$article->CreatedObj->AsString%></span>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="label col-3">
+      <&|/l&>Updated</&>:
+    </div>
+    <div class="value col-9">
+      <span class="current-value"><%$article->LastUpdatedObj->AsString%></span>
+    </div>
+  </div>
 </&>
 
 % $m->callback( %ARGS, CallbackName => 'AfterBasics' );

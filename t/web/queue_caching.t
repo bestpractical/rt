@@ -80,7 +80,6 @@ diag( "Test a user who has only CreateTicket right" );
 
     my $b_m = RT::Test::Web->new;
     ok $b_m->login( 'user_b', 'password' ), 'logged in as user B';
-
     check_queues( $b_m, [], [] );
 }
 
@@ -254,10 +253,13 @@ sub internal_queues {
 sub check_queues {
     my ($browser, $queue_id_list, $queue_name_list, $url, $form_name) = @_;
     $url ||= $baseurl;
-    $form_name ||= 'CreateTicketInQueue';
 
     $browser->get_ok( $url, "Navigated to $url" );
-    ok( my $form = $browser->form_name( $form_name ), "Found form $form_name" );
+
+    # Get rid of inline-edit forms
+    my ($form) = grep { $_->action !~ m{/Helpers/TicketUpdate} } $browser->all_forms_with_fields('Subject');
+    ok( $form, "Found form" );
+
     my ( @queue_ids, @queue_names );
     if ( !$queue_id_list || @$queue_id_list > 0 ) {
         ok(my $queuelist = $form->find_input('Queue','option'), "Found queue select");

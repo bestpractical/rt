@@ -94,6 +94,9 @@ ok($m->logout(), 'Logged out');
     ok($tester->PrincipalObj->GrantRight(Right => 'SeeGroup', Object => $RT::System), 'Grant SeeGroup');
 
     load_group_admin_pages($m, $group_id, '200');
+
+    $m->get("/Group/Summary.html?id=$group_id");
+    is( $m->status, 200, "Got 200 for Group Summary page");
 }
 
 sub load_group_admin_pages{
@@ -101,7 +104,7 @@ sub load_group_admin_pages{
     my $group_id = shift;
     my $status = shift;
 
-    foreach my $page (qw(GroupRights Members Modify History Memberships UserRights)){
+    foreach my $page (qw(GroupRights Members Modify History Memberships ModifyLinks UserRights)){
         $m->get("/Admin/Groups/$page.html?id=$group_id");
         is( $m->status, $status, "Got $status for $page page");
     }

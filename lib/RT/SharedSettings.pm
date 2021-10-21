@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -137,6 +137,14 @@ sub GotoPage {
     my $self = shift;
     $self->{idx} = shift;
 }
+
+=head2 ColumnMapClassName
+
+Equivalent to L<RT::SearchBuilder/ColumnMapClassName>
+
+=cut
+
+sub ColumnMapClassName { return shift->RecordClass->ColumnMapClassName }
 
 ### Internal methods
 

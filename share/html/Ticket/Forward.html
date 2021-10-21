@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,57 +51,74 @@
 % $m->callback(CallbackName => 'BeforeActionList', Actions => \@results, ARGSRef => \%ARGS, Ticket => $TicketObj);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="Forward.html" id="ForwardMessage" name="ForwardMessage" method="post">
+<form action="Forward.html" id="ForwardMessage" name="ForwardMessage" method="post" class="mx-auto max-width-lg">
 % $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
-<input type="hidden" class="hidden" name="id" value="<% $id %>" /><br />
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} || '' %>" />
 
-<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
+<& /Elements/Crypt/SignEncryptWidget:ShowIssues, self => $gnupg_widget, Queue => $TicketObj->QueueObj &>
 
-<table border="0">
-<tr><td align="right"><&|/l&>From</&>:</td>
-<td><% $from %></td></tr>
+<&|/Widgets/TitleBox, title => loc('Message'), class => 'messagedetails' &>
+<div>
+  <div class="form-row">
+    <div class="label col-2"><&|/l&>From</&>:</div>
+    <div class="value col-9"><% $from %></div>
+  </div>
 
-<tr><td align="right"><&|/l&>Subject</&>:</td>
-<td><input name="Subject" size="60" value="<% $ARGS{'Subject'} || $subject %>" /></td></tr>
+  <div class="form-row">
+    <div class="label col-2"><&|/l&>Subject</&>:</div>
+    <div class="value col-9"><input class="form-control"   type="text" name="Subject" value="<% $ARGS{'Subject'} || $subject %>" /></div>
+  </div>
 
-<tr><td align="right"><&|/l&>To</&>:</td>
-<td><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></td></tr>
+  <div class="form-row">
+    <div class="label col-2"><&|/l&>To</&>:</div>
+    <div class="value col-9"><& /Elements/EmailInput, Name => "To", AutocompleteMultiple => 1, Default => $ARGS{'To'} &></div>
+  </div>
 
-<tr><td align="right"><&|/l&>Cc</&>:</td>
-<td><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></td></tr>
+  <div class="form-row">
+    <div class="label col-2"><&|/l&>Cc</&>:</div>
+    <div class="value col-9"><& /Elements/EmailInput, Name => "Cc", AutocompleteMultiple => 1, Default => $ARGS{'Cc'} &></div>
+  </div>
 
-<tr><td align="right"><&|/l&>Bcc</&>:</td>
-<td><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></td></tr>
+  <div class="form-row">
+    <div class="label col-2"><&|/l&>Bcc</&>:</div>
+    <div class="value col-9"><& /Elements/EmailInput, Name => "Bcc", AutocompleteMultiple => 1, Default => $ARGS{'Bcc'} &></div>
+  </div>
 
 % if ( $gnupg_widget ) {
-<tr><td>&nbsp;</td><td>
+  <div class="form-row">
+    <span class="label col-2 empty">&nbsp;</span>
+    <div class="value col-9">
 <& /Elements/Crypt/SignEncryptWidget,
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 &>
-</td></tr>
+    </div>
+  </div>
 % }
 
-<tr>
-<td><&|/l&>Content</&>:</td>
-<td>
+  <div class="form-group">
+    <div class="messagebox-container">
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0, SuppressAttachmentWarning => 1 &>
 % } else {
 <& /Elements/MessageBox, SuppressAttachmentWarning => 1 &>
 %}
-</td>
-</tr>
+    </div>
+  </div>
+</div>
 
 % $m->callback(CallbackName => 'AfterMessageBox', ARGSRef => \%ARGS, TicketObj => $TicketObj);
-
-</table>
+</&>
 
 <& /Ticket/Elements/ShowAttachments, Ticket => $TicketObj, Attachments => $attachments, Count => RT->Config->Get('AttachmentListCount') &>
 
-<& /Elements/Submit, Label => loc('Forward Message and Return'), Name => 'ForwardAndReturn' &>
-<& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
+  <div class="form-row">
+    <div class="col-12">
+      <& /Elements/Submit, Label => loc('Forward Message and Return'), Name => 'ForwardAndReturn' &>
+      <& /Elements/Submit, Label => loc('Forward Message'), Name => 'Forward' &>
+    </div>
+  </div>
 </form>
 <%INIT>
 my ($status, $msg);

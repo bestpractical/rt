@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,104 +45,197 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table width="100%" border="0">
-  <tr>
-    <td valign="top" class="boxcontainer">
-      <&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
-      <input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
-      <table cellspacing="0" cellpadding="0">
-        <tr>
-          <td class="label"><&|/l&>Email</&>:</td>
-          <td class="value"><%$UserObj->EmailAddress%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Real Name</&>:</td>
-          <td class="value"><%$UserObj->RealName%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Nickname</&>:</td>
-          <td class="value"><%$UserObj->NickName || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Language</&>:</td>
-% if ( $UserObj->Lang ) {
-          <td class="value"><&|/l, $lang &>[_1]</&></td>
-% } else {
-          <td class="value"><&|/l&>System Default</&> (<% I18N::LangTags::List::name($session{CurrentUser}->LanguageHandle->language_tag) %>)</td>
-% }
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Timezone</&>:</td>
-% if ( $UserObj->Timezone ) {
-          <td class="value"><%$UserObj->Timezone%></td>
-% } else {
-          <td class="value"><&|/l&>System Default</&> (<% RT->Config->Get('Timezone') %>)</td>
-% }
-        </tr>
-      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Identity', InTable => 1 &>
-      </table>
-      </&>
-      <&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
-      <table cellspacing="0" cellpadding="0">
-        <tr>
-          <td class="label"><&|/l&>Residence</&>:</td>
-          <td class="value"><%$UserObj->HomePhone || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Work</&>:</td>
-          <td class="value"><%$UserObj->WorkPhone || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Mobile</&>:</td>
-          <td class="value"><%$UserObj->MobilePhone || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Pager</&>:</td>
-          <td class="value"><%$UserObj->PagerPhone || ''%></td>
-        </tr>
-      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Phones', InTable => 1 &>
-      </table>
-      </&>
-    </td>
-    <td valign="top" class="boxcontainer">
-      <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
-      <table cellspacing="0" cellpadding="0">
-        <tr>
-          <td class="label"><&|/l&>Organization</&>:</td>
-          <td class="value"><%$UserObj->Organization || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Address1</&>:</td>
-          <td class="value"><%$UserObj->Address1 || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Address2</&>:</td>
-          <td class="value"><%$UserObj->Address2 || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>City</&>:</td>
-          <td class="value"><%$UserObj->City || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>State</&>:</td>
-          <td class="value"><%$UserObj->State || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Zip</&>:</td>
-          <td class="value"><%$UserObj->Zip || ''%></td>
-        </tr>
-        <tr>
-          <td class="label"><&|/l&>Country</&>:</td>
-          <td class="value"><%$UserObj->Country || ''%></td>
-        </tr>
-      <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Location', InTable => 1 &>
-      </table>
-      </&>
-      <& /Elements/ShowCustomFieldCustomGroupings, Object => $UserObj &>
-    </td>
-  </tr>
-</table>
+<div class="form-row">
+%### Left column ###
+  <div class="col-6">
 
+    <&| /Widgets/TitleBox, title => loc('Identity'), id => "user-prefs-identity" &>
+      <input type="hidden" class="hidden" name="Name" value="<%$UserObj->Name%>" />
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Email</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->EmailAddress%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Real Name</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->RealName%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Nickname</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->NickName || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Language</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value">
+% if ( $UserObj->Lang ) {
+            <&|/l, $lang &>[_1]</&>
+% } else {
+            <&|/l&>System Default</&> (<% I18N::LangTags::List::name($session{CurrentUser}->LanguageHandle->language_tag) %>)
+% }
+          </span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Timezone</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value">
+% if ( $UserObj->Timezone ) {
+            <%$UserObj->Timezone%>
+% } else {
+            <&|/l&>System Default</&> (<% RT->Config->Get('Timezone') %>)
+% }
+          </span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Identity' &>
+      </div>
+
+    </&>
+
+    <&| /Widgets/TitleBox, title => loc('Phone numbers'), id => "user-prefs-phone" &>
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Residence</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->HomePhone || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Work</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->WorkPhone || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Mobile</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->MobilePhone || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Pager</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->PagerPhone || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Phones' &>
+      </div>
+    </&>
+
+  </div>
+
+%### Right column ###
+
+  <div class="col-6">
+
+    <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Organization</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->Organization || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Address1</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->Address1 || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Address2</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->Address2 || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>City</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->City || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>State</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->State || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Zip</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->Zip || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="label col-3">
+          <&|/l&>Country</&>:
+        </div>
+        <div class="value col-9">
+          <span class="current-value"><%$UserObj->Country || ''%></span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <& /Elements/ShowCustomFields, Object => $UserObj, Grouping => 'Location' &>
+      </div>
+    </&>
+
+    <& /Elements/ShowCustomFieldCustomGroupings, Object => $UserObj &>
+
+  </div>
+%### End right column ###
+</div>
 <%INIT>
 use I18N::LangTags::List;
 my $lang = I18N::LangTags::List::name( $UserObj->Lang );

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -56,6 +56,11 @@ my $COLUMN_MAP = {
         title     => 'Status', # loc
         attribute => 'Disabled',
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
+    },
+    SLADisabled => {
+        title     => 'SLA Status', # loc
+        attribute => 'SLADisabled',
+        value     => sub { return $_[0]->SLADisabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
     InitialPriority => {
         title     => 'InitialPriority', # loc

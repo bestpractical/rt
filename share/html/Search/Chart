@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -49,6 +49,7 @@
 $Cache => undef
 $Query => "id > 0"
 @GroupBy => ()
+$StackedGroupBy => undef
 $ChartStyle => 'bar+table+sql'
 @ChartFunction => 'COUNT'
 $Width  => undef
@@ -63,7 +64,7 @@ my $font = $font_config{ $session{CurrentUser}->UserObj->Lang || '' }
     || $font_config{'others'};
 
 s/\D//g for grep defined, $Width, $Height;
-$Width  ||= 600;
+$Width  ||= ($ChartStyle =~ /\bpie\b/ ? 400 : 600);
 $Height ||= ($ChartStyle =~ /\bpie\b/ ? $Width : 400);
 $Height = $Width if $ChartStyle =~ /\bpie\b/;
 
@@ -171,6 +172,82 @@ my $chart = $chart_class->new( $Width => $Height );
 
 my %chart_options;
 if ($chart_class eq "GD::Graph::bars") {
+    my $text_size = sub {
+        my ($size, $text) = (@_);
+        my $font_handle = GD::Text::Align->new(
+            $chart->get('graph'), valign => 'top', 'halign' => 'center',
+        );
+        $font_handle->set_font($font, $size);
+        $font_handle->set_text($text);
+        return $font_handle;
+    };
+
+    # $ChartStyle could be pie even if $chart_class is ::bars
+    if ( $StackedGroupBy && $ChartStyle =~ /\bbar\b/ ) {
+        if ( scalar @data > 2 ) {
+            RT->Logger->warning( "Invalid stack option: it can't apply to multiple data rows" );
+        }
+        else {
+
+            my $labels = $data[0];
+
+            # find the stacked group index
+            require List::MoreUtils;
+            my $stacked_index = List::MoreUtils::first_index { $_ eq $StackedGroupBy } @GroupBy;
+            if ( $stacked_index >= 0 ) {
+                $chart_options{cumulate} = 1;
+                my @new_labels;
+                my %rows;
+                my $i = 0;
+
+                for my $label ( @$labels ) {
+                    my @new_label = @$label;
+                    splice @new_label, $stacked_index, 1; # remove the stacked group
+                    my $key = join ';;;', @new_label;
+                    push @new_labels, \@new_label unless $rows{$key};
+                    push @{$rows{$key}}, $data[1][$i] . ' ' . $label->[$stacked_index];
+                    $i++;
+                }
+
+                # increase $Width and $Height if necessary
+                require List::Util;
+                my ( $max_sum, $min_value, $max_width );
+                for my $vertical_values ( map { $rows{join ';;;', @$_} } @new_labels ) {
+                    my $sum = List::Util::sum( map { defined $_ && /^(\d+)/ ? $1 : () } @$vertical_values );
+                    my $min_v = List::Util::min( map { defined $_ && /^(\d+)/ ? $1 : () } @$vertical_values );
+                    my $max_w = List::Util::max( map { defined $_ ? $text_size->(12, $_)->get('width') : () } @$vertical_values );
+                    $max_sum = $sum if !$max_sum || $max_sum < $sum;
+                    $min_value = $min_v if !$min_value || ( $min_v > 0 && $min_value > $min_v );
+                    $max_width = $max_w if !$max_width || $max_width < $max_w;
+                }
+
+                $chart_options{y_max_value} = int( $max_sum * 1.1 );
+                $chart_options{y_max_value} += 5 - $chart_options{y_max_value} % 5;
+                if ( $min_value ) {
+                    my $pixels = $min_value * $Height / $chart_options{y_max_value};
+                    if ( $pixels < 30 ) {
+                        $Height = int( $Height * 30 / $pixels );
+                    }
+                    $Height = 200 if $Height < 200;
+                }
+
+                my $value_width = ( $max_width + 25 ) * scalar @new_labels;
+                $Width = $value_width * 2 if $Width < $value_width * 2;
+                $Width = 200 if $Width < 200;
+
+                @data = \@new_labels;
+
+                my $ea = List::MoreUtils::each_arrayref( map { $rows{join ';;;', @$_} } @new_labels );
+                while ( my ( @list ) = $ea->() ) {
+                    push @data, [ map { $_ || '' } @list ];
+                }
+            }
+            else {
+                RT->Logger->warning("Invalid StackedGroupBy: $StackedGroupBy");
+            }
+        }
+    }
+
     my $count = @{ $data[0] };
     $chart_options{'bar_spacing'} =
         $count > 30 ? 1
@@ -206,15 +283,6 @@ if ($chart_class eq "GD::Graph::bars") {
         $chart_options{'y_label_skip'} = 2;
         $chart_options{'y_tick_number'} = 10;
     }
-    my $text_size = sub {
-        my ($size, $text) = (@_);
-        my $font_handle = GD::Text::Align->new(
-            $chart->get('graph'), valign => 'top', 'halign' => 'center',
-        );
-        $font_handle->set_font($font, $size);
-        $font_handle->set_text($text);
-        return $font_handle;
-    };
 
     my $fitter = sub {
         my %args = @_;
@@ -341,7 +409,14 @@ if ($chart_class eq "GD::Graph::bars") {
     }
 
     # try to fit in values above bars
-    {
+    if ( $chart_options{cumulate} ) {
+        $chart_options{'show_values'}             = 1;
+        $chart_options{'values_vertical'}         = 0;
+        $chart_options{'values_space'}            = -25;
+        $chart_options{'values_font'}             = [ $font, 12 ];
+        $chart_options{'hide_overlapping_values'} = 1;
+    }
+    else {
         # 0.8 is guess, labels for ticks on Y axis can be wider
         # 1.5 for paddings around bars that GD::Graph adds
         my $x_space_for_label = $Width*0.8/($count*(@data - 1)+1.5);
@@ -388,15 +463,16 @@ if ($chart_class eq "GD::Graph::bars") {
         );
         $chart_options{'show_values'} = 1;
         $chart_options{'hide_overlapping_values'} = 1;
+
         if ( $found_solution ) {
             $chart_options{'values_font'} = [ $font, $found_solution ],
-            $chart_options{'values_space'} = 2;
-            $chart_options{'values_vertical'} =
+            $chart_options{'values_space'} ||= 2;
+            $chart_options{'values_vertical'} //=
                 $can{'horizontal, one line'} ? 0 : 1;
         } else {
             $chart_options{'values_font'} = [ $font, 9 ],
-            $chart_options{'values_space'} = 1;
-            $chart_options{'values_vertical'} = 1;
+            $chart_options{'values_space'} ||= 1;
+            $chart_options{'values_vertical'} //= 1;
         }
     }
 
@@ -409,7 +485,7 @@ if ($chart_class eq "GD::Graph::bars") {
 # use a top margin enough to display values over the top line if needed
         t_margin => 18,
 # the following line to make sure there's enough space for values to show
-        y_max_value => $max_value,
+        ( $chart_options{y_max_value} || 0 ) < $max_value ? ( y_max_value => $max_value ) : (),
         y_min_value => $min_value,
 # if there're too many bars or at least one key is too long, use vertical
         bargroup_spacing => $chart_options{'bar_spacing'}*5,
@@ -457,6 +533,29 @@ $chart->{dclrs} = [ RT->Config->Get("ChartColors") ];
         my $color_hex = $self->{dclrs}[ $_[0] % @{ $self->{dclrs} } - 1 ];
         return map { hex } ( $color_hex =~ /(..)(..)(..)/ );
     };
+
+    if ( $chart_options{cumulate} ) {
+        # Avoid "numeric" warnings caused by labels like "2 open" or absent
+        # stacks.
+        no strict 'refs';
+        my @warning_subs = ();
+        for my $pkg ( 'GD::Graph::Data::', 'GD::Graph::axestype::', 'GD::Graph::bars' ) {
+            push @warning_subs, map { $pkg . $_ } grep { /^[a-z_]+$/ } keys %$pkg;
+        }
+
+        if ( !$RT::HandledGDGraphNumericWarnings ) {
+            for my $warning_sub ( @warning_subs ) {
+                my ( $package, $sub ) = $warning_sub =~ /(.+)::(\w+)/;
+                if ( my $orig = $package->can($sub) ) {
+                    *$warning_sub = sub {
+                        local $SIG{__WARN__} = sub { warn $_[0] unless $_[0] =~ /numeric/ };
+                        $orig->( @_ );
+                    };
+                }
+            }
+            $RT::HandledGDGraphNumericWarnings = 1;
+        }
+    }
 }
 
 if (my $plot = eval { $chart->plot( \@data ) }) {

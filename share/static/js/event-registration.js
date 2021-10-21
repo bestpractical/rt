@@ -52,7 +52,7 @@ jQuery(function() {
             .clone(true, true)
             .attr("name", name + "-Complete")
             .attr("disabled", "disabled")
-            .hide()
+            .addClass('hidden')
             .insertAfter(this);
 
         var groups = jQuery(this)
@@ -70,12 +70,15 @@ jQuery(function() {
         if (selected === undefined) selected = "";
         jQuery('option[value="' + selected + '"]', groups).attr("selected", "selected");
 
+        jQuery(this).selectpicker();
+        groups.selectpicker();
+
         // Wire it all up
         groups.change(function(){
             var name     = this.name.replace(/-Groups$/, '');
             var field    = jQuery(this);
-            var subfield = field.next("select[name=" + name + "]");
-            var complete = subfield.next("select[name=" + name + "-Complete]");
+            var subfield = field.closest('fieldset').find("select[name=" + name + "]");
+            var complete = field.closest('fieldset').find("select[name=" + name + "-Complete]");
             var value    = field.val();
             filter_cascade_select( subfield[0], complete[0], value );
         }).change();

@@ -515,7 +515,7 @@ declared, so you may remove Set($ExternalAuth, 1); from your config.
 =item *
 
 We've deprecated the /Admin/CustomFields/Modify.html callback named
-AfterUpdateCustomFieldValue. It will be removed in RT 4.6.
+AfterUpdateCustomFieldValue. It will be removed in RT 5.0.
 
 =back
 
@@ -638,6 +638,75 @@ To restore the previous configuration and show all attachments,
 add the following to your C<RT_SiteConfig.pm>.
 
     Set($AttachmentListCount, undef);
+
+=item * User Timezone and Dates in Ticket Searches
+
+This releases fixes an issue with how "=" in time comparisons in ticket
+searches applied timezone settings. Previously, dates would be adjusted
+based on the global RT timezone even if the user had a different timezone.
+This has been fixed to correctly use the user's timezone.
+
+Note that this change may modify results for some saved searches for users
+with a different timezone than RT's global setting.
+
+=item * Script to reduce records in CachedGroupMembers
+
+When adding groups to roles on tickets, we have found that caching the
+members of these added groups in the CachedGroupMembers table makes
+performance worse rather than improving it. This release includes updates
+to no longer add these members recursively.
+
+If you use groups in ticket roles, it's likely your CachedGroupMembers table
+has a large number of now unnecessary records and these can hurt performance.
+To delete these extra records run the following script:
+
+    /opt/rt4/etc/upgrade/shrink-cgm-table
+
+Depending on how many records your system has, this may take a while to run.
+After you run this, you may have significantly reduced the number of records
+in your CachedGroupMembers table, and may need to tell your database to
+refresh indexes/statistics.
+
+=item * Run Transaction Batch last, even in nested updates
+
+When RT processes scrips, Batch mode scrips should always run last.
+Previously, with nested updates, inner updates would run batch before
+all outer updates were complete. One example of this is processing ticket
+updates, the Basics update calls an inner "atomic" transaction to update
+Owner, which would cause the unexpected batch run. This has been fixed
+so batch runs only once for the outermost updates. All transactions
+performed for that batch are available from the C<TransactionBatch> method
+as expected.
+
+=item * Ambigious Owner order by option in search replaced with Owner.Name
+
+RT 4.4.5 adds a bunch of new order by and format options for users and roles
+to the Query Builder. For example, you can order by user fields on a user
+like Owner.EmailAddress, Owner.RealName, or even Owner.Organization.
+As part of this change, the previous Owner entry has been renamed to
+Owner.Name.
+
+The upgrade scripts include a step to make this change in any saved searches
+in the database automatically. If you have Owner as an order by field in
+searches stored elsewhere or as a link, you can update to Owner.Name manually.
+
+=item * Default "order by" field for roles in search results
+
+Because of the new options mentioned above, when displaying role information
+we also set defaults for order by behavior when you click headers on search
+results to re-sort them. For example, in a list of ticket results, you can
+click on Requestors to re-sort the results by that field.
+
+Previously this order by used EmailAddress. It now defaults to Name
+because we believe that is more common for sorting, but because of
+the new features you can change this in your search Format.
+For example, you can update the line in the Format section on
+the Advanced page to look like this:
+
+    '<small>__Requestor.EmailAddress__</small>',
+
+That column will then specifically show EmailAddress and when you click
+it will order by EmailAddress.
 
 =back
 

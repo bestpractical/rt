@@ -2,7 +2,7 @@
 #
 # COPYRIGHT:
 #
-# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 #                                          <sales@bestpractical.com>
 #
 # (Except where explicitly superseded by other copyright notices)
@@ -189,11 +189,10 @@ sub _WatcherJoin {
     my $group_members = $self->_GroupMembersJoin( GroupsAlias => $groups );
     # XXX: work around, we must hide groups that
     # are members of the role group we search in,
-    # otherwise them result in wrong NULLs in Users
-    # table and break ordering. Now, we know that
-    # RT doesn't allow to add groups as members of the
-    # ticket roles, so we just hide entries in CGM table
-    # with MemberId == GroupId from results
+    # otherwise they result in wrong NULLs in Users
+    # table and break ordering.
+
+    # Exclude role groups themselves
     $self->Limit(
         LEFTJOIN   => $group_members,
         FIELD      => 'GroupId',
@@ -201,6 +200,26 @@ sub _WatcherJoin {
         VALUE      => "$group_members.MemberId",
         QUOTEVALUE => 0,
     );
+
+    # Exclude groups added in role groups.  It technially also covers
+    # the above limit, but with that limit, SQL could be faster as it
+    # reduces rows to process before the following join.
+
+    my $groups_2 = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => $group_members,
+        FIELD1 => 'MemberId',
+        TABLE2 => 'Groups',
+        FIELD2 => 'id',
+    );
+    $self->Limit(
+        ALIAS           => $groups_2,
+        FIELD           => 'id',
+        OPERATOR        => 'IS',
+        VALUE           => 'NULL',
+        SUBCLAUSE       => "exclude_groups",
+    );
+
     my $users = $self->Join(
         TYPE            => 'LEFT',
         ALIAS1          => $group_members,
@@ -222,6 +241,7 @@ sub RoleLimit {
         VALUE => undef,
         @_
     );
+    my $is_shallow = ( $args{OPERATOR} =~ s/^shallow\s*//i );
 
     my $class = $args{CLASS} || $self->_RoleGroupClass;
 
@@ -235,9 +255,9 @@ sub RoleLimit {
 
     my $column = $type ? $class->Role($type)->{Column} : undef;
 
-    # if it's equality op and search by Email or Name then we can preload user
+    # if it's equality op and search by Email or Name then we can preload user/group
     # we do it to help some DBs better estimate number of rows and get better plans
-    if ( $args{OPERATOR} =~ /^!?=$/
+    if ( $args{QUOTEVALUE} && $args{OPERATOR} =~ /^!?=$/
              && (!$args{FIELD} || $args{FIELD} eq 'Name' || $args{FIELD} eq 'EmailAddress') ) {
         my $o = RT::User->new( $self->CurrentUser );
         my $method =
@@ -245,8 +265,27 @@ sub RoleLimit {
             ? ($column ? 'Load' : 'LoadByEmail')
             : $args{FIELD} eq 'EmailAddress' ? 'LoadByEmail': 'Load';
         $o->$method( $args{VALUE} );
+        my @values;
+        @values = $o->Id if $o->Id;
+
+        if ( !$args{FIELD} || $args{FIELD} eq 'Name' ) {
+            my $group = RT::Group->new( $self->CurrentUser );
+            $group->LoadUserDefinedGroup( $args{VALUE} );
+            push @values, $group->Id if $group->Id;
+        }
+
         $args{FIELD} = 'id';
-        $args{VALUE} = $o->id || 0;
+        if ( @values == 1 ) {
+            $args{VALUE} = $values[0];
+        }
+        elsif ( @values > 1 ) {
+            RT->Logger->debug("Name $args{VALUE} is used in both user and group");
+            $args{VALUE} = \@values;
+            $args{OPERATOR} = $args{OPERATOR} =~ /!/ ? 'NOT IN' : 'IN';
+        }
+        else {
+            $args{VALUE} = 0;
+        }
     }
 
     if ( $column and $args{FIELD} and $args{FIELD} eq 'id' ) {
@@ -257,7 +296,7 @@ sub RoleLimit {
         return;
     }
 
-    $args{FIELD} ||= 'EmailAddress';
+    $args{FIELD} ||= $args{QUOTEVALUE} ? 'EmailAddress' : 'id';
 
     my ($groups, $group_members, $users);
     if ( $args{'BUNDLE'} and @{$args{'BUNDLE'}}) {
@@ -312,11 +351,24 @@ sub RoleLimit {
         if ( @users <= 1 ) {
             my $uid = 0;
             $uid = $users[0]->id if @users;
+
+            my @ids;
+            if ( $is_shallow ) {
+                @ids = $uid;
+            }
+            else {
+                my $groups = RT::Groups->new( RT->SystemUser );
+                $groups->LimitToUserDefinedGroups;
+                $groups->WithMember( PrincipalId => $uid, Recursively => 1 );
+                @ids = ( $uid, map { $_->id } @{ $groups->ItemsArrayRef } );
+            }
+
             $self->Limit(
                 LEFTJOIN      => $group_members,
                 ALIAS         => $group_members,
                 FIELD         => 'MemberId',
-                VALUE         => $uid,
+                VALUE         => \@ids,
+                OPERATOR      => 'IN',
             );
             $self->Limit(
                 %args,
@@ -360,26 +412,66 @@ sub RoleLimit {
         # positive condition case
 
         $group_members ||= $self->_GroupMembersJoin(
-            GroupsAlias => $groups, New => 1, Left => 0
+            GroupsAlias => $groups, New => 1,
         );
         if ($args{FIELD} eq "id") {
+            my @ids = ref $args{VALUE} eq 'ARRAY' ? @{ $args{VALUE} } : $args{VALUE};
+            if ( !$is_shallow ) {
+                my @group_ids;
+                for my $id (@ids) {
+                    my $groups = RT::Groups->new( RT->SystemUser );
+                    $groups->LimitToUserDefinedGroups;
+                    $groups->WithMember( PrincipalId => $id, Recursively => 1 );
+                    push @group_ids, map { $_->id } @{ $groups->ItemsArrayRef };
+                }
+                push @ids, @group_ids;
+            }
+
             # Save a left join to Users, if possible
             $self->Limit(
                 %args,
                 ALIAS           => $group_members,
                 FIELD           => "MemberId",
-                OPERATOR        => $args{OPERATOR},
-                VALUE           => $args{VALUE},
+                OPERATOR        => 'IN',
+                VALUE           => \@ids,
                 CASESENSITIVE   => 0,
             );
         } else {
-            $users ||= $self->Join(
-                TYPE            => 'LEFT',
-                ALIAS1          => $group_members,
-                FIELD1          => 'MemberId',
-                TABLE2          => 'Users',
-                FIELD2          => 'id',
-            );
+
+            if ( $is_shallow ) {
+                $users ||= $self->Join(
+                    TYPE            => 'LEFT',
+                    ALIAS1          => $group_members,
+                    FIELD1          => 'MemberId',
+                    TABLE2          => 'Users',
+                    FIELD2          => 'id',
+                );
+            }
+            else {
+                my $cgm_2 = $self->NewAlias('CachedGroupMembers');
+                my $group_members_2 = $self->Join(
+                    TYPE   => 'LEFT',
+                    ALIAS1 => $group_members,
+                    FIELD1 => 'MemberId',
+                    ALIAS2 => $cgm_2,
+                    FIELD2 => 'GroupId',
+                );
+                $self->Limit(
+                    LEFTJOIN => $group_members_2,
+                    ALIAS => $cgm_2,
+                    FIELD => 'Disabled',
+                    VALUE => 0,
+                    ENTRYAGGREGATOR => 'AND',
+                );
+
+                $users ||= $self->Join(
+                    TYPE            => 'LEFT',
+                    ALIAS1          => $group_members_2,
+                    FIELD1          => 'MemberId',
+                    TABLE2          => 'Users',
+                    FIELD2          => 'id',
+                );
+            }
             $self->Limit(
                 %args,
                 ALIAS           => $users,

@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -53,6 +53,104 @@ $Attr  => undef
 <%ONCE>
 
 use Scalar::Util;
+
+my $role_value = sub {
+    my $role   = shift;
+    my $object = shift;
+
+    # $[0] is the index number of current row
+    my $field  = $_[1] || '';
+
+    my ( $role_type, $attr, $cf_name );
+
+
+    if ( $role eq 'CustomRole' ) {
+        my $role_name;
+        if ( $field =~ /^\{(.+)\}\.CustomField\.\{(.+)\}/ ) {
+
+            # {test}.CustomField.{foo}
+            $role_name = $1;
+            $cf_name   = $2;
+        }
+        elsif ( $field =~ /^\{(.+)\}(?:\.(\w+))?$/ ) {
+
+            # {test}.Name or {test}
+            $role_name = $1;
+            $attr      = $2;
+        }
+
+        # Cache the role object on a per-request basis, to avoid
+        # having to load it for every row
+        my $key = "RT::CustomRole-" . $role_name;
+
+        my $role_obj = $m->notes($key);
+        if ( !$role_obj ) {
+            $role_obj = RT::CustomRole->new( $object->CurrentUser );
+            $role_obj->Load($role_name);
+
+            RT->Logger->notice("Unable to load custom role $role_name")
+                unless $role_obj->Id;
+
+            $m->notes( $key, $role_obj );
+        }
+        $role_type = $role_obj->GroupType;
+    }
+    else {
+        if ( $field =~ /^CustomField\.\{(.+)\}/ ) {
+            $cf_name = $1;
+        }
+        elsif ( $field =~ /^(\w+)$/ ) {
+            $attr = $1;
+        }
+        $role_type = $role;
+    }
+
+    return if !$role_type;
+
+    my $role_group = $object->RoleGroup($role_type);
+    if ( $cf_name || $attr ) {
+        # TODO Show direct members only?
+        my $users = $role_group->UserMembersObj;
+        my @values;
+
+        while ( my $user = $users->Next ) {
+            if ($cf_name) {
+                my $key = join( "-", "CF", $user->CustomFieldLookupType, $cf_name );
+                my $cf = $m->notes($key);
+                if ( !$cf ) {
+                    $cf = $user->LoadCustomFieldByIdentifier($cf_name);
+                    RT->Logger->debug( "Unable to load $cf_name for " . $user->CustomFieldLookupType )
+                        unless $cf->Id;
+                    $m->notes( $key, $cf );
+                }
+
+                my $ocfvs = $cf->ValuesForObject($user)->ItemsArrayRef;
+                my $comp
+                    = $m->comp_exists( "/Elements/ShowCustomField" . $cf->Type )
+                    ? "/Elements/ShowCustomField" . $cf->Type
+                    : undef;
+
+                push @values, map { $comp ? \( $m->scomp( $comp, Object => $_ ) ) : $_->Content } @$ocfvs;
+
+            }
+            elsif ( $user->_Accessible( $attr, 'read' ) ) {
+                push @values, $user->$attr || ();
+            }
+        }
+        return @values if @values <= 1;
+
+        if ($cf_name) {
+            @values = map { \"<li>", $_, \"</li>" } @values;
+            @values = ( \"<ul class='cf-values'>", @values, \"</ul>" );
+        }
+        else {
+            return join ', ', @values;
+        }
+    }
+    else {
+        return \( $m->scomp( "/Elements/ShowPrincipal", Object => $role_group ) );
+    }
+};
 
 my ($COLUMN_MAP, $WCOLUMN_MAP);
 $WCOLUMN_MAP = $COLUMN_MAP = {
@@ -140,37 +238,84 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
             }
             return @values;
         },
+        edit      => sub {
+            my $self = $WCOLUMN_MAP->{CustomField};
+            my $cf = $self->{load}->(@_);
+            return unless $cf->Id;
+
+            # uploading files should be done on the modify page
+            return if $cf->Type =~ /^(?:Binary|Image)$/;
+
+            return \($m->scomp('/Elements/EditCustomField', CustomField => $cf, Object => $_[0]))
+        },
     },
     CustomRole => {
-        attribute => sub { return shift @_ },
-        title     => sub { return pop @_ },
-        value     => sub {
-            my $object = shift;
-            my $role_name = pop;
-
-            my $role_type = do {
-                # Cache the role object on a per-request basis, to avoid
-                # having to load it for every row
-                my $key = "RT::CustomRole-" . $role_name;
-
-                my $role_type = $m->notes($key);
-                if (!$role_type) {
-                    my $role_obj = RT::CustomRole->new($object->CurrentUser);
-                    $role_obj->Load($role_name);
-
-                    RT->Logger->notice("Unable to load custom role $role_name")
-                        unless $role_obj->Id;
-
-                    $role_type = $role_obj->GroupType;
-                    $m->notes($key, $role_type);
-                }
-
-                $role_type;
-            };
-
-            return if !$role_type;
-            return \($m->scomp("/Elements/ShowPrincipal", Object => $object->RoleGroup($role_type) ) );
+        attribute => sub {
+            my $field = $_[0];
+            if ( $field =~ /^CustomRole\.\{.+\}\.\w+/ ) {
+                return $field;
+            }
+            else {
+                return "$field.Name";
+            }
         },
+        title     => sub {
+            my $field = pop @_;
+            if (   $field =~ /^\{(.+)\}\.CustomField\.\{(.+)\}/
+                || $field =~ /^\{(.+)\}\.(.+)/ )
+            {
+                return "$1.$2";
+            }
+            elsif ( $field =~ /^\{(.+)\}$/ ) {
+                return $1;
+            }
+            else {
+                return $field;
+            }
+        },
+        load      => sub {
+            my $field = $_[2];
+            my $role_name;
+            if ( $field =~ /^\{(.+)\}\.CustomField\.\{(.+)\}/ ) {
+
+                # {test}.CustomField.{foo}
+                $role_name = $1;
+            }
+            elsif ( $field =~ /^\{(.+)\}(?:\.(\w+))?$/ ) {
+
+                # {test}.Name or {test}
+                $role_name = $1;
+            }
+
+            # Cache the role object on a per-request basis, to avoid
+            # having to load it for every row
+            my $key = "RT::CustomRole-" . $role_name;
+
+            my $role_obj = $m->notes($key);
+            if (!$role_obj) {
+                $role_obj = RT::CustomRole->new($_[0]->CurrentUser);
+                $role_obj->Load($role_name);
+
+                RT->Logger->notice("Unable to load custom role $role_name")
+                    unless $role_obj->Id;
+
+                $m->notes($key, $role_obj);
+            }
+
+            return $role_obj;
+        },
+        edit => sub {
+            my $self = $WCOLUMN_MAP->{CustomRole};
+            my $role   = $self->{load}->(@_);
+            return unless $role->Id;
+            if ($role->SingleValue) {
+                return \($m->scomp("/Elements/SingleUserRoleInput", role => $role, Ticket => $_[0]));
+            }
+            else {
+                return undef;
+            }
+        },
+        value => sub { return $role_value->('CustomRole', @_) },
     },
 
     CheckBox => {
@@ -235,6 +380,15 @@ $WCOLUMN_MAP = $COLUMN_MAP = {
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
 
+# Add a CustomFieldView column for custom fields, but with editing disabled
+$COLUMN_MAP->{'CustomFieldView'} = {};
+
+# We copy all keys from CF to CustomFieldView except for "edit"
+foreach my $key ( keys( %{ $COLUMN_MAP->{'CF'} } ) ) {
+    next if $key eq 'edit';
+    $COLUMN_MAP->{'CustomFieldView'}->{$key} = $COLUMN_MAP->{'CF'}->{$key};
+}
+
 Scalar::Util::weaken($WCOLUMN_MAP);
 
 my $ROLE_MAP = {};
@@ -254,10 +408,29 @@ if ($RecordClass->DOES("RT::Record::Role::Roles")) {
         for my $role ($RecordClass->Roles(UserDefined => 0)) {
             my $attrs = $RecordClass->Role($role);
             $ROLE_MAP->{$RecordClass}{$role} = {
-                title => $role,
-                attribute => $attrs->{Column} || "$role.EmailAddress",
-                value => sub { return \($m->scomp("/Elements/ShowPrincipal", Object => $_[0]->RoleGroup($role) ) ) },
+                attribute => sub {
+                    my $field = $_[0];
+                    if ( $field =~ /\.\w+/ ) {
+                        return $field;
+                    }
+                    else {
+                        return "$field.Name";
+                    }
+                },
+                title => sub {
+                    my $field = pop @_;
+                    if (   $field =~ /^CustomField\.\{(.+)\}/
+                        || $field =~ /^(?!$role)(.+)/ )
+                    {
+                        return "$role.$1";
+                    }
+                    else {
+                        return $role;
+                    }
+                },
+                value => sub { return $role_value->($role, @_, @_ == 2 ? '' : () ) },
             };
+
             $ROLE_MAP->{$RecordClass}{$role . "s"} = $ROLE_MAP->{$RecordClass}{$role}
                 unless $attrs->{Single};
         }

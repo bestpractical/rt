@@ -40,7 +40,26 @@ ok (!$id, $msg);
 $cl->Load('Test-'.$$);
 ok($cl->id, "Loaded the class we want");
 
+diag('Test class custom fields');
 
+my $cfs = $cl->CustomFields;
+is( $cfs->Count, 0, 'Class has no custom fields' );
+
+my $ok;
+my $single_cf = RT::CustomField->new( RT->SystemUser );
+($ok, $msg) = $single_cf->Create( Name => 'Single', Type => 'FreeformSingle', LookupType => RT::Class->CustomFieldLookupType);
+ok($ok, $msg);
+my $single_cf_id = $single_cf->Id;
+
+($ok, $msg) = $single_cf->AddToObject($cl);
+ok($ok, $msg);
+
+$cfs = $cl->CustomFields;
+is( $cfs->Count, 1, 'Class now has one custom field' );
+
+($ok, $msg) = $cl->AddCustomFieldValue( Field => 'Single' , Value => 'foo' );
+ok($ok, $msg);
+is( $cl->FirstCustomFieldValue('Single'), 'foo', 'Custom field has the correct value' );
 
 # Create a new user. make sure they can't create a class
 

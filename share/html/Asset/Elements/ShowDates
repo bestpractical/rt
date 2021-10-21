@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2019 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,28 +45,38 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<table>
-  <tr>
-    <td class="label"><&|/l&>Created</&>:</td>
-    <td>
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Created</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value">
       <&|/l_unsafe,
-          $m->interp->apply_escapes($AssetObj->CreatedAsString, 'h'),
-          $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj)
-        &>[_1] by [_2]</&>
-    </td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Last Updated</&>:</td>
-    <td>
+        $m->interp->apply_escapes($AssetObj->CreatedAsString, 'h'),
+        $m->scomp('/Elements/ShowUser', User => $AssetObj->CreatorObj)
+      &>[_1] by [_2]</&>
+    </span>
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>Last Updated</&>:
+  </div>
+  <div class="value col-9">
+    <span class="current-value">
       <&|/l_unsafe,
-          $m->interp->apply_escapes($AssetObj->LastUpdatedAsString, 'h'),
-          $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj)
-        &>[_1] by [_2]</&>
-    </td>
-  </tr>
-  <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Dates', Table => 0 &>
+        $m->interp->apply_escapes($AssetObj->LastUpdatedAsString, 'h'),
+        $m->scomp('/Elements/ShowUser', User => $AssetObj->LastUpdatedByObj)
+      &>[_1] by [_2]</&>
+    </span>
+  </div>
+</div>
+
+<div class="form-row">
+  <& /Elements/ShowCustomFields, Object => $AssetObj, Grouping => 'Dates' &>
+</div>
 % $m->callback(%ARGS, CallbackName => "AfterFields");
-</table>
 <%args>
 $AssetObj
 </%args>
