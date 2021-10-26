@@ -2809,7 +2809,7 @@ sub _CanonilizeAttributeContent {
                     next unless $entry->{portlet_type} eq 'search';
                     if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
                         if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
-                            my $attributes = $object->Attributes;
+                            my $attributes = $object->Attributes->Clone();
                             $attributes->Limit( FIELD => 'Description', VALUE => $entry->{Description} );
                             if ( my $attribute = $attributes->First ) {
                                 $entry->{id} = $attribute->id;
