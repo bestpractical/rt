@@ -76,6 +76,8 @@ GetOptions(
     'siteinstall!',
     'help|h',
 
+    'testinstall!',
+
     # No-ops, for back-compat
     'v|verbose', 'with-ICAL', 'with-DASHBOARDS', 'with-USERLOGO',
 );
@@ -99,6 +101,7 @@ my %default = (
     'with-EXTERNALAUTH' => @RT_EXTERNALAUTH@,
     'with-S3'           => (uc(q{@ATTACHMENT_STORE@}) eq 'S3'),
     'with-DROPBOX'      => (uc(q{@ATTACHMENT_STORE@}) eq 'DROPBOX'),
+    'testinstall'       => 1
 );
 
 $default{"with-".uc("@DB_TYPE@")} = 1 unless grep {$args{"with-$_"}} qw/MYSQL PG SQLITE ORACLE/;
@@ -396,8 +399,13 @@ sub resolve_dep {
             if $args{siteinstall};
         local $CPAN::Config->{makepl_arg} = $installdirs;
 
-        my $rv = eval { require CPAN; CPAN::Shell->install($module) };
-        return $rv unless $@;
+	my $rv;
+	if ($args{'testinstall'}) {
+          $rv = eval { require CPAN; CPAN::Shell->install($module) };
+	} else {
+          $rv = eval { require CPAN; CPAN::Shell->notest('install', $module) };
+	}
+	return $rv unless $@;
     }
 
     if ( $ext =~ /\%s/ ) {
