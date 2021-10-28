@@ -168,6 +168,7 @@ $session{'i'}++;
 $session{$session_name} = $Class->new($session{'CurrentUser'}) ;
 
 my ( $ok, $msg );
+$Query = "id > 0" if $Query eq "";
 if ( $Query ) {
     if ( $Class eq 'RT::Transactions' ) {
         my @limits = ( "ObjectType = '$ObjectType'", "($Query)" );
