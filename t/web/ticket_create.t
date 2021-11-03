@@ -94,4 +94,23 @@ $m->content_lacks( 'Permission Denied', 'Has permission to create ticket' );
 $form = $m->form_name('TicketCreate');
 is_deeply( [ $form->find_input('Queue','option')->possible_values ], [ $queue2->id ], 'Only Another queue is listed' );
 
+diag 'Test DefaultQueue setting with and without SeeQueue rights';
+
+RT::Test->stop_server;
+RT->Config->Set(DefaultQueue => 'General');
+( $baseurl, $m ) = RT::Test->started_ok;
+
+ok( $user->PrincipalObj->RevokeRight( Right => 'SeeQueue', Object => RT->System ), 'Revoke SeeQueue right' );
+ok( $m->login( 'user', 'password' ), 'Logged in as user' );
+$m->submit_form_ok( { form_name => 'CreateTicketInQueue' }, 'Try to create ticket' );
+$m->text_contains('Permission Denied', 'No permission to create ticket without SeeQueue');
+$m->warning_like(qr/Permission Denied/, 'Permission denied warning' );
+
+ok( $user->PrincipalObj->GrantRight( Right => 'SeeQueue', Object => $queue2 ), 'Grant SeeQueue right to Another queue' );
+$m->submit_form_ok( { form_name => 'CreateTicketInQueue' }, 'Try to create ticket' );
+$m->content_lacks( 'Permission Denied', 'Has permission to create ticket' );
+$form = $m->form_name('TicketCreate');
+is( $form->value('Queue'), $queue2->id, 'Queue selection dropdown populated and pre-selected with ' . $queue2->Name );
+is_deeply( [ $form->find_input('Queue','option')->possible_values ], [ $queue2->id ], 'Only queue listed is ' . $queue2->Name );
+
 done_testing();
