@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, Title => $Title &>
 <& /Elements/Tabs &>
 <& /Elements/ListActions, actions => \@results &>
 
-<&|/Widgets/TitleBox, title => loc('Set Homepage'), bodyclass => "", class => "mx-auto max-width-lg" &>
+<&|/Widgets/TitleBox, title => $WidgetTitle, bodyclass => "", class => "mx-auto max-width-lg" &>
 <form method="post" name="UpdateDefaultDashboard" class="mx-auto max-width-lg">
   <div class="form-row">
     <div class="col-12">
@@ -63,19 +63,32 @@
 Abort( loc("Permission Denied") ) unless $session{CurrentUser}->HasRight( Right => 'SuperUser', Object => RT->System );
 
 my @results;
-my $title = loc("Customize").' '.loc("Global RT at a glance");
 
-my ($system_default) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
+my ($system_default) = RT::System->new( $session{'CurrentUser'} )->Attributes->Named($AttributeName);
 my $default_dashboard_id = $system_default ? $system_default->Content : 0;
 
 my ($default) = map { /^DefaultDashboard-(\d+)/ ? $1 : () } keys %ARGS;
 if ( $default ) {
-    my ( $ret, $msg ) = RT->System->SetAttribute( Name => 'DefaultDashboard', Description => 'Default Dashboard', Content => $default );
+    my ( $ret, $msg ) = RT->System->SetAttribute( Name => $AttributeName, Description => $AttributeDescription, Content => $default );
     push @results, $ret ? loc('Preferences saved.') : $msg;
     MaybeRedirectForResults(
-        Actions => \@results,
-        Path    => "/Admin/Global/MyRT.html",
+        Actions   => \@results,
+        Path      => "/Admin/Global/MyRT.html",
+        Arguments => {
+            Title                => $Title,
+            WidgetTitle          => $WidgetTitle,
+            AttributeName        => $AttributeName,
+            AttributeDescription => $AttributeDescription,
+        },
     );
+
 }
 
 </%INIT>
+
+<%ARGS>
+$Title                => loc('Customize') . ' ' . loc("Global RT at a glance")
+$WidgetTitle          => loc('Set Homepage')
+$AttributeName        => 'DefaultDashboard'
+$AttributeDescription => 'Default Dashboard'
+</%ARGS>
