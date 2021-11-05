@@ -6,11 +6,6 @@
     width: 100%;
 }
 
-#ticket-create-message #SubmitTicket,
-#ticket-update-message #SubmitTicket {
-    padding-bottom: 2em;
-}
-
 .ticket-update-suggested-cc {
     white-space: nowrap;
 }
@@ -52,10 +47,6 @@
         width: auto;
         clear: both;
     }
-}
-
-.sidebyside #comp-Ticket-Update #body {
-    padding-top: 3em;
 }
 
 .sidebyside #ticket-create-message .button[name="AddMoreAttach"],
