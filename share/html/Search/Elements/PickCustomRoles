@@ -49,6 +49,8 @@
 %queues => ()
 </%ARGS>
 <%INIT>
+RT->Deprecated( Message => '/Search/Elements/PickCustomRoles is obsolete', Remove => '5.2' );
+
 my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
 foreach my $id (keys %queues) {
     # Gotta load up the $queue object, since queues get stored by name now.

@@ -439,7 +439,7 @@ else {
             Field => {
                 Type => 'component',
                 Path => 'SelectPersonType',
-                Arguments => { Default => 'Requestor' },
+                Arguments => { Default => 'Requestor', Queues => \%queues },
             },
             Op => {
                 Type => 'component',

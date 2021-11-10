@@ -105,6 +105,19 @@ else {
    }
    else {
       @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
+
+      my $CustomRoles = RT::CustomRoles->new( $session{'CurrentUser'});
+      foreach my $id (keys %Queues) {
+          my $queue = RT::Queue->new($session{'CurrentUser'});
+          $queue->Load($id);
+          next unless $queue->Id;
+          $CustomRoles->LimitToObjectId($queue->Id);
+      }
+      $m->callback(
+          CallbackName => 'MassageCustomRoles',
+          CustomRoles  => $CustomRoles,
+      );
+      push @types, map { [ "CustomRole.{" . $_->Name . "}", $_->Name ] } @{ $CustomRoles->ItemsArrayRef };
    }
 
     @subtypes = @{ $RT::Tickets::SEARCHABLE_SUBFIELDS{'User'} };
@@ -122,4 +135,5 @@ $Scope => $Class eq 'RT::Assets' ? 'asset' : 'ticket'
 $Name => 'WatcherType'
 $Role => undef
 @Roles => ()
+%Queues => ()
 </%ARGS>
