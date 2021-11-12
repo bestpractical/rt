@@ -152,9 +152,9 @@
 % while (my $CF = $CFs->Next) {
   <div class="form-row">
     <div class="label col-3">
-      <% $CF->Name %>:
+      <span class="<% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
 % if ( $CF->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
 % }
     </div>
     <div class="value col-9">
