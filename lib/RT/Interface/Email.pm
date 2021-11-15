@@ -550,7 +550,7 @@ sub CheckForLoops {
     my $RTLoop = Encode::decode( "UTF-8", $head->get("X-RT-Loop-Prevention") || "" );
     chomp ($RTLoop); # remove that newline
     if ( $RTLoop =~ ( $queue . '.' . RT->Config->Get('rtname') . ',') ) {
-        $RT::Logger->warning("Dropping mail because X-RT-Loop-Protection contains " . $queue . '.' . RT->Config->Get('rtname') . ',';
+        $RT::Logger->warning("Dropping mail because X-RT-Loop-Protection contains " . $queue . '.' . RT->Config->Get('rtname'));
         return 1;
     }
 
