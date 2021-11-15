@@ -4800,7 +4800,10 @@ sub GetDefaultQueue {
         $queue = RT->Config->Get( "DefaultQueue", $session{'CurrentUser'} );
     }
 
-    return $queue;
+    # Confirm the user can see and load the default queue
+    my $queue_obj = RT::Queue->new( $HTML::Mason::Commands::session{'CurrentUser'} );
+    $queue_obj->Load($queue);
+    return defined $queue_obj->Name ? $queue_obj->Id : undef;
 }
 
 =head2 UpdateDashboard
@@ -5232,6 +5235,7 @@ sub GetDashboards {
     my %args = (
         Objects     => undef,
         CurrentUser => $session{CurrentUser},
+        DefaultAttribute => 'DefaultDashboard',
         @_,
     );
 
@@ -5239,7 +5243,7 @@ sub GetDashboards {
 
     $args{Objects} ||= [ RT::Dashboard->new( $args{CurrentUser} )->ObjectsForLoading( IncludeSuperuserGroups => 1 ) ];
 
-    my ($system_default) = RT::System->new( $args{'CurrentUser'} )->Attributes->Named('DefaultDashboard');
+    my ($system_default) = RT::System->new( $args{'CurrentUser'} )->Attributes->Named( $args{DefaultAttribute} );
     my $default_dashboard_id = $system_default ? $system_default->Content : 0;
 
     my $found_system_default;

@@ -72,7 +72,7 @@
 %     if ( $dashboard->{id} == $Default ) {
         <&|/l&>Current Homepage</&>
 %     } else {
-        <input name="DefaultDashboard-<% $dashboard->{id} %>" class="button btn btn-primary form-control" type="submit" value="<&|/l&>Set as Homepage</&>" />
+        <input name="<% $Name %>-<% $dashboard->{id} %>" class="button btn btn-primary form-control" type="submit" value="<&|/l&>Set as Homepage</&>" />
 %     }
       </td>
     </tr>

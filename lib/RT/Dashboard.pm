@@ -335,10 +335,10 @@ sub CurrentUserCanDelete {
 
     # Don't allow to delete system default dashboard
     if ($can) {
-        my ($system_default) = RT::System->new( RT->SystemUser )->Attributes->Named('DefaultDashboard');
-        if ( $system_default && $system_default->Content && $system_default->Content == $self->Id ) {
-            return 0;
-        }
+        my $attrs = RT::System->new( RT->SystemUser )->Attributes;
+        $attrs->Limit( FIELD => 'Name', OPERATOR => 'ENDSWITH', VALUE => 'DefaultDashboard' );
+        $attrs->Limit( FIELD => 'Content', VALUE => $self->Id );
+        return 0 if $attrs->First;
     }
 
     return $can;
