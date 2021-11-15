@@ -405,24 +405,14 @@ The Name of an L<RT::Group>.
 
 sub CanonicalizePrincipal {
     my $self = shift;
-    my %args = (@_);
+    my %args = (ExcludeRTAddress => 1, @_);
 
     return (0, $self->loc("One, and only one, of Principal/PrincipalId/User/Group is required"))
         if 1 != grep { $_ } @args{qw/Principal PrincipalId User Group/};
 
-    if ($args{Principal}) {
-        return $args{Principal};
-    }
-    elsif ($args{PrincipalId}) {
-        # Check the PrincipalId for loops
-        my $principal = RT::Principal->new( $self->CurrentUser );
-        $principal->Load($args{'PrincipalId'});
-        if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
-            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
-                                  $email, $self->loc($args{Type})))
-                if RT::EmailParser->IsRTAddress( $email );
-        }
-    } else {
+    $args{PrincipalId} = $args{Principal}->Id if $args{Principal};
+
+    if ( !$args{PrincipalId} ) {
         if ( ( $args{User} || '' ) =~ /^\s*group\s*:\s*(\S.*?)\s*$/i ) {
             $args{Group} = $1;
             delete $args{User};
@@ -433,7 +423,7 @@ sub CanonicalizePrincipal {
             # Sanity check the address
             return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
                                   $name, $self->loc($args{Type}) ))
-                if RT::EmailParser->IsRTAddress( $name );
+                if $args{ExcludeRTAddress} && RT::EmailParser->IsRTAddress( $name );
 
             # Create as the SystemUser, not the current user
             my $user = RT::User->new(RT->SystemUser);
@@ -464,6 +454,20 @@ sub CanonicalizePrincipal {
 
     my $principal = RT::Principal->new( $self->CurrentUser );
     $principal->Load( $args{PrincipalId} );
+
+    if (    $args{ExcludeRTAddress}
+        and $principal->Id
+        and $principal->IsUser
+        and my $email = $principal->Object->EmailAddress )
+    {
+        return (
+            0,
+            $self->loc(
+                "[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop",
+                $email, $self->loc( $args{Type} )
+            )
+        ) if RT::EmailParser->IsRTAddress($email);
+    }
 
     return $principal;
 }
@@ -570,7 +574,7 @@ sub DeleteRoleMember {
     return (0, $self->loc("That role is invalid for this object"))
         unless $args{Type} and $self->HasRole($args{Type});
 
-    my ($principal, $msg) = $self->CanonicalizePrincipal(%args);
+    my ($principal, $msg) = $self->CanonicalizePrincipal(%args, ExcludeRTAddress => 0);
     return (0, $msg) if !$principal;
 
     my $acl = delete $args{ACL};
