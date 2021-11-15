@@ -206,7 +206,7 @@ sub Gateway {
         if IsMachineGeneratedMail(
             Message   => $Message,
             Subject   => $Subject,
-            Queue     => $SystemQueueObj->Name;
+            Queue     => $SystemQueueObj->Name,
         );
 
     # Make all errors from here on out bounce back to $ErrorsTo
