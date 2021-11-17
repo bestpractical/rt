@@ -94,6 +94,18 @@ Set to true value to enable this subsystem:
         ... other options ...
     );
 
+=head3 Setting the GnuPG Command
+
+By default, RT looks for a command named C<gpg> in your C<$PATH> to run GnuPG.
+If the command has a different name or is outside the C<$PATH> on your system,
+you can specify the full path of the GnuPG command using the C<GnuPG> option:
+
+    Set( %GnuPG,
+        Enable => 1,
+        GnuPG  => '/usr/local/bin/gpg2',
+        ... other options ...
+    );
+
 =head3 Format of outgoing messages
 
 The format of outgoing messages can be controlled using the
