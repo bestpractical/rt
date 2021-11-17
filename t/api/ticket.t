@@ -363,4 +363,25 @@ diag("Test LazyRoleGroups");
     }
 }
 
+diag "Delete role members with RT internal addresses";
+{
+    RT->Config->Set( 'RTAddressRegexp', undef );
+    my $queue = RT::Test->load_or_create_queue( Name => 'General' );
+    ok( $queue->SetCorrespondAddress('test@localhost') );
+    is( $queue->CorrespondAddress, 'test@localhost', 'Set queue reply address' );
+    my $t = RT::Ticket->new( RT->SystemUser );
+    my ($ok) = $t->Create(
+        Queue     => 'General',
+        Subject   => 'Delete RT address test from role',
+        Requestor => 'test@localhost',
+    );
+    ok( $ok, "Tickets can be created with an queue reply address as requestor" );
+    is( $t->RequestorAddresses, 'test@localhost', 'Queue reply address is in requestor' );
+
+    ( $ok, my $msg ) = $t->DeleteRoleMember( Type => 'Requestor', User => 'test@localhost' );
+    ok( $ok, $msg );
+    is( $t->RequestorAddresses, '', 'Queue reply address is not in requestor any more' );
+    ok( $queue->CorrespondAddress('') );
+}
+
 done_testing;
