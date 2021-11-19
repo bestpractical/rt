@@ -1,3 +1,11 @@
+Starting with RT 5.0.0, the minimum supported PostgreSQL version is 9.1. RT
+specifies a client_encoding when it connects to a PostgreSQL server to help
+ensure that text is encoded and decoded correctly and consistently in the
+database. Support for specifying client_encoding at connection time was
+introduced in PostgreSQL 9.1.
+
+https://www.postgresql.org/docs/9.1/release-9-1.html#AEN111367
+
 Locale and sorting behavior (order by)
 --------------------------------------
 
