@@ -262,6 +262,7 @@ sub WebRemoteUserAutocreateInfo {
 sub HandleRequest {
     my $ARGS = shift;
 
+    RT->SetCurrentInterface('Web');
     if (RT->Config->Get('DevelMode')) {
         require Module::Refresh;
         Module::Refresh->refresh;
@@ -2252,7 +2253,8 @@ sub CreateTicket {
         Date    => $date_now->RFC2822(Timezone => 'user'),
         Body    => $sigless,
         Type    => $ARGS{'ContentType'},
-        Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
+        # Stick to "Mobile" for back compatibility, unless current interface is customized to something else
+        RT->CurrentInterface eq 'Web' && RT::Interface::Web::MobileClient() ? ( Interface => 'Mobile' ) : (),
     );
 
     my @attachments;
@@ -2435,7 +2437,8 @@ sub ProcessUpdateMessage {
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
         Type    => $args{ARGSRef}->{'UpdateContentType'},
-        Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
+        # Stick to "Mobile" for back compatibility, unless current interface is customized to something else
+        RT->CurrentInterface eq 'Web' && RT::Interface::Web::MobileClient() ? ( Interface => 'Mobile' ) : (),
     );
 
     $Message->head->replace( 'Message-ID' => Encode::encode( "UTF-8",
@@ -2634,13 +2637,13 @@ sub MakeMIMEEntity {
         Body                => undef,
         AttachmentFieldName => undef,
         Type                => undef,
-        Interface           => 'API',
+        Interface           => undef,
         @_,
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
         "Message-Id" => Encode::encode( "UTF-8", RT::Interface::Email::GenMessageId ),
-        "X-RT-Interface" => $args{Interface},
+        "X-RT-Interface" => $args{Interface} || RT->CurrentInterface,
         map { $_ => Encode::encode( "UTF-8", $args{ $_} ) }
             grep defined $args{$_}, qw(Subject From Cc To Date)
     );

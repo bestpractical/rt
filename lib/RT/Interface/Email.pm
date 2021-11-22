@@ -130,6 +130,8 @@ sub Gateway {
         %$argsref
     );
 
+    RT->SetCurrentInterface('Email');
+
     # Set the scope to return from with TMPFAIL/FAILURE/SUCCESS
     $SCOPE = HERE;
 
