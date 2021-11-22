@@ -125,6 +125,13 @@ sub update_record {
     my $self = shift;
     my $data = shift;
 
+    my ($ok, $msg, $return_code) = $self->validate_input(Data => $data, Action => 'update');
+
+    # XXX TODO: refactor update_resource to accept return_code in response
+    if (!$ok) {
+        return (0, $msg);
+    }
+
     my @results;
 
     if ( my $action = $self->action ) {
