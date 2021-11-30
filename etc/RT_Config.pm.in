@@ -201,8 +201,9 @@ Set($DatabaseType, "@DB_TYPE@");
 
 =item C<$DatabaseHost>
 
-The domain name of your database server.  If you're running MySQL and
-on localhost, leave it blank for enhanced performance.
+The domain name of your database server.  If this is blank or undefined, RT
+will attempt to connect to the database using a local socket instead of the
+network.
 
 =cut
 
