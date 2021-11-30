@@ -199,18 +199,14 @@ Database driver being used; case matters.  Valid types are "mysql",
 
 Set($DatabaseType, "@DB_TYPE@");
 
-=item C<$DatabaseHost>, C<$DatabaseRTHost>
+=item C<$DatabaseHost>
 
 The domain name of your database server.  If you're running MySQL and
 on localhost, leave it blank for enhanced performance.
 
-C<DatabaseRTHost> is the fully-qualified hostname of your RT server,
-for use in granting ACL rights on MySQL.
-
 =cut
 
 Set($DatabaseHost,   "@DB_HOST@");
-Set($DatabaseRTHost, "@DB_RT_HOST@");
 
 =item C<$DatabasePort>
 
@@ -237,6 +233,20 @@ The password the C<$DatabaseUser> should use to access the database.
 =cut
 
 Set($DatabasePassword, q{@DB_RT_PASS@});
+
+=item C<$DatabaseRTHost>
+
+C<DatabaseRTHost> is only used by MySQL/MariaDB.  When C<rt-setup-database>
+creates C<DatabaseUser> in a MySQL database, it will use this value as the
+account hostname.  You can set any value MySQL itself supports, including
+hostname or IP address, optionally using SQL wildcards or a netmask in
+dotted quad format to match multiple addresses.  For full details, refer to
+the MySQL Reference Manual about L<specifying account
+names|https://dev.mysql.com/doc/refman/5.7/en/account-names.html>.
+
+=cut
+
+Set($DatabaseRTHost, "@DB_RT_HOST@");
 
 =item C<$DatabaseName>
 
