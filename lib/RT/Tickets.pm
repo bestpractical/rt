@@ -3297,7 +3297,23 @@ sub _parser {
                 next if $node->{Meta}[1] and RT::Ticket->Role($node->{Meta}[1])->{Column};
                 next if $op =~ /^!=$|\bNOT\b/i;
                 next if $op =~ /^IS( NOT)?$/i and not $subkey;
-                $node->{Bundle} = $refs{$node->{Meta}[1] || ''} ||= [];
+
+                my $name;
+                if ( $key eq 'CustomRole' ) {
+                    if ( $subkey =~ /^\{(.+?)\}/ ) {
+                        my $cr = RT::CustomRole->new(RT->SystemUser);
+                        $cr->Load($1);
+                        next unless $cr->Id;
+                        $name = $cr->GroupType;
+                    }
+                    else {
+                        next;
+                    }
+                }
+                else {
+                    $name = $node->{Meta}[1] || '';
+                }
+                $node->{Bundle} = $refs{$name} ||= [];
             }
         }
     );
