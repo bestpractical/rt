@@ -3286,7 +3286,7 @@ sub _parser {
         sub {
             my $node = shift;
             return if $node->isLeaf;
-            return unless ($node->getNodeValue||'') eq "OR";
+            return unless lc ($node->getNodeValue||'') eq "or";
             my %refs;
             my @kids = grep {$_->{Meta}[0] eq "WATCHERFIELD"}
                 map {$_->getNodeValue}
