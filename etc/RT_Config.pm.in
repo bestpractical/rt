@@ -221,7 +221,9 @@ Set($DatabasePort, "@DB_PORT@");
 
 =item C<$DatabaseUser>
 
-The name of the user to connect to the database as.
+The name of the user to connect to the database as.  You can leave this blank
+if it's not required by your database (for example, if your database
+uses peer authentication).
 
 =cut
 
@@ -229,7 +231,9 @@ Set($DatabaseUser, "@DB_RT_USER@");
 
 =item C<$DatabasePassword>
 
-The password the C<$DatabaseUser> should use to access the database.
+The password the C<$DatabaseUser> should use to access the database.  You can
+leave this blank if it's not required by your database (for example, if your
+database uses peer authentication).
 
 =cut
 
