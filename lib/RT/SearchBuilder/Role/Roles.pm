@@ -447,7 +447,7 @@ sub RoleLimit {
                     FIELD2          => 'id',
                 );
             }
-            else {
+            elsif ( !$users ) {
                 my $cgm_2 = $self->NewAlias('CachedGroupMembers');
                 my $group_members_2 = $self->Join(
                     TYPE   => 'LEFT',
@@ -464,7 +464,7 @@ sub RoleLimit {
                     ENTRYAGGREGATOR => 'AND',
                 );
 
-                $users ||= $self->Join(
+                $users = $self->Join(
                     TYPE            => 'LEFT',
                     ALIAS1          => $group_members_2,
                     FIELD1          => 'MemberId',
