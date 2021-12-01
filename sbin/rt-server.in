@@ -159,6 +159,9 @@ $SIG{INT} = sub {
     exit 0;
 } if $> == 0;
 
+# If a client goes away, don't allow this process to die.
+$SIG{PIPE} = 'IGNORE';
+
 $r->run;
 
 __END__
