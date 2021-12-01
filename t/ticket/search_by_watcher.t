@@ -334,6 +334,26 @@ diag 'Test bundle optimization';
         [ sort map { $_->Id } $sales_alice_ticket, $engineer_bob_ticket ],
         'Found both sales and enginner tickets'
     );
+
+    my $requestor_bob_ticket = RT::Test->create_ticket(
+        Queue     => $queue,
+        Subject   => 'Sales bob',
+        Requestor => 'bob@localhost',
+    );
+
+    $tix = RT::Tickets->new( RT->SystemUser );
+    $tix->FromSQL(
+        qq{
+        Queue = '$queue' AND
+        ( Requestor.Name LIKE 'bob' OR CustomRole.{Engineer}.Name LIKE 'bob' )
+    }
+    );
+    is( $tix->Count, 2, 'Found correct number of tickets' );
+    is_deeply(
+        [ sort map { $_->Id } @{ $tix->ItemsArrayRef } ],
+        [ sort map { $_->Id } $requestor_bob_ticket, $engineer_bob_ticket ],
+        'Found both bob tickets'
+    );
 }
 
 @tickets = ();
