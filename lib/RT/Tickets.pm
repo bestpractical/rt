@@ -3313,7 +3313,9 @@ sub _parser {
                 else {
                     $name = $node->{Meta}[1] || '';
                 }
-                $node->{Bundle} = $refs{$name} ||= [];
+
+                # JOIN SQL for shallow and recursive items are different
+                $node->{Bundle} = $refs{$name}{ $op =~ /^shallow/i ? 'shallow' : 'recursive' } ||= [];
             }
         }
     );
