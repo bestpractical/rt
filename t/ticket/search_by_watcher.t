@@ -266,5 +266,75 @@ my $nobody = RT::Nobody();
     is($tix->Count, 2, "found ticket(s)");
 }
 
+diag 'Test bundle optimization';
+{
+    my $sales = RT::CustomRole->new( RT->SystemUser );
+    my ( $ret, $msg ) = $sales->Create(
+        Name      => 'Sales',
+        MaxValues => 0,
+    );
+    ok( $ret, "Created role: $msg" );
+    ( $ret, $msg ) = $sales->AddToObject( ObjectId => $q->id );
+    ok( $ret, "Added Sales to queue: $msg" );
+
+    my $engineer = RT::CustomRole->new( RT->SystemUser );
+    ( $ret, $msg ) = $engineer->Create(
+        Name      => 'Engineer',
+        MaxValues => 0,
+    );
+    ok( $ret, "Created role: $msg" );
+    ( $ret, $msg ) = $engineer->AddToObject( ObjectId => $q->id );
+    ok( $ret, "Added Engineer to queue: $msg" );
+
+    my $alice = RT::User->new( RT->SystemUser );
+    $alice->LoadOrCreateByEmail('alice@localhost');
+
+    my $bob = RT::User->new( RT->SystemUser );
+    $bob->LoadOrCreateByEmail('bob@localhost');
+
+    my $sales_alice_ticket = RT::Test->create_ticket(
+        Queue             => $queue,
+        Subject           => 'Sales alice',
+        $sales->GroupType => 'alice@localhost'
+    );
+    my $engineer_bob_ticket = RT::Test->create_ticket(
+        Queue                => $queue,
+        Subject              => 'Engineer bob',
+        $engineer->GroupType => 'bob@localhost',
+    );
+
+    my $tix = RT::Tickets->new( RT->SystemUser );
+    $tix->FromSQL(qq{
+        Queue = '$queue' AND
+        ( CustomRole.{Sales}.Name LIKE 'alice' OR CustomRole.{Engineer}.Name LIKE 'bob' )
+    });
+
+    is( $tix->Count, 2, 'Found correct number of tickets' );
+    is_deeply(
+        [ sort map { $_->Id } @{ $tix->ItemsArrayRef } ],
+        [ sort map { $_->Id } $sales_alice_ticket, $engineer_bob_ticket ],
+        'Found both sales and enginner tickets'
+    );
+
+    my $sales_group = RT::Test->load_or_create_group( 'Sales Team' );
+    ( $ret, $msg ) = $sales_group->AddMember( $bob->Id );
+    ok( $ret, 'Added bob to sales group' );
+
+    ( $ret, $msg ) = $engineer_bob_ticket->RoleGroup( $sales->GroupType )->AddMember( $sales_group->Id );
+    ok( $ret, 'Added sales group to bob ticket' );
+
+    $tix = RT::Tickets->new( RT->SystemUser );
+    $tix->FromSQL(qq{
+        Queue = '$queue' AND
+        ( CustomRole.{Sales}.Name SHALLOW LIKE 'alice' OR CustomRole.{Sales}.Name LIKE 'bob' )
+    });
+    is( $tix->Count, 2, 'Found correct number of tickets' );
+    is_deeply(
+        [ sort map { $_->Id } @{ $tix->ItemsArrayRef } ],
+        [ sort map { $_->Id } $sales_alice_ticket, $engineer_bob_ticket ],
+        'Found both sales and enginner tickets'
+    );
+}
+
 @tickets = ();
 done_testing();
