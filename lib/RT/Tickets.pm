@@ -3288,12 +3288,13 @@ sub _parser {
             return if $node->isLeaf;
             return unless lc ($node->getNodeValue||'') eq "or";
             my %refs;
+            my %op_value;
             my @kids = grep {$_->{Meta}[0] eq "WATCHERFIELD"}
                 map {$_->getNodeValue}
                 grep {$_->isLeaf} $node->getAllChildren;
             for (@kids) {
                 my $node = $_;
-                my ($key, $subkey, $op) = @{$node}{qw/Key Subkey Op/};
+                my ($key, $subkey, $op, $value, $quote_value) = @{$node}{qw/Key Subkey Op Value QuoteValue/};
                 next if $node->{Meta}[1] and RT::Ticket->Role($node->{Meta}[1])->{Column};
                 next if $op =~ /^!=$|\bNOT\b/i;
                 next if $op =~ /^IS( NOT)?$/i and not $subkey;
@@ -3314,8 +3315,21 @@ sub _parser {
                     $name = $node->{Meta}[1] || '';
                 }
 
+                $quote_value //= 0;
+                push @{$op_value{"$op $quote_value $value"}}, [ $name, $node ] if $name;
                 # JOIN SQL for shallow and recursive items are different
-                $node->{Bundle} = $refs{$name}{ $op =~ /^shallow/i ? 'shallow' : 'recursive' } ||= [];
+                $node->{Bundle} = $refs{$name}{ $op =~ /^shallow/i ? 'shallow' : 'recursive' } ||= [$name];
+            }
+
+            # Merge "Bundle" for items with the same op and value, to share watcher JOINs among them
+            for my $items ( values %op_value ) {
+                next if @$items < 2;
+                my @names  = map { $_->[0] } @$items;
+                my @nodes  = map { $_->[1] } @$items;
+                my @refs = \@names;
+                for my $node (@nodes) {
+                    $node->{Bundle} = \@refs;
+                }
             }
         }
     );

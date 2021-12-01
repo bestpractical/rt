@@ -102,9 +102,10 @@ sub _RoleGroupsJoin {
     $args{'Class'} ||= $self->_RoleGroupClass;
 
     my $name = $args{'Name'};
+    my $name_str = ref $name eq 'ARRAY' ? join( ', ', sort @$name ) : $name;
 
-    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name }
-        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name }
+    return $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name_str }
+        if $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name_str }
            && !$args{'New'};
 
     # If we're looking at a role group on a class that "contains" this record
@@ -138,9 +139,10 @@ sub _RoleGroupsJoin {
         FIELD           => 'Name',
         VALUE           => $name,
         CASESENSITIVE   => 0,
+        ref $name eq 'ARRAY' ? ( OPERATOR => 'IN' ) : (),
     ) if $name;
 
-    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name } = $groups
+    $self->{'_sql_role_group_aliases'}{ $args{'Class'} .'-'. $name_str } = $groups
         unless $args{'New'};
 
     return $groups;
@@ -298,12 +300,14 @@ sub RoleLimit {
 
     $args{FIELD} ||= $args{QUOTEVALUE} ? 'EmailAddress' : 'id';
 
-    my ($groups, $group_members, $users);
-    if ( $args{'BUNDLE'} and @{$args{'BUNDLE'}}) {
-        ($groups, $group_members, $users) = @{ $args{'BUNDLE'} };
-    } else {
-        $groups = $self->_RoleGroupsJoin( Name => $type, Class => $class, New => !$type );
+    my ($group_name, $groups, $group_members, $users);
+    if ( $args{'BUNDLE'} ) {
+        ($group_name, $groups, $group_members, $users) = @{ $args{'BUNDLE'} };
+
+        # Shared watcher JOINs have the same op/value, so it's safe to skip if one exists already
+        return if ref $group_name eq 'ARRAY' && $groups;
     }
+    $groups ||= $self->_RoleGroupsJoin( Name => $group_name || $type, Class => $class, New => !$type );
 
     $self->_OpenParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
     if ( $args{OPERATOR} =~ /^IS(?: NOT)?$/i ) {
@@ -483,8 +487,8 @@ sub RoleLimit {
         }
     }
     $self->_CloseParen( $args{SUBCLAUSE} ) if $args{SUBCLAUSE};
-    if ($args{BUNDLE} and not @{$args{BUNDLE}}) {
-        @{$args{BUNDLE}} = ($groups, $group_members, $users);
+    if ($args{BUNDLE} and @{$args{BUNDLE}} == 1) {
+        push @{$args{BUNDLE}}, $groups, $group_members, $users;
     }
     return ($groups, $group_members, $users);
 }
