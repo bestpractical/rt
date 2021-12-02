@@ -94,4 +94,14 @@ like( $advanced, qr{Query=id%3E0},
       'Advanced link still has Query param with id search'
     );
 
+# Test query with JOINs
+$m->get_ok( "/Search/Chart.html?Query=Requestor.Name LIKE 'root'" );
+$m->content_like(qr{<th[^>]*>Status\s*</th>\s*<th[^>]*>Ticket count\s*</th>}, "Grouped by status");
+$m->content_like(qr{new\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>}, "Found results in table");
+$m->content_like(qr{<img src="/Search/Chart\?}, "Found image");
+
+$m->get_ok( "/Search/Chart?Query=Requestor.Name LIKE 'root'" );
+is( $m->content_type, "image/png" );
+ok( length($m->content), "Has content" );
+
 done_testing;
