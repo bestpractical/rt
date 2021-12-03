@@ -122,6 +122,22 @@ my $COLUMN_MAP = {
         title       => 'Content', # loc
         value       => sub { return \$_[0]->Content( Type => 'text/html' ) },
     },
+    SLAViolationDuration => {
+        title => 'SLA Violation Duration',
+        value => sub { return $_[0]->SLAViolationDuration },
+    },
+    SLAViolationDurationAsString => {
+        title => 'SLA Violation Duration As String',
+        value => sub { return $_[0]->SLAViolationDurationAsString },
+    },
+    SLAViolationBusinessDuration => {
+        title => 'SLA Violation Business Duration',
+        value => sub { return $_[0]->SLAViolationBusinessDuration },
+    },
+    SLAViolationBusinessDurationAsString => {
+        title => 'SLA Violation Business Duration As String',
+        value => sub { return $_[0]->SLAViolationBusinessDurationAsString },
+    },
     TicketId => {
         title     => 'Ticket ID', # loc
         value     => $get_ticket_value->( @_, sub { $_[0]->Object->id } ),

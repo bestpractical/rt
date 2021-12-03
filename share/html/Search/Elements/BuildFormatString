@@ -84,6 +84,8 @@ if ( $Class eq 'RT::Transactions' ) {
         TicketLastUpdatedBy TicketCreated TicketStarted TicketResolved
         TicketTold TicketLastUpdated TicketDue
         TicketPriority TicketInitialPriority TicketFinalPriority
+        SLAViolationDuration SLAViolationDurationAsString
+        SLAViolationBusinessDuration SLAViolationBusinessDurationAsString
         NEWLINE NBSP );    # loc_qw
 
     my $CustomFields = RT::CustomFields->new( $session{'CurrentUser'} );

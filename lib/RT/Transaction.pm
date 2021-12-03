@@ -1438,7 +1438,23 @@ sub _CanonicalizeRoleName {
     DeleteConfig => sub  {
         my $self = shift;
         return ('[_1] deleted', $self->Field); #loc()
-    }
+    },
+    Event => sub {
+        my $self = shift;
+        if ( $self->Field eq 'SLAViolation' ) {
+            my $due = RT::Date->new( $self->CurrentUser );
+            $due->Set( Value => $self->NewValue, Format => 'sql' );
+            return (
+                'Exceeded SLA for [_2] in real time, [_3] in business hours',
+                $self->Field,
+                $self->SLAViolationDurationAsString,
+                $self->SLAViolationBusinessDurationAsString,
+            );
+        }
+        else {
+            return ( 'Event [_1]', $self->Field );
+        }
+    },
 );
 
 
@@ -2251,6 +2267,66 @@ sub PreInflate {
     }
 
     return $class->SUPER::PreInflate( $importer, $uid, $data );
+}
+
+sub SLAViolationEndedObj {
+    my $self = shift;
+    return '' unless $self->Type eq 'Event' && $self->Field eq 'SLAViolation';
+
+    my $ticket = $self->Object;
+    my $txns   = RT::Transactions->new( $self->CurrentUser );
+    $txns->FromSQL(
+        sprintf q{ObjectType = '%s' AND ObjectId = %d AND id > %d AND
+                  ( (Type = 'Set' AND Field = 'Due') OR (Type = 'Event' AND Field = 'SLAViolation') )},
+        map { $self->$_ } qw/ObjectType ObjectId Id/
+    );
+    my $txn = $txns->First;
+    my $date;
+    if ($txn) {
+        $date = $txn->CreatedObj;
+    }
+    else {
+        $date = RT::Date->new( $self->CurrentUser );
+        $date->SetToNow();
+    }
+    return $date;
+}
+
+sub SLAViolationDuration {
+    my $self = shift;
+    my $date = $self->SLAViolationEndedObj or return '';
+    return $date->Diff( $self->CreatedObj );
+}
+
+sub SLAViolationDurationAsString {
+    my $self = shift;
+    my $date = $self->SLAViolationEndedObj or return '';
+    return $date->DiffAsString( $self->CreatedObj );
+}
+
+sub SLAViolationBusinessDuration {
+    my $self      = shift;
+    my $date      = $self->SLAViolationEndedObj                    or return '';
+    my $agreement = RT::SLA->Agreement( Level => $self->OldValue ) or return '';
+    my $bh_name   = $agreement->{BusinessHours}                    or return '';
+
+    local $ENV{'TZ'} = $ENV{'TZ'};
+    if ( $agreement->{'Timezone'} && $agreement->{'Timezone'} ne ( $ENV{'TZ'} || '' ) ) {
+        $ENV{'TZ'} = $agreement->{'Timezone'};
+        require POSIX;
+        POSIX::tzset();
+    }
+
+    my $bh = RT::SLA->BusinessHours($bh_name);
+    # -1 is to not include the end time
+    return $bh->between( $self->CreatedObj->Unix, $date->Unix - 1 );
+}
+
+sub SLAViolationBusinessDurationAsString {
+    my $self = shift;
+    my $time = $self->SLAViolationBusinessDuration;
+    return '' unless defined $time && length $time;
+    return RT::Date->new( $self->CurrentUser )->DurationAsString($time);
 }
 
 RT::Base->_ImportOverlays();
