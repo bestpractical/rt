@@ -22,6 +22,9 @@ to use L<Starman>, a high performance preforking server:
 
     /opt/rt5/sbin/rt-server --server Starman --port 8080
 
+To listen on IPv6 too, you can install L<IO::Socket::INET6> and use
+L<Starman> exactly like the above command.
+
 =head2 Apache
 
 B<WARNING>: Both C<mod_speling> and C<mod_cache> are known to break RT.
