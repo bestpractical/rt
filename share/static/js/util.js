@@ -1047,12 +1047,12 @@ jQuery(function () {
     });
 
     jQuery('.titlebox[data-inline-edit-behavior="click"] > .titlebox-content').click(function (e) {
-        if (jQuery(e.target).is('a, input, select, textarea')) {
+        if (jQuery(e.target).is('input, select, textarea')) {
             return;
         }
 
-        // Bypass radio/checkbox controls too
-        if (jQuery(e.target).closest('div.custom-radio, div.custom-checkbox').length) {
+        // Bypass links, buttons and radio/checkbox controls too
+        if (jQuery(e.target).closest('a, button, div.custom-radio, div.custom-checkbox').length) {
             return;
         }
 
