@@ -54,9 +54,9 @@
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
 <div class="form-row">
 <div class="label col-<% $LabelCols %>">
-  <span class="name"><% $CF->Name %>:</span>
+  <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
 % if ( $CF->EntryHint ) {
-  <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
 % }
 </div>
 <div class="value col-<% $ValueCols %>">

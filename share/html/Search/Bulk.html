@@ -206,9 +206,9 @@
 % while (my $role = $single_roles->Next) {
       <div class="form-row">
         <div class="label col-3">
-          <&|/l, $role->Name &>Make [_1]</&>:
+          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Make [_1]</&>:</span>\
 %         if ($role->EntryHint) {
-            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 %         }
         </div>
         <div class="value col-9">
@@ -223,9 +223,9 @@
 % while (my $role = $multi_roles->Next) {
       <div class="form-row">
         <div class="label col-3">
-          <&|/l, $role->Name &>Add [_1]</&>:
+          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Add [_1]</&>:</span>\
 %         if ($role->EntryHint) {
-            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 %         }
         </div>
         <div class="value col-9">
@@ -235,9 +235,9 @@
 
       <div class="form-row">
         <div class="label col-3">
-          <&|/l, $role->Name &>Remove [_1]</&>:
+          <span class="<% $role->EntryHint ? 'prev-icon-helper' : '' %>"><&|/l, $role->Name &>Remove [_1]</&>:</span>\
 %         if ($role->EntryHint) {
-            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $role->EntryHint %>"></span>
 %         }
         </div>
         <div class="value col-9">
@@ -372,9 +372,9 @@
 % while (my $CF = $TxnCFs->Next()) {
   <div class="form-row">
     <div class="form-group label col-2">
-      <span class="name"><% $CF->Name %>:</span>
+      <span class="name <% $CF->EntryHint ? 'prev-icon-helper' : '' %>"><% $CF->Name %>:</span>\
 % if ( $CF->EntryHint ) {
-      <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<% $CF->EntryHint %>"></span>
 % }
     </div>
     <div class="value col-9">

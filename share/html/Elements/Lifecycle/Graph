@@ -94,8 +94,9 @@
       <span class="current-value form-control">
         <div class="custom-control custom-checkbox">
           <input class="custom-control-input" type="checkbox" id="enableSimulation" name="enableSimulation" />
-          <label class="custom-control-label" for="enableSimulation"><&|/l&>Auto Layout</&>
-            <span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Auto layout automatically spaces out statuses. Uncheck to manually reposition your lifecycle.</&>"></span>
+          <label class="custom-control-label" for="enableSimulation">
+            <span class="prev-icon-helper"><&|/l&>Auto Layout</&>:</span>\
+<span class="far fa-question-circle icon-helper" data-toggle="tooltip" data-placement="top" data-original-title="<&|/l&>Auto layout automatically spaces out statuses. Uncheck to manually reposition your lifecycle.</&>"></span>
           </label>
         </div>
       </span>

@@ -150,8 +150,8 @@ diag "test admin user create";
     $m->logout;
     ok( $m->login );
     $m->get_ok( $baseurl . '/Admin/Users/Modify.html?Create=1', 'user create page' );
-    $m->text_contains( 'Employee Type:  Set from external source' );
-    $m->text_contains( 'Employee ID:  Set from external source' );
+    $m->text_contains( 'Employee Type: Set from external source' );
+    $m->text_contains( 'Employee ID: Set from external source' );
 
     my $username = 'testuser2';
     $m->submit_form(
