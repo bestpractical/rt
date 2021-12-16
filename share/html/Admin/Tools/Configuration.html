@@ -144,7 +144,7 @@ foreach my $key ( sort keys %{*RT::} ) {
 </tr>
 <%PERL>
 my ($index_size, $user_count, $privileged_count);
-for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers UnprivilegedUsers/) {
+for my $type (qw/Tickets Queues Transactions Articles Assets Groups PrivilegedUsers UnprivilegedUsers/) {
     my $count;
     my $class = 'RT::' . $type;
     $class =~ s/Privileged|Unprivileged//;
