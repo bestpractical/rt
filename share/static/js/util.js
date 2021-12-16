@@ -429,6 +429,7 @@ function AddAttachmentWarning() {
         var needsWarning = text &&
                            text.match(regex) &&
                            !dropzoneElement.hasClass('has-attachments') &&
+                           !jQuery('a.delete-attach').length &&
                            !has_reused_attachments;
 
         if (needsWarning) {
