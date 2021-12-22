@@ -62,9 +62,9 @@ my $login_url = $m->interp->apply_escapes(RT::Interface::Web::TangentForLoginURL
     <% $m->content |n%>
 
     <p id="contact-admin">
-% if (my $owner = RT->Config->Get('OwnerEmail')) {
-%     $owner = $m->interp->apply_escapes($owner, 'h');
-      <&|/l_unsafe, qq[<a href="mailto:$owner">], $owner, '</a>' &>Contact your RT administrator via [_1]email to [_2][_3].</&>
+% if (my $contact = RT->Config->Get('RTSupportEmail')) {
+%     $contact = $m->interp->apply_escapes($contact, 'h');
+      <&|/l_unsafe, qq[<a href="mailto:$contact">], $contact, '</a>' &>Contact your RT administrator via [_1]email to [_2][_3].</&>
 % } else {
       <&|/l&>Contact your RT administrator.</&>
 % }
