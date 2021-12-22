@@ -286,7 +286,7 @@ sub PSGIApp {
             unless (eval { RT::ConnectToDatabase() }) {
                 my $res = Plack::Response->new(503);
                 $res->content_type("text/plain");
-                $res->body("Database inaccessible; contact the RT administrator (".RT->Config->Get("OwnerEmail").")");
+                $res->body("Database inaccessible; contact the RT administrator (".RT->Config->Get("RTSupportEmail").")");
                 return $self->_psgi_response_cb( $res->finalize, sub { $self->CleanupRequest } );
             }
         }
