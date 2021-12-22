@@ -574,6 +574,8 @@ CREATE TABLE ObjectCustomFields (
 
 );
 
+CREATE INDEX ObjectCustomFields1 ON ObjectCustomFields (ObjectId);
+
 
 
 

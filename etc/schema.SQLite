@@ -414,6 +414,8 @@ CREATE TABLE ObjectCustomFields (
   PRIMARY KEY (id)
 ) ;
 
+CREATE INDEX ObjectCustomFields1 ON ObjectCustomFields (ObjectId);
+
 
 
 CREATE TABLE CustomFieldValues (
