@@ -1160,8 +1160,32 @@ sub DefaultValue {
     my $self = shift;
     my $field = shift;
     my $attr = $self->FirstAttribute('DefaultValues');
-    return undef unless $attr && $attr->Content;
-    return $attr->Content->{$field};
+
+    my $fallback;
+    if ( $field =~ /Priority/
+        && RT->Config->Get('EnablePriorityAsString') )
+    {
+        my %config = RT->Config->Get('PriorityAsString');
+        my $queue_name = $self->__Value('Name');
+        if ( my $value = exists $config{$queue_name} ? $config{$queue_name} : $config{Default} ) {
+
+            # For ordered list(array), use the first entry. For unordered list(hash), use the lowest value.
+            # This is also consistent with the priority order on web pages
+            if ( ref $value eq 'ARRAY' ) {
+                $fallback = $value->[1];
+            }
+            elsif ( ref $value eq 'HASH' ) {
+                $fallback = ( sort { $a <=> $b } values %$value )[0];
+            }
+            else {
+                RT->Logger->warning("Invalid PriorityAsString value: $value");
+            }
+        }
+    }
+
+    return $fallback unless $attr && $attr->Content;
+    my $value = $attr->Content->{$field};
+    return $value // $fallback;
 }
 
 sub SetDefaultValue {
