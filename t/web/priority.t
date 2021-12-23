@@ -16,8 +16,8 @@ my $form = $m->form_name('TicketCreate');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', "$field input is a select" );
-    is_deeply( [ $priority_input->possible_values ], [ '', 0, 50, 100 ], "$field options" );
-    is( $form->value($field), '', "$field default value" );
+    is_deeply( [ $priority_input->possible_values ], [ 0, 50, 100 ], "$field options" );
+    is( $form->value($field), 0, "$field default value" );
 }
 
 $m->submit_form_ok( { fields => { Subject => 'Test PriorityAsString', InitialPriority => 50 }, button => 'SubmitTicket' }, 'Create ticket' );
@@ -75,8 +75,8 @@ $form = $m->form_name('TicketCreate');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', "$field input is a select" );
-    is_deeply( [ $priority_input->possible_values ], [ '', 0, 20, 50, 100, 200 ], "$field options" );
-    is( $form->value($field), '', "$field default value" );
+    is_deeply( [ $priority_input->possible_values ], [ 0, 20, 50, 100, 200 ], "$field options" );
+    is( $form->value($field), 0, "$field default value" );
 }
 
 diag "Disable PriorityAsString for General";
@@ -111,8 +111,8 @@ $form = $m->form_name('TicketCreate');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', "$field input is a select" );
-    is_deeply( [ $priority_input->possible_values ], [ '', 50, 0, 20, 100, 200 ], "$field options" );
-    is( $form->value($field), '', "$field default value" );
+    is_deeply( [ $priority_input->possible_values ], [ 50, 0, 20, 100, 200 ], "$field options" );
+    is( $form->value($field), 50, "$field default value" );
 }
 
 diag "Queue default values";
@@ -122,7 +122,7 @@ $form = $m->form_name('ModifyDefaultValues');
 for my $field (qw/InitialPriority FinalPriority/) {
     my $priority_input = $form->find_input($field);
     is( $priority_input->type, 'option', 'Priority input is a select' );
-    is_deeply( [ $priority_input->possible_values ], [ '', 50, 0, 20, 100, 200 ], 'Priority options' );
+    is_deeply( [ $priority_input->possible_values ], [ 50, 0, 20, 100, 200 ], 'Priority options' );
 }
 $m->submit_form_ok( { fields => { InitialPriority => 50, FinalPriority => 100 }, button => 'Update' },
     'Update default values' );
