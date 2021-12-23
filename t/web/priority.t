@@ -192,4 +192,57 @@ $m->submit_form_ok( { fields => { TicketPriorityOp => '=', ValueOfTicketPriority
 $m->title_is('Found 4 transactions');
 $m->text_contains('Test PriorityAsString');
 
+diag "Set PriorityAsString without 0";
+
+$m->goto_ticket( RT::Test->last_ticket->id );
+$m->follow_link_ok( { text => 'Basics' } );
+$m->form_name('TicketModify');
+$m->submit_form_ok( { fields => { Priority => 0 } }, 'Update Priority' );
+$m->text_contains( qq{Priority changed from 'High' to 'VeryLow'}, 'Priority is updated' );
+
+sleep 1;
+
+( $ret, $msg ) = $config->SetContent( { General => { Low => 5, Medium => 50, High => 100 } }, );
+ok( $ret, 'Updated config' );
+
+$m->reload;
+$form = $m->form_name('TicketModify');
+for my $field (qw/Priority FinalPriority/) {
+    my $priority_input = $form->find_input($field);
+    is( $priority_input->type, 'option', "$field input is a select" );
+    if ( $field eq 'Priority' ) {
+        is_deeply( [ $priority_input->possible_values ], [ 0, 5, 50, 100 ], "$field options" );
+        is( $form->value($field), 0, "$field default value" );
+    }
+    else {
+        is_deeply( [ $priority_input->possible_values ], [ 5, 50, 100 ], "$field options" );
+        is( $form->value($field), 100, "$field default value" );
+    }
+}
+
+$m->goto_create_ticket( $queue->Id );
+$form = $m->form_name('TicketCreate');
+is( $form->value('InitialPriority'), 50,  'InitialPriority default value on page' );
+is( $form->value('FinalPriority'),   100, 'FinalPriority default value on page' );
+
+ok( $queue->SetDefaultValue( Name => 'InitialPriority', Value => undef ) );
+ok( $queue->SetDefaultValue( Name => 'FinalPriority',   Value => undef ) );
+
+is( $queue->DefaultValue('InitialPriority'), 5, 'InitialPriority default value inferred by config' );
+is( $queue->DefaultValue('FinalPriority'),   5, 'FinalPriority default value inferred by config' );
+
+$m->goto_create_ticket( $queue->Id );
+$form = $m->form_name('TicketCreate');
+is( $form->value('InitialPriority'), 5, 'InitialPriority default value on page' );
+is( $form->value('FinalPriority'),   5, 'FinalPriority default value on page' );
+
+my $ticket = RT::Test->create_ticket(
+    Subject => 'Test default priority',
+    Queue   => 'General',
+);
+
+for my $field (qw/InitialPriority Priority FinalPriority/) {
+    is( $ticket->$field, 5, "$field is set correctly" );
+}
+
 done_testing;
