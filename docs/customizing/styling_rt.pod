@@ -109,7 +109,7 @@ create your own version of bootstrap.css
     brew install node
     npm install -g node-sass postcss postcss-cli
 
-    cd devel/third-party/bootstrap-4.2.1
+    cd devel/third-party/bootstrap-4.6.1
     npm install autoprefixer
 
 =item Create bootstrap_customized.scss
