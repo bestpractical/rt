@@ -345,7 +345,14 @@ $COLUMN_MAP = {
         attribute => 'checkbox',
         title => 'Update', # loc
         align     => 'right',
-        value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked="checked" />') }
+        value     => sub {
+            my $name = 'UpdateTicket' . $_[0]->id;
+            return \qq{
+<div class="custom-control custom-checkbox">
+  <input type="checkbox" name="$name" id="$name" value="1" class="checkbox custom-control-input" checked="checked" />
+  <label class="custom-control-label" for="$name"></label>
+</div>};
+        }
     },
 
     Bookmark => {

@@ -52,14 +52,19 @@
 <ul>
 % while (my $watcher=$Members->Next) {
 <li>
-<input type="checkbox" class="checkbox" name="Queue-<%$QueueObj->Id%>-DeleteWatcher-Type-<%$Watchers->Name%>-Principal-<%$watcher->MemberId%>" value="1"
-        unchecked />
+% my $name = join '-', 'Queue', $QueueObj->Id, 'DeleteWatcher-Type', $Watchers->Name, 'Principal', $watcher->MemberId;
+  <div class="custom-control custom-checkbox">
+    <input type="checkbox" name="<% $name %>" id="<% $name %>" value="1" class="checkbox custom-control-input" />
+    <label class="custom-control-label" for="<% $name %>">
 % if ($watcher->MemberObj->IsUser) { 
 <& /Elements/ShowUser, User => $watcher->MemberObj->Object &>
 % } else {
 <a href="<%RT->Config->Get('WebPath')%>/Admin/Groups/Modify.html?id=<%$watcher->MemberObj->Id%>">
 <%$watcher->MemberObj->Object->Name%></a>
 % }
+    </label>
+  </div>
+</li>
 % }
 % }
 </ul>
