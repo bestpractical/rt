@@ -253,6 +253,7 @@ sub parse_args
     if( GetOptions( 'sqldump=s' => \$tmp ) && $tmp ) {
         $opt{'sqldump'} = $tmp;
     }
+    $tmp = undef;
 
     if( GetOptions( 'no-sqldump' => \$tmp ) && $tmp ) {
         $opt{'no-sqldump'} = $tmp;
