@@ -84,13 +84,12 @@ RT::Interface::CLI->ShowHelp if $OPT{help};
 use Fcntl ':flock';
 if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
     if ( $OPT{quiet} ) {
-        RT->Logger->info("$0 is already running; aborting silently, as requested");
-        exit;
+        RT->Logger->info("$0 is already running");
     }
     else {
-        print STDERR "$0 is already running\n";
-        exit 1;
+        print "$0 is already running\n";
     }
+    exit;
 }
 
 my $max_size = RT->Config->Get('MaxFulltextAttachmentSize');
