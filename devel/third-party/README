@@ -44,7 +44,7 @@ Description: Bring data to life with SVG, Canvas and HTML
 Origin: https://d3js.org
 License: BSD 3-Clause
 
-* dropzone-4.0.1
+* dropzone-5.9.3
 Description: drag and drop attachment uploader
 Origin: https://github.com/enyo/dropzone
 License: MIT
