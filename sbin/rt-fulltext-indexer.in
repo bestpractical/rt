@@ -67,20 +67,14 @@ BEGIN { # BEGIN RT CMD BOILERPLATE
 
 }
 
-use RT -init;
-use RT::Interface::CLI ();
+use RT::Interface::CLI qw(Init);
 use HTML::Entities;
 
-use Getopt::Long qw(GetOptions);
 my %OPT = ( memory => '2M', limit => 0 );
-GetOptions( \%OPT,
-    "help|h!",
-    "debug!",
-    "quiet!",
-
+Init(
+    \%OPT,
     "all!",
     "limit=i",
-
     "memory=s",
 );
 $OPT{limit} ||= 200;
@@ -90,13 +84,12 @@ RT::Interface::CLI->ShowHelp if $OPT{help};
 use Fcntl ':flock';
 if ( !flock main::DATA, LOCK_EX | LOCK_NB ) {
     if ( $OPT{quiet} ) {
-        RT::Logger->info("$0 is already running; aborting silently, as requested");
-        exit;
+        RT->Logger->info("$0 is already running");
     }
     else {
-        print STDERR "$0 is already running\n";
-        exit 1;
+        print "$0 is already running\n";
     }
+    exit;
 }
 
 my $max_size = RT->Config->Get('MaxFulltextAttachmentSize');
