@@ -377,8 +377,6 @@ sub process_pg_update {
 
 # helper functions
 sub debug    { print @_, "\n" if $OPT{debug}; 1 }
-sub error    { $RT::Logger->error(_(@_)); 1 }
-sub warning  { $RT::Logger->warn(_(@_)); 1 }
 
 =head1 NAME
 
