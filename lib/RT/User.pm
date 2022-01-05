@@ -204,6 +204,11 @@ sub Create {
         return ( 0, $self->loc('Could not create user') );
     }
 
+    # Add corresponding CustomFieldValue records for custom fields,
+    # the same as in RT::Authen::ExternalAuth::UpdateUserInfo.
+    require RT::Authen::ExternalAuth;
+    RT::Authen::ExternalAuth::AddCustomFieldValue(%args);
+
     # Handle any user CFs
     $self->UpdateObjectCustomFieldValues( %args );
 
