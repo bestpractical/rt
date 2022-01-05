@@ -703,6 +703,18 @@ sub DeleteValue {
     return ($ok, $self->loc("Custom field value deleted"));
 }
 
+=head2 ValidateValue Value
+
+Make sure that the supplied value is valid
+
+=cut
+
+sub ValidateValue {
+    my $self  = shift;
+    my $value = shift;
+    my ($ret) = $self->_CanonicalizeValue( { Content => $value } );
+    return $ret;
+}
 
 =head2 ValidateQueue Queue
 
