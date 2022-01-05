@@ -1940,6 +1940,28 @@ sub _CanonicalizeValueIPAddressRange {
     return 1;
 }
 
+sub _CanonicalizeValueSelect {
+    my $self = shift;
+    my $args = shift;
+
+    if ( defined $args->{Content} && length $args->{Content} ) {
+        my $system_object = RT::CustomField->new( RT->SystemUser );
+        $system_object->Load( $self->Id );
+        if ( !$system_object->IsExternalValues() ) {
+            my $cfvs = $system_object->Values;
+            $cfvs->Limit( FIELD => 'Name', VALUE => $args->{Content}, CASESENSITIVE => 0 );
+            if ( my $cfv = $cfvs->Next ) {
+                # If user passes "foo" and cfv actually has "Foo", canonicalize it to "Foo".
+                $args->{Content} = $cfv->Name;
+            }
+            else {
+                return ( 0, $self->loc("Content is not a valid value") );
+            }
+        }
+    }
+    return 1;
+}
+
 =head2 MatchPattern STRING
 
 Tests the incoming string against the Pattern of this custom field object
