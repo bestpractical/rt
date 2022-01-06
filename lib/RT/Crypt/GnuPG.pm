@@ -843,6 +843,9 @@ sub FindScatteredParts {
         my $fname = $part->head->recommended_filename || '';
         next unless $fname =~ /\.(?:$file_extension_regex)$/;
 
+        # skip pgp keys, which could have .asc file extension
+        next if ( $part->head->mime_type // '' ) eq 'application/pgp-keys';
+
         $RT::Logger->debug("Found encrypted attachment '$fname'");
 
         $args{'Skip'}{$part} = 1;
