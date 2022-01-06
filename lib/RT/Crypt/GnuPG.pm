@@ -1007,7 +1007,7 @@ sub VerifyRFC3156 {
     my %args = ( Data => undef, Signature => undef, @_ );
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
-    binmode $tmp_fh, ':raw:eol(CRLF?)';
+    binmode $tmp_fh, ':raw:eol(CRLF)';
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
 
