@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use RT::Test::Crypt GnuPG => 1, tests => 198, gnupg_options => { passphrase => 'rt-test' };
+use RT::Test::Crypt GnuPG => 1, tests => undef, gnupg_options => { passphrase => 'rt-test' };
 
 use Digest::MD5 qw(md5_hex);
 
@@ -31,6 +31,13 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
 $eid = 18;
 {
     my ($usage, $format, $attachment) = ('signed', 'inline', 'plain');
+    ++$eid;
+    diag "Email $eid: $usage, $attachment email with $format format";
+    eval { email_ok($eid, $usage, $format, $attachment) };
+}
+
+{
+    my ($usage, $format, $attachment) = ('signed&encrypted', 'MIME', 'plain');
     ++$eid;
     diag "Email $eid: $usage, $attachment email with $format format";
     eval { email_ok($eid, $usage, $format, $attachment) };
@@ -148,3 +155,4 @@ sub email_ok {
     return 0;
 }
 
+done_testing;
