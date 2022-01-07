@@ -268,6 +268,11 @@ sub LimitCustomField {
 
     $self->Limit(
         LEFTJOIN => $ObjectValuesAlias,
+        FIELD    => 'ObjectType',
+        VALUE    => 'RT::Article',
+    );
+    $self->Limit(
+        LEFTJOIN => $ObjectValuesAlias,
         FIELD    => 'Disabled',
         VALUE    => '0'
     );
