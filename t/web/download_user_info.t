@@ -49,7 +49,7 @@ $agent->login( 'root' => 'password' );
     $agent->follow_link_ok( { text => 'User Data' } );
 
     my $user_info_tsv = <<EOF;
-id\tName\tEmailAddress\tRealName\tNickName\tOrganization\tHomePhone\tWorkPhone\tMobilePhone\tPagerPhone\tAddress1\tAddress2\tCity\tState\tZip\tCountry\tGecos\tLang\tTimezone\tFreeFormContactInfo
+id\tName\tEmail Address\tReal Name\tNick Name\tOrganization\tHome Phone\tWork Phone\tMobile Phone\tPager Phone\tAddress1\tAddress2\tCity\tState\tZip\tCountry\tGecos\tLang\tTimezone\tFree Form Contact Info
 14\troot\troot\@localhost\tEnoch Root\t\t\t\t\t\t\t\t\t\t\t\t\troot\t\t\t
 EOF
 
@@ -61,7 +61,7 @@ EOF
     $agent->follow_link_ok( { text => 'User Transactions' } );
 
     my $transaction_info_tsv = <<EOF;
-Ticket Id\tid\tCreated\tDescription\tOldValue\tNewValue\tContent
+Ticket Id\tid\tCreated\tDescription\tOld Value\tNew Value\tContent
 1\t37\t$date_created\tTicket created\t\t\tThis transaction appears to have no content
 1\t39\t$date_commented\tComments added\t\t\tTest - Comment
 1\t40\t$date_correspondence\tCorrespondence added\t\t\tTest - Reply
@@ -75,7 +75,7 @@ EOF
     $agent->follow_link_ok( { text => 'User Tickets' } );
 
     my $ticket_info_tsv = <<EOF;
-id\tSubject\tStatus\tQueueName\tOwner\tPriority\tRequestors
+id\tSubject\tStatus\tQueue\tOwner\tPriority\tRequestor
 1\tTest\topen\tGeneral\tNobody in particular\tLow\troot (Enoch Root)
 EOF
 
