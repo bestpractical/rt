@@ -419,10 +419,21 @@ if ($CloneTicket) {
             push @cf_values, $cf_value->Content;
         }
 
+        next unless @cf_values;
+
         if ( @cf_values > 1 && $cf->Type eq 'Select' ) {
             $clone->{GetCustomFieldInputName( CustomField => $cf )} = \@cf_values;
         }
         else {
+            if ( $cf->Type eq 'DateTime' ) {
+                # Convert to user timezone. DateTime doesn't have multiple values, so only need to take care of
+                # $cf_values[0]
+
+                my $date = RT::Date->new( $session{'CurrentUser'} );
+                $date->Set( Format => 'ISO', Value => $cf_values[0] );
+                $cf_values[0] = $date->ISO( Timezone => 'user' );
+            }
+
             $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
               @cf_values;
         }
