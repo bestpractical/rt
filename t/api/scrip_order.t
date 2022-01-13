@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 204;
+use RT::Test tests => undef;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -269,4 +269,4 @@ sub dump_sort_order {
 
 }
 
-
+done_testing;
