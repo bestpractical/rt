@@ -81,7 +81,7 @@ Provides the LDAP implementation for L<RT::Authen::ExternalAuth>.
             'group'                     =>  'GROUP_NAME',
             'group_attr'                =>  'GROUP_ATTR',
 
-            'tls'                       =>  { verify => "require", capath => "/path/to/ca.pem" },
+            'tls'                       =>  { verify => "require", cafile => "/path/to/ca.pem" },
 
             'net_ldap_args'             => [    version =>  3   ],
 
