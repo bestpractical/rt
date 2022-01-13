@@ -855,6 +855,11 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition    => 'Require due set according to SLA',
        ScripAction       => 'Set due date according to SLA',
        Template          => 'Blank' },
+    {  Description       => "On Comment or Correspond, Add 15 Mins Time Worked",
+       ScripCondition    => 'On Comment Or Reply',
+       ScripAction       => 'Add 15 Minutes To Time Worked',
+       Disabled          => 1,
+       Template          => 'Blank' },
 );
 
 @ACL = (
