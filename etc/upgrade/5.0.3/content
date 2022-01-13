@@ -1,0 +1,29 @@
+use strict;
+use warnings;
+
+our @ScripActions = (
+    {
+      Name        => 'Add 15 Minutes To Time Worked',              # loc
+      Description => 'Add 15 Minutes To Ticket Time Worked Value', # loc
+      ExecModule  => 'SetTimeWorked',
+      Argument    => '15'
+    },
+);
+
+our @ScripConditions = (
+    {
+      Name                 => 'On Comment Or Reply',                                # loc
+      Description          => 'When a ticket is commented on or replied to',        # loc
+      ApplicableTransTypes => 'Comment,Correspond',
+      ExecModule           => 'AnyTransaction',
+    },
+);
+
+our @Scrips = (
+    {  Description       => "On Comment or Correspond, Add 15 Mins Time Worked",
+       ScripCondition    => 'On Comment Or Reply',
+       ScripAction       => 'Add 15 Minutes To Time Worked',
+       Disabled          => 1,
+       Template          => 'Blank' },
+);
+
