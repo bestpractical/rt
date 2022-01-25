@@ -19,15 +19,15 @@ works($id,$msg);
 
 sub add_works {
     works(
-        $cf->AddValue(Name => $_[0], Description => $_[0], Category => $_[1])
+        $cf->AddValue(Name => $_[0], Description => $_[0], Category => $_[1], SortOrder => $_[2])
     );
 };
 
-add_works('value1', '1. Category A');
-add_works('value2');
-add_works('value3', '1.1. A-sub one');
-add_works('value4', '1.2. A-sub two');
-add_works('value5', '');
+add_works('value1', '1. Category A', 1);
+add_works('value2', '', 2);
+add_works('value3', '1.1. A-sub one', 3);
+add_works('value4', '1.2. A-sub two', 4);
+add_works('value5', '', 5);
 
 my $cfv = $cf->Values->First;
 is($cfv->Category, '1. Category A');
