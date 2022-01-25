@@ -209,7 +209,7 @@ sub _SortValues {
 
     no warnings 'uninitialized';
 
-    return sort { $a->{sortorder} <=> $b->{sortorder} || lc($a->{name}) cmp lc($b->{name}) }
+    return sort { $a->{sortorder} <=> $b->{sortorder} || lc($a->{category}) cmp lc($b->{category}) || lc($a->{name}) cmp lc($b->{name}) }
                @items;
 }
 
