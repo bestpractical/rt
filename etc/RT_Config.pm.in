@@ -3258,6 +3258,20 @@ set on any assets, RT's behavior may be inconsistent.
 
 Set($AssetMultipleOwner, 0);
 
+=item C<$UserAssetExtraInfo>
+
+By default the People portlet on the asset display page shows the Name field
+for each user. Set this value with additional fields from the user record to
+show more information about the users. The value is a Format string of user
+attributes or custom fields. For example, to show the user's email, city, state,
+zip, and the user custom field Primary Office:
+
+    Set($UserAssetExtraInfo, 'EmailAddress, City, State, Zip, "CF.{Primary Office}"');
+
+=cut
+
+Set($UserAssetExtraInfo, '');
+
 =back
 
 =head2 Message box properties
