@@ -383,7 +383,7 @@ CREATE TABLE Users (
 
 
 CREATE UNIQUE INDEX Users1 ON Users (LOWER(Name)) ;
-CREATE INDEX Users4 ON Users (EmailAddress);
+CREATE INDEX Users4 ON Users (LOWER(EmailAddress));
 
 
 
