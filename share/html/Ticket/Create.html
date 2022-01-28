@@ -61,6 +61,17 @@
 <input type="hidden" class="hidden" name="AddGroupCc" value="<% $ARGS{'AddGroupCc'} %>" />
 % }
 
+% if ( $ARGS{'ChangedField'} ) {
+%   for my $field ( ref $ARGS{ChangedField} eq 'ARRAY' ? @{ $ARGS{ChangedField} } : $ARGS{ChangedField} ) {
+  <input type="hidden" class="hidden" name="ChangedField" value="<% $field %>" />
+%   }
+% }
+
+%# If user includes an article, it usually means the content changes.
+% if ( $ARGS{IncludeArticleId} ) {
+  <input type="hidden" class="hidden" name="ChangedField" value="Content" />
+% }
+
 % $m->callback( CallbackName => 'FormStart', QueueObj => $QueueObj, ARGSRef => \%ARGS );
 
 % if ($gnupg_widget) {
@@ -460,6 +471,18 @@ $m->callback( QueueObj => $QueueObj, title => \$title, results => \@results, ARG
 $m->scomp( '/Articles/Elements/SubjectOverride', ARGSRef => \%ARGS, QueueObj => $QueueObj, results => \@results );
 
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."), Code => HTTP::Status::HTTP_NOT_FOUND);
+
+if ( $ARGS{QueueChanged} ) {
+    my %changed = map { $_ => 1 } ref $ARGS{ChangedField} eq 'ARRAY' ? @{ $ARGS{ChangedField} } : $ARGS{ChangedField}
+        if $ARGS{ChangedField};
+
+    for my $field ( qw/Content InitialPriority FinalPriority SLA Starts Due/, grep { /-CustomField-/ && !/-Magic$/ } sort keys %ARGS ) {
+        if ( !$changed{$field} ) {
+            delete $ARGS{$field};
+            delete $DECODED_ARGS->{$field}; # EditCustomField uses $DECODED_ARGS
+        }
+    }
+}
 
 my $ticket = RT::Ticket->new($current_user); # empty ticket object
 
