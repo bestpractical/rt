@@ -77,3 +77,10 @@ $Transactions->OrderBy(FIELD => 'Created', ORDER => 'DESC');
   </div>
  </&>
 </div>
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('.transaction .toggle-txn-details').click(function () {
+        return toggleTransactionDetails.apply(this);
+    });
+});
+</script>
