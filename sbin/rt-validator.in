@@ -987,8 +987,8 @@ push @CHECKS, Attributes => sub {
     foreach my $model ( @models ) {
         $res *= check_integrity(
             'Attributes', 'ObjectId' => m2t($model), 'id',
-            condition   => 's.ObjectType = ?',
-            bind_values => [ "RT::$model" ],
+            condition   => 's.ObjectType = ? AND s.Name != ?',
+            bind_values => [ "RT::$model", "ContentHistory" ],
         );
     }
     return $res;
