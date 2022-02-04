@@ -2030,6 +2030,9 @@ our %META;
     MoreAboutRequestorTicketListFormat => {
         Widget => '/Widgets/Form/MultilineString',
     },
+    UserAssetExtraInfo => {
+        Widget => '/Widgets/Form/MultilineString',
+    },
     UserDataResultFormat => {
         Widget => '/Widgets/Form/MultilineString',
     },
