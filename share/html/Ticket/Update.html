@@ -341,6 +341,17 @@ my $TicketObj = LoadTicket($id);
 
 my @results;
 
+if ($ARGS{IncludeArticleId}) {
+    my $article = RT::Article->new($session{'CurrentUser'});
+    my ($ret, $msg) = $article->Load( $ARGS{IncludeArticleId} );
+
+    if (!$ret) {
+        # Make sure we don't finalize the update if we won't be able to include the article
+        $checks_failure = 1;
+        push @results, loc('Unable to load article "[_1]"', $ARGS{IncludeArticleId});
+    }
+}
+
 $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, checks_failure => \$checks_failure, results => \@results, CallbackName => 'Initial' );
 $m->scomp( '/Articles/Elements/SubjectOverride', Ticket => $TicketObj, ARGSRef => \%ARGS, results => \@results );
 

@@ -493,6 +493,17 @@ if ( $ARGS{SubmitTicket} ) {
     $checks_failure = 1 unless $status;
 }
 
+if ($ARGS{IncludeArticleId}) {
+    my $article = RT::Article->new($session{'CurrentUser'});
+    my ($ret, $msg) = $article->Load( $ARGS{IncludeArticleId} );
+
+    if (!$ret) {
+        # Make sure we don't finalize the ticket if we won't be able to include the article
+        $checks_failure = 1;
+        push @results, loc('Unable to load article "[_1]"', $ARGS{IncludeArticleId});
+    }
+}
+
 # check email addresses for RT's
 {
     foreach my $field ( qw(Requestors Cc AdminCc) ) {
