@@ -50,10 +50,10 @@
 % $m->abort;
 <%ARGS>
 $term       => undef
-$max        => 10
-$op         => 'STARTSWITH'
+$max        => undef
+$op         => undef
 $right      => undef
-$return     => 'Name'
+$return     => ''
 $queue      => undef
 </%ARGS>
 <%INIT>
@@ -65,24 +65,18 @@ $m->abort unless defined $return
              and defined $term
              and length $term;
 
-# Sanity check the operator
-$op = 'STARTSWITH' unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
-
 $m->callback( CallbackName => 'ModifyMaxResults', max => \$max );
+$max //= 10;
 
 my $articles = RT::Articles->new( $session{CurrentUser} );
-if( $queue ) {
-    $articles->LimitAppliedClasses( Queue => $queue );
-}
-
-$articles->RowsPerPage( $max );
-$articles->Limit(
-    FIELD           => 'Name',
-    OPERATOR        => $op,
-    VALUE           => $term,
-    ENTRYAGGREGATOR => 'OR',
-    CASESENSITIVE   => 0,
+$articles->SimpleSearch(
+    Queue           => $queue,
+    Return          => $return,
+    Term            => $term,
+    Max             => $max,
+    $op ? ( Fields => { $return => $op } ) : (),
 );
+$m->callback( CallbackName => "ModifyArticlesLimit", Articles => $articles, Term => $term, ARGSRef => \%ARGS );
 
 my @suggestions;
 while (my $a = $articles->Next) {

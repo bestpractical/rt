@@ -2541,6 +2541,23 @@ preference.
 
 Set($AutocompleteQueues, 0);
 
+=item C<$ArticleSearchFields>
+
+Used when searching for an Article to Include.
+
+Specifies which fields of L<RT::Article> to match against and how to match
+each field when autocompleting articles.  Valid match methods are LIKE,
+STARTSWITH, ENDSWITH, =, and !=.  Valid search fields are the core Article
+fields, as well as custom fields, including Content, which are specified as
+"CF.1234" or "CF.Name"
+
+=cut
+
+Set($ArticleSearchFields, {
+    Name         => 'STARTSWITH',
+    Summary      => 'LIKE',
+});
+
 =item C<$UserSearchFields>
 
 Used by the User Autocompleter as well as the User Search.

@@ -875,6 +875,99 @@ sub Search {
     return 1;
 }
 
+=head2 SimpleSearch
+
+Does a 'simple' search of Articles against a specified Term.
+
+This Term is compared to a number of fields using various types of SQL
+comparison operators.
+
+Ensures that the returned collection of Articles will have a value for Return.
+
+This method is passed the following.  You must specify a Term and a Return.
+
+    Queue      - Limit the search to classes applied to this queue
+    Fields     - Hashref of data - defaults to C<$ArticleSearchFields> emulate that if you want to override
+    Term       - String that is in the fields specified by Fields
+    Return     - What field on the Article you want to be sure isn't empty
+    Max        - What to limit this collection to
+
+=cut
+
+sub SimpleSearch {
+    my $self = shift;
+    my %args = (
+        Queue       => undef,
+        Fields      => RT->Config->Get('ArticleSearchFields'),
+        Term        => undef,
+        Return      => undef,
+        Max         => 10,
+        @_
+    );
+
+    return $self unless defined $args{Return}
+                        and defined $args{Term}
+                        and length $args{Term};
+
+    $self->RowsPerPage( $args{Max} );
+
+    if ($args{Queue}) {
+        $self->LimitAppliedClasses( Queue => $args{Queue} );
+    }
+
+    while (my ($name, $op) = each %{$args{Fields}}) {
+        $op = 'STARTSWITH'
+            unless $op =~ /^(?:LIKE|(?:START|END)SWITH|=|!=)$/i;
+
+        if ($name =~ /^CF\.(?:\{(.*)}|(.*))$/) {
+            my $cfname = $1 || $2;
+            my $cf = RT::CustomField->new(RT->SystemUser);
+            my ($ok, $msg) = $cf->LoadByName(
+                Name => $cfname,
+                LookupType => RT::Article->new( $self->CurrentUser )->CustomFieldLookupType,
+            );
+            if ( $ok ) {
+                $self->LimitCustomField(
+                    CUSTOMFIELD     => $cf->Id,
+                    OPERATOR        => $op,
+                    VALUE           => $args{Term},
+                    ENTRYAGGREGATOR => 'OR',
+                    SUBCLAUSE       => 'autocomplete',
+                );
+            } else {
+                RT->Logger->warning("Asked to search custom field $name but unable to load an Article CF with the name $cfname: $msg");
+            }
+        } else {
+            $self->Limit(
+                FIELD           => $name,
+                OPERATOR        => $op,
+                VALUE           => $args{Term},
+                ENTRYAGGREGATOR => 'OR',
+                SUBCLAUSE       => 'autocomplete',
+            );
+        }
+    }
+
+    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+        $self->Limit(
+            FIELD    => $args{Return},
+            OPERATOR => 'IS NOT',
+            VALUE    => 'NULL',
+        );
+    }
+    elsif ( $args{Return} !~ /^id$/i ) {
+        $self->Limit( FIELD => $args{Return}, OPERATOR => '!=', VALUE => '' );
+        $self->Limit(
+            FIELD           => $args{Return},
+            OPERATOR        => 'IS NOT',
+            VALUE           => 'NULL',
+            ENTRYAGGREGATOR => 'AND'
+        );
+    }
+
+    return $self;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
