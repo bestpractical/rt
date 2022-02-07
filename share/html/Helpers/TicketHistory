@@ -63,6 +63,7 @@ $m->callback( CallbackName => 'ExtraShowHistoryArguments', Ticket => $TicketObj,
     ReverseTxns => $ARGS{'ReverseTxns'},
     Attachments => $attachments,
     AttachmentContent => $attachment_content,
+    HistoryFilter => $ARGS{'HistoryFilter'},
     %extra_args,
     &>
 <script type="text/javascript">ReplaceUserReferences()</script>

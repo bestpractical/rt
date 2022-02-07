@@ -187,6 +187,12 @@
   </div>
 % }
 
+  <div class="form-row">
+    <div class="col-12"> <% # colspan=4 %>
+      <& /Admin/Elements/EditHistoryFilter, QueueObj => $QueueObj, %ARGS &>
+    </div>
+  </div>
+
 </&>
   <div class="form-row">
     <div class="col-12">
@@ -273,6 +279,37 @@ if ( $QueueObj->Id ) {
     if ( !$QueueObj->SLADisabled && !( RT->Config->Get('ServiceAgreements') && keys %{RT->Config->Get('ServiceAgreements')}) ) {
         push @no_redirect_results, loc("You enabled [_1] but [_2] hasn't been configured in RT_SiteConfig.pm, please check '[_3]' for more help", 'SLA', '%ServiceAgreements', 'docs/customizing/sla.pod');
     }
+
+    if ( $ARGS{'HistoryFilter-Magic'} ) {
+        unless ( ref $HistoryFilter ) {
+            if ( $HistoryFilter ) {
+                $HistoryFilter = [$HistoryFilter];
+            }
+            else {
+                $HistoryFilter = [];
+            }
+        }
+        my $history_filter_attribute = $QueueObj->FirstAttribute( 'HistoryFilter' );
+        my $previous_history_filter = $history_filter_attribute ? $history_filter_attribute->Content : [];
+
+        my %cmp;
+
+        foreach my $v (@$HistoryFilter, @$previous_history_filter) {
+            $cmp{$v}++;
+        }
+
+        # we don't care about the details of the difference, only whether or not there is one
+        if (grep { $_ != 2 } values %cmp) {
+            my ($ret, $msg) = $QueueObj->SetAttribute( Name => 'HistoryFilter', Content => $HistoryFilter );
+            if ( $ret ) {
+                push @results, loc("Histroy Filter Updated");
+            }
+            else {
+                RT::Logger->error( "Could not set History Filter queue attribute: $msg" );
+                push @results, loc("Failed to update History Filter setting");
+            }
+        }
+    }
 } else {
     $title = loc("Create a queue");
 }
@@ -303,4 +340,5 @@ $SetCrypt => undef
 $SLAEnabled => undef
 $Enabled => undef
 $SortOrder => undef
+$HistoryFilter => undef
 </%ARGS>

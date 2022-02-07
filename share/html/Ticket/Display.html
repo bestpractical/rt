@@ -73,18 +73,21 @@
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
         ReverseTxns => $ARGS{'ReverseTxns'},
+        HistoryFilter => $ARGS{'HistoryFilter'},
     &>
 % } elsif ($ShowHistory eq "delay") {
     <& /Ticket/Elements/DelayShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
         ReverseTxns => $ARGS{'ReverseTxns'},
+        HistoryFilter => $ARGS{'HistoryFilter'},
     &>
 % } elsif (not $ForceShowHistory and $ShowHistory eq "click") {
     <& /Ticket/Elements/ClickToShowHistory,
         Ticket => $TicketObj,
         ShowHeaders => $ARGS{'ShowHeaders'},
         ReverseTxns => $ARGS{'ReverseTxns'},
+        HistoryFilter => $ARGS{'HistoryFilter'},
     &>
 % } else {
     <& /Elements/ShowHistory ,
@@ -93,7 +96,8 @@
           ShowHeaders => $ARGS{'ShowHeaders'},
           ReverseTxns => $ARGS{'ReverseTxns'},
           Attachments => $attachments,
-          AttachmentContent => $attachment_content
+          AttachmentContent => $attachment_content,
+          HistoryFilter => $ARGS{'HistoryFilter'},
     &>
 % }
 

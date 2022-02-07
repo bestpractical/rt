@@ -1567,6 +1567,12 @@ our %META;
             }
         },
     },
+    HistoryFilterTypes => {
+        Type            => 'ARRAY',
+        WidgetArguments => {
+            Description => 'Transactions types that history can be filtered by' # loc
+        }
+    },
     ServiceBusinessHours => {
         Type => 'HASH',
         PostLoadCheck   => sub {

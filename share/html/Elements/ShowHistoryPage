@@ -54,6 +54,8 @@ $AttachmentContent => $Object->TextAttachments
 $ShowHeaders       => 0
 
 $PathPrefix        => ''
+
+$HistoryFilter     => undef
 </%ARGS>
 <%INIT>
 my $trans_content = {};
@@ -89,6 +91,30 @@ for my $attachment (@{$Attachments->ItemsArrayRef()}) {
 }
 
 my $HasTxnCFs = ($Object->can("TransactionCustomFields") and $Object->TransactionCustomFields->Count);
+
+if ($Object->isa("RT::Ticket")) {
+    # Translate $HistoryFilter into a hash
+    if ($HistoryFilter) {
+        if (ref $HistoryFilter eq 'ARRAY') {
+            $HistoryFilter = { map { $_ => 1 } @$HistoryFilter };
+        }
+        else {
+            $HistoryFilter = { $HistoryFilter => 1 };
+        }
+    }
+    else {
+        # Default based on whether or not the queue has one defined
+        # but not when anything has been explicitly set by the page
+        my $queue_history_filter_attribute_obj = $Object->QueueObj->FirstAttribute( 'HistoryFilter' );
+        if ($queue_history_filter_attribute_obj and @{$queue_history_filter_attribute_obj->Content}) {
+            $HistoryFilter = { map { $_ => 1 } @{$queue_history_filter_attribute_obj->Content} };
+            $HistoryFilter->{_Enabled} = 1;
+        }
+    }
+}
+else {
+    $HistoryFilter = undef;
+}
 </%INIT>
 <%perl>
 my $i = 1;
@@ -127,6 +153,10 @@ while ( my $Transaction = $Transactions->Next ) {
     $skip = 1 if $m->request_path =~ m{^/SelfService/}
         and RT::Config->Get('SelfServiceCorrespondenceOnly')
         and ($Transaction->Type ne "Correspond" && $Transaction->Type ne "Create");
+
+    if ($HistoryFilter and exists $HistoryFilter->{_Enabled}) {
+        $skip = 1 unless exists $HistoryFilter->{$Transaction->Type};
+    }
 
     $m->callback(
         %ARGS,

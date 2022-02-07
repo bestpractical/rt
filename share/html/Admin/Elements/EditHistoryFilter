@@ -2,7 +2,7 @@
 %#
 %# COPYRIGHT:
 %#
-%# This software is Copyright (c) 1996-2022 Best Practical Solutions, LLC
+%# This software is Copyright (c) 1996-2021 Best Practical Solutions, LLC
 %#                                          <sales@bestpractical.com>
 %#
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,43 +45,35 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Ticket History #[_1]: [_2]", $Ticket->Id, $Ticket->Subject) &>
-<& /Elements/Tabs &>
+<input type='hidden' name='HistoryFilter-Magic' value=1>
 
-% $m->callback( %ARGS, Ticket => $Ticket, CallbackName => 'BeforeActionList' );
+<div class="form-row">
+  <div class="label col-3">
+    <&|/l&>History Filter</&>:
+  </div>
+  <div class="value col-9">
+    <select name="HistoryFilter" class="selectpicker form-control" multiple>
+%     foreach my $type ( @options ) {
+%         my $selected = '';
+%         if ( scalar @{$default} && grep {$_ eq $type} @{$default} ) {
+%             $selected = 'selected="selected"';
+%         }
 
-<& /Elements/ShowHistory,
-    Object => $Ticket,
-    ShowHeaders => $ARGS{'ShowHeaders'}, 
-    Attachments => $attachments,
-    AttachmentContent => $attachment_content,
-    HistoryFilter => $ARGS{'HistoryFilter'},
-    &>
-
-% $m->callback( %ARGS, CallbackName => 'AfterShowHistory', Ticket => $Ticket );
-
-<%ARGS>
-$id => undef
-</%ARGS>
+          <option <% $selected |n %> value="<% $type %>"><% loc( $type ) %></option>
+%     }
+    </select>
+  </div>
+</div>
 
 <%INIT>
+return unless $QueueObj;
 
-  
+my $queue_attribute = $QueueObj->FirstAttribute( 'HistoryFilter' );
+my $default = $queue_attribute ? $queue_attribute->Content : [];
 
-my $Ticket = LoadTicket ($id);
-
-unless ($Ticket->CurrentUserHasRight('ShowTicket')) {
-    Abort("No permission to view ticket");
-}
-
-$Ticket->CurrentUser->AddRecentlyViewedTicket($Ticket);
-
-my $attachments = $Ticket->Attachments;
-my $attachment_content = $Ticket->TextAttachments;
-
-
+my @options = RT->Config->Get( 'HistoryFilterTypes' );
 </%INIT>
 
-
-
-
+<%ARGS>
+$QueueObj => undef
+</%ARGS>

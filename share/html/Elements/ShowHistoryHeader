@@ -52,6 +52,7 @@ $ShowTitle         => 1
 $ShowDisplayModes  => 1
 $ScrollShowHistory => 0
 $SingleTransaction => 0
+$HistoryFilter     => undef
 </%ARGS>
 <%INIT>
 my $record_type = $Object->RecordType;
@@ -66,6 +67,30 @@ else {
     # Default the link to the opposite of the config setting
     # Oldest Txns first is ASC, so reverse it for this option default
     $reverse_txns = RT->Config->Get("OldestTransactionsFirst", $session{'CurrentUser'}) ? 'DESC' : 'ASC';
+}
+
+if ($record_type eq 'Ticket') {
+    # Translate $HistoryFilter into a hash
+    if ($HistoryFilter) {
+        if (ref $HistoryFilter eq 'ARRAY') {
+            $HistoryFilter = { map { $_ => 1 } @$HistoryFilter };
+        }
+        else {
+            $HistoryFilter = { $HistoryFilter => 1 };
+        }
+    }
+    else {
+        # Default based on whether or not the queue has one defined
+        # but not when anything has been explicitly set by the page
+        my $queue_history_filter_attribute_obj = $Object->QueueObj->FirstAttribute( 'HistoryFilter' );
+        if ($queue_history_filter_attribute_obj and @{$queue_history_filter_attribute_obj->Content}) {
+            $HistoryFilter = { map { $_ => 1 } @{$queue_history_filter_attribute_obj->Content} };
+            $HistoryFilter->{_Enabled} = 1;
+        }
+    }
+}
+else {
+    $HistoryFilter = undef;
 }
 </%INIT>
 <div class="history <% lc $record_type %>" id="<% $histid %>">
@@ -127,6 +152,48 @@ if ( $ShowDisplayModes or $ShowTitle or $ScrollShowHistory ) {
 
         $titleright .= q{</ul></div>};
     }
+
+    my $history_filter = '';
+
+    if ($record_type eq 'Ticket') {
+            #<ul class="dropdown-menu dropdown-menu-right pre-scrollable">
+        $history_filter = q{
+            <ul class="dropdown-menu dropdown-menu-right pre-scrollable">
+            <li>
+                <form class="m-2" action="}.RT->Config->Get('WebPath').q{">
+                <input type="hidden" name="id" value="}.$Object->Id.q{">
+                <input type="hidden" name="HistoryFilter" value="_Defined">
+                <input type="submit" class="button btn btn-primary" value="}.loc('Filter').q{">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" id="EnableHistoryFilter" name="HistoryFilter"}.(exists $HistoryFilter->{_Enabled} ? ' checked="checked"' : '').q{ value="_Enabled" class="custom-control-input"
+                     onclick="d=!this.checked;jQuery('input[history-filter]').each(function(){this.disabled = d})">
+                    <label class="custom-control-label" for="EnableHistoryFilter">}.loc("Filter History").q{</label>
+                </div>
+        };
+
+        if (exists $HistoryFilter->{_Enabled}) {
+            my $types = RT->Config->Get( 'HistoryFilterTypes' ) || [];
+
+            # Use counting variable for checkbox ID incase a transaction type has a space
+            my $i = 1;
+            foreach my $type ( @{$types} ) {
+                my $checked = exists $HistoryFilter->{$type} ? 'checked="checked"' : '';
+                my $disabled = '';
+
+                $history_filter .= qq{
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" history-filter="yes" id="HistoryFilter-$i" name="HistoryFilter" $checked $disabled value="$type" class="custom-control-input">
+                    <label class="custom-control-label" for="HistoryFilter-$i">}.loc($type).q{</label>
+                </div>};
+                $i = $i + 1;
+            }
+        }
+
+        $history_filter .= q{
+        </li></form></ul>};
+    }
+
+    $titleright .= qq{<div class="btn-group dropdown"><a href="#" id="history-filter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fas fa-filter icon-bordered fa-2x" alt="Filter History" data-toggle="tooltip" data-placement="top" data-original-title="Filter History"></span></a>$history_filter</div>};
 
 </%perl>
 % $m->callback( CallbackName => 'BeforeTitle', %ARGS, title => \$title, titleright => \$titleright, ARGSRef => \%ARGS );

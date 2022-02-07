@@ -2863,7 +2863,17 @@ Set(%PriorityAsString,
     Default => { Low => 0, Medium => 50, High => 100 },
 );
 
+=item C<@HistoryFilterTypes>
+
+Transaction types that ticket history can be filtered by, the default options
+are 'Create', 'Correspond' and 'Comment'.  A full list of valid options can be
+found on Transaction Query Builder page under the Search menu.
+
 =back
+
+=cut
+
+Set(@HistoryFilterTypes, qw(Create Correspond Comment));
 
 =head2 Group Summary Configuration
 
