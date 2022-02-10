@@ -1156,7 +1156,7 @@ sub UpdateCustomFields {
         $CustomFieldObj->LoadById($cf);
 
         my @values;
-        if ($CustomFieldObj->Type =~ /text/i) { # Both Text and Wikitext
+        if ($CustomFieldObj->Type =~ /text|html/i) { # Text, HTML, and Wikitext
             @values = ($args->{$arg});
         } else {
             @values = split /\n/, $args->{$arg};

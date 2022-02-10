@@ -365,9 +365,9 @@ function ReplaceAllTextareas() {
 
     for (var i=0; i < allTextAreas.length; i++) {
         var textArea = allTextAreas[i];
-        if (jQuery(textArea).hasClass("messagebox richtext")) {
+        if (jQuery(textArea).hasClass("richtext")) {
             // Turn the original plain text content into HTML
-            var type = jQuery("#"+textArea.name+"Type");
+            var type = jQuery('[name="'+textArea.name+'Type"]');
             if (type.val() != "text/html")
                 textArea.value = textToHTML(textArea.value);
 
@@ -376,7 +376,7 @@ function ReplaceAllTextareas() {
 
             CKEDITOR.replace(textArea.name,{ width: '100%', height: RT.Config.MessageBoxRichTextHeight });
 
-            jQuery("#" + textArea.name + "___Frame").addClass("richtext-editor");
+            jQuery('[name="' + textArea.name + '___Frame"]').addClass("richtext-editor");
         }
     }
 };
