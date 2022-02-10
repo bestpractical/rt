@@ -887,6 +887,18 @@ sub PostInflate {
     $self->__Set( Field => 'URI', Value => $self->URI );
 }
 
+sub Load {
+    my $self = shift;
+    my $id = shift || '';
+
+    if ($id and $id =~ /^\d+$/) {
+        return $self->LoadById( $id );
+    }
+    else {
+        return $self->LoadByCols( Name => $id );
+    }
+}
+
 RT::Base->_ImportOverlays();
 
 1;
