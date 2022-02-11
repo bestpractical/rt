@@ -1568,7 +1568,14 @@ sub OrderByCols {
                         ENTRYAGGREGATOR => 'AND'
                     );
                     push @res, { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' },
-                        { %$row, ALIAS => $ocfvs, FIELD => 'Content' };
+                        {
+                            %$row,
+                            ALIAS => $ocfvs,
+                            FIELD => 'Content',
+                            blessed $cf && $cf->IsNumeric
+                            ? ( FUNCTION => $self->_CastToDecimal('Content') )
+                            : ()
+                        };
                 }
                 else {
                     RT->Logger->warning("Couldn't load user custom field $cf_name");
@@ -3462,28 +3469,39 @@ sub _parser {
                 $value = "main.$value" if $class eq 'RT::Tickets' && $value =~ /^\w+$/;
 
                 if ( $class eq 'RT::ObjectCustomFieldValues' ) {
+                    my $cast_to;
+                    if ( $meta->[0] eq 'CUSTOMFIELD' ) {
+                        my ($object, $field, $cf, $column) = $self->_CustomFieldDecipher( $subkey );
+                        if ( $cf && $cf->IsNumeric ) {
+                            $cast_to = 'DECIMAL';
+                        }
+                    }
+
                     if ( RT->Config->Get('DatabaseType') eq 'Pg' ) {
-                        my $cast_to;
-                        if ($subkey) {
+                        if ( !$cast_to ) {
+                            if ($subkey) {
 
-                            # like Requestor.id
-                            if ( $subkey eq 'id' ) {
-                                $cast_to = 'INTEGER';
+                                # like Requestor.id
+                                if ( $subkey eq 'id' ) {
+                                    $cast_to = 'INTEGER';
+                                }
+                            }
+                            elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
+                                if ( $meta->{is_numeric} ) {
+                                    $cast_to = 'INTEGER';
+                                }
+                                elsif ( $meta->{type} eq 'datetime' ) {
+                                    $cast_to = 'TIMESTAMP';
+                                }
                             }
                         }
-                        elsif ( my $meta = $self->RecordClass->_ClassAccessible->{$key} ) {
-                            if ( $meta->{is_numeric} ) {
-                                $cast_to = 'INTEGER';
-                            }
-                            elsif ( $meta->{type} eq 'datetime' ) {
-                                $cast_to = 'TIMESTAMP';
-                            }
-                        }
-
                         $value = "CAST($value AS $cast_to)" if $cast_to;
                     }
                     elsif ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
-                        if ($subkey) {
+                        if ( $cast_to && $cast_to eq 'DECIMAL' ) {
+                            $value = "TO_NUMBER($value)";
+                        }
+                        elsif ($subkey) {
 
                             # like Requestor.id
                             if ( $subkey eq 'id' ) {
