@@ -329,6 +329,10 @@ elsif ( $AddCol ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id=__id__">};
                     $column{Suffix} .= "</a>";
                 }
+                elsif ( $Link eq "Basics" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Modify.html?id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
             }
 
             if ($Title) {
