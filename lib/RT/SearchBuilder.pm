@@ -169,8 +169,15 @@ sub _OrderByCF {
         ENTRYAGGREGATOR => 'AND'
     );
 
-    return { %$row, ALIAS => $CFvs,  FIELD => 'SortOrder' },
-           { %$row, ALIAS => $ocfvs, FIELD => 'Content' };
+    return { %$row, ALIAS => $CFvs, FIELD => 'SortOrder' },
+        {
+            %$row,
+            ALIAS => $ocfvs,
+            FIELD => 'Content',
+            blessed $cf && $cf->IsNumeric
+            ? ( FUNCTION => RT->DatabaseHandle->CastAsDecimal('Content') )
+            : ()
+        };
 }
 
 sub OrderByCols {
@@ -545,9 +552,20 @@ sub _LimitCustomField {
 
 
     my $fix_op = sub {
+        my %args = @_;
+
+        if (   $args{'FIELD'} eq 'Content'
+            && blessed $cf
+            && $cf->IsNumeric
+            && ( !$args{QUOTEVALUE} || Scalar::Util::looks_like_number($args{'VALUE'}) ) )
+        {
+            $args{QUOTEVALUE} = 0;
+            $args{FUNCTION} = RT->DatabaseHandle->CastAsDecimal( "$args{ALIAS}.$args{FIELD}" );
+            return %args;
+        }
+
         return @_ unless RT->Config->Get('DatabaseType') eq 'Oracle';
 
-        my %args = @_;
         return %args unless $args{'FIELD'} eq 'LargeContent';
 
         my $op = $args{'OPERATOR'};
@@ -843,17 +861,18 @@ sub _LimitCustomField {
         );
     } else {
         # Otherwise, go looking at the Content
-        $self->Limit(
+        $self->Limit( $fix_op->(
             %args,
             ALIAS    => $ocfvalias,
             FIELD    => 'Content',
             OPERATOR => $op,
             VALUE    => $value,
             CASESENSITIVE => 0,
-        );
+        ) );
     }
 
-    if (!$value_is_long and $op eq "=") {
+    if ( ( blessed($cf) and $cf->IsNumeric ) or ( !$value_is_long and $op eq "=" ) ) {
+        # Skip LargeContent comparison for numeric values.
         # Doesn't matter what LargeContent contains, as it cannot match
         # the short value.
     } elsif (!$value_is_long and $op =~ /^(!=|<>)$/) {
