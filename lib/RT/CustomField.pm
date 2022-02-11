@@ -2359,6 +2359,61 @@ sub CleanupDefaultValues {
     }
 }
 
+=head2 SupportNumericValues
+
+Return true if this custom field supports numeric values, false otherwise.
+
+Currently it's supported for Freeform/Select/Combobox/Autocomplete.
+
+=cut
+
+sub SupportNumericValues {
+    my $self = shift;
+    return 0 unless $self->Id;
+    return $self->Type =~ /Freeform|Select|Combobox|Autocomplete/;
+}
+
+=head2 SetNumericValues BOOL
+
+Enable or Disable numeric values.
+
+=cut
+
+sub SetNumericValues {
+    my $self  = shift;
+    my $value = shift || 0;
+    return 0 unless $self->Id;
+    return 1 if $self->NumericValues == $value;
+
+    my ( $ret, $msg ) = $self->SetAttribute( Name => 'NumericValues', Description => '', Content => $value );
+    if ($ret) {
+        if ($value) {
+            return ( $ret, $self->loc('Numeric values enabled') );
+        }
+        else {
+            return ( $ret, $self->loc('Numeric values disabled') );
+        }
+    }
+    else {
+        return ( $ret, $self->loc( "Can't set NumericValues to [_1]: [_2]", $value, $msg ) );
+    }
+}
+
+=head2 NumericValues
+
+Return true if this custom field has numeric values enabled, false otherwise.
+
+=cut
+
+sub NumericValues {
+    my $self = shift;
+    return 0 unless $self->Id && $self->SupportNumericValues;
+    if ( my $attr = $self->FirstAttribute('NumericValues') ) {
+        return $attr->Content;
+    }
+    return 0;
+}
+
 =head2 id
 
 Returns the current value of id. 
