@@ -1962,6 +1962,7 @@ our %META;
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Default catalog',    #loc
+            Default     => 1, # allow user to unset it on EditConfig.html
             Callback    => sub {
                 my $ret = { Values => [], ValuesLabel => {} };
                 my $c = RT::Catalogs->new( $HTML::Mason::Commands::session{'CurrentUser'} );
