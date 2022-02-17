@@ -1915,7 +1915,7 @@ sub GetCustomFieldInputName {
     elsif ( $args{CustomField}->Type =~ /^(?:Binary|Image)$/ ) {
         $name .= 'Upload';
     }
-    elsif ( $args{CustomField}->Type =~ /^(?:Date|DateTime|Text|Wikitext)$/ ) {
+    elsif ( $args{CustomField}->Type =~ /^(?:Date|DateTime|Text|HTML|Wikitext)$/ ) {
         $name .= 'Values';
     }
     else {
@@ -3378,6 +3378,11 @@ sub _ProcessObjectCustomFieldUpdates {
         delete $args{'ARGS'}->{'Values'};
     }
 
+    if ($cf_type eq 'HTML') {
+        # this field is needed only to create the ckeditor
+        delete $args{'ARGS'}->{'ValuesType'};
+    }
+
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
 
@@ -3581,7 +3586,7 @@ sub _NormalizeObjectCustomFieldValue {
 
     if ( ref $args{'Value'} eq 'ARRAY' ) {
         @values = @{ $args{'Value'} };
-    } elsif ( $cf_type =~ /text/i ) {    # Both Text and Wikitext
+    } elsif ( $cf_type =~ /text|html/i ) {    # Text, HTML, and Wikitext
         @values = ( $args{'Value'} );
     } else {
         @values = split /\r*\n/, $args{'Value'}

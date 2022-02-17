@@ -111,8 +111,18 @@ our %FieldTypes = (
                     'Fill in up to [quant,_1,text area,text areas]', # loc
                   ]
             },
-    Wikitext => {
+    HTML => {
         sort_order => 40,
+        selection_type => 0,
+        canonicalizes => 1,
+        labels         => [
+                    'Fill in multiple HTML areas',                       # loc
+                    'Fill in one HTML area',                             # loc
+                    'Fill in up to [quant,_1,HTML area,HTML areas]', # loc
+                  ]
+                },
+    Wikitext => {
+        sort_order => 50,
         selection_type => 0,
         canonicalizes => 1,
         labels         => [
@@ -121,9 +131,8 @@ our %FieldTypes = (
                     'Fill in up to [quant,_1,wikitext area,wikitext areas]', # loc
                   ]
                 },
-
     Image => {
-        sort_order => 50,
+        sort_order => 60,
         selection_type => 0,
         canonicalizes => 0,
         labels         => [
@@ -133,7 +142,7 @@ our %FieldTypes = (
                   ]
              },
     Binary => {
-        sort_order => 60,
+        sort_order => 70,
         selection_type => 0,
         canonicalizes => 0,
         labels         => [
@@ -144,7 +153,7 @@ our %FieldTypes = (
               },
 
     Combobox => {
-        sort_order => 70,
+        sort_order => 80,
         selection_type => 1,
         canonicalizes => 1,
         labels         => [
@@ -154,7 +163,7 @@ our %FieldTypes = (
                   ]
                 },
     Autocomplete => {
-        sort_order => 80,
+        sort_order => 90,
         selection_type => 1,
         canonicalizes => 1,
         labels         => [
@@ -165,7 +174,7 @@ our %FieldTypes = (
     },
 
     Date => {
-        sort_order => 90,
+        sort_order => 100,
         selection_type => 0,
         canonicalizes => 0,
         labels         => [
@@ -175,7 +184,7 @@ our %FieldTypes = (
                   ]
             },
     DateTime => {
-        sort_order => 100,
+        sort_order => 110,
         selection_type => 0,
         canonicalizes => 0,
         labels         => [
@@ -186,7 +195,7 @@ our %FieldTypes = (
                 },
 
     IPAddress => {
-        sort_order => 110,
+        sort_order => 120,
         selection_type => 0,
         canonicalizes => 0,
 
@@ -196,7 +205,7 @@ our %FieldTypes = (
                   ]
                 },
     IPAddressRange => {
-        sort_order => 120,
+        sort_order => 130,
         selection_type => 0,
         canonicalizes => 0,
 
@@ -1283,7 +1292,7 @@ Returns an array of all possible composite values for custom fields.
 
 sub TypeComposites {
     my $self = shift;
-    return grep !/(?:[Tt]ext|Combobox|Date|DateTime)-0/, map { ("$_-1", "$_-0") } $self->Types;
+    return grep !/(?:[Tt]ext|HTML|Combobox|Date|DateTime)-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
 =head2 RenderType

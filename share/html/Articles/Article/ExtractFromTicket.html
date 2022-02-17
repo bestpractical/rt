@@ -55,7 +55,7 @@
 % }
 <input type="hidden" name="new-RefersTo" value="t:<% $ticket->id%>" />
 <p><&|/l&>Use the dropdown menus to select which ticket updates you want to extract into a new article.</&>
-<&|/l&>You can insert ticket content into any freeform, text or wiki field.</&>
+<&|/l&>You can insert ticket content into any freeform, text, HTML, or wiki field.</&>
 </p>
 <div class="form-row">
   <div class="label col-2 text-left">
@@ -79,7 +79,12 @@
   </div>
   <div class="value col-auto">
     <b><%$trans->CreatedObj->AsString%>: <%$trans->Description%></b>
-    <pre><%$trans->Content%></pre>
+% my $content_obj = $trans->ContentObj(Type => 'text/html');
+% my $content = $content_obj->Content;
+% if ($content_obj->ContentType eq 'text/html') {
+%   $content = $m->comp( '/Elements/ScrubHTML', Content => $content_obj->Content );
+% }
+    <& /Elements/ShowMessageStanza, Message => $content, ContentType => $content_obj->ContentType &>
   </div>
 </div>
 % } 
@@ -102,6 +107,7 @@ unless ($ClassObj->Id) {
 my     $CustomFields = $ClassObj->ArticleCustomFields();
 
 $CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Text');
+$CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'HTML');
 $CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Wikitext');
 $CustomFields->Limit(FIELD => 'Type', OPERATOR => '=', VALUE => 'Freeform');
 </%init>

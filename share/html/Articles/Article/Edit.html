@@ -133,11 +133,21 @@ if ($ARGS{SortOrder}) {
 if ( !$id ) {
     $title = loc('Create a new article');
     foreach my $arg ( sort keys %ARGS ) {
-        if ( $arg =~ /^Transaction-(\d+)$/ ) {
+        if ( $arg =~ /^Transaction-(\d+)$/ and $ARGS{$arg} ) {
             my $trans = RT::Transaction->new( $session{'CurrentUser'} );
             $trans->Load($1);
-            $CFContent{ $ARGS{$arg} } .= "\n\n" if $CFContent{ $ARGS{$arg} };
-            $CFContent{ $ARGS{$arg} } .= $trans->Content;
+            my $cf_id = $ARGS{$arg};
+            my $cf = RT::CustomField->new( $session{'CurrentUser'} );
+            $cf->LoadById( $cf_id );
+            if ($CFContent{$cf_id}) {
+                if ($cf->Type eq 'HTML') {
+                    $CFContent{$cf_id} .= "<br /><br />";
+                }
+                else {
+                    $CFContent{$cf_id} .= "\n\n";
+                }
+            }
+            $CFContent{$cf_id} .= $trans->Content( ($cf->Type eq 'HTML') ? (Type => 'text/html') : () );
         }
     }
 
