@@ -55,9 +55,9 @@ Origin: http://thenounproject.com/noun/eye-dropper/ (The Noun Project)
 Author: The Noun Project
 License: CC BY 3.0
 
-* jquery-3.4.1.js
+* jquery-3.6.0.js
 Description: DOM manipulation
-Origin: http://code.jquery.com/jquery-3.4.1.js
+Origin: http://code.jquery.com/jquery-3.6.0.js
 License: MIT
 
 * jquery-jgrowl-1.4.5/
@@ -70,7 +70,7 @@ Description: sort tables without page refresh
 Origin: https://github.com/christianbach/tablesorter
 License: MIT
 
-* jquery-ui-1.12.1.custom/
+* jquery-ui-1.13.0.custom/
 Description: JavaScript user interface enhancements
 Origin: http://jqueryui.com/download/
 License: MIT
