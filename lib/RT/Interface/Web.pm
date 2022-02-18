@@ -118,8 +118,7 @@ sub JSFiles {
         jquery-ui-patch-datepicker.js
         jquery.cookie.js
         selectize.min.js
-        popper.min.js
-        bootstrap.min.js
+        bootstrap.bundle.min.js
         bootstrap-select.min.js
         bootstrap-combobox.js
         i18n.js
