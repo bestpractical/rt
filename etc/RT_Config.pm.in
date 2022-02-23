@@ -2574,6 +2574,18 @@ if there are other query arguments.
 
 Set( %ReferrerComponents );
 
+=item C<$StrictContentTypes>
+
+If set to 0, the C<X-Content-Type-Options: nosniff> header will be omitted on
+attachments.  Because RT does not filter HTML content in unknown content types,
+disabling this opens RT up to cross-site scripting (XSS) attacks by allowing
+the execution of arbitrary Javascript when the browser detects HTML-looking
+data in an attachment with an unknown content type.
+
+=cut
+
+Set($StrictContentTypes, 1);
+
 =item C<$BcryptCost>
 
 This sets the default cost parameter used for the C<bcrypt> key
