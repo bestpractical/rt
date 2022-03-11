@@ -119,6 +119,11 @@ sub NewHandler {
     $handler->interp->set_escape( h => \&RT::Interface::Web::EscapeHTML );
     $handler->interp->set_escape( u => \&RT::Interface::Web::EscapeURI  );
     $handler->interp->set_escape( j => \&RT::Interface::Web::EscapeJS   );
+
+    if ( !RT->Config->Get('DevelMode') ) {
+        $handler->interp->{rt_mason_cache_created} = RT::Interface::Web::MasonCacheCreatedDate;
+    }
+
     return($handler);
 }
 

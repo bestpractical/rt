@@ -174,9 +174,9 @@ for my $type (qw/Tickets Queues Transactions Articles Assets Groups PrivilegedUs
 
 <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
 
-% if ( $m->{rt_mason_cache_created} ) {
+% if ( $m->interp->{rt_mason_cache_created} ) {
 % my $mason_obj_date = RT::Date->new( $session{CurrentUser} );
-% $mason_obj_date->Set( Format => 'Unix', Value => $m->{rt_mason_cache_created} );
+% $mason_obj_date->Set( Format => 'Unix', Value => $m->interp->{rt_mason_cache_created} );
 
 <div class="mason-cache">
     <div class="mason-cache-info"><&|/l&>Cache created</&>: <% $mason_obj_date->AsString %></div>
