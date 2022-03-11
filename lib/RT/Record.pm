@@ -2863,6 +2863,9 @@ sub PreInflate {
     my $class = shift;
     my ($importer, $uid, $data) = @_;
 
+    # In case it's RT::Class from RT 4 that has HotList column
+    delete $data->{HotList} if $uid =~ /^RT::Class-/;
+
     my $ca = $class->_ClassAccessible;
     my %ca = %{ $ca };
 
