@@ -163,7 +163,15 @@ sub InitStream {
 sub Resolve {
     my $self = shift;
     my ($uid, $class, $id) = @_;
-    $self->{UIDs}{$uid} = [ $class, $id ];
+
+    # If we can infer from uid, do not store class/id to save memory usage.
+    if ( $uid eq join '-', $class, $self->{Organization}, $id ) {
+        $self->{UIDs}{$uid} = undef;
+    }
+    else {
+        $self->{UIDs}{$uid} = "$class-$id";
+    }
+
     return unless $self->{Pending}{$uid};
 
     for my $ref (@{$self->{Pending}{$uid}}) {
@@ -196,7 +204,15 @@ sub Lookup {
         carp "Tried to lookup an undefined UID";
         return;
     }
-    return $self->{UIDs}{$uid};
+
+    return unless exists $self->{UIDs}{$uid};
+
+    if ( ( $self->{UIDs}{$uid} // '' ) =~ /(.+)-(.+)/
+        || $uid =~ /(.+)-(?:\Q$self->{Organization}\E)-(.+)/ )
+    {
+        return [ $1, $2 ];
+    }
+    return;
 }
 
 sub LookupObj {
