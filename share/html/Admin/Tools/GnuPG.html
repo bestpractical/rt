@@ -112,13 +112,23 @@
 <form action="<% RT->Config->Get('WebPath')%>/Admin/Tools/GnuPG.html" name="PublicKeys" method="POST" enctype="multipart/form-data">
     <table class="table collection-as-table">
         <tr>
-            <th><input type="checkbox" name="PublicKeyAll" value="1" onclick="setCheckbox(this, 'PublicKey')"></th>
+            <th>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" name="PublicKeyAll" value="1" id="PublicKeyAll" class="checkbox custom-control-input" onclick="setCheckbox(this, 'PublicKey')" />
+                <label class="custom-control-label" for="PublicKeyAll"></label>
+              </div>
+            </th>
             <th><% loc('Summary') %></th>
             <th><% loc('Trust Level') %></th>
         </tr>
 % for my $item ( @{$public{info}} ) {
         <tr>
-            <td><input type="checkbox" name="PublicKey" value="<% $item->{Fingerprint} %>" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> /></td>
+            <td>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" name="PublicKey" id="PublicKey-<% $item->{Fingerprint} %>" value="<% $item->{Fingerprint} %>" class="checkbox custom-control-input" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> />
+                <label class="custom-control-label" for="PublicKey-<% $item->{Fingerprint} %>"></label>
+              </div>
+            </td>
             <td><% $item->{Formatted} %></td>
             <td><% $owner_trust_level{$item->{OwnerTrustChar}} || loc('Not set') %></td>
         </tr>
@@ -161,12 +171,21 @@
 <form action="<% RT->Config->Get('WebPath')%>/Admin/Tools/GnuPG.html" name="PrivateKeys" method="POST" enctype="multipart/form-data">
     <table class="table collection-as-table">
         <tr>
-            <th><input type="checkbox" name="PrivateKeyAll" value="1" onclick="setCheckbox(this, 'DeletePrivateKey')"></th>
+            <th>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" name="PrivateKeyAll" value="1" id="PrivateKeyAll" class="checkbox custom-control-input" onclick="setCheckbox(this, 'PrivateKey')" />
+                <label class="custom-control-label" for="PrivateKeyAll"></label>
+              </div>
             <th><% loc('Summary') %></th>
         </tr>
 % for my $item ( @{$private{info}} ) {
         <tr>
-            <td><input type="checkbox" name="PrivateKey" value="<% $item->{Fingerprint} %>" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> /></td>
+            <td>
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" name="PrivateKey" id="PrivateKey-<% $item->{Fingerprint} %>" value="<% $item->{Fingerprint} %>" class="checkbox custom-control-input" <% $delete{$item->{Fingerprint}} ? 'checked="checked"' : '' |n %> />
+                <label class="custom-control-label" for="PrivateKey-<% $item->{Fingerprint} %>"></label>
+              </div>
+            </td>
             <td><% $item->{Formatted} %></td>
         </tr>
 % }
