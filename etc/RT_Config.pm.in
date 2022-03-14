@@ -584,8 +584,9 @@ Set($MailCommand, "sendmailpipe");
 C<$SetOutgoingMailFrom> tells RT to set the sender envelope to the
 Correspond mail address of the ticket's queue.
 
-Warning: If you use this setting, bounced mails will appear to be
-incoming mail to the system, thus creating new tickets.
+Warning: RT will recognize most bounced messages and typically not create
+a ticket. If you use this setting however, any bounced mails that aren't caught
+will appear to be incoming mail to the system, thus creating new tickets.
 
 If the value contains an C<@>, it is assumed to be an email address and used as
 a global envelope sender.  Expected usage in this case is to simply set the
