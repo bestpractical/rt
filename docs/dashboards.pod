@@ -57,7 +57,7 @@ you can save it. Under the "Saved Searches" box, type "Outstanding Invoices"
 in the Description box. For now, leave Privacy set to "My saved searches" and 
 click Save. You now have a saved search you can use for your dashboard.
 
-To create the dashboard, select Home > New Dashboard. Type "Outstanding 
+To create the dashboard, select Reports > New Dashboard. Type "Outstanding 
 Invoices" for the name and leave the privacy set to "My Dashboards". Click 
 Create and the new dashboard is created.
 
