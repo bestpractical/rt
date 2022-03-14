@@ -843,6 +843,9 @@ sub FindScatteredParts {
         my $fname = $part->head->recommended_filename || '';
         next unless $fname =~ /\.(?:$file_extension_regex)$/;
 
+        # skip pgp keys, which could have .asc file extension
+        next if ( $part->head->mime_type // '' ) eq 'application/pgp-keys';
+
         $RT::Logger->debug("Found encrypted attachment '$fname'");
 
         $args{'Skip'}{$part} = 1;
@@ -1004,7 +1007,7 @@ sub VerifyRFC3156 {
     my %args = ( Data => undef, Signature => undef, @_ );
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
-    binmode $tmp_fh, ':raw:eol(CRLF?)';
+    binmode $tmp_fh, ':raw:eol(CRLF)';
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
 
@@ -1055,7 +1058,7 @@ sub DecryptRFC3156 {
 
     seek $tmp_fh, 0, 0;
     my $parser = RT::EmailParser->new();
-    my $decrypted = $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0 );
+    my $decrypted = $parser->ParseMIMEEntityFromFileHandle( $tmp_fh, 0, 1 );
     $decrypted->{'__store_link_to_object_to_avoid_early_cleanup'} = $parser;
 
     $args{'Top'}->parts( [$decrypted] );
