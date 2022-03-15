@@ -129,4 +129,38 @@ $m->text_like(
     'textarea change details'
 );
 
+$m->back;
+$m->submit_form_ok(
+    {
+        with_fields => {
+            $cfs->{area}{input}            => '<div class="form-row">test</div>',
+            $cfs->{area}{input} . '-Magic' => "1",
+        },
+    },
+    'submitted form to update textarea CF'
+);
+$m->text_contains('TheTextarea scrubbed');
+$m->text_contains( "TheTextarea <div>test</div> added", 'textarea was updated' );
+
+RT::Test->stop_server;
+RT->Config->Set( ScrubCustomFieldOnSave => Default => 1, 'RT::Ticket' => 0 );
+
+( $base, $m ) = RT::Test->started_ok;
+$m->login;
+$m->get_ok( $EditUrl, "Fetched $EditUrl" );
+$m->submit_form_ok(
+    {
+        with_fields => {
+            $cfs->{area}{input}            => '<div class="form-row">test2</div>',
+            $cfs->{area}{input} . '-Magic' => "1",
+        },
+    },
+    'submitted form to update textarea CF'
+);
+$m->text_lacks('TheTextarea scrubbed');
+$m->text_contains( qq{TheTextarea <div>test</div> changed to <div class="form-row">test2</div>},
+    'textarea was updated without scrubbing' );
+$m->follow_link_ok( { text => 'Display' } );
+$m->content_contains( '<div>test2</div>', 'Content is scrubbed on display' );
+
 done_testing;
