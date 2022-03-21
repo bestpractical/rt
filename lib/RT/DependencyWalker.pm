@@ -139,9 +139,7 @@ sub Walk {
                 push @{$self->{replace}}, \%frame;
             }
         }
-        unshift @{$stack}, @{$self->{replace}};
-        unshift @{$stack}, @{$self->{top}};
-        push    @{$stack}, @{$self->{bottom}};
+        unshift @{$stack}, @{$self->{top}}, @{$self->{replace}}, @{$self->{bottom}};
 
         if ($self->{GC} > 0 and $self->{gc_count} > $self->{GC}) {
             $self->{gc_count} = 0;
