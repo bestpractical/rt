@@ -41,15 +41,34 @@ $ldap->add(
     ],
 );
 
+$ldap->add(
+    "uid=testdisabled,ou=foo,dc=bestpractical,dc=com",
+    attr => [
+        cn          => "Disabled user",
+        mail        => "testdisabled\@invalid.tld",
+        uid         => 'testdisabled',
+        objectclass => 'User',
+        disabled    => 1,
+    ],
+);
 
 RT->Config->Set('LDAPHost',"ldap://localhost:$ldap_port");
 RT->Config->Set('LDAPOptions', [ port => $ldap_port ]);
-RT->Config->Set('LDAPMapping',
-                   {Name         => 'uid',
-                    EmailAddress => 'mail',
-                    RealName     => 'cn'});
+RT->Config->Set(
+    'LDAPMapping',
+    {
+        Name         => 'uid',
+        EmailAddress => 'mail',
+        RealName     => 'cn',
+        Disabled     => sub {
+            my %args   = @_;
+            return $args{ldap_entry}->get_value('disabled') ? 1 : 0;
+        },
+    }
+);
 RT->Config->Set('LDAPBase','ou=foo,dc=bestpractical,dc=com');
 RT->Config->Set('LDAPFilter','(objectClass=User)');
+RT->Config->Set('LDAPUpdateUsers', 1);
 
 # check that we don't import
 ok($importer->import_users());
@@ -80,6 +99,13 @@ $user->LoadByCols( Name => 9000 );
 ok(!$user->Id);
 $user->Load( 9000 );
 ok(!$user->Id);
+
+$user->Load('testdisabled');
+ok( $user->Disabled, 'User testdisabled is disabled' );
+$ldap->modify( "uid=testdisabled,ou=foo,dc=bestpractical,dc=com", replace => { disabled => 0 } );
+ok( $importer->import_users( import => 1 ) );
+$user->Load('testdisabled');
+ok( !$user->Disabled, 'User testdisabled is enabled' );
 
 # can't unbind earlier or the server will die
 $ldap->unbind;
