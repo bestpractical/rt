@@ -536,6 +536,28 @@ sub CanonicalizeAttributes {
                         }
                     }
                 }
+                elsif ( $record->{Name} eq 'SavedSearch' ) {
+                    if ( my $group_by = $record->{Content}{GroupBy} ) {
+                        my @new_group_by;
+                        my $stacked_group_by = $record->{Content}{StackedGroupBy};
+                        for my $item ( ref $group_by ? @$group_by : $group_by ) {
+                            if ( $item =~ /^CF\.\{(\d+)\}$/ ) {
+                                my $cf = RT::CustomField->new( RT->SystemUser );
+                                $cf->Load($1);
+                                my $by_name = 'CF.{' . $cf->Name . '}';
+                                push @new_group_by, $by_name;
+                                if ( $item eq ( $stacked_group_by // '' ) ) {
+                                    $stacked_group_by = $by_name;
+                                }
+                            }
+                            else {
+                                push @new_group_by, $item;
+                            }
+                        }
+                        $record->{Content}{GroupBy}        = \@new_group_by;
+                        $record->{Content}{StackedGroupBy} = $stacked_group_by if $stacked_group_by;
+                    }
+                }
             }
         }
         elsif ( $record->{Name} =~ /DefaultDashboard$/ ) {
