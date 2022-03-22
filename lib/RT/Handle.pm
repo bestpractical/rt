@@ -1808,7 +1808,19 @@ sub InsertData {
             'Pref-DashboardsInMenu' => 2,
             'Subscription'          => 2,
         );
-        for my $item ( sort { ( $order{ $a->{Name} } || 0 ) <=> ( $order{ $b->{Name} } || 0 ) } @Attributes ) {
+
+        my $order = sub {
+            my $name = shift;
+            return $order{$name} if exists $order{$name};
+
+            # Handle customized default dashboards like RTIRDefaultDashboard later than Dashboards.
+            if ( $name =~ /DefaultDashboard$/ ) {
+                return 2;
+            }
+            return 0;
+        };
+
+        for my $item ( sort { $order->( $a->{Name} ) <=> $order->( $b->{Name} ) } @Attributes ) {
             if ( $item->{_Original} ) {
                 $self->_UpdateOrDeleteObject( 'RT::Attribute', $item );
                 next;
@@ -2838,7 +2850,7 @@ sub _CanonilizeAttributeContent {
         }
         $item->{Content}{dashboards} = \@dashboards;
     }
-    elsif ( $item->{Name} =~ /^(?:Pref-)?DefaultDashboard$/ ) {
+    elsif ( $item->{Name} =~ /DefaultDashboard$/ ) {
         my $entry = $item->{Content};
         if ( $entry->{ObjectType} && $entry->{ObjectId} && $entry->{Description} ) {
             if ( my $object = $self->_LoadObject( $entry->{ObjectType}, $entry->{ObjectId} ) ) {
