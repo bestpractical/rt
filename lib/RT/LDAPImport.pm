@@ -1222,7 +1222,7 @@ sub create_rt_group {
     my $group_obj = $self->find_rt_group(%args);
     return unless defined $group_obj;
 
-    $group = { map { $_ => $group->{$_} } qw(id Name Description) };
+    $group = { map { $_ => $group->{$_} } qw(id Name Description Disabled) };
 
     my $id = delete $group->{'id'};
 
