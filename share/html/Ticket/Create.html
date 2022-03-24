@@ -521,8 +521,10 @@ if ($ARGS{IncludeArticleId}) {
 
 # check email addresses for RT's
 {
+    my $recipient_check = RT::Ticket->new($session{'CurrentUser'});
     my $custom_roles = $QueueObj->CustomRoles;
     my @static_roles = qw(Requestors Cc AdminCc);
+
     while (my $role = shift @static_roles || $custom_roles->Next) {
         my $field = ref $role ? $role->GroupType : $role;
         my $value = $ARGS{ $field };
@@ -543,7 +545,14 @@ if ($ARGS{IncludeArticleId}) {
                 }
             }
             else {
-                push @emails, $entry->{value};
+                my($principals, $messages) = $recipient_check->ParseInputPrincipals($entry->{value});
+                if (!$principals->[0]) {
+                    push @results, loc("Couldn't add '[_1]' as [_2]: [_3]", $entry->{value}, ref $role ? $role->Name : loc($role =~ /^(.*?)s?$/), $messages->[0]);
+                    $checks_failure ||= 1;
+                }
+                else {
+                    push @emails, $entry->{value};
+                }
             }
         }
         $ARGS{ $field } = join ', ', grep defined, @emails;
