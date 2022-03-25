@@ -483,8 +483,8 @@ accordingly.
 
 Set($ExtractSubjectTagMatch, qr/\[[^\]]+? #\d+\]/);
 Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
-       ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
-       : qr/\[\Q$RT::rtname\E #\d+\]/));
+       ? qr{\[(?:https?://)?(?:${RT::EmailSubjectTagRegex}) #\d+\]}
+       : qr{\[(?:https?://)?\Q$RT::rtname\E #\d+\]}));
 
 =item C<$CheckMoreMSMailHeaders>
 
