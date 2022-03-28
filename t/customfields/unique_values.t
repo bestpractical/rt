@@ -31,7 +31,7 @@ use RT::Test tests => undef;
         ( $ret, $msg ) =
           $beta->AddCustomFieldValue( Field => $unique_single, Value => $foo );
         ok( !$ret, "can't reuse the OCFV 'foo'");
-        like($msg, qr/That is not a unique value/);
+        like($msg, qr/ is not a unique value/);
         is( $beta->FirstCustomFieldValue($unique_single), undef, 'no value since it was a duplicate' );
 
         ( $ret, $msg ) =

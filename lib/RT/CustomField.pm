@@ -1827,12 +1827,13 @@ sub AddValueForObject {
     if ($self->UniqueValues) {
         my $class = $self->CollectionClassFromLookupType($self->ObjectTypeFromLookupType);
         my $collection = $class->new(RT->SystemUser);
-        $collection->LimitCustomField(CUSTOMFIELD => $self->Id, OPERATOR => '=', VALUE => $args{'LargeContent'} // $args{'Content'});
+        my $value = $args{'LargeContent'} // $args{'Content'};
+        $collection->LimitCustomField(CUSTOMFIELD => $self->Id, OPERATOR => '=', VALUE => $value);
 
         if ($collection->Count) {
             $RT::Logger->debug( "Non-unique custom field value for CF #" . $self->Id ." with object custom field value " . $collection->First->Id );
             $RT::Handle->Rollback();
-            return ( 0, $self->loc('That is not a unique value') );
+            return ( 0, $self->loc("'[_1]' is not a unique value", $value) );
         }
     }
 
