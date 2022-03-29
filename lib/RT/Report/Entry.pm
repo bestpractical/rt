@@ -56,6 +56,9 @@ use base qw/RT::Record/;
 # XXX TODO: how the heck do we acl a report?
 sub CurrentUserHasRight {1}
 
+# RT::Transactions::AddRecord calls CurrentUserCanSee
+sub CurrentUserCanSee {1}
+
 =head2 LabelValue
 
 If you're pulling a value out of this collection and using it as a label,

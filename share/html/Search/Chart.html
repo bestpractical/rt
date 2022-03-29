@@ -163,7 +163,7 @@ $m->callback( ARGSRef => \%ARGS, QueryArgsRef => \%query );
 % }
 
     <&| /Widgets/TitleBox, title => loc('Group by'), class => "chart-group-by" &>
-      <fieldset><legend><% loc('Group tickets by') %></legend>
+      <fieldset><legend><% loc('Group [_1] by', loc(lc $Class->Table)) %></legend>
         <& Elements/SelectGroupBy,
           Name => 'GroupBy',
           Query => $query{Query},
