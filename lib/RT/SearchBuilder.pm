@@ -267,6 +267,22 @@ sub RecordClass {
     $_[0]->_SingularClass
 }
 
+=head2 ReportClass
+
+Returns report class name of this collection. E.g. report class of RT::Tickets
+is RT::Report::Tickets
+
+=cut
+
+sub ReportClass {
+    my $self = shift;
+    my $class = ref($self) || $self;
+    if ( $class =~ s/(?<=^RT::)/Report::/ ) {
+        return $class;
+    }
+    return undef;
+}
+
 =head2 RegisterCustomFieldJoin
 
 Takes a pair of arguments, the first a class name and the second a callback

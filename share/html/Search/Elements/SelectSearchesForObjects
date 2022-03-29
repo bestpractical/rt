@@ -65,6 +65,7 @@ $SearchType => $Class eq 'RT::Transactions' ? 'Transaction' : $Class eq 'RT::Ass
 %     next if ($search->SubValue('SearchType')
 %              && $search->SubValue('SearchType') ne $SearchType);
 %     next if ($search->SubValue('SearchType') // '') eq 'RT::Transactions' && ($search->SubValue('ObjectType') // '') ne $ObjectType;
+%     next if $SearchType eq 'Chart' && ( $search->SubValue('Class') || 'RT::Tickets' ) ne ( $Class || 'RT::Tickets' );
 <option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->Id%>"><%$search->Description||loc('Unnamed search')%></option>
 % }
 </optgroup>

@@ -119,6 +119,7 @@ if ($SavedSearch) {
 
         if ( $SearchArg->{'SearchType'} eq 'Chart' ) {
             $SearchArg->{'SavedChartSearchId'} ||= $SavedSearch;
+            $class = $SearchArg->{Class} if $SearchArg->{Class};
         }
 
         # XXX: dispatch to different handler here

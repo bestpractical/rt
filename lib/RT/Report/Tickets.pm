@@ -720,7 +720,7 @@ sub SetupGroupings {
 
     my @group_by = grep defined && length,
         ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
-    @group_by = ('Status') unless @group_by;
+    @group_by = $self->DefaultGroupBy unless @group_by;
 
     my $distinct_results = 1;
     foreach my $e ( splice @group_by ) {
@@ -1836,6 +1836,10 @@ sub _GroupingType {
     # keys for custom roles are like "CustomRole.{1}"
     $key = 'CustomRole' if $key =~ /^CustomRole/;
     return $GROUPINGS{$key};
+}
+
+sub DefaultGroupBy {
+    return 'Status';
 }
 
 RT::Base->_ImportOverlays();
