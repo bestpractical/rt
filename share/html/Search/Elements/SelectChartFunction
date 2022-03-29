@@ -72,8 +72,10 @@ while ( my ($value, $display) = splice @functions, 0, 2 ) {
 $Name => 'ChartFunction'
 $Default => 'COUNT'
 $ShowEmpty => 0
+$Class => $Class
 </%ARGS>
 <%INIT>
-my @functions = RT::Report::Tickets->Statistics;
-$Default = '' unless defined $Default;
+my $report_class = ( $Class || 'RT::Tickets' )->ReportClass;
+RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
+my @functions = $report_class->Statistics;
 </%INIT>

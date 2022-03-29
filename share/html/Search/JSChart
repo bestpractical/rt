@@ -55,6 +55,7 @@ $Width  => undef
 $Height => undef
 $SavedSearchId => ''
 $StackedGroupBy => undef
+$Class => 'RT::Tickets'
 </%args>
 
 % my $id = join '-', 'search-chart', $SavedSearchId || ();
@@ -188,12 +189,11 @@ $Width  ||= ($ChartStyle =~ /\bpie\b/ ? 400 : 600);
 $Height ||= ($ChartStyle =~ /\bpie\b/ ? $Width : 400);
 $Height = $Width if $ChartStyle =~ /\bpie\b/;
 
-use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $report_class = ( $Class || 'RT::Tickets' )->ReportClass;
+RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
+my $report = $report_class->new( $session{'CurrentUser'} );
 
-# Default GroupBy we use in RT::Report::Tickets, we also need it here to
-# generate sub queries.
-@GroupBy = 'Status' unless @GroupBy;
+@GroupBy = $report_class->DefaultGroupBy unless @GroupBy;
 
 my %columns;
 if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {

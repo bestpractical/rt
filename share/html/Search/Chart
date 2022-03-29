@@ -54,6 +54,7 @@ $ChartStyle => 'bar+table+sql'
 @ChartFunction => 'COUNT'
 $Width  => undef
 $Height => undef
+$Class => 'RT::Tickets'
 </%args>
 <%init>
 use GD;
@@ -101,8 +102,9 @@ my $plot_error = sub {
     $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 };
 
-use RT::Report::Tickets;
-my $report = RT::Report::Tickets->new( $session{'CurrentUser'} );
+my $report_class = ( $Class || 'RT::Tickets' )->ReportClass;
+RT::StaticUtil::RequireModule($report_class) or Abort( loc("Couldn't load [_1]", $report_class) );
+my $report = $report_class->new( $session{'CurrentUser'} );
 
 my %columns;
 if ( $Cache and my $data = delete $session{'charts_cache'}{ $Cache } ) {
