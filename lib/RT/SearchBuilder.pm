@@ -999,6 +999,16 @@ sub Limit {
         $ARGS{'CASESENSITIVE'} = 1;
     }
 
+    # Oracle doesn't support to directly compare CLOB with VARCHAR/INTEGER.
+    # DefaultDashboard search in RT::Dashboard::CurrentUserCanDelete needs this
+    if (   $ARGS{OPERATOR} !~ /IS/i
+        && !$ARGS{FUNCTION}
+        && RT->Config->Get('DatabaseType') eq 'Oracle'
+        && $self->RecordClass->_Accessible( $ARGS{FIELD}, 'is_blob' ) )
+    {
+        $ARGS{FUNCTION} = 'TO_CHAR(?)';
+    }
+
     return $self->SUPER::Limit( %ARGS );
 }
 
