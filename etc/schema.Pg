@@ -33,7 +33,7 @@ CREATE TABLE Attachments (
 CREATE INDEX Attachments1 ON Attachments (Parent) ;
 CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
-CREATE INDEX Attachments4 ON Attachments (Filename) ;
+CREATE INDEX Attachments4 ON Attachments (LOWER(Filename));
 
 
 
@@ -91,8 +91,8 @@ CREATE TABLE Links (
   PRIMARY KEY (id)
 
 );
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type) ;
-CREATE INDEX Links4 ON Links(Type,LocalBase);
+CREATE UNIQUE INDEX Links1 ON Links (LOWER(Base), LOWER(Target), LOWER(Type));
+CREATE INDEX Links4 ON Links(LOWER(Type), LocalBase);
 
 
 
@@ -202,7 +202,7 @@ CREATE TABLE Transactions (
   PRIMARY KEY (id)
 
 );
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (LOWER(ObjectType), ObjectId);
 
 
 
@@ -278,7 +278,7 @@ CREATE TABLE ACL (
 
 );
 
-CREATE INDEX  ACL1 on ACL(RightName, ObjectType, ObjectId,PrincipalType,PrincipalId);
+CREATE INDEX ACL1 on ACL(LOWER(RightName), LOWER(ObjectType), ObjectId, LOWER(PrincipalType), PrincipalId);
 
 
 
@@ -429,7 +429,7 @@ CREATE TABLE Tickets (
 
 );
 
-CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
+CREATE INDEX Tickets1 ON Tickets (Queue, LOWER(Status));
 CREATE INDEX Tickets2 ON Tickets (Owner) ;
 CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
 
@@ -514,8 +514,8 @@ CREATE TABLE ObjectCustomFieldValues (
 
 );
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField, LOWER(ObjectType), ObjectId, LOWER(Content));
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField, LOWER(ObjectType), ObjectId);
 
 
 
@@ -629,8 +629,8 @@ CREATE TABLE Attributes (
 
 );
 
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(LOWER(Name));
+CREATE INDEX Attributes2 on Attributes(LOWER(ObjectType), ObjectId);
 
 
 
@@ -725,7 +725,7 @@ CREATE TABLE Assets (
 );
 
 CREATE INDEX AssetsName ON Assets (LOWER(Name));
-CREATE INDEX AssetsStatus ON Assets (Status);
+CREATE INDEX AssetsStatus ON Assets (LOWER(Status));
 CREATE INDEX AssetsCatalog ON Assets (Catalog);
 
 CREATE SEQUENCE catalogs_id_seq;
