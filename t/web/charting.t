@@ -132,4 +132,13 @@ $m->get_ok( "/Search/Chart?Query=Requestor.Name LIKE 'root'" );
 is( $m->content_type, "image/png" );
 ok( length($m->content), "Has content" );
 
+# Test txn charts
+$m->get_ok("/Search/Chart.html?Class=RT::Transactions&Query=Type=Create");
+$m->content_like( qr{<th[^>]*>Creator\s*</th>\s*<th[^>]*>Transaction count\s*</th>}, "Grouped by creator" );
+$m->content_like( qr{RT_System\s*</th>\s*<td[^>]*>\s*<a[^>]*>7</a>},                 "Found results in table" );
+$m->content_like( qr{<img src="/Search/Chart\?},                                     "Found image" );
+$m->get_ok("/Search/Chart?Class=RT::Transactions&Query=Type=Create");
+is( $m->content_type, "image/png" );
+ok( length( $m->content ), "Has content" );
+
 done_testing;

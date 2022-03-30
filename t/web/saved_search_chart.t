@@ -232,4 +232,33 @@ diag "test chart content with default parameters";
     ok( !exists $search->{Attribute}->Content->{''}, 'No empty key' );
 }
 
+diag 'testing transaction saved searches';
+{
+    $m->get_ok("/Search/Chart.html?Class=RT::Transactions&Query=Type=Create");
+    $m->submit_form(
+        form_name => 'SaveSearch',
+        fields    => {
+            SavedSearchDescription => 'txn chart 1',
+            SavedSearchOwner       => $owner,
+        },
+        button => 'SavedSearchSave',
+    );
+    $m->form_name('SaveSearch');
+    @saved_search_ids = $m->current_form->find_input('SavedSearchLoad')->possible_values;
+    shift @saved_search_ids;    # first value is blank
+    my $chart_without_updates_id = $saved_search_ids[0];
+    ok( $chart_without_updates_id, 'got a saved chart id' );
+    is( scalar @saved_search_ids, 1, 'got only one saved chart id' );
+
+    my ( $privacy, $user_id, $search_id ) = $chart_without_updates_id =~ /^(RT::User-(\d+))-SavedSearch-(\d+)$/;
+    my $user = RT::User->new( RT->SystemUser );
+    $user->Load($user_id);
+    is( $user->Name, 'root', 'loaded user' );
+    my $currentuser = RT::CurrentUser->new($user);
+
+    my $search = RT::SavedSearch->new($currentuser);
+    $search->Load( $privacy, $search_id );
+    is( $search->Name, 'txn chart 1', 'loaded search' );
+}
+
 done_testing;
