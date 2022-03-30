@@ -17,7 +17,7 @@ CREATE TABLE Attachments (
 );
 CREATE INDEX Attachments2 ON Attachments (TransactionId);
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId);
-CREATE INDEX Attachments4 ON Attachments (Filename);
+CREATE INDEX Attachments4 ON Attachments (LOWER(Filename));
 
 
 CREATE SEQUENCE QUEUES_seq;
@@ -56,10 +56,10 @@ CREATE TABLE Links (
         Creator         NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created         DATE
 );
-CREATE UNIQUE INDEX Links1 ON Links (Base, Target, Type);
-CREATE INDEX Links2 ON Links (Base, Type);
-CREATE INDEX Links3 ON Links (Target, Type);
-CREATE INDEX Links4 ON Links(Type,LocalBase);
+CREATE UNIQUE INDEX Links1 ON Links (LOWER(Base), LOWER(Target), LOWER(Type));
+CREATE INDEX Links2 ON Links (LOWER(Base), LOWER(Type));
+CREATE INDEX Links3 ON Links (LOWER(Target), LOWER(Type));
+CREATE INDEX Links4 ON Links(LOWER(Type), LocalBase);
 
 
 CREATE SEQUENCE PRINCIPALS_seq;
@@ -122,7 +122,7 @@ CREATE TABLE Transactions (
         Creator                 NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created                 DATE
 );
-CREATE INDEX Transactions1 ON Transactions (ObjectType, ObjectId);
+CREATE INDEX Transactions1 ON Transactions (LOWER(ObjectType), ObjectId);
 
 
 CREATE SEQUENCE SCRIPS_seq;
@@ -172,7 +172,7 @@ CREATE TABLE ACL (
         LastUpdatedBy   NUMBER(11,0) DEFAULT 0 NOT NULL,
         LastUpdated     DATE
 );
-CREATE INDEX ACL1 ON ACL(RightName, ObjectType, ObjectId, PrincipalType, PrincipalId);
+CREATE INDEX ACL1 ON ACL(LOWER(RightName), LOWER(ObjectType), ObjectId, LOWER(PrincipalType), PrincipalId);
 
 
 CREATE SEQUENCE GROUPMEMBERS_seq;
@@ -271,9 +271,9 @@ CREATE TABLE Tickets (
         Creator                 NUMBER(11,0) DEFAULT 0 NOT NULL,
         Created                 DATE
 );
-CREATE INDEX Tickets1 ON Tickets (Queue, Status);
+CREATE INDEX Tickets1 ON Tickets (Queue, LOWER(Status));
 CREATE INDEX Tickets2 ON Tickets (Owner);
-CREATE INDEX Tickets6 ON Tickets (EffectiveId, Type);
+CREATE INDEX Tickets6 ON Tickets (EffectiveId, LOWER(Type));
 
 
 CREATE SEQUENCE SCRIPACTIONS_seq;
@@ -342,8 +342,8 @@ CREATE TABLE ObjectCustomFieldValues (
         Disabled        NUMBER(11,0) DEFAULT 0 NOT NULL
 );
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (Content); 
-CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (LOWER(Content)); 
+CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,LOWER(ObjectType),ObjectId); 
 
 CREATE SEQUENCE CUSTOMFIELDS_seq;
 CREATE TABLE CustomFields (
@@ -402,8 +402,8 @@ CREATE TABLE Attributes (
         LastUpdated             DATE
 );
 
-CREATE INDEX Attributes1 on Attributes(Name);
-CREATE INDEX Attributes2 on Attributes(ObjectType, ObjectId);
+CREATE INDEX Attributes1 on Attributes(LOWER(Name));
+CREATE INDEX Attributes2 on Attributes(LOWER(ObjectType), ObjectId);
 
 
 CREATE TABLE sessions (
@@ -493,7 +493,7 @@ CREATE TABLE Assets (
 );
 
 CREATE INDEX AssetsName ON Assets (LOWER(Name));
-CREATE INDEX AssetsStatus ON Assets (Status);
+CREATE INDEX AssetsStatus ON Assets (LOWER(Status));
 CREATE INDEX AssetsCatalog ON Assets (Catalog);
 
 CREATE SEQUENCE Catalogs_seq;
