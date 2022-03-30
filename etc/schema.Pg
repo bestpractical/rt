@@ -33,7 +33,7 @@ CREATE TABLE Attachments (
 CREATE INDEX Attachments1 ON Attachments (Parent) ;
 CREATE INDEX Attachments2 ON Attachments (TransactionId) ;
 CREATE INDEX Attachments3 ON Attachments (Parent, TransactionId) ;
-CREATE INDEX Attachments4 ON Attachments (Filename) ;
+CREATE INDEX Attachments4 ON Attachments (LOWER(Filename));
 
 
 
@@ -429,7 +429,7 @@ CREATE TABLE Tickets (
 
 );
 
-CREATE INDEX Tickets1 ON Tickets (Queue, Status) ;
+CREATE INDEX Tickets1 ON Tickets (Queue, LOWER(Status));
 CREATE INDEX Tickets2 ON Tickets (Owner) ;
 CREATE INDEX Tickets3 ON Tickets (EffectiveId) ;
 
@@ -514,7 +514,7 @@ CREATE TABLE ObjectCustomFieldValues (
 
 );
 
-CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,Content); 
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId,LOWER(Content)); 
 CREATE INDEX ObjectCustomFieldValues2 ON ObjectCustomFieldValues (CustomField,ObjectType,ObjectId); 
 
 
@@ -725,7 +725,7 @@ CREATE TABLE Assets (
 );
 
 CREATE INDEX AssetsName ON Assets (LOWER(Name));
-CREATE INDEX AssetsStatus ON Assets (Status);
+CREATE INDEX AssetsStatus ON Assets (LOWER(Status));
 CREATE INDEX AssetsCatalog ON Assets (Catalog);
 
 CREATE SEQUENCE catalogs_id_seq;
