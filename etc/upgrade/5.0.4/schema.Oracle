@@ -1,2 +1,10 @@
 ALTER TABLE CustomRoles ADD LookupType VARCHAR2(255);
 UPDATE CustomRoles SET LookupType='RT::Queue-RT::Ticket';
+DROP INDEX Tickets1;
+CREATE INDEX Tickets1 ON Tickets (Queue, LOWER(Status));
+DROP INDEX AssetsStatus;
+CREATE INDEX AssetsStatus ON Assets (LOWER(Status));
+DROP INDEX Attachments4;
+CREATE INDEX Attachments4 ON Attachments (LOWER(Filename));
+DROP INDEX ObjectCustomFieldValues1;
+CREATE INDEX ObjectCustomFieldValues1 ON ObjectCustomFieldValues (LOWER(Content));
