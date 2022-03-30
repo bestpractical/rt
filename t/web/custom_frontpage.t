@@ -193,11 +193,24 @@ $m->submit_form(
 # We don't show saved message on page :/
 $m->content_contains("Save as New", 'saved first txn search' );
 
+$m->get_ok( $url . "/Search/Chart.html?Class=RT::Transactions&Query=" . 'id>1' );
+
+$m->submit_form(
+    form_name => 'SaveSearch',
+    fields    => {
+        SavedSearchDescription => 'first txn chart',
+        SavedSearchOwner       => 'RT::System-1',
+    },
+    button => 'SavedSearchSave',
+);
+$m->content_contains("Chart first txn chart saved", 'saved first txn chart' );
+
 $m->get_ok( $url . "Dashboards/Queries.html?id=$id" );
 push(
     @{$args->{body}},
     "saved-" . $m->dom->find('[data-description="first chart"]')->first->attr('data-name'),
     "saved-" . $m->dom->find('[data-description="first txn search"]')->first->attr('data-name'),
+    "saved-" . $m->dom->find('[data-description="first txn chart"]')->first->attr('data-name'),
 );
 
 $res = $m->post(
@@ -211,5 +224,7 @@ $m->content_contains( 'Dashboard updated' );
 $m->get_ok($url);
 $m->text_contains('first chart');
 $m->text_contains('first txn search');
+$m->text_contains('first txn chart');
+$m->text_contains('Transaction count', 'txn chart content');
 
 done_testing;
