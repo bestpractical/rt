@@ -298,6 +298,20 @@ sub create_record {
 
     # Lookup CustomFields by name.
     if ($cfs) {
+        my $context_object;
+        if ( $record->isa('RT::Ticket') ) {
+            $context_object = RT::Queue->new( RT->SystemUser );
+            $context_object->Load($args{Queue});
+        } elsif ( $record->isa('RT::Asset') ) {
+            $context_object = RT::Catalog->new( RT->SystemUser );
+            $context_object->Load($args{Catalog});
+        } elsif ( $record->isa('RT::Article') ) {
+            $context_object = RT::Class->new( RT->SystemUser );
+            $context_object->Load($args{Class});
+        }
+        unless ( $context_object && $context_object->id ) {
+            RT->Logger->error("Unable to load context object");
+        }
         foreach my $id (keys(%$cfs)) {
             my $value = delete $cfs->{$id};
             if ( ref($value) eq 'HASH' ) {
@@ -330,8 +344,11 @@ sub create_record {
             $cfs->{$id} = $value;
 
             if ($id !~ /^\d+$/) {
-                my $cf = $record->LoadCustomFieldByIdentifier($id);
-
+                my $cf = RT::CustomField->new( $record->CurrentUser );
+                my ($val, $msg) = $cf->LoadByName( Name => $id,
+                                 LookupType => $record->CustomFieldLookupType,
+                                 ObjectId => $context_object->id,
+                                 IncludeGlobal => 1 );
                 if ($cf->Id) {
                     $cfs->{$cf->Id} = $cfs->{$id};
                     delete $cfs->{$id};
