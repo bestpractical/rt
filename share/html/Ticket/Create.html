@@ -502,7 +502,10 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 
 # check email addresses for RT's
 {
-    foreach my $field ( qw(Requestors Cc AdminCc) ) {
+    my $custom_roles = $QueueObj->CustomRoles;
+    my @static_roles = qw(Requestors Cc AdminCc);
+    while (my $role = shift @static_roles || $custom_roles->Next) {
+        my $field = ref $role ? $role->GroupType : $role;
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
 
@@ -512,7 +515,8 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
             if ( $entry->{type} eq 'mailbox' ) {
                 my $email = $entry->{value};
                 if ( RT::EmailParser->IsRTAddress($email->address) ) {
-                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field =~ /^(.*?)s?$/) );
+                    # No need to localize custom roles, to be consistent with labels
+                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, ref $role ? $role->Name : loc($role =~ /^(.*?)s?$/) );
                     $checks_failure ||= 1;
                 }
                 else {
