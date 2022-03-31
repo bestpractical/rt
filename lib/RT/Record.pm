@@ -2019,7 +2019,7 @@ sub _AddCustomFieldValue {
         );
 
         unless ( $new_value_id ) {
-            return ( 0, $self->loc( "Could not add new custom field value: [_1]", $value_msg ) );
+            return ( 0, $self->loc( "Could not add a new value to custom field '[_1]': [_2]", $cf->Name, $value_msg ) );
         }
 
         my $new_value = RT::ObjectCustomFieldValue->new( $self->CurrentUser );
