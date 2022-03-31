@@ -665,6 +665,11 @@ sub AddValue {
         return (0, $self->loc("Can't add a custom field value without a name"));
     }
 
+    # disallow non-integer sort order
+    if ( defined $args{'SortOrder'} and $args{'SortOrder'} !~ /^(?:-?\d+)?$/ ) {
+        return (0, $self->loc("SortOrder must be an integer value."));
+    }
+
     my $newval = RT::CustomFieldValue->new( $self->CurrentUser );
     return $newval->Create( %args, CustomField => $self->Id );
 }

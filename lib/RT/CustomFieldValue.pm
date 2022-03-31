@@ -123,6 +123,11 @@ sub _Set {
         return (0, $self->loc('Permission Denied')); 
     } 
 
+    # disallow non-integer sort order
+    if ( $args{Field} eq 'SortOrder' and ( $args{Value} // '' ) !~ /^(?:-?\d+)?$/ ) {
+        return (0, $self->loc("SortOrder must be an integer value."));
+    }
+
     my ($ret, $msg) = $self->SUPER::_Set( @_ ); 
     if ( $args{Field} eq 'Name' ) {
         $cf->CleanupDefaultValues;
