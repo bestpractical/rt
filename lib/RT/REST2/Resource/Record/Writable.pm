@@ -299,6 +299,7 @@ sub create_record {
     # Lookup CustomFields by name.
     if ($cfs) {
         my $context_object;
+        my $context_id = 0;
         if ( $record->isa('RT::Ticket') ) {
             $context_object = RT::Queue->new( RT->SystemUser );
             $context_object->Load($args{Queue});
@@ -309,8 +310,12 @@ sub create_record {
             $context_object = RT::Class->new( RT->SystemUser );
             $context_object->Load($args{Class});
         }
-        unless ( $context_object && $context_object->id ) {
-            RT->Logger->error("Unable to load context object");
+        if ( $context_object ) {
+            if ( $context_object->id ) {
+                $context_id = $context_object->id;
+            } else {
+                RT->Logger->warning("Unable to load context object");
+            }
         }
         foreach my $id (keys(%$cfs)) {
             my $value = delete $cfs->{$id};
@@ -347,7 +352,7 @@ sub create_record {
                 my $cf = RT::CustomField->new( $record->CurrentUser );
                 my ($val, $msg) = $cf->LoadByName( Name => $id,
                                  LookupType => $record->CustomFieldLookupType,
-                                 ObjectId => $context_object->id,
+                                 ObjectId => $context_id,
                                  IncludeGlobal => 1 );
                 if ($cf->Id) {
                     $cfs->{$cf->Id} = $cfs->{$id};
