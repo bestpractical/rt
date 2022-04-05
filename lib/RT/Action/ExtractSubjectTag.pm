@@ -118,7 +118,7 @@ sub Commit {
         my $tag = $1;
         next if $tag =~ /$nomatch/;
         foreach my $subject_tag ( RT->System->SubjectTag ) {
-            if ($tag =~ /\[\Q$subject_tag\E\s+\#(\d+)\s*\]/) {
+            if ($tag =~ m{\[(?:https?://)?\Q$subject_tag\E\s+#(\d+)\s*\]}) {
                 next TAGLIST;
             }
         }
