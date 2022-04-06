@@ -172,11 +172,11 @@ if ($GroupString) {
 % if ( $session{CurrentUser}->HasRight( Right => 'AdminUsers', Object => $RT::System ) &&
 %      $session{CurrentUser}->HasRight( Right => 'ShowConfigTab', Object =>$RT::System ) ) {
 <a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $current_user_id %>">
-<& /Elements/ShowUser, User => $session{CurrentUser} &></a>
+<& /Elements/ShowUser, User => $session{CurrentUser}->UserObj &></a>
 % } else {
-<& /Elements/ShowUser, User => $session{CurrentUser} &>
+<& /Elements/ShowUser, User => $session{CurrentUser}->UserObj &>
 % }
-<& /Elements/ShowUserEmailFrequency, User => $session{CurrentUser} &>
+<& /Elements/ShowUserEmailFrequency, User => $session{CurrentUser}->UserObj &>
 </li>
 
 % for my $user_id (@{ $recipients_users || [] }) {
