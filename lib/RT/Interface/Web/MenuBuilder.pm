@@ -80,7 +80,9 @@ sub BuildMainNav {
     my $current_user = $HTML::Mason::Commands::session{CurrentUser};
 
     if ($request_path =~ m{^/Asset/}) {
-        $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+        if (!RT->Config->Get('AssetHideSimpleSearch')) {
+            $widgets->child( asset_search => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/Search') );
+        }
         $widgets->child( create_asset => raw_html => $HTML::Mason::Commands::m->scomp('/Asset/Elements/CreateAsset') );
     }
     elsif ($request_path =~ m{^/Articles/}) {
