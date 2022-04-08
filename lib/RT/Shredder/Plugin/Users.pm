@@ -285,7 +285,9 @@ sub SetResolvers
             my $t =    $args{'TargetObject'};
             foreach my $method ( qw(Creator LastUpdatedBy) ) {
                 next unless $t->_Accessible( $method => 'read' );
-                $t->__Set( Field => $method, Value => $uid );
+                if ( $t->__Value($method) == $args{BaseObject}->Id ) {
+                    $t->__Set( Field => $method, Value => $uid );
+                }
             }
         };
         $args{'Shredder'}->PutResolver( BaseClass => 'RT::User', Code => $resolver );
