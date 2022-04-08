@@ -116,7 +116,7 @@ of all lifecycles of the appropriate type.
 sub LifecycleObj {
     my $self = shift;
     my $obj  = $self->LifecycleColumn . "Obj";
-    return $self->$obj->LifecycleObj($self);
+    return $self->$obj->LifecycleObj;
 }
 
 =head2 Lifecycle
