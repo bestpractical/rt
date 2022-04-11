@@ -550,32 +550,36 @@ sub __DependsOn {
         TargetObjects => $group,
         Shredder => $args{'Shredder'}
     );
-    $args{'Shredder'}->PutResolver(
-        BaseClass => ref $self,
-        TargetClass => ref $group,
-        Code => sub {
-            my %args = (@_);
-            my $group = $args{'TargetObject'};
-            return if $args{'Shredder'}->GetState( Object => $group )
-                & (RT::Shredder::Constants::WIPED|RT::Shredder::Constants::IN_WIPING);
-            my $class = $group->RoleClass or return;
-            return unless $class->Role($group->Name)->{Single};
 
-            return if $group->MembersObj->Count > 1;
+    if ( !$args{Shredder}->{_resolver_mark}{SingleMemberGroupResolver} ) {
+        $args{'Shredder'}->PutResolver(
+            BaseClass   => ref $self,
+            TargetClass => ref $group,
+            Code        => sub {
+                my %args  = ( @_ );
+                my $group = $args{'TargetObject'};
+                return if $args{'Shredder'}->GetState( Object => $group )
+                  & ( RT::Shredder::Constants::WIPED | RT::Shredder::Constants::IN_WIPING );
+                my $class = $group->RoleClass or return;
+                return unless $class->Role($group->Name)->{Single};
 
-            my $group_member = $args{'BaseObject'};
+                return if $group->MembersObj->Count > 1;
 
-            if( $group_member->MemberObj->id == RT->Nobody->id ) {
-                RT::Shredder::Exception->throw( "Couldn't delete Nobody from @{[$group->Name]} role group" );
-            }
+                my $group_member = $args{'BaseObject'};
 
-            my( $status, $msg ) = $group->AddMember( RT->Nobody->id );
+                if ( $group_member->MemberObj->id == RT->Nobody->id ) {
+                    RT::Shredder::Exception->throw( "Couldn't delete Nobody from @{[$group->Name]} role group" );
+                }
 
-            RT::Shredder::Exception->throw( $msg ) unless $status;
+                my ( $status, $msg ) = $group->AddMember( RT->Nobody->id );
 
-            return;
-        },
-    );
+                RT::Shredder::Exception->throw( $msg ) unless $status;
+
+                return;
+            },
+        );
+        $args{Shredder}->{_resolver_mark}{SingleMemberGroupResolver} = 1;
+    }
 
     return $self->SUPER::__DependsOn( %args );
 }
