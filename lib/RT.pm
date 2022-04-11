@@ -211,7 +211,7 @@ sub Init {
 
 =head2 ConnectToDatabase
 
-Get a database connection. See also L</Handle>.
+Get a database connection. See also L</DatabaseHandle>.
 
 =cut
 
