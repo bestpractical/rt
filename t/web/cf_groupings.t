@@ -9,6 +9,7 @@ RT->Config->Set( 'CustomFieldGroupings',
         map { +($_ => ["Test$_"]) } @groupings,
     },
 );
+RT->Config->PostLoadCheck;
 
 my %CF;
 for my $grouping (@groupings) {
@@ -146,6 +147,7 @@ my $id = $m->get_ticket_id;
             More   => [ 'TestMore' ],
         },
     );
+    RT->Config->PostLoadCheck;
 
     ( $baseurl, $m ) = RT::Test->started_ok;
     ok $m->login, 'logged in as root';

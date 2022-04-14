@@ -70,6 +70,7 @@
         CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
         Grouping => 'Basics',
         InTable => 1,
+        CategoryObj => $queue,
     &>
     </table>
     </&>
@@ -85,12 +86,13 @@
         CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
         Grouping => 'Dates',
         InTable => 1,
+        CategoryObj => $queue,
     &>
     </table>
     </&>
 </div>
 
-% if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'People') ) {
+% if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), CategoryObj => $queue, Grouping => 'People') ) {
 <div class="ticket-info-people">
     <&|/Widgets/TitleBox, title => loc("People") &>
     <table>
@@ -99,13 +101,14 @@
         CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
         Grouping => 'People',
         InTable => 1,
+        CategoryObj => $queue,
     &>
     </table>
     </&>
 </div>
 % }
 
-% if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), Grouping => 'Links') ) {
+% if ( RT->Config->ObjectHasCustomFieldGrouping(Object => RT::Ticket->new($session{CurrentUser}), CategoryObj => $queue, Grouping => 'Links') ) {
 <div class="ticket-info-links">
     <&|/Widgets/TitleBox, title => loc("Links") &>
     <table>

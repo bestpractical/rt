@@ -3727,6 +3727,11 @@ sub Serialize {
     return %store;
 }
 
+sub CategoryObj {
+    my $self = shift;
+    return $self->QueueObj;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
