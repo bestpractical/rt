@@ -93,8 +93,12 @@ if ( $Class eq 'RT::Transactions' ) {
         my $queue = RT::Queue->new( $session{'CurrentUser'} );
         $queue->Load($id);
         next unless $queue->Id;
-        $CustomFields->LimitToQueue( $queue->Id );
-        $CustomFields->SetContextObject($queue) if keys %queues == 1;
+        # Do not use ->LimitToQueue here because it hardcodes a LookupType of 'RT::Queue-RT::Ticket'
+        $CustomFields->Limit (ALIAS => $CustomFields->_OCFAlias,
+            ENTRYAGGREGATOR => 'OR',
+            FIELD => 'ObjectId',
+            VALUE => $queue->Id,
+        );
     }
     $CustomFields->Limit(
         ALIAS           => $CustomFields->_OCFAlias,
