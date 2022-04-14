@@ -215,7 +215,7 @@ AC_ARG_WITH(rt-group,
 	    AS_HELP_STRING([--with-rt-group=GROUP],
 	    		   [group to own all files (default: rt)]),
             RTGROUP=$withval,
-            ACRT_GROUP_GUESS([rt3 rt $WEB_GROUP],[RTGROUP], [rt]))
+            ACRT_GROUP_GUESS([rt $WEB_GROUP],[RTGROUP], [rt]))
 AC_SUBST(RTGROUP)
 
 dnl INSTALL AS ME
