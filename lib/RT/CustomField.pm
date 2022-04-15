@@ -708,6 +708,18 @@ sub DeleteValue {
     return ($ok, $self->loc("Custom field value deleted"));
 }
 
+=head2 ValidateValue Value
+
+Make sure that the supplied value is valid
+
+=cut
+
+sub ValidateValue {
+    my $self  = shift;
+    my $value = shift;
+    my ($ret) = $self->_CanonicalizeValue( { Content => $value } );
+    return $ret;
+}
 
 =head2 ValidateQueue Queue
 
@@ -1956,6 +1968,28 @@ sub _CanonicalizeValueIPAddressRange {
     $args->{ContentType} = 'text/plain';
     return (0, $self->loc("Content is not a valid IP address range"))
         unless $args->{Content};
+    return 1;
+}
+
+sub _CanonicalizeValueSelect {
+    my $self = shift;
+    my $args = shift;
+
+    if ( defined $args->{Content} && length $args->{Content} ) {
+        my $system_object = RT::CustomField->new( RT->SystemUser );
+        $system_object->Load( $self->Id );
+        if ( !$system_object->IsExternalValues() ) {
+            my $cfvs = $system_object->Values;
+            $cfvs->Limit( FIELD => 'Name', VALUE => $args->{Content}, CASESENSITIVE => 0 );
+            if ( my $cfv = $cfvs->Next ) {
+                # If user passes "foo" and cfv actually has "Foo", canonicalize it to "Foo".
+                $args->{Content} = $cfv->Name;
+            }
+            else {
+                return ( 0, $self->loc("Content is not a valid value") );
+            }
+        }
+    }
     return 1;
 }
 
