@@ -206,6 +206,7 @@ sub CleanupRequest {
             unless $INC{'Test/WWW/Mechanize/PSGI.pm'};
 
     RT::ObjectCustomFieldValues::ClearOCFVCache();
+    RT->ResetCurrentInterface;
 }
 
 

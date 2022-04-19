@@ -49,6 +49,7 @@
 %#
 <%INIT>
 use RT::Interface::REST;
+RT->SetCurrentInterface('REST');
 $r->content_type('text/plain; charset=utf-8');
 $m->error_format('text');
 $m->call_next();

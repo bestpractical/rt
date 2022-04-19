@@ -227,6 +227,7 @@ sub Init {
           if not $exists{help} and $hash->{help};
 
     require RT;
+    RT->SetCurrentInterface('CLI');
     RT::LoadConfig();
 
     if ( $hash->{log} ) {
