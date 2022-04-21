@@ -66,7 +66,7 @@ GetOptions(
     \%args,
     'install!',
     'with-MYSQL', 'with-PG', 'with-SQLITE', 'with-ORACLE',
-    'with-FASTCGI', 'with-MODPERL1', 'with-MODPERL2', 'with-STANDALONE',
+    'with-FASTCGI', 'with-MODPERL2', 'with-STANDALONE',
 
     'with-DEVELOPER',
 
@@ -246,10 +246,6 @@ XML::Simple
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
 FCGI 0.74
-.
-
-$deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-Apache::Request
 .
 
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
@@ -682,8 +678,6 @@ These configure which backend database to add dependencies for.
 =item C<--with-standalone>
 
 =item B<--with-fastcgi>
-
-=item B<--with-modperl1>
 
 =item B<--with-modperl2>
 
