@@ -47,11 +47,10 @@ To keep the index up-to-date, you will need to run:
 tickets at a time; you can adjust this upwards by passing C<--limit
 500>.  Larger batch sizes will take longer and consume more memory.
 
-If there is already an instances of C<rt-fulltext-indexer> running, new
-ones will exit abnormally (with exit code 1) and the error message
-"rt-fulltext-indexer is already running."  You can suppress this message
-and end those processes normally (with exit code 0) using the C<--quiet>
-option; this is particularly useful when running the command via
+If there is already an instance of C<rt-fulltext-indexer> running, new
+ones will exit with the message "rt-fulltext-indexer is already running".
+You can suppress this message and other output to C<STDERR> using the
+C<--quiet> option; this is particularly useful when running the command via
 C<cron>:
 
     /opt/rt5/sbin/rt-fulltext-indexer --quiet
@@ -98,11 +97,10 @@ To keep the index up-to-date, you will need to run:
 tickets at a time; you can adjust this upwards by passing C<--limit
 500>.  Larger batch sizes will take longer and consume more memory.
 
-If there is already an instances of C<rt-fulltext-indexer> running, new
-ones will exit abnormally (with exit code 1) and the error message
-"rt-fulltext-indexer is already running."  You can suppress this message
-and end those processes normally (with exit code 0) using the C<--quiet>
-option; this is particularly useful when running the command via
+If there is already an instance of C<rt-fulltext-indexer> running, new
+ones will exit with the message "rt-fulltext-indexer is already running".
+You can suppress this message and other output to C<STDERR> using the
+C<--quiet> option; this is particularly useful when running the command via
 C<cron>:
 
     /opt/rt5/sbin/rt-fulltext-indexer --quiet
@@ -251,10 +249,9 @@ C<--memory> option:
     /opt/rt5/sbin/rt-fulltext-indexer --memory 10M
 
 If there is already an instance of C<rt-fulltext-indexer> running, new
-ones will exit abnormally (with exit code 1) and the error message
-"rt-fulltext-indexer is already running."  You can suppress this message
-and end those processes normally (with exit code 0) using the C<--quiet>
-option; this is particularly useful when running the command via
+ones will exit with the message "rt-fulltext-indexer is already running".
+You can suppress this message and other output to C<STDERR> using the
+C<--quiet> option; this is particularly useful when running the command via
 C<cron>:
 
     /opt/rt5/sbin/rt-fulltext-indexer --quiet

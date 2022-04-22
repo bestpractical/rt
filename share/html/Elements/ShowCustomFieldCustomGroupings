@@ -127,7 +127,7 @@ my $TitleBoxARGS = delete $ARGS{TitleBoxARGS} || {};
 $InlineEdit = 0 unless $Object->isa('RT::Ticket');
 my %inline_edit_behavior;
 if ( my $config = RT->Config->Get('InlineEditPanelBehavior') ) {
-    %inline_edit_behavior = %{ $config->{ RT::CustomField->_GroupingClass($Object) } || $config->{'RT::Ticket'} || {} };
+    %inline_edit_behavior = %{ $config->{ (RT::CustomField->_GroupingClass($Object))[0] } || $config->{'RT::Ticket'} || {} };
 }
 
 my $edit_label   = $m->interp->apply_escapes( loc("Edit"), 'h' );

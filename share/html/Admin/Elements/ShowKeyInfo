@@ -46,6 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => $title &>
+% if ( RT->Config->Get('GnuPG')->{Enable} && $session{'CurrentUser'}->HasRight( Right => 'SuperUser', Object => RT->System ) ) {
+<p class="mt-3 mb-1 ml-3">
+  <&|/l_unsafe, '<a href="' . RT->Config->Get("WebPath") . '/Admin/Tools/GnuPG.html">' . loc('Manage GnuPG Keys') . '</a>' &>Manage the trust level for keys at [_1].</&>
+</p>
+% }
 
 % while ( my $protocol = shift @protocols ) {
 % my %res = RT::Crypt->GetKeyInfo(

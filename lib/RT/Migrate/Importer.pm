@@ -71,6 +71,7 @@ sub Init {
         DumpObjects         => undef,
         HandleError         => undef,
         ExcludeOrganization => undef,
+        AutoCommit          => 1,
         @_,
     );
 
@@ -80,6 +81,8 @@ sub Init {
     $self->{ExcludeOrganization} = $args{ExcludeOrganization};
 
     $self->{Progress} = $args{Progress};
+
+    $self->{AutoCommit} = $args{AutoCommit};
 
     $self->{HandleError} = sub { 0 };
     $self->{HandleError} = $args{HandleError}

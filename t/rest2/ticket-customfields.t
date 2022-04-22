@@ -280,7 +280,12 @@ my $no_ticket_cf_values = bag(
         local $TODO = "RT ->Update isn't introspectable";
         is($res->code, 403);
     };
-    is_deeply($mech->json_response, ['Ticket 1: Permission Denied', 'Ticket 1: Permission Denied', 'Could not add new custom field value: Permission Denied']);
+
+    my $cf_error
+        = RT::Handle::cmp_version( $RT::VERSION, '4.4.6' ) >= 0
+        ? "Could not add a new value to custom field 'Single': Permission Denied"
+        : 'Could not add new custom field value: Permission Denied';
+    is_deeply($mech->json_response, ['Ticket 1: Permission Denied', 'Ticket 1: Permission Denied', $cf_error]);
 
     $user->PrincipalObj->GrantRight( Right => 'ModifyTicket' );
 
@@ -289,7 +294,7 @@ my $no_ticket_cf_values = bag(
         'Authorization' => $auth,
     );
     is($res->code, 200);
-    is_deeply($mech->json_response, ["Ticket 1: Priority changed from (no value) to '42'", "Ticket 1: Subject changed from 'Ticket creation using REST' to 'Ticket update using REST'", 'Could not add new custom field value: Permission Denied']);
+    is_deeply($mech->json_response, ["Ticket 1: Priority changed from (no value) to '42'", "Ticket 1: Subject changed from 'Ticket creation using REST' to 'Ticket update using REST'", $cf_error]);
 
     $res = $mech->get($ticket_url,
         'Authorization' => $auth,

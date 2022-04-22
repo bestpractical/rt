@@ -134,7 +134,7 @@ foreach my $key ( sort keys %{*RT::} ) {
 
 <%PERL>
 my ($index_size, $user_count, $privileged_count);
-for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers UnprivilegedUsers/) {
+for my $type (qw/Tickets Queues Transactions Articles Assets Groups PrivilegedUsers UnprivilegedUsers/) {
     my $count;
     my $class = 'RT::' . $type;
     $class =~ s/Privileged|Unprivileged//;
@@ -165,9 +165,9 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 
     <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
 
-% if ( $m->{rt_mason_cache_created} ) {
+% if ( $m->interp->{rt_mason_cache_created} ) {
 % my $mason_obj_date = RT::Date->new( $session{CurrentUser} );
-% $mason_obj_date->Set( Format => 'Unix', Value => $m->{rt_mason_cache_created} );
+% $mason_obj_date->Set( Format => 'Unix', Value => $m->interp->{rt_mason_cache_created} );
 
 <div class="mason-cache">
   <div class="mason-cache-info py-1 d-inline-block">

@@ -213,6 +213,8 @@ sub Init {
     push @args, "quiet|q!" => \($hash->{quiet})
         unless $exists{quiet};
 
+    push @args, "log=s" => \($hash->{log}) unless $exists{log};
+
     push @args, "statement-log=s" => \($hash->{'statement-log'})
         unless $exists{'statement-log'};
 
@@ -225,9 +227,12 @@ sub Init {
           if not $exists{help} and $hash->{help};
 
     require RT;
+    RT->SetCurrentInterface('CLI');
     RT::LoadConfig();
 
-    if (not $exists{quiet} and $hash->{quiet}) {
+    if ( $hash->{log} ) {
+        RT->Config->Set(LogToSTDERR => $hash->{log});
+    } elsif (not $exists{quiet} and $hash->{quiet}) {
         RT->Config->Set(LogToSTDERR => "error");
     } elsif (not $exists{verbose} and $hash->{verbose}) {
         RT->Config->Set(LogToSTDERR => "debug");

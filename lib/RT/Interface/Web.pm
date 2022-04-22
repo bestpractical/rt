@@ -265,20 +265,25 @@ sub WebRemoteUserAutocreateInfo {
     return {%user_info};
 }
 
+sub MasonCacheCreatedDate {
+    require File::Spec;
+    return ( stat File::Spec->catdir( $RT::MasonDataDir, 'obj' ) )[9] // '';
+}
 
 sub HandleRequest {
     my $ARGS = shift;
 
+    RT->SetCurrentInterface('Web');
     if (RT->Config->Get('DevelMode')) {
         require Module::Refresh;
         Module::Refresh->refresh;
     }
     else {
-        require File::Spec;
-        my $mason_cache_created = ( stat File::Spec->catdir( $RT::MasonDataDir, 'obj' ) )[ 9 ] // '';
-        if ( ( $HTML::Mason::Commands::m->{rt_mason_cache_created} // '' ) ne $mason_cache_created ) {
+        my $mason_cache_created = MasonCacheCreatedDate();
+        if ( $HTML::Mason::Commands::m->interp->{rt_mason_cache_created} ne $mason_cache_created ) {
             $HTML::Mason::Commands::m->interp->flush_code_cache;
-            $HTML::Mason::Commands::m->{rt_mason_cache_created} = $mason_cache_created;
+            $HTML::Mason::Commands::m->clear_callback_cache;
+            $HTML::Mason::Commands::m->interp->{rt_mason_cache_created} = $mason_cache_created;
         }
     }
 
@@ -1962,41 +1967,6 @@ sub ClientIsIE {
     return RequestENV('HTTP_USER_AGENT') =~ m{MSIE|Trident/} ? 1 : 0;
 }
 
-=head2 ClearMasonCache
-
-Delete current mason cache.
-
-=cut
-
-sub ClearMasonCache {
-    require File::Path;
-    require File::Spec;
-    my $mason_obj_dir = File::Spec->catdir( $RT::MasonDataDir, 'obj' );
-
-    my $error;
-
-    # There is a race condition that other processes add new cache items while
-    # remove_tree is running, which could prevent it from deleting the whole "obj"
-    # directory with errors like "Directory not empty". Let's try for a few times
-    # here to get around it.
-
-    for ( 1 .. 10 ) {
-        last unless -e $mason_obj_dir;
-        File::Path::remove_tree( $mason_obj_dir, { safe => 1, error => \$error } );
-    }
-
-    if ( $error && @$error ) {
-
-        # Only one dir is specified, so there will be only one error if any
-        my ( $file, $message ) = %{ $error->[0] };
-        RT->Logger->error("Failed to clear mason cache: $file => $message");
-        return ( 0, HTML::Mason::Commands::loc( "Failed to clear mason cache: [_1] => [_2]", $file, $message ) );
-    }
-    else {
-        return ( 1, HTML::Mason::Commands::loc('Cache cleared') );
-    }
-}
-
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -2315,7 +2285,8 @@ sub CreateTicket {
         Date    => $date_now->RFC2822(Timezone => 'user'),
         Body    => $sigless,
         Type    => $ARGS{'ContentType'},
-        Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
+        # Stick to "Mobile" for back compatibility, unless current interface is customized to something else
+        RT->CurrentInterface eq 'Web' && RT::Interface::Web::MobileClient() ? ( Interface => 'Mobile' ) : (),
     );
 
     my @attachments;
@@ -2498,7 +2469,8 @@ sub ProcessUpdateMessage {
         Subject => $args{ARGSRef}->{'UpdateSubject'},
         Body    => $args{ARGSRef}->{'UpdateContent'},
         Type    => $args{ARGSRef}->{'UpdateContentType'},
-        Interface => RT::Interface::Web::MobileClient() ? 'Mobile' : 'Web',
+        # Stick to "Mobile" for back compatibility, unless current interface is customized to something else
+        RT->CurrentInterface eq 'Web' && RT::Interface::Web::MobileClient() ? ( Interface => 'Mobile' ) : (),
     );
 
     $Message->head->replace( 'Message-ID' => Encode::encode( "UTF-8",
@@ -2697,13 +2669,13 @@ sub MakeMIMEEntity {
         Body                => undef,
         AttachmentFieldName => undef,
         Type                => undef,
-        Interface           => 'API',
+        Interface           => undef,
         @_,
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
         "Message-Id" => Encode::encode( "UTF-8", RT::Interface::Email::GenMessageId ),
-        "X-RT-Interface" => $args{Interface},
+        "X-RT-Interface" => $args{Interface} || RT->CurrentInterface,
         map { $_ => Encode::encode( "UTF-8", $args{ $_} ) }
             grep defined $args{$_}, qw(Subject From Cc To Date)
     );
@@ -3448,14 +3420,7 @@ sub _ProcessObjectCustomFieldUpdates {
 
             my %values_hash;
             foreach my $value (@values) {
-                my $value_in_db = $value;
-                if ( $cf->Type eq 'DateTime' ) {
-                    my $date = RT::Date->new($session{CurrentUser});
-                    $date->Set(Format => 'unknown', Value => $value);
-                    $value_in_db = $date->ISO;
-                }
-
-                if ( my $entry = $cf_values->HasEntry($value_in_db) ) {
+                if ( my $entry = $cf_values->HasEntry($value) ) {
                     $values_hash{ $entry->id } = 1;
                     next;
                 }

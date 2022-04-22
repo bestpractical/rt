@@ -2,7 +2,7 @@ use warnings;
 use strict;
 
 use RT;
-use RT::Test nodata => 1, tests => 8;
+use RT::Test tests => undef;
 
 
 
@@ -28,9 +28,24 @@ my $t = RT::Ticket->new(RT->SystemUser);
 
 ok($id,$msg);
 is($t->CustomFieldValues($cf->id)->Count, 0, "No values yet");
-$t->AddCustomFieldValue(Field => $cf->id, Value => 'First');
+
+my $ok;
+my $value = 'First';
+($ok, $msg) = $t->AddCustomFieldValue(Field => $cf->id, Value => $value);
+ok( $ok, $msg );
 is($t->CustomFieldValues($cf->id)->Count, 1, "One now");
+is($t->FirstCustomFieldValue($cf->id), $value, "Value is $value");
 
-$t->AddCustomFieldValue(Field => $cf->id, Value => 'Second');
+$value = 'Second';
+($ok, $msg) = $t->AddCustomFieldValue(Field => $cf->id, Value => $value);
+ok( $ok, $msg );
+is($t->CustomFieldValues($cf->id)->Count, 1, "Still one value");
+is($t->FirstCustomFieldValue($cf->id), $value, "Value is $value");
+
+($ok, $msg) = $t->AddCustomFieldValue(Field => $cf->id, Value => 'Bogus');
+ok( !$ok, 'Returned false with value not in values list' );
+like( $msg, qr/Invalid value/, 'Message reports invalid value');
 is($t->CustomFieldValues($cf->id)->Count, 1, "Still one");
+is($t->FirstCustomFieldValue($cf->id), $value, "Value is still $value");
 
+done_testing();

@@ -125,6 +125,7 @@
       <& /Elements/EditCustomFields,
           %ARGS,
           Object => $ticket,
+          CategoryObj => $QueueObj,
           CustomFields => $QueueObj->TicketCustomFields,
           Grouping => 'Basics',
           InTable => 1,
@@ -141,6 +142,7 @@
 <& /Elements/EditCustomFieldCustomGroupings,
     %ARGS,
     Object => $ticket,
+    CategoryObj => $QueueObj,
     CustomFieldGenerator => sub { $QueueObj->TicketCustomFields },
     ForCreation => 1,
 &>
@@ -198,6 +200,7 @@
 <& /Elements/EditCustomFields,
     %ARGS,
     Object => $ticket,
+    CategoryObj => $QueueObj,
     CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'People',
     InTable => 1,
@@ -308,6 +311,7 @@
 <& /Elements/EditCustomFields,
     %ARGS,
     Object => $ticket,
+    CategoryObj => $QueueObj,
     CustomFields => $QueueObj->TicketCustomFields,
     Grouping => 'Dates',
     InTable => 1,
@@ -423,10 +427,21 @@ if ($CloneTicket) {
             push @cf_values, $cf_value->Content;
         }
 
+        next unless @cf_values;
+
         if ( @cf_values > 1 && $cf->Type eq 'Select' ) {
             $clone->{GetCustomFieldInputName( CustomField => $cf )} = \@cf_values;
         }
         else {
+            if ( $cf->Type eq 'DateTime' ) {
+                # Convert to user timezone. DateTime doesn't have multiple values, so only need to take care of
+                # $cf_values[0]
+
+                my $date = RT::Date->new( $session{'CurrentUser'} );
+                $date->Set( Format => 'ISO', Value => $cf_values[0] );
+                $cf_values[0] = $date->ISO( Timezone => 'user' );
+            }
+
             $clone->{GetCustomFieldInputName( CustomField => $cf )} = join "\n",
               @cf_values;
         }
@@ -506,7 +521,10 @@ if ($ARGS{IncludeArticleId}) {
 
 # check email addresses for RT's
 {
-    foreach my $field ( qw(Requestors Cc AdminCc) ) {
+    my $custom_roles = $QueueObj->CustomRoles;
+    my @static_roles = qw(Requestors Cc AdminCc);
+    while (my $role = shift @static_roles || $custom_roles->Next) {
+        my $field = ref $role ? $role->GroupType : $role;
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
 
@@ -516,7 +534,8 @@ if ($ARGS{IncludeArticleId}) {
             if ( $entry->{type} eq 'mailbox' ) {
                 my $email = $entry->{value};
                 if ( RT::EmailParser->IsRTAddress($email->address) ) {
-                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc($field =~ /^(.*?)s?$/) );
+                    # No need to localize custom roles, to be consistent with labels
+                    push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, ref $role ? $role->Name : loc($role =~ /^(.*?)s?$/) );
                     $checks_failure ||= 1;
                 }
                 else {

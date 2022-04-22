@@ -61,6 +61,24 @@ Set(\%Lifecycles,
             'delayed -> on way'   => {label => 'Put On Way', update => 'Respond'},
         },
     },
+    triage => {
+        initial  => ['untriaged'],
+        active   => ['ordinary', 'escalated'],
+        inactive => ['resolved'],
+        defaults => {
+            on_create => 'untriaged',
+        },
+        transitions => {
+            ''        => ['untriaged'],
+            untriaged => ['ordinary', 'escalated'],
+            ordinary  => ['resolved'],
+            escalated => ['resolved'],
+            resolved => [],
+        },
+        rights => {
+            '* -> escalated' => 'EscalateTicket',
+        },
+    },
     racing => {
         type => 'racecar',
         active => ['on-your-mark', 'get-set', 'go'],

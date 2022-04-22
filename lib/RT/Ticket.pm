@@ -1671,7 +1671,7 @@ sub _RecordNote {
         );
     }
 
-    $args{'MIMEObj'}->head->replace('X-RT-Interface' => 'API')
+    $args{'MIMEObj'}->head->replace('X-RT-Interface' => RT->CurrentInterface)
         unless $args{'MIMEObj'}->head->get('X-RT-Interface');
 
     # convert text parts into utf-8
@@ -3829,6 +3829,11 @@ sub GetPriorityAsStringMapping {
     }
 
     return \%map;
+}
+
+sub CategoryObj {
+    my $self = shift;
+    return $self->QueueObj;
 }
 
 RT::Base->_ImportOverlays();
