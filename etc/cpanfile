@@ -155,10 +155,6 @@ feature 'fastcgi' => sub {
     requires 'FCGI', '>= 0.74';
 };
 
-feature 'modperl1' => sub {
-    requires 'Apache::Request';
-};
-
 feature 'modperl2' => sub {};
 
 
