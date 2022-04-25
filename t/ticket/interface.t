@@ -100,4 +100,25 @@ ok( $id, "Created ticket #$id" );
 $ticket->Load($id);
 is( $ticket->FirstCustomFieldValue('Interface'), 'REST', 'Interface is set to REST' );
 
+diag 'Test REST2 interface';
+require RT::Test::REST2;
+my $user = RT::Test::REST2->user;
+$user->PrincipalObj->GrantRight( Right => $_ )
+    for qw/CreateTicket SeeQueue ShowTicket ModifyCustomField SeeCustomField/;
+my $rest2_m = RT::Test::REST2->mech;
+
+my $res = $rest2_m->post_json(
+    "/REST/2.0/ticket",
+    {
+        Subject => 'Test REST2 interface',
+        Queue   => 'General',
+        Content => 'Test',
+    },
+    'Authorization' => RT::Test::REST2->authorization_header,
+);
+is( $res->code, 201 );
+ok( ($id) = $res->header('location') =~ qr[/ticket/(\d+)] );
+$ticket->Load($id);
+is( $ticket->FirstCustomFieldValue('Interface'), 'REST2', 'Interface is set to REST2' );
+
 done_testing;
