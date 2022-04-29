@@ -152,6 +152,8 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
     $catch_non_fatals->() && last if $@;
 
     push @{ $messages{Success} }, loc('objects were successfuly removed');
+
+    $m->callback(CallbackName => 'AfterWipeout', Actions => $messages{Success}, ARGSRef => \%ARGS);
 } }
 
 if( $Plugin && ( $Search || $Wipeout ) ) { { # use additional block({}) to effectively exit block on errors
