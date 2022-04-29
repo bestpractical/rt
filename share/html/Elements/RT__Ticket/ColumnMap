@@ -442,12 +442,17 @@ if ( RT->Config->Get('EnablePriorityAsString') ) {
     }
 }
 
-my %ranges = RT::Ticket->CustomDateRanges;
-for my $name (keys %ranges) {
+my $ranges = $m->notes('custom_date_ranges');
+if ( !$ranges ) {
+    $ranges = { RT::Ticket->CustomDateRanges };
+    $m->notes( custom_date_ranges => $ranges );
+}
+
+for my $name (keys %$ranges) {
     $COLUMN_MAP->{$name} = {
         title => $name,
         value => sub {
-            $_[0]->CustomDateRange($name, $ranges{$name});
+            $_[0]->CustomDateRange($name, $ranges->{$name});
         },
     };
 }
