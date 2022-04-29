@@ -152,6 +152,12 @@ sub update_record {
     my $self = shift;
     my $data = shift;
 
+    # update_role_members wants custom role IDs (like RT::CustomRole-ID)
+    # rather than role names.
+    if ( $data->{CustomRoles} ) {
+        %$data = ( %$data, %{ fix_custom_role_ids( $self->record, delete $data->{CustomRoles} ) } );
+    }
+
     my @results = $self->record->Update(
         ARGSRef       => $data,
         AttributesRef => [ $self->record->WritableAttributes ],
