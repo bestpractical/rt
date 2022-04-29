@@ -88,44 +88,6 @@ is(
     "got a file of the correct size ($file)",
 );
 
-#
-# XXX: hey-ho, we have these tests in t/web/query-builder
-# TODO: move everything about QB there
-
-my $response = $agent->get($url."Search/Build.html");
-ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
-
-# Parsing TicketSQL
-#
-# Adding items
-
-# set the first value
-ok($agent->form_name('BuildQuery'));
-$agent->field("AttachmentField", "Subject");
-$agent->field("AttachmentOp", "LIKE");
-$agent->field("ValueOfAttachment", "aaa");
-$agent->submit("AddClause");
-
-# set the next value
-ok($agent->form_name('BuildQuery'));
-$agent->field("AttachmentField", "Subject");
-$agent->field("AttachmentOp", "LIKE");
-$agent->field("ValueOfAttachment", "bbb");
-$agent->submit("AddClause");
-
-ok($agent->form_name('BuildQuery'));
-
-# get the query
-my $query = $agent->current_form->find_input("Query")->value;
-# strip whitespace from ends
-$query =~ s/^\s*//g;
-$query =~ s/\s*$//g;
-
-# collapse other whitespace
-$query =~ s/\s+/ /g;
-
-is ($query, "Subject LIKE 'aaa' AND Subject LIKE 'bbb'");
-
 {
     my $queue = RT::Test->load_or_create_queue( Name => 'foo&bar' );
     $agent->goto_create_ticket( $queue->id );

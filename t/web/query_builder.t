@@ -41,6 +41,29 @@ sub selectedClauses {
     return [ @clauses ];
 }
 
+diag "add the first condition";
+{
+    ok $agent->form_name('BuildQuery'), "found the form once";
+    $agent->field("AttachmentField", "Subject");
+    $agent->field("AttachmentOp", "LIKE");
+    $agent->field("ValueOfAttachment", "aaa");
+    $agent->submit("AddClause");
+    is getQueryFromForm($agent), "Subject LIKE 'aaa'";
+}
+
+diag "set the next condition";
+{
+    ok($agent->form_name('BuildQuery'), "found the form again");
+    $agent->field("AttachmentField", "Subject");
+    $agent->field("AttachmentOp", "LIKE");
+    $agent->field("ValueOfAttachment", "bbb");
+    $agent->submit("AddClause");
+    is getQueryFromForm($agent), "Subject LIKE 'aaa' AND Subject LIKE 'bbb'",
+        'correct query';
+}
+
+$response = $agent->get($url."Search/Build.html?NewQuery=1");
+ok( $response->is_success, "Fetched new query builder page" );
 
 diag "add the first condition";
 {
