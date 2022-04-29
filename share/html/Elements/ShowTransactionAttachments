@@ -216,6 +216,7 @@ my $render_attachment = sub {
                 ARGSRef          => \%ARGS,
                 Object           => $Object,
                 Transaction      => $Transaction,
+                Attachment       => $message,
                 Content          => \$content,
                 SkipQuoteFolding => \$skip_quote_folding,
             );
