@@ -129,7 +129,7 @@ while ( my $CF = $CustomFields->Next ) {
             $existing->LimitToCustomField($CF->Id);
             $existing->LimitToEnabled;
             $existing->Limit(FIELD => 'ObjectType', VALUE => ref($Object));
-            $existing->Limit(FIELD => 'ObjectId', VALUE => $Object->id, OPERATOR => '!=');
+            $existing->Limit(FIELD => 'ObjectId', VALUE => $Object->id || 0, OPERATOR => '!=');
             $existing->Limit(
                 FIELD => 'Content',
                 VALUE => $value,
