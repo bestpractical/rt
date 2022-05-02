@@ -1776,7 +1776,7 @@ are displayed alphabetically. The second level keys are the grouping names
 and the values are array refs containing a list of CF names.
 
 For C<RT::Ticket> and C<RT::Asset>, you can specify global, and queue
-or catalog level gropuings. For example, if you wanted to diplay some
+or catalog level groupings. For example, if you wanted to diplay some
 groupings only on tickets in the General queue, you can create an entry
 for 'General'. Global configurations then go in 'Default' as shown below.
 

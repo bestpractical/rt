@@ -191,23 +191,28 @@ elsif ( $ARGS{Update} ) {
         );
         push @results, $msg;
     }
-    my $cfs = _ParseObjectCustomFieldArgs(\%ARGS)->{'RT::Ticket'}{0};
-    for my $cf_id (keys %$cfs) {
-        # In the case of inconsistent CFV submission,
-        # we'll get the 1st grouping in the hash, alphabetically
-        my ($ret, $grouping_name) = _ValidateConsistentCustomFieldValues($cf_id, $cfs->{$cf_id});
+    for my $cfs (
+        scalar _ParseObjectCustomFieldArgs( \%ARGS )->{'RT::Ticket'}{0},
+        scalar _ParseObjectCustomFieldArgs( \%ARGS )->{'RT::Transaction'}{0}
+        )
+    {
+        for my $cf_id ( keys %$cfs ) {
+            # In the case of inconsistent CFV submission,
+            # we'll get the 1st grouping in the hash, alphabetically
+            my ( $ret, $grouping_name ) = _ValidateConsistentCustomFieldValues( $cf_id, $cfs->{$cf_id} );
 
-        my $grouping = $cfs->{$cf_id}{$grouping_name};
-        my $value = $grouping->{Value} // $grouping->{Values};
+            my $grouping = $cfs->{$cf_id}{$grouping_name};
+            my $value    = $grouping->{Value} // $grouping->{Values};
 
-        my $cf = RT::CustomField->new($session{CurrentUser});
-        $cf->Load($cf_id);
-        if ( $cf->id && $cf->SupportDefaultValues ) {
-            my ($ret, $msg) = $cf->SetDefaultValues(
-                Object => $queue,
-                Values => $value,
-            );
-            push @results, $msg;
+            my $cf = RT::CustomField->new( $session{CurrentUser} );
+            $cf->Load($cf_id);
+            if ( $cf->id && $cf->SupportDefaultValues ) {
+                my ( $ret, $msg ) = $cf->SetDefaultValues(
+                    Object => $queue,
+                    Values => $value,
+                );
+                push @results, $msg;
+            }
         }
     }
 }

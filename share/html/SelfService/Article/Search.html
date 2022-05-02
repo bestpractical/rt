@@ -105,11 +105,13 @@ if ( $ARGS{'Articles_Content'} ) {
                              FIELD           => 'Name',
                              OPERATOR        => 'LIKE',
                              VALUE           => $ARGS{'Articles_Content'},
+                             CASESENSITIVE   => 0,
                              ENTRYAGGREGATOR => "OR" );
     $articles_basics->Limit( SUBCLAUSE       => 'all',
                              FIELD           => 'Summary',
                              OPERATOR        => 'LIKE',
                              VALUE           => $ARGS{'Articles_Content'},
+                             CASESENSITIVE   => 0,
                              ENTRYAGGREGATOR => "OR" );
 }
 

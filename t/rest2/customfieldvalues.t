@@ -207,11 +207,12 @@ $user->PrincipalObj->GrantRight(Right => 'SeeCustomField');
     my $items = $content->{items};
     is(scalar(@$items), 1);
 
+    my @sub_cf_values = grep { ( $_->Category // '' ) eq $select_cf_values->[0]->Name } @$basedon_cf_values;
     for (my $i=0; $i < scalar @$items; $i++) {
-        my $cf_value_id = $basedon_cf_values->[$i]->id;
+        my $cf_value_id = $sub_cf_values[$i]->id;
         is($items->[$i]->{type}, 'customfieldvalue');
         is($items->[$i]->{id}, $cf_value_id);
-        is($items->[$i]->{name}, $basedon_cf_values->[$i]->Name);
+        is($items->[$i]->{name}, $sub_cf_values[$i]->Name);
         like($items->[$i]->{_url}, qr{$rest_base_path/customfield/$basedon_cf_id/value/$cf_value_id$});
     }
 }

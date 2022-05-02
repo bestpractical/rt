@@ -62,7 +62,7 @@ GetOptions(
     \%args,
     'install!',
     'with-MYSQL', 'with-PG', 'with-SQLITE', 'with-ORACLE',
-    'with-FASTCGI', 'with-MODPERL1', 'with-MODPERL2', 'with-STANDALONE',
+    'with-FASTCGI', 'with-MODPERL2', 'with-STANDALONE',
 
     'with-DEVELOPER',
 
@@ -512,8 +512,6 @@ These configure which backend database to add dependencies for.
 =item C<--with-standalone>
 
 =item B<--with-fastcgi>
-
-=item B<--with-modperl1>
 
 =item B<--with-modperl2>
 
