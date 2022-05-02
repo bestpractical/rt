@@ -54,6 +54,16 @@ $ldap->add(
     ],
 );
 
+my $entry = {
+    cn          => "testdisabled",
+    members     => ["uid=testuser1,ou=foo,dc=bestpractical,dc=com"],
+    objectClass => 'Group',
+    disabled    => 1,
+};
+$ldap->add( "cn=testdisabled,ou=groups,dc=bestpractical,dc=com", attr => [ %$entry ] );
+push @ldap_group_entries, $entry;
+
+
 RT->Config->Set('LDAPHost',"ldap://localhost:$ldap_port");
 RT->Config->Set('LDAPMapping',
                    {Name         => 'uid',
@@ -74,10 +84,17 @@ for my $entry (@ldap_user_entries) {
 
 RT->Config->Set('LDAPGroupBase','dc=bestpractical,dc=com');
 RT->Config->Set('LDAPGroupFilter','(objectClass=Group)');
-RT->Config->Set('LDAPGroupMapping',
-                   {Name         => 'cn',
-                    Member_Attr  => 'members',
-                   });
+RT->Config->Set(
+    'LDAPGroupMapping',
+    {
+        Name        => 'cn',
+        Member_Attr => 'members',
+        Disabled    => sub {
+            my %args = @_;
+            return $args{ldap_entry}->get_value('disabled') ? 1 : 0;
+        },
+    }
+);
 
 # confirm that we skip the import
 ok( $importer->import_groups() );
@@ -88,6 +105,15 @@ ok( $importer->import_groups() );
 }
 
 import_group_members_ok( members => 'dn' );
+
+my $group = RT::Group->new($RT::SystemUser);
+$group->LoadUserDefinedGroup('testdisabled');
+ok( $group->Disabled, 'Group testdisabled is disabled' );
+
+$ldap->modify( "cn=testdisabled,ou=groups,dc=bestpractical,dc=com", replace => { disabled => 0 } );
+ok( $importer->import_groups( import => 1 ), "imported groups" );
+$group->LoadUserDefinedGroup('testdisabled');
+ok( !$group->Disabled, 'Group testdisabled is enabled' );
 
 RT->Config->Set('LDAPGroupMapping',
                    {Name                => 'cn',
