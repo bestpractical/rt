@@ -206,8 +206,10 @@ sub Create {
 
     # Add corresponding CustomFieldValue records for custom fields,
     # the same as in RT::Authen::ExternalAuth::UpdateUserInfo.
-    require RT::Authen::ExternalAuth;
-    RT::Authen::ExternalAuth::AddCustomFieldValue(%args);
+    # RT::Authen::ExternalAuth needs Net::LDAP, which might be unavailable
+    if ( RT::Authen::ExternalAuth->require ) {
+        RT::Authen::ExternalAuth::AddCustomFieldValue(%args);
+    }
 
     # Handle any user CFs
     $self->UpdateObjectCustomFieldValues( %args );
