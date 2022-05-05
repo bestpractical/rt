@@ -1596,7 +1596,7 @@ sub _GroupingClass {
         my ($container_object) = $record->CategoryObj;
         $category = $container_object->Name if $container_object;
     }
-    return ( $record_class, $category );
+    return wantarray ? ( $record_class, $category ) : $record_class;
 }
 
 =head2 RegisterBuiltInGroupings
