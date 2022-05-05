@@ -117,13 +117,18 @@
         CustomFields => $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes,
         Grouping => 'Links',
         InTable => 1,
+        CategoryObj => $queue,
     &>
     </table>
     </&>
 </div>
 % }
 
-<& /Elements/EditCustomFieldCustomGroupings, CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes }, Object => RT::Ticket->new($session{CurrentUser}) &>
+<& /Elements/EditCustomFieldCustomGroupings,
+    CustomFieldGenerator => sub { $queue->TicketCustomFields->LimitToDefaultValuesSupportedTypes },
+    Object => RT::Ticket->new($session{CurrentUser}),
+    CategoryObj => $queue,
+&>
 
 <div class="ticket-info-cfs">
     <&|/Widgets/TitleBox, title => loc("Transaction Custom Fields") &>
