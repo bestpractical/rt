@@ -159,11 +159,8 @@ elsif ( $ARGS{Update} ) {
         );
         push @results, $msg;
     }
-    for my $cfs (
-        scalar _ParseObjectCustomFieldArgs( \%ARGS )->{'RT::Ticket'}{0},
-        scalar _ParseObjectCustomFieldArgs( \%ARGS )->{'RT::Transaction'}{0}
-        )
-    {
+    my $cf_args = _ParseObjectCustomFieldArgs( \%ARGS );
+    for my $cfs ( map { $cf_args->{$_}{0} || () } qw/RT::Ticket RT::Transaction/ ) {
         for my $cf_id ( keys %$cfs ) {
             # In the case of inconsistent CFV submission,
             # we'll get the 1st grouping in the hash, alphabetically
