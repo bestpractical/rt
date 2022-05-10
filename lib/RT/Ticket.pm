@@ -2511,7 +2511,8 @@ sub _SetStatus {
         $self->_Set(
             Field             => 'Started',
             Value             => $now->ISO,
-            RecordTransaction => 0
+            RecordTransaction => 0,
+            CheckACL          => 0,
         );
     }
 
@@ -2522,6 +2523,7 @@ sub _SetStatus {
             Field             => 'Resolved',
             Value             => $now->ISO,
             RecordTransaction => 0,
+            CheckACL          => 0,
         );
     }
 
