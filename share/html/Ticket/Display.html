@@ -160,6 +160,17 @@ if ($ARGS{'id'} eq 'new') {
             TicketObj => $TicketObj,
             ActionsRef => \@Actions, ARGSRef => \%ARGS,
             SkipProcessing => \$SkipProcessing );
+
+        my ($status, @msg) = $m->comp(
+            '/Elements/ValidateCustomFields',
+            Object       => $TicketObj,
+            CustomFields => $TicketObj->CustomFields,
+            ARGSRef      => \%ARGS,
+        );
+        unless ($status) {
+            push @Actions, @msg;
+            $SkipProcessing = 1;
+        }
         return if $SkipProcessing;
 
         if ( defined $ARGS{'Action'} ) {
