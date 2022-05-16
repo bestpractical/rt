@@ -71,6 +71,8 @@ sub MailDashboards {
         Time   => time,
         User   => undef,
         Recipients => undef,
+        Subscription => undef,
+        Test => 0,
         @_,
     );
 
@@ -115,6 +117,10 @@ sub MailDashboards {
         }
     }
 
+    if ( $args{Subscription} ) {
+        $Users->Limit( FIELD => 'id', VALUE => $args{Subscription}->Object->Id || 0 );
+    }
+
     while (defined(my $user = $Users->Next)) {
         my ($hour, $dow, $dom) = HourDowDomIn($args{Time}, $user->Timezone || RT->Config->Get('Timezone'));
         $hour .= ':00';
@@ -127,7 +133,8 @@ sub MailDashboards {
 
         # look through this user's subscriptions, are any supposed to be generated
         # right now?
-        for my $subscription ($user->Attributes->Named('Subscription')) {
+        my @subscriptions = $args{Subscription} || $user->Attributes->Named('Subscription');
+        for my $subscription (@subscriptions) {
             next unless $self->IsSubscriptionReady(
                 %args,
                 Subscription => $subscription,
@@ -243,7 +250,7 @@ sub MailDashboards {
                 }
             }
 
-            if ($email_success) {
+            if ( $email_success && !$args{Test} ) {
                 my $counter = $subscription->SubValue('Counter') || 0;
                 $subscription->SetSubValues(Counter => $counter + 1)
                     unless $args{DryRun};
@@ -259,10 +266,11 @@ sub IsSubscriptionReady {
         Subscription => undef,
         User         => undef,
         LocalTime    => [0, 0, 0],
+        Test         => 0,
         @_,
     );
 
-    return 1 if $args{All};
+    return 1 if $args{All} || $args{Test};
 
     my $subscription  = $args{Subscription};
 

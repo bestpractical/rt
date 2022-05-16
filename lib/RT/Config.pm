@@ -1818,6 +1818,9 @@ our %META;
     BcryptCost => {
         Widget => '/Widgets/Form/Integer',
     },
+    DashboardTestEmailLimit => {
+        Widget => '/Widgets/Form/String',
+    },
     DefaultSummaryRows => {
         Widget => '/Widgets/Form/Integer',
     },

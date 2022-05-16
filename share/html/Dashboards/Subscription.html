@@ -297,6 +297,74 @@
 % }
     </div>
   </div>
+
+% if ($SubscriptionObj) {
+  <&| /Widgets/TitleBox, title => loc('Test Dashboard Subscription') &>
+    <p class="mt-3 ml-3">
+      <&|/l&>Your dashboard subscription will run automatically using the schedule defined above. This section allows you to manually test sending a dashboard email. Click Show above to view the content of the dashboard without sending email.</&>
+    </p>
+    <div class="form-row">
+      <div class="label col-3">
+        <&|/l&>Send test email to</&>:
+      </div>
+      <div class="value col-9">
+        <div class="custom-control custom-radio no-text-input">
+          <input type="radio" id="send-test-email-type-me" name="SendTestEmailType" class="custom-control-input" value="me" <% ($ARGS{'SendTestEmailType'} || '') eq 'me' ? ' checked="checked"': '' |n %>>
+          <label class="custom-control-label" for="send-test-email-type-me">Me (<% $session{CurrentUser}->EmailAddress %>)</label>
+        </div>
+        <div class="custom-control custom-radio has-text-input">
+          <input type="radio" id="send-test-email-type-custom" name="SendTestEmailType" class="custom-control-input" value="custom" <% ($ARGS{'SendTestEmailType'} || '') eq 'custom' ? ' checked="checked"': '' |n %>>
+          <label class="custom-control-label d-inline-block" for="send-test-email-type-custom">
+            <&|/l&>One email address</&>:
+            <input class="form-control w-auto d-inline-block" name="SendTestEmailToCustom" value="<% ($ARGS{'SendTestEmailToCustom'} || '') %>" />
+          </label>
+        </div>
+        <div class="custom-control custom-radio has-text-input">
+          <input type="radio" id="send-test-email-type-first" name="SendTestEmailType" class="custom-control-input" value="first" <% ($ARGS{'SendTestEmailType'} || '') eq 'first' ? ' checked="checked"': '' |n %>>
+          <label class="custom-control-label d-inline-block" for="send-test-email-type-first">
+%#          Make input a bit wider if possible to not squeeze content too much
+%           my $max = RT->Config->Get('DashboardTestEmailLimit') || 50;
+            <&|/l_unsafe,
+                qq!<input size="@{[1+length $max]}" type="number" min="1" max="@{[ $max ]}" class="form-control w-auto d-inline-block" name="SendTestEmailToFirst" value="@{[ $ARGS{'SendTestEmailToFirst'} || 1 ]}" />!,
+                $max, &>First [_1] recipient(s) from the list above (Max: [_2])</&>
+          </label>
+        </div>
+        <input name="SendTestEmailToFirstRecipients" type="hidden" value="" />
+        <div class="send-test-email-type-first-details hidden">
+          <p class="mt-1 mb-0 ml-4"><&|/l&>Recipient list</&>:</p>
+          <ol class="list-group-compact">
+%         for my $user ( @current_recipient_list ) {
+            <li class="list-group-item marker" data-id="<% $user->Id %>">
+              <& /Elements/ShowUser, User => $user, LinkTarget => '_blank' &>
+            </li>
+%         }
+          </ol>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="col-12">
+        <& /Elements/Submit, Name => 'SendTestEmail', Label => loc('Send Test Email') &>
+      </div>
+    </div>
+    <script type="text/javascript">
+        jQuery('input[name=SendTestEmailType]').change(function() {
+            jQuery('.send-test-email-type-first-details').toggleClass('hidden', jQuery(this).val() !== 'first');
+        }).filter(':checked').change();
+
+        jQuery('input[name=SendTestEmailToFirst]').change(function() {
+            var selected = jQuery('.send-test-email-type-first-details li').slice(0, jQuery(this).val());
+            selected.removeClass('hidden');
+            jQuery('input[name=SendTestEmailToFirstRecipients]').val(
+                selected.map(function() { return jQuery(this).data('id') }).get().join(',')
+            );
+
+            jQuery('.send-test-email-type-first-details li').slice(jQuery(this).val()).addClass('hidden');
+        }).change();
+    </script>
+  </&>
+% }
+
 </form>
 
 <%INIT>
@@ -463,10 +531,92 @@ if (defined $ARGS{Save}) {
     $UserString = undef;
     $UserField = undef;
     $UserOp = undef;
+} elsif ( $ARGS{SendTestEmail} ) {
+    if ($SubscriptionObj) {
+        if ( my $type = $ARGS{SendTestEmailType} ) {
+            my @recipients;
+            if ( $type eq 'me' ) {
+                push @recipients, $session{CurrentUser}->EmailAddress;
+            }
+            elsif ( $type eq 'custom' ) {
+                if ( $ARGS{SendTestEmailToCustom} ) {
+                    push @recipients, $ARGS{SendTestEmailToCustom};
+                }
+                else {
+                    push @results, loc('Empty email address');
+                }
+            }
+            elsif ( $type eq 'first' ) {
+                if ( my $emails = $ARGS{SendTestEmailToFirstRecipients} ) {
+                    @recipients = split /,/, $emails;
+                    my $limit = RT->Config->Get('DashboardTestEmailLimit') || 50;
+                    if ( @recipients > $limit ) {
+                        push @results, loc( 'Number of recipients exceeds limit([_1])', $limit );
+                        @recipients = ();
+                    }
+                }
+                else {
+                    push @results, loc('Empty number of recipients');
+                }
+            }
+            else {
+                # should not be here
+            }
+
+            if (@recipients) {
+                require RT::Dashboard::Mailer;
+                RT::Dashboard::Mailer->MailDashboards(
+                    Subscription => $SubscriptionObj,
+                    Test         => 1,
+                    Recipients   => \@recipients,
+                );
+                push @results, loc('Test dashboard email sent');
+            }
+        }
+    }
 }
+
+my @current_recipient_list;
 
 if ($SubscriptionObj) {
     $title = loc("Modify the subscription to dashboard [_1]", $Dashboard->Name);
+
+    my %exist;
+    push @current_recipient_list, $session{CurrentUser}->UserObj;
+    $exist{$session{CurrentUser}->Id} = 1;
+
+    my $limit = RT->Config->Get('DashboardTestEmailLimit') || 50;
+
+    if ( @current_recipient_list < $limit ) {
+        for my $user_id ( @{$fields{Recipients}{Users} || []} ) {
+            next if $exist{$user_id}++;
+
+            my $user = RT::User->new($session{CurrentUser});
+            $user->Load($user_id);
+            if ( $user->Id && !$user->Disabled ) {
+                push @current_recipient_list, $user;
+                last if @current_recipient_list == $limit;
+            }
+        }
+    }
+
+    if ( @current_recipient_list < $limit ) {
+        for my $group_id ( @{ $fields{Recipients}{Groups} || [] } ) {
+            my $group = RT::Group->new( $session{CurrentUser} );
+            $group->Load($group_id);
+            if ( $group->Id ) {
+                my $users = $group->UserMembersObj;
+                while ( my $user = $users->Next ) {
+                    next if $exist{ $user->Id }++;
+                    push @current_recipient_list, $user;
+                    last if @current_recipient_list == $limit;
+                }
+            }
+            else {
+                RT->Logger->warning("Couldn't load group $group_id");
+            }
+        }
+    }
 }
 else {
     $title = loc("Subscribe to dashboard [_1]", $Dashboard->Name);
