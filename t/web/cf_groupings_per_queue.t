@@ -92,6 +92,25 @@ for my $queue ( $general, $foo ) {
             ok( !$m->find_link( url_regex => qr/#ticket-info-cfs-More$/, text => 'More' ), 'no "More" widget' );
         }
     }
+
+    {
+        $m->get_ok( '/Admin/Queues/DefaultValues.html?id=' . $queue->Id, 'default values page' );
+        my $prefix = 'Object-RT::Ticket--CustomField:';
+        my $dom    = $m->dom;
+        $m->form_name('ModifyDefaultValues');
+        for my $grouping (@groupings) {
+            my $input_name = $prefix . "$grouping-$CF{$grouping}-Value";
+            if ( $grouping eq 'More' && $queue == $foo ) {
+                $input_name =~ s!:More!!;
+            }
+            is $dom->find(qq{input[name="$input_name"]})->size, 1, "only one CF input on the page";
+            ok $dom->at(qq{$location{$grouping} input[name="$input_name"]}), "CF is in the right place";
+            $m->field( $input_name, "Test" . $grouping . "Value" );
+        }
+        $m->submit_form_ok( { button => 'Update' } );
+        $m->text_contains('Default values changed from (no value) to Test' . $_ . 'Value') for @groupings;
+    }
+
 }
 
 done_testing;
